@@ -21,14 +21,14 @@
     0 2px 1px -1px color(var(--state-danger-color) a(100%)),
     0 1px 1px 0 color(var(--state-danger-color) a(65%)),
     0 1px 3px 0 color(var(--state-danger-color) a(50%));
-  --backdrop-background-color: color(var(--brand-primary-lighter) a(40%));
+  --backdrop-background-color: color(var(--gray-base) a(40%));
   --main-navigation-background-color: color(var(--brand-primary) shade(70%) saturation(20%));
   --header-height: 3rem;
 
   /* Border radius */
   --border-radius-base: 3px;
-  --border-radius-large: 0;
-  --border-radius-small: 0;
+  --border-radius-large: 5px;
+  --border-radius-small: 2px;
 
   /* Padding */
   --extra-small-padding: 0.25rem;

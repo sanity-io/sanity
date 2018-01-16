@@ -10,18 +10,30 @@ export default class CaptureOutsideClicks extends React.Component {
     wrapperElement: 'div'
   }
 
+  hadMouseDown = false
+
   componentWillMount() {
     document.addEventListener('mouseup', this.handleDocumentClick)
+    document.addEventListener('mousedown', this.handleMouseDown)
   }
 
   componentWillUnmount() {
     document.removeEventListener('mouseup', this.handleDocumentClick)
+    document.removeEventListener('mousedown', this.handleMouseDown)
+  }
+
+  handleMouseDown = event => {
+    if (this._wrapperElement.contains(event.target)) {
+      this.hadMouseDown = true
+    }
+
   }
 
   handleDocumentClick = event => {
-    if (this.props.onClickOutside && this._wrapperElement && !this._wrapperElement.contains(event.target)) {
+    if (this.props.onClickOutside && this._wrapperElement && !this._wrapperElement.contains(event.target) && !this.hadMouseDown) {
       this.props.onClickOutside(event)
     }
+    this.hadMouseDown = false
   }
 
   setWrapperElement = element => {

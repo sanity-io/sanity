@@ -19,7 +19,7 @@
   @nest .transparent & {
     transition: all 0.05s linear;
     background-color: transparent;
-    border-color: color(var(--gray-base) a(8%));
+    border: 1px solid color(var(--gray-base) a(8%));
 
     @nest &:hover {
       background-color: var(--white);
@@ -49,7 +49,7 @@
   composes: shadow-4dp from "part:@sanity/base/theme/shadows-style";
   box-sizing: border-box;
   transform: translateY(-1px);
-  background-color: color(var(--component-bg) a(90%));
+  background-color: var(--component-bg);
   height: auto;
   width: auto;
   overflow-y: auto;

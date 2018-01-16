@@ -8,7 +8,7 @@ import TRANSFER_TYPES from 'slate-react/lib/constants/transfer-types'
 import Base64 from 'slate-base64-serializer'
 import {Selection} from 'slate'
 import ItemForm from './ItemForm'
-import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
+import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import Preview from '../../Preview'
 import styles from './styles/FormBuilderInline.css'
 import createRange from './util/createRange'
@@ -234,24 +234,41 @@ export default class FormBuilderInline extends React.Component {
     this.previewContainer = previewContainer
   }
 
+  handleDialogAction = action => {
+    if (action.name === 'close') {
+      this.handleClose()
+    }
+  }
+
   renderInput() {
     const value = this.getValue()
     const memberType = this.getMemberTypeOf(value)
 
     return (
-      <FullscreenDialog
+      <DefaultDialog
         isOpen
         title={this.props.node.title}
         onClose={this.handleClose}
+        onAction={this.handleDialogAction}
+        showCloseButton={false}
+        actions={[
+          {
+            index: '1',
+            name: 'close',
+            title: 'Close'
+          }
+        ]}
       >
-        <ItemForm
-          onDrop={this.handleCancelEvent}
-          type={memberType}
-          level={0}
-          value={this.getValue()}
-          onChange={this.handleChange}
-        />
-      </FullscreenDialog>
+        <div style={{padding: '1rem'}}>
+          <ItemForm
+            onDrop={this.handleCancelEvent}
+            type={memberType}
+            level={0}
+            value={this.getValue()}
+            onChange={this.handleChange}
+          />
+        </div>
+      </DefaultDialog>
     )
   }
 

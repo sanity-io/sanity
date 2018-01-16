@@ -26,6 +26,22 @@ import DragBarsIcon from 'part:@sanity/base/bars-icon'
 
 const DragHandle = createDragHandle(() => <span className={styles.dragHandle}><DragBarsIcon /></span>)
 
+const DIALOG_ACTIONS = [
+  {
+    index: '1',
+    name: 'close',
+    title: 'Close'
+  },
+  {
+    index: '2',
+    name: 'delete',
+    kind: 'simple',
+    title: 'Delete',
+    color: 'danger',
+    secondary: true
+  }
+]
+
 type Props = {
   type: ArrayType,
   value: ItemValue,
@@ -124,7 +140,8 @@ export default class RenderItemValue extends React.Component<Props> {
       this.handleEditStop()
     }
     if (action.name === 'delete') {
-      if (window.confirm("Do you really want to delete?")) {
+      // Needs a proper confirm dialog later
+      if (window.confirm('Do you really want to delete?')) { // eslint-disable-line no-alert
         this.handleRemove()
       }
     }
@@ -136,13 +153,10 @@ export default class RenderItemValue extends React.Component<Props> {
 
     const memberType = this.getMemberType() || {}
 
-    // Reset level if a full screen modal
-    const level = options.editModal === 'fullscreen' ? 0 : 2
-
     const content = (
       <FormBuilderInput
         type={memberType}
-        level={1}
+        level={0}
         value={item}
         onChange={this.handleChange}
         onFocus={onFocus}
@@ -191,19 +205,8 @@ export default class RenderItemValue extends React.Component<Props> {
           key={item._key}
           title="Edit"
           onAction={this.handleDialogAction}
-          actions={[{
-            index: '1',
-            name: 'close',
-            title: 'Close'
-          },
-          {
-            index: '2',
-            name: 'delete',
-            kind: 'simple',
-            title: 'Delete',
-            color: 'danger'
-          }
-          ]}
+          showCloseButton={false}
+          actions={DIALOG_ACTIONS}
         >
           <div className={styles.defaultDialogContent}>
             {content}
@@ -227,15 +230,20 @@ export default class RenderItemValue extends React.Component<Props> {
           tabIndex={0}
           onClick={this.handleEditStart}
           onKeyPress={this.handleKeyPress}
-          onFocus={this.handleFocus}
-          ref={this.setFocusArea}
           className={styles.previewWrapper}
         >
-          <Preview
-            layout={previewLayout}
-            value={value}
-            type={this.getMemberType()}
-          />
+          <div
+            tabIndex={-1}
+            ref={this.setFocusArea}
+            className={styles.previewWrapperHelper}
+            onFocus={this.handleFocus}
+          >
+            <Preview
+              layout={previewLayout}
+              value={value}
+              type={this.getMemberType()}
+            />
+          </div>
         </div>
 
         <div className={styles.functions}>
