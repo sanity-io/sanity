@@ -1,3 +1,5 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .root {
   display: inline-block;
   position: relative;
@@ -9,4 +11,8 @@
   height: 1px;
   top: 50%;
   left: 50%;
+}
+
+.wrapper {
+  padding: var(--medium-padding);
 }

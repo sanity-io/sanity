@@ -87,6 +87,7 @@ export default class Fieldset extends React.Component {
       styles[`columns${columns}`],
       styles[`level${level}`],
       transparent && styles.transparent,
+      this.props.onFocus && styles.canFocus,
       className
     ]
       .filter(Boolean)

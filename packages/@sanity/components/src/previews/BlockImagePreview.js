@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import styles from 'part:@sanity/components/previews/block-style'
+import styles from 'part:@sanity/components/previews/block-image-style'
 
 const fieldProp = PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.func])
 
-export default class BlockPreview extends React.PureComponent {
+export default class BlockImagePreview extends React.PureComponent {
   static propTypes = {
     title: PropTypes.string,
     subtitle: PropTypes.string,
@@ -24,7 +24,7 @@ export default class BlockPreview extends React.PureComponent {
   }
 
   static defaultProps = {
-    mediaDimensions: {width: 160, height: 160, aspect: 1, fit: 'crop'},
+    mediaDimensions: {width: 600, height: 300, aspect: 1, fit: 'fill'},
     type: {
       title: undefined,
       name: undefined
@@ -42,23 +42,15 @@ export default class BlockPreview extends React.PureComponent {
     } = this.props
 
     return (
-      <div className={description ? styles.hasDescription : styles.root}>
-        {
-          status && (
-            <div className={styles.status}>
-              {
-                (typeof status === 'function' && status({layout: 'default'}))
-                || status
-              }
-            </div>
-          )
-        }
+      <div
+        className={styles.root}
+      >
         {
           media && (
             <div className={`${styles.media}`}>
               {
                 typeof media === 'function' && (
-                  media({dimensions: mediaDimensions, layout: 'default'})
+                  media({dimensions: mediaDimensions, layout: 'blockImage'})
                 )
               }
               {
@@ -76,14 +68,28 @@ export default class BlockPreview extends React.PureComponent {
           <h2 className={styles.title}>
             {title}
           </h2>
-          <h3 className={styles.subtitle}>
-            {subtitle}
-          </h3>
+          {
+            subtitle && (
+              <h3 className={styles.subtitle}>
+                {subtitle}
+              </h3>
+            )
+          }
           {
             description && (
               <p className={styles.description}>
                 {description}
               </p>
+            )
+          }
+          {
+            status && (
+              <div className={styles.status}>
+                {
+                  (typeof status === 'function' && status({layout: 'default'}))
+                  || status
+                }
+              </div>
             )
           }
         </div>
