@@ -47,13 +47,7 @@ export default class ConfirmButton extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (!prevState.showConfirmDialog && this.state.showConfirmDialog) {
-      // This is a hack needed because popovers doesn't render its children immediately.
-      // When this is fixed, we can call this._confirmButton.focus() immediately
-      setTimeout(() => {
-        if (this._confirmButton) {
-          this._confirmButton.focus()
-        }
-      }, 0)
+      this._confirmButton.focus()
     }
   }
 
