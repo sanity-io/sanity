@@ -343,6 +343,10 @@
       "description": "Shows everything in a block"
     },
     {
+      "name": "part:@sanity/components/previews/block-image",
+      "description": "Shows image in a block"
+    },
+    {
       "name": "part:@sanity/components/previews/default-style",
       "description": "Default preview styling"
     },
@@ -361,6 +365,10 @@
     {
       "name": "part:@sanity/components/previews/block-style",
       "description": "Block preview styling"
+    },
+    {
+      "name": "part:@sanity/components/previews/block-image-style",
+      "description": "Block image preview styling"
     },
     {
       "name": "part:@sanity/components/previews/media-style",
@@ -548,6 +556,10 @@
       "path": "previews/BlockPreview.js"
     },
     {
+      "implements": "part:@sanity/components/previews/block-image",
+      "path": "previews/BlockImagePreview.js"
+    },
+    {
       "implements": "part:@sanity/components/autocomplete/default-style",
       "path": "autocomplete/styles/DefaultAutocomplete.css"
     },
@@ -722,6 +734,10 @@
     {
       "implements": "part:@sanity/components/previews/block-style",
       "path": "previews/styles/BlockPreview.css"
+    },
+    {
+      "implements": "part:@sanity/components/previews/block-image-style",
+      "path": "previews/styles/BlockImagePreview.css"
     },
     {
       "implements": "part:@sanity/components/previews/media-style",

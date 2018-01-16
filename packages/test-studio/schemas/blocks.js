@@ -39,6 +39,11 @@ export default {
           }
         },
         {
+          type: 'color',
+          name: 'colorBlock',
+          title: 'Color (block)'
+        },
+        {
           type: 'object', title: 'Test object', name: 'testObject',
           fields: [{name: 'field1', type: 'string'}]
         },

@@ -28,9 +28,11 @@
   width: 100%;
   vertical-align: bottom;
   box-sizing: border-box;
+  background-color: var(--component-bg);
 }
 
 .item {
+  background-color: var(--gray-lighter);
   composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
   display: block;
   margin: calc(var(--small-padding) / 2);

@@ -8,7 +8,7 @@ import PreviewComponentDetail from 'part:@sanity/components/previews/detail'
 import PreviewComponentInline from 'part:@sanity/components/previews/inline'
 import PreviewComponentMedia from 'part:@sanity/components/previews/media'
 import PreviewComponentBlock from 'part:@sanity/components/previews/block'
-
+import PreviewComponentBlockImage from 'part:@sanity/components/previews/block-image'
 import sanityClient from 'part:@sanity/base/client'
 
 const imageBuilder = imageUrlBuilder(sanityClient)
@@ -45,64 +45,77 @@ export default class SanityDefaultPreview extends React.PureComponent {
     // for the rendering of the media (dimensions)
     const {dimensions} = options
     const {value} = this.props
-
-    if (!value) {
-      return undefined
-    }
     const {media} = value
 
+    // Handle sanity image
+    return (
+      <img
+        alt={value.title}
+        src={
+          imageBuilder.image(media)
+            .width(dimensions.width || 100)
+            .height(dimensions.height || 100)
+            .fit(dimensions.fit)
+            .url()
+        }
+      />
+    )
+
+  }
+
+  renderImageUrl = options => {
     // Legacy support for imageUrl
+    const {dimensions} = options
+    const {value} = this.props
     const imageUrl = value.imageUrl
     if (imageUrl) {
-      const assetUrl = assetUrlBuilder(imageUrl, {dimensions})
-      return <img src={assetUrl} alt={value.title} style={{objectFit: 'cover', height: '100%', width: '100%'}} />
+      const assetUrl = assetUrlBuilder(imageUrl, dimensions)
+      return <img src={assetUrl} alt={value.title} />
     }
+    return undefined
+  }
 
-    if (!media) {
-      return undefined
-    }
+  renderIcon = options => {
+    const {type} = this.props
+    const Icon = type.icon
+    return Icon && <Icon />
 
-    // Handle sanity image
-    if (media._type === 'image' && media.asset) {
-      return (
-        <img
-          alt={value.title}
-          src={
-            imageBuilder.image(media)
-              .width(dimensions.width || 100)
-              .height(dimensions.height || 100)
-              .fit(dimensions.fit)
-              .url()
-          }
-        />
-      )
-    }
   }
 
   resolveMedia = () => {
     const {value} = this.props
     const {media} = value
 
+    if (typeof media === 'function' || React.isValidElement(media)) {
+      return media
+    }
+
     // Legacy support for imageUrl
     if (value.imageUrl) {
-      return this.renderMedia
+      return this.renderImageUrl
     }
 
     // Handle sanity image
-    if (media && media._type === 'image') {
+    if (media && media.asset) {
       return this.renderMedia
     }
 
-    return media
+    // Render fallback icon
+    return this.renderIcon
 
   }
 
   render() {
     const {layout, ...rest} = this.props
 
-    const PreviewComponent = previewComponentMap.hasOwnProperty(layout)
+    let PreviewComponent = previewComponentMap.hasOwnProperty(layout)
       ? previewComponentMap[layout]
       : previewComponentMap.default
+
+    // TODO: Bjoerge: Check for image type with "is()"
+    if (layout === 'block' && this.props.type && this.props.type.name === 'image') {
+      PreviewComponent = PreviewComponentBlockImage
+    }
 
     const {_upload, value} = extractUploadState(this.props.value)
 
