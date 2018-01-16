@@ -82,12 +82,7 @@ export default class SanityDefaultPreview extends React.PureComponent {
   renderIcon = options => {
     const {type} = this.props
     const Icon = type.icon
-    if (Icon) {
-      // const Icon = dataAspects.getIcon(type.name)
-      // console.log(Icon)
-      return <Icon />
-    }
-    return undefined
+    return Icon && <Icon />
   }
 
   resolveMedia = () => {

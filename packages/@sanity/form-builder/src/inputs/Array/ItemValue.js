@@ -26,6 +26,22 @@ import DragBarsIcon from 'part:@sanity/base/bars-icon'
 
 const DragHandle = createDragHandle(() => <span className={styles.dragHandle}><DragBarsIcon /></span>)
 
+const DIALOG_ACTIONS = [
+  {
+    index: '1',
+    name: 'close',
+    title: 'Close'
+  },
+  {
+    index: '2',
+    name: 'delete',
+    kind: 'simple',
+    title: 'Delete',
+    color: 'danger',
+    secondary: true
+  }
+]
+
 type Props = {
   type: ArrayType,
   value: ItemValue,
@@ -190,21 +206,7 @@ export default class RenderItemValue extends React.Component<Props> {
           title="Edit"
           onAction={this.handleDialogAction}
           showCloseButton={false}
-          actions={[
-            {
-              index: '1',
-              name: 'close',
-              title: 'Close'
-            },
-            {
-              index: '2',
-              name: 'delete',
-              kind: 'simple',
-              title: 'Delete',
-              color: 'danger',
-              secondary: true
-            }
-          ]}
+          actions={DIALOG_ACTIONS}
         >
           <div className={styles.defaultDialogContent}>
             {content}
