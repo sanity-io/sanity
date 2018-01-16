@@ -13,7 +13,7 @@ export default class MediaPreview extends React.PureComponent {
     mediaDimensions: PropTypes.shape({
       width: PropTypes.number,
       height: PropTypes.number,
-      fit: PropTypes.oneOf(['clip', 'crop', 'clamp']),
+      fit: PropTypes.oneOf(['clip', 'crop', 'fill', 'fillmax', 'max', 'scale', 'min']),
       aspect: PropTypes.number,
     }),
     children: PropTypes.node,
