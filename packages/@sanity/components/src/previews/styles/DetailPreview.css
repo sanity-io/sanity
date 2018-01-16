@@ -75,11 +75,19 @@
   box-sizing: border-box;
   background-color: var(--gray-lighter);
   border: 1px solid color(var(--gray-lighter) lightness(-3%));
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   @nest & > img {
     display: block;
     width: 5em;
     height: 5em;
+  }
+
+  @nest & svg {
+    font-size: 3rem;
+    color: var(--gray);
   }
 }
 

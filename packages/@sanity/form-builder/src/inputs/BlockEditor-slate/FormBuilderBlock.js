@@ -8,7 +8,9 @@ import TRANSFER_TYPES from 'slate-react/lib/constants/transfer-types'
 import Base64 from 'slate-base64-serializer'
 import {findDOMNode} from 'slate-react'
 import {FormBuilderInput} from '../../FormBuilderInput'
+import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
+import Button from 'part:@sanity/components/buttons/default'
 import EditItemPopOver from 'part:@sanity/components/edititem/popover'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
 import Preview from '../../Preview'
@@ -17,11 +19,30 @@ import createRange from './util/createRange'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import InvalidValue from '../InvalidValue'
 import FocusManager from '../../sanity/focusManagers/SimpleFocusManager'
+import TrashIcon from 'part:@sanity/base/trash-icon'
+import EditIcon from 'part:@sanity/base/edit-icon'
+import is from '../../utils/is'
+
+const DIALOG_ACTIONS = [
+  {
+    index: '1',
+    name: 'close',
+    title: 'Close'
+  },
+  // {
+  //   index: '2',
+  //   name: 'delete',
+  //   kind: 'simple',
+  //   title: 'Delete',
+  //   color: 'danger',
+  //   secondary: true
+  // }
+]
 
 export default class FormBuilderBlock extends React.Component {
   static propTypes = {
     // Note: type refers to the array type, not the value type
-    type: PropTypes.object,
+    type: PropTypes.object.isRequired,
     node: PropTypes.object,
     editor: PropTypes.object,
     state: PropTypes.object,
@@ -206,6 +227,7 @@ export default class FormBuilderBlock extends React.Component {
   renderPreview() {
     const value = this.getValue()
     const memberType = this.getMemberTypeOf(value)
+
     if (!memberType) {
       const validMemberTypes = this.props.type.of.map(type => type.name)
       const actualType = resolveTypeName(value)
@@ -218,6 +240,7 @@ export default class FormBuilderBlock extends React.Component {
         />
       )
     }
+
     return (
       <Preview
         type={memberType}
@@ -225,6 +248,15 @@ export default class FormBuilderBlock extends React.Component {
         layout="block"
       />
     )
+  }
+
+  handleDialogAction = action => {
+    if (action.name === 'close') {
+      this.handleClose()
+    }
+    if (action.name === 'delete') {
+      // Implement delete
+    }
   }
 
   refFormBuilderBlock = formBuilderBlock => {
@@ -240,34 +272,22 @@ export default class FormBuilderBlock extends React.Component {
     const memberType = this.getMemberTypeOf(value)
 
     return (
-      <FormBuilderInput
-        type={memberType}
-        level={0}
-        value={value}
-        onChange={this.handleChange}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        focusPath={focusPath}
-        path={[{_key: value._key}]}
-      />
+      <div style={{minWidth: '30rem', padding: '1rem'}}>
+        <FormBuilderInput
+          type={memberType}
+          level={1}
+          value={value}
+          onChange={this.handleChange}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          focusPath={focusPath}
+          path={[{_key: value._key}]}
+        />
+      </div>
     )
   }
   renderInput() {
-    const value = this.getValue()
-    const memberType = this.getMemberTypeOf(value)
-
-    const fieldsQty = ((memberType && memberType.fields) || []).length
-
-    let editModalLayout = get(this, 'props.type.options.editModal')
-
-    // Choose editModal based on number of fields
-    if (!editModalLayout) {
-      if (fieldsQty < 3) {
-        editModalLayout = 'popover'
-      } else {
-        editModalLayout = 'fullscreen'
-      }
-    }
+    const editModalLayout = get(this.props.type.options, 'editModal')
 
     const input = (
       <FocusManager>{this.renderFormBuilderInput}</FocusManager>
@@ -299,17 +319,32 @@ export default class FormBuilderBlock extends React.Component {
       )
     }
 
+    if (editModalLayout === 'popover') {
+      return (
+        <div className={styles.editBlockContainerPopOver}>
+          <EditItemPopOver
+            isOpen
+            title={this.props.node.title}
+            onClose={this.handleClose}
+          >
+            {input}
+          </EditItemPopOver>
+        </div>
+      )
+    }
+
     // default
     return (
-      <div className={styles.editBlockContainerPopOver}>
-        <EditItemPopOver
-          isOpen
-          title={this.props.node.title}
-          onClose={this.handleClose}
-        >
-          {input}
-        </EditItemPopOver>
-      </div>
+      <DefaultDialog
+        isOpen
+        title={this.props.node.title}
+        onClose={this.handleClose}
+        showCloseButton={false}
+        onAction={this.handleDialogAction}
+        actions={DIALOG_ACTIONS}
+      >
+        {input}
+      </DefaultDialog>
     )
 
 
@@ -339,6 +374,9 @@ export default class FormBuilderBlock extends React.Component {
       className = styles.root
     }
 
+    const value = this.getValue()
+    const memberType = this.getMemberTypeOf(value)
+
     return (
       <div
         {...attributes}
@@ -356,7 +394,32 @@ export default class FormBuilderBlock extends React.Component {
           ref={this.refPreview}
           className={styles.previewContainer}
         >
-          {this.renderPreview()}
+          <div className={styles.preview}>
+            {this.renderPreview()}
+          </div>
+          <div className={styles.functions}>
+            {
+              memberType && <span className={styles.type}>{memberType.title || memberType.name}</span>
+            }
+            <div>
+              <Button
+                kind="simple"
+                icon={EditIcon}
+                title="Delete"
+              />
+            </div>
+            {/*
+              Add delete button later when we have handleDelete here
+              <div>
+                <Button
+                  kind="simple"
+                  color="danger"
+                  icon={TrashIcon}
+                  title="Delete"
+                />
+              </div>
+            */}
+          </div>
         </span>
 
         {isEditing && this.renderInput()}

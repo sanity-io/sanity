@@ -1,11 +1,18 @@
 .root {
-  background-color: #fff;
-  padding: 0.2em;
+  position: relative;
+
+  @nest & > h3 {
+    padding-left: 0.75rem;
+  }
 }
 
 .aceWrapper {
-  border: 1px #aaa;
-  padding: 0.2em;
+  border-top: 1px solid #ccc;
+  cursor: default;
+}
+
+.aceWrapper :global(.ace_content) {
+  padding: 0 0.5rem;
 }
 
 .defaultPreviewContainer {
