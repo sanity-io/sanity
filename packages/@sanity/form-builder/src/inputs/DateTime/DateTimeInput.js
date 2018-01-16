@@ -128,7 +128,7 @@ export default class DateInput extends React.Component<Props, State> {
             />
           )
           : (
-            <div className={styles.root}>
+            <div className={styles.rootWithTime}>
               <DatePicker
                 {...options}
                 {...rest}
