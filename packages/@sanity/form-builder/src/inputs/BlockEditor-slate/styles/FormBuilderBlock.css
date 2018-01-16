@@ -10,7 +10,7 @@
   display: block;
   cursor: move;
   border: 1px solid var(--form-builder-block-border-color);
-  border-radius: var(--border-radius-base);
+  border-radius: var(--border-radius-small);
   background-color: var(--body-bg);
   box-shadow: var(--input-box-shadow);
   overflow: hidden;
