@@ -70,7 +70,7 @@ export default class SanityDefaultPreview extends React.PureComponent {
     const imageUrl = value.imageUrl
     if (imageUrl) {
       const assetUrl = assetUrlBuilder(imageUrl, dimensions)
-      return <img src={assetUrl} alt={value.title} style={{objectFit: 'cover', height: '100%', width: '100%'}} />
+      return <img src={assetUrl} alt={value.title} />
     }
     return undefined
   }

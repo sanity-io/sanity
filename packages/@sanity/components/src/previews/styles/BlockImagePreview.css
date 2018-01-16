@@ -17,6 +17,13 @@
 .media {
   display: flex;
   justify-content: center;
+  padding: var(--medium-padding);
+
+  @nest & img {
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+  }
 }
 
 .subtitle {

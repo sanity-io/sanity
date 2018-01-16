@@ -24,7 +24,7 @@ export default class BlockImagePreview extends React.PureComponent {
   }
 
   static defaultProps = {
-    mediaDimensions: {width: 300, height: 200, aspect: 1, fit: 'crop'},
+    mediaDimensions: {width: 600, height: 300, aspect: 1, fit: 'fill'},
     type: {
       title: undefined,
       name: undefined
