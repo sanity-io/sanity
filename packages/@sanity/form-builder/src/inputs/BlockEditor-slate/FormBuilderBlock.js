@@ -23,6 +23,22 @@ import TrashIcon from 'part:@sanity/base/trash-icon'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import is from '../../utils/is'
 
+const DIALOG_ACTIONS = [
+  {
+    index: '1',
+    name: 'close',
+    title: 'Close'
+  },
+  // {
+  //   index: '2',
+  //   name: 'delete',
+  //   kind: 'simple',
+  //   title: 'Delete',
+  //   color: 'danger',
+  //   secondary: true
+  // }
+]
+
 export default class FormBuilderBlock extends React.Component {
   static propTypes = {
     // Note: type refers to the array type, not the value type
@@ -325,21 +341,7 @@ export default class FormBuilderBlock extends React.Component {
         onClose={this.handleClose}
         showCloseButton={false}
         onAction={this.handleDialogAction}
-        actions={[
-          {
-            index: '1',
-            name: 'close',
-            title: 'Close'
-          },
-          // {
-          //   index: '2',
-          //   name: 'delete',
-          //   kind: 'simple',
-          //   title: 'Delete',
-          //   color: 'danger',
-          //   secondary: true
-          // }
-        ]}
+        actions={DIALOG_ACTIONS}
       >
         {input}
       </DefaultDialog>
