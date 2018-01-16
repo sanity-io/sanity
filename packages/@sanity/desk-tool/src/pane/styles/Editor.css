@@ -54,8 +54,6 @@
 
 .publishedDate {
   composes: dates;
-  align-self: flex-end;
-  margin-left: auto;
 }
 
 .editedDate {
@@ -71,6 +69,7 @@
   display: block;
   opacity: 1;
   font-size: 0.7em;
+  min-width: 4rem;
 }
 
 .syncStatusSynced {

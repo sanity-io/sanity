@@ -2,12 +2,18 @@
 
 .root {
   composes: root from 'part:@sanity/components/fieldsets/default-style';
-  padding: var(--medium-padding);
-  border: 3px dashed var(--state-warning-color);
+  padding: var(--large-padding);
+  background-color: var(--state-warning-color);
+  color: var(--state-warning-color--text);
 
-  @nest & > h3 {
-    color: var(--state-warning-color);
+  @nest & h3 {
+    margin: 0;
+    padding: 0;
   }
+}
+
+.removeButtonWrapper {
+  padding-top: var(--medium-padding);
 }
 
 textarea.currentValueDump {
@@ -17,5 +23,4 @@ textarea.currentValueDump {
   padding: 0;
   height: 0;
   font-family: monospace;
-  overflow: hidden;
 }

@@ -5,7 +5,7 @@
   --state-success-color--text: #fff;
   --state-info-color: #2097ac;
   --state-info-color--text: #fff;
-  --state-warning-color: #ff9b00;
+  --state-warning-color: #ffba00;
   --state-warning-color--text: var(--black);
   --state-danger-color: #f43;
   --state-danger-color--text: var(--white);
