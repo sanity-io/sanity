@@ -1,6 +1,6 @@
 {
   "name": "@sanity/import",
-  "version": "0.124.0",
+  "version": "0.124.5",
   "description": "Import documents to a Sanity dataset",
   "main": "lib/import.js",
   "engines": {
@@ -26,7 +26,7 @@
   "dependencies": {
     "@rexxars/get-uri": "^2.0.2",
     "@sanity/mutator": "^0.124.0",
-    "@sanity/uuid": "^0.120.0",
+    "@sanity/uuid": "^0.124.5",
     "debug": "^2.6.3",
     "lodash": "^4.17.4",
     "p-map": "^1.2.0",
