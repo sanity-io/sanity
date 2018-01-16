@@ -41,7 +41,6 @@
     "@sanity/cli": "^0.124.4",
     "@sanity/components": "^0.124.4",
     "@sanity/core": "^0.124.0",
-    "@sanity/form-builder": "^0.124.4",
     "@sanity/generate-help-url": "^0.123.0",
     "@sanity/observable": "^0.121.0",
     "@sanity/schema": "^0.124.0",

@@ -20,7 +20,6 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@sanity/form-builder": "^0.124.4",
     "@sanity/generate-help-url": "^0.123.0",
     "lodash": "^4.17.4",
     "moment": "^2.19.1",
