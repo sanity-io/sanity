@@ -57,7 +57,7 @@ export const ObjectType = {
       return createFieldsets(subTypeDef, parsed.fields)
     })
 
-    lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))
+    lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef, parsed))
 
     lazyGetter(parsed, '__unstable_searchFields', () => resolveSearchFields(parsed), {enumerable: false})
 

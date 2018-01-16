@@ -118,6 +118,11 @@ export default {
           title: 'Image in image behind edit'
         }
       ]
+    },
+    {
+      name: 'arrayOfMyImage',
+      type: 'array',
+      of: [{type: 'myImage'}]
     }
   ]
 }
