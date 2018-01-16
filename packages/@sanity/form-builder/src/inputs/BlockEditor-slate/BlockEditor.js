@@ -350,15 +350,16 @@ export default class BlockEditor extends React.Component {
   handleFullScreenScroll = event => {
     const threshold = 100
     const scrollTop = event.target.scrollTop
-    if (scrollTop < threshold) {
-      const ratio = scrollTop / threshold
-      this.setState({
-        toolbarStyle: {
-          backgroundColor: `rgba(255, 255, 255, ${ratio * 0.95})`,
-          boxShadow: `0 2px ${5 * ratio}px rgba(0, 0, 0, ${ratio * 0.3})`
-        }
-      })
+    let ratio = scrollTop / threshold
+    if (ratio >= 1) {
+      ratio = 1
     }
+    this.setState({
+      toolbarStyle: {
+        backgroundColor: `rgba(255, 255, 255, ${ratio * 0.95})`,
+        boxShadow: `0 2px ${5 * ratio}px rgba(0, 0, 0, ${ratio * 0.3})`
+      }
+    })
   }
 
   handleFullScreenClose = () => {
