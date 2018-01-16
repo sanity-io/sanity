@@ -41,13 +41,13 @@ export default class ColorInput extends PureComponent {
   }
 
   handleColorChangeComplete = (color, event) => {
-    const {onChange} = this.props
+    const {onChange, type} = this.props
 
     if (!color) {
       console.error('Color missing') //eslint-disable-line
     }
 
-    const value = Object.assign({_type: 'color', alpha: color.rgb.a}, color)
+    const value = Object.assign({_type: type.name, alpha: color.rgb.a}, color)
 
     onChange(PatchEvent.from(
       Object.keys(value).map(key => set(value[key], [key]))
