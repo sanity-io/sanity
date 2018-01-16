@@ -1,0 +1,35 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+
+}
+
+.heading {
+  padding: var(--small-padding);
+}
+
+.title {
+  font-size: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+.media {
+  display: flex;
+  justify-content: center;
+  padding: var(--medium-padding);
+
+  @nest & img {
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+  }
+}
+
+.subtitle {
+  font-size: var(--font-size-small);
+}
+
+.description {
+  font-size: var(--font-size-xsmall);
+}

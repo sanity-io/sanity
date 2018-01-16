@@ -242,7 +242,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
             {imageAsset => <ImageToolInput level={level} imageUrl={imageAsset.url} value={value} onChange={onChange} />}
           </WithMaterializedReference>
         )}
-        <div>
+        <div className={styles.advancedEditFields}>
           {this.renderFields(fields)}
         </div>
         <Button onClick={this.handleStopAdvancedEdit}>Close</Button>

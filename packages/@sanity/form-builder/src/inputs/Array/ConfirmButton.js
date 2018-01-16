@@ -58,7 +58,6 @@ export default class ConfirmButton extends React.Component {
       <div className={styles.root}>
         <Button
           {...rest}
-          tabIndex={0}
           kind="simple"
           color="danger"
           icon={TrashIcon}
@@ -73,14 +72,17 @@ export default class ConfirmButton extends React.Component {
                 useOverlay={false}
                 onClose={this.handleConfirmPopoverClose}
               >
-                <Button
-                  kind="simple"
-                  onClick={onConfirm}
-                  icon={TrashIcon}
-                  ref={this.setConfirmButton}
-                >
-                  Confirm remove
-                </Button>
+                <div className={styles.wrapper}>
+                  <Button
+                    color="white"
+                    inverted
+                    onClick={onConfirm}
+                    icon={TrashIcon}
+                    ref={this.setConfirmButton}
+                  >
+                    Confirm remove
+                  </Button>
+                </div>
               </PopOver>
             )
           }

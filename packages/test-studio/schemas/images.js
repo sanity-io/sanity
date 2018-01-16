@@ -4,7 +4,6 @@ export const myImage = {
   name: 'myImage',
   title: 'Some image type',
   type: 'image',
-  icon,
   fields: [
     {
       name: 'caption',
@@ -18,6 +17,7 @@ export default {
   name: 'imagesTest',
   type: 'document',
   title: 'Images test',
+  icon,
   description: 'Different test cases of image fields',
   fields: [
     {
