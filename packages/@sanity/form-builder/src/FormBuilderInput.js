@@ -60,10 +60,10 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
     }
   }
 
-  componentDidUpdate(prevProps: Props) {
-    const hadFocus = PathUtils.hasFocus(prevProps.focusPath, prevProps.path)
+  componentWillReceiveProps(nextProps: Props) {
+    const willHaveFocus = PathUtils.hasFocus(nextProps.focusPath, nextProps.path)
     const hasFocus = PathUtils.hasFocus(this.props.focusPath, this.props.path)
-    if (!hadFocus && hasFocus) {
+    if (willHaveFocus && !hasFocus) {
       this.focus()
     }
   }
@@ -95,13 +95,7 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
       return
     }
 
-    // This is a hack needed because popovers doesn't render its children immediately.
-    // When this is fixed, we can call this._confirmButton.focus() immediately
-    setTimeout(() => {
-      if (this._input) {
-        this._input.focus()
-      }
-    }, 0)
+    this._input.focus()
   }
 
   handleChange = patchEvent => {
