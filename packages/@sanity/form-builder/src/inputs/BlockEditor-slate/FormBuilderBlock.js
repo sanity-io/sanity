@@ -42,7 +42,7 @@ const DIALOG_ACTIONS = [
 export default class FormBuilderBlock extends React.Component {
   static propTypes = {
     // Note: type refers to the array type, not the value type
-    type: PropTypes.object,
+    type: PropTypes.object.isRequired,
     node: PropTypes.object,
     editor: PropTypes.object,
     state: PropTypes.object,
@@ -287,7 +287,7 @@ export default class FormBuilderBlock extends React.Component {
     )
   }
   renderInput() {
-    const editModalLayout = get(this, 'props.type.options.editModal')
+    const editModalLayout = get(this.props.type.options, 'editModal')
 
     const input = (
       <FocusManager>{this.renderFormBuilderInput}</FocusManager>
