@@ -17,7 +17,7 @@ export default class DetailPreview extends React.PureComponent {
     mediaDimensions: PropTypes.shape({
       width: PropTypes.number,
       height: PropTypes.number,
-      fit: PropTypes.oneOf(['clip', 'crop', 'clamp']),
+      fit: PropTypes.oneOf(['clip', 'crop', 'fill', 'fillmax', 'max', 'scale', 'min']),
       aspect: PropTypes.number,
     }),
     children: PropTypes.node,
@@ -69,7 +69,7 @@ export default class DetailPreview extends React.PureComponent {
             )
           }
           {
-            typeof media === 'object' && media
+            React.isValidElement(media) && media
           }
         </div>
         <div className={styles.content}>
