@@ -65,7 +65,7 @@ export default class CodePreview extends PureComponent {
         <div className={styles.aceWrapper}>
           <AceEditor
             mode={(value && value.language) || fixedLanguage || 'text'}
-            theme="tomorrow"
+            theme="monokai"
             width="100%"
             height={null}
             maxLines={200}

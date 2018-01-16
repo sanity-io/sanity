@@ -3,6 +3,15 @@
   height: auto;
 }
 
+.dialogInner {
+  max-width: 90vw;
+  max-height: 90vh;
+  height: 40rem;
+  width: 50rem;
+  z-index: 1;
+  position: relative;
+}
+
 .functions {
   composes: functions from 'part:@sanity/components/fieldsets/default-style';
 }

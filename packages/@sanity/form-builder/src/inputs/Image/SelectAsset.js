@@ -90,7 +90,7 @@ export default class SelectAsset extends React.Component<Props, State> {
                 style={{width: `${(width * size) / height}px`, flexGrow: `${(width * size) / height}`}}
               >
                 <i className={styles.padder} style={{paddingBottom: `${(height / width) * 100}%`}} />
-                <img src={`${asset.url}?w=100`} className={styles.image} />
+                <img src={`${asset.url}?h=100`} className={styles.image} />
               </a>
             )
           })}

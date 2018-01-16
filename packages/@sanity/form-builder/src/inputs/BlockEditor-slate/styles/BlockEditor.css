@@ -53,6 +53,7 @@
   background-color: var(--input-bg);
   composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
   composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
+  z-index: 0;
 
   @nest .fullscreen & {
     width: 90%;

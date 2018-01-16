@@ -3,11 +3,11 @@
 @keyframes reveal {
   0% {
     opacity: 0;
-    transform: translateX(-50%) translateY(-50%) scale(0.5);
   }
 
   5% {
-    opacity: 1;
+    opacity: 0;
+    transform: translateX(-50%) translateY(-50%) scale(0.7);
   }
 
   100% {
@@ -29,7 +29,7 @@
 :root {
   --dialog-padding: var(--small-padding);
   --dialog-header-height: 3rem;
-  --dialog-functions-height: 3.5rem;
+  --dialog-functions-height: calc(2em + (var(--medium-padding) * 2));
 }
 
 .root {
@@ -41,7 +41,7 @@
   height: 100%;
   background-color: var(--backdrop-background-color);
   animation-name: fadeIn;
-  animation-duration: 0.2s;
+  animation-duration: 0.1s;
   animation-timing-function: cubic-bezier(0, 0, 0, 1);
   animation-iteration-count: once;
 }
@@ -71,10 +71,10 @@
 }
 
 .dialog {
-  composes: shadow-10dp from "part:@sanity/base/theme/shadows-style";
+  composes: shadow-24dp from "part:@sanity/base/theme/shadows-style";
   position: absolute;
   border: 0;
-  border-radius: var(--border-radius-base);
+  border-radius: var(--border-radius-large);
   padding: 0;
   animation-name: reveal;
   animation-duration: 0.2s;
@@ -212,8 +212,7 @@
 
 .actionSecondary {
   margin-right: auto;
-  order: -1;
-  border: 3px solid red;
+  order: 1;
 }
 
 .footer {
@@ -223,6 +222,7 @@
   background-color: var(--body-bg);
   border-top: 1px solid var(--component-border-color);
   height: var(--dialog-functions-height);
+  border-radius: 0 0 var(--border-radius-large) var(--border-radius-large);
 
   @nest .danger & {
     background-color: color(var(--white) a(60%));

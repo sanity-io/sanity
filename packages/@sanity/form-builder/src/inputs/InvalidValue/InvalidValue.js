@@ -88,10 +88,12 @@ export default class InvalidValue extends React.PureComponent {
               Convert value to {converter.to}
             </DefaultButton>
           ))}
+        </Details>
+        <div className={styles.removeButtonWrapper}>
           <DefaultButton onClick={this.handleClearClick} color="danger">
             Remove value
           </DefaultButton>
-        </Details>
+        </div>
       </div>
     )
   }

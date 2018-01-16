@@ -3,7 +3,7 @@ import React from 'react'
 import {IntentLink} from 'part:@sanity/base/router'
 import Dialog from 'part:@sanity/components/dialogs/default'
 import styles from './styles/ActionModal.css'
-import QuestionIcon from 'part:@sanity/base/question-icon'
+import FileIcon from 'part:@sanity/base/file-icon'
 
 function ActionModal(props) {
   return (
@@ -23,7 +23,7 @@ function ActionModal(props) {
                     params={action.params}
                   >
                     <span className={styles.icon}>
-                      {Icon ? <Icon /> : <QuestionIcon />}
+                      {Icon ? <Icon /> : <FileIcon />}
                     </span>
                     <span>{action.title}</span>
                   </IntentLink>
