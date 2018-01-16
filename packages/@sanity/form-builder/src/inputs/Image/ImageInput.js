@@ -228,14 +228,16 @@ export default class ImageInput extends React.PureComponent<Props, State> {
     })
   }
 
-  renderAdvancedEdit(fields: Array<FieldT>) {
-    const {value, level, onChange, type, materialize} = this.props
+  isImageToolEnabled() {
+    return get(this.props.type, 'options.hotspot') === true
+  }
 
-    const isImageToolEnabled = get(type, 'options.hotspot') === true
+  renderAdvancedEdit(fields: Array<FieldT>) {
+    const {value, level, onChange, materialize} = this.props
 
     return (
       <Dialog title="Edit details" onClose={this.handleStopAdvancedEdit} isOpen>
-        {isImageToolEnabled && value && value.asset && (
+        {this.isImageToolEnabled() && value && value.asset && (
           <WithMaterializedReference materialize={materialize} reference={value.asset}>
             {imageAsset => <ImageToolInput level={level} imageUrl={imageAsset.url} value={value} onChange={onChange} />}
           </WithMaterializedReference>
@@ -308,6 +310,8 @@ export default class ImageInput extends React.PureComponent<Props, State> {
 
     const hasAsset = value && value.asset
 
+    const showAdvancedEditButton = value && (otherFields.length > 0 || this.isImageToolEnabled())
+
     return (
       <UploadTargetFieldset
         legend={type.title}
@@ -358,7 +362,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
           <Button onClick={this.handleOpenSelectAsset} kind="simple">
             Select from library
           </Button>
-          {value && otherFields.length > 0 && (
+          {showAdvancedEditButton && (
             <Button
               icon={EditIcon}
               kind="simple"
