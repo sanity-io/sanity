@@ -1,10 +1,7 @@
-import createPreviewObserver from './createPreviewObserver'
-import observeWithPaths from './observeWithPaths'
 import resolveRefType from './resolveRefType'
 import prepareForPreview, {invokePrepare} from './prepareForPreview'
 import Observable from '@sanity/observable'
-
-const observe = createPreviewObserver(observeWithPaths)
+import materializePaths from './materializePaths'
 
 function is(typeName, type) {
   return type.name === typeName || (type.type && is(typeName, type.type))
@@ -34,7 +31,7 @@ export default function observeForPreview(value, type, fields, viewOptions) {
     const configFields = Object.keys(selection)
     const targetFields = fields ? configFields.filter(fieldName => fields.includes(fieldName)) : configFields
     const paths = targetFields.map(key => selection[key].split('.'))
-    return observe(value, paths)
+    return materializePaths(value, paths)
       .map(snapshot => ({
         type: type,
         snapshot: prepareForPreview(snapshot, type, viewOptions)
