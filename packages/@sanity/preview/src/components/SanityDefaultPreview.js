@@ -45,60 +45,62 @@ export default class SanityDefaultPreview extends React.PureComponent {
     // for the rendering of the media (dimensions)
     const {dimensions} = options
     const {value} = this.props
-
-    if (!value) {
-      return undefined
-    }
     const {media} = value
 
+    // Handle sanity image
+    return (
+      <img
+        alt={value.title}
+        src={
+          imageBuilder.image(media)
+            .width(dimensions.width || 100)
+            .height(dimensions.height || 100)
+            .fit(dimensions.fit)
+            .url()
+        }
+      />
+    )
+
+  }
+
+  renderImageUrl = options => {
     // Legacy support for imageUrl
+    const {dimensions} = options
+    const {value} = this.props
     const imageUrl = value.imageUrl
     if (imageUrl) {
-      const assetUrl = assetUrlBuilder(imageUrl, {dimensions})
+      const assetUrl = assetUrlBuilder(imageUrl, dimensions)
       return <img src={assetUrl} alt={value.title} style={{objectFit: 'cover', height: '100%', width: '100%'}} />
     }
-
-    if (!media) {
-      return undefined
-    }
-
-    // Handle sanity image
-    if (media._type === 'image' && media.asset) {
-      return (
-        <img
-          alt={value.title}
-          src={
-            imageBuilder.image(media)
-              .width(dimensions.width || 100)
-              .height(dimensions.height || 100)
-              .fit(dimensions.fit)
-              .url()
-          }
-        />
-      )
-    }
+    return undefined
   }
 
   renderIcon = options => {
     const {type} = this.props
     const Icon = type.icon
     return Icon && <Icon />
+
   }
 
   resolveMedia = () => {
     const {value} = this.props
     const {media} = value
 
+    if (typeof media === 'function' || React.isValidElement(media)) {
+      return media
+    }
+
     // Legacy support for imageUrl
     if (value.imageUrl) {
-      return this.renderMedia
+      return this.renderImageUrl
     }
 
     // Handle sanity image
-    if (media && media._type === 'image') {
+    if (media && media.asset) {
       return this.renderMedia
     }
 
+    // Render fallback icon
     return this.renderIcon
 
   }
