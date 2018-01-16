@@ -47,7 +47,7 @@ export const SpanType = {
     lazyGetter(parsed, 'annotations', () => annotations.map(extendMember))
     lazyGetter(parsed, 'marks', () => marks.map(extendMember))
 
-    lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))
+    lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef, parsed))
 
     return subtype(parsed)
 

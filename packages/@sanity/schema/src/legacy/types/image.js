@@ -20,6 +20,11 @@ const IMAGE_CORE = {
 }
 
 const DEFAULT_OPTIONS = {}
+const DEFAULT_PREVIEW = {
+  select: {
+    imageUrl: 'asset.url'
+  }
+}
 
 export const ImageType = {
   get() {
@@ -51,7 +56,10 @@ export const ImageType = {
       })
     })
 
-    lazyGetter(parsed, 'preview', createPreviewGetter(Object.assign({}, subTypeDef, {fields})))
+    lazyGetter(parsed, 'preview', createPreviewGetter(
+      Object.assign({}, {preview: DEFAULT_PREVIEW}, subTypeDef),
+      parsed
+    ))
 
     return subtype(parsed)
 

@@ -63,7 +63,7 @@ export const BlockType = {
       })
     })
 
-    lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))
+    lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef, parsed))
 
     return subtype(parsed)
 
