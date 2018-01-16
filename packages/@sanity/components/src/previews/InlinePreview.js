@@ -49,6 +49,9 @@ export default class InlinePreview extends React.PureComponent {
               {
                 typeof media !== 'function' && media
               }
+              {
+                React.isValidElement(media) && media
+              }
             </span>
           )
         }

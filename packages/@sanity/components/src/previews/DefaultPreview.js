@@ -82,7 +82,7 @@ class DefaultPreview extends React.PureComponent {
             )
           }
           {
-            typeof media === 'object' && media
+            React.isValidElement(media) && media
           }
         </div>
 

@@ -69,7 +69,7 @@ export default class DetailPreview extends React.PureComponent {
             )
           }
           {
-            typeof media === 'object' && media
+            React.isValidElement(media) && media
           }
         </div>
         <div className={styles.content}>

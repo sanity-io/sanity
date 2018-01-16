@@ -394,9 +394,6 @@ export default class FormBuilderBlock extends React.Component {
           ref={this.refPreview}
           className={styles.previewContainer}
         >
-          {/* <div className={styles.dragHandle}>
-            <DragBarsIcon />
-          </div> */}
           <div className={styles.preview}>
             {this.renderPreview()}
           </div>
@@ -411,14 +408,17 @@ export default class FormBuilderBlock extends React.Component {
                 title="Delete"
               />
             </div>
-            {/* <div>
-              <Button
-                kind="simple"
-                color="danger"
-                icon={TrashIcon}
-                title="Delete"
-              />
-            </div> */}
+            {/*
+              Add delete button later when we have handleDelete here
+              <div>
+                <Button
+                  kind="simple"
+                  color="danger"
+                  icon={TrashIcon}
+                  title="Delete"
+                />
+              </div>
+            */}
           </div>
         </span>
 

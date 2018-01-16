@@ -59,7 +59,7 @@ export default class BlockImagePreview extends React.PureComponent {
                 )
               }
               {
-                typeof media === 'object' && media
+                React.isValidElement(media) && media
               }
             </div>
           )

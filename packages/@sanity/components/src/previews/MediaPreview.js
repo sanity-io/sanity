@@ -72,7 +72,7 @@ export default class MediaPreview extends React.PureComponent {
             )
           }
           {
-            typeof media === 'object' && media
+            React.isValidElement(media) && media
           }
         </div>
         <div className={styles.meta}>
