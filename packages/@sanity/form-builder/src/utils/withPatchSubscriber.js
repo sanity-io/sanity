@@ -87,8 +87,11 @@ export default function withPatchSubscriber(ComposedComponent: any) {
     }
 
     focus() {
-      this._input.focus()
+      if (this._input && this._input.focus) {
+        this._input.focus()
+      }
     }
+
     setInput = input => {
       this._input = input
     }

@@ -1,3 +1,4 @@
+// @flow
 import PropTypes from 'prop-types'
 import React from 'react'
 import blockTools from '@sanity/block-tools'
@@ -52,6 +53,8 @@ export default withPatchSubscriber(class Syncer extends React.PureComponent {
     subscribe: PropTypes.func
   }
 
+  _blockEditor: null
+
   constructor(props) {
     super()
     const deprecatedSchema = isDeprecatedBlockSchema(props.type)
@@ -102,6 +105,16 @@ export default withPatchSubscriber(class Syncer extends React.PureComponent {
     // }
   }
 
+  focus() {
+    if (this._blockEditor) {
+      this._blockEditor.focus()
+    }
+  }
+
+  setBlockEditor(blockEditor: ?BlockEditor) {
+    this._blockEditor = blockEditor
+  }
+
   componentWillUnmount() {
     // This is a defensive workaround for an issue causing content to be overwritten
     // It cancels any pending saves, so if the component gets unmounted within the
@@ -150,6 +163,7 @@ export default withPatchSubscriber(class Syncer extends React.PureComponent {
             onChange={this.handleChange}
             onNodePatch={this.handleNodePatch}
             value={value}
+            ref={this._setBlockEditor}
           />)
         }
 
