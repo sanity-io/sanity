@@ -30,7 +30,7 @@
       box-shadow: var(--input-box-shadow--hover);
     }
 
-    @nest &:focus {
+    @nest &:focus, &:focus-within {
       /* border-color: var(--input-border-color-focus); */
       box-shadow: var(--input-box-shadow--focus);
     }
