@@ -3,7 +3,7 @@ import icon from 'react-icons/lib/fa/calendar-o'
 export default {
   name: 'richDateTest',
   type: 'document',
-  title: 'RichDates test',
+  title: 'RichDates (deprecated)',
   icon,
   fields: [
     {

@@ -783,6 +783,10 @@
       "path": "components/icons/Paste.js"
     },
     {
+      "implements": "part:@sanity/base/calendar-icon",
+      "path": "components/icons/Calendar.js"
+    },
+    {
       "implements": "part:@sanity/base/sanity-logo",
       "path": "components/logos/SanityLogo.js"
     },
