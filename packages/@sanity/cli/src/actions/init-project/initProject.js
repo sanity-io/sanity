@@ -134,7 +134,7 @@ export default async function initSanity(args, context) {
   }
 
   // If the template has a sample dataset, prompt the user whether or not we should import it
-  const shouldImport = template.datasetUrl && await promptForDatasetImport(template.importPrompt)
+  const shouldImport = !unattended && template.datasetUrl && (await promptForDatasetImport(template.importPrompt))
 
   // Bootstrap Sanity, creating required project files, manifests etc
   await bootstrapTemplate(initOptions, context)
