@@ -10,35 +10,6 @@ function fieldHasReferenceTo(fieldDef, refType) {
   return arrify(fieldDef.to || []).some(memberTypeDef => memberTypeDef.type === refType)
 }
 
-function isImageAssetField(fieldDef) {
-  return fieldHasReferenceTo(fieldDef, 'sanity.imageAsset')
-}
-
-function resolveImageAssetPath(typeDef) {
-  const fields = typeDef.fields || []
-  const imageAssetField = fields.find(isImageAssetField)
-  if (imageAssetField) {
-    return imageAssetField.name
-  }
-  const fieldWithImageAsset = fields.find(fieldDef => (fieldDef.fields || []).some(isImageAssetField))
-
-  return fieldWithImageAsset ? `${fieldWithImageAsset.name}.asset` : undefined
-}
-
-function isFileAssetField(fieldDef) {
-  return fieldHasReferenceTo(fieldDef, 'sanity.fileAsset')
-}
-
-function resolveFileAssetPath(typeDef) {
-  const fields = typeDef.fields || []
-  const assetField = fields.find(isFileAssetField)
-  if (assetField) {
-    return assetField.name
-  }
-  const fieldWithFileAsset = fields.find(fieldDef => (fieldDef.fields || []).some(isFileAssetField))
-  return fieldWithFileAsset ? `${fieldWithFileAsset.name}.asset` : undefined
-}
-
 export default function guessPreviewFields(rawObjectTypeDef) {
   const objectTypeDef = {fields: [], ...rawObjectTypeDef}
 
@@ -60,19 +31,10 @@ export default function guessPreviewFields(rawObjectTypeDef) {
     descField = stringFieldNames[1]
   }
 
-  const imageAssetPath = resolveImageAssetPath(objectTypeDef)
+  const imageField = objectTypeDef.fields
+    .find(field => field.type === 'image')
 
-  if (!titleField) {
-    const fileAssetPath = resolveFileAssetPath(objectTypeDef)
-    if (fileAssetPath) {
-      titleField = `${fileAssetPath}.originalFilename`
-    }
-    if (imageAssetPath) {
-      titleField = `${imageAssetPath}.originalFilename`
-    }
-  }
-
-  if (!titleField && !imageAssetPath) {
+  if (!titleField && !imageField) {
     // last resort, pick all fields and concat them
     const fieldNames = objectTypeDef.fields.map(field => field.name)
     const fieldMapping = fieldNames.reduce((acc, fieldName) => {
@@ -89,7 +51,7 @@ export default function guessPreviewFields(rawObjectTypeDef) {
   const select = omitBy({
     title: titleField,
     description: descField,
-    imageUrl: imageAssetPath ? `${imageAssetPath}.url` : undefined
+    media: imageField ? imageField.name : undefined
   }, isUndefined)
 
   return {

@@ -35,6 +35,7 @@ import richDateType from 'part:@sanity/form-builder/input/rich-date/schema'
 import focus from './focus'
 import previewImageUrlTest from './previewImageUrlTest'
 import previewMediaTest from './previewMediaTest'
+import authorWithoutPreview from './authorWithoutPreview'
 
 export default createSchema({
   name: 'test-examples',
@@ -71,6 +72,7 @@ export default createSchema({
     typeWithNoToplevelStrings,
     previewImageUrlTest,
     previewMediaTest,
+    authorWithoutPreview,
     empty
   ])
 })
