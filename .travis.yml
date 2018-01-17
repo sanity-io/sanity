@@ -7,6 +7,9 @@ before_script:
   - travis_wait yarn run bootstrap
   - yarn run build
 script:
+  # Allow running the Sanity CLI tool without specifying absolute path
+  - export PATH="${TRAVIS_BUILD_DIR}/packages/@sanity/cli/bin:$PATH"
+
   # Build CLI to a single file
   - cd packages/@sanity/cli
   - npm run pack
@@ -17,7 +20,7 @@ script:
 
   # Test building the test studio with all customizations
   - cd $TRAVIS_BUILD_DIR/packages/test-studio
-  - $TRAVIS_BUILD_DIR/packages/@sanity/cli/bin/sanity build
+  - sanity build
 
   # Test initializing a project in unattended mode
   - sanity init -y --project=ppsg7ml5 --dataset=test --output-path=/tmp/test-project
@@ -27,4 +30,4 @@ script:
   - $TRAVIS_BUILD_DIR/scripts/symlinkDependencies.js .
 
   # Test building the project with latest dependencies
-  - $TRAVIS_BUILD_DIR/packages/@sanity/cli/bin/sanity build --skip-minify
+  - sanity build --skip-minify
