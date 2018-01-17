@@ -7,12 +7,12 @@
 
   5% {
     opacity: 0;
-    transform: translateX(-50%) translateY(-50%) scale(0.7);
+    transform: scale(0.7);
   }
 
   100% {
     opacity: 1;
-    transform: translateX(-50%) translateY(-50%) scale(1);
+    transform: scale(1);
   }
 }
 
@@ -44,6 +44,7 @@
   animation-duration: 0.1s;
   animation-timing-function: cubic-bezier(0, 0, 0, 1);
   animation-iteration-count: once;
+  composes: flexCenter from 'part:@sanity/base/theme/layout/positioning-style';
 }
 
 .default {
@@ -72,7 +73,6 @@
 
 .dialog {
   composes: shadow-24dp from "part:@sanity/base/theme/shadows-style";
-  position: absolute;
   border: 0;
   border-radius: var(--border-radius-large);
   padding: 0;
@@ -80,10 +80,9 @@
   animation-duration: 0.2s;
   animation-timing-function: cubic-bezier(0, 0, 0, 1);
   animation-iteration-count: once;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  left: 0;
+  transform-origin: center;
+  height: auto;
+  width: auto;
   box-sizing: border-box;
   background-color: var(--body-bg);
   transition: all 0.3s linear;
@@ -109,12 +108,8 @@
   }
 
   @media (--screen-medium) {
-    display: block;
-    top: 50%;
-    left: 50%;
-    height: auto;
     width: auto;
-    transform: translateX(-50%) translateY(-50%) scale(1);
+    height: auto;
   }
 }
 
@@ -123,7 +118,7 @@
 }
 
 .isOpen {
-  display: block;
+  display: flex;
 }
 
 .header {
@@ -139,14 +134,20 @@
 
 .inner {
   display: block;
+  position: relative;
 }
 
 .content {
   box-sizing: border-box;
   composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
   composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
-  max-height: 90vh;
-  max-width: 80vw;
+  max-height: 95vh;
+  max-width: 95vw;
+
+  @media (--screen-medium) {
+    max-height: 90vh;
+    max-width: 80vw;
+  }
 
   @nest .hasFunctions & {
     max-height: calc(90vh - var(--dialog-functions-height));
@@ -200,9 +201,13 @@
 .closeButtonOutside {
   composes: closeButton;
   color: inherit;
-  font-size: 3rem;
-  top: -3.5rem;
-  right: -3.5rem;
+  border-radius: 50%;
+  background-color: var(--component-bg);
+  font-size: 1.5rem;
+  top: -1rem;
+  right: -1rem;
+  z-index: 1;
+  height: 2.25rem;
 }
 
 .actions {
