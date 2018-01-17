@@ -24,7 +24,7 @@ export default {
           fields: [
             {name: 'first', type: 'string', title: 'First string'},
             {name: 'second', type: 'string', title: 'Second string'},
-            {name: 'image', type: 'image', title: 'An image'},
+            {name: 'image', type: 'image', title: 'An image', options: {hotspot: true}},
             {
               name: 'gallery',
               title: 'Image array',
@@ -40,12 +40,6 @@ export default {
                 {
                   title: 'Image',
                   type: 'image',
-                  preview: {
-                    select: {
-                      imageUrl: 'asset.url',
-                      title: 'caption'
-                    }
-                  },
                   fields: [
                     {
                       name: 'caption',
