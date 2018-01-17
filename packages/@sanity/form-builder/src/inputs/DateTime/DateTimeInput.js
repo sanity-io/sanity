@@ -113,7 +113,6 @@ export default class DateInput extends React.Component<Props, State> {
 
   setDialogDatePicker = (datePicker: ?DatePicker) => {
     this._dialogdatepicker = datePicker
-    console.log(datepicker, datepicker.input)
   }
 
   handleKeyDown = event => {
