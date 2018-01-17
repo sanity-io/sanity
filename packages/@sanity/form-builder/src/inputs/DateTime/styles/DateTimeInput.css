@@ -3,30 +3,64 @@
 @import './variables.css';
 
 :root {
-  --time-width: 100px;
+  --time-width: 70px;
 }
 
-.input {
+.selectButton {
+  font-size: 0.8rem;
+
+  @nest & > span {
+    padding: 0 !important;
+  }
+}
+
+.inputWrapper {
+  justify-content: space-between;
   composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
   width: 100%;
-}
+  display: flex;
 
-.root {
-  @nest & .datepicker {
-    border-radius: 0;
-    border: none;
-    box-shadow:
-      0 3px 5px -1px rgba(0, 0, 0, var(--shadow-key-umbra-opacity)),
-      0 5px 8px 0 rgba(0, 0, 0, var(--shadow-key-penumbra-opacity)),
-      0 1px 14px 0 rgba(0, 0, 0, var(--shadow-ambient-shadow-opacity));
+  @nest & > div {
+    flex-grow: 1;
   }
 
   @nest & :global(.react-datepicker-wrapper) {
+    position: relative;
     display: block;
+    width: 100%;
   }
 
   @nest & :global(.react-datepicker__input-container) {
+    width: 100%;
     display: block;
+  }
+}
+
+.input {
+  width: 100%;
+  border: none;
+  outline: none;
+}
+
+.datepicker {
+  position: relative;
+  display: block;
+  border-radius: var(--react-datepicker-border-radius);
+  overflow: hidden;
+}
+
+.hiddenPopper {
+  display: none;
+}
+
+.popper {
+  background-color: transparent;
+}
+
+.root {
+  @nest & :global(.react-datepicker) {
+    border-radius: var(--react-datepicker-border-radius) var(--react-datepicker-border-radius) 0 0;
+    border: none;
   }
 
   @nest & :global(.react-datepicker__day-name) {
@@ -39,12 +73,12 @@
   }
 
   @nest & :global(.react-datepicker__header) {
-    border-radius: 0;
+    border-radius: var(--react-datepicker-border-radius) 0 0 0;
   }
 
   @nest & :global(.react-datepicker__month-container) {
     overflow: hidden;
-    background-color: var(--component-bg);
+    background-color: transparent;
   }
 
   @nest & :global(.react-datepicker__day) {
@@ -57,7 +91,7 @@
   }
 
   @nest & :global(.react-datepicker__navigation--next) {
-    border-left-color: var(--brand-primary--text);
+    right: 0;
   }
 
   @nest & :global(.react-datepicker-popper[data-placement^="bottom"] .react-datepicker__triangle) {
@@ -69,8 +103,7 @@
   }
 
   @nest & :global(.react-datepicker__day--keyboard-selected) {
-    background-color: var(--brand-primary);
-    color: var(--brand-primary--text);
+    background-color: var(--selected-item-color);
   }
 
   @nest & :global(.react-datepicker__triangle) {
@@ -87,7 +120,8 @@
 
   @nest & :global(.react-datepicker__day) {
     border-radius: 0;
-    padding: 0.5rem;
+    padding: var(--react-datepicker-padding);
+    margin: 0;
   }
 
   @nest & :global(.react-datepicker__day:hover) {
@@ -96,22 +130,30 @@
 
   @nest & :global(.react-datepicker__day-name) {
     border-radius: 0;
-    padding: 0 0.5rem;
+    padding: 0 var(--react-datepicker-padding);
+    margin: 0;
   }
 
   @nest & :global(.react-datepicker__day--selected) {
-    background-color: var(--brand-primary);
-    color: var(--brand-primary--text);
+    background-color: var(--selected-item-color);
   }
 
   @nest & :global(.react-datepicker__header) {
-    border-bottom: none;
     background-color: var(--brand-primary);
     color: var(--brand-primary--text);
   }
 
-  @nest & .datepicker {
-    padding-right: var(--time-width);
+  @nest & :global(.react-datepicker__header__dropdown) {
+    border-bottom: 1px solid color(#fff a(50%));
+    padding-bottom: var(--small-padding);
+  }
+}
+
+.rootWithTime {
+  composes: root;
+
+  @nest & :global(.react-datepicker__header--time) {
+    padding: 0;
   }
 
   @nest & :global(.react-datepicker__navigation--next) {
@@ -119,28 +161,21 @@
     right: calc(var(--time-width) + 10px);
   }
 
-  @nest & :global(.react-datepicker__today-button) {
-    background-color: transparent;
-    border-color: #eee;
-    padding: 3px 0;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    color: #999;
-  }
-
-  @nest & :global(.react-datepicker__time-container--with-today-button) {
+  @nest & :global(.react-datepicker__time-container) {
     border-radius: 0;
     border: none;
     right: 0;
   }
 
-  @nest & :global(.react-datepicker__header .react-datepicker-time) {
+  @nest & :global(.react-datepicker__header.react-datepicker__header--time) {
+    border-left: 1px solid color(#fff a(50%));
     width: var(--time-width);
+    border-radius: 0 var(--react-datepicker-border-radius) 0 0;
   }
 
   @nest & :global(.react-datepicker__header .react-datepicker-time__header) {
     text-indent: -9999px;
-    height: 2.8rem;
+    height: 41px;
     border-radius: 0 !important;
     background-image: url("data:image/svg+xml;utf8, <svg fill='#fff' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z' /><path d='M0 0h24v24H0z' fill='none' /><path d='M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z' /></svg>");
     background-repeat: no-repeat;
@@ -159,20 +194,20 @@
 
   @nest & :global(.react-datepicker__time-list) {
     padding: 0;
-    padding-right: 0;
-    overflow-y: overlay;
+    padding-right: 0 !important;
+    overflow-y: scroll;
   }
 
   @nest & :global(.react-datepicker__time-list-item) {
     margin: 0;
     display: block;
     white-space: nowrap;
-    padding: var(--small-padding) 0;
+    padding: var(--react-datepicker-padding) 0;
   }
 
   @nest & :global(.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected) {
-    background-color: var(--brand-primary);
-    color: var(--brand-primary--text);
+    background-color: var(--selected-item-color);
+    color: inherit;
   }
 
   @nest & :global(.react-datepicker__month-dropdown) {
@@ -208,13 +243,13 @@
   @nest & :global(.react-datepicker__month-read-view--down-arrow) {
     border-top-color: var(--white);
     border-width: 0.25rem;
-    top: 0.5em;
+    top: var(--small-padding);
   }
 
   @nest & :global(.react-datepicker__year-read-view--down-arrow) {
     border-top-color: var(--white);
     border-width: 0.25rem;
-    top: 0.5em;
+    top: var(--small-padding);
   }
 }
 
