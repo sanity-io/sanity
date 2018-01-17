@@ -8,8 +8,9 @@
   --react-datepicker-text-color: var(--black);
   --react-datepicker-header-background-color: var(--brand-primary);
   --react-datepicker-header-text-color: var(--white);
-  --react-datepicker-border-radius: 0;
-  --react-datepicker-item-size: 24px;
+  --react-datepicker-border-radius: var(--border-radius-large);
+  --react-datepicker-padding: 5px;
+  --react-datepicker-item-size: 16px;
   --react-datepicker-day-margin: 2px;
   --react-datepicker-triangle-size: 8px;
   --react-datepicker-datepicker__margin: 5px;

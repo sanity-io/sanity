@@ -8,14 +8,15 @@
   font-size: var(--font-size-xsmall);
   color: color(var(--white) a(50%));
   text-align: center;
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-weight: 300;
+  padding: 0 var(--small-padding);
 
   @media (--screen-medium) {
-    padding: 0 var(--small-padding);
+    display: flex;
   }
 }
 
