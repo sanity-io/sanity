@@ -60,6 +60,8 @@ export default function guessPreviewFields(rawObjectTypeDef) {
     descField = stringFieldNames[1]
   }
 
+  const mediaField = rawObjectTypeDef.fields.find(field => field.type === 'image')
+
   const imageAssetPath = resolveImageAssetPath(objectTypeDef)
 
   if (!titleField) {
@@ -89,7 +91,8 @@ export default function guessPreviewFields(rawObjectTypeDef) {
   const select = omitBy({
     title: titleField,
     description: descField,
-    imageUrl: imageAssetPath ? `${imageAssetPath}.url` : undefined
+    imageUrl: (!mediaField && imageAssetPath) ? `${imageAssetPath}.url` : undefined,
+    media: mediaField ? mediaField.name : undefined
   }, isUndefined)
 
   return {
