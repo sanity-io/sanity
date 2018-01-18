@@ -32,7 +32,7 @@
     "@sanity/google-maps-input": "^0.124.8",
     "@sanity/rich-date-input": "^0.124.8",
     "@sanity/storybook": "^0.123.0",
-    "@sanity/vision": "^0.123.1",
+    "@sanity/vision": "^0.124.6",
     "bio-pv": "^1.8.1",
     "date-fns": "^1.29.0",
     "fetch": "^1.1.0",
