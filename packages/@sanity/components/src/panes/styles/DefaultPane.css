@@ -175,11 +175,16 @@
   position: absolute;
   top: -3rem;
   padding-top: 3rem;
+  padding-bottom: 50vh;
   left: 0;
   right: 0;
   height: calc(100% + 3rem);
   display: block;
   box-sizing: border-box;
+
+  @media (--screen-medium) {
+    padding-bottom: 3rem;
+  }
 
   @nest .isCollapsed & {
     display: none;

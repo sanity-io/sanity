@@ -5,23 +5,24 @@
   /*
     Selectable item
   */
+  --selectable-item-base: var(--brand-primary);
   --selectable-item-color: transparent;
   --selectable-item-text-color: var(--text-color);
   --selectable-item-color--inverted: var(--selectable-item-text-color);
-  --selectable-item-color-hover: color(var(--brand-primary) a(10%));
+  --selectable-item-color-hover: color(var(--selectable-item-base) a(10%));
   --selectable-item-color-hover--inverted: var(--selectable-item-text-color);
   --selectable-item-color-focus: var(--selectable-item-color-hover);
   --selectable-item-color-focus--inverted: var(--selectable-item-text-color);
-  --selectable-item-color-active: color(var(--brand-primary) lightness(- 10%) a(30%));
+  --selectable-item-color-active: color(var(--selectable-item-base) lightness(- 10%) a(30%));
   --selectable-item-color-active--inverted: var(--selectable-item-text-color);
-  --selectable-item-color-highlighted: var(--selectable-item-color-hover);
+  --selectable-item-color-highlighted: color(var(--selectable-item-base) lightness(- 5%) a(30%));
 
   /*
     Selected Item
   */
-  --selected-item-color: color(var(--brand-primary) a(20%));
-  --selected-item-color--hard: color(var(--brand-primary) lightness(- 20%) a(90%));
+  --selected-item-color: color(var(--selectable-item-base) a(20%));
+  --selected-item-color--hard: color(var(--selectable-item-base) lightness(- 10%) a(90%));
   --selected-item-color--inverted: var(--selectable-item-text-color);
-  --selected-item-color-hover: color(var(--brand-primary) a(30%));
+  --selected-item-color-hover: color(var(--selectable-item-base) a(30%));
   --selected-item-color-hover--inverted: var(--selectable-item-text-color);
 }
