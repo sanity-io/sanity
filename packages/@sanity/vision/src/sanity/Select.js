@@ -7,8 +7,10 @@ function Select(props) {
   return (
     <div className={styles.selectContainer}>
       <Dropdown className={styles.select} {...props} />
-      <div className={styles.icon}>
-        <FaAngleDown color="inherit" />
+      <div className={styles.functions}>
+        <div className={styles.icon}>
+          <FaAngleDown color="inherit" />
+        </div>
       </div>
     </div>
   )

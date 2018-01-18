@@ -49,6 +49,7 @@ class QueryEditor extends React.PureComponent {
     const options = {
       lineNumbers: true,
       tabSize: 2,
+      scrollbarStyle: null,
       mode: {name: 'javascript', json: true},
       hintOptions: {hint: this.getHint},
       extraKeys: {
