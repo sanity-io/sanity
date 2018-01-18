@@ -167,6 +167,7 @@
 
 .functions {
   margin-top: 1em;
+  composes: buttonsCollection from 'part:@sanity/base/theme/typography/forms-style';
 }
 
 .arrow {
