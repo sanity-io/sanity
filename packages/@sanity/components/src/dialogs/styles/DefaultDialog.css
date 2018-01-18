@@ -30,6 +30,7 @@
   --dialog-padding: var(--small-padding);
   --dialog-header-height: 3rem;
   --dialog-functions-height: calc(2em + (var(--medium-padding) * 2));
+  --dialog-max-height: calc(100vh - 200px);
 }
 
 .root {
@@ -141,8 +142,8 @@
   box-sizing: border-box;
   composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
   composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
-  max-height: 95vh;
-  max-width: 95vw;
+  max-height: calc(100vh - 200px);
+  max-width: calc(100vw - 3rem);
 
   @media (--screen-medium) {
     max-height: 90vh;
@@ -150,15 +151,15 @@
   }
 
   @nest .hasFunctions & {
-    max-height: calc(90vh - var(--dialog-functions-height));
+    max-height: calc(var(--dialog-max-height) - var(--dialog-functions-height));
   }
 
   @nest .hasHeader & {
-    max-height: calc(90vh - var(--dialog-header-height));
+    max-height: calc(var(--dialog-max-height) - var(--dialog-header-height));
   }
 
   @nest .hasFunctions.hasHeader & {
-    max-height: calc(90vh - var(--dialog-header-height) - var(--dialog-functions-height));
+    max-height: calc(var(--dialog-max-height) - var(--dialog-header-height) - var(--dialog-functions-height));
   }
 }
 
@@ -200,23 +201,34 @@
 
 .closeButtonOutside {
   composes: closeButton;
+  composes: shadow-5dp from 'part:@sanity/base/theme/shadows-style';
   color: inherit;
   border-radius: 50%;
   background-color: var(--component-bg);
-  font-size: 1.5rem;
+  font-size: 1rem;
   top: -1rem;
   right: -1rem;
   z-index: 1;
-  height: 2.25rem;
+  height: 2rem;
+  width: 2rem;
+
+  & svg {
+    height: 1rem;
+    width: 1rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 }
 
 .actions {
-  display: flex;
+  composes: buttonsCollection from 'part:@sanity/base/theme/typography/forms-style';
   flex-direction: row-reverse;
 }
 
 .actionSecondary {
-  margin-right: auto;
+  margin-right: auto !important;
   order: 1;
 }
 
