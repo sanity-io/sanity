@@ -72,6 +72,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
       const {recentlyHovered} = this.state
 
       const style = cx(className, [
+        styles.root,
         styles[kind],
         inverted && styles.inverted,
         color && styles[`color__${color}`],

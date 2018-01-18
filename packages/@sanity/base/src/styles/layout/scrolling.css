@@ -5,51 +5,53 @@
 }
 
 .lightScrollbars {
-  @nest &::-webkit-scrollbar {
-    background-color: transparent;
-    width: var(--defaultScrollBarWidth);
-
-    @media (--screen-medium) {
-      width: var(--defaultScrollBarWidth);
-
-      @nest &:not(:hover) {
-        width: 0;
-      }
-    }
-  }
-
-  @nest &::-webkit-scrollbar * {
-    background: transparent;
-  }
-
-  @nest &::-webkit-scrollbar-thumb:window-inactive {
-    opacity: 0;
-  }
-
-  @nest &:hover {
+  @media (--screen-medium) {
     @nest &::-webkit-scrollbar {
+      background-color: transparent;
       width: var(--defaultScrollBarWidth);
-      display: initial;
 
       @media (--screen-medium) {
         width: var(--defaultScrollBarWidth);
+
+        @nest &:not(:hover) {
+          width: 0;
+        }
+      }
+    }
+
+    @nest &::-webkit-scrollbar * {
+      background: transparent;
+    }
+
+    @nest &::-webkit-scrollbar-thumb:window-inactive {
+      opacity: 0;
+    }
+
+    @nest &:hover {
+      @nest &::-webkit-scrollbar {
+        width: var(--defaultScrollBarWidth);
+        display: initial;
+
+        @media (--screen-medium) {
+          width: var(--defaultScrollBarWidth);
+        }
+      }
+
+      @nest &::-webkit-scrollbar-thumb {
+        background-color: var(--gray);
+      }
+
+      @nest &::-webkit-scrollbar-track {
+        background-color: color(var(--black) a(2%));
       }
     }
 
     @nest &::-webkit-scrollbar-thumb {
-      background-color: var(--gray);
-    }
+      background-color: transparent;
 
-    @nest &::-webkit-scrollbar-track {
-      background-color: color(var(--black) a(2%));
-    }
-  }
-
-  @nest &::-webkit-scrollbar-thumb {
-    background-color: transparent;
-
-    @nest &:hover {
-      background-color: var(--black);
+      @nest &:hover {
+        background-color: var(--black);
+      }
     }
   }
 }
@@ -86,13 +88,13 @@
 }
 
 .scrollX {
+  composes: touchScroll;
   overflow-y: hidden;
   overflow-x: overlay;
-  composes: touchScroll;
 }
 
 .scrollY {
+  composes: touchScroll;
   overflow-y: overlay;
   overflow-x: hidden;
-  composes: touchScroll;
 }

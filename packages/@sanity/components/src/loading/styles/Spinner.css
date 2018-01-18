@@ -46,12 +46,18 @@
 }
 
 .center {
-  background-color: color(var(--body-bg) a(10%));
-  position: absolute;
+  background-color: color(var(--body-bg) a(50%));
+  z-index: var(--zindex-spinner);
+  position: fixed;
   height: 100%;
   width: 100%;
   top: 0;
   left: 0;
+
+  @media (--screen-medium) {
+    position: absolute;
+    background-color: color(var(--body-bg) a(10%));
+  }
 
   @nest & .inner {
     position: absolute;
