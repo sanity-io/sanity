@@ -99,5 +99,9 @@
 
 .defaultDialogContent {
   padding: var(--medium-padding);
-  min-width: 30rem;
+  min-width: 10rem;
+
+  @media (--screen-medium) {
+    min-width: 30rem;
+  }
 }

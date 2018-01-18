@@ -60,9 +60,5 @@
 }
 
 .functions {
-  font-size: 0.8rem;
-
-  @media (--screen-medium) {
-    font-size: 1rem;
-  }
+  composes: functions from 'part:@sanity/components/fieldsets/default-style';
 }

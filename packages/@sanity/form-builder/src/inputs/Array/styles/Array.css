@@ -55,3 +55,7 @@
     color: var(--state-warning-color);
   }
 }
+
+.functions {
+  composes: functions from 'part:@sanity/components/fieldsets/default-style';
+}

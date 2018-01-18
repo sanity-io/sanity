@@ -34,6 +34,8 @@
 }
 
 .root {
+  margin: 0;
+  padding: 0;
   position: relative;
   display: inline-block;
   outline: none;
@@ -47,10 +49,6 @@
   transition: background-color 0.15s, color 0.15s, opacity 0.15s;
   border-radius: var(--button-border-radius);
   text-transform: uppercase;
-}
-
-.root + .root {
-  margin-left: var(--small-padding);
 }
 
 .root:focus {
@@ -77,16 +75,21 @@
   outline: none;
 
   @nest :not(.onlyIcon) & {
-    padding: 0.7em 1.2em 0.8em 1.2em;
+    padding: 0.7em 0.7em 0.8em 0.7em;
+
+    @media (--screen-medium) {
+      padding: 0.7em 1.2em 0.8em 1.2em;
+    }
   }
 
   @nest .onlyIcon & {
-    padding: 0.7em 0.45em;
+    padding: 0.7em 0.8em;
   }
 }
 
 .content {
   display: flex;
+  align-items: center;
 }
 
 .shadow {

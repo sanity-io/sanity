@@ -35,18 +35,22 @@
 }
 
 .listContainer {
+  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
+  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
   position: absolute;
   z-index: var(--zindex-dropdown);
   top: 3rem;
   width: 100vw;
-  min-height: calc(100vh - var(--header-height));
   background-color: var(--component-bg);
   box-sizing: border-box;
   left: 0;
   padding: 0;
+  padding-bottom: 500px;
+  max-height: 100vh;
 
   @media (--screen-medium) {
     composes: shadow-10dp from "part:@sanity/base/theme/shadows-style";
+    padding-bottom: 0;
     width: 40rem;
     max-width: 100%;
     min-height: initial;
