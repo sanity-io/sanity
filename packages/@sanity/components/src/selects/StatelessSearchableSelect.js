@@ -52,6 +52,7 @@ export default class StatelessSearchableSelect extends React.PureComponent {
   handleSelect = item => {
     this.props.onChange(item)
   }
+
   handlePortalOutsideClick = event => {
     if (!this._rootNode.contains(event.target)) {
       this.props.onClose()
@@ -79,6 +80,11 @@ export default class StatelessSearchableSelect extends React.PureComponent {
 
   handleKeyDown = event => {
     const {items, highlightIndex, onHighlightIndexChange, isOpen, onOpen} = this.props
+
+    if (event.key === 'ArrowDown' && !isOpen) {
+      onOpen()
+    }
+
     if (!items || items.length === 0) {
       return
     }
@@ -168,8 +174,8 @@ export default class StatelessSearchableSelect extends React.PureComponent {
               )
             }
             {
-              onClear && inputValue && (
-                <button className={styles.clearButton} onClick={onClear}>
+              onClear && value && (
+                <button type="button" className={styles.clearButton} onClick={onClear}>
                   <CloseIcon color="inherit" />
                 </button>
               )

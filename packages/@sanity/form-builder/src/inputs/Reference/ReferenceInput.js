@@ -203,6 +203,8 @@ export default class ReferenceInput extends React.Component<Props, State> {
     const hasRef = value && value._ref
     const hasWeakMismatch = hasRef && !isMissing && weakIs !== weakShouldBe
 
+    const inputValue = value ? ((previewSnapshot && previewSnapshot.title) || 'Untitled document') : ''
+
     return (
       <FormField label={type.title} level={level} description={type.description}>
         <div className={(hasWeakMismatch || isMissing) ? styles.hasWarnings : ''}>
@@ -225,7 +227,7 @@ export default class ReferenceInput extends React.Component<Props, State> {
             onClear={this.handleClear}
             openItemElement={this.renderOpenItemElement}
             value={valueFromHit || value}
-            inputValue={isMissing ? '<Unpublished or missing document>' : (previewSnapshot && previewSnapshot.title)}
+            inputValue={isMissing ? '<Unpublished or missing document>' : inputValue}
             renderItem={this.renderHit}
             isLoading={isFetching}
             items={hits}

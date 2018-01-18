@@ -7,10 +7,10 @@
 }
 
 .selectButton {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
 
   @nest & > span {
-    padding: 0 !important;
+    padding: 0.5em !important;
   }
 }
 
