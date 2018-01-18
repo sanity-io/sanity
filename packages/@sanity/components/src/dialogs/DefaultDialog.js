@@ -15,7 +15,7 @@ export default class DefaultDialog extends React.PureComponent {
     title: PropTypes.string,
     children: PropTypes.node,
     onOpen: PropTypes.func,
-    onClose: PropTypes.func,
+    onClose: PropTypes.func.isRequired,
     isOpen: PropTypes.bool,
     onAction: PropTypes.func,
     showHeader: PropTypes.bool,
@@ -103,18 +103,18 @@ export default class DefaultDialog extends React.PureComponent {
       <Stacked>
         {isActive => (
           <Portal isOpened={isOpen}>
-            <div className={classNames} ref={this.setDialogElement} onClick={this.handleCloseClick}>
-              <div className={styles.dialog} onClick={this.handleDialogClick}>
-                {
-                  !showHeader && onClose && showCloseButton && (
-                    <button className={styles.closeButtonOutside} onClick={onClose}>
-                      <CloseIcon color="inherit" />
-                    </button>
-                  )
-                }
+            <div className={classNames} ref={this.setDialogElement}>
+              <div className={styles.dialog}>
                 <Escapable onEscape={event => ((isActive || event.shiftKey) && onClose())} />
-                <CaptureOutsideClicks onClickOutside={isActive ? onClose : false}>
+                <CaptureOutsideClicks onClickOutside={isActive ? onClose : undefined}>
                   <div className={styles.inner}>
+                    {
+                      !showHeader && onClose && showCloseButton && (
+                        <button className={styles.closeButtonOutside} onClick={onClose}>
+                          <CloseIcon color="inherit" />
+                        </button>
+                      )
+                    }
                     {
                       showHeader && onClose && title && (
                         <div className={styles.header}>

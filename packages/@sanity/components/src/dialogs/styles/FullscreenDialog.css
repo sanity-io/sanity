@@ -79,16 +79,19 @@
 
 .closeButton {
   display: block;
-  position: absolute;
+  position: fixed;
+  z-index: 1;
   top: var(--medium-padding);
   right: var(--medium-padding);
   font-size: 3em;
   height: 1em;
   width: 1em;
-  background-color: transparent;
   border: none;
   color: inherit;
   outline: none;
+  background-color: color(var(--component-bg) a(50%));
+  padding: 0;
+  margin: 0;
 
   @nest .default & {
     color: var(--text-color);
