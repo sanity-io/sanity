@@ -282,7 +282,6 @@ class VisionGui extends React.PureComponent {
             <Button
               onClick={this.handleListenExecution}
               loading={listenInProgress}
-              kind="secondary"
             >
               Listen
             </Button>
