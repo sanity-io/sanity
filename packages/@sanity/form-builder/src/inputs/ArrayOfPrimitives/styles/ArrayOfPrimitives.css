@@ -35,3 +35,7 @@
 .inputLabel {
   display: none;
 }
+
+.functions {
+  composes: functions from 'part:@sanity/components/fieldsets/default-style';
+}

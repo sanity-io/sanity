@@ -165,8 +165,13 @@
   box-shadow: none;
 }
 
+.fieldWrapper > * + .functions {
+  margin-top: var(--small-padding);
+}
+
 .functions {
-  margin-top: 1em;
+  margin-top: var(--small-padding);
+  composes: buttonsCollection from 'part:@sanity/base/theme/typography/forms-style';
 }
 
 .arrow {
