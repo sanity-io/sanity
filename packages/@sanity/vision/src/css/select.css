@@ -1,7 +1,9 @@
 .selectContainer {
-  composes: selectContainer from 'part:@sanity/components/selects/default-style';
-  display: inline-block;
-  width: auto;
+  composes: root from 'part:@sanity/components/selects/default-style';
+}
+
+.functions {
+  composes: functions from 'part:@sanity/components/selects/default-style';
 }
 
 .select {
@@ -9,5 +11,5 @@
 }
 
 .icon {
-  composes: icon from 'part:@sanity/components/selects/default-style';
+  composes: arrow from 'part:@sanity/components/selects/default-style';
 }
