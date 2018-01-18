@@ -38,8 +38,8 @@ exports.initConfig = (config, prevConfig) => {
   const projectBased = !gradientMode && newConfig.useProjectHostname
 
   if (typeof Promise === 'undefined') {
-    // @todo add help url?
-    throw new Error('No native `Promise`-implementation found, polyfill needed')
+    const helpUrl = generateHelpUrl('js-client-promise-polyfill')
+    throw new Error(`No native Promise-implementation found, polyfill needed - see ${helpUrl}`)
   }
 
   if (gradientMode && !newConfig.namespace) {
