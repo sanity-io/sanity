@@ -26,3 +26,24 @@
   font-size: var(--font-size-base);
   font-weight: 400;
 }
+
+.buttonsCollection {
+  font-size: var(--font-size-small);
+  display: flex;
+  flex-wrap: wrap;
+  align-content: stretch;
+
+  @nest & > * {
+    margin-bottom: var(--small-padding);
+  }
+
+  @nest & > *:not(:last-child) {
+    margin-right: var(--small-padding);
+  }
+
+  @media (--screen-medium) {
+    @nest & > *:not(:last-child) {
+      margin-right: var(--medium-padding);
+    }
+  }
+}
