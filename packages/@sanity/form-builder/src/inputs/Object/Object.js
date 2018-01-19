@@ -3,11 +3,16 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import Field from './Field'
+import {get} from 'lodash'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import isEmpty from '../../utils/isEmpty'
 import UnknownFields from './UnknownFields'
 import fieldStyles from './styles/Field.css'
+
+function checkIsCollapsible(options = {}) {
+  return options.collapsible !== false && options.collapsable !== false
+}
 
 export default class ObjectInput extends React.PureComponent {
 
@@ -88,10 +93,12 @@ export default class ObjectInput extends React.PureComponent {
   renderFieldset(fieldset, fieldsetIndex) {
     const {level, focusPath} = this.props
     const columns = fieldset.options && fieldset.options.columns
-    const isCollapsible = fieldset.options && (fieldset.options.collapsable || fieldset.options.collapsible)
-    const isExpanded = focusPath.length > 0 && fieldset.fields.some(field => (
+
+    const isCollapsed = get(fieldset.options, 'collapsed') === true
+
+    const isExpanded = !isCollapsed || (focusPath.length > 0 && fieldset.fields.some(field => (
       focusPath[0] === field.name
-    ))
+    )))
 
     return (
       <div key={fieldset.name} className={fieldStyles.root}>
@@ -100,7 +107,7 @@ export default class ObjectInput extends React.PureComponent {
           description={fieldset.description}
           level={level + 1}
           columns={columns}
-          isCollapsible={isCollapsible}
+          isCollapsible={checkIsCollapsible(fieldset.options)}
           isCollapsed={!isExpanded}
         >
           {fieldset.fields.map((field, fieldIndex) => {
@@ -176,7 +183,7 @@ export default class ObjectInput extends React.PureComponent {
     }
 
     const columns = type.options && type.options.columns
-    const isCollapsible = type.options && (type.options.collapsable || type.options.collapsible)
+    const isCollapsible = checkIsCollapsible(type.options)
 
     return (
       <Fieldset
