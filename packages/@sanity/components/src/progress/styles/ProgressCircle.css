@@ -72,7 +72,7 @@
 }
 
 .text {
-  font-weight: 200;
+  font-weight: 400;
   font-size: 1em;
   fill: inherit;
   transform-origin: center center;
@@ -94,7 +94,7 @@
 .status {
   composes: text;
   fill: inherit;
-  font-weight: 200;
+  font-weight: 400;
   font-size: 0.8em;
 
   @nest .completed & {
