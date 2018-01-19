@@ -4,6 +4,7 @@ import React from 'react'
 import Button from 'part:@sanity/components/buttons/default'
 import FileInputButton from 'part:@sanity/components/fileinput/button'
 import ProgressBar from 'part:@sanity/components/progress/bar'
+import ProgressCircle from 'part:@sanity/components/progress/circle'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import UploadIcon from 'part:@sanity/base/upload-icon'
 import {get, partition} from 'lodash'
@@ -153,28 +154,29 @@ export default class ImageInput extends React.PureComponent<Props, State> {
 
   renderUploadState(uploadState: any) {
     const {isUploading} = this.state
-    const isComplete = uploadState.progress === 100
-    const filename = get(uploadState, 'file.name')
+    const isComplete = (uploadState.progress === 100) && !!(this.props.value && this.props.value.asset)
     return (
-      <div>
-        <div className={isComplete ? styles.progressBarCompleted : styles.progressBar}>
-          <ProgressBar
-            percent={status === 'complete' ? 100 : uploadState.progress}
-            text={isComplete ? 'Complete' : `Uploading${filename ? ` "${filename}"` : '...'}`}
-            completed={isComplete}
-            showPercent
-            animation
-          />
+      <div className={styles.progress}>
+        <div>
+          <div className={isComplete ? styles.progressBarCompleted : styles.progressBar}>
+            <ProgressCircle
+              percent={status === 'complete' ? 100 : uploadState.progress}
+              text={isComplete ? 'Please wait…' : 'Uploading…'}
+              completed={isComplete}
+              showPercent
+              animation
+            />
+          </div>
+          {isUploading && (
+            <Button
+              kind="simple"
+              color="danger"
+              onClick={this.handleCancelUpload}
+            >
+              Cancel
+            </Button>
+          )}
         </div>
-        {isUploading && (
-          <Button
-            kind="simple"
-            color="danger"
-            onClick={this.handleCancelUpload}
-          >
-            Cancel
-          </Button>
-        )}
       </div>
     )
   }
@@ -332,13 +334,13 @@ export default class ImageInput extends React.PureComponent<Props, State> {
             {"We're"} really sorry, but the upload could not be completed.
           </Snackbar>
         )}
-        {value && value._upload && (
-          <div className={styles.uploadState}>
-            {this.renderUploadState(value._upload)}
-          </div>
-        )}
         <div className={styles.content}>
           <div className={styles.assetWrapper}>
+            {value && value._upload && (
+              <div className={styles.uploadState}>
+                {this.renderUploadState(value._upload)}
+              </div>
+            )}
             {hasAsset ? (
               <WithMaterializedReference reference={value.asset} materialize={materialize}>
                 {this.renderMaterializedAsset}
