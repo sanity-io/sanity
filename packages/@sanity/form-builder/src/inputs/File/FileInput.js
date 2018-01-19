@@ -155,25 +155,29 @@ export default class FileInput extends React.PureComponent<Props, State> {
     const isComplete = uploadState.progress === 100
     const filename = get(uploadState, 'file.name')
     return (
-      <div>
-        <div className={isComplete ? styles.progressBarCompleted : styles.progressBar}>
-          <ProgressBar
-            percent={status === 'complete' ? 100 : uploadState.progress}
-            text={isComplete ? 'Complete' : `Uploading${filename ? ` "${filename}"` : '...'}`}
-            completed={isComplete}
-            showPercent
-            animation
-          />
+      <div className={styles.uploadState}>
+        <div>
+          <div className={isComplete ? styles.progressBarCompleted : styles.progressBar}>
+            <ProgressBar
+              percent={status === 'complete' ? 100 : uploadState.progress}
+              text={isComplete ? 'Complete' : `Uploading${filename ? ` "${filename}"` : '...'}`}
+              completed={isComplete}
+              showPercent
+              animation
+            />
+          </div>
+          <div className={styles.cancelButton}>
+            {isUploading && (
+              <Button
+                kind="simple"
+                color="danger"
+                onClick={this.handleCancelUpload}
+              >
+                Cancel
+              </Button>
+            )}
+          </div>
         </div>
-        {isUploading && (
-          <Button
-            kind="simple"
-            color="danger"
-            onClick={this.handleCancelUpload}
-          >
-            Cancel
-          </Button>
-        )}
       </div>
     )
   }
@@ -282,13 +286,13 @@ export default class FileInput extends React.PureComponent<Props, State> {
             {"We're"} really sorry, but the upload could not be completed.
           </Snackbar>
         )}
-        {value && value._upload && (
-          <div className={styles.uploadState}>
-            {this.renderUploadState(value._upload)}
-          </div>
-        )}
         <div className={styles.content}>
           <div className={styles.assetWrapper}>
+            {value && value._upload && (
+              <div className={styles.uploadState}>
+                {this.renderUploadState(value._upload)}
+              </div>
+            )}
             {hasAsset ? (
               <WithMaterializedReference reference={value.asset} materialize={materialize}>
                 {this.renderMaterializedAsset}
