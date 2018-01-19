@@ -6,6 +6,8 @@
 
 .root {
   border: 1px solid var(--brand-darkest);
+  box-sizing: border-box;
+  border-radius: var(--border-radius-small);
   height: var(--progress-bar-height);
   width: 100%;
   clear: both;
@@ -29,13 +31,14 @@
   position: relative;
   width: 100%;
   height: var(--progress-bar-height);
-  padding: 0.1em 0.12em;
+  padding: 0.1em 0.1em;
   box-sizing: border-box;
 }
 
 .bar {
   background-color: var(--brand-darkest);
-  height: calc(var(--progress-bar-height) - 0.2em);
+  border-radius: var(--border-radius-small);
+  height: calc(var(--progress-bar-height) - 0.35em);
   transition-property: width;
   transition-duration: 0.1s;
   transition-timing-function: linear;

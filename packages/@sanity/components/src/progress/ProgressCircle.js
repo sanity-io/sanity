@@ -72,7 +72,7 @@ export default class ProgressCircle extends React.Component {
               showPercent && <text
                 className={styles.percent}
                 x={radius}
-                y={radius}
+                y={text ? radius - 5 : radius}
                 dy=".4em"
                 textAnchor="middle"
               >
@@ -83,7 +83,7 @@ export default class ProgressCircle extends React.Component {
               text && <text
                 className={styles.status}
                 x={radius}
-                y={radius * radiusFactor}
+                y={(radius * radiusFactor) - 5}
                 dy=".4em"
                 textAnchor="middle"
               >{text}</text>
