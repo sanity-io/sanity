@@ -200,7 +200,7 @@ export default class EditorPane extends React.Component {
       .catch(error => Observable.of({
         type: 'error',
         message: `An error occurred while attempting to unpublish document.
-        This usually means that you attempted to {transactionResult.action} a document that other documents
+        This usually means that you attempted to unpublish a document that other documents
         refers to.`,
         error
       }))
@@ -209,25 +209,39 @@ export default class EditorPane extends React.Component {
       })
   }
 
-  handlePublish = draft => {
-
+  handlePublish = () => {
+    const {documentId} = this.props
+    const {draft} = this.state
     this.setState({isPublishing: true})
 
-    const publishedId = this.getPublishedId()
-
-    this.published.createOrReplace({
-      ...omit(draft, '_createdAt', '_updatedAt'),
-      _id: publishedId
-    })
-
-    return this.published.commit()
-      .mergeMap(() => {
-        this.draft.delete()
-        return this.draft.commit()
+    const tx = client.observable
+      .transaction()
+      .createOrReplace({
+        ...omit(draft.snapshot, '_createdAt', '_updatedAt'),
+        _id: getPublishedId(documentId)
       })
-      .subscribe(() =>
-        this.setState({isPublishing: false})
-      )
+      .delete(getDraftId(documentId))
+
+    Observable.from(tx.commit())
+      .map(result => ({
+        type: 'success',
+        result: result
+      }))
+      .catch(error => Observable.of({
+        type: 'error',
+        message: 'An error occurred while attempting to publishing document',
+        error
+      }))
+      .subscribe({
+        next: result => {
+          this.setState({
+            transactionResult: result
+          })
+        },
+        complete: () => {
+          this.setState({isPublishing: false})
+        }
+      })
   }
 
   handleChange = event => {
