@@ -62,7 +62,7 @@ export default class SearchableSelect extends React.Component {
   handleChange = item => {
     const {onChange} = this.props
     this.setState({
-      isInputSelected: true,
+      isInputSelected: true
     })
     onChange(item)
     this.handleClose()
@@ -70,7 +70,7 @@ export default class SearchableSelect extends React.Component {
 
   handleOpen = () => {
     this.setState({
-      isOpen: true,
+      isOpen: true
     })
     this.props.onOpen()
   }
@@ -120,8 +120,15 @@ export default class SearchableSelect extends React.Component {
 
   handleBlur = event => {
     this.setState({
-      hasFocus: false
+      hasFocus: false,
+      inputValue: this.props.inputValue
     })
+
+    if (this.state.isOpen && this._rootElement.contains(event.relatedTarget)) {
+      this.setState({
+        isOpen: false
+      })
+    }
   }
 
   handleResize = dimensions => {
