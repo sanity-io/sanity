@@ -2,12 +2,12 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import shallowEquals from 'shallow-equals'
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
+import format from 'date-fns/format'
 
 export default class TimeAgo extends React.PureComponent {
-
   static propTypes = {
     refreshInterval: PropTypes.number,
-    time: PropTypes.string
+    time: PropTypes.string.isRequired
   }
 
   static defaultProps = {
@@ -41,7 +41,9 @@ export default class TimeAgo extends React.PureComponent {
   stop() {
     clearInterval(this.intervalId)
   }
+
   render() {
-    return <span>{distanceInWordsToNow(this.props.time, {addSuffix: true})}</span>
+    const timestamp = format(this.props.time, 'MMM D, YYYY, h:mm A Z')
+    return <span title={timestamp}>{distanceInWordsToNow(this.props.time, {addSuffix: true})}</span>
   }
 }
