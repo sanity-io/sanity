@@ -82,6 +82,10 @@
   @nest .layout__detail & {
     padding: var(--small-padding) var(--medium-padding);
   }
+
+  @nest & > span {
+    display: block;
+  }
 }
 
 .selectedItem {
