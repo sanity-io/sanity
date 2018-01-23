@@ -1,8 +1,8 @@
+/* eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/previews/detail-style'
 import TextEllipsis from 'react-text-ellipsis'
-import SvgPlaceholder from './common/SvgPlaceholder'
 
 let index = 0
 const fieldProp = PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.func])
@@ -51,8 +51,13 @@ export default class DetailPreview extends React.PureComponent {
 
     if (isPlaceholder) {
       return (
-        <div className={styles.root}>
-          <SvgPlaceholder styles={styles} />
+        <div className={styles.placeholder}>
+          <div className={styles.media} />
+          <div className={styles.content}>
+            <h2 className={styles.title}>Loading</h2>
+            <h3 className={styles.subtitle}>Loading</h3>
+            <p className={styles.description}>Loading</p>
+          </div>
         </div>
       )
     }

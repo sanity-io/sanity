@@ -1,4 +1,5 @@
 // @flow
+/* eslint-disable complexity */
 import React from 'react'
 import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import FormField from 'part:@sanity/components/formfields/default'
@@ -203,7 +204,11 @@ export default class ReferenceInput extends React.Component<Props, State> {
     const hasRef = value && value._ref
     const hasWeakMismatch = hasRef && !isMissing && weakIs !== weakShouldBe
 
-    const inputValue = value ? ((previewSnapshot && previewSnapshot.title) || 'Untitled document') : ''
+    let inputValue = value ? (previewSnapshot && previewSnapshot.title) : undefined
+
+    if (previewSnapshot && !previewSnapshot.title) {
+      inputValue = 'Untitled document'
+    }
 
     return (
       <FormField label={type.title} level={level} description={type.description}>
