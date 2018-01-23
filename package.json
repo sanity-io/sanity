@@ -11,6 +11,7 @@
     "package-cli": "(cd packages/@sanity/cli && yarn run pack)",
     "package-yarn": "(cd packages/@sanity/cli && yarn run package-yarn)",
     "init": "lerna clean --yes && yarn run bootstrap && yarn run build",
+    "deploy-test": "yarn run build && cd packages/test-studio && sanity deploy",
     "start": "gulp dev",
     "storybook": "gulp storybook",
     "example": "gulp example",
