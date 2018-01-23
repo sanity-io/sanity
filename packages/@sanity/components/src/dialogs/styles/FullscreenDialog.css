@@ -73,8 +73,12 @@
   display: none;
 }
 
-.actions {
+.actionsWrapper {
   padding-top: 2em;
+}
+
+.actions {
+  composes: buttonsCollection from 'part:@sanity/base/theme/typography/forms-style';
 }
 
 .closeButton {

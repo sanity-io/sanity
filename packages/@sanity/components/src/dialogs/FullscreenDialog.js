@@ -68,30 +68,31 @@ export default class FullScreenDialog extends React.PureComponent {
               <h1 className={styles.heading}>{title}</h1>
               <div className={styles.content}>
                 {this.props.children}
-                <div className={styles.actions}>
+                <div className={styles.actionsWrapper}>
                   {
                     actions.length > 0 && (
-                      <div className={styles.functions}>
+                      <div className={styles.actions}>
                         {
                           actions.map((action, i) => {
                             return (
-                              <Button
-                                key={i}
-                                onClick={this.handleActionClick}
-                                data-action-index={i}
-                                color={color === 'default' ? action.color : 'white'}
-                                disabled={action.disabled}
-                                inverted={!action.secondary}
-                                kind={action.kind}
-                                autoFocus={action.autoFocus}
-                                className={`
-                                  ${styles.button}
-                                  ${styles[`button_${action.kind}`] || styles.button}
-                                `
-                                }
-                              >
-                                {action.title}
-                              </Button>
+                              <div key={i}>
+                                <Button
+                                  onClick={this.handleActionClick}
+                                  data-action-index={i}
+                                  color={color === 'default' ? action.color : 'white'}
+                                  disabled={action.disabled}
+                                  inverted={typeof action.inverted === 'boolean' ? action.inverted : true}
+                                  kind={action.kind}
+                                  autoFocus={action.autoFocus}
+                                  className={`
+                                    ${styles.button}
+                                    ${styles[`button_${action.kind}`] || styles.button}
+                                  `
+                                  }
+                                >
+                                  {action.title}
+                                </Button>
+                              </div>
                             )
                           })
                         }
