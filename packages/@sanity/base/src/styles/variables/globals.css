@@ -3,6 +3,7 @@
   --body-bg: var(--gray-lightest);
   --body-text: #111;
   --component-bg: #fff;
+  --preview-placeholder-color: var(--gray-lighter);
   --component-border-color: color(var(--gray) lightness(+ 30%));
   --component-box-shadow-base: var(--gray-base);
   --component-box-shadow:
