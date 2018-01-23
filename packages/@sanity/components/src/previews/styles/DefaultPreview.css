@@ -106,40 +106,32 @@
 }
 
 .placeholder {
-  height: 100%;
-  width: 100%;
+  composes: root;
+  composes: hasSubtitle;
+
+  @nest & .heading {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
 
   @nest & .title {
-    height: 1.2rem;
-    width: calc(100% - 0.5rem);
-    x: 0.25em;
-    y: 0.25rem;
-
-    @nest .hasMedia & {
-      width: calc(100% - 3.5rem);
-      x: 3rem;
-    }
+    width: 80%;
+    color: transparent;
+    background-color: var(--preview-placeholder-color);
   }
 
   @nest & .subtitle {
-    height: 0.5rem;
     width: 40%;
-    x: 0.25rem;
-    y: 1.7rem;
-
-    @nest .hasMedia & {
-      x: 3rem;
-    }
+    color: transparent;
+    background-color: var(--preview-placeholder-color);
   }
 
   @nest & .media {
-    @nest .hasMedia & {
-      display: block;
-      height: 2.5rem;
-      width: 2.5rem;
-      x: 0;
-      y: 0;
-    }
+    border-color: transparent;
+    color: transparent;
+    background-color: var(--preview-placeholder-color);
   }
 }
 

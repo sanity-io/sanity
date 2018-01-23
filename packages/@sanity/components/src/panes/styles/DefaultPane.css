@@ -183,7 +183,7 @@
   box-sizing: border-box;
 
   @media (--screen-medium) {
-    padding-bottom: 3rem;
+    padding-bottom: 0;
   }
 
   @nest .isCollapsed & {
