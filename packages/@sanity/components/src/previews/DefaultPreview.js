@@ -1,15 +1,8 @@
+/* eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React from 'react'
 import defaultStyles from 'part:@sanity/components/previews/default-style'
-import SvgPlaceholder from './common/SvgPlaceholder'
 import Styleable from '../utilities/Styleable'
-import TextEllipsis from 'react-text-ellipsis'
-
-const PLACEHOLDER = (
-  <div className={defaultStyles.root}>
-    <SvgPlaceholder styles={defaultStyles} />
-  </div>
-)
 
 const fieldProp = PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.func])
 
@@ -54,12 +47,15 @@ class DefaultPreview extends React.PureComponent {
 
     if (isPlaceholder) {
       return (
-        <div className={media ? styles.hasMedia : ''}>
-          {PLACEHOLDER}
+        <div className={styles.placeholder}>
+          <div className={styles.media} />
+          <div className={styles.heading}>
+            <h2 className={styles.title}>Loading…</h2>
+            <h3 className={styles.subtitle}>Loading…</h3>
+          </div>
         </div>
       )
     }
-
 
     return (
       <div
@@ -70,7 +66,7 @@ class DefaultPreview extends React.PureComponent {
         `}
       >
 
-        <div className={`${styles.media}`}>
+        <div className={styles.media}>
           {
             typeof media === 'function' && (
               media({dimensions: mediaDimensions, layout: 'default'})

@@ -42,7 +42,7 @@ export default class SelectMenu extends React.Component {
               [styles.selected]: item === value
             })
             return (
-              <Item key={index} data-item-index={index} onClick={this.handleItemClick} className={classes}>
+              <Item key={index} data-item-index={index} onClick={this.handleItemClick} className={classes} tabIndex={0}>
                 {renderItem(item, index)}
               </Item>
             )

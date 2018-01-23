@@ -11,7 +11,7 @@
   border-bottom: var(--list-border);
   padding: var(--small-padding) 0;
 
-  @nest &:first-child {
-    border-top: var(--list-border);
+  @nest &:last-child {
+    border-bottom: none;
   }
 }
