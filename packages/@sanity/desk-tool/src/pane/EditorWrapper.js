@@ -187,7 +187,7 @@ export default class EditorPane extends React.Component {
 
     if (published.snapshot) {
       tx = tx.createIfNotExists({
-        ...omit(published.snapshot, '_createdAt', '_updatedAt'),
+        ...omit(published.snapshot, '_updatedAt'),
         _id: getDraftId(documentId)
       })
     }
@@ -217,7 +217,7 @@ export default class EditorPane extends React.Component {
     const tx = client.observable
       .transaction()
       .createOrReplace({
-        ...omit(draft.snapshot, '_createdAt', '_updatedAt'),
+        ...omit(draft.snapshot, '_updatedAt'),
         _id: getPublishedId(documentId)
       })
       .delete(getDraftId(documentId))
@@ -250,7 +250,7 @@ export default class EditorPane extends React.Component {
 
     if (!draft.snapshot) {
       this.draft.createIfNotExists({
-        ...omit(published.snapshot, '_createdAt', '_updatedAt'),
+        ...omit(published.snapshot, '_updatedAt'),
         _id: this.getDraftId(),
         _type: typeName
       })
