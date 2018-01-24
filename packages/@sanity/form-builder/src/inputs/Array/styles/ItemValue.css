@@ -46,7 +46,7 @@
 }
 
 .linkToReference {
-  z-index: 2;
+  z-index: 1;
   color: var(--text-color);
   transition: transform 0.1s linear, opacity 0.1s linear;
   opacity: 0.6;
