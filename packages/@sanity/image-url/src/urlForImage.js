@@ -12,7 +12,8 @@ const SPEC_NAME_TO_URL_NAME_MAPPINGS = [
   ['minWidth', 'min-w'],
   ['maxWidth', 'max-w'],
   ['quality', 'q'],
-  ['fit', 'fit']
+  ['fit', 'fit'],
+  ['crop', 'crop']
 ]
 
 export default function urlForImage(options) {
@@ -53,7 +54,7 @@ export default function urlForImage(options) {
 
   // If irrelevant, or if we are requested to: don't perform crop/fit based on
   // the crop/hotspot.
-  if (!(spec.rect || spec.focalPoint || spec.ignoreImageParams)) {
+  if (!(spec.rect || spec.focalPoint || spec.ignoreImageParams || spec.crop)) {
     spec = Object.assign(spec, fit({crop, hotspot}, spec))
   }
 
@@ -83,7 +84,7 @@ function parseSource(source) {
   }
 
   if (!image.crop || !image.hotspot) {
-    // Mock crop and hostpot if image lacks it
+    // Mock crop and hotspot if image lacks it
     image = Object.assign({
       crop: {
         left: 0,

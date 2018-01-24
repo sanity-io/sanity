@@ -102,6 +102,10 @@ Make this an url to download the image. Specify the file name that will be sugge
 
 Flips the image.
 
+### `crop(mode)`
+
+Specifies how to crop the image. When specified, overrides any crop or hotspot in the image record. See the [documentation](https://www.sanity.io/docs/reference/image-urls#crop-object-object) for details.
+
 ### `fit(value)`
 
 Configures the fit mode. See the [documentation](https://www.sanity.io/docs/reference/image-urls#fit-object-object) for details.
