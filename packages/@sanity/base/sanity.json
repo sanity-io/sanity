@@ -571,6 +571,10 @@
       "description": "Plus circle outlined icon"
     },
     {
+      "name": "part:@sanity/base/public-icon",
+      "description": "Public icon"
+    },
+    {
       "name": "part:@sanity/base/search-icon",
       "description": "Search icon"
     },
@@ -709,6 +713,10 @@
     {
       "implements": "part:@sanity/base/plus-circle-outline-icon",
       "path": "components/icons/PlusCircleOutline.js"
+    },
+    {
+      "implements": "part:@sanity/base/public-icon",
+      "path": "components/icons/Public.js"
     },
     {
       "implements": "part:@sanity/base/circle-check-icon",

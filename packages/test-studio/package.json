@@ -31,6 +31,7 @@
     "@sanity/form-builder": "^0.124.9",
     "@sanity/google-maps-input": "^0.124.9",
     "@sanity/rich-date-input": "^0.124.9",
+    "@sanity/production-preview": "^0.124.9",
     "@sanity/storybook": "^0.123.0",
     "@sanity/vision": "^0.124.6",
     "bio-pv": "^1.8.1",
