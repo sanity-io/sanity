@@ -8,7 +8,6 @@
     "packages/@sanity/*",
     "packages/example-studio",
     "packages/test-studio",
-    "packages/sanity-plugin-vision",
     "packages/storybook"
   ],
   "version": "0.124.11"
