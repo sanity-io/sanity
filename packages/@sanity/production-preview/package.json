@@ -1,0 +1,36 @@
+{
+  "name": "@sanity/production-preview",
+  "version": "0.124.9",
+  "description": "Production preview",
+  "main": "lib/index.js",
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "scripts": {
+    "clean": "rimraf lib"
+  },
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "color-input",
+    "sanity-plugin"
+  ],
+  "dependencies": {
+  },
+  "devDependencies": {
+    "rimraf": "^2.6.2"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

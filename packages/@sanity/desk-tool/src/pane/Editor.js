@@ -12,6 +12,7 @@ import InspectView from '../components/InspectView'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import UndoIcon from 'part:@sanity/base/undo-icon'
+import PublicIcon from 'part:@sanity/base/public-icon'
 import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
 import BinaryIcon from 'part:@sanity/base/binary-icon'
 import styles from './styles/Editor.css'
@@ -29,6 +30,7 @@ import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-compo
 import SyncIcon from 'part:@sanity/base/sync-icon'
 import CheckIcon from 'part:@sanity/base/check-icon'
 import Snackbar from 'part:@sanity/components/snackbar/default'
+import resolveProductionPreviewUrl from 'part:@sanity/transitional/production-preview/resolve-production-url?'
 
 const preventDefault = ev => ev.preventDefault()
 
@@ -80,7 +82,38 @@ const getInspectItem = (draft, published) => ({
   isDisabled: !(draft || published)
 })
 
-const getMenuItems = (draft, published) => ([getDiscardItem, getUnpublishItem, getDuplicateItem, getDeleteItem, getInspectItem])
+const getProductionPreviewItem = (draft, published) => {
+  if (!resolveProductionPreviewUrl) {
+    return null
+  }
+  let previewUrl
+  try {
+    previewUrl = resolveProductionPreviewUrl(draft || published)
+  } catch (error) {
+    error.message = `An error was thrown while trying to get production preview url: ${error.message}`
+    // eslint-disable-next-line no-console
+    console.error(error)
+    return null
+  }
+
+  return previewUrl && {
+    action: 'production-preview',
+    title: <span>Open preview <code className={styles.hotkey}>Ctrl+Alt+O</code></span>,
+    icon: PublicIcon,
+    divider: true,
+    isDisabled: !(draft || published),
+    url: previewUrl
+  }
+}
+
+const getMenuItems = (draft, published) => ([
+  getDiscardItem,
+  getUnpublishItem,
+  getDuplicateItem,
+  getDeleteItem,
+  getInspectItem,
+  getProductionPreviewItem
+])
   .map(fn => fn(draft, published))
   .filter(Boolean)
 
@@ -111,6 +144,9 @@ function getToggleKeyState(event) {
   }
 
   return undefined
+}
+function navigateUrl(url) {
+  window.open(url)
 }
 
 export default withRouterHOC(class Editor extends React.PureComponent {
@@ -159,7 +195,16 @@ export default withRouterHOC(class Editor extends React.PureComponent {
   componentDidMount() {
     this.unlistenForKey = listen(window, 'keyup', event => {
       const toggleKey = getToggleKeyState(event)
-      if (toggleKey) {
+      if (event.ctrlKey
+        && event.code === 'KeyO'
+        && event.altKey
+        && !event.shiftKey) {
+        const {draft, published} = this.props
+        const item = getProductionPreviewItem(draft || published)
+        if (item && item.url) {
+          navigateUrl(item.url)
+        }
+      } else if (toggleKey) {
         this.setState(prevState => ({[toggleKey]: !prevState[toggleKey]}))
       }
     })
@@ -294,6 +339,10 @@ export default withRouterHOC(class Editor extends React.PureComponent {
 
     if (item.action === 'inspect') {
       this.setState({inspect: true})
+    }
+
+    if (item.action === 'production-preview') {
+      navigateUrl(item.url)
     }
 
     this.setState({isMenuOpen: false})
