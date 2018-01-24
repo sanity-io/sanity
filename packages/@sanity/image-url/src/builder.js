@@ -1,6 +1,7 @@
 import urlForImage from './urlForImage'
 
 const validFits = ['clip', 'crop', 'fill', 'fillmax', 'max', 'scale', 'min']
+const validCrops = ['top', 'bottom', 'left', 'right', 'center', 'focalpoint', 'entropy']
 
 class ImageUrlBuilder {
   constructor(parent, options) {
@@ -45,10 +46,6 @@ class ImageUrlBuilder {
   // Specify focal point in fraction of image dimensions. Each component 0.0-1.0
   focalPoint(x, y) {
     return this._withOptions({focalPoint: {x, y}})
-  }
-
-  fit(fit) {
-    return this._withOptions({fit})
   }
 
   maxWidth(maxWidth) {
@@ -131,6 +128,14 @@ class ImageUrlBuilder {
     }
 
     return this._withOptions({fit: value})
+  }
+
+  crop(value) {
+    if (validCrops.indexOf(value) === -1) {
+      throw new Error(`Invalid crop mode "${value}"`)
+    }
+
+    return this._withOptions({crop: value})
   }
 
   // Gets the url based on the submitted parameters
