@@ -8,8 +8,13 @@ import debugLogger from 'debug'
 const debug = debugLogger('buffered-document-tester')
 
 export default class BufferedDocumentTester {
-  doc : BufferedDocument
-  pendingCommit : Object
+  doc: BufferedDocument
+  pendingCommit: Object
+  onMutationCalled: boolean
+  onRebaseCalled: boolean
+  onDeleteCalled: boolean
+  tap: Object
+
   constructor(tap, attrs) {
     this.doc = new BufferedDocument(attrs)
     this.onRebaseCalled = false
@@ -19,7 +24,7 @@ export default class BufferedDocumentTester {
     this.doc.onMutation = (edge, mutation) => {
       this.onMutationCalled = true
     }
-    this.doc.onDelete = (local) => {
+    this.doc.onDelete = local => {
       this.onDeleteCalled = true
     }
     this.doc.commitHandler = opts => {
@@ -119,15 +124,27 @@ export default class BufferedDocumentTester {
     return this
   }
   assertLOCAL(path, value) {
-    this.tap.same(extract(path, this.doc.LOCAL)[0], value, `assert value ${path} of LOCAL failed ${this.context}`)
+    this.tap.same(
+      extract(path, this.doc.LOCAL)[0],
+      value,
+      `assert value ${path} of LOCAL failed ${this.context}`
+    )
     return this
   }
   assertEDGE(path, value) {
-    this.tap.same(extract(path, this.doc.document.EDGE)[0], value, `assert value ${path} of EDGE failed ${this.context}`)
+    this.tap.same(
+      extract(path, this.doc.document.EDGE)[0],
+      value,
+      `assert value ${path} of EDGE failed ${this.context}`
+    )
     return this
   }
   assertHEAD(path, value) {
-    this.tap.same(extract(path, this.doc.document.HEAD)[0], value, `assert value ${path} of HEAD failed ${this.context}`)
+    this.tap.same(
+      extract(path, this.doc.document.HEAD)[0],
+      value,
+      `assert value ${path} of HEAD failed ${this.context}`
+    )
     return this
   }
   assertALL(path, values) {
@@ -137,21 +154,34 @@ export default class BufferedDocumentTester {
     return this
   }
   assertLOCALDeleted() {
-    this.tap.ok(this.doc.LOCAL === null, `LOCAL should be deleted ${this.context}`)
+    this.tap.ok(
+      this.doc.LOCAL === null,
+      `LOCAL should be deleted ${this.context}`
+    )
     return this
   }
   assertEDGEDeleted() {
-    this.tap.ok(this.doc.document.EDGE === null, `EDGE should be deleted ${this.context}`)
+    this.tap.ok(
+      this.doc.document.EDGE === null,
+      `EDGE should be deleted ${this.context}`
+    )
     return this
   }
   assertHEADDeleted() {
-    this.tap.ok(this.doc.document.HEAD === null, `HEAD should be deleted ${this.context}`)
+    this.tap.ok(
+      this.doc.document.HEAD === null,
+      `HEAD should be deleted ${this.context}`
+    )
     return this
   }
   assertALLDeleted() {
     this.assertLOCALDeleted()
     this.assertEDGEDeleted()
     this.assertHEADDeleted()
+    return this
+  }
+  assert(cb) {
+    cb(this.tap, this.doc)
     return this
   }
   didRebase() {
@@ -171,45 +201,83 @@ export default class BufferedDocumentTester {
     return this
   }
   onDeleteDidFire() {
-    this.tap.ok(this.onDeleteCalled, `should fire onDelete event ${this.context}`)
+    this.tap.ok(
+      this.onDeleteCalled,
+      `should fire onDelete event ${this.context}`
+    )
     return this
   }
   onDeleteDidNotFire() {
-    this.tap.notOk(this.onDeleteCalled, `should not fire onDelete event ${this.context}`)
+    this.tap.notOk(
+      this.onDeleteCalled,
+      `should not fire onDelete event ${this.context}`
+    )
     return this
   }
   isConsistent() {
-    this.tap.ok(this.doc.document.isConsistent(), `should be consistent ${this.context}`)
-    this.tap.same(this.doc.document.EDGE, this.doc.document.HEAD, `HEAD and EDGE should be equal ${this.context}`)
+    this.tap.ok(
+      this.doc.document.isConsistent(),
+      `should be consistent ${this.context}`
+    )
+    this.tap.same(
+      this.doc.document.EDGE,
+      this.doc.document.HEAD,
+      `HEAD and EDGE should be equal ${this.context}`
+    )
     return this
   }
   isInconsistent() {
-    this.tap.notOk(this.doc.document.isConsistent(), `should not be consistent ${this.context}`)
-    this.tap.notSame(this.doc.document.EDGE, this.doc.document.HEAD, `HEAD and EDGE should be different ${this.context}`)
+    this.tap.notOk(
+      this.doc.document.isConsistent(),
+      `should not be consistent ${this.context}`
+    )
+    this.tap.notSame(
+      this.doc.document.EDGE,
+      this.doc.document.HEAD,
+      `HEAD and EDGE should be different ${this.context}`
+    )
     return this
   }
   hasUnresolvedLocalMutations() {
-    this.tap.ok(this.doc.document.anyUnresolvedMutations(), `should be unresolved local mutations ${this.context}`)
+    this.tap.ok(
+      this.doc.document.anyUnresolvedMutations(),
+      `should be unresolved local mutations ${this.context}`
+    )
     return this
   }
   noUnresolvedLocalMutations() {
-    this.tap.notOk(this.doc.document.anyUnresolvedMutations(), `should be no unresolved local mutations ${this.context}`)
+    this.tap.notOk(
+      this.doc.document.anyUnresolvedMutations(),
+      `should be no unresolved local mutations ${this.context}`
+    )
     return this
   }
   hasLocalEdits() {
-    this.tap.true(this.doc.buffer.hasChanges(), `should have local edits ${this.context}`)
+    this.tap.true(
+      this.doc.buffer.hasChanges(),
+      `should have local edits ${this.context}`
+    )
     return this
   }
   hasNoLocalEdits() {
-    this.tap.false(this.doc.buffer.hasChanges(), `should not have local edits ${this.context}`)
+    this.tap.false(
+      this.doc.buffer.hasChanges(),
+      `should not have local edits ${this.context}`
+    )
     return this
   }
   hasPendingCommit() {
-    this.tap.ok(this.doc.committerRunning, `should have pending commits ${this.context}`)
+    this.tap.ok(
+      this.doc.committerRunning,
+      `should have pending commits ${this.context}`
+    )
     return this
   }
   hasNoPendingCommit() {
-    this.tap.notOk(this.doc.committerRunning, `should not have pending commits ${this.context}`)
+    this.tap.notOk(
+      this.doc.committerRunning,
+      `should not have pending commits ${this.context}`
+    )
     return this
   }
   end() {
