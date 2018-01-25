@@ -35,9 +35,22 @@ export default {
           name: 'weakAuthorRef',
           title: 'A weak author ref',
           weak: true,
-          to: {type: 'author'}
+          to: {type: 'author'},
         }
       ]
+    },
+  ],
+  preview: {
+    fields: {
+      title: 'title',
+      author0: 'array.0.name',
+      author1: 'array.1.name'
+    },
+    prepare(val) {
+      return {
+        title: val.title,
+        subtitle: [val.author0, val.author1].filter(Boolean).join(', ')
+      }
     }
-  ]
+  }
 }
