@@ -159,7 +159,10 @@ test('document being deleted by remote', tap => {
 
   .stage('when local user creates document')
   .localMutation(null, '3', {
-    create: {_id: 'a', text: 'good morning'}
+    create: {_id: 'a', text: 'good morning', _createdAt: '2018-01-25T15:18:12.114Z'}
+  })
+  .assert((tap, bufDoc) => {
+    tap.type(bufDoc.LOCAL._createdAt, 'string', "New documents must have a _createdAt time")
   })
   .assertLOCAL('text', 'good morning')
   .assertHEADDeleted()
