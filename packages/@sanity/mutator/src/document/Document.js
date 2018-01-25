@@ -147,7 +147,7 @@ export default class Document {
       }
       mustRebase = mustRebase || this.applyIncoming(nextMut)
       if (protect++ > 100) {
-        throw new Error('Mutator stuck flusing incoming mutations. Probably stuck here:', JSON.stringify(nextMut))
+        throw new Error('Mutator stuck flushing incoming mutations. Probably stuck here:', JSON.stringify(nextMut))
       }
     } while (nextMut)
 
