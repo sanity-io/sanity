@@ -54,6 +54,7 @@ const getDiscardItem = (draft, published) => ({
   action: 'discard',
   title: 'Discard changes…',
   icon: UndoIcon,
+  divider: true,
   isDisabled: !draft || !published
 })
 
@@ -83,12 +84,13 @@ const getInspectItem = (draft, published) => ({
 })
 
 const getProductionPreviewItem = (draft, published) => {
-  if (!resolveProductionPreviewUrl) {
+  const snapshot = draft || published
+  if (!snapshot || !resolveProductionPreviewUrl) {
     return null
   }
   let previewUrl
   try {
-    previewUrl = resolveProductionPreviewUrl(draft || published)
+    previewUrl = resolveProductionPreviewUrl(snapshot)
   } catch (error) {
     error.message = `An error was thrown while trying to get production preview url: ${error.message}`
     // eslint-disable-next-line no-console
@@ -100,19 +102,17 @@ const getProductionPreviewItem = (draft, published) => {
     action: 'production-preview',
     title: <span>Open preview <code className={styles.hotkey}>Ctrl+Alt+O</code></span>,
     icon: PublicIcon,
-    divider: true,
-    isDisabled: !(draft || published),
     url: previewUrl
   }
 }
 
 const getMenuItems = (draft, published) => ([
+  getProductionPreviewItem,
   getDiscardItem,
   getUnpublishItem,
   getDuplicateItem,
   getDeleteItem,
-  getInspectItem,
-  getProductionPreviewItem
+  getInspectItem
 ])
   .map(fn => fn(draft, published))
   .filter(Boolean)
