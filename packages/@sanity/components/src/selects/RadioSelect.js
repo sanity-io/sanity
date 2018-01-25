@@ -40,6 +40,10 @@ export default class RadioSelect extends React.Component {
     })
   }
 
+  focus() {
+    // todo. See https://github.com/sanity-io/sanity/issues/527
+  }
+
   render() {
     const {items, value, name, direction} = this.props
     const {focusedItem} = this.state
