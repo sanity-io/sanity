@@ -15,6 +15,11 @@
   right: 0;
   box-sizing: border-box;
   position: relative;
+
+  @media (--max-screen-medium) {
+    /* hack to make the spinner place at center */
+    min-height: calc(100vh - 12rem);
+  }
 }
 
 .layout__default {
@@ -31,11 +36,6 @@
 
 .layout__media {
   composes: root;
-}
-
-.spinner {
-  height: 100vh;
-  transform: translateY(-30%);
 }
 
 .empty {

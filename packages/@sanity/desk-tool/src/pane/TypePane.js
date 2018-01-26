@@ -29,12 +29,12 @@ export default withRouterHOC(class TypePane extends React.PureComponent {
   }
 
   render() {
-    const {items} = this.props
-    // const {selectedType, action, selectedDocumentId} = router.state
-    // const isActive = !selectedType && !action && !selectedDocumentId
+    const {items, router} = this.props
+    const {selectedType, action, selectedDocumentId} = router.state
+    const isSelected = !selectedType && !action && !selectedDocumentId
 
     return (
-      <Pane {...this.props} styles={contentStylesOverride}>
+      <Pane {...this.props} styles={contentStylesOverride} isSelected={isSelected}>
         <ul className={styles.list}>
           {
             items.map((item, i) => {

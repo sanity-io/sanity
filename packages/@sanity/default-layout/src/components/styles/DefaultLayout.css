@@ -12,6 +12,8 @@
 
 :global(body) {
   overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
 
   @media (--screen-medium) {
     max-height: 100%;
@@ -36,17 +38,19 @@
 }
 
 .defaultLayout {
+  display: flex;
   padding: 0;
   max-width: 100%;
   width: 100vw;
-  overflow: hidden;
-  display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  height: 100vh;
+  min-height: calc(100vh - var(--header-height));
 
   @media (--screen-medium) {
     flex-direction: row;
+    height: 100vh;
+    overflow: hidden;
+    min-height: 100vh;
   }
 }
 
@@ -86,11 +90,13 @@
   position: relative;
   max-width: 100%;
   flex-grow: 1;
-  overflow: hidden;
   display: block;
-  max-height: 100%;
-  overflow-y: auto;
   margin-top: 0;
+
+  @media (--screen-medium) {
+    max-height: 100%;
+    overflow-y: auto;
+  }
 }
 
 .mainArea {
@@ -98,19 +104,31 @@
   display: flex;
   overflow: hidden;
   flex-direction: column;
+  padding-top: var(--header-height);
+
+  @media (--screen-medium) {
+    padding-top: 0;
+  }
 }
 
 .secondaryNavigation {
   display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-items: stretch;
   justify-content: flex-end;
   flex-direction: row;
-  position: relative;
+  position: fixed;
   width: 100vw;
   font-size: var(--font-size-xsmall);
   background-color: var(--secondary-menu-background-color);
   height: var(--header-height);
+  z-index: var(--zindex-navbar);
+  padding-right: var(--small-padding);
 
   @media (--screen-medium) {
+    z-index: initial;
+    position: relative;
     display: block;
     width: var(--tool-switcher-width);
     height: 100vh;
@@ -118,13 +136,12 @@
 }
 
 .createButton {
-  display: block;
+  display: none;
   text-align: center;
   color: var(--brand-primary);
   user-select: none;
   cursor: default;
   position: relative;
-  line-height: 2.5rem;
   padding: 0 1rem;
 
   @nest &:hover {
@@ -136,7 +153,7 @@
   }
 
   @media (--screen-medium) {
-    line-height: initial;
+    display: block;
     padding-bottom: var(--medium-padding);
   }
 }
@@ -161,6 +178,7 @@
 }
 
 .sanityStudioLogoContainer {
+  display: none;
   position: fixed;
   width: 5em;
   bottom: 0.5rem;
@@ -176,11 +194,22 @@
   @nest & svg {
     height: 0.6rem;
   }
+
+  @media (--screen-medium) {
+    display: inline-block;
+  }
+}
+
+.mobileCreateButton {
+  color: var(--brand-primary);
+
+  @media (--screen-medium) {
+    display: none !important;
+  }
 }
 
 .mobileMenuButton {
   color: var(--white);
-  font-size: 1rem;
 
   @media (--screen-medium) {
     display: none !important;
@@ -201,7 +230,6 @@
 .toolSwitcher {
   height: 1px;
   width: 1px;
-  overflow: hidden;
   position: absolute;
   transition: height 0.1s linear;
   top: var(--header-height);
@@ -211,7 +239,6 @@
     position: relative;
     display: block;
     width: auto;
-    overflow: hidden;
     top: initial;
     height: initial;
     left: initial;
