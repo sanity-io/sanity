@@ -27,17 +27,9 @@ export default {
   ],
   preview: {
     select: {
-      characterName: 'characterName',
-      name: 'person.name',
-      imageUrl: 'person.image.asset.url'
-    },
-    prepare(selection) {
-      const {characterName, name, imageUrl} = selection
-      return {
-        title: name,
-        subtitle: characterName,
-        imageUrl: imageUrl
-      }
+      subtitle: 'characterName',
+      title: 'person.name',
+      media: 'person.image'
     }
   }
 
