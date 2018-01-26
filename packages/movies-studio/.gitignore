@@ -1,0 +1,11 @@
+# Build files
+dist
+
+# Dependency directories
+node_modules
+
+# npm log
+npm-debug.log
+
+# macOS finder file
+.DS_Store

@@ -1,0 +1,34 @@
+{
+  "name": "movies-studio",
+  "private": true,
+  "version": "0.124.10",
+  "description": "Content studio running with schema from the moviedb init template",
+  "main": "package.json",
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "scripts": {
+    "start": "cd ../.. && npm run movies-studio",
+    "test": "sanity check"
+  },
+  "keywords": [
+    "sanity"
+  ],
+  "dependencies": {
+    "@sanity/base": "^0.124.9",
+    "@sanity/cli": "^0.124.4",
+    "@sanity/components": "^0.124.10",
+    "@sanity/core": "^0.124.9",
+    "@sanity/default-layout": "^0.124.10",
+    "@sanity/default-login": "^0.124.0",
+    "@sanity/desk-tool": "^0.124.10",
+    "@sanity/vision": "^0.124.10",
+    "@sanity/google-maps-input": "^0.124.10",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.23.0",
+    "babel-preset-es2015": "^6.22.0",
+    "babel-preset-react": "^6.23.0"
+  }
+}
