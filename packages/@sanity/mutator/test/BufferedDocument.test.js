@@ -181,7 +181,67 @@ test('document being deleted by remote', tap => {
   .end()
 })
 
+test('document being created with `createOrReplace`', tap => {
+  const createdAt = '2018-01-25T15:18:12.114Z';
+  (new BufferedDocumentTester(tap, {
+    _id: 'a',
+    _rev: '1',
+    text: 'hello'
+  }))
+  .hasNoLocalEdits()
 
+  .stage('when applying createOrReplace mutation')
+  .localMutation(null, '2', {
+    createOrReplace: {_id: 'a', text: 'good morning', _createdAt: createdAt}
+  })
+  .onMutationFired()
+  .hasLocalEdits()
+  .assertLOCAL('_createdAt', createdAt)
+  .end()
+})
+
+test('document being created with `createIfNotExists`', tap => {
+  const createdAt = '2018-01-25T15:18:12.114Z';
+  (new BufferedDocumentTester(tap, {
+    _id: 'a',
+    _rev: '1',
+    text: 'hello'
+  }))
+  .hasNoLocalEdits()
+  .localMutation('1', '2', {
+    delete: {id: 'a'}
+  })
+  .stage('when applying createIfNotExists mutation')
+  .localMutation(null, '3', {
+    createIfNotExists: {_id: 'a', text: 'good morning', _createdAt: createdAt}
+  })
+  .onMutationFired()
+  .hasLocalEdits()
+  .assertLOCAL('_createdAt', createdAt)
+  .end()
+})
+
+test('document being created with `create`', tap => {
+  const createdAt = '2018-01-25T15:18:12.114Z';
+  (new BufferedDocumentTester(tap, {
+    _id: 'a',
+    _rev: '1',
+    text: 'hello'
+  }))
+  .hasNoLocalEdits()
+  .localMutation('1', '2', {
+    delete: {id: 'a'}
+  })
+
+  .stage('when applying create mutation')
+  .localMutation(null, '2', {
+    create: {_id: 'a', text: 'good morning', _createdAt: createdAt}
+  })
+  .onMutationFired()
+  .hasLocalEdits()
+  .assertLOCAL('_createdAt', createdAt)
+  .end()
+})
 
 test('document being deleted by local', tap => {
   (new BufferedDocumentTester(tap, {
