@@ -3,8 +3,8 @@
 .root {
   color: inherit;
   line-height: 3em;
-  height: 3em;
   position: relative;
+  height: 3rem;
 }
 
 .inner {
@@ -34,10 +34,10 @@
   }
 }
 
-.listContainer {
-  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
-  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
+.result {
+  composes: shadow-10dp from "part:@sanity/base/theme/shadows-style";
   position: absolute;
+  min-height: 8rem;
   z-index: var(--zindex-dropdown);
   top: 3rem;
   width: 100vw;
@@ -45,16 +45,30 @@
   box-sizing: border-box;
   left: 0;
   padding: 0;
-  padding-bottom: 500px;
-  max-height: 100vh;
 
   @media (--screen-medium) {
-    composes: shadow-10dp from "part:@sanity/base/theme/shadows-style";
     padding-bottom: 0;
     width: 40rem;
     max-width: 100%;
+    max-height: 100vh;
     min-height: initial;
   }
+}
+
+.noHits {
+  box-sizing: border-box;
+  margin: 2rem;
+  text-align: center;
+  color: var(--text-color-secondary);
+
+  @nest & strong {
+    color: var(--text-color);
+  }
+}
+
+.listContainer {
+  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
+  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
 }
 
 .hits {
@@ -81,6 +95,10 @@
 .activeLink {
   composes: link;
   background-color: var(--selected-item-color-hover);
+}
+
+.spinner {
+  composes: absoluteCenter from 'part:@sanity/base/theme/layout/positioning-style';
 }
 
 .itemType {

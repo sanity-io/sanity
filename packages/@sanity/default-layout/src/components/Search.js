@@ -269,24 +269,35 @@ export default enhanceClickOutside(class Search extends React.Component {
             ref={this.setInput}
 
           />
-          <div className={styles.spinner}>
-            {isSearching && <Spinner />}
-          </div>
         </div>
-        {isOpen && hits && hits.length > 0 && (
-          <div className={styles.listContainer}>
-            <ul
-              className={styles.hits}
-              onKeyDown={this.handleKeyDown}
-              onKeyPress={this.handleKeyPress}
-              ref={this.setListElement}
-            >
-              {hits.map((hit, index) => (
-                <li key={hit._id} className={styles.hit}>
-                  {this.renderItem(hit, index)}
-                </li>
-              ))}
-            </ul>
+        {isOpen && (inputValue || isSearching || hits > 0) && (
+          <div className={styles.result}>
+            <div className={styles.spinner}>
+              {isSearching && <Spinner />}
+            </div>
+            {
+              inputValue && !isSearching && (!hits || hits.length === 0) && (
+                <div className={styles.noHits}>Could not find <strong>&ldquo;{inputValue}&rdquo;</strong></div>
+              )
+            }
+            {
+              !isSearching && hits && hits.length > 0 && (
+                <div className={styles.listContainer}>
+                  <ul
+                    className={styles.hits}
+                    onKeyDown={this.handleKeyDown}
+                    onKeyPress={this.handleKeyPress}
+                    ref={this.setListElement}
+                  >
+                    {hits.map((hit, index) => (
+                      <li key={hit._id} className={styles.hit}>
+                        {this.renderItem(hit, index)}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )
+            }
           </div>
         )}
       </div>
