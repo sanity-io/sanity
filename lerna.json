@@ -8,6 +8,8 @@
     "packages/@sanity/*",
     "packages/example-studio",
     "packages/test-studio",
+    "packages/movies-studio",
+    "packages/blog-studio",
     "packages/storybook"
   ],
   "version": "0.124.11"
