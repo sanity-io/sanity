@@ -1,21 +1,19 @@
 {
   "root": true,
   "project": {
-    "name": "SanityTest"
+    "name": "Movies Unlimited"
   },
   "api": {
-    "projectId": "q2r21cu7",
-    "dataset": "example"
+    "projectId": "zp7mbokg",
+    "dataset": "production"
   },
   "plugins": [
     "@sanity/base",
     "@sanity/components",
     "@sanity/default-layout",
     "@sanity/default-login",
-    "@sanity/date-input",
-    "@sanity/code-input",
     "@sanity/desk-tool",
-    "@sanity/storybook",
+    "@sanity/google-maps-input",
     "@sanity/vision"
   ],
   "parts": [
@@ -26,21 +24,12 @@
     {
       "implements": "part:@sanity/base/brand-logo",
       "path": "components/BrandLogo.js"
-    },
-    {
-      "implements": "part:@sanity/form-builder/input-resolver",
-      "path": "./parts/inputResolver.js"
     }
   ],
   "env": {
     "staging": {
       "api": {
-        "projectId": "exx11uqh"
-      }
-    },
-    "development": {
-      "api": {
-        "projectId": "q2r21cu7"
+        "projectId": "3pvq1ebc"
       }
     }
   }
