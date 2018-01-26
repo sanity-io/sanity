@@ -78,10 +78,10 @@ export default class Mutation {
         )
       } else if (mutation.createIfNotExists) {
         operations.push(
-          doc => (doc === null ? Object.assign(mutation.createIfNotExists, {_createdAt: mutation.create._createdAt || this.params.timestamp}) : doc)
+          doc => (doc === null ? Object.assign(mutation.createIfNotExists, {_createdAt: mutation.createIfNotExists._createdAt || this.params.timestamp}) : doc)
         )
       } else if (mutation.createOrReplace) {
-        operations.push(() => Object.assign(mutation.createOrReplace, {_createdAt: mutation.create._createdAt || this.params.timestamp}))
+        operations.push(() => Object.assign(mutation.createOrReplace, {_createdAt: mutation.createOrReplace._createdAt || this.params.timestamp}))
       } else if (mutation.delete) {
         operations.push(() => null)
       } else if (mutation.patch) {
