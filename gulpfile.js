@@ -120,44 +120,33 @@ gulp.task('watch', ['watch-js', 'watch-assets'], callback => {
   })
 })
 
-gulp.task('dev', ['watch-js', 'watch-assets'], cb => {
-  watch(scripts, {debounceDelay: 200}, () => {
-    gulp.start('watch-js')
+const STUDIOS = [
+  {name: 'test-studio', port: '3333'},
+  {name: 'movies-studio', port: '3334'},
+  {name: 'example-studio', port: '3335'},
+  {name: 'blog-studio', port: '3336'},
+]
+
+STUDIOS.forEach(studio => {
+  gulp.task(studio.name, ['watch-js', 'watch-assets'], cb => {
+    watch(scripts, {debounceDelay: 200}, () => {
+      gulp.start('watch-js')
+    })
+
+    watch(assets, {debounceDelay: 200}, () => {
+      gulp.start('watch-assets')
+    })
+
+    const projectPath = path.join(__dirname, 'packages', studio.name)
+    const proc = childProcess.spawn('sanity', ['start', '--host', '0.0.0.0', '--port', studio.port], {
+      shell: isWindows,
+      cwd: projectPath,
+      env: getProjectEnv(projectPath)
+    })
+
+    proc.stdout.pipe(process.stdout)
+    proc.stderr.pipe(process.stderr)
   })
-
-  watch(assets, {debounceDelay: 200}, () => {
-    gulp.start('watch-assets')
-  })
-
-  const projectPath = path.join(__dirname, 'packages', 'test-studio')
-  const proc = childProcess.spawn('sanity', ['start', '--host', '0.0.0.0'], {
-    shell: isWindows,
-    cwd: projectPath,
-    env: getProjectEnv(projectPath)
-  })
-
-  proc.stdout.pipe(process.stdout)
-  proc.stderr.pipe(process.stderr)
-})
-
-gulp.task('example', ['watch-js', 'watch-assets'], cb => {
-  watch(scripts, {debounceDelay: 200}, () => {
-    gulp.start('watch-js')
-  })
-
-  watch(assets, {debounceDelay: 200}, () => {
-    gulp.start('watch-assets')
-  })
-
-  const projectPath = path.join(__dirname, 'packages', 'example-studio')
-  const proc = childProcess.spawn('sanity', ['start', '--host', '0.0.0.0'], {
-    shell: isWindows,
-    cwd: projectPath,
-    env: getProjectEnv(projectPath)
-  })
-
-  proc.stdout.pipe(process.stdout)
-  proc.stderr.pipe(process.stderr)
 })
 
 gulp.task('storybook', ['watch-js', 'watch-assets'], () => {
