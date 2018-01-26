@@ -1,6 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
+  composes: flexCenter from 'part:@sanity/base/theme/layout/positioning-style';
   position: fixed;
   top: 0;
   bottom: 0;
@@ -69,15 +70,15 @@
 }
 
 .inner {
-  @nest .centered & {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateY(-50%) translateX(-50%);
-    max-width: 40em;
-    font-size: 1em;
-    margin: 0 auto;
-    line-height: 1.5em;
+  box-sizing: border-box;
+  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
+  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
+  max-height: calc(100vh - 200px);
+  max-width: calc(100vw - 3rem);
+
+  @media (--screen-medium) {
+    max-height: 90vh;
+    max-width: 80vw;
   }
 }
 
