@@ -72,23 +72,35 @@
 }
 
 .canFocus > .fieldset > .inner > .content {
-  padding: var(--medium-padding);
+  padding: var(--small-padding);
   border-radius: var(--border-radius-base);
   box-shadow: var(--component-box-shadow);
+
+  @media (--screen-medium) {
+    padding: var(--medium-padding);
+  }
 }
 
 .level1 > .fieldset > .inner > .content {
   background-color: var(--component-bg);
   box-shadow: var(--component-box-shadow);
-  padding: var(--medium-padding);
+  padding: var(--small-padding);
   border-radius: var(--border-radius-base);
+
+  @media (--screen-medium) {
+    padding: var(--medium-padding);
+  }
 }
 
 .level2 > .fieldset > .inner > .content {
   background-color: var(--component-bg);
   box-shadow: var(--component-box-shadow);
-  padding: var(--medium-padding);
+  padding: var(--small-padding);
   border-radius: var(--border-radius-base);
+
+  @media (--screen-medium) {
+    padding: var(--medium-padding);
+  }
 }
 
 .root {
