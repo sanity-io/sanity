@@ -24,5 +24,6 @@
     "content",
     "date-input"
   ],
-  "homepage": "https://www.sanity.io/"
+  "homepage": "https://www.sanity.io/",
+  "devDependencies": {}
 }

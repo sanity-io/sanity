@@ -1,5 +1,49 @@
 {
-  "env": {"node": true},
+  "env": {
+    "node": true,
+    "browser": true
+  },
   "parser": "babel-eslint",
-  "extends": "sanity"
+  "extends": [
+    "sanity",
+    "sanity/react",
+    "sanity/import",
+    "prettier",
+    "prettier/react",
+    "prettier/flowtype"
+  ],
+  "rules": {
+    "newline-per-chained-call": 0,
+    "sort-imports": 0,
+    "import/no-unresolved": [
+      "error",
+      {
+        "ignore": [
+          ".*:.*"
+        ]
+      }
+    ],
+    "prettier/prettier": "warn", // set to error to enable project wide prettier
+    "import/no-extraneous-dependencies": "off",
+    "flowtype/define-flow-type": 1,
+    "flowtype/use-flow-type": 1,
+    "import/unambiguous": "off"
+  },
+  "globals": {
+    "__DEV__": true
+  },
+  "settings": {
+    "import/resolver": "webpack",
+    "import/ignore": [
+      "\\.css$",
+      ".*node_modules.*",
+      ".*:.*"
+    ]
+  },
+  "plugins": [
+    "flowtype",
+    "import",
+    "prettier",
+    "react"
+  ]
 }

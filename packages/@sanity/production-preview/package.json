@@ -17,8 +17,7 @@
     "color-input",
     "sanity-plugin"
   ],
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "rimraf": "^2.6.2"
   },

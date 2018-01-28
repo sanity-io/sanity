@@ -1,5 +1,5 @@
 {
-  "env": {"node": true},
-  "parser": "babel-eslint",
-  "extends": ["sanity"]
+  "rules": {
+    "import/no-commonjs": "off"
+  }
 }

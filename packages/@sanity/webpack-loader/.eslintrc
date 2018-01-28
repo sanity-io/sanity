@@ -1,9 +1,5 @@
 {
-  "env": {
-    "node": true
-  },
-  "extends": "sanity",
   "rules": {
-    "strict": 0
+    "import/no-commonjs": "off"
   }
 }
