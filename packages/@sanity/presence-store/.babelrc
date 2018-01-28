@@ -1,9 +1,0 @@
-{
-  "presets": ["es2015"],
-  "plugins": ["transform-class-properties"],
-  "env": {
-    "test": {
-      "plugins": ["istanbul"]
-    }
-  }
-}

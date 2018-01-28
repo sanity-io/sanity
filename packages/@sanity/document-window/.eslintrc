@@ -1,13 +1,5 @@
 {
-  "env": {
-    "browser": false,
-    "node": true
-  },
-  "extends": [
-    "sanity",
-    "prettier"
-  ],
-  "parserOptions": {
-    "ecmaVersion": 2017
+  "rules": {
+    "import/no-commonjs": "off"
   }
 }

@@ -1,11 +1,5 @@
 {
-  "env": {
-    "node": true,
-    "browser": true
-  },
-  "parser": "babel-eslint",
-  "extends": [
-    "sanity",
-    "sanity/react"
-  ]
+  "rules": {
+    "import/no-commonjs": "off"
+  }
 }

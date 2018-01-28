@@ -29,5 +29,6 @@
   "dependencies": {
     "eventsource": "^1.0.5",
     "eventsource-polyfill": "^0.9.6"
-  }
+  },
+  "devDependencies": {}
 }

@@ -1,9 +1,5 @@
 {
-  "env": {"node": true},
-  "parser": "babel-eslint",
-  "extends": "sanity",
   "rules": {
-    "max-depth": [2, 4],
-    "array-element-newline": 0
+    "import/no-commonjs": "off"
   }
 }
