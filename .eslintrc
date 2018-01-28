@@ -20,12 +20,11 @@
         ]
       }
     ],
+    "prettier/prettier": "off", // set to error to enable project wide prettier
     "import/no-extraneous-dependencies": "off",
     "array-element-newline": "off",
     "flowtype/define-flow-type": 1,
-    "flowtype/use-flow-type": 1,
-    "prefer-template": "off",
-    "strict": "off"
+    "flowtype/use-flow-type": 1
   },
   "globals": {
     "__DEV__": true
