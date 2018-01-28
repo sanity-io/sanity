@@ -4,6 +4,7 @@ import AceEditor from 'react-ace'
 import {get} from 'lodash'
 import styles from './Preview.css'
 
+/* eslint-disable import/no-unassigned-import */
 import 'brace/mode/batchfile'
 import 'brace/mode/css'
 import 'brace/mode/html'
@@ -19,6 +20,7 @@ import 'brace/theme/github'
 import 'brace/theme/monokai'
 import 'brace/theme/terminal'
 import 'brace/theme/tomorrow'
+/* eslint-enable import/no-unassigned-import */
 
 import {SUPPORTED_LANGUAGES, ACE_EDITOR_PROPS, ACE_SET_OPTIONS} from './config'
 import createHighlightMarkers from './createHighlightMarkers'

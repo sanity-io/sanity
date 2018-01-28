@@ -1,4 +1,5 @@
 {
-  "env": {"node": true, "browser": true},
-  "extends": "sanity"
+  "rules": {
+    "import/no-commonjs": "off"
+  }
 }

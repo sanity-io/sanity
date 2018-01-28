@@ -45,15 +45,13 @@
     "react-icons": "^2.2.5",
     "react-intl": "^2.2.2",
     "semver-compare": "^1.0.0",
-    "shallow-equals": "^1.0.0",
-    "stylelint-config-standard": "^17.0.0"
+    "shallow-equals": "^1.0.0"
   },
   "devDependencies": {
     "@sanity/check": "^0.123.0",
     "@sanity/plugin-loader": "^0.123.0",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^4.11.0",
     "mocha": "^3.2.0",
     "nyc": "^11.0.3",
     "prop-types": "^15.6.0",

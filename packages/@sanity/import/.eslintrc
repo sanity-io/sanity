@@ -1,5 +1,5 @@
 {
-  "extends": ["sanity", "prettier"],
-  "env": {"node": true, "browser": false},
-  "parserOptions": {"ecmaVersion": 2017}
+  "rules": {
+    "import/no-commonjs": "off"
+  }
 }

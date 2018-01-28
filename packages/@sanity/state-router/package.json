@@ -12,7 +12,8 @@
     "compile": "npm run clean && babel --out-dir lib/ src/",
     "compile:watch": "babel --watch --out-dir lib/ src/",
     "benchmark": "npm run compile && node --prof --logfile=benchmarks.log perf/benchmark.js",
-    "clean": "rimraf lib"
+    "clean": "rimraf lib",
+    "typecheck": "flow check"
   },
   "keywords": [
     "sanity",
@@ -29,20 +30,9 @@
     "nano-pubsub": "^1.0.2"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-plugin-lodash": "^3.2.11",
-    "babel-plugin-syntax-flow": "^6.18.0",
-    "babel-plugin-transform-flow-comments": "^6.22.0",
-    "babelify": "^7.3.0",
     "browserify": "^14.3.0",
     "error-capture-middleware": "0.0.2",
-    "eslint": "^4.11.0",
-    "eslint-config-sanity": "^3.1.0",
-    "eslint-plugin-flowtype": "^2.39.1",
-    "eslint-plugin-import": "^2.7.0",
-    "eslint-plugin-react": "^7.4.0",
     "express": "^4.16.1",
-    "flow-bin": "^0.57.2",
     "history": "^4.6.3",
     "in-publish": "^2.0.0",
     "object-inspect": "^1.3.0",

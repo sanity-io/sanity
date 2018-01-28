@@ -38,5 +38,6 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git"
-  }
+  },
+  "devDependencies": {}
 }
