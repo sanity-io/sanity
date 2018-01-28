@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import {FormBuilderInput} from './FormBuilderInput'
-import Schema from '@sanity/schema'
 import FormBuilderContext from './FormBuilderContext'
 
 // Todo: consider deprecating this in favor of <FormBuilderContext ...><FormBuilderInput .../></FormBuilderContext>
@@ -9,7 +8,7 @@ export default class FormBuilder extends React.Component {
   static createPatchChannel = FormBuilderContext.createPatchChannel;
   static propTypes = {
     value: PropTypes.any,
-    schema: PropTypes.instanceOf(Schema).isRequired,
+    schema: PropTypes.object.isRequired,
     type: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
     patchChannel: PropTypes.shape({

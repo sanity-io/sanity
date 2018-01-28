@@ -1,5 +1,47 @@
 {
-  "env": {"node": true},
+  "env": {
+    "node": true,
+    "browser": true
+  },
   "parser": "babel-eslint",
-  "extends": "sanity"
+  "extends": [
+    "sanity",
+    "sanity/react",
+    "prettier"
+  ],
+  "rules": {
+    "newline-per-chained-call": 0,
+    "sort-imports": 0,
+    "import/no-unresolved": [
+      "error",
+      {
+        "ignore": [
+          ".*:.*"
+        ]
+      }
+    ],
+    "import/no-extraneous-dependencies": "off",
+    "array-element-newline": "off",
+    "flowtype/define-flow-type": 1,
+    "flowtype/use-flow-type": 1,
+    "prefer-template": "off",
+    "strict": "off"
+  },
+  "globals": {
+    "__DEV__": true
+  },
+  "settings": {
+    "import/resolver": "webpack",
+    "import/ignore": [
+      "\\.css$",
+      "*node_modules*",
+      ".*:.*"
+    ]
+  },
+  "plugins": [
+    "flowtype",
+    "import",
+    "prettier",
+    "react"
+  ]
 }

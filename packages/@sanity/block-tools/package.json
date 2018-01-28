@@ -9,7 +9,8 @@
     "compile:watch": "npm run compile -- --watch",
     "lint": "eslint src --quiet",
     "test": "NODE_ENV=test jest",
-    "coverage": "NODE_ENV=test jest --coverage"
+    "coverage": "NODE_ENV=test jest --coverage",
+    "typecheck": "flow check"
   },
   "publishConfig": {
     "access": "public"
@@ -38,28 +39,6 @@
   "devDependencies": {
     "@sanity/schema": "^0.124.0",
     "assert": "^1.4.1",
-    "babel-cli": "^6.26.0",
-    "babel-eslint": "^8.0.1",
-    "babel-plugin-css-modules-transform": "^1.1.0",
-    "babel-plugin-lodash": "^3.2.11",
-    "babel-plugin-syntax-class-properties": "^6.13.0",
-    "babel-plugin-syntax-flow": "^6.18.0",
-    "babel-plugin-syntax-object-rest-spread": "^6.13.0",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-flow-comments": "^6.22.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-polyfill": "^6.23.0",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
-    "babel-register": "^6.26.0",
-    "eslint": "^4.11.0",
-    "eslint-config-sanity": "^3.1.0",
-    "eslint-import-resolver-webpack": "^0.8.3",
-    "eslint-plugin-flowtype": "^2.39.1",
-    "eslint-plugin-import": "^2.7.0",
-    "eslint-plugin-react": "^7.4.0",
-    "flow-bin": "^0.57.2",
-    "flow-typed": "^2.2.0",
     "in-publish": "^2.0.0",
     "jest": "^21.2.1",
     "jest-cli": "^21.2.1",

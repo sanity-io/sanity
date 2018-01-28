@@ -1,7 +1,0 @@
-{
-  "extends": [
-    "sanity",
-    "sanity/react"
-  ],
-  "parser": "babel-eslint"
-}

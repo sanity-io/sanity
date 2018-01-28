@@ -1,10 +1,15 @@
 {
-  "presets": ["es2015", "react"],
+  "presets": [
+    "es2015",
+    "react"
+  ],
   "plugins": [
+    "lodash",
     "syntax-class-properties",
     "transform-class-properties",
     "syntax-object-rest-spread",
     "transform-object-rest-spread",
-    "lodash"
+    "syntax-flow",
+    "transform-flow-comments"
   ]
 }

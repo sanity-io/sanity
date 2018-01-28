@@ -1,9 +1,0 @@
-{
-  "env": {
-    "node": true
-  },
-  "extends": "sanity",
-  "rules": {
-    "no-var": 0
-  }
-}

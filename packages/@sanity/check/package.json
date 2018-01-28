@@ -30,7 +30,6 @@
     "promise-props-recursive": "^1.0.0"
   },
   "devDependencies": {
-    "eslint": "^4.11.0",
     "rimraf": "^2.6.2"
   },
   "repository": {

@@ -1,7 +1,0 @@
-{
-  "env": {
-    "node": true,
-    "browser": true
-  },
-  "extends": "sanity"
-}

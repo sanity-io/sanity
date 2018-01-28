@@ -34,8 +34,5 @@
     "react-addons-create-fragment": "^15.4.2",
     "shelljs": "^0.7.6"
   },
-  "devDependencies": {
-    "babel-eslint": "^8.0.1",
-    "eslint": "^4.11.0"
-  }
+  "devDependencies": {}
 }
