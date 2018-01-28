@@ -17,6 +17,7 @@ import {
   DEFAULT_THEME
 } from './config'
 
+/* eslint-disable import/no-unassigned-import */
 import 'brace/mode/batchfile'
 import 'brace/mode/css'
 import 'brace/mode/html'
@@ -32,6 +33,7 @@ import 'brace/theme/github'
 import 'brace/theme/monokai'
 import 'brace/theme/terminal'
 import 'brace/theme/tomorrow'
+/* eslint-enable import/no-unassigned-import */
 
 function compareNumbers(numA, numB) {
   return numA - numB

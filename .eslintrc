@@ -7,7 +7,10 @@
   "extends": [
     "sanity",
     "sanity/react",
-    "prettier"
+    "sanity/import",
+    "prettier",
+    "prettier/react",
+    "prettier/flowtype"
   ],
   "rules": {
     "newline-per-chained-call": 0,
@@ -20,11 +23,11 @@
         ]
       }
     ],
-    "prettier/prettier": "off", // set to error to enable project wide prettier
+    "prettier/prettier": "warn", // set to error to enable project wide prettier
     "import/no-extraneous-dependencies": "off",
-    "array-element-newline": "off",
     "flowtype/define-flow-type": 1,
-    "flowtype/use-flow-type": 1
+    "flowtype/use-flow-type": 1,
+    "import/unambiguous": "off"
   },
   "globals": {
     "__DEV__": true
@@ -33,7 +36,7 @@
     "import/resolver": "webpack",
     "import/ignore": [
       "\\.css$",
-      "*node_modules*",
+      ".*node_modules.*",
       ".*:.*"
     ]
   },

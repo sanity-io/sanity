@@ -38,9 +38,9 @@ export default class SimpleExample extends React.Component {
     shouldInspect: false
   }
   setValue(nextValue) {
-    this.setState({
-      value: this.state.value.set(nextValue)
-    })
+    this.setState(prevState => ({
+      value: prevState.value.set(nextValue)
+    }))
   }
   getValue() {
     return this.state.value
@@ -49,14 +49,14 @@ export default class SimpleExample extends React.Component {
     this.setValue(applyPatch(this.getValue(), event.patch))
   }
   undo() {
-    this.setState({
-      value: this.state.value.undo()
-    })
+    this.setState(prevState => ({
+      value: prevState.value.undo()
+    }))
   }
   redo() {
-    this.setState({
-      value: this.state.value.redo()
-    })
+    this.setState(prevState => ({
+      value: prevState.value.redo()
+    }))
   }
   handleCommand = event => {
     const command = event.currentTarget.dataset.command
@@ -68,7 +68,7 @@ export default class SimpleExample extends React.Component {
         this.redo()
         break
       case 'inspect':
-        this.setState({shouldInspect: !this.state.shouldInspect})
+        this.setState(prevState => ({shouldInspect: !prevState.shouldInspect}))
         break
       default:
     }
