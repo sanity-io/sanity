@@ -1,7 +1,7 @@
-/node_modules/
 /packages/*/node_modules
 /packages/@sanity/*/node_modules
 /packages/*/dist
 /packages/@sanity/*/dist
 /packages/*/lib
 /packages/@sanity/*/lib
+/packages/@sanity/client/umd
