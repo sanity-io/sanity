@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "0.124.10",
+  "version": "0.124.11",
   "description": "React-based data management tool for Sanity projects",
   "main": "lib/SanityVision.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -34,8 +34,8 @@
     "@sanity/base": "^0.124.9",
     "@sanity/check": "^0.123.0",
     "@sanity/client": "^0.123.0",
-    "@sanity/components": "^0.124.10",
-    "@sanity/default-layout": "^0.124.10",
+    "@sanity/components": "^0.124.11",
+    "@sanity/default-layout": "^0.124.11",
     "babel-eslint": "^7.2.3",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
