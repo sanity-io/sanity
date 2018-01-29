@@ -79,7 +79,7 @@
 
 .Resizer {
   background: var(--gray-darker);
-  opacity: 0;
+  opacity: 0.1;
   z-index: 10;
   box-sizing: border-box;
   background-clip: padding-box;
