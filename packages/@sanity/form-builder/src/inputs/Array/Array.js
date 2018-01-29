@@ -138,7 +138,7 @@ export default class ArrayInput extends React.Component<Props, State> {
 
     return (
       <DropDownButton items={items} onAction={this.handleDropDownAction}>
-        New {this.props.type.title}
+        Add
       </DropDownButton>
     )
   }
