@@ -7,16 +7,9 @@
   "license": "MIT",
   "scripts": {
     "clean": "rimraf lib",
-    "stylelint": "stylelint \"src/**/*.css\"",
-    "eslint": "eslint . --quiet",
     "prepublish": "in-publish && sanity-check || not-in-publish",
-    "test": "npm run lint",
-    "start": "cd demo && sanity start -d",
-    "lint": "npm run eslint && npm run stylelint"
+    "start": "cd demo && sanity start -d"
   },
-  "pre-commit": [
-    "lint"
-  ],
   "keywords": [
     "sanity",
     "cms",

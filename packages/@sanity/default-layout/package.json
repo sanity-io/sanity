@@ -6,7 +6,6 @@
   "scripts": {
     "start": "cd example && sanity start",
     "coverage": "nyc --report=lcov --report=text _mocha -- test/**/*.test.js",
-    "test": "eslint .",
     "clean": "rimraf lib .nyc_output coverage",
     "prepublish": "in-publish && sanity-check || not-in-publish"
   },

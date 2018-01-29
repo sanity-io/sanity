@@ -4,8 +4,7 @@
   "description": "Generates URLs to specific sections of the Sanity documentation",
   "main": "index.js",
   "scripts": {
-    "test": "tape test/**/*.test.js",
-    "posttest": "eslint ."
+    "test": "tape test/**/*.test.js"
   },
   "repository": {
     "type": "git",

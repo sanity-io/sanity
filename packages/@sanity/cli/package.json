@@ -12,8 +12,7 @@
     "package-yarn": "node -r babel-register src/scripts/package-yarn.js",
     "test": "mocha test/**/*.test.js",
     "clean": "rimraf lib",
-    "prepublishOnly": "npm run build",
-    "posttest": "eslint ."
+    "prepublishOnly": "npm run build"
   },
   "engines": {
     "node": ">=6.0.0"

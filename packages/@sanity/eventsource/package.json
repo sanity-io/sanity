@@ -4,9 +4,7 @@
   "description": "EventSource polyfill for browser and node.js",
   "main": "./node.js",
   "browser": "./browser.js",
-  "scripts": {
-    "test": "eslint ."
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git"
