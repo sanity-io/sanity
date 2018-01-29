@@ -1,3 +1,13 @@
+export function imageWithNoCropSpecified() {
+  return ({
+    _type: 'image',
+    asset: {
+      _ref: 'image-vK7bXJPEjVpL_C950gH1N73Zv14r7pYsbUdXl-4288x2848-jpg',
+      _type: 'reference'
+    }
+  })
+}
+
 export function uncroppedImage() {
   return ({
     _type: 'image',
