@@ -41,6 +41,7 @@
     "@sanity/client": "^0.123.0",
     "@sanity/resolver": "^0.123.0",
     "@sanity/util": "^0.123.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "chalk": "^2.1.0",
