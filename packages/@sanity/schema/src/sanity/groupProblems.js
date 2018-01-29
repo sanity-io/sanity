@@ -63,6 +63,6 @@ export function getTypeProblems(type, path = []) {
 
 export default function groupProblems(types) {
   return flatten(types
-    .map(getTypeProblems))
+    .map(type => getTypeProblems(type)))
     .filter(type => type.problems.length > 0)
 }
