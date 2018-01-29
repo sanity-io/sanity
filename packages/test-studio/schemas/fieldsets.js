@@ -10,7 +10,9 @@ export default {
       title: 'myObject.first'
     }
   },
-  fieldsets: [{name: 'recursive', title: 'Recursive', options: {collapsable: true}}],
+  fieldsets: [
+    {name: 'recursive', title: 'Recursive', options: {collapsable: true}}
+  ],
   fields: [
     {
       name: 'myObject',
@@ -21,7 +23,13 @@ export default {
     {
       name: 'person',
       type: 'object',
-      fieldsets: [{name: 'social', title: 'Social media handles'}],
+      fieldsets: [
+        {
+          name: 'social',
+          title: 'Social media handles [collapsed by default]',
+          options: {collapsible: true, collapsed: true}
+        }
+      ],
       fields: [
         {
           name: 'name',

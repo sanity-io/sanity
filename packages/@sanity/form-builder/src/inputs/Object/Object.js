@@ -9,8 +9,28 @@ import isEmpty from '../../utils/isEmpty'
 import UnknownFields from './UnknownFields'
 import fieldStyles from './styles/Field.css'
 
-function checkIsCollapsible(options = {}) {
-  return options.collapsible !== false && options.collapsable !== false
+function getCollapsedWithDefaults(options = {}, level) {
+  // todo: warn on "collapsable" and deprecate collapsible in favor of just "collapsed"
+  //       --> relevant: https://github.com/sanity-io/sanity/issues/537
+  if (options.collapsible === true || options.collapsable === true) {
+    // collapsible explicit set to true
+    return {
+      collapsible: true,
+      collapsed: options.collapsed !== false
+    }
+  } else if (options.collapsible === false && options.collapsable === false) {
+    // collapsible explicit set to false
+    return {
+      collapsible: false,
+      collapsed: false
+    }
+  }
+
+  // default
+  return {
+    collapsible: level > 2,
+    collapsed: level > 2
+  }
 }
 
 export default class ObjectInput extends React.PureComponent {
@@ -23,8 +43,7 @@ export default class ObjectInput extends React.PureComponent {
     focusPath: PropTypes.array,
     onBlur: PropTypes.func.isRequired,
     level: PropTypes.number,
-    isRoot: PropTypes.bool,
-    autoFocus: PropTypes.bool
+    isRoot: PropTypes.bool
   }
 
   static defaultProps = {
@@ -93,11 +112,11 @@ export default class ObjectInput extends React.PureComponent {
     const {level, focusPath} = this.props
     const columns = fieldset.options && fieldset.options.columns
 
-    const isCollapsed = (fieldset.options || {}).collapsed === true
+    const collapsibleOpts = getCollapsedWithDefaults(fieldset.options)
 
-    const isExpanded = !isCollapsed || (focusPath.length > 0 && fieldset.fields.some(field => (
+    const isExpanded = focusPath.length > 0 && fieldset.fields.some(field => (
       focusPath[0] === field.name
-    )))
+    ))
 
     return (
       <div key={fieldset.name} className={fieldStyles.root}>
@@ -106,8 +125,8 @@ export default class ObjectInput extends React.PureComponent {
           description={fieldset.description}
           level={level + 1}
           columns={columns}
-          isCollapsible={checkIsCollapsible(fieldset.options)}
-          isCollapsed={!isExpanded}
+          isCollapsible={collapsibleOpts.collapsible}
+          isCollapsed={!isExpanded && collapsibleOpts.collapsed}
         >
           {fieldset.fields.map((field, fieldIndex) => {
             return this.renderField(field, level + 2, fieldsetIndex + fieldIndex)
@@ -182,7 +201,6 @@ export default class ObjectInput extends React.PureComponent {
     }
 
     const columns = type.options && type.options.columns
-    const isCollapsible = checkIsCollapsible(type.options)
 
     return (
       <Fieldset
@@ -190,8 +208,6 @@ export default class ObjectInput extends React.PureComponent {
         legend={type.title}
         description={type.description}
         columns={columns}
-        isCollapsible={isCollapsible}
-        isCollapsed={isCollapsible}
       >
         {renderedFields}
         {renderedUnknownFields}
