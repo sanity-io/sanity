@@ -1,5 +1,5 @@
 import fse from 'fs-extra'
-import UglifyJS from 'uglify-js'
+import UglifyJS from 'uglify-es'
 
 export default async inputFile => {
   const content = await fse.readFile(inputFile, 'utf8')
