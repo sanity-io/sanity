@@ -9,8 +9,7 @@
   "author": "Espen Hovlandsdal <espen@hovlandsdal.com>",
   "license": "MIT",
   "scripts": {
-    "prepublish": "in-publish && ./src/bin.js || not-in-publish",
-    "test": "eslint ."
+    "prepublish": "in-publish && ./src/bin.js || not-in-publish"
   },
   "keywords": [
     "sanity",

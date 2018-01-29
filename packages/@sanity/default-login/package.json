@@ -8,7 +8,7 @@
   "scripts": {
     "clean": "rimraf lib",
     "prepublish": "in-publish && sanity-check || not-in-publish",
-    "test": "sanity-check && eslint ."
+    "test": "sanity-check"
   },
   "keywords": [
     "sanity",
