@@ -30,7 +30,7 @@ function toSanitySpan(node, sanityBlock, spanIndex) {
         Object.keys(annotations).forEach(name => {
           const annotation = annotations[name]
           const annotationKey = annotation._key
-          if (annotation) {
+          if (annotation && annotationKey) {
             sanityBlock.markDefs.push(annotation)
             annotationKeys.push(annotationKey)
           }
