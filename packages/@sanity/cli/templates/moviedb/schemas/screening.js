@@ -67,14 +67,7 @@ export default {
   preview: {
     select: {
       title: 'title',
-      imageUrl: 'movie.poster.asset.url'
-    },
-    prepare(selection) {
-      const {title, imageUrl} = selection
-      return {
-        title: title,
-        imageUrl: imageUrl
-      }
+      media: 'movie.poster'
     }
   }
 }

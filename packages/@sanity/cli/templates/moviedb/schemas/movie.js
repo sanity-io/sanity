@@ -64,15 +64,22 @@ export default {
   preview: {
     select: {
       title: 'title',
-      date: 'releaseDate.utc',
-      imageUrl: 'poster.asset.url'
+      date: 'releaseDate',
+      media: 'poster',
+      castName0: 'castMembers.0.person.name',
+      castName1: 'castMembers.1.person.name'
     },
     prepare(selection) {
-      const {date, imageUrl} = selection
-      return Object.assign({}, selection, {
-        subtitle: date && date.utc ? date.utc.split('-')[0] : '',
-        imageUrl: imageUrl ? `${imageUrl}?w=100` : imageUrl
-      })
+
+      const year = selection.date && selection.date.split('-')[0]
+      const cast = [selection.castName0, selection.castName1].filter(Boolean).join(', ')
+
+      return {
+        title: `${selection.title} ${year ? `(${year})` : ''}`,
+        date: selection.date,
+        subtitle: cast,
+        media: selection.media
+      }
     }
   }
 }

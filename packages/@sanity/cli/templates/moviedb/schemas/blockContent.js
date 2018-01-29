@@ -32,6 +32,20 @@ export default {
           }
         ]
       }
+    },
+    {
+      type: 'reference',
+      title: 'Reference',
+      to: [
+        {title: 'Movie', type: 'movie'},
+        {title: 'Person', type: 'person'},
+        {title: 'Screening', type: 'screening'}
+      ]
+    },
+    {
+      title: 'Image',
+      type: 'image',
+      fields: [{type: 'string', title: 'Caption', name: 'caption', options: {isHighlighted: true}}]
     }
   ]
 }
