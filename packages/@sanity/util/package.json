@@ -5,8 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "clean": "rimraf lib",
-    "test": "mocha test/**/*.test.js",
-    "posttest": "eslint ."
+    "test": "mocha test/**/*.test.js"
   },
   "repository": {
     "type": "git",

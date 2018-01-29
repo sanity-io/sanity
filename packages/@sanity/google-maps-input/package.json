@@ -8,8 +8,7 @@
   "scripts": {
     "clean": "rimraf lib",
     "start": "cd example && sanity start",
-    "prepublish": "in-publish && sanity-check || not-in-publish",
-    "test": "sanity-check && eslint ."
+    "prepublish": "in-publish && sanity-check || not-in-publish"
   },
   "keywords": [
     "sanity",

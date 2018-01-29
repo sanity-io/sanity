@@ -10,9 +10,7 @@
   "license": "MIT",
   "scripts": {
     "clean": "rimraf lib",
-    "test": "jest",
-    "posttest": "npm run lint",
-    "lint": "eslint ."
+    "test": "jest"
   },
   "keywords": [
     "sanity",

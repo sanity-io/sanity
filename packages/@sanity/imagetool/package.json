@@ -6,8 +6,6 @@
   "scripts": {
     "clean": "rimraf lib",
     "bloat": "browserify -t babelify --full-paths ./src/index.js | discify --open",
-    "lint": "eslint .",
-    "pre-commit-check": "npm test && (eslint . || (echo 'Warning: project has lint errors. Please fix and re-commit with `git commit --amend`' && echo))",
     "start": "remon --require babel-core/register ./example/app.js",
     "test": "mocha --recursive --require babel-register test"
   },

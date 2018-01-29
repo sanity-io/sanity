@@ -34,9 +34,7 @@
     "@types/node": "6.0.52",
     "empty": "^0.10.1",
     "flow-typed": "^2.2.0",
-    "husky": "^0.14.3",
     "jest": "^21.2.1",
-    "lint-staged": "^4.2.3",
     "prettier": "^1.7.4",
     "recursive-readdir": "^2.1.0",
     "rimraf": "^2.6.2"

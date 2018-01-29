@@ -7,8 +7,7 @@
   "license": "MIT",
   "scripts": {
     "clean": "rimraf lib",
-    "test": "mocha --recursive test/**/*.test.js",
-    "posttest": "eslint ."
+    "test": "mocha --recursive test/**/*.test.js"
   },
   "engines": {
     "node": ">=6.0.0"

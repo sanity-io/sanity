@@ -5,8 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "clean": "rimraf lib",
-    "test": "tap test/*.test.js --node-arg --require --node-arg ./.babel-init.js && eslint src --quiet",
-    "lint": "eslint .",
+    "test": "tap test/*.test.js --node-arg --require --node-arg ./.babel-init.js",
     "typecheck": "flow check"
   },
   "keywords": [

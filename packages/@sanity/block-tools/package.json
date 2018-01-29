@@ -7,7 +7,6 @@
     "clean": "rimraf lib",
     "compile": "babel src --copy-files --out-dir lib",
     "compile:watch": "npm run compile -- --watch",
-    "lint": "eslint src --quiet",
     "test": "NODE_ENV=test jest",
     "coverage": "NODE_ENV=test jest --coverage",
     "typecheck": "flow check"
