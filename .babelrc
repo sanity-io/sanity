@@ -15,8 +15,6 @@
     "lodash",
     "syntax-class-properties",
     "transform-class-properties",
-    "syntax-object-rest-spread",
-    "transform-object-rest-spread",
     "syntax-flow",
     "transform-flow-comments"
   ]
