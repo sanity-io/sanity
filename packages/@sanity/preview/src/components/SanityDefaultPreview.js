@@ -55,7 +55,8 @@ export default class SanityDefaultPreview extends React.PureComponent {
           imageBuilder.image(media)
             .width(dimensions.width || 100)
             .height(dimensions.height || 100)
-            .fit(dimensions.fit)
+            // todo: disable for now due to a bug with the order options are applied in the image service
+            // .fit(dimensions.fit)
             .url()
         }
       />
