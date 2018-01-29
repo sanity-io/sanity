@@ -23,6 +23,7 @@
     "@sanity/desk-tool": "^0.124.10",
     "@sanity/vision": "^0.124.10",
     "@sanity/google-maps-input": "^0.124.10",
+    "@sanity/production-preview": "^0.124.9",
     "react": "^15.4.2",
     "react-dom": "^15.4.2"
   },
