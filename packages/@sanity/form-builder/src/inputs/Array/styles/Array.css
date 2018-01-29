@@ -7,6 +7,7 @@
 
 .list {
   composes: root from 'part:@sanity/components/lists/default-style';
+  user-select: none;
 }
 
 .list + .functions {
@@ -26,6 +27,7 @@
 .listItem {
   composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
   composes: lineBetween from 'part:@sanity/components/lists/default-item-style';
+  cursor: default;
 }
 
 .listItemMute {
