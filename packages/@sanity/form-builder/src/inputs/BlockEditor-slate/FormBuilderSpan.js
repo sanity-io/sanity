@@ -94,14 +94,11 @@ export default class FormBuilderSpan extends React.Component {
   }
 
   handleCloseInput = () => {
-    // Let it happen after focus is set in the editor (state may be out of sync)
     this.props.editor.focus()
-    setTimeout(() => {
-      if (this.state.isEditing) {
-        this.setState({isEditing: false, focusedAnnotationName: undefined})
-      }
-      this.garbageCollect()
-    }, 100)
+    if (this.state.isEditing) {
+      this.setState({isEditing: false, focusedAnnotationName: undefined})
+    }
+    this.garbageCollect()
   }
 
   garbageCollect() {
@@ -183,6 +180,11 @@ export default class FormBuilderSpan extends React.Component {
       ...annotations,
       [name]: applyAll(annotations[name], event.patches)
     }
+    Object.keys(nextAnnotations).forEach(key => {
+      if (nextAnnotations[key] === undefined) {
+        delete nextAnnotations[key]
+      }
+    })
     const {node, editor} = this.props
     const data = {
       ...node.data.toObject(),
