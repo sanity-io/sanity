@@ -57,7 +57,7 @@ function sanitySpanToRawSlateBlockNode(span, sanityBlock) {
   const range = {
     kind: 'range',
     text: text,
-    marks: decorators.map(toRawMark)
+    marks: decorators.filter(Boolean).map(toRawMark)
   }
 
   if (!annotations) {
