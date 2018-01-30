@@ -163,7 +163,10 @@ export default class ReferenceInput extends React.Component<Props, State> {
   renderOpenItemElement = () => {
     const {value} = this.props
     const {previewSnapshot} = this.state
-    return (value && previewSnapshot !== MISSING_SNAPSHOT) && (
+    if (!value || !value._ref || previewSnapshot === MISSING_SNAPSHOT) {
+      return null
+    }
+    return (
       <IntentLink
         title={previewSnapshot && `Open ${previewSnapshot.title}`}
         intent="edit"
