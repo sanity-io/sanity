@@ -172,7 +172,7 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
 
     const childFocusPath = this.getChildFocusPath()
 
-    const isLeaf = childFocusPath.length === 0
+    const isLeaf = childFocusPath.length === 0 || childFocusPath[0] === PathUtils.FOCUS_TERMINATOR
     const leafProps = isLeaf ? {} : {focusPath: childFocusPath}
 
     return (
