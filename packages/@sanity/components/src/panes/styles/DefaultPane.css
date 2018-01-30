@@ -175,22 +175,25 @@
 }
 
 .scrollContainer {
-  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
-  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
-  position: absolute;
-  top: -3rem;
-  padding-top: 3rem;
-  left: 0;
-  right: 0;
-  height: calc(100% + 3rem);
   display: block;
   box-sizing: border-box;
 
-  @media (--max-screen-medium) {
+  @media (--screen-medium) {
+    composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
+    composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
+    position: absolute;
+    top: -3rem;
+    padding-top: 3rem;
+    left: 0;
+    right: 0;
+    height: calc(100% + 3rem);
+  }
+
+  /* @media (--max-screen-medium) {
     overflow: visible;
     position: relative;
     height: auto;
-  }
+  } */
 
   @nest .isCollapsed & {
     display: none;
