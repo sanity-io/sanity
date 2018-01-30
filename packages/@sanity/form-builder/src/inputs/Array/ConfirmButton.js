@@ -47,7 +47,8 @@ export default class ConfirmButton extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (!prevState.showConfirmDialog && this.state.showConfirmDialog) {
-      this._confirmButton.focus()
+      // todo: does not work as the popover is not in sync
+      //this._confirmButton.focus()
     }
   }
 
