@@ -35,14 +35,14 @@ export default {
       name: 'person.name',
       job: 'job',
       department: 'department',
-      media: 'person.image'
+      imageUrl: 'person.image.asset.url'
     },
     prepare(selection) {
-      const {name, job, department, media} = selection
+      const {name, job, department, imageUrl} = selection
       return {
         title: name,
         subtitle: `${job} [${department}]`,
-        media: media
+        imageUrl: imageUrl
       }
     }
   }

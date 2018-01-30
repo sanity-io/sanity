@@ -65,7 +65,7 @@ export default {
     select: {
       title: 'title',
       date: 'releaseDate',
-      media: 'poster',
+      imageUrl: 'poster.asset.url',
       castName0: 'castMembers.0.person.name',
       castName1: 'castMembers.1.person.name'
     },
@@ -78,7 +78,7 @@ export default {
         title: `${selection.title} ${year ? `(${year})` : ''}`,
         date: selection.date,
         subtitle: cast,
-        media: selection.media
+        imageUrl: selection.imageUrl
       }
     }
   }
