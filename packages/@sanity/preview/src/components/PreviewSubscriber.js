@@ -6,6 +6,30 @@ import shallowEquals from 'shallow-equals'
 import intersectionObservableFor from '../streams/intersectionObservableFor'
 import visibilityChange$ from '../streams/visibilityChange'
 
+// How long to wait before signalling tear down of subscriptions
+const DELAY_MS = 20 * 1000
+
+const isVisible$ = visibilityChange$.map(event => !event.target.hidden)
+const visibilityOn$ = isVisible$.filter(Boolean)
+const visibilityOff$ = isVisible$.filter(isVisible => !isVisible)
+
+// A stream of booleans to signal whether preview component should keep
+// subscriptions active or not
+const keepActive$ = new Observable(observer => {
+  observer.next(!document.hidden)
+  observer.complete()
+})
+  .concat(
+    visibilityOn$.switchMap(on =>
+      Observable.of(on).concat(
+        visibilityOff$.debounceTime(DELAY_MS).map(() => false)
+      )
+    )
+  )
+  .distinctUntilChanged()
+  .publishReplay(1)
+  .refCount()
+
 export default class PreviewSubscriber extends React.PureComponent {
   static propTypes = {
     type: PropTypes.object.isRequired,
@@ -49,14 +73,10 @@ export default class PreviewSubscriber extends React.PureComponent {
       ? {ordering: this.props.ordering}
       : {}
 
-    const visibilityOn$ = Observable.of(!document.hidden)
-      .merge(visibilityChange$.map(event => !event.target.hidden))
-
     const inViewport$ = intersectionObservableFor(this._element)
       .map(event => event.isIntersecting)
 
-    this.subscription = visibilityOn$
-      .distinctUntilChanged()
+    this.subscription = keepActive$
       .switchMap(isVisible => (isVisible ? inViewport$ : Observable.of(false)))
       .distinctUntilChanged()
       .switchMap(isInViewport => {
