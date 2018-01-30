@@ -1,6 +1,6 @@
 {
   "name": "@sanity/uuid",
-  "version": "0.124.9",
+  "version": "0.125.0",
   "description": "Simple generation of sanity document IDs",
   "main": "index.js",
   "keywords": [
@@ -23,6 +23,5 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git"
-  },
-  "devDependencies": {}
+  }
 }

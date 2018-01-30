@@ -12,5 +12,5 @@
     "packages/blog-studio",
     "packages/storybook"
   ],
-  "version": "0.124.11"
+  "version": "0.125.0"
 }

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/cli",
-  "version": "0.124.4",
+  "version": "0.125.0",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "main": "lib/cli.js",
   "bin": {
@@ -37,9 +37,9 @@
   },
   "homepage": "https://www.sanity.io/",
   "devDependencies": {
-    "@sanity/client": "^0.123.0",
-    "@sanity/resolver": "^0.123.0",
-    "@sanity/util": "^0.123.0",
+    "@sanity/client": "0.125.0",
+    "@sanity/resolver": "0.125.0",
+    "@sanity/util": "0.125.0",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "chalk": "^2.1.0",
@@ -76,6 +76,5 @@
     "validate-npm-package-name": "^3.0.0",
     "webpack": "^3.8.1",
     "xdg-basedir": "^3.0.0"
-  },
-  "dependencies": {}
+  }
 }

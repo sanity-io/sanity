@@ -1,6 +1,6 @@
 {
   "name": "@sanity/eventsource",
-  "version": "0.120.0",
+  "version": "0.125.0",
   "description": "EventSource polyfill for browser and node.js",
   "main": "./node.js",
   "browser": "./browser.js",
@@ -27,6 +27,5 @@
   "dependencies": {
     "eventsource": "^1.0.5",
     "eventsource-polyfill": "^0.9.6"
-  },
-  "devDependencies": {}
+  }
 }
