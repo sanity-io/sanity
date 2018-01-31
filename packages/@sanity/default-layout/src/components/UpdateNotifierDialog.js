@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
-import VersionChecker from 'part:@sanity/base/version-checker'
 import styles from './styles/UpdateNotifierDialog.css'
 
 const upperFirst = str => `${str.slice(0, 1).toUpperCase()}${str.slice(1)}`
@@ -22,12 +21,6 @@ class UpdateNotifierDialog extends Component {
 
   static defaultProps = {
     outdated: []
-  }
-
-  componentWillMount() {
-    VersionChecker.checkVersions({getOutdated: true})
-      .then(this.handleVersionReply)
-      .catch(this.handleError)
   }
 
   renderTable() {
@@ -56,14 +49,11 @@ class UpdateNotifierDialog extends Component {
         </table>
 
         <p className={styles.upgradeText}>
-          To upgrade, run <code className={styles.code}>sanity upgrade</code> in your studio.
+          To upgrade, run <code className={styles.code}>sanity upgrade</code> in
+          your studio.
         </p>
       </div>
     )
-  }
-
-  renderInfo() {
-    return this.renderTable()
   }
 
   renderContactDeveloper() {
@@ -73,9 +63,15 @@ class UpdateNotifierDialog extends Component {
         <p>You are running an outdated studio.</p>
 
         {severity === 'high' ? (
-          <p>Please get in touch with your developers and ask them to upgrade it for you.</p>
+          <p>
+            Please get in touch with your developers and ask them to upgrade it
+            for you.
+          </p>
         ) : (
-          <p>Consider getting in touch with your developers and ask them to upgrade it for you.</p>
+          <p>
+            Consider getting in touch with your developers and ask them to
+            upgrade it for you.
+          </p>
         )}
 
         <details>
@@ -89,17 +85,18 @@ class UpdateNotifierDialog extends Component {
   render() {
     const {severity, onClose} = this.props
     return (
-      <Dialog
-        isOpen
-        onClose={onClose}
-      >
+      <Dialog isOpen onClose={onClose}>
         <div className={styles.content}>
           <div>
             <h2>
-              {severity === 'low' ? 'New versions available' : 'Studio is outdated'}
+              {severity === 'low'
+                ? 'New versions available'
+                : 'Studio is outdated'}
             </h2>
-            {__DEV__ ? this.renderInfo() : this.renderContactDeveloper()}
-            <Button color="primary" onClick={onClose}>Close</Button>
+            {__DEV__ ? this.renderTable() : this.renderContactDeveloper()}
+            <Button color="primary" onClick={onClose}>
+              Close
+            </Button>
           </div>
         </div>
       </Dialog>
