@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/buttons/dropdown-style'
@@ -5,9 +6,9 @@ import Button from 'part:@sanity/components/buttons/default'
 import ArrowIcon from 'part:@sanity/base/angle-down-icon'
 import Menu from 'part:@sanity/components/menus/default'
 import {omit} from 'lodash'
-import StickyPortal from 'part:@sanity/components/portal/sticky'
 import Stacked from '../utilities/Stacked'
 import Escapable from '../utilities/Escapable'
+import {Manager, Target, Popper} from 'react-popper'
 
 class DropDownButton extends React.PureComponent {
   static propTypes = {
@@ -35,8 +36,7 @@ class DropDownButton extends React.PureComponent {
   }
 
   state = {
-    menuOpened: false,
-    stickToBottom: true
+    menuOpened: false
   }
 
   width = 100
@@ -72,95 +72,54 @@ class DropDownButton extends React.PureComponent {
     this.handleClose()
   }
 
-  handleResize = dimensions => {
-    const buttonHeight = this._rootElement.offsetHeight
-    if (this._menuElement.offsetHeight + buttonHeight < (window.innerHeight - dimensions.rootTop)) {
-      this.setState({
-        stickToBottom: true
-      })
-      return
-    }
-    this.setState({
-      stickToBottom: false
-    })
-  }
-
   render() {
     const {items, children, kind, className, origin, ...rest} = omit(this.props, 'onAction')
-    const {menuOpened, width, stickToBottom} = this.state
-
-
-    let menuClassName = styles.menu
-
-    if (stickToBottom && origin === 'right') {
-      menuClassName = styles.menuBottomRight
-    }
-
-    if (!stickToBottom && origin === 'right') {
-      menuClassName = styles.menuTopRight
-    }
-
-    if (stickToBottom && origin === 'left') {
-      menuClassName = styles.menuBottomLeft
-    }
-
-    if (!stickToBottom && origin === 'left') {
-      menuClassName = styles.menuTopLeft
-    }
+    const {menuOpened, width} = this.state
 
     return (
       <div ref={this.setRootElement} className={className}>
-        <Button
-          {...rest}
-          className={`${styles.root}`}
-          onClick={this.handleOnClick}
-          kind={kind}
-        >
-          <span className={styles.title}>
-            {children}
-          </span>
+        <Manager>
+          <Target>
+            <Button
+              {...rest}
+              className={`${styles.root}`}
+              onClick={this.handleOnClick}
+              kind={kind}
+            >
+              <span className={styles.title}>
+                {children}
+              </span>
 
-          <span className={styles.arrow}>
-            <ArrowIcon color="inherit" />
-          </span>
-          <span
-            className={`
-              ${stickToBottom ? styles.stickyBottom : styles.stickyTop}
-              ${origin === 'left' ? styles.stickyLeft : styles.stickyRight}
-            `}
-          >
+              <span className={styles.arrow}>
+                <ArrowIcon color="inherit" />
+              </span>
+            </Button>
+          </Target>
+          <Popper className={styles.popper}>
             {
               menuOpened && (
                 <Stacked>
                   {isActive => (
-                    <StickyPortal
-                      isOpen
-                      onResize={this.handleResize}
-                      onlyBottomSpace={false}
-                      useOverlay={false}
-                      addPadding={false}
-                      scrollIntoView={false}
+                    <div
+                      className={styles.wrapper}
+                      ref={this.setMenuElement}
+                      style={{minWidth: `${width}px`}}
                     >
-                      <div
-                        ref={this.setMenuElement}
-                        style={{minWidth: `${width}px`}}
-                      >
-                        <Escapable onEscape={event => (isActive && this.handleClose())} />
-                        <Menu
-                          items={items}
-                          isOpen
-                          className={menuClassName}
-                          onAction={this.handleAction}
-                          onClickOutside={event => (isActive && this.handleClose())}
-                        />
-                      </div>
-                    </StickyPortal>
+                      <Escapable onEscape={event => (isActive && this.handleClose())} />
+                      <Menu
+                        items={items}
+                        isOpen
+                        className={styles.menu}
+                        onAction={this.handleAction}
+                        onClickOutside={event => (isActive && this.handleClose())}
+                      />
+                    </div>
                   )}
                 </Stacked>
               )
             }
-          </span>
-        </Button>
+          </Popper>
+        </Manager>
       </div>
     )
   }

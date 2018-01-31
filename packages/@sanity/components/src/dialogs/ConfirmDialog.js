@@ -5,7 +5,7 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import CheckIcon from 'part:@sanity/base/circle-check-icon'
 import styles from './styles/ConfirmDialog.css'
 import Button from 'part:@sanity/components/buttons/default'
-import Portal from 'react-portal'
+import {Portal} from 'react-portal'
 import StackedEscapable from '../utilities/StackedEscapable'
 
 export default class DefaultDialog extends React.PureComponent {
@@ -53,7 +53,7 @@ export default class DefaultDialog extends React.PureComponent {
 
     return (
       <StackedEscapable onEscape={onCancel}>
-        <Portal isOpened>
+        <Portal>
           <div
             className={`${styles.root} ${styles[color]} ${className}`}
             ref={this.setDialogElement}

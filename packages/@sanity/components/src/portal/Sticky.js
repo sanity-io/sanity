@@ -2,7 +2,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from './styles/Sticky.css'
-import Portal from 'react-portal'
+import {Portal} from 'react-portal'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import ease from 'ease-component'
 import scroll from 'scroll'
@@ -321,33 +321,33 @@ export default class Sticky extends React.PureComponent {
     return (
       <span ref={this.setRootElement} className={styles.root}>
         <Portal
-          isOpened={isOpen && portalIsOpen}
-          closeOnEsc={false}
+          isOpen={isOpen && portalIsOpen}
           onOpen={this.handlePortalOpened}
-          className={styles.portal}
         >
-          <div className={styles.portalInner}>
-            {
-              useOverlay && <div className={styles.overlay} />
-            }
-            <div
-              className={styles.availableSpace}
-              ref={this.setAvailableSpaceElement}
-              style={{
-                top: `${availableSpaceTop}px`,
-                width: `${availableWidth}px`,
-                height: `${availableHeight}px`
-              }}
-            >
+          <div className={styles.portal}>
+            <div className={styles.portalInner}>
+              {
+                useOverlay && <div className={styles.overlay} />
+              }
               <div
-                className={styles.content}
-                ref={this.setContentElement}
+                className={styles.availableSpace}
+                ref={this.setAvailableSpaceElement}
                 style={{
-                  top: `${contentTop}px`,
-                  left: `${contentLeft}px`
+                  top: `${availableSpaceTop}px`,
+                  width: `${availableWidth}px`,
+                  height: `${availableHeight}px`
                 }}
               >
-                {children}
+                <div
+                  className={styles.content}
+                  ref={this.setContentElement}
+                  style={{
+                    top: `${contentTop}px`,
+                    left: `${contentLeft}px`
+                  }}
+                >
+                  {children}
+                </div>
               </div>
             </div>
           </div>

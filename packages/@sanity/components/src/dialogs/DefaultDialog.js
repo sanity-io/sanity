@@ -1,14 +1,15 @@
+/* eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React from 'react'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import styles from 'part:@sanity/components/dialogs/default-style'
 import Button from 'part:@sanity/components/buttons/default'
-import Portal from 'react-portal'
+import {Portal} from 'react-portal'
 import Escapable from '../utilities/Escapable'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Stacked from '../utilities/Stacked'
 
-export default class DefaultDialog extends React.PureComponent {
+export default class DefaultDialog extends React.Component {
   static propTypes = {
     kind: PropTypes.oneOf(['default', 'warning', 'success', 'danger', 'info']),
     className: PropTypes.string,
@@ -100,10 +101,10 @@ export default class DefaultDialog extends React.PureComponent {
     `
 
     return (
-      <Stacked>
-        {isActive => (
-          <Portal isOpened={isOpen}>
-            <div className={classNames} ref={this.setDialogElement}>
+      <Portal>
+        <div className={classNames}>
+          <Stacked>
+            {isActive => (
               <div className={styles.dialog}>
                 <Escapable onEscape={event => ((isActive || event.shiftKey) && onClose())} />
                 <CaptureOutsideClicks onClickOutside={isActive ? onClose : undefined}>
@@ -138,10 +139,10 @@ export default class DefaultDialog extends React.PureComponent {
                   </div>
                 </CaptureOutsideClicks>
               </div>
-            </div>
-          </Portal>
-        )}
-      </Stacked>
+            )}
+          </Stacked>
+        </div>
+      </Portal>
     )
   }
 }

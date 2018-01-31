@@ -37,16 +37,23 @@
   box-sizing: border-box;
 }
 
+.portal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: var(--zindex-portal);
+}
+
 .listContainer {
+  composes: shadow-24dp from "part:@sanity/base/theme/shadows-style";
   display: block;
   position: absolute;
-  width: 100%;
   max-height: 300px;
-  height: 1000px;
+  height: 300px;
   border: 1px solid var(--component-border-color);
   box-sizing: border-box;
   background-color: var(--component-bg);
-  composes: shadow-10dp from "part:@sanity/base/theme/shadows-style";
+  transform: translateX(-50%);
 }
 
 .listContainerEmpty {

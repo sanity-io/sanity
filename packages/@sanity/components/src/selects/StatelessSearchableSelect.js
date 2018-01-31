@@ -7,10 +7,11 @@ import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import SelectMenu from './SelectMenu'
-import StickyPortal from 'part:@sanity/components/portal/sticky'
 import Stacked from '../utilities/Stacked'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Escapable from '../utilities/Escapable'
+import {Portal} from 'react-portal'
+import {Manager, Target, Popper} from 'react-popper'
 
 const noop = () => {}
 
@@ -115,6 +116,10 @@ export default class StatelessSearchableSelect extends React.PureComponent {
     }
   }
 
+  handleClose = event => {
+    this.props.onClose()
+  }
+
   setListElement = element => {
     this._listElement = element
   }
@@ -131,7 +136,11 @@ export default class StatelessSearchableSelect extends React.PureComponent {
     this._input.focus()
   }
 
-  render() {
+  setTargetRef = element => {
+    return element
+  }
+
+  renderTarget = () => {
     const {
       onClear,
       placeholder,
@@ -157,97 +166,147 @@ export default class StatelessSearchableSelect extends React.PureComponent {
     } = this.props
 
     return (
-      <div ref={this.setRootNode}>
-        <div className={disabled ? styles.selectContainerDisabled : styles.selectContainer}>
-          <DefaultTextInput
-            {...rest}
-            className={styles.select}
-            placeholder={placeholder}
-            onChange={this.handleInputChange}
-            onKeyDown={this.handleKeyDown}
-            onKeyUp={this.handleKeyUp}
-            value={inputValue || ''}
-            selected={isInputSelected}
-            disabled={disabled}
-            ref={this.setInput}
-            readOnly={readOnly}
-          />
-          <div className={styles.functions}>
-            {openItemElement &&
-              value && <span className={styles.openItem}>{openItemElement(value)}</span>}
-            {onClear &&
-              value &&
-              !readOnly && (
-                <button type="button" className={styles.clearButton} onClick={onClear}>
-                  <CloseIcon color="inherit" />
-                </button>
-              )}
-            {!isLoading &&
-              !readOnly && (
-                <div
-                  className={styles.arrow}
-                  onClick={disabled ? null : this.handleArrowClick}
-                  tabIndex={0}
-                  onKeyPress={disabled ? null : this.handleArrowKeyPress}
-                >
-                  <FaAngleDown color="inherit" />
-                </div>
-              )}
-            {isLoading && <Spinner />}
-          </div>
-        </div>
-        <div className={styles.stickyContainer} style={{width: `${this.props.width}px`}}>
-          {isOpen && (
-            <StickyPortal
-              isOpen={isOpen}
-              onResize={onResize}
-              onlyBottomSpace={false}
-              useOverlay={false}
-              addPadding={false}
-              scrollIntoView={false}
+      <div>
+        <DefaultTextInput
+          {...rest}
+          className={styles.select}
+          placeholder={placeholder}
+          onChange={this.handleInputChange}
+          onKeyDown={this.handleKeyDown}
+          onKeyUp={this.handleKeyUp}
+          value={inputValue || ''}
+          selected={isInputSelected}
+          disabled={disabled}
+          ref={this.setInput}
+        />
+        <div className={styles.functions}>
+          {
+            openItemElement && value && (
+              <span className={styles.openItem}>{openItemElement(value)}</span>
+            )
+          }
+          {
+            onClear && value && (
+              <button type="button" className={styles.clearButton} onClick={onClear}>
+                <CloseIcon color="inherit" />
+              </button>
+            )
+          }
+          {!isLoading && (
+            <div
+              className={styles.arrow}
+              onClick={disabled ? null : this.handleArrowClick}
+              tabIndex={0}
+              onKeyPress={disabled ? null : this.handleArrowKeyPress}
             >
-              <Stacked>
-                {isActive => (
-                  <CaptureOutsideClicks onClickOutside={isActive ? onClose : null}>
-                    <Escapable onEscape={event => (isActive || event.shiftKey) && onClose()} />
-
-                    <div
-                      className={`
-                        ${isOpen ? styles.listContainer : styles.listContainerHidden}
-                        ${
-                          dropdownPosition === 'top'
-                            ? styles.listContainerTop
-                            : styles.listContainerBottom
-                        }
-                        ${items.length === 0 ? styles.listContainerEmpty : ''}
-                      `}
-                      style={{width: `${this.props.width}px`}}
-                      ref={this.setListElement}
-                    >
-                      {items.length === 0 &&
-                        !isLoading && <p className={styles.noResultText}>No results</p>}
-                      {items.length === 0 &&
-                        isLoading && (
-                          <div className={styles.listSpinner}>
-                            <Spinner message="Loading items…" />
-                          </div>
-                        )}
-                      {items.length > 0 && (
-                        <SelectMenu
-                          items={items}
-                          value={value}
-                          onSelect={this.handleSelect}
-                          renderItem={renderItem}
-                          highlightIndex={highlightIndex}
-                        />
-                      )}
-                    </div>
-                  </CaptureOutsideClicks>
-                )}
-              </Stacked>
-            </StickyPortal>
+              <FaAngleDown color="inherit" />
+            </div>
           )}
+          {
+            isLoading && (
+              <Spinner />
+            )
+          }
         </div>
+      </div>
+    )
+  }
+
+  renderList = () => {
+    const {
+      items,
+      isLoading,
+      value,
+      renderItem,
+      highlightIndex
+    } = this.props
+    return (
+      <Stacked>
+        {isActive => (
+          <div style={{width: `${this.props.width}px`}} className={styles.listContainer}>
+            <Escapable onEscape={event => ((isActive || event.shiftKey) && this.handleClose())} />
+            <CaptureOutsideClicks onClickOutside={isActive ? this.handleClose : undefined}>
+              {
+                items.length === 0 && !isLoading && <p className={styles.noResultText}>No results</p>
+              }
+              {
+                items.length === 0 && isLoading && (
+                  <div className={styles.listSpinner}>
+                    <Spinner message="Loading items…" />
+                  </div>
+                )
+              }
+              {
+                items.length > 0 && (
+                  <SelectMenu
+                    items={items}
+                    value={value}
+                    onSelect={this.handleSelect}
+                    renderItem={renderItem}
+                    highlightIndex={highlightIndex}
+                  />
+                )
+              }
+            </CaptureOutsideClicks>
+          </div>
+        )}
+      </Stacked>
+    )
+  }
+
+  render() {
+    const {disabled, isOpen} = this.props
+
+    return (
+      <div ref={this.setRootNode}>
+        <Manager>
+          <Target>
+            {({targetProps}) => (
+              <div
+                className={disabled ? styles.selectContainerDisabled : styles.selectContainer}
+                {...targetProps}
+              >
+                {this.renderTarget()}
+              </div>
+            )}
+          </Target>
+          {
+            isOpen && (
+              <Portal>
+                <div className={styles.portal}>
+                  <Popper
+                    placement="bottom"
+                    modifiers={
+                      // testing the modifiers
+                      {
+                        customStyle: {
+                          enabled: true,
+                          fn: data => {
+                            data.styles = {
+                              ...data.styles,
+                              background: 'red',
+                            }
+                            return data
+                          },
+                        },
+                        preventOverflow: {
+                          priority: ['bottom', 'top', 'left'],
+                          boundariesElement: 'viewport'
+                        }
+                      }
+                    }
+                  >
+                    {({popperProps, restProps}) => (
+                      <div {...popperProps}>
+                        {this.renderList()}
+                      </div>
+                    )}
+                  </Popper>
+                </div>
+              </Portal>
+            )
+          }
+        </Manager>
       </div>
     )
   }
