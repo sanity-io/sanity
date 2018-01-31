@@ -63,3 +63,7 @@
   composes: button;
   color: var(--state-info-color);
 }
+
+.upToDateText {
+  color: color(var(--white) a(40%));
+}
