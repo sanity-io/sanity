@@ -109,10 +109,16 @@ export default class Mutation {
           `Previous revision for this mutation was ${prevRev}, but the document revision is ${doc._rev}`
         )
       }
-      const result = operations.reduce(
+      let result = operations.reduce(
         (revision, operation) => operation(revision),
         doc
       )
+
+      // Ensure that result is a unique object, even if the operation was a no-op
+      if (result === doc) {
+        result = Object.assign({}, doc)
+      }
+
       if (result && rev) {
         result._rev = rev
       }
