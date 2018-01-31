@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import VersionChecker from 'part:@sanity/base/version-checker'
 import UpdateNotifierDialog from './UpdateNotifierDialog'
+import CurrentVersionsDialog from './CurrentVersionsDialog'
 import styles from './styles/UpdateNotifier.css'
 
 const logError = err => console.error(err)
@@ -34,30 +35,43 @@ class UpdateNotifier extends Component {
   }
 
   render() {
-    const {level, outdated, isUpToDate, isSupported, showUpdateNotifier} = this.state
+    const {
+      level,
+      outdated,
+      isUpToDate,
+      isSupported,
+      showUpdateNotifier
+    } = this.state
     const severity = isSupported ? level : 'high'
     const className = styles[classes[severity] || 'button']
+    const Dialog = isUpToDate ? CurrentVersionsDialog : UpdateNotifierDialog
 
     return (
       <div className={styles.container}>
         {showUpdateNotifier && (
-          <UpdateNotifierDialog
+          <Dialog
             severity={severity}
             outdated={outdated}
             onClose={this.handleHideUpdateNotifier}
           />
         )}
 
-        {!isUpToDate && (
-          <button onClick={this.handleShowUpdateNotifier} className={className}>
+        <button
+          type="button"
+          onClick={this.handleShowUpdateNotifier}
+          className={className}
+        >
+          {!isUpToDate && (
             <div className={styles.warningIcon}>
               <WarningIcon />
             </div>
-            <div className={styles.upgradeText}>Upgrade</div>
-          </button>
-        )}
-
-        <span>v{VersionChecker.getLatestInstalled()}</span>
+          )}
+          <div
+            className={isUpToDate ? styles.upToDateText : styles.upgradeText}
+          >
+            {isUpToDate ? 'Up to date' : 'Upgrade'}
+          </div>
+        </button>
       </div>
     )
   }
