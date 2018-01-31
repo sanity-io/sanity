@@ -114,12 +114,12 @@ export default class Mutation {
         doc
       )
 
-      // Ensure that result is a unique object, even if the operation was a no-op
-      if (result === doc) {
-        result = Object.assign({}, doc)
-      }
-
+      // Should update _rev?
       if (result && rev) {
+        // Ensure that result is a unique object, even if the operation was a no-op
+        if (result === doc) {
+          result = Object.assign({}, doc)
+        }
         result._rev = rev
       }
       return result
