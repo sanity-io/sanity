@@ -299,3 +299,22 @@ test('no-op-patch only changes _rev of target document', tap => {
   .end()
 })
 
+test('remotely created documents has _rev', tap => {
+  (new BufferedDocumentTester(tap, {
+    _id: 'a',
+    _rev: '1',
+  }))
+  .remoteMutation('1', '2', {
+    delete: {id: 'a'}
+  })
+  .remoteMutation(null, '2', {
+    create: {
+      _id: 'a'
+    }
+  })
+  .assertHEAD('_rev', '2')
+
+  .end()
+})
+
+
