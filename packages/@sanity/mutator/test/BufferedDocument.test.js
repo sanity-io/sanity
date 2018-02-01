@@ -165,6 +165,7 @@ test('document being deleted by remote', tap => {
     tap.type(bufDoc.LOCAL._createdAt, 'string', "New documents must have a _createdAt time")
   })
   .assertLOCAL('text', 'good morning')
+  .assertLOCAL('_rev', '3')
   .assertHEADDeleted()
   .assertEDGEDeleted()
 
@@ -197,6 +198,7 @@ test('document being created with `createOrReplace`', tap => {
   .onMutationFired()
   .hasLocalEdits()
   .assertLOCAL('_createdAt', createdAt)
+  .assertLOCAL('_rev', '2')
   .end()
 })
 
@@ -217,6 +219,7 @@ test('document being created with `createIfNotExists`', tap => {
   })
   .onMutationFired()
   .hasLocalEdits()
+  .assertLOCAL('_rev', '3')
   .assertLOCAL('_createdAt', createdAt)
   .end()
 })
@@ -265,5 +268,51 @@ test('document being deleted by local', tap => {
   .commitSucceedsButMutationArriveDuringCommitProcess()
   .onMutationDidNotFire()
   .assertALLDeleted()
+  .end()
+})
+
+
+test('no-op-patch only changes _rev of target document', tap => {
+  (new BufferedDocumentTester(tap, {
+    _id: 'a',
+    _rev: '1',
+    text: 'hello'
+  }))
+  .hasNoLocalEdits()
+
+  .stage('when local fires a no-op patch')
+  .localMutation('1', '2', {
+    id: 'a',
+    patch: {
+      unset: ['nonExistent']
+    }
+  })
+  .assertLOCAL('_rev', '2')
+  .assertEDGE('_rev', '1')
+  .assertHEAD('_rev', '1')
+  .onMutationFired()
+  .hasLocalEdits()
+
+  .stage('when no-op patch commits')
+  .commit()
+
+  .end()
+})
+
+test('remotely created documents has _rev', tap => {
+  (new BufferedDocumentTester(tap, {
+    _id: 'a',
+    _rev: '1',
+  }))
+  .remoteMutation('1', '2', {
+    delete: {id: 'a'}
+  })
+  .remoteMutation(null, '2', {
+    create: {
+      _id: 'a'
+    }
+  })
+  .assertHEAD('_rev', '2')
+
   .end()
 })
