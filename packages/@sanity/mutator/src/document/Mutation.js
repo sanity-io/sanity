@@ -133,7 +133,7 @@ export default class Mutation {
       this.compile()
     }
     const result = this.compiled(document)
-    debug(`  => ${JSON.stringify(result)}`)
+    debug('  => %O', result)
     return result
   }
   static applyAll(document: Object, mutations: Array<Mutation>): Object {
