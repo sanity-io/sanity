@@ -86,7 +86,7 @@ export default class BufferedDocumentTester {
       previousRev: fromRev,
       mutations: [operation]
     })
-    debug(`Local mutation: ${JSON.stringify(mut)}`)
+    debug('Local mutation: %O', mut)
     this.doc.add(mut)
     return this
   }
