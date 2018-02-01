@@ -21,6 +21,12 @@ export default {
       to: {type: 'author'}
     },
     {
+      title: 'Reference to book or author',
+      name: 'multiTypeRef',
+      type: 'reference',
+      to: [{type: 'book'}, {type: 'author'}]
+    },
+    {
       name: 'array',
       type: 'array',
       of: [
