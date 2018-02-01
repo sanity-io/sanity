@@ -1,6 +1,6 @@
 {
   "name": "@sanity/base",
-  "version": "0.125.0",
+  "version": "0.125.3",
   "description": "Sanity plugin containing the base components and roles for a Sanity configuration",
   "main": "lib/index.js",
   "scripts": {
@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@sanity/check": "0.125.0",
-    "@sanity/plugin-loader": "0.125.0",
+    "@sanity/plugin-loader": "^0.125.3",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "mocha": "^3.2.0",
