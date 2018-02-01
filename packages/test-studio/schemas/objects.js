@@ -44,12 +44,39 @@ export default {
       type: 'object',
       description: 'This is a field of (anonymous, inline) object type. Values here should never get a `_type` property',
       fields: [
-        {name: 'field1', type: 'string', description: 'This is a string field'},
+        {name: 'level1', type: 'string', description: 'Level 1'},
         {
-          name: 'field2',
-          type: 'myObject',
-          title: 'A field of myObject',
-          description: 'This is another field of "myObject"'
+          name: 'fieldWithObjectType',
+          title: 'Field of object type',
+          type: 'object',
+          description: 'This is a field of (anonymous, inline) object type. Values here should never get a `_type` property',
+          fields: [
+            {name: 'level2', type: 'string', description: 'level 2'},
+            {
+              name: 'fieldWithObjectType',
+              title: 'Field of object type',
+              type: 'object',
+              fields: [
+                {name: 'level3', type: 'string', description: 'level 3'},
+                {
+                  name: 'fieldWithObjectType',
+                  title: 'Field of object type',
+                  type: 'object',
+                  fields: [
+                    {name: 'level4', type: 'string', description: 'level 4'},
+                    {
+                      name: 'fieldWithObjectType',
+                      title: 'Field of object type',
+                      type: 'object',
+                      fields: [
+                        {name: 'level5', type: 'string', description: 'level 5'},
+                      ]
+                    },
+                  ]
+                }
+              ]
+            },
+          ]
         },
       ]
     },

@@ -186,7 +186,7 @@ export default class ObjectInput extends React.PureComponent {
   }
 
   render() {
-    const {type, level} = this.props
+    const {type, level, focusPath} = this.props
 
     const renderedFields = this.getRenderedFields()
     const renderedUnknownFields = this.renderUnknownFields()
@@ -200,6 +200,9 @@ export default class ObjectInput extends React.PureComponent {
       )
     }
 
+    const isExpanded = focusPath.length > 0 && type.fields.some(field => focusPath[0] === field.name)
+    const collapsibleOpts = getCollapsedWithDefaults(type.options, level)
+
     const columns = type.options && type.options.columns
 
     return (
@@ -208,6 +211,8 @@ export default class ObjectInput extends React.PureComponent {
         legend={type.title}
         description={type.description}
         columns={columns}
+        isCollapsible={collapsibleOpts.collapsible}
+        isCollapsed={!isExpanded && collapsibleOpts.collapsed}
       >
         {renderedFields}
         {renderedUnknownFields}
