@@ -15,6 +15,11 @@ const env = typeof sanityEnv === 'undefined' ? process.env.NODE_ENV : sanityEnv
 function sanityPartLoader(input) {
   this.cacheable()
 
+  let buildEnv = sanityEnv
+  if (!buildEnv) {
+    buildEnv = this.options.devtool ? env : 'production'
+  }
+
   const qs = this.resourceQuery.substring(this.resourceQuery.indexOf('?'))
   const request = (loaderUtils.parseQuery(qs) || {}).sanityPart
 
@@ -31,14 +36,14 @@ function sanityPartLoader(input) {
 
   if (request.indexOf('config:') === 0) {
     const config = JSON.parse(input)
-    const indent = env === 'production' ? 0 : 2
-    const reduced = reduceConfig(config, env)
+    const indent = buildEnv === 'production' ? 0 : 2
+    const reduced = reduceConfig(config, buildEnv)
     return `module.exports = ${JSON.stringify(reduced, null, indent)}\n`
   }
 
   if (request === 'sanity:versions') {
     const versions = getSanityVersions(basePath)
-    const indent = env === 'production' ? 0 : 2
+    const indent = buildEnv === 'production' ? 0 : 2
     return `module.exports = ${JSON.stringify(versions, null, indent)}\n`
   }
 
