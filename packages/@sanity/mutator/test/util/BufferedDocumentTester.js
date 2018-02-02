@@ -44,7 +44,7 @@ export default class BufferedDocumentTester {
     this.doc.reset(doc)
   }
   stage(title) {
-    debug(`Stage: ${title}`)
+    debug('Stage: %s', title)
     this.context = title
     return this
   }
