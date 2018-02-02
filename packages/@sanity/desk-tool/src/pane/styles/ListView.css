@@ -28,10 +28,4 @@
 .scroll {
   composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
   composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
-  overflow: overlay !important;
-
-  @media (--max-screen-medium) {
-    height: auto !important;
-    overflow: visible !important;
-  }
 }
