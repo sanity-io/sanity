@@ -76,7 +76,6 @@ export default class SearchableSelect extends React.Component {
   }
 
   handleClose = () => {
-    console.log('onClose')
     this.setState({
       isOpen: false
     })
@@ -167,7 +166,6 @@ export default class SearchableSelect extends React.Component {
           isInputSelected={isInputSelected}
           inputValue={inputValue}
           onInputChange={this.handleInputChange}
-          width={width}
           isSelected={hasFocus}
           ref={this.setInput}
         />

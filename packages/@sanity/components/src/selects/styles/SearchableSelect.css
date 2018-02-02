@@ -37,37 +37,19 @@
   box-sizing: border-box;
 }
 
-.portal {
-  position: absolute;
-  top: 0;
-  left: 0;
+.popper {
+  position: relative;
   z-index: var(--zindex-portal);
 }
 
 .listContainer {
   composes: shadow-24dp from "part:@sanity/base/theme/shadows-style";
   display: block;
-  position: absolute;
-  max-height: 300px;
-  height: 300px;
+  max-height: 20rem;
+  overflow: auto;
   border: 1px solid var(--component-border-color);
   box-sizing: border-box;
   background-color: var(--component-bg);
-  transform: translateX(-50%);
-}
-
-.listContainerEmpty {
-  max-height: 4.5rem;
-}
-
-.listContainerTop {
-  bottom: 2.5em;
-  transform: translateY(2px);
-}
-
-.listContainerBottom {
-  top: 0;
-  transform: translateY(-1px);
 }
 
 .listContainerHidden {
