@@ -3,7 +3,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 import DefaultButton from 'part:@sanity/components/buttons/default'
-import EditItemPopOver from 'part:@sanity/components/edititem/popover'
+import Popover from 'part:@sanity/components/dialogs/popover'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import styles from './styles/FormBuilderSpan.css'
 import {applyAll} from '../../simplePatch'
@@ -220,7 +220,7 @@ export default class FormBuilderSpan extends React.Component {
     const annotationValue = focusedAnnotationKey && annotations && annotations[focusedAnnotationKey]
     return (
       <span className={styles.editSpanContainer} style={style}>
-        <EditItemPopOver
+        <Popover
           onClose={this.handleCloseInput}
         >
           { /* Buttons for selecting annotation when there are several, and none is focused  */ }
@@ -260,7 +260,7 @@ export default class FormBuilderSpan extends React.Component {
               />
             </div>
           )}
-        </EditItemPopOver>
+        </Popover>
       </span>
     )
   }

@@ -8,7 +8,7 @@ import ConfirmButton from './ConfirmButton'
 import LinkIcon from 'part:@sanity/base/link-icon'
 
 import EditItemFold from 'part:@sanity/components/edititem/fold'
-import EditItemPopOver from 'part:@sanity/components/edititem/popover'
+import Popover from 'part:@sanity/components/dialogs/popover'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import ValidationStatus from 'part:@sanity/components/validation/status'
@@ -98,7 +98,6 @@ export default class RenderItemValue extends React.Component<Props> {
   }
 
   handleEditStop = () => {
-    console.log('handleEditStop')
     this.setFocus()
   }
 
@@ -207,15 +206,14 @@ export default class RenderItemValue extends React.Component<Props> {
     if (options.editModal === 'popover') {
       return (
         <div className={styles.popupAnchor}>
-          <EditItemPopOver
-            key={item._key}
+          <Popover
             title={`Edit ${memberType.title}`}
             onClose={this.handleEditStop}
             actions={actions}
             onAction={this.handleDialogAction}
           >
             {content}
-          </EditItemPopOver>
+          </Popover>
         </div>
       )
     }

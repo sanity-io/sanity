@@ -11,7 +11,7 @@ import {FormBuilderInput} from '../../FormBuilderInput'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Button from 'part:@sanity/components/buttons/default'
-import EditItemPopOver from 'part:@sanity/components/edititem/popover'
+import Popover from 'part:@sanity/components/dialogs/popover'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
 import Preview from '../../Preview'
 import styles from './styles/FormBuilderBlock.css'
@@ -325,14 +325,14 @@ export default class FormBuilderBlock extends React.Component {
     if (editModalLayout === 'popover') {
       return (
         <div className={styles.editBlockContainerPopOver}>
-          <EditItemPopOver
+          <Popover
             title={this.props.node.title}
             onClose={this.handleClose}
             onAction={this.handleDialogAction}
             actions={DIALOG_ACTIONS}
           >
             {input}
-          </EditItemPopOver>
+          </Popover>
         </div>
       )
     }
