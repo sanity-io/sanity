@@ -16,6 +16,7 @@ export default class EditItemPopOver extends React.Component {
     children: PropTypes.node.isRequired,
     onClose: PropTypes.func,
     onAction: PropTypes.func,
+    modifiers: PropTypes.object,
     actions: PropTypes.arrayOf(PropTypes.shape({
       kind: PropTypes.string,
       title: PropTypes.string,
@@ -28,7 +29,14 @@ export default class EditItemPopOver extends React.Component {
     onClose() {},
     onAction() {},
     actions: [],
-    isOpen: true
+    modifiers: {
+      flip: {
+        boundariesElement: 'viewport'
+      },
+      preventOverflow: {
+        boundariesElement: 'viewport'
+      }
+    }
   }
 
   setTargetRef = element => {
@@ -47,6 +55,7 @@ export default class EditItemPopOver extends React.Component {
       children,
       actions,
       onClose,
+      modifiers,
     } = this.props
 
     return (
@@ -62,16 +71,7 @@ export default class EditItemPopOver extends React.Component {
                   innerRef={this.setPopperRef}
                   className={styles.popper}
                   placement="auto"
-                  modifiers={
-                    {
-                      flip: {
-                        boundariesElement: 'viewport'
-                      },
-                      preventOverflow: {
-                        boundariesElement: 'viewport'
-                      }
-                    }
-                  }
+                  modifiers={modifiers}
                 >
                   <Arrow className={title ? styles.filledArrow : styles.arrow} />
                   <CaptureOutsideClicks onClickOutside={isActive ? onClose : null}>
