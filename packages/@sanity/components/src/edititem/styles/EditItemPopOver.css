@@ -19,13 +19,29 @@
   --array--add-item-triangle-color: color(var(--form-builder--array--add-item-color) lightness(- 20%));
 }
 
-.root {
-  padding: 0;
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: var(--backdrop-background-color);
+  opacity: 0.75;
+  z-index: var(--zindex-portal);
+  pointer-events: none;
+}
 
-  @nest &::before {
-    content: "shouldReposition";
-    display: none;
-  }
+.target {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.popper {
+  z-index: var(--zindex-portal);
+  position: relative;
 
   @media (--max-screen-medium) {
     position: fixed;
@@ -41,52 +57,68 @@
 
 .arrow {
   position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 4;
+  height: 1em;
+  width: 1em;
+  transform: translate(-50%, -50%) rotate(45deg);
+  box-shadow: 0 0 40px var(--component-box-shadow-base);
+  z-index: 0;
+
+  @nest &::before {
+    content: "";
+    position: absolute;
+    height: 1em;
+    width: 1em;
+    background-color: var(--component-bg);
+    z-index: 3;
+    clip-path: polygon(100% 0, 0 0, 0 100%);
+  }
+
+  @nest .popper[data-placement^="top"] & {
+    bottom: 0;
+    transform: translate(-50%, 50%) rotate(45deg);
+
+    @nest &::before {
+      clip-path: polygon(100% 100%, 100% 0, 0 100%);
+    }
+  }
+
+  @nest .popper[data-placement^="right"] & {
+    left: 0;
+    transform: translate(-50%, 0) rotate(45deg);
+  }
+
+  @nest .popper[data-placement^="left"] & {
+    right: 0;
+    transform: translate(50%, 0) rotate(45deg);
+
+    @nest &::before {
+      clip-path: polygon(100% 100%, 100% 0, 0 0);
+    }
+  }
 
   @media (--max-screen-medium) {
     display: none;
   }
 
-  @nest &::before {
-    content: "";
-    z-index: 5;
-    position: absolute;
-    height: 1em;
-    width: 1em;
-    background-color: var(--component-bg);
-    transform: translateX(-0.4em) rotate(45deg);
-  }
 }
 
 .filledArrow {
   composes: arrow;
 
-  @nest &::before {
-    background-color: var(--brand-primary);
+  @nest .popper[data-placement^="bottom"] & {
+    @nest &::before {
+      background-color: var(--brand-primary);
+    }
   }
 }
 
 .popover {
-  composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
+  z-index: 0;
+  composes: shadow-24dp from "part:@sanity/base/theme/shadows-style";
   background-color: var(--component-bg);
   border-radius: var(--border-radius-base);
-  z-index: 2;
-  padding: 0;
-  margin-bottom: var(--large-padding);
   box-sizing: border-box;
   position: relative;
-  transform: translateY(0.5rem);
-  min-width: 30em;
-  max-width: 80vw;
-  transition: transform 0.25s cubic-bezier(0.77, 0, 0.175, 1); /* easeInOutQuart */
-
-  @nest .fullWidth & {
-    min-width: 100%;
-    max-width: calc(100vw - 4rem);
-    width: calc(100vw - 4rem);
-  }
 
   @media (--max-screen-medium) {
     box-shadow: none;
@@ -127,6 +159,7 @@
   composes: close;
   color: #fff;
   top: calc(var(--small-padding) / 2);
+  background-color: transparent;
   right: 0;
 
   @media (--max-screen-medium) {
@@ -136,18 +169,18 @@
 }
 
 .content {
-  padding: 1em;
-  max-height: 100%;
+  height: 100%;
+  padding: var(--medium-padding);
   box-sizing: border-box;
+  overflow: auto;
+  min-width: 20em;
+  width: 30em;
+  max-height: 40em;
+  padding-bottom: 5rem; /*only with functions */
 
   @media (--max-screen-medium) {
     max-height: calc(100vh - var(--header-height)) !important;
   }
-}
-
-.contentIsResizing {
-  composes: content;
-  overflow: hidden;
 }
 
 .head {
@@ -180,6 +213,18 @@
     line-height: var(--header-height);
     padding: 0 var(--small-padding);
   }
+}
+
+.footer {
+  composes: footer from 'part:@sanity/components/dialogs/default-style';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+.actions {
+  composes: actions from 'part:@sanity/components/dialogs/default-style';
 }
 
 .primaryFunctions {

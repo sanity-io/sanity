@@ -35,10 +35,7 @@ export default class EditItemFoldOut extends React.PureComponent {
   render() {
     const {title, onClose, children} = this.props
     return (
-      <div
-        ref={this.setRootElement}
-        className={styles.root}
-      >
+      <div className={styles.root}>
         <div className={styles.wrapper}>
           {
             title && (
