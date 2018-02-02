@@ -8,7 +8,7 @@
   max-height: 90vh;
   height: 40rem;
   width: 50rem;
-  z-index: 1;
+  z-index: 0;
   position: relative;
 }
 
