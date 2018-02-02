@@ -85,7 +85,7 @@ export default class Document {
     }
     this.lastStagedAt = new Date()
 
-    debug(`Staging mutation ${mutation.transactionId} (pushed to pending)`)
+    debug('Staging mutation %s (pushed to pending)', mutation.transactionId)
     this.pending.push(mutation)
     this.EDGE = mutation.apply(this.EDGE)
 
@@ -151,7 +151,7 @@ export default class Document {
       }
     } while (nextMut)
 
-    if (this.incoming.length > 0) {
+    if (this.incoming.length > 0 && debug.enabled) {
       debug('Unable to apply mutations %s', this.incoming.map(mut => mut.transactionId).join(', '))
     }
 
@@ -195,14 +195,16 @@ export default class Document {
 
 
     if (this.anyUnresolvedMutations()) {
-      debug(`Incoming mutation ${mut.transactionId} appeared while there were pending or submitted local mutations`)
-      debug(`Submitted txnIds: ${this.submitted.map(m => m.transactionId).join(', ')}`)
-      debug(`Pending txnIds: ${this.pending.map(m => m.transactionId).join(', ')}`)
       const needRebase = this.consumeUnresolved(mut.transactionId)
-      debug(`needRebase == ${needRebase}`)
+      if (debug.enabled) {
+        debug(`Incoming mutation ${mut.transactionId} appeared while there were pending or submitted local mutations`)
+        debug(`Submitted txnIds: ${this.submitted.map(m => m.transactionId).join(', ')}`)
+        debug(`Pending txnIds: ${this.pending.map(m => m.transactionId).join(', ')}`)
+        debug(`needRebase == %s`, needRebase)
+      }
       return needRebase
     }
-    debug(`Remote mutation ${mut.transactionId} arrived w/o any pending or submitted local mutations`)
+    debug(`Remote mutation %s arrived w/o any pending or submitted local mutations`, mut.transactionId)
     this.EDGE = this.HEAD
     if (this.onMutation) {
       this.onMutation({
@@ -235,22 +237,22 @@ export default class Document {
     // If we can consume the directly upcoming mutation, we won't have to rebase
     if (this.submitted.length != 0) {
       if (this.submitted[0].transactionId == txnId) {
-        debug(`Remote mutation ${txnId} matches upcoming submitted mutation, consumed from 'submitted' buffer`)
+        debug(`Remote mutation %s matches upcoming submitted mutation, consumed from 'submitted' buffer`, txnId)
         this.submitted.shift()
         return false
       }
     } else if (this.pending.length > 0 && this.pending[0].transactionId == txnId) {
       // There are no submitted, but some are pending so let's check the upcoming pending
-      debug(`Remote mutation ${txnId} matches upcoming pending mutation, consumed from 'pending' buffer`)
+      debug(`Remote mutation %s matches upcoming pending mutation, consumed from 'pending' buffer`, txnId)
       this.pending.shift()
       return false
     }
-    debug(`The mutation was not the upcoming mutation, scrubbing. Pending: ${this.pending.length}, Submitted: ${this.submitted.length}`)
+    debug('The mutation was not the upcoming mutation, scrubbing. Pending: %d, Submitted: %d', this.pending.length, this.submitted.length)
     // The mutation was not the upcoming mutation, so we'll have to check everything to
     // see if we have an out of order situation
     this.submitted = this.submitted.filter(mut => mut.transactionId != txnId)
     this.pending = this.pending.filter(mut => mut.transactionId != txnId)
-    debug(`After scrubbing: Pending: ${this.pending.length}, Submitted: ${this.submitted.length}`)
+    debug(`After scrubbing: Pending: %d, Submitted: %d`, this.pending.length, this.submitted.length)
     // Whether we had it or not we have either a reordering, or an unexpected mutation
     // so must rebase
     return true

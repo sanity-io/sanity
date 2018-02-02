@@ -120,14 +120,12 @@ export default class Mutation {
     }
   }
   apply(document: Object): Object {
-    debug(
-      `Applying mutation ${JSON.stringify(this.mutations)} to document ${JSON.stringify(document)}`
-    )
+    debug('Applying mutation %O to document %O', this.mutations, document)
     if (!this.compiled) {
       this.compile()
     }
     const result = this.compiled(document)
-    debug(`  => ${JSON.stringify(result)}`)
+    debug('  => %O', result)
     return result
   }
   static applyAll(document: Object, mutations: Array<Mutation>): Object {
