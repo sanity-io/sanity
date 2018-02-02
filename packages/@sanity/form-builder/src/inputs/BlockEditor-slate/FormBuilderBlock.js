@@ -326,17 +326,16 @@ export default class FormBuilderBlock extends React.Component {
       return (
         <div className={styles.editBlockContainerPopOver}>
           <EditItemPopOver
-            isOpen
             title={this.props.node.title}
             onClose={this.handleClose}
+            onAction={this.handleDialogAction}
+            actions={DIALOG_ACTIONS}
           >
             {input}
           </EditItemPopOver>
         </div>
       )
     }
-
-    // default
     return (
       <DefaultDialog
         isOpen
@@ -349,8 +348,6 @@ export default class FormBuilderBlock extends React.Component {
         {input}
       </DefaultDialog>
     )
-
-
   }
 
   showBlockDragMarker(pos, node) {
@@ -389,13 +386,13 @@ export default class FormBuilderBlock extends React.Component {
         onDragLeave={this.handleCancelEvent}
         onDrop={this.handleCancelEvent}
         draggable
-        onClick={this.handleToggleEdit}
         ref={this.refFormBuilderBlock}
         className={className}
       >
         <span
           ref={this.refPreview}
           className={styles.previewContainer}
+          onClick={this.handleToggleEdit}
         >
           <div className={styles.preview}>
             {this.renderPreview()}
