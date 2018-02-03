@@ -883,6 +883,19 @@ test('can manually call clone on patch', t => {
   t.end()
 })
 
+test('can apply ifRevisionId constraint', t => {
+  t.deepEqual(
+    getClient()
+      .patch('abc123')
+      .inc({count: 1})
+      .ifRevisionId('someRev')
+      .serialize(),
+    {id: 'abc123', inc: {count: 1}, ifRevisionID: 'someRev'},
+    'patch should be able to apply ifRevisionId constraint'
+  )
+  t.end()
+})
+
 /*****************
  * TRANSACTIONS  *
  *****************/

@@ -89,6 +89,11 @@ assign(Patch.prototype, {
     return this.insert('replace', rangeSelector, items || [])
   },
 
+  ifRevisionId(rev) {
+    this.operations.ifRevisionID = rev
+    return this
+  },
+
   serialize() {
     return assign(getSelection(this.selection), this.operations)
   },
