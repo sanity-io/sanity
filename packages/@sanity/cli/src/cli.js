@@ -4,9 +4,9 @@ import path from 'path'
 import chalk from 'chalk'
 import fse from 'fs-extra'
 import resolveFrom from 'resolve-from'
-import updateNotifier from 'update-notifier'
 import {resolveProjectRoot} from '@sanity/resolver'
 import pkg from '../package.json'
+import updateNotifier from './util/updateNotifier'
 import parseArguments from './util/parseArguments'
 import mergeCommands from './util/mergeCommands'
 import {getCliRunner} from './CommandRunner'
@@ -15,14 +15,16 @@ import baseCommands from './commands'
 const sanityEnv = process.env.SANITY_ENV || 'production' // eslint-disable-line no-process-env
 const knownEnvs = ['development', 'staging', 'production']
 
-module.exports = function runCli(cliRoot) {
+module.exports = async function runCli(cliRoot) {
   installUnhandledRejectionsHandler()
-  updateNotifier({pkg}).notify({defer: false})
 
   const args = parseArguments()
-  const isInit = args.groupOrCommand === 'init' && args.argsWithoutOptions[0] !== 'plugin'
+  const isInit =
+    args.groupOrCommand === 'init' && args.argsWithoutOptions[0] !== 'plugin'
   const cwd = checkCwdPresence()
   const workDir = isInit ? process.cwd() : resolveRootDir(cwd)
+
+  await updateNotifier({pkg, cwd, workDir}).notify()
 
   const options = {
     cliRoot: cliRoot,
@@ -30,19 +32,8 @@ module.exports = function runCli(cliRoot) {
     corePath: getCoreModulePath(workDir)
   }
 
-  if (sanityEnv !== 'production') {
-    console.warn(
-      chalk.yellow(
-        knownEnvs.includes(sanityEnv)
-          ? `[WARN] Running in ${sanityEnv} environment mode\n`
-          : `[WARN] Running in ${chalk.red('UNKNOWN')} "${sanityEnv}" environment mode\n`
-      )
-    )
-  }
-
-  if (!isInit && workDir !== cwd) {
-    console.log(`Not in project directory, assuming context of project at ${workDir}`)
-  }
+  warnOnNonProductionEnvironment()
+  warnOnInferredProjectDir(isInit, cwd, workDir)
 
   const core = args.coreOptions
   const commands = mergeCommands(baseCommands, options.corePath)
@@ -68,12 +59,6 @@ module.exports = function runCli(cliRoot) {
     const errMessage = debug ? error.stack || error : error.message || error
     console.error(chalk.red(errMessage)) // eslint-disable-line no-console
     process.exit(1) // eslint-disable-line no-process-exit
-  })
-}
-
-function installUnhandledRejectionsHandler() {
-  process.on('unhandledRejection', (reason, promise) => {
-    console.error('Unhandled rejection:', reason.stack)
   })
 }
 
@@ -105,7 +90,9 @@ function checkCwdPresence() {
     pwd = process.cwd()
   } catch (err) {
     if (err.code === 'ENOENT') {
-      console.error('[ERR] Could not resolve working directory, does the current folder exist?')
+      console.error(
+        '[ERR] Could not resolve working directory, does the current folder exist?'
+      )
       process.exit(1)
     } else {
       throw err
@@ -126,10 +113,46 @@ function resolveRootDir(cwd) {
     )
   } catch (err) {
     console.warn(
-      chalk.red(['Error occured trying to resolve project root:', err.message].join('\n'))
+      chalk.red(
+        ['Error occured trying to resolve project root:', err.message].join(
+          '\n'
+        )
+      )
     )
     process.exit(1)
   }
 
   return false
+}
+
+function installUnhandledRejectionsHandler() {
+  process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled rejection:', reason.stack)
+  })
+}
+
+function warnOnInferredProjectDir(isInit, cwd, workDir) {
+  if (isInit || cwd === workDir) {
+    return
+  }
+
+  console.log(
+    `Not in project directory, assuming context of project at ${workDir}`
+  )
+}
+
+function warnOnNonProductionEnvironment() {
+  if (sanityEnv === 'production') {
+    return
+  }
+
+  console.warn(
+    chalk.yellow(
+      knownEnvs.includes(sanityEnv)
+        ? `[WARN] Running in ${sanityEnv} environment mode\n`
+        : `[WARN] Running in ${chalk.red(
+            'UNKNOWN'
+          )} "${sanityEnv}" environment mode\n`
+    )
+  )
 }
