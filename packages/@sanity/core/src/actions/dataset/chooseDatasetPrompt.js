@@ -1,7 +1,7 @@
 import debug from '../../debug'
 import promptForDatasetName from './datasetNamePrompt'
 
-module.exports = async (context, options = {}) => {
+export default async (context, options = {}) => {
   const {apiClient, prompt} = context
   const {message, allowCreation} = options
   const client = apiClient()
