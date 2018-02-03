@@ -41,7 +41,7 @@ export default async (args, context) => {
   const shouldBuild = flags.build
   if (shouldBuild) {
     const buildStaticAssets = lazyRequire(require.resolve('../build/buildStaticAssets'))
-    await buildStaticAssets({extOptions: {}, argsWithoutOptions: []}, context)
+    await buildStaticAssets({extOptions: flags, argsWithoutOptions: []}, context)
   }
 
   // Ensure that the directory exists, is a directory and seems to have valid content
