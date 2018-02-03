@@ -85,7 +85,7 @@ Likewise, you can also have the client return the document *before* the mutation
 ```js
 const doc = {
   _type: 'bike',
-  name: 'Bengler Tandem Extraordinaire',
+  name: 'Sanity Tandem Extraordinaire',
   seats: 2
 }
 
@@ -105,7 +105,7 @@ Create a document. Argument is a plain JS object representing the document. It m
 const doc = {
   _id: 'my-bike',
   _type: 'bike',
-  name: 'Bengler Tandem Extraordinaire',
+  name: 'Sanity Tandem Extraordinaire',
   seats: 2
 }
 
@@ -124,7 +124,7 @@ If you are not sure whether or not a document exists but want to overwrite it if
 const doc = {
   _id: 'my-bike',
   _type: 'bike',
-  name: 'Bengler Tandem Extraordinaire',
+  name: 'Sanity Tandem Extraordinaire',
   seats: 2
 }
 
@@ -159,6 +159,17 @@ client
 
 Modify a document. `patch` takes a document ID. `set` merges the partialDoc with the stored document. `inc` increments the given field with the given numeric value. `commit` executes the given `patch`. Returns the updated object.
 
+### Patch a document only if revision matches
+
+You can use the `ifRevisionId(rev)` method to specify that you only want the patch to be applied if the stored document matches a given revision.
+
+```js
+client
+  .patch('bike-123')
+  .ifRevisionId('previously-known-revision')
+  .set({title: 'Little Red Tricycle'})
+  .commit()
+```
 
 ### Delete a document
 
@@ -183,8 +194,9 @@ const namePatch = client
   .patch('bike-310')
   .set({name: 'A Bike To Go'})
 
-client.transaction()
-  .create({name: 'Bengler Tandem Extraordinaire', seats: 2})
+client
+  .transaction()
+  .create({name: 'Sanity Tandem Extraordinaire', seats: 2})
   .delete('bike-123')
   .patch(namePatch)
   .commit()
@@ -195,14 +207,15 @@ client.transaction()
     console.error('Transaction failed: ', err.message)
   })
 ```
+
 `client.transaction().create(doc).delete(docId).patch(patch).commit()`
 
 Create a transaction to perform chained mutations.
 
-
 ```js
-client.transaction()
-  .create({name: 'Bengler Tandem Extraordinaire', seats: 2})
+client
+  .transaction()
+  .create({name: 'Sanity Tandem Extraordinaire', seats: 2})
   .patch('bike-123', p => p.set({inStock: false}))
   .commit()
   .then(res => {
