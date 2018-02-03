@@ -15,7 +15,11 @@ const absoluteMatch = /^https?:\/\//i
 
 export default async (args, context) => {
   const {output, prompt, workDir} = context
-  const flags = args.extOptions
+  const flags = Object.assign(
+    {minify: true, profile: false, stats: false, 'source-maps': false},
+    args.extOptions
+  )
+
   const defaultOutputDir = path.resolve(path.join(workDir, 'dist'))
   const outputDir = path.resolve(args.argsWithoutOptions[0] || defaultOutputDir)
   const config = getConfig(workDir)
@@ -25,8 +29,8 @@ export default async (args, context) => {
     basePath: workDir,
     outputPath: path.join(outputDir, 'static'),
     sourceMaps: flags['source-maps'],
-    skipMinify: flags['skip-minify'] || false,
-    profile: flags.profile || false
+    skipMinify: !flags.minify,
+    profile: flags.profile
   }
 
   await tryInitializePluginConfigs({workDir, output})

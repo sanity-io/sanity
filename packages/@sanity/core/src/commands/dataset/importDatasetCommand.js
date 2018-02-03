@@ -8,11 +8,22 @@ import linecount from 'linecount/promise'
 import chooseDatasetPrompt from '../../actions/dataset/chooseDatasetPrompt'
 import debug from '../../debug'
 
+const helpText = `
+Options
+  --missing On duplicate document IDs, skip importing document in question
+  --replace On duplicate document IDs, replace existing document with imported document
+
+Examples
+  sanity import moviedb.ndjson moviedb
+  sanity import moviedb.ndjson moviedb --replace
+`
+
 export default {
   name: 'import',
   group: 'dataset',
   signature: '[FILE] [TARGET_DATASET]',
-  description: 'Import dataset from local filesystem',
+  description: 'Import documents to given dataset from ndjson file',
+  helpText,
   action: async (args, context) => {
     const {apiClient, output, chalk, prompt} = context
 
