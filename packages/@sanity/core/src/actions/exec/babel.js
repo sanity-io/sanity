@@ -1,5 +1,14 @@
-const presets = ['es2015-node4', 'stage-2']
+import registerBabel from 'babel-register'
 
-require('babel-register')({
-  presets: presets.map(preset => require.resolve(`babel-preset-${preset}`)),
+registerBabel({
+  presets: [
+    [
+      'env',
+      {
+        targets: {
+          node: 'current'
+        }
+      }
+    ]
+  ]
 })
