@@ -110,6 +110,9 @@ export default class FormBuilderBlock extends React.Component {
   }
 
   handleSelectionChange = event => {
+    if (!this._editorNode.contains(event.target)) {
+      return
+    }
     const selection = document.getSelection()
     const isSelected = selection.containsNode
         && selection.containsNode(this.formBuilderBlock)
