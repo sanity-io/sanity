@@ -7,7 +7,6 @@ export default {
       name: 'title',
       title: 'Title',
       type: 'string',
-      required: true,
       description: 'E.g.: Our first ever screening of Gattaca'
     },
     {
@@ -45,7 +44,6 @@ export default {
       name: 'allowedGuests',
       title: 'Who can come?',
       type: 'string',
-      required: true,
       options: {
         list: [{title: 'Members', value: 'members'}, {title: 'Members and friends', value: 'friends'}, {title: 'Anyone', value: 'anyone'}],
         layout: 'radio'
