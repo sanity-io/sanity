@@ -35,12 +35,21 @@ export default {
     },
     {
       type: 'reference',
-      title: 'Reference',
-      to: [
-        {title: 'Movie', type: 'movie'},
-        {title: 'Person', type: 'person'},
-        {title: 'Screening', type: 'screening'}
-      ]
+      title: 'Movie',
+      name: 'movieRef',
+      to: [{type: 'movie'}]
+    },
+    {
+      type: 'reference',
+      title: 'Person',
+      name: 'personRef',
+      to: {type: 'person'}
+    },
+    {
+      type: 'reference',
+      title: 'Screening',
+      name: 'screeningRef',
+      to: {type: 'screening'}
     },
     {
       title: 'Image',
