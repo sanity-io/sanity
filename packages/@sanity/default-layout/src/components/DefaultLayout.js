@@ -120,13 +120,16 @@ export default withRouterHOC(
         }
       })
 
-
       return (
         <div
           className={`${styles.defaultLayout} ${mobileMenuIsOpen ? styles.mobileMenuIsOpen : ''}`}>
           {this.state.showLoadingScreen && (
             <div
-              className={this.state.loaded ? styles.loadingScreenLoaded : styles.loadingScreen}
+              className={
+                this.state.loaded && document.visibilityState == 'hidden'
+                  ? styles.loadingScreenLoaded
+                  : styles.loadingScreen
+              }
               ref={this.setLoadingScreenElement}>
               <AppLoadingScreen text="Restoring Sanity" />
             </div>
