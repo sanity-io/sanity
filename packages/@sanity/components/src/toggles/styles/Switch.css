@@ -68,7 +68,7 @@
     background: var(--switch-track-color);
   }
 
-  @nest .disabled & {
+  @nest .isDisabled & {
     background: var(--switch-disabled-track-color);
     cursor: auto;
   }
@@ -78,8 +78,9 @@
   composes: root;
 }
 
-.disabled {
+.isDisabled {
   composes: root;
+  pointer-events: none;
   opacity: 0.5;
 }
 

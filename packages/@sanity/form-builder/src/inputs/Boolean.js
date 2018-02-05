@@ -37,6 +37,7 @@ export default class BooleanInput extends React.Component<Props> {
       ? (
         <Checkbox
           {...rest}
+          readOnly={type.readOnly}
           onChange={this.handleChange}
           checked={value}
           ref={this.setInput}
@@ -47,6 +48,7 @@ export default class BooleanInput extends React.Component<Props> {
       : (
         <Switch
           {...rest}
+          readOnly={type.readOnly}
           onChange={this.handleChange}
           checked={value}
           label={type.title}

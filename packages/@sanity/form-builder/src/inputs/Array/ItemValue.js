@@ -218,9 +218,10 @@ export default class RenderItemValue extends React.Component<Props> {
 
   renderItem() {
     const {value, type} = this.props
+    const {readOnly} = type
     const options = type.options || {}
     const isGrid = options.layout === 'grid'
-    const isSortable = options.sortable !== false
+    const isSortable = !readOnly && options.sortable !== false
     const previewLayout = isGrid ? 'media' : 'default'
 
     return (
@@ -258,7 +259,7 @@ export default class RenderItemValue extends React.Component<Props> {
               </IntentLink>
             )
           }
-          {!type.readOnly && (
+          {!readOnly && (
             <ConfirmButton
               title="Remove this item"
               onConfirm={this.handleRemove}

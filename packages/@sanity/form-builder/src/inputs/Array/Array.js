@@ -209,6 +209,7 @@ export default class ArrayInput extends React.Component<Props, State> {
 
   renderList = () => {
     const {type, value, focusPath, onBlur, onFocus, level} = this.props
+    const {readOnly} = type
     const {isMoving} = this.state
     const options = type.options || {}
 
@@ -230,7 +231,7 @@ export default class ArrayInput extends React.Component<Props, State> {
     const listItemClassName = isMoving ? styles.listItemMute : styles.listItem
     return (
       <List
-        className={styles.list}
+        className={readOnly ? styles.listReadOnly : styles.list}
         {...listProps}
       >
         {value.map((item, index) => {

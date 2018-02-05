@@ -13,11 +13,13 @@ export default class TagsTextField extends React.Component {
   static propTypes = {
     onChange: PropTypes.func.isRequired,
     onBlur: PropTypes.func,
+    readOnly: PropTypes.bool,
     value: PropTypes.arrayOf(PropTypes.string)
   }
 
   static defaultProps = {
     value: [],
+    readOnly: false,
     onBlur: () => {}
   }
 
@@ -91,6 +93,7 @@ export default class TagsTextField extends React.Component {
     const {
       onChange,
       value,
+      readOnly,
       ...rest
     } = this.props
 
@@ -100,24 +103,26 @@ export default class TagsTextField extends React.Component {
           <div className={styles.content}>
             <ul className={styles.tags}>
               {
-                value && value.map((tag, i) => {
+                value.map((tag, i) => {
                   return (
-                    <li key={i} className={styles.tag}>
+                    <li key={i} className={readOnly ? styles.tag : styles.tagWithClear}>
                       {tag}
-                      <a
-                        onClick={this.handleRemoveTagClick}
-                        data-index={i}
-                        className={styles.clearTag}
-                      >
-                        ×
-                      </a>
+                      {!readOnly && (
+                        <a
+                          onClick={this.handleRemoveTagClick}
+                          data-index={i}
+                          className={styles.clearTag}
+                        >
+                          ×
+                        </a>
+                      )}
                     </li>
                   )
-                })
-              }
+                })}
             </ul>
             <input
               {...rest}
+              readOnly={readOnly}
               value={inputValue}
               className={styles.input}
               onKeyDown={this.handleKeyDown}

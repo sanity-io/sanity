@@ -9,6 +9,7 @@ export default class Switch extends React.Component {
     disabled: PropTypes.bool,
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
+    readOnly: PropTypes.bool
   }
 
   state = {
@@ -42,7 +43,7 @@ export default class Switch extends React.Component {
   }
 
   render() {
-    const {disabled, checked, label, ...rest} = this.props
+    const {disabled, checked, label, readOnly, ...rest} = this.props
     const {hasFocus} = this.state
 
     let thumbClass = checked ? styles.thumbChecked : styles.thumb
@@ -54,8 +55,8 @@ export default class Switch extends React.Component {
     return (
       <label
         className={`
+          ${disabled || readOnly ? styles.isDisabled : styles.isEnabled}
           ${typeof checked === 'undefined' ? styles.indeterminate : styles.root}
-          ${disabled ? styles.isDisabled : styles.isEnabled}
           ${checked ? styles.isChecked : styles.unChecked}
           ${hasFocus ? styles.hasFocus : ''}
         `}
@@ -70,15 +71,12 @@ export default class Switch extends React.Component {
           {...rest}
           className={styles.input}
           type="checkbox"
-          disabled={disabled}
-          checked={!!checked}
+          disabled={disabled || readOnly}
+          checked={checked}
           ref={this.setInput}
           onFocus={this.handleFocus}
         />
-        <div className={styles.label}>
-          {label}
-        </div>
-
+        <div className={styles.label}>{label}</div>
       </label>
     )
   }

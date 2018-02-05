@@ -240,6 +240,7 @@ export default class ReferenceInput extends React.Component<Props, State> {
             isLoading={isFetching}
             items={hits}
             ref={this.setInput}
+            readOnly={type.readOnly}
           />
         </div>
       </FormField>

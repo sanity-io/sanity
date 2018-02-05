@@ -6,8 +6,8 @@
   outline: none;
 }
 
-.label {
-  /* Nothing here yet */
+.disabled {
+  composes: root;
 }
 
 .select {
@@ -44,6 +44,10 @@
   @nest .hasFocus & {
     color: inherit;
   }
+}
+
+.disabled .arrow {
+  opacity: 0.2;
 }
 
 .root:hover .arrow {

@@ -45,7 +45,7 @@ export default class RadioSelect extends React.Component {
   }
 
   render() {
-    const {items, value, name, direction} = this.props
+    const {items, value, name, direction, readOnly} = this.props
     const {focusedItem} = this.state
 
     return (
@@ -60,6 +60,7 @@ export default class RadioSelect extends React.Component {
               return (
                 <div className={styles.item} key={i}>
                   <RadioButton
+                    disabled={readOnly}
                     name={name}
                     key={i}
                     label={item.title}

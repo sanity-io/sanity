@@ -44,6 +44,7 @@ export default class TagsArrayInput extends React.PureComponent<Props> {
       >
         <TagInput
           {...rest}
+          readOnly={type.readOnly}
           value={value}
           onChange={this.handleChange}
           ref={this.setInput}

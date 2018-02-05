@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/selects/searchable-style'
@@ -34,7 +35,8 @@ export default class StatelessSearchableSelect extends React.PureComponent {
     isInputSelected: PropTypes.bool,
     width: PropTypes.number,
     disabled: PropTypes.bool,
-    dropdownPosition: PropTypes.string
+    dropdownPosition: PropTypes.string,
+    readOnly: PropTypes.bool
   }
 
   static defaultProps = {
@@ -43,6 +45,7 @@ export default class StatelessSearchableSelect extends React.PureComponent {
     onClose: noop,
     onInputChange: noop,
     isLoading: false,
+    readOnly: false,
     renderItem: item => item,
     items: [],
     width: 100,
@@ -174,13 +177,13 @@ export default class StatelessSearchableSelect extends React.PureComponent {
               )
             }
             {
-              onClear && value && (
+              onClear && value && !this.props.readOnly && (
                 <button type="button" className={styles.clearButton} onClick={onClear}>
                   <CloseIcon color="inherit" />
                 </button>
               )
             }
-            {!isLoading && (
+            {!isLoading && !this.props.readOnly && (
               <div
                 className={styles.arrow}
                 onClick={disabled ? null : this.handleArrowClick}

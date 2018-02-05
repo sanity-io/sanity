@@ -68,6 +68,7 @@ export default class StringSelect extends React.Component<Props> {
             value={currentItem}
             direction={type.options.direction || 'vertical'}
             ref={this.setInput}
+            readOnly={type.readOnly}
           />
           : <Select
             {...rest}
@@ -77,6 +78,7 @@ export default class StringSelect extends React.Component<Props> {
             onChange={this.handleChange}
             items={[EMPTY_ITEM].concat(items)}
             ref={this.setInput}
+            readOnly={type.readOnly}
           />
         }
       </FormField>

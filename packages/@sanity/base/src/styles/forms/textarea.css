@@ -27,4 +27,8 @@
   @nest &:disabled {
     background-color: var(--input-bg-disabled);
   }
+
+  @nest &:read-only {
+    opacity: 0.5;
+  }
 }
