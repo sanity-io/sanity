@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-export default class ImageLoader extends React.Component {
+export default class Resize extends React.Component {
   static propTypes = {
     image: PropTypes.instanceOf(HTMLImageElement).isRequired,
     maxWidth: PropTypes.number.isRequired,
