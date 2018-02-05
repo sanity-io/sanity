@@ -9,6 +9,12 @@ export default class ImageLoader extends React.Component {
     children: PropTypes.func.isRequired
   }
 
+  componentWillUnmount() {
+    if (this._canvas) {
+      document.body.removeChild(this._canvas)
+    }
+  }
+
   getCanvas() {
     if (!this._canvas) {
       this._canvas = document.createElement('canvas')
