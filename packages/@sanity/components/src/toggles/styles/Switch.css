@@ -50,6 +50,10 @@
   position: relative;
 }
 
+.undefined {
+  composes: root;
+}
+
 .switch {
   background: var(--switch-off-track-color);
   position: absolute;

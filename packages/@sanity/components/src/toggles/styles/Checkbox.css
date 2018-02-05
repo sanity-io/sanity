@@ -36,6 +36,10 @@
   composes: root;
 }
 
+.undefinedChecked {
+  composes: root;
+}
+
 .isDisabled {
   opacity: 0.2;
 }
@@ -118,6 +122,12 @@
 
   @nest .isChecked & {
     /* background: $checkbox-color url("#{$checkbox-image-path}/tick.svg?embed"); */
+    background-color: var(--checkbox-color);
+  }
+
+  @nest .undefinedChecked & {
+    top: calc(var(--checkbox-button-size) * 0.29);
+    height: calc(var(--checkbox-button-size) * 0.2);
     background-color: var(--checkbox-color);
   }
 }

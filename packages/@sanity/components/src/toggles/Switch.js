@@ -33,7 +33,7 @@ export default class Switch extends React.Component {
 
   setInput = el => {
     this._input = el
-    if (typeof value === 'undefined') {
+    if (typeof value === 'undefined' && el) {
       el.indeterminate = true
     }
   }
@@ -41,8 +41,6 @@ export default class Switch extends React.Component {
   render() {
     const {disabled, checked, label, ...rest} = this.props
     const {hasFocus} = this.state
-
-    console.log(checked)
 
     let thumbClass = checked ? styles.thumbChecked : styles.thumb
 
@@ -70,7 +68,7 @@ export default class Switch extends React.Component {
           className={styles.input}
           type="checkbox"
           disabled={disabled}
-          checked={checked}
+          checked={!!checked}
           ref={this.setInput}
           onFocus={this.handleFocus}
         />

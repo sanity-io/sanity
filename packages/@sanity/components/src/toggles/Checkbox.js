@@ -38,11 +38,21 @@ export default class Checkbox extends React.Component {
 
   setInput = el => {
     this._input = el
+
+    if (typeof value === 'undefined' && el) {
+      el.indeterminate = true
+    }
   }
 
   render() {
     const {disabled, checked, label, children, ...rest} = this.props
     const {hasFocus} = this.state
+
+    let checkedClass = checked ? styles.isChecked : styles.unChecked
+
+    if (typeof checked === 'undefined') {
+      checkedClass = styles.undefinedChecked
+    }
 
     return (
       <label
@@ -50,7 +60,7 @@ export default class Checkbox extends React.Component {
         className={`
           ${styles.root}
           ${disabled ? styles.isDisabled : styles.isEnabled}
-          ${checked ? styles.isChecked : styles.unChecked}
+          ${checkedClass}
           ${hasFocus ? styles.hasFocus : ''}
         `}
         onBlur={this.handleBlur}
@@ -60,7 +70,7 @@ export default class Checkbox extends React.Component {
           className={styles.input}
           type="checkbox"
           disabled={disabled}
-          checked={checked}
+          checked={!!checked}
           ref={this.setInput}
           onFocus={this.handleFocus}
         />
