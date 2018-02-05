@@ -1,6 +1,6 @@
 {
   "name": "@sanity/default-layout",
-  "version": "0.125.4",
+  "version": "0.125.5",
   "description": "The default layout components for Sanity",
   "main": "lib/default-layout.js",
   "scripts": {
@@ -37,7 +37,7 @@
   "devDependencies": {
     "@sanity/base": "^0.125.4",
     "@sanity/check": "0.125.0",
-    "@sanity/cli": "^0.125.4",
+    "@sanity/cli": "^0.125.5",
     "@sanity/components": "^0.125.4",
     "@sanity/core": "^0.125.4",
     "@sanity/generate-help-url": "0.125.0",
