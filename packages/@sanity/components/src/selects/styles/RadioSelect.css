@@ -8,6 +8,11 @@
 
 .horizontal {
   composes: root;
+
+  @nest & .radioContainer {
+    display: flex;
+    flex-wrap: wrap;
+  }
 }
 
 .container {
@@ -15,8 +20,5 @@
 }
 
 .item {
-  @nest .horizontal & {
-    margin-right: 1rem;
-    float: left;
-  }
+  margin-right: 1rem;
 }
