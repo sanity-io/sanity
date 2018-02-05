@@ -87,7 +87,7 @@ export default class FormBuilderInline extends React.Component {
   }
 
   handleSelectionChange = event => {
-    if (!this._editorNode.contains(event.target)) {
+    if (!this._editorNode || !this._editorNode.contains(event.target)) {
       return
     }
     const selection = document.getSelection()
