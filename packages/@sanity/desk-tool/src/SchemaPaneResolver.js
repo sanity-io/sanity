@@ -30,6 +30,16 @@ export default class SchemaPaneResolver extends React.Component {
     collapsedPanes: []
   }
 
+  componentWillReceiveProps(nextProps) {
+    const nextType = nextProps.router.state && nextProps.router.state.selectedType
+    const currentType = this.props.router.state && this.props.router.state.selectedType
+    if (nextType !== currentType) {
+      this.setState({
+        collapsedPanes: []
+      })
+    }
+  }
+
   handleToggleDocumentsPaneMenu = () => {
     this.setState({
       documentPaneMenuIsOpen: !this.state.documentPaneMenuIsOpen
