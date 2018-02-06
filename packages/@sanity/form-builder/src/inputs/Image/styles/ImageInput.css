@@ -17,6 +17,9 @@
 }
 
 .assetWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-height: 10rem;
   position: relative;
   transition: background-color 0.1s linear;
