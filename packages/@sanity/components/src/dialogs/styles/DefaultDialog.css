@@ -55,21 +55,37 @@
 .danger {
   composes: root;
   background-color: color(var(--body-bg) a(90%));
+
+  @nest & a {
+    color: inherit;
+  }
 }
 
 .success {
   composes: root;
   background-color: color(var(--body-bg) a(90%));
+
+  @nest & a {
+    color: inherit;
+  }
 }
 
 .info {
   composes: root;
   background-color: color(var(--body-bg) a(90%));
+
+  @nest & a {
+    color: inherit;
+  }
 }
 
 .warning {
   composes: root;
   background-color: color(var(--body-bg) a(90%));
+
+  @nest & a {
+    color: inherit;
+  }
 }
 
 .dialog {
