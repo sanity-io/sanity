@@ -24,7 +24,7 @@ function fetchQuerySnapshot(query, params) {
 
 const serverConnection = {
   byId(id) {
-    return Observable.from(client.listen('*[_id == $id]', {id: id}, {events: ['welcome', 'mutation']}))
+    return Observable.from(client.listen('*[_id == $id]', {id: id}, {includeResult: false, events: ['welcome', 'mutation']}))
       .concatMap(event => {
         return (event.type === 'welcome')
           ? Observable.from(fetchDocumentSnapshot(id))
@@ -33,7 +33,7 @@ const serverConnection = {
   },
 
   query(query, params) {
-    return Observable.from(client.observable.listen(query, params || {}, {events: ['welcome', 'mutation']}))
+    return Observable.from(client.observable.listen(query, params || {}, {includeResult: false, events: ['welcome', 'mutation']}))
       .concatMap(event => {
         return (event.type === 'welcome')
           ? Observable.from(fetchQuerySnapshot(query, params))
