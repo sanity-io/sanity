@@ -7,26 +7,16 @@ class ActivateOnFocus extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
     message: PropTypes.string,
-    isActive: PropTypes.bool,
-    enableBlur: PropTypes.bool,
-    onFocus: PropTypes.func,
-    onBlur: PropTypes.func,
+    isActive: PropTypes.bool
   }
 
   static defaultProps = {
-    enableBlur: true,
     message: 'Click to activate…',
-    isActive: false,
-    onFocus() {},
-    onBlur() {},
+    isActive: false
   }
 
   state = {
     hasFocus: false
-  }
-
-  setEventHandlerElement = element => {
-    this._eventHandlerElement = element
   }
 
   handleClick = event => {
@@ -34,7 +24,6 @@ class ActivateOnFocus extends React.Component {
       this.setState({
         hasFocus: true
       })
-      this.props.onFocus()
     }
   }
 
@@ -43,51 +32,26 @@ class ActivateOnFocus extends React.Component {
       this.setState({
         hasFocus: false
       })
-      this.props.onBlur()
     }
-  }
-
-  handleFocus = event => {
-    this.setState({
-      hasFocus: true
-    })
-    this.props.onFocus()
-  }
-
-  handleBlur = event => {
-    const {enableBlur} = this.props
-    if (enableBlur) {
-      this.setState({
-        hasFocus: false
-      })
-    }
-    this.props.onBlur()
   }
 
   render() {
     const {message, children, isActive} = this.props
     const {hasFocus} = this.state
 
-    if (isActive) {
-      return children
-    }
-
     return (
-      <div
-        className={hasFocus ? styles.hasFocus : styles.noFocus}
-        onFocus={this.handleFocus}
-        onBlur={this.handleBlur}
-      >
-        <div
-          className={styles.eventHandler}
-          onClick={this.handleClick}
-        >
-          <div className={styles.overlay} />
-          <div className={styles.message}>{message}</div>
-        </div>
-        <div className={styles.content}>
-          {children}
-        </div>
+      <div className={hasFocus ? styles.hasFocus : styles.noFocus}>
+        {!isActive && (
+          <div
+            className={styles.eventHandler}
+            onClick={this.handleClick}
+            ref={this.setEventHandlerElement}
+          >
+            <div className={styles.overlay} />
+            <div className={styles.message}>{message}</div>
+          </div>
+        )}
+        <div className={styles.content}>{children}</div>
       </div>
     )
   }
