@@ -36,12 +36,16 @@ export default function createPathMaterializer(observeWithPaths) {
 
       const nextHeads = uniq(missingHeads.map(path => [path[0]]))
 
+      const isRef = isReference(value)
       if (isReference(value) || isDocument(value)) {
-        const id = isReference(value) ? value._ref : value._id
-        return observeWithPaths(id, nextHeads)
-          .switchMap(snapshot => {
-            return materializePaths({...createEmpty(nextHeads), ...value, ...snapshot}, paths)
-          })
+        const id = isRef ? value._ref : value._id
+        return observeWithPaths(id, nextHeads).switchMap(snapshot => {
+          return materializePaths({
+              ...createEmpty(nextHeads),
+              ...(isRef ? {} : value),
+              ...snapshot
+            }, paths)
+        })
       }
     }
 
