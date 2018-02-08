@@ -9,6 +9,11 @@
   padding: var(--small-padding);
   cursor: pointer;
   box-sizing: border-box;
+  outline: none;
+
+  @nest &:focus {
+    background-color: color(var(--state-danger-color) a(15%));
+  }
 }
 
 .error {
