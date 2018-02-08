@@ -236,7 +236,7 @@ export default class ImageTool extends React.PureComponent {
     return {crop: crop, hotspot: hotspotRect}
   }
 
-  paintHotspot(context) {
+  paintHotspot(context, opacity) {
 
     const {image} = this.props
 
@@ -266,7 +266,7 @@ export default class ImageTool extends React.PureComponent {
 
       context.scale(1, scaleY)
       context.beginPath()
-      context.globalAlpha = 0.8
+      context.globalAlpha = opacity
       context.arc(dest.center.x, (dest.center.y / scaleY), Math.abs(dest.width / 2), 0, 2 * Math.PI, false)
       context.strokeStyle = 'white'
       context.lineWidth = 1.5 * scale
@@ -428,16 +428,19 @@ export default class ImageTool extends React.PureComponent {
     const pxratio = this.state.devicePixelVsBackingStoreRatio
     context.scale(pxratio, pxratio)
 
+    const opacity = this.state.mousePosition ? 0.8 : 0.2
+
     this.paintBackground(context)
     //return context.restore();
-    this.paintHotspot(context)
+    this.paintHotspot(context, opacity)
     //this.paintDragHandle(context);
     this.debug(context)
     this.paintCropBorder(context)
 
+    this.highlightCropHandles(context, opacity)
+
     if (this.state.mousePosition) {
-      //this.paintMousePosition(context)
-      this.highlightCropHandles(context)
+      // this.paintMousePosition(context)
     }
 
     context.restore()
@@ -464,22 +467,21 @@ export default class ImageTool extends React.PureComponent {
     context.restore()
   }
 
-  highlightCropHandles(context) {
+  highlightCropHandles(context, opacity) {
     context.save()
     const crophandles = this.getCropHandles()
 
     //context.globalCompositeOperation = "difference";
 
     Object.keys(crophandles).forEach(handle => {
-      context.fillStyle = this.state.cropping === handle ? 'rgba(202, 54, 53, 0.9)' : 'rgba(230, 230, 230, 0.9)'
+      context.fillStyle = this.state.cropping === handle ? `rgba(202, 54, 53, ${opacity})` : `rgba(230, 230, 230, ${opacity + 0.4})`
       const {left, top, height, width} = crophandles[handle]
       context.fillRect(left, top, width, height)
       context.beginPath()
-      context.fillStyle = 'rgba(66, 66, 66, 0.9)'
+      context.fillStyle = `rgba(66, 66, 66, ${opacity})`
       context.rect(left, top, width, height)
       context.closePath()
       context.stroke()
-
     })
     context.restore()
   }
@@ -524,7 +526,7 @@ export default class ImageTool extends React.PureComponent {
     this.paint(context)
     const currentCursor = domNode.style.cursor
     const newCursor = this.getCursor()
-    if (currentCursor != newCursor) {
+    if (currentCursor !== newCursor) {
       domNode.style.cursor = newCursor
     }
   }
