@@ -1,7 +1,10 @@
+import icon from 'react-icons/lib/fa/font'
+
 export default {
   name: 'richText',
   type: 'document',
   title: 'Rich text',
+  icon,
   fields: [
     {
       name: 'title',

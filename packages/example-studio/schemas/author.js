@@ -1,9 +1,11 @@
 import AuthorPreview from '../parts/AuthorPreview'
+import icon from 'react-icons/lib/md/person'
 
 export default {
   name: 'author',
   type: 'document',
   title: 'Author',
+  icon,
   preview: {
     select: {
       title: 'name',
