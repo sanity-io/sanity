@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import type {Node} from 'react'
 // @flow
 import React from 'react'
@@ -192,6 +193,7 @@ export default class FileInput extends React.PureComponent<Props, State> {
       })))
   }
 
+
   handleStartAdvancedEdit = () => {
     this.setState({isAdvancedEditOpen: true})
   }
@@ -215,8 +217,22 @@ export default class FileInput extends React.PureComponent<Props, State> {
     return fields.map(field => this.renderField(field))
   }
 
+  handleFocus = event => {
+    this.setState({
+      hasFocus: true
+    })
+    this.props.onFocus(event)
+  }
+
+  handleBlur = event => {
+    this.setState({
+      hasFocus: false
+    })
+    this.props.onBlur(event)
+  }
+
   renderField(field: FieldT) {
-    const {value, level, onBlur, focusPath, onFocus} = this.props
+    const {value, level, onBlur, focusPath} = this.props
     const fieldValue = value && value[field.name]
 
     return (
@@ -226,7 +242,7 @@ export default class FileInput extends React.PureComponent<Props, State> {
         type={field.type}
         onChange={ev => this.handleFieldChange(ev, field)}
         path={[field.name]}
-        onFocus={onFocus}
+        onFocus={this.handleFocus}
         onBlur={onBlur}
         focusPath={focusPath}
         level={level}
@@ -256,9 +272,9 @@ export default class FileInput extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {type, value, level, onFocus, materialize} = this.props
+    const {type, value, level, materialize} = this.props
 
-    const {isAdvancedEditOpen, uploadError} = this.state
+    const {isAdvancedEditOpen, uploadError, hasFocus} = this.state
 
     const [highlightedFields, otherFields] = partition(
       type.fields.filter(field => !HIDDEN_FIELDS.includes(field.name)),
@@ -272,7 +288,8 @@ export default class FileInput extends React.PureComponent<Props, State> {
         legend={type.title}
         description={type.description}
         level={level}
-        onFocus={onFocus}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
         onUpload={this.handleUpload}
         getUploadOptions={this.getUploadOptions}
         ref={this.setFocusArea}
@@ -297,7 +314,7 @@ export default class FileInput extends React.PureComponent<Props, State> {
               <WithMaterializedReference reference={value.asset} materialize={materialize}>
                 {this.renderMaterializedAsset}
               </WithMaterializedReference>
-            ) : <UploadPlaceholder />}
+            ) : <UploadPlaceholder hasFocus={hasFocus} />}
           </div>
           {highlightedFields.length > 0 && (
             <div className={styles.fieldsWrapper}>

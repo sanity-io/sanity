@@ -1,15 +1,63 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+@keyframes eye-right_d {
+  0% {
+    d: path('M4.75,0.75C4.75,0.75,2.95914,0.75,0.75,0.75C-1.45914,0.75,-3.25,0.75,-3.25,0.75C-3.25,0.75,-1.45914,0.75,0.75,0.75C2.95914,0.75,4.75,0.75,4.75,0.75Z'); } 100% { d: path('M4.75,0.75C4.75,2.95914,2.95914,4.75,0.75,4.75C-1.45914,4.75,-3.25,2.95914,-3.25,0.75C-3.25,-1.45914,-1.45914,-3.25,0.75,-3.25C2.95914,-3.25,4.75,-1.45914,4.75,0.75Z');
+  }
+}
+
+@keyframes eye-left_d {
+  0% {
+    d: path('M4.75,0.75C4.75,0.75,2.95914,0.75,0.75,0.75C-1.45914,0.75,-3.25,0.75,-3.25,0.75C-3.25,0.75,-1.45914,0.75,0.75,0.75C2.95914,0.75,4.75,0.75,4.75,0.75Z'); } 100% { d: path('M4.75,0.75C4.75,2.95914,2.95914,4.75,0.75,4.75C-1.45914,4.75,-3.25,2.95914,-3.25,0.75C-3.25,-1.45914,-1.45914,-3.25,0.75,-3.25C2.95914,-3.25,4.75,-1.45914,4.75,0.75Z');
+  }
+}
+
+@keyframes smile_d {
+  0% {
+    d: path('M0,0C0,0,4.5,0,10,0C15.5,0,19,0,19,0');
+  }
+
+  100% {
+    d: path('M0,0C0,0,4,5,9.5,5C15,5,19,0,19,0');
+  }
+}
+
 .root {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   text-align: center;
   height: 100%;
 }
 
+.inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: space-between;
+}
+
+.hasFocus {
+  composes: root;
+
+  @nest & .eyeRight {
+    animation: eye-right_d 0.3s linear both;
+  }
+
+  @nest & .eyeLeft {
+    animation: eye-left_d 0.3s linear both;
+  }
+
+  @nest & .smile {
+    animation: smile_d 0.3s linear both;
+  }
+}
+
+.noFocus {
+  composes: root;
+}
+
 .iconContainer {
-  font-size: 2rem;
+  font-size: 3rem;
 }
 
 .strong {
@@ -19,8 +67,32 @@
   padding: 0;
 }
 
-.light {
-  opacity: 0.7;
-  margin: 0;
-  padding: 0;
+.dropFile,
+.pasteFile {
+  padding: 1rem;
+}
+
+.pasteFile {
+  opacity: 0.2;
+  transition: opacity linear 0.2s;
+
+  @nest .hasFocus & {
+    opacity: 1;
+  }
+}
+
+.eye {
+  stroke: red;
+}
+
+.eyeRight {
+  /* animation: eye-right_d 1s linear both; */
+}
+
+.eyeLeft {
+  /* animation: eye-left_d 1s linear both; */
+}
+
+.smile {
+  /* animation: smile_d 1s linear both; */
 }
