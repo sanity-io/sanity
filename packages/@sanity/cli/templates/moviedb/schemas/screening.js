@@ -1,7 +1,10 @@
+import icon from 'react-icons/lib/md/local-play'
+
 export default {
   name: 'screening',
   title: 'Screening',
   type: 'document',
+  icon,
   fields: [
     {
       name: 'title',
