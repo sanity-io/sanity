@@ -3,6 +3,8 @@ export const datasetUrl = 'https://public.sanity.io/moviesdb.ndjson'
 
 export const dependencies = {
   '@sanity/google-maps-input': '^0.99.0',
+  'react-icons': '^2.2.5',
+
 }
 
 export const generateSanityManifest = base => ({
