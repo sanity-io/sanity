@@ -1,4 +1,5 @@
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
+import BookIcon from 'react-icons/lib/fa/book'
 
 const pickFirst = (obj, keys) => {
   if (!obj || typeof obj !== 'object') {
@@ -14,6 +15,7 @@ export default {
   name: 'blogpost',
   type: 'document',
   title: 'Blogpost',
+  icon: BookIcon,
   preview: {
     select: {
       title: 'title',
