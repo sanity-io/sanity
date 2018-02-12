@@ -13,6 +13,11 @@ export default class Switch extends React.Component {
     readOnly: PropTypes.bool
   }
 
+  static defaultProps = {
+    onFocus: () => {},
+    onBlur: () => {}
+  }
+
   state = {
     hasFocus: false
   }

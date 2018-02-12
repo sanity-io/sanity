@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
-import InInputButton from 'part:@sanity/components/buttons/in-input'
-import InInputStyles from 'part:@sanity/components/buttons/in-input-style'
+import Button from 'part:@sanity/components/buttons/default'
+import styles from './styles/SlugInput.css'
 import DefaultFormField from 'part:@sanity/components/formfields/default'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
-import {uniqueId, debounce, deburr, kebabCase, get} from 'lodash'
+import {debounce, deburr, kebabCase, get} from 'lodash'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 
@@ -58,13 +58,13 @@ export default class SlugInput extends React.Component {
     slugifyFn: PropTypes.func,
     document: PropTypes.object.isRequired,
     onChange: PropTypes.func
-  };
+  }
 
   static defaultProps = {
     value: {current: undefined, auto: true},
     onChange() {},
     slugifyFn: defaultSlugify
-  };
+  }
 
   state = vanillaState
 
@@ -84,27 +84,31 @@ export default class SlugInput extends React.Component {
   updateValueWithUniquenessCheck(value) {
     const {type, checkValidityFn, document} = this.props
     const docId = document._id
-    return makeCancelable(tryPromise(() => {
-      if (!value.current) {
-        this.updateValue(value)
-        this.setState({loading: false, validationError: null})
-        return Promise.resolve()
-      }
-      this.setState({loading: true, validationError: null})
-      return checkValidityFn(type, value.current, docId)
-    })).promise
-      .then(validationError => {
+    return makeCancelable(
+      tryPromise(() => {
+        if (!value.current) {
+          this.updateValue(value)
+          this.setState({loading: false, validationError: null})
+          return Promise.resolve()
+        }
+        this.setState({loading: true, validationError: null})
+        return checkValidityFn(type, value.current, docId)
+      })
+    )
+      .promise.then(validationError => {
         if (!validationError) {
           this.updateValue(value)
           this.setState({loading: false, validationError: null})
           return Promise.resolve()
         }
+        // TODO: Increment number instead of ending up with slug-1-1-1-1-1-1
         const proposedNewCurrent = `${value.current}-1`
         const newVal = {current: proposedNewCurrent, auto: false}
         this.setState({
           loading: false,
-          inputText: proposedNewCurrent,
-          validationError: validationError.toString()
+          inputText: proposedNewCurrent
+          // TODO only show validation error when manual edit is required
+          //validationError: validationError.toString()
         })
         return this.updateValueWithUniquenessCheck(newVal)
       })
@@ -115,8 +119,9 @@ export default class SlugInput extends React.Component {
         console.error(err) // eslint-disable-line no-console
         this.setState({
           loading: false,
-          validationError: 'Got javascript error trying to validate the slug. '
-            + 'See javascript console for more info.'
+          validationError:
+            'Got javascript error trying to validate the slug. ' +
+            'See javascript console for more info.'
         })
         this.updateValue({current: value.current, auto: false})
         return Promise.resolve()
@@ -129,39 +134,19 @@ export default class SlugInput extends React.Component {
     }
     const {type, slugifyFn} = this.props
 
-    const slugify = get(type, 'options.slugifyFn') || slugifyFn
+    const slugify = get(type, 'options.slugify') || slugifyFn
 
     return slugify(type, sourceValue)
   }
 
   componentWillReceiveProps(nextProps) {
-    const {checkValidityFn} = this.props
-    const {document, type, value} = nextProps
+    const {document} = nextProps
 
     // Reset state if document is changed
     const oldDocId = this.props.document._id
     const newDocId = document._id
     if (oldDocId !== newDocId) {
       this.setState(vanillaState)
-      return
-    }
-
-    // If slug is set to auto and the source field has changed,
-    // verify and set the new slug if it is different from the current one
-    let newCurrent
-    const source = get(type, 'options.source')
-    if (value.auto && source) {
-      const newFromSource = typeof source === 'function' ? source(document) : get(document, source)
-      newCurrent = this.slugify(newFromSource)
-    }
-    if (newCurrent && newCurrent !== value.current) {
-      const newVal = {current: newCurrent, auto: value.auto}
-      if (checkValidityFn) {
-        this.updateValueWithUniquenessCheck(newVal)
-        this.setState({inputText: newCurrent})
-        return
-      }
-      this.updateValue(newVal)
     }
   }
 
@@ -172,9 +157,8 @@ export default class SlugInput extends React.Component {
     }
     this.setState({inputText: event.target.value.toString()})
     this.finalizeSlugTimeout = setTimeout(() => {
-      const newCurrent = typeof this.state.inputText === 'undefined'
-        ? undefined
-        : this.slugify(this.state.inputText)
+      const newCurrent =
+        typeof this.state.inputText === 'undefined' ? undefined : this.slugify(this.state.inputText)
       this.setState({inputText: newCurrent})
       const newVal = {current: newCurrent, auto: value.auto}
       if (checkValidityFn) {
@@ -185,15 +169,28 @@ export default class SlugInput extends React.Component {
     }, 500)
   }
 
-  handleChangeButtonClick = event => {
-    const {value} = this.props
-    this.setState({inputText: this.state.validationError ? undefined : value.current})
-    this.updateValue({current: value.current, auto: false})
-  }
+  handleGenerateSlug = () => {
+    const {type, value, checkValidityFn, document} = this.props
+    const source = get(type, 'options.source')
 
-  handleAutoButtonClicked = event => {
-    const {value} = this.props
-    this.updateValue({current: value.current, auto: true})
+    if (!source) {
+      return
+    }
+
+    const newFromSource = typeof source === 'function' ? source(document) : get(document, source)
+    const newCurrent = this.slugify(newFromSource)
+
+    if (newCurrent && newCurrent !== value.current) {
+      const newVal = {current: newCurrent, auto: value.auto}
+      if (checkValidityFn) {
+        // TODO: generate an unique slug first time instead of show loading, validation errors
+        // and invalid slugs until it finds an valid slug
+        this.updateValueWithUniquenessCheck(newVal)
+        this.setState({inputText: newCurrent})
+        return
+      }
+      this.updateValue(newVal)
+    }
   }
 
   focus() {
@@ -214,40 +211,26 @@ export default class SlugInput extends React.Component {
       level: level
     }
 
-    const inputId = uniqueId('FormBuilderSlug')
-    const isAuto = type.options && type.options.source && value.auto
     return (
       <DefaultFormField {...formFieldProps}>
-        { validationError && (
-          <p>{validationError}</p>
-        )}
-        <div className={InInputStyles.wrapper}>
-          <DefaultTextInput
-            id={inputId}
-            ref={this.setInput}
-            disabled={isAuto}
-            placeholder={type.placeholder}
-            onChange={this.handleChange}
-            value={typeof inputText === 'string' ? inputText : value.current}
-          />
-          <div className={InInputStyles.container}>
-            { loading && (
-              <Spinner inline message="Loading…" />
+        {validationError && <p>{validationError}</p>}
+        <div className={styles.wrapper}>
+          <div className={styles.input}>
+            <DefaultTextInput
+              disabled={loading}
+              ref={this.setInput}
+              placeholder={type.placeholder}
+              onChange={this.handleChange}
+              value={typeof inputText === 'string' ? inputText : value.current}
+            />
+          </div>
+
+          <div className={styles.button}>
+            {hasSourceField && (
+              <Button disabled={loading} loading={loading} onClick={this.handleGenerateSlug}>
+                Generate slug
+              </Button>
             )}
-            {
-              hasSourceField && value.auto && (
-                <InInputButton onClick={this.handleChangeButtonClick}>
-                  Edit
-                </InInputButton>
-              )
-            }
-            {
-              hasSourceField && !value.auto && (
-                <InInputButton onClick={this.handleAutoButtonClicked}>
-                  Auto
-                </InInputButton>
-              )
-            }
           </div>
         </div>
       </DefaultFormField>
