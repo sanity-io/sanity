@@ -32,8 +32,6 @@ export default class BooleanInput extends React.Component<Props> {
   render() {
     const {value, type, level, description, ...rest} = this.props
 
-    console.log('boolean', value)
-
     const isCheckbox = type.options && type.options.layout === 'checkbox'
     return isCheckbox
       ? (

@@ -36,7 +36,7 @@
   composes: root;
 }
 
-.undefinedChecked {
+.indeterminate {
   composes: root;
 }
 
@@ -125,7 +125,7 @@
     background-color: var(--checkbox-color);
   }
 
-  @nest .undefinedChecked & {
+  @nest .indeterminate & {
     top: calc(var(--checkbox-button-size) * 0.29);
     height: calc(var(--checkbox-button-size) * 0.2);
     background-color: var(--checkbox-color);
@@ -138,12 +138,4 @@
   font-size: var(--checkbox-label-font-size);
   line-height: var(--checkbox-label-height);
   margin: 0;
-
-  /*
-  fieldset[disabled] .mdl-checkbox &,
-  .mdl-checkbox.is-disabled & {
-    color: $checkbox-disabled-color;
-    cursor: auto;
-  }
-  */
 }

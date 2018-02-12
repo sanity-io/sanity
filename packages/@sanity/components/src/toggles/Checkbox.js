@@ -16,6 +16,12 @@ export default class Checkbox extends React.Component {
     hasFocus: false
   }
 
+  componentDidMount() {
+    if (typeof value === 'undefined' && this._input) {
+      this._input.indeterminate = true
+    }
+  }
+
   handleFocus = event => {
     this.setState({hasFocus: true})
     if (this.props.onFocus) {
@@ -38,10 +44,6 @@ export default class Checkbox extends React.Component {
 
   setInput = el => {
     this._input = el
-
-    if (typeof value === 'undefined' && el) {
-      el.indeterminate = true
-    }
   }
 
   render() {
@@ -51,7 +53,7 @@ export default class Checkbox extends React.Component {
     let checkedClass = checked ? styles.isChecked : styles.unChecked
 
     if (typeof checked === 'undefined') {
-      checkedClass = styles.undefinedChecked
+      checkedClass = styles.indeterminate
     }
 
     return (

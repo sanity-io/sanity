@@ -50,7 +50,7 @@
   position: relative;
 }
 
-.undefined {
+.indeterminate {
   composes: root;
 }
 
@@ -121,7 +121,7 @@
   left: calc(var(--switch-track-length) - var(--switch-thumb-size));
 }
 
-.thumbUndefined {
+.thumbIndeterminate {
   composes: thumb;
   left: calc(0.5 * (var(--switch-track-length) - var(--switch-thumb-size)));
 }
