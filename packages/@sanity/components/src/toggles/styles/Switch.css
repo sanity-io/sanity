@@ -50,6 +50,10 @@
   position: relative;
 }
 
+.indeterminate {
+  composes: root;
+}
+
 .switch {
   background: var(--switch-off-track-color);
   position: absolute;
@@ -115,6 +119,11 @@
   composes: shadow-3dp from "part:@sanity/base/theme/shadows-style";
   background: var(--switch-thumb-color);
   left: calc(var(--switch-track-length) - var(--switch-thumb-size));
+}
+
+.thumbIndeterminate {
+  composes: thumb;
+  left: calc(0.5 * (var(--switch-track-length) - var(--switch-thumb-size)));
 }
 
 .focusHelper {

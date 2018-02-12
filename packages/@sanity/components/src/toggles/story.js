@@ -5,7 +5,7 @@ import ToggleButton from 'part:@sanity/components/toggles/button'
 import Switch from 'part:@sanity/components/toggles/switch'
 import Checkbox from 'part:@sanity/components/toggles/checkbox'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
-import {withKnobs, boolean, text} from 'part:@sanity/storybook/addons/knobs'
+import {withKnobs, boolean, text, select} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 storiesOf('Toggles')
@@ -16,7 +16,7 @@ storiesOf('Toggles')
       return (
         <Sanity part="part:@sanity/components/toggles/switch" propTables={[Switch]}>
           <Switch
-            checked={boolean('checked (prop)', false)}
+            checked={boolean('undefined', false) ? undefined : boolean('checked (prop)', false)}
             label={text('label (prop)', 'This is the label')}
             disabled={boolean('disabled (prop)', false)}
             onChange={action('change')}
@@ -34,7 +34,7 @@ storiesOf('Toggles')
         <Sanity part="part:@sanity/components/toggles/checkbox" propTables={[Checkbox]}>
           <Checkbox
             label={text('label (prop)', 'This is the label')}
-            checked={boolean('checked (prop)', false)}
+            checked={boolean('undefined', false) ? undefined : boolean('checked (prop)', false)}
             disabled={boolean('disabled (prop)', false)}
             onChange={action('onChange')}
             onBlur={action('onBlur')}

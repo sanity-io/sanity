@@ -15,6 +15,12 @@ export default class Switch extends React.Component {
     hasFocus: false
   }
 
+  componentDidMount() {
+    if (typeof value === 'undefined' && this._input) {
+      this._input.indeterminate = true
+    }
+  }
+
   handleFocus = event => {
     this.setState({hasFocus: true})
     this.props.onFocus(event)
@@ -39,10 +45,16 @@ export default class Switch extends React.Component {
     const {disabled, checked, label, ...rest} = this.props
     const {hasFocus} = this.state
 
+    let thumbClass = checked ? styles.thumbChecked : styles.thumb
+
+    if (typeof checked === 'undefined') {
+      thumbClass = styles.thumbIndeterminate
+    }
+
     return (
       <label
         className={`
-          ${styles.root}
+          ${typeof checked === 'undefined' ? styles.indeterminate : styles.root}
           ${disabled ? styles.isDisabled : styles.isEnabled}
           ${checked ? styles.isChecked : styles.unChecked}
           ${hasFocus ? styles.hasFocus : ''}
@@ -50,7 +62,7 @@ export default class Switch extends React.Component {
         onBlur={this.handleBlur}
       >
         <div className={styles.track} />
-        <div className={`${checked ? styles.thumbChecked : styles.thumb}`}>
+        <div className={thumbClass}>
           <div className={styles.focusHelper} />
         </div>
 
@@ -59,7 +71,7 @@ export default class Switch extends React.Component {
           className={styles.input}
           type="checkbox"
           disabled={disabled}
-          checked={checked}
+          checked={!!checked}
           ref={this.setInput}
           onFocus={this.handleFocus}
         />
