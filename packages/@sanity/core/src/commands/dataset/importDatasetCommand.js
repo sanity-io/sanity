@@ -25,9 +25,8 @@ export default {
   description: 'Import documents to given dataset from ndjson file',
   helpText,
   action: async (args, context) => {
-    const {apiClient, output, chalk, prompt} = context
+    const {apiClient, output, chalk} = context
 
-    let spinner = null
     const operation = getMutationOperation(args.extOptions)
     const client = apiClient()
 
@@ -40,32 +39,7 @@ export default {
       )
     }
 
-    debug('[  0%] Fetching available datasets')
-    spinner = output.spinner('Fetching available datasets').start()
-    const datasets = await client.datasets.list()
-    spinner.succeed('[100%] Fetching available datasets')
-
-    let targetDataset = target ? `${target}` : null
-    if (!targetDataset) {
-      targetDataset = await chooseDatasetPrompt(context, {
-        message: 'Select target dataset',
-        allowCreation: true
-      })
-    } else if (!datasets.find(dataset => dataset.name === targetDataset)) {
-      debug('Target dataset does not exist, prompting for creation')
-      const shouldCreate = await prompt.single({
-        type: 'confirm',
-        message: `Dataset "${targetDataset}" does not exist, would you like to create it?`,
-        default: true
-      })
-
-      if (!shouldCreate) {
-        throw new Error(`Dataset "${targetDataset}" does not exist`)
-      }
-
-      await client.datasets.create(targetDataset)
-    }
-
+    const targetDataset = await determineTargetDataset(target, context)
     debug(`Target dataset has been set to "${targetDataset}"`)
 
     const isUrl = /^https?:\/\//i.test(file)
@@ -174,6 +148,39 @@ export default {
       output.error(chalk.red(`\n${error}\n`))
     }
   }
+}
+
+async function determineTargetDataset(target, context) {
+  const {apiClient, output, prompt} = context
+  const client = apiClient()
+
+  debug('[  0%] Fetching available datasets')
+  const spinner = output.spinner('Fetching available datasets').start()
+  const datasets = await client.datasets.list()
+  spinner.succeed('[100%] Fetching available datasets')
+
+  let targetDataset = target ? `${target}` : null
+  if (!targetDataset) {
+    targetDataset = await chooseDatasetPrompt(context, {
+      message: 'Select target dataset',
+      allowCreation: true
+    })
+  } else if (!datasets.find(dataset => dataset.name === targetDataset)) {
+    debug('Target dataset does not exist, prompting for creation')
+    const shouldCreate = await prompt.single({
+      type: 'confirm',
+      message: `Dataset "${targetDataset}" does not exist, would you like to create it?`,
+      default: true
+    })
+
+    if (!shouldCreate) {
+      throw new Error(`Dataset "${targetDataset}" does not exist`)
+    }
+
+    await client.datasets.create(targetDataset)
+  }
+
+  return targetDataset
 }
 
 function getMutationOperation(flags) {

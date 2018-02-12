@@ -1,4 +1,5 @@
 const fs = require('fs')
+const zlib = require('zlib')
 const miss = require('mississippi')
 const split = require('split2')
 const archiver = require('archiver')
@@ -15,7 +16,11 @@ const noop = () => null
 function exportDataset(opts) {
   const options = validateOptions(opts)
   const onProgress = options.onProgress || noop
-  const archive = archiver('zip', {zlib: {level: 9}})
+  const archive = archiver('tar', {
+    gzip: true,
+    gzipOptions: {level: options.compress ? zlib.Z_DEFAULT_COMPRESSION : zlib.Z_NO_COMPRESSION}
+  })
+
   const slugDate = new Date()
     .toISOString()
     .replace(/[^a-z0-9]/gi, '-')

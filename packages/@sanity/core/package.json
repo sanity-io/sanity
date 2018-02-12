@@ -22,6 +22,7 @@
   ],
   "dependencies": {
     "@sanity/check": "^0.125.6",
+    "@sanity/export": "^0.125.6",
     "@sanity/import": "^0.125.6",
     "@sanity/mutator": "^0.125.6",
     "@sanity/plugin-loader": "^0.125.6",
@@ -48,7 +49,6 @@
     "semver": "^5.4.1",
     "simple-concat": "^1.0.0",
     "simple-get": "^2.7.0",
-    "split2": "^2.1.1",
     "tar-fs": "^1.15.2",
     "thenify": "^3.3.0",
     "through2": "^2.0.3",

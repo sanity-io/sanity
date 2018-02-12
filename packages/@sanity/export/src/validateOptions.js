@@ -1,8 +1,9 @@
 const defaults = require('lodash/defaults')
 
 const clientMethods = ['getUrl', 'config']
-const booleanFlags = ['assets', 'raw']
+const booleanFlags = ['assets', 'raw', 'compress']
 const exportDefaults = {
+  compress: true,
   assets: true,
   raw: false
 }
