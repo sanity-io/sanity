@@ -1,11 +1,10 @@
 import path from 'path'
 import fse from 'fs-extra'
-import split from 'split2'
-import prettyMs from 'pretty-ms'
 import {pathTools} from '@sanity/util'
-import streamDataset from '../../actions/dataset/streamDataset'
-import skipSystemDocuments from '../../util/skipSystemDocuments'
+import exportDataset from '@sanity/export'
 import chooseDatasetPrompt from '../../actions/dataset/chooseDatasetPrompt'
+
+const noop = () => null
 
 export default {
   name: 'export',
@@ -16,6 +15,7 @@ export default {
     const {apiClient, output, chalk, workDir, prompt} = context
     const client = apiClient()
     const [targetDataset, targetDestination] = args.argsWithoutOptions
+    const flags = args.extOptions
     const {absolutify} = pathTools
 
     let dataset = targetDataset ? `${targetDataset}` : null
@@ -26,9 +26,7 @@ export default {
     // Verify existence of dataset before trying to export from it
     const datasets = await client.datasets.list()
     if (!datasets.find(set => set.name === dataset)) {
-      throw new Error(
-        `Dataset with name "${dataset}" not found`
-      )
+      throw new Error(`Dataset with name "${dataset}" not found`)
     }
 
     let destinationPath = targetDestination
@@ -36,64 +34,84 @@ export default {
       destinationPath = await prompt.single({
         type: 'input',
         message: 'Output path:',
-        default: path.join(workDir, `${dataset}.ndjson`),
+        default: path.join(workDir, `${dataset}.tar.gz`),
         filter: absolutify
       })
     }
 
-    const outputPath = await getOutputPath(destinationPath, dataset)
+    const outputPath = await getOutputPath(destinationPath, dataset, prompt, flags)
+    if (!outputPath) {
+      output.print('Cancelled')
+      return
+    }
 
     // If we are dumping to a file, let the user know where it's at
-    if (outputPath) {
+    if (outputPath !== '-') {
       output.print(`Exporting dataset "${chalk.cyan(dataset)}" to "${chalk.cyan(outputPath)}"`)
     }
 
-    const startTime = Date.now()
+    let currentStep = 'Exporting documents...'
+    let spinner = output.spinner(currentStep).start()
+    const onProgress = progress => {
+      if (progress.step !== currentStep) {
+        spinner.succeed()
+        spinner = output.spinner(progress.step).start()
+      } else if (progress.step === currentStep && progress.update) {
+        spinner.text = `${progress.step} (${progress.current}/${progress.total})`
+      }
 
-    const stream = await streamDataset(client, dataset)
-    stream
-      .pipe(split())
-      .pipe(skipSystemDocuments)
-      .pipe(outputPath ? fse.createWriteStream(outputPath) : process.stdout)
-      .on('error', err => output.error(err))
-      .on('close', () => {
-        if (outputPath) {
-          const time = prettyMs(Date.now() - startTime, {verbose: true})
-          output.print(`Done. Time spent: ${chalk.cyan(time)}`)
-        }
+      currentStep = progress.step
+    }
+
+    try {
+      await exportDataset({
+        client,
+        dataset,
+        outputPath,
+        onProgress,
+        ...flags
       })
+      spinner.succeed()
+    } catch (err) {
+      spinner.fail()
+      throw err
+    }
   }
 }
 
-async function getOutputPath(destination, dataset) {
+// eslint-disable-next-line complexity
+async function getOutputPath(destination, dataset, prompt, flags) {
   if (destination === '-') {
-    return null
+    return '-'
   }
 
   const dstPath = path.isAbsolute(destination)
     ? destination
     : path.resolve(process.cwd(), destination)
 
-  let dstStats = null
-  try {
-    dstStats = await fse.stat(dstPath)
-  } catch (err) {
-    // Do nothing
-  }
-
-  const looksLikeFile = dstStats
-    ? dstStats.isFile()
-    : path.basename(dstPath).indexOf('.') !== -1
+  let dstStats = await fse.stat(dstPath).catch(noop)
+  const looksLikeFile = dstStats ? dstStats.isFile() : path.basename(dstPath).indexOf('.') !== -1
 
   if (!dstStats) {
-    const createPath = looksLikeFile
-      ? path.dirname(dstPath)
-      : dstPath
+    const createPath = looksLikeFile ? path.dirname(dstPath) : dstPath
 
     await fse.mkdirs(createPath)
   }
 
-  return looksLikeFile
-    ? dstPath
-    : path.join(dstPath, `${dataset}.ndjson`)
+  const finalPath = looksLikeFile ? dstPath : path.join(dstPath, `${dataset}.tar.gz`)
+  dstStats = await fse.stat(finalPath).catch(noop)
+
+  if (!flags.overwrite && dstStats && dstStats.isFile()) {
+    const shouldOverwrite = await prompt.single({
+      type: 'confirm',
+      message: `File "${finalPath}" already exists, would you like to overwrite it?`,
+      default: false
+    })
+
+    if (!shouldOverwrite) {
+      return false
+    }
+  }
+
+  return finalPath
 }
