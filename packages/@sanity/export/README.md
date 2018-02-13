@@ -28,8 +28,7 @@ exportDataset({
   // Default: `true`
   assets: false,
 
-  // Exports documents only, without downloading or rewriting asset references. Note that the
-  // `assets` option is still respected, determining whether or not to include asset documents
+  // Exports documents only, without downloading or rewriting asset references
   raw: true
 })
 ```

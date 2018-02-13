@@ -34,9 +34,7 @@ function exportDataset(opts) {
     options.outputPath === '-' ? process.stdout : fs.createWriteStream(options.outputPath)
 
   let assetStreamHandler = assetHandler.noop
-  if (options.raw && !options.assets) {
-    assetStreamHandler = assetHandler.skipAssets
-  } else if (!options.raw) {
+  if (!options.raw) {
     assetStreamHandler = options.assets ? assetHandler.rewriteAssets : assetHandler.stripAssets
   }
 
