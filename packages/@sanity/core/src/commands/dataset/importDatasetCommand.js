@@ -16,6 +16,7 @@ Options
 Examples
   sanity import moviedb.ndjson moviedb
   sanity import moviedb.ndjson moviedb --replace
+  sanity import https://some.url/moviedb.tar.gz moviedb --replace
 `
 
 export default {
