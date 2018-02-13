@@ -1,5 +1,6 @@
 const noop = require('lodash/noop')
 const defaults = require('lodash/defaults')
+
 const clientMethods = ['fetch', 'transaction', 'config']
 const allowedOperations = ['create', 'createIfNotExists', 'createOrReplace']
 const defaultOperation = allowedOperations[0]

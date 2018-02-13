@@ -1,7 +1,7 @@
 const basename = require('path').basename
 const parseUrl = require('url').parse
-const debug = require('debug')('sanity:import')
 const crypto = require('crypto')
+const debug = require('debug')('sanity:import')
 const pMap = require('p-map')
 const getBufferForUri = require('./util/getBufferForUri')
 const progressStepper = require('./util/progressStepper')
@@ -15,6 +15,14 @@ async function uploadAssets(assets, options) {
   // objects containing document id and path to inject asset reference to.
   // `assets` is an array of objects with shape: {documentId, path, url, type}
   const assetMap = getAssetMap(assets)
+
+  // We might have additional assets that is not referenced by any documents, but was part of a
+  // dataset when exporting, for instance. Add these to the map without any references to update.
+  ;(options.unreferencedAssets || []).forEach(asset => {
+    if (!assetMap.has(asset)) {
+      assetMap.set(asset, [])
+    }
+  })
 
   // Create a function we can call for every completed upload to report progress
   const progress = progressStepper(options.onProgress, {
