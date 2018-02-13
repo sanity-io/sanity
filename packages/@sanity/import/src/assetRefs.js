@@ -1,4 +1,4 @@
-const {get, unset} = require('lodash')
+const {get, set, unset} = require('lodash')
 const {extractWithPath} = require('@sanity/mutator')
 const serializePath = require('./serializePath')
 
@@ -9,6 +9,24 @@ const assetMatcher = /^(file|image)@([a-z]+:\/\/.*)/
 function unsetAssetRefs(doc) {
   findAssetRefs(doc).forEach(path => {
     unset(doc, path)
+  })
+
+  return doc
+}
+
+// Note: mutates in-place
+function absolutifyPaths(doc, absPath) {
+  if (!absPath) {
+    return doc
+  }
+
+  const modifier = value =>
+    value
+      .replace(/file:\/\/\.\//i, `file://${absPath}/`)
+      .replace(/(https?):\/\/\.\//, `$1://${absPath}/`)
+
+  findAssetRefs(doc).forEach(path => {
+    set(doc, path, modifier(get(doc, path)))
   })
 
   return doc
@@ -33,3 +51,4 @@ function findAssetRefs(doc) {
 
 exports.getAssetRefs = getAssetRefs
 exports.unsetAssetRefs = unsetAssetRefs
+exports.absolutifyPaths = absolutifyPaths

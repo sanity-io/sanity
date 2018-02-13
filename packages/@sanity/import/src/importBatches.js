@@ -10,11 +10,7 @@ async function importBatches(batches, options) {
   })
 
   const mapOptions = {concurrency: DOCUMENT_IMPORT_CONCURRENCY}
-  const batchSizes = await pMap(
-    batches,
-    importBatch.bind(null, options, progress),
-    mapOptions
-  )
+  const batchSizes = await pMap(batches, importBatch.bind(null, options, progress), mapOptions)
 
   return batchSizes.reduce((prev, add) => prev + add, 0)
 }
