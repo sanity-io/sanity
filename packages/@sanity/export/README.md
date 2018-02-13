@@ -29,7 +29,16 @@ exportDataset({
   assets: false,
 
   // Exports documents only, without downloading or rewriting asset references
-  raw: true
+  // Default: `false`
+  raw: true,
+
+  // Whether or not to export drafts
+  // Default: `true`
+  drafts: true,
+
+  // Export only given document types (`_type`)
+  // Optional, default: all types
+  types: ['products', 'shops']
 })
 ```
 
