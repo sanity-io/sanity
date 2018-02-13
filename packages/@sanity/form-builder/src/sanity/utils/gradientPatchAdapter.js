@@ -1,79 +1,79 @@
 // @flow
-
 import {arrayToJSONMatchPath} from '@sanity/mutator'
 import assert from 'assert'
 import {flatten} from 'lodash'
-import type {Patch} from '../../utils/patches'
+import type {Origin, Patch} from '../../typedefs/patch'
+import * as convertPath from './convertPath'
+
 type GradientPatch = Object
 
-type Adapter = {
-  fromFormBuilder: (patches: Array<Patch>) => Array<GradientPatch>,
-  toFormBuilder: (origin: string, patches: Array<GradientPatch>) => Array<Patch>
+export function toGradient(patches: Patch[]): GradientPatch[] {
+  return patches.map(toGradientPatch)
 }
 
-const adapter: Adapter = {
-  fromFormBuilder(patches) {
-    return patches.map(fromFormBuilder)
-  },
-  toFormBuilder
+export function toFormBuilder(origin: Origin, patches: GradientPatch[]): Patch[] {
+  return flatten(patches.map(patch => toFormBuilderPatch(origin, patch)))
 }
 
-export default adapter
-
-
-/**
- *
- * *** WARNING ***
- *
- * This function is *EXPERIMENTAL* and very likely to have bugs. It is not in real use yet, and needs
- * to be revised.
- */
-
-function toFormBuilder(origin, patches: Array<GradientPatch>): Array<Patch> {
-  return flatten(patches.map(patch => {
-    return flatten(Object.keys(patch)
+function toFormBuilderPatch(origin: Origin, patch: GradientPatch): Patch {
+  return flatten(
+    Object.keys(patch)
       .filter(key => key !== 'id')
-      .map((type): Array<Patch> => {
+      .map(type => {
         if (type === 'unset') {
           return patch.unset.map(path => {
             return {
               type: 'unset',
-              path: path.split('.'),
+              path: convertPath.toFormBuilder(path),
               origin
             }
           })
         }
-        return Object.keys(patch[type]).map(path => {
-          if (type === 'insert') {
-            const position = 'before' in patch.insert ? 'before' : 'after'
-            return {
-              type: 'insert',
-              position: position,
-              path: path.split('.'),
-              items: patch[type][path],
-              origin
+        return Object.keys(patch[type])
+          .map(gradientPath => {
+            if (type === 'insert') {
+              const position = 'before' in patch.insert ? 'before' : 'after'
+              return {
+                type: 'insert',
+                position: position,
+                path: convertPath.toFormBuilder(patch.insert[position]),
+                items: patch.insert.items,
+                origin
+              }
             }
-          }
-          if (type === 'set') {
-            return {
-              type: 'set',
-              path: path.split('.'),
-              value: patch[type][path],
-              origin
+            if (type === 'set') {
+              return {
+                type: 'set',
+                path: convertPath.toFormBuilder(gradientPath),
+                value: patch[type][gradientPath],
+                origin
+              }
             }
-          }
-          return {
-            type,
-            path: path.split('.'),
-            value: patch[type][path],
-            origin
-          }
-        })
-      }))
-  }))
+            if (type === 'setIfMissing') {
+              return {
+                type: 'setIfMissing',
+                path: convertPath.toFormBuilder(gradientPath),
+                value: patch[type][gradientPath],
+                origin
+              }
+            }
+            if (type === 'diffMatchPatch') {
+              return {
+                type: 'diffMatchPatch',
+                path: convertPath.toFormBuilder(gradientPath),
+                value: patch[type][gradientPath],
+                origin
+              }
+            }
+            console.warn(new Error(`Unsupported patch type: ${type}`))
+            return null
+          })
+          .filter(Boolean)
+      })
+  )
 }
 
-function fromFormBuilder(patch: Patch): GradientPatch {
+function toGradientPatch(patch: Patch): GradientPatch {
   const matchPath = arrayToJSONMatchPath(patch.path || [])
   if (patch.type === 'insert') {
     const {position, items} = patch

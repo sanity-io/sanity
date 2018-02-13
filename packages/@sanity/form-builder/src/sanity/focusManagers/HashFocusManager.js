@@ -1,47 +1,30 @@
 /**
  * An example of how to sync focus path through document.location.hash
  *
-*/
+ */
 
 // @flow
 import React from 'react'
-import {arrayToJSONMatchPath} from '../../../../mutator/lib/index'
-import type {Path, PathSegment} from '../../typedefs/path'
+import type {Path} from '../../typedefs/path'
+import {toFormBuilder, toGradient} from '../utils/convertPath'
+
+type ChildArgs = {
+  onFocus: (path: Path) => void,
+  onBlur: () => void,
+  focusPath: Path
+}
 
 type Props = {
   focusPath: ?any,
   onFocus: () => {},
   onBlur: () => {},
-  children: () => any
+  children: (
+    ChildArgs
+  ) => any
 }
 
 type State = {
   focusPath: Array<*>
-}
-const IS_NUMERIC = /^\d+$/
-
-function unquote(str) {
-  return str.replace(/^['"]/, '').replace(/['"]$/, '')
-}
-
-function splitAttr(segment) {
-  const [attr, key] = segment.split('==')
-  return {[attr]: unquote(key)}
-}
-
-function coerce(segment: string): PathSegment {
-  return IS_NUMERIC.test(segment) ? Number(segment) : segment
-}
-
-function parseSimplePath(focusPathStr): Path {
-  return focusPathStr
-    .split(/[[.\]]/g)
-    .filter(Boolean)
-    .map(seg => (seg.includes('==') ? splitAttr(seg) : coerce(seg)))
-}
-
-function formatPath(focusPath) {
-  return arrayToJSONMatchPath(focusPath)
 }
 
 function getHash() {
@@ -50,7 +33,7 @@ function getHash() {
 
 function getPathFromHash() {
   const hash = getHash()
-  return hash ? parseSimplePath(hash) : []
+  return hash ? toFormBuilder(hash) : []
 }
 
 export default class HashFocusManager extends React.Component<Props, State> {
@@ -71,7 +54,7 @@ export default class HashFocusManager extends React.Component<Props, State> {
   }
 
   handleFocus = (focusPath: Path) => {
-    document.location.hash = formatPath(focusPath)
+    document.location.hash = toGradient(focusPath)
   }
 
   handleBlur = () => {

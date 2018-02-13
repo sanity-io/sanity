@@ -1,6 +1,7 @@
 // @flow weak
 import documentStore from 'part:@sanity/base/datastore/document'
-import gradientPatchAdapter from './utils/gradientPatchAdapter'
+import * as gradientPatchAdapter from './utils/gradientPatchAdapter'
+import type {Patch} from '../typedefs/patch'
 
 export function checkout(documentId) {
 
@@ -35,7 +36,7 @@ export function checkout(documentId) {
     ...document,
     events: events$,
     patch(patches: Array<Patch>) {
-      document.patch(gradientPatchAdapter.fromFormBuilder(patches))
+      document.patch(gradientPatchAdapter.toGradient(patches))
     }
   }
 }
