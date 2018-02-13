@@ -6,11 +6,24 @@ import chooseDatasetPrompt from '../../actions/dataset/chooseDatasetPrompt'
 
 const noop = () => null
 
+const helpText = `
+Options
+  --raw         Extract only documents, without rewriting asset references
+  --no-assets   Export only non-asset documents and remove references to image assets
+  --no-compress Skips compressing tarball entries (still generates a gzip file)
+
+Examples
+  sanity export moviedb localPath.tar.gz
+  sanity export moviedb assetless.tar.gz --no-assets
+  sanity export staging staging.tar.gz --raw
+`
+
 export default {
   name: 'export',
   group: 'dataset',
   signature: '[NAME] [DESTINATION]',
-  description: 'Export dataset to local filesystem',
+  description: 'Export dataset to local filesystem as a gzipped tarball',
+  helpText,
   action: async (args, context) => {
     const {apiClient, output, chalk, workDir, prompt} = context
     const client = apiClient()
