@@ -9,7 +9,9 @@ const stringifyStream = require('./stringifyStream')
 const validateOptions = require('./validateOptions')
 const rejectOnApiError = require('./rejectOnApiError')
 const getDocumentsStream = require('./getDocumentsStream')
-const skipSystemDocuments = require('./skipSystemDocuments')
+const filterSystemDocuments = require('./filterSystemDocuments')
+const filterDocumentTypes = require('./filterDocumentTypes')
+const filterDrafts = require('./filterDrafts')
 
 const noop = () => null
 
@@ -57,8 +59,10 @@ function exportDataset(opts) {
       inputStream,
       split(JSON.parse),
       rejectOnApiError,
-      skipSystemDocuments,
+      filterSystemDocuments,
       assetStreamHandler,
+      filterDocumentTypes(options.types),
+      options.drafts ? miss.through.obj() : filterDrafts,
       stringifyStream
     )
 
