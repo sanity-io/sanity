@@ -1,5 +1,6 @@
 import path from 'path'
 import fse from 'fs-extra'
+import prettyMs from 'pretty-ms'
 import {pathTools} from '@sanity/util'
 import exportDataset from '@sanity/export'
 import chooseDatasetPrompt from '../../actions/dataset/chooseDatasetPrompt'
@@ -10,12 +11,16 @@ const helpText = `
 Options
   --raw         Extract only documents, without rewriting asset references
   --no-assets   Export only non-asset documents and remove references to image assets
+  --no-drafts   Export only published versions of documents
   --no-compress Skips compressing tarball entries (still generates a gzip file)
+  --types       Defines which document types to export
+  --overwrite   Overwrite any file with the same name
 
 Examples
   sanity export moviedb localPath.tar.gz
   sanity export moviedb assetless.tar.gz --no-assets
   sanity export staging staging.tar.gz --raw
+  sanity export staging staging.tar.gz --types products,shops
 `
 
 export default {
@@ -30,6 +35,10 @@ export default {
     const [targetDataset, targetDestination] = args.argsWithoutOptions
     const flags = args.extOptions
     const {absolutify} = pathTools
+
+    if (flags.types) {
+      flags.types = `${flags.types}`.split(',')
+    }
 
     let dataset = targetDataset ? `${targetDataset}` : null
     if (!dataset) {
@@ -76,6 +85,7 @@ export default {
       currentStep = progress.step
     }
 
+    const start = Date.now()
     try {
       await exportDataset({
         client,
@@ -89,6 +99,8 @@ export default {
       spinner.fail()
       throw err
     }
+
+    output.print(`Export finished (${prettyMs(Date.now() - start)})`)
   }
 }
 
