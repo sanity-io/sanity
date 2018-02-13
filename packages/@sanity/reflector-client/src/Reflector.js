@@ -1,3 +1,4 @@
+/* eslint-disable import/no-commonjs */
 /* global window, navigator */
 
 import {Observable} from 'rxjs'
@@ -84,5 +85,4 @@ class Reflector {
   }
 }
 
-// eslint-disable-next-line import/no-commonjs
 module.exports = Reflector

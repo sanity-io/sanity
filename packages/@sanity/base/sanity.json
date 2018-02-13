@@ -365,6 +365,10 @@
       "path": "datastores/document"
     },
     {
+      "name": "part:@sanity/base/datastore/presence",
+      "path": "datastores/presence"
+    },
+    {
       "name": "part:@sanity/base/user",
       "path": "datastores/user"
     },

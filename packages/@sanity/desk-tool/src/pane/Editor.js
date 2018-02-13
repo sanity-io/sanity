@@ -20,6 +20,7 @@ import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
 import BinaryIcon from 'part:@sanity/base/binary-icon'
 import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 import documentStore from 'part:@sanity/base/datastore/document'
+import presenceStore from 'part:@sanity/base/datastore/presence'
 import schema from 'part:@sanity/base/schema'
 import Pane from 'part:@sanity/components/panes/default'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
@@ -270,6 +271,7 @@ export default withRouterHOC(
       if (this.duplicate$) {
         this.duplicate$.unsubscribe()
       }
+      presenceStore.reportMyState({})
     }
 
     // @todo move publishing notification out of this component
@@ -296,6 +298,11 @@ export default withRouterHOC(
 
     handleFocus = path => {
       this.setState({focusPath: path})
+
+      presenceStore.reportMyState({
+        documentId: this.props.router.state.selectedDocumentId,
+        path: path
+      })
     }
 
     handleBlur = () => {
@@ -312,8 +319,8 @@ export default withRouterHOC(
 
       this.duplicate$ = documentStore.create(duplicatedDocument).subscribe(copied => {
         const copyDocId = getPublishedId(copied._id)
-        const newPanes = router.state.panes.map((prev, i) =>
-          i === paneIndex - 1 && prev === prevId ? copyDocId : prev
+        const newPanes = router.state.panes.map(
+          (prev, i) => (i === paneIndex - 1 && prev === prevId ? copyDocId : prev)
         )
         router.navigate({
           ...router.state,
@@ -618,7 +625,8 @@ export default withRouterHOC(
               >
                 <div>
                   <div className={styles.popOverText}>
-                    <strong>Are you sure</strong> you want to discard all changes since last published?
+                    <strong>Are you sure</strong> you want to discard all changes since last
+                    published?
                   </div>
                   <ButtonGrid>
                     <Button kind="simple" onClick={this.handleCancelDiscard}>

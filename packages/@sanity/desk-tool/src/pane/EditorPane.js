@@ -5,6 +5,7 @@ import {merge, timer, of as observableOf} from 'rxjs'
 import {catchError, switchMap, map, mapTo, tap} from 'rxjs/operators'
 import {validateDocument} from '@sanity/validation'
 import {omit, throttle, debounce} from 'lodash'
+import presenceStore from 'part:@sanity/base/datastore/presence'
 import {FormBuilder, checkoutPair} from 'part:@sanity/form-builder'
 import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import schema from 'part:@sanity/base/schema'
@@ -22,6 +23,7 @@ const INITIAL_DOCUMENT_STATE = {
 }
 
 const INITIAL_STATE = {
+  markers: [],
   isSaving: true,
   isReconnecting: false,
   isCreatingDraft: false,
@@ -116,6 +118,9 @@ export default withDocumentType(
       const publishedId = getPublishedId(documentId)
       const draftId = getDraftId(documentId)
 
+      // Subscribe to state changes about all other users on the channel
+      this.presenceSubscription = presenceStore.presence.subscribe(this.presenceToMarkers)
+
       const {published, draft} = checkoutPair({publishedId, draftId})
       this.published = published
       this.draft = draft
@@ -129,8 +134,9 @@ export default withDocumentType(
         draft$.pipe(map(event => ({...event, version: 'draft'})))
       )
         .pipe(
-          switchMap(event =>
-            event.type === 'reconnect' ? timer(500).pipe(mapTo(event)) : observableOf(event)
+          switchMap(
+            event =>
+              event.type === 'reconnect' ? timer(500).pipe(mapTo(event)) : observableOf(event)
           ),
           catchError((err, _caught$) => {
             // eslint-disable-next-line no-console
@@ -155,6 +161,22 @@ export default withDocumentType(
         })
     }
 
+    presenceToMarkers = states => {
+      const currentDocument = states.filter(
+        presence => presence.documentId === this.props.documentId
+      )
+      const presenceMarkers = currentDocument.map(presence => ({
+        type: 'presence',
+        ...presence
+      }))
+
+      this.setState(prevState => ({
+        markers: prevState.markers
+          .filter(marker => marker.type !== 'presence')
+          .concat(presenceMarkers)
+      }))
+    }
+
     validateDocument = async () => {
       const {draft, published} = this.state
       const doc = (draft && draft.snapshot) || (published && published.snapshot)
@@ -170,7 +192,10 @@ export default withDocumentType(
       }
 
       const markers = await validateDocument(doc, schema)
-      this.setStateIfMounted({markers, validationPending: false})
+      this.setStateIfMounted(prevState => ({
+        markers: prevState.markers.filter(marker => marker.type !== 'validation').concat(markers),
+        validationPending: false
+      }))
       return markers
     }
 
@@ -229,6 +254,11 @@ export default withDocumentType(
         this.subscription = null
       }
 
+      if (this.presenceSubscription) {
+        this.presenceSubscription.unsubscribe()
+        this.presenceSubscription = null
+      }
+
       if (this.validateLatestDocument) {
         this.validateLatestDocument.cancel()
         this.validateLatestDocument = null
@@ -253,7 +283,8 @@ export default withDocumentType(
         .delete(getPublishedId(documentId))
         .delete(getDraftId(documentId))
 
-      tx.commit()
+      tx
+        .commit()
         .pipe(
           map(result => ({
             type: 'success',
@@ -291,7 +322,8 @@ export default withDocumentType(
         })
       }
 
-      tx.commit()
+      tx
+        .commit()
         .pipe(
           map(result => ({
             type: 'success',
@@ -329,20 +361,23 @@ export default withDocumentType(
       } else {
         // If it exists already, we only want to update it if the revision on the remote server
         // matches what our local state thinks it's at
-        tx.patch(getPublishedId(documentId), {
-          // Hack until other mutations support revision locking
-          unset: ['_reserved_prop_'],
-          ifRevisionID: published.snapshot._rev
-        }).createOrReplace({
-          ...omit(draft.snapshot, '_updatedAt'),
-          _id: getPublishedId(documentId)
-        })
+        tx
+          .patch(getPublishedId(documentId), {
+            // Hack until other mutations support revision locking
+            unset: ['_reserved_prop_'],
+            ifRevisionID: published.snapshot._rev
+          })
+          .createOrReplace({
+            ...omit(draft.snapshot, '_updatedAt'),
+            _id: getPublishedId(documentId)
+          })
       }
 
       tx.delete(getDraftId(documentId))
 
       // @todo add error handling for revision mismatch
-      tx.commit()
+      tx
+        .commit()
         .pipe(
           map(result => ({
             type: 'success',
@@ -493,14 +528,15 @@ export default withDocumentType(
               This document has the schema type <code>{typeName}</code>, which is not defined as a
               type in the local content studio schema.
             </p>
-            {__DEV__ && doc && (
-              <div>
-                <h4>Here is the JSON representation of the document:</h4>
-                <pre className={styles.jsonDump}>
-                  <code>{JSON.stringify(doc, null, 2)}</code>
-                </pre>
-              </div>
-            )}
+            {__DEV__ &&
+              doc && (
+                <div>
+                  <h4>Here is the JSON representation of the document:</h4>
+                  <pre className={styles.jsonDump}>
+                    <code>{JSON.stringify(doc, null, 2)}</code>
+                  </pre>
+                </div>
+              )}
           </div>
         </div>
       )

@@ -1,12 +1,13 @@
 /* eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React from 'react'
+import AnimateHeight from 'react-animate-height'
 
 import styles from 'part:@sanity/components/formfields/default-style'
 import DefaultLabel from 'part:@sanity/components/labels/default'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import ValidationList from 'part:@sanity/components/validation/list'
-import AnimateHeight from 'react-animate-height'
+import PresenceList from '../presence/PresenceList'
 
 export default class DefaultFormField extends React.Component {
   static propTypes = {
@@ -77,6 +78,7 @@ export default class DefaultFormField extends React.Component {
                 {description && <div className={styles.description}>{description}</div>}
               </div>
               <div className={styles.headerStatus}>
+                <PresenceList markers={markers.filter(marker => marker.type === 'presence')} />
                 <div onClick={this.handleToggleShowValidation} className={styles.validationStatus}>
                   <ValidationStatus markers={markers} />
                 </div>

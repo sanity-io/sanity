@@ -1,0 +1,9 @@
+.root {
+  background: transparent;
+  border: 2px solid transparent;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-size: 100%;
+  display: inline-block;
+}
