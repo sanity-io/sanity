@@ -655,8 +655,8 @@ export default class ImageTool extends React.PureComponent {
     const style = {
       maxWidth: '100%',
       maxHeight: '100%',
-      userSelect: 'none'
-      // ,outline: '1px dotted cyan'
+      userSelect: 'none',
+      display: 'block'
     }
     return (
       <DragAwareCanvas
