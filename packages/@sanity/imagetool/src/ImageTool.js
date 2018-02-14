@@ -5,6 +5,7 @@ import getBackingStoreRatio from './getBackingStoreRatio'
 import makeDragAware from './makeDragAware'
 import * as utils2d from './2d/utils'
 import {Rect} from './2d/shapes'
+import styles from './styles/ImageTool.css'
 
 import * as cursors from './cursors'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
@@ -652,24 +653,20 @@ export default class ImageTool extends React.PureComponent {
   render() {
     const {height, width} = this.props.image
     const ratio = this.state.devicePixelVsBackingStoreRatio
-    const style = {
-      maxWidth: '100%',
-      maxHeight: '100%',
-      userSelect: 'none',
-      display: 'block'
-    }
     return (
-      <DragAwareCanvas
-        ref={this.setCanvas}
-        onDrag={this.handleDrag}
-        onDragStart={this.handleDragStart}
-        onDragEnd={this.handleDragEnd}
-        onMouseMove={this.handleMouseMove}
-        onMouseOut={this.handleMouseOut}
-        style={style}
-        height={height * ratio}
-        width={width * ratio}
-      />
+      <div className={styles.root}>
+        <DragAwareCanvas
+          className={styles.canvas}
+          ref={this.setCanvas}
+          onDrag={this.handleDrag}
+          onDragStart={this.handleDragStart}
+          onDragEnd={this.handleDragEnd}
+          onMouseMove={this.handleMouseMove}
+          onMouseOut={this.handleMouseOut}
+          height={height * ratio}
+          width={width * ratio}
+        />
+      </div>
     )
   }
 }
