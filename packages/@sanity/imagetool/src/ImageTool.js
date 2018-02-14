@@ -202,7 +202,6 @@ export default class ImageTool extends React.PureComponent {
   }
 
   emitCropMove(pos) {
-    console.log('cropMove')
     const {image, onChange, value} = this.props
     const scale = this.getScale()
     const delta = {}
@@ -233,7 +232,6 @@ export default class ImageTool extends React.PureComponent {
     } else if (side == 'bottom' || side === 'bottomLeft' || side === 'bottomRight') {
       delta.bottom = -pos.y * scale / image.height
     }
-
 
     const newValue = limitToBounderies(value, delta).value
     const newDelta = limitToBounderies(value, delta).delta
