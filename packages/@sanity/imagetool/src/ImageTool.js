@@ -30,7 +30,7 @@ function checkCropBounderies(value, delta) {
   return true
 }
 
-function limitToBounderies(value, delta) {
+function limitToBoundaries(value, delta) {
   const {top, right, bottom, left} = value.crop
 
   const newValue = {...value}
@@ -234,8 +234,8 @@ export default class ImageTool extends React.PureComponent {
       delta.bottom = -pos.y * scale / image.height
     }
 
-    const newValue = limitToBounderies(value, delta).value
-    const newDelta = limitToBounderies(value, delta).delta
+    const newValue = limitToBoundaries(value, delta).value
+    const newDelta = limitToBoundaries(value, delta).delta
 
     onChange(this.applyCropMoveBy(newValue, newDelta))
   }

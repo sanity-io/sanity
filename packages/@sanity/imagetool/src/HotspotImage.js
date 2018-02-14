@@ -40,7 +40,7 @@ export default class HotspotImage extends React.PureComponent {
   static defaultProps = {
     alignX: 'center',
     alignY: 'center',
-    className: undefined,
+    className: '',
     crop: DEFAULT_CROP,
     hotspot: DEFAULT_HOTSPOT,
     aspectRatio: 'none'
@@ -138,7 +138,7 @@ export default class HotspotImage extends React.PureComponent {
       }
     })
     return (
-      <div className={className || styles.root} style={style} ref={this.setContainerElement}>
+      <div className={`${styles.root} ${className}`} style={style} ref={this.setContainerElement}>
         <div style={targetStyles.container}>
           <div style={targetStyles.padding} />
           <div style={targetStyles.crop}>
