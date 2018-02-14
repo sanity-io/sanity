@@ -261,7 +261,8 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
     const {
       selectedDocumentId,
       schemaType,
-      isCollapsed
+      isCollapsed,
+      router,
     } = this.props
 
     const {settings} = this.state
@@ -269,6 +270,8 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
       .find(option => option.name === settings.ordering) || DEFAULT_SELECTED_ORDERING_OPTION
     const params = {type: schemaType.name, draftsPath: `${DRAFTS_FOLDER}.**`}
     const query = `*[_type == $type] | order(${toGradientOrderClause(currentOrderingOption.by)}) [0...10000] {_id, _type}`
+    const {selectedType, action} = router.state
+    const isSelected = selectedType && !action && !selectedDocumentId
     return (
       <Pane
         {...this.props}
@@ -278,6 +281,7 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
         isCollapsed={isCollapsed}
         onMenuToggle={this.handleToggleMenu}
         scrollTop={this.state.scrollTop}
+        isSelected={isSelected}
       >
         <QueryContainer
           query={query}
@@ -323,13 +327,7 @@ export default withRouterHOC(class DocumentsPane extends React.PureComponent {
 
             return (
               <div className={styles[`layout__${settings.listLayout}`]}>
-                {loading && (
-                  <div className={styles.spinner}>
-                    <Spinner center message="Loading items…" />
-                  </div>
-                )
-                }
-
+                {loading && <Spinner center message="Loading items…" />}
                 {items && (
                   <ListView
                     onScroll={this.handleScroll}

@@ -12,23 +12,11 @@
 
 .root {
   display: block;
-
-  /*
-    TODO Remove this this when supporting mobile navigation in js
-  */
   background-color: var(--body-bg);
 
   @media (--screen-medium) {
     background-color: transparent;
   }
-
-  /* This makes the content behave strange. but fixes a safari bug
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  */
 }
 
 .hotkey {
@@ -105,14 +93,14 @@
   line-height: calc(2.75em / 0.8);
 }
 
-.spinnerContainer {
+.syncSpinnerContainer {
   display: inline-block;
   height: 1em;
   position: relative;
   margin-right: 1em;
 }
 
-.spinner {
+.syncSpinner {
   display: block;
   position: absolute;
   top: 0;

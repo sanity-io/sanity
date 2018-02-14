@@ -372,8 +372,8 @@ export default withRouterHOC(class Editor extends React.PureComponent {
       <div className={styles.paneFunctions}>
         {showSavingStatus && (
           <div className={styles.syncStatusSyncing}>
-            <span className={styles.spinnerContainer}>
-              <span className={styles.spinner}>
+            <span className={styles.syncSpinnerContainer}>
+              <span className={styles.syncSpinner}>
                 <SyncIcon />
               </span>
             </span> Syncing…
@@ -462,6 +462,7 @@ export default withRouterHOC(class Editor extends React.PureComponent {
         renderMenu={this.renderMenu}
         renderFunctions={this.renderFunctions}
         onMenuToggle={this.handleMenuToggle}
+        isSelected // last pane is always selected for now
       >
         <div className={styles.root}>
           {isCreatingDraft && (

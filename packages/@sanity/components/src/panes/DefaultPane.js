@@ -18,7 +18,6 @@ class Pane extends React.PureComponent {
     renderFunctions: PropTypes.func,
     children: PropTypes.node,
     isSelected: PropTypes.bool,
-    isScrollable: PropTypes.bool,
     onMenuToggle: PropTypes.func,
     className: PropTypes.string,
     styles: PropTypes.object,
@@ -110,14 +109,13 @@ class Pane extends React.PureComponent {
   }
 
   render() {
-    const {title, children, isSelected, renderFunctions, renderMenu, isCollapsed, isScrollable, styles} = this.props
+    const {title, children, isSelected, renderFunctions, renderMenu, isCollapsed, styles} = this.props
 
     return (
       <div
         className={`
           ${isCollapsed ? styles.isCollapsed : styles.root}
-          ${isScrollable ? styles.isScrollable : ''}
-          ${isSelected ? styles.isActive : ''}
+          ${isSelected ? styles.isActive : styles.isDisabled}
         `}
         ref={this.setRootElement}
       >

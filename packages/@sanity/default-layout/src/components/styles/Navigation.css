@@ -5,7 +5,10 @@
   position: relative;
   width: 100%;
   background-color: var(--component-bg);
-  height: 3rem;
+
+  @media (--screen-medium) {
+    height: 3rem;
+  }
 }
 
 .loginStatus {

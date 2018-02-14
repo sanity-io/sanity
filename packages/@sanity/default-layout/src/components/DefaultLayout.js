@@ -152,6 +152,17 @@ export default withRouterHOC(
               <span className={styles.createButtonText}>New</span>
               <Ink duration={200} opacity={0.1} radius={200} />
             </a>
+            <div className={styles.mobileCreateButton}>
+              <Button
+                kind="simple"
+                onClick={this.handleCreateButtonClick}
+                title="Create new item"
+                icon={PlusIcon}
+              >
+                New
+              </Button>
+            </div>
+
             <div className={styles.mobileMenuButton}>
               <Button
                 kind="simple"

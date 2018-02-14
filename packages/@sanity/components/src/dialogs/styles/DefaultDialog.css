@@ -99,7 +99,7 @@
   animation-iteration-count: once;
   transform-origin: center;
   height: auto;
-  width: auto;
+  width: calc(100vw - var(--medium-padding) * 2);
   box-sizing: border-box;
   background-color: var(--body-bg);
   transition: all 0.3s linear;
