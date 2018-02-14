@@ -17,7 +17,7 @@ const MARGIN_PX = 8
 const CROP_HANDLE_SIZE = 12
 const HOTSPOT_HANDLE_SIZE = 10
 
-function checkCropBounderies(value, delta) {
+function checkCropBoundaries(value, delta) {
   // Make the experience a little better. Still offsets when dragging back from outside
   if (
     value.crop.top + delta.top < 0 ||
@@ -212,7 +212,7 @@ export default class ImageTool extends React.PureComponent {
     delta.top = pos.y * scale / image.height
     delta.bottom = -pos.y * scale / image.height
 
-    if (checkCropBounderies(value, delta)) {
+    if (checkCropBoundaries(value, delta)) {
       onChange(this.applyCropMoveBy(value, delta))
     }
   }
