@@ -4,6 +4,7 @@ import calculateStyles from './calculateStyles'
 import Debug from 'debug'
 import {DEFAULT_HOTSPOT, DEFAULT_CROP} from './constants'
 import {debounce} from 'lodash'
+import styles from './styles/HotspotImage.css'
 
 const debug = Debug('sanity-imagetool')
 
@@ -39,6 +40,7 @@ export default class HotspotImage extends React.PureComponent {
   static defaultProps = {
     alignX: 'center',
     alignY: 'center',
+    className: undefined,
     crop: DEFAULT_CROP,
     hotspot: DEFAULT_HOTSPOT,
     aspectRatio: 'none'
@@ -136,7 +138,7 @@ export default class HotspotImage extends React.PureComponent {
       }
     })
     return (
-      <div className={className} style={style} ref={this.setContainerElement}>
+      <div className={className || styles.root} style={style} ref={this.setContainerElement}>
         <div style={targetStyles.container}>
           <div style={targetStyles.padding} />
           <div style={targetStyles.crop}>
