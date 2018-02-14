@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React from 'react'
 import getBackingStoreRatio from './getBackingStoreRatio'
@@ -14,6 +15,41 @@ const DragAwareCanvas = makeDragAware('canvas')
 const MARGIN_PX = 8
 const CROP_HANDLE_SIZE = 12
 const HOTSPOT_HANDLE_SIZE = 10
+
+function checkCropBounderies(value, delta) {
+  // Make the experience a little better. Still offsets when dragging back from outside
+  if (
+    value.crop.top + delta.top < 0 ||
+    value.crop.left + delta.left < 0 ||
+    value.crop.right + delta.right < 0 ||
+    value.crop.bottom + delta.bottom < 0
+  ) {
+    return false
+  }
+  return true
+}
+
+function limitToBounderies(value, delta) {
+  const {top, right, bottom, left} = value.crop
+
+  const newValue = {...value}
+
+  newValue.crop = {
+    top: top + (delta.top || 0) > 0 ? top : 0,
+    right: right + (delta.right || 0) > 0 ? right : 0,
+    bottom: bottom + (delta.bottom || 0) > 0 ? bottom : 0,
+    left: left + (delta.left || 0) > 0 ? left : 0
+  }
+
+  const newDelta = {
+    top: top + (delta.top || 0) > 0 ? delta.top || 0 : 0,
+    right: right + (delta.right || 0) > 0 ? delta.right || 0 : 0,
+    bottom: bottom + (delta.bottom || 0) > 0 ? delta.bottom || 0 : 0,
+    left: left + (delta.left || 0) > 0 ? delta.left || 0 : 0
+  }
+
+  return {value: newValue, delta: newDelta}
+}
 
 function getCropCursorForHandle(handle) {
   switch (handle) {
@@ -166,6 +202,7 @@ export default class ImageTool extends React.PureComponent {
   }
 
   emitCropMove(pos) {
+    console.log('cropMove')
     const {image, onChange, value} = this.props
     const scale = this.getScale()
     const delta = {}
@@ -175,7 +212,9 @@ export default class ImageTool extends React.PureComponent {
     delta.top = pos.y * scale / image.height
     delta.bottom = -pos.y * scale / image.height
 
-    onChange(this.applyCropMoveBy(value, delta))
+    if (checkCropBounderies(value, delta)) {
+      onChange(this.applyCropMoveBy(value, delta))
+    }
   }
 
   emitCrop(side, pos) {
@@ -195,7 +234,11 @@ export default class ImageTool extends React.PureComponent {
       delta.bottom = -pos.y * scale / image.height
     }
 
-    onChange(this.applyCropMoveBy(value, delta))
+
+    const newValue = limitToBounderies(value, delta).value
+    const newDelta = limitToBounderies(value, delta).delta
+
+    onChange(this.applyCropMoveBy(newValue, newDelta))
   }
 
   emitResize(pos) {
