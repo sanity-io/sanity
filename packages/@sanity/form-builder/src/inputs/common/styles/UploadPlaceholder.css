@@ -80,19 +80,3 @@
     opacity: 1;
   }
 }
-
-.eye {
-  stroke: red;
-}
-
-.eyeRight {
-  /* animation: eye-right_d 1s linear both; */
-}
-
-.eyeLeft {
-  /* animation: eye-left_d 1s linear both; */
-}
-
-.smile {
-  /* animation: smile_d 1s linear both; */
-}
