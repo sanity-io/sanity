@@ -232,7 +232,7 @@ export default class FileInput extends React.PureComponent<Props, State> {
   }
 
   renderField(field: FieldT) {
-    const {value, level, onBlur, focusPath} = this.props
+    const {value, level, onFocus, onBlur, focusPath} = this.props
     const fieldValue = value && value[field.name]
 
     return (
@@ -242,7 +242,7 @@ export default class FileInput extends React.PureComponent<Props, State> {
         type={field.type}
         onChange={ev => this.handleFieldChange(ev, field)}
         path={[field.name]}
-        onFocus={this.handleFocus}
+        onFocus={onFocus}
         onBlur={onBlur}
         focusPath={focusPath}
         level={level}

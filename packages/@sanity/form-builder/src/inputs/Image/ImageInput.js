@@ -260,7 +260,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
   }
 
   renderField(field: FieldT) {
-    const {value, level, focusPath} = this.props
+    const {value, level, focusPath, onFocus, onBlur} = this.props
     const fieldValue = value && value[field.name]
 
     return (
@@ -273,8 +273,8 @@ export default class ImageInput extends React.PureComponent<Props, State> {
           type={field.type}
           onChange={ev => this.handleFieldChange(ev, field)}
           path={[field.name]}
-          onFocus={this.handleFocus}
-          onBlur={this.handleBlur}
+          onFocus={onFocus}
+          onBlur={onBlur}
           focusPath={focusPath}
           level={level}
         />
