@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import type {Node} from 'react'
 // @flow
 import React from 'react'
@@ -52,7 +53,8 @@ type Props = {
 type State = {
   isAdvancedEditOpen: boolean,
   isUploading: boolean,
-  isSelectAssetOpen: boolean
+  isSelectAssetOpen: boolean,
+  hasFocus: boolean
 }
 
 const HIDDEN_FIELDS = ['asset', 'hotspot', 'crop']
@@ -63,7 +65,8 @@ export default class ImageInput extends React.PureComponent<Props, State> {
     isUploading: false,
     uploadError: null,
     isAdvancedEditOpen: false,
-    isSelectAssetOpen: false
+    isSelectAssetOpen: false,
+    hasFocus: false
   }
 
   handleRemoveButtonClick = (event: SyntheticEvent<*>) => {
@@ -257,7 +260,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
   }
 
   renderField(field: FieldT) {
-    const {value, level, onBlur, focusPath, onFocus} = this.props
+    const {value, level, focusPath} = this.props
     const fieldValue = value && value[field.name]
 
     return (
@@ -270,8 +273,8 @@ export default class ImageInput extends React.PureComponent<Props, State> {
           type={field.type}
           onChange={ev => this.handleFieldChange(ev, field)}
           path={[field.name]}
-          onFocus={onFocus}
-          onBlur={onBlur}
+          onFocus={this.handleFocus}
+          onBlur={this.handleBlur}
           focusPath={focusPath}
           level={level}
         />
@@ -283,6 +286,20 @@ export default class ImageInput extends React.PureComponent<Props, State> {
     if (this._focusArea) {
       this._focusArea.focus()
     }
+  }
+
+  handleFocus = event => {
+    this.setState({
+      hasFocus: true
+    })
+    this.props.onFocus(event)
+  }
+
+  handleBlur = event => {
+    this.props.onBlur(event)
+    this.setState({
+      hasFocus: false
+    })
   }
 
   setFocusArea = (el: ?FocusArea) => {
@@ -301,9 +318,9 @@ export default class ImageInput extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {type, value, level, onFocus, materialize} = this.props
+    const {type, value, level, materialize} = this.props
 
-    const {isAdvancedEditOpen, isSelectAssetOpen, uploadError} = this.state
+    const {isAdvancedEditOpen, isSelectAssetOpen, uploadError, hasFocus} = this.state
 
     const [highlightedFields, otherFields] = partition(
       type.fields.filter(field => !HIDDEN_FIELDS.includes(field.name)),
@@ -319,7 +336,8 @@ export default class ImageInput extends React.PureComponent<Props, State> {
         legend={type.title}
         description={type.description}
         level={level}
-        onFocus={onFocus}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
         className={styles.root}
         onUpload={this.handleUpload}
         getUploadOptions={this.getUploadOptions}
@@ -345,7 +363,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
               <WithMaterializedReference reference={value.asset} materialize={materialize}>
                 {this.renderMaterializedAsset}
               </WithMaterializedReference>
-            ) : <UploadPlaceholder />}
+            ) : <UploadPlaceholder hasFocus={hasFocus} />}
           </div>
           {highlightedFields.length > 0 && (
             <div className={styles.fieldsWrapper}>
