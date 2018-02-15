@@ -7,6 +7,7 @@ import FileInputButton from 'part:@sanity/components/fileinput/button'
 import ProgressCircle from 'part:@sanity/components/progress/circle'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import UploadIcon from 'part:@sanity/base/upload-icon'
+import VisibilityIcon from 'part:@sanity/base/visibility-icon'
 import {get, partition} from 'lodash'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import styles from './styles/ImageInput.css'
@@ -395,7 +396,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
           </Button>}
           {showAdvancedEditButton && (
             <Button
-              icon={!readOnly && EditIcon}
+              icon={readOnly ? VisibilityIcon : EditIcon}
               kind="simple"
               title={readOnly ? 'View details' : 'Edit details'}
               onClick={this.handleStartAdvancedEdit}

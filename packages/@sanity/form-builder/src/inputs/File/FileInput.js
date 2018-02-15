@@ -6,6 +6,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import FileInputButton from 'part:@sanity/components/fileinput/button'
 import ProgressBar from 'part:@sanity/components/progress/bar'
 import EditIcon from 'part:@sanity/base/edit-icon'
+import VisibilityIcon from 'part:@sanity/base/visibility-icon'
 import FileIcon from 'part:@sanity/base/file-icon'
 import UploadIcon from 'part:@sanity/base/upload-icon'
 import {get, partition} from 'lodash'
@@ -349,7 +350,7 @@ export default class FileInput extends React.PureComponent<Props, State> {
           )}
           {value && otherFields.length > 0 && (
             <Button
-              icon={!readOnly && EditIcon}
+              icon={readOnly ? VisibilityIcon : EditIcon}
               kind="simple"
               title={readOnly ? 'View details' : 'Edit details'}
               onClick={this.handleStartAdvancedEdit}

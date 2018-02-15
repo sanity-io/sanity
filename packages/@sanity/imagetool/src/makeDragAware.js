@@ -16,7 +16,7 @@ export default function makeDragAware(Component) {
       onDragStart: PropTypes.func.isRequired,
       onDrag: PropTypes.func.isRequired,
       onDragEnd: PropTypes.func.isRequired,
-      readOnly: PropTypes.boolean
+      readOnly: PropTypes.bool
     }
 
     currentPos = null
