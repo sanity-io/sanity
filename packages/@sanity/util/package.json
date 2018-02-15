@@ -7,6 +7,9 @@
     "clean": "rimraf lib",
     "test": "mocha test/**/*.test.js"
   },
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git"
