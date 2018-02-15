@@ -1,13 +1,8 @@
 // @flow
-type KeyedSegment = {
-  _key: string
-}
+
+import type {Path} from './path'
 
 type JSONValue = number | string | boolean | {[string]: JSONValue} | JSONValue[]
-
-export type PathSegment = string | number | KeyedSegment
-
-export type Path = Array<PathSegment>
 
 export type Origin = 'remote' | 'local'
 
