@@ -34,7 +34,7 @@
   "devDependencies": {
     "flow-typed": "^2.2.3",
     "jest": "^22.0.5",
-    "prettier": "^1.10.1"
+    "prettier": "^1.10.2"
   },
   "publishConfig": {
     "access": "public"

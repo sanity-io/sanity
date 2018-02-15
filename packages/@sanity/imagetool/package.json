@@ -24,7 +24,7 @@
     "error-capture-middleware": "0.0.2",
     "express": "^4.16.1",
     "history": "^4.6.3",
-    "mocha": "^3.2.0",
+    "mocha": "^5.0.1",
     "prop-types": "^15.6.0",
     "quickreload": "^2.1.2",
     "react": "^15.6.1",

@@ -29,14 +29,14 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
-    "fs-extra": "^4.0.2",
+    "fs-extra": "^5.0.0",
     "lodash": "^4.17.4",
     "resolve-from": "^4.0.0"
   },
   "devDependencies": {
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
-    "mocha": "^3.2.0",
+    "mocha": "^5.0.1",
     "rimraf": "^2.6.2"
   }
 }
