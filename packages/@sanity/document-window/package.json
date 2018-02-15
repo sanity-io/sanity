@@ -1,6 +1,6 @@
 {
   "name": "@sanity/document-window",
-  "version": "0.125.6",
+  "version": "0.125.7",
   "description": "Utility to keep a window of documents in sync",
   "main": "src/DocumentWindow.js",
   "scripts": {
@@ -27,7 +27,7 @@
     "dot-prop": "^4.2.0"
   },
   "devDependencies": {
-    "@sanity/client": "^0.125.6",
+    "@sanity/client": "^0.125.7",
     "@sanity/observable": "^0.125.6",
     "chalk": "^2.3.0",
     "hard-rejection": "^1.0.0",
