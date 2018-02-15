@@ -33,9 +33,9 @@
   "devDependencies": {
     "@types/node": "6.0.52",
     "empty": "^0.10.1",
-    "flow-typed": "^2.2.0",
-    "jest": "^21.2.1",
-    "prettier": "^1.7.4",
+    "flow-typed": "^2.2.3",
+    "jest": "^22.0.5",
+    "prettier": "^1.10.2",
     "recursive-readdir": "^2.1.0",
     "rimraf": "^2.6.2"
   },

@@ -44,8 +44,8 @@
     "@sanity/client": "^0.125.8",
     "file-url": "^2.0.2",
     "get-it": "^4.0.1",
-    "jest": "^21.2.1",
-    "prettier": "^1.7.4",
+    "jest": "^22.0.5",
+    "prettier": "^1.10.2",
     "rimraf": "^2.6.2"
   },
   "repository": {
