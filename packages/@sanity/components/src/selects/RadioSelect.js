@@ -9,6 +9,7 @@ export default class RadioSelect extends React.Component {
     direction: PropTypes.oneOf(['horizontal', 'vertical']),
     onChange: PropTypes.func,
     value: PropTypes.object,
+    readOnly: PropTypes.bool,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string,

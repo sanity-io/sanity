@@ -143,6 +143,7 @@ export default class StatelessSearchableSelect extends React.PureComponent {
       highlightIndex,
       isInputSelected,
       inputValue,
+      readOnly,
       onChange,
       onInputChange,
       onOpen,
@@ -168,6 +169,7 @@ export default class StatelessSearchableSelect extends React.PureComponent {
             value={inputValue || ''}
             selected={isInputSelected}
             disabled={disabled}
+            readOnly={readOnly}
             ref={this.setInput}
           />
           <div className={styles.functions}>
@@ -177,13 +179,13 @@ export default class StatelessSearchableSelect extends React.PureComponent {
               )
             }
             {
-              onClear && value && !this.props.readOnly && (
+              onClear && value && !readOnly && (
                 <button type="button" className={styles.clearButton} onClick={onClear}>
                   <CloseIcon color="inherit" />
                 </button>
               )
             }
-            {!isLoading && !this.props.readOnly && (
+            {!isLoading && !readOnly && (
               <div
                 className={styles.arrow}
                 onClick={disabled ? null : this.handleArrowClick}
