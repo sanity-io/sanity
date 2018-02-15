@@ -22,15 +22,15 @@ export default function getDevServer(config = {}) {
 
   // Apply the dev and hot middlewares to build/serve bundles on the fly
   const compiler = webpack(webpackConfig)
-  app.use(webpackDevMiddleware(compiler, {
-    quiet: true,
-    noInfo: true,
-    watchOptions: {
-      ignored: /node_modules/
-    },
-    publicPath: webpackConfig.output.publicPath,
-    stats: true
-  }))
+  app.use(
+    webpackDevMiddleware(compiler, {
+      logLevel: 'silent',
+      watchOptions: {
+        ignored: /node_modules/
+      },
+      publicPath: webpackConfig.output.publicPath
+    })
+  )
 
   app.use(webpackHotMiddleware(compiler))
 
