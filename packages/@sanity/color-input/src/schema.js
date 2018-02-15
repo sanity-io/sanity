@@ -17,6 +17,39 @@ export default {
       title: 'Alpha',
       name: 'alpha',
       type: 'number'
+    },
+    {
+      title: 'Hue Saturation Lightness',
+      name: 'hsl',
+      type: 'object',
+      fields: [
+        {name: 'h', type: 'number', title: 'Hue'},
+        {name: 's', type: 'number', title: 'Saturation'},
+        {name: 'l', type: 'number', title: 'Lightness'},
+        {name: 'a', type: 'number', title: 'Alpha'}
+      ]
+    },
+    {
+      title: 'Hue Saturation Value',
+      name: 'hsv',
+      type: 'object',
+      fields: [
+        {name: 'h', type: 'number', title: 'Hue'},
+        {name: 's', type: 'number', title: 'Saturation'},
+        {name: 'v', type: 'number', title: 'Value'},
+        {name: 'a', type: 'number', title: 'Alpha'}
+      ]
+    },
+    {
+      title: 'Red Green Blue (rgb)',
+      name: 'rgb',
+      type: 'object',
+      fields: [
+        {name: 'r', type: 'number', title: 'Red'},
+        {name: 'g', type: 'number', title: 'Green'},
+        {name: 'b', type: 'number', title: 'Blue'},
+        {name: 'a', type: 'number', title: 'Alpha'}
+      ]
     }
   ],
   preview: {
