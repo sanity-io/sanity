@@ -1,10 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import Button from 'part:@sanity/components/buttons/default'
 import {ColorWrap, Checkboard, Saturation, Hue, Alpha} from 'react-color/lib/components/common'
 import ColorPickerFields from './ColorPickerFields'
+import TrashIcon from 'part:@sanity/base/trash-icon'
 import styles from './ColorPicker.css'
 
-const ColorPicker = ({width, rgb, hex, hsv, hsl, onChange, disableAlpha, renderers}) => {
+const ColorPicker = ({width, rgb, hex, hsv, hsl, onChange, onUnset, disableAlpha, renderers}) => {
   return (
     <div style={{width}}>
       <div className={styles.saturation}>
@@ -63,6 +65,7 @@ const ColorPicker = ({width, rgb, hex, hsv, hsl, onChange, disableAlpha, rendere
             onChange={onChange}
             disableAlpha={disableAlpha}
           />
+          <Button onClick={onUnset} title="Delete color" icon={TrashIcon} color="danger" />
         </div>
       </div>
     </div>
@@ -77,7 +80,8 @@ ColorPicker.propTypes = {
   rgb: PropTypes.object,
   onChange: PropTypes.func,
   disableAlpha: PropTypes.bool,
-  renderers: PropTypes.func
+  renderers: PropTypes.func,
+  onUnset: PropTypes.func
 }
 
 ColorPicker.defaultProps = {
