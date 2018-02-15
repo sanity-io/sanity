@@ -1,4 +1,5 @@
 import icon from 'react-icons/lib/md/text-format'
+import React from 'react'
 
 export default {
   name: 'readOnlyTest',
@@ -123,6 +124,13 @@ export default {
       }
     },
     {
+      name: 'date',
+      title: 'Date',
+      description: 'A read only date',
+      type: 'datetime',
+      readOnly: true
+    },
+    {
       name: 'tags',
       title: 'Tags',
       description: 'Enter a tag and press enter. Should result in an array of strings and should be possible to remove items',
@@ -208,13 +216,63 @@ export default {
         },
         {
           type: 'number',
-          title: 'Number'
+          title: 'Number',
         },
         {
           type: 'boolean',
           title: 'Boolean'
         }
       ]
-    }
+    },
+    {
+      name: 'readOnlyArrayOfPredefinedOptions',
+      title: 'Read only array of predefined options',
+      type: 'array',
+      readOnly: true,
+      of: [
+        {
+          type: 'object',
+          name: 'color',
+          fields: [
+            {
+              name: 'title',
+              type: 'string',
+            },
+            {
+              name: 'name',
+              type: 'string',
+            }
+          ],
+          preview: {
+            select: {
+              title: 'title',
+              name: 'name'
+            },
+            prepare({title, name}) {
+              return {
+                title: title,
+                media: () => (
+                  <div
+                    style={{
+                      backgroundColor: name,
+                      height: '100%', width: '100%'
+                    }}
+                  />
+                )
+              }
+            }
+          }
+        }
+      ],
+      options: {
+        direction: 'vertical',
+        list: [
+          {_type: 'color', title: 'Red', name: 'red', _key: 'red'},
+          {_type: 'color', title: 'Green', name: 'green', _key: 'green'},
+          {_type: 'color', title: 'Blue', name: 'blue', _key: 'blue'},
+          {_type: 'color', title: 'Black', name: 'black', _key: 'black'},
+        ]
+      },
+    },
   ]
 }
