@@ -43,6 +43,7 @@ export default class ObjectInput extends React.PureComponent {
     focusPath: PropTypes.array,
     onBlur: PropTypes.func.isRequired,
     level: PropTypes.number,
+    readOnly: PropTypes.bool,
     isRoot: PropTypes.bool
   }
 
@@ -91,7 +92,7 @@ export default class ObjectInput extends React.PureComponent {
       return null
     }
 
-    const {value, focusPath, onFocus, onBlur} = this.props
+    const {value, readOnly, type, focusPath, onFocus, onBlur} = this.props
     const fieldValue = value && value[field.name]
     return (
       <Field
@@ -103,6 +104,7 @@ export default class ObjectInput extends React.PureComponent {
         onBlur={onBlur}
         focusPath={focusPath}
         level={level}
+        readOnly={readOnly}
         ref={index === 0 && this.setFirstField}
       />
     )

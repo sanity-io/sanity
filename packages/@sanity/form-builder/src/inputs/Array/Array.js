@@ -48,6 +48,7 @@ type Props = {
   onFocus: Path => void,
   onBlur: () => void,
   focusPath: Path,
+  readOnly: ?boolean,
   resolveUploader?: (type: Type, file: File) => Uploader
 }
 
@@ -208,8 +209,7 @@ export default class ArrayInput extends React.Component<Props, State> {
   }
 
   renderList = () => {
-    const {type, value, focusPath, onBlur, onFocus, level} = this.props
-    const {readOnly} = type
+    const {type, readOnly, value, focusPath, onBlur, onFocus, level} = this.props
     const {isMoving} = this.state
     const options = type.options || {}
 
@@ -253,6 +253,7 @@ export default class ArrayInput extends React.Component<Props, State> {
                 onChange={this.handleItemChange}
                 focusPath={focusPath}
                 onFocus={onFocus}
+                readOnly={readOnly}
                 onBlur={onBlur}
               />
             </Item>
@@ -305,7 +306,7 @@ export default class ArrayInput extends React.Component<Props, State> {
   }
 
   render() {
-    const {type, level, value} = this.props
+    const {type, level, readOnly, value} = this.props
 
     return (
       <UploadTargetFieldset
@@ -321,7 +322,7 @@ export default class ArrayInput extends React.Component<Props, State> {
         ref={this.setElement}
       >
         {value && value.length > 0 && this.renderList()}
-        {!type.readOnly && (
+        {!readOnly && (
           <div className={styles.functions}>
             {this.props.type.of.length === 1 && (
               <Button onClick={this.handleAddBtnClick} className={styles.addButton}>

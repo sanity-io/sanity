@@ -51,6 +51,7 @@ type Props = {
   onChange: (PatchEvent, ItemValue) => void,
   onFocus: (Path) => void,
   onBlur: void => void,
+  readOnly: ?boolean,
   focusPath: Path
 }
 
@@ -148,7 +149,7 @@ export default class RenderItemValue extends React.Component<Props> {
   }
 
   renderEditItemForm(item: ItemValue): Node {
-    const {type, focusPath, onFocus, onBlur} = this.props
+    const {type, focusPath, onFocus, onBlur, readOnly} = this.props
     const options = type.options || {}
 
     const memberType = this.getMemberType() || {}
@@ -162,6 +163,7 @@ export default class RenderItemValue extends React.Component<Props> {
         onFocus={onFocus}
         onBlur={onBlur}
         focusPath={focusPath}
+        readOnly={readOnly || memberType.readOnly}
         path={[{_key: item._key}]}
       />
     )
@@ -217,11 +219,11 @@ export default class RenderItemValue extends React.Component<Props> {
   }
 
   renderItem() {
-    const {value, type} = this.props
-    const {readOnly} = type
+    const {value, type, readOnly} = this.props
+
     const options = type.options || {}
     const isGrid = options.layout === 'grid'
-    const isSortable = !readOnly && options.sortable !== false
+    const isSortable = (!readOnly && !type.readOnly) && options.sortable !== false
     const previewLayout = isGrid ? 'media' : 'default'
 
     return (

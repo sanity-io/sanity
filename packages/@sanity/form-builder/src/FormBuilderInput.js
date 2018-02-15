@@ -12,6 +12,7 @@ type Props = {
   onChange: PatchEvent => void,
   onFocus: Path => void,
   onBlur: () => void,
+  readOnly: boolean,
   focusPath: Path,
   level: number,
   isRoot: boolean,
@@ -154,6 +155,7 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
       onFocus,
       onBlur,
       path,
+      readOnly,
       value,
       type,
       level,
@@ -182,6 +184,7 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
           {...rootProps}
           {...leafProps}
           value={value}
+          readOnly={readOnly || type.readOnly}
           type={type}
           onChange={this.handleChange}
           onFocus={this.handleFocus}

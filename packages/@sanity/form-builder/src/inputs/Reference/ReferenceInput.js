@@ -192,6 +192,7 @@ export default class ReferenceInput extends React.Component<Props, State> {
       type,
       value,
       level,
+      readOnly,
       onSearch,
       getPreviewSnapshot,
       ...rest
@@ -240,7 +241,7 @@ export default class ReferenceInput extends React.Component<Props, State> {
             isLoading={isFetching}
             items={hits}
             ref={this.setInput}
-            readOnly={type.readOnly}
+            readOnly={readOnly}
           />
         </div>
       </FormField>

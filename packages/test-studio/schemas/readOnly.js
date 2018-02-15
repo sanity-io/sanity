@@ -79,6 +79,16 @@ export default {
       to: [{type: 'book'}, {type: 'author'}]
     },
     {
+      name: 'anObject',
+      type: 'object',
+      title: 'A read only object',
+      readOnly: true,
+      fields: [
+        {name: 'first', type: 'string'},
+        {name: 'second', type: 'string'}
+      ]
+    },
+    {
       name: 'myObject',
       type: 'myObject',
       title: 'MyObject',
@@ -131,6 +141,57 @@ export default {
         {
           title: 'A book',
           type: 'book'
+        }
+      ]
+    },
+    {
+      name: 'readOnlyImage',
+      title: 'Read only image field',
+      type: 'image',
+      readOnly: true,
+      options: {hotspot: true},
+      fields: [
+        {
+          title: 'Caption',
+          type: 'string',
+          name: 'caption',
+          options: {isHighlighted: true}
+        },
+        {
+          title: 'Attribution',
+          name: 'attribution',
+          type: 'string',
+          options: {isHighlighted: true}
+        },
+        {
+          title: 'Extra',
+          name: 'extra',
+          type: 'string'
+        }
+      ]
+    },
+    {
+      name: 'readOnlyFile',
+      title: 'Read only file field',
+      type: 'file',
+      readOnly: true,
+      fields: [
+        {
+          title: 'Caption',
+          type: 'string',
+          name: 'caption',
+          options: {isHighlighted: true}
+        },
+        {
+          title: 'Attribution',
+          name: 'attribution',
+          type: 'string',
+          options: {isHighlighted: true}
+        },
+        {
+          title: 'Extra',
+          name: 'extra',
+          type: 'string'
         }
       ]
     }

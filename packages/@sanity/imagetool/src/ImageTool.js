@@ -280,7 +280,7 @@ export default class ImageTool extends React.PureComponent {
 
   paintHotspot(context, opacity) {
 
-    const {image} = this.props
+    const {image, readOnly} = this.props
 
     const imageRect = new Rect().setSize(image.width, image.height)
 
@@ -295,7 +295,9 @@ export default class ImageTool extends React.PureComponent {
     context.clip()
     drawHole()
     context.restore()
-    drawDragHandle(Math.PI * 1.25)
+    if (!readOnly) {
+      drawDragHandle(Math.PI * 1.25)
+    }
 
     function drawEllipse() {
       context.save()
@@ -465,6 +467,7 @@ export default class ImageTool extends React.PureComponent {
   }
 
   paint(context) {
+    const {readOnly} = this.props
     context.save()
 
     const pxratio = this.state.devicePixelVsBackingStoreRatio
@@ -479,7 +482,9 @@ export default class ImageTool extends React.PureComponent {
     this.debug(context)
     this.paintCropBorder(context)
 
-    this.highlightCropHandles(context, opacity)
+    if (!readOnly) {
+      this.highlightCropHandles(context, opacity)
+    }
 
     if (this.state.mousePosition) {
       // this.paintMousePosition(context)
@@ -651,20 +656,21 @@ export default class ImageTool extends React.PureComponent {
   }
 
   render() {
-    const {height, width} = this.props.image
+    const {image, readOnly} = this.props
     const ratio = this.state.devicePixelVsBackingStoreRatio
     return (
       <div className={styles.root}>
         <DragAwareCanvas
           className={styles.canvas}
+          readOnly={readOnly}
           ref={this.setCanvas}
           onDrag={this.handleDrag}
           onDragStart={this.handleDragStart}
           onDragEnd={this.handleDragEnd}
           onMouseMove={this.handleMouseMove}
           onMouseOut={this.handleMouseOut}
-          height={height * ratio}
-          width={width * ratio}
+          height={image.height * ratio}
+          width={image.width * ratio}
         />
       </div>
     )
