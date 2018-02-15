@@ -11,6 +11,9 @@
   "bin": {
     "sanity-server": "./bin/sanity-server.js"
   },
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git"

@@ -14,6 +14,7 @@
     "headless",
     "realtime",
     "content",
+    "production-preview",
     "color-input",
     "sanity-plugin"
   ],

@@ -17,7 +17,7 @@
     "content",
     "document-store"
   ],
-  "author": "",
+  "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
     "@sanity/mutator": "^0.125.8",

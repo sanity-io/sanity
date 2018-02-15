@@ -6,7 +6,10 @@
   "bin": {
     "sanity-check": "./src/bin.js"
   },
-  "author": "Espen Hovlandsdal <espen@hovlandsdal.com>",
+  "author": "Sanity.io <hello@sanity.io>",
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "license": "MIT",
   "scripts": {
     "prepublish": "in-publish && ./src/bin.js || not-in-publish"
