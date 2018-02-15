@@ -11,7 +11,7 @@
     "content",
     "uuid"
   ],
-  "author": "",
+  "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
     "uuid": "3.1.0"

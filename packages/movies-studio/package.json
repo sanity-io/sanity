@@ -11,7 +11,12 @@
     "test": "sanity check"
   },
   "keywords": [
-    "sanity"
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "movies-studio"
   ],
   "dependencies": {
     "@sanity/base": "^0.125.8",
@@ -27,5 +32,13 @@
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-icons": "^2.2.5"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
   }
 }
