@@ -19,7 +19,7 @@
     "content",
     "schema"
   ],
-  "author": "",
+  "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
     "@sanity/generate-help-url": "^0.125.6",

@@ -17,6 +17,9 @@
     "webpack-integration",
     "webpack"
   ],
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "bugs": {

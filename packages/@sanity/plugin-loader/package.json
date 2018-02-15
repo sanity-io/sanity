@@ -7,6 +7,9 @@
     "test": "ava",
     "coverage": "nyc --reporter=html ava"
   },
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git"
