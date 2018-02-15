@@ -110,7 +110,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   }
 
   renderItem = (item, index) => {
-    const {type, level, value, focusPath, onChange, onFocus, onBlur} = this.props
+    const {type, level, value, focusPath, onChange, onFocus, readOnly, onBlur} = this.props
 
     const typeName = resolveTypeName(item)
     const itemMemberType = this.getMemberType(typeName)
@@ -135,6 +135,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
           level={level + 1}
           index={index}
           value={item}
+          readOnly={readOnly}
           isSortable={isSortable}
           type={itemMemberType}
           focusPath={focusPath}
@@ -197,7 +198,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   }
 
   render() {
-    const {type, value, level, onFocus} = this.props
+    const {type, value, level, readOnly, onFocus} = this.props
     return (
       <Fieldset
         legend={type.title}
@@ -211,13 +212,15 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
           <div className={styles.list}>
             {value && value.length > 0 && this.renderList(value)}
           </div>
-          <div className={styles.functions}>
-            {type.of.length === 1 ? (
-              <Button onClick={this.handleAddBtnClick} className={styles.addButton}>
-                Add
-              </Button>
-            ) : this.renderSelectType()}
-          </div>
+          {!readOnly && (
+            <div className={styles.functions}>
+              {type.of.length === 1 ? (
+                <Button onClick={this.handleAddBtnClick} className={styles.addButton}>
+                  Add
+                </Button>
+              ) : this.renderSelectType()}
+            </div>
+          )}
         </div>
       </Fieldset>
     )

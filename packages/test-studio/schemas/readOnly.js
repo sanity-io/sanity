@@ -194,6 +194,27 @@ export default {
           type: 'string'
         }
       ]
+    },
+    {
+      name: 'readOnlyArrayOfPrimitives',
+      title: 'Array with primitive types',
+      description: 'This array contains only strings, values and booleans',
+      type: 'array',
+      readOnly: true,
+      of: [
+        {
+          type: 'string',
+          title: 'String'
+        },
+        {
+          type: 'number',
+          title: 'Number'
+        },
+        {
+          type: 'boolean',
+          title: 'Boolean'
+        }
+      ]
     }
   ]
 }

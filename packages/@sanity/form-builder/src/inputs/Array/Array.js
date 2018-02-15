@@ -12,7 +12,7 @@ import {resolveTypeName} from '../../utils/resolveTypeName'
 import type {Uploader} from '../../sanity/uploads/typedefs'
 import type {Type} from '../../typedefs'
 import type {Path} from '../../typedefs/path'
-import {FOCUS_TERMINATOR, isExpanded} from '../../utils/pathUtils'
+import {FOCUS_TERMINATOR} from '../../utils/pathUtils'
 import type {Subscription} from '../../typedefs/observable'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 
