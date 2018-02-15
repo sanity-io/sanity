@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 /* eslint-disable no-console, no-process-exit, no-sync */
-const fse = require('fs-extra')
 const path = require('path')
+const fse = require('fs-extra')
 const webpack = require('webpack')
 const klawSync = require('klaw-sync')
 
-const lazyLoader = require.resolve('./lazy-loader')
 const shebangLoader = require.resolve('./shebang-loader')
 const basedir = path.join(__dirname, '..')
 const modulesDir = path.join(basedir, 'node_modules')
@@ -18,7 +17,9 @@ console.log('Building CLI to a single file')
 
 // Make sure there are no native modules
 const isBinding = file => path.basename(file.path) === 'binding.gyp'
-const bindings = klawSync(modulesDir, {nodir: true, filter: isBinding}).filter(whitelistNative)
+const bindings = klawSync(modulesDir, {nodir: true, filter: isBinding}).filter(
+  whitelistNative
+)
 
 if (bindings.length > 0) {
   console.error('Eek! Found native module at:')
@@ -30,7 +31,9 @@ const opnDir = path.dirname(require.resolve('opn'))
 const xdgPath = path.join(opnDir, 'xdg-open')
 fse.copy(xdgPath, path.join(basedir, 'bin', 'xdg-open'))
 
-const babelRc = JSON.parse(fse.readFileSync(path.join(basedir, '.babelrc'), 'utf8'))
+const babelRc = JSON.parse(
+  fse.readFileSync(path.join(basedir, '.babelrc'), 'utf8')
+)
 
 // Use the real node __dirname and __filename in order to get Yarn's source
 // files on the user's system. See constants.js
@@ -58,10 +61,6 @@ const compiler = webpack({
       {
         test: /node_modules[/\\]rc[/\\]/,
         use: [{loader: shebangLoader}]
-      },
-      {
-        test: /node_modules[/\\]update-notifier[/\\].*\.js$/,
-        use: [{loader: lazyLoader}]
       }
     ]
   },
