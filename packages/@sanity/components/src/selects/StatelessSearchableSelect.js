@@ -153,6 +153,7 @@ export default class StatelessSearchableSelect extends React.PureComponent {
       disabled,
       onHighlightIndexChange,
       openItemElement,
+      readOnly,
       ...rest
     } = this.props
 
@@ -171,6 +172,7 @@ export default class StatelessSearchableSelect extends React.PureComponent {
             disabled={disabled}
             readOnly={readOnly}
             ref={this.setInput}
+            readOnly={readOnly}
           />
           <div className={styles.functions}>
             {
