@@ -290,11 +290,11 @@ export default class ArrayInput extends React.Component<Props, State> {
   }
 
   render() {
-    const {type, level, readOnly, value} = this.props
+    const {type, level, markers, readOnly, value} = this.props
 
     return (
       <UploadTargetFieldset
-        markers={this.props.markers}
+        markers={markers}
         tabIndex={0}
         legend={type.title}
         description={type.description}

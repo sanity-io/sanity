@@ -40,6 +40,7 @@ type Props = {
   onFocus: Path => void,
   onBlur: () => void,
   focusPath: Path,
+  readOnly: ?boolean,
   markers: Array<Marker>
 }
 
@@ -198,7 +199,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   }
 
   render() {
-    const {type, value, level, readOnly, onFocus} = this.props
+    const {type, value, level, markers, readOnly, onFocus} = this.props
     return (
       <Fieldset
         legend={type.title}
@@ -207,7 +208,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
         tabIndex={0}
         onFocus={onFocus}
         ref={this.setElement}
-        markers={this.props.markers}
+        markers={markers}
       >
         <div className={styles.root}>
           <div className={styles.list}>{value && value.length > 0 && this.renderList(value)}</div>

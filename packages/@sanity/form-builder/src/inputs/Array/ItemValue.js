@@ -148,8 +148,8 @@ export default class RenderItemValue extends React.Component<Props> {
     }
     if (action.name === 'delete') {
       // Needs a proper confirm dialog later
+      // eslint-disable-next-line no-alert
       if (window.confirm('Do you really want to delete?')) {
-        // eslint-disable-line no-alert
         this.handleRemove()
       }
     }
