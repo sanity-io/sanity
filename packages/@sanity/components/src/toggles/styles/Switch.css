@@ -46,6 +46,7 @@
 
 .root {
   composes: root from 'part:@sanity/components/formfields/default-style';
+  display: inline-block;
   user-select: none;
   position: relative;
 }
@@ -167,13 +168,13 @@
 }
 
 .label {
+  display: inline-block;
   position: relative;
   cursor: default;
   font-size: var(--switch-label-font-size);
   line-height: var(--switch-label-height);
   margin: 0;
   left: calc(var(--switch-track-length) + 0.5rem);
-  width: calc(100% - var(--switch-track-length) + 0.5rem);
 
   @nest .disabled & {
     color: var(--switch-disabled-thumb-color);

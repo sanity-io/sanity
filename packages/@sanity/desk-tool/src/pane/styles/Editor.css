@@ -26,18 +26,18 @@
 }
 
 .top {
-  display: flex;
+  display: none;
   margin: 0 var(--medium-padding);
   color: var(--text-color-secondary);
+  font-size: 0.7rem;
+
+  @media (--screen-medium) {
+    display: flex;
+  }
 }
 
 .dates {
-  font-size: 0.7rem;
-  display: none;
-
-  @media (--screen-medium) {
-    display: block;
-  }
+  display: block;
 }
 
 .publishedDate {
@@ -49,6 +49,16 @@
   margin-right: 1rem;
 }
 
+.errors {
+  margin-left: 1rem;
+  color: var(--state-danger-color);
+}
+
+.warnings {
+  margin-left: 1rem;
+  color: var(--state-warning-color);
+}
+
 .editor {
   padding: var(--medium-padding);
 }
@@ -56,8 +66,9 @@
 .syncStatus {
   display: block;
   opacity: 1;
-  font-size: 0.7em;
   min-width: 4rem;
+  margin-right: 1em;
+  font-size: var(--font-size-xsmall);
 }
 
 .syncStatusSynced {
@@ -84,13 +95,13 @@
 .paneFunctions {
   display: flex;
   flex-wrap: nowrap;
+  align-items: center;
+  padding-right: 0;
+  font-size: var(--font-size-small);
 }
 
 .publishButton {
   padding: 0 1rem;
-  padding-right: 0;
-  font-size: 0.8em;
-  line-height: calc(2.75em / 0.8);
 }
 
 .syncSpinnerContainer {
@@ -116,4 +127,8 @@
   @nest & > svg {
     display: block;
   }
+}
+
+.validationButton {
+  border: 5px solid red;
 }

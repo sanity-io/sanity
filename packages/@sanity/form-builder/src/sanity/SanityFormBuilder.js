@@ -2,7 +2,7 @@
 import React from 'react'
 import SanityFormBuilderContext from './SanityFormBuilderContext'
 import {FormBuilderInput} from '../FormBuilderInput'
-import SimpleFocusManager from './focusManagers/SimpleFocusManager'
+import {Marker} from '../typedefs'
 
 type PatchChannel = {
   subscribe: () => () => {},
@@ -13,9 +13,13 @@ type Props = {
   value: ?any,
   schema: any,
   type: Object,
+  markers: Array<Marker>,
   patchChannel: PatchChannel,
+  onFocus: Path => void,
   onChange: () => {},
-  autoFocus: boolean
+  onBlur: () => void,
+  autoFocus: boolean,
+  focusPath: Path
 }
 
 export default class SanityFormBuilder extends React.Component<Props> {
@@ -32,32 +36,33 @@ export default class SanityFormBuilder extends React.Component<Props> {
     }
   }
 
-  renderInput = ({onFocus, onBlur, focusPath}) => {
-    const {value, type, onChange} = this.props
-    return (
-      <FormBuilderInput
-        type={type}
-        onChange={onChange}
-        level={0}
-        value={value}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        focusPath={focusPath}
-        isRoot
-        ref={this.setInput}
-      />
-    )
-  }
-
   render() {
-    const {value, schema, patchChannel} = this.props
+    const {
+      value,
+      schema,
+      patchChannel,
+      type,
+      onChange,
+      markers,
+      onFocus,
+      onBlur,
+      focusPath
+    } = this.props
+
     return (
-      <SanityFormBuilderContext
-        value={value}
-        schema={schema}
-        patchChannel={patchChannel}
-      >
-        <SimpleFocusManager>{this.renderInput}</SimpleFocusManager>
+      <SanityFormBuilderContext value={value} schema={schema} patchChannel={patchChannel}>
+        <FormBuilderInput
+          type={type}
+          onChange={onChange}
+          level={0}
+          value={value}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          markers={markers}
+          focusPath={focusPath}
+          isRoot
+          ref={this.setInput}
+        />
       </SanityFormBuilderContext>
     )
   }

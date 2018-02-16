@@ -11,31 +11,54 @@ import PatchEvent, {set, unset} from 'part:@sanity/form-builder/patch-event'
 
 const getLocale = context => {
   const intl = context.intl || {}
-  return (
-    intl.locale
-    || (typeof window !== 'undefined' && window.navigator.language)
-    || 'en'
-  )
+  return intl.locale || (typeof window !== 'undefined' && window.navigator.language) || 'en'
+}
+
+const getStaticImageUrl = value => {
+  const loc = `${value.lat},${value.lng}`
+  const params = {
+    key: config.apiKey,
+    center: loc,
+    markers: loc,
+    zoom: 13,
+    scale: 2,
+    size: '640x300'
+  }
+
+  const qs = Object.keys(params).reduce((res, param) => {
+    return res.concat(`${param}=${encodeURIComponent(params[param])}`)
+  }, [])
+
+  return `https://maps.googleapis.com/maps/api/staticmap?${qs.join('&')}`
 }
 
 class GeopointInput extends React.Component {
   static propTypes = {
     onChange: PropTypes.func.isRequired,
+    markers: PropTypes.arrayOf(
+      PropTypes.shape({
+        type: PropTypes.string
+      })
+    ),
     value: PropTypes.shape({
       lat: PropTypes.number,
       lng: PropTypes.number
     }),
     type: PropTypes.shape({
       title: PropTypes.string.isRequired,
-      description: PropTypes.string,
+      description: PropTypes.string
     })
-  };
+  }
+
+  static defaultProps = {
+    markers: []
+  }
 
   static contextTypes = {
     intl: PropTypes.shape({
       locale: PropTypes.string
     })
-  };
+  }
 
   constructor() {
     super()
@@ -54,11 +77,15 @@ class GeopointInput extends React.Component {
 
   handleChange = latLng => {
     const {type, onChange} = this.props
-    onChange(PatchEvent.from(set({
-      _type: type.name,
-      lat: latLng.lat(),
-      lng: latLng.lng()
-    })))
+    onChange(
+      PatchEvent.from(
+        set({
+          _type: type.name,
+          lat: latLng.lat(),
+          lng: latLng.lng()
+        })
+      )
+    )
   }
 
   handleClear = () => {
@@ -70,32 +97,15 @@ class GeopointInput extends React.Component {
     this.setState({modalOpen: false})
   }
 
-  getStaticImageUrl(value) {
-    const loc = `${value.lat},${value.lng}`
-    const params = {
-      key: config.apiKey,
-      center: loc,
-      markers: loc,
-      zoom: 13,
-      scale: 2,
-      size: '640x300'
-    }
-
-    const qs = Object.keys(params).reduce((res, param) => {
-      return res.concat(`${param}=${encodeURIComponent(params[param])}`)
-    }, [])
-
-    return `https://maps.googleapis.com/maps/api/staticmap?${qs.join('&')}`
-  }
-
   render() {
-    const {value, type} = this.props
+    const {value, type, markers} = this.props
 
     if (!config || !config.apiKey) {
       return (
         <div>
           <p>
-            The <a href="https://sanity.io/docs/schema-types/geopoint-type">Geopoint type</a> needs a Google Maps API key with access to:
+            The <a href="https://sanity.io/docs/schema-types/geopoint-type">Geopoint type</a> needs a Google
+            Maps API key with access to:
           </p>
           <ul>
             <li>Google Maps JavaScript API</li>
@@ -104,22 +114,24 @@ class GeopointInput extends React.Component {
           </ul>
           <p>
             Please enter the API key with access to these services in
-            <code style={{whitespace: 'nowrap'}}>`&lt;project-root&gt;/config/@sanity/google-maps-input.json`</code>
+            <code style={{whitespace: 'nowrap'}}>
+              `&lt;project-root&gt;/config/@sanity/google-maps-input.json`
+            </code>
           </p>
         </div>
       )
     }
 
     return (
-      <Fieldset legend={type.title} description={type.description} className={styles.root}>
-        {value && <div>
-          <img className={styles.previewImage} src={this.getStaticImageUrl(value)} />
-        </div>}
+      <Fieldset legend={type.title} description={type.description} className={styles.root} markers={markers}>
+        {value && (
+          <div>
+            <img className={styles.previewImage} src={getStaticImageUrl(value)} />
+          </div>
+        )}
 
         <div className={styles.functions}>
-          <Button onClick={this.handleToggleModal}>
-            {value ? 'Edit' : 'Set location'}
-          </Button>
+          <Button onClick={this.handleToggleModal}>{value ? 'Edit' : 'Set location'}</Button>
 
           {value && (
             <Button type="button" onClick={this.handleClear}>

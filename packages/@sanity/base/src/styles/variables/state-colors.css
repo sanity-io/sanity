@@ -7,6 +7,6 @@
   --state-info-color--text: #fff;
   --state-warning-color: #ffba00;
   --state-warning-color--text: var(--black);
-  --state-danger-color: #f43;
+  --state-danger-color: #e66666;
   --state-danger-color--text: var(--white);
 }

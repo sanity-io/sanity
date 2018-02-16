@@ -36,6 +36,19 @@
   }
 }
 
+.inputWrapperWithError {
+  composes: inputWrapper;
+
+  /* copied from part:@sanity/base/theme/forms/text-input-style */
+  border-color: var(--input-border-color-invalid) !important;
+  background-color: var(--input-bg-error) !important;
+  box-shadow: var(--input-box-shadow--error) !important;
+
+  @nest &:focus, &:focus-within {
+    box-shadow: var(--input-box-shadow--error-focus) !important;
+  }
+}
+
 .input {
   width: 100%;
   border: none;

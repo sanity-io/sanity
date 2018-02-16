@@ -18,6 +18,24 @@
   min-width: 0;
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--small-padding);
+}
+
+.headerMain {
+  flex-grow: 1;
+}
+
+.headerStatus {
+  padding: var(--small-padding);
+}
+
+.validationIconError {
+  composes: validationIconError from 'part:@sanity/base/theme/forms/validation-style';
+}
+
 @media (--screen-medium) {
   .columns4 .fieldWrapper {
     display: grid;
@@ -68,6 +86,10 @@
     border: none;
     padding: 0;
     box-shadow: none;
+  }
+
+  @nest .hasErrors:focus-within & {
+    box-shadow: var(--component-box-shadow--error) !important;
   }
 }
 

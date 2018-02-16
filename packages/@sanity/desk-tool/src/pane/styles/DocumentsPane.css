@@ -94,6 +94,15 @@
 }
 
 .itemStatus {
+  z-index: 2;
+  position: relative;
+  opacity: 0.7;
+  transition: opacity 0.15s linear;
+
+  @nest &:hover {
+    opacity: 1;
+  }
+
   @nest .selectedItem & {
     color: var(--selected-item-color--inverted);
   }

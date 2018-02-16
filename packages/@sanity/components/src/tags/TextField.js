@@ -14,6 +14,7 @@ export default class TagsTextField extends React.Component {
     onChange: PropTypes.func.isRequired,
     onBlur: PropTypes.func,
     readOnly: PropTypes.bool,
+    markers: PropTypes.array,
     value: PropTypes.arrayOf(PropTypes.string)
   }
 
@@ -90,35 +91,29 @@ export default class TagsTextField extends React.Component {
 
   render() {
     const {inputValue} = this.state
-    const {
-      onChange,
-      value,
-      readOnly,
-      ...rest
-    } = this.props
+    const {onChange, value, readOnly, markers, ...rest} = this.props
 
     return (
       <div className={styles.wrapper}>
         <div className={`${styles.inner}`}>
           <div className={styles.content}>
             <ul className={styles.tags}>
-              {
-                value.map((tag, i) => {
-                  return (
-                    <li key={i} className={readOnly ? styles.tag : styles.tagWithClear}>
-                      {tag}
-                      {!readOnly && (
-                        <a
-                          onClick={this.handleRemoveTagClick}
-                          data-index={i}
-                          className={styles.clearTag}
-                        >
-                          ×
-                        </a>
-                      )}
-                    </li>
-                  )
-                })}
+              {value.map((tag, i) => {
+                return (
+                  <li key={i} className={readOnly ? styles.tag : styles.tagWithClear}>
+                    {tag}
+                    {!readOnly && (
+                      <a
+                        onClick={this.handleRemoveTagClick}
+                        data-index={i}
+                        className={styles.clearTag}
+                      >
+                        ×
+                      </a>
+                    )}
+                  </li>
+                )
+              })}
             </ul>
             <input
               {...rest}

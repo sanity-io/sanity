@@ -15,6 +15,7 @@ import arrays from './arrays'
 import files from './files'
 import uploads from './uploads'
 import code from './code'
+import customNumber from './customNumber'
 import color from './color'
 import recursive from './recursive'
 import recursiveArray from './recursiveArray'
@@ -27,6 +28,7 @@ import geopoint from './geopoint'
 import fieldsets from './fieldsets'
 import empty from './empty'
 import readOnly from './readOnly'
+import validation from './validation'
 
 import customInputs from './customInputs'
 import notitle from './notitle'
@@ -46,12 +48,14 @@ export default createSchema({
     strings,
     texts,
     numbers,
+    customNumber,
     booleans,
     richDateType,
     objects,
     fieldsets,
     datetime,
     richDateTest,
+    validation,
     arrays,
     uploads,
     code,

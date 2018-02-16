@@ -367,6 +367,22 @@
       "description": "Block preview styling"
     },
     {
+      "name": "part:@sanity/components/validation/status",
+      "description": "Show validation status icon based on markers"
+    },
+    {
+      "implements": "part:@sanity/components/validation/status",
+      "path": "validation/ValidationStatus.js"
+    },
+    {
+      "name": "part:@sanity/components/validation/list",
+      "description": "Show list of validation warnings and errors, based on markers"
+    },
+    {
+      "implements": "part:@sanity/components/validation/list",
+      "path": "validation/ValidationList.js"
+    },
+    {
       "name": "part:@sanity/components/previews/block-image-style",
       "description": "Block image preview styling"
     },

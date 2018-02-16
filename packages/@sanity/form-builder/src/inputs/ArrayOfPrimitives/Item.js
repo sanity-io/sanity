@@ -4,16 +4,21 @@ import {FormBuilderInput} from '../../FormBuilderInput'
 import styles from './styles/Item.css'
 import Button from 'part:@sanity/components/buttons/default'
 import TrashIcon from 'part:@sanity/base/trash-icon'
+import ValidationStatus from 'part:@sanity/components/validation/status'
 
 import PatchEvent, {set} from '../../PatchEvent'
 import getEmptyValue from './getEmptyValue'
 
 import {createDragHandle} from 'part:@sanity/components/lists/sortable'
 import DragBarsIcon from 'part:@sanity/base/bars-icon'
-import type {Type} from '../../typedefs'
+import type {Type, Marker} from '../../typedefs'
 import type {Path} from '../../typedefs/path'
 
-const DragHandle = createDragHandle(() => <span className={styles.dragHandle}><DragBarsIcon /></span>)
+const DragHandle = createDragHandle(() => (
+  <span className={styles.dragHandle}>
+    <DragBarsIcon />
+  </span>
+))
 
 type Props = {
   type: Type,
@@ -21,9 +26,10 @@ type Props = {
   onRemove: number => void,
   onEnterKey: number => void,
   onEscapeKey: number => void,
-  onFocus: (Path) => void,
+  onFocus: Path => void,
   onBlur: () => void,
   focusPath: Path,
+  markers: Array<Marker>,
   index: number,
   value: string | number | boolean,
   isSortable: boolean,
@@ -31,7 +37,6 @@ type Props = {
   level: number
 }
 export default class Item extends React.PureComponent<Props> {
-
   handleRemove = () => {
     const {index, onRemove} = this.props
     onRemove(index)
@@ -56,16 +61,30 @@ export default class Item extends React.PureComponent<Props> {
 
   handleChange = (patchEvent: PatchEvent) => {
     const {onChange, type, index} = this.props
-    onChange(PatchEvent.from(patchEvent.patches.map(patch => (
-      // Map direct unset patches to empty value instead in order to not *remove* elements as the user clears out the value
-      (patch.path.length === 0 && patch.type === 'unset')
-        ? set(getEmptyValue(type))
-        : patch
-    ))).prefixAll(index))
+    onChange(
+      PatchEvent.from(
+        patchEvent.patches.map(
+          patch =>
+            // Map direct unset patches to empty value instead in order to not *remove* elements as the user clears out the value
+            patch.path.length === 0 && patch.type === 'unset' ? set(getEmptyValue(type)) : patch
+        )
+      ).prefixAll(index)
+    )
   }
 
   render() {
-    const {value, level, index, focusPath, onFocus, onBlur, type, readOnly, isSortable} = this.props
+    const {
+      value,
+      level,
+      markers,
+      index,
+      focusPath,
+      onFocus,
+      onBlur,
+      type,
+      readOnly,
+      isSortable
+    } = this.props
     return (
       <div className={styles.root}>
         {isSortable && !readOnly && <DragHandle className={styles.dragHandle} />}
@@ -73,6 +92,7 @@ export default class Item extends React.PureComponent<Props> {
           <FormBuilderInput
             value={value}
             path={[index]}
+            markers={markers}
             focusPath={focusPath}
             onFocus={onFocus}
             onBlur={onBlur}
@@ -84,16 +104,22 @@ export default class Item extends React.PureComponent<Props> {
             level={level}
           />
         </div>
-        {!readOnly && (
-          <Button
-            kind="simple"
-            className={styles.deleteButton}
-            color="danger"
-            icon={TrashIcon}
-            title="Delete"
-            onClick={this.handleRemove}
-          />
-        )}
+        <div className={styles.functions}>
+          <div className={styles.validationStatus}>
+            <ValidationStatus markers={markers} />
+          </div>
+          {!readOnly && (
+            <div>
+              <Button
+                kind="simple"
+                className={styles.deleteButton}
+                icon={TrashIcon}
+                title="Delete"
+                onClick={this.handleRemove}
+              />
+            </div>
+          )}
+        </div>
       </div>
     )
   }

@@ -5,6 +5,7 @@ import styles from 'part:@sanity/components/toggles/switch-style'
 export default class Switch extends React.Component {
   static propTypes = {
     label: PropTypes.string.isRequired,
+    markers: PropTypes.array,
     checked: PropTypes.bool,
     disabled: PropTypes.bool,
     onFocus: PropTypes.func,
@@ -43,7 +44,7 @@ export default class Switch extends React.Component {
   }
 
   render() {
-    const {disabled, checked, label, readOnly, ...rest} = this.props
+    const {disabled, markers, checked, label, readOnly, ...rest} = this.props
     const {hasFocus} = this.state
 
     let thumbClass = checked ? styles.thumbChecked : styles.thumb

@@ -1,0 +1,32 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.validationIconError {
+  color: var(--gray);
+}
+
+.validationList {
+  margin: 0;
+  padding: 0;
+  max-height: 10rem;
+  overflow: hidden;
+  transition: max-height 0.5s linear;
+  font-size: var(--font-size-small);
+  color: var(--state-danger-color);
+}
+
+.validationListClosed {
+  composes: validationList;
+  max-height: 0;
+}
+
+.validationListItem {
+  font-size: var(--font-size-small);
+}
+
+.validationListItemError {
+  color: var(--state-danger-color);
+}
+
+.validationListItemWarning {
+  color: var(--state-warning-color);
+}

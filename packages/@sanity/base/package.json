@@ -35,6 +35,7 @@
     "@sanity/preview": "^0.125.8",
     "@sanity/schema": "^0.125.8",
     "@sanity/state-router": "^0.125.8",
+    "@sanity/validation": "^0.125.8",
     "history": "^4.6.3",
     "in-publish": "^2.0.0",
     "lodash": "^4.17.4",

@@ -1,0 +1,135 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`number greater than constraint: gt: too low 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Must be greater than 10],
+    "level": "error",
+  },
+]
+`;
+
+exports[`number greater than constraint: gt: too low, at limit 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Must be greater than 10],
+    "level": "error",
+  },
+]
+`;
+
+exports[`number greater than constraint: gt: valid 1`] = `Array []`;
+
+exports[`number integer constraint: integer: invalid (float) 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Must be an integer],
+    "level": "error",
+  },
+]
+`;
+
+exports[`number integer constraint: integer: valid 1`] = `Array []`;
+
+exports[`number less than constraint: lt: too high 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Must be less than 10],
+    "level": "error",
+  },
+]
+`;
+
+exports[`number less than constraint: lt: too high, at limit 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Must be less than 10],
+    "level": "error",
+  },
+]
+`;
+
+exports[`number less than constraint: lt: valid 1`] = `Array []`;
+
+exports[`number max constraint: max: too large 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Must be less than or equal 10],
+    "level": "error",
+  },
+]
+`;
+
+exports[`number max constraint: max: valid 1`] = `Array []`;
+
+exports[`number max constraint: max: valid, at limit 1`] = `Array []`;
+
+exports[`number min constraint: min: too low 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Must be greater than or equal 10],
+    "level": "error",
+  },
+]
+`;
+
+exports[`number min constraint: min: valid 1`] = `Array []`;
+
+exports[`number min constraint: min: valid, at limit 1`] = `Array []`;
+
+exports[`number negative constraint: negative: invalid (zero) 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Must be less than 0],
+    "level": "error",
+  },
+]
+`;
+
+exports[`number negative constraint: negative: invalid 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Must be less than 0],
+    "level": "error",
+  },
+]
+`;
+
+exports[`number negative constraint: negative: valid 1`] = `Array []`;
+
+exports[`number positive constraint: positive: invalid 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Must be greater than or equal 0],
+    "level": "error",
+  },
+]
+`;
+
+exports[`number positive constraint: positive: valid (zero) 1`] = `Array []`;
+
+exports[`number positive constraint: positive: valid 1`] = `Array []`;
+
+exports[`number precision constraint: precision: invalid (pi) 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Max precision is 3],
+    "level": "error",
+  },
+]
+`;
+
+exports[`number precision constraint: precision: valid (at limit) 1`] = `Array []`;
+
+exports[`number precision constraint: precision: valid (below limit) 1`] = `Array []`;
+
+exports[`number required constraint: required: undefined 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Value is required],
+    "level": "error",
+  },
+]
+`;
+
+exports[`number required constraint: required: valid 1`] = `Array []`;

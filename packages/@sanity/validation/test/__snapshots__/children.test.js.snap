@@ -1,0 +1,79 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`child rules all() rules - multiple failures: all() rules - match 1`] = `Array []`;
+
+exports[`child rules all() rules - multiple failures: all() rules - multiple failures, custom messages 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: [Must start with an uppercase character - AND - 5 chars or more]],
+    "level": "error",
+  },
+]
+`;
+
+exports[`child rules all() rules - single failure, custom, common error: all() rules - multiple failures, common error 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Needs to be a capital letter followed by at least 4 lowercase characters],
+    "level": "error",
+  },
+]
+`;
+
+exports[`child rules all() rules - single failure, custom, common error: all() rules - single failure, common error 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Needs to start with a capital letter and then follow with lowercase characters],
+    "level": "error",
+  },
+]
+`;
+
+exports[`child rules all() rules - single failure: all() rules - match 1`] = `Array []`;
+
+exports[`child rules all() rules - single failure: all() rules - single failure, custom message 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Must start with an uppercase character],
+    "level": "error",
+  },
+]
+`;
+
+exports[`child rules either() rules - all fail, custom, common error: either() rules - all fail, common error 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Needs to start with a capital letter, unless it's an iProduct],
+    "level": "error",
+  },
+]
+`;
+
+exports[`child rules either() rules - all matches: either() rules - all match 1`] = `Array []`;
+
+exports[`child rules either() rules - all matches: either() rules - no matches 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: [Must start with a capital R - OR - Must end with "ed"]],
+    "level": "error",
+  },
+]
+`;
+
+exports[`child rules either() rules - single failure: either() rules - match 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: [Must be rgb(num, num, num) format - OR - Must be hex color with #-prefix]],
+    "level": "error",
+  },
+]
+`;
+
+exports[`child rules either() rules - single failure: either() rules - single failure, custom message 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: [Must be rgb(num, num, num) format - OR - Must be hex color with #-prefix]],
+    "level": "error",
+  },
+]
+`;

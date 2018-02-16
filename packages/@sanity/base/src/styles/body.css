@@ -1,5 +1,6 @@
 @import "part:@sanity/base/theme/variables-style";
 @import "part:@sanity/base/theme/variables/fonts-style";
+@import './layout/tippy.css';
 
 :global(body) {
   font-family: var(--font-family-sans-serif);

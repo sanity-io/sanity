@@ -17,17 +17,18 @@ import styles from './styles/BlockEditor.css'
 import {SLATE_SPAN_TYPE} from './constants'
 
 export default class BlockEditor extends React.Component {
-
   static propTypes = {
     type: PropTypes.any,
     level: PropTypes.number,
     value: PropTypes.instanceOf(State),
+    markers: PropTypes.arrayOf(PropTypes.shape({type: PropTypes.string.isRequired})),
     onChange: PropTypes.func,
     onNodePatch: PropTypes.func
   }
 
   static defaultProps = {
-    onChange() {}
+    onChange() {},
+    markers: []
   }
 
   static contextTypes = {
@@ -369,26 +370,29 @@ export default class BlockEditor extends React.Component {
   }
 
   render() {
-    const {type, level} = this.props
+    const {type, level, markers} = this.props
     const {fullscreen} = this.state
     const blockEditor = this.renderBlockEditor()
     return (
       <FormField
+        markers={markers}
         label={type.title}
         description={type.description}
         labelFor={this._inputId}
         level={level}
       >
-        <button tabIndex={0} className={styles.focusSkipper} onClick={() => this.focus()}>Jump to editor</button>
-        {
-          fullscreen ? (
-            <FullscreenDialog isOpen onClose={this.handleFullScreenClose}>
-              <ScrollContainer className={styles.portal} onScroll={this.handleFullScreenScroll}>
-                {blockEditor}
-              </ScrollContainer>
-            </FullscreenDialog>
-          ) : blockEditor
-        }
+        <button type="button" tabIndex={0} className={styles.focusSkipper} onClick={() => this.focus()}>
+          Jump to editor
+        </button>
+        {fullscreen ? (
+          <FullscreenDialog isOpen onClose={this.handleFullScreenClose}>
+            <ScrollContainer className={styles.portal} onScroll={this.handleFullScreenScroll}>
+              {blockEditor}
+            </ScrollContainer>
+          </FullscreenDialog>
+        ) : (
+          blockEditor
+        )}
       </FormField>
     )
   }

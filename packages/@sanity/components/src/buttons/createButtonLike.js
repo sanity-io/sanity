@@ -1,3 +1,4 @@
+/*eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React from 'react'
 import Ink from 'react-ink'
@@ -21,6 +22,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
       className: PropTypes.string,
       disabled: PropTypes.bool,
       tabIndex: PropTypes.number,
+      padding: PropTypes.oneOf(['default', 'small']),
     }
 
     static defaultProps = {
@@ -28,6 +30,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
       icon: null,
       onClick() {},
       kind: 'default',
+      padding: 'default',
       ...defaultProps
     }
 
@@ -64,7 +67,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
 
     render() {
 
-      const {kind, ripple, inverted, color, icon: Icon, loading, className, children, ...rest} = this.props
+      const {kind, ripple, inverted, color, icon: Icon, loading, className, children, padding, ...rest} = this.props
 
       // Should not be part of the destructing, cause it should be passed to component through rest
       const disabled = this.props.disabled
@@ -74,6 +77,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
       const style = cx(className, [
         styles.root,
         styles[kind],
+        styles[`padding_${padding}`],
         inverted && styles.inverted,
         color && styles[`color__${color}`],
         disabled && styles.disabled,

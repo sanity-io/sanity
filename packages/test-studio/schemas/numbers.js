@@ -18,11 +18,17 @@ export default {
       description: 'A plain number field'
     },
     {
+      name: 'myCustomNumberField',
+      type: 'customNumber',
+      title: 'Number between 0 and 1000',
+      description: 'A subclassed number, with validation!'
+    },
+    {
       name: 'readonlyField',
       type: 'number',
       title: 'A read only number',
       description: 'It may have a value, but it cannot be edited',
       readOnly: true
-    },
+    }
   ]
 }

@@ -2,7 +2,7 @@
 
 .root {
   appearance: none;
-  border: none;
+  border: var(--input-border-size) solid var(--input-border-color);
   width: 100%;
   max-width: 100%;
   outline: 0;
@@ -21,6 +21,16 @@
 
     @nest &:focus, &:active {
       box-shadow: var(--input-box-shadow--focus);
+    }
+
+    @nest &:invalid {
+      border-color: var(--input-border-color-invalid);
+      background-color: var(--input-bg-error);
+      box-shadow: var(--input-box-shadow--error);
+
+      @nest &:focus, &:focus-within {
+        box-shadow: var(--input-box-shadow--error-focus);
+      }
     }
   }
 

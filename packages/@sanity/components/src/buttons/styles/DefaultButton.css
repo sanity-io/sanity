@@ -73,17 +73,33 @@
 .inner {
   display: block;
   outline: none;
+}
 
-  @nest :not(.onlyIcon) & {
-    padding: 0.7em 0.7em 0.8em 0.7em;
+.padding_default {
+  @nest & .inner {
+    @nest :not(.onlyIcon) & {
+      padding: 0.7em 0.7em 0.8em 0.7em;
 
-    @media (--screen-medium) {
-      padding: 0.7em 1.2em 0.8em 1.2em;
+      @media (--screen-medium) {
+        padding: 0.7em 1.2em 0.8em 1.2em;
+      }
     }
   }
+}
 
-  @nest .onlyIcon & {
-    padding: 0.7em 0.8em;
+.onlyIcon .inner {
+  padding: 0.7em 0.8em !important;
+}
+
+.padding_small {
+  @nest & .inner {
+    @nest :not(.onlyIcon) & {
+      padding: 0.7em 0.7em 0.8em 0.7em;
+
+      @media (--screen-medium) {
+        padding: 0.7em 0.6em 0.8em 0.6em;
+      }
+    }
   }
 }
 
