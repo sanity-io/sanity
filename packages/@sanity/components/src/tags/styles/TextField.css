@@ -25,6 +25,10 @@
   user-select: none;
   cursor: default;
   position: relative;
+}
+
+.tagWithClear {
+  composes: tag;
   padding-right: 1.4em;
 }
 

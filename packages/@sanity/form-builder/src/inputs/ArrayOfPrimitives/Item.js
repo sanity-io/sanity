@@ -27,6 +27,7 @@ type Props = {
   index: number,
   value: string | number | boolean,
   isSortable: boolean,
+  readOnly: ?boolean,
   level: number
 }
 export default class Item extends React.PureComponent<Props> {
@@ -64,10 +65,10 @@ export default class Item extends React.PureComponent<Props> {
   }
 
   render() {
-    const {value, level, index, focusPath, onFocus, onBlur, type, isSortable} = this.props
+    const {value, level, index, focusPath, onFocus, onBlur, type, readOnly, isSortable} = this.props
     return (
       <div className={styles.root}>
-        {isSortable && <DragHandle className={styles.dragHandle} />}
+        {isSortable && !readOnly && <DragHandle className={styles.dragHandle} />}
         <div className={styles.input}>
           <FormBuilderInput
             value={value}
@@ -76,20 +77,23 @@ export default class Item extends React.PureComponent<Props> {
             onFocus={onFocus}
             onBlur={onBlur}
             type={type}
+            readOnly={readOnly || type.readOnly}
             onKeyUp={this.handleKeyUp}
             onKeyPress={this.handleKeyPress}
             onChange={this.handleChange}
             level={level}
           />
         </div>
-        <Button
-          kind="simple"
-          className={styles.deleteButton}
-          color="danger"
-          icon={TrashIcon}
-          title="Delete"
-          onClick={this.handleRemove}
-        />
+        {!readOnly && (
+          <Button
+            kind="simple"
+            className={styles.deleteButton}
+            color="danger"
+            icon={TrashIcon}
+            title="Delete"
+            onClick={this.handleRemove}
+          />
+        )}
       </div>
     )
   }

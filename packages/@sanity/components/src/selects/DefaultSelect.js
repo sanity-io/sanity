@@ -12,6 +12,7 @@ export default class DefaultSelect extends React.Component {
     onBlur: PropTypes.func,
     hasFocus: PropTypes.bool,
     disabled: PropTypes.bool,
+    readOnly: PropTypes.bool,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string,
@@ -23,6 +24,7 @@ export default class DefaultSelect extends React.Component {
     onChange() {},
     onBlur() {},
     onFocus() {},
+    readOnly: false,
     hasError: false,
     hasFocus: false,
     value: {},
@@ -44,26 +46,27 @@ export default class DefaultSelect extends React.Component {
   }
 
   render() {
-    const {hasError, items, value, disabled, hasFocus, ...rest} = this.props
+    const {hasError, items, value, disabled, hasFocus, readOnly, ...rest} = this.props
     return (
-      <div className={disabled ? styles.disabled : styles.root}>
+      <div className={disabled || readOnly ? styles.disabled : styles.root}>
         <select
           {...rest}
           className={styles.select}
           onChange={this.handleChange}
-          disabled={disabled}
+          disabled={disabled || readOnly}
           value={value && items.indexOf(value)}
           autoComplete="off"
           ref={this.setInput}
         >
           {!value && <option />}
-          {
-            items && items.length > 0 && items.map((item, i) => {
+          {items.length &&
+            items.map((item, i) => {
               return (
-                <option key={i} value={i}>{item.title}</option>
+                <option key={i} value={i}>
+                  {item.title}
+                </option>
               )
-            })
-          }
+            })}
         </select>
         <div className={styles.functions}>
           <span className={styles.arrow}>

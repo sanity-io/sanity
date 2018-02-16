@@ -55,6 +55,7 @@ export default class OptionsArrayInput extends React.PureComponent {
     }),
     value: PropTypes.array,
     level: PropTypes.number,
+    readOnly: PropTypes.bool,
     onChange: PropTypes.func
   }
 
@@ -65,7 +66,7 @@ export default class OptionsArrayInput extends React.PureComponent {
 
     if (!isChecked && optionValue._key) {
       // This is an optimization that only works if list items are _keyed
-      this.props.onChange(PatchEvent.from(unset({_key: optionValue._key})))
+      this.props.onChange(PatchEvent.from(unset([{_key: optionValue._key}])))
     }
 
     const nextValue = list
@@ -85,7 +86,7 @@ export default class OptionsArrayInput extends React.PureComponent {
   }
 
   render() {
-    const {type, value, level} = this.props
+    const {type, value, level, readOnly} = this.props
 
     const options = get(type.options, 'list')
     const direction = get(type.options, 'direction') // vertical and horizontal
@@ -114,6 +115,7 @@ export default class OptionsArrayInput extends React.PureComponent {
               <Item
                 layout="inline"
                 type={optionType}
+                readOnly={readOnly}
                 value={option}
                 checked={checked}
                 onChange={this.handleChange}

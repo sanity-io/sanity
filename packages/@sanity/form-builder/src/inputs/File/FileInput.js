@@ -6,6 +6,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import FileInputButton from 'part:@sanity/components/fileinput/button'
 import ProgressBar from 'part:@sanity/components/progress/bar'
 import EditIcon from 'part:@sanity/base/edit-icon'
+import VisibilityIcon from 'part:@sanity/base/visibility-icon'
 import FileIcon from 'part:@sanity/base/file-icon'
 import UploadIcon from 'part:@sanity/base/upload-icon'
 import {get, partition} from 'lodash'
@@ -44,6 +45,7 @@ type Props = {
   materialize: (string) => ObservableI<Object>,
   onBlur: () => void,
   onFocus: () => void,
+  readOnly: ?boolean,
   focusPath: Array<*>
 }
 
@@ -232,7 +234,7 @@ export default class FileInput extends React.PureComponent<Props, State> {
   }
 
   renderField(field: FieldT) {
-    const {value, level, onFocus, onBlur, focusPath} = this.props
+    const {value, level, focusPath, onFocus, readOnly, onBlur} = this.props
     const fieldValue = value && value[field.name]
 
     return (
@@ -244,9 +246,28 @@ export default class FileInput extends React.PureComponent<Props, State> {
         path={[field.name]}
         onFocus={onFocus}
         onBlur={onBlur}
+        readOnly={readOnly || field.type.readOnly}
         focusPath={focusPath}
         level={level}
       />
+    )
+  }
+
+  renderAsset() {
+    const {value, materialize, readOnly} = this.props
+
+    if (value && value.asset) {
+      return (
+        <WithMaterializedReference reference={value.asset} materialize={materialize}>
+          {this.renderMaterializedAsset}
+        </WithMaterializedReference>
+      )
+    }
+
+    return readOnly ? (
+      <span>Field is read only</span>
+    ) : (
+      <UploadPlaceholder hasFocus={this.state.hasFocus} />
     )
   }
 
@@ -267,14 +288,13 @@ export default class FileInput extends React.PureComponent<Props, State> {
   }
 
   handleUpload = ({file, uploader}) => {
-
     this.uploadWith(uploader, file)
   }
 
   render() {
-    const {type, value, level, materialize} = this.props
+    const {type, value, level, readOnly} = this.props
 
-    const {isAdvancedEditOpen, uploadError, hasFocus} = this.state
+    const {isAdvancedEditOpen, uploadError} = this.state
 
     const [highlightedFields, otherFields] = partition(
       type.fields.filter(field => !HIDDEN_FIELDS.includes(field.name)),
@@ -310,11 +330,7 @@ export default class FileInput extends React.PureComponent<Props, State> {
                 {this.renderUploadState(value._upload)}
               </div>
             )}
-            {hasAsset ? (
-              <WithMaterializedReference reference={value.asset} materialize={materialize}>
-                {this.renderMaterializedAsset}
-              </WithMaterializedReference>
-            ) : <UploadPlaceholder hasFocus={hasFocus} />}
+            {this.renderAsset()}
           </div>
           {highlightedFields.length > 0 && (
             <div className={styles.fieldsWrapper}>
@@ -323,24 +339,26 @@ export default class FileInput extends React.PureComponent<Props, State> {
           )}
         </div>
         <div className={styles.functions}>
-          <FileInputButton
-            icon={UploadIcon}
-            onSelect={this.handleSelectFile}
-            accept={''/* todo build from this.props.resolveUploaders */}
-          >
-            Upload
-          </FileInputButton>
+          {!readOnly && (
+            <FileInputButton
+              icon={UploadIcon}
+              onSelect={this.handleSelectFile}
+              accept={''/* todo build from this.props.resolveUploaders */}
+            >
+              Upload
+            </FileInputButton>
+          )}
           {value && otherFields.length > 0 && (
             <Button
-              icon={EditIcon}
+              icon={readOnly ? VisibilityIcon : EditIcon}
               kind="simple"
-              title="Edit details"
+              title={readOnly ? 'View details' : 'Edit details'}
               onClick={this.handleStartAdvancedEdit}
             >
-              Edit
+              {readOnly ? 'View details' : 'Edit'}
             </Button>
           )}
-          {hasAsset && (
+          {!readOnly && hasAsset && (
             <Button color="danger" kind="simple" onClick={this.handleRemoveButtonClick}>Remove</Button>
           )}
         </div>

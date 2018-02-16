@@ -1,13 +1,13 @@
 /* eslint-disable complexity */
-import type {Node} from 'react'
 // @flow
+import type {Node} from 'react'
 import React from 'react'
 import Button from 'part:@sanity/components/buttons/default'
 import FileInputButton from 'part:@sanity/components/fileinput/button'
-import ProgressBar from 'part:@sanity/components/progress/bar'
 import ProgressCircle from 'part:@sanity/components/progress/circle'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import UploadIcon from 'part:@sanity/base/upload-icon'
+import VisibilityIcon from 'part:@sanity/base/visibility-icon'
 import {get, partition} from 'lodash'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import styles from './styles/ImageInput.css'
@@ -47,6 +47,7 @@ type Props = {
   materialize: (string) => ObservableI<Object>,
   onBlur: () => void,
   onFocus: () => void,
+  readOnly: ?boolean,
   focusPath: Array<*>
 }
 
@@ -238,14 +239,24 @@ export default class ImageInput extends React.PureComponent<Props, State> {
   }
 
   renderAdvancedEdit(fields: Array<FieldT>) {
-    const {value, level, onChange, materialize} = this.props
+    const {value, level, onChange, readOnly, materialize} = this.props
 
     return (
       <Dialog title="Edit details" onClose={this.handleStopAdvancedEdit} isOpen>
-        {this.isImageToolEnabled() && value && value.asset && (
-          <WithMaterializedReference materialize={materialize} reference={value.asset}>
-            {imageAsset => <ImageToolInput level={level} imageUrl={imageAsset.url} value={value} onChange={onChange} />}
-          </WithMaterializedReference>
+        {this.isImageToolEnabled() &&
+          value &&
+          value.asset && (
+            <WithMaterializedReference materialize={materialize} reference={value.asset}>
+              {imageAsset => (
+                <ImageToolInput
+                  level={level}
+                  readOnly={readOnly}
+                  imageUrl={imageAsset.url}
+                  value={value}
+                  onChange={onChange}
+                />
+              )}
+            </WithMaterializedReference>
         )}
         <div className={styles.advancedEditFields}>
           {this.renderFields(fields)}
@@ -260,7 +271,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
   }
 
   renderField(field: FieldT) {
-    const {value, level, focusPath, onFocus, onBlur} = this.props
+    const {value, level, focusPath, onFocus, readOnly, onBlur} = this.props
     const fieldValue = value && value[field.name]
 
     return (
@@ -275,6 +286,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
           path={[field.name]}
           onFocus={onFocus}
           onBlur={onBlur}
+          readOnly={readOnly || field.type.readOnly}
           focusPath={focusPath}
           level={level}
         />
@@ -318,7 +330,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {type, value, level, materialize} = this.props
+    const {type, value, level, materialize, readOnly} = this.props
 
     const {isAdvancedEditOpen, isSelectAssetOpen, uploadError, hasFocus} = this.state
 
@@ -363,7 +375,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
               <WithMaterializedReference reference={value.asset} materialize={materialize}>
                 {this.renderMaterializedAsset}
               </WithMaterializedReference>
-            ) : <UploadPlaceholder hasFocus={hasFocus} />}
+            ) : (readOnly ? <span>Field is read only</span> : <UploadPlaceholder hasFocus={hasFocus} />)}
           </div>
           {highlightedFields.length > 0 && (
             <div className={styles.fieldsWrapper}>
@@ -372,27 +384,27 @@ export default class ImageInput extends React.PureComponent<Props, State> {
           )}
         </div>
         <div className={styles.functions}>
-          <FileInputButton
+          {!readOnly && <FileInputButton
             icon={UploadIcon}
             onSelect={this.handleSelectFile}
             accept={''/* todo build from this.props.resolveUploaders */}
           >
             Upload
-          </FileInputButton>
-          <Button onClick={this.handleOpenSelectAsset} kind="simple">
+          </FileInputButton>}
+          {!readOnly && <Button onClick={this.handleOpenSelectAsset} kind="simple">
             Select from library
-          </Button>
+          </Button>}
           {showAdvancedEditButton && (
             <Button
-              icon={EditIcon}
+              icon={readOnly ? VisibilityIcon : EditIcon}
               kind="simple"
-              title="Edit details"
+              title={readOnly ? 'View details' : 'Edit details'}
               onClick={this.handleStartAdvancedEdit}
             >
-              Edit
+              {readOnly ? 'View details' : 'Edit'}
             </Button>
           )}
-          {hasAsset && (
+          {hasAsset && !readOnly && (
             <Button color="danger" kind="simple" onClick={this.handleRemoveButtonClick}>Remove</Button>
           )}
         </div>

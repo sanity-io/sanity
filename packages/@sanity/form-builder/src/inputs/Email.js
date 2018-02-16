@@ -9,6 +9,7 @@ type Props = {
   type: Type,
   level: number,
   value: ?string,
+  readOnly: ?boolean,
   onChange: PatchEvent => void
 }
 
@@ -31,7 +32,7 @@ export default class EmailInput extends React.Component<Props> {
   }
 
   render() {
-    const {value, type, level, ...rest} = this.props
+    const {value, readOnly, type, level, ...rest} = this.props
 
     return (
       <FormField
@@ -43,7 +44,7 @@ export default class EmailInput extends React.Component<Props> {
           {...rest}
           type="email"
           value={value}
-          readOnly={type.readOnly}
+          readOnly={readOnly}
           placeholder={type.placeholder}
           onChange={this.handleChange}
           ref={this.setInput}

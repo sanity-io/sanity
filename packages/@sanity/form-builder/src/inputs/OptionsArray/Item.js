@@ -9,7 +9,8 @@ type Props = {
   type: Type,
   value: any,
   checked: boolean,
-  onChange: (boolean, any) => void
+  onChange: (boolean, any) => void,
+  readOnly: ?boolean
 }
 export default class Item extends React.PureComponent<Props> {
   handleChange = (event: SyntheticEvent<HTMLInputElement>) => {
@@ -18,11 +19,12 @@ export default class Item extends React.PureComponent<Props> {
   }
 
   render() {
-    const {value, checked, type} = this.props
+    const {value, checked, type, readOnly} = this.props
     return (
       <Checkbox
         onChange={this.handleChange}
         checked={checked}
+        readOnly={readOnly || type.readOnly}
       >
         {isLegacyOptionsItem(value)
           ? value.title

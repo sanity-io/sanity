@@ -18,6 +18,7 @@ type Props = {
   type: Type,
   level: number,
   value: ?string,
+  readOnly: ?boolean,
   onChange: PatchEvent => void
 }
 
@@ -44,7 +45,7 @@ export default class StringSelect extends React.Component<Props> {
   }
 
   render() {
-    const {value, type, level, ...rest} = this.props
+    const {value, readOnly, type, level, ...rest} = this.props
 
     const items = toSelectItems(type.options.list || [])
 
@@ -68,6 +69,7 @@ export default class StringSelect extends React.Component<Props> {
             value={currentItem}
             direction={type.options.direction || 'vertical'}
             ref={this.setInput}
+            readOnly={readOnly}
           />
           : <Select
             {...rest}
@@ -77,6 +79,7 @@ export default class StringSelect extends React.Component<Props> {
             onChange={this.handleChange}
             items={[EMPTY_ITEM].concat(items)}
             ref={this.setInput}
+            readOnly={readOnly}
           />
         }
       </FormField>

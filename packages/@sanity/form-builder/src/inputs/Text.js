@@ -9,6 +9,7 @@ type Props = {
   type: Type,
   level: number,
   value: ?string,
+  readOnly: ?boolean,
   onChange: PatchEvent => void
 }
 
@@ -31,7 +32,7 @@ export default class TextInput extends React.Component<Props> {
   }
 
   render() {
-    const {value, type, level, ...rest} = this.props
+    const {value, type, readOnly, level, ...rest} = this.props
 
     return (
       <FormField
@@ -42,7 +43,7 @@ export default class TextInput extends React.Component<Props> {
         <TextArea
           {...rest}
           value={value}
-          readOnly={type.readOnly}
+          readOnly={readOnly}
           placeholder={type.placeholder}
           onChange={this.handleChange}
           rows={type.rows}

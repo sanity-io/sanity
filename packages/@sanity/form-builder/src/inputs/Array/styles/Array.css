@@ -10,6 +10,11 @@
   user-select: none;
 }
 
+.listReadOnly {
+  composes: list;
+  opacity: 0.5;
+}
+
 .list + .functions {
   padding-top: var(--medium-padding);
 }

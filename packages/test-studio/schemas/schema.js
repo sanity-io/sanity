@@ -26,6 +26,7 @@ import slugs from './slugs'
 import geopoint from './geopoint'
 import fieldsets from './fieldsets'
 import empty from './empty'
+import readOnly from './readOnly'
 
 import customInputs from './customInputs'
 import notitle from './notitle'
@@ -71,6 +72,7 @@ export default createSchema({
     typeWithNoToplevelStrings,
     previewImageUrlTest,
     previewMediaTest,
+    readOnly,
     empty
   ])
 })

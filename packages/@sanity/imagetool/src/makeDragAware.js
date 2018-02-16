@@ -16,6 +16,7 @@ export default function makeDragAware(Component) {
       onDragStart: PropTypes.func.isRequired,
       onDrag: PropTypes.func.isRequired,
       onDragEnd: PropTypes.func.isRequired,
+      readOnly: PropTypes.bool
     }
 
     currentPos = null
@@ -117,12 +118,13 @@ export default function makeDragAware(Component) {
     }
 
     render() {
+      const {readOnly} = this.props
       return (
         <Component
           ref={this.setDomNode}
-          onTouchStart={this.handleDragStart}
-          onMouseDown={this.handleDragStart}
-          onTouchMove={this.handleDrag}
+          onTouchStart={!readOnly && this.handleDragStart}
+          onMouseDown={!readOnly && this.handleDragStart}
+          onTouchMove={!readOnly && this.handleDrag}
           {...omit(this.props, ['onDragStart', 'onDragEnd', 'onDrag'])}
         />)
     }

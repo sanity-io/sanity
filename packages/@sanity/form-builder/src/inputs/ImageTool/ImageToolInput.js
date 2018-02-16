@@ -33,6 +33,7 @@ type Props = {
   imageUrl: string,
   value?: Value,
   onChange: (PatchEvent) => void,
+  readOnly: ?boolean,
   level: number
 }
 
@@ -56,12 +57,15 @@ export default class ImageToolInput extends React.Component<Props, State> {
   }
 
   handleChangeEnd = () => {
-    const {onChange} = this.props
+    const {onChange, readOnly} = this.props
     const {value} = this.state
-    onChange(PatchEvent.from([
-      set(value.crop, ['crop']),
-      set(value.hotspot, ['hotspot'])
-    ]))
+    if (!readOnly) {
+      onChange(PatchEvent.from([
+        set(value.crop, ['crop']),
+        set(value.hotspot, ['hotspot'])
+      ]))
+    }
+    this.setState({value: this.props.value})
   }
 
   handleChange = (nextValue: Value) => {
@@ -73,7 +77,7 @@ export default class ImageToolInput extends React.Component<Props, State> {
   }
 
   render() {
-    const {imageUrl, level} = this.props
+    const {imageUrl, level, readOnly} = this.props
     const {value} = this.state
 
     return (
@@ -84,6 +88,7 @@ export default class ImageToolInput extends React.Component<Props, State> {
               <ImageTool
                 value={value}
                 src={imageUrl}
+                readOnly={readOnly}
                 onChangeEnd={this.handleChangeEnd}
                 onChange={this.handleChange}
               />

@@ -37,8 +37,8 @@ type Props = {
     title: string,
     description: string,
     options?: SchemaOptions,
-    readOnly?: boolean,
   },
+  readOnly: ?boolean,
   onChange: PatchEvent => void,
   level: number
 }
@@ -144,9 +144,9 @@ export default class DateInput extends React.Component<Props, State> {
   }
 
   render() {
-    const {value, type, level, ...rest} = this.props
+    const {value, type, readOnly, level, ...rest} = this.props
     const {inputValue, isActive} = this.state
-    const {title, description, readOnly} = type
+    const {title, description} = type
     const momentValue: ?Moment = value ? moment(value) : null
 
     const options = parseOptions(type.options)

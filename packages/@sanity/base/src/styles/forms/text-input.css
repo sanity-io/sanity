@@ -17,6 +17,10 @@
   @nest &:disabled {
     opacity: 0.5;
   }
+
+  @nest &:read-only {
+    opacity: 0.5;
+  }
 }
 
 .textInput {
@@ -26,17 +30,19 @@
   box-shadow: var(--input-box-shadow);
 
   @nest &:not(:disabled) {
-    @nest &:hover {
-      box-shadow: var(--input-box-shadow--hover);
-    }
+    @nest &:not(:read-only) {
+      @nest &:hover {
+        box-shadow: var(--input-box-shadow--hover);
+      }
 
-    @nest &:focus, &:focus-within {
-      /* border-color: var(--input-border-color-focus); */
-      box-shadow: var(--input-box-shadow--focus);
-    }
+      @nest &:focus, &:focus-within {
+        /* border-color: var(--input-border-color-focus); */
+        box-shadow: var(--input-box-shadow--focus);
+      }
 
-    @nest &:active {
-      /* border-color: var(--input-border-color-active); */
+      @nest &:active {
+        /* border-color: var(--input-border-color-active); */
+      }
     }
   }
 }
