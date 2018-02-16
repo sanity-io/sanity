@@ -3,6 +3,13 @@ const webpackIntegration = require('@sanity/webpack-integration/v3')
 
 module.exports = {
   plugins: webpackIntegration.getPostcssPlugins({
-    basePath: resolveProjectRoot({sync: true})
+    basePath: resolveProjectRoot({sync: true}),
+    cssnext: {
+      features: {
+        customProperties: {
+          preserve: false
+        }
+      }
+    }
   })
 }
