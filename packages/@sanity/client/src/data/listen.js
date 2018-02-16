@@ -1,12 +1,14 @@
 const assign = require('object-assign')
 const Observable = require('@sanity/observable/minimal')
-const encodeQueryString = require('./encodeQueryString')
+const polyfilledEventSource = require('@sanity/eventsource')
 const pick = require('../util/pick')
 const defaults = require('../util/defaults')
+const encodeQueryString = require('./encodeQueryString')
 
-const EventSource = typeof window !== 'undefined' && window.EventSource
-  ? window.EventSource // Native browser EventSource
-  : require('@sanity/eventsource') // Node.js, IE etc
+const EventSource =
+  typeof window !== 'undefined' && window.EventSource
+    ? window.EventSource // Native browser EventSource
+    : polyfilledEventSource // Node.js, IE etc
 
 const possibleOptions = ['includePreviousRevision', 'includeResult']
 const defaultOptions = {
@@ -35,18 +37,31 @@ module.exports = function listen(query, params, opts = {}) {
   }
 
   return new Observable(observer => {
-    const es = new EventSource(uri, esOptions)
-
-    es.addEventListener('error', onError, false)
-    es.addEventListener('channelError', onChannelError, false)
-    es.addEventListener('disconnect', onDisconnect, false)
-    listenFor.forEach(type => es.addEventListener(type, onMessage, false))
+    let es = getEventSource()
+    let reconnectTimer
+    let stopped = false
 
     function onError() {
+      if (stopped) {
+        return
+      }
+
+      emitReconnect()
+
+      // Allow event handlers of `emitReconnect` to cancel/close the reconnect attempt
+      if (stopped) {
+        return
+      }
+
+      // Unless we've explicitly stopped the ES (in which case `stopped` should be true),
+      // we should never be in a disconnected state. By default, EventSource will reconnect
+      // automatically, in which case it sets readyState to `CONNECTING`, but in some cases
+      // (like when a laptop lid is closed), it closes the connection. In these cases we need
+      // to explicitly reconnect.
       if (es.readyState === EventSource.CLOSED) {
-        observer.complete()
-      } else if (es.readyState === EventSource.CONNECTING) {
-        emitReconnect()
+        unsubscribe()
+        clearTimeout(reconnectTimer)
+        reconnectTimer = setTimeout(open, 100)
       }
     }
 
@@ -56,21 +71,20 @@ module.exports = function listen(query, params, opts = {}) {
 
     function onMessage(evt) {
       const event = parseEvent(evt)
-      return event instanceof Error
-        ? observer.error(event)
-        : observer.next(event)
+      return event instanceof Error ? observer.error(event) : observer.next(event)
     }
 
     function onDisconnect(evt) {
-      observer.complete()
+      stopped = true
       unsubscribe()
+      observer.complete()
     }
 
     function unsubscribe() {
-      listenFor.forEach(type => es.removeEventListener(type, onMessage, false))
       es.removeEventListener('error', onError, false)
       es.removeEventListener('channelError', onChannelError, false)
       es.removeEventListener('disconnect', onDisconnect, false)
+      listenFor.forEach(type => es.removeEventListener(type, onMessage, false))
       es.close()
     }
 
@@ -80,7 +94,25 @@ module.exports = function listen(query, params, opts = {}) {
       }
     }
 
-    return unsubscribe
+    function getEventSource() {
+      const evs = new EventSource(uri, esOptions)
+      evs.addEventListener('error', onError, false)
+      evs.addEventListener('channelError', onChannelError, false)
+      evs.addEventListener('disconnect', onDisconnect, false)
+      listenFor.forEach(type => evs.addEventListener(type, onMessage, false))
+      return evs
+    }
+
+    function open() {
+      es = getEventSource()
+    }
+
+    function stop() {
+      stopped = true
+      unsubscribe()
+    }
+
+    return stop
   })
 }
 
@@ -111,7 +143,5 @@ function extractErrorMessage(err) {
     return err.error.description
   }
 
-  return typeof err.error === 'string'
-    ? err.error
-    : JSON.stringify(err.error, null, 2)
+  return typeof err.error === 'string' ? err.error : JSON.stringify(err.error, null, 2)
 }
