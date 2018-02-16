@@ -1,6 +1,6 @@
 {
   "name": "@sanity/core",
-  "version": "0.125.8",
+  "version": "0.125.9",
   "description": "Sanity core bundle, containing required packages for the development and build process",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -26,7 +26,7 @@
     "@sanity/mutator": "^0.125.8",
     "@sanity/plugin-loader": "^0.125.8",
     "@sanity/resolver": "^0.125.8",
-    "@sanity/server": "^0.125.8",
+    "@sanity/server": "^0.125.9",
     "@sanity/util": "^0.125.8",
     "babel-preset-env": "^1.6.1",
     "babel-register": "^6.26.0",
