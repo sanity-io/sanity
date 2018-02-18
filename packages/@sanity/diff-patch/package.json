@@ -1,0 +1,39 @@
+{
+  "name": "@sanity/diff-patch",
+  "version": "0.125.8",
+  "description": "Generates a patch by comparing two JSON structures",
+  "main": "lib/diff-patch.js",
+  "scripts": {
+    "clean": "rimraf lib",
+    "test": "jest"
+  },
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "mocha": "^5.0.1",
+    "rimraf": "^2.6.2",
+    "jest": "^22.0.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/",
+  "directories": {
+    "test": "test"
+  },
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "diff-patch"
+  ]
+}

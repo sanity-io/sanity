@@ -1,0 +1,9 @@
+{
+  "env": {
+    "jest": true
+  },
+  "rules": {
+    "import/no-commonjs": 0,
+    "id-length": 0
+  }
+}
