@@ -1,8 +1,8 @@
-import ObjectInput from './inputs/Object/Object'
-import ArrayInput from './inputs/Array/Array'
-import BooleanInput from './inputs/Boolean'
-import NumberInput from './inputs/Number'
-import TextInput from './inputs/Text'
+import ObjectInput from './inputs/ObjectInput'
+import ArrayInput from './inputs/ArrayInput'
+import BooleanInput from './inputs/BooleanInput'
+import NumberInput from './inputs/NumberInput'
+import TextInput from './inputs/TextInput'
 
 export const fallbackInputs = {
   object: ObjectInput,

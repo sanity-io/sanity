@@ -3,7 +3,7 @@ import {FileInput} from '../..'
 import resolveUploader from '../uploads/resolveUploader'
 import {materializeReference} from './client-adapters/assets'
 
-export default class SanityImageInput extends React.Component {
+export default class SanityFileInput extends React.Component {
   focus() {
     if (this._input) {
       this._input.focus()

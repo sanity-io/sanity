@@ -3,9 +3,9 @@ import * as SlugInput from './inputs/Slug'
 export {default as FormBuilder} from './FormBuilder'
 export {default as FormBuilderContext} from './FormBuilderContext'
 export {default as BlockEditor} from './inputs/BlockEditor-slate'
-export {default as ReferenceInput} from './inputs/Reference'
-export {default as FileInput} from './inputs/File'
-export {default as ImageInput} from './inputs/Image'
+export {default as ReferenceInput} from './inputs/ReferenceInput'
+export {default as FileInput} from './inputs/FileInput'
+export {default as ImageInput} from './inputs/ImageInput'
 
 // Input component factories
 export {SlugInput}

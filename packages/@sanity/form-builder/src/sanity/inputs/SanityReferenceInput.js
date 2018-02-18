@@ -1,7 +1,7 @@
 
 import React from 'react'
 import {search, getPreviewSnapshot} from './client-adapters/reference'
-import ReferenceInput from '../../inputs/Reference'
+import ReferenceInput from '../../inputs/ReferenceInput'
 
 export default class SanityReference extends React.Component {
   setInput = input => {

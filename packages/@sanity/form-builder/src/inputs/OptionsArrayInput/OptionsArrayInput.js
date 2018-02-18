@@ -4,7 +4,7 @@ import {get} from 'lodash'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 import Item from './Item'
-import styles from './styles/OptionsArray.css'
+import styles from './styles/OptionsArrayInput.css'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import {resolveValueWithLegacyOptionsSupport, isLegacyOptionsItem} from './legacyOptionsSupport'
 

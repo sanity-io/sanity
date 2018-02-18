@@ -6,15 +6,15 @@ import {Item as SortableItem, List as SortableList} from 'part:@sanity/component
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import Button from 'part:@sanity/components/buttons/default'
 import Item from './Item'
-import styles from './styles/ArrayOfPrimitives.css'
+import styles from './styles/ArrayOfPrimitivesInput.css'
 import PatchEvent, {set, unset} from '../../PatchEvent'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import getEmptyValue from './getEmptyValue'
 
 import {startsWith} from '../../utils/pathUtils'
 import {resolveTypeName} from '../../utils/resolveTypeName'
-import InvalidValue from '../InvalidValue'
-import type {ItemValue} from '../Array/typedefs'
+import InvalidValue from '../InvalidValueInput'
+import type {ItemValue} from '../ArrayInput/typedefs'
 import type {Path} from '../../typedefs/path'
 import type {Type, Marker} from '../../typedefs'
 

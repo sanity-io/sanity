@@ -1,16 +1,16 @@
 
-import BooleanInput from '../../inputs/Boolean'
-import EmailInput from '../../inputs/Email'
-import NumberInput from '../../inputs/Number'
-import ObjectInput from '../../inputs/Object'
-import StringInput from '../../inputs/String'
-import DateTimeInput from '../../inputs/DateTime'
-import TextInput from '../../inputs/Text'
-import UrlInput from '../../inputs/Url'
+import BooleanInput from '../../inputs/BooleanInput'
+import EmailInput from '../../inputs/EmailInput'
+import NumberInput from '../../inputs/NumberInput'
+import ObjectInput from '../../inputs/ObjectInput'
+import StringInput from '../../inputs/StringInput'
+import DateTimeInput from '../../inputs/DateTimeInput'
+import TextInput from '../../inputs/TextInput'
+import UrlInput from '../../inputs/UrlInput'
 
-import SanityArrayInput from '../inputs/SanityArray'
-import Image from '../inputs/Image'
-import File from '../inputs/File'
+import SanityArrayInput from '../inputs/SanityArrayInput'
+import Image from '../inputs/SanityImageInput'
+import File from '../inputs/SanityFileInput'
 import Slug from '../inputs/Slug'
 
 export default {

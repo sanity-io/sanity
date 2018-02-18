@@ -1,1 +1,1 @@
-export {default} from '../../Array/randomKey'
+export {default} from '../../ArrayInput/randomKey'
