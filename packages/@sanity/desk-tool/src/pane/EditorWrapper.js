@@ -1,17 +1,17 @@
 import PropTypes from 'prop-types'
-// Connects the FormBuilder with various sanity roles
 import React from 'react'
-import Observable from '@sanity/observable'
-import {validateDocument} from '@sanity/validation'
 import promiseLatest from 'promise-latest'
 import {omit, throttle, debounce} from 'lodash'
+import diffPatch from '@sanity/diff-patch'
+import Observable from '@sanity/observable'
+import {validateDocument} from '@sanity/validation'
 import FormBuilder, {checkout} from 'part:@sanity/form-builder'
 import schema from 'part:@sanity/base/schema'
-import Button from 'part:@sanity/components/buttons/default'
 import client from 'part:@sanity/base/client'
+import Button from 'part:@sanity/components/buttons/default'
 import {getDraftId, getPublishedId} from '../utils/draftUtils'
-import Editor from './Editor'
 import styles from './styles/EditorWrapper.css'
+import Editor from './Editor'
 
 const INITIAL_DOCUMENT_STATE = {
   isLoading: true,
@@ -268,18 +268,18 @@ export default class EditorWrapper extends React.Component {
         _id: getPublishedId(documentId)
       })
     } else {
-      // If it exists already, we only want to update it if the revision on the remote server
-      // matches what our local state thinks it's at
-      tx
-        .patch(getPublishedId(documentId), {
-          // Hack until other mutations support revision locking
-          unset: ['_reserved_prop_'],
+      // If it exists already, we want to apply the minimal set of patches we can. In the future,
+      // we probably just want to apply the same operations that have been applied to the draft,
+      // but for now do a diff and update whichever differences we can find.
+      const diffOperations = diffPatch(published.snapshot, draft.snapshot)
+
+      // In some cases there is no difference between the two - only apply the patch if there are changes
+      if (diffOperations) {
+        tx.patch(getPublishedId(documentId), {
+          ...diffOperations,
           ifRevisionID: published.snapshot._rev
         })
-        .createOrReplace({
-          ...omit(draft.snapshot, '_updatedAt'),
-          _id: getPublishedId(documentId)
-        })
+      }
     }
 
     tx.delete(getDraftId(documentId))
