@@ -71,4 +71,9 @@ const generatedPatch = {
 
 * Using keys are a bit tricky:
   * How do we detect a move, and which patch operation should we use?
-* Better object-move semantics (based on \_key)
+  * If new items are added, there are no efficient ways that I can think of in which we
+    can insert at correct locations. For one, we don't support multiple insert patches,
+    secondly there are no way to reference paths provided by the same patch:
+    If an array currently has [a, z] and we want to insert two new items, [b, c] after `a`,
+    the b-item can use a "insert after a"-patch, but the second (c) can't use a
+    "insert after b"-patch, as far as I can tell.

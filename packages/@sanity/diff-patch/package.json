@@ -1,6 +1,6 @@
 {
   "name": "@sanity/diff-patch",
-  "version": "0.125.8",
+  "version": "0.132.4",
   "description": "Generates a patch by comparing two JSON structures",
   "main": "lib/diff-patch.js",
   "scripts": {
@@ -13,9 +13,10 @@
     "access": "public"
   },
   "devDependencies": {
+    "@sanity/client": "^0.132.2",
     "mocha": "^5.0.1",
     "rimraf": "^2.6.2",
-    "jest": "^22.0.5"
+    "jest": "^22.4.3"
   },
   "repository": {
     "type": "git",

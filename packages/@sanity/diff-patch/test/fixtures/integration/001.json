@@ -1,0 +1,41 @@
+{
+  "input": {
+    "_type": "fixture",
+    "AidanGillen": {
+      "array": ["Game of Thron\"es", "The Wire"],
+      "string": "some string",
+      "int": 2,
+      "aboolean": true,
+      "boolean": true,
+      "object": {
+        "foo": "bar",
+        "object1": {"newprop1": "newprop value"},
+        "object2": {"newprop1": "newprop value"},
+        "object3": {"newprop1": "newprop value"},
+        "object4": {"newprop1": "newprop value"}
+      }
+    },
+    "AmyRyan": {"one": "In Treatment", "two": "The Wire"},
+    "AnnieFitzgerald": ["Big Love", "True Blood"],
+    "AnwanGlover": ["Treme", "The Wire"],
+    "AlexanderSkarsgard": ["Generation Kill", "True Blood"],
+    "ClarkePeters": null
+  },
+  "output": {
+    "_type": "fixture",
+    "AidanGillen": {
+      "array": ["Game of Thrones", "The Wire"],
+      "string": "some string",
+      "int": "2",
+      "otherint": 4,
+      "aboolean": "true",
+      "boolean": false,
+      "object": {"foo": "bar"}
+    },
+    "AmyRyan": ["In Treatment", "The Wire"],
+    "AnnieFitzgerald": ["True Blood", "Big Love", "The Sopranos", "Oz"],
+    "AnwanGlover": ["Treme", "The Wire"],
+    "AlexanderSkarsgaard": ["Generation Kill", "True Blood"],
+    "AliceFarmer": ["The Corner", "Oz", "The Wire"]
+  }
+}

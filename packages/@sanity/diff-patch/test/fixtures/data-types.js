@@ -30,3 +30,14 @@ exports.c = {
   slug: 'die-hard-with-a-vengeance', // Object => String
   year: {released: 1995} // Integer => Object
 }
+
+exports.d = {
+  _id: 'die-hard-iii',
+  _type: 'movie',
+  title: 'Die Hard 3', // String
+  rating: 3.14, // Float
+  isFeatured: true, // Boolean
+  characters: ['John McClane'], // Array
+  slug: ['die-hard-with-a-vengeance'], // Object => Array
+  year: 1994 // Integer
+}

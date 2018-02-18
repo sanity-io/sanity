@@ -1,0 +1,26 @@
+{
+  "input": {
+    "_type": "fixture",
+    "delete": {
+      "l0o": {
+        "l1s": "abcd",
+        "l1o": {
+          "l2s": "efed"
+        }
+      },
+      "l0a": ["abcd", ["efcg"]]
+    }
+  },
+  "output": {
+    "_type": "fixture",
+    "add": {
+      "l0o": {
+        "l1s": "abcd",
+        "l1o": {
+          "l2s": "efed"
+        }
+      },
+      "l0a": ["abcd", ["efcg"]]
+    }
+  }
+}

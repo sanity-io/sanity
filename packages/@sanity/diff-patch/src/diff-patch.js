@@ -7,41 +7,46 @@ function diffPatch(itemA, itemB, basePath = []) {
   return serializePatches(optimized)
 }
 
+// eslint-disable-next-line complexity
 function diffItem(itemA, itemB, basePath, patches) {
   if (itemA === itemB) {
     return patches
   }
 
-  const aType = typeof itemA
-  const bType = typeof itemB
+  const aType = Array.isArray(itemA) ? 'array' : typeof itemA
+  const bType = Array.isArray(itemB) ? 'array' : typeof itemB
 
-  if (aType === 'undefined' && bType !== 'undefined') {
+  const aIsUndefined = aType === 'undefined'
+  const bIsUndefined = bType === 'undefined'
+
+  if (aIsUndefined && !bIsUndefined) {
     patches.push({op: 'set', path: basePath, value: itemB})
     return patches
   }
 
-  if (bType === 'undefined' && aType !== 'undefined') {
+  if (!aIsUndefined && bIsUndefined) {
     patches.push({op: 'unset', path: basePath})
     return patches
   }
 
-  const dataType = aType === 'undefined' ? bType : aType
-
-  if (dataType === 'object') {
-    return Array.isArray(itemA)
-      ? diffArray(itemA, itemB, basePath, patches)
-      : diffObject(itemA, itemB, basePath, patches)
+  const dataType = aIsUndefined ? bType : aType
+  const isContainer = dataType === 'object' || dataType === 'array'
+  if (!isContainer) {
+    return diffPrimitive(itemA, itemB, basePath, patches)
   }
 
-  return diffPrimitive(itemA, itemB, basePath, patches)
-}
-
-function diffObject(itemA, itemB, basePath, patches) {
-  if (typeof itemB !== typeof itemA) {
+  if (aType !== bType) {
+    // Array => Object / Object => Array
     patches.push({op: 'set', path: basePath, value: itemB})
     return patches
   }
 
+  return dataType === 'array'
+    ? diffArray(itemA, itemB, basePath, patches)
+    : diffObject(itemA, itemB, basePath, patches)
+}
+
+function diffObject(itemA, itemB, basePath, patches) {
   const aKeys = Object.keys(itemA).filter(withoutReadOnly)
   const aKeysLength = aKeys.length
   const bKeys = Object.keys(itemB).filter(withoutReadOnly)
@@ -65,11 +70,6 @@ function diffObject(itemA, itemB, basePath, patches) {
 }
 
 function diffArray(itemA, itemB, basePath, patches) {
-  if (!Array.isArray(itemA) || !Array.isArray(itemB)) {
-    patches.push({op: 'set', path: basePath, value: itemB})
-    return patches
-  }
-
   // Check for new items
   if (itemB.length > itemA.length) {
     patches.push({
@@ -87,12 +87,37 @@ function diffArray(itemA, itemB, basePath, patches) {
     })
   }
 
+  const isKeyed = isUniquelyKeyed(itemA) && isUniquelyKeyed(itemB)
+  return isKeyed
+    ? diffArrayByKey(itemA, itemB, basePath, patches)
+    : diffArrayByIndex(itemA, itemB, basePath, patches)
+}
+
+function diffArrayByIndex(itemA, itemB, basePath, patches) {
   // Check for changed items
   // @todo This currently also sets new items, which should instead be handled with an `insert`-
   // operation, but we can't currently represent multiple insert operations in the same patch,
   // so for now this is the best we can do. Change to simply iterate up to itemA's length.
   for (let i = 0; i < itemB.length; i++) {
     diffItem(itemA[i], itemB[i], basePath.concat(i), patches)
+  }
+
+  return patches
+}
+
+function diffArrayByKey(itemA, itemB, basePath, patches) {
+  const keyedA = indexByKey(itemA)
+  const keyedB = indexByKey(itemB)
+
+  // There's a bunch of hard/semi-hard problems related to using keys
+  // Unless we have the exact same order, just use indexes for now
+  if (!arrayIsEqual(keyedA.keys, keyedB.keys)) {
+    return diffArrayByIndex(itemA, itemB, basePath, patches)
+  }
+
+  for (let i = 0; i < keyedB.keys.length; i++) {
+    const key = keyedB.keys[i]
+    diffItem(keyedA.index[key], keyedB.index[key], basePath.concat({_key: key}), patches)
   }
 
   return patches
@@ -140,6 +165,36 @@ function serializePatches(patches) {
 
     return patch
   }, {})
+}
+
+function isUniquelyKeyed(arr) {
+  const keys = []
+
+  for (let i = 0; i < arr.length; i++) {
+    const key = arr[i] && arr[i]._key
+    if (!key || keys.indexOf(key) !== -1) {
+      return false
+    }
+
+    keys.push(key)
+  }
+
+  return true
+}
+
+function indexByKey(arr) {
+  return arr.reduce(
+    (acc, item) => {
+      acc.keys.push(item._key)
+      acc.index[item._key] = item
+      return acc
+    },
+    {keys: [], index: {}}
+  )
+}
+
+function arrayIsEqual(itemA, itemB) {
+  return itemA.length === itemB.length && itemA.every((item, i) => itemB[i] === item)
 }
 
 function pathToString(path) {

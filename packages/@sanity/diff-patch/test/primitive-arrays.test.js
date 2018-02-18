@@ -11,11 +11,11 @@ describe('primitive arrays', () => {
     })
   })
 
-  test('add to end (multiple)', () => {
+  test.only('add to end (multiple)', () => {
     expect(diffPatch(primitiveArrayAdd.a, primitiveArrayAdd.c)).toEqual({
-      set: {
-        'characters[1]': 'Simon Gruber',
-        'characters[2]': 'Zeus Carver'
+      insert: {
+        after: 'characters[-1]',
+        items: ['Simon Gruber', 'Zeus Carver']
       }
     })
   })

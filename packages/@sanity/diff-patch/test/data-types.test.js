@@ -27,4 +27,10 @@ describe('diff data types', () => {
       }
     })
   })
+
+  test('different data type (object => array)', () => {
+    expect(diffPatch(dataTypes.a, dataTypes.d)).toEqual({
+      set: {slug: ['die-hard-with-a-vengeance']}
+    })
+  })
 })

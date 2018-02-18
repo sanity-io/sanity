@@ -1,8 +1,17 @@
 const diffPatch = require('../src/diff-patch')
 const objectArrayAdd = require('./fixtures/object-array-add')
 const objectArrayRemove = require('./fixtures/object-array-remove')
+const objectArrayChange = require('./fixtures/object-array-change')
 
 describe('object arrays', () => {
+  test('change item', () => {
+    expect(diffPatch(objectArrayChange.a, objectArrayChange.b)).toEqual({
+      set: {
+        'characters[_key=="simon"].name': 'Simon Grüber'
+      }
+    })
+  })
+
   test('add to end (single)', () => {
     expect(diffPatch(objectArrayAdd.a, objectArrayAdd.b)).toEqual({
       set: {

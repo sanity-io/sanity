@@ -1,0 +1,30 @@
+{
+  "input": {
+    "_id": "foo",
+    "_type": "foo",
+    "arr": [
+      1,
+      2,
+      6,
+      {
+        "str": "bcded",
+        "arr": ["a", "b", 37.8]
+      },
+      "string"
+    ]
+  },
+  "output": {
+    "_id": "foo",
+    "_type": "foo",
+    "arr": [
+      1,
+      2,
+      6,
+      {
+        "str": "bcdef",
+        "arr": ["a", "b", 37.8]
+      },
+      "string"
+    ]
+  }
+}
