@@ -14,7 +14,7 @@ import styles from './styles/FormBuilderInline.css'
 import createRange from './util/createRange'
 import {applyAll} from '../../simplePatch'
 import {resolveTypeName} from '../../utils/resolveTypeName'
-import InvalidValue from '../InvalidValue'
+import InvalidValue from '../InvalidValueInput'
 
 export default class FormBuilderInline extends React.Component {
   static propTypes = {

@@ -1,7 +1,7 @@
 // @flow
 import React from 'react'
 import {resolveTypeName} from '../../utils/resolveTypeName'
-import InvalidValue from '../InvalidValue'
+import InvalidValue from '../InvalidValueInput'
 import PatchEvent from '../../PatchEvent'
 
 type Type = {

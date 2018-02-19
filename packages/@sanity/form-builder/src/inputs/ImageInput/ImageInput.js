@@ -18,7 +18,7 @@ import type {Reference, Type} from '../../typedefs'
 import type {Uploader, UploaderResolver} from '../../sanity/uploads/typedefs'
 
 import WithMaterializedReference from '../../utils/WithMaterializedReference'
-import ImageToolInput from '../ImageTool'
+import ImageToolInput from '../ImageToolInput'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
 import SelectAsset from './SelectAsset'
 import {FormBuilderInput} from '../../FormBuilderInput'

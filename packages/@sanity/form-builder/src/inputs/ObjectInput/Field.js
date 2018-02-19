@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import {FormBuilderInput} from '../../FormBuilderInput'
-import InvalidValue from '../InvalidValue'
+import InvalidValue from '../InvalidValueInput'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import styles from './styles/Field.css'
 

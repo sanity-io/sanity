@@ -13,7 +13,7 @@
 }
 
 .field {
-  composes: root from '../../Object/styles/Field.css';
+  composes: root from '../../ObjectInput/styles/Field.css';
 }
 
 .assetWrapper {

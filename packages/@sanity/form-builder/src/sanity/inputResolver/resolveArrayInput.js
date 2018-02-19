@@ -1,7 +1,7 @@
-import OptionsArray from '../../inputs/OptionsArray/OptionsArray'
+import OptionsArray from '../../inputs/OptionsArrayInput'
 import BlockEditor from '../../inputs/BlockEditor-slate'
-import ArrayOfPrimitivesInput from '../../inputs/ArrayOfPrimitives/ArrayOfPrimitives'
-import TagsArrayInput from '../../inputs/TagsArray/TagsArray'
+import ArrayOfPrimitivesInput from '../../inputs/ArrayOfPrimitivesInput'
+import TagsArrayInput from '../../inputs/TagsArrayInput'
 import * as is from '../../utils/is'
 import {get} from 'lodash'
 
