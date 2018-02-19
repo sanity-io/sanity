@@ -1,13 +1,13 @@
+// @flow
 import PropTypes from 'prop-types'
 import React from 'react'
-import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import Button from 'part:@sanity/components/buttons/default'
-import styles from './styles/SlugInput.css'
-import DefaultFormField from 'part:@sanity/components/formfields/default'
-import DefaultTextInput from 'part:@sanity/components/textinputs/default'
-import {debounce, deburr, kebabCase, get} from 'lodash'
-import Spinner from 'part:@sanity/components/loading/spinner'
+import FormField from 'part:@sanity/components/formfields/default'
+import TextInput from 'part:@sanity/components/textinputs/default'
+import {deburr, kebabCase, get} from 'lodash'
+import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import PatchEvent, {set, unset} from '../../PatchEvent'
+import styles from './styles/SlugInput.css'
 
 // Fallback slugify function if not defined in factory function
 // or in the type definition's options
@@ -28,28 +28,6 @@ function proposeNewValue(value) {
   return `${value}-1`
 }
 
-const makeCancelable = promise => {
-  let hasCanceled_ = false
-
-  const wrappedPromise = new Promise((resolve, reject) => {
-    const cancelError = new Error('Promise was canceled')
-    cancelError.isCanceled = true
-    promise.then(val => {
-      return hasCanceled_ ? reject(cancelError) : resolve(val)
-    })
-    promise.catch(error => {
-      return hasCanceled_ ? reject(cancelError) : reject(error)
-    })
-  })
-
-  return {
-    promise: wrappedPromise,
-    cancel() {
-      hasCanceled_ = true
-    }
-  }
-}
-
 const vanillaState = {
   inputText: undefined,
   loading: false
@@ -65,15 +43,21 @@ export default class SlugInput extends React.Component {
     }),
     checkValidityFn: PropTypes.func,
     slugifyFn: PropTypes.func,
-    document: PropTypes.object.isRequired,
+    document: PropTypes.shape({_id: PropTypes.string}).isRequired,
     onChange: PropTypes.func,
-    markers: PropTypes.array
+    markers: PropTypes.arrayOf(
+      PropTypes.shape({
+        type: PropTypes.string.isRequired
+      })
+    )
   }
 
   static defaultProps = {
+    checkValidityFn: null,
     value: {current: undefined, auto: true},
     onChange() {},
-    slugifyFn: defaultSlugify
+    slugifyFn: defaultSlugify,
+    markers: []
   }
 
   state = vanillaState
@@ -137,27 +121,26 @@ export default class SlugInput extends React.Component {
     })
   }
 
-
   render() {
-    const {value, type, level, markers, ...rest} = this.props
+    const {value, type, level, markers, document, checkValidityFn, slugifyFn, ...rest} = this.props
     const hasSourceField = type.options && type.options.source
     const {loading, validationError, inputText} = this.state
     const formFieldProps = {
       label: type.title,
       description: type.description,
       level: level,
-      markers: markers
+      markers
     }
 
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
 
     return (
-      <DefaultFormField {...formFieldProps}>
+      <FormField {...formFieldProps}>
         {validationError && <p>{validationError}</p>}
         <div className={styles.wrapper}>
           <div className={styles.input}>
-            <DefaultTextInput
+            <TextInput
               customValidity={errors.length > 0 ? errors[0].item.message : ''}
               disabled={loading}
               placeholder={type.placeholder}
@@ -175,7 +158,7 @@ export default class SlugInput extends React.Component {
             )}
           </div>
         </div>
-      </DefaultFormField>
+      </FormField>
     )
   }
 }
