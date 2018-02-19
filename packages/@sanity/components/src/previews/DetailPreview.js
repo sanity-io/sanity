@@ -2,7 +2,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/previews/detail-style'
-import TextEllipsis from 'react-text-ellipsis'
 
 let index = 0
 const fieldProp = PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.func])
@@ -115,18 +114,7 @@ export default class DetailPreview extends React.PureComponent {
                   typeof description === 'function' && description({layout: 'detail'})
                 }
                 {
-                  typeof description === 'string' && (
-                    <TextEllipsis
-                      lines={2}
-                      tag={'span'}
-                      ellipsisChars={'…'}
-                      tagClass={'className'}
-                      debounceTimeoutOnResize={200}
-                      useJsOnly
-                    >
-                      {description}
-                    </TextEllipsis>
-                  )
+                  typeof description === 'string' && description
                 }
                 {
                   typeof description === 'object' && description
