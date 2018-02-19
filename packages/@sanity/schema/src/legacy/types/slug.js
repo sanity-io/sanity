@@ -1,12 +1,16 @@
 import {pick} from 'lodash'
 
-const OVERRIDABLE_FIELDS = ['jsonType', 'type', 'name', 'title', 'description', 'options']
+const OVERRIDABLE_FIELDS = ['validation', 'jsonType', 'type', 'name', 'title', 'description', 'options']
 
 const SLUG_CORE = {
   name: 'slug',
   title: 'Slug',
   type: null,
-  jsonType: 'object'
+  jsonType: 'object',
+  validation: Rule => Rule.custom((...args) => {
+    console.log('TODO: slug validation', ...args)
+    return 'Slug is used in "XXX - XXX'
+  })
 }
 
 export const SlugType = {
