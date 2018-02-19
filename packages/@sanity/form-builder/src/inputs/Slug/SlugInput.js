@@ -15,8 +15,17 @@ function defaultSlugify(value) {
   return kebabCase(deburr(value))
 }
 
-function tryPromise(fn) {
-  return Promise.resolve().then(() => fn())
+function proposeNewValue(value) {
+  const arr = value.split('-')
+
+  const version = Number(arr.slice(-1)[0])
+
+  if (version && Number.isInteger(version)) {
+    arr[arr.length - 1] = version + 1
+    return arr.join('-')
+  }
+
+  return `${value}-1`
 }
 
 const makeCancelable = promise => {
@@ -57,7 +66,8 @@ export default class SlugInput extends React.Component {
     checkValidityFn: PropTypes.func,
     slugifyFn: PropTypes.func,
     document: PropTypes.object.isRequired,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    markers: PropTypes.array
   }
 
   static defaultProps = {
@@ -68,64 +78,8 @@ export default class SlugInput extends React.Component {
 
   state = vanillaState
 
-  constructor(props) {
-    super(props)
-    this.updateValueWithUniquenessCheck = debounce(
-      this.updateValueWithUniquenessCheck.bind(this),
-      500
-    )
-  }
-
   updateValue(value) {
-    this.setState({loading: false})
     this.props.onChange(PatchEvent.from(value ? set(value) : unset()))
-  }
-
-  updateValueWithUniquenessCheck(value) {
-    const {type, checkValidityFn, document} = this.props
-    const docId = document._id
-    return makeCancelable(
-      tryPromise(() => {
-        if (!value.current) {
-          this.updateValue(value)
-          this.setState({loading: false, validationError: null})
-          return Promise.resolve()
-        }
-        this.setState({loading: true, validationError: null})
-        return checkValidityFn(type, value.current, docId)
-      })
-    )
-      .promise.then(validationError => {
-        if (!validationError) {
-          this.updateValue(value)
-          this.setState({loading: false, validationError: null})
-          return Promise.resolve()
-        }
-        // TODO: Increment number instead of ending up with slug-1-1-1-1-1-1
-        const proposedNewCurrent = `${value.current}-1`
-        const newVal = {current: proposedNewCurrent, auto: false}
-        this.setState({
-          loading: false,
-          inputText: proposedNewCurrent
-          // TODO only show validation error when manual edit is required
-          //validationError: validationError.toString()
-        })
-        return this.updateValueWithUniquenessCheck(newVal)
-      })
-      .catch(err => {
-        if (err.isCanceled) {
-          return null
-        }
-        console.error(err) // eslint-disable-line no-console
-        this.setState({
-          loading: false,
-          validationError:
-            'Got javascript error trying to validate the slug. ' +
-            'See javascript console for more info.'
-        })
-        this.updateValue({current: value.current, auto: false})
-        return Promise.resolve()
-      })
   }
 
   slugify(sourceValue) {
@@ -134,7 +88,7 @@ export default class SlugInput extends React.Component {
     }
     const {type, slugifyFn} = this.props
 
-    const slugify = get(type, 'options.slugify') || slugifyFn
+    const slugify = get(type, 'options.slugifyFn') || slugifyFn
 
     return slugify(type, sourceValue)
   }
@@ -151,65 +105,52 @@ export default class SlugInput extends React.Component {
   }
 
   handleChange = event => {
-    const {checkValidityFn, value} = this.props
-    if (this.finalizeSlugTimeout) {
-      clearTimeout(this.finalizeSlugTimeout)
-    }
-    this.setState({inputText: event.target.value.toString()})
-    this.finalizeSlugTimeout = setTimeout(() => {
-      const newCurrent =
-        typeof this.state.inputText === 'undefined' ? undefined : this.slugify(this.state.inputText)
-      this.setState({inputText: newCurrent})
-      const newVal = {current: newCurrent, auto: value.auto}
-      if (checkValidityFn) {
-        this.updateValueWithUniquenessCheck(newVal)
-        return
-      }
-      this.updateValue(newVal)
-    }, 500)
+    this.updateValue({current: event.target.value.toString()})
   }
 
   handleGenerateSlug = () => {
-    const {type, value, checkValidityFn, document} = this.props
+    const {type, checkValidityFn, document} = this.props
     const source = get(type, 'options.source')
 
     if (!source) {
+      console.error(`Source is missing. Check source on type "${type.name}" in schema`) // eslint-disable-line no-console
       return
     }
-
     const newFromSource = typeof source === 'function' ? source(document) : get(document, source)
     const newCurrent = this.slugify(newFromSource)
 
-    if (newCurrent && newCurrent !== value.current) {
-      const newVal = {current: newCurrent, auto: value.auto}
-      if (checkValidityFn) {
-        // TODO: generate an unique slug first time instead of show loading, validation errors
-        // and invalid slugs until it finds an valid slug
-        this.updateValueWithUniquenessCheck(newVal)
-        this.setState({inputText: newCurrent})
-        return
+    this.slugProposal = this.slugProposal || newCurrent
+    this.setState({loading: true})
+
+    checkValidityFn(type, this.slugProposal, document && document._id).then(error => {
+      if (error) {
+        console.log(this.slugProposal, 'is used')
+        this.slugProposal = proposeNewValue(this.slugProposal)
+        this.handleGenerateSlug() // Keep trying
+      } else {
+        this.setState({
+          loading: false
+        })
+        this.updateValue({current: this.slugProposal})
+        this.slugProposal = null
       }
-      this.updateValue(newVal)
-    }
+    })
   }
 
-  focus() {
-    this._input.focus()
-  }
-
-  setInput = input => {
-    this._input = input
-  }
 
   render() {
-    const {value, type, level} = this.props
+    const {value, type, level, markers, ...rest} = this.props
     const hasSourceField = type.options && type.options.source
     const {loading, validationError, inputText} = this.state
     const formFieldProps = {
       label: type.title,
       description: type.description,
-      level: level
+      level: level,
+      markers: markers
     }
+
+    const validation = markers.filter(marker => marker.type === 'validation')
+    const errors = validation.filter(marker => marker.level === 'error')
 
     return (
       <DefaultFormField {...formFieldProps}>
@@ -217,11 +158,12 @@ export default class SlugInput extends React.Component {
         <div className={styles.wrapper}>
           <div className={styles.input}>
             <DefaultTextInput
+              customValidity={errors.length > 0 ? errors[0].item.message : ''}
               disabled={loading}
-              ref={this.setInput}
               placeholder={type.placeholder}
               onChange={this.handleChange}
               value={typeof inputText === 'string' ? inputText : value.current}
+              {...rest}
             />
           </div>
 
