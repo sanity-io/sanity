@@ -1,7 +1,21 @@
+import React from 'react'
+
 export default {
   name: 'slugsTest',
   type: 'document',
   title: 'Slugs test',
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'slug.current'
+    },
+    prepare: ({title, subtitle}) => {
+      return {
+        title: title,
+        subtitle: <span style={{fontFamily: 'monospace'}}>{`/${subtitle}/`}</span>
+      }
+    }
+  },
   fields: [
     {
       name: 'title',
