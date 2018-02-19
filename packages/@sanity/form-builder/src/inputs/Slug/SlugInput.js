@@ -88,6 +88,16 @@ export default class SlugInput extends React.Component {
     }
   }
 
+  focus() {
+    if (this._textInput) {
+      this._textInput.focus()
+    }
+  }
+
+  setTextInput = (input: ?TextInput) => {
+    this._textInput = input
+  }
+
   handleChange = event => {
     this.updateValue({current: event.target.value.toString()})
   }
@@ -141,6 +151,7 @@ export default class SlugInput extends React.Component {
         <div className={styles.wrapper}>
           <div className={styles.input}>
             <TextInput
+              ref={this.setTextInput}
               customValidity={errors.length > 0 ? errors[0].item.message : ''}
               disabled={loading}
               placeholder={type.placeholder}
