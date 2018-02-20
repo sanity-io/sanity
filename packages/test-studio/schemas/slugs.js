@@ -29,8 +29,7 @@ export default {
       description: 'This is a slug field that should update according to current title',
       options: {
         source: 'title',
-        maxLength: 96,
-        auto: true,
+        maxLength: 96
       }
     },
     {
@@ -40,23 +39,38 @@ export default {
       description: 'This is a slug field that should update according to current title',
       options: {
         source: document => document.title,
-        maxLength: 96,
-        auto: true,
+        maxLength: 96
       }
     },
     {
-      name: 'slugWithSlugify',
+      name: 'slugWithCustomUniqueCheck',
       type: 'slug',
-      title: 'Custom slugify function',
-      description: 'This is a slug field that should update according to current title',
+      title: 'Slug with custom unique check',
+      description: 'Slugs starting with "hei" are always taken, regardless of documents using it',
       options: {
         source: 'title',
-        slugify: (input, value) => {
-          return encodeURI(`${input.name}_${value}`).toLocaleLowerCase()
-        },
-        maxLength: 96,
-        auto: true,
+        maxLength: 100,
+        checkUnique: value => /^hei/i.test(value)
       }
+    },
+    {
+      name: 'nested',
+      type: 'object',
+      fields: [
+        {
+          name: 'slugWithSlugify',
+          type: 'slug',
+          title: 'Custom slugify function',
+          description: 'This is a slug field that should update according to current title',
+          options: {
+            source: 'title',
+            maxLength: 96,
+            slugify: (type, value) => {
+              return encodeURI(`${type.name}_${value}`).toLocaleLowerCase()
+            }
+          }
+        }
+      ]
     }
   ]
 }
