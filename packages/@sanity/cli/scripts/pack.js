@@ -86,15 +86,14 @@ compiler.run((err, stats) => {
     throw err
   }
 
-  if (stats.compilation.warnings.length > 0) {
-    console.warn('=== [  Warnings  ]========')
-    stats.compilation.warnings.forEach(warn => {
-      if (!warn.name === 'ModuleDependencyWarning') {
-        console.warn(warn)
-        return
-      }
+  const filtered = stats.compilation.warnings.filter(warn => {
+    return !warn.origin || warn.origin.userRequest.indexOf('spawn-sync.js') === -1
+  })
 
-      console.warn(`\n${warn.origin.userRequest}:`)
+  if (filtered.length > 0) {
+    console.warn('=== [  Warnings  ]========')
+    filtered.forEach(warn => {
+      console.warn(warn.origin ? `\n${warn.origin.userRequest}:` : '\n')
       console.warn(`${warn}\n`)
     })
     console.warn('=== [ /Warnings  ]========\n')
