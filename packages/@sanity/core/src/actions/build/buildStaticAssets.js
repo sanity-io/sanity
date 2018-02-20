@@ -1,16 +1,16 @@
-import fse from 'fs-extra'
 import path from 'path'
+import fse from 'fs-extra'
 import rimTheRaf from 'rimraf'
-import thenify from 'thenify'
 import filesize from 'filesize'
-import compressJavascript from './compressJavascript'
+import {promisify} from 'es6-promisify'
 import getConfig from '@sanity/util/lib/getConfig'
+import {getWebpackCompiler, getDocumentElement, ReactDOM} from '@sanity/server'
 import sortModulesBySize from '../../stats/sortModulesBySize'
 import checkReactCompatibility from '../../util/checkReactCompatibility'
 import {tryInitializePluginConfigs} from '../config/reinitializePluginConfigs'
-import {getWebpackCompiler, getDocumentElement, ReactDOM} from '@sanity/server'
+import compressJavascript from './compressJavascript'
 
-const rimraf = thenify(rimTheRaf)
+const rimraf = promisify(rimTheRaf)
 const absoluteMatch = /^https?:\/\//i
 
 export default async (args, context) => {
@@ -38,7 +38,7 @@ export default async (args, context) => {
   checkReactCompatibility(workDir)
 
   const compiler = getWebpackCompiler(compilationConfig)
-  const compile = thenify(compiler.run.bind(compiler))
+  const compile = promisify(compiler.run.bind(compiler))
   let shouldDelete = true
 
   if (outputDir !== defaultOutputDir) {

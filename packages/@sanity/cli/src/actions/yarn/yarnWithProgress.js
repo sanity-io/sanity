@@ -4,8 +4,8 @@ import ora from 'ora'
 import execa from 'execa'
 import split2 from 'split2'
 import chalk from 'chalk'
-import progrescii from 'progrescii'
-import {noop, padEnd, throttle} from 'lodash'
+import Gauge from 'gauge'
+import {noop, throttle} from 'lodash'
 import dynamicRequire from '../../util/dynamicRequire'
 
 const useProgress = process.stderr && process.stderr.isTTY && !process.env.CI
@@ -31,9 +31,6 @@ export default function yarnWithProgress(args, options = {}) {
   const error = options.error || console.error
   /* eslint-enable no-console */
 
-  const padLength = 'Resolving dependencies'.length
-  const getProgressTemplate = (symbol, msg) => `${symbol} ${padEnd(msg, padLength)} :b :p% (:ts)`
-
   const execOpts = Object.assign(
     {
       cwd: options.rootDir || process.cwd(),
@@ -46,6 +43,10 @@ export default function yarnWithProgress(args, options = {}) {
   const nodeArgs = [yarnPath].concat(args, ['--json', '--non-interactive'])
 
   const state = {firstStepReceived: false, currentProgressStep: null}
+  state.progress = new Gauge(process.stderr, {
+    theme: 'colorASCII',
+    enabled: true
+  })
 
   // Yarn takes a while before starting to emit events, we want to show
   // some sort of indication while it's getting started
@@ -71,8 +72,8 @@ export default function yarnWithProgress(args, options = {}) {
   const interceptors = options.interceptors || {}
   const throttledOnProgressTick = throttle(onProgressTick, 50)
 
+  // eslint-disable-next-line complexity
   function onChunk(event) {
-    // eslint-disable-line complexity
     if (interceptors[event.type]) {
       return interceptors[event.type](event)
     }
@@ -150,10 +151,8 @@ export default function yarnWithProgress(args, options = {}) {
 
     if (useProgress && event.data.total) {
       state.currentProgressStep = state.step.message
-      state.progress = progrescii.create({
-        template: getProgressTemplate(chalk.yellow('●'), state.step.message),
-        total: event.data.total
-      })
+      state.progressTotal = event.data.total
+      state.progress.show(state.step.message, 0)
     } else {
       print(`${chalk.yellow('●')} ${state.step.message}`)
     }
@@ -169,7 +168,7 @@ export default function yarnWithProgress(args, options = {}) {
       return // Will be taken care of by onProgressFinish
     }
 
-    prog.set(event.data.current)
+    prog.show(state.step.message, event.data.current / state.progressTotal)
   }
 
   function onProgressFinish(event) {
@@ -178,8 +177,7 @@ export default function yarnWithProgress(args, options = {}) {
       return
     }
 
-    prog.template = getProgressTemplate(chalk.green('✔'), state.step.message)
-    prog.set(prog.total)
+    prog.show(`${chalk.green('✔')} ${state.step.message}`, 1)
   }
 
   function onStep(event) {
@@ -189,6 +187,10 @@ export default function yarnWithProgress(args, options = {}) {
   function onSuccess(event) {
     if (state.spinner) {
       state.spinner.stop()
+    }
+
+    if (state.progress) {
+      state.progress.disable()
     }
 
     print(`\n${chalk.green('✔')} Saved lockfile`)
@@ -206,7 +208,6 @@ export default function yarnWithProgress(args, options = {}) {
   function onWarning(event) {
     // For now, skip the warnings as they seem to only contain the first line of the text,
     // so it makes no sense to show it. Debug this later and consider reimplementing this.
-    // holdSpinner(() => print(`${chalk.yellow('●')} ${event.data}`))
   }
 
   function onError(event) {

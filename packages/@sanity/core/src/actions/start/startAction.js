@@ -1,6 +1,6 @@
 import path from 'path'
 import chalk from 'chalk'
-import thenify from 'thenify'
+import {promisify} from 'es6-promisify'
 import {getProdServer, getDevServer} from '@sanity/server'
 import getConfig from '@sanity/util/lib/getConfig'
 import isProduction from '../../util/isProduction'
@@ -46,7 +46,7 @@ export default async (args, context) => {
 
   // Start the server and try to create more user-friendly errors if we encounter issues
   try {
-    await thenify(server.listen.bind(server))(httpPort, httpHost)
+    await promisify(server.listen.bind(server))(httpPort, httpHost)
   } catch (err) {
     gracefulDeath(httpHost, config, err)
   }

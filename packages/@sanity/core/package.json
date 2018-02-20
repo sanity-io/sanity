@@ -34,6 +34,7 @@
     "batch-stream-operation": "^1.0.2",
     "debug": "^3.1.0",
     "deep-sort-object": "^1.0.1",
+    "es6-promisify": "^6.0.0",
     "filesize": "^3.5.6",
     "fs-extra": "^5.0.0",
     "get-uri": "^2.0.1",
@@ -50,7 +51,6 @@
     "simple-concat": "^1.0.0",
     "simple-get": "^2.7.0",
     "tar-fs": "^1.16.0",
-    "thenify": "^3.3.0",
     "through2": "^2.0.3",
     "uglify-es": "3.3.9"
   },

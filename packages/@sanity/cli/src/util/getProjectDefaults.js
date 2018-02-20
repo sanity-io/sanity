@@ -3,7 +3,7 @@ import fse from 'fs-extra'
 import gitConfigLocal from 'gitconfiglocal'
 import gitUserInfo from 'git-user-info'
 import promiseProps from 'promise-props-recursive'
-import thenify from 'thenify'
+import {promisify} from 'es6-promisify'
 
 export default (workDir, {isPlugin, context}) => {
   const cwd = process.cwd()
@@ -23,9 +23,10 @@ export default (workDir, {isPlugin, context}) => {
   })
 }
 
-const getGitConfig = thenify(gitConfigLocal)
+const getGitConfig = promisify(gitConfigLocal)
 function resolveGitRemote(cwd) {
-  return fse.stat(path.join(cwd, '.git'))
+  return fse
+    .stat(path.join(cwd, '.git'))
     .then(() => getGitConfig(cwd))
     .then(cfg => cfg.remote && cfg.remote.origin && cfg.remote.origin.url)
     .catch(() => null)
