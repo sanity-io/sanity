@@ -2,7 +2,7 @@ const PALETTE_FIELDS = [
   {name: 'background', type: 'string', title: 'Background', readOnly: true},
   {name: 'foreground', type: 'string', title: 'Foreground', readOnly: true},
   {name: 'population', type: 'number', title: 'Population', readOnly: true},
-  {name: 'title', type: 'string', title: 'String', readOnly: true},
+  {name: 'title', type: 'string', title: 'String', readOnly: true}
 ]
 
 export default {
@@ -20,7 +20,8 @@ export default {
     {
       name: 'originalFilename',
       type: 'string',
-      title: 'Original file name'
+      title: 'Original file name',
+      readOnly: true
     },
     {
       name: 'label',
@@ -46,7 +47,7 @@ export default {
       type: 'number',
       title: 'File size in bytes',
       readOnly: true,
-      fieldset: 'system',
+      fieldset: 'system'
     },
     {
       name: 'assetId',
@@ -118,17 +119,24 @@ export default {
   ],
   preview: {
     select: {
+      id: '_id',
       title: 'originalFilename',
-      imageUrl: 'url',
-      path: 'path',
       mimeType: 'mimeType',
+      size: 'size'
     },
     prepare(doc) {
       return {
         title: doc.title || doc.path.split('/').slice(-1)[0],
-        imageUrl: `${doc.imageUrl}?w=150`,
-        subtitle: doc.mimeType
+        media: {asset: {_ref: doc.id}},
+        subtitle: `${doc.mimeType} (${(doc.size / 1024 / 1024).toFixed(2)} MB)`
       }
     }
-  }
+  },
+  orderings: [
+    {
+      title: 'File size',
+      name: 'fileSizeDesc',
+      by: [{field: 'size', direction: 'desc'}]
+    }
+  ]
 }
