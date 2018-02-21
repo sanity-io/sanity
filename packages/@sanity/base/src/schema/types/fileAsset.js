@@ -13,7 +13,8 @@ export default {
     {
       name: 'originalFilename',
       type: 'string',
-      title: 'Original file name'
+      title: 'Original file name',
+      readOnly: true
     },
     {
       name: 'label',
@@ -39,7 +40,7 @@ export default {
       type: 'number',
       title: 'File size in bytes',
       readOnly: true,
-      fieldset: 'system',
+      fieldset: 'system'
     },
     {
       name: 'assetId',
@@ -68,12 +69,20 @@ export default {
       title: 'originalFilename',
       path: 'path',
       mimeType: 'mimeType',
+      size: 'size'
     },
     prepare(doc) {
       return {
         title: doc.title || doc.path.split('/').slice(-1)[0],
-        subtitle: doc.mimeType
+        subtitle: `${doc.mimeType} (${(doc.size / 1024 / 1024).toFixed(2)} MB)`
       }
     }
-  }
+  },
+  orderings: [
+    {
+      title: 'File size',
+      name: 'fileSizeDesc',
+      by: [{field: 'size', direction: 'desc'}]
+    }
+  ]
 }
