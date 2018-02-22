@@ -28,8 +28,7 @@ export default withDocument(
       type: FormBuilderPropTypes.type.isRequired,
       level: PropTypes.number.isRequired,
       value: PropTypes.shape({
-        current: PropTypes.string,
-        auto: PropTypes.bool
+        current: PropTypes.string
       }),
       document: PropTypes.shape({_id: PropTypes.string}).isRequired,
       onChange: PropTypes.func,
@@ -41,7 +40,7 @@ export default withDocument(
     }
 
     static defaultProps = {
-      value: {current: undefined, auto: true},
+      value: {current: undefined},
       onChange() {},
       markers: []
     }
@@ -49,7 +48,14 @@ export default withDocument(
     state = defaultState
 
     updateValue(value) {
-      this.props.onChange(PatchEvent.from(value ? set(value) : unset()))
+      if (!value) {
+        this.props.onChange(PatchEvent.from(unset()))
+        return
+      }
+
+      this.props.onChange(
+        PatchEvent.from(setIfMissing({_type: this.props.type.name}), set(value, ['current']))
+      )
     }
 
     slugify(sourceValue) {
@@ -84,7 +90,7 @@ export default withDocument(
     }
 
     handleChange = event => {
-      this.updateValue({current: event.target.value.toString()})
+      this.updateValue(event.target.value.toString())
     }
 
     handleGenerateSlug = () => {
