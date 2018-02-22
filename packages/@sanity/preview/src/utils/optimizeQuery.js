@@ -33,11 +33,11 @@ function stringifyId(id: string) {
 }
 
 function toSubQuery({ids, paths}) {
-  return `*[_id in [${ids.map(stringifyId).join(',')}]]{_id,_type,${paths.join(',')}}`
+  return `*[_id in [${ids.map(stringifyId).join(',')}]][0...${ids.length}]{_id,_type,${paths.join(',')}}`
 }
 
 export function toGradientQuery(combinedSelections: CombinedSelection[]) {
-  return `[${combinedSelections.map(toSubQuery).join(',')}]`
+  return `[${combinedSelections.map(toSubQuery).join(',')}][0...${combinedSelections.length}]`
 }
 
 export function reassemble(queryResult: Result[], combinedSelections: CombinedSelection[]) {
