@@ -37,7 +37,7 @@ function toSubQuery({ids, paths}) {
 }
 
 export function toGradientQuery(combinedSelections: CombinedSelection[]) {
-  return `[${combinedSelections.map(toSubQuery).join(',')}]`
+  return `[${combinedSelections.map(toSubQuery).join(',')}][0...${combinedSelections.length}]`
 }
 
 export function reassemble(queryResult: Result[], combinedSelections: CombinedSelection[]) {
