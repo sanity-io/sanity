@@ -47,6 +47,14 @@ export default withDocument(
 
     state = defaultState
 
+    componentDidMount() {
+      this._isMounted = true
+    }
+
+    componentWillUnmount() {
+      this._isMounted = false
+    }
+
     updateValue(value) {
       if (!value) {
         this.props.onChange(PatchEvent.from(unset()))
@@ -111,7 +119,7 @@ export default withDocument(
           // eslint-disable-next-line no-console
           console.error(`An error occured while slugifying "${newFromSource}":\n${err.stack}`)
         })
-        .then(() => this.setState({loading: false}))
+        .then(() => this._isMounted && this.setState({loading: false}))
     }
 
     render() {
