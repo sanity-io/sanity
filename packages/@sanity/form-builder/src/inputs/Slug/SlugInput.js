@@ -68,7 +68,7 @@ export default withDocument(
 
     slugify(sourceValue) {
       if (!sourceValue) {
-        return sourceValue
+        return Promise.resolve(sourceValue)
       }
 
       const {type} = this.props
@@ -113,8 +113,8 @@ export default withDocument(
 
       const newFromSource = typeof source === 'function' ? source(document) : get(document, source)
       this.setState({loading: true})
-      this.slugify(newFromSource)
-        .then(newSlug => this.updateValue({current: newSlug}))
+      this.slugify(newFromSource || '')
+        .then(newSlug => this.updateValue(newSlug))
         .catch(err => {
           // eslint-disable-next-line no-console
           console.error(`An error occured while slugifying "${newFromSource}":\n${err.stack}`)
