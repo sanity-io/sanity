@@ -65,7 +65,7 @@ export default {
           options: {
             source: 'title',
             maxLength: 96,
-            slugify: (type, value) => {
+            slugify: (value, type) => {
               return encodeURI(`${type.name}_${value}`).toLocaleLowerCase()
             }
           }

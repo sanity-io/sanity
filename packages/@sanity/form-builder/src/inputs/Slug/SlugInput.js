@@ -6,7 +6,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import FormField from 'part:@sanity/components/formfields/default'
 import TextInput from 'part:@sanity/components/textinputs/default'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
-import PatchEvent, {set, unset} from '../../PatchEvent'
+import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import withDocument from '../../utils/withDocument'
 import styles from './styles/SlugInput.css'
 
@@ -73,7 +73,7 @@ export default withDocument(
 
       const {type} = this.props
       const slugify = get(type, 'options.slugify', defaultSlugify)
-      return Promise.resolve(slugify(type, sourceValue))
+      return Promise.resolve(slugify(sourceValue, type))
     }
 
     componentWillReceiveProps(nextProps) {
@@ -117,7 +117,9 @@ export default withDocument(
         .then(newSlug => this.updateValue(newSlug))
         .catch(err => {
           // eslint-disable-next-line no-console
-          console.error(`An error occured while slugifying "${newFromSource}":\n${err.stack}`)
+          console.error(
+            `An error occured while slugifying "${newFromSource}":\n${err.message}\n${err.stack}`
+          )
         })
         .then(() => this._isMounted && this.setState({loading: false}))
     }
