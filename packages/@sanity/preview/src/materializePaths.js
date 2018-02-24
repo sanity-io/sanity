@@ -1,4 +1,4 @@
-import observeWithPaths from './observeWithPaths'
+import observeFields from './observeWithPaths'
 import createPathMaterializer from './createPathMaterializer'
 
-export default createPathMaterializer(observeWithPaths)
+export default createPathMaterializer(observeFields)

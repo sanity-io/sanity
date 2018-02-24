@@ -1,8 +1,13 @@
 import client from 'part:@sanity/base/client'
 import Observable from '@sanity/observable'
 
+const CACHE = {} // todo: use a LRU cache instead (e.g. hashlru or quick-lru)
+
 function resolveRefTypeName(value) {
-  return Observable.from(client.observable.fetch('*[_id == $id][0]._type', {id: value._ref}))
+  if (!(value._ref in CACHE)) {
+    CACHE[value._ref] = client.fetch('*[_id == $id][0]._type', {id: value._ref})
+  }
+  return Observable.from(CACHE[value._ref])
 }
 
 export default function resolveRefType(value, type) {
