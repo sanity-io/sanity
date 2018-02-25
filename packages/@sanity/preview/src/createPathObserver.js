@@ -2,17 +2,15 @@
 import {isObject, uniq} from 'lodash'
 import Observable from '@sanity/observable'
 import {configure} from 'observable-props'
-import type {FieldName, Id, Path} from './types'
-
-type Value = Object
+import type {FieldName, Id, Path, Reference, Document, Value} from './types'
 
 const props = configure({Observable})
 
-function isReference(value: Object) {
+function isReference(value: Reference | Document | Object) {
   return '_ref' in value
 }
 
-function isDocument(value: Object) {
+function isDocument(value: Reference | Document | Object) {
   return '_id' in value
 }
 

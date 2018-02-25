@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "flow-typed": "^2.2.3",
+    "empty": "^0.10.1",
     "jest": "^22.0.5",
     "prettier": "^1.10.2"
   },

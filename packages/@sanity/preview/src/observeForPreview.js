@@ -5,7 +5,7 @@ import Observable from '@sanity/observable'
 import observePaths from './observePaths'
 import type {FieldName, Type, ViewOptions} from './types'
 
-function is(typeName, type) {
+function is(typeName: string, type: Type) {
   return type.name === typeName || (type.type && is(typeName, type.type))
 }
 

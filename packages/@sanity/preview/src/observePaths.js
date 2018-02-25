@@ -1,3 +1,4 @@
+// @flow
 import observeFields from './observeFields'
 import createPathObserver from './createPathObserver'
 

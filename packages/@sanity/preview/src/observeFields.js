@@ -16,7 +16,7 @@ const getGlobalListener = () => {
   return _globalListener
 }
 
-function listen(id) {
+function listen(id: Id) {
   return getGlobalListener().filter(event => event.documentId === id)
 }
 
