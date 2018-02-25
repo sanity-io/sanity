@@ -2,7 +2,7 @@
 import {isObject, uniq} from 'lodash'
 import Observable from '@sanity/observable'
 import {configure} from 'observable-props'
-import type {FieldName, Path} from './types'
+import type {FieldName, Id, Path} from './types'
 
 type Value = Object
 
@@ -92,6 +92,12 @@ function normalizePaths(path: FieldName[] | Path[]): Path[] {
   return path.map(segment => (typeof segment === 'string' ? segment.split('.') : segment))
 }
 
+// Supports passing either an id or a value (document/reference/object)
+function normalizeValue(value: Value | Id): Value {
+  return typeof value === 'string' ? {_id: value} : value
+}
+
 export default function createPathObserver(observeFields: ObserveFieldsFn) {
-  return (value: Value, paths: Path[]) => observePaths(value, normalizePaths(paths), observeFields)
+  return (value: Value, paths: Path[]) =>
+    observePaths(normalizeValue(value), normalizePaths(paths), observeFields)
 }

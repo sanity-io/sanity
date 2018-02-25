@@ -2,7 +2,7 @@
 import resolveRefType from './resolveRefType'
 import prepareForPreview, {invokePrepare} from './prepareForPreview'
 import Observable from '@sanity/observable'
-import observePaths from './materializePaths'
+import observePaths from './observePaths'
 import type {FieldName, Type, ViewOptions} from './types'
 
 function is(typeName, type) {
