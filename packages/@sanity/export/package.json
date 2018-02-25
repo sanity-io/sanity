@@ -37,6 +37,9 @@
     "rimraf": "^2.6.2",
     "string-to-stream": "^1.1.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git"
