@@ -27,14 +27,21 @@ function fetchAllDocumentPaths(selections: Selection[]) {
     .map(result => reassemble(result, combinedSelections))
 }
 
-const fetchDocumentPathsFast = debounceCollect(fetchAllDocumentPaths, 0)
-const fetchDocumentPathsSlow = debounceCollect(fetchAllDocumentPaths, 1200)
+const fetchDocumentPathsFast = debounceCollect(fetchAllDocumentPaths, 100)
+const fetchDocumentPathsSlow = debounceCollect(fetchAllDocumentPaths, 1000)
 
 function listenFields(id: Id, fields: FieldName[]) {
   // console.log('listening on doc #%s for fields %O', id, fields)
-  return fetchDocumentPathsFast(id, fields).concat(
-    listen(id).switchMap(event => fetchDocumentPathsSlow(id, fields))
-  )
+  return fetchDocumentPathsFast(id, fields)
+    .mergeMap(
+      result =>
+        result === undefined
+          ? // hack: if we get undefined as result here it is most likely because the document has
+            // just been created and is not yet indexed. We therefore need to wait a bit and then re-fetch.
+            fetchDocumentPathsSlow(id, fields)
+          : Observable.of(result)
+    )
+    .concat(listen(id).switchMap(event => fetchDocumentPathsSlow(id, fields)))
 }
 
 // keep for debugging purposes for now
@@ -58,6 +65,9 @@ function createCachedFieldObserver(id, fields): CachedFieldObserver {
     if (latest) {
       // Re-emit last known value immediately
       observer.next(latest)
+      return fetchDocumentPathsSlow(id, fields)
+        .concat(listen(id).switchMap(event => fetchDocumentPathsSlow(id, fields)))
+        .subscribe(observer)
     }
     return listenFields(id, fields).subscribe(observer)
   })
