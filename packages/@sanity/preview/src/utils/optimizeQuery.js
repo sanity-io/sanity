@@ -1,6 +1,7 @@
 // @flow
 import {identity, sortBy, values} from 'lodash'
 import type {FieldName, Id, Selection} from '../types'
+import {INCLUDE_FIELDS_QUERY} from '../constants'
 
 type CombinedSelection = {
   ids: Id[],
@@ -32,7 +33,8 @@ function stringifyId(id: string) {
 }
 
 function toSubQuery({ids, fields}) {
-  return `*[_id in [${ids.map(stringifyId).join(',')}]][0...${ids.length}]{_id,_type,${fields.join(',')}}`
+  const allFields = [...INCLUDE_FIELDS_QUERY, ...fields]
+  return `*[_id in [${ids.map(stringifyId).join(',')}]][0...${ids.length}]{${allFields.join(',')}}`
 }
 
 export function toGradientQuery(combinedSelections: CombinedSelection[]) {

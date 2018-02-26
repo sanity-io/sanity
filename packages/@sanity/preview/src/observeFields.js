@@ -5,6 +5,7 @@ import debounceCollect from './utils/debounceCollect'
 import {combineSelections, reassemble, toGradientQuery} from './utils/optimizeQuery'
 import {flatten, difference} from 'lodash'
 import type {FieldName, Id} from './types'
+import {INCLUDE_FIELDS} from './constants'
 
 let _globalListener
 const getGlobalListener = () => {
@@ -97,6 +98,28 @@ export default function cachedObserveFields(id: Id, fields: FieldName[]) {
     .map(cached => cached.changes$)
 
   return Observable.combineLatest(cachedFieldObservers)
-    .map(snapshots => Object.assign({}, ...snapshots))
+    .map(snapshots => pickFrom(snapshots, fields))
     .distinctUntilChanged((prev, current) => fields.every(field => prev[field] === current[field]))
+}
+
+function pickFrom(objects: Object[], fields: string[]) {
+  return [...INCLUDE_FIELDS, ...fields].reduce((result, fieldName) => {
+    const value = getFirstFieldValue(objects, fieldName)
+    if (value !== undefined) {
+      result[fieldName] = value
+    }
+    return result
+  }, {})
+}
+
+function getFirstFieldValue(objects: Object[], fieldName: string) {
+  let value
+  objects.some(object => {
+    if (fieldName in object) {
+      value = object[fieldName]
+      return true
+    }
+    return false
+  })
+  return value
 }
