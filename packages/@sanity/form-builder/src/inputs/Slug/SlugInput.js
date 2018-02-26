@@ -139,6 +139,10 @@ export default withDocument(
       const validation = markers.filter(marker => marker.type === 'validation')
       const errors = validation.filter(marker => marker.level === 'error')
 
+      const source = get(type, 'options.source')
+
+      const hasSource = !!(typeof source === 'function' ? source(document) : get(document, source))
+
       return (
         <FormField {...formFieldProps}>
           <div className={styles.wrapper}>
@@ -156,7 +160,11 @@ export default withDocument(
 
             <div className={styles.button}>
               {hasSourceField && (
-                <Button disabled={loading} loading={loading} onClick={this.handleGenerateSlug}>
+                <Button
+                  disabled={loading || !hasSource}
+                  loading={loading}
+                  onClick={this.handleGenerateSlug}
+                >
                   Generate slug
                 </Button>
               )}
