@@ -10,6 +10,7 @@ export default class ScrollContainer extends React.PureComponent {
   }
 
   static defaultProps = {
+    className: '',
     onScroll: () => {}
   }
 
@@ -47,7 +48,7 @@ export default class ScrollContainer extends React.PureComponent {
     return (
       <div
         ref={this.setScrollContainerElement}
-        className={this.props.className || styles.scrollContainer}
+        className={`${styles.scrollContainer} ${this.props.className}`}
       >
         {this.props.children}
       </div>
