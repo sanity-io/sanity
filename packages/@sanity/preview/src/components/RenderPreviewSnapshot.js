@@ -5,7 +5,7 @@ import {get} from 'lodash'
 import SanityDefaultPreview from './SanityDefaultPreview'
 
 // Set this to true for debugging preview subscriptions
-const DEBUG = false
+const DEBUG = true
 
 function resolvePreview(type) {
   const fromPreview = get(type, 'preview.component')
@@ -30,10 +30,24 @@ export default function RenderPreviewSnapshot(props) {
       isPlaceholder={!snapshot}
     />
   )
+  const isCached = snapshot && snapshot.__fromCache
   if (DEBUG) {
     return (
       <div>
-        <span style={{position: 'absolute', right: 24, top: 2}}>{isLive ? '⚡️' : '💤'}</span>
+        <span
+          tabIndex={0}
+          title={isLive ? 'Subscribed to changes' : 'Not subscribed to changes'}
+          style={{position: 'absolute', right: 24, top: 2, zIndex: 2000}}
+        >
+          {isLive ? '⚡️' : '💤'}
+        </span>
+        <span
+          tabIndex={0}
+          title={isCached ? 'Cache hit' : 'Cache miss'}
+          style={{position: 'absolute', right: 48, top: 2, zIndex: 2000}}
+        >
+          {isCached ? '☀️️️' : '☁'}
+        </span>
         {preview}
       </div>
     )

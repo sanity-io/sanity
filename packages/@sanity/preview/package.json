@@ -27,6 +27,7 @@
   "dependencies": {
     "@sanity/image-url": "0.128.3",
     "@sanity/observable": "0.128.3",
+    "idb-keyval": "^2.3.0",
     "lodash": "^4.17.4",
     "observable-props": "^2.0.0",
     "shallow-equals": "^1.0.0"

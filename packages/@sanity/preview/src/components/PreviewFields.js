@@ -1,13 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import PreviewSubscriber from './PreviewSubscriber'
-
-function arrify(val) {
-  if (Array.isArray(val)) {
-    return val
-  }
-  return typeof val === undefined ? [] : [val]
-}
+import arrify from '../utils/arrify'
 
 export default function PreviewFields(props) {
   return (

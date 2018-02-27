@@ -1,13 +1,18 @@
 // @flow
 import client from 'part:@sanity/base/client'
 import Observable from '@sanity/observable'
+import idb from 'idb-keyval'
+import {flatten, difference} from 'lodash'
 import debounceCollect from './utils/debounceCollect'
 import {combineSelections, reassemble, toGradientQuery} from './utils/optimizeQuery'
-import {flatten, difference} from 'lodash'
 import type {FieldName, Id} from './types'
 import {INCLUDE_FIELDS} from './constants'
+import arrify from './utils/arrify'
 import hasEqualFields from './utils/hasEqualFields'
 import isUniqueBy from './utils/isUniqueBy'
+
+const ROOT_KEY = '__sanity__preview__cache__'
+const UNDEFINED = '__$undefined$__'
 
 let _globalListener
 const getGlobalEvents = () => {
@@ -86,19 +91,39 @@ type CachedFieldObserver = {
 type Cache = {[id: Id]: CachedFieldObserver[]}
 const CACHE: Cache = {} // todo: use a LRU cache instead (e.g. hashlru or quick-lru)
 
-function createCachedFieldObserver(id, fields): CachedFieldObserver {
-  let latest = null
-  const changes$ = new Observable(observer => {
-    observer.next(latest)
-    observer.complete()
-  })
-    .filter(Boolean)
-    .merge(listenFields(id, fields))
-    .do(v => (latest = v))
-    .publishReplay(1)
-    .refCount()
+function keyFor(id) {
+  return `${ROOT_KEY}-${id}`
+}
 
-  return {id, fields, changes$}
+function mapValues(object, replacer) {
+  return Object.keys(object).reduce((acc, key) => {
+    acc[key] = replacer(object[key])
+    return acc
+  }, {})
+}
+
+function getCachedSnapshot(id) {
+  return Observable.from(idb.get(keyFor(id))).map(
+    cacheVal =>
+      cacheVal ? mapValues(cacheVal, value => (value === UNDEFINED ? undefined : value)) : cacheVal
+  )
+}
+
+function updateCache(id, document) {
+  const prepared = document
+    ? mapValues(document, value => (value === undefined ? UNDEFINED : value))
+    : null
+  return Observable.from(idb.set(keyFor(id), prepared))
+}
+
+function createCachedFieldObserver(id, fields): CachedFieldObserver {
+  return {
+    id,
+    fields,
+    changes$: listenFields(id, fields)
+      .publishReplay(1)
+      .refCount()
+  }
 }
 
 export default function cachedObserveFields(id: Id, fields: FieldName[]) {
@@ -116,22 +141,42 @@ export default function cachedObserveFields(id: Id, fields: FieldName[]) {
     existingObservers.push(createCachedFieldObserver(id, fields))
   }
 
-  const cachedFieldObservers = existingObservers
+  const sharedFieldObservers = existingObservers
     .filter(observer => observer.fields.some(fieldName => fields.includes(fieldName)))
     .map(cached => cached.changes$)
 
   return (
-    Observable.combineLatest(cachedFieldObservers)
-      // in the event that a document gets deleted, the cached values will be updated to store `undefined`
-      // if this happens, we should not pick any fields from it, but rather just return null
-      .map(snapshots => snapshots.filter(Boolean))
-      // make sure all snapshots agree on same revision
-      .filter(snapshots => isUniqueBy(snapshots, snapshot => snapshot._rev))
+    getCachedSnapshot(id)
+      .do(cached => console.log('CACHE %s', cached ? 'HIT' : 'MISS', cached))
+      .filter(Boolean)
+      // .filter(hasFields(fields)) // todo: store fields that are retrieved, but has no value in indexed db
+      .map(arrify)
+      .concat(
+        Observable.combineLatest(sharedFieldObservers)
+          // in the event that a document gets deleted, the cached values will be updated to store `undefined`
+          // if this happens, we should not pick any fields from it, but rather just return null
+          .map(snapshots => snapshots.filter(Boolean))
+          // make sure all snapshots agree on same revision
+          .filter(snapshots => isUniqueBy(snapshots, snapshot => snapshot._rev))
+          .do(snapshots => {
+            // console.log(snapshots)
+            const entry =
+              snapshots.length === 0 ? null : Object.assign({__fromCache: true}, ...snapshots)
+            console.log('CACHE SET %s', id, entry)
+            updateCache(id, entry)
+          })
+      )
       // pass on value with the requested fields (or null if value is deleted)
+      // .do(console.log)
       .map(snapshots => (snapshots.length === 0 ? null : pickFrom(snapshots, fields)))
       // emit values only if changed
       .distinctUntilChanged(hasEqualFields(fields))
+    // .do(console.log)
   )
+}
+
+function hasFields(fields) {
+  return document => fields.every(field => field in document)
 }
 
 function pickFrom(objects: Object[], fields: string[]) {

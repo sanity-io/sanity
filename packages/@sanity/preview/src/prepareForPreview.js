@@ -1,7 +1,7 @@
 import {get, pick, debounce, flatten, uniqBy} from 'lodash'
 
 const pass = v => v
-const PRESERVE_KEYS = ['_id', '_type', '_upload']
+const PRESERVE_KEYS = ['_id', '_type', '_upload', '__fromCache']
 
 let COLLECTED_ERRORS = {}
 
