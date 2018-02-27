@@ -1,5 +1,5 @@
 import client from 'part:@sanity/base/client'
-import {observeWithPaths} from 'part:@sanity/base/preview'
+import {observePaths} from 'part:@sanity/base/preview'
 import {withMaxConcurrency} from '../../utils/withMaxConcurrency'
 
 const MAX_CONCURRENT_UPLOADS = 4
@@ -22,5 +22,5 @@ export const uploadImageAsset = file => uploadAsset('image', file)
 export const uploadFileAsset = file => uploadAsset('file', file)
 
 export function materializeReference(id) {
-  return observeWithPaths(id, ['originalFilename', 'url', 'metadata'])
+  return observePaths(id, ['originalFilename', 'url', 'metadata'])
 }
