@@ -38,12 +38,14 @@ import richDateType from 'part:@sanity/form-builder/input/rich-date/schema'
 import focus from './focus'
 import previewImageUrlTest from './previewImageUrlTest'
 import previewMediaTest from './previewMediaTest'
+import species from './species'
 
 export default createSchema({
   name: 'test-examples',
   types: schemaTypes.concat([
     book,
     author,
+    species,
     focus,
     strings,
     texts,
