@@ -1,8 +1,8 @@
 // @flow
-import Mutation from './Mutation'
+import DiffMatchPatch from 'diff-match-patch'
 import extractWithPath from '../jsonpath/extractWithPath'
 import arrayToJSONMatchPath from '../jsonpath/arrayToJSONMatchPath'
-import DiffMatchPatch from 'diff-match-patch'
+import Mutation from './Mutation'
 import debug from './debug'
 
 // An operation is one single operation of a mutation
@@ -13,18 +13,19 @@ type Operation = Object
 // operations.
 export default class SquashingBuffer {
   // The document forming the basis of this squash
-  BASIS : Object
+  BASIS: Object
   // The operations in the out-Mutation are not able to be optimized any further
-  out : Mutation
+  out: ?Mutation
   // The document after the out-Mutation has been applied, but before the staged operations are committed.
-  PRESTAGE : Object
+  PRESTAGE: Object
   // setOperations contain the latest set operation by path. If the set-operations are updating strings to new
   // strings, they are rewritten as diffMatchPatch operations, any new set operations on the same paths overwrites
   // any older set operations. Only set-operations assigning plain values to plain values gets optimized like this.
-  setOperations : Object
-  staged : Array<any>
+  setOperations: Object
+  staged: Array<any>
+  dmp: DiffMatchPatch
 
-  constructor(doc : Object) {
+  constructor(doc: Object) {
     if (doc) {
       debug('Reset mutation buffer to rev %s', doc._rev)
     } else {
@@ -37,23 +38,23 @@ export default class SquashingBuffer {
     this.dmp = new DiffMatchPatch()
   }
 
-  add(mut : Mutation) {
+  add(mut: Mutation) {
     mut.mutations.forEach(op => this.addOperation(op))
   }
 
   hasChanges() {
-    return (this.out || Object.keys(this.setOperations).length > 0)
+    return this.out || Object.keys(this.setOperations).length > 0
   }
 
   // Extracts the mutations in this buffer. After this is done, the buffer lifecycle is over and the client should
   // create an new one with the new, updated BASIS.
-  purge(txnId : string) : Mutation {
+  purge(txnId: string): ?Mutation {
     this.stashStagedOperations()
     let result = null
     if (this.out) {
       debug('Purged mutation buffer')
       result = new Mutation({
-        mutations: this.out.mutations,
+        mutations: this.out && this.out.mutations,
         resultRev: txnId,
         transactionId: txnId
       })
@@ -62,15 +63,20 @@ export default class SquashingBuffer {
     return result
   }
 
-  addOperation(op : Operation) {
+  /* eslint-disable max-depth */
+  addOperation(op: Operation) {
     // Is this a set patch, and only a set patch, and does it apply to the document at hand?
-    if (op.patch && op.patch.set && op.patch.id === this.PRESTAGE._id && Object.keys(op.patch).length == 2) {
+    if (
+      op.patch &&
+      op.patch.set &&
+      op.patch.id === this.PRESTAGE._id &&
+      Object.keys(op.patch).length == 2
+    ) {
       // console.log("Attempting to apply optimised set patch")
       const setPatch = op.patch.set
       const unoptimizable = {}
       // Apply all optimisable keys in the patch
       for (const path of Object.keys(setPatch)) {
-        // console.log("...", path)
         if (setPatch.hasOwnProperty(path)) {
           if (!this.optimiseSetOperation(path, setPatch[path])) {
             // If not optimisable, add to unoptimizable set
@@ -93,10 +99,11 @@ export default class SquashingBuffer {
     this.staged.push(op)
     this.stashStagedOperations()
   }
+  /* eslint-enable max-depth */
 
   // Attempt to perform one single set operation in an optimised manner, return value reflects whether the
   // operation could be performed.
-  optimiseSetOperation(path : string, nextValue : any) : bool {
+  optimiseSetOperation(path: string, nextValue: any): boolean {
     // console.log('optimiseSetOperation', path, nextValue)
     // If target value is not a plain value, unable to optimise
     if (typeof nextValue === 'object') {
@@ -129,7 +136,10 @@ export default class SquashingBuffer {
     } else if (typeof match.value === 'string' && typeof nextValue === 'string') {
       // console.log("Rewriting to dmp")
       // We are updating a string to another string, so we are making a diffMatchPatch
-      const patch = this.dmp.patch_make(match.value, nextValue).map(patch => patch.toString()).join('')
+      const patch = this.dmp
+        .patch_make(match.value, nextValue)
+        .map(dmpPatch => dmpPatch.toString())
+        .join('')
       op = {patch: {id: this.PRESTAGE._id, diffMatchPatch: {[path]: patch}}}
     } else {
       // console.log("Not able to rewrite to dmp, making normal set")
@@ -171,12 +181,13 @@ export default class SquashingBuffer {
 
   // Rebases given the new base-document. Returns the new "edge" document with the buffered changes
   // integrated.
-  rebase(newBasis : Object) {
+  rebase(newBasis: Object) {
     this.stashStagedOperations()
     if (newBasis === null) {
       // If document was just deleted, we must throw out local changes
       this.out = null
-      this.PRESTAGE = this.BASIS = newBasis
+      this.BASIS = newBasis
+      this.PRESTAGE = this.BASIS
     } else {
       this.BASIS = newBasis
       if (this.out) {

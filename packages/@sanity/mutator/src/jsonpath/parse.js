@@ -1,15 +1,12 @@
 // Converts a string into an abstract syntax tree representation
 
 import tokenize from './tokenize'
-import {uniq} from 'lodash'
-
-// TODO: Support '*'
 
 class Parser {
-  tokens : Array
-  length : number
-  i : number
-  constructor(path : string) {
+  tokens: Array
+  length: number
+  i: number
+  constructor(path: string) {
     this.tokens = tokenize(path)
     this.length = this.tokens.length
     this.i = 0
@@ -69,7 +66,7 @@ class Parser {
     return null
   }
 
-  parseAttribute() : Object {
+  parseAttribute(): Object {
     const token = this.match({type: 'identifier'})
     if (token) {
       return {
@@ -87,7 +84,7 @@ class Parser {
     return null
   }
 
-  parseAlias() : Object {
+  parseAlias(): Object {
     if (this.match({type: 'keyword', symbol: '@'}) || this.match({type: 'keyword', symbol: '$'})) {
       return {
         type: 'alias',
@@ -97,7 +94,7 @@ class Parser {
     return null
   }
 
-  parseNumber() : Object {
+  parseNumber(): Object {
     const token = this.match({type: 'number'})
     if (token) {
       return {
@@ -108,7 +105,7 @@ class Parser {
     return null
   }
 
-  parseNumberValue() : Object {
+  parseNumberValue(): Object {
     const expr = this.parseNumber()
     if (expr) {
       return expr.value
@@ -116,7 +113,7 @@ class Parser {
     return null
   }
 
-  parseSliceSelector() : Object {
+  parseSliceSelector(): Object {
     const start = this.i
     const result = {
       type: 'range'
@@ -147,11 +144,11 @@ class Parser {
     return result
   }
 
-  parseValueReference() : Object {
+  parseValueReference(): Object {
     return this.parseAttribute() || this.parseSliceSelector()
   }
 
-  parseLiteralValue() : Object {
+  parseLiteralValue(): Object {
     const literalString = this.match({type: 'quoted', quote: 'double'})
     if (literalString) {
       return {
@@ -169,9 +166,7 @@ class Parser {
     return this.parseNumber()
   }
 
-  // TODO: Reorder constraints so that literal value is always on rhs, and variable is always
-  // on lhs.
-  parseFilterExpression() : Object {
+  parseFilterExpression(): Object {
     const start = this.i
     const expr = this.parseAttribute() || this.parseAlias()
     if (!expr) {
@@ -181,7 +176,7 @@ class Parser {
       return {
         type: 'constraint',
         operator: '?',
-        lhs: expr,
+        lhs: expr
       }
     }
     const binOp = this.match({type: 'comparator'})
@@ -203,11 +198,12 @@ class Parser {
     }
   }
 
-  parseExpression() : Object {
+  parseExpression(): Object {
     return this.parseFilterExpression() || this.parseValueReference()
   }
 
-  parseUnion() : Object {
+  /* eslint-disable complexity, max-depth */
+  parseUnion(): Object {
     if (!this.match({type: 'paren', symbol: '['})) {
       return null
     }
@@ -227,15 +223,14 @@ class Parser {
         throw new Error("Expected expression following ','")
       }
     }
-    // console.log("Union terms", terms)
-    // return unionFromTerms(terms)
     return {
       type: 'union',
       nodes: terms
     }
   }
+  /* eslint-enable complexity, max-depth */
 
-  parseRecursive() : Object {
+  parseRecursive(): Object {
     if (this.match({type: 'operator', symbol: '..'})) {
       const subpath = this.parsePath()
       if (!subpath) {
@@ -249,7 +244,8 @@ class Parser {
     return null
   }
 
-  parsePath() : Object {
+  /* eslint-disable complexity, max-depth */
+  parsePath(): Object {
     const nodes = []
     const expr = this.parseAttribute() || this.parseUnion() || this.parseRecursive()
     if (!expr) {
@@ -287,48 +283,8 @@ class Parser {
     }
   }
 }
+/* eslint-enable complexity, max-depth */
 
-export default function parse(path : string) {
+export default function parse(path: string) {
   return new Parser(path).parse()
-}
-
-function unionFromTerms(terms) : Object {
-  let result = {
-    type: 'union'
-  }
-  terms.forEach(term => {
-    switch (term.type) {
-      case 'index':
-        result.indexes = (result.indexes || []).concat(term.value)
-        break
-      case 'range':
-        result.ranges = (result.ranges || []).concat(term)
-        break
-      case 'path':
-        result.paths = (result.paths || []).concat(term)
-        break
-      case 'constraint':
-        result.constraints = (result.constraints || []).concat(term)
-        break
-      case 'union':
-        result = mergeUnions(result, term)
-        break
-      default:
-        throw new Error(`Unexpected union member of type ${term.type}`)
-    }
-  })
-  if (result.indexes) {
-    result.indexes = uniq(result.indexes)
-  }
-  return result
-}
-
-function mergeUnions(union1, union2) : Object {
-  const result = {
-    type: 'union'
-  }
-  uniq(Object.keys(union1).concat(Object.keys(union2))).forEach(key => {
-    result[key] = (union1[key] || []).concat(union2[key] || [])
-  })
-  return result
 }

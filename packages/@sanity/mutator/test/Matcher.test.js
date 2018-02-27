@@ -2,6 +2,8 @@ import {test} from 'tap'
 import Matcher from '../src/jsonpath/Matcher'
 import PlainProbe from '../src/jsonpath/PlainProbe'
 
+/* eslint-disable id-length */
+
 // Just a couple of basic tests to check that basic object descent works.
 // The real hardcore testing of the matcher is done indirectly in the
 // 'patch' test.
@@ -19,7 +21,7 @@ test('basic path match', tap => {
   tap.end()
 })
 
-// TODO: Fix recursion
+// Fix this: https://github.com/sanity-io/sanity-priv/issues/135
 // test('recursive path match', tap => {
 //   const mx = Matcher.fromPath('..b').setPayload('My Patch')
 //   const r1 = mx.match(new PlainProbe({a: {b: 1}}))
@@ -33,4 +35,3 @@ test('basic path match', tap => {
 //   tap.equal(r2.delivery.payload, 'My Patch')
 //   tap.end()
 // })
-

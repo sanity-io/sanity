@@ -1,6 +1,6 @@
 // @flow
 
-import { Patcher } from '../patch'
+import {Patcher} from '../patch'
 import luid from './luid'
 import debug from './debug'
 
@@ -16,12 +16,15 @@ export default class Mutation {
     previousRev: string,
     resultRev: string,
     mutations: Array<Object>,
-    timestamp: String
+    timestamp: string
   }
   compiled: Function
   _appliesToMissingDocument: boolean
+  internalTimestamp: Date
+
   constructor(options: Object) {
     this.params = options
+    this.internalTimestamp = new Date()
   }
 
   get transactionId(): string {
@@ -42,14 +45,15 @@ export default class Mutation {
   get mutations(): Array<Object> {
     return this.params.mutations
   }
-  get timestamp(): Date {
+  get timestamp(): ?Date {
     if (typeof this.params.timestamp == 'string') {
       return new Date(this.params.timestamp)
     }
-    return undefined
+    return null
   }
   assignRandomTransactionId() {
-    this.params.resultRev = this.params.transactionId = luid()
+    this.params.transactionId = luid()
+    this.params.resultRev = this.params.transactionId
   }
   appliesToMissingDocument() {
     if (typeof this._appliesToMissingDocument !== 'undefined') {
@@ -59,9 +63,7 @@ export default class Mutation {
     const firstMut = this.mutations[0]
     if (firstMut) {
       this._appliesToMissingDocument =
-        firstMut.create ||
-        firstMut.createIfNotExists ||
-        firstMut.createOrReplace
+        firstMut.create || firstMut.createIfNotExists || firstMut.createOrReplace
     } else {
       this._appliesToMissingDocument = true
     }
@@ -72,25 +74,37 @@ export default class Mutation {
     const operations = []
     this.mutations.forEach(mutation => {
       if (mutation.create) {
-        // TODO: Fail entire patch if document did exist
+        // T0D0: Fail entire patch if document did exist
         operations.push(
-          doc => (doc === null ? Object.assign(mutation.create, {_createdAt: mutation.create._createdAt || this.params.timestamp}) : doc)
+          doc =>
+            doc === null
+              ? Object.assign(mutation.create, {
+                  _createdAt: mutation.create._createdAt || this.params.timestamp
+                })
+              : doc
         )
       } else if (mutation.createIfNotExists) {
         operations.push(
-          doc => (doc === null ? Object.assign(mutation.createIfNotExists, {_createdAt: mutation.createIfNotExists._createdAt || this.params.timestamp}) : doc)
+          doc =>
+            doc === null
+              ? Object.assign(mutation.createIfNotExists, {
+                  _createdAt: mutation.createIfNotExists._createdAt || this.params.timestamp
+                })
+              : doc
         )
       } else if (mutation.createOrReplace) {
-        operations.push(() => Object.assign(mutation.createOrReplace, {_createdAt: mutation.createOrReplace._createdAt || this.params.timestamp}))
+        operations.push(() =>
+          Object.assign(mutation.createOrReplace, {
+            _createdAt: mutation.createOrReplace._createdAt || this.params.timestamp
+          })
+        )
       } else if (mutation.delete) {
         operations.push(() => null)
       } else if (mutation.patch) {
         const patch = new Patcher(mutation.patch)
         operations.push(doc => patch.apply(doc))
       } else {
-        throw new Error(
-          `Unsupported mutation ${JSON.stringify(mutation, null, 2)}`
-        )
+        throw new Error(`Unsupported mutation ${JSON.stringify(mutation, null, 2)}`)
       }
     })
     if (typeof this.params.timestamp === 'string') {
@@ -106,13 +120,12 @@ export default class Mutation {
     this.compiled = doc => {
       if (prevRev && prevRev != doc._rev) {
         throw new Error(
-          `Previous revision for this mutation was ${prevRev}, but the document revision is ${doc._rev}`
+          `Previous revision for this mutation was ${prevRev}, but the document revision is ${
+            doc._rev
+          }`
         )
       }
-      let result = operations.reduce(
-        (revision, operation) => operation(revision),
-        doc
-      )
+      let result = operations.reduce((revision, operation) => operation(revision), doc)
 
       // Should update _rev?
       if (result && rev) {
@@ -146,6 +159,6 @@ export default class Mutation {
       (result, mutation) => result.concat(...mutation.mutations),
       []
     )
-    return new Mutation({ mutations: squashed })
+    return new Mutation({mutations: squashed})
   }
 }

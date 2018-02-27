@@ -1,15 +1,21 @@
+// @flow
+
 // Splits an expression into a set of heads, tails. A head is the next leaf node to
 // check for matches, and a tail is everything that follows it. Matching is done by
 // matching heads, then proceedint to the matching value, splitting the tail into
 // heads and tails and checking the heads against the new value, and so on.
 
+// The expressions here are raw, unwrapped expressions. The kind of expressions that would
+// be wrapped by the Expression utility class.
+
 // expands an expression into one or more head/tail pairs
-export default function descend(tail) : Array {
-  return spreadIfUnionHead(...splitIfPath(tail))
+export default function descend(tail: Object): Array<Array<?Object>> {
+  const [nextHead, nextTail] = splitIfPath(tail)
+  return spreadIfUnionHead(nextHead, nextTail)
 }
 
 // Split path in [head, tail]
-function splitIfPath(tail) : Array {
+function splitIfPath(tail: Object): Array<?Object> {
   if (tail.type !== 'path') {
     return [tail, null]
   }
@@ -19,13 +25,10 @@ function splitIfPath(tail) : Array {
   } else if (nodes.length === 1) {
     return [nodes[0], null]
   }
-  return [
-    nodes[0],
-    {type: 'path', nodes: nodes.slice(1)}
-  ]
+  return [nodes[0], {type: 'path', nodes: nodes.slice(1)}]
 }
 
-function concatPaths(path1, path2) {
+function concatPaths(path1: ?Object, path2: ?Object) {
   if (!path1 && !path2) {
     return null
   }
@@ -38,8 +41,8 @@ function concatPaths(path1, path2) {
 }
 
 // Spreads a union head into several heads/tails
-function spreadIfUnionHead(head, tail) : Array {
-  if (head.type !== 'union') {
+function spreadIfUnionHead(head: ?Object, tail: ?Object): Array<Array<?Object>> {
+  if (!head || head.type !== 'union') {
     return [[head, tail]]
   }
   return head.nodes.map(node => {

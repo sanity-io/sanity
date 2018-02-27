@@ -1,13 +1,16 @@
+// @flow
+import Expression from '../jsonpath/Expression'
+
 export default class IncPatch {
-  path : string
-  value : number
-  id : string
-  constructor(id : string, path : string, value : number) {
+  path: string
+  value: number
+  id: string
+  constructor(id: string, path: string, value: number) {
     this.path = path
     this.value = value
     this.id = id
   }
-  apply(targets, accessor) {
+  apply(targets: Array<Expression>, accessor: Object) {
     let result = accessor
     targets.forEach(target => {
       if (target.isIndexReference()) {

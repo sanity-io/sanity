@@ -73,11 +73,11 @@ export default [
     patch: {
       insert: {
         replace: 'scores[1:4]',
-        items: ["hello", "man"]
+        items: ['hello', 'man']
       }
     },
     after: {
-      scores: [1, "hello", "man", 5]
+      scores: [1, 'hello', 'man', 5]
     }
   },
 
@@ -105,12 +105,11 @@ export default [
     patch: {
       insert: {
         replace: 'scores[1]',
-        items: [{a: "hello"}]
+        items: [{a: 'hello'}]
       }
     },
     after: {
-      scores: [{a: 1}, {a: "hello"}, {a: 3}]
+      scores: [{a: 1}, {a: 'hello'}, {a: 3}]
     }
   }
-
 ]

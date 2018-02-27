@@ -9,16 +9,16 @@ import SquashingBuffer from './SquashingBuffer'
 import debug from './debug'
 
 class Commit {
-  mutations : mutations
-  tries : number
+  mutations: mutations
+  tries: number
   constructor(mutations) {
     this.mutations = mutations
     this.tries = 0
   }
-  apply(doc : Object) : Object {
+  apply(doc: Object): Object {
     return Mutation.applyAll(doc, this.mutations)
   }
-  squash(doc : Object) {
+  squash(doc: Object) {
     const result = Mutation.squash(doc, this.mutations)
     result.assignRandomTransactionId()
     return result
@@ -27,17 +27,17 @@ class Commit {
 
 export default class BufferedDocument {
   // The Document we are wrapping
-  document : Document
+  document: Document
   // The Document with local changes applied
-  LOCAL : Object
+  LOCAL: Object
   // Commits that are waiting to be delivered to the server
-  commits : Array<Commit>
+  commits: Array<Commit>
   // Local mutations that are not scheduled to be committed yet
-  buffer : SquashingBuffer
-  onMutation : Function
-  onRebase : Function
-  onDelete : Function
-  commitHandler : Function
+  buffer: SquashingBuffer
+  onMutation: Function
+  onRebase: Function
+  onDelete: Function
+  commitHandler: Function
   constructor(doc) {
     this.buffer = new SquashingBuffer(doc)
     this.document = new Document(doc)
@@ -60,20 +60,20 @@ export default class BufferedDocument {
     this.rebase()
   }
 
-  set onConsistencyChanged(callback : Function) {
+  set onConsistencyChanged(callback: Function) {
     this.document.onConsistencyChanged = callback
   }
 
-  get onConsistencyChanged() : Function {
+  get onConsistencyChanged(): Function {
     return this.document.onConsistencyChanged
   }
 
-  get inconsitentAt() : Date {
+  get inconsitentAt(): Date {
     return this.document.inconsitentAt
   }
 
   // Add a change to the buffer
-  add(mutation : Mutation) {
+  add(mutation: Mutation) {
     debug('Staged local mutation')
     this.buffer.add(mutation)
     const oldLocal = this.LOCAL
@@ -92,10 +92,12 @@ export default class BufferedDocument {
   }
 
   // Call when a mutation arrives from Sanity
-  arrive(mutation : Mutation) {
+  arrive(mutation: Mutation) {
     debug('Remote mutation arrived %s -> %s', mutation.previousRev, mutation.resultRev)
     if (mutation.previousRev == mutation.resultRev) {
-      throw new Error(`Mutation ${mutation.transactionId} has previousRev == resultRev (${mutation.previousRev})`)
+      throw new Error(
+        `Mutation ${mutation.transactionId} has previousRev == resultRev (${mutation.previousRev})`
+      )
     }
     return this.document.arrive(mutation)
   }
@@ -128,7 +130,6 @@ export default class BufferedDocument {
     this._cycleCommitter()
   }
 
-  // TODO: Error handling, right now retries after every error,
   _cycleCommitter() {
     if (this.commits.length == 0) {
       this.committerRunning = false
@@ -157,7 +158,6 @@ export default class BufferedDocument {
         }
         docResponder.failure()
         // Retry
-        // TODO: Be able to _not_ retry if failure is permanent
         setTimeout(() => this._cycleCommitter(), 1000)
       }
     }
@@ -197,7 +197,6 @@ export default class BufferedDocument {
       return
     }
     debug('Document mutated from remote with local changes')
-
 
     // If there are local edits, and the document was deleted, we need to purge those local edits now
     if (this.document.EDGE === null) {

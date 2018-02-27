@@ -3,7 +3,7 @@
 
 const IS_DOTTABLE = /^[a-z_$]+/
 
-function stringifySegment(segment, hasLeading) {
+function stringifySegment(segment: any, hasLeading) {
   const type = typeof segment
 
   const isNumber = type === 'number'
@@ -15,10 +15,12 @@ function stringifySegment(segment, hasLeading) {
   const isObject = type === 'object' && segment !== null && segment !== undefined
 
   if (isObject) {
-    return Object.keys(segment).map(key => {
-      const val = segment[key]
-      return `[${key}=="${val}"]`
-    }).join('')
+    return Object.keys(segment)
+      .map(key => {
+        const val = segment[key]
+        return `[${key}=="${val}"]`
+      })
+      .join('')
   }
 
   if (IS_DOTTABLE.test(segment)) {
@@ -28,9 +30,8 @@ function stringifySegment(segment, hasLeading) {
   return `['${segment}']`
 }
 
-export default function arrayToJSONMatchPath(pathArray : Array<string|number|object>) : string {
+export default function arrayToJSONMatchPath(pathArray: Array<string | number | Object>): string {
   return pathArray.reduce((acc, segment, index) => {
     return acc + stringifySegment(segment, index === 0)
   }, '')
 }
-

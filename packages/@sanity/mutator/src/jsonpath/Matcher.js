@@ -6,10 +6,10 @@ import Expression from './Expression'
 type Probe = Object
 
 export default class Matcher {
-  active : Array<Descender>
+  active: Array<Descender>
   recursives: Array<Descender>
-  payload : any
-  constructor(active : Array<Descender>, parent? : Matcher) {
+  payload: any
+  constructor(active: Array<Descender>, parent?: Matcher) {
     this.active = active || []
     if (parent) {
       this.recursives = parent.recursives
@@ -20,7 +20,7 @@ export default class Matcher {
     this.extractRecursives()
   }
 
-  setPayload(payload : any) {
+  setPayload(payload: any) {
     this.payload = payload
     return this
   }
@@ -39,33 +39,37 @@ export default class Matcher {
   }
 
   // Find recursives that are relevant now and should be considered part of the active set
-  activeRecursives(probe : Probe) : Array<Descender> {
+  /* eslint-disable max-depth */
+  activeRecursives(probe: Probe): Array<Descender> {
     return this.recursives.filter(descender => {
       const head = descender.head
-      // Constraints are always relevant
-      if (head.isConstraint()) {
-        return true
-      }
-      // Index references are only relevant for indexable values
-      if (probe.containerType() == 'array' && head.isIndexReference()) {
-        return true
-      }
-      // Attribute references are relevant for plain objects
-      if (probe.containerType() == 'object') {
-        if (head.isAttributeReference() && probe.hasAttribute(head.name())) {
+      if (head) {
+        // Constraints are always relevant
+        if (head.isConstraint()) {
           return true
+        }
+        // Index references are only relevant for indexable values
+        if (probe.containerType() == 'array' && head.isIndexReference()) {
+          return true
+        }
+        // Attribute references are relevant for plain objects
+        if (probe.containerType() == 'object') {
+          if (head.isAttributeReference() && probe.hasAttribute(head.name())) {
+            return true
+          }
         }
       }
       return false
     })
   }
+  /* eslint-enable max-depth */
 
-  match(probe : Probe) : Object {
+  match(probe: Probe): Object {
     return this.iterate(probe).extractMatches(probe)
   }
 
-  iterate(probe : Probe) : Matcher {
-    const newActiveSet : Array<Descender> = []
+  iterate(probe: Probe): Matcher {
+    const newActiveSet: Array<Descender> = []
     this.active.concat(this.activeRecursives(probe)).forEach(descender => {
       newActiveSet.push(...descender.iterate(probe))
     })
@@ -74,7 +78,7 @@ export default class Matcher {
 
   // Returns true if any of the descenders in the active or recursive set
   // consider the current state a final destination
-  isDestination() : bool {
+  isDestination(): boolean {
     const arrival = this.active.find(descender => {
       if (descender.hasArrived()) {
         return true
@@ -84,49 +88,59 @@ export default class Matcher {
     return !!arrival
   }
 
-  hasRecursives() : bool {
+  hasRecursives(): boolean {
     return this.recursives.length > 0
   }
 
   // Returns any payload delivieries and leads that needs to be followed to complete
   // the process.
-  extractMatches(probe : Probe) : Object {
+  extractMatches(probe: Probe): Object {
     const leads = []
     const targets = []
     this.active.forEach(descender => {
       if (descender.hasArrived()) {
         // This was allready arrived, so matches this value, not descenders
-        targets.push(new Expression({
-          type: 'alias',
-          target: 'self'
-        }))
-        return
-      }
-      if (probe.containerType() == 'array' && !descender.head.isIndexReference()) {
-        // This descender does not match an indexable value
-        return
-      }
-      if (probe.containerType() == 'object' && !descender.head.isAttributeReference()) {
-        // This descender never match a plain object
-        return
-      }
-      // const newDescenders = descender.descend()
-      // console.log('newDescenders', newDescenders)
-      if (descender.tail) {
-        // Not arrived yet
-        const matcher = new Matcher(descender.descend(), this)
-        descender.head.toFieldReferences().forEach(field => {
-          leads.push({
-            target: descender.head,
-            matcher: matcher
+        targets.push(
+          new Expression({
+            type: 'alias',
+            target: 'self'
           })
-        })
+        )
+        return
+      }
+
+      const head = descender.head
+      const tail = descender.tail
+
+      if (head) {
+        if (probe.containerType() == 'array' && !head.isIndexReference()) {
+          // This descender does not match an indexable value
+          return
+        }
+        if (probe.containerType() == 'object' && !head.isAttributeReference()) {
+          // This descender never match a plain object
+          return
+        }
+      }
+
+      if (tail) {
+        // Not arrived yet
+        if (head) {
+          const matcher = new Matcher(descender.descend(), this)
+          head.toFieldReferences(probe).forEach(field => {
+            leads.push({
+              target: descender.head,
+              matcher: matcher
+            })
+          })
+        }
       } else {
         // arrived
         targets.push(descender.head)
       }
     })
 
+    /* eslint-disable max-depth */
     // If there are recursive terms, we need to add a lead for every descendant ...
     if (this.hasRecursives()) {
       // The recustives matcher will have no active set, only inherit recursives from this
@@ -148,8 +162,9 @@ export default class Matcher {
         })
       }
     }
+    /* eslint-enable max-depth */
 
-    const result : Object = {
+    const result: Object = {
       leads: leads
     }
     if (targets.length > 0) {
@@ -161,7 +176,7 @@ export default class Matcher {
     return result
   }
 
-  static fromPath(jsonpath : string) {
+  static fromPath(jsonpath: string) {
     const descender = new Descender(null, new Expression(parse(jsonpath)))
     return new Matcher(descender.descend())
   }

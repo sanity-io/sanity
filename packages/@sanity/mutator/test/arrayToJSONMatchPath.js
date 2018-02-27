@@ -18,7 +18,6 @@ const cases = [
   // [[1, {foo: 'bar', bar: 'baz'}, 4], "[1][foo=='bar'&&bar=='baz'][4]"]
 ]
 
-
 test(tap => {
   cases.forEach(([input, expected]) => {
     tap.same(arrayToJSONMatchPath(input), expected)

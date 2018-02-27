@@ -1,12 +1,16 @@
+// @flow
+import Expression from '../jsonpath/Expression'
+
 export default class SetPatch {
-  path : string
-  value : any
-  constructor(id : string, path : string, value : any) {
+  path: string
+  value: any
+  id: string
+  constructor(id: string, path: string, value: any) {
     this.id = id
     this.path = path
     this.value = value
   }
-  apply(targets, accessor) {
+  apply(targets: Array<Expression>, accessor: Object) {
     let result = accessor
     targets.forEach(target => {
       if (target.isSelfReference()) {

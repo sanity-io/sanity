@@ -1,6 +1,6 @@
 import {test} from 'tap'
-import {Patcher} from '../src/patch'
 import {cloneDeep} from 'lodash'
+import {Patcher} from '../src/patch'
 
 // Test suites
 import set from './patchExamples/set'
@@ -17,7 +17,7 @@ examples.forEach(example => {
     // Fake some id's in there
     example.before._id = 'a'
     if (Array.isArray(example.patch)) {
-      example.patch.forEach(patch => patch.id = 'a')
+      example.patch.forEach(patch => (patch.id = 'a'))
     } else {
       example.patch.id = 'a'
     }

@@ -2,20 +2,22 @@
 
 // A test jig for the BufferedDocument model
 
+import debugLogger from 'debug'
 import {BufferedDocument, Mutation} from '../../src/document'
 import {extract} from '../../src/jsonpath'
-import debugLogger from 'debug'
+
 const debug = debugLogger('buffered-document-tester')
 
 export default class BufferedDocumentTester {
   doc: BufferedDocument
-  pendingCommit: Object
+  pendingCommit: ?Object
   onMutationCalled: boolean
   onRebaseCalled: boolean
   onDeleteCalled: boolean
+  context: string
   tap: Object
 
-  constructor(tap, attrs) {
+  constructor(tap: any, attrs: any) {
     this.doc = new BufferedDocument(attrs)
     this.onRebaseCalled = false
     this.doc.onRebase = edge => {
@@ -39,16 +41,16 @@ export default class BufferedDocumentTester {
     this.onRebaseCalled = false
     this.onDeleteCalled = false
   }
-  resetDocument(doc) {
+  resetDocument(doc: any) {
     this.resetState()
     this.doc.reset(doc)
   }
-  stage(title) {
+  stage(title: string) {
     debug('Stage: %s', title)
     this.context = title
     return this
   }
-  remotePatch(fromRev, toRev, patch) {
+  remotePatch(fromRev: ?string, toRev: string, patch: any): BufferedDocumentTester {
     this.resetState()
     const mut = new Mutation({
       transactionId: toRev,
@@ -59,7 +61,7 @@ export default class BufferedDocumentTester {
     this.doc.arrive(mut)
     return this
   }
-  remoteMutation(fromRev, toRev, operation) {
+  remoteMutation(fromRev: ?string, toRev: string, operation: any): BufferedDocumentTester {
     this.resetState()
     const mut = new Mutation({
       transactionId: toRev,
@@ -70,7 +72,7 @@ export default class BufferedDocumentTester {
     this.doc.arrive(mut)
     return this
   }
-  localPatch(patch) {
+  localPatch(patch: any): BufferedDocumentTester {
     this.resetState()
     const mut = new Mutation({
       mutations: [{patch}]
@@ -78,7 +80,7 @@ export default class BufferedDocumentTester {
     this.doc.add(mut)
     return this
   }
-  localMutation(fromRev, toRev, operation) {
+  localMutation(fromRev: ?string, toRev: string, operation: any): BufferedDocumentTester {
     this.resetState()
     const mut = new Mutation({
       transactionId: toRev,
@@ -90,40 +92,52 @@ export default class BufferedDocumentTester {
     this.doc.add(mut)
     return this
   }
-  commit() {
+  commit(): BufferedDocumentTester {
     this.resetState()
     this.doc.commit()
     return this
   }
-  commitSucceeds() {
+  commitSucceeds(): BufferedDocumentTester {
     this.resetState()
-    this.pendingCommit.success()
+    const pendingCommit = this.pendingCommit
+    if (!pendingCommit) return this
+    pendingCommit.success()
+
+    // Magically this commit is based on the current HEAD revision
+    if (this.doc.document.HEAD && pendingCommit.mutation) {
+      pendingCommit.mutation.params.previousRev = this.doc.document.HEAD._rev
+    }
+
+    this.doc.arrive(pendingCommit.mutation)
+
+    this.pendingCommit = null
+    return this
+  }
+  commitSucceedsButMutationArriveDuringCommitProcess(): BufferedDocumentTester {
+    this.resetState()
+    const pendingCommit = this.pendingCommit
+    if (!pendingCommit) return this
+
     // Magically this commit is based on the current HEAD revision
     if (this.doc.document.HEAD) {
-      this.pendingCommit.mutation.params.previousRev = this.doc.document.HEAD._rev
+      pendingCommit.mutation.params.previousRev = this.doc.document.HEAD._rev
     }
-    this.doc.arrive(this.pendingCommit.mutation)
+
+    this.doc.arrive(pendingCommit.mutation)
+    pendingCommit.success()
+
     this.pendingCommit = null
     return this
   }
-  commitSucceedsButMutationArriveDuringCommitProcess() {
+  commitFails(): BufferedDocumentTester {
     this.resetState()
-    // Magically this commit is based on the current HEAD revision
-    if (this.doc.document.HEAD) {
-      this.pendingCommit.mutation.params.previousRev = this.doc.document.HEAD._rev
+    if (this.pendingCommit) {
+      this.pendingCommit.failure()
     }
-    this.doc.arrive(this.pendingCommit.mutation)
-    this.pendingCommit.success()
     this.pendingCommit = null
     return this
   }
-  commitFails() {
-    this.resetState()
-    this.pendingCommit.failure()
-    this.pendingCommit = null
-    return this
-  }
-  assertLOCAL(path, value) {
+  assertLOCAL(path: string, value: any): BufferedDocumentTester {
     this.tap.same(
       extract(path, this.doc.LOCAL)[0],
       value,
@@ -131,7 +145,7 @@ export default class BufferedDocumentTester {
     )
     return this
   }
-  assertEDGE(path, value) {
+  assertEDGE(path: string, value: any): BufferedDocumentTester {
     this.tap.same(
       extract(path, this.doc.document.EDGE)[0],
       value,
@@ -139,7 +153,7 @@ export default class BufferedDocumentTester {
     )
     return this
   }
-  assertHEAD(path, value) {
+  assertHEAD(path: string, value: any): BufferedDocumentTester {
     this.tap.same(
       extract(path, this.doc.document.HEAD)[0],
       value,
@@ -147,78 +161,60 @@ export default class BufferedDocumentTester {
     )
     return this
   }
-  assertALL(path, values) {
+  assertALL(path: string, values: any): BufferedDocumentTester {
     this.assertHEAD(path, values)
     this.assertEDGE(path, values)
     this.assertLOCAL(path, values)
     return this
   }
-  assertLOCALDeleted() {
-    this.tap.ok(
-      this.doc.LOCAL === null,
-      `LOCAL should be deleted ${this.context}`
-    )
+  assertLOCALDeleted(): BufferedDocumentTester {
+    this.tap.ok(this.doc.LOCAL === null, `LOCAL should be deleted ${this.context}`)
     return this
   }
-  assertEDGEDeleted() {
-    this.tap.ok(
-      this.doc.document.EDGE === null,
-      `EDGE should be deleted ${this.context}`
-    )
+  assertEDGEDeleted(): BufferedDocumentTester {
+    this.tap.ok(this.doc.document.EDGE === null, `EDGE should be deleted ${this.context}`)
     return this
   }
-  assertHEADDeleted() {
-    this.tap.ok(
-      this.doc.document.HEAD === null,
-      `HEAD should be deleted ${this.context}`
-    )
+  assertHEADDeleted(): BufferedDocumentTester {
+    this.tap.ok(this.doc.document.HEAD === null, `HEAD should be deleted ${this.context}`)
     return this
   }
-  assertALLDeleted() {
+  assertALLDeleted(): BufferedDocumentTester {
     this.assertLOCALDeleted()
     this.assertEDGEDeleted()
     this.assertHEADDeleted()
     return this
   }
-  assert(cb) {
+  assert(cb: Function): BufferedDocumentTester {
     cb(this.tap, this.doc)
     return this
   }
-  didRebase() {
+  didRebase(): BufferedDocumentTester {
     this.tap.ok(this.onRebaseCalled, `should rebase ${this.context}`)
     return this
   }
-  didNotRebase() {
+  didNotRebase(): BufferedDocumentTester {
     this.tap.notOk(this.onRebaseCalled, `should not rebase ${this.context}`)
     return this
   }
-  onMutationFired() {
+  onMutationFired(): BufferedDocumentTester {
     this.tap.ok(this.onMutationCalled, `should mutate ${this.context}`)
     return this
   }
-  onMutationDidNotFire() {
+  onMutationDidNotFire(): BufferedDocumentTester {
     this.tap.notOk(this.onMutationCalled, `should not mutate ${this.context}`)
     return this
   }
-  onDeleteDidFire() {
-    this.tap.ok(
-      this.onDeleteCalled,
-      `should fire onDelete event ${this.context}`
-    )
+  onDeleteDidFire(): BufferedDocumentTester {
+    this.tap.ok(this.onDeleteCalled, `should fire onDelete event ${this.context}`)
     return this
   }
-  onDeleteDidNotFire() {
-    this.tap.notOk(
-      this.onDeleteCalled,
-      `should not fire onDelete event ${this.context}`
-    )
+  onDeleteDidNotFire(): BufferedDocumentTester {
+    this.tap.notOk(this.onDeleteCalled, `should not fire onDelete event ${this.context}`)
     return this
   }
-  isConsistent() {
-    this.tap.ok(
-      this.doc.document.isConsistent(),
-      `should be consistent ${this.context}`
-    )
+  isConsistent(): BufferedDocumentTester {
+    this.tap.ok(this.doc.document.isConsistent(), `should be consistent ${this.context}`)
     this.tap.same(
       this.doc.document.EDGE,
       this.doc.document.HEAD,
@@ -226,11 +222,8 @@ export default class BufferedDocumentTester {
     )
     return this
   }
-  isInconsistent() {
-    this.tap.notOk(
-      this.doc.document.isConsistent(),
-      `should not be consistent ${this.context}`
-    )
+  isInconsistent(): BufferedDocumentTester {
+    this.tap.notOk(this.doc.document.isConsistent(), `should not be consistent ${this.context}`)
     this.tap.notSame(
       this.doc.document.EDGE,
       this.doc.document.HEAD,
@@ -238,46 +231,34 @@ export default class BufferedDocumentTester {
     )
     return this
   }
-  hasUnresolvedLocalMutations() {
+  hasUnresolvedLocalMutations(): BufferedDocumentTester {
     this.tap.ok(
       this.doc.document.anyUnresolvedMutations(),
       `should be unresolved local mutations ${this.context}`
     )
     return this
   }
-  noUnresolvedLocalMutations() {
+  noUnresolvedLocalMutations(): BufferedDocumentTester {
     this.tap.notOk(
       this.doc.document.anyUnresolvedMutations(),
       `should be no unresolved local mutations ${this.context}`
     )
     return this
   }
-  hasLocalEdits() {
-    this.tap.true(
-      this.doc.buffer.hasChanges(),
-      `should have local edits ${this.context}`
-    )
+  hasLocalEdits(): BufferedDocumentTester {
+    this.tap.true(this.doc.buffer.hasChanges(), `should have local edits ${this.context}`)
     return this
   }
-  hasNoLocalEdits() {
-    this.tap.false(
-      this.doc.buffer.hasChanges(),
-      `should not have local edits ${this.context}`
-    )
+  hasNoLocalEdits(): BufferedDocumentTester {
+    this.tap.false(this.doc.buffer.hasChanges(), `should not have local edits ${this.context}`)
     return this
   }
-  hasPendingCommit() {
-    this.tap.ok(
-      this.doc.committerRunning,
-      `should have pending commits ${this.context}`
-    )
+  hasPendingCommit(): BufferedDocumentTester {
+    this.tap.ok(this.doc.committerRunning, `should have pending commits ${this.context}`)
     return this
   }
-  hasNoPendingCommit() {
-    this.tap.notOk(
-      this.doc.committerRunning,
-      `should not have pending commits ${this.context}`
-    )
+  hasNoPendingCommit(): BufferedDocumentTester {
+    this.tap.notOk(this.doc.committerRunning, `should not have pending commits ${this.context}`)
     return this
   }
   end() {

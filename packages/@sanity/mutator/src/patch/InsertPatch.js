@@ -1,19 +1,20 @@
 // @flow
-import {targetsToIndicies} from './util'
 import {min, max} from 'lodash'
+import Expression from '../jsonpath/Expression'
+import {targetsToIndicies} from './util'
 
 export default class InsertPatch {
-  location : string
-  path : string
-  items : Array<any>
-  id : string
-  constructor(id : string, location : string, path : string, items : Array<any>) {
+  location: string
+  path: string
+  items: Array<any>
+  id: string
+  constructor(id: string, location: string, path: string, items: Array<any>) {
     this.id = id
     this.location = location
     this.path = path
     this.items = items
   }
-  apply(targets, accessor) {
+  apply(targets: Array<Expression>, accessor: Object) {
     let result = accessor
     if (accessor.containerType() !== 'array') {
       throw new Error('Attempt to apply insert patch to non-array value')
@@ -30,8 +31,6 @@ export default class InsertPatch {
         break
       }
       case 'replace': {
-        // TODO: Properly implement ranges in compliance with Gradient
-        // This will only properly support single contiguous ranges
         const indicies = targetsToIndicies(targets, accessor)
         result = result.unsetIndices(indicies)
         result = result.insertItemsAt(indicies[0], this.items)
@@ -45,12 +44,12 @@ export default class InsertPatch {
   }
 }
 
-function minIndex(targets, accessor) : number {
+function minIndex(targets, accessor): number {
   let result = min(targetsToIndicies(targets, accessor))
   // Ranges may be zero-length and not turn up in indices
   targets.forEach(target => {
     if (target.isRange()) {
-      const {start} = target.expandRange()
+      const {start} = target.expandRange(accessor)
       if (start < result) {
         result = start
       }
@@ -59,12 +58,12 @@ function minIndex(targets, accessor) : number {
   return result
 }
 
-function maxIndex(targets, accessor) : number {
+function maxIndex(targets, accessor): number {
   let result = max(targetsToIndicies(targets, accessor))
   // Ranges may be zero-length and not turn up in indices
   targets.forEach(target => {
     if (target.isRange()) {
-      const {end} = target.expandRange()
+      const {end} = target.expandRange(accessor)
       if (end > result) {
         result = end
       }

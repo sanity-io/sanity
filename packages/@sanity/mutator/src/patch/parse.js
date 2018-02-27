@@ -8,10 +8,11 @@ import UnsetPatch from './UnsetPatch'
 import DiffMatchPatch from './DiffMatchPatch'
 
 // Parses a Gradient patch into our own personal patch implementations
-export default function parse(patch : Object) : Array<Object> {
+/* eslint-disable complexity */
+export default function parse(patch: Object): Array<Object> {
   const result = []
   if (Array.isArray(patch)) {
-    return patch.reduce((r, p) => r.concat(parse(p)), result)
+    return patch.reduce((res, patch2) => res.concat(parse(patch2)), result)
   }
   if (patch.set) {
     Object.keys(patch.set).forEach(path => {
@@ -23,7 +24,6 @@ export default function parse(patch : Object) : Array<Object> {
       result.push(new SetIfMissingPatch(patch.id, path, patch.setIfMissing[path]))
     })
   }
-  // TODO: merge
   if (patch.unset) {
     patch.unset.forEach(path => {
       result.push(new UnsetPatch(patch.id, path))
@@ -45,8 +45,8 @@ export default function parse(patch : Object) : Array<Object> {
     })
   }
   if (patch.insert) {
-    let location : string
-    let path : string
+    let location: string
+    let path: string
     const spec = patch.insert
     if (spec.before) {
       location = 'before'
@@ -58,7 +58,11 @@ export default function parse(patch : Object) : Array<Object> {
       location = 'replace'
       path = spec.replace
     }
+    if (!location || !path) {
+      throw new Error('Insert patch needs a location (before, after or replace)')
+    }
     result.push(new InsertPatch(patch.id, location, path, spec.items))
   }
   return result
 }
+/* eslint-enable complexity */

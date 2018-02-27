@@ -1,14 +1,14 @@
 // @flow
+import {Matcher} from '../jsonpath'
 import parse from './parse'
 import ImmutableAccessor from './ImmutableAccessor'
-import {Matcher} from '../jsonpath'
 
 export default class Patcher {
-  patches : Array<Object>
-  constructor(patch : Object) {
+  patches: Array<Object>
+  constructor(patch: Object) {
     this.patches = parse(patch)
   }
-  apply(value : Object) {
+  apply(value: Object) {
     // Apply just makes a root accessor around the provided
     // value, then applies the patches. Due to the use of
     // ImmutableAccessor it is guaranteed to return either the
@@ -22,7 +22,7 @@ export default class Patcher {
   // are obtained through the methods in the accessors, you retain full control of the
   // implementation throguhgout the application. Have a look in ImmutableAccessor
   // to see an example of how accessors are implemented.
-  applyViaAccessor(accessor : Object) {
+  applyViaAccessor(accessor: Object) {
     let result = accessor
     const idAccessor = accessor.getAttribute('_id')
     let id
@@ -57,7 +57,7 @@ function process(matcher, accessor) {
   const {leads, delivery} = matcher.match(accessor)
   leads.forEach(lead => {
     if (lead.target.isIndexReference()) {
-      lead.target.toIndicies().forEach(i => {
+      lead.target.toIndicies(accessor).forEach(i => {
         result = result.setIndexAccessor(i, process(lead.matcher, result.getIndex(i)))
       })
     } else if (lead.target.isAttributeReference()) {

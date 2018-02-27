@@ -1,9 +1,9 @@
 // @flow
-import PlainProbe from './PlainProbe'
-import {Expression, Matcher} from '../jsonpath'
 import {compact} from 'lodash'
+import {Expression, Matcher} from '../jsonpath'
+import PlainProbe from './PlainProbe'
 
-export default function extract(path : string, value : Object) : Array<any> {
+export default function extract(path: string, value: Object): Array<any> {
   const result = []
   const appendResult = values => {
     result.push(...values)
@@ -28,7 +28,7 @@ function descend(matcher, accessor) {
   }
 }
 
-function accessorsFromTarget(target : Expression, accessor : PlainProbe) {
+function accessorsFromTarget(target: Expression, accessor: PlainProbe) {
   const result = []
   if (target.isIndexReference()) {
     target.toIndicies(accessor).forEach(i => {

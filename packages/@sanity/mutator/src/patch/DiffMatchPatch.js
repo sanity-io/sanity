@@ -1,18 +1,19 @@
+// @flow
 import DMP from 'diff-match-patch'
+import Expression from '../jsonpath/Expression'
 
 const dmp = new DMP()
 
-
 export default class DiffMatchPatch {
-  path : string
-  dmpPatch : string
-  id : string
-  constructor(id : string, path : string, dmpPatchSrc : string) {
+  path: string
+  dmpPatch: string
+  id: string
+  constructor(id: string, path: string, dmpPatchSrc: string) {
     this.id = id
     this.path = path
     this.dmpPatch = dmp.patch_fromText(dmpPatchSrc)
   }
-  apply(targets, accessor) {
+  apply(targets: Array<Expression>, accessor: Object) {
     let result = accessor
     targets.forEach(target => {
       if (target.isIndexReference()) {
