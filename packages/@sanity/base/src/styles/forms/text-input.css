@@ -7,7 +7,6 @@
   width: 100%;
   outline: none;
   line-height: var(--input-line-height);
-  height: calc(var(--input-line-height) + var(--input-padding-horizontal) * 2);
   font-size: inherit;
   box-sizing: border-box;
   padding: var(--input-padding-horizontal) var(--input-padding-vertical);
