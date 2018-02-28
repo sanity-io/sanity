@@ -19,7 +19,7 @@ function getDocumentIds(id) {
   }
 }
 
-const defaultChecker = (slug, options) => {
+const defaultIsUnique = (slug, options) => {
   const {document, path} = options
   const {published, draft} = getDocumentIds(document._id)
   const docType = document._type
@@ -31,7 +31,7 @@ const defaultChecker = (slug, options) => {
     `${atPath} == $slug`
   ].join(' && ')
 
-  return client.fetch(`*[${constraints}][0]._id`, {docType, draft, published, slug})
+  return client.fetch(`!defined(*[${constraints}][0]._id)`, {docType, draft, published, slug})
 }
 
 const SLUG_CORE = {
@@ -46,9 +46,9 @@ const SLUG_CORE = {
       }
 
       const errorMessage = 'Slug is already in use'
-      const checkUnique = get(options, 'type.options.checkUnique', defaultChecker)
-      return Promise.resolve(checkUnique(value.current, options)).then(
-        hasDupe => (hasDupe ? errorMessage : true)
+      const isUnique = get(options, 'type.options.isUnique', defaultIsUnique)
+      return Promise.resolve(isUnique(value.current, {...options, defaultIsUnique})).then(
+        slugIsUnique => (slugIsUnique ? true : errorMessage)
       )
     })
 }
