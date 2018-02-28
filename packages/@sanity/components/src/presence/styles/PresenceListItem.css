@@ -1,9 +1,15 @@
 .root {
-  background: transparent;
-  border: 2px solid transparent;
-  width: 24px;
-  height: 24px;
+  width: 1em;
+  height: 1em;
   border-radius: 50%;
   background-size: 100%;
-  display: inline-block;
+  transition: 0.1s linear transform;
+
+  @nest &:hover {
+    transform: scale(2);
+  }
+}
+
+.root + .root {
+  margin-left: 0.5em;
 }

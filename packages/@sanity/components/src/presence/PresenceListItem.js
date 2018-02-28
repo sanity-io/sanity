@@ -36,7 +36,7 @@ export default class PresenceListItem extends React.PureComponent {
     const imgUrl = user.imageUrl || user.profileImage
     const userColor = colorHasher.hex(this.props.marker.session)
     const imgStyles = {
-      borderColor: userColor,
+      boxShadow: `0 0 1px 1px ${userColor}`,
       backgroundColor: userColor,
       backgroundImage: imgUrl && `url(${imgUrl})`
     }
@@ -44,15 +44,16 @@ export default class PresenceListItem extends React.PureComponent {
     return (
       <Tooltip
         title={user.displayName || 'Loading...'}
+        position="top"
         trigger="mouseenter"
         animation="scale"
         arrow
         theme="light"
-        distance="2"
+        distance="10"
         duration={50}
-      >
-        <div className={styles.root} style={imgStyles} />
-      </Tooltip>
+        className={styles.root}
+        style={imgStyles}
+      />
     )
   }
 }

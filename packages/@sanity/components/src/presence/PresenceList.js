@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import PresenceListItem from './PresenceListItem'
+import styles from './styles/PresenceList.css'
 
 export default class PresenceList extends React.PureComponent {
   static propTypes = {
@@ -31,7 +32,9 @@ export default class PresenceList extends React.PureComponent {
     }
 
     return (
-      <div>{presence.map(marker => <PresenceListItem key={marker.session} marker={marker} />)}</div>
+      <div className={styles.root}>
+        {presence.map(marker => <PresenceListItem key={marker.session} marker={marker} />)}
+      </div>
     )
   }
 }
