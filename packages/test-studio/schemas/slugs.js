@@ -50,7 +50,8 @@ export default {
       options: {
         source: 'title',
         maxLength: 100,
-        checkUnique: value => /^hei/i.test(value)
+        isUnique: (value, options) =>
+          !/^hei/i.test(value) && options.defaultIsUnique(value, options)
       }
     },
     {
