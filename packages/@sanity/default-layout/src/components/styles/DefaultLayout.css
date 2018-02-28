@@ -124,7 +124,6 @@
   background-color: var(--secondary-menu-background-color);
   height: var(--header-height);
   z-index: var(--zindex-navbar);
-  padding-right: var(--small-padding);
 
   @media (--screen-medium) {
     z-index: initial;
