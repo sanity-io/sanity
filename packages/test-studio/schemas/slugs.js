@@ -54,6 +54,22 @@ export default {
       }
     },
     {
+      name: 'deprecatedSlugifyFnField',
+      type: 'slug',
+      title: 'Slug field using deprecated "slugifyFn" option',
+      description: 'Should warn the developer about deprecated field',
+      options: {
+        source: 'title',
+        slugifyFn: value =>
+          value
+            .toLocaleLowerCase()
+            .split('')
+            .reverse()
+            .join('')
+            .replace(/\s+/g, '-')
+      }
+    },
+    {
       name: 'nested',
       type: 'object',
       fields: [
