@@ -65,6 +65,13 @@ function toFormBuilderPatch(origin: Origin, patch: GradientPatch): Patch {
                 origin
               }
             }
+            if (type === 'ifRevisionID') {
+              return {
+                type: 'ifRevisionID',
+                value: patch[type],
+                origin
+              }
+            }
             console.warn(new Error(`Unsupported patch type: ${type}`))
             return null
           })
