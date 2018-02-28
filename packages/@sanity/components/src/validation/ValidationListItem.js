@@ -9,6 +9,7 @@ export default class ValidationListItem extends React.PureComponent {
     onClick: PropTypes.func,
     showLink: PropTypes.bool,
     path: PropTypes.string,
+    hasFocus: PropTypes.bool,
     marker: PropTypes.shape({
       path: PropTypes.arrayOf(
         PropTypes.oneOfType([
@@ -29,6 +30,31 @@ export default class ValidationListItem extends React.PureComponent {
     showLink: false
   }
 
+  componentDidMount() {
+    if (this.props.hasFocus) {
+      this.focus()
+    }
+  }
+
+
+  handleKeyPress = event => {
+    if (event.key === 'Enter') {
+      this.handleClick(event)
+    }
+  }
+
+  focus() {
+    setTimeout(() => {
+      this._element.focus()
+    }, 200)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.hasFocus) {
+      this.focus()
+    }
+  }
+
   handleClick = event => {
     const {marker, onClick} = this.props
     if (onClick) {
@@ -36,17 +62,25 @@ export default class ValidationListItem extends React.PureComponent {
     }
   }
 
+  setElement = element => {
+    this._element = element
+  }
+
   render() {
     const {marker, onClick, path, showLink} = this.props
     const shouldRenderLink = onClick && showLink
 
     return (
-      <li
+      <a
+        ref={this.setElement}
+        tabIndex={0}
+        onClick={this.handleClick}
+        onKeyPress={this.handleKeyPress}
         className={`
           ${onClick ? styles.interactiveItem : styles.item}
           ${styles[marker.level]}
         `}
-        onClick={this.handleClick}>
+      >
         <span className={styles.icon}>
           <WarningIcon />
         </span>
@@ -65,7 +99,7 @@ export default class ValidationListItem extends React.PureComponent {
             <LinkIcon />
           </span>
         )}
-      </li>
+      </a>
     )
   }
 }

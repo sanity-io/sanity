@@ -1,4 +1,3 @@
-
 import BooleanInput from '../../inputs/BooleanInput'
 import EmailInput from '../../inputs/EmailInput'
 import NumberInput from '../../inputs/NumberInput'
@@ -7,11 +6,11 @@ import StringInput from '../../inputs/StringInput'
 import DateTimeInput from '../../inputs/DateTimeInput'
 import TextInput from '../../inputs/TextInput'
 import UrlInput from '../../inputs/UrlInput'
+import SlugInput from '../../inputs/Slug/SlugInput'
 
 import SanityArrayInput from '../inputs/SanityArrayInput'
 import Image from '../inputs/SanityImageInput'
 import File from '../inputs/SanityFileInput'
-import Slug from '../inputs/Slug'
 
 export default {
   object: ObjectInput,
@@ -25,5 +24,5 @@ export default {
   image: Image,
   file: File,
   string: StringInput,
-  slug: Slug
+  slug: SlugInput
 }

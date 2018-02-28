@@ -32,37 +32,8 @@
   line-height: 1em;
 }
 
-.colored {
-  composes: root;
-  background-color: var(--brand-primary);
-  color: var(--white);
-}
-
-.small {
-  font-size: 0.8em;
-}
-
-.danger {
-  composes: root;
-  color: var(--state-danger-color);
-
-  &:hover {
-    background-color: var(--state-danger-color);
-    border-color: var(--state-danger-color);
-    color: var(--input-bg);
-  }
-}
-
-.delete {
-  composes: danger;
-}
-
-.add {
-  composes: colored;
-}
-
-.save {
-  composes: root;
+.button {
+  font-size: 0.7em;
 }
 
 .container {

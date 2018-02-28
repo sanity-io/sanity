@@ -78,7 +78,7 @@ const custom = async (fn, value, message, options) => {
 
   let result
   try {
-    result = await fn(value)
+    result = await fn(value, options)
   } catch (err) {
     const path = pathToString(options.path)
     err.message = `${path}: Error validating value: ${err.message}`
