@@ -255,17 +255,36 @@ export default class EditorWrapper extends React.Component {
 
   handlePublish = () => {
     const {documentId} = this.props
-    const {draft} = this.state
+    const {draft, published} = this.state
     this.setState({isPublishing: true})
 
-    const tx = client.observable
-      .transaction()
-      .createOrReplace({
+    const tx = client.observable.transaction()
+
+    if (!published || !published.snapshot) {
+      // If the document has not been published, we want to create it - if it suddenly exists
+      // before being created, we don't want to overwrite if, instead we want to yield an error
+      tx.create({
         ...omit(draft.snapshot, '_updatedAt'),
         _id: getPublishedId(documentId)
       })
-      .delete(getDraftId(documentId))
+    } else {
+      // If it exists already, we only want to update it if the revision on the remote server
+      // matches what our local state thinks it's at
+      tx
+        .patch(getPublishedId(documentId), {
+          // Hack until other mutations support revision locking
+          unset: ['_reserved_prop_'],
+          ifRevisionID: published.snapshot._rev
+        })
+        .createOrReplace({
+          ...omit(draft.snapshot, '_updatedAt'),
+          _id: getPublishedId(documentId)
+        })
+    }
 
+    tx.delete(getDraftId(documentId))
+
+    // @todo add error handling for revision mismatch
     Observable.from(tx.commit())
       .map(result => ({
         type: 'success',
