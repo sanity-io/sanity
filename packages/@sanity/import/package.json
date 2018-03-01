@@ -12,7 +12,15 @@
     "clean": "rimraf lib",
     "test": "jest"
   },
-  "keywords": ["sanity", "cms", "headless", "realtime", "content", "import", "ndjson"],
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "import",
+    "ndjson"
+  ],
   "dependencies": {
     "@rexxars/get-uri": "^2.0.2",
     "@sanity/mutator": "^0.125.8",
