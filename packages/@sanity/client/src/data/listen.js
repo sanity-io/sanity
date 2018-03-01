@@ -37,31 +37,20 @@ module.exports = function listen(query, params, opts = {}) {
   }
 
   return new Observable(observer => {
-    let es = getEventSource()
-    let reconnectTimer
-    let stopped = false
+    const es = new EventSource(uri, esOptions)
+
+    es.addEventListener('error', onError, false)
+    es.addEventListener('channelError', onChannelError, false)
+    es.addEventListener('disconnect', onDisconnect, false)
+    listenFor.forEach(type => es.addEventListener(type, onMessage, false))
 
     function onError() {
-      if (stopped) {
-        return
-      }
-
-      emitReconnect()
-
-      // Allow event handlers of `emitReconnect` to cancel/close the reconnect attempt
-      if (stopped) {
-        return
-      }
-
-      // Unless we've explicitly stopped the ES (in which case `stopped` should be true),
-      // we should never be in a disconnected state. By default, EventSource will reconnect
-      // automatically, in which case it sets readyState to `CONNECTING`, but in some cases
-      // (like when a laptop lid is closed), it closes the connection. In these cases we need
-      // to explicitly reconnect.
       if (es.readyState === EventSource.CLOSED) {
-        unsubscribe()
-        clearTimeout(reconnectTimer)
-        reconnectTimer = setTimeout(open, 100)
+        const error = new Error('Listener unexpectedly disconnected')
+        error.code = 'EDISCONNECT'
+        observer.error(error)
+      } else if (es.readyState === EventSource.CONNECTING) {
+        emitReconnect()
       }
     }
 
@@ -75,16 +64,15 @@ module.exports = function listen(query, params, opts = {}) {
     }
 
     function onDisconnect(evt) {
-      stopped = true
-      unsubscribe()
       observer.complete()
+      unsubscribe()
     }
 
     function unsubscribe() {
+      listenFor.forEach(type => es.removeEventListener(type, onMessage, false))
       es.removeEventListener('error', onError, false)
       es.removeEventListener('channelError', onChannelError, false)
       es.removeEventListener('disconnect', onDisconnect, false)
-      listenFor.forEach(type => es.removeEventListener(type, onMessage, false))
       es.close()
     }
 
@@ -94,25 +82,7 @@ module.exports = function listen(query, params, opts = {}) {
       }
     }
 
-    function getEventSource() {
-      const evs = new EventSource(uri, esOptions)
-      evs.addEventListener('error', onError, false)
-      evs.addEventListener('channelError', onChannelError, false)
-      evs.addEventListener('disconnect', onDisconnect, false)
-      listenFor.forEach(type => evs.addEventListener(type, onMessage, false))
-      return evs
-    }
-
-    function open() {
-      es = getEventSource()
-    }
-
-    function stop() {
-      stopped = true
-      unsubscribe()
-    }
-
-    return stop
+    return unsubscribe
   })
 }
 
