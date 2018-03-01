@@ -8,6 +8,7 @@ Options
   --dataset <dataset> Dataset name for the studio
   --output-path <path> Path to write studio project to
   --template <template> Project template to use [default: "clean"]
+  --create-project <name> Create a new project with the given name
 
 Examples
   # Initialize a new project, prompt for required information along the way
@@ -23,6 +24,12 @@ Examples
   # template to the given path
   sanity init -y --project abc123 --dataset staging --template moviedb --output-path .
 
+  # Create a brand new project with name "Movies Unlimited"
+  sanity init -y \\
+    --create-project "Movies Unlimited" \\
+    --dataset moviedb \\
+    --template moviedb \\
+    --output-path /Users/espenh/movies-unlimited
 `
 
 export default {

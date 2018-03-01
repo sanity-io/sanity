@@ -22,20 +22,12 @@ const sanityEnv = process.env.SANITY_ENV
 const environment = sanityEnv ? sanityEnv : process.env.NODE_ENV
 /* eslint-enable no-process-env */
 
+// eslint-disable-next-line max-statements
 export default async function initSanity(args, context) {
-  const flags = args.extOptions
   const {output, prompt, workDir, apiClient, yarn, chalk} = context
-  const unattended = flags.y || flags.yes
+  const cliFlags = args.extOptions
+  const unattended = cliFlags.y || cliFlags.yes
   const print = unattended ? noop : output.print
-
-  const requiredForUnattended = ['project', 'dataset', 'output-path']
-  if (unattended) {
-    requiredForUnattended.forEach(flag => {
-      if (!flags[flag]) {
-        throw new Error(`\`--${flag}\` must be specified in unattended mode`)
-      }
-    })
-  }
 
   print('This utility walks you through creating a Sanity installation.')
   print('Press ^C at any time to quit.\n')
@@ -52,7 +44,9 @@ export default async function initSanity(args, context) {
     await getOrCreateUser()
   }
 
-  // We're authenticated, now lets create a project
+  const flags = await prepareFlags(cliFlags)
+
+  // We're authenticated, now lets select or create a project
   debug('Prompting user to select or create a project')
   const {projectId, displayName} = await getOrCreateProject()
   const sluggedName = deburr(displayName.toLowerCase())
@@ -75,47 +69,13 @@ export default async function initSanity(args, context) {
   const defaults = await getProjectDefaults(workDir, {isPlugin: false, context})
 
   // Prompt the user for required information
-  let answers
-  if (unattended) {
-    answers = Object.assign({license: 'UNLICENSED'}, defaults, {
-      outputPath: path.resolve(flags['output-path'])
-    })
-  } else {
-    answers = {}
-    answers.description = answers.description || defaults.description
-    answers.gitRemote = defaults.gitRemote
-    answers.author = defaults.author
-    answers.license = 'UNLICENSED'
-
-    const workDirIsEmpty = (await fse.readdir(workDir)).length === 0
-    answers.outputPath = await prompt.single({
-      type: 'input',
-      message: 'Output path:',
-      default: workDirIsEmpty ? workDir : path.join(workDir, sluggedName),
-      validate: validateEmptyPath,
-      filter: absolutify
-    })
-  }
+  const answers = await getProjectInfo()
 
   // Ensure we are using the output path provided by user
   const outputPath = answers.outputPath || workDir
 
   // Prompt for template to use
-  const defaultTemplate = unattended ? flags.template || 'clean' : null
-  const templateName = defaultTemplate || (await prompt.single({
-    message: 'Select project template',
-    type: 'list',
-    choices: [
-      {
-        value: 'moviedb',
-        name: 'Movie database (schema + sample data)'
-      },
-      {
-        value: 'blog',
-        name: 'Blog (schema)'
-      }
-    ]
-  }))
+  const templateName = await selectProjectTemplate()
 
   // Build a full set of resolved options
   const initOptions = {
@@ -134,7 +94,8 @@ export default async function initSanity(args, context) {
   }
 
   // If the template has a sample dataset, prompt the user whether or not we should import it
-  const shouldImport = !unattended && template.datasetUrl && (await promptForDatasetImport(template.importPrompt))
+  const shouldImport =
+    !unattended && template.datasetUrl && (await promptForDatasetImport(template.importPrompt))
 
   // Bootstrap Sanity, creating required project files, manifests etc
   await bootstrapTemplate(initOptions, context)
@@ -158,24 +119,16 @@ export default async function initSanity(args, context) {
 
   // Prompt for dataset import (if a dataset is defined)
   if (shouldImport) {
-    const manifestPath = path.join(outputPath, 'sanity.json')
-    const baseManifest = await loadJson(manifestPath)
-    const manifest = reduceConfig(baseManifest || {}, environment)
-
-    const importCmd = coreCommands.find(cmd => cmd.name === 'import' && cmd.group === 'dataset')
-    await importCmd.action(
-      {argsWithoutOptions: [template.datasetUrl, datasetName], extOptions: {}},
-      Object.assign({}, context, {
-        apiClient: clientWrapper(manifest, manifestPath),
-        workDir: outputPath
-      })
-    )
+    await doDatasetImport()
   }
-
 
   if (shouldImport) {
     print('')
-    print(`If you want to delete the imported data, use ${chalk.cyan(`sanity dataset delete ${datasetName}`)}`)
+    print(
+      `If you want to delete the imported data, use ${chalk.cyan(
+        `sanity dataset delete ${datasetName}`
+      )}`
+    )
   }
 
   print(`\n${chalk.green('Success!')} Now what?\n`)
@@ -225,8 +178,14 @@ export default async function initSanity(args, context) {
       throw new Error('No projects found for current user')
     }
 
-    if (unattended) {
+    if (flags.project) {
       const project = projects.find(proj => proj.id === flags.project)
+      if (!project && !unattended) {
+        throw new Error(
+          `Given project ID (${flags.project}) not found, or you do not have access to it`
+        )
+      }
+
       return {
         projectId: flags.project,
         displayName: project ? project.displayName : 'Unknown project'
@@ -273,17 +232,25 @@ export default async function initSanity(args, context) {
   }
 
   async function getOrCreateDataset(opts) {
-    if (unattended) {
-      return {datasetName: opts.dataset}
-    }
-
     const client = apiClient({api: {projectId: opts.projectId}})
     const datasets = await client.datasets.list()
+
+    if (opts.dataset) {
+      debug('User has specified dataset through a flag (%s)', opts.dataset)
+      const existing = datasets.find(ds => ds.name === opts.dataset)
+
+      if (!existing) {
+        debug('Specified dataset not found, creating it')
+        await client.datasets.create(opts.dataset)
+      }
+
+      return {datasetName: opts.dataset}
+    }
 
     if (datasets.length === 0) {
       debug('No datasets found for project, prompting for name')
       const name = await promptForDatasetName(prompt, {
-        message: 'Name of your first data set:',
+        message: 'Name of your first dataset:',
         default: 'production'
       })
 
@@ -324,6 +291,120 @@ export default async function initSanity(args, context) {
       message: message || 'This template includes a sample dataset, would you like to import it?',
       default: true
     })
+  }
+
+  function selectProjectTemplate() {
+    const defaultTemplate = unattended ? flags.template || 'clean' : null
+    return (
+      defaultTemplate ||
+      prompt.single({
+        message: 'Select project template',
+        type: 'list',
+        choices: [
+          {
+            value: 'moviedb',
+            name: 'Movie database (schema + sample data)'
+          },
+          {
+            value: 'blog',
+            name: 'Blog (schema)'
+          }
+        ]
+      })
+    )
+  }
+
+  async function doDatasetImport() {
+    const manifestPath = path.join(outputPath, 'sanity.json')
+    const baseManifest = await loadJson(manifestPath)
+    const manifest = reduceConfig(baseManifest || {}, environment)
+
+    const importCmd = coreCommands.find(cmd => cmd.name === 'import' && cmd.group === 'dataset')
+    return importCmd.action(
+      {argsWithoutOptions: [template.datasetUrl, datasetName], extOptions: {}},
+      Object.assign({}, context, {
+        apiClient: clientWrapper(manifest, manifestPath),
+        workDir: outputPath
+      })
+    )
+  }
+
+  async function getProjectInfo() {
+    if (unattended) {
+      return Object.assign({license: 'UNLICENSED'}, defaults, {
+        outputPath: path.resolve(flags['output-path'])
+      })
+    }
+
+    const workDirIsEmpty = (await fse.readdir(workDir)).length === 0
+    return {
+      description: defaults.description,
+      gitRemote: defaults.gitRemote,
+      author: defaults.author,
+      license: 'UNLICENSED',
+
+      outputPath: await prompt.single({
+        type: 'input',
+        message: 'Output path:',
+        default: workDirIsEmpty ? workDir : path.join(workDir, sluggedName),
+        validate: validateEmptyPath,
+        filter: absolutify
+      })
+    }
+  }
+
+  async function prepareFlags() {
+    const createProjectName = cliFlags['create-project']
+    if (cliFlags.project && createProjectName) {
+      throw new Error(
+        'Both `--project` and `--create-project` specified, only a single is supported'
+      )
+    }
+
+    if (createProjectName === true) {
+      throw new Error('Please specify a project name (`--create-project <name>`)')
+    }
+
+    if (typeof createProjectName === 'string' && createProjectName.trim().length === 0) {
+      throw new Error('Please specify a project name (`--create-project <name>`)')
+    }
+
+    if (unattended) {
+      debug('Unattended mode, validating required options')
+      const requiredForUnattended = ['dataset', 'output-path']
+      requiredForUnattended.forEach(flag => {
+        if (!cliFlags[flag]) {
+          throw new Error(`\`--${flag}\` must be specified in unattended mode`)
+        }
+      })
+
+      if (!cliFlags.project && !createProjectName) {
+        throw new Error(
+          '`--project <id>` or `--create-project <name>` must be specified in unattended mode'
+        )
+      }
+    }
+
+    if (createProjectName) {
+      debug('--create-project specified, creating a new project')
+      const createdProject = await createProject(apiClient, {
+        displayName: createProjectName.trim()
+      })
+      debug('Project with ID %s created', createdProject.projectId)
+
+      if (cliFlags.dataset) {
+        debug('--dataset specified, creating dataset (%s)', cliFlags.dataset)
+        const client = apiClient({api: {projectId: createdProject.projectId}})
+        await client.datasets.create(cliFlags.dataset)
+      }
+
+      const newFlags = Object.assign({}, cliFlags, {project: createdProject.projectId})
+      delete newFlags['create-project']
+
+      return newFlags
+    }
+
+    return cliFlags
   }
 }
 
