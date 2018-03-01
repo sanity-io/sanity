@@ -154,7 +154,7 @@ export default class ObjectInput extends React.PureComponent {
   }
 
   renderUnknownFields() {
-    const {value, type, onChange} = this.props
+    const {value, type, onChange, readOnly} = this.props
     if (!type.fields) {
       return null
     }
@@ -168,7 +168,7 @@ export default class ObjectInput extends React.PureComponent {
       return null
     }
 
-    return <UnknownFields fieldNames={unknownFields} value={value} onChange={onChange} />
+    return <UnknownFields readOnly={readOnly} fieldNames={unknownFields} value={value} onChange={onChange} />
   }
 
   setFirstField = el => {
