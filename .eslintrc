@@ -5,9 +5,9 @@
   },
   "parser": "babel-eslint",
   "extends": [
-    "sanity",
-    "sanity/react",
-    "sanity/import",
+    "./packages/eslint-config-sanity/index.js",
+    "./packages/eslint-config-sanity/react.js",
+    "./packages/eslint-config-sanity/import.js",
     "prettier",
     "prettier/react",
     "prettier/flowtype"

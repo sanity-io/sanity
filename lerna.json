@@ -7,6 +7,7 @@
   "packages": [
     "packages/@sanity/*",
     "packages/example-studio",
+    "packages/eslint-config-sanity",
     "packages/test-studio",
     "packages/movies-studio",
     "packages/blog-studio",
