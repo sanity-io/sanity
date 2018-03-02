@@ -8,17 +8,35 @@ import type {FieldName, Id} from './types'
 import {INCLUDE_FIELDS} from './constants'
 
 let _globalListener
-const getGlobalListener = () => {
+const getGlobalEvents = () => {
   if (!_globalListener) {
-    _globalListener = Observable.from(
-      client.listen('*[!(_id in path("_.**"))]', {}, {includeResult: false})
+    const allEvents$ = Observable.from(
+      client.listen(
+        '*[!(_id in path("_.**"))]',
+        {},
+        {events: ['welcome', 'mutation'], includeResult: false}
+      )
     ).share()
+
+    _globalListener = {
+      // This is a stream of welcome events from the server, each telling us that we have established listener connection
+      // We map these to snapshot fetch/sync. It is good to wait for the first welcome event before fetching any snapshots as, we may miss
+      // events that happens in the time period after initial fetch and before the listener is established.
+      welcome$: allEvents$
+        .filter(event => event.type === 'welcome')
+        .publishReplay(1)
+        .refCount(),
+      mutations$: allEvents$.filter(event => event.type === 'mutation')
+    }
   }
   return _globalListener
 }
 
 function listen(id: Id) {
-  return getGlobalListener().filter(event => event.documentId === id)
+  const globalEvents = getGlobalEvents()
+  return globalEvents.welcome$.merge(
+    globalEvents.mutations$.filter(event => event.documentId === id)
+  )
 }
 
 function fetchAllDocumentPaths(selections: Selection[]) {
@@ -32,8 +50,13 @@ const fetchDocumentPathsFast = debounceCollect(fetchAllDocumentPaths, 100)
 const fetchDocumentPathsSlow = debounceCollect(fetchAllDocumentPaths, 1000)
 
 function listenFields(id: Id, fields: FieldName[]) {
-  // console.log('listening on doc #%s for fields %O', id, fields)
-  return fetchDocumentPathsFast(id, fields)
+  return listen(id)
+    .switchMap(
+      event =>
+        event.type === 'welcome'
+          ? fetchDocumentPathsFast(id, fields)
+          : fetchDocumentPathsSlow(id, fields)
+    )
     .mergeMap(
       result =>
         result === undefined
@@ -42,7 +65,6 @@ function listenFields(id: Id, fields: FieldName[]) {
             fetchDocumentPathsSlow(id, fields)
           : Observable.of(result)
     )
-    .concat(listen(id).switchMap(event => fetchDocumentPathsSlow(id, fields)))
 }
 
 // keep for debugging purposes for now
