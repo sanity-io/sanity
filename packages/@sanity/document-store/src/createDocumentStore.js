@@ -8,6 +8,7 @@ const NOOP = () => {}
 function createBufferedDocument(documentId, server) {
 
   const serverEvents$ = Observable.from(server.byId(documentId)).share()
+  const reconnects$ = serverEvents$.filter(event => event.type === 'reconnect')
   const saves = pubsub()
 
   const bufferedDocs$ = serverEvents$
@@ -70,6 +71,7 @@ function createBufferedDocument(documentId, server) {
           observer.next({type: 'snapshot', document: bufferedDocument.LOCAL})
           return mutation$
             .merge(rebase$)
+            .merge(reconnects$)
             .subscribe(observer)
         }),
         patch(patches) {
@@ -143,7 +145,7 @@ function createBufferedDocument(documentId, server) {
   }
 }
 
-module.exports = function createDocumentStore({serverConnection}) {
+export default function createDocumentStore({serverConnection}) {
 
   return {
     byId,
