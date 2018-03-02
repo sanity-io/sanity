@@ -183,6 +183,7 @@ export default withRouterHOC(
       isCreatingDraft: PropTypes.bool,
       isUnpublishing: PropTypes.bool,
       isPublishing: PropTypes.bool,
+      isReconnecting: PropTypes.bool,
       isLoading: PropTypes.bool,
       isSaving: PropTypes.bool,
       deletedSnapshot: PropTypes.object
@@ -194,6 +195,7 @@ export default withRouterHOC(
       isSaving: false,
       isUnpublishing: false,
       isPublishing: false,
+      isReconnecting: false,
       isCreatingDraft: false,
       deletedSnapshot: null,
       transactionResult: null,
@@ -429,7 +431,7 @@ export default withRouterHOC(
     }
 
     renderFunctions = () => {
-      const {draft, published, markers, type} = this.props
+      const {draft, published, markers, type, isReconnecting} = this.props
       const {showSavingStatus, showValidationTooltip} = this.state
 
       const value = draft || published
@@ -457,8 +459,25 @@ export default withRouterHOC(
               Syncing…
             </Tooltip>
           )}
+          {isReconnecting && (
+            <Tooltip
+              className={styles.syncStatusSyncing}
+              arrow
+              theme="light"
+              size="small"
+              distance="0"
+              title="Connection lost. Reconnecting…"
+            >
+              <span className={styles.spinnerContainer}>
+                <span className={styles.spinner}>
+                  <SyncIcon />
+                </span>
+              </span>{' '}
+              Reconnecting…
+            </Tooltip>
+          )}
           {value &&
-            !showSavingStatus && (
+            !showSavingStatus && !isReconnecting && (
               <Tooltip
                 className={styles.syncStatusSynced}
                 arrow
@@ -509,7 +528,7 @@ export default withRouterHOC(
             title={errors.length > 0 ? 'Fix errors before publishing' : 'Ctrl+Alt+P'}
           >
             <Button
-              disabled={!draft || errors.length > 0}
+              disabled={isReconnecting || !draft || errors.length > 0}
               onClick={this.handlePublishRequested}
               color="primary"
             >
@@ -544,6 +563,7 @@ export default withRouterHOC(
         isPublishing,
         isUnpublishing,
         isCreatingDraft,
+        isReconnecting,
         patchChannel,
         transactionResult,
         onClearTransactionResult
@@ -621,6 +641,7 @@ export default withRouterHOC(
                 patchChannel={patchChannel}
                 value={draft || published || {_type: type.name}}
                 type={type}
+                readOnly={isReconnecting}
                 onBlur={this.handleBlur}
                 onFocus={this.handleFocus}
                 focusPath={focusPath}
@@ -628,7 +649,6 @@ export default withRouterHOC(
                 markers={markers}
               />
             </form>
-
             {afterEditorComponents.map((AfterEditorComponent, i) => (
               <AfterEditorComponent key={i} documentId={published._id} />
             ))}
@@ -666,11 +686,15 @@ export default withRouterHOC(
                 onConfirm={this.handleConfirmUnpublish}
               />
             )}
-
+            {isReconnecting && (
+              <Snackbar kind="warning">
+                <WarningIcon /> Connection lost. Reconnecting…
+              </Snackbar>
+            )}
             {transactionResult &&
               transactionResult.type === 'error' && (
                 <Snackbar
-                  kind={'danger'}
+                  kind="danger"
                   action={{title: 'Ok, got it'}}
                   onAction={onClearTransactionResult}
                 >
