@@ -1076,6 +1076,26 @@ test('transaction commit() throws if called without a client', t => {
   t.end()
 })
 
+test('transaction can be given an explicit transaction ID', t => {
+  const transactionId = 'moop'
+  const mutations = [{create: {bar: true}}, {delete: {id: 'barfoo'}}]
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?returnIds=true&visibility=sync', {mutations, transactionId})
+    .reply(200, {transactionId})
+
+  getClient().transaction()
+    .create({bar: true})
+    .delete('barfoo')
+    .transactionId(transactionId)
+    .commit()
+    .then(res => {
+      t.equal(res.transactionId, transactionId, 'applies given transaction')
+    })
+    .catch(t.ifError)
+    .then(t.end)
+})
+
+
 /*****************
  * LISTENERS     *
  *****************/

@@ -91,7 +91,11 @@ module.exports = {
       : mutations
     const muts = Array.isArray(mut) ? mut : [mut]
 
-    return this.dataRequest('mutate', {mutations: muts}, options)
+    return this.dataRequest(
+      'mutate',
+      {mutations: muts, transactionId: options && options.transactionId},
+      options
+    )
   },
 
   transaction(operations) {
