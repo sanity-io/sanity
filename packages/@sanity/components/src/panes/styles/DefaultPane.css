@@ -189,11 +189,16 @@
     height: calc(100% + 3rem);
   }
 
-  /* @media (--max-screen-medium) {
-    overflow: visible;
-    position: relative;
-    height: auto;
-  } */
+  @media (--max-screen-medium) {
+    /* Override default scrollcontainer  */
+    transform: initial;
+    position: initial;
+    top: initial;
+    left: initial;
+    height: initial;
+    width: initial;
+    overflow: initial;
+  }
 
   @nest .isCollapsed & {
     display: none;
