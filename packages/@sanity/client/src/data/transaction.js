@@ -4,17 +4,15 @@ const Patch = require('./patch')
 
 const defaultMutateOptions = {returnDocuments: false}
 
-function Transaction(operations = [], client) {
+function Transaction(operations = [], client, transactionId) {
+  this.trxId = transactionId
   this.operations = operations
   this.client = client
 }
 
 assign(Transaction.prototype, {
   clone() {
-    return new Transaction(
-      this.operations.slice(0),
-      this.client
-    )
+    return new Transaction(this.operations.slice(0), this.client, this.trxId)
   },
 
   create(doc) {
@@ -63,6 +61,15 @@ assign(Transaction.prototype, {
     return this._add({patch: assign({id: documentId}, patchOps)})
   },
 
+  transactionId(id) {
+    if (!id) {
+      return this.trxId
+    }
+
+    this.trxId = id
+    return this
+  },
+
   serialize() {
     return this.operations.slice()
   },
@@ -79,7 +86,10 @@ assign(Transaction.prototype, {
       )
     }
 
-    return this.client.mutate(this.serialize(), assign({}, defaultMutateOptions, options || {}))
+    return this.client.mutate(
+      this.serialize(),
+      assign({transactionId: this.trxId}, defaultMutateOptions, options || {})
+    )
   },
 
   reset() {
