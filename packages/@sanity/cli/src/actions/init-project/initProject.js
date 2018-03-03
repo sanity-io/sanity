@@ -18,6 +18,7 @@ import bootstrapTemplate from './bootstrapTemplate'
 import templates from './templates'
 
 /* eslint-disable no-process-env */
+const isCI = process.env.CI
 const sanityEnv = process.env.SANITY_ENV
 const environment = sanityEnv ? sanityEnv : process.env.NODE_ENV
 /* eslint-enable no-process-env */
@@ -232,6 +233,10 @@ export default async function initSanity(args, context) {
   }
 
   async function getOrCreateDataset(opts) {
+    if (opts.dataset && isCI) {
+      return {datasetName: opts.dataset}
+    }
+
     const client = apiClient({api: {projectId: opts.projectId}})
     const datasets = await client.datasets.list()
 
