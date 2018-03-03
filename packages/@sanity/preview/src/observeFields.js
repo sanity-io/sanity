@@ -18,6 +18,11 @@ const getGlobalEvents = () => {
       )
     ).share()
 
+    // This will keep the listener active forever and in turn reduce the number of initial fetches
+    // as less 'welcome' events will be emitted.
+    // @todo: see if we can delay unsubscribing or connect with some globally defined shared listener
+    allEvents$.subscribe()
+
     _globalListener = {
       // This is a stream of welcome events from the server, each telling us that we have established listener connection
       // We map these to snapshot fetch/sync. It is good to wait for the first welcome event before fetching any snapshots as, we may miss
@@ -85,18 +90,15 @@ const CACHE: Cache = {} // todo: use a LRU cache instead (e.g. hashlru or quick-
 function createCachedFieldObserver(id, fields): CachedFieldObserver {
   let latest = null
   const changes$ = new Observable(observer => {
-    if (latest) {
-      // Re-emit last known value immediately
-      observer.next(latest)
-      return fetchDocumentPathsSlow(id, fields)
-        .concat(listen(id).switchMap(event => fetchDocumentPathsSlow(id, fields)))
-        .subscribe(observer)
-    }
-    return listenFields(id, fields).subscribe(observer)
+    observer.next(latest)
+    observer.complete()
   })
+    .filter(Boolean)
+    .merge(listenFields(id, fields))
     .do(v => (latest = v))
     .publishReplay()
     .refCount()
+
   return {id, fields, changes$}
 }
 
