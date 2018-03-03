@@ -27,7 +27,12 @@ export default function observeForPreview(
     // todo: We need a way of knowing the type of the referenced value by looking at the reference record alone
     return resolveRefType(value, type).switchMap(
       refType =>
-        refType ? observeForPreview(value, refType, fields) : Observable.of({snapshot: null})
+        refType
+          ? observeForPreview(value, refType, fields)
+          : Observable.of({
+              type: type,
+              snapshot: null
+            })
     )
   }
 
@@ -38,9 +43,10 @@ export default function observeForPreview(
       ? configFields.filter(fieldName => fields.includes(fieldName))
       : configFields
     const paths = targetFields.map(key => selection[key].split('.'))
-    return observePaths(value, paths).map(snapshot => ({
+    return observePaths(value, paths)
+      .map(snapshot => ({
       type: type,
-      snapshot: prepareForPreview(snapshot, type, viewOptions)
+      snapshot: snapshot && prepareForPreview(snapshot, type, viewOptions)
     }))
   }
   return Observable.of({

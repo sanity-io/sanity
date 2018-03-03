@@ -6,6 +6,7 @@ import {combineSelections, reassemble, toGradientQuery} from './utils/optimizeQu
 import {flatten, difference} from 'lodash'
 import type {FieldName, Id} from './types'
 import {INCLUDE_FIELDS} from './constants'
+import hasEqualFields from './utils/hasEqualFields'
 
 let _globalListener
 const getGlobalEvents = () => {
@@ -122,8 +123,13 @@ export default function cachedObserveFields(id: Id, fields: FieldName[]) {
     .map(cached => cached.changes$)
 
   return Observable.combineLatest(cachedFieldObservers)
-    .map(snapshots => pickFrom(snapshots, fields))
-    .distinctUntilChanged((prev, current) => fields.every(field => prev[field] === current[field]))
+    .map(snapshots => {
+      // in the event that a document gets deleted, the cached values will be updated to store `undefined`
+      // if this happens, we should not pick any fields from it, but rather just return null
+      const compactedSnapshots = snapshots.filter(Boolean)
+      return compactedSnapshots.length === 0 ? null : pickFrom(compactedSnapshots, fields)
+    })
+    .distinctUntilChanged(hasEqualFields(fields))
 }
 
 function pickFrom(objects: Object[], fields: string[]) {
