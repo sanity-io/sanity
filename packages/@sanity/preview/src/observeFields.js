@@ -7,6 +7,7 @@ import {flatten, difference} from 'lodash'
 import type {FieldName, Id} from './types'
 import {INCLUDE_FIELDS} from './constants'
 import hasEqualFields from './utils/hasEqualFields'
+import isUniqueBy from './utils/isUniqueBy'
 
 let _globalListener
 const getGlobalEvents = () => {
@@ -56,21 +57,18 @@ const fetchDocumentPathsFast = debounceCollect(fetchAllDocumentPaths, 100)
 const fetchDocumentPathsSlow = debounceCollect(fetchAllDocumentPaths, 1000)
 
 function listenFields(id: Id, fields: FieldName[]) {
-  return listen(id)
-    .switchMap(
-      event =>
-        event.type === 'welcome'
-          ? fetchDocumentPathsFast(id, fields)
-          : fetchDocumentPathsSlow(id, fields)
-    )
-    .mergeMap(
-      result =>
-        result === undefined
+  return listen(id).switchMap(event => {
+    if (event.type === 'welcome') {
+      return fetchDocumentPathsFast(id, fields).mergeMap(result => {
+        return result === undefined
           ? // hack: if we get undefined as result here it is most likely because the document has
             // just been created and is not yet indexed. We therefore need to wait a bit and then re-fetch.
             fetchDocumentPathsSlow(id, fields)
           : Observable.of(result)
-    )
+      })
+    }
+    return fetchDocumentPathsSlow(id, fields)
+  })
 }
 
 // keep for debugging purposes for now
@@ -97,7 +95,7 @@ function createCachedFieldObserver(id, fields): CachedFieldObserver {
     .filter(Boolean)
     .merge(listenFields(id, fields))
     .do(v => (latest = v))
-    .publishReplay()
+    .publishReplay(1)
     .refCount()
 
   return {id, fields, changes$}
@@ -122,14 +120,18 @@ export default function cachedObserveFields(id: Id, fields: FieldName[]) {
     .filter(observer => observer.fields.some(fieldName => fields.includes(fieldName)))
     .map(cached => cached.changes$)
 
-  return Observable.combineLatest(cachedFieldObservers)
-    .map(snapshots => {
+  return (
+    Observable.combineLatest(cachedFieldObservers)
       // in the event that a document gets deleted, the cached values will be updated to store `undefined`
       // if this happens, we should not pick any fields from it, but rather just return null
-      const compactedSnapshots = snapshots.filter(Boolean)
-      return compactedSnapshots.length === 0 ? null : pickFrom(compactedSnapshots, fields)
-    })
-    .distinctUntilChanged(hasEqualFields(fields))
+      .map(snapshots => snapshots.filter(Boolean))
+      // make sure all snapshots agree on same revision
+      .filter(snapshots => isUniqueBy(snapshots, snapshot => snapshot._rev))
+      // pass on value with the requested fields (or null if value is deleted)
+      .map(snapshots => (snapshots.length === 0 ? null : pickFrom(snapshots, fields)))
+      // emit values only if changed
+      .distinctUntilChanged(hasEqualFields(fields))
+  )
 }
 
 function pickFrom(objects: Object[], fields: string[]) {
