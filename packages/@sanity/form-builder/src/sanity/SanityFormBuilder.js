@@ -16,6 +16,7 @@ type Props = {
   markers: Array<Marker>,
   patchChannel: PatchChannel,
   onFocus: Path => void,
+  readOnly: boolean,
   onChange: () => {},
   onBlur: () => void,
   autoFocus: boolean,
@@ -43,6 +44,7 @@ export default class SanityFormBuilder extends React.Component<Props> {
       patchChannel,
       type,
       onChange,
+      readOnly,
       markers,
       onFocus,
       onBlur,
@@ -61,6 +63,7 @@ export default class SanityFormBuilder extends React.Component<Props> {
           markers={markers}
           focusPath={focusPath}
           isRoot
+          readOnly={readOnly}
           ref={this.setInput}
         />
       </SanityFormBuilderContext>

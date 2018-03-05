@@ -21,6 +21,7 @@ const INITIAL_DOCUMENT_STATE = {
 
 const INITIAL_STATE = {
   isSaving: true,
+  isReconnecting: false,
   isCreatingDraft: false,
   transactionResult: null,
   validationPending: true,
@@ -52,6 +53,9 @@ function documentEventToState(event) {
             }
           : event.document
       }
+    }
+    case 'reconnect': {
+      return {}
     }
     default: {
       // eslint-disable-next-line no-console
@@ -124,6 +128,7 @@ export default class EditorWrapper extends React.Component {
   }
 
   receiveDraftEvent = event => {
+    this.setState({isReconnecting: event.type === 'reconnect'})
     if (event.type !== 'mutation') {
       return
     }
@@ -393,7 +398,8 @@ export default class EditorWrapper extends React.Component {
       transactionResult,
       isPublishing,
       isSaving,
-      validationPending
+      validationPending,
+      isReconnecting
     } = this.state
 
     if (isRecoverable(draft, published)) {
@@ -410,6 +416,7 @@ export default class EditorWrapper extends React.Component {
         validationPending={validationPending}
         isLoading={draft.isLoading || published.isLoading}
         isSaving={isSaving}
+        isReconnecting={isReconnecting}
         isPublishing={isPublishing}
         isUnpublishing={isUnpublishing}
         transactionResult={transactionResult}
