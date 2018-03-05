@@ -67,6 +67,62 @@ export default {
       ]
     },
     {
+      name: 'readOnlyWithDefaults',
+      title: 'Read only with defaults',
+      description: 'This is read only',
+      type: 'array',
+      readOnly: true,
+      of: [
+        {type: 'image', title: 'Image'},
+        {
+          type: 'reference', name: 'authorReference',
+          to: {type: 'author'},
+          title: 'Reference to author'
+        },
+        {
+          type: 'reference',
+          name: 'bookReference',
+          to: {type: 'book'},
+          title: 'Reference to book'
+        },
+        {type: 'author', title: 'Embedded author'},
+        {type: 'code', title: 'Code'},
+        {
+          type: 'color',
+          title: 'Color',
+          options: {
+            inline: true
+          }
+        },
+        {
+          type: 'color',
+          name: 'colorBlock',
+          title: 'Color (block)'
+        },
+        {
+          type: 'object', title: 'Test object', name: 'testObject',
+          fields: [{name: 'field1', type: 'string'}]
+        },
+        {
+          type: 'object', title: 'Other test object', name: 'otherTestObject',
+          fields: [
+            {name: 'field1', type: 'string'},
+            {
+              name: 'field3',
+              type: 'array',
+              of: [
+                {type: 'object', fields: [
+                    {name: 'aString', type: 'string'},
+                    {name: 'aNumber', type: 'number'},
+                  ]}
+              ]
+            }
+          ]
+        },
+        {type: 'block'},
+      ]
+    },
+    {
       name: 'minimal',
       title: 'Reset all options',
       type: 'array',
