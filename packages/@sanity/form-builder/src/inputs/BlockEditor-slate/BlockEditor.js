@@ -16,6 +16,7 @@ import initializeSlatePlugins from './util/initializeSlatePlugins'
 
 import styles from './styles/BlockEditor.css'
 import {SLATE_SPAN_TYPE} from './constants'
+const NOOP = () => {}
 
 export default class BlockEditor extends React.Component {
   static propTypes = {
@@ -24,6 +25,8 @@ export default class BlockEditor extends React.Component {
     value: PropTypes.instanceOf(State),
     markers: PropTypes.arrayOf(PropTypes.shape({type: PropTypes.string.isRequired})),
     onChange: PropTypes.func,
+    onFocus: PropTypes.func,
+    readOnly: PropTypes.bool,
     onNodePatch: PropTypes.func
   }
 
@@ -283,15 +286,11 @@ export default class BlockEditor extends React.Component {
     this.blockDragMarker.style.display = 'none'
   }
 
-  handleEditorContainerClick = () => {
-    this.editor.focus()
-  }
-
   handleEditorFocus = event => {
+    this.props.onFocus()
     this.setState({
       editorHasFocus: true
     })
-    this.focus()
   }
 
   handleEditorBlur = event => {
@@ -339,32 +338,34 @@ export default class BlockEditor extends React.Component {
   }
 
   renderBlockEditor() {
-    const {value, onChange} = this.props
+    const {value, onChange, readOnly} = this.props
     const {fullscreen, toolbarStyle, preventScroll, editorHasFocus} = this.state
 
     return (
       <div
         className={`${styles.root} ${fullscreen ? styles.fullscreen : ''}`}
       >
-        <Toolbar
-          className={styles.toolbar}
-          onInsertBlock={this.handleInsertBlock}
-          insertBlocks={this.customBlocks}
-          onFullscreenEnable={this.handleToggleFullscreen}
-          fullscreen={this.state.fullscreen}
-          onMarkButtonClick={this.handleOnClickMarkButton}
-          onAnnotationButtonClick={this.handleAnnotationButtonClick}
-          onListButtonClick={this.handleOnClickListFormattingButton}
-          onBlockStyleChange={this.handleBlockStyleChange}
-          listItems={this.getListItems()}
-          blockStyles={this.getBlockStyles()}
-          annotations={this.getActiveAnnotations()}
-          decorators={this.getActiveDecorators()}
-          style={toolbarStyle}
-        />
+        {!readOnly && (
+          <Toolbar
+            className={styles.toolbar}
+            onInsertBlock={this.handleInsertBlock}
+            insertBlocks={this.customBlocks}
+            onFullscreenEnable={this.handleToggleFullscreen}
+            fullscreen={this.state.fullscreen}
+            onMarkButtonClick={this.handleOnClickMarkButton}
+            onAnnotationButtonClick={this.handleAnnotationButtonClick}
+            onListButtonClick={this.handleOnClickListFormattingButton}
+            onBlockStyleChange={this.handleBlockStyleChange}
+            listItems={this.getListItems()}
+            blockStyles={this.getBlockStyles()}
+            annotations={this.getActiveAnnotations()}
+            decorators={this.getActiveDecorators()}
+            style={toolbarStyle}
+          />
+        )}
         <ActivateOnFocus
           isActive={editorHasFocus || fullscreen || !preventScroll}
-          message="Click to edit"
+          message={readOnly ? 'Click to scroll' : 'Click to edit'}
         >
           <div
             className={styles.inputContainer}
@@ -377,8 +378,9 @@ export default class BlockEditor extends React.Component {
               <Editor
                 ref={this.refEditor}
                 className={styles.input}
-                onChange={onChange}
+                onChange={readOnly ? NOOP : onChange}
                 placeholder=""
+                readOnly={readOnly}
                 state={value}
                 blockEditor={this}
                 plugins={this.slatePlugins}
