@@ -1,7 +1,12 @@
 const Rule = require('./Rule')
 
 // eslint-disable-next-line complexity
-function inferFromSchemaType(typeDef, isRoot = true) {
+function inferFromSchemaType(typeDef) {
+  if (typeDef.validation === false) {
+    typeDef.validation = []
+    return typeDef
+  }
+
   const isInitialized =
     Array.isArray(typeDef.validation) &&
     typeDef.validation.every(item => typeof item.validate === 'function')

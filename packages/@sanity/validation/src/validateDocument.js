@@ -55,7 +55,7 @@ function validateObject(obj, type, path, options) {
   const fieldChecks = fields.map(field => {
     const validation = field.type.validation
     if (!validation) {
-      return null
+      return []
     }
 
     const fieldPath = appendPath(path, field.name)
