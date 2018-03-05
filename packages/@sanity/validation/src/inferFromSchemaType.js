@@ -31,7 +31,7 @@ function inferFromSchemaType(typeDef, isRoot = true) {
   }
 
   if (typeDef.options && typeDef.options.list) {
-    base = base.valid(typeDef.options.list)
+    base = base.valid(typeDef.options.list.map(extractValueFromListOption))
   }
 
   typeDef.validation = inferValidation(typeDef, base)
@@ -45,6 +45,10 @@ function inferFromSchemaType(typeDef, isRoot = true) {
   }
 
   return typeDef
+}
+
+function extractValueFromListOption(option) {
+  return option.value || option
 }
 
 function inferValidation(field, baseRule) {
