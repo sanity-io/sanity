@@ -1,6 +1,6 @@
 {
   "name": "@sanity/presence-store",
-  "version": "0.125.8",
+  "version": "0.126.0",
   "description": "Client side presence channel handler",
   "main": "lib/Connector.js",
   "scripts": {
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@sanity/observable": "^0.125.8",
-    "@sanity/uuid": "^0.125.8",
+    "@sanity/uuid": "^0.126.0",
     "deep-equal": "^1.0.1"
   },
   "publishConfig": {

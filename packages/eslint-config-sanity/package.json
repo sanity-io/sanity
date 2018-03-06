@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-sanity",
-  "version": "0.125.9",
+  "version": "0.126.0",
   "description": "Shared eslint configs for sanity-io",
   "main": "index.js",
   "scripts": {
@@ -27,7 +27,6 @@
     "url": "https://github.com/sanity-io/sanity/issues"
   },
   "homepage": "https://www.sanity.io/",
-  "dependencies": {},
   "peerDependencies": {
     "eslint": "^4.6"
   },
