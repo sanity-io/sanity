@@ -1,3 +1,4 @@
+const getFileUrl = require('file-url')
 const {get, set, unset} = require('lodash')
 const {extractWithPath} = require('@sanity/mutator')
 const serializePath = require('./serializePath')
@@ -22,7 +23,7 @@ function absolutifyPaths(doc, absPath) {
 
   const modifier = value =>
     value
-      .replace(/file:\/\/\.\//i, `file://${absPath}/`)
+      .replace(/file:\/\/\.\//i, `${getFileUrl(absPath, {resolve: false})}/`)
       .replace(/(https?):\/\/\.\//, `$1://${absPath}/`)
 
   findAssetRefs(doc).forEach(path => {
