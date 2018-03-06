@@ -73,7 +73,10 @@ export const SlugType = {
   },
   extend(subTypeDef) {
     const parsed = Object.assign(pick(SLUG_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
-      type: SLUG_CORE
+      type: SLUG_CORE,
+      preview: {
+        select: {title: 'current'}
+      }
     })
     return subtype(parsed)
 
