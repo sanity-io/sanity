@@ -68,7 +68,7 @@ export default {
   preview: {
     select: {
       title: 'title',
-      imageUrl: 'movie.poster.asset.url'
+      media: 'movie.poster'
     }
   }
 }
