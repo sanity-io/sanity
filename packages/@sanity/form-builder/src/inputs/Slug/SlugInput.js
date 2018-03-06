@@ -32,6 +32,7 @@ export default withDocument(
       }),
       document: PropTypes.shape({_id: PropTypes.string}).isRequired,
       onChange: PropTypes.func,
+      onFocus: PropTypes.func,
       markers: PropTypes.arrayOf(
         PropTypes.shape({
           type: PropTypes.string.isRequired
@@ -55,14 +56,14 @@ export default withDocument(
       this._isMounted = false
     }
 
-    updateValue(value) {
-      if (!value) {
-        this.props.onChange(PatchEvent.from(unset()))
+    updateCurrent(current) {
+      const {onChange, type} = this.props
+      if (!current) {
+        onChange(PatchEvent.from(unset(['current'])))
         return
       }
-
-      this.props.onChange(
-        PatchEvent.from(setIfMissing({_type: this.props.type.name}), set(value, ['current']))
+      onChange(
+        PatchEvent.from(setIfMissing({_type: type.name}), set(current, ['current']))
       )
     }
 
@@ -98,7 +99,11 @@ export default withDocument(
     }
 
     handleChange = event => {
-      this.updateValue(event.target.value.toString())
+      this.updateCurrent(event.target.value)
+    }
+
+    handleFocusCurrent = event => {
+      this.props.onFocus(['current'])
     }
 
     handleGenerateSlug = () => {
@@ -114,7 +119,7 @@ export default withDocument(
       const newFromSource = typeof source === 'function' ? source(document) : get(document, source)
       this.setState({loading: true})
       this.slugify(newFromSource || '')
-        .then(newSlug => this.updateValue(newSlug))
+        .then(newSlug => this.updateCurrent(newSlug))
         .catch(err => {
           // eslint-disable-next-line no-console
           console.error(
@@ -125,7 +130,7 @@ export default withDocument(
     }
 
     render() {
-      const {value, type, level, markers, document, ...rest} = this.props
+      const {value, type, level, markers, onFocus, document, ...rest} = this.props
       const {loading, inputText} = this.state
 
       const hasSourceField = type.options && type.options.source
@@ -154,6 +159,7 @@ export default withDocument(
                 disabled={loading}
                 placeholder={type.placeholder}
                 onChange={this.handleChange}
+                onFocus={this.handleFocusCurrent}
                 value={typeof inputText === 'string' ? inputText : value.current}
               />
             </div>

@@ -55,6 +55,18 @@ export default {
       }
     },
     {
+      name: 'arrayOfSlugs',
+      type: 'array',
+      of: [
+        {
+          options: {
+            source: 'title'
+          },
+          type: 'slug'
+        }
+      ]
+    },
+    {
       name: 'deprecatedSlugifyFnField',
       type: 'slug',
       title: 'Slug field using deprecated "slugifyFn" option',
