@@ -1,6 +1,7 @@
 /* eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React from 'react'
+import {memoize} from 'lodash'
 import getBackingStoreRatio from './getBackingStoreRatio'
 import makeDragAware from './makeDragAware'
 import * as utils2d from './2d/utils'
@@ -74,6 +75,13 @@ function getCropCursorForHandle(handle) {
   }
 }
 
+const getDevicePixelRatio = memoize(() => {
+  const devicePixelRatio = window.devicePixelRatio || 1
+  const ctx = document.createElement('canvas').getContext('2d')
+  const backingStoreRatio = getBackingStoreRatio(ctx) || 1
+  return devicePixelRatio / backingStoreRatio
+})
+
 export default class ImageTool extends React.PureComponent {
 
   static propTypes = {
@@ -99,7 +107,6 @@ export default class ImageTool extends React.PureComponent {
   }
 
   state = {
-    devicePixelVsBackingStoreRatio: null,
     cropping: false,
     cropMoving: false,
     moving: false
@@ -249,18 +256,6 @@ export default class ImageTool extends React.PureComponent {
       y: pos.y * scale * 2 / image.height
     }
     onChange(this.applyHotspotResizeBy(value, {height: delta.y, width: delta.x}))
-  }
-
-  componentDidMount() {
-    this.setState({
-      devicePixelVsBackingStoreRatio: this.getDevicePixelVsBackingStoreRatio(this.canvas.domNode.getContext('2d'))
-    })
-  }
-
-  getDevicePixelVsBackingStoreRatio(context) {
-    const devicePixelRatio = window.devicePixelRatio || 1
-    const backingStoreRatio = getBackingStoreRatio(context) || 1
-    return devicePixelRatio / backingStoreRatio
   }
 
   getClampedValue() {
@@ -470,7 +465,7 @@ export default class ImageTool extends React.PureComponent {
     const {readOnly} = this.props
     context.save()
 
-    const pxratio = this.state.devicePixelVsBackingStoreRatio
+    const pxratio = getDevicePixelRatio()
     context.scale(pxratio, pxratio)
 
     const opacity = this.state.mousePosition ? 0.8 : 0.2
@@ -567,7 +562,15 @@ export default class ImageTool extends React.PureComponent {
     return 'auto'
   }
 
+  componentDidMount() {
+    this.draw()
+  }
+
   componentDidUpdate() {
+    this.draw()
+  }
+
+  draw() {
     const domNode = this.canvas.domNode
     const context = domNode.getContext('2d')
     this.paint(context)
@@ -657,7 +660,7 @@ export default class ImageTool extends React.PureComponent {
 
   render() {
     const {image, readOnly} = this.props
-    const ratio = this.state.devicePixelVsBackingStoreRatio
+    const ratio = getDevicePixelRatio()
     return (
       <div className={styles.root}>
         <DragAwareCanvas
