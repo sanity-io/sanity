@@ -31,6 +31,6 @@ export default {
     }
   ],
   preview: {
-    select: {title: 'name', imageUrl: 'image.asset.url'}
+    select: {title: 'name', media: 'image'}
   }
 }

@@ -29,7 +29,7 @@ export default {
     select: {
       subtitle: 'characterName',
       title: 'person.name',
-      imageUrl: 'person.image.asset.url'
+      media: 'person.image'
     }
   }
 
