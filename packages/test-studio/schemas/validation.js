@@ -330,6 +330,25 @@ export default {
     },
 
     {
+      name: 'arrayOfSlugs',
+      title: 'Array of slugs',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          name: 'slugEmbed',
+          fields: [
+            {
+              type: 'slug',
+              name: 'sku',
+              title: 'SKU'
+            }
+          ]
+        }
+      ]
+    },
+
+    {
       name: 'deepInline',
       type: 'object',
       title: 'Deep inline object',

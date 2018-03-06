@@ -19,11 +19,21 @@ function getDocumentIds(id) {
   }
 }
 
+function serializePath(path) {
+  return path.reduce((target, part, i) => {
+    const isIndex = typeof part === 'number'
+    const isKey = part && part._key
+    const separator = i === 0 ? '' : '.'
+    const add = isIndex || isKey ? '[]' : `${separator}${part}`
+    return `${target}${add}`
+  }, '')
+}
+
 const defaultIsUnique = (slug, options) => {
   const {document, path} = options
   const {published, draft} = getDocumentIds(document._id)
   const docType = document._type
-  const atPath = path.concat('current').join('.')
+  const atPath = serializePath(path.concat('current'))
 
   const constraints = [
     '_type == $docType',
