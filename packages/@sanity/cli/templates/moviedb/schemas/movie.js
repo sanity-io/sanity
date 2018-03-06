@@ -9,7 +9,8 @@ export default {
     {
       name: 'title',
       title: 'Title',
-      type: 'string'
+      type: 'string',
+      validation: Rule => Rule.required()
     },
     {
       name: 'slug',
@@ -17,8 +18,7 @@ export default {
       type: 'slug',
       options: {
         source: 'title',
-        maxLength: 96,
-        auto: true
+        maxLength: 100
       }
     },
     {
@@ -62,7 +62,6 @@ export default {
       of: [{type: 'crewMember'}]
     }
   ],
-
   preview: {
     select: {
       title: 'title',
@@ -72,7 +71,6 @@ export default {
       castName1: 'castMembers.1.person.name'
     },
     prepare(selection) {
-
       const year = selection.date && selection.date.split('-')[0]
       const cast = [selection.castName0, selection.castName1].filter(Boolean).join(', ')
 
