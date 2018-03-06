@@ -1,5 +1,6 @@
 const fse = require('fs-extra')
 const globby = require('globby')
+const getFileUrl = require('file-url')
 const debug = require('debug')('sanity:import:folder')
 
 module.exports = async function importFromFolder(fromDir, options, importers) {
@@ -20,8 +21,8 @@ module.exports = async function importFromFolder(fromDir, options, importers) {
   const images = await globby('images/*', {cwd: fromDir, absolute: true})
   const files = await globby('files/*', {cwd: fromDir, absolute: true})
   const unreferencedAssets = []
-    .concat(images.map(path => `image#${path}`))
-    .concat(files.map(path => `file#${path}`))
+    .concat(images.map(path => `image#${getFileUrl(path, {resolve: false})}`))
+    .concat(files.map(path => `file#${getFileUrl(path, {resolve: false})}`))
 
   debug('Queueing %d assets', unreferencedAssets.length)
 
