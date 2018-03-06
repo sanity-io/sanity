@@ -55,6 +55,10 @@ const SLUG_CORE = {
         return true
       }
 
+      if (!value.current) {
+        return 'Slug must have a value'
+      }
+
       const errorMessage = 'Slug is already in use'
       const isUnique = get(options, 'type.options.isUnique', defaultIsUnique)
       return Promise.resolve(isUnique(value.current, {...options, defaultIsUnique})).then(
