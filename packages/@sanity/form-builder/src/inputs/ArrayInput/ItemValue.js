@@ -31,21 +31,18 @@ const DragHandle = createDragHandle(() => (
   </span>
 ))
 
-const DIALOG_ACTIONS = [
-  {
-    index: '1',
-    name: 'close',
-    title: 'Close'
-  },
-  {
-    index: '2',
-    name: 'delete',
-    kind: 'simple',
-    title: 'Delete',
-    color: 'danger',
-    secondary: true
-  }
-]
+const CLOSE_ACTION = {
+  name: 'close',
+  title: 'Close'
+}
+
+const DELETE_ACTION = {
+  name: 'delete',
+  kind: 'simple',
+  title: 'Delete',
+  color: 'danger',
+  secondary: true
+}
 
 type Props = {
   type: ArrayType,
@@ -207,7 +204,6 @@ export default class RenderItemValue extends React.Component<Props> {
         </div>
       )
     }
-
     return (
       <div className={styles.popupAnchor}>
         <DefaultDialog
@@ -217,7 +213,10 @@ export default class RenderItemValue extends React.Component<Props> {
           title="Edit"
           onAction={this.handleDialogAction}
           showCloseButton={false}
-          actions={DIALOG_ACTIONS}
+          actions={[
+            CLOSE_ACTION,
+            !readOnly && DELETE_ACTION
+          ].filter(Boolean)}
         >
           <div className={styles.defaultDialogContent}>{content}</div>
         </DefaultDialog>
