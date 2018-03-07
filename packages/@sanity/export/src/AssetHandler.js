@@ -15,6 +15,7 @@ class AssetHandler {
     this.archive = options.archive
     this.archivePrefix = options.prefix
 
+    this.assetsSeen = new Map()
     this.queueSize = 0
     this.queue = options.queue || new PQueue({concurrency: 3})
     this.reject = () => {
@@ -23,6 +24,7 @@ class AssetHandler {
   }
 
   clear() {
+    this.assetsSeen.clear()
     this.queue.clear()
     this.queueSize = 0
   }
@@ -36,27 +38,28 @@ class AssetHandler {
 
   // Called when we want to download all assets to local filesystem and rewrite documents to hold
   // placeholder asset references (_sanityAsset: 'image@file:///local/path')
-  rewriteAssets = miss.through.obj((doc, enc, callback) => {
+  rewriteAssets = miss.through.obj(async (doc, enc, callback) => {
     if (['sanity.imageAsset', 'sanity.fileAsset'].includes(doc._type)) {
       const type = doc._type === 'sanity.imageAsset' ? 'image' : 'file'
       const filePath = `${type}s/${generateFilename(doc._id)}`
+      this.assetsSeen.set(doc._id, type)
       this.queueAssetDownload(doc, filePath)
       callback()
       return
     }
 
-    callback(null, this.findAndModify(doc, ACTION_REWRITE))
+    callback(null, await this.findAndModify(doc, ACTION_REWRITE))
   })
 
   // Called in the case where we don't _want_ assets, so basically just remove all asset documents
   // as well as references to assets (*.asset._ref ^= (image|file)-)
-  stripAssets = miss.through.obj((doc, enc, callback) => {
+  stripAssets = miss.through.obj(async (doc, enc, callback) => {
     if (['sanity.imageAsset', 'sanity.fileAsset'].includes(doc._type)) {
       callback()
       return
     }
 
-    callback(null, this.findAndModify(doc, ACTION_REMOVE))
+    callback(null, await this.findAndModify(doc, ACTION_REMOVE))
   })
 
   // Called when we are using raw export mode along with `assets: false`, where we simply
@@ -99,40 +102,61 @@ class AssetHandler {
     })
   }
 
-  findAndModify = (item, action) => {
+  // eslint-disable-next-line complexity
+  findAndModify = async (item, action) => {
     if (Array.isArray(item)) {
-      return item.map(child => this.findAndModify(child, action)).filter(Boolean)
+      const children = await Promise.all(item.map(child => this.findAndModify(child, action)))
+      return children.filter(Boolean)
     }
 
     if (!item || typeof item !== 'object') {
       return item
     }
 
-    const assetType = getAssetType(item)
-    if (assetType) {
-      if (action === ACTION_REMOVE) {
-        return undefined
+    const isAsset = isAssetField(item)
+    if (isAsset && action === ACTION_REMOVE) {
+      return undefined
+    }
+
+    if (isAsset && action === ACTION_REWRITE) {
+      const assetId = item.asset._ref
+      if (isModernAsset(assetId)) {
+        const assetType = getAssetType(item)
+        const filePath = `${assetType}s/${generateFilename(assetId)}`
+        return {_sanityAsset: `${assetType}@file://./${filePath}`}
       }
 
-      if (action === ACTION_REWRITE) {
-        const filePath = `${assetType}s/${generateFilename(item.asset._ref)}`
-        return {
-          _sanityAsset: `${assetType}@file://./${filePath}`
-        }
+      // Legacy asset
+      const type = this.assetsSeen.get(assetId) || (await this.lookupAssetType(assetId))
+      const filePath = `${type}s/${generateFilename(assetId)}`
+      return {_sanityAsset: `${type}@file://./${filePath}`}
+    }
+
+    const newItem = {}
+    const keys = Object.keys(item)
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i]
+      const value = item[key]
+
+      // eslint-disable-next-line no-await-in-loop
+      newItem[key] = await this.findAndModify(value, action)
+
+      if (typeof newItem[key] === 'undefined') {
+        delete newItem[key]
       }
     }
 
-    return Object.keys(item).reduce((acc, key) => {
-      const value = item[key]
-      acc[key] = this.findAndModify(value, action)
-
-      if (typeof acc[key] === 'undefined') {
-        delete acc[key]
-      }
-
-      return acc
-    }, {})
+    return newItem
   }
+
+  lookupAssetType = async assetId => {
+    const docType = await this.client.fetch('*[_id == $id][0]._type', {id: assetId})
+    return docType === 'sanity.imageAsset' ? 'image' : 'file'
+  }
+}
+
+function isAssetField(item) {
+  return item.asset && item.asset._ref
 }
 
 function getAssetType(item) {
@@ -144,14 +168,14 @@ function getAssetType(item) {
   return type || null
 }
 
-function generateFilename(assetId) {
-  const [, , asset, ext] = assetId.match(/^(image|file)-(.*?)(-[a-z]+)?$/)
-  const extension = (ext || 'bin').replace(/^-/, '')
-  return `${asset}.${extension}`
+function isModernAsset(assetId) {
+  return /^(image|file)/.test(assetId)
 }
 
-function lookupAssetUrl(client, assetId) {
-  return client.fetch('*[_id == $id][0].url', {id: assetId})
+function generateFilename(assetId) {
+  const [, , asset, ext] = assetId.match(/^(image|file)-(.*?)(-[a-z]+)?$/) || []
+  const extension = (ext || 'bin').replace(/^-/, '')
+  return asset ? `${asset}.${extension}` : `${assetId}.bin`
 }
 
 module.exports = AssetHandler

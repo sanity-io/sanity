@@ -3,7 +3,8 @@ const AssetHandler = require('../../src/AssetHandler')
 
 const getMockClient = () => ({
   config: () => ({projectId: '__fixtures__', dataset: '__test__'}),
-  fetch: (query, params) => `http://localhost:32323/${params.id}.jpg`
+  fetch: (query, params) =>
+    query.endsWith('._type') ? `sanity.imageAsset` : `http://localhost:32323/${params.id}.jpg`
 })
 
 const getMockArchive = () => ({append: jest.fn(), abort: jest.fn()})
