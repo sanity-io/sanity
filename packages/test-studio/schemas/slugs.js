@@ -33,6 +33,17 @@ export default {
       }
     },
     {
+      name: 'requiredSlug',
+      type: 'slug',
+      title: 'Required slug',
+      description: 'Slug field that is required',
+      validation: Rule => Rule.required(),
+      options: {
+        source: 'title',
+        maxLength: 96
+      }
+    },
+    {
       name: 'slugWithFunction',
       type: 'slug',
       title: 'Slug with function to get source',

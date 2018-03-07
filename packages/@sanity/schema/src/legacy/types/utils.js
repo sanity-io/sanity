@@ -6,7 +6,7 @@ export function lazyGetter(target, key, getter, config = {}) {
       const val = getter()
       Object.defineProperty(target, key, {
         value: val,
-        writable: false,
+        writable: Boolean(config.writable),
         configurable: false
       })
       return val

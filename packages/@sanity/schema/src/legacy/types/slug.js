@@ -1,5 +1,6 @@
 import {pick, get} from 'lodash'
 import client from 'part:@sanity/base/client'
+import {lazyGetter} from './utils'
 
 const OVERRIDABLE_FIELDS = [
   'jsonType',
@@ -44,27 +45,29 @@ const defaultIsUnique = (slug, options) => {
   return client.fetch(`!defined(*[${constraints}][0]._id)`, {docType, draft, published, slug})
 }
 
+const slugValidator = Rule =>
+  Rule.custom((value, options) => {
+    if (!value) {
+      return true
+    }
+
+    if (!value.current) {
+      return 'Slug must have a value'
+    }
+
+    const errorMessage = 'Slug is already in use'
+    const isUnique = get(options, 'type.options.isUnique', defaultIsUnique)
+    return Promise.resolve(isUnique(value.current, {...options, defaultIsUnique})).then(
+      slugIsUnique => (slugIsUnique ? true : errorMessage)
+    )
+  })
+
 const SLUG_CORE = {
   name: 'slug',
   title: 'Slug',
   type: null,
   jsonType: 'object',
-  validation: Rule =>
-    Rule.custom((value, options) => {
-      if (!value) {
-        return true
-      }
-
-      if (!value.current) {
-        return 'Slug must have a value'
-      }
-
-      const errorMessage = 'Slug is already in use'
-      const isUnique = get(options, 'type.options.isUnique', defaultIsUnique)
-      return Promise.resolve(isUnique(value.current, {...options, defaultIsUnique})).then(
-        slugIsUnique => (slugIsUnique ? true : errorMessage)
-      )
-    })
+  validation: slugValidator
 }
 
 export const SlugType = {
@@ -78,6 +81,17 @@ export const SlugType = {
         select: {title: 'current'}
       }
     })
+
+    lazyGetter(
+      parsed,
+      'validation',
+      () =>
+        subTypeDef.validation
+          ? Rule => [subTypeDef.validation(Rule), slugValidator(Rule)]
+          : slugValidator,
+      {writable: true}
+    )
+
     return subtype(parsed)
 
     function subtype(parent) {
