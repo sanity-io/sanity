@@ -71,6 +71,10 @@
     background-color: var(--component-bg);
     z-index: 3;
     clip-path: polygon(100% 0, 0 0, 0 100%);
+
+    @nest .color_danger & {
+      background-color: var(--state-danger-color);
+    }
   }
 
   @nest .popper[data-placement^="top"] & {
@@ -99,7 +103,6 @@
   @media (--max-screen-medium) {
     display: none;
   }
-
 }
 
 .filledArrow {
@@ -119,6 +122,10 @@
   border-radius: var(--border-radius-base);
   box-sizing: border-box;
   position: relative;
+
+  @nest .color_danger & {
+    background-color: var(--state-danger-color);
+  }
 
   @media (--max-screen-medium) {
     box-shadow: none;
@@ -147,8 +154,15 @@
   color: var(--text-color);
   top: var(--small-padding);
   right: var(--small-padding);
-  background-color: color(var(--component-bg) a(50%));
   z-index: 1;
+
+  @nest .color_default & {
+    background-color: color(var(--component-bg) a(50%));
+  }
+
+  @nest .color_danger & {
+    color: var(--white);
+  }
 
   @nest &:hover {
     color: var(--black);
@@ -173,10 +187,13 @@
   padding: var(--medium-padding);
   box-sizing: border-box;
   overflow: auto;
+  max-height: 40em;
+
+  /*
   min-width: 20em;
   width: 30em;
-  max-height: 40em;
-  padding-bottom: 5rem; /*only with functions */
+  padding-bottom: 5rem;
+  */
 
   @media (--max-screen-medium) {
     max-height: calc(100vh - var(--header-height)) !important;

@@ -15,8 +15,10 @@ export default class EditItemPopOver extends React.Component {
     title: PropTypes.string,
     children: PropTypes.node.isRequired,
     onClose: PropTypes.func,
+    onClickOutside: PropTypes.func,
     onAction: PropTypes.func,
     modifiers: PropTypes.object,
+    color: PropTypes.oneOf(['default', 'danger']),
     actions: PropTypes.arrayOf(PropTypes.shape({
       kind: PropTypes.string,
       title: PropTypes.string,
@@ -26,9 +28,9 @@ export default class EditItemPopOver extends React.Component {
 
   static defaultProps = {
     title: undefined,
-    onClose() {},
     onAction() {},
     actions: [],
+    color: 'default',
     modifiers: {
       flip: {
         boundariesElement: 'viewport'
@@ -52,10 +54,12 @@ export default class EditItemPopOver extends React.Component {
   render() {
     const {
       title,
+      color,
       children,
       actions,
       onClose,
       modifiers,
+      onClickOutside
     } = this.props
 
     return (
@@ -69,16 +73,20 @@ export default class EditItemPopOver extends React.Component {
                 <div className={styles.overlay} />
                 <Popper
                   innerRef={this.setPopperRef}
-                  className={styles.popper}
+                  className={`${styles.popper} ${styles[`color_${color}`]}`}
                   placement="auto"
                   modifiers={modifiers}
                 >
                   <Arrow className={title ? styles.filledArrow : styles.arrow} />
-                  <CaptureOutsideClicks onClickOutside={isActive ? onClose : null}>
+                  <CaptureOutsideClicks onClickOutside={isActive ? onClickOutside || onClose : null}>
                     <div className={styles.popover}>
-                      <button className={title ? styles.closeInverted : styles.close} type="button" onClick={onClose}>
-                        <CloseIcon />
-                      </button>
+                      {
+                        onClose && (
+                          <button className={title ? styles.closeInverted : styles.close} type="button" onClick={onClose}>
+                            <CloseIcon />
+                          </button>
+                        )
+                      }
                       {
                         title && (
                           <h3 className={styles.title}>
@@ -117,7 +125,6 @@ export default class EditItemPopOver extends React.Component {
                       }
                     </div>
                   </CaptureOutsideClicks>
-
                 </Popper>
               </Portal>
             </Manager>
