@@ -82,7 +82,7 @@ const schema = {
           title: 'E-mail address',
           placeholder: 'murgh@example.com'
         },
-        {,
+        {
           name: 'profilePicture',
           type: 'image'
         }
