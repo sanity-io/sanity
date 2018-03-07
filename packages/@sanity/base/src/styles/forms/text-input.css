@@ -16,10 +16,6 @@
   @nest &:disabled {
     opacity: 0.5;
   }
-
-  @nest &:read-only {
-    opacity: 0.5;
-  }
 }
 
 .textInput {
@@ -27,6 +23,10 @@
   color: var(--input-color);
   background-color: var(--input-bg);
   box-shadow: var(--input-box-shadow);
+
+  @nest &:read-only {
+    opacity: 0.5;
+  }
 
   @nest &:not(:disabled) {
     @nest &:not(:read-only) {
