@@ -1,4 +1,5 @@
 const path = require('path')
+const fse = require('fs-extra')
 const miss = require('mississippi')
 const PQueue = require('p-queue')
 const pkg = require('../package.json')
@@ -7,15 +8,15 @@ const debug = require('./debug')
 
 const ACTION_REMOVE = 'remove'
 const ACTION_REWRITE = 'rewrite'
-const precompressedExts = ['.zip', '.gz', '.rar', '.png', '.jpeg', '.jpg', '.gif']
 
 class AssetHandler {
   constructor(options) {
     this.client = options.client
-    this.archive = options.archive
-    this.archivePrefix = options.prefix
+    this.tmpDir = options.tmpDir
+    this.assetDirsCreated = false
 
     this.assetsSeen = new Map()
+    this.filesWritten = 0
     this.queueSize = 0
     this.queue = options.queue || new PQueue({concurrency: 3})
     this.reject = () => {
@@ -77,6 +78,11 @@ class AssetHandler {
   noop = miss.through.obj((doc, enc, callback) => callback(null, doc))
 
   queueAssetDownload(assetDoc, dstPath) {
+    if (!assetDoc.url) {
+      debug('Asset document "%s" does not have a URL property, skipping', assetDoc._id)
+      return
+    }
+
     debug('Adding download task for %s (destination: %s)', assetDoc._id, dstPath)
     this.queueSize++
     this.queue.add(() => this.downloadAsset(assetDoc.url, dstPath))
@@ -85,21 +91,25 @@ class AssetHandler {
   async downloadAsset(url, dstPath) {
     const headers = {'User-Agent': `${pkg.name}@${pkg.version}`}
     const stream = await requestStream({url, headers})
-    const store = precompressedExts.includes(path.extname(dstPath))
 
     if (stream.statusCode !== 200) {
-      this.archive.abort()
       this.queue.clear()
       this.reject(new Error(`Referenced asset URL "${url}" returned HTTP ${stream.statusCode}`))
       return
     }
 
-    debug('Asset stream ready, appending to archive at %s', dstPath)
-    this.archive.append(stream, {
-      name: path.basename(dstPath),
-      prefix: [this.archivePrefix, path.dirname(dstPath)].join('/'),
-      store
-    })
+    if (!this.assetDirsCreated) {
+      /* eslint-disable no-sync */
+      fse.ensureDirSync(path.join(this.tmpDir, 'files'))
+      fse.ensureDirSync(path.join(this.tmpDir, 'images'))
+      /* eslint-enable no-sync */
+      this.assetDirsCreated = true
+    }
+
+    debug('Asset stream ready, writing to filesystem at %s', dstPath)
+    await writeStream(path.join(this.tmpDir, dstPath), stream)
+
+    this.filesWritten++
   }
 
   // eslint-disable-next-line complexity
@@ -176,6 +186,14 @@ function generateFilename(assetId) {
   const [, , asset, ext] = assetId.match(/^(image|file)-(.*?)(-[a-z]+)?$/) || []
   const extension = (ext || 'bin').replace(/^-/, '')
   return asset ? `${asset}.${extension}` : `${assetId}.bin`
+}
+
+function writeStream(filePath, stream) {
+  return new Promise((resolve, reject) =>
+    miss.pipe(stream, fse.createWriteStream(filePath), err => {
+      return err ? reject(err) : resolve()
+    })
+  )
 }
 
 module.exports = AssetHandler
