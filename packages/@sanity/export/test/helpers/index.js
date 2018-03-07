@@ -1,3 +1,5 @@
+const os = require('os')
+const path = require('path')
 const stringToStream = require('string-to-stream')
 const AssetHandler = require('../../src/AssetHandler')
 
@@ -31,7 +33,7 @@ const getAssetHandler = () =>
   new AssetHandler({
     prefix: 'test',
     client: getMockClient(),
-    archive: getMockArchive()
+    tmpDir: path.join(os.tmpdir(), 'asset-handler-tests', `${Date.now()}`)
   })
 
 module.exports = {

@@ -1,5 +1,7 @@
-const fs = require('fs')
+const os = require('os')
+const path = require('path')
 const zlib = require('zlib')
+const fse = require('fs-extra')
 const miss = require('mississippi')
 const split = require('split2')
 const archiver = require('archiver')
@@ -29,11 +31,17 @@ function exportDataset(opts) {
     .toLowerCase()
 
   const prefix = `${opts.dataset}-export-${slugDate}`
-  const assetHandler = new AssetHandler({client: options.client, archive, prefix})
+  const tmpDir = path.join(os.tmpdir(), prefix)
+  const assetHandler = new AssetHandler({
+    client: options.client,
+    tmpDir,
+    prefix
+  })
 
+  debug('Outputting assets (temporarily) to %s', tmpDir)
   debug('Outputting to %s', options.outputPath === '-' ? 'stdout' : options.outputPath)
   const outputStream =
-    options.outputPath === '-' ? process.stdout : fs.createWriteStream(options.outputPath)
+    options.outputPath === '-' ? process.stdout : fse.createWriteStream(options.outputPath)
 
   let assetStreamHandler = assetHandler.noop
   if (!options.raw) {
@@ -49,11 +57,31 @@ function exportDataset(opts) {
       }
 
       debug('Archive finished!')
-      resolve()
     })
 
     debug('Getting dataset export stream')
     onProgress({step: 'Exporting documents...'})
+
+    let documentCount = 0
+    let lastReported = Date.now()
+    const reportDocumentCount = (chunk, enc, cb) => {
+      ++documentCount
+
+      const now = Date.now()
+      if (now - lastReported > 50) {
+        onProgress({
+          step: 'Exporting documents...',
+          current: documentCount,
+          total: '?',
+          update: true
+        })
+
+        lastReported = now
+      }
+
+      cb(null, chunk)
+    }
+
     const inputStream = await getDocumentsStream(options.client, options.dataset)
     const jsonStream = miss.pipeline(
       inputStream,
@@ -63,7 +91,8 @@ function exportDataset(opts) {
       assetStreamHandler,
       filterDocumentTypes(options.types),
       options.drafts ? miss.through.obj() : filterDrafts,
-      stringifyStream
+      stringifyStream,
+      miss.through(reportDocumentCount)
     )
 
     miss.finished(jsonStream, async err => {
@@ -71,36 +100,65 @@ function exportDataset(opts) {
         return
       }
 
+      onProgress({
+        step: 'Exporting documents...',
+        current: documentCount,
+        total: documentCount,
+        update: true
+      })
+
       if (!options.raw && options.assets) {
         onProgress({step: 'Downloading assets...'})
-
-        archive.on('progress', ({entries}) => {
-          onProgress({
-            step: 'Downloading assets...',
-            current: entries.processed,
-            total: Math.max(assetHandler.queueSize, entries.processed),
-            update: true
-          })
-        })
       }
+
+      let prevCompleted = 0
+      const progressInterval = setInterval(() => {
+        const completed = assetHandler.queueSize - assetHandler.queue.size
+        if (prevCompleted === completed) {
+          return
+        }
+
+        prevCompleted = completed
+        onProgress({
+          step: 'Downloading assets...',
+          current: completed,
+          total: assetHandler.queueSize,
+          update: true
+        })
+      }, 500)
 
       debug('Waiting for asset handler to complete downloads')
       try {
         await assetHandler.finish()
+        clearInterval(progressInterval)
       } catch (assetErr) {
+        clearInterval(progressInterval)
         reject(assetErr)
         return
       }
 
+      // Add all downloaded assets to archive
+      archive.directory(path.join(tmpDir, 'files'), `${prefix}/files`, {store: true})
+      archive.directory(path.join(tmpDir, 'images'), `${prefix}/images`, {store: true})
+
       debug('Finalizing archive, flushing streams')
+      onProgress({step: 'Adding assets to archive...'})
       archive.finalize()
+    })
+
+    archive.on('warning', err => {
+      debug('Archive warning: %s', err.message)
     })
 
     archive.append(jsonStream, {name: 'data.ndjson', prefix})
     miss.pipe(archive, outputStream, onComplete)
 
-    function onComplete(err) {
+    async function onComplete(err) {
+      onProgress({step: 'Clearing temporary files...'})
+      await fse.remove(tmpDir)
+
       if (!err) {
+        resolve()
         return
       }
 

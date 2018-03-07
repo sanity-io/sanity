@@ -1,3 +1,6 @@
+const os = require('os')
+const path = require('path')
+const fse = require('fs-extra')
 const miss = require('mississippi')
 const split = require('split2')
 const {getAssetHandler, arrayToStream} = require('./helpers')
@@ -5,6 +8,10 @@ const {getAssetHandler, arrayToStream} = require('./helpers')
 const docById = (docs, id) => docs.find(doc => doc._id === id)
 
 describe('asset handler', () => {
+  afterAll(async () => {
+    await fse.remove(path.join(os.tmpdir(), 'asset-handler-tests'))
+  })
+
   test('can rewrite documents / queue downloads', done => {
     // prettier-ignore
     const docs = [
@@ -33,7 +40,7 @@ describe('asset handler', () => {
       expect(docById(newDocs, 'plain')).toMatchSnapshot('Nothing rewritten in assetless doc')
 
       await assetHandler.finish()
-      expect(assetHandler.archive.append.mock.calls).toHaveLength(3)
+      expect(assetHandler.filesWritten).toEqual(3)
       done()
     }
   })
@@ -66,7 +73,7 @@ describe('asset handler', () => {
       expect(docById(newDocs, 'plain')).toMatchSnapshot('Nothing removed in assetless doc')
 
       await assetHandler.finish()
-      expect(assetHandler.archive.append.mock.calls).toHaveLength(0)
+      expect(assetHandler.filesWritten).toEqual(0)
       done()
     }
   })
@@ -90,7 +97,7 @@ describe('asset handler', () => {
       expect(docById(newDocs, 'plain')).toMatchObject(docs[2])
 
       await assetHandler.finish()
-      expect(assetHandler.archive.append.mock.calls).toHaveLength(2)
+      expect(assetHandler.filesWritten).toEqual(2)
       done()
     }
   })
@@ -121,7 +128,7 @@ describe('asset handler', () => {
       expect(docById(newDocs, 'plain')).toMatchObject(docs[6])
 
       await assetHandler.finish()
-      expect(assetHandler.archive.append.mock.calls).toHaveLength(0)
+      expect(assetHandler.filesWritten).toEqual(0)
       done()
     }
   })
