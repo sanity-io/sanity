@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Nothing removed in assetless doc 1`] = `
+exports[`asset handler can remove asset documents: Nothing removed in assetless doc 1`] = `
 Object {
   "_id": "plain",
   "_type": "bike",
@@ -8,7 +8,39 @@ Object {
 }
 `;
 
-exports[`Nothing rewritten in assetless doc 1`] = `
+exports[`asset handler can remove asset documents: doc1 with no image asset 1`] = `
+Object {
+  "_id": "doc1",
+  "_type": "bike",
+  "name": "Scooter",
+}
+`;
+
+exports[`asset handler can remove asset documents: doc2 with no image asset 1`] = `
+Object {
+  "_id": "doc2",
+  "_type": "bike",
+  "name": "Dupe",
+}
+`;
+
+exports[`asset handler can remove asset documents: doc3 with no image asset 1`] = `
+Object {
+  "_id": "doc3",
+  "_type": "bike",
+  "name": "Tandem",
+}
+`;
+
+exports[`asset handler can remove asset documents: old4 with no image asset 1`] = `
+Object {
+  "_id": "old4",
+  "_type": "bike",
+  "name": "Cool",
+}
+`;
+
+exports[`asset handler can rewrite documents / queue downloads: Nothing rewritten in assetless doc 1`] = `
 Object {
   "_id": "plain",
   "_type": "bike",
@@ -16,7 +48,7 @@ Object {
 }
 `;
 
-exports[`Rewritten asset for doc1 1`] = `
+exports[`asset handler can rewrite documents / queue downloads: Rewritten asset for doc1 1`] = `
 Object {
   "_id": "doc1",
   "_type": "bike",
@@ -27,7 +59,7 @@ Object {
 }
 `;
 
-exports[`Rewritten asset for doc2 1`] = `
+exports[`asset handler can rewrite documents / queue downloads: Rewritten asset for doc2 1`] = `
 Object {
   "_id": "doc2",
   "_type": "bike",
@@ -38,7 +70,7 @@ Object {
 }
 `;
 
-exports[`Rewritten asset for doc3 1`] = `
+exports[`asset handler can rewrite documents / queue downloads: Rewritten asset for doc3 1`] = `
 Object {
   "_id": "doc3",
   "_type": "bike",
@@ -49,26 +81,13 @@ Object {
 }
 `;
 
-exports[`doc1 with no image asset 1`] = `
+exports[`asset handler can rewrite documents / queue downloads: Rewritten asset for old4 1`] = `
 Object {
-  "_id": "doc1",
+  "_id": "old4",
   "_type": "bike",
-  "name": "Scooter",
-}
-`;
-
-exports[`doc2 with no image asset 1`] = `
-Object {
-  "_id": "doc2",
-  "_type": "bike",
-  "name": "Dupe",
-}
-`;
-
-exports[`doc3 with no image asset 1`] = `
-Object {
-  "_id": "doc3",
-  "_type": "bike",
-  "name": "Tandem",
+  "image": Object {
+    "_sanityAsset": "image@file://./images/mzFgq1cvHSEeGscxBsRFoqKG.bin",
+  },
+  "name": "Cool",
 }
 `;
