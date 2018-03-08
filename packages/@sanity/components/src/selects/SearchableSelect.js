@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import StatelessSearchableSelect from './StatelessSearchableSelect'
 
-export default class SearchableSelect extends React.Component {
+export default class SearchableSelect extends React.PureComponent {
   static propTypes = {
     label: PropTypes.string,
     description: PropTypes.string,
