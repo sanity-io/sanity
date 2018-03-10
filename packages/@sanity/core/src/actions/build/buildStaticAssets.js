@@ -20,6 +20,7 @@ export default async (args, context) => {
     args.extOptions
   )
 
+  const unattendedMode = flags.yes || flags.y
   const defaultOutputDir = path.resolve(path.join(workDir, 'dist'))
   const outputDir = path.resolve(args.argsWithoutOptions[0] || defaultOutputDir)
   const config = getConfig(workDir)
@@ -41,7 +42,7 @@ export default async (args, context) => {
   const compile = promisify(compiler.run.bind(compiler))
   let shouldDelete = true
 
-  if (outputDir !== defaultOutputDir) {
+  if (outputDir !== defaultOutputDir && !unattendedMode) {
     shouldDelete = await prompt.single({
       type: 'confirm',
       message: `Do you want to delete the existing directory (${outputDir}) first?`,
