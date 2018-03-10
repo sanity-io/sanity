@@ -19,9 +19,8 @@ import createRange from './util/createRange'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import InvalidValue from '../InvalidValueInput'
 import FocusManager from '../../sanity/focusManagers/SimpleFocusManager'
-import TrashIcon from 'part:@sanity/base/trash-icon'
 import EditIcon from 'part:@sanity/base/edit-icon'
-import is from '../../utils/is'
+import StopPropagation from './StopPropagation'
 
 const DIALOG_ACTIONS = [
   {
@@ -422,7 +421,12 @@ export default class FormBuilderBlock extends React.Component {
           </div>
         </span>
 
-        {isEditing && this.renderInput()}
+        {isEditing && (
+          <StopPropagation>
+            {this.renderInput()}
+          </StopPropagation>
+        )}
+
       </div>
     )
   }

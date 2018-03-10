@@ -15,6 +15,8 @@ import createRange from './util/createRange'
 import {applyAll} from '../../simplePatch'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import InvalidValue from '../InvalidValueInput'
+import StopPropagation from './StopPropagation'
+
 
 export default class FormBuilderInline extends React.Component {
   static propTypes = {
@@ -353,7 +355,9 @@ export default class FormBuilderInline extends React.Component {
 
         {isEditing && (
           <span className={styles.editInlineContainer}>
-            {this.renderInput()}
+            <StopPropagation>
+              {this.renderInput()}
+            </StopPropagation>
           </span>
         )}
       </span>

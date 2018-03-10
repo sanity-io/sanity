@@ -7,6 +7,7 @@ import Popover from 'part:@sanity/components/dialogs/popover'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import styles from './styles/FormBuilderSpan.css'
 import {applyAll} from '../../simplePatch'
+import StopPropagation from './StopPropagation'
 
 function isEmpty(object, ignoreKeys) {
   for (const key in object) {
@@ -287,8 +288,11 @@ export default class FormBuilderSpan extends React.Component {
           {this.props.children}
         </span>
 
-        { isEditing && this.renderInput() }
-
+        {isEditing && (
+          <StopPropagation>
+            {this.renderInput()}
+          </StopPropagation>
+        )}
       </span>
     )
   }
