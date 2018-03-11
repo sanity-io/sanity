@@ -20,7 +20,7 @@ export default {
         editModal: 'popover'
       },
       of: [
-        {type: 'recursiveArraysTest'},
+        {type: 'recursivePopoverTest'},
         {
           type: 'object',
           title: 'Something',
