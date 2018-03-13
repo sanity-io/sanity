@@ -1,6 +1,6 @@
 {
   "name": "storybook",
-  "version": "0.126.2",
+  "version": "0.126.3",
   "private": true,
   "description": "",
   "main": "config.js",
@@ -13,7 +13,7 @@
     "@sanity/base": "^0.126.2",
     "@sanity/components": "^0.126.2",
     "@sanity/core": "^0.126.2",
-    "@sanity/default-layout": "^0.126.2",
+    "@sanity/default-layout": "^0.126.3",
     "@sanity/default-login": "^0.126.0",
     "@sanity/desk-tool": "^0.126.2",
     "@sanity/google-maps-input": "^0.126.2",
