@@ -34,6 +34,10 @@
   color: var(--state-info-color--text);
   background-color: color(var(--state-info-color) a(95%));
 
+  @nest & .closeButton {
+    background-color: color(var(--state-info-color) a(30%));
+  }
+
   @nest & .content a {
     color: inherit;
   }
@@ -43,6 +47,10 @@
   composes: root;
   color: var(--state-danger-color--text);
   background-color: color(var(--state-danger-color) a(95%));
+
+  @nest & .closeButton {
+    background-color: color(var(--state-danger-color) a(30%));
+  }
 
   @nest & .content a {
     color: inherit;
@@ -54,6 +62,10 @@
   color: var(--state-success-color--text);
   background-color: color(var(--state-success-color) a(95%));
 
+  @nest & .closeButton {
+    background-color: color(var(--state-success-color) a(30%));
+  }
+
   @nest & .content a {
     color: inherit;
   }
@@ -63,6 +75,10 @@
   composes: root;
   color: var(--state-warning-color--text);
   background-color: color(var(--state-warning-color) a(95%));
+
+  @nest & .closeButton {
+    background-color: color(var(--state-warning-color) a(30%));
+  }
 
   @nest & .content a {
     color: inherit;
