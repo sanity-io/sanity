@@ -6,8 +6,8 @@ function DatasetsClient(client) {
 }
 
 assign(DatasetsClient.prototype, {
-  create(name) {
-    return this._modify('PUT', name)
+  create(name, options) {
+    return this._modify('PUT', name, options)
   },
 
   delete(name) {
@@ -18,9 +18,9 @@ assign(DatasetsClient.prototype, {
     return this.request({uri: '/datasets'})
   },
 
-  _modify(method, name) {
+  _modify(method, name, body) {
     validate.dataset(name)
-    return this.request({method, uri: `/datasets/${name}`})
+    return this.request({method, uri: `/datasets/${name}`, body})
   }
 })
 
