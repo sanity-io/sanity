@@ -11,6 +11,8 @@ import proteinTest from './proteinTest'
 import customObject from './customObject'
 import richText from './richText'
 import protein from '../components/ProteinInput/schema'
+import orderLines from '../components/OrderLinesInput/schema'
+import invoice from './invoice'
 
 export default createSchema({
   name: 'example-blog',
@@ -18,12 +20,14 @@ export default createSchema({
     blogpost,
     author,
     code,
+    orderLines,
     customObject,
     localeString,
     localeSlug,
     videoEmbed,
     proteinTest,
     protein,
-    richText
+    richText,
+    invoice
   ])
 })
