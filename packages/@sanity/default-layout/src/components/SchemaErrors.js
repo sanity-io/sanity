@@ -2,7 +2,7 @@ import React from 'react'
 import styles from './styles/SchemaErrors.css'
 import ErrorIcon from 'part:@sanity/base/error-icon'
 import WarningIcon from 'part:@sanity/base/warning-icon'
-import generateHelpUrl from '../../../generate-help-url'
+import generateHelpUrl from '@sanity/generate-help-url'
 
 function renderPath(path) {
   return path.map(segment => {
