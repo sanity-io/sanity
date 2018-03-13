@@ -34,7 +34,7 @@
     "dialog-polyfill": "^0.4.3",
     "dom-scroll-into-view": "^1.2.1",
     "ease-component": "^1.0.0",
-    "element-resize-detector": "^1.1.10",
+    "element-resize-detector": "^1.1.14",
     "exif-component": "^1.0.1",
     "fuse.js": "^2.4.1",
     "in-publish": "^2.0.0",
@@ -53,7 +53,7 @@
     "react-portal": "^4.1.2",
     "react-sortable-hoc": "^0.6.3",
     "react-split-pane": "^0.1.63",
-    "react-popper":  "^0.7.5",
+    "react-popper":  "^0.8.2",
     "scroll": "^2.0.0"
   },
   "devDependencies": {

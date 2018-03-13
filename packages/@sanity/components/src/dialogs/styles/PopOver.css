@@ -146,7 +146,7 @@
 .close {
   position: absolute;
   border: 0;
-  background: transparent;
+  background-color: transparent;
   font-size: 1.5em;
   cursor: pointer;
   outline: none;
@@ -176,6 +176,10 @@
   background-color: transparent;
   right: 0;
 
+  @nest .color_default & {
+    background-color: transparent;
+  }
+
   @media (--max-screen-medium) {
     top: var(--small-padding);
     right: var(--small-padding);
@@ -198,6 +202,11 @@
   @media (--max-screen-medium) {
     max-height: calc(100vh - var(--header-height)) !important;
   }
+}
+
+.contentWithActions {
+  composes: content;
+  padding-bottom: 5rem;
 }
 
 .head {
