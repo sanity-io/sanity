@@ -68,6 +68,7 @@
   color: var(--text-color);
   cursor: default;
   z-index: 1;
+  pointer-events: none;
 
   @nest & > *:not(:first-child) {
     margin-left: 0.5em;
