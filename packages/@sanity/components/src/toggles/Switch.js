@@ -5,6 +5,7 @@ import styles from 'part:@sanity/components/toggles/switch-style'
 export default class Switch extends React.Component {
   static propTypes = {
     label: PropTypes.string.isRequired,
+    description: PropTypes.string,
     markers: PropTypes.array,
     checked: PropTypes.bool,
     disabled: PropTypes.bool,
@@ -49,7 +50,7 @@ export default class Switch extends React.Component {
   }
 
   render() {
-    const {disabled, markers, checked, label, readOnly, ...rest} = this.props
+    const {disabled, markers, checked, label, description, readOnly, ...rest} = this.props
     const {hasFocus} = this.state
 
     let thumbClass = checked ? styles.thumbChecked : styles.thumb
@@ -68,21 +69,26 @@ export default class Switch extends React.Component {
         `}
         onBlur={this.handleBlur}
       >
-        <div className={styles.track} />
-        <div className={thumbClass}>
-          <div className={styles.focusHelper} />
-        </div>
+        <div className={styles.inner}>
+          <div className={styles.track} />
+          <div className={thumbClass}>
+            <div className={styles.focusHelper} />
+          </div>
 
-        <input
-          {...rest}
-          className={styles.input}
-          type="checkbox"
-          disabled={disabled || readOnly}
-          checked={checked}
-          ref={this.setInput}
-          onFocus={this.handleFocus}
-        />
-        <div className={styles.label}>{label}</div>
+          <input
+            {...rest}
+            className={styles.input}
+            type="checkbox"
+            disabled={disabled || readOnly}
+            checked={checked}
+            ref={this.setInput}
+            onFocus={this.handleFocus}
+          />
+          <div className={styles.label}>{label}</div>
+          {
+            description && <div className={styles.description}>{description}</div>
+          }
+        </div>
       </label>
     )
   }

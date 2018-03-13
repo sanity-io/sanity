@@ -5,6 +5,7 @@ import styles from 'part:@sanity/components/toggles/checkbox-style'
 export default class Checkbox extends React.Component {
   static propTypes = {
     label: PropTypes.string,
+    description: PropTypes.string,
     markers: PropTypes.array,
     checked: PropTypes.bool,
     disabled: PropTypes.bool,
@@ -49,7 +50,7 @@ export default class Checkbox extends React.Component {
   }
 
   render() {
-    const {disabled, markers, checked, label, children, readOnly, ...rest} = this.props
+    const {disabled, markers, checked, label, description, children, readOnly, ...rest} = this.props
     const {hasFocus} = this.state
 
     let checkedClass = checked ? styles.isChecked : styles.unChecked
@@ -80,7 +81,9 @@ export default class Checkbox extends React.Component {
           onFocus={this.handleFocus}
         />
         <div className={styles.label}>{children || label}</div>
-
+        {
+          description && <div className={styles.description}>{description}</div>
+        }
         <div className={styles.focusHelper} />
         <div className={styles.boxOutline}>
           <div className={styles.tickOutline} />
