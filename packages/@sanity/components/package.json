@@ -50,7 +50,6 @@
     "react-dropzone": "^3.9.2",
     "react-element-query": "^3.0.2",
     "react-ink": "^6.1.0",
-    "react-portal": "^4.1.2",
     "react-sortable-hoc": "^0.6.3",
     "react-split-pane": "^0.1.63",
     "react-popper":  "^0.8.2",
@@ -68,7 +67,8 @@
   },
   "peerDependencies": {
     "prop-types": "^15.6 || ^16",
-    "react": "^15.6 || ^16"
+    "react": "^15.6 || ^16",
+    "react-dom": "^15.6 || ^16"
   },
   "repository": {
     "type": "git",

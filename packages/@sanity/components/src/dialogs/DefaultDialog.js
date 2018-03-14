@@ -4,7 +4,7 @@ import React from 'react'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import styles from 'part:@sanity/components/dialogs/default-style'
 import Button from 'part:@sanity/components/buttons/default'
-import {Portal} from 'react-portal'
+import {Portal} from '../utilities/Portal'
 import Escapable from '../utilities/Escapable'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Stacked from '../utilities/Stacked'
@@ -17,7 +17,6 @@ export default class DefaultDialog extends React.Component {
     children: PropTypes.node,
     onOpen: PropTypes.func,
     onClose: PropTypes.func.isRequired,
-    isOpen: PropTypes.bool,
     onAction: PropTypes.func,
     showHeader: PropTypes.bool,
     showCloseButton: PropTypes.bool,
@@ -30,23 +29,12 @@ export default class DefaultDialog extends React.Component {
   }
 
   static defaultProps = {
-    isOpen: false,
     showHeader: false,
     showCloseButton: true,
     onAction() {},
     onOpen() {},
     actions: [],
     kind: 'default'
-  }
-
-  componentDidUpdate(prevProps) {
-    const isOpen = this.props.isOpen
-    const wasOpen = prevProps.isOpen
-    if (!wasOpen && isOpen) {
-      this.openDialogElement()
-    } else if (wasOpen && !isOpen) {
-      this.closeDialogElement()
-    }
   }
 
   openDialogElement() {

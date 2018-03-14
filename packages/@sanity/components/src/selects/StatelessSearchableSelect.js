@@ -10,7 +10,7 @@ import SelectMenu from './SelectMenu'
 import Stacked from '../utilities/Stacked'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Escapable from '../utilities/Escapable'
-import {Portal} from 'react-portal'
+import {Portal} from '../utilities/Portal'
 import {Manager, Target, Popper} from 'react-popper'
 import {get} from 'lodash'
 

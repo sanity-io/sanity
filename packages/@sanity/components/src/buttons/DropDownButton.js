@@ -10,7 +10,7 @@ import Stacked from '../utilities/Stacked'
 import Escapable from '../utilities/Escapable'
 import {Manager, Target, Popper} from 'react-popper'
 
-class DropDownButton extends React.PureComponent {
+export default class DropDownButton extends React.PureComponent {
   static propTypes = {
     kind: PropTypes.oneOf(['secondary', 'add', 'delete', 'warning', 'success', 'danger', 'simple']),
     items: PropTypes.arrayOf(
@@ -40,10 +40,6 @@ class DropDownButton extends React.PureComponent {
   }
 
   width = 100
-
-  handleClickOutside = event => {
-    this.setState({menuOpened: false})
-  }
 
   handleClose = () => {
     this.setState({menuOpened: false})
@@ -105,13 +101,13 @@ class DropDownButton extends React.PureComponent {
                       ref={this.setMenuElement}
                       style={{minWidth: `${width}px`}}
                     >
-                      <Escapable onEscape={event => (isActive && this.handleClose())} />
+                      <Escapable onEscape={isActive && this.handleClose} />
                       <Menu
                         items={items}
                         isOpen
                         className={styles.menu}
                         onAction={this.handleAction}
-                        onClickOutside={event => (isActive && this.handleClose())}
+                        onClickOutside={isActive && this.handleClose}
                       />
                     </div>
                   )}
@@ -124,5 +120,3 @@ class DropDownButton extends React.PureComponent {
     )
   }
 }
-
-export default DropDownButton
