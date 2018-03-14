@@ -10,6 +10,10 @@ assign(DatasetsClient.prototype, {
     return this._modify('PUT', name, options)
   },
 
+  edit(name, options) {
+    return this._modify('PATCH', name, options)
+  },
+
   delete(name) {
     return this._modify('DELETE', name)
   },
