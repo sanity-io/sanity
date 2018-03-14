@@ -109,9 +109,7 @@ export default class StatelessSearchableSelect extends React.Component {
   }
 
   handleClose = event => {
-    if (this.props.isOpen) {
-      this.props.onClose()
-    }
+    this.props.onClose()
   }
 
   setInput = input => {
