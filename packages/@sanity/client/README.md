@@ -271,20 +271,23 @@ client.asset.upload(type: 'file' | image', body: File | Blob | Buffer | NodeStre
 👉 Read more about [assets in Sanity](https://sanity.io/docs/http-api/assets)
 
 #### Examples: Uploading assets from Node.js
+
 ```js
 // Upload a file from the file system
-client.assets.upload('file', fs.createReadStream('myFile.txt'))
+client.assets
+  .upload('file', fs.createReadStream('myFile.txt'), {filename: 'myFile.txt'})
   .then(document => {
     console.log('The file was uploaded!', document)
   })
   .catch(error => {
     console.error('Upload failed:', error.message)
   })
-````
-```js
+```
 
+```js
 // Upload an image file from the file system
-client.assets.upload('image', fs.createReadStream('myImage.jpg'))
+client.assets
+  .upload('image', fs.createReadStream('myImage.jpg'), {filename: 'myImage.jpg'})
   .then(document => {
     console.log('The image was uploaded!', document)
   })
@@ -294,32 +297,35 @@ client.assets.upload('image', fs.createReadStream('myImage.jpg'))
 ```
 
 #### Examples: Uploading assets from the Browser
+
 ```js
 // Create a file with "foo" as its content
-const file = new File(["foo"], "foo.txt", {type: "text/plain"})
+const file = new File(['foo'], 'foo.txt', {type: 'text/plain'})
 // Upload it
-client.assets.upload('file', file)
+client.assets
+  .upload('file', file)
   .then(document => {
     console.log('The file was uploaded!', document)
   })
   .catch(error => {
     console.error('Upload failed:', error.message)
   })
-````
+```
 
 ```js
 // Draw something on a canvas and upload as image
 const canvas = document.getElementById('someCanvas')
-const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext('2d')
 ctx.fillStyle = '#f85040'
-ctx.fillRect(0, 0, 50, 50);
+ctx.fillRect(0, 0, 50, 50)
 ctx.fillStyle = '#fff'
 ctx.font = '10px monospace'
 ctx.fillText('Sanity', 8, 30)
 canvas.toBlob(uploadImageBlob, 'image/png')
 
 function uploadImageBlob(blob) {
-  client.assets.upload('image', blob)
+  client.assets
+    .upload('image', blob, {contentType: 'image/png', filename: 'someText.png'})
     .then(document => {
       console.log('The image was uploaded!', document)
     })
@@ -330,16 +336,18 @@ function uploadImageBlob(blob) {
 ```
 
 #### Examples: Specify image metadata to extract
+
 ```js
 // Extract palette of colors as well as GPS location from exif
-client.assets.upload('image', someFile, {extract: ['palette', 'location']})
+client.assets
+  .upload('image', someFile, {extract: ['palette', 'location']})
   .then(document => {
     console.log('The file was uploaded!', document)
   })
   .catch(error => {
     console.error('Upload failed:', error.message)
   })
-````
+```
 
 ### Deleting an asset
 
