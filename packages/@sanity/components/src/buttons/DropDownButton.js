@@ -92,12 +92,12 @@ export default class DropDownButton extends React.PureComponent {
               </span>
             </Button>
           </Target>
-          <Portal>
-            <Stacked>
-              {isActive => (
-                <Popper className={styles.popper}>
-                  {
-                    menuOpened && (
+          {
+            menuOpened && (
+              <Portal>
+                <Stacked>
+                  {isActive => (
+                    <Popper className={styles.popper}>
                       <div
                         className={styles.wrapper}
                         ref={this.setMenuElement}
@@ -112,12 +112,12 @@ export default class DropDownButton extends React.PureComponent {
                           onClickOutside={isActive && this.handleClose}
                         />
                       </div>
-                    )
-                  }
-                </Popper>
-              )}
-            </Stacked>
-          </Portal>
+                    </Popper>
+                  )}
+                </Stacked>
+              </Portal>
+            )
+          }
         </Manager>
       </div>
     )
