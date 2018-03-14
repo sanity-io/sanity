@@ -5,6 +5,7 @@ import datasetGroup from './dataset/datasetGroup'
 import deployCommand from './deploy/deployCommand'
 import listDatasetsCommand from './dataset/listDatasetsCommand'
 import createDatasetCommand from './dataset/createDatasetCommand'
+import datasetVisibilityCommand from './dataset/datasetVisibilityCommand'
 import deleteDatasetCommand from './dataset/deleteDatasetCommand'
 import exportDatasetCommand from './dataset/exportDatasetCommand'
 import importDatasetCommand from './dataset/importDatasetCommand'
@@ -30,6 +31,7 @@ export default [
   deployCommand,
   listDatasetsCommand,
   createDatasetCommand,
+  datasetVisibilityCommand,
   exportDatasetCommand,
   importDatasetCommand,
   deleteDatasetCommand,
