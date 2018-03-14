@@ -355,7 +355,7 @@ export default class FormBuilderInline extends React.Component {
 
         {isEditing && (
           <span className={styles.editInlineContainer}>
-            <StopPropagation>
+            <StopPropagation tagName="span">
               {this.renderInput()}
             </StopPropagation>
           </span>

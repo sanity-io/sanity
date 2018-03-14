@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 const stop = e => e.stopPropagation()
 
@@ -42,5 +43,12 @@ const EVENT_PROPS = STOP_EVENTS.reduce((props, event) => {
 }, {})
 
 export default function StopPropagation(props) {
-  return <div {...EVENT_PROPS}>{props.children}</div>
+  return React.createElement(props.tagName, EVENT_PROPS, props.children)
+}
+StopPropagation.defaultProps = {
+  tagName: 'div'
+}
+StopPropagation.propTypes = {
+  children: PropTypes.node,
+  tagName: PropTypes.oneOf(['span', 'div'])
 }

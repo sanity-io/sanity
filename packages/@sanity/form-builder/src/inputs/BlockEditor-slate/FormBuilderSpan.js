@@ -289,7 +289,7 @@ export default class FormBuilderSpan extends React.Component {
         </span>
 
         {isEditing && (
-          <StopPropagation>
+          <StopPropagation tagName="span">
             {this.renderInput()}
           </StopPropagation>
         )}
