@@ -43,6 +43,7 @@ export default class BooleanInput extends React.Component<Props> {
         onChange={this.handleChange}
         checked={value}
         ref={this.setInput}
+        description={type.description}
       >
         {type.title}
       </Checkbox>
@@ -53,6 +54,7 @@ export default class BooleanInput extends React.Component<Props> {
         onChange={this.handleChange}
         checked={value}
         label={type.title}
+        description={type.description}
         ref={this.setInput}
       />
     )

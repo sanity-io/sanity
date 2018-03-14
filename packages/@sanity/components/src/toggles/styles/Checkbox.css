@@ -135,3 +135,7 @@
   line-height: var(--checkbox-label-height);
   margin: 0;
 }
+
+.description {
+  composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
+}

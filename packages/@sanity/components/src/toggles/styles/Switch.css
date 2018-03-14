@@ -46,7 +46,8 @@
 
 .root {
   composes: root from 'part:@sanity/components/formfields/default-style';
-  display: inline-block;
+  display: inline-block !important;
+  width: auto !important;
   user-select: none;
   position: relative;
 }
@@ -180,6 +181,13 @@
     color: var(--switch-disabled-thumb-color);
     cursor: auto;
   }
+}
+
+.description {
+  composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
+  position: relative;
+  display: block;
+  left: calc(var(--switch-track-length) + 0.5rem);
 }
 
 .track {
