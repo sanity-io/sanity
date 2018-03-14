@@ -5,7 +5,7 @@
 }
 
 .lightScrollbars {
-  /* @media (--screen-medium) {
+  @media (--screen-medium) {
     @nest &::-webkit-scrollbar {
       background-color: transparent;
       width: var(--defaultScrollBarWidth);
@@ -44,7 +44,7 @@
         background-color: var(--black);
       }
     }
-  } */
+  }
 }
 
 .thinLightScrollbars {
