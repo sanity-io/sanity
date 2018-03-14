@@ -15,6 +15,7 @@ export default class EditItemPopOver extends React.PureComponent {
     children: PropTypes.node.isRequired,
     onClose: PropTypes.func,
     onClickOutside: PropTypes.func,
+    onEscape: PropTypes.func,
     onAction: PropTypes.func,
     modifiers: PropTypes.object,
     color: PropTypes.oneOf(['default', 'danger']),
@@ -43,7 +44,7 @@ export default class EditItemPopOver extends React.PureComponent {
   }
 
   renderPopper(isActive) {
-    const {title, color, children, actions, onClose, modifiers} = this.props
+    const {title, color, children, actions, onClose, onClickOutside, onEscape, modifiers} = this.props
     return (
       <Popper
         className={`${styles.popper} ${styles[`color_${color}`]}`}
@@ -51,8 +52,8 @@ export default class EditItemPopOver extends React.PureComponent {
         modifiers={modifiers}
       >
         <Arrow className={title ? styles.filledArrow : styles.arrow} />
-        <Escapable onEscape={event => (isActive || event.shiftKey) && onClose()} />
-        <CaptureOutsideClicks onClickOutside={isActive ? onClose : undefined}>
+        <Escapable onEscape={event => (isActive || event.shiftKey) && onEscape && onEscape()} />
+        <CaptureOutsideClicks onClickOutside={isActive ? onClickOutside : undefined}>
           <div className={styles.popover}>
             {onClose && (
               <button

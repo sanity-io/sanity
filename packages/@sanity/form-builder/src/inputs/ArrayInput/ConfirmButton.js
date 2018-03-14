@@ -70,6 +70,7 @@ export default class ConfirmButton extends React.Component {
               <PopOver
                 color="danger"
                 useOverlay={false}
+                onEscape={this.handleConfirmPopoverClose}
                 onClickOutside={this.handleConfirmPopoverClose}
               >
                 <div className={styles.wrapper}>

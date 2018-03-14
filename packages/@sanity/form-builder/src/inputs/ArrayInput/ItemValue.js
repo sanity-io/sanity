@@ -209,6 +209,8 @@ export default class RenderItemValue extends React.Component<Props> {
           <Popover
             title={`Edit ${memberType.title}`}
             onClose={this.handleEditStop}
+            onEscape={this.handleEditStop}
+            onClickOutside={this.handleEditStop}
             actions={actions}
             onAction={this.handleDialogAction}
           >

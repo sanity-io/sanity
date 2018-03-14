@@ -214,6 +214,8 @@ export default class FormBuilderSpan extends React.Component {
       <span className={styles.editSpanContainer}>
         <Popover
           onClose={this.handleCloseInput}
+          onEscape={this.handleCloseInput}
+          onClickOutside={this.handleCloseInput}
           modifiers={
             {
               flip: {

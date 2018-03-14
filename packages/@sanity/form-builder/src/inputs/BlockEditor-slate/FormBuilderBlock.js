@@ -327,6 +327,8 @@ export default class FormBuilderBlock extends React.Component {
           <Popover
             title={this.props.node.title}
             onClose={this.handleClose}
+            onEscape={this.handleClose}
+            onClickOutside={this.handleClose}
             onAction={this.handleDialogAction}
             actions={DIALOG_ACTIONS}
           >

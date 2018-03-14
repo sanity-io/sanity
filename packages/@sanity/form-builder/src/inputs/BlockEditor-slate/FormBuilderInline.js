@@ -253,6 +253,8 @@ export default class FormBuilderInline extends React.Component {
       <Popover
         title={this.props.node.title}
         onClose={this.handleClose}
+        onClickOutside={this.handleClose}
+        onEscape={this.handleClose}
         onAction={this.handleDialogAction}
         modifiers={
           {
