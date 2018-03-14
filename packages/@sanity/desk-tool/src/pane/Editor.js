@@ -610,9 +610,13 @@ export default withRouterHOC(
           isSelected // last pane is always selected for now
         >
           <div className={styles.root}>
-            {isCreatingDraft && <Spinner fullscreen message="Making changes…" />}
-            {isPublishing && <Spinner fullscreen message="Publishing…" />}
-            {isUnpublishing && <Spinner fullscreen message="Unpublishing…" />}
+            {(isCreatingDraft || isPublishing || isUnpublishing) && (
+              <div className={styles.spinnerContainer}>
+                {isCreatingDraft && <Spinner center message="Making changes…" />}
+                {isPublishing && <Spinner center message="Publishing…" />}
+                {isUnpublishing && <Spinner center message="Unpublishing…" />}
+              </div>
+            )}
             <div className={styles.top}>
               <div className={styles.editedDate}>
                 {value && (
