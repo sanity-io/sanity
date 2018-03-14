@@ -8,6 +8,7 @@ Options
   --dataset <dataset> Dataset name for the studio
   --output-path <path> Path to write studio project to
   --template <template> Project template to use [default: "clean"]
+  --visibility <mode> Visibility mode for dataset (public/private)
   --create-project <name> Create a new project with the given name
 
 Examples
@@ -28,6 +29,7 @@ Examples
   sanity init -y \\
     --create-project "Movies Unlimited" \\
     --dataset moviedb \\
+    --visibility private \\
     --template moviedb \\
     --output-path /Users/espenh/movies-unlimited
 `

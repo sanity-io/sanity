@@ -61,7 +61,8 @@ export default async function initSanity(args, context) {
   const {datasetName} = await getOrCreateDataset({
     projectId,
     displayName,
-    dataset: flags.dataset
+    dataset: flags.dataset,
+    aclMode: flags.visibility
   })
 
   debug(`Dataset with name ${datasetName} selected`)
@@ -160,7 +161,7 @@ export default async function initSanity(args, context) {
     await login(args, context)
 
     print("Good stuff, you're now authenticated. You'll need a project to keep your")
-    print('data sets and collaborators safe and snug.')
+    print('datasets and collaborators safe and snug.')
   }
 
   async function getOrCreateProject() {
@@ -238,15 +239,41 @@ export default async function initSanity(args, context) {
     }
 
     const client = apiClient({api: {projectId: opts.projectId}})
-    const datasets = await client.datasets.list()
+    const [datasets, projectFeatures] = await Promise.all([
+      client.datasets.list(),
+      client.request({uri: '/features'})
+    ])
+
+    const privateDatasetsAllowed = projectFeatures.includes('privateDataset')
+    const allowedModes = privateDatasetsAllowed ? ['public', 'private'] : ['public']
+
+    if (opts.aclMode && allowedModes.includes(opts.aclMode)) {
+      throw new Error(`Visibility mode "${opts.aclMode}" not allowed`)
+    }
+
+    // Getter in order to present prompts in a more logical order
+    const getAclMode = () => {
+      if (opts.aclMode) {
+        return opts.aclMode
+      }
+
+      if (unattended || !privateDatasetsAllowed) {
+        return 'public'
+      } else if (privateDatasetsAllowed) {
+        return promptForAclMode(prompt, output)
+      }
+
+      return opts.aclMode
+    }
 
     if (opts.dataset) {
       debug('User has specified dataset through a flag (%s)', opts.dataset)
       const existing = datasets.find(ds => ds.name === opts.dataset)
+      const aclMode = await getAclMode()
 
       if (!existing) {
         debug('Specified dataset not found, creating it')
-        await client.datasets.create(opts.dataset)
+        await client.datasets.create(opts.dataset, {aclMode})
       }
 
       return {datasetName: opts.dataset}
@@ -259,7 +286,8 @@ export default async function initSanity(args, context) {
         default: 'production'
       })
 
-      await client.datasets.create(name)
+      const aclMode = await getAclMode()
+      await client.datasets.create(name, {aclMode})
       return {datasetName: name}
     }
 
@@ -279,10 +307,11 @@ export default async function initSanity(args, context) {
     if (selected === 'new') {
       debug('User wants to create a new dataset, prompting for name')
       const newDatasetName = await promptForDatasetName(prompt, {
-        message: 'Name your data set:',
+        message: 'Name your dataset:',
         default: 'production'
       })
-      await client.datasets.create(newDatasetName)
+      const aclMode = await getAclMode()
+      await client.datasets.create(newDatasetName, {aclMode})
       return {datasetName: newDatasetName}
     }
 
@@ -447,4 +476,29 @@ function expandHome(filePath) {
 function absolutify(dir) {
   const pathName = expandHome(dir)
   return path.isAbsolute(pathName) ? pathName : path.resolve(process.cwd(), pathName)
+}
+
+async function promptForAclMode(prompt, output) {
+  const mode = await prompt.single({
+    type: 'list',
+    message: 'Dataset visibility',
+    choices: [
+      {
+        value: 'public',
+        name: 'Public (world readable)'
+      },
+      {
+        value: 'private',
+        name: 'Private (Authenticated user or token needed)'
+      }
+    ]
+  })
+
+  if (mode === 'private') {
+    output.print(
+      'Please note that while documents are private, assets (files and images) are still public\n'
+    )
+  }
+
+  return mode
 }
