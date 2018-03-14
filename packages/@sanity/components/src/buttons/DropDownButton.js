@@ -6,6 +6,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import ArrowIcon from 'part:@sanity/base/angle-down-icon'
 import Menu from 'part:@sanity/components/menus/default'
 import {omit} from 'lodash'
+import {Portal} from '../utilities/Portal'
 import Stacked from '../utilities/Stacked'
 import Escapable from '../utilities/Escapable'
 import {Manager, Target, Popper} from 'react-popper'
@@ -91,30 +92,32 @@ export default class DropDownButton extends React.PureComponent {
               </span>
             </Button>
           </Target>
-          <Popper className={styles.popper}>
-            {
-              menuOpened && (
-                <Stacked>
-                  {isActive => (
-                    <div
-                      className={styles.wrapper}
-                      ref={this.setMenuElement}
-                      style={{minWidth: `${width}px`}}
-                    >
-                      <Escapable onEscape={isActive && this.handleClose} />
-                      <Menu
-                        items={items}
-                        isOpen
-                        className={styles.menu}
-                        onAction={this.handleAction}
-                        onClickOutside={isActive && this.handleClose}
-                      />
-                    </div>
-                  )}
-                </Stacked>
-              )
-            }
-          </Popper>
+          <Portal>
+            <Stacked>
+              {isActive => (
+                <Popper className={styles.popper}>
+                  {
+                    menuOpened && (
+                      <div
+                        className={styles.wrapper}
+                        ref={this.setMenuElement}
+                        style={{minWidth: `${width}px`}}
+                      >
+                        <Escapable onEscape={isActive && this.handleClose} />
+                        <Menu
+                          items={items}
+                          isOpen
+                          className={styles.menu}
+                          onAction={this.handleAction}
+                          onClickOutside={isActive && this.handleClose}
+                        />
+                      </div>
+                    )
+                  }
+                </Popper>
+              )}
+            </Stacked>
+          </Portal>
         </Manager>
       </div>
     )
