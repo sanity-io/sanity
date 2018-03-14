@@ -13,6 +13,7 @@
 .root {
   display: block;
   background-color: var(--body-bg);
+  position: relative; /* Needed to keep the spinners in place */
 
   @media (--screen-medium) {
     background-color: transparent;
@@ -126,6 +127,20 @@
 
   @nest & > svg {
     display: block;
+  }
+}
+
+.spinnerContainer {
+  composes: frosted from "part:@sanity/base/theme/layout/backgrounds-style";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 3;
+  height: 100vh;
+
+  @media (--screen-medium) {
+    height: calc(100vh - 6rem); /* 6rem is aprox the height of the header stuff */
   }
 }
 
