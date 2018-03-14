@@ -1,13 +1,14 @@
+import debug from '../../debug'
 import promptForDatasetName from '../../actions/dataset/datasetNamePrompt'
 
 const helpText = `
 Options
---acl-mode <mode> Set ACL mode for this dataset (public/private)
+  --visibility <mode> Set visibility for this dataset (public/private)
 
 Examples
-sanity dataset create
-sanity dataset create <name>
-sanity dataset create <name> --acl-mode private
+  sanity dataset create
+  sanity dataset create <name>
+  sanity dataset create <name> --visibility private
 `
 
 const allowedModes = ['private', 'public']
@@ -29,8 +30,8 @@ export default {
       client.request({uri: '/features'})
     ])
 
-    if (flags['acl-mode'] && allowedModes.includes(flags['acl-mode'])) {
-      throw new Error(`ACL mode "${flags['acl-mode']}" not allowed`)
+    if (flags.visibility && allowedModes.includes(flags.visibility)) {
+      throw new Error(`Visibility mode "${flags.visibility}" not allowed`)
     }
 
     const datasetName = await (dataset || promptForDatasetName(prompt))
@@ -39,8 +40,10 @@ export default {
     }
 
     const canCreatePrivate = projectFeatures.includes('privateDataset')
-    const defaultAclMode = canCreatePrivate ? flags['acl-mode'] : 'public'
-    const aclMode = await (defaultAclMode || promptForAclMode(prompt))
+    debug('%s create private datasets', canCreatePrivate ? 'Can' : 'Cannot')
+
+    const defaultAclMode = canCreatePrivate ? flags.visibility : 'public'
+    const aclMode = await (defaultAclMode || promptForDatasetVisibility(prompt, output))
 
     try {
       await client.datasets.create(datasetName, {aclMode})
@@ -51,31 +54,27 @@ export default {
   }
 }
 
-async function promptForAclMode(prompt, options = {}) {
+async function promptForDatasetVisibility(prompt, output) {
   const mode = await prompt.single({
     type: 'list',
-    message: 'Dataset ACL mode',
+    message: 'Dataset visibility',
     choices: [
       {
         value: 'public',
-        name: 'Public (all documents visible)'
+        name: 'Public (world readable)'
       },
       {
         value: 'private',
-        name: 'Private (requires token to read documents)'
+        name: 'Private (Authenticated user or token needed)'
       }
     ]
   })
 
-  if (mode !== 'private') {
-    return mode
+  if (mode === 'private') {
+    output.print(
+      'Please note that while documents are private, assets (files and images) are still public\n'
+    )
   }
 
-  const confirmed = await prompt.single({
-    type: 'confirm',
-    message: 'Note: Assets (images, files) will still be public (accessible by URL). Continue?',
-    default: true
-  })
-
-  return confirmed ? mode : promptForAclMode(prompt, options)
+  return mode
 }
