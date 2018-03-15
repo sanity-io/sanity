@@ -17,6 +17,7 @@
 
   @media (--screen-medium) {
     background-color: transparent;
+    height: 100%;
   }
 }
 
@@ -74,6 +75,11 @@
 
 .syncStatusSynced {
   composes: syncStatus;
+}
+
+.syncStatusReconnecting {
+  composes: syncStatus;
+  color: var(--state-danger-color);
 }
 
 .syncStatusSyncing {

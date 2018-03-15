@@ -445,29 +445,29 @@ export default withRouterHOC(
               distance="0"
               title="Syncing your content with the Sanity cloud"
             >
-              <span className={styles.spinnerContainer}>
-                <span className={styles.spinner}>
+              <span className={styles.syncSpinnerContainer}>
+                <span className={styles.syncSpinner}>
                   <SyncIcon />
                 </span>
-              </span>{' '}
-              Syncing…
+              </span>
+              &nbsp;Syncing…
             </Tooltip>
           )}
           {isReconnecting && (
             <Tooltip
-              className={styles.syncStatusSyncing}
+              className={styles.syncStatusReconnecting}
               arrow
               theme="light"
               size="small"
               distance="0"
               title="Connection lost. Reconnecting…"
             >
-              <span className={styles.spinnerContainer}>
-                <span className={styles.spinner}>
+              <span className={styles.syncSpinnerContainer}>
+                <span className={styles.syncSpinner}>
                   <SyncIcon />
                 </span>
-              </span>{' '}
-              Reconnecting…
+              </span>
+              &nbsp;Reconnecting…
             </Tooltip>
           )}
           {value &&
