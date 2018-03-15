@@ -1,6 +1,6 @@
 {
   "name": "@sanity/import",
-  "version": "0.126.2",
+  "version": "0.127.0",
   "description": "Import documents to a Sanity dataset",
   "main": "lib/import.js",
   "engines": {
@@ -42,7 +42,7 @@
     "through2": "^2.0.3"
   },
   "devDependencies": {
-    "@sanity/client": "^0.126.0",
+    "@sanity/client": "^0.127.0",
     "get-it": "^4.0.1",
     "jest": "^22.0.5",
     "prettier": "^1.10.2",

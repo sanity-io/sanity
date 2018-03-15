@@ -1,6 +1,6 @@
 {
   "name": "@sanity/components",
-  "version": "0.126.2",
+  "version": "0.127.0",
   "description": "Basic UX components",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -21,7 +21,7 @@
   ],
   "dependencies": {
     "@sanity/date-input": "^0.126.0",
-    "@sanity/imagetool": "^0.126.2",
+    "@sanity/imagetool": "^0.127.0",
     "@sanity/observable": "^0.125.8",
     "@sanity/react-tippy": "^1.2.4",
     "attr-accept": "^1.1.0",
@@ -50,15 +50,15 @@
     "react-dropzone": "^3.9.2",
     "react-element-query": "^3.0.2",
     "react-ink": "^6.1.0",
+    "react-popper": "^0.8.2",
     "react-sortable-hoc": "^0.6.3",
     "react-split-pane": "^0.1.63",
-    "react-popper":  "^0.8.2",
     "scroll": "^2.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "^0.126.2",
+    "@sanity/base": "^0.127.0",
     "@sanity/check": "^0.126.0",
-    "@sanity/core": "^0.126.2",
+    "@sanity/core": "^0.127.0",
     "pre-commit": "^1.2.2",
     "prop-types": "^15.6.0",
     "react": "^15.6.1",
