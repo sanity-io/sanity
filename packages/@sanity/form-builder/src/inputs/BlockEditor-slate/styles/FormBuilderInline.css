@@ -1,10 +1,12 @@
 @import "part:@sanity/base/theme/variables/forms-style";
 
 .root {
+  position: relative;
   user-select: none;
 }
 
 .previewContainer {
+  position: relative;
   display: inline-block;
   cursor: move;
   border: 1px solid var(--form-builder-block-border-color);
@@ -37,8 +39,10 @@
   background-color: var(--form-builder-block-background-selected);
 }
 
-.editBlockContainer {
+.editInlineContainer {
   position: absolute;
-  top: 50%;
-  left: 25%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }

@@ -1,7 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 :root {
-  --defaultScrollBarWidth: var(--small-padding);
+  --defaultScrollBarWidth: calc(var(--small-padding) / 2);
 }
 
 .lightScrollbars {
@@ -9,14 +9,6 @@
     @nest &::-webkit-scrollbar {
       background-color: transparent;
       width: var(--defaultScrollBarWidth);
-
-      @media (--screen-medium) {
-        width: var(--defaultScrollBarWidth);
-
-        @nest &:not(:hover) {
-          width: 0;
-        }
-      }
     }
 
     @nest &::-webkit-scrollbar * {
@@ -30,19 +22,18 @@
     @nest &:hover {
       @nest &::-webkit-scrollbar {
         width: var(--defaultScrollBarWidth);
-        display: initial;
-
-        @media (--screen-medium) {
-          width: var(--defaultScrollBarWidth);
-        }
       }
 
       @nest &::-webkit-scrollbar-thumb {
         background-color: var(--gray);
+        border-radius: calc(var(--defaultScrollBarWidth) / 2);
+        border: 2px color(var(--black) a(2%)) solid;
       }
 
       @nest &::-webkit-scrollbar-track {
-        background-color: color(var(--black) a(2%));
+        padding: 2px;
+        width: var(--defaultScrollBarWidth);
+        background-color: transparent;
       }
     }
 
@@ -78,23 +69,28 @@
   }
 }
 
+.hideScrollbars {
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+  overflow-style: overflow;
+}
+
 .touchScroll {
   -webkit-overflow-scrolling: touch;
 }
 
 .scrollAll {
-  overflow: overlay;
+  overflow: auto;
   composes: touchScroll;
 }
 
 .scrollX {
   composes: touchScroll;
   overflow-y: hidden;
-  overflow-x: overlay;
+  overflow-x: auto;
 }
 
 .scrollY {
   composes: touchScroll;
-  overflow-y: overlay;
+  overflow-y: auto;
   overflow-x: hidden;
 }

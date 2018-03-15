@@ -19,6 +19,7 @@ import customNumber from './customNumber'
 import color from './color'
 import recursive from './recursive'
 import recursiveArray from './recursiveArray'
+import recursivePopover from './recursivePopover'
 import numbers from './numbers'
 import booleans from './booleans'
 import datetime from './datetime'
@@ -72,6 +73,7 @@ export default createSchema({
     myImage,
     recursive,
     recursiveArray,
+    recursivePopover,
     myObject,
     codeInputType,
     notitle,

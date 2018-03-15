@@ -3,10 +3,11 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 import DefaultButton from 'part:@sanity/components/buttons/default'
-import EditItemPopOver from 'part:@sanity/components/edititem/popover'
+import Popover from 'part:@sanity/components/dialogs/popover'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import styles from './styles/FormBuilderSpan.css'
 import {applyAll} from '../../simplePatch'
+import StopPropagation from './StopPropagation'
 
 function isEmpty(object, ignoreKeys) {
   for (const key in object) {
@@ -202,15 +203,6 @@ export default class FormBuilderSpan extends React.Component {
     const annotationTypes = this.props.type.annotations
     const {focusedAnnotationName} = this.state
 
-    const style = {}
-    if (this.state.rootElement) {
-      const {width, height, left} = this.state.rootElement.getBoundingClientRect()
-      style.width = `${width}px`
-      style.height = `${height}px`
-      style.left = `${left - this._editorNodeRect.left}px`
-      style.top = `${this.state.rootElement.offsetTop + height + 10}px`
-    }
-
     const annotationTypeInFocus = annotationTypes.find(type => {
       return type.name === focusedAnnotationName
     })
@@ -219,9 +211,21 @@ export default class FormBuilderSpan extends React.Component {
     })
     const annotationValue = focusedAnnotationKey && annotations && annotations[focusedAnnotationKey]
     return (
-      <span className={styles.editSpanContainer} style={style}>
-        <EditItemPopOver
+      <span className={styles.editSpanContainer}>
+        <Popover
           onClose={this.handleCloseInput}
+          onEscape={this.handleCloseInput}
+          onClickOutside={this.handleCloseInput}
+          modifiers={
+            {
+              flip: {
+                boundariesElement: 'scrollParent'
+              },
+              preventOverflow: {
+                boundariesElement: 'scrollParent'
+              }
+            }
+          }
         >
           { /* Buttons for selecting annotation when there are several, and none is focused  */ }
           { !focusedAnnotationName && Object.keys(annotations).length > 1 && (
@@ -260,7 +264,7 @@ export default class FormBuilderSpan extends React.Component {
               />
             </div>
           )}
-        </EditItemPopOver>
+        </Popover>
       </span>
     )
   }
@@ -275,16 +279,22 @@ export default class FormBuilderSpan extends React.Component {
     return (
       <span
         {...attributes}
-        onMouseDown={this.handleMouseDown}
-        onMouseUp={this.handleMouseUp}
-        onClick={this.handleNodeClick}
         className={styles.root}
         ref={this.setRootElement}
       >
-        {this.props.children}
+        <span
+          onClick={this.handleNodeClick}
+          onMouseDown={this.handleMouseDown}
+          onMouseUp={this.handleMouseUp}
+        >
+          {this.props.children}
+        </span>
 
-        { isEditing && this.renderInput() }
-
+        {isEditing && (
+          <StopPropagation tagName="span">
+            {this.renderInput()}
+          </StopPropagation>
+        )}
       </span>
     )
   }

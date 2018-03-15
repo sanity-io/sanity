@@ -1,14 +1,15 @@
+/* eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React from 'react'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import styles from 'part:@sanity/components/dialogs/default-style'
 import Button from 'part:@sanity/components/buttons/default'
-import Portal from 'react-portal'
+import {Portal} from '../utilities/Portal'
 import Escapable from '../utilities/Escapable'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Stacked from '../utilities/Stacked'
 
-export default class DefaultDialog extends React.PureComponent {
+export default class DefaultDialog extends React.Component {
   static propTypes = {
     kind: PropTypes.oneOf(['default', 'warning', 'success', 'danger', 'info']),
     className: PropTypes.string,
@@ -16,7 +17,6 @@ export default class DefaultDialog extends React.PureComponent {
     children: PropTypes.node,
     onOpen: PropTypes.func,
     onClose: PropTypes.func.isRequired,
-    isOpen: PropTypes.bool,
     onAction: PropTypes.func,
     showHeader: PropTypes.bool,
     showCloseButton: PropTypes.bool,
@@ -29,23 +29,12 @@ export default class DefaultDialog extends React.PureComponent {
   }
 
   static defaultProps = {
-    isOpen: false,
     showHeader: false,
     showCloseButton: true,
     onAction() {},
     onOpen() {},
     actions: [],
     kind: 'default'
-  }
-
-  componentDidUpdate(prevProps) {
-    const isOpen = this.props.isOpen
-    const wasOpen = prevProps.isOpen
-    if (!wasOpen && isOpen) {
-      this.openDialogElement()
-    } else if (wasOpen && !isOpen) {
-      this.closeDialogElement()
-    }
   }
 
   openDialogElement() {
@@ -90,20 +79,20 @@ export default class DefaultDialog extends React.PureComponent {
   }
 
   render() {
-    const {title, actions, isOpen, showHeader, kind, onClose, className, showCloseButton} = this.props
+    const {title, actions, showHeader, kind, onClose, className, showCloseButton} = this.props
     const classNames = `
       ${styles[kind]}
-      ${isOpen ? styles.isOpen : styles.isClosed}
+      ${styles.isOpen}
       ${showHeader ? styles.hasHeader : ''}
       ${actions && actions.length > 0 ? styles.hasFunctions : ''}
       ${className}
     `
 
     return (
-      <Stacked>
-        {isActive => (
-          <Portal isOpened={isOpen}>
-            <div className={classNames} ref={this.setDialogElement}>
+      <Portal>
+        <Stacked>
+          {isActive => (
+            <div className={classNames}>
               <div className={styles.dialog}>
                 <Escapable onEscape={event => ((isActive || event.shiftKey) && onClose())} />
                 <CaptureOutsideClicks onClickOutside={isActive ? onClose : undefined}>
@@ -139,9 +128,9 @@ export default class DefaultDialog extends React.PureComponent {
                 </CaptureOutsideClicks>
               </div>
             </div>
-          </Portal>
-        )}
-      </Stacked>
+          )}
+        </Stacked>
+      </Portal>
     )
   }
 }

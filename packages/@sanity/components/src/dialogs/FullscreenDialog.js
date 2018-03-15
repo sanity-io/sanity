@@ -3,9 +3,8 @@ import React from 'react'
 
 import styles from 'part:@sanity/components/dialogs/fullscreen-style'
 import CloseIcon from 'part:@sanity/base/close-icon'
-import Portal from 'react-portal'
+import {Portal} from '../utilities/Portal'
 import Button from 'part:@sanity/components/buttons/default'
-import Escapable from '../utilities/Escapable'
 import StackedEscapable from '../utilities/StackedEscapable'
 
 export default class FullScreenDialog extends React.PureComponent {
@@ -55,7 +54,7 @@ export default class FullScreenDialog extends React.PureComponent {
 
     return (
       <StackedEscapable onEscape={onClose}>
-        <Portal isOpened={isOpen}>
+        <Portal>
           <div className={classNames}>
             {
               onClose && (

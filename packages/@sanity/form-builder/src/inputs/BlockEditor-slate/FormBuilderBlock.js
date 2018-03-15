@@ -11,7 +11,7 @@ import {FormBuilderInput} from '../../FormBuilderInput'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Button from 'part:@sanity/components/buttons/default'
-import EditItemPopOver from 'part:@sanity/components/edititem/popover'
+import Popover from 'part:@sanity/components/dialogs/popover'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
 import Preview from '../../Preview'
 import styles from './styles/FormBuilderBlock.css'
@@ -19,9 +19,8 @@ import createRange from './util/createRange'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import InvalidValue from '../InvalidValueInput'
 import FocusManager from '../../sanity/focusManagers/SimpleFocusManager'
-import TrashIcon from 'part:@sanity/base/trash-icon'
 import EditIcon from 'part:@sanity/base/edit-icon'
-import is from '../../utils/is'
+import StopPropagation from './StopPropagation'
 
 const DIALOG_ACTIONS = [
   {
@@ -325,18 +324,19 @@ export default class FormBuilderBlock extends React.Component {
     if (editModalLayout === 'popover') {
       return (
         <div className={styles.editBlockContainerPopOver}>
-          <EditItemPopOver
-            isOpen
+          <Popover
             title={this.props.node.title}
             onClose={this.handleClose}
+            onEscape={this.handleClose}
+            onClickOutside={this.handleClose}
+            onAction={this.handleDialogAction}
+            actions={DIALOG_ACTIONS}
           >
             {input}
-          </EditItemPopOver>
+          </Popover>
         </div>
       )
     }
-
-    // default
     return (
       <DefaultDialog
         isOpen
@@ -349,8 +349,6 @@ export default class FormBuilderBlock extends React.Component {
         {input}
       </DefaultDialog>
     )
-
-
   }
 
   showBlockDragMarker(pos, node) {
@@ -389,13 +387,13 @@ export default class FormBuilderBlock extends React.Component {
         onDragLeave={this.handleCancelEvent}
         onDrop={this.handleCancelEvent}
         draggable
-        onClick={this.handleToggleEdit}
         ref={this.refFormBuilderBlock}
         className={className}
       >
         <span
           ref={this.refPreview}
           className={styles.previewContainer}
+          onClick={this.handleToggleEdit}
         >
           <div className={styles.preview}>
             {this.renderPreview()}
@@ -425,7 +423,12 @@ export default class FormBuilderBlock extends React.Component {
           </div>
         </span>
 
-        {isEditing && this.renderInput()}
+        {isEditing && (
+          <StopPropagation>
+            {this.renderInput()}
+          </StopPropagation>
+        )}
+
       </div>
     )
   }

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/snackbar/default-style'
 import Button from 'part:@sanity/components/buttons/default'
-import Portal from 'react-portal'
+import {Portal} from '../utilities/Portal'
 
 export default class DefaultSnackbar extends React.PureComponent {
   static propTypes = {
@@ -86,7 +86,7 @@ export default class DefaultSnackbar extends React.PureComponent {
     const style = `${styles[kind] || styles.root} ${this.state.visible ? styles.visible : styles.hidden}`
 
     return (
-      <Portal isOpened>
+      <Portal>
         <div className={style}>
           <div className={styles.inner} onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave}>
             {action && (

@@ -204,7 +204,7 @@ export default withPatchSubscriber(class Syncer extends React.PureComponent {
             <br />
             We&apos;re sorry for the inconvenience and working hard to get it working properly.
             <p>
-              <Button inverted primary onClick={this.handleSynchronize}>Load remote changes</Button>
+              <Button inverted kind="primary" onClick={this.handleSynchronize}>Load remote changes</Button>
             </p>
           </div>
         )}
