@@ -1,6 +1,6 @@
 {
   "name": "@sanity/reflector-client",
-  "version": "0.125.8",
+  "version": "0.127.1",
   "description": "A client for the client to client message bus",
   "main": "lib/Reflector.js",
   "scripts": {
@@ -13,8 +13,8 @@
     "rimraf": "^2.6.2"
   },
   "dependencies": {
-    "@sanity/eventsource": "^0.125.8",
-    "@sanity/observable": "^0.125.8",
+    "@sanity/eventsource": "0.127.1",
+    "@sanity/observable": "0.127.1",
     "get-it": "^4.0.1"
   },
   "publishConfig": {
