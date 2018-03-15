@@ -37,8 +37,8 @@
     "get-video-id": "^2.1.4",
     "humanize-list": "^1.0.1",
     "prop-types": "^15.6.0",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
     "react-icons": "^2.2.5"
   },
   "devDependencies": {
