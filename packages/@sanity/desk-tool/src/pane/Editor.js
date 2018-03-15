@@ -246,12 +246,6 @@ export default withRouterHOC(
         })
         this.setSavingStatus()
       }
-
-      const prevDocId = (this.props.draft || this.props.published || {})._id
-      const nextDocId = (nextProps.draft || nextProps.published || {})._id
-      if (prevDocId !== nextDocId) {
-        this.setState({focusPath: []})
-      }
     }
 
     setSavingStatus = debounce(

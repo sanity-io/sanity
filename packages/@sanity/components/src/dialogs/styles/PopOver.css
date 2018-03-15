@@ -14,127 +14,247 @@
   }
 }
 
-.root {
-  padding: 0;
-  margin: 0;
+:root {
+  --array--add-item-color: var(--brand-primary);
+  --array--add-item-triangle-color: color(var(--form-builder--array--add-item-color) lightness(- 20%));
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: var(--backdrop-background-color);
+  opacity: 0.75;
+  z-index: var(--zindex-portal);
+  pointer-events: none;
+}
+
+.target {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.popper {
+  z-index: var(--zindex-portal);
+  position: relative;
+
+  @media (--max-screen-medium) {
+    position: fixed;
+    box-sizing: border-box;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    width: 100vw;
+    overflow: auto;
+  }
 }
 
 .arrow {
   position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 4;
-
-  @media (--max-screen-medium) {
-    display: none;
-  }
+  height: 1em;
+  width: 1em;
+  transform: translate(-50%, -50%) rotate(45deg);
+  box-shadow: 0 0 40px var(--component-box-shadow-base);
+  z-index: 0;
 
   @nest &::before {
     content: "";
-    z-index: 5;
     position: absolute;
     height: 1em;
     width: 1em;
     background-color: var(--component-bg);
-    transform: translateX(-0.4em) rotate(45deg);
+    z-index: 3;
+    clip-path: polygon(100% 0, 0 0, 0 100%);
 
-    @nest .colorDanger & {
+    @nest .color_danger & {
       background-color: var(--state-danger-color);
     }
+  }
 
-    @nest .colorSuccess & {
-      background-color: var(--state-success-color);
+  @nest .popper[data-placement^="top"] & {
+    bottom: 0;
+    transform: translate(-50%, 50%) rotate(45deg);
+
+    @nest &::before {
+      clip-path: polygon(100% 100%, 100% 0, 0 100%);
     }
+  }
 
-    @nest .colorWarning & {
-      background-color: var(--state-warning-color);
+  @nest .popper[data-placement^="right"] & {
+    left: 0;
+    transform: translate(-50%, 0) rotate(45deg);
+  }
+
+  @nest .popper[data-placement^="left"] & {
+    right: 0;
+    transform: translate(50%, 0) rotate(45deg);
+
+    @nest &::before {
+      clip-path: polygon(100% 100%, 100% 0, 0 0);
     }
+  }
 
-    @nest .colorInfo & {
-      background-color: var(--state-info-color);
+  @media (--max-screen-medium) {
+    display: none;
+  }
+}
+
+.filledArrow {
+  composes: arrow;
+
+  @nest .popper[data-placement^="bottom"] & {
+    @nest &::before {
+      background-color: var(--brand-primary);
     }
   }
 }
 
 .popover {
-  composes: shadow-5dp from "part:@sanity/base/theme/shadows-style";
+  z-index: 0;
+  composes: shadow-24dp from "part:@sanity/base/theme/shadows-style";
   background-color: var(--component-bg);
-  font-size: var(--font-size-xsmall);
-  z-index: 2;
-  padding: 0;
+  border-radius: var(--border-radius-base);
   box-sizing: border-box;
   position: relative;
-  transform: translateY(0.5rem);
-  min-width: 10em;
-  max-width: 90vw;
-  transition: transform 0.25s cubic-bezier(0.77, 0, 0.175, 1); /* easeInOutQuart */
 
-  @nest .colorDanger & {
+  @nest .color_danger & {
     background-color: var(--state-danger-color);
-    color: var(--state-danger-color--text);
   }
 
-  @nest .colorSuccess & {
-    background-color: var(--state-success-color);
-    color: var(--state-success-color--text);
-  }
-
-  @nest .colorWarning & {
-    background-color: var(--state-warning-color);
-    color: var(--state-warning-color--text);
-  }
-
-  @nest .colorInfo & {
-    background-color: var(--state-info-color);
-    color: var(--state-info-color--text);
+  @media (--max-screen-medium) {
+    box-shadow: none;
+    position: fixed !important;
+    box-sizing: border-box;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100vh !important;
+    width: 100vw !important;
+    margin: 0 !important;
+    transform: translate(0, 0) !important;
+    min-width: 100vw !important;
+    padding-bottom: 3rem;
+    overflow: hidden;
   }
 }
 
 .close {
   position: absolute;
   border: 0;
-  margin: 0;
-  padding: 0;
-  background: transparent;
-  font-size: 1em;
+  background-color: transparent;
+  font-size: 1.5em;
   cursor: pointer;
   outline: none;
+  padding-right: 0.25em;
   color: var(--text-color);
-  top: 0;
-  right: 0;
+  top: var(--small-padding);
+  right: var(--small-padding);
+  z-index: 1;
+
+  @nest .color_default & {
+    background-color: color(var(--component-bg) a(50%));
+  }
+
+  @nest .color_danger & {
+    color: var(--white);
+  }
 
   @nest &:hover {
     color: var(--black);
-  }
-
-  @nest .colorDanger & {
-    color: var(--state-danger-color--text);
-  }
-
-  @nest .colorSuccess & {
-    color: var(--state-success-color--text);
-  }
-
-  @nest .colorWarning & {
-    color: var(--state-warning-color--text);
-  }
-
-  @nest .colorInfo & {
-    color: var(--state-info-color--text);
   }
 }
 
 .closeInverted {
   composes: close;
   color: #fff;
-  top: 0;
+  top: calc(var(--small-padding) / 2);
+  background-color: transparent;
   right: 0;
+
+  @nest .color_default & {
+    background-color: transparent;
+  }
+
+  @media (--max-screen-medium) {
+    top: var(--small-padding);
+    right: var(--small-padding);
+  }
 }
 
 .content {
-  padding: var(--small-padding);
-  max-height: 100%;
+  height: 100%;
+  padding: var(--medium-padding);
   box-sizing: border-box;
+  overflow: auto;
+  max-height: 40em;
+
+  /*
+  min-width: 20em;
+  width: 30em;
+  padding-bottom: 5rem;
+  */
+
+  @media (--max-screen-medium) {
+    max-height: calc(100vh - var(--header-height)) !important;
+  }
+}
+
+.contentWithActions {
+  composes: content;
+  padding-bottom: 5rem;
+}
+
+.head {
+  /* Mobile header */
+  font-size: 1em;
+  padding: 0.5em;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  left: 0;
+  z-index: 2;
+
+  @media (--screen-medium) {
+    display: none;
+  }
+}
+
+.title {
+  margin: 0;
+  background-color: var(--array--add-item-color);
+  color: var(--component-bg);
+  padding: var(--small-padding);
+  font-size: 1rem;
+  font-weight: 400;
+  border-radius: var(--border-radius-base) var(--border-radius-base) 0 0;
+
+  @media (--max-screen-medium) {
+    height: var(--header-height);
+    line-height: var(--header-height);
+    padding: 0 var(--small-padding);
+  }
+}
+
+.footer {
+  composes: footer from 'part:@sanity/components/dialogs/default-style';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+.actions {
+  composes: actions from 'part:@sanity/components/dialogs/default-style';
+}
+
+.primaryFunctions {
+  margin-top: 1em;
 }
 
 .paddingDummy {

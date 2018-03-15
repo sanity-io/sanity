@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import StatelessSearchableSelect from './StatelessSearchableSelect'
 
-export default class SearchableSelect extends React.Component {
+export default class SearchableSelect extends React.PureComponent {
   static propTypes = {
     label: PropTypes.string,
     description: PropTypes.string,
@@ -39,9 +39,7 @@ export default class SearchableSelect extends React.Component {
       highlightIndex: -1,
       isInputSelected: false,
       arrowNavigationPosition: 0,
-      width: 448,
-      hasFocus: false,
-      dropdownPosition: props.dropdownPosition || 'bottom'
+      hasFocus: false
     }
   }
 
@@ -97,11 +95,6 @@ export default class SearchableSelect extends React.Component {
 
   setRootElement = element => {
     this._rootElement = element
-    if (this._rootElement) {
-      this.setState({
-        width: this._rootElement.offsetWidth
-      })
-    }
   }
 
   setInput = input => {
@@ -131,23 +124,8 @@ export default class SearchableSelect extends React.Component {
     }
   }
 
-  handleResize = dimensions => {
-    const width = this._rootElement.clientWidth
-    if ((window.innerHeight - dimensions.rootTop) < window.innerHeight / 3) {
-      this.setState({
-        dropdownPosition: 'top',
-        width: width
-      })
-    } else {
-      this.setState({
-        dropdownPosition: 'bottom',
-        width: width
-      })
-    }
-  }
-
   render() {
-    const {isOpen, highlightIndex, isInputSelected, inputValue, width, hasFocus, dropdownPosition} = this.state
+    const {isOpen, highlightIndex, isInputSelected, inputValue, hasFocus} = this.state
     const {onSearch, ...rest} = this.props
     return (
       <div ref={this.setRootElement}>
@@ -159,14 +137,11 @@ export default class SearchableSelect extends React.Component {
           onOpen={this.handleOpen}
           onClose={this.handleClose}
           onChange={this.handleChange}
-          onResize={this.handleResize}
-          dropdownPosition={dropdownPosition}
           isOpen={isOpen}
           highlightIndex={highlightIndex}
           isInputSelected={isInputSelected}
           inputValue={inputValue}
           onInputChange={this.handleInputChange}
-          width={width}
           isSelected={hasFocus}
           ref={this.setInput}
         />

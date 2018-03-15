@@ -8,7 +8,7 @@ import ConfirmButton from './ConfirmButton'
 import LinkIcon from 'part:@sanity/base/link-icon'
 
 import EditItemFold from 'part:@sanity/components/edititem/fold'
-import EditItemPopOver from 'part:@sanity/components/edititem/popover'
+import Popover from 'part:@sanity/components/dialogs/popover'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import ValidationStatus from 'part:@sanity/components/validation/status'
@@ -188,39 +188,49 @@ export default class RenderItemValue extends React.Component<Props> {
     if (options.editModal === 'fold') {
       return (
         <div className={styles.popupAnchorRelative}>
-          <EditItemFold title={memberType.title} onClose={this.handleEditStop}>
+          <EditItemFold
+            title={`Edit ${memberType.title}`}
+            onClose={this.handleEditStop}
+          >
             {content}
           </EditItemFold>
         </div>
       )
     }
 
+    const actions = [
+      CLOSE_ACTION,
+      !readOnly && DELETE_ACTION
+    ].filter(Boolean)
+
     if (options.editModal === 'popover') {
       return (
         <div className={styles.popupAnchor}>
-          <EditItemPopOver onClose={this.handleEditStop} key={item._key}>
+          <Popover
+            title={`Edit ${memberType.title}`}
+            onClose={this.handleEditStop}
+            onEscape={this.handleEditStop}
+            onClickOutside={this.handleEditStop}
+            actions={actions}
+            onAction={this.handleDialogAction}
+          >
             {content}
-          </EditItemPopOver>
+          </Popover>
         </div>
       )
     }
+
     return (
-      <div className={styles.popupAnchor}>
-        <DefaultDialog
-          isOpen
-          onClose={this.handleEditStop}
-          key={item._key}
-          title="Edit"
-          onAction={this.handleDialogAction}
-          showCloseButton={false}
-          actions={[
-            CLOSE_ACTION,
-            !readOnly && DELETE_ACTION
-          ].filter(Boolean)}
-        >
-          <div className={styles.defaultDialogContent}>{content}</div>
-        </DefaultDialog>
-      </div>
+      <DefaultDialog
+        onClose={this.handleEditStop}
+        key={item._key}
+        title={`Edit ${memberType.title}`}
+        actions={actions}
+        onAction={this.handleDialogAction}
+        showCloseButton={false}
+      >
+        <div className={styles.defaultDialogContent}>{content}</div>
+      </DefaultDialog>
     )
   }
 
@@ -287,9 +297,7 @@ export default class RenderItemValue extends React.Component<Props> {
     return (
       <div className={isGrid ? styles.gridItem : styles.listItem}>
         {this.renderItem()}
-        <div className={options.editModal === 'fold' ? styles.editRootFold : styles.editRoot}>
-          {isExpanded && this.renderEditItemForm(value)}
-        </div>
+        {isExpanded && this.renderEditItemForm(value)}
       </div>
     )
   }

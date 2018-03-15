@@ -34,14 +34,6 @@ export default function createButtonLike(Component, {displayName, defaultProps =
       ...defaultProps
     }
 
-    state = {
-      recentlyHovered: false
-    }
-
-    componentWillUnmount() {
-      clearTimeout(this.timeOut)
-    }
-
     focus() {
       if (this._element.focus) {
         this._element.focus()
@@ -58,11 +50,6 @@ export default function createButtonLike(Component, {displayName, defaultProps =
       })
 
       this.props.onClick(event)
-
-      clearTimeout(this.timeOut)
-      this.timeOut = setTimeout(() => {
-        this.setState({recentlyHovered: true})
-      }, 300)
     }
 
     render() {
@@ -72,8 +59,6 @@ export default function createButtonLike(Component, {displayName, defaultProps =
       // Should not be part of the destructing, cause it should be passed to component through rest
       const disabled = this.props.disabled
 
-      const {recentlyHovered} = this.state
-
       const style = cx(className, [
         styles.root,
         styles[kind],
@@ -81,7 +66,6 @@ export default function createButtonLike(Component, {displayName, defaultProps =
         inverted && styles.inverted,
         color && styles[`color__${color}`],
         disabled && styles.disabled,
-        recentlyHovered && styles.recentlyHovered,
         !children && styles.onlyIcon
       ])
 

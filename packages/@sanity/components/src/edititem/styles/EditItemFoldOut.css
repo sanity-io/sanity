@@ -21,8 +21,10 @@
 }
 
 .root {
+  position: relative;
   display: block;
   width: 100%;
+  z-index: 10;
 }
 
 .wrapper {
@@ -35,7 +37,7 @@
   margin-right: calc(var(--edit-item-fold-padding) * -1);
   position: relative;
   animation: appear 0.2s linear;
-  width: calc(100% + var(--edit-item-fold-padding));
+  width: calc(100% + var(--edit-item-fold-padding) * 2);
 
   @nest &::after {
     content: '';

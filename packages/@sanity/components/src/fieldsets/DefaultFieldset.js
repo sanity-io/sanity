@@ -125,7 +125,7 @@ export default class Fieldset extends React.Component {
               <div className={styles.headerMain}>
                 <legend
                   className={`${styles.legend} ${isCollapsed ? '' : styles.isOpen}`}
-                  onClick={isCollapsible && this.handleToggle}
+                  onClick={isCollapsible ? this.handleToggle : undefined}
                 >
                   {isCollapsible && (
                     <div className={`${styles.arrow} ${isCollapsed ? '' : styles.isOpen}`}>

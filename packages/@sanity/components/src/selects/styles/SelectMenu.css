@@ -1,20 +1,12 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  max-height: 100%;
   height: 100%;
   position: relative;
 }
 
 .scrollContainer {
   transform: translateZ(0);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  overflow-y: auto;
 }
 
 .list {

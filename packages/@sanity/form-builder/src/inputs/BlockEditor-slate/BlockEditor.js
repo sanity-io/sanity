@@ -349,28 +349,28 @@ export default class BlockEditor extends React.Component {
       <div
         className={`${styles.root} ${fullscreen ? styles.fullscreen : ''}`}
       >
-        {!readOnly && (
-          <Toolbar
-            className={styles.toolbar}
-            onInsertBlock={this.handleInsertBlock}
-            insertBlocks={this.customBlocks}
-            onFullscreenEnable={this.handleToggleFullscreen}
-            fullscreen={this.state.fullscreen}
-            onMarkButtonClick={this.handleOnClickMarkButton}
-            onAnnotationButtonClick={this.handleAnnotationButtonClick}
-            onListButtonClick={this.handleOnClickListFormattingButton}
-            onBlockStyleChange={this.handleBlockStyleChange}
-            listItems={this.getListItems()}
-            blockStyles={this.getBlockStyles()}
-            annotations={this.getActiveAnnotations()}
-            decorators={this.getActiveDecorators()}
-            style={toolbarStyle}
-          />
-        )}
         <ActivateOnFocus
           isActive={editorHasFocus || fullscreen || !preventScroll}
-          message={readOnly ? 'Click to scroll' : 'Click to edit'}
+          message="Click to edit"
         >
+          {!readOnly && (
+            <Toolbar
+              className={styles.toolbar}
+              onInsertBlock={this.handleInsertBlock}
+              insertBlocks={this.customBlocks}
+              onFullscreenEnable={this.handleToggleFullscreen}
+              fullscreen={this.state.fullscreen}
+              onMarkButtonClick={this.handleOnClickMarkButton}
+              onAnnotationButtonClick={this.handleAnnotationButtonClick}
+              onListButtonClick={this.handleOnClickListFormattingButton}
+              onBlockStyleChange={this.handleBlockStyleChange}
+              listItems={this.getListItems()}
+              blockStyles={this.getBlockStyles()}
+              annotations={this.getActiveAnnotations()}
+              decorators={this.getActiveDecorators()}
+              style={toolbarStyle}
+            />
+          )}
           <div
             className={styles.inputContainer}
             id={this._inputId}

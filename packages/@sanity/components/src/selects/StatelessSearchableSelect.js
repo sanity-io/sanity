@@ -7,10 +7,12 @@ import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import SelectMenu from './SelectMenu'
-import StickyPortal from 'part:@sanity/components/portal/sticky'
 import Stacked from '../utilities/Stacked'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Escapable from '../utilities/Escapable'
+import {Portal} from '../utilities/Portal'
+import {Manager, Target, Popper} from 'react-popper'
+import {get} from 'lodash'
 
 const noop = () => {}
 
@@ -27,13 +29,11 @@ export default class StatelessSearchableSelect extends React.PureComponent {
     isOpen: PropTypes.bool,
     onOpen: PropTypes.func,
     onClose: PropTypes.func,
-    onResize: PropTypes.func,
     openItemElement: PropTypes.func,
     items: PropTypes.array,
     highlightIndex: PropTypes.number,
     onHighlightIndexChange: PropTypes.func,
     isInputSelected: PropTypes.bool,
-    width: PropTypes.number,
     disabled: PropTypes.bool,
     dropdownPosition: PropTypes.string,
     readOnly: PropTypes.bool
@@ -48,7 +48,6 @@ export default class StatelessSearchableSelect extends React.PureComponent {
     readOnly: false,
     renderItem: item => item,
     items: [],
-    width: 100,
     dropdownPosition: 'bottom'
   }
 
@@ -56,16 +55,10 @@ export default class StatelessSearchableSelect extends React.PureComponent {
     this.props.onChange(item)
   }
 
-  handlePortalOutsideClick = event => {
-    if (!this._rootNode.contains(event.target)) {
-      this.props.onClose()
-    }
-  }
-
   handleArrowClick = () => {
-    const {isOpen, onOpen, onClose} = this.props
+    const {isOpen, onOpen} = this.props
     if (isOpen) {
-      onClose()
+      this.handleClose()
     } else {
       onOpen()
     }
@@ -115,12 +108,8 @@ export default class StatelessSearchableSelect extends React.PureComponent {
     }
   }
 
-  setListElement = element => {
-    this._listElement = element
-  }
-
-  setRootNode = node => {
-    this._rootNode = node
+  handleClose = event => {
+    this.props.onClose()
   }
 
   setInput = input => {
@@ -147,7 +136,6 @@ export default class StatelessSearchableSelect extends React.PureComponent {
       onInputChange,
       onOpen,
       onClose,
-      onResize,
       dropdownPosition,
       disabled,
       onHighlightIndexChange,
@@ -157,8 +145,8 @@ export default class StatelessSearchableSelect extends React.PureComponent {
     } = this.props
 
     return (
-      <div ref={this.setRootNode}>
-        <div className={disabled ? styles.selectContainerDisabled : styles.selectContainer}>
+      <Manager>
+        <Target className={disabled ? styles.selectContainerDisabled : styles.selectContainer}>
           <DefaultTextInput
             {...rest}
             className={styles.select}
@@ -170,85 +158,87 @@ export default class StatelessSearchableSelect extends React.PureComponent {
             selected={isInputSelected}
             disabled={disabled}
             ref={this.setInput}
-            readOnly={readOnly}
           />
           <div className={styles.functions}>
             {openItemElement &&
               value && <span className={styles.openItem}>{openItemElement(value)}</span>}
             {onClear &&
-              value &&
-              !readOnly && (
+              value && (
                 <button type="button" className={styles.clearButton} onClick={onClear}>
                   <CloseIcon color="inherit" />
                 </button>
               )}
-            {!isLoading &&
-              !readOnly && (
-                <div
-                  className={styles.arrow}
-                  onClick={disabled ? null : this.handleArrowClick}
-                  tabIndex={0}
-                  onKeyPress={disabled ? null : this.handleArrowKeyPress}
-                >
-                  <FaAngleDown color="inherit" />
-                </div>
-              )}
+            {!isLoading && (
+              <div
+                className={styles.arrow}
+                onClick={disabled ? null : this.handleArrowClick}
+                tabIndex={0}
+                onKeyPress={disabled ? null : this.handleArrowKeyPress}
+              >
+                <FaAngleDown color="inherit" />
+              </div>
+            )}
             {isLoading && <Spinner />}
           </div>
-        </div>
-        <div className={styles.stickyContainer} style={{width: `${this.props.width}px`}}>
-          {isOpen && (
-            <StickyPortal
-              isOpen={isOpen}
-              onResize={onResize}
-              onlyBottomSpace={false}
-              useOverlay={false}
-              addPadding={false}
-              scrollIntoView={false}
-            >
-              <Stacked>
-                {isActive => (
-                  <CaptureOutsideClicks onClickOutside={isActive ? onClose : null}>
-                    <Escapable onEscape={event => (isActive || event.shiftKey) && onClose()} />
-
-                    <div
-                      className={`
-                        ${isOpen ? styles.listContainer : styles.listContainerHidden}
-                        ${
-                          dropdownPosition === 'top'
-                            ? styles.listContainerTop
-                            : styles.listContainerBottom
+        </Target>
+        {isOpen && (
+          <Stacked>
+            {isActive => (
+              <Portal>
+                <Popper
+                  placement="bottom"
+                  className={styles.popper}
+                  modifiers={{
+                    preventOverflow: {
+                      boundariesElement: 'viewport'
+                    },
+                    customStyle: {
+                      enabled: true,
+                      fn: data => {
+                        const width = get(data, 'instance.reference.clientWidth') || 500
+                        data.styles = {
+                          ...data.styles,
+                          width: width
                         }
-                        ${items.length === 0 ? styles.listContainerEmpty : ''}
-                      `}
-                      style={{width: `${this.props.width}px`}}
-                      ref={this.setListElement}
+                        return data
+                      }
+                    }
+                  }}
+                >
+                  <div>
+                    <CaptureOutsideClicks
+                      onClickOutside={isActive && isOpen ? this.handleClose : undefined}
                     >
-                      {items.length === 0 &&
-                        !isLoading && <p className={styles.noResultText}>No results</p>}
-                      {items.length === 0 &&
-                        isLoading && (
-                          <div className={styles.listSpinner}>
-                            <Spinner message="Loading items…" />
-                          </div>
-                        )}
-                      {items.length > 0 && (
-                        <SelectMenu
-                          items={items}
-                          value={value}
-                          onSelect={this.handleSelect}
-                          renderItem={renderItem}
-                          highlightIndex={highlightIndex}
+                      <div className={styles.listContainer}>
+                        <Escapable
+                          onEscape={event => (isActive || event.shiftKey) && this.handleClose()}
                         />
-                      )}
-                    </div>
-                  </CaptureOutsideClicks>
-                )}
-              </Stacked>
-            </StickyPortal>
-          )}
-        </div>
-      </div>
+                        {items.length === 0 &&
+                          !isLoading && <p className={styles.noResultText}>No results</p>}
+                        {items.length === 0 &&
+                          isLoading && (
+                            <div className={styles.listSpinner}>
+                              <Spinner message="Loading items…" />
+                            </div>
+                          )}
+                        {items.length > 0 && (
+                          <SelectMenu
+                            items={items}
+                            value={value}
+                            onSelect={this.handleSelect}
+                            renderItem={renderItem}
+                            highlightIndex={highlightIndex}
+                          />
+                        )}
+                      </div>
+                    </CaptureOutsideClicks>
+                  </div>
+                </Popper>
+              </Portal>
+            )}
+          </Stacked>
+        )}
+      </Manager>
     )
   }
 }

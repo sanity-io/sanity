@@ -251,6 +251,10 @@
       "description": "Popover dialog. Points an arrow to parent element"
     },
     {
+      "name": "part:@sanity/components/dialogs/popover-style",
+      "description": "Popover styling"
+    },
+    {
       "name": "part:@sanity/components/snackbar/default",
       "description": "Shows messages with an action and a timeout."
     },
@@ -309,10 +313,6 @@
     {
       "implements": "part:@sanity/components/drag-handle-style",
       "path": "lists/styles/DragHandle.css"
-    },
-    {
-      "name": "part:@sanity/components/edititem/popover",
-      "description": "Edit item. Popover that points to the element"
     },
     {
       "name": "part:@sanity/components/edititem/fold",
@@ -532,16 +532,16 @@
       "path": "dialogs/PopOver.js"
     },
     {
+      "implements":  "part:@sanity/components/dialogs/popover-style",
+      "path": "dialogs/styles/PopOver.css"
+    },
+    {
       "implements": "part:@sanity/components/fieldsets/default",
       "path": "fieldsets/DefaultFieldset.js"
     },
     {
       "implements": "part:@sanity/components/snackbar/default",
       "path": "snackbar/DefaultSnackbar.js"
-    },
-    {
-      "implements": "part:@sanity/components/edititem/popover",
-      "path": "edititem/EditItemPopOver.js"
     },
     {
       "implements": "part:@sanity/components/edititem/fold",
@@ -724,10 +724,6 @@
       "path": "lists/sortable-grid"
     },
     {
-      "implements": "part:@sanity/components/edititem/popover-style",
-      "path": "edititem/styles/EditItemPopOver.css"
-    },
-    {
       "implements": "part:@sanity/components/edititem/fold-style",
       "path": "edititem/styles/EditItemFoldOut.css"
     },
@@ -807,18 +803,6 @@
     {
       "implements": "part:@sanity/components/panes/split-pane-wrapper",
       "path": "panes/SplitPaneWrapper.js"
-    },
-    {
-      "name": "part:@sanity/components/portal/sticky",
-      "description": "Portal that sticks to scrollContainer"
-    },
-    {
-      "implements": "part:@sanity/components/portal/sticky",
-      "path": "portal/Sticky.js"
-    },
-    {
-      "name": "part:@sanity/components/utilities/scroll-container",
-      "description": "Portal that sticks to scrollContainer"
     },
     {
       "implements": "part:@sanity/components/utilities/scroll-container",
@@ -923,11 +907,6 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "panes/story.js"
-    },
-    {
-      "implements": "part:@sanity/base/component",
-      "path": "portal/story.js"
     }
-
   ]
 }
