@@ -5,7 +5,7 @@
     "bootstrap": "lerna bootstrap && yarn run package-yarn && yarn run install-husky",
     "build": "lerna run clean && gulp && yarn run package",
     "clean": "lerna run clean && lerna clean",
-    "publish": "yarn run build && lerna publish",
+    "publish": "yarn run build && lerna publish --exact",
     "publish-canary": "yarn run build && lerna publish --canary --exact",
     "package": "yarn run package-yarn && yarn run package-cli",
     "package-cli": "(cd packages/@sanity/cli && yarn run pack)",
