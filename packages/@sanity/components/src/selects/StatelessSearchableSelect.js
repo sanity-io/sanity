@@ -16,7 +16,7 @@ import {get} from 'lodash'
 
 const noop = () => {}
 
-export default class StatelessSearchableSelect extends React.Component {
+export default class StatelessSearchableSelect extends React.PureComponent {
   static propTypes = {
     onChange: PropTypes.func,
     value: PropTypes.any,
