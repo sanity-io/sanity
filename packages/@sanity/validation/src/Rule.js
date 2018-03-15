@@ -6,6 +6,15 @@ const createUriRegex = require('./util/createUriRegex')
 const knownTypes = ['Object', 'String', 'Number', 'Boolean', 'Array', 'Date']
 const isExclusive = ['type', 'uri', 'email']
 
+const mergeRequired = (prev, next) => {
+  let isRequired = prev._required || next._required
+  if (!isRequired) {
+    isRequired = prev._required === false || next._required === false ? false : undefined
+  }
+
+  return isRequired
+}
+
 class Rule {
   static FIELD_REF = Symbol('FIELD_REF')
   static array = () => new Rule().type('Array')
@@ -46,13 +55,13 @@ class Rule {
     this._type = this._type || null
     this._rules = (this._rules || []).filter(rule => rule.flag === 'type')
     this._message = null
-    this._required = false
+    this._required = undefined
     this._level = 'error'
     return this
   }
 
   isRequired() {
-    return this._required
+    return this._required === true
   }
 
   clone() {
@@ -95,7 +104,7 @@ class Rule {
     const newRule = this.cloneWithRules(rule._rules)
     newRule._type = this._type || rule._type
     newRule._message = this._message || rule._message
-    newRule._required = this._required || rule._required
+    newRule._required = mergeRequired(this, rule)
     newRule._level = this._level === 'error' ? rule._level : this._level
     return newRule
   }
