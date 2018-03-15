@@ -11,8 +11,8 @@
 }
 
 .select {
-  composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
-  padding-right: 2rem;
+  composes: root from 'part:@sanity/base/theme/forms/text-input-style';
+  box-sizing: border-box;
   min-width: 7rem;
   appearance: none;
   position: relative;
@@ -69,6 +69,14 @@
   cursor: default;
   z-index: 1;
   pointer-events: none;
+
+  @nest & > * {
+    pointer-events: initial;
+  }
+
+  @nest & .arrow {
+    pointer-events: none;
+  }
 
   @nest & > *:not(:first-child) {
     margin-left: 0.5em;
