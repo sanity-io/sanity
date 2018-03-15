@@ -9,8 +9,12 @@ function QueryErrorDetails(props) {
 
   return (
     <div>
-      <pre><code>{`${details.line}\n${dashLine(details.column)}`}</code></pre>
-      <pre><code>{`Line:   ${details.lineNumber}\nColumn: ${details.column}`}</code></pre>
+      <pre>
+        <code>{`${details.line}\n${dashLine(details.column)}`}</code>
+      </pre>
+      <pre>
+        <code>{`Line:   ${details.lineNumber}\nColumn: ${details.column}`}</code>
+      </pre>
     </div>
   )
 }

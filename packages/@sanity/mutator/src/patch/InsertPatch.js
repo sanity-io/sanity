@@ -3,11 +3,11 @@ import {targetsToIndicies} from './util'
 import {min, max} from 'lodash'
 
 export default class InsertPatch {
-  location : string
-  path : string
-  items : Array<any>
-  id : string
-  constructor(id : string, location : string, path : string, items : Array<any>) {
+  location: string
+  path: string
+  items: Array<any>
+  id: string
+  constructor(id: string, location: string, path: string, items: Array<any>) {
     this.id = id
     this.location = location
     this.path = path
@@ -45,7 +45,7 @@ export default class InsertPatch {
   }
 }
 
-function minIndex(targets, accessor) : number {
+function minIndex(targets, accessor): number {
   let result = min(targetsToIndicies(targets, accessor))
   // Ranges may be zero-length and not turn up in indices
   targets.forEach(target => {
@@ -59,7 +59,7 @@ function minIndex(targets, accessor) : number {
   return result
 }
 
-function maxIndex(targets, accessor) : number {
+function maxIndex(targets, accessor): number {
   let result = max(targetsToIndicies(targets, accessor))
   // Ranges may be zero-length and not turn up in indices
   targets.forEach(target => {

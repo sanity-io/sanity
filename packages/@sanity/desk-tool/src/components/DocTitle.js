@@ -18,12 +18,11 @@ export default function DocTitle(props) {
     <PreviewFields document={document} type={type} fields={['title']}>
       {ShowTitle}
     </PreviewFields>
-
   )
 }
 
 DocTitle.propTypes = {
   document: PropTypes.shape({
-    _type: PropTypes.string,
+    _type: PropTypes.string
   })
 }

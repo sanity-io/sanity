@@ -26,7 +26,7 @@ export default function uploadImage(file: File): ObservableI<UploadEvent> {
     .filter(event => event.stage !== 'download')
     .map(event => ({
       ...event,
-      progress: 2 + ((event.percent / 100) * 98)
+      progress: 2 + event.percent / 100 * 98
     }))
     .map(event => {
       if (event.type === 'complete') {
@@ -42,7 +42,11 @@ export default function uploadImage(file: File): ObservableI<UploadEvent> {
     .mergeMap((exifData: Exif) => rotateImage(file, exifData.orientation || DEFAULT_ORIENTATION))
     .catch(error => {
       // eslint-disable-next-line no-console
-      console.warn('Image preprocessing failed for "%s" with the error: %s', file.name, error.message)
+      console.warn(
+        'Image preprocessing failed for "%s" with the error: %s',
+        file.name,
+        error.message
+      )
       // something went wrong, but continue still
       return Observable.of(null)
     })

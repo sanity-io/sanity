@@ -12,7 +12,7 @@ export default {
       awards: 'awards',
       relatedAuthors: 'relatedAuthors',
       lastUpdated: '_updatedAt',
-      media: 'image',
+      media: 'image'
     },
     prepare({title, media, awards}) {
       return {

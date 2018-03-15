@@ -18,9 +18,11 @@ function copyArray(array, options = {}) {
 const COPY_AS_IS = ['number', 'string', 'boolean']
 
 function isReference(value) {
-  return value._type === 'reference'
+  return (
+    value._type === 'reference' ||
     // should not happen as all references should have _type === 'reference'
-    || (!('_type' in value) && ('_ref' in value))
+    (!('_type' in value) && '_ref' in value)
+  )
 }
 
 function copyAny(value, options) {

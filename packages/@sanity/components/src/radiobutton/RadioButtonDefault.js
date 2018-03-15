@@ -68,7 +68,9 @@ export default class RadioButton extends React.Component {
           onBlur={this.handleBlur}
           disabled={disabled}
         />
-        <div className={styles.label} htmlFor={this._inputId}>{label}</div>
+        <div className={styles.label} htmlFor={this._inputId}>
+          {label}
+        </div>
         <div className={styles.circleOutline}>
           <div className={styles.tickOutline} />
         </div>

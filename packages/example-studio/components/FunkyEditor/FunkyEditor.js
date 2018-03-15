@@ -10,7 +10,8 @@ function extractTextFromBlocks(blocks) {
         .filter(child => child._type === 'span')
         .map(span => span.text)
         .join('')
-    }).join('')
+    })
+    .join('')
 }
 
 export default class FunkyEditor extends React.Component {
@@ -21,18 +22,13 @@ export default class FunkyEditor extends React.Component {
     level: PropTypes.number,
     value: PropTypes.array,
     onChange: PropTypes.func.isRequired
-  };
+  }
 
   render() {
     const {type, value = [], level, onChange} = this.props
     return (
       <div>
-        <BlockEditor
-          type={type}
-          level={level}
-          value={value}
-          onChange={onChange}
-        />
+        <BlockEditor type={type} level={level} value={value} onChange={onChange} />
         <p>
           Your funkyness is <strong>{extractTextFromBlocks(value).length}</strong> characters long
         </p>

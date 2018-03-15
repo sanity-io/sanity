@@ -5,6 +5,7 @@ const cssHook = require('css-modules-require-hook')
 const postcss = require('@sanity/webpack-integration/v3')
 const resolver = require('@sanity/resolver')
 const util = require('@sanity/util')
+
 const reduceConfig = util.reduceConfig
 const getSanityVersions = util.getSanityVersions
 
@@ -52,10 +53,7 @@ function registerLoader(options) {
       }
     })
 
-    parts.implementations = Object.assign(
-      parts.implementations,
-      overrides
-    )
+    parts.implementations = Object.assign(parts.implementations, overrides)
   }
 
   const realResolve = Module._resolveFilename
@@ -105,9 +103,8 @@ function registerLoader(options) {
 
       // Overrides should be plain objects, not paths to modules
       // Actual resolved parts are paths to implementations
-      const implementations = overrides && overrides[partName]
-        ? implementers
-        : implementers.map(interopRequire)
+      const implementations =
+        overrides && overrides[partName] ? implementers : implementers.map(interopRequire)
 
       require.cache[request] = getModule(request, implementations.reverse())
       return request
@@ -128,7 +125,9 @@ function registerLoader(options) {
 
       try {
         return realResolve(request, parent)
-      } catch (err) { /* intentional noop */ }
+      } catch (err) {
+        /* intentional noop */
+      }
 
       // Attempt local resolve
       try {
@@ -153,7 +152,8 @@ function registerLoader(options) {
   // Register CSS hook
   cssHook({
     generateScopedName: options.generateScopedName || '[name]__[local]___[hash:base64:5]',
-    prepend: postcss.getPostcssPlugins({basePath: basePath})
+    prepend: postcss
+      .getPostcssPlugins({basePath: basePath})
       .filter(plugin => plugin.postcssPlugin !== 'postcss-import')
   })
 }

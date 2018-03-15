@@ -2,12 +2,11 @@ import DMP from 'diff-match-patch'
 
 const dmp = new DMP()
 
-
 export default class DiffMatchPatch {
-  path : string
-  dmpPatch : string
-  id : string
-  constructor(id : string, path : string, dmpPatchSrc : string) {
+  path: string
+  dmpPatch: string
+  id: string
+  constructor(id: string, path: string, dmpPatchSrc: string) {
     this.id = id
     this.path = path
     this.dmpPatch = dmp.patch_fromText(dmpPatchSrc)

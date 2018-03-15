@@ -9,15 +9,21 @@ export function validateTypeName(typeName: string, visitorContext) {
 
   if (!typeName) {
     return [
-      error(`Type is missing a type. Valid types are: ${humanize(possibleTypeNames)}`,
-        HELP_IDS.TYPE_MISSING_TYPE)
+      error(
+        `Type is missing a type. Valid types are: ${humanize(possibleTypeNames)}`,
+        HELP_IDS.TYPE_MISSING_TYPE
+      )
     ]
   }
 
   if (typeof typeName !== 'string') {
     return [
-      error(`Type has an invalid "type"-property - should be a string. Valid types are: ${humanize(possibleTypeNames)}`,
-        HELP_IDS.TYPE_MISSING_TYPE)
+      error(
+        `Type has an invalid "type"-property - should be a string. Valid types are: ${humanize(
+          possibleTypeNames
+        )}`,
+        HELP_IDS.TYPE_MISSING_TYPE
+      )
     ]
   }
 
@@ -27,14 +33,16 @@ export function validateTypeName(typeName: string, visitorContext) {
     const suggestions = possibleTypeNames
       .map(possibleTypeName => {
         if (!possibleTypeName || !typeName) {
-
         }
         return [leven(typeName, possibleTypeName), possibleTypeName]
       })
       .filter(([distance]) => distance < 3)
       .map(([_, name]) => name)
 
-    const suggestion = suggestions.length > 0 ? ` Did you mean ${humanize(suggestions.map(quote), {conjunction: 'or'})}?` : ''
+    const suggestion =
+      suggestions.length > 0
+        ? ` Did you mean ${humanize(suggestions.map(quote), {conjunction: 'or'})}?`
+        : ''
 
     return [
       error(

@@ -19,8 +19,7 @@ function Multicast() {
     return () => {
       this._observer = null
     }
-  })
-    .share()
+  }).share()
 }
 
 Multicast.prototype.next = function next(val) {

@@ -19,22 +19,13 @@ export default class CustomObjectInput extends React.PureComponent {
 
   handleFieldChange = (field, fieldPatchEvent) => {
     const {onChange, type} = this.props
-    onChange(fieldPatchEvent
-      .prefixAll(field.name)
-      .prepend(
-        setIfMissing({_type: type.name}),
-      )
-    )
+    onChange(fieldPatchEvent.prefixAll(field.name).prepend(setIfMissing({_type: type.name})))
   }
 
   render() {
     const {type, value, level} = this.props
     return (
-      <FormField
-        label={type.title}
-        level={level}
-        description={type.description}
-      >
+      <FormField label={type.title} level={level} description={type.description}>
         This is my custom object input with fields
         <fieldset style={{backgroundColor: 'lightblue'}}>
           {type.fields.map(field => (
@@ -46,8 +37,7 @@ export default class CustomObjectInput extends React.PureComponent {
               value={value && value[field.name]}
               onChange={patchEvent => this.handleFieldChange(field, patchEvent)}
             />
-          )
-          )}
+          ))}
         </fieldset>
       </FormField>
     )

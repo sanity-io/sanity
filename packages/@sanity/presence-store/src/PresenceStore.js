@@ -64,9 +64,12 @@ export default class PresenceStore {
   // Updates state for a client based on an incoming state message
   updateClientState(msg) {
     // Construct next state object
-    const state = Object.assign({
-      identity: msg.i
-    }, msg.m)
+    const state = Object.assign(
+      {
+        identity: msg.i
+      },
+      msg.m
+    )
     delete state.type
 
     // The cache key for this state
@@ -123,14 +126,15 @@ export default class PresenceStore {
   }
 
   getStateReport() {
-    return Array.from(this.states.keys()).sort().map(key => this.states.get(key))
+    return Array.from(this.states.keys())
+      .sort()
+      .map(key => this.states.get(key))
   }
 
   reportChangesToAllSubscribers = () => {
     const report = this.getStateReport()
     this.subscriberCallbacks.forEach(cb => cb(report))
   }
-
 
   sendMyState() {
     clearTimeout(this.resendReportTimer)
@@ -145,9 +149,14 @@ export default class PresenceStore {
   }
 
   send(msgType, msg) {
-    return this.connection.send(Object.assign({
-      type: msgType,
-      session: this.sessionId
-    }, msg))
+    return this.connection.send(
+      Object.assign(
+        {
+          type: msgType,
+          session: this.sessionId
+        },
+        msg
+      )
+    )
   }
 }

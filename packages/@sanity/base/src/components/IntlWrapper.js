@@ -7,7 +7,7 @@ let intl = null
 export class IntlWrapper extends React.Component {
   static contextTypes = {
     intl: intlShape
-  };
+  }
 
   static propTypes = {
     children: PropTypes.node.isRequired
@@ -27,8 +27,13 @@ export class IntlWrapper extends React.Component {
 }
 
 const proxies = [
-  'formatDate', 'formatTime', 'formatRelative', 'formatNumber',
-  'formatPlural', 'formatMessage', 'formatHTMLMessage'
+  'formatDate',
+  'formatTime',
+  'formatRelative',
+  'formatNumber',
+  'formatPlural',
+  'formatMessage',
+  'formatHTMLMessage'
 ].reduce((target, fnName) => {
   target[fnName] = (...args) => {
     if (!intl) {

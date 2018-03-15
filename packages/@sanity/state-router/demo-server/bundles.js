@@ -7,9 +7,8 @@ const main = rebundler((cache, pkgCache) => {
     cache: cache,
     packageCache: pkgCache,
     debug: true,
-    fullPaths: true,
-  })
-    .transform(babelify)
+    fullPaths: true
+  }).transform(babelify)
 })
 
 export default {

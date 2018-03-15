@@ -35,13 +35,7 @@ class UpdateNotifier extends Component {
   }
 
   render() {
-    const {
-      level,
-      outdated,
-      isUpToDate,
-      isSupported,
-      showUpdateNotifier
-    } = this.state
+    const {level, outdated, isUpToDate, isSupported, showUpdateNotifier} = this.state
     const severity = isSupported ? level : 'high'
     const className = styles[classes[severity] || 'button']
     const Dialog = isUpToDate ? CurrentVersionsDialog : UpdateNotifierDialog
@@ -49,26 +43,16 @@ class UpdateNotifier extends Component {
     return (
       <div className={styles.container}>
         {showUpdateNotifier && (
-          <Dialog
-            severity={severity}
-            outdated={outdated}
-            onClose={this.handleHideUpdateNotifier}
-          />
+          <Dialog severity={severity} outdated={outdated} onClose={this.handleHideUpdateNotifier} />
         )}
 
-        <button
-          type="button"
-          onClick={this.handleShowUpdateNotifier}
-          className={className}
-        >
+        <button type="button" onClick={this.handleShowUpdateNotifier} className={className}>
           {!isUpToDate && (
             <div className={styles.warningIcon}>
               <WarningIcon />
             </div>
           )}
-          <div
-            className={isUpToDate ? styles.upToDateText : styles.upgradeText}
-          >
+          <div className={isUpToDate ? styles.upToDateText : styles.upgradeText}>
             {isUpToDate ? 'Up to date' : 'Upgrade'}
           </div>
         </button>

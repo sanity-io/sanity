@@ -18,7 +18,12 @@ export default class CustomStringInput extends React.Component {
       <div style={{backgroundColor: '#f5ad3d'}}>
         <h3>{type.title}</h3>
         <p>{type.description}</p>
-        <input type="text" placeholder={type.placeholder} onChange={this.handleChange} value={value} />
+        <input
+          type="text"
+          placeholder={type.placeholder}
+          onChange={this.handleChange}
+          value={value}
+        />
       </div>
     )
   }

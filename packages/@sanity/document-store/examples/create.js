@@ -9,6 +9,4 @@ const create = documents.create({_type: 'test'})
 
 create.subscribe(log('created'))
 
-create
-  .flatMap(ev => documents.byId(ev.results[0].id))
-  .subscribe(log('doc event:'))
+create.flatMap(ev => documents.byId(ev.results[0].id)).subscribe(log('doc event:'))

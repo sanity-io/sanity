@@ -5,15 +5,16 @@ import {withMaxConcurrency} from '../../utils/withMaxConcurrency'
 const MAX_CONCURRENT_UPLOADS = 4
 
 function uploadSanityAsset(assetType, file) {
-  return client.observable.assets.upload(assetType, file)
-    .map(event => {
-      return event.type === 'response'
-        ? { // rewrite to a 'complete' event
+  return client.observable.assets.upload(assetType, file).map(event => {
+    return event.type === 'response'
+      ? {
+          // rewrite to a 'complete' event
           type: 'complete',
           id: event.body.document._id,
           asset: event.body.document
-        } : event
-    })
+        }
+      : event
+  })
 }
 
 const uploadAsset = withMaxConcurrency(uploadSanityAsset, MAX_CONCURRENT_UPLOADS)

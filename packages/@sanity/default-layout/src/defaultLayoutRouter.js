@@ -12,7 +12,4 @@ const spaceRoute = route('/:space', params => {
   return foundSpace ? toolRoute : route('/')
 })
 
-export default route('/', [
-  route.intents('/intent'),
-  HAS_SPACES ? spaceRoute : toolRoute
-])
+export default route('/', [route.intents('/intent'), HAS_SPACES ? spaceRoute : toolRoute])

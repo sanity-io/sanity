@@ -471,7 +471,8 @@ export default withRouterHOC(
             </Tooltip>
           )}
           {value &&
-            !showSavingStatus && !isReconnecting && (
+            !showSavingStatus &&
+            !isReconnecting && (
               <Tooltip
                 className={styles.syncStatusSynced}
                 arrow

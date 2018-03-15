@@ -118,9 +118,7 @@ export default class Fieldset extends React.Component {
         className={rootClassName}
       >
         <fieldset className={styles.fieldset}>
-          <div
-            className={styles.inner}
-          >
+          <div className={styles.inner}>
             <div className={styles.header}>
               <div className={styles.headerMain}>
                 <legend
@@ -144,17 +142,13 @@ export default class Fieldset extends React.Component {
                 <ValidationStatus markers={markers} onClick={this.handleToggleValidationList} />
               </div>
             </div>
-            {
-              showValidationList && (
-                <div className={styles.validationList}>
-                  <ValidationList markers={markers} />
-                </div>
-              )
-            }
-            <div className={`${styles.content} ${isCollapsed ? '' : styles.isOpen}`}>
-              <div className={styles.fieldWrapper}>
-                {!isCollapsed && children}
+            {showValidationList && (
+              <div className={styles.validationList}>
+                <ValidationList markers={markers} />
               </div>
+            )}
+            <div className={`${styles.content} ${isCollapsed ? '' : styles.isOpen}`}>
+              <div className={styles.fieldWrapper}>{!isCollapsed && children}</div>
             </div>
           </div>
         </fieldset>

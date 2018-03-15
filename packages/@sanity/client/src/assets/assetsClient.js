@@ -7,11 +7,11 @@ function AssetsClient(client) {
 }
 
 function toPromise(observable) {
-  return observable.filter(event => event.type === 'response')
+  return observable
+    .filter(event => event.type === 'response')
     .map(event => event.body)
     .toPromise()
 }
-
 
 function resolveWithDocument(body) {
   // todo: rewrite to just return body.document in a while
@@ -20,7 +20,9 @@ function resolveWithDocument(body) {
     enumerable: false,
     get: () => {
       // eslint-disable-next-line no-console
-      console.warn('The promise returned from client.asset.upload(...) now resolves with the asset document')
+      console.warn(
+        'The promise returned from client.asset.upload(...) now resolves with the asset document'
+      )
       return document
     }
   })
@@ -32,10 +34,13 @@ function optionsFromFile(opts, file) {
     return opts
   }
 
-  return assign({
-    filename: opts.preserveFilename === false ? undefined : file.name,
-    contentType: file.type
-  }, opts)
+  return assign(
+    {
+      filename: opts.preserveFilename === false ? undefined : file.name,
+      contentType: file.type
+    },
+    opts
+  )
 }
 
 assign(AssetsClient.prototype, {
@@ -77,9 +82,7 @@ assign(AssetsClient.prototype, {
       body
     })
 
-    return this.client.isPromiseAPI()
-      ? toPromise(observable).then(resolveWithDocument)
-      : observable
+    return this.client.isPromiseAPI() ? toPromise(observable).then(resolveWithDocument) : observable
   },
 
   delete(type, id) {

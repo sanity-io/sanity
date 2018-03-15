@@ -22,7 +22,6 @@ function compileRegistry(schemaDef) {
       }
       add(defsByName[typeName])
     }
-
   }
   function extendMember(memberDef) {
     ensure(memberDef.type)

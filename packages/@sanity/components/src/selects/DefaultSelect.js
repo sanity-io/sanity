@@ -15,9 +15,9 @@ export default class DefaultSelect extends React.Component {
     readOnly: PropTypes.bool,
     items: PropTypes.arrayOf(
       PropTypes.shape({
-        title: PropTypes.string,
+        title: PropTypes.string
       })
-    ),
+    )
   }
 
   static defaultProps = {

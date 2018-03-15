@@ -6,7 +6,7 @@ export default {
     select: {
       title: 'title',
       imageUrl: 'image.asset.url'
-    },
+    }
   },
   fields: [
     {

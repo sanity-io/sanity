@@ -5,9 +5,10 @@ import getItJsonResponse from 'get-it/lib/middleware/jsonResponse'
 import getItPromise from 'get-it/lib/middleware/promise'
 import Observable from '@sanity/observable/minimal'
 
-const EventSource = typeof window !== 'undefined' && window.EventSource
-? window.EventSource // Native browser EventSource
-: require('@sanity/eventsource') // Node.js, IE etc
+const EventSource =
+  typeof window !== 'undefined' && window.EventSource
+    ? window.EventSource // Native browser EventSource
+    : require('@sanity/eventsource') // Node.js, IE etc
 
 function parseEvent(event) {
   try {
@@ -19,10 +20,7 @@ function parseEvent(event) {
 export default class Reflector {
   constructor(sanityClient) {
     this.sanityClient = sanityClient
-    this.request = getIt([
-      getItJsonResponse(),
-      getItPromise()
-    ])
+    this.request = getIt([getItJsonResponse(), getItPromise()])
   }
 
   listen(channel) {
@@ -46,9 +44,7 @@ export default class Reflector {
 
       function onMessage(evt) {
         const event = parseEvent(evt)
-        return event instanceof Error
-          ? observer.error(event)
-          : observer.next(event)
+        return event instanceof Error ? observer.error(event) : observer.next(event)
       }
 
       function unsubscribe() {

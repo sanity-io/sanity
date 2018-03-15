@@ -6,7 +6,8 @@ function reduceType(type, reducer, accumulator, path = [], maxDepth = 10) {
   }
   if (Array.isArray(type.fields)) {
     return type.fields.reduce(
-      (acc, field, index) => reduceType(field.type, reducer, acc, path.concat(field.name), maxDepth - 1),
+      (acc, field, index) =>
+        reduceType(field.type, reducer, acc, path.concat(field.name), maxDepth - 1),
       reducer(accumulator, type, path)
     )
   }
@@ -22,10 +23,7 @@ function getCachedStringFieldPaths(type, maxDepth) {
 
 function getStringFieldPaths(type, maxDepth) {
   const reducer = (accumulator, childType, path) =>
-    (childType.jsonType === 'string'
-      ? [...accumulator, path]
-      : accumulator
-    )
+    childType.jsonType === 'string' ? [...accumulator, path] : accumulator
 
   return reduceType(type, reducer, [], [], maxDepth)
 }

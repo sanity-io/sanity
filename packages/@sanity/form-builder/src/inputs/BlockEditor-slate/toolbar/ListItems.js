@@ -15,7 +15,6 @@ export const listItem = PropTypes.shape({
 })
 
 export default class ListItem extends React.Component {
-
   static propTypes = {
     onClick: PropTypes.func,
     listItems: PropTypes.arrayOf(listItem)
@@ -31,7 +30,6 @@ export default class ListItem extends React.Component {
         return SanityLogoIcon
     }
   }
-
 
   renderButton = listFormat => {
     const onClick = event => {
@@ -49,14 +47,7 @@ export default class ListItem extends React.Component {
     )
   }
 
-
   render() {
-    return (
-      <div className={styles.root}>
-        {
-          this.props.listItems.map(this.renderButton)
-        }
-      </div>
-    )
+    return <div className={styles.root}>{this.props.listItems.map(this.renderButton)}</div>
   }
 }

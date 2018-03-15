@@ -62,7 +62,9 @@ export default {
     prepare({title, hex, hsl, alpha}) {
       let subtitle = hex || 'No color set'
       if (hsl) {
-        subtitle = `H:${Math.round(hsl.l * 100)} S:${Math.round(hsl.l * 100)} L:${Math.round(hsl.l * 100)} A:${Math.round(alpha * 100)}` //eslint-disable-line max-len
+        subtitle = `H:${Math.round(hsl.l * 100)} S:${Math.round(hsl.l * 100)} L:${Math.round(
+          hsl.l * 100
+        )} A:${Math.round(alpha * 100)}` //eslint-disable-line max-len
       }
       return {
         title: title,
@@ -73,7 +75,11 @@ export default {
               style={{
                 backgroundColor: hex || '#000',
                 opacity: alpha || 1,
-                position: 'absolute', height: '100%', width: '100%', top: '0', left: '0'
+                position: 'absolute',
+                height: '100%',
+                width: '100%',
+                top: '0',
+                left: '0'
               }}
             />
           )

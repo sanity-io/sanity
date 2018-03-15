@@ -20,12 +20,14 @@ export default class DefaultDialog extends React.Component {
     onAction: PropTypes.func,
     showHeader: PropTypes.bool,
     showCloseButton: PropTypes.bool,
-    actions: PropTypes.arrayOf(PropTypes.shape({
-      title: PropTypes.string.isRequired,
-      tooltip: PropTypes.string,
-      kind: PropTypes.string,
-      autoFocus: PropTypes.bool
-    }))
+    actions: PropTypes.arrayOf(
+      PropTypes.shape({
+        title: PropTypes.string.isRequired,
+        tooltip: PropTypes.string,
+        kind: PropTypes.string,
+        autoFocus: PropTypes.bool
+      })
+    )
   }
 
   static defaultProps = {
@@ -56,24 +58,22 @@ export default class DefaultDialog extends React.Component {
 
     return (
       <div className={styles.actions}>
-        {
-          actions.map((action, i) => {
-            return (
-              <Button
-                key={i}
-                onClick={() => this.props.onAction(action)}
-                data-action-index={i}
-                color={action.color}
-                disabled={action.disabled}
-                kind={action.kind}
-                autoFocus={action.autoFocus}
-                className={action.secondary ? styles.actionSecondary : ''}
-              >
-                {action.title}
-              </Button>
-            )
-          })
-        }
+        {actions.map((action, i) => {
+          return (
+            <Button
+              key={i}
+              onClick={() => this.props.onAction(action)}
+              data-action-index={i}
+              color={action.color}
+              disabled={action.disabled}
+              kind={action.kind}
+              autoFocus={action.autoFocus}
+              className={action.secondary ? styles.actionSecondary : ''}
+            >
+              {action.title}
+            </Button>
+          )
+        })}
       </div>
     )
   }
@@ -94,36 +94,31 @@ export default class DefaultDialog extends React.Component {
           {isActive => (
             <div className={classNames}>
               <div className={styles.dialog}>
-                <Escapable onEscape={event => ((isActive || event.shiftKey) && onClose())} />
+                <Escapable onEscape={event => (isActive || event.shiftKey) && onClose()} />
                 <CaptureOutsideClicks onClickOutside={isActive ? onClose : undefined}>
                   <div className={styles.inner}>
-                    {
-                      !showHeader && onClose && showCloseButton && (
+                    {!showHeader &&
+                      onClose &&
+                      showCloseButton && (
                         <button className={styles.closeButtonOutside} onClick={onClose}>
                           <CloseIcon color="inherit" />
                         </button>
-                      )
-                    }
-                    {
-                      showHeader && onClose && title && (
+                      )}
+                    {showHeader &&
+                      onClose &&
+                      title && (
                         <div className={styles.header}>
                           <h1 className={styles.title}>{title}</h1>
                           <button className={styles.closeButton} onClick={onClose}>
                             <CloseIcon color="inherit" />
                           </button>
                         </div>
-                      )
-                    }
-                    <div className={styles.content}>
-                      {this.props.children}
-                    </div>
-                    {
-                      actions && actions.length > 0 && (
-                        <div className={styles.footer}>
-                          {this.renderActions(actions)}
-                        </div>
-                      )
-                    }
+                      )}
+                    <div className={styles.content}>{this.props.children}</div>
+                    {actions &&
+                      actions.length > 0 && (
+                        <div className={styles.footer}>{this.renderActions(actions)}</div>
+                      )}
                   </div>
                 </CaptureOutsideClicks>
               </div>

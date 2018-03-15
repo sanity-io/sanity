@@ -5,10 +5,8 @@ import {withKnobs, object, boolean, text} from 'part:@sanity/storybook/addons/kn
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 storiesOf('Radiobutton')
-.addDecorator(withKnobs)
-.add(
-  'Default',
-  () => {
+  .addDecorator(withKnobs)
+  .add('Default', () => {
     return (
       <Sanity part="part:@sanity/components/radiobutton/default" propTables={[RadioButton]}>
         <RadioButton
@@ -20,5 +18,4 @@ storiesOf('Radiobutton')
         />
       </Sanity>
     )
-  }
-)
+  })

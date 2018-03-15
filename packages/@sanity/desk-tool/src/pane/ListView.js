@@ -5,7 +5,6 @@ import InfiniteList from './InfiniteList'
 import styles from './styles/ListView.css'
 
 export default class ListView extends React.PureComponent {
-
   static propTypes = {
     items: PropTypes.array, // eslint-disable-line react/forbid-prop-types
     renderItem: PropTypes.func,

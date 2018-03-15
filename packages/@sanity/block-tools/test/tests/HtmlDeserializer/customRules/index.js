@@ -1,8 +1,7 @@
 import defaultSchema from '../../../fixtures/defaultSchema'
 
-const blockContentType = defaultSchema.get('blogPost')
-  .fields.find(field => field.name === 'body').type
-
+const blockContentType = defaultSchema.get('blogPost').fields.find(field => field.name === 'body')
+  .type
 
 const rules = [
   // Map 'em' tags to 'strong'
@@ -25,9 +24,8 @@ const rules = [
         return undefined
       }
       const code = el.children[0]
-      const childNodes = code && code.tagName.toLowerCase() === 'code'
-        ? code.childNodes
-        : el.childNodes
+      const childNodes =
+        code && code.tagName.toLowerCase() === 'code' ? code.childNodes : el.childNodes
       let text = ''
       childNodes.forEach(node => {
         text += node.textContent

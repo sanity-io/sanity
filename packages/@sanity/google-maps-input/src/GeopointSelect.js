@@ -21,12 +21,12 @@ class GeopointSelect extends React.Component {
       lng: PropTypes.number
     }),
     defaultZoom: PropTypes.number
-  };
+  }
 
   static defaultProps = {
     defaultZoom: 8,
-    defaultLocation: {lng: 10.7460900, lat: 59.9127300}
-  };
+    defaultLocation: {lng: 10.74609, lat: 59.91273}
+  }
 
   constructor(props) {
     super(props)
@@ -46,18 +46,14 @@ class GeopointSelect extends React.Component {
     this.mapInstance = new GMap(this.elementRefs.map, options)
     this.declareMarker()
 
-    const searchBounds = (new Circle({center: geoPoint, radius: 100})).getBounds()
+    const searchBounds = new Circle({center: geoPoint, radius: 100}).getBounds()
     const input = this.elementRefs.searchInput
     this.autoComplete = new places.Autocomplete(input, {
       bounds: searchBounds,
       types: [] // return all kinds of places
     })
 
-    event.addListener(
-      this.autoComplete,
-      'place_changed',
-      this.handlePlaceChanged.bind(this)
-    )
+    event.addListener(this.autoComplete, 'place_changed', this.handlePlaceChanged.bind(this))
 
     event.addListener(this.mapInstance, 'click', clickEvent => {
       this.setValue(clickEvent.latLng)
@@ -83,11 +79,7 @@ class GeopointSelect extends React.Component {
       draggable: true
     })
 
-    event.addListener(
-      this.marker,
-      'dragend',
-      this.handleMarkerDragEnd.bind(this)
-    )
+    event.addListener(this.marker, 'dragend', this.handleMarkerDragEnd.bind(this))
 
     return this.marker
   }
@@ -124,10 +116,7 @@ class GeopointSelect extends React.Component {
   render() {
     return (
       <div className={styles.wrapper}>
-        <div
-          ref={this.assignReference('map')}
-          className={styles.map}
-        />
+        <div ref={this.assignReference('map')} className={styles.map} />
         <div className={styles.searchInput}>
           <input
             name="place"

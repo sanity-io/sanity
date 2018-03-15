@@ -40,9 +40,7 @@ export default function traverseSchema(
 
   const reservedTypeNames = FUTURE_RESERVED.concat(coreTypeNames)
 
-  const typeNames = types
-    .map(typeDef => typeDef.name)
-    .filter(Boolean)
+  const typeNames = types.map(typeDef => typeDef.name).filter(Boolean)
 
   coreTypes.forEach(coreType => {
     coreTypesRegistry[coreType.name] = coreType
@@ -56,8 +54,7 @@ export default function traverseSchema(
   function getType(typeName) {
     return typeName === 'type'
       ? TYPE_TYPE
-      : coreTypesRegistry[typeName]
-          || registry[typeName] || null
+      : coreTypesRegistry[typeName] || registry[typeName] || null
   }
 
   const duplicateNames = uniq(flatten(getDupes(typeNames)))
@@ -73,7 +70,14 @@ export default function traverseSchema(
   }
 
   const visitType = isRoot => typeDef => {
-    return visitor(typeDef, {visit: visitType(false), isRoot, getType, getTypeNames, isReserved, isDuplicate})
+    return visitor(typeDef, {
+      visit: visitType(false),
+      isRoot,
+      getType,
+      getTypeNames,
+      isReserved,
+      isDuplicate
+    })
   }
 
   coreTypes.forEach(coreTypeDef => {

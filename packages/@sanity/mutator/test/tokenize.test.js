@@ -1,4 +1,4 @@
-import { test } from 'tap'
+import {test} from 'tap'
 
 import tokenize from '../src/jsonpath/tokenize'
 
@@ -99,31 +99,33 @@ const cases = {
       symbol: ']'
     }
   ],
-  '"\\"quoted\\""': [{
-    type: 'quoted',
-    value: '"quoted"',
-    quote: 'double'
-  }],
+  '"\\"quoted\\""': [
+    {
+      type: 'quoted',
+      value: '"quoted"',
+      quote: 'double'
+    }
+  ],
   '[true, false]': [
     {
-      'symbol': '[',
-      'type': "paren"
+      symbol: '[',
+      type: 'paren'
     },
     {
-      'symbol': 'true',
-      'type': 'boolean'
+      symbol: 'true',
+      type: 'boolean'
     },
     {
-      'symbol': ',',
-      'type': 'operator'
+      symbol: ',',
+      type: 'operator'
     },
     {
-      'symbol': 'false',
-      'type': 'boolean'
+      symbol: 'false',
+      type: 'boolean'
     },
     {
-      'symbol': ']',
-      'type': 'paren'
+      symbol: ']',
+      type: 'paren'
     }
   ]
 }

@@ -37,7 +37,8 @@ export default class FormBuilderSpan extends React.Component {
   componentWillMount() {
     this.setState({
       isEditing: false,
-      focusedAnnotationName: this.props.node.data && this.props.node.data.get('focusedAnnotationName')
+      focusedAnnotationName:
+        this.props.node.data && this.props.node.data.get('focusedAnnotationName')
     })
   }
 
@@ -49,11 +50,13 @@ export default class FormBuilderSpan extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return nextState.isEditing !== this.state.isEditing
-      || nextState.rootElement !== this.state.rootElement
-      || nextState.focusedAnnotationName !== this.state.focusedAnnotationName
-      || nextProps.state.focusOffset !== this.props.state.focusOffset
-      || nextProps.node.data !== this.props.node.data
+    return (
+      nextState.isEditing !== this.state.isEditing ||
+      nextState.rootElement !== this.state.rootElement ||
+      nextState.focusedAnnotationName !== this.state.focusedAnnotationName ||
+      nextProps.state.focusOffset !== this.props.state.focusOffset ||
+      nextProps.node.data !== this.props.node.data
+    )
   }
 
   componentWillUpdate(nextProps, nextState) {
@@ -71,9 +74,7 @@ export default class FormBuilderSpan extends React.Component {
   }
 
   destroy = () => {
-    this.props.editor.props.blockEditor
-      .operations
-      .removeSpan(this.props.node)
+    this.props.editor.props.blockEditor.operations.removeSpan(this.props.node)
   }
 
   isUnannotated() {
@@ -81,9 +82,11 @@ export default class FormBuilderSpan extends React.Component {
     if (!annotations) {
       return true
     }
-    return !Object.keys(annotations).filter(key => {
-      return !this.isEmptyAnnotation(annotations[key])
-    }).length === 0
+    return (
+      !Object.keys(annotations).filter(key => {
+        return !this.isEmptyAnnotation(annotations[key])
+      }).length === 0
+    )
   }
 
   isEmptyAnnotation = annotation => {
@@ -118,7 +121,8 @@ export default class FormBuilderSpan extends React.Component {
       focusedAnnotationName: undefined,
       annotations: nextAnnotations
     }
-    const change = editor.getState()
+    const change = editor
+      .getState()
       .change()
       .setNodeByKey(node.key, {data})
 
@@ -132,7 +136,8 @@ export default class FormBuilderSpan extends React.Component {
       ...node.data.toObject(),
       focusedAnnotationName: annotationName
     }
-    const change = editor.getState()
+    const change = editor
+      .getState()
       .change()
       .setNodeByKey(node.key, {data})
     editor.onChange(change)
@@ -163,9 +168,11 @@ export default class FormBuilderSpan extends React.Component {
     }
     // Try to figure out which annotation that should be focused when user clicks the span
     let focusedAnnotationName
-    if (this.props.type.annotations.length === 1) { // Only one annotation type, always focus this one
+    if (this.props.type.annotations.length === 1) {
+      // Only one annotation type, always focus this one
       focusedAnnotationName = this.props.type.annotations[0].name
-    } else if (annotations && Object.keys(annotations).length === 1) { // Only one annotation value, focus it
+    } else if (annotations && Object.keys(annotations).length === 1) {
+      // Only one annotation value, focus it
       focusedAnnotationName = annotations[Object.keys(annotations)[0]]._type
     }
     if (focusedAnnotationName) {
@@ -192,7 +199,8 @@ export default class FormBuilderSpan extends React.Component {
       focusedAnnotationName: this.state.focusedAnnotationName,
       annotations: nextAnnotations
     }
-    const change = editor.getState()
+    const change = editor
+      .getState()
       .change()
       .setNodeByKey(node.key, {data})
     editor.onChange(change)
@@ -216,23 +224,21 @@ export default class FormBuilderSpan extends React.Component {
           onClose={this.handleCloseInput}
           onEscape={this.handleCloseInput}
           onClickOutside={this.handleCloseInput}
-          modifiers={
-            {
-              flip: {
-                boundariesElement: 'scrollParent'
-              },
-              preventOverflow: {
-                boundariesElement: 'scrollParent'
-              }
+          modifiers={{
+            flip: {
+              boundariesElement: 'scrollParent'
+            },
+            preventOverflow: {
+              boundariesElement: 'scrollParent'
             }
-          }
+          }}
         >
-          { /* Buttons for selecting annotation when there are several, and none is focused  */ }
-          { !focusedAnnotationName && Object.keys(annotations).length > 1 && (
-            <div>
-              <h3>Which annotation?</h3>
-              {
-                Object.keys(annotations).map(annotationKey => {
+          {/* Buttons for selecting annotation when there are several, and none is focused  */}
+          {!focusedAnnotationName &&
+            Object.keys(annotations).length > 1 && (
+              <div>
+                <h3>Which annotation?</h3>
+                {Object.keys(annotations).map(annotationKey => {
                   if (!annotations[annotationKey]) {
                     return null
                   }
@@ -240,20 +246,19 @@ export default class FormBuilderSpan extends React.Component {
                     this.focusAnnotation(annotations[annotationKey]._type)
                   }
                   return (
-                    <DefaultButton
-                      key={`annotationButton${annotationKey}`}
-                      onClick={setFieldFunc}
-                    >
-                      {annotationTypes.find(type => type.name === annotations[annotationKey]._type).title}
+                    <DefaultButton key={`annotationButton${annotationKey}`} onClick={setFieldFunc}>
+                      {
+                        annotationTypes.find(type => type.name === annotations[annotationKey]._type)
+                          .title
+                      }
                     </DefaultButton>
                   )
-                })
-              }
-            </div>
-          )}
+                })}
+              </div>
+            )}
 
-          { /* Render input for focused annotation  */ }
-          { focusedAnnotationName && (
+          {/* Render input for focused annotation  */}
+          {focusedAnnotationName && (
             <div>
               <FormBuilderInput
                 value={annotationValue}
@@ -277,11 +282,7 @@ export default class FormBuilderSpan extends React.Component {
     const {isEditing} = this.state
     const {attributes} = this.props
     return (
-      <span
-        {...attributes}
-        className={styles.root}
-        ref={this.setRootElement}
-      >
+      <span {...attributes} className={styles.root} ref={this.setRootElement}>
         <span
           onClick={this.handleNodeClick}
           onMouseDown={this.handleMouseDown}
@@ -290,11 +291,7 @@ export default class FormBuilderSpan extends React.Component {
           {this.props.children}
         </span>
 
-        {isEditing && (
-          <StopPropagation tagName="span">
-            {this.renderInput()}
-          </StopPropagation>
-        )}
+        {isEditing && <StopPropagation tagName="span">{this.renderInput()}</StopPropagation>}
       </span>
     )
   }

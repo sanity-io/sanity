@@ -24,7 +24,6 @@ function createQuery(start = 0, end = PER_PAGE) {
 }
 
 export default class SelectAsset extends React.Component<Props, State> {
-
   state = {
     assets: [],
     isLastPage: false
@@ -87,20 +86,20 @@ export default class SelectAsset extends React.Component<Props, State> {
                 onClick={this.handleItemClick}
                 onKeyPress={this.handleItemKeyPress}
                 tabIndex={0}
-                style={{width: `${(width * size) / height}px`, flexGrow: `${(width * size) / height}`}}
+                style={{width: `${width * size / height}px`, flexGrow: `${width * size / height}`}}
               >
-                <i className={styles.padder} style={{paddingBottom: `${(height / width) * 100}%`}} />
+                <i className={styles.padder} style={{paddingBottom: `${height / width * 100}%`}} />
                 <img src={`${asset.url}?h=100`} className={styles.image} />
               </a>
             )
           })}
         </div>
         <div className={styles.loadMore}>
-          {
-            isLastPage
-              ? <span>Nothing more to load…</span>
-              : <Button onClick={this.handleFetchNextPage}>Load more…</Button>
-          }
+          {isLastPage ? (
+            <span>Nothing more to load…</span>
+          ) : (
+            <Button onClick={this.handleFetchNextPage}>Load more…</Button>
+          )}
         </div>
       </div>
     )

@@ -5,7 +5,7 @@ import loadGoogleMapsApi from './loadGoogleMapsApi'
 class GoogleMapsLoadProxy extends React.Component {
   static propTypes = {
     component: PropTypes.func.isRequired
-  };
+  }
 
   constructor(props) {
     super(props)

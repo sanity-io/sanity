@@ -18,7 +18,8 @@ export default {
       name: 'select',
       type: 'string',
       title: 'Select string',
-      description: 'Select a single string value from a set of predefined options. It should be possible to unset a selected value.',
+      description:
+        'Select a single string value from a set of predefined options. It should be possible to unset a selected value.',
       readOnly: true,
       options: {
         list: [
@@ -41,7 +42,8 @@ export default {
       name: 'radioSelectHorizontal',
       title: 'Select (layout: radio, direction: horizontal)',
       type: 'string',
-      description: 'Select a single string value by choosing options from a list of radio buttons. It should *not* be possible to unset a selected value once its set.',
+      description:
+        'Select a single string value by choosing options from a list of radio buttons. It should *not* be possible to unset a selected value once its set.',
       readOnly: true,
       options: {
         layout: 'radio',
@@ -65,7 +67,8 @@ export default {
     {
       name: 'selectObjectOfString',
       title: 'Select string in object',
-      description: 'Select a single string value from an array of strings. It should be possible to unset a selected value.',
+      description:
+        'Select a single string value from an array of strings. It should be possible to unset a selected value.',
       type: 'string',
       readOnly: true,
       options: {
@@ -84,10 +87,7 @@ export default {
       type: 'object',
       title: 'A read only object',
       readOnly: true,
-      fields: [
-        {name: 'first', type: 'string'},
-        {name: 'second', type: 'string'}
-      ]
+      fields: [{name: 'first', type: 'string'}, {name: 'second', type: 'string'}]
     },
     {
       name: 'myObject',
@@ -133,7 +133,8 @@ export default {
     {
       name: 'tags',
       title: 'Tags',
-      description: 'Enter a tag and press enter. Should result in an array of strings and should be possible to remove items',
+      description:
+        'Enter a tag and press enter. Should result in an array of strings and should be possible to remove items',
       type: 'array',
       options: {layout: 'tags'},
       of: [{type: 'string'}],
@@ -216,7 +217,7 @@ export default {
         },
         {
           type: 'number',
-          title: 'Number',
+          title: 'Number'
         },
         {
           type: 'boolean',
@@ -236,11 +237,11 @@ export default {
           fields: [
             {
               name: 'title',
-              type: 'string',
+              type: 'string'
             },
             {
               name: 'name',
-              type: 'string',
+              type: 'string'
             }
           ],
           preview: {
@@ -255,7 +256,8 @@ export default {
                   <div
                     style={{
                       backgroundColor: name,
-                      height: '100%', width: '100%'
+                      height: '100%',
+                      width: '100%'
                     }}
                   />
                 )
@@ -270,9 +272,9 @@ export default {
           {_type: 'color', title: 'Red', name: 'red', _key: 'red'},
           {_type: 'color', title: 'Green', name: 'green', _key: 'green'},
           {_type: 'color', title: 'Blue', name: 'blue', _key: 'blue'},
-          {_type: 'color', title: 'Black', name: 'black', _key: 'black'},
+          {_type: 'color', title: 'Black', name: 'black', _key: 'black'}
         ]
-      },
-    },
+      }
+    }
   ]
 }

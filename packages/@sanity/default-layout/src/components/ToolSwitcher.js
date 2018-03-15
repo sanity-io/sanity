@@ -11,9 +11,7 @@ function ToolSwitcher(props) {
     <div className={`${styles.toolSwitcher} ${props.className}`}>
       <ul className={styles.toolList}>
         {tools.map(tool => {
-          const itemClass = (activeToolName === tool.name)
-            ? styles.activeItem
-            : styles.item
+          const itemClass = activeToolName === tool.name ? styles.activeItem : styles.item
 
           const ToolIcon = tool.icon || PluginIcon
 
@@ -24,10 +22,8 @@ function ToolSwitcher(props) {
                 <div className={styles.iconContainer}>
                   <ToolIcon />
                 </div>
-                <div className={styles.toolName}>
-                  {tool.title || tool.name}
-                </div>
-                <Ink duration={1000} opacity={0.10} radius={200} />
+                <div className={styles.toolName}>{tool.title || tool.name}</div>
+                <Ink duration={1000} opacity={0.1} radius={200} />
               </StateLink>
             </li>
           )

@@ -7,15 +7,17 @@ function toArray(acc, val) {
 }
 
 test('it works', t => {
-  Observable
-    .of('Foo, Bar, SKIP, Baz')
+  Observable.of('Foo, Bar, SKIP, Baz')
     .flatMap(str => str.split(/,\s*/))
     .filter(word => word !== 'SKIP')
     .map(word => word.toUpperCase())
-    .flatMap(word => new RxObservable(observer => {
-      observer.next(`prefix-${word}`)
-      observer.complete()
-    }))
+    .flatMap(
+      word =>
+        new RxObservable(observer => {
+          observer.next(`prefix-${word}`)
+          observer.complete()
+        })
+    )
     .reduce(toArray, [])
     .subscribe(values => {
       t.same(values, ['prefix-FOO', 'prefix-BAR', 'prefix-BAZ'])

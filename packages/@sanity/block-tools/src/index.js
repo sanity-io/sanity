@@ -13,7 +13,6 @@ import slateStateToBlocks from './converters/slateStateToBlocks'
  *
  */
 export default {
-
   /**
    * Convert HTML to blocks respecting the block content type's schema
    *
@@ -65,5 +64,4 @@ export default {
   getBlockContentFeatures(blockType) {
     return blockContentTypeToOptions(blockType)
   }
-
 }

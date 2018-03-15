@@ -31,7 +31,6 @@ function getLanguageTitle(value) {
 }
 
 export default class CodePreview extends PureComponent {
-
   static propTypes = {
     type: PropTypes.object,
     layout: PropTypes.string,
@@ -45,16 +44,14 @@ export default class CodePreview extends PureComponent {
 
   render() {
     const {layout} = this.props
-    return layout === 'block'
-      ? this.renderBlockPreview()
-      : this.renderDefaultPreview()
+    return layout === 'block' ? this.renderBlockPreview() : this.renderDefaultPreview()
   }
 
   renderDefaultPreview() {
     const {value} = this.props
     return (
       <div className={styles.defaultPreviewContainer}>
-        <div>{(value && value.language) ? getLanguageTitle(value.language) : 'Unknown language'}</div>
+        <div>{value && value.language ? getLanguageTitle(value.language) : 'Unknown language'}</div>
       </div>
     )
   }
@@ -77,7 +74,11 @@ export default class CodePreview extends PureComponent {
             highlightActiveLine={false}
             cursorStart={-1}
             value={(value && value.code) || ''}
-            markers={(value && value.highlightedLines) ? createHighlightMarkers(value.highlightedLines) : null}
+            markers={
+              value && value.highlightedLines
+                ? createHighlightMarkers(value.highlightedLines)
+                : null
+            }
             onLoad={this.handleEditorLoad}
             tabSize={2}
             showGutter={false}

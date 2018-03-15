@@ -28,10 +28,7 @@ export const LIST_TYPES = {
   numbered: {title: 'Numbered', value: 'number'}
 }
 
-export const DEFAULT_LIST_TYPES = [
-  LIST_TYPES.bullet,
-  LIST_TYPES.numbered,
-]
+export const DEFAULT_LIST_TYPES = [LIST_TYPES.bullet, LIST_TYPES.numbered]
 
 export const BLOCK_STYLES = {
   normal: {title: 'Normal', value: 'normal'},

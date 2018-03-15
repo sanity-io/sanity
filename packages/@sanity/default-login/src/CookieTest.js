@@ -10,9 +10,11 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 const projectName = (config.project && config.project.name) || ''
 
 const checkCookies = () => {
-  return client.request({method: 'post', uri: '/auth/testCookie', withCredentials: true})
+  return client
+    .request({method: 'post', uri: '/auth/testCookie', withCredentials: true})
     .then(() => {
-      return client.request({uri: '/auth/testCookie', withCredentials: true})
+      return client
+        .request({uri: '/auth/testCookie', withCredentials: true})
         .then(() => true)
         .catch(() => false)
     })
@@ -21,10 +23,9 @@ const checkCookies = () => {
 }
 
 class CookieTest extends PureComponent {
-
   static propTypes = {
     children: PropTypes.node.isRequired
-  };
+  }
 
   constructor(...args) {
     super(...args)
@@ -32,41 +33,48 @@ class CookieTest extends PureComponent {
   }
 
   componentWillMount() {
-    checkCookies().then(res => this.setState({
-      result: res,
-      isLoading: false,
-    }))
+    checkCookies().then(res =>
+      this.setState({
+        result: res,
+        isLoading: false
+      })
+    )
   }
 
-  renderWhiteListForm() { // eslint-disable-line class-methods-use-this
+  renderWhiteListForm() {
+    // eslint-disable-line class-methods-use-this
     const {SanityLogo, sanityLogo} = this.props
-    const redirectTo = `${client.clientConfig.url}/auth/whitelist?redirectTo=${encodeURIComponent(window.location.toString())}`
+    const redirectTo = `${client.clientConfig.url}/auth/whitelist?redirectTo=${encodeURIComponent(
+      window.location.toString()
+    )}`
     return (
       <div className={styles.root}>
-
         <div className={styles.inner}>
-          { SanityLogo && (
+          {SanityLogo && (
             <div className={styles.sanityLogo}>
               <SanityLogo />
             </div>
           )}
-          { sanityLogo && !SanityLogo && (
-            <div className={styles.sanityLogo}>
-              {sanityLogo}
-            </div>
-          )}
+          {sanityLogo && !SanityLogo && <div className={styles.sanityLogo}>{sanityLogo}</div>}
           <div className={styles.branding}>
-            <h1 className={BrandLogo ? styles.projectNameHidden : styles.projectName}>{projectName}</h1>
-            {
-              BrandLogo && <div className={styles.brandLogoContainer}><BrandLogo projectName={projectName} /></div>
-            }
+            <h1 className={BrandLogo ? styles.projectNameHidden : styles.projectName}>
+              {projectName}
+            </h1>
+            {BrandLogo && (
+              <div className={styles.brandLogoContainer}>
+                <BrandLogo projectName={projectName} />
+              </div>
+            )}
           </div>
 
           <div className={styles.title}>
             <h2 className={styles.headline}>Accept the Cookie</h2>
           </div>
           <div className={styles.description}>
-            <p>Your browser didn&apos;t accept our cookie so we&apos;re having trouble logging you in.</p>
+            <p>
+              Your browser didn&apos;t accept our cookie so we&apos;re having trouble logging you
+              in.
+            </p>
             <p>You can explicitly accept it though by clicking below.</p>
           </div>
           <form
@@ -76,7 +84,9 @@ class CookieTest extends PureComponent {
             encType="application/x-www-form-urlencoded"
           >
             <input type="hidden" name="redirectTo" value={redirectTo} />
-            <Button color="success" inverted type="submit">ACCEPT COOKIE</Button>
+            <Button color="success" inverted type="submit">
+              ACCEPT COOKIE
+            </Button>
           </form>
         </div>
       </div>
@@ -94,11 +104,7 @@ class CookieTest extends PureComponent {
       return this.renderWhiteListForm()
     }
 
-    return (
-      <div>
-        {this.props.children}
-      </div>
-    )
+    return <div>{this.props.children}</div>
   }
 }
 

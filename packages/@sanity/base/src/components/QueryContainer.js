@@ -33,18 +33,19 @@ function keysEqual(object, otherObject, excludeKeys = []) {
   return union(objectKeys, otherObjectKeys).every(key => object[key] === otherObject[key])
 }
 
-const RESPOND_TO_TRANSITIONS = ['appear', 'disappear',
+const RESPOND_TO_TRANSITIONS = [
+  'appear',
+  'disappear',
   'update' // todo: remove this
 ]
 
 export default class QueryContainer extends React.Component {
-
   static propTypes = {
     query: PropTypes.string,
     params: PropTypes.object,
     mapFn: PropTypes.func,
-    children: deprecatedCheck,
-  };
+    children: deprecatedCheck
+  }
 
   static defaultProps = {
     mapFn: props => props
@@ -62,8 +63,11 @@ export default class QueryContainer extends React.Component {
 
   subscribe(query, params) {
     this.unsubscribe()
-    this._subscription = store.query(query, params)
-      .filter(event => event.type === 'snapshot' || RESPOND_TO_TRANSITIONS.includes(event.transition))
+    this._subscription = store
+      .query(query, params)
+      .filter(
+        event => event.type === 'snapshot' || RESPOND_TO_TRANSITIONS.includes(event.transition)
+      )
       .subscribe(this)
   }
 
@@ -116,9 +120,12 @@ export default class QueryContainer extends React.Component {
      */
     const {result} = this.state
 
-    const hasCreateOrDelete = event.type === 'mutation'
-      && event.mutations.some(mut => (
-        mut.create || (mut.delete && (result.documents || []).some(doc => doc._id === mut.delete.id)))
+    const hasCreateOrDelete =
+      event.type === 'mutation' &&
+      event.mutations.some(
+        mut =>
+          mut.create ||
+          (mut.delete && (result.documents || []).some(doc => doc._id === mut.delete.id))
       )
 
     if (hasCreateOrDelete) {
@@ -127,9 +134,13 @@ export default class QueryContainer extends React.Component {
     }
   }
 
-  refresh = throttle(() => {
-    this.subscribe(this.props.query, this.props.params)
-  }, 1000, {leading: true, trailing: true})
+  refresh = throttle(
+    () => {
+      this.subscribe(this.props.query, this.props.params)
+    },
+    1000,
+    {leading: true, trailing: true}
+  )
 
   unsubscribe() {
     if (this._subscription) {
@@ -151,7 +162,10 @@ export default class QueryContainer extends React.Component {
     if (!shallowEquals(this.state, nextState)) {
       return true
     }
-    if (nextProps.query !== this.props.query || !shallowEquals(nextProps.params, this.props.params)) {
+    if (
+      nextProps.query !== this.props.query ||
+      !shallowEquals(nextProps.params, this.props.params)
+    ) {
       return true
     }
 
@@ -159,7 +173,10 @@ export default class QueryContainer extends React.Component {
   }
 
   renderDeprecated() {
-    return React.cloneElement(React.Children.only(this.props.children), this.props.mapFn(this.state))
+    return React.cloneElement(
+      React.Children.only(this.props.children),
+      this.props.mapFn(this.state)
+    )
   }
 
   render() {

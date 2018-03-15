@@ -9,7 +9,10 @@ function run(t) {
 
   test('static properties', t => {
     const staticFields = staticProps.filter(key => typeof Observable[key] !== 'function')
-    t.ok(staticFields.length === 0, `Expected SanityObservable to have no static fields, instead found ${staticFields}`)
+    t.ok(
+      staticFields.length === 0,
+      `Expected SanityObservable to have no static fields, instead found ${staticFields}`
+    )
     t.end()
   })
 
@@ -21,15 +24,15 @@ function run(t) {
 
   function getInheritedAndOwnProperties(obj) {
     const res = []
-    for (const prop in obj) { // eslint-disable-line guard-for-in
+    for (const prop in obj) {
+      // eslint-disable-line guard-for-in
       res.push(prop)
     }
     return res
   }
 
   t.test('instance methods', t => {
-    const instance = new Observable(() => {
-    })
+    const instance = new Observable(() => {})
     t.same(getInheritedAndOwnProperties(instance), [
       '_isScalar', // rxjs internals
       '_subscribe', // rxjs internals
@@ -43,18 +46,14 @@ function run(t) {
       'forEach', // spec
       'pipe'
     ])
-
-    ;[
-      'map',
-      'filter',
-      'reduce',
-      'toPromise',
-      'lift',
-      'pipe',
-      'subscribe',
-      'forEach'
-    ]
-      .forEach(method => t.type(instance[method], 'function', `Expected observable instance to expose the method ${method}`))
+    ;['map', 'filter', 'reduce', 'toPromise', 'lift', 'pipe', 'subscribe', 'forEach'].forEach(
+      method =>
+        t.type(
+          instance[method],
+          'function',
+          `Expected observable instance to expose the method ${method}`
+        )
+    )
 
     t.end()
   })

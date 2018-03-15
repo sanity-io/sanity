@@ -9,19 +9,14 @@ test('image types with fields', t => {
       {
         name: 'someImage',
         type: 'image',
-        fields: [
-          {name: 'caption', type: 'string'}
-        ]
+        fields: [{name: 'caption', type: 'string'}]
       }
     ]
   })
   t.deepEqual(schema.getType('someImage'), {
     name: 'someImage',
     type: 'image',
-    fields: [
-      ASSET_FIELD,
-      {name: 'caption', type: 'string', format: 'plain'}
-    ],
+    fields: [ASSET_FIELD, {name: 'caption', type: 'string', format: 'plain'}],
     fieldsets: [
       {
         single: true,
@@ -50,9 +45,7 @@ test('image types without fields', t => {
   t.deepEqual(schema.getType('someImage'), {
     name: 'someImage',
     type: 'image',
-    fields: [
-      ASSET_FIELD
-    ],
+    fields: [ASSET_FIELD],
     fieldsets: [
       {
         field: ASSET_FIELD,

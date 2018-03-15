@@ -4,12 +4,12 @@
 // heads and tails and checking the heads against the new value, and so on.
 
 // expands an expression into one or more head/tail pairs
-export default function descend(tail) : Array {
+export default function descend(tail): Array {
   return spreadIfUnionHead(...splitIfPath(tail))
 }
 
 // Split path in [head, tail]
-function splitIfPath(tail) : Array {
+function splitIfPath(tail): Array {
   if (tail.type !== 'path') {
     return [tail, null]
   }
@@ -19,10 +19,7 @@ function splitIfPath(tail) : Array {
   } else if (nodes.length === 1) {
     return [nodes[0], null]
   }
-  return [
-    nodes[0],
-    {type: 'path', nodes: nodes.slice(1)}
-  ]
+  return [nodes[0], {type: 'path', nodes: nodes.slice(1)}]
 }
 
 function concatPaths(path1, path2) {
@@ -38,7 +35,7 @@ function concatPaths(path1, path2) {
 }
 
 // Spreads a union head into several heads/tails
-function spreadIfUnionHead(head, tail) : Array {
+function spreadIfUnionHead(head, tail): Array {
   if (head.type !== 'union') {
     return [[head, tail]]
   }

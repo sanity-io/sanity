@@ -21,10 +21,22 @@ const GithubLogo = () => (
 
 const GoogleLogo = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-    <path d="M11 24a13 13 0 0 1 .66-4.08l-7.4-5.66a22.18 22.18 0 0 0 0 19.49l7.4-5.67A13 13 0 0 1 11 24z" fill="#fbbc05" />
-    <path d="M24 11a12.72 12.72 0 0 1 8.1 2.9l6.4-6.4a22 22 0 0 0-34.24 6.75l7.4 5.66A13 13 0 0 1 24 11z" fill="#ea4335" />
-    <path d="M24 37a13 13 0 0 1-12.34-8.92l-7.4 5.66A21.93 21.93 0 0 0 24 46a21 21 0 0 0 14.33-5.48l-7-5.44A13.59 13.59 0 0 1 24 37zm-12.35-8.93l-7.4 5.67 7.4-5.66z" fill="#34a853" />
-    <path d="M44.5 20H24v8.5h11.8a9.91 9.91 0 0 1-4.49 6.58l7 5.44C42.37 36.76 45 31.17 45 24a18.25 18.25 0 0 0-.5-4z" fill="#4285f4" />
+    <path
+      d="M11 24a13 13 0 0 1 .66-4.08l-7.4-5.66a22.18 22.18 0 0 0 0 19.49l7.4-5.67A13 13 0 0 1 11 24z"
+      fill="#fbbc05"
+    />
+    <path
+      d="M24 11a12.72 12.72 0 0 1 8.1 2.9l6.4-6.4a22 22 0 0 0-34.24 6.75l7.4 5.66A13 13 0 0 1 24 11z"
+      fill="#ea4335"
+    />
+    <path
+      d="M24 37a13 13 0 0 1-12.34-8.92l-7.4 5.66A21.93 21.93 0 0 0 24 46a21 21 0 0 0 14.33-5.48l-7-5.44A13.59 13.59 0 0 1 24 37zm-12.35-8.93l-7.4 5.67 7.4-5.66z"
+      fill="#34a853"
+    />
+    <path
+      d="M44.5 20H24v8.5h11.8a9.91 9.91 0 0 1-4.49 6.58l7 5.44C42.37 36.76 45 31.17 45 24a18.25 18.25 0 0 0-.5-4z"
+      fill="#4285f4"
+    />
   </svg>
 )
 
@@ -45,9 +57,7 @@ function getProviderLogo(provider) {
       return GithubLogo
     default:
       return function CustomLogo() {
-        return provider.logo
-          ? <img src={provider.logo} />
-          : <QuestionmarkLogo />
+        return provider.logo ? <img src={provider.logo} /> : <QuestionmarkLogo />
       }
   }
 }
@@ -59,7 +69,7 @@ export default class LoginDialog extends React.Component {
     sanityLogo: PropTypes.node,
     SanityLogo: PropTypes.func,
     projectId: PropTypes.string
-  };
+  }
 
   static defaultProps = {
     description: null,
@@ -71,7 +81,7 @@ export default class LoginDialog extends React.Component {
   state = {
     providers: [],
     error: null
-  };
+  }
 
   componentDidMount() {
     this.getProviders = cancelWrap(authenticationFetcher.getProviders())
@@ -86,10 +96,10 @@ export default class LoginDialog extends React.Component {
 
   componentWillUpdate(_, nextState) {
     const {providers} = nextState
-    if (providers.length === 1 && (
-      pluginConfig.providers
-      && pluginConfig.providers.redirectOnSingle
-    )) {
+    if (
+      providers.length === 1 &&
+      (pluginConfig.providers && pluginConfig.providers.redirectOnSingle)
+    ) {
       this.redirectToProvier(providers[0])
     }
   }
@@ -97,15 +107,13 @@ export default class LoginDialog extends React.Component {
   redirectToProvier(provider) {
     const {projectId} = this.props
     const currentUrl = encodeURIComponent(window.location.toString())
-    const params = [
-      `origin=${currentUrl}`,
-      projectId && `projectId=${projectId}`
-    ].filter(Boolean)
+    const params = [`origin=${currentUrl}`, projectId && `projectId=${projectId}`].filter(Boolean)
     if (provider.custom && !provider.supported) {
       this.setState({
         error: {
-          message: 'This project is missing the required "thirdPartyLogin" '
-            + 'feature to support custom logins.',
+          message:
+            'This project is missing the required "thirdPartyLogin" ' +
+            'feature to support custom logins.',
           link: generateHelpUrl('third-party-login')
         }
       })
@@ -123,32 +131,27 @@ export default class LoginDialog extends React.Component {
     const {title, description, SanityLogo, sanityLogo} = this.props
     return (
       <div className={styles.root}>
-
         <div className={styles.inner}>
-          { SanityLogo && (
+          {SanityLogo && (
             <div className={styles.sanityLogo}>
               <SanityLogo />
             </div>
           )}
-          { sanityLogo && !SanityLogo && (
-            <div className={styles.sanityLogo}>
-              {sanityLogo}
-            </div>
-          )}
+          {sanityLogo && !SanityLogo && <div className={styles.sanityLogo}>{sanityLogo}</div>}
 
           <div className={styles.branding}>
-            <h1 className={BrandLogo ? styles.projectNameHidden : styles.projectName}>{projectName}</h1>
-            {
-              BrandLogo && <div className={styles.brandLogoContainer}><BrandLogo projectName={projectName} /></div>
-            }
+            <h1 className={BrandLogo ? styles.projectNameHidden : styles.projectName}>
+              {projectName}
+            </h1>
+            {BrandLogo && (
+              <div className={styles.brandLogoContainer}>
+                <BrandLogo projectName={projectName} />
+              </div>
+            )}
           </div>
 
-          <h2 className={styles.title}>
-            {title}
-          </h2>
-          { description && (
-            <div className={styles.description}>{description}</div>
-          )}
+          <h2 className={styles.title}>{title}</h2>
+          {description && <div className={styles.description}>{description}</div>}
           <ul className={styles.providers}>
             {this.state.providers.map(provider => {
               const ProviderLogo = getProviderLogo(provider)
@@ -159,15 +162,12 @@ export default class LoginDialog extends React.Component {
                     <span className={styles.providerLogo}>
                       <ProviderLogo />
                     </span>
-                    <span className={styles.providerName}>
-                      {provider.title}
-                    </span>
+                    <span className={styles.providerName}>{provider.title}</span>
                   </button>
                 </li>
               )
             })}
           </ul>
-
         </div>
       </div>
     )
@@ -180,27 +180,26 @@ export default class LoginDialog extends React.Component {
   render() {
     return (
       <div>
-        {
-          this.state.error && (
-            <FullscreenDialog
-              color="danger"
-              title="Error"
-              isOpen
-              centered
-              onClose={this.handleErrorDialogClosed}
-            >
-              <div className={styles.error}>
-                {this.state.error.message}
-                {this.state.error.link && (
-                  <p><a href={this.state.error.link}>Read more</a></p>
-                )}
-              </div>
-            </FullscreenDialog>
-          )
-        }
+        {this.state.error && (
+          <FullscreenDialog
+            color="danger"
+            title="Error"
+            isOpen
+            centered
+            onClose={this.handleErrorDialogClosed}
+          >
+            <div className={styles.error}>
+              {this.state.error.message}
+              {this.state.error.link && (
+                <p>
+                  <a href={this.state.error.link}>Read more</a>
+                </p>
+              )}
+            </div>
+          </FullscreenDialog>
+        )}
         {this.state.providers.length > 0 && this.renderLoginScreen()}
       </div>
     )
   }
-
 }

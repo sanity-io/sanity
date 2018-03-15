@@ -12,9 +12,11 @@ import SpaceSwitcher from './SpaceSwitcher'
 
 export default class MobileNavigation extends React.Component {
   static propTypes = {
-    tools: PropTypes.arrayOf(PropTypes.shape({
-      title: PropTypes.string
-    }))
+    tools: PropTypes.arrayOf(
+      PropTypes.shape({
+        title: PropTypes.string
+      })
+    )
   }
   state = {
     isOpen: false

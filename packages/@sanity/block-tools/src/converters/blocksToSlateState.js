@@ -7,11 +7,12 @@ import {SLATE_DEFAULT_BLOCK} from '../constants'
 
 function resolveTypeName(value) {
   const jsType = resolveJsType(value)
-  return ((jsType === 'object' && '_type' in value) && value._type) || jsType
+  return (jsType === 'object' && '_type' in value && value._type) || jsType
 }
 
 function hasKeys(obj) {
-  for (const key in obj) { // eslint-disable-line guard-for-in
+  for (const key in obj) {
+    // eslint-disable-line guard-for-in
     return true
   }
   return false
@@ -25,7 +26,6 @@ function toRawMark(markName) {
 }
 
 function sanitySpanToRawSlateBlockNode(span, sanityBlock) {
-
   if (!span._key) {
     span._key = randomKey(12)
   }
@@ -133,7 +133,7 @@ export default function blocksToSlateState(array, type) {
     document: {
       kind: 'document',
       data: {},
-      nodes: (array && array.length > 0) ? sanityBlocksArrayToRawNodes(array, type) : defaultNodes
+      nodes: array && array.length > 0 ? sanityBlocksArrayToRawNodes(array, type) : defaultNodes
     }
   }
 }

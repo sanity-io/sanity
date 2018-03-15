@@ -8,11 +8,10 @@ export const insertBlockShape = PropTypes.shape({
 })
 
 export default class InsertBlocks extends React.Component {
-
   static propTypes = {
     onInsertBlock: PropTypes.func,
     blocks: PropTypes.arrayOf(insertBlockShape)
-  };
+  }
 
   shouldComponentUpdate(nextProps, nextState) {
     return this.props.blocks !== nextProps.blocks

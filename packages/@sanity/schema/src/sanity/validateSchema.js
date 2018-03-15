@@ -21,13 +21,16 @@ const NOOP_VISITOR = schemaDef => ({
 
 function combine(...visitors) {
   return (schemaType, visitorContext) => {
-    return visitors.reduce((result, visitor) => {
-      const res = visitor(result, visitorContext)
-      return {
-        ...res,
-        _problems: result._problems.concat(res._problems)
-      }
-    }, {...schemaType, _problems: []})
+    return visitors.reduce(
+      (result, visitor) => {
+        const res = visitor(result, visitorContext)
+        return {
+          ...res,
+          _problems: result._problems.concat(res._problems)
+        }
+      },
+      {...schemaType, _problems: []}
+    )
   }
 }
 

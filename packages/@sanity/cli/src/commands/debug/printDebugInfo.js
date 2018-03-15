@@ -25,21 +25,27 @@ export default async (args, context) => {
   // Project info (API-based)
   if (project) {
     context.output.print('Project:')
-    printKeyValue({
-      ID: project.id,
-      'Display name': project.displayName,
-      'Studio URL': project.studioHostname || project.studioHost,
-      'User role': project.userRole
-    }, context)
+    printKeyValue(
+      {
+        ID: project.id,
+        'Display name': project.displayName,
+        'Studio URL': project.studioHostname || project.studioHost,
+        'User role': project.userRole
+      },
+      context
+    )
   }
 
   // Auth info
   if (globalConfig.authToken) {
     context.output.print('Authentication:')
-    printKeyValue({
-      'User type': globalConfig.authType || 'normal',
-      'Auth token': globalConfig.authToken,
-    }, context)
+    printKeyValue(
+      {
+        'User type': globalConfig.authType || 'normal',
+        'Auth token': globalConfig.authToken
+      },
+      context
+    )
   }
 
   // Global configuration (user home dir config file)
@@ -83,17 +89,22 @@ function printKeyValue(obj, context) {
 async function gatherInfo(context) {
   const baseInfo = await promiseProps({
     globalConfig: gatherGlobalConfigInfo(context),
-    projectConfig: gatherProjectConfigInfo(context),
+    projectConfig: gatherProjectConfigInfo(context)
   })
 
   baseInfo.user = await gatherUserInfo(context, {
     projectBased: Boolean(baseInfo.projectConfig && baseInfo.projectConfig.api)
   })
 
-  return promiseProps(Object.assign({
-    project: gatherProjectInfo(context, baseInfo),
-    versions: findSanityModuleVersions(context)
-  }, baseInfo))
+  return promiseProps(
+    Object.assign(
+      {
+        project: gatherProjectInfo(context, baseInfo),
+        versions: findSanityModuleVersions(context)
+      },
+      baseInfo
+    )
+  )
 }
 
 function getGlobalConfigLocation() {
@@ -113,7 +124,9 @@ async function gatherProjectConfigInfo(context) {
   try {
     const config = await fse.readJson(configLocation)
     if (!config.api || !config.api.projectId) {
-      throw new Error(`Project config (${configLocation}) does not contain required "api.projectId" key`)
+      throw new Error(
+        `Project config (${configLocation}) does not contain required "api.projectId" key`
+      )
     }
 
     return config

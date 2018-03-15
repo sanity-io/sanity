@@ -59,8 +59,12 @@ describe('string', () => {
 
   test('regex constraint (custom pattern name)', async () => {
     const rule = Rule.string().regex(/^[A-Z][a-z]+$/, 'PascalCase')
-    await expect(rule.validate('SANITY')).resolves.toMatchSnapshot('regex: non-match w/ custom pattern name')
-    await expect(rule.validate('Sanity')).resolves.toMatchSnapshot('regex: match w/ custom pattern name')
+    await expect(rule.validate('SANITY')).resolves.toMatchSnapshot(
+      'regex: non-match w/ custom pattern name'
+    )
+    await expect(rule.validate('Sanity')).resolves.toMatchSnapshot(
+      'regex: match w/ custom pattern name'
+    )
   })
 
   test('regex constraint (custom pattern name, as options)', async () => {
@@ -81,7 +85,9 @@ describe('string', () => {
 
   test('uri constraint (invalid protocol)', async () => {
     const rule = Rule.string().uri({scheme: ['http', 'ftp']})
-    await expect(rule.validate('https://sanity.io/')).resolves.toMatchSnapshot('uri: protocol non-match')
+    await expect(rule.validate('https://sanity.io/')).resolves.toMatchSnapshot(
+      'uri: protocol non-match'
+    )
     await expect(rule.validate('ftp://code.sanity.io/')).resolves.toHaveLength(0)
   })
 

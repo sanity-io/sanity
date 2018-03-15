@@ -24,14 +24,7 @@ const client = sanityClient.clone()
 
 // Used in Sanity project
 function SanityVision() {
-  return (
-    <Vision
-      styles={styles}
-      components={components}
-      client={client}
-      schema={schema}
-    />
-  )
+  return <Vision styles={styles} components={components} client={client} schema={schema} />
 }
 
 module.exports = SanityVision

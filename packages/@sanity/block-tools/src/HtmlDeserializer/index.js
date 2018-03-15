@@ -22,7 +22,6 @@ let _markDefsWithinBlock = []
  */
 
 export default class HtmlDeserializer {
-
   /**
    * Create a new serializer respecting a Sanity block content type's schema
    *
@@ -38,10 +37,7 @@ export default class HtmlDeserializer {
   constructor(options = {}) {
     const {rules = []} = options
     const blockContentType = options.blockContentType
-    const standardRules = createRules(
-      blockContentType,
-      createRuleOptions(blockContentType)
-    )
+    const standardRules = createRules(blockContentType, createRuleOptions(blockContentType))
     this.rules = [...rules, ...standardRules]
     const parseHtml = options.parseHtml || defaultParseHtml()
     this.parseHtml = html => {
@@ -100,7 +96,8 @@ export default class HtmlDeserializer {
    * @return {Any}
    */
 
-  deserializeElement = element => { // eslint-disable-line complexity
+  deserializeElement = element => {
+    // eslint-disable-line complexity
 
     let node
     if (!element.tagName) {
@@ -191,7 +188,8 @@ export default class HtmlDeserializer {
         return this.deserializeDecorator(node)
       } else if (node._type === 'span') {
         node.marks = node.marks || []
-        if (node.text.trim()) { // Only apply marks if this is an actual text
+        if (node.text.trim()) {
+          // Only apply marks if this is an actual text
           node.marks.unshift(name)
         }
       } else if (node.children) {
@@ -225,7 +223,8 @@ export default class HtmlDeserializer {
         return this.deserializeAnnotation(node)
       } else if (node._type === 'span') {
         node.marks = node.marks || []
-        if (node.text.trim()) { // Only apply marks if this is an actual text
+        if (node.text.trim()) {
+          // Only apply marks if this is an actual text
           node.marks.unshift(markDef._key)
         }
       } else if (node.children) {
@@ -242,5 +241,4 @@ export default class HtmlDeserializer {
       return children
     }, [])
   }
-
 }

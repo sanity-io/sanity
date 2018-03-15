@@ -53,7 +53,9 @@ test('rejects on invalid `_id` property', async () => {
 })
 
 test('rejects on invalid `_id` property format', async () => {
-  await expect(importer(getFixtureStream('invalid-id-format'), importOptions)).rejects.toHaveProperty(
+  await expect(
+    importer(getFixtureStream('invalid-id-format'), importOptions)
+  ).rejects.toHaveProperty(
     'message',
     'Failed to parse line #2: Document ID "pk#123" is not valid: Please use alphanumeric document IDs. Dashes (-) and underscores (_) are also allowed.'
   )

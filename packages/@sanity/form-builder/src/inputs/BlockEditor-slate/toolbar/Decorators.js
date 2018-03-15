@@ -17,7 +17,6 @@ export const decorator = PropTypes.shape({
 })
 
 export default class Decorators extends React.Component {
-
   static propTypes = {
     onClick: PropTypes.func,
     decorators: PropTypes.arrayOf(decorator)
@@ -61,9 +60,7 @@ export default class Decorators extends React.Component {
 
   render() {
     return this.props.decorators ? (
-      <div className={styles.root}>
-        {this.props.decorators.map(this.renderDecoratorButton)}
-      </div>
+      <div className={styles.root}>{this.props.decorators.map(this.renderDecoratorButton)}</div>
     ) : null
   }
 }

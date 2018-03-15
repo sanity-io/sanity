@@ -5,7 +5,7 @@ import type {ObservableI, Subscription} from '../typedefs/observable'
 
 type Props = {
   documentId: string,
-  materialize: (string) => ObservableI<Object>,
+  materialize: string => ObservableI<Object>,
   children: Object => null | Node
 }
 
@@ -46,10 +46,9 @@ export default class WithMaterializedDocument extends React.Component<Props, Sta
       this.setState({materialized: null})
       return
     }
-    this.subscription = this.props.materialize(docId)
-      .subscribe(materialized => (
-        this.setState({materialized})
-      ))
+    this.subscription = this.props
+      .materialize(docId)
+      .subscribe(materialized => this.setState({materialized}))
   }
 
   render() {

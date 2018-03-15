@@ -20,17 +20,15 @@ errorChannel.subscribe(val => {
 })
 
 function fetchInitial() {
-  return authenticationFetcher.getCurrentUser().then(
-    user => userChannel.publish(user),
-    err => errorChannel.publish(err)
-  )
+  return authenticationFetcher
+    .getCurrentUser()
+    .then(user => userChannel.publish(user), err => errorChannel.publish(err))
 }
 
 function logout() {
-  return authenticationFetcher.logout().then(
-    () => userChannel.publish(null),
-    err => errorChannel.publish(err)
-  )
+  return authenticationFetcher
+    .logout()
+    .then(() => userChannel.publish(null), err => errorChannel.publish(err))
 }
 
 const currentUser = new Observable(observer => {
@@ -63,15 +61,15 @@ const currentUser = new Observable(observer => {
 const userCache = {}
 
 const getUser = id => {
-
   if (!userCache[id]) {
-    userCache[id] = client.request({
-      uri: `/users/${id}`,
-      withCredentials: true
-    })
-    .then(user => {
-      return (user && user.id) ? user : null
-    })
+    userCache[id] = client
+      .request({
+        uri: `/users/${id}`,
+        withCredentials: true
+      })
+      .then(user => {
+        return user && user.id ? user : null
+      })
   }
 
   return userCache[id]

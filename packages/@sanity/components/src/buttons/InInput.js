@@ -38,8 +38,10 @@ export default class InInputButton extends React.Component {
   }
 
   render() {
-
-    const {kind, ripple, inverted, colored, icon, loading, className, ...rest} = omit(this.props, 'onAction')
+    const {kind, ripple, inverted, colored, icon, loading, className, ...rest} = omit(
+      this.props,
+      'onAction'
+    )
 
     const Icon = icon
 
@@ -56,27 +58,18 @@ export default class InInputButton extends React.Component {
     `
 
     return (
-      <button
-        {...rest}
-        className={style}
-        type="button"
-        onClick={this.handleClick}
-      >
+      <button {...rest} className={style} type="button" onClick={this.handleClick}>
         <span className={styles.content}>
-          {
-            loading && <Spinner />
-          }
-          {
-            Icon && <span className={styles.iconContainer}><Icon className={styles.icon} /></span>
-          }
-          <span className={styles.text}>
-            {this.props.children}
-          </span>
+          {loading && <Spinner />}
+          {Icon && (
+            <span className={styles.iconContainer}>
+              <Icon className={styles.icon} />
+            </span>
+          )}
+          <span className={styles.text}>{this.props.children}</span>
         </span>
 
-        {
-          ripple && <Ink duration={200} opacity={0.10} radius={200} />
-        }
+        {ripple && <Ink duration={200} opacity={0.1} radius={200} />}
       </button>
     )
   }

@@ -9,7 +9,7 @@ export default {
     select: {
       title: 'title',
       media: 'image'
-    },
+    }
   },
   fields: [
     {

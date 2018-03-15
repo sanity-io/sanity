@@ -9,7 +9,9 @@ class LoadingContainer extends React.PureComponent {
 
     if (!this.getSubscriptions) {
       throw new Error(
-        `${this.constructor.name} extended LoadingContainer but did not define a getSubscriptions() method`
+        `${
+          this.constructor.name
+        } extended LoadingContainer but did not define a getSubscriptions() method`
       )
     }
 
@@ -19,7 +21,7 @@ class LoadingContainer extends React.PureComponent {
 
   componentDidMount() {
     const subs = this.getSubscriptions()
-    const stateKeys = this.stateKeys = Object.keys(subs)
+    const stateKeys = (this.stateKeys = Object.keys(subs))
 
     this.subscriptions = stateKeys.reduce((target, key) => {
       target.push(request(this, subs[key], key))

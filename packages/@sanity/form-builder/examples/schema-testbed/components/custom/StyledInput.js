@@ -9,11 +9,11 @@ function defaultGeneratePatch(inputValue) {
 // Just an idea
 function fromInput(Component, generatePatch = defaultGeneratePatch) {
   return class extends React.Component {
-    static displayName = Component.name || 'FromInput';
+    static displayName = Component.name || 'FromInput'
     static propTypes = {
       onChange: PropTypes.func,
-      value: PropTypes.string,
-    };
+      value: PropTypes.string
+    }
 
     handleChange = event => {
       this.props.onChange(PatchEvent.from(generatePatch(event.target.value)))

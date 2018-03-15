@@ -7,10 +7,6 @@ const styles = {
   border: '10px solid red'
 }
 
-const CenterDecorator = story => (
-  <div style={styles}>
-    {story()}
-  </div>
-)
+const CenterDecorator = story => <div style={styles}>{story()}</div>
 
 export default CenterDecorator

@@ -10,9 +10,7 @@ export default {
       title: 'myObject.first'
     }
   },
-  fieldsets: [
-    {name: 'recursive', title: 'Recursive', options: {collapsable: true}}
-  ],
+  fieldsets: [{name: 'recursive', title: 'Recursive', options: {collapsable: true}}],
   fields: [
     {
       name: 'myObject',
@@ -60,7 +58,8 @@ export default {
       name: 'fieldWithObjectType',
       title: 'Field of object type',
       type: 'object',
-      description: 'This is a field of (anonymous, inline) object type. Values here should never get a `_type` property',
+      description:
+        'This is a field of (anonymous, inline) object type. Values here should never get a `_type` property',
       fields: [
         {name: 'field1', type: 'string', description: 'This is a string field'},
         {
@@ -68,7 +67,7 @@ export default {
           type: 'myObject',
           title: 'A field of myObject',
           description: 'This is another field of "myObject"'
-        },
+        }
       ]
     },
     {

@@ -14,7 +14,6 @@ const browser = rebundler((cache, pkgCache) => {
     .transform(envify)
 })
 
-
 module.exports = {
   '/browser.js': () => browser().bundle()
 }

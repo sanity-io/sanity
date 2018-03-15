@@ -19,7 +19,11 @@ export default class Select extends React.Component {
             return (
               <li key={schemaName} className={styles.schema}>
                 <h2>{schemaName}</h2>
-                {schemaName !== schema.name && (<span>MISMATCH: {schemaName} !== {schema.name}</span>)}
+                {schemaName !== schema.name && (
+                  <span>
+                    MISMATCH: {schemaName} !== {schema.name}
+                  </span>
+                )}
                 <ul className={styles.type}>
                   {schema.types.map(type => {
                     return (

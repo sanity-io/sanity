@@ -109,7 +109,15 @@ class Pane extends React.PureComponent {
   }
 
   render() {
-    const {title, children, isSelected, renderFunctions, renderMenu, isCollapsed, styles} = this.props
+    const {
+      title,
+      children,
+      isSelected,
+      renderFunctions,
+      renderMenu,
+      isCollapsed,
+      styles
+    } = this.props
 
     return (
       <div
@@ -129,26 +137,20 @@ class Pane extends React.PureComponent {
             <h2 className={styles.title} onClick={this.handleToggle}>
               {title}
             </h2>
-            {
-              renderFunctions(isCollapsed)
-            }
+            {renderFunctions(isCollapsed)}
           </div>
           <div className={styles.menuWrapper}>
             <div className={styles.menuButtonContainer}>
-              {
-                renderMenu(isCollapsed) && (
-                  <Button
-                    kind="simple"
-                    icon={IconMoreVert}
-                    onClick={this.handleMenuToggle}
-                    className={styles.menuButton}
-                  />
-                )
-              }
+              {renderMenu(isCollapsed) && (
+                <Button
+                  kind="simple"
+                  icon={IconMoreVert}
+                  onClick={this.handleMenuToggle}
+                  className={styles.menuButton}
+                />
+              )}
             </div>
-            <div className={styles.menuContainer}>
-              {renderMenu(isCollapsed)}
-            </div>
+            <div className={styles.menuContainer}>{renderMenu(isCollapsed)}</div>
           </div>
           <div
             className={styles.headerBackground}

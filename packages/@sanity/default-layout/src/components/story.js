@@ -6,11 +6,6 @@ import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 storiesOf('Tags')
   .addDecorator(withKnobs)
-  .add(
-    'Create new',
-    () => {
-      return (
-        <div>Test</div>
-      )
-    }
-  )
+  .add('Create new', () => {
+    return <div>Test</div>
+  })

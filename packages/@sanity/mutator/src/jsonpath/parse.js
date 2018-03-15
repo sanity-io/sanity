@@ -6,10 +6,10 @@ import {uniq} from 'lodash'
 // TODO: Support '*'
 
 class Parser {
-  tokens : Array
-  length : number
-  i : number
-  constructor(path : string) {
+  tokens: Array
+  length: number
+  i: number
+  constructor(path: string) {
     this.tokens = tokenize(path)
     this.length = this.tokens.length
     this.i = 0
@@ -69,7 +69,7 @@ class Parser {
     return null
   }
 
-  parseAttribute() : Object {
+  parseAttribute(): Object {
     const token = this.match({type: 'identifier'})
     if (token) {
       return {
@@ -87,7 +87,7 @@ class Parser {
     return null
   }
 
-  parseAlias() : Object {
+  parseAlias(): Object {
     if (this.match({type: 'keyword', symbol: '@'}) || this.match({type: 'keyword', symbol: '$'})) {
       return {
         type: 'alias',
@@ -97,7 +97,7 @@ class Parser {
     return null
   }
 
-  parseNumber() : Object {
+  parseNumber(): Object {
     const token = this.match({type: 'number'})
     if (token) {
       return {
@@ -108,7 +108,7 @@ class Parser {
     return null
   }
 
-  parseNumberValue() : Object {
+  parseNumberValue(): Object {
     const expr = this.parseNumber()
     if (expr) {
       return expr.value
@@ -116,7 +116,7 @@ class Parser {
     return null
   }
 
-  parseSliceSelector() : Object {
+  parseSliceSelector(): Object {
     const start = this.i
     const result = {
       type: 'range'
@@ -147,11 +147,11 @@ class Parser {
     return result
   }
 
-  parseValueReference() : Object {
+  parseValueReference(): Object {
     return this.parseAttribute() || this.parseSliceSelector()
   }
 
-  parseLiteralValue() : Object {
+  parseLiteralValue(): Object {
     const literalString = this.match({type: 'quoted', quote: 'double'})
     if (literalString) {
       return {
@@ -171,7 +171,7 @@ class Parser {
 
   // TODO: Reorder constraints so that literal value is always on rhs, and variable is always
   // on lhs.
-  parseFilterExpression() : Object {
+  parseFilterExpression(): Object {
     const start = this.i
     const expr = this.parseAttribute() || this.parseAlias()
     if (!expr) {
@@ -181,7 +181,7 @@ class Parser {
       return {
         type: 'constraint',
         operator: '?',
-        lhs: expr,
+        lhs: expr
       }
     }
     const binOp = this.match({type: 'comparator'})
@@ -203,11 +203,11 @@ class Parser {
     }
   }
 
-  parseExpression() : Object {
+  parseExpression(): Object {
     return this.parseFilterExpression() || this.parseValueReference()
   }
 
-  parseUnion() : Object {
+  parseUnion(): Object {
     if (!this.match({type: 'paren', symbol: '['})) {
       return null
     }
@@ -235,7 +235,7 @@ class Parser {
     }
   }
 
-  parseRecursive() : Object {
+  parseRecursive(): Object {
     if (this.match({type: 'operator', symbol: '..'})) {
       const subpath = this.parsePath()
       if (!subpath) {
@@ -249,7 +249,7 @@ class Parser {
     return null
   }
 
-  parsePath() : Object {
+  parsePath(): Object {
     const nodes = []
     const expr = this.parseAttribute() || this.parseUnion() || this.parseRecursive()
     if (!expr) {
@@ -288,11 +288,11 @@ class Parser {
   }
 }
 
-export default function parse(path : string) {
+export default function parse(path: string) {
   return new Parser(path).parse()
 }
 
-function unionFromTerms(terms) : Object {
+function unionFromTerms(terms): Object {
   let result = {
     type: 'union'
   }
@@ -323,7 +323,7 @@ function unionFromTerms(terms) : Object {
   return result
 }
 
-function mergeUnions(union1, union2) : Object {
+function mergeUnions(union1, union2): Object {
   const result = {
     type: 'union'
   }

@@ -1,7 +1,7 @@
-
 export default [
   {
-    title: 'Structure of the dengue virus 2\'O methyltransferase in complex with s-adenosyl homocysteine and ribavirin 5\' triphosphate',
+    title:
+      "Structure of the dengue virus 2'O methyltransferase in complex with s-adenosyl homocysteine and ribavirin 5' triphosphate",
     id: '1R6A'
   },
   {

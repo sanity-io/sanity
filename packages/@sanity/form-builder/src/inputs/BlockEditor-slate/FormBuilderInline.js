@@ -17,7 +17,6 @@ import {resolveTypeName} from '../../utils/resolveTypeName'
 import InvalidValue from '../InvalidValueInput'
 import StopPropagation from './StopPropagation'
 
-
 export default class FormBuilderInline extends React.Component {
   static propTypes = {
     // Note: type refers to the array type, not the value type
@@ -67,7 +66,7 @@ export default class FormBuilderInline extends React.Component {
     const encoded = Base64.serializeNode(this.props.node, {preserveKeys: true})
     setTransferData(event.dataTransfer, TRANSFER_TYPES.NODE, encoded)
     event.dataTransfer.effectAllowed = 'move'
-    event.dataTransfer.setDragImage(element, (element.clientWidth / 2), -10)
+    event.dataTransfer.setDragImage(element, element.clientWidth / 2, -10)
   }
 
   addSelectionHandler() {
@@ -93,8 +92,7 @@ export default class FormBuilderInline extends React.Component {
       return
     }
     const selection = document.getSelection()
-    const isSelected = selection.containsNode
-        && selection.containsNode(this.formBuilderInline)
+    const isSelected = selection.containsNode && selection.containsNode(this.formBuilderInline)
     this.setState({isSelected})
   }
 
@@ -106,7 +104,6 @@ export default class FormBuilderInline extends React.Component {
   }
 
   handleDragOverOtherNode = event => {
-
     if (!this.state.isDragging) {
       return
     }
@@ -166,7 +163,6 @@ export default class FormBuilderInline extends React.Component {
   }
 
   handleDragEnd = event => {
-
     this.setState({isDragging: false})
     this.removeDragHandlers()
 
@@ -176,7 +172,8 @@ export default class FormBuilderInline extends React.Component {
 
     const {editor, node} = this.props
     const state = editor.getState()
-    const change = state.change()
+    const change = state
+      .change()
       .removeNodeByKey(node.key)
       .insertInline(node)
       .focus()
@@ -222,11 +219,7 @@ export default class FormBuilderInline extends React.Component {
     }
     return (
       <span>
-        <Preview
-          type={memberType}
-          value={this.getValue()}
-          layout="inline"
-        />
+        <Preview type={memberType} value={this.getValue()} layout="inline" />
       </span>
     )
   }
@@ -256,17 +249,15 @@ export default class FormBuilderInline extends React.Component {
         onClickOutside={this.handleClose}
         onEscape={this.handleClose}
         onAction={this.handleDialogAction}
-        modifiers={
-          {
-            flip: {
-              boundariesElement: 'viewport'
-            },
-            preventOverflow: {
-              priority: ['bottom', 'top', 'right', 'left'],
-              boundariesElement: 'viewport'
-            }
+        modifiers={{
+          flip: {
+            boundariesElement: 'viewport'
+          },
+          preventOverflow: {
+            priority: ['bottom', 'top', 'right', 'left'],
+            boundariesElement: 'viewport'
           }
-        }
+        }}
         showCloseButton={false}
         actions={[
           {
@@ -313,7 +304,8 @@ export default class FormBuilderInline extends React.Component {
       theOffset = 0
     }
 
-    const change = state.change()
+    const change = state
+      .change()
       .collapseToStartOf(node)
       .move(theOffset)
       .focus()
@@ -357,9 +349,7 @@ export default class FormBuilderInline extends React.Component {
 
         {isEditing && (
           <span className={styles.editInlineContainer}>
-            <StopPropagation tagName="span">
-              {this.renderInput()}
-            </StopPropagation>
+            <StopPropagation tagName="span">{this.renderInput()}</StopPropagation>
           </span>
         )}
       </span>

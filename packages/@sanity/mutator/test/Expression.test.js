@@ -4,7 +4,7 @@ import Expression from '../src/jsonpath/Expression'
 import PlainProbe from '../src/jsonpath/PlainProbe'
 
 test('Expression union', tap => {
-  let expression = new Expression(parse("[1,2,3]"))
+  const expression = new Expression(parse('[1,2,3]'))
   tap.equal(false, expression.isPath())
   tap.equal(true, expression.isUnion())
   tap.equal(true, expression.isCollection())
@@ -19,8 +19,7 @@ test('Expression path', tap => {
   const union = new Expression(parse('[e,f]'))
   const simple = new Expression(parse('a'))
   const concatCase = (a, b, expect) => {
-    tap.equal(a.concat(b).toString(), expect,
-      `concat ${a} ${b}`)
+    tap.equal(a.concat(b).toString(), expect, `concat ${a} ${b}`)
   }
   concatCase(path1, path2, 'a.b.c.d.e.f')
   concatCase(union, path2, '[e,f].d.e.f')

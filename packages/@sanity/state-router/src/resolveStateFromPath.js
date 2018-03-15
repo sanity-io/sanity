@@ -3,7 +3,7 @@ import type {Node} from './types'
 import {debug} from './utils/debug'
 import arrayify from './utils/arrayify'
 
-function matchPath(node : Node, path : string) : ?{[key: string]: string} {
+function matchPath(node: Node, path: string): ?{[key: string]: string} {
   const parts = path.split('/').filter(Boolean)
   const segmentsLength = node.route.segments.length
   if (parts.length < segmentsLength) {
@@ -26,7 +26,8 @@ function matchPath(node : Node, path : string) : ?{[key: string]: string} {
 
   const rest = parts.slice(segmentsLength)
   let childState = null
-  const children = typeof node.children === 'function' ? arrayify(node.children(state)) : node.children
+  const children =
+    typeof node.children === 'function' ? arrayify(node.children(state)) : node.children
   children.some(childNode => {
     // console.log('----childNode')
     // console.log(childNode)
@@ -43,7 +44,7 @@ function matchPath(node : Node, path : string) : ?{[key: string]: string} {
   return node.scope ? {[node.scope]: mergedState} : mergedState
 }
 
-export default function resolveStateFromPath(node : Node, path : string) : ?Object {
+export default function resolveStateFromPath(node: Node, path: string): ?Object {
   debug('resolving state from path %s', path)
 
   const pathMatch = matchPath(node, path.split('?')[0])

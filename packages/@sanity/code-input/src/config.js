@@ -11,9 +11,7 @@ export const SUPPORTED_LANGUAGES = [
   {title: 'Plain text', value: 'text'}
 ]
 
-export const SUPPORTED_THEMES = [
-  'github', 'monokai', 'terminal', 'tomorrow'
-]
+export const SUPPORTED_THEMES = ['github', 'monokai', 'terminal', 'tomorrow']
 
 export const DEFAULT_THEME = 'tomorrow'
 

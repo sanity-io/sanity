@@ -4,7 +4,6 @@ import PreviewSubscriber from './PreviewSubscriber'
 import RenderPreviewSnapshot from './RenderPreviewSnapshot'
 
 export default class SanityPreview extends React.PureComponent {
-
   static propTypes = {
     layout: PropTypes.string,
     value: PropTypes.any,

@@ -6,10 +6,10 @@ import Expression from './Expression'
 type Probe = Object
 
 export default class Matcher {
-  active : Array<Descender>
+  active: Array<Descender>
   recursives: Array<Descender>
-  payload : any
-  constructor(active : Array<Descender>, parent? : Matcher) {
+  payload: any
+  constructor(active: Array<Descender>, parent?: Matcher) {
     this.active = active || []
     if (parent) {
       this.recursives = parent.recursives
@@ -20,7 +20,7 @@ export default class Matcher {
     this.extractRecursives()
   }
 
-  setPayload(payload : any) {
+  setPayload(payload: any) {
     this.payload = payload
     return this
   }
@@ -39,7 +39,7 @@ export default class Matcher {
   }
 
   // Find recursives that are relevant now and should be considered part of the active set
-  activeRecursives(probe : Probe) : Array<Descender> {
+  activeRecursives(probe: Probe): Array<Descender> {
     return this.recursives.filter(descender => {
       const head = descender.head
       // Constraints are always relevant
@@ -60,12 +60,12 @@ export default class Matcher {
     })
   }
 
-  match(probe : Probe) : Object {
+  match(probe: Probe): Object {
     return this.iterate(probe).extractMatches(probe)
   }
 
-  iterate(probe : Probe) : Matcher {
-    const newActiveSet : Array<Descender> = []
+  iterate(probe: Probe): Matcher {
+    const newActiveSet: Array<Descender> = []
     this.active.concat(this.activeRecursives(probe)).forEach(descender => {
       newActiveSet.push(...descender.iterate(probe))
     })
@@ -74,7 +74,7 @@ export default class Matcher {
 
   // Returns true if any of the descenders in the active or recursive set
   // consider the current state a final destination
-  isDestination() : bool {
+  isDestination(): boolean {
     const arrival = this.active.find(descender => {
       if (descender.hasArrived()) {
         return true
@@ -84,22 +84,24 @@ export default class Matcher {
     return !!arrival
   }
 
-  hasRecursives() : bool {
+  hasRecursives(): boolean {
     return this.recursives.length > 0
   }
 
   // Returns any payload delivieries and leads that needs to be followed to complete
   // the process.
-  extractMatches(probe : Probe) : Object {
+  extractMatches(probe: Probe): Object {
     const leads = []
     const targets = []
     this.active.forEach(descender => {
       if (descender.hasArrived()) {
         // This was allready arrived, so matches this value, not descenders
-        targets.push(new Expression({
-          type: 'alias',
-          target: 'self'
-        }))
+        targets.push(
+          new Expression({
+            type: 'alias',
+            target: 'self'
+          })
+        )
         return
       }
       if (probe.containerType() == 'array' && !descender.head.isIndexReference()) {
@@ -149,7 +151,7 @@ export default class Matcher {
       }
     }
 
-    const result : Object = {
+    const result: Object = {
       leads: leads
     }
     if (targets.length > 0) {
@@ -161,7 +163,7 @@ export default class Matcher {
     return result
   }
 
-  static fromPath(jsonpath : string) {
+  static fromPath(jsonpath: string) {
     const descender = new Descender(null, new Expression(parse(jsonpath)))
     return new Matcher(descender.descend())
   }

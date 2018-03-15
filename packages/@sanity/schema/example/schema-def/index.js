@@ -1,4 +1,3 @@
-
 const CUSTOMER = {
   name: 'customer',
   type: 'object',
@@ -37,9 +36,7 @@ const PERSON = {
     {
       name: 'image',
       type: 'image',
-      fields: [
-        {name: 'caption', type: 'string'}
-      ]
+      fields: [{name: 'caption', type: 'string'}]
     },
     {
       name: 'customer',
@@ -57,10 +54,7 @@ const PERSON = {
 const ADDRESS = {
   name: 'address',
   type: 'object',
-  fields: [
-    {name: 'zipcode', type: 'string'},
-    {name: 'street', type: 'string'}
-  ]
+  fields: [{name: 'zipcode', type: 'string'}, {name: 'street', type: 'string'}]
 }
 const RELATION = {
   name: 'relation',
@@ -87,10 +81,5 @@ const RELATION = {
 
 export default {
   name: 'test',
-  types: [
-    PERSON,
-    ADDRESS,
-    CUSTOMER,
-    RELATION
-  ]
+  types: [PERSON, ADDRESS, CUSTOMER, RELATION]
 }

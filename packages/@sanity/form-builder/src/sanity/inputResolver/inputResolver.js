@@ -47,7 +47,5 @@ export default function resolveInputComponent(type) {
     return type.inputComponent
   }
 
-  return resolveTypeVariants(type)
-    || customInputs[type.name]
-    || defaultInputs[type.name]
+  return resolveTypeVariants(type) || customInputs[type.name] || defaultInputs[type.name]
 }

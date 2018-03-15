@@ -2,9 +2,9 @@
 
 // A default implementation of a probe for vanilla JS _values
 export default class PlainProbe {
-  _value : any
-  path : Array<any>
-  constructor(_value : any, path : Array<any>) {
+  _value: any
+  path: Array<any>
+  constructor(_value: any, path: Array<any>) {
     this._value = _value
     this.path = path || []
   }
@@ -17,13 +17,13 @@ export default class PlainProbe {
     return 'primitive'
   }
 
-  length() : number {
+  length(): number {
     if (this.containerType() !== 'array') {
       throw new Error("Won't return length of non-indexable _value")
     }
     return this._value.length
   }
-  getIndex(i : number) : any {
+  getIndex(i: number): any {
     if (this.containerType() !== 'array') {
       return false
     }
@@ -33,20 +33,19 @@ export default class PlainProbe {
     return new PlainProbe(this._value[i], this.path.concat(i))
   }
 
-
-  hasAttribute(key : string) : bool {
+  hasAttribute(key: string): boolean {
     if (this.containerType() !== 'object') {
       return false
     }
     return this._value.hasOwnProperty(key)
   }
-  attributeKeys() : Array<string> {
+  attributeKeys(): Array<string> {
     if (this.containerType() !== 'object') {
       return []
     }
     return Object.keys(this._value)
   }
-  getAttribute(key : string) : any {
+  getAttribute(key: string): any {
     if (this.containerType() !== 'object') {
       throw new Error('getAttribute only applies to plain objects')
     }
@@ -56,7 +55,7 @@ export default class PlainProbe {
     return new PlainProbe(this._value[key], this.path.concat(key))
   }
 
-  get() : any {
+  get(): any {
     return this._value
   }
 }

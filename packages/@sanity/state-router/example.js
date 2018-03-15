@@ -2,10 +2,12 @@ import {route} from './src'
 import assert from 'assert'
 
 function findAppByName(name) {
-  return name === 'pokemon' && {
-    name: 'pokemon',
-    router: route('/:section', route('/:pokemonName'))
-  }
+  return (
+    name === 'pokemon' && {
+      name: 'pokemon',
+      router: route('/:section', route('/:pokemonName'))
+    }
+  )
 }
 
 const router = route('/', [

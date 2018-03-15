@@ -13,7 +13,7 @@ export default class Slider extends React.Component {
     level: PropTypes.number,
     value: PropTypes.number,
     onChange: PropTypes.func.isRequired
-  };
+  }
 
   handleChange = event => {
     const inputValue = event.target.value

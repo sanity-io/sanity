@@ -9,7 +9,7 @@ export default {
     {
       title: 'Optimistic estimate',
       name: 'optimistic',
-      type: 'number',
+      type: 'number'
     },
     {
       title: 'Nominal estimate',

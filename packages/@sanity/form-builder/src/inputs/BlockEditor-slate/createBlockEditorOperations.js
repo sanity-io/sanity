@@ -3,7 +3,6 @@ import {createProtoValue} from './createProtoValue'
 import randomKey from './util/randomKey'
 
 export default function createBlockEditorOperations(blockEditor) {
-
   function onChange(change) {
     return blockEditor.props.onChange(change)
   }
@@ -15,7 +14,6 @@ export default function createBlockEditorOperations(blockEditor) {
   }
 
   return {
-
     createFormBuilderSpan(annotationType) {
       const state = getState()
       let change
@@ -36,9 +34,7 @@ export default function createBlockEditorOperations(blockEditor) {
         data: undefined,
         key: key
       }
-      change
-        .unwrapInline(SLATE_SPAN_TYPE)
-        .wrapInline(span)
+      change.unwrapInline(SLATE_SPAN_TYPE).wrapInline(span)
 
       const currentSpan = blockEditor.props.value.inlines
         .filter(inline => inline.key === key)
@@ -75,8 +71,7 @@ export default function createBlockEditorOperations(blockEditor) {
         focusedAnnotationName: undefined,
         annotations: annotations
       }
-      const nextChange = state.change()
-        .setNodeByKey(spanNode.key, {data})
+      const nextChange = state.change().setNodeByKey(spanNode.key, {data})
 
       onChange(nextChange)
     },
@@ -91,12 +86,14 @@ export default function createBlockEditorOperations(blockEditor) {
         })
         change = change.focus()
       } else if (spanNode) {
-        change = state.change()
+        change = state
+          .change()
           .unwrapInlineByKey(spanNode.key)
           .focus()
       } else {
         // Apply on current selection
-        change = state.change()
+        change = state
+          .change()
           .unwrapInline(SLATE_SPAN_TYPE)
           .focus()
       }
@@ -127,18 +124,17 @@ export default function createBlockEditorOperations(blockEditor) {
 
       // If a single block is selected partially, split block conditionally
       // (selection in start, middle or end of text)
-      if (startBlock === endBlock
-        && selection.isExpanded
-        && !(
-          selection.hasStartAtStartOf(startBlock)
-          && selection.hasEndAtEndOf(startBlock)
-        )) {
+      if (
+        startBlock === endBlock &&
+        selection.isExpanded &&
+        !(selection.hasStartAtStartOf(startBlock) && selection.hasEndAtEndOf(startBlock))
+      ) {
         const hasTextBefore = !selection.hasStartAtStartOf(startBlock)
         const hasTextAfter = !selection.hasEndAtEndOf(startBlock)
         if (hasTextAfter) {
           const extendForward = selection.isForward
-            ? (selection.focusOffset - selection.anchorOffset)
-            : (selection.anchorOffset - selection.focusOffset)
+            ? selection.focusOffset - selection.anchorOffset
+            : selection.anchorOffset - selection.focusOffset
           change
             .collapseToStart()
             .splitBlock()
@@ -165,8 +161,7 @@ export default function createBlockEditorOperations(blockEditor) {
       state.blocks.forEach(blk => {
         const newData = {...blk.data.toObject(), style: styleName}
         if (blk.type === 'contentBlock') {
-          change = change
-            .setNodeByKey(blk.key, {data: newData})
+          change = change.setNodeByKey(blk.key, {data: newData})
         }
       })
       onChange(change.focus())
@@ -202,10 +197,12 @@ export default function createBlockEditorOperations(blockEditor) {
     },
 
     toggleMark(mark) {
-      onChange(getState()
-        .change()
-        .toggleMark(mark.type)
-        .focus())
+      onChange(
+        getState()
+          .change()
+          .toggleMark(mark.type)
+          .focus()
+      )
     },
 
     expandToFocusedWord(change) {
@@ -215,29 +212,26 @@ export default function createBlockEditorOperations(blockEditor) {
       const isEmpty = obj => obj.get('text').match(/\s/g)
       const whiteSpaceBeforeIndex = charsBefore.reverse().findIndex(obj => isEmpty(obj))
 
-      const newStartOffset = (whiteSpaceBeforeIndex > -1)
-        ? (charsBefore.size - whiteSpaceBeforeIndex)
-        : -1
+      const newStartOffset =
+        whiteSpaceBeforeIndex > -1 ? charsBefore.size - whiteSpaceBeforeIndex : -1
 
       const whiteSpaceAfterIndex = charsAfter.findIndex(obj => isEmpty(obj))
-      const newEndOffset = charsBefore.size
-          + (whiteSpaceAfterIndex > -1 ? whiteSpaceAfterIndex : (charsAfter.size + 1))
+      const newEndOffset =
+        charsBefore.size + (whiteSpaceAfterIndex > -1 ? whiteSpaceAfterIndex : charsAfter.size + 1)
 
       // Not near any word, abort
       if (newStartOffset === newEndOffset) {
         return null
       }
       // Select and highlight current word
-      return change
-        .moveOffsetsTo(newStartOffset, newEndOffset)
-        .focus()
+      return change.moveOffsetsTo(newStartOffset, newEndOffset).focus()
     },
 
     expandToNode(node) {
-      return getState().change()
+      return getState()
+        .change()
         .moveToRangeOf(node)
         .focus()
     }
-
   }
 }

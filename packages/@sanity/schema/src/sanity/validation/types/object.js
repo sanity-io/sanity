@@ -26,11 +26,9 @@ function validateFieldName(name): Array<any> {
   if (!VALID_FIELD_RE.test(name)) {
     return [
       error(
-        `Invalid field name: ${name
-        }. Fields can only contain characters from a-z, numbers and underscores and should not start with a number (${
-          String(
-            VALID_FIELD_RE
-          )})`,
+        `Invalid field name: ${name}. Fields can only contain characters from a-z, numbers and underscores and should not start with a number (${String(
+          VALID_FIELD_RE
+        )})`,
         HELP_IDS.OBJECT_FIELD_NAME_INVALID
       )
     ]
@@ -38,8 +36,8 @@ function validateFieldName(name): Array<any> {
   if (!CONVENTIONAL_FIELD_RE.test(name)) {
     return [
       warning(
-        'Thats an interesting field name for sure! But it is... how to put it... a bit... unconventional?'
-      + ' It may be wise to keep special characters out of field names for easier access later on.'
+        'Thats an interesting field name for sure! But it is... how to put it... a bit... unconventional?' +
+          ' It may be wise to keep special characters out of field names for easier access later on.'
       ),
       HELP_IDS.OBJECT_FIELD_NAME_INVALID
     ]
@@ -49,14 +47,13 @@ function validateFieldName(name): Array<any> {
 
 function validateField(field, visitorContext) {
   const {name, fieldset, ...fieldType} = field
-  return ('name' in field)
+  return 'name' in field
     ? validateFieldName(name)
     : [error('Missing field name', HELP_IDS.OBJECT_FIELD_NAME_INVALID)]
-
 }
 
 function getDuplicateFields(array: Array<Field>): Array<Array<Field>> {
-  const dupes: { [string]: Array<Field> } = {}
+  const dupes: {[string]: Array<Field>} = {}
   array.forEach(field => {
     if (!dupes[field.name]) {
       dupes[field.name] = []
@@ -72,24 +69,18 @@ export default (typeDef, visitorContext) => {
   const problems = []
   const fieldsIsArray = Array.isArray(typeDef.fields)
   if (fieldsIsArray) {
-    const fieldsWithNames = typeDef.fields.filter(
-      field => typeof field.name === 'string'
-    )
+    const fieldsWithNames = typeDef.fields.filter(field => typeof field.name === 'string')
 
     getDuplicateFields(fieldsWithNames).forEach(dupes => {
       problems.push(
         error(
-          `Found ${dupes.length} fields with name "${dupes[0]
-            .name}" in object`,
+          `Found ${dupes.length} fields with name "${dupes[0].name}" in object`,
           HELP_IDS.OBJECT_FIELD_NOT_UNIQUE
         )
       )
     })
     if (typeDef.fields.length === 0) {
-      problems.push(error(
-        'Object should have at least one field',
-        HELP_IDS.OBJECT_FIELDS_INVALID
-      ))
+      problems.push(error('Object should have at least one field', HELP_IDS.OBJECT_FIELDS_INVALID))
     }
   } else {
     problems.push(
@@ -99,7 +90,6 @@ export default (typeDef, visitorContext) => {
       )
     )
   }
-
 
   return {
     ...typeDef,

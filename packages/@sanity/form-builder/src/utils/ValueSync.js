@@ -10,7 +10,7 @@ declare var __DEV__: boolean
 
 type Deserialized = any
 
-type ChildProps = { value: Deserialized }
+type ChildProps = {value: Deserialized}
 
 type Props = {
   value: Object,
@@ -18,70 +18,77 @@ type Props = {
   serialize: (value: Deserialized) => Object,
   deserialize: (value: Object) => Deserialized,
   applyPatch: (patch: Patch) => Deserialized,
-  children: (ChildProps) => ?React$Element<any>
+  children: ChildProps => ?React$Element<any>
 }
 
+export default withPatchSubscriber(
+  class ValueSync extends React.Component {
+    props: Props
 
-export default withPatchSubscriber(class ValueSync extends React.Component {
-  props: Props
-
-  static contextTypes = {
-    getValuePath: PropTypes.func,
-    formBuilder: PropTypes.any,
-  }
-
-  state: {
-    value: Deserialized
-  }
-
-  unsubscribe: () => void
-
-  constructor(props: Props) {
-    super()
-    this.state = {
-      value: props.deserialize(props.value)
+    static contextTypes = {
+      getValuePath: PropTypes.func,
+      formBuilder: PropTypes.any
     }
-    this.unsubscribe = props.subscribe(({snapshot, patches, shouldReset}) => {
-      if (shouldReset) {
-        // eslint-disable-next-line no-console
-        console.warn('Serialized local input value was reset due to a patch that targeted an ancestor')
-        this.setState({value: props.deserialize(snapshot)})
+
+    state: {
+      value: Deserialized
+    }
+
+    unsubscribe: () => void
+
+    constructor(props: Props) {
+      super()
+      this.state = {
+        value: props.deserialize(props.value)
       }
-      this.receivePatches(patches)
-    })
-  }
-
-
-  componentWillUnmount() {
-    this.unsubscribe()
-    this.checkDiff.cancel()
-  }
-
-  receivePatches(patches: Array<Patch>) {
-    const {applyPatch} = this.props
-    this.setState(prevState => ({
-      value: patches.reduce(applyPatch, prevState.value)
-    }))
-  }
-
-  checkDiff = debounce(() => {
-    const propsVal = this.props.value
-    const stateVal = this.state.value ? this.props.serialize(this.state.value) : this.state.value
-    const notEqual = whyNotEqual(propsVal, stateVal)
-    if (notEqual) {
-      // eslint-disable-next-line no-console
-      console.warn('Serialized local input value (%o) out of sync with actual value (%o): %s', propsVal, stateVal, notEqual)
+      this.unsubscribe = props.subscribe(({snapshot, patches, shouldReset}) => {
+        if (shouldReset) {
+          // eslint-disable-next-line no-console
+          console.warn(
+            'Serialized local input value was reset due to a patch that targeted an ancestor'
+          )
+          this.setState({value: props.deserialize(snapshot)})
+        }
+        this.receivePatches(patches)
+      })
     }
-  }, 5000)
 
-  componentDidUpdate() {
-    if (__DEV__) {
-      this.checkDiff()
+    componentWillUnmount() {
+      this.unsubscribe()
+      this.checkDiff.cancel()
+    }
+
+    receivePatches(patches: Array<Patch>) {
+      const {applyPatch} = this.props
+      this.setState(prevState => ({
+        value: patches.reduce(applyPatch, prevState.value)
+      }))
+    }
+
+    checkDiff = debounce(() => {
+      const propsVal = this.props.value
+      const stateVal = this.state.value ? this.props.serialize(this.state.value) : this.state.value
+      const notEqual = whyNotEqual(propsVal, stateVal)
+      if (notEqual) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          'Serialized local input value (%o) out of sync with actual value (%o): %s',
+          propsVal,
+          stateVal,
+          notEqual
+        )
+      }
+    }, 5000)
+
+    componentDidUpdate() {
+      if (__DEV__) {
+        this.checkDiff()
+      }
+    }
+
+    render() {
+      const {value} = this.state
+      return this.props.children({...this.props, value})
     }
   }
-
-  render() {
-    const {value} = this.state
-    return this.props.children({...this.props, value})
-  }
-})
+)

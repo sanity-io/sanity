@@ -7,9 +7,7 @@ let state = null
 
 export function getState(key, defaultVal) {
   ensureState()
-  return typeof state[key] === 'undefined'
-    ? defaultVal
-    : state[key]
+  return typeof state[key] === 'undefined' ? defaultVal : state[key]
 }
 
 export function storeState(key, value) {

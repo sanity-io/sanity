@@ -31,7 +31,6 @@ function extractUploadState(value) {
 }
 
 export default class SanityDefaultPreview extends React.PureComponent {
-
   static propTypes = {
     layout: PropTypes.oneOf(Object.keys(previewComponentMap)),
     value: PropTypes.object,
@@ -51,16 +50,14 @@ export default class SanityDefaultPreview extends React.PureComponent {
     return (
       <img
         alt={value.title}
-        src={
-          imageBuilder.image(media)
-            .width(dimensions.width || 100)
-            .height(dimensions.height || 100)
-            .fit(dimensions.fit)
-            .url()
-        }
+        src={imageBuilder
+          .image(media)
+          .width(dimensions.width || 100)
+          .height(dimensions.height || 100)
+          .fit(dimensions.fit)
+          .url()}
       />
     )
-
   }
 
   renderImageUrl = options => {
@@ -79,7 +76,6 @@ export default class SanityDefaultPreview extends React.PureComponent {
     const {type} = this.props
     const Icon = type.icon
     return Icon && <Icon />
-
   }
 
   resolveMedia = () => {
@@ -102,7 +98,6 @@ export default class SanityDefaultPreview extends React.PureComponent {
 
     // Render fallback icon
     return this.renderIcon
-
   }
 
   render() {
@@ -119,19 +114,16 @@ export default class SanityDefaultPreview extends React.PureComponent {
 
     const {_upload, value} = extractUploadState(this.props.value)
 
-    const item = _upload ? {
-      ...value,
-      imageUrl: _upload.previewImage,
-      title: value.title || (_upload.file && _upload.file.name) || 'Uploading…'
-    } : value
+    const item = _upload
+      ? {
+          ...value,
+          imageUrl: _upload.previewImage,
+          title: value.title || (_upload.file && _upload.file.name) || 'Uploading…'
+        }
+      : value
 
     if (!item) {
-      return (
-        <PreviewComponent
-          {...rest}
-          progress={_upload && _upload.progress}
-        />
-      )
+      return <PreviewComponent {...rest} progress={_upload && _upload.progress} />
     }
 
     const media = this.resolveMedia()

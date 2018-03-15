@@ -27,33 +27,41 @@ const slateTypeComponentMapping = {
   h1(props) {
     return <Header level={1} {...props} />
   },
-  h2(props) { // eslint-disable-line react/no-multi-comp
+  h2(props) {
+    // eslint-disable-line react/no-multi-comp
     return <Header level={2} {...props} />
   },
-  h3(props) { // eslint-disable-line react/no-multi-comp
+  h3(props) {
+    // eslint-disable-line react/no-multi-comp
     return <Header level={3} {...props} />
   },
-  h4(props) { // eslint-disable-line react/no-multi-comp
+  h4(props) {
+    // eslint-disable-line react/no-multi-comp
     return <Header level={4} {...props} />
   },
-  h5(props) { // eslint-disable-line react/no-multi-comp
+  h5(props) {
+    // eslint-disable-line react/no-multi-comp
     return <Header level={5} {...props} />
   },
-  h6(props) { // eslint-disable-line react/no-multi-comp
+  h6(props) {
+    // eslint-disable-line react/no-multi-comp
     return <Header level={6} {...props} />
   },
-  listItem(props) { // eslint-disable-line react/no-multi-comp
+  listItem(props) {
+    // eslint-disable-line react/no-multi-comp
     // eslint-disable-next-line react/prop-types
     const listItem = props.children[0] && props.children[0].props.parent.data.get('listItem')
     // eslint-disable-next-line react/prop-types
     const level = props.children[0] && props.children[0].props.parent.data.get('level')
     // eslint-disable-next-line react/prop-types
-    const style = (props.children[0] && props.children[0].props.parent.data.get('style'))
-      || BLOCK_DEFAULT_STYLE
+    const style =
+      (props.children[0] && props.children[0].props.parent.data.get('style')) || BLOCK_DEFAULT_STYLE
     const contentComponent = slateTypeComponentMapping[style]
-    return <ListItem contentComponent={contentComponent} level={level} listItem={listItem} {...props} />
+    return (
+      <ListItem contentComponent={contentComponent} level={level} listItem={listItem} {...props} />
+    )
   },
-  blockquote: Blockquote,
+  blockquote: Blockquote
 }
 
 // Create a contentBlock component
@@ -75,7 +83,6 @@ function createContentBlock(props) {
 }
 
 export default function prepareSlateForBlockEditor(blockEditor) {
-
   const type = blockEditor.props.type
   const blockType = type.of.find(ofType => ofType.name === 'block')
   if (!blockType) {
@@ -87,20 +94,22 @@ export default function prepareSlateForBlockEditor(blockEditor) {
     throw new Error("A field with name 'style' is not defined in the block type (required).")
   }
 
-  const textStyles = styleField.type.options.list
-    && styleField.type.options.list.filter(style => style.value)
+  const textStyles =
+    styleField.type.options.list && styleField.type.options.list.filter(style => style.value)
   if (!textStyles || textStyles.length === 0) {
-    throw new Error('The style fields need at least one style '
-      + "defined. I.e: {title: 'Normal', value: 'normal'}.")
+    throw new Error(
+      'The style fields need at least one style ' +
+        "defined. I.e: {title: 'Normal', value: 'normal'}."
+    )
   }
 
   const listField = blockType.fields.find(btField => btField.name === 'list')
   let listItems = []
   if (listField) {
-    listItems = listField.type.options.list
-      && listField.type.options.list.filter(listStyle => listStyle.value)
+    listItems =
+      listField.type.options.list &&
+      listField.type.options.list.filter(listStyle => listStyle.value)
   }
-
 
   const memberTypesExceptBlock = type.of.filter(ofType => ofType.name !== 'block')
   const spanType = getSpanType(type)
@@ -111,13 +120,13 @@ export default function prepareSlateForBlockEditor(blockEditor) {
 
   const slateSchema = {
     nodes: {
-      ...mapToObject(
-        memberTypesExceptBlock,
-        ofType => [ofType.name, ofType.options && ofType.options.inline ? FormBuilderInline : FormBuilderBlock]
-      ),
+      ...mapToObject(memberTypesExceptBlock, ofType => [
+        ofType.name,
+        ofType.options && ofType.options.inline ? FormBuilderInline : FormBuilderBlock
+      ]),
       __unknown: FormBuilderBlock,
       span: createSpanNode(spanType),
-      contentBlock: createContentBlock,
+      contentBlock: createContentBlock
     },
     marks: mapToObject(allowedDecorators, decorator => {
       return [decorator, Decorator]
@@ -130,15 +139,13 @@ export default function prepareSlateForBlockEditor(blockEditor) {
           return node.kind === 'document'
         },
         validate: document => {
-          return (
-            document.nodes.size === 0
-            || (
-              document.nodes.size === 1
-                && document.nodes.first().type === SLATE_DEFAULT_BLOCK.type
-                && document.nodes.first().text === ''
-                && document.nodes.first().data.get('style') !== BLOCK_DEFAULT_STYLE
-            )
-          ) ? document : null
+          return document.nodes.size === 0 ||
+            (document.nodes.size === 1 &&
+              document.nodes.first().type === SLATE_DEFAULT_BLOCK.type &&
+              document.nodes.first().text === '' &&
+              document.nodes.first().data.get('style') !== BLOCK_DEFAULT_STYLE)
+            ? document
+            : null
         },
         normalize: (change, document) => {
           change.deselect()
@@ -153,8 +160,7 @@ export default function prepareSlateForBlockEditor(blockEditor) {
       // Rule to ensure that every non-void block has a style
       {
         match: node => {
-          if (node.kind === 'block' && !node.isVoid
-          ) {
+          if (node.kind === 'block' && !node.isVoid) {
             return node
           }
           return undefined
@@ -164,8 +170,7 @@ export default function prepareSlateForBlockEditor(blockEditor) {
         },
         normalize: (change, block) => {
           const data = {...block.data.toObject(), style: BLOCK_DEFAULT_STYLE}
-          return change
-            .setNodeByKey(block.key, {data})
+          return change.setNodeByKey(block.key, {data})
         }
       },
       // Rule to ensure that annotation _key's within a block is unique
@@ -173,19 +178,20 @@ export default function prepareSlateForBlockEditor(blockEditor) {
       {
         match: node => {
           // contentBlock with annotations
-          return node.kind === 'block'
-            && node.type === 'contentBlock'
-            && node.filterDescendants(desc => {
+          return (
+            node.kind === 'block' &&
+            node.type === 'contentBlock' &&
+            node.filterDescendants(desc => {
               const annotations = desc.data && desc.data.get('annotations')
               return annotations && Object.keys(annotations).length
             }).size
+          )
         },
 
         validate: contentBlock => {
           // return the last occurence of nodes with annotations that has the same _key
-          const duplicateKeyNodes = contentBlock.filterDescendants(
-            desc => desc.data && desc.data.get('annotations')
-          )
+          const duplicateKeyNodes = contentBlock
+            .filterDescendants(desc => desc.data && desc.data.get('annotations'))
             .toArray()
             .map(aNode => {
               const annotations = aNode.data.get('annotations')
@@ -199,14 +205,16 @@ export default function prepareSlateForBlockEditor(blockEditor) {
             return duplicateKeyNodes.map(key => {
               return {
                 dupKey: key,
-                dupNode: contentBlock.filterDescendants(
-                  desc => {
+                dupNode: contentBlock
+                  .filterDescendants(desc => {
                     const annotations = desc.data && desc.data.get('annotations')
-                    return annotations
-                      && Object.keys(annotations)
-                        .find(name => annotations[name]._key === key)
-                  }
-                ).toArray().slice(-1)[0] // Last occurence
+                    return (
+                      annotations &&
+                      Object.keys(annotations).find(name => annotations[name]._key === key)
+                    )
+                  })
+                  .toArray()
+                  .slice(-1)[0] // Last occurence
               }
             })
           }

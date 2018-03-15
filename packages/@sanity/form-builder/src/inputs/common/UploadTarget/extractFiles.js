@@ -12,8 +12,7 @@ export function extractPastedFiles(dataTransfer: DataTransfer): Array<File> {
   if (dataTransfer.files && dataTransfer.files.length > 0) {
     return Promise.resolve(Array.from(dataTransfer.files || []))
   }
-  return normalizeItems(Array.from(dataTransfer.items || []))
-    .then(flatten)
+  return normalizeItems(Array.from(dataTransfer.items || [])).then(flatten)
 }
 
 export function extractDroppedFiles(dataTransfer: DataTransfer) {
@@ -22,8 +21,7 @@ export function extractDroppedFiles(dataTransfer: DataTransfer) {
   if (files && files.length > 0) {
     return Promise.resolve(files)
   }
-  return normalizeItems(items)
-    .then(flatten)
+  return normalizeItems(items).then(flatten)
 }
 
 function normalizeItems(items: Array<DataTransferItem>): Promise<Array<File>> {
@@ -51,16 +49,16 @@ function normalizeItems(items: Array<DataTransferItem>): Promise<Array<File>> {
       }
 
       // others
-      return new Promise(resolve => item.getAsString(resolve))
-        .then(str => (str ? [new File([str], 'unknown.txt', {type: item.type})] : []))
+      return new Promise(resolve => item.getAsString(resolve)).then(
+        str => (str ? [new File([str], 'unknown.txt', {type: item.type})] : [])
+      )
     })
   )
 }
 
 function walk(entry: WebKitFileEntry): Promise<Array<File>> {
   if (entry.isFile) {
-    return new Promise(resolve => entry.file(resolve))
-      .then(file => [file])
+    return new Promise(resolve => entry.file(resolve)).then(file => [file])
   }
 
   if (entry.isDirectory) {

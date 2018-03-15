@@ -7,10 +7,9 @@ export default class Preview extends React.Component {
     layout: PropTypes.string,
     value: PropTypes.object,
     type: PropTypes.object.isRequired
-  };
+  }
 
   render() {
-
     const {type, value, layout} = this.props
 
     const PreviewComponent = resolvePreview(type)

@@ -30,7 +30,6 @@ const LIST_VIEW_ITEMS = [
     icon: IconThumbnails,
     action: 'setListLayout',
     key: 'media'
-
   },
   // Disabled for now as it needs more work (virtual-list support, etc.)
   TEST_CARDS_AND_THUMBNAILS && {
@@ -50,7 +49,6 @@ const LIST_VIEW_ITEMS = [
 const NULL_COMPONENT = () => null
 
 export default class DocumentsPaneMenu extends React.PureComponent {
-
   static propTypes = {
     onSetListLayout: PropTypes.func,
     onSetOrdering: PropTypes.func,
@@ -76,13 +74,14 @@ export default class DocumentsPaneMenu extends React.PureComponent {
 
   render() {
     const {orderingOptions} = this.props
-    const orderingItems = orderingOptions.map(orderingOption => ({
-      title: orderingOption.title,
-      icon: orderingOption.icon || NULL_COMPONENT,
-      ordering: orderingOption,
-      action: 'setOrdering',
-      key: orderingOption.name
-    }))
+    const orderingItems = orderingOptions
+      .map(orderingOption => ({
+        title: orderingOption.title,
+        icon: orderingOption.icon || NULL_COMPONENT,
+        ordering: orderingOption,
+        action: 'setOrdering',
+        key: orderingOption.name
+      }))
       .concat(LIST_VIEW_ITEMS)
 
     return (

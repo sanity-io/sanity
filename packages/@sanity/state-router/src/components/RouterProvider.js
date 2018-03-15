@@ -23,7 +23,7 @@ export default class RouterProvider extends React.Component<*, *> {
   __internalRouter: InternalRouter
   _state: RouterState
 
-  constructor(props : Props) {
+  constructor(props: Props) {
     super()
     this._state = props.state
     this.__internalRouter = {
@@ -37,36 +37,36 @@ export default class RouterProvider extends React.Component<*, *> {
     }
   }
 
-  navigateUrl = (url : string, options : NavigateOptions = {}) : void => {
+  navigateUrl = (url: string, options: NavigateOptions = {}): void => {
     const {onNavigate} = this.props
     onNavigate(url, options)
   }
 
-  navigateState = (nextState : Object, options : NavigateOptions = {}) : void => {
+  navigateState = (nextState: Object, options: NavigateOptions = {}): void => {
     this.navigateUrl(this.resolvePathFromState(nextState), options)
   }
 
-  navigateIntent = (intentName : string, params? : Object, options? : NavigateOptions = {}) : void => {
+  navigateIntent = (intentName: string, params?: Object, options?: NavigateOptions = {}): void => {
     this.navigateUrl(this.resolveIntentLink(intentName, params), options)
   }
 
   getState = () => this._state
 
-  resolvePathFromState = (state : Object) : string => {
+  resolvePathFromState = (state: Object): string => {
     return this.props.router.encode(state)
   }
 
-  resolveIntentLink = (intentName : string, params?: Object) : string => {
+  resolveIntentLink = (intentName: string, params?: Object): string => {
     return this.props.router.encode({intent: intentName, params})
   }
 
-  getChildContext() : RouterProviderContext {
+  getChildContext(): RouterProviderContext {
     return {
       __internalRouter: this.__internalRouter
     }
   }
 
-  componentWillReceiveProps(nextProps : Props) {
+  componentWillReceiveProps(nextProps: Props) {
     if (this.props.state !== nextProps.state) {
       this._state = nextProps.state
       this.__internalRouter.channel.publish(nextProps.state)

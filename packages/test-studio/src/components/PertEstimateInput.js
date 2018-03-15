@@ -9,7 +9,7 @@ const calculateEstimate = estimates => {
   }
 
   // µ = (O + (4 * N) + P) / 6
-  const calculated = Number(((optimistic + (4 * nominal) + pessimistic) / 6).toFixed(2))
+  const calculated = Number(((optimistic + 4 * nominal + pessimistic) / 6).toFixed(2))
   return {optimistic, nominal, pessimistic, calculated}
 }
 
@@ -22,14 +22,18 @@ export default class PertEstimateInput extends React.Component {
 
   handleChange = (field, event) => {
     const {type, onChange} = this.props
-    const value = Object.assign({}, this.props.value || {}, {[field.name]: event.target.valueAsNumber})
+    const value = Object.assign({}, this.props.value || {}, {
+      [field.name]: event.target.valueAsNumber
+    })
     const {calculated} = calculateEstimate(value)
 
-    onChange(PatchEvent.from(
-      setIfMissing({_type: type.name}),
-      set(event.target.valueAsNumber, [field.name]),
-      calculated ? set(calculated, ['calculated']) : unset(['calculated'])
-    ))
+    onChange(
+      PatchEvent.from(
+        setIfMissing({_type: type.name}),
+        set(event.target.valueAsNumber, [field.name]),
+        calculated ? set(calculated, ['calculated']) : unset(['calculated'])
+      )
+    )
   }
 
   render() {

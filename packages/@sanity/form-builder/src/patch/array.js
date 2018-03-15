@@ -25,20 +25,27 @@ export default function apply(value, patch) {
   if (patch.path.length === 0) {
     // its directed to me
     if (patch.type === 'setIfMissing') {
-      if (!Array.isArray(patch.value)) { // eslint-disable-line max-depth
+      if (!Array.isArray(patch.value)) {
+        // eslint-disable-line max-depth
         throw new Error('Cannot set value of an array to a non-array')
       }
       return value === undefined ? patch.value : value
     } else if (patch.type === 'set') {
-      if (!Array.isArray(patch.value)) { // eslint-disable-line max-depth
+      if (!Array.isArray(patch.value)) {
+        // eslint-disable-line max-depth
         throw new Error('Cannot set value of an array to a non-array')
       }
       return patch.value
     } else if (patch.type === 'unset') {
       return undefined
     } else if (patch.type === 'move') {
-      if (!patch.value || !hasOwn(patch.value, 'from') || !hasOwn(patch.value, 'to')) { // eslint-disable-line max-depth
-        throw new Error(`Invalid value of 'move' patch. Expected a value with "from" and "to" indexes, instead got: ${JSON.stringify(patch.value)}`)
+      if (!patch.value || !hasOwn(patch.value, 'from') || !hasOwn(patch.value, 'to')) {
+        // eslint-disable-line max-depth
+        throw new Error(
+          `Invalid value of 'move' patch. Expected a value with "from" and "to" indexes, instead got: ${JSON.stringify(
+            patch.value
+          )}`
+        )
       }
       return move(nextValue, patch.value.from, patch.value.to)
     }

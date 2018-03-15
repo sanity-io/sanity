@@ -8,7 +8,9 @@ export default function create(...keys) {
   function add(key, subscription) {
     validate(key)
     if (registry[key]) {
-      throw new Error(`Subscription already exists for key: ${key}. Did you mean to call .replace instead?`)
+      throw new Error(
+        `Subscription already exists for key: ${key}. Did you mean to call .replace instead?`
+      )
     }
     registry[key] = subscription
   }

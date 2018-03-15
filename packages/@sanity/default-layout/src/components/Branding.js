@@ -10,25 +10,19 @@ function Branding() {
   return (
     <div className={styles.root}>
       <StateLink toIndex className={styles.link} title={projectName}>
-        {
-          BrandLogo && (
+        {BrandLogo && (
+          <div className={styles.brandLogoContainer}>
+            <BrandLogo projectName={projectName} />
+          </div>
+        )}
+        {!BrandLogo && (
+          <div>
             <div className={styles.brandLogoContainer}>
-              <BrandLogo projectName={projectName} />
+              <SanityLogo projectName={projectName} />
             </div>
-          )
-        }
-        {
-          !BrandLogo && (
-            <div>
-              <div className={styles.brandLogoContainer}>
-                <SanityLogo projectName={projectName} />
-              </div>
-              <h1 className={styles.projectName}>
-                {projectName}
-              </h1>
-            </div>
-          )
-        }
+            <h1 className={styles.projectName}>{projectName}</h1>
+          </div>
+        )}
       </StateLink>
     </div>
   )

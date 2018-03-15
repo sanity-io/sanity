@@ -10,7 +10,7 @@ export default {
         select: {title: 'title', image: 'image', imageUrl: 'imageUrl'},
         prepare(document) {
           return {
-            title: document.title || '',
+            title: document.title || ''
           }
         }
       },

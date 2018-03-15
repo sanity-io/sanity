@@ -1,6 +1,14 @@
 import {pick, omit} from 'lodash'
 
-const OVERRIDABLE_FIELDS = ['jsonType', 'type', 'name', 'title', 'description', 'options', 'fieldsets']
+const OVERRIDABLE_FIELDS = [
+  'jsonType',
+  'type',
+  'name',
+  'title',
+  'description',
+  'options',
+  'fieldsets'
+]
 
 const ANY_CORE = {
   name: 'any',
@@ -34,7 +42,9 @@ export const AnyType = {
           if (extensionDef.of) {
             throw new Error('Cannot override `of` property of subtypes of "array"')
           }
-          const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {type: parent})
+          const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
+            type: parent
+          })
           return subtype(current)
         }
       }

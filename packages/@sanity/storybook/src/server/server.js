@@ -5,6 +5,7 @@ const path = require('path')
 const express = require('express')
 const middleware = require('@storybook/react/dist/server/middleware')
 const webpackConfig = require('../config/webpack.config')
+
 const storybook = middleware.default || middleware
 
 let app = null

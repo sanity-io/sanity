@@ -27,7 +27,7 @@ export default class CardPreview extends React.PureComponent {
       width: PropTypes.number,
       height: PropTypes.number,
       fit: PropTypes.oneOf(['clip', 'crop', 'fill', 'fillmax', 'max', 'scale', 'min']),
-      aspect: PropTypes.number,
+      aspect: PropTypes.number
     }),
     children: PropTypes.node,
     isPlaceholder: PropTypes.bool
@@ -58,10 +58,7 @@ export default class CardPreview extends React.PureComponent {
     }
 
     if (!nextProps.isPlaceholder && this.dateElement) {
-      this._elementResizeDetector.listenTo(
-        this.dateElement,
-        this.onResize
-      )
+      this._elementResizeDetector.listenTo(this.dateElement, this.onResize)
     }
   }
 
@@ -72,17 +69,17 @@ export default class CardPreview extends React.PureComponent {
   setDateElement = element => {
     this.dateElement = element
     if (element) {
-      this._elementResizeDetector.listenTo(
-        this.dateElement,
-        this.onResize
-      )
+      this._elementResizeDetector.listenTo(this.dateElement, this.onResize)
     }
   }
 
   onResize = debounce(() => {
     const el = this.dateElement
     if (el) {
-      const fontSize = window.getComputedStyle(el, null).getPropertyValue('font-size').split('px')[0]
+      const fontSize = window
+        .getComputedStyle(el, null)
+        .getPropertyValue('font-size')
+        .split('px')[0]
       const emWidth = el.offsetWidth / fontSize
       this.setState({
         emWidth: Math.round(emWidth)
@@ -100,7 +97,7 @@ export default class CardPreview extends React.PureComponent {
       mediaDimensions,
       children,
       isPlaceholder,
-      status,
+      status
     } = this.props
     const {emWidth} = this.state
     const aspect = mediaDimensions.aspect
@@ -110,16 +107,14 @@ export default class CardPreview extends React.PureComponent {
         <div className={styles.placeholder}>
           <div className={styles.svg} style={svgStyles}>
             <div className={styles.media}>
-              {
-                aspect && (
-                  <div
-                    className={styles.mediaPadding}
-                    style={{
-                      paddingTop: `${100 / aspect}%`
-                    }}
-                  />
-                )
-              }
+              {aspect && (
+                <div
+                  className={styles.mediaPadding}
+                  style={{
+                    paddingTop: `${100 / aspect}%`
+                  }}
+                />
+              )}
               <div className={styles.mediaContent} />
             </div>
             <div className={styles.meta}>
@@ -139,100 +134,64 @@ export default class CardPreview extends React.PureComponent {
     return (
       <div className={styles.root}>
         <div className={styles.inner}>
-          {
-            media && (
-              <div className={styles.media}>
-                <div
-                  className={styles.mediaPadding}
-                  style={{
-                    paddingTop: `${100 / aspect}%`
-                  }}
-                />
-                <div className={aspect ? styles.mediaContent : styles.mediaContentRelative}>
-                  {
-                    typeof media === 'function' && (
-                      media({dimensions: mediaDimensions, layout: 'default'})
-                    )
-                  }
-                  {
-                    typeof media === 'string' && (
-                      <div className={styles.mediaString}>{media}</div>
-                    )
-                  }
-                  {
-                    React.isValidElement(media) && media
-                  }
-                </div>
+          {media && (
+            <div className={styles.media}>
+              <div
+                className={styles.mediaPadding}
+                style={{
+                  paddingTop: `${100 / aspect}%`
+                }}
+              />
+              <div className={aspect ? styles.mediaContent : styles.mediaContentRelative}>
+                {typeof media === 'function' &&
+                  media({dimensions: mediaDimensions, layout: 'default'})}
+                {typeof media === 'string' && <div className={styles.mediaString}>{media}</div>}
+                {React.isValidElement(media) && media}
               </div>
-            )
-          }
+            </div>
+          )}
           <div className={styles.meta}>
             <div className={styles.heading}>
-              <h2 className={styles.title}>
-                {title}
-              </h2>
-              {
-                status && (
-                  <div className={styles.status}>
-                    {
-                      (typeof status === 'function' && status({layout: 'default'}))
-                      || status
-                    }
-                  </div>
-                )
-              }
-              {
-                date && (
-                  <div ref={this.setDateElement} className={styles.date} title={formatDate(date, 'ddd, MMM Do, YYYY hh:mm A')}>
-                    {
-                      emWidth <= 10 && formatDate(date, 'DD.MM.YY')
-                    }
-                    {
-                      emWidth > 10 && emWidth <= 15 && formatDate(date, 'DD.MM.YY hh:mm A')
-                    }
-                    {
-                      emWidth > 15 && formatDate(date, 'ddd, MMM Do, YYYY hh:mm A')
-                    }
-                  </div>
-                )
-              }
+              <h2 className={styles.title}>{title}</h2>
+              {status && (
+                <div className={styles.status}>
+                  {(typeof status === 'function' && status({layout: 'default'})) || status}
+                </div>
+              )}
+              {date && (
+                <div
+                  ref={this.setDateElement}
+                  className={styles.date}
+                  title={formatDate(date, 'ddd, MMM Do, YYYY hh:mm A')}
+                >
+                  {emWidth <= 10 && formatDate(date, 'DD.MM.YY')}
+                  {emWidth > 10 && emWidth <= 15 && formatDate(date, 'DD.MM.YY hh:mm A')}
+                  {emWidth > 15 && formatDate(date, 'ddd, MMM Do, YYYY hh:mm A')}
+                </div>
+              )}
             </div>
-            {
-              subtitle && (
-                <h3 className={styles.subtitle}>
-                  {
-                    typeof subtitle === 'function' && subtitle({layout: 'card'})
-                  }
-                  {
-                    typeof subtitle === 'object' && subtitle
-                  }
-                  {
-                    typeof subtitle === 'string' && truncate(subtitle, {
-                      length: 30,
-                      separator: /,? +/
-                    })
-                  }
-                </h3>
-              )
-            }
-            {
-              description && (
-                <p className={styles.description}>
-                  {
-                    typeof description === 'function' && description({layout: 'card'})
-                  }
-                  {
-                    typeof description === 'object' && description
-                  }
-                  {
-                    typeof description === 'string' && truncate(description, {
-                      length: 100,
-                      separator: /,? +/
-                    })
-                  }
-                </p>
-              )
-            }
+            {subtitle && (
+              <h3 className={styles.subtitle}>
+                {typeof subtitle === 'function' && subtitle({layout: 'card'})}
+                {typeof subtitle === 'object' && subtitle}
+                {typeof subtitle === 'string' &&
+                  truncate(subtitle, {
+                    length: 30,
+                    separator: /,? +/
+                  })}
+              </h3>
+            )}
+            {description && (
+              <p className={styles.description}>
+                {typeof description === 'function' && description({layout: 'card'})}
+                {typeof description === 'object' && description}
+                {typeof description === 'string' &&
+                  truncate(description, {
+                    length: 100,
+                    separator: /,? +/
+                  })}
+              </p>
+            )}
             {children}
           </div>
         </div>

@@ -4,10 +4,7 @@ import noSuchCommandText from './noSuchCommandText'
 /**
  * Generate documentation for all commands within a given group
  */
-export function generateCommandsDocumentation(
-  commandGroups,
-  group = 'default'
-) {
+export function generateCommandsDocumentation(commandGroups, group = 'default') {
   const commandGroup = commandGroups[group]
 
   if (!commandGroup) {
@@ -15,10 +12,7 @@ export function generateCommandsDocumentation(
   }
 
   // Find the maximum length of a command name, so we can pad the descriptions
-  const cmdLength = commandGroup.reduce(
-    (max, cmd) => Math.max(cmd.name.length, max),
-    0
-  )
+  const cmdLength = commandGroup.reduce((max, cmd) => Math.max(cmd.name.length, max), 0)
   const prefix = group === 'default' ? '' : ` ${group}`
 
   const rows = [
@@ -26,15 +20,8 @@ export function generateCommandsDocumentation(
     '',
     'Commands:'
   ]
-    .concat(
-      commandGroup.map(
-        cmd => `   ${padEnd(cmd.name, cmdLength + 1)} ${cmd.description}`
-      )
-    )
-    .concat([
-      '',
-      `See 'sanity help${prefix} <command>' for specific information on a subcommand.`
-    ])
+    .concat(commandGroup.map(cmd => `   ${padEnd(cmd.name, cmdLength + 1)} ${cmd.description}`))
+    .concat(['', `See 'sanity help${prefix} <command>' for specific information on a subcommand.`])
 
   return rows.join('\n')
 }

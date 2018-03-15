@@ -6,7 +6,7 @@ function arrify(val) {
   if (Array.isArray(val)) {
     return val
   }
-  return (typeof val === undefined) ? [] : [val]
+  return typeof val === undefined ? [] : [val]
 }
 
 export default function PreviewFields(props) {
@@ -19,10 +19,7 @@ export default function PreviewFields(props) {
 
 PreviewFields.propTypes = {
   document: PropTypes.object,
-  fields: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.arrayOf(PropTypes.string)
-  ]),
+  fields: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
   type: PropTypes.object.isRequired,
   children: PropTypes.func
 }

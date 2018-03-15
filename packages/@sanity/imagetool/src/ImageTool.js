@@ -83,22 +83,21 @@ const getDevicePixelRatio = memoize(() => {
 })
 
 export default class ImageTool extends React.PureComponent {
-
   static propTypes = {
     value: PropTypes.shape({
       hotspot: PropTypes.shape({
         x: PropTypes.number,
         y: PropTypes.number,
         height: PropTypes.number,
-        width: PropTypes.number,
+        width: PropTypes.number
       })
     }),
     image: PropTypes.shape({
       height: PropTypes.number,
-      width: PropTypes.number,
+      width: PropTypes.number
     }),
     onChange: PropTypes.func,
-    onChangeEnd: PropTypes.func,
+    onChangeEnd: PropTypes.func
   }
 
   static defaultProps = {
@@ -136,7 +135,6 @@ export default class ImageTool extends React.PureComponent {
   }
 
   getCropHandles() {
-
     const inner = this.getCropRect()
 
     const handleSize = CROP_HANDLE_SIZE * this.getScale()
@@ -145,16 +143,40 @@ export default class ImageTool extends React.PureComponent {
 
     const cropHandle = new Rect(0, 0, handleSize, handleSize)
     return {
-      left: cropHandle.setTopLeft(inner.left - halfCropHandleSize, inner.center.y - halfCropHandleSize),
-      right: cropHandle.setTopLeft(inner.right - halfCropHandleSize, inner.center.y - halfCropHandleSize),
+      left: cropHandle.setTopLeft(
+        inner.left - halfCropHandleSize,
+        inner.center.y - halfCropHandleSize
+      ),
+      right: cropHandle.setTopLeft(
+        inner.right - halfCropHandleSize,
+        inner.center.y - halfCropHandleSize
+      ),
 
-      top: cropHandle.setTopLeft(inner.center.x - halfCropHandleSize, inner.top - halfCropHandleSize),
-      topLeft: cropHandle.setTopLeft(inner.left - halfCropHandleSize, inner.top - halfCropHandleSize),
-      topRight: cropHandle.setTopLeft(inner.right - halfCropHandleSize, inner.top - halfCropHandleSize),
+      top: cropHandle.setTopLeft(
+        inner.center.x - halfCropHandleSize,
+        inner.top - halfCropHandleSize
+      ),
+      topLeft: cropHandle.setTopLeft(
+        inner.left - halfCropHandleSize,
+        inner.top - halfCropHandleSize
+      ),
+      topRight: cropHandle.setTopLeft(
+        inner.right - halfCropHandleSize,
+        inner.top - halfCropHandleSize
+      ),
 
-      bottom: cropHandle.setTopLeft(inner.center.x - halfCropHandleSize, inner.bottom - halfCropHandleSize),
-      bottomLeft: cropHandle.setTopLeft(inner.left - halfCropHandleSize, inner.bottom - halfCropHandleSize),
-      bottomRight: cropHandle.setTopLeft(inner.right - halfCropHandleSize, inner.bottom - halfCropHandleSize)
+      bottom: cropHandle.setTopLeft(
+        inner.center.x - halfCropHandleSize,
+        inner.bottom - halfCropHandleSize
+      ),
+      bottomLeft: cropHandle.setTopLeft(
+        inner.left - halfCropHandleSize,
+        inner.bottom - halfCropHandleSize
+      ),
+      bottomRight: cropHandle.setTopLeft(
+        inner.right - halfCropHandleSize,
+        inner.bottom - halfCropHandleSize
+      )
     }
   }
 
@@ -261,8 +283,7 @@ export default class ImageTool extends React.PureComponent {
   getClampedValue() {
     const value = this.props.value
 
-    const crop = Rect.fromEdges(value.crop || DEFAULT_CROP)
-      .clamp(new Rect(0, 0, 1, 1))
+    const crop = Rect.fromEdges(value.crop || DEFAULT_CROP).clamp(new Rect(0, 0, 1, 1))
 
     const hotspot = value.hotspot || DEFAULT_HOTSPOT
     const hotspotRect = new Rect(0, 0, 1, 1)
@@ -274,7 +295,6 @@ export default class ImageTool extends React.PureComponent {
   }
 
   paintHotspot(context, opacity) {
-
     const {image, readOnly} = this.props
 
     const imageRect = new Rect().setSize(image.width, image.height)
@@ -297,16 +317,21 @@ export default class ImageTool extends React.PureComponent {
     function drawEllipse() {
       context.save()
 
-      const dest = imageRect
-        .shrink(margin)
-        .multiply(hotspot)
+      const dest = imageRect.shrink(margin).multiply(hotspot)
 
       const scaleY = dest.height / dest.width
 
       context.scale(1, scaleY)
       context.beginPath()
       context.globalAlpha = opacity
-      context.arc(dest.center.x, (dest.center.y / scaleY), Math.abs(dest.width / 2), 0, 2 * Math.PI, false)
+      context.arc(
+        dest.center.x,
+        dest.center.y / scaleY,
+        Math.abs(dest.width / 2),
+        0,
+        2 * Math.PI,
+        false
+      )
       context.strokeStyle = 'white'
       context.lineWidth = 1.5 * scale
       context.stroke()
@@ -322,27 +347,38 @@ export default class ImageTool extends React.PureComponent {
     }
 
     function drawHole() {
-
       const src = imageRect.multiply(hotspot)
 
-      const dest = imageRect
-        .shrink(margin)
-        .multiply(hotspot)
+      const dest = imageRect.shrink(margin).multiply(hotspot)
 
-      drawImage(src.left, src.top, src.width, src.height, dest.left, dest.top, dest.width, dest.height)
+      drawImage(
+        src.left,
+        src.top,
+        src.width,
+        src.height,
+        dest.left,
+        dest.top,
+        dest.width,
+        dest.height
+      )
     }
 
     function drawBackdrop() {
+      const src = imageRect.cropRelative(crop)
 
-      const src = imageRect
-        .cropRelative(crop)
-
-      const dest = imageRect
-        .shrink(margin)
-        .cropRelative(crop)
+      const dest = imageRect.shrink(margin).cropRelative(crop)
 
       context.save()
-      drawImage(src.left, src.top, src.width, src.height, dest.left, dest.top, dest.width, dest.height)
+      drawImage(
+        src.left,
+        src.top,
+        src.width,
+        src.height,
+        dest.left,
+        dest.top,
+        dest.width,
+        dest.height
+      )
       context.globalAlpha = 0.5
       context.fillStyle = 'black'
       context.fillRect(dest.left, dest.top, dest.width, dest.height)
@@ -353,9 +389,7 @@ export default class ImageTool extends React.PureComponent {
       context.save()
 
       const radius = HOTSPOT_HANDLE_SIZE * scale
-      const dest = imageRect
-        .shrink(margin)
-        .multiply(hotspot)
+      const dest = imageRect.shrink(margin).multiply(hotspot)
 
       const point = utils2d.getPointAtCircumference(radians, dest)
 
@@ -372,7 +406,6 @@ export default class ImageTool extends React.PureComponent {
       context.lineWidth = 0.5 * scale
       context.stroke()
       context.closePath()
-
     }
   }
 
@@ -446,9 +479,7 @@ export default class ImageTool extends React.PureComponent {
 
   paintBackground(context) {
     const {image} = this.props
-    const inner = new Rect()
-      .setSize(image.width, image.height)
-      .shrink(MARGIN_PX * this.getScale())
+    const inner = new Rect().setSize(image.width, image.height).shrink(MARGIN_PX * this.getScale())
 
     context.save()
     context.fillStyle = 'white'
@@ -516,7 +547,10 @@ export default class ImageTool extends React.PureComponent {
     //context.globalCompositeOperation = "difference";
 
     Object.keys(crophandles).forEach(handle => {
-      context.fillStyle = this.state.cropping === handle ? `rgba(202, 54, 53, ${opacity})` : `rgba(230, 230, 230, ${opacity + 0.4})`
+      context.fillStyle =
+        this.state.cropping === handle
+          ? `rgba(202, 54, 53, ${opacity})`
+          : `rgba(230, 230, 230, ${opacity + 0.4})`
       const {left, top, height, width} = crophandles[handle]
       context.fillRect(left, top, width, height)
       context.beginPath()
