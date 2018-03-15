@@ -18,9 +18,7 @@ function resolveStyleImport(moduleId, opts) {
   }
 
   const paths = part.map(implementer => implementer.path)
-  return loadAll
-    ? paths.reverse()
-    : paths[0]
+  return loadAll ? paths.reverse() : paths[0]
 }
 
 function isSanityPart(part) {

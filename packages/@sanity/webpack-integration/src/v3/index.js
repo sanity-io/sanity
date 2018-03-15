@@ -21,10 +21,7 @@ function getEnvPlugin(options) {
 }
 
 function getPlugins(options) {
-  return [
-    getPartResolverPlugin(options),
-    getEnvPlugin(options)
-  ]
+  return [getPartResolverPlugin(options), getEnvPlugin(options)]
 }
 
 function getPartLoader(options) {

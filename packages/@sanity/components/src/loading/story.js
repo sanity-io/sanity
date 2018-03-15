@@ -11,10 +11,8 @@ import CompanyLogo from 'part:@sanity/base/company-logo?'
 import SanityLogo from 'part:@sanity/base/sanity-logo'
 
 storiesOf('Loading')
-.addDecorator(withKnobs)
-.add(
-  'Spinner',
-  () => {
+  .addDecorator(withKnobs)
+  .add('Spinner', () => {
     return (
       <Sanity part="part:@sanity/components/loading/spinner" propTables={[Spinner]}>
         <Spinner
@@ -25,21 +23,20 @@ storiesOf('Loading')
         />
       </Sanity>
     )
-  }
-)
+  })
 
-.add(
-  'App loading screen',
-  // `
-  //   Used when app is loading. No use of CSSModules.
-  // `,
+  .add(
+    'App loading screen',
+    // `
+    //   Used when app is loading. No use of CSSModules.
+    // `,
 
-  () => {
-    const logo = CompanyLogo || SanityLogo
-    return (
-      <Sanity part="part:@sanity/base/app-loading-screen" propTables={[AppLoadingScreen]}>
-        <AppLoadingScreen logo={boolean('logo') && logo} text={text('text') || undefined} />
-      </Sanity>
-    )
-  }
-)
+    () => {
+      const logo = CompanyLogo || SanityLogo
+      return (
+        <Sanity part="part:@sanity/base/app-loading-screen" propTables={[AppLoadingScreen]}>
+          <AppLoadingScreen logo={boolean('logo') && logo} text={text('text') || undefined} />
+        </Sanity>
+      )
+    }
+  )

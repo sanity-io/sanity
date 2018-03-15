@@ -2,7 +2,6 @@
 // from a drag event onto the editor nodes
 
 function onDrop(event, data, change) {
-
   // Cancel the default Slate handling for void nodes
   // (we deal with it within our ForbuilderBlock/FormbulderInline code)
   if (data.type === 'node' && data.node.isVoid) {
@@ -25,7 +24,6 @@ function onDrop(event, data, change) {
   // Nothing else implemented for now
   // TODO: implement image drop?
   return change
-
 }
 
 export default () => {

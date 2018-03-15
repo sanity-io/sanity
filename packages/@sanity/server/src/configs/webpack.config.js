@@ -46,14 +46,12 @@ export default (config = {}) => {
 
   const cssLoaderLocation = resolve('css-loader')
   const baseCssLoader = `${cssLoaderLocation}?modules&localIdentName=[name]_[local]_[hash:base64:5]&importLoaders=1`
-  const cssLoader = isProd && !skipMinify
-    ? `${baseCssLoader}&minimize`
-    : `${baseCssLoader}&sourceMap`
+  const cssLoader =
+    isProd && !skipMinify ? `${baseCssLoader}&minimize` : `${baseCssLoader}&sourceMap`
 
-  const commonChunkPlugin = (
-    typeof config.commonChunkPlugin === 'undefined'
-    || config.commonChunkPlugin
-  ) && new webpack.optimize.CommonsChunkPlugin({name: 'vendor', filename: 'js/vendor.bundle.js'})
+  const commonChunkPlugin =
+    (typeof config.commonChunkPlugin === 'undefined' || config.commonChunkPlugin) &&
+    new webpack.optimize.CommonsChunkPlugin({name: 'vendor', filename: 'js/vendor.bundle.js'})
 
   return {
     entry: {
@@ -73,40 +71,42 @@ export default (config = {}) => {
       alias: {
         react: path.dirname(reactPath),
         'react-dom': path.dirname(reactDomPath),
-        moment$: 'moment/moment.js',
+        moment$: 'moment/moment.js'
       }
     },
     module: {
-      rules: [{
-        test: /\.jsx?/,
-        exclude: /(packages\/@sanity|node_modules|bower_components)/,
-        use: {
-          loader: resolve('babel-loader'),
-          options: babelConfig || {
-            presets: [
-              resolve('babel-preset-react'),
-              resolve('babel-preset-es2015')
-            ],
-            plugins: [
-              resolve('babel-plugin-syntax-class-properties'),
-              resolve('babel-plugin-transform-class-properties'),
-              !isProd && resolve('react-hot-loader/patch')
-            ].filter(Boolean),
-            cacheDirectory: true
+      rules: [
+        {
+          test: /\.jsx?/,
+          exclude: /(packages\/@sanity|node_modules|bower_components)/,
+          use: {
+            loader: resolve('babel-loader'),
+            options: babelConfig || {
+              presets: [resolve('babel-preset-react'), resolve('babel-preset-es2015')],
+              plugins: [
+                resolve('babel-plugin-syntax-class-properties'),
+                resolve('babel-plugin-transform-class-properties'),
+                !isProd && resolve('react-hot-loader/patch')
+              ].filter(Boolean),
+              cacheDirectory: true
+            }
           }
-        }
-      }, {
-        test: /\.css(\?|$)/,
-        use: isProd
-          ? ExtractTextPlugin.extract({use: [cssLoader, postcssLoader]})
-          : [resolve('style-loader'), cssLoader, postcssLoader]
-      }, {
-        test: /\.(jpe?g|png|gif|svg|webp|woff|woff2|ttf|eot|otf)$/,
-        use: {
-          loader: resolve('file-loader'),
-          options: {name: 'assets/[name]-[hash].[ext]'}
         },
-      }, webpackIntegration.getPartLoader(wpIntegrationOptions)]
+        {
+          test: /\.css(\?|$)/,
+          use: isProd
+            ? ExtractTextPlugin.extract({use: [cssLoader, postcssLoader]})
+            : [resolve('style-loader'), cssLoader, postcssLoader]
+        },
+        {
+          test: /\.(jpe?g|png|gif|svg|webp|woff|woff2|ttf|eot|otf)$/,
+          use: {
+            loader: resolve('file-loader'),
+            options: {name: 'assets/[name]-[hash].[ext]'}
+          }
+        },
+        webpackIntegration.getPartLoader(wpIntegrationOptions)
+      ]
     },
     profile: config.profile || false,
     plugins: [

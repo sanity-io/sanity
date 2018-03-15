@@ -8,13 +8,13 @@
  *
  * Fill this stub out by replacing all the `any` types.
  *
- * Once filled out, we encourage you to share your work with the 
- * community by sending a pull request to: 
+ * Once filled out, we encourage you to share your work with the
+ * community by sending a pull request to:
  * https://github.com/flowtype/flow-typed
  */
 
 declare module 'eslint-config-sanity' {
-  declare module.exports: any;
+  declare module.exports: any
 }
 
 /**
@@ -23,23 +23,23 @@ declare module 'eslint-config-sanity' {
  * needed.
  */
 declare module 'eslint-config-sanity/import' {
-  declare module.exports: any;
+  declare module.exports: any
 }
 
 declare module 'eslint-config-sanity/react' {
-  declare module.exports: any;
+  declare module.exports: any
 }
 
 // Filename aliases
 declare module 'eslint-config-sanity/import.js' {
-  declare module.exports: $Exports<'eslint-config-sanity/import'>;
+  declare module.exports: $Exports<'eslint-config-sanity/import'>
 }
 declare module 'eslint-config-sanity/index' {
-  declare module.exports: $Exports<'eslint-config-sanity'>;
+  declare module.exports: $Exports<'eslint-config-sanity'>
 }
 declare module 'eslint-config-sanity/index.js' {
-  declare module.exports: $Exports<'eslint-config-sanity'>;
+  declare module.exports: $Exports<'eslint-config-sanity'>
 }
 declare module 'eslint-config-sanity/react.js' {
-  declare module.exports: $Exports<'eslint-config-sanity/react'>;
+  declare module.exports: $Exports<'eslint-config-sanity/react'>
 }

@@ -24,17 +24,10 @@ class ActionButton extends React.Component {
 
   render() {
     if (this.state.modalOpen) {
-      return (
-        <ActionModal
-          actions={this.props.actions}
-          onClose={this.handleToggleModal}
-        />
-      )
+      return <ActionModal actions={this.props.actions} onClose={this.handleToggleModal} />
     }
 
-    return (
-      <Fab onClick={this.handleToggleModal} ripple colored />
-    )
+    return <Fab onClick={this.handleToggleModal} ripple colored />
   }
 }
 

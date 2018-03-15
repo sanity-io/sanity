@@ -7,10 +7,12 @@ import type {Node} from 'react'
 import type {RouterProviderContext, NavigateOptions, InternalRouter} from './types'
 
 function addScope(routerState: Object, scope: string, scopedState: Object) {
-  return scopedState && {
-    ...routerState,
-    [scope]: scopedState
-  }
+  return (
+    scopedState && {
+      ...routerState,
+      [scope]: scopedState
+    }
+  )
 }
 
 type Props = {
@@ -22,9 +24,9 @@ export default class RouteScope extends React.Component<*, *> {
   props: Props
   __internalRouter: InternalRouter
 
-  static childContextTypes = RouteScope.contextTypes = {
+  static childContextTypes = (RouteScope.contextTypes = {
     __internalRouter: PropTypes.object
-  }
+  })
 
   constructor(props: Props, context: RouterProviderContext) {
     super()

@@ -57,7 +57,7 @@ class StyleSelect extends React.Component {
 
   handleOpenList = () => {
     this.setState({
-      showList: true,
+      showList: true
     })
     this.props.onOpen()
   }
@@ -105,41 +105,33 @@ class StyleSelect extends React.Component {
           </div>
         </div>
         <Escapable onEscape={this.handleCloseList} />
-        {
-          showList && (
-            <List className={styles.list}>
-              {items.map((item, index) => {
-                const isSemiSelected = value && value.length > 1 && includes(value, item)
-                const isSelected = value && value.length === 1 && value[0] == item
-                const classNames = `
+        {showList && (
+          <List className={styles.list}>
+            {items.map((item, index) => {
+              const isSemiSelected = value && value.length > 1 && includes(value, item)
+              const isSelected = value && value.length === 1 && value[0] == item
+              const classNames = `
                   ${isSelected ? styles.itemSelected : styles.item}
                   ${isSemiSelected ? styles.itemSemiSelected : ''}
                 `
-                return (
-                  <Item
-                    key={item.key}
-                    title={item.title}
-                    data-index={index}
-                    onClick={this.handleSelect}
-                    className={classNames}
-                  >
-                    <div className={styles.itemIcon}>
-                      {
-                        isSelected && <CircleCheckIcon />
-                      }
-                      {
-                        isSemiSelected && <CircleThinIcon />
-                      }
-                    </div>
-                    <div className={styles.itemContent}>
-                      {renderItem(item)}
-                    </div>
-                  </Item>
-                )
-              })}
-            </List>
-          )
-        }
+              return (
+                <Item
+                  key={item.key}
+                  title={item.title}
+                  data-index={index}
+                  onClick={this.handleSelect}
+                  className={classNames}
+                >
+                  <div className={styles.itemIcon}>
+                    {isSelected && <CircleCheckIcon />}
+                    {isSemiSelected && <CircleThinIcon />}
+                  </div>
+                  <div className={styles.itemContent}>{renderItem(item)}</div>
+                </Item>
+              )
+            })}
+          </List>
+        )}
       </div>
     )
   }

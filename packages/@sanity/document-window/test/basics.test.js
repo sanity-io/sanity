@@ -25,9 +25,7 @@ describe('basics', () => {
   })
 
   test('requires query', () => {
-    expect(() => new DocumentWindow({client: getMockClient()})).toThrow(
-      /instance of Query/
-    )
+    expect(() => new DocumentWindow({client: getMockClient()})).toThrow(/instance of Query/)
   })
 
   test('uses default from/to/buffer factor if not set', done => {
@@ -39,9 +37,7 @@ describe('basics', () => {
       expect(data).toHaveLength(0)
       expectRangeQueryToMatchRange(client, {
         from: 0,
-        to:
-          Constants.DEFAULT_LIMIT +
-          Constants.DEFAULT_LIMIT * Constants.DEFAULT_BUFFER_FACTOR
+        to: Constants.DEFAULT_LIMIT + Constants.DEFAULT_LIMIT * Constants.DEFAULT_BUFFER_FACTOR
       })
       done()
     })
@@ -49,7 +45,10 @@ describe('basics', () => {
 
   test('sends listener query with only the constraints', done => {
     const client = getMockClient({responses: [[]]})
-    const query = new Query().constraint('isActive == true').from(0).to(80)
+    const query = new Query()
+      .constraint('isActive == true')
+      .from(0)
+      .to(80)
     docWindow = new DocumentWindow({client, query})
     docWindow.on('data', noop) // Trigger connect
 

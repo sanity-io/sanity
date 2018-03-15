@@ -18,7 +18,9 @@ export function loadImage(src) {
       observer.complete()
     }
     const onerror = () => {
-      observer.error(new Error(`Could not load image from ${isLocalFile(src) ? 'local file' : src}`))
+      observer.error(
+        new Error(`Could not load image from ${isLocalFile(src) ? 'local file' : src}`)
+      )
     }
 
     image.onload = onload

@@ -5,7 +5,7 @@ const pickFirst = (obj, keys) => {
   if (!obj || typeof obj !== 'object') {
     return obj
   }
-  const found = keys.find(key => (key in obj))
+  const found = keys.find(key => key in obj)
   return obj[found]
 }
 
@@ -121,9 +121,7 @@ export default {
       options: {
         layout: 'tags'
       },
-      of: [
-        {type: 'string'}
-      ]
+      of: [{type: 'string'}]
     },
     {
       name: 'firstAuthor',
@@ -139,13 +137,15 @@ export default {
       options: {
         editModal: 'fold'
       },
-      of: [{
-        type: 'reference',
-        title: 'Reference to co-author',
-        to: {
-          type: 'author'
+      of: [
+        {
+          type: 'reference',
+          title: 'Reference to co-author',
+          to: {
+            type: 'author'
+          }
         }
-      }],
+      ],
       required: true
     }
   ]

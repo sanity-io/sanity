@@ -35,23 +35,15 @@ export default class SearchFieldField extends React.Component {
   }
 
   render() {
-    const {
-      label,
-      placeholder,
-      value,
-      onChange,
-      onFocus,
-      onBlur,
-      onKeyPress
-    } = this.props
+    const {label, placeholder, value, onChange, onFocus, onBlur, onKeyPress} = this.props
 
     return (
       <div className={styles.root}>
-        {
-          label && <label htmlFor={this._inputId} className={styles.label}>
+        {label && (
+          <label htmlFor={this._inputId} className={styles.label}>
             {label}
           </label>
-        }
+        )}
         <input
           className={styles.input}
           id={this._inputId}

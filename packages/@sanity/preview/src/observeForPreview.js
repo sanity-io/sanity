@@ -43,8 +43,7 @@ export default function observeForPreview(
       ? configFields.filter(fieldName => fields.includes(fieldName))
       : configFields
     const paths = targetFields.map(key => selection[key].split('.'))
-    return observePaths(value, paths)
-      .map(snapshot => ({
+    return observePaths(value, paths).map(snapshot => ({
       type: type,
       snapshot: snapshot && prepareForPreview(snapshot, type, viewOptions)
     }))

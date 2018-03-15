@@ -23,4 +23,5 @@ if (process.version === 'v8.1.0' || process.version === 'v8.1.1') {
 
 var path = require('path')
 var runCli = require('../lib/cli')
+
 runCli(path.join(__dirname, '..'))

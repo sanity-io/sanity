@@ -44,19 +44,19 @@ export default class ConfirmDiscard extends React.PureComponent {
       >
         <div style={{padding: 10}}>
           <p>
-            Are you sure you would like to discard {published ? 'changes in' : 'the document'}
-            {' '}
+            Are you sure you would like to discard {published ? 'changes in' : 'the document'}{' '}
             <strong>
-              <DocTitle document={(draft || published)} />
+              <DocTitle document={draft || published} />
             </strong>?
           </p>
           <p>
-            This will {
-              published
-                ? `revert to the latest published version of this document (published ${
-                  distanceInWordsToNow(published._updatedAt, {addSuffix: true})}).`
-                : 'delete it entirely and there is no going back.'
-            }
+            This will{' '}
+            {published
+              ? `revert to the latest published version of this document (published ${distanceInWordsToNow(
+                  published._updatedAt,
+                  {addSuffix: true}
+                )}).`
+              : 'delete it entirely and there is no going back.'}
           </p>
         </div>
       </Dialog>

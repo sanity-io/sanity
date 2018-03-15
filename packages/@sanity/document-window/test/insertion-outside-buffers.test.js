@@ -1,11 +1,6 @@
 const DocumentWindow = require('../src/DocumentWindow')
 const {getSnapshotFixture} = require('./fixtures')
-const {
-  getMockClient,
-  gatherWindows,
-  mockMutation,
-  willBackfill
-} = require('./helpers')
+const {getMockClient, gatherWindows, mockMutation, willBackfill} = require('./helpers')
 
 const Query = DocumentWindow.Query
 let docWindow = null
@@ -25,7 +20,10 @@ describe('insertion outside of range', () => {
       __injected: true
     }
 
-    const query = new Query().from(8).to(10).orderBy('_updatedAt', 'desc')
+    const query = new Query()
+      .from(8)
+      .to(10)
+      .orderBy('_updatedAt', 'desc')
     const client = getMockClient({
       responses: [getSnapshotFixture(2, 35)],
       events: [mockMutation(newDocument)]
@@ -48,7 +46,10 @@ describe('insertion outside of range', () => {
   })
 
   test('ignores documents outside of the range (rear)', async () => {
-    const query = new Query().from(0).to(5).orderBy('_updatedAt', 'desc')
+    const query = new Query()
+      .from(0)
+      .to(5)
+      .orderBy('_updatedAt', 'desc')
     const client = getMockClient({
       responses: [getSnapshotFixture(0, 35)],
       events: [

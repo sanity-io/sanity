@@ -19,7 +19,7 @@ export default (html, doc) => {
     "//p[@class='MsoToaHeading']",
     "//p[@class='MsoSubtitle']",
     "//span[@class='MsoSubtleEmphasis']",
-    "//span[@class='MsoIntenseEmphasis']",
+    "//span[@class='MsoIntenseEmphasis']"
   ]
 
   // Which HTML element(s) to map the elements matching mappedPaths into

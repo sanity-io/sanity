@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import documentStore from 'part:@sanity/base/datastore/document'
 
 export default function withReferringDocuments(Component) {
-
   return class extends React.PureComponent {
     static displayName = `enhanceWithAvailHeight(${Component.displayName || Component.name})`
 
@@ -22,7 +21,8 @@ export default function withReferringDocuments(Component) {
         return
       }
       this.setState({isLoading: true})
-      this.refSubscription = documentStore.query('*[references($docId)] [0...101]', {docId: published._id})
+      this.refSubscription = documentStore
+        .query('*[references($docId)] [0...101]', {docId: published._id})
         .subscribe(event => {
           this.setState({
             referringDocuments: event.documents || [],

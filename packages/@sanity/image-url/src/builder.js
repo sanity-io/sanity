@@ -155,7 +155,7 @@ export default function urlBuilder(options) {
     // Inherit config from client
     return new ImageUrlBuilder(null, {
       projectId: options.clientConfig.projectId,
-      dataset: options.clientConfig.dataset,
+      dataset: options.clientConfig.dataset
     })
   }
 

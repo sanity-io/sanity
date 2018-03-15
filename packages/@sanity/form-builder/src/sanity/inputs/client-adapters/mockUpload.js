@@ -14,7 +14,7 @@ function simulateProgress(updateInterval: number = 200, speed: number = 2) {
     return () => clearInterval(interval)
 
     function next() {
-      progress = Math.min(100, progress + (speed + (Math.random() * speed)))
+      progress = Math.min(100, progress + (speed + Math.random() * speed))
       observer.next(progress)
       if (progress === 100) {
         observer.complete()
@@ -24,15 +24,17 @@ function simulateProgress(updateInterval: number = 200, speed: number = 2) {
 }
 
 export function mockUpload(assetDoc: Object) {
-  return simulateProgress(100 + (Math.random() * 500), 10 + (Math.random() * 50))
+  return simulateProgress(100 + Math.random() * 500, 10 + Math.random() * 50)
     .map(createProgressEvent)
     .mergeMap(event => {
-      return Observable.of(...[
-        event,
-        event.percent === 100 && {
-          type: 'complete',
-          asset: assetDoc
-        }
-      ].filter(Boolean))
+      return Observable.of(
+        ...[
+          event,
+          event.percent === 100 && {
+            type: 'complete',
+            asset: assetDoc
+          }
+        ].filter(Boolean)
+      )
     })
 }

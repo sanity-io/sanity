@@ -49,10 +49,7 @@ class ResultCollection extends React.PureComponent {
 }
 
 ResultCollection.propTypes = {
-  data: PropTypes.oneOfType([
-    PropTypes.object,
-    PropTypes.arrayOf(PropTypes.object)
-  ]),
+  data: PropTypes.oneOfType([PropTypes.object, PropTypes.arrayOf(PropTypes.object)]),
   viewMode: PropTypes.oneOf(['inspector', 'dump'])
 }
 

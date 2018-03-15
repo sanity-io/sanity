@@ -44,6 +44,6 @@ export default class ImageLoader extends React.PureComponent {
   render() {
     const {children} = this.props
     const {error, loadedImage} = this.state
-    return (error || loadedImage) ? children({image: loadedImage, error}) : null
+    return error || loadedImage ? children({image: loadedImage, error}) : null
   }
 }

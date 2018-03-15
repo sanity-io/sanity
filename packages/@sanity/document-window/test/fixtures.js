@@ -1,8 +1,11 @@
 // 2017-06-01T12:00:00.000Z
 const baseTime = 1496318400000
-const reverse = str => str.split('').reverse().join('')
-const timestamp = diff =>
-  new Date(baseTime + diff).toISOString().replace(/\.\d+Z$/, 'Z')
+const reverse = str =>
+  str
+    .split('')
+    .reverse()
+    .join('')
+const timestamp = diff => new Date(baseTime + diff).toISOString().replace(/\.\d+Z$/, 'Z')
 
 exports.getSnapshotFixture = (fromIndex = 0, toIndex = 100) => {
   const items = []

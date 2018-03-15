@@ -5,7 +5,6 @@ function ProjectsClient(client) {
 }
 
 assign(ProjectsClient.prototype, {
-
   list() {
     return this.client.request({uri: '/projects'})
   },
@@ -13,7 +12,6 @@ assign(ProjectsClient.prototype, {
   getById(id) {
     return this.client.request({uri: `/projects/${id}`})
   }
-
 })
 
 module.exports = ProjectsClient

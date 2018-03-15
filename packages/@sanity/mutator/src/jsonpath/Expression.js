@@ -9,8 +9,8 @@ import parse from './parse'
 type Probe = Object
 
 export default class Expression {
-  expr : Object
-  constructor(expr : Object) {
+  expr: Object
+  constructor(expr: Object) {
     // This is a wrapped expr
     if (expr.expr) {
       this.expr = expr.expr
@@ -21,31 +21,31 @@ export default class Expression {
       throw new Error('Attempt to create Expression for expression with no type')
     }
   }
-  isPath() : bool {
+  isPath(): boolean {
     return this.expr.type == 'path'
   }
-  isUnion() : bool {
+  isUnion(): boolean {
     return this.expr.type == 'union'
   }
-  isCollection() : bool {
+  isCollection(): boolean {
     return this.isPath() || this.isUnion()
   }
-  isConstraint() : bool {
+  isConstraint(): boolean {
     return this.expr.type == 'constraint'
   }
-  isRecursive() : bool {
+  isRecursive(): boolean {
     return this.expr.type == 'recursive'
   }
-  isExistenceConstraint() : bool {
+  isExistenceConstraint(): boolean {
     return this.isConstraint() && this.expr.operator == '?'
   }
-  isIndex() : bool {
+  isIndex(): boolean {
     return this.expr.type == 'index'
   }
-  isRange() : bool {
+  isRange(): boolean {
     return this.expr.type == 'range'
   }
-  expandRange(probe : Probe) : Object {
+  expandRange(probe: Probe): Object {
     let start = this.expr.start || 0
     start = interpretNegativeIndex(start, probe)
     let end = this.expr.end || probe.length()
@@ -53,17 +53,17 @@ export default class Expression {
     const step = this.expr.step || 1
     return {start, end, step}
   }
-  isAttributeReference() : bool {
+  isAttributeReference(): boolean {
     return this.expr.type == 'attribute'
   }
   // Is a range or index -> something referencing indexes
-  isIndexReference() : bool {
+  isIndexReference(): boolean {
     return this.isIndex() || this.isRange()
   }
-  name() : string {
+  name(): string {
     return this.expr.name
   }
-  isSelfReference() : bool {
+  isSelfReference(): boolean {
     return this.expr.type == 'alias' && this.expr.target == 'self'
   }
   constraintTargetIsSelf() {
@@ -72,7 +72,7 @@ export default class Expression {
   constraintTargetIsAttribute() {
     return this.isConstraint() && this.expr.lhs.type == 'attribute'
   }
-  testConstraint(probe : Probe) : bool {
+  testConstraint(probe: Probe): boolean {
     if (this.constraintTargetIsSelf()) {
       if (probe.containerType() != 'primitive') {
         return false
@@ -138,17 +138,17 @@ export default class Expression {
     }
     return new Expression(this.expr.term)
   }
-  toIndicies(probe : Probe) : Array<number> {
+  toIndicies(probe: Probe): Array<number> {
     if (!this.isIndexReference()) {
       throw new Error('Node cannot be converted to indexes')
     }
     if (this.expr.type == 'index') {
       return [interpretNegativeIndex(this.expr.value, probe)]
     } else if (this.expr.type == 'range') {
-      const result : Array<number> = []
+      const result: Array<number> = []
       let {start, end, step} = this.expandRange(probe)
       if (step < 0) {
-        [start, end] = [end, start]
+        ;[start, end] = [end, start]
       }
       for (let i = start; i < end; i++) {
         result.push(i)
@@ -157,7 +157,7 @@ export default class Expression {
     }
     throw new Error(`Unable to convert ${this.expr.type} to indices`)
   }
-  toFieldReferences() : Array<any> {
+  toFieldReferences(): Array<any> {
     if (this.isIndexReference()) {
       return this.toIndicies()
     }
@@ -166,19 +166,19 @@ export default class Expression {
     }
     throw new Error(`Can't convert ${this.expr.type} to field references`)
   }
-  toString() : string {
+  toString(): string {
     return toPath(this.expr)
   }
-  static fromPath(path : string) {
-    return (new Expression(parse(path)))
+  static fromPath(path: string) {
+    return new Expression(parse(path))
   }
-  static attributeReference(name : string) {
+  static attributeReference(name: string) {
     return new Expression({
       type: 'attribute',
       name: name
     })
   }
-  static indexReference(i : number) {
+  static indexReference(i: number) {
     return new Expression({
       type: 'index',
       value: i
@@ -205,7 +205,7 @@ function testBinaryOperator(lhsValue, operator, rhsValue) {
       throw new Error(`Unsupported binary operator ${operator}`)
   }
 }
-function interpretNegativeIndex(index : number, probe : Probe) {
+function interpretNegativeIndex(index: number, probe: Probe) {
   if (index < 0) {
     return index + probe.length()
   }

@@ -8,7 +8,7 @@ export default function debounceCollect(fn, wait) {
   let timer
   let queue = {}
   let idx = 0
-  return function (...args) {
+  return function(...args) {
     return new Observable(obs => {
       clearTimeout(timer)
       timer = setTimeout(flush, wait)

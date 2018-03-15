@@ -9,30 +9,34 @@ import {decodeParams, encodeParams} from './utils/paramsEncoding'
 type NodeOptions = {
   path?: string,
   children?: RouteChildren,
-  transform?: {[key: string] : Transform<*>},
+  transform?: {[key: string]: Transform<*>},
   scope?: string
 }
 
-function normalizeChildren(children : any) : RouteChildren {
+function normalizeChildren(children: any): RouteChildren {
   if (Array.isArray(children) || typeof children === 'function') {
     return children
   }
   return children ? [children] : []
 }
 
-function isRoute(val? : NodeOptions | Router | RouteChildren) {
+function isRoute(val?: NodeOptions | Router | RouteChildren) {
   return val && '_isRoute' in val
 }
 
 function normalizeArgs(
-  path : string | NodeOptions,
-  childrenOrOpts? : NodeOptions | Router | RouteChildren,
-  children? : Router | RouteChildren
-) : NodeOptions {
+  path: string | NodeOptions,
+  childrenOrOpts?: NodeOptions | Router | RouteChildren,
+  children?: Router | RouteChildren
+): NodeOptions {
   if (typeof path === 'object') {
     return path
   }
-  if (Array.isArray(childrenOrOpts) || typeof childrenOrOpts === 'function' || isRoute(childrenOrOpts)) {
+  if (
+    Array.isArray(childrenOrOpts) ||
+    typeof childrenOrOpts === 'function' ||
+    isRoute(childrenOrOpts)
+  ) {
     return {path, children: normalizeChildren(childrenOrOpts)}
   }
   if (children) {
@@ -42,15 +46,14 @@ function normalizeArgs(
 }
 
 export default function route(
-  routeOrOpts : string | NodeOptions,
-  childrenOrOpts? : NodeOptions | RouteChildren,
-  children? : Router | RouteChildren
-) : Router {
+  routeOrOpts: string | NodeOptions,
+  childrenOrOpts?: NodeOptions | RouteChildren,
+  children?: Router | RouteChildren
+): Router {
   return createNode(normalizeArgs(routeOrOpts, childrenOrOpts, children))
 }
 
-route.scope = function scope(scopeName: string, ...rest : any[]) : Router {
-
+route.scope = function scope(scopeName: string, ...rest: any[]): Router {
   const options = normalizeArgs(...rest)
 
   return createNode({
@@ -60,21 +63,21 @@ route.scope = function scope(scopeName: string, ...rest : any[]) : Router {
 }
 
 function normalize(...paths) {
-  return paths
-    .reduce((acc, path) => acc.concat(path.split('/')), [])
-    .filter(Boolean)
+  return paths.reduce((acc, path) => acc.concat(path.split('/')), []).filter(Boolean)
 }
 
 route.intents = function intents(base) {
   const basePath = normalize(base).join('/')
-  return route(`${basePath}/:intent`, [route(':params', {
-    transform: {
-      params: {
-        toState: decodeParams,
-        toPath: encodeParams
+  return route(`${basePath}/:intent`, [
+    route(':params', {
+      transform: {
+        params: {
+          toState: decodeParams,
+          toPath: encodeParams
+        }
       }
-    }
-  })])
+    })
+  ])
 }
 
 const EMPTY_STATE = {}
@@ -88,7 +91,7 @@ function isRoot(pathname: string): boolean {
   return true
 }
 
-function createNode(options : NodeOptions) : Router {
+function createNode(options: NodeOptions): Router {
   const {path, scope, transform, children} = options
   if (!path) {
     throw new TypeError('Missing path')
@@ -114,7 +117,7 @@ function createNode(options : NodeOptions) : Router {
     getBasePath(): string {
       return this.encode(EMPTY_STATE)
     },
-    getRedirectBase(pathname : string) : ?string {
+    getRedirectBase(pathname: string): ?string {
       if (isRoot(pathname)) {
         const basePath = this.getBasePath()
         // Check if basepath is something different than given

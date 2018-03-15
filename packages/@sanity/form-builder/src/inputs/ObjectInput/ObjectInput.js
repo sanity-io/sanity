@@ -168,7 +168,14 @@ export default class ObjectInput extends React.PureComponent {
       return null
     }
 
-    return <UnknownFields readOnly={readOnly} fieldNames={unknownFields} value={value} onChange={onChange} />
+    return (
+      <UnknownFields
+        readOnly={readOnly}
+        fieldNames={unknownFields}
+        value={value}
+        onChange={onChange}
+      />
+    )
   }
 
   setFirstField = el => {

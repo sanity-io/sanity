@@ -26,7 +26,7 @@ type Props = {
   children: Function
 }
 
-function getInitialState() : State {
+function getInitialState(): State {
   return {
     isLoading: true,
     isSaving: false,
@@ -35,27 +35,28 @@ function getInitialState() : State {
   }
 }
 
-
 export default class WithFormBuilderValue extends React.PureComponent<Props, State> {
   document: Object
 
   static childContextTypes = {
     formBuilder: PropTypes.object
-  };
+  }
 
   subscriptions = subscriptionManager('documentEvents', 'commit')
 
-  state = getInitialState();
+  state = getInitialState()
   patchChannel = SanityFormBuilderContext.createPatchChannel()
 
-  checkoutDocument(documentId : string) {
+  checkoutDocument(documentId: string) {
     this.document = checkout(documentId)
 
-    this.subscriptions.replace('documentEvents', this.document.events
-      .subscribe({
-        next: this.handleDocumentEvent,
+    this.subscriptions.replace(
+      'documentEvents',
+      this.document.events.subscribe({
+        next: this.handleDocumentEvent
         // error: this.handleDocumentError
-      }))
+      })
+    )
   }
 
   handleDocumentEvent = (event: {type: string, document: any}) => {
@@ -98,7 +99,7 @@ export default class WithFormBuilderValue extends React.PureComponent<Props, Sta
     this.checkoutDocument(this.props.documentId)
   }
 
-  componentWillReceiveProps(nextProps : Props) {
+  componentWillReceiveProps(nextProps: Props) {
     if (nextProps.documentId !== this.props.documentId) {
       this.setState(getInitialState())
       this.checkoutDocument(nextProps.documentId)
@@ -119,23 +120,29 @@ export default class WithFormBuilderValue extends React.PureComponent<Props, Sta
     })
   }
 
-  commit = throttle(() => {
-    this.setState({isSaving: true})
-    this.subscriptions.replace('commit', this.document.commit().subscribe({
-      next: () => {
-        // todo
-      },
-      error: error => {
-        // todo
-      },
-      complete: () => {
-        this.setState({isSaving: false})
-      }
-    }))
+  commit = throttle(
+    () => {
+      this.setState({isSaving: true})
+      this.subscriptions.replace(
+        'commit',
+        this.document.commit().subscribe({
+          next: () => {
+            // todo
+          },
+          error: error => {
+            // todo
+          },
+          complete: () => {
+            this.setState({isSaving: false})
+          }
+        })
+      )
+    },
+    1000,
+    {leading: true, trailing: true}
+  )
 
-  }, 1000, {leading: true, trailing: true})
-
-  handleChange = (event : PatchEvent) => {
+  handleChange = (event: PatchEvent) => {
     this.document.createIfNotExists({
       _id: this.props.documentId,
       _type: this.props.typeName
@@ -158,11 +165,7 @@ export default class WithFormBuilderValue extends React.PureComponent<Props, Sta
     const {typeName, documentId, schema, children: Component} = this.props
     const {isLoading, isSaving, value, deletedSnapshot} = this.state
     return (
-      <SanityFormBuilderContext
-        value={value}
-        schema={schema}
-        patchChannel={this.patchChannel}
-      >
+      <SanityFormBuilderContext value={value} schema={schema} patchChannel={this.patchChannel}>
         <Component
           value={value}
           isLoading={isLoading}

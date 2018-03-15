@@ -5,7 +5,7 @@ const nav = typeof navigator === 'undefined' ? {} : navigator
 const defaultLanguage = 'en-US'
 
 function resolveLanguage(supportedLanguages = null) {
-  let language = (nav.language || nav.browserLanguage || defaultLanguage)
+  let language = nav.language || nav.browserLanguage || defaultLanguage
   if (supportedLanguages && !supportedLanguages.includes(language)) {
     language = supportedLanguages[0]
   }

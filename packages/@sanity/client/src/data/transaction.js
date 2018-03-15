@@ -81,8 +81,8 @@ assign(Transaction.prototype, {
   commit(options) {
     if (!this.client) {
       throw new Error(
-        'No `client` passed to transaction, either provide one or pass the '
-        + 'transaction to a clients `mutate()` method'
+        'No `client` passed to transaction, either provide one or pass the ' +
+          'transaction to a clients `mutate()` method'
       )
     }
 

@@ -23,7 +23,8 @@ export default {
       name: 'select',
       type: 'string',
       title: 'Select string',
-      description: 'Select a single string value from a set of predefined options. It should be possible to unset a selected value.',
+      description:
+        'Select a single string value from a set of predefined options. It should be possible to unset a selected value.',
       options: {
         list: [
           {
@@ -45,7 +46,8 @@ export default {
       name: 'radioSelectHorizontal',
       title: 'Select (layout: radio, direction: horizontal)',
       type: 'string',
-      description: 'Select a single string value by choosing options from a list of radio buttons. It should *not* be possible to unset a selected value once its set.',
+      description:
+        'Select a single string value by choosing options from a list of radio buttons. It should *not* be possible to unset a selected value once its set.',
       options: {
         layout: 'radio',
         direction: 'horizontal',
@@ -68,7 +70,8 @@ export default {
     {
       name: 'selectObjectOfString',
       title: 'Select string in object',
-      description: 'Select a single string value from an array of strings. It should be possible to unset a selected value.',
+      description:
+        'Select a single string value from an array of strings. It should be possible to unset a selected value.',
       type: 'string',
       options: {
         list: ['one', 'two', 'three']
@@ -78,7 +81,8 @@ export default {
       name: 'radioSelect',
       title: 'Select (layout: radio)',
       type: 'string',
-      description: 'Select a single string value by choosing options from a list of radio buttons. It should *not* be possible to unset a selected value once its set.',
+      description:
+        'Select a single string value by choosing options from a list of radio buttons. It should *not* be possible to unset a selected value once its set.',
       options: {
         layout: 'radio',
         direction: 'vertical',

@@ -31,7 +31,6 @@ const schema = Schema.compile({
 })
 
 export default class QuickstartExample extends React.Component {
-
   state = {
     editorValue: undefined
   }
@@ -49,7 +48,9 @@ export default class QuickstartExample extends React.Component {
     return (
       <div>
         <FormBuilder schema={schema} value={this.state.editorValue} onChange={this.handleChange} />
-        <button type="button" onClick={this.handleLogClick}>Output current value to console</button>
+        <button type="button" onClick={this.handleLogClick}>
+          Output current value to console
+        </button>
       </div>
     )
   }

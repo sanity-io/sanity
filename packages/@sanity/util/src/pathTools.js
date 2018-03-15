@@ -30,7 +30,5 @@ export function expandHome(filePath) {
 
 export function absolutify(dir) {
   const pathName = expandHome(dir)
-  return path.isAbsolute(pathName)
-    ? pathName
-    : path.resolve(process.cwd(), pathName)
+  return path.isAbsolute(pathName) ? pathName : path.resolve(process.cwd(), pathName)
 }

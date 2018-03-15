@@ -19,7 +19,10 @@ const dependencies = patterns
   .map(file => fs.readFileSync(file, 'utf8'))
   .map(file => JSON.parse(file))
   .concat(corePkg)
-  .map(file => ({name: file.name, deps: Object.assign({}, file.dependencies || {}, file.devDependencies || {})}))
+  .map(file => ({
+    name: file.name,
+    deps: Object.assign({}, file.dependencies || {}, file.devDependencies || {})
+  }))
 
 const versionRanges = {}
 const fixable = {}
@@ -80,9 +83,10 @@ const fixablePackages = Object.keys(fixable)
 
 fixablePackages.forEach(pkg => {
   const toFix = fixable[pkg]
-  const manifestPath = pkg === corePkg.name
-    ? path.join(rootPath, 'package.json')
-    : path.join(rootPath, 'packages', pkg, 'package.json')
+  const manifestPath =
+    pkg === corePkg.name
+      ? path.join(rootPath, 'package.json')
+      : path.join(rootPath, 'packages', pkg, 'package.json')
 
   const manifest = require(manifestPath)
   toFix.forEach(dep => {
@@ -99,9 +103,12 @@ fixablePackages.forEach(pkg => {
 
 if (fixablePackages.length > 0) {
   console.log('')
-  console.log([
-    'Updated version ranges for %d packages,',
-    'you might want to run "npm run bootstrap"',
-    'and run some tests before pushing changes'
-  ].join(' '), fixablePackages.length)
+  console.log(
+    [
+      'Updated version ranges for %d packages,',
+      'you might want to run "npm run bootstrap"',
+      'and run some tests before pushing changes'
+    ].join(' '),
+    fixablePackages.length
+  )
 }

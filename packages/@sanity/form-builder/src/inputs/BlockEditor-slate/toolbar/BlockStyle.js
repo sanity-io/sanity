@@ -7,11 +7,10 @@ export const blockStyleShape = PropTypes.shape({
   key: PropTypes.string,
   active: PropTypes.bool,
   title: PropTypes.string,
-  preview: PropTypes.node,
+  preview: PropTypes.node
 })
 
 export default class BlockStyle extends React.Component {
-
   static propTypes = {
     value: PropTypes.arrayOf(blockStyleShape),
     items: PropTypes.arrayOf(blockStyleShape),

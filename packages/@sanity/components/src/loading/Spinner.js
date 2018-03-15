@@ -13,7 +13,13 @@ export default class Spinner extends React.Component {
 
   renderSvg() {
     return (
-      <svg width="126px" height="126px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+      <svg
+        width="126px"
+        height="126px"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="xMidYMid"
+      >
         <rect x="0" y="0" width="100" height="100" fill="none" />
         <circle
           cx="50"
@@ -49,12 +55,8 @@ export default class Spinner extends React.Component {
         `}
       >
         <div className={styles.inner}>
-          {
-            (fullscreen || center) ? this.renderSvg() : <SpinnerIcon color="inherit" />
-          }
-          {
-            message && <div className={styles.message}>{message}</div>
-          }
+          {fullscreen || center ? this.renderSvg() : <SpinnerIcon color="inherit" />}
+          {message && <div className={styles.message}>{message}</div>}
         </div>
       </div>
     )

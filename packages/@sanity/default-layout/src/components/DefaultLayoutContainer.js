@@ -12,14 +12,14 @@ export default class DefaultLayoutContainer extends React.PureComponent {
   state = {}
 
   componentWillMount() {
-    this.urlStateSubscription = urlStateStore.state
-      .subscribe({
-        next: event => this.setState({
+    this.urlStateSubscription = urlStateStore.state.subscribe({
+      next: event =>
+        this.setState({
           urlState: event.state,
           isNotFound: event.isNotFound,
           intent: event.intent
         })
-      })
+    })
   }
 
   componentWillUnmount() {
@@ -34,18 +34,18 @@ export default class DefaultLayoutContainer extends React.PureComponent {
     const {intent, urlState, isNotFound} = this.state
     const tools = getOrderedTools()
 
-    const content = isNotFound
-      ? (
-        <NotFound>{
-          intent && (
-            <div>
-              No tool can handle the intent:
-              {' '} <strong>{intent.name}</strong> {' '}
-              with parameters <pre>{JSON.stringify(intent.params)}</pre>
-            </div>
-          )}
-        </NotFound>
-      ) : <DefaultLayout tools={tools} />
+    const content = isNotFound ? (
+      <NotFound>
+        {intent && (
+          <div>
+            No tool can handle the intent: <strong>{intent.name}</strong> with parameters{' '}
+            <pre>{JSON.stringify(intent.params)}</pre>
+          </div>
+        )}
+      </NotFound>
+    ) : (
+      <DefaultLayout tools={tools} />
+    )
 
     const router = (
       <RouterProvider router={rootRouter} state={urlState} onNavigate={this.handleNavigate}>
@@ -53,6 +53,10 @@ export default class DefaultLayoutContainer extends React.PureComponent {
       </RouterProvider>
     )
 
-    return LoginWrapper ? <LoginWrapper LoadingScreen={<AppLoadingScreen text="Logging in" />}>{router}</LoginWrapper> : router
+    return LoginWrapper ? (
+      <LoginWrapper LoadingScreen={<AppLoadingScreen text="Logging in" />}>{router}</LoginWrapper>
+    ) : (
+      router
+    )
   }
 }

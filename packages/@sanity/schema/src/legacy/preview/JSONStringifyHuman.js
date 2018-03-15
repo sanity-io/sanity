@@ -18,7 +18,8 @@ function _stringify(value, options, depth) {
       return '[empty]'
     }
     const capLength = Math.max(value.length - options.maxBreadth)
-    const asString = value.slice(0, options.maxBreadth)
+    const asString = value
+      .slice(0, options.maxBreadth)
       .map((item, index) => _stringify(item, options, depth + 1))
       .concat(capLength > 0 ? `…+${capLength}` : [])
       .join(', ')
@@ -26,8 +27,9 @@ function _stringify(value, options, depth) {
     return depth === 0 ? asString : `[${asString}]`
   }
   if (typeof value === 'object' && value !== null) {
-    const keys = Object.keys(value)
-      .filter(key => !options.ignoreKeys.includes(key) && typeof value[key] !== 'undefined')
+    const keys = Object.keys(value).filter(
+      key => !options.ignoreKeys.includes(key) && typeof value[key] !== 'undefined'
+    )
 
     if (isEmpty(pick(value, keys))) {
       return '{empty}'

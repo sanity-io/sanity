@@ -8,7 +8,8 @@ export default class NeverUpdate extends React.Component {
   render() {
     return (
       <span>
-        Hello this is a component that never updates. It includs another component that depends on router state
+        Hello this is a component that never updates. It includs another component that depends on
+        router state
         <ProductCounter />
       </span>
     )

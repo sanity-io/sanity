@@ -11,7 +11,11 @@ const GetStarted = () => {
 
       <p>
         Read our guide on how to get started with &nbsp;
-        <a href="https://www.sanity.io/docs/content-studio/the-schema" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://www.sanity.io/docs/content-studio/the-schema"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           creating schemas
         </a>.
       </p>

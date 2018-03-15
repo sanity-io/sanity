@@ -20,10 +20,9 @@ function createAuthor(number) {
   })
 }
 
-
 function createDB() {
-  const docs = window.docs = []
-  const index = window.idx = {}
+  const docs = (window.docs = [])
+  const index = (window.idx = {})
   return {
     create,
     delete: del,
@@ -40,7 +39,8 @@ function createDB() {
     return index[id]
   }
   // keep for later
-  function update(_id, document) { // eslint-disable-line no-unused-vars
+  function update(_id, document) {
+    // eslint-disable-line no-unused-vars
     const idx = indexOf(_id)
     docs[idx] = document
   }

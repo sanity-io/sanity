@@ -1,20 +1,23 @@
 import {DEFAULT_HOTSPOT, DEFAULT_CROP} from './constants'
 
 export default function calculateStyles(options = {}) {
-
   const imageAspect = readAspectRatio(options.image)
 
   const hotspot = options.hotspot || DEFAULT_HOTSPOT
 
   const crop = options.crop || DEFAULT_CROP
-  const containerAspect = readAspectRatio(options.container) || (imageAspect * readCropAspect(crop))
+  const containerAspect = readAspectRatio(options.container) || imageAspect * readCropAspect(crop)
 
   const align = options.align || {x: 'center', y: 'center'}
 
-  const result = calculateHotSpotCrop(imageAspect, {hotspot, crop}, {
-    aspect: containerAspect,
-    align
-  })
+  const result = calculateHotSpotCrop(
+    imageAspect,
+    {hotspot, crop},
+    {
+      aspect: containerAspect,
+      align
+    }
+  )
 
   const containerHeight = styleFormat(round(100 / containerAspect))
 
@@ -110,16 +113,18 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
   // The scale at which the hotspot would fill the viewport exactly in the X direction
   const maxHotspotXScale = 1.0 / hotspot.width
   // The scale at which the hotspot would fill the veiwport exactly in the Y direction
-  const maxHotspotYScale = (1.0 / hotspot.height) * cropAspect / viewportAspect
+  const maxHotspotYScale = 1.0 / hotspot.height * cropAspect / viewportAspect
   // This is the largest scale the image can have while still not cropping the hotspot:
   const maxScale = Math.min(maxHotspotXScale, maxHotspotYScale)
 
   // Now lets find the minimum scale we can have while maintaining full bleed (no letterboxing)
   let minFullBleedScale
-  const cropIsTaller = (cropAspect <= viewportAspect)
-  if (cropIsTaller) { // Crop is taller than viewport
+  const cropIsTaller = cropAspect <= viewportAspect
+  if (cropIsTaller) {
+    // Crop is taller than viewport
     minFullBleedScale = 1.0 // By definition 1.0 fills the width of the viewport exactly with the viewport cutting away from the height of the cropbox
-  } else { // Image is wider than viewport
+  } else {
+    // Image is wider than viewport
     minFullBleedScale = cropAspect / viewportAspect // At this scale the viewport is filled exactly in the height while cutting away from the sides
   }
 
@@ -128,7 +133,6 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
 
   // Do we have to letterbox this image in order to leave the hotspot area uncropped?
   if (minFullBleedScale > maxScale) {
-
     // Yes :-( There is no way to protect the hot spot and still have full bleed, so we are letterboxing it
     method = 'letterbox'
     let letterboxScale
@@ -146,7 +150,7 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
       height: letterboxScale / cropAspect * viewportAspect
     }
 
-    const hotspotLeft = (hotspot.x * outCrop.width) - ((hotspot.width * outCrop.width) / 2)
+    const hotspotLeft = hotspot.x * outCrop.width - hotspot.width * outCrop.width / 2
     switch (alignment.x) {
       case 'left':
         outCrop.left = cropIsTaller ? 0 : -hotspotLeft
@@ -159,29 +163,32 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
         outCrop.left = cropIsTaller ? (1 - outCrop.width) / 2 : -hotspotLeft
         break
       default:
-        throw new Error(`Invalid x alignment: '${alignment.x}'. Must be either 'left', 'right' or 'center'`)
-
+        throw new Error(
+          `Invalid x alignment: '${alignment.x}'. Must be either 'left', 'right' or 'center'`
+        )
     }
-    const hotspotTop = (hotspot.y * outCrop.height) - ((hotspot.height * outCrop.height) / 2)
+    const hotspotTop = hotspot.y * outCrop.height - hotspot.height * outCrop.height / 2
     switch (alignment.y) {
       case 'top':
         outCrop.top = cropIsTaller ? -hotspotTop : 0
         break
       case 'bottom':
-          // todo: broken atm
+        // todo: broken atm
         outCrop.top = hotspotTop
         break
       case 'center':
         outCrop.top = cropIsTaller ? -hotspotTop : (1 - outCrop.height) / 2
         break
       default:
-        throw new Error(`Invalid y alignment: '${alignment.y}'. Must be either 'top', 'bottom' or 'center'`)
+        throw new Error(
+          `Invalid y alignment: '${alignment.y}'. Must be either 'top', 'bottom' or 'center'`
+        )
     }
   } else if (cropIsTaller) {
     // TODO: Clamp hotspot offset to avoid moving image off canvas
     method = 'full_width'
 
-    let top = ((-hotspot.y / cropAspect) * viewportAspect) + 0.5
+    let top = -hotspot.y / cropAspect * viewportAspect + 0.5
     const height = minFullBleedScale / cropAspect * viewportAspect
     // Clamp top so that we will not move the image off of the viewport
     if (top > 0) {
@@ -197,11 +204,12 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
       // Place the Y center of the hotspot near the center of the viewport
       top
     }
-  } else { // crop is wider
+  } else {
+    // crop is wider
     method = 'full_height'
 
     const width = minFullBleedScale
-    let left = 0.5 - (hotspot.x * minFullBleedScale)
+    let left = 0.5 - hotspot.x * minFullBleedScale
     if (left > 0) {
       left = 0
     } else if (-left > width - 1.0) {
@@ -225,8 +233,8 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
 }
 
 function readCropAspect(crop) {
-  const height = (1 - crop.top - crop.bottom)
-  const width = (1 - crop.left - crop.right)
+  const height = 1 - crop.top - crop.bottom
+  const width = 1 - crop.left - crop.right
   return width / height
 }
 

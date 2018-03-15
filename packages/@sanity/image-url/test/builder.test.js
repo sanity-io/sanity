@@ -54,8 +54,7 @@ const cases = [
   },
 
   {
-    name:
-      'does crop image with no crop/hotspot specified if aspect ratio is forced',
+    name: 'does crop image with no crop/hotspot specified if aspect ratio is forced',
     url: urlFor
       .image(imageWithNoCropSpecified())
       .width(80)
@@ -127,16 +126,10 @@ describe('builder', () => {
   })
 
   it('should throw on invalid fit mode', () => {
-    should.throws(
-      () => urlFor.image(croppedImage()).fit('moo'),
-      /Invalid fit mode "moo"/
-    )
+    should.throws(() => urlFor.image(croppedImage()).fit('moo'), /Invalid fit mode "moo"/)
   })
 
   it('should throw on invalid crop mode', () => {
-    should.throws(
-      () => urlFor.image(croppedImage()).crop('moo'),
-      /Invalid crop mode "moo"/
-    )
+    should.throws(() => urlFor.image(croppedImage()).crop('moo'), /Invalid crop mode "moo"/)
   })
 })

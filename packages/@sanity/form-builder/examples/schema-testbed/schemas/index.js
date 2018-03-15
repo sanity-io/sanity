@@ -10,7 +10,6 @@ import exampleBlog from './example-blog'
 import reference from './reference'
 import selects from './selects'
 
-
 export default {
   customPatchHandling,
   arrays,

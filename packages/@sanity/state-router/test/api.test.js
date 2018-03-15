@@ -11,9 +11,7 @@ test('route(options)', t => {
         toPath: param => param.toLowerCase()
       }
     },
-    children: [
-      route({path: '/sub/:subparam'})
-    ]
+    children: [route({path: '/sub/:subparam'})]
   })
 
   t.same(router.decode('/root/banana'), {param: 'BANANA'})
@@ -31,9 +29,7 @@ test('route(path, options)', t => {
         toPath: param => param.toLowerCase()
       }
     },
-    children: [
-      route('/sub/:subparam')
-    ]
+    children: [route('/sub/:subparam')]
   })
 
   t.same(router.decode('/root/banana'), {param: 'BANANA'})
@@ -44,16 +40,18 @@ test('route(path, options)', t => {
 })
 
 test('route(path, options, children)', t => {
-  const router = route('/root/:param', {
-    transform: {
-      param: {
-        toState: param => param.toUpperCase(),
-        toPath: param => param.toLowerCase()
+  const router = route(
+    '/root/:param',
+    {
+      transform: {
+        param: {
+          toState: param => param.toUpperCase(),
+          toPath: param => param.toLowerCase()
+        }
       }
     },
-  }, [
-    route('/sub/:subparam')
-  ])
+    [route('/sub/:subparam')]
+  )
 
   t.same(router.decode('/root/banana'), {param: 'BANANA'})
   t.same(router.encode({param: 'BANANA'}), '/root/banana')
@@ -63,9 +61,7 @@ test('route(path, options, children)', t => {
 })
 
 test('route(path, children)', t => {
-  const router = route('/root/:param', [
-    route('/sub/:subparam')
-  ])
+  const router = route('/root/:param', [route('/sub/:subparam')])
 
   t.same(router.decode('/root/banana'), {param: 'banana'})
   t.same(router.encode({param: 'banana'}), '/root/banana')
@@ -75,20 +71,20 @@ test('route(path, children)', t => {
 })
 
 test('overrides conflicting params', t => {
-  const router = route('/this/will/be/ignored', {
-    path: '/root/:param',
-    transform: {
-      param: {
-        toState: param => param.toUpperCase(),
-        toPath: param => param.toLowerCase()
-      }
+  const router = route(
+    '/this/will/be/ignored',
+    {
+      path: '/root/:param',
+      transform: {
+        param: {
+          toState: param => param.toUpperCase(),
+          toPath: param => param.toLowerCase()
+        }
+      },
+      children: [route('/sub/:thiswillbeignored')]
     },
-    children: [
-      route('/sub/:thiswillbeignored')
-    ]
-  }, [
-    route('/sub/:subparam')
-  ])
+    [route('/sub/:subparam')]
+  )
 
   t.same(router.decode('/root/banana'), {param: 'BANANA'})
   t.same(router.encode({param: 'BANANA'}), '/root/banana')

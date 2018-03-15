@@ -8,6 +8,7 @@ const app = express()
 
 app.use(require('quickreload')())
 app.use(serve(require('./static-routes/browserify')))
+
 app.use(capture.css())
 app.use(capture.js())
 

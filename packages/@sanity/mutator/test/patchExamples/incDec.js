@@ -11,10 +11,10 @@ export default [
     patch: {
       inc: {
         'a[2]': 1,
-        'b': 2,
+        b: 2
       },
       dec: {
-        'c': 1
+        c: 1
       }
     },
     after: {
@@ -22,5 +22,5 @@ export default [
       b: 6,
       c: 4
     }
-  },
+  }
 ]

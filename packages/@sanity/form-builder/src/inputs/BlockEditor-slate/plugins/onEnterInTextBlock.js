@@ -9,10 +9,17 @@ function createOnKeyDown(defaultBlock) {
     }
     const state = change.state
     const isTextBlock = state.blocks.some(block => block.data.get('style'))
-    const isDefaultBlock = state.blocks.some(block => block.data.get('style') === defaultBlock.data.style)
+    const isDefaultBlock = state.blocks.some(
+      block => block.data.get('style') === defaultBlock.data.style
+    )
     const isListNode = state.blocks.some(block => block.data.get('listItem'))
     const {startBlock} = state
-    if (isListNode || !isTextBlock || state.selection.isExpanded || !state.selection.hasEndAtEndOf(startBlock)) {
+    if (
+      isListNode ||
+      !isTextBlock ||
+      state.selection.isExpanded ||
+      !state.selection.hasEndAtEndOf(startBlock)
+    ) {
       return null
     }
     if (!isDefaultBlock) {

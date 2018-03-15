@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import ReactCodeMirror from 'react-codemirror2'
 import CodeMirror from 'codemirror'
+
 require('codemirror/mode/javascript/javascript')
 require('codemirror/addon/hint/show-hint')
 
@@ -55,7 +56,7 @@ class QueryEditor extends React.PureComponent {
       extraKeys: {
         'Ctrl-Space': 'autocomplete',
         'Ctrl-Enter': this.props.onExecute
-      },
+      }
     }
     return (
       <ReactCodeMirror
@@ -72,7 +73,7 @@ QueryEditor.propTypes = {
   onExecute: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
   value: PropTypes.string,
-  schema: PropTypes.object,
+  schema: PropTypes.object
 }
 
 QueryEditor.defaultProps = {

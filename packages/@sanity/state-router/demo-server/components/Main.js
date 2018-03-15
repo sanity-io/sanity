@@ -15,7 +15,9 @@ export default withRouterHOC((props: Props) => {
     <div>
       <h1>Main</h1>
       <h3>Current router state (global):</h3>
-      <pre><code>{JSON.stringify(router.state, null, 2)}</code></pre>
+      <pre>
+        <code>{JSON.stringify(router.state, null, 2)}</code>
+      </pre>
       {router.state.product && (
         <RouteScope scope="product">
           <Product id={router.state.product.id} />
@@ -29,10 +31,18 @@ export default withRouterHOC((props: Props) => {
         <StateLink state={{userId: 'me'}}>Show profile</StateLink>
       </p>
       <p>
-        <StateLink state={{product: {id: 55, userId: 'me'}}}>Show both product and profile</StateLink>
+        <StateLink state={{product: {id: 55, userId: 'me'}}}>
+          Show both product and profile
+        </StateLink>
       </p>
       <p>
-        <Link href={`/foo/bar/${Math.random().toString(32).substring(2)}`}>Invalid</Link>
+        <Link
+          href={`/foo/bar/${Math.random()
+            .toString(32)
+            .substring(2)}`}
+        >
+          Invalid
+        </Link>
       </p>
       <p>
         <StateLink toIndex>Back to index</StateLink>

@@ -39,57 +39,30 @@ export default {
             {
               title: 'Paragraph',
               type: 'paragraph',
-              marks: [
-                'bold',
-                'italic',
-                'underline',
-                'overline',
-                'line-through',
-                'code'
-              ]
+              marks: ['bold', 'italic', 'underline', 'overline', 'line-through', 'code']
             },
             {
               title: 'Header 1',
               type: 'header',
-              marks: [
-                'bold',
-                'italic',
-                'underline',
-                'line-through'
-              ],
+              marks: ['bold', 'italic', 'underline', 'line-through'],
               level: 1
             },
             {
               title: 'Header 2',
               type: 'header',
-              marks: [
-                'bold',
-                'italic',
-                'underline',
-                'line-through'
-              ],
+              marks: ['bold', 'italic', 'underline', 'line-through'],
               level: 2
             },
             {
               title: 'Header 3',
               type: 'header',
-              marks: [
-                'bold',
-                'italic',
-                'underline',
-                'line-through'
-              ],
+              marks: ['bold', 'italic', 'underline', 'line-through'],
               level: 3
             },
             {
               title: 'Header 4',
               type: 'header',
-              marks: [
-                'bold',
-                'italic',
-                'underline',
-                'line-through'
-              ],
+              marks: ['bold', 'italic', 'underline', 'line-through'],
               level: 4
             },
             {
@@ -110,22 +83,12 @@ export default {
             {
               title: 'List item',
               type: 'listItem',
-              marks: [
-                'bold',
-                'italic',
-                'underline',
-                'line-through'
-              ]
+              marks: ['bold', 'italic', 'underline', 'line-through']
             },
             {
               title: 'Link',
               type: 'link',
-              marks: [
-                'bold',
-                'italic',
-                'underline',
-                'line-through'
-              ]
+              marks: ['bold', 'italic', 'underline', 'line-through']
             },
             {
               title: 'String',
@@ -153,7 +116,7 @@ export default {
           of: [
             {
               title: 'Paragraph',
-              type: 'paragraph',
+              type: 'paragraph'
             }
           ]
         }

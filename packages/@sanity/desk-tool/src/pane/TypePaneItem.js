@@ -18,14 +18,8 @@ export default class TypePaneItem extends React.Component {
     const {selected, type} = this.props
 
     return (
-      <div
-        className={selected ? styles.selected : styles.item}
-        key={document._id}
-      >
-        <StateLink
-          state={{selectedType: type.name}}
-          className={styles.link}
-        >
+      <div className={selected ? styles.selected : styles.item} key={document._id}>
+        <StateLink state={{selectedType: type.name}} className={styles.link}>
           {type.title}
           <Ink duration={1000} opacity={0.1} radius={200} />
         </StateLink>

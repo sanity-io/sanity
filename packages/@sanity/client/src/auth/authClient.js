@@ -5,7 +5,6 @@ function AuthClient(client) {
 }
 
 assign(AuthClient.prototype, {
-
   getLoginProviders() {
     return this.client.request({uri: '/auth/providers'})
   },
@@ -13,7 +12,6 @@ assign(AuthClient.prototype, {
   logout() {
     return this.client.request({uri: '/auth/logout', method: 'POST'})
   }
-
 })
 
 module.exports = AuthClient

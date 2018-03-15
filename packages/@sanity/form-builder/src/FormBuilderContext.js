@@ -93,13 +93,17 @@ export default class FormBuilderContext extends React.Component {
   getChildContext = memoize(() => {
     const {schema, patchChannel} = this.props
     return {
-      getValuePath: () => ([]),
+      getValuePath: () => [],
       formBuilder: {
-        onPatch: patchChannel ? patchChannel.onPatch : () => {
-          // eslint-disable-next-line no-console
-          console.warn('No patch channel provided to form-builder. If you need input based patch updates, please provide one')
-          return NOOP
-        },
+        onPatch: patchChannel
+          ? patchChannel.onPatch
+          : () => {
+              // eslint-disable-next-line no-console
+              console.warn(
+                'No patch channel provided to form-builder. If you need input based patch updates, please provide one'
+              )
+              return NOOP
+            },
         schema,
         resolveInputComponent: this.resolveInputComponent,
         resolvePreviewComponent: this.resolvePreviewComponent,

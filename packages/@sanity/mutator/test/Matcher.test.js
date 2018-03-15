@@ -33,4 +33,3 @@ test('basic path match', tap => {
 //   tap.equal(r2.delivery.payload, 'My Patch')
 //   tap.end()
 // })
-

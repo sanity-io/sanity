@@ -9,13 +9,16 @@ const bundleUrl = `${baseUrl}/v${version}/yarn-legacy-${version}.js`
 const licenseUrl = 'https://raw.githubusercontent.com/yarnpkg/yarn/master/LICENSE'
 const destination = path.join(__dirname, '..', '..', 'vendor', 'yarn')
 const writeFlags = {encoding: 'utf8', mode: 0o755}
-const request = url => new Promise((resolve, reject) => simpleGet.concat(url, (err, res, body) => {
-  if (err) {
-    reject(err)
-  } else {
-    resolve(body.toString())
-  }
-}))
+const request = url =>
+  new Promise((resolve, reject) =>
+    simpleGet.concat(url, (err, res, body) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(body.toString())
+      }
+    })
+  )
 
 function download() {
   console.log('[package-yarn] Downloading bundle')
@@ -31,7 +34,10 @@ function download() {
 async function writeHeader() {
   console.log('[package-yarn] Downloading license')
   const license = await request(licenseUrl)
-  const commented = license.split('\n').map(line => ` * ${line}`).join('\n')
+  const commented = license
+    .split('\n')
+    .map(line => ` * ${line}`)
+    .join('\n')
   const wrappedLicense = `/*\n${commented}*/`
 
   console.log('[package-yarn] Reading bundle')
@@ -41,7 +47,7 @@ async function writeHeader() {
   }
 
   console.log('[package-yarn] Writing modified bundle')
-  const pkgDate = (new Date()).toISOString().substr(0, 10)
+  const pkgDate = new Date().toISOString().substr(0, 10)
   const versionString = `/* yarn v${version} - packaged ${pkgDate} */`
   const licensed = bundle.replace(/^(#!.*\n)/, `$1${versionString}\n${wrappedLicense}\n\n`)
   await fse.writeFile(destination, licensed, writeFlags)

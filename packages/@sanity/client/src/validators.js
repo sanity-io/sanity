@@ -3,7 +3,9 @@ const VALID_INSERT_LOCATIONS = ['before', 'after', 'replace']
 
 exports.dataset = name => {
   if (!/^[-\w]{1,128}$/.test(name)) {
-    throw new Error('Datasets can only contain lowercase characters, numbers, underscores and dashes')
+    throw new Error(
+      'Datasets can only contain lowercase characters, numbers, underscores and dashes'
+    )
   }
 }
 
@@ -43,21 +45,15 @@ exports.validateInsert = (at, selector, items) => {
   const signature = 'insert(at, selector, items)'
   if (VALID_INSERT_LOCATIONS.indexOf(at) === -1) {
     const valid = VALID_INSERT_LOCATIONS.map(loc => `"${loc}"`).join(', ')
-    throw new Error(
-      `${signature} takes an "at"-argument which is one of: ${valid}`
-    )
+    throw new Error(`${signature} takes an "at"-argument which is one of: ${valid}`)
   }
 
   if (typeof selector !== 'string') {
-    throw new Error(
-      `${signature} takes a "selector"-argument which must be a string`
-    )
+    throw new Error(`${signature} takes a "selector"-argument which must be a string`)
   }
 
   if (!Array.isArray(items)) {
-    throw new Error(
-      `${signature} takes an "items"-argument which must be an array`
-    )
+    throw new Error(`${signature} takes an "items"-argument which must be an array`)
   }
 }
 

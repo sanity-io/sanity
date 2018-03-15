@@ -3,10 +3,9 @@ import React from 'react'
 import {debounce} from 'lodash'
 
 export default class SimpleImagePreview extends React.Component {
-
   static propTypes = {
-    value: PropTypes.object,
-  };
+    value: PropTypes.object
+  }
 
   constructor(props, context) {
     super(props, context)
@@ -35,7 +34,7 @@ export default class SimpleImagePreview extends React.Component {
 
   loadImage(url) {
     this.setState({loading: true, errored: false})
-    const loader = new Image
+    const loader = new Image()
     loader.onerror = this.handleLoadError
     loader.onload = this.handleLoadSuccess
     loader.src = url
@@ -78,7 +77,9 @@ export default class SimpleImagePreview extends React.Component {
 
     return (
       <span>
-        <span><img src={url} title={caption} style={{maxWidth: 100, maxHeight: 100}} /></span>
+        <span>
+          <img src={url} title={caption} style={{maxWidth: 100, maxHeight: 100}} />
+        </span>
         <span>{caption}</span>
       </span>
     )

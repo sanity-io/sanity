@@ -9,7 +9,7 @@ export default {
           fields: ['title', 'image', 'imageUrl'],
           prepare(document) {
             return {
-              title: document.title || '',
+              title: document.title || ''
             }
           }
         }

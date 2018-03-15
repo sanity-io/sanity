@@ -6,7 +6,6 @@ import {BufferedDocument, Mutation} from '@sanity/mutator'
 const NOOP = () => {}
 
 function createBufferedDocument(documentId, server) {
-
   const serverEvents$ = Observable.from(server.byId(documentId)).share()
   const reconnects$ = serverEvents$.filter(event => event.type === 'reconnect')
   const saves = pubsub()
@@ -24,14 +23,13 @@ function createBufferedDocument(documentId, server) {
         // right now the BufferedDocument just commits fire-and-forget-ish
         // We should be able to handle failures and retry here
 
-        server.mutate(omit(payload, 'resultRev'))
-          .subscribe({
-            next: res => {
-              opts.success(res)
-              saves.publish()
-            },
-            error: opts.failure
-          })
+        server.mutate(omit(payload, 'resultRev')).subscribe({
+          next: res => {
+            opts.success(res)
+            saves.publish()
+          },
+          error: opts.failure
+        })
       }
 
       const rebase$ = new Observable(rebaseObserver => {
@@ -116,9 +114,10 @@ function createBufferedDocument(documentId, server) {
       observer.next(currentBuffered)
       observer.complete()
     }
-    return bufferedDocs$.do(doc => {
-      currentBuffered = doc
-    })
+    return bufferedDocs$
+      .do(doc => {
+        currentBuffered = doc
+      })
       .subscribe(observer)
   })
 
@@ -146,7 +145,6 @@ function createBufferedDocument(documentId, server) {
 }
 
 export default function createDocumentStore({serverConnection}) {
-
   return {
     byId,
     byIds,
@@ -156,7 +154,7 @@ export default function createDocumentStore({serverConnection}) {
     patch: patchDoc,
     delete: deleteDoc,
     createOrReplace: createOrReplace,
-    createIfNotExists: createIfNotExists,
+    createIfNotExists: createIfNotExists
   }
 
   function patchDoc(documentId, patches) {
@@ -181,8 +179,7 @@ export default function createDocumentStore({serverConnection}) {
 
   function byIds(documentIds) {
     return new Observable(observer => {
-      const documentSubscriptions = documentIds
-        .map(id => byId(id).subscribe(observer))
+      const documentSubscriptions = documentIds.map(id => byId(id).subscribe(observer))
 
       return () => {
         documentSubscriptions.map(subscription => subscription.unsubscribe())

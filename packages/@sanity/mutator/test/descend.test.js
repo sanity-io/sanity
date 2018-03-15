@@ -1,18 +1,17 @@
-import { test } from 'tap'
+import {test} from 'tap'
 import parse from '../src/jsonpath/parse'
 import toPath from '../src/jsonpath/toPath'
 import descend from '../src/jsonpath/descend'
-
 
 function headTailToStr(headTail) {
   return `<${toPath(headTail[0])}|${headTail[1] ? toPath(headTail[1]) : ''}]`
 }
 
-function descentStateToStr(descentState) : string {
+function descentStateToStr(descentState): string {
   return `(${descentState.map(ht => headTailToStr(ht)).join(', ')})`
 }
 
-function descendAll(descentState) : Array {
+function descendAll(descentState): Array {
   const result = []
   descentState.forEach(ht => {
     const tail = ht[1]
@@ -35,24 +34,14 @@ function descentsFor(path) {
 }
 
 const cases = {
-  'a.b.c': [
-    '(<a|b.c])',
-    '(<b|c])', '(<c|])'],
-  '[a,b].c': [
-    '(<a|c], <b|c])',
-    '(<c|], <c|])'],
+  'a.b.c': ['(<a|b.c])', '(<b|c])', '(<c|])'],
+  '[a,b].c': ['(<a|c], <b|c])', '(<c|], <c|])'],
   '[0,1,2,3]._weak': [
     '(<[0]|_weak], <[1]|_weak], <[2]|_weak], <[3]|_weak])',
-    '(<_weak|], <_weak|], <_weak|], <_weak|])'],
-  'a[b.c, e].f': [
-    '(<a|[b.c,e].f])',
-    '(<b|c.f], <e|f])',
-    '(<c|f], <f|])',
-    '(<f|])'],
-  'members[age > 50].name': [
-    '(<members|[age > 50].name])',
-    '(<[age > 50]|name])',
-    '(<name|])'],
+    '(<_weak|], <_weak|], <_weak|], <_weak|])'
+  ],
+  'a[b.c, e].f': ['(<a|[b.c,e].f])', '(<b|c.f], <e|f])', '(<c|f], <f|])', '(<f|])'],
+  'members[age > 50].name': ['(<members|[age > 50].name])', '(<[age > 50]|name])', '(<name|])'],
   '[]': []
 }
 

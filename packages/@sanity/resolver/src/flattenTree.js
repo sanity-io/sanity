@@ -10,10 +10,7 @@ function flattenTree(target, plugin, index) {
 
   // Add all the plugins that this plugin depend on,
   // before the current plugin in the chain
-  Array.prototype.splice.apply(
-    newTarget,
-    [target.indexOf(plugin), 0].concat(children)
-  )
+  Array.prototype.splice.apply(newTarget, [target.indexOf(plugin), 0].concat(children))
 
   return newTarget
 }

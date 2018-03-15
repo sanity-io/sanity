@@ -12,7 +12,6 @@ import {SLATE_DEFAULT_BLOCK} from '../constants'
 
 export default function intializeSlatePlugins(blockEditor) {
   return [
-
     insertBlockOnEnter(SLATE_DEFAULT_BLOCK),
     softBreak({
       onlyIn: [SLATE_DEFAULT_BLOCK.type],
@@ -32,6 +31,5 @@ export default function intializeSlatePlugins(blockEditor) {
     onPasteSlateContent(blockEditor.context.formBuilder, blockEditor.props.type.of),
 
     onTabSetIntendation()
-
   ]
 }

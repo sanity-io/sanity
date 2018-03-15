@@ -27,15 +27,16 @@ function getListItemLevel(el) {
 
 function isWordListElement(el) {
   if (el.className) {
-    return el.className === 'MsoListParagraphCxSpFirst'
-      || el.className === 'MsoListParagraphCxSpMiddle'
-      || el.className === 'MsoListParagraphCxSpLast'
+    return (
+      el.className === 'MsoListParagraphCxSpFirst' ||
+      el.className === 'MsoListParagraphCxSpMiddle' ||
+      el.className === 'MsoListParagraphCxSpLast'
+    )
   }
   return undefined
 }
 
 export default function createWordRules(blockContentType, options = {}) {
-
   return [
     {
       deserialize(el, next) {

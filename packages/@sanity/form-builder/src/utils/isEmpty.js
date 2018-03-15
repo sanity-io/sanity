@@ -13,7 +13,7 @@ function isEmptyObject(value: {[string]: any}): boolean {
   return true
 }
 
-function isEmptyArray(value : Array<any>): boolean {
+function isEmptyArray(value: Array<any>): boolean {
   if (value === undefined) {
     return true
   }
@@ -26,7 +26,7 @@ function isEmptyArray(value : Array<any>): boolean {
   return false
 }
 
-function isEmptyPrimitive(value : any) {
+function isEmptyPrimitive(value: any) {
   return value === undefined
 }
 

@@ -3,7 +3,6 @@
 
 function createOnKeyDown(defaultBlock, callbackFn) {
   return function onKeyDown(event, data, change, editor) {
-
     const {document, startKey, startBlock} = change.state
 
     // only for key

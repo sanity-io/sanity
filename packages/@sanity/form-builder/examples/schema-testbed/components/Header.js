@@ -10,22 +10,24 @@ export default function Header(props) {
   const {schemaNames, typeNames, selectedTypeName, selectedSchemaName} = props
   return (
     <header className={styles.header}>
-      Schema: <select value={selectedSchemaName} onChange={e => goto(e.target.value)}>
+      Schema:{' '}
+      <select value={selectedSchemaName} onChange={e => goto(e.target.value)}>
         {!selectedSchemaName && <option>Select schema…</option>}
         {schemaNames.map(schemaName => (
           <option key={schemaName} value={schemaName}>
             {schemaName}
           </option>
         ))}
-      </select>
-      {' '}
+      </select>{' '}
       {selectedSchemaName && (
         <span>
-          Type: <select value={selectedTypeName} onChange={e => goto(selectedSchemaName, e.currentTarget.value)}>
+          Type:{' '}
+          <select
+            value={selectedTypeName}
+            onChange={e => goto(selectedSchemaName, e.currentTarget.value)}
+          >
             {!selectedTypeName && <option>Select type…</option>}
-            {typeNames.map(typeName => (
-              <option key={typeName}>{typeName}</option>
-            ))}
+            {typeNames.map(typeName => <option key={typeName}>{typeName}</option>)}
           </select>
         </span>
       )}

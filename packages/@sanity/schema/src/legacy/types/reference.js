@@ -27,7 +27,10 @@ function buildTitle(type) {
   if (!type.to || type.to.length === 0) {
     return 'Reference'
   }
-  return `Reference to ${humanize(arrify(type.to).map(toType => (toType.title || toType.name || toType.type || '').toLowerCase()), 'or')}`
+  return `Reference to ${humanize(
+    arrify(type.to).map(toType => (toType.title || toType.name || toType.type || '').toLowerCase()),
+    'or'
+  )}`
 }
 
 export const ReferenceType = {
@@ -36,11 +39,13 @@ export const ReferenceType = {
   },
   extend(subTypeDef, createMemberType) {
     if (!subTypeDef.to) {
-      throw new Error(`Missing "to" field in reference definition. Check the type ${subTypeDef.name}`)
+      throw new Error(
+        `Missing "to" field in reference definition. Check the type ${subTypeDef.name}`
+      )
     }
     const parsed = Object.assign(pick(REFERENCE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: REFERENCE_CORE,
-      title: subTypeDef.title || buildTitle(subTypeDef),
+      title: subTypeDef.title || buildTitle(subTypeDef)
     })
 
     lazyGetter(parsed, 'to', () => {
@@ -58,7 +63,9 @@ export const ReferenceType = {
           if (extensionDef.of) {
             throw new Error('Cannot override `of` of subtypes of "reference"')
           }
-          const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {type: parent})
+          const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
+            type: parent
+          })
           return subtype(current)
         }
       }

@@ -2,12 +2,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 export default function withDocument(ComposedComponent: any) {
-
   return class WithDocument extends React.PureComponent {
     static displayName = `withDocument(${ComposedComponent.displayName || ComposedComponent.name})`
 
     static contextTypes = {
-      formBuilder: PropTypes.any,
+      formBuilder: PropTypes.any
     }
 
     state: {
@@ -15,7 +14,7 @@ export default function withDocument(ComposedComponent: any) {
     }
     unsubscribe: () => void
 
-    constructor(props : any, context: any) {
+    constructor(props: any, context: any) {
       super()
       const {formBuilder} = context
       this.state = {document: formBuilder.getDocument()}
@@ -36,7 +35,9 @@ export default function withDocument(ComposedComponent: any) {
       this._input = input
     }
     render() {
-      return <ComposedComponent ref={this.setInput} document={this.state.document} {...this.props} />
+      return (
+        <ComposedComponent ref={this.setInput} document={this.state.document} {...this.props} />
+      )
     }
   }
 }

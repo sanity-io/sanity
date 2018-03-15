@@ -21,13 +21,22 @@ export default {
       return {
         title: title,
         subtitle: subtitle,
-        description: color && color.hsl && `H:${Math.round(color.hsl.l * 100)} S:${Math.round(color.hsl.l * 100)} L:${Math.round(color.hsl.l * 100)} A:${Math.round(color.hsl.a * 100)}`,
+        description:
+          color &&
+          color.hsl &&
+          `H:${Math.round(color.hsl.l * 100)} S:${Math.round(color.hsl.l * 100)} L:${Math.round(
+            color.hsl.l * 100
+          )} A:${Math.round(color.hsl.a * 100)}`,
         media: () => (
           <div
             style={{
               backgroundColor: (color && color.hex) || '#000',
               opacity: (color && color.alpha) || 1,
-              position: 'absolute', height: '100%', width: '100%', top: '0', left: '0'
+              position: 'absolute',
+              height: '100%',
+              width: '100%',
+              top: '0',
+              left: '0'
             }}
           />
         )

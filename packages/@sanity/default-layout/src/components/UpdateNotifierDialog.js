@@ -49,8 +49,7 @@ class UpdateNotifierDialog extends Component {
         </table>
 
         <p className={styles.upgradeText}>
-          To upgrade, run <code className={styles.code}>sanity upgrade</code> in
-          your studio.
+          To upgrade, run <code className={styles.code}>sanity upgrade</code> in your studio.
         </p>
       </div>
     )
@@ -63,15 +62,9 @@ class UpdateNotifierDialog extends Component {
         <p>You are running an outdated studio.</p>
 
         {severity === 'high' ? (
-          <p>
-            Please get in touch with your developers and ask them to upgrade it
-            for you.
-          </p>
+          <p>Please get in touch with your developers and ask them to upgrade it for you.</p>
         ) : (
-          <p>
-            Consider getting in touch with your developers and ask them to
-            upgrade it for you.
-          </p>
+          <p>Consider getting in touch with your developers and ask them to upgrade it for you.</p>
         )}
 
         <details>
@@ -88,11 +81,7 @@ class UpdateNotifierDialog extends Component {
       <Dialog isOpen onClose={onClose}>
         <div className={styles.content}>
           <div>
-            <h2>
-              {severity === 'low'
-                ? 'New versions available'
-                : 'Studio is outdated'}
-            </h2>
+            <h2>{severity === 'low' ? 'New versions available' : 'Studio is outdated'}</h2>
             {__DEV__ ? this.renderTable() : this.renderContactDeveloper()}
             <Button color="primary" onClick={onClose}>
               Close

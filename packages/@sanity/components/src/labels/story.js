@@ -6,18 +6,12 @@ import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 storiesOf('Labels')
   .addDecorator(withKnobs)
-  .add(
-  'Default',
-  () => {
+  .add('Default', () => {
     return (
       <Sanity part="part:@sanity/components/labels/default" propTables={[DefaultLabel]}>
-        <DefaultLabel
-          level={number('level (prop)', 0)}
-          htmlFor="thisNeedsToBeUnique"
-        >
+        <DefaultLabel level={number('level (prop)', 0)} htmlFor="thisNeedsToBeUnique">
           {text('children  (prop)', 'Label')}
         </DefaultLabel>
       </Sanity>
     )
-  }
-)
+  })

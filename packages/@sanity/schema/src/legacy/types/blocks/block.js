@@ -6,7 +6,8 @@ import {
   BLOCK_STYLES,
   DEFAULT_BLOCK_STYLES,
   DEFAULT_LINK_ANNOTATION,
-  DEFAULT_LIST_TYPES, DEFAULT_MARKS_FIELD,
+  DEFAULT_LIST_TYPES,
+  DEFAULT_MARKS_FIELD,
   DEFAULT_TEXT_FIELD,
   DEFAULT_DECORATORS
 } from './defaults'
@@ -42,11 +43,7 @@ export const BlockType = {
     const stylesField = createStylesField(styles)
     const listsField = createListsField(lists)
 
-    const fields = [
-      spansField,
-      stylesField,
-      listsField
-    ].concat(subTypeDef.fields || [])
+    const fields = [spansField, stylesField, listsField].concat(subTypeDef.fields || [])
 
     const parsed = Object.assign(pick(BLOCK_CORE, INHERITED_FIELDS), rest, {
       type: BLOCK_CORE,
@@ -76,7 +73,9 @@ export const BlockType = {
           if (extensionDef.fields) {
             throw new Error('Cannot override `fields` of subtypes of "block"')
           }
-          const current = Object.assign({}, parent, pick(extensionDef, INHERITED_FIELDS), {type: parent})
+          const current = Object.assign({}, parent, pick(extensionDef, INHERITED_FIELDS), {
+            type: parent
+          })
           return subtype(current)
         }
       }
@@ -85,9 +84,7 @@ export const BlockType = {
 }
 
 function ensureNormalStyle(styles) {
-  return styles.some(style => style.value === 'normal')
-    ? styles
-    : [BLOCK_STYLES.normal, ...styles]
+  return styles.some(style => style.value === 'normal') ? styles : [BLOCK_STYLES.normal, ...styles]
 }
 
 function createStylesField(styles) {
@@ -125,9 +122,7 @@ function createListsField(lists) {
   }
 }
 
-const DEFAULT_ANNOTATIONS = [
-  DEFAULT_LINK_ANNOTATION
-]
+const DEFAULT_ANNOTATIONS = [DEFAULT_LINK_ANNOTATION]
 
 function createSpansField(marks) {
   return {

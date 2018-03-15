@@ -10,10 +10,10 @@ export default function createActions(actions) {
 }
 
 function createAction(name, fn) {
-
   const calls = pubsub()
 
-  const functor = function action(...args) { // eslint-disable-line func-name-matching
+  const functor = function action(...args) {
+    // eslint-disable-line func-name-matching
     const retValue = fn(...args)
 
     calls.publish({

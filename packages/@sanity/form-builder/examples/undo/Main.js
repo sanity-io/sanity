@@ -78,21 +78,26 @@ export default class SimpleExample extends React.Component {
     return (
       <div style={{padding: 100}}>
         <div>
-          <button onClick={this.handleCommand} data-command="undo" disabled={!value.canUndo}>Undo</button>
-          <button onClick={this.handleCommand} data-command="redo" disabled={!value.canRedo}>Redo</button>
+          <button onClick={this.handleCommand} data-command="undo" disabled={!value.canUndo}>
+            Undo
+          </button>
+          <button onClick={this.handleCommand} data-command="redo" disabled={!value.canRedo}>
+            Redo
+          </button>
         </div>
         <FormBuilder schema={schema} value={value.get()} onChange={this.handleChange} />
         <div>
           <label>
-            <input type="checkbox" checked={shouldInspect} onChange={this.handleCommand} data-command="inspect" />
-            {' '} Inspect as you type
+            <input
+              type="checkbox"
+              checked={shouldInspect}
+              onChange={this.handleCommand}
+              data-command="inspect"
+            />{' '}
+            Inspect as you type
           </label>
         </div>
-        {shouldInspect && (
-          <pre>
-            {JSON.stringify(value.get(), null, 2)}
-          </pre>
-        )}
+        {shouldInspect && <pre>{JSON.stringify(value.get(), null, 2)}</pre>}
       </div>
     )
   }

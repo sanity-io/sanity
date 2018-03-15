@@ -1,4 +1,3 @@
-
 export default function getEmptyValue(type) {
   switch (type.jsonType) {
     case 'string': {

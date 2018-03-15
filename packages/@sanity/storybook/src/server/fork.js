@@ -15,7 +15,7 @@ module.exports = config => {
   const exec = cmd => shelljs.exec(cmd, {silent: true}).stdout.trim()
   const env = Object.assign({}, process.env, {
     STORYBOOK_GIT_ORIGIN: process.env.STORYBOOK_GIT_ORIGIN || exec('git remote get-url origin'),
-    STORYBOOK_GIT_BRANCH: process.env.STORYBOOK_GIT_BRANCH || exec('git symbolic-ref HEAD --short'),
+    STORYBOOK_GIT_BRANCH: process.env.STORYBOOK_GIT_BRANCH || exec('git symbolic-ref HEAD --short')
   })
 
   // For the server process so we don't block the main thread while it's compiling/doing it's thing
@@ -28,7 +28,10 @@ module.exports = config => {
   })
 
   proc.stderr.on('data', data => {
-    const msg = data.toString().replace(/\x08/g, '').trim()
+    const msg = data
+      .toString()
+      .replace(/\x08/g, '')
+      .trim()
 
     // Skip empty messages
     if (!msg) {

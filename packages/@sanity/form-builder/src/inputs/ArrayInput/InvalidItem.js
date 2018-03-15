@@ -15,9 +15,9 @@ export default class Item extends React.PureComponent<*> {
     type: Type,
     value: any,
     onChange: (PatchEvent, value: any) => void
-  };
+  }
 
-  handleChange = (event : PatchEvent) => {
+  handleChange = (event: PatchEvent) => {
     const {onChange, value} = this.props
     onChange(event, value)
   }

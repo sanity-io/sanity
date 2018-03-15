@@ -81,9 +81,7 @@ export default class Checkbox extends React.Component {
           onFocus={this.handleFocus}
         />
         <div className={styles.label}>{children || label}</div>
-        {
-          description && <div className={styles.description}>{description}</div>
-        }
+        {description && <div className={styles.description}>{description}</div>}
         <div className={styles.focusHelper} />
         <div className={styles.boxOutline}>
           <div className={styles.tickOutline} />

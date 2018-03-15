@@ -5,9 +5,7 @@ export default {
   type: 'document',
   title: 'Recursive madness',
   icon,
-  fieldsets: [
-    {name: 'recursive', title: 'Recursive madness', options: {collapsable: true}}
-  ],
+  fieldsets: [{name: 'recursive', title: 'Recursive madness', options: {collapsable: true}}],
   fields: [
     {
       name: 'title',

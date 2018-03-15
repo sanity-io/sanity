@@ -7,14 +7,18 @@ let COLLECTED_ERRORS = {}
 
 const reportErrors = debounce(() => {
   /* eslint-disable no-console */
-  const uniqueErrors = flatten(Object.keys(COLLECTED_ERRORS).map(typeName => {
-    const entries = COLLECTED_ERRORS[typeName]
-    return uniqBy(entries, entry => entry.error.message)
-  }))
+  const uniqueErrors = flatten(
+    Object.keys(COLLECTED_ERRORS).map(typeName => {
+      const entries = COLLECTED_ERRORS[typeName]
+      return uniqBy(entries, entry => entry.error.message)
+    })
+  )
   const errorCount = uniqueErrors.length
   console.groupCollapsed(
-    `%cHeads up! Got ${errorCount === 1 ? 'error' : `${errorCount} errors`} while preparing data for preview. Click for details.`
-   + ' This may be a hard failure in production and cause your application to crash.',
+    `%cHeads up! Got ${
+      errorCount === 1 ? 'error' : `${errorCount} errors`
+    } while preparing data for preview. Click for details.` +
+      ' This may be a hard failure in production and cause your application to crash.',
     'color: #ff7e7c'
   )
 

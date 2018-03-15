@@ -28,7 +28,7 @@ export default {
       name: 'justARegularStringFieldInBetween',
       type: 'string',
       title: 'Some string',
-      description: 'A string field in between',
+      description: 'A string field in between'
     },
     {
       name: 'aDateTimeWithCustomTimeFormat',
@@ -77,7 +77,7 @@ export default {
             {
               name: 'date',
               type: 'datetime',
-              title: 'A datetime field with custom date format',
+              title: 'A datetime field with custom date format'
             }
           ]
         }

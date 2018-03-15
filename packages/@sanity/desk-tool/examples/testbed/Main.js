@@ -58,7 +58,11 @@ export default class DeskToolTestBed extends React.Component {
       overflow: 'hidden'
     }
     return (
-      <RouterProvider state={router.decode(location.pathname)} router={router} onNavigate={handleNavigate}>
+      <RouterProvider
+        state={router.decode(location.pathname)}
+        router={router}
+        onNavigate={handleNavigate}
+      >
         <RouteScope scope="desktool">
           <div style={relativeWrapper}>
             <DeskTool />

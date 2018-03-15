@@ -25,15 +25,11 @@ const ReferenceSelect = ReferenceInput.createSelect({
 export default function resolveReference(field) {
   const fieldOptions = field.options || {}
   if (fieldOptions.inputType === 'select') {
-    return fieldOptions.searchable
-      ? ReferenceSearchableSelect
-      : ReferenceSelect
+    return fieldOptions.searchable ? ReferenceSearchableSelect : ReferenceSelect
   }
 
   if (fieldOptions.inputType === 'browser') {
-    return fieldOptions.searchable
-      ? ReferenceBrowserWithSearch
-      : ReferenceBrowser
+    return fieldOptions.searchable ? ReferenceBrowserWithSearch : ReferenceBrowser
   }
 
   return ReferenceSearchableSelect

@@ -27,7 +27,6 @@ Object.assign(CustomObservable.prototype, {
   switchMap: switchMap
 })
 
-
 function fetchAsync(result) {
   return new CustomObservable(observer => {
     setTimeout(() => observer.next(result), 0)

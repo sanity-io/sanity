@@ -1,4 +1,3 @@
-
 export function restore(key) {
   try {
     const val = localStorage.getItem(key)

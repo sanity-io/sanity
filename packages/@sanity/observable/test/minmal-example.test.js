@@ -2,9 +2,8 @@ const {test} = require('tap')
 const Observable = require('../src/SanityObservableMinimal')
 
 test('it works', t => {
-
   new Observable(observer => {
-    ['tiger', 'lion', 'SKIP', 'cheetah'].forEach(word => {
+    ;['tiger', 'lion', 'SKIP', 'cheetah'].forEach(word => {
       observer.next(word)
     })
     observer.complete()

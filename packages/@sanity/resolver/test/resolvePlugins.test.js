@@ -55,78 +55,96 @@ describe('plugin resolver', () => {
   describe('rejects on invalid parts declaration', () => {
     it('parts with no path needs a description', () => {
       mockFs(getInvalidPartDeclaration({missingDescription: true}))
-      return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
-        err.message.should.contain('index 0')
-        err.message.should.contain('`description`')
-      })
+      return resolvePlugins(opts)
+        .then(shouldHaveThrown)
+        .catch(err => {
+          err.message.should.contain('index 0')
+          err.message.should.contain('`description`')
+        })
     })
 
     it('part names need a prefix', () => {
       mockFs(getInvalidPartDeclaration({unprefixed: true}))
-      return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
-        err.message.should.contain('index 1')
-        err.message.should.contain('needs a "part:"-prefix')
-        err.message.should.contain('xamples')
-      })
+      return resolvePlugins(opts)
+        .then(shouldHaveThrown)
+        .catch(err => {
+          err.message.should.contain('index 1')
+          err.message.should.contain('needs a "part:"-prefix')
+          err.message.should.contain('xamples')
+        })
     })
 
     it('part names should not include reserved keywords', () => {
       mockFs(getInvalidPartDeclaration({allPrefixed: true}))
-      return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
-        err.message.should.contain('index 2')
-        err.message.should.contain('"all:"')
-        err.message.should.contain('xamples')
-      })
+      return resolvePlugins(opts)
+        .then(shouldHaveThrown)
+        .catch(err => {
+          err.message.should.contain('index 2')
+          err.message.should.contain('"all:"')
+          err.message.should.contain('xamples')
+        })
     })
 
     it('part names should not have more than one prefix', () => {
       mockFs(getInvalidPartDeclaration({doublePrefix: true}))
-      return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
-        err.message.should.contain('index 3')
-        err.message.should.contain('":"')
-        err.message.should.contain('xamples')
-      })
+      return resolvePlugins(opts)
+        .then(shouldHaveThrown)
+        .catch(err => {
+          err.message.should.contain('index 3')
+          err.message.should.contain('":"')
+          err.message.should.contain('xamples')
+        })
     })
 
     it('part names should include plugin name', () => {
       mockFs(getInvalidPartDeclaration({noPluginName: true}))
-      return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
-        err.message.should.contain('index 4')
-        err.message.should.contain('plugin name')
-        err.message.should.contain('xamples')
-      })
+      return resolvePlugins(opts)
+        .then(shouldHaveThrown)
+        .catch(err => {
+          err.message.should.contain('index 4')
+          err.message.should.contain('plugin name')
+          err.message.should.contain('xamples')
+        })
     })
 
     it('part names should include part name after plugin name', () => {
       mockFs(getInvalidPartDeclaration({noPartName: true}))
-      return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
-        err.message.should.contain('index 5')
-        err.message.should.contain('after the plugin name')
-        err.message.should.contain('xamples')
-      })
+      return resolvePlugins(opts)
+        .then(shouldHaveThrown)
+        .catch(err => {
+          err.message.should.contain('index 5')
+          err.message.should.contain('after the plugin name')
+          err.message.should.contain('xamples')
+        })
     })
 
     it('parts with `path` should contain `implements` or `name`', () => {
       mockFs(getInvalidPartDeclaration({missingImplements: true}))
-      return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
-        err.message.should.contain('index 6')
-        err.message.should.contain('either `name` or `implements`')
-      })
+      return resolvePlugins(opts)
+        .then(shouldHaveThrown)
+        .catch(err => {
+          err.message.should.contain('index 6')
+          err.message.should.contain('either `name` or `implements`')
+        })
     })
 
     it('parts with `path` should contain `implements` or `name`', () => {
       mockFs(getInvalidPartDeclaration({missingName: true}))
-      return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
-        err.message.should.contain('index 7')
-        err.message.should.contain('either `name` or `implements`')
-      })
+      return resolvePlugins(opts)
+        .then(shouldHaveThrown)
+        .catch(err => {
+          err.message.should.contain('index 7')
+          err.message.should.contain('either `name` or `implements`')
+        })
     })
 
     it('parts with `implements` should contain `path`', () => {
       mockFs(getInvalidPartDeclaration({missingPath: true}))
-      return resolvePlugins(opts).then(shouldHaveThrown).catch(err => {
-        err.message.should.contain('index 8')
-      })
+      return resolvePlugins(opts)
+        .then(shouldHaveThrown)
+        .catch(err => {
+          err.message.should.contain('index 8')
+        })
     })
   })
 
@@ -148,14 +166,16 @@ describe('plugin resolver', () => {
   it('resolves plugins in the right order', () => {
     mockFs(getDeepTree())
     return resolvePlugins(opts).then(plugins => {
-      plugins.map(plugin => plugin.name).should.eql([
-        '@sanity/default-layout',
-        '@sanity/core',
-        'baz',
-        'bar',
-        'foo',
-        '(project root)'
-      ])
+      plugins
+        .map(plugin => plugin.name)
+        .should.eql([
+          '@sanity/default-layout',
+          '@sanity/core',
+          'baz',
+          'bar',
+          'foo',
+          '(project root)'
+        ])
     })
   })
 
@@ -169,14 +189,9 @@ describe('plugin resolver', () => {
   it('allows resolving plugins synchronously', () => {
     mockFs(getDeepTree())
     const plugins = resolvePlugins(syncOpts)
-    plugins.map(plugin => plugin.name).should.eql([
-      '@sanity/default-layout',
-      '@sanity/core',
-      'baz',
-      'bar',
-      'foo',
-      '(project root)'
-    ])
+    plugins
+      .map(plugin => plugin.name)
+      .should.eql(['@sanity/default-layout', '@sanity/core', 'baz', 'bar', 'foo', '(project root)'])
   })
 
   describe('respects the sanity plugin resolution order', () => {
@@ -198,7 +213,9 @@ describe('plugin resolver', () => {
     it(`prefers fully qualified in parent plugin node_modules as 3rd option (${subPath})`, () => {
       mockFs(getResolutionOrderFixture({chosenMethod: 'subNodeModules'}))
       return resolvePlugins(opts).then(plugins => {
-        plugins[0].path.should.equal('/sanity/node_modules/sanity-plugin-foo/node_modules/sanity-plugin-bar')
+        plugins[0].path.should.equal(
+          '/sanity/node_modules/sanity-plugin-foo/node_modules/sanity-plugin-bar'
+        )
       })
     })
 
@@ -254,12 +271,14 @@ describe('plugin resolver', () => {
     mockFs(getBasicTree())
     return resolveParts(opts).then(res => {
       res.plugins.should.have.length(4)
-      res.plugins.map(plugin => plugin.path).should.eql([
-        '/sanity/node_modules/@sanity/default-layout',
-        '/sanity/node_modules/@sanity/core',
-        '/sanity/node_modules/sanity-plugin-instagram',
-        '/sanity'
-      ])
+      res.plugins
+        .map(plugin => plugin.path)
+        .should.eql([
+          '/sanity/node_modules/@sanity/default-layout',
+          '/sanity/node_modules/@sanity/core',
+          '/sanity/node_modules/sanity-plugin-instagram',
+          '/sanity'
+        ])
     })
   })
 
@@ -268,19 +287,22 @@ describe('plugin resolver', () => {
 
     const res = resolveParts(syncOpts)
     res.plugins.should.have.length(4)
-    res.plugins.map(plugin => plugin.path).should.eql([
-      '/sanity/node_modules/@sanity/default-layout',
-      '/sanity/node_modules/@sanity/core',
-      '/sanity/node_modules/sanity-plugin-instagram',
-      '/sanity'
-    ])
+    res.plugins
+      .map(plugin => plugin.path)
+      .should.eql([
+        '/sanity/node_modules/@sanity/default-layout',
+        '/sanity/node_modules/@sanity/core',
+        '/sanity/node_modules/sanity-plugin-instagram',
+        '/sanity'
+      ])
   })
 
   it('doesnt try to look up the same location twice', () => {
     mockFs(getScopedPluginsTree())
     return resolveParts(opts).catch(err => {
-      err.locations.some((location, index) =>
-        err.locations.indexOf(location, index + 1) !== -1).should.equal(false)
+      err.locations
+        .some((location, index) => err.locations.indexOf(location, index + 1) !== -1)
+        .should.equal(false)
     })
   })
 

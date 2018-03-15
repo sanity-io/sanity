@@ -4,16 +4,15 @@ import React from 'react'
 import PatchEvent, {set} from '../../../../src/PatchEvent'
 
 export default class MyCustomLatLonInput extends React.Component {
-
   static propTypes = {
     value: PropTypes.object,
     onChange: PropTypes.func
-  };
+  }
 
   static defaultProps = {
     onChange() {},
     value: {}
-  };
+  }
 
   handleLatChange = event => {
     this.handleFieldChange('lat', event.target.value)

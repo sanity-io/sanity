@@ -8,7 +8,7 @@ const SanityObservable = require('@sanity/observable/minimal')
 const progress = require('get-it/lib/middleware/progress')
 const {ClientError, ServerError} = require('./errors')
 
-const httpError = ({
+const httpError = {
   onResponse: res => {
     if (res.statusCode >= 500) {
       throw new ServerError(res)
@@ -18,7 +18,7 @@ const httpError = ({
 
     return res
   }
-})
+}
 
 // Environment-specific middleware.
 const envSpecific = require('./nodeMiddleware')

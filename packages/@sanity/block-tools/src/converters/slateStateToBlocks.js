@@ -5,45 +5,45 @@ import randomKey from '../util/randomKey'
 
 function toSanitySpan(node, sanityBlock, spanIndex) {
   if (node.kind === 'text') {
-    return node.ranges
-      .map(range => {
-        return {
-          _type: 'span',
-          _key: `${sanityBlock._key}${spanIndex()}`,
-          text: range.text,
-          marks: range.marks.map(mark => mark.type)
-        }
-      })
+    return node.ranges.map(range => {
+      return {
+        _type: 'span',
+        _key: `${sanityBlock._key}${spanIndex()}`,
+        text: range.text,
+        marks: range.marks.map(mark => mark.type)
+      }
+    })
   }
   if (node.kind === 'inline') {
     const {nodes, data} = node
-    return flatten(nodes.map(nodesNode => {
-      if (nodesNode.kind !== 'text') {
-        throw new Error(`Unexpected non-text child node for inline text: ${nodesNode.kind}`)
-      }
-      if (node.type !== 'span') {
-        return node.data.value
-      }
-      const annotations = data.annotations
-      const annotationKeys = []
-      if (annotations) {
-        Object.keys(annotations).forEach(name => {
-          const annotation = annotations[name]
-          const annotationKey = annotation._key
-          if (annotation && annotationKey) {
-            sanityBlock.markDefs.push(annotation)
-            annotationKeys.push(annotationKey)
-          }
-        })
-      }
-      return nodesNode.ranges
-        .map(range => ({
+    return flatten(
+      nodes.map(nodesNode => {
+        if (nodesNode.kind !== 'text') {
+          throw new Error(`Unexpected non-text child node for inline text: ${nodesNode.kind}`)
+        }
+        if (node.type !== 'span') {
+          return node.data.value
+        }
+        const annotations = data.annotations
+        const annotationKeys = []
+        if (annotations) {
+          Object.keys(annotations).forEach(name => {
+            const annotation = annotations[name]
+            const annotationKey = annotation._key
+            if (annotation && annotationKey) {
+              sanityBlock.markDefs.push(annotation)
+              annotationKeys.push(annotationKey)
+            }
+          })
+        }
+        return nodesNode.ranges.map(range => ({
           _type: 'span',
           _key: `${sanityBlock._key}${spanIndex()}`,
           text: range.text,
-          marks: range.marks.map(mark => mark.type).concat(annotationKeys),
+          marks: range.marks.map(mark => mark.type).concat(annotationKeys)
         }))
-    }))
+      })
+    )
   }
   throw new Error(`Unsupported kind ${node.kind}`)
 }
@@ -60,9 +60,11 @@ function toSanityBlock(block) {
     const spanIndex = () => {
       return index++
     }
-    sanityBlock.children = flatten(block.nodes.map(node => {
-      return toSanitySpan(node, sanityBlock, spanIndex)
-    }))
+    sanityBlock.children = flatten(
+      block.nodes.map(node => {
+        return toSanitySpan(node, sanityBlock, spanIndex)
+      })
+    )
     return sanityBlock
   }
   return block.data.value

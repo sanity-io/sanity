@@ -28,15 +28,14 @@ export default function urlForImage(options) {
 
   const asset = parseAssetId(image.asset._ref)
 
-
   // Compute crop rect in terms of pixel coordinates in the raw source image
   const crop = {
     left: Math.round(image.crop.left * asset.width),
     top: Math.round(image.crop.top * asset.height)
   }
 
-  crop.width = Math.round(asset.width - (image.crop.right * asset.width) - crop.left)
-  crop.height = Math.round(asset.height - (image.crop.bottom * asset.height) - crop.top)
+  crop.width = Math.round(asset.width - image.crop.right * asset.width - crop.left)
+  crop.height = Math.round(asset.height - image.crop.bottom * asset.height - crop.top)
 
   // Compute hot spot rect in terms of pixel coordinates
   const hotSpotVerticalRadius = image.hotspot.height * asset.height / 2
@@ -85,20 +84,23 @@ function parseSource(source) {
 
   if (!image.crop || !image.hotspot) {
     // Mock crop and hotspot if image lacks it
-    image = Object.assign({
-      crop: {
-        left: 0,
-        top: 0,
-        bottom: 0,
-        right: 0
+    image = Object.assign(
+      {
+        crop: {
+          left: 0,
+          top: 0,
+          bottom: 0,
+          right: 0
+        },
+        hotspot: {
+          x: 0.5,
+          y: 0.5,
+          height: 1.0,
+          width: 1.0
+        }
       },
-      hotspot: {
-        x: 0.5,
-        y: 0.5,
-        height: 1.0,
-        width: 1.0
-      }
-    }, image)
+      image
+    )
   }
 
   return image
@@ -108,7 +110,9 @@ function parseAssetId(ref) {
   const [, id, dimensionString, format] = ref.split('-')
 
   if (!(typeof dimensionString == 'string')) {
-    throw new Error(`Malformed asset _ref '${ref}'. Expected an id on the form "image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg.`)
+    throw new Error(
+      `Malformed asset _ref '${ref}'. Expected an id on the form "image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg.`
+    )
   }
 
   const [imgWidthStr, imgHeightStr] = dimensionString.split('x')
@@ -116,8 +120,17 @@ function parseAssetId(ref) {
   const width = +imgWidthStr
   const height = +imgHeightStr
 
-  if (!(typeof id == 'string' && typeof format == 'string' && Number.isFinite(width) && Number.isFinite(height))) {
-    throw new Error(`Malformed asset _ref '${ref}'. Expected an id on the form "image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg.`)
+  if (
+    !(
+      typeof id == 'string' &&
+      typeof format == 'string' &&
+      Number.isFinite(width) &&
+      Number.isFinite(height)
+    )
+  ) {
+    throw new Error(
+      `Malformed asset _ref '${ref}'. Expected an id on the form "image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg.`
+    )
   }
 
   return {id, width, height, format}
@@ -125,14 +138,19 @@ function parseAssetId(ref) {
 
 /* eslint-disable complexity */
 function specToImageUrl(spec) {
-  const baseUrl
-    = `https://cdn.sanity.io/images/${spec.projectId}/${spec.dataset}/${spec.asset.id}-${spec.asset.width}x${spec.asset.height}.${spec.asset.format}`
+  const baseUrl = `https://cdn.sanity.io/images/${spec.projectId}/${spec.dataset}/${
+    spec.asset.id
+  }-${spec.asset.width}x${spec.asset.height}.${spec.asset.format}`
 
   const params = []
 
   if (spec.rect) {
     // Only bother url with a crop if it actually crops anything
-    const isEffectiveCrop = spec.rect.left != 0 || spec.rect.top != 0 || spec.rect.height != spec.asset.height || spec.rect.width != spec.asset.width
+    const isEffectiveCrop =
+      spec.rect.left != 0 ||
+      spec.rect.top != 0 ||
+      spec.rect.height != spec.asset.height ||
+      spec.rect.width != spec.asset.width
     if (isEffectiveCrop) {
       params.push(`rect=${spec.rect.left},${spec.rect.top},${spec.rect.width},${spec.rect.height}`)
     }
@@ -182,15 +200,14 @@ function fit(source, spec) {
   const desiredAspectRatio = spec.width / spec.height
   const cropAspectRatio = crop.width / crop.height
 
-
   if (cropAspectRatio > desiredAspectRatio) {
     // The crop is wider than the desired aspect ratio. That means we are cutting from the sides
     const height = crop.height
     const width = height * desiredAspectRatio
     const top = crop.top
     // Center output horizontally over hotspot
-    const hotspotXCenter = ((hotspot.right - hotspot.left) / 2) + hotspot.left
-    let left = hotspotXCenter - (width / 2)
+    const hotspotXCenter = (hotspot.right - hotspot.left) / 2 + hotspot.left
+    let left = hotspotXCenter - width / 2
     // Keep output within crop
     if (left < crop.left) {
       left = crop.left
@@ -210,8 +227,8 @@ function fit(source, spec) {
   const height = width / desiredAspectRatio
   const left = crop.left
   // Center output vertically over hotspot
-  const hotspotYCenter = ((hotspot.bottom - hotspot.top) / 2) + hotspot.top
-  let top = hotspotYCenter - (height / 2)
+  const hotspotYCenter = (hotspot.bottom - hotspot.top) / 2 + hotspot.top
+  let top = hotspotYCenter - height / 2
   // Keep output rect within crop
   if (top < crop.top) {
     top = crop.top

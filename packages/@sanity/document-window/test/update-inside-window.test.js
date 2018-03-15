@@ -20,7 +20,10 @@ describe('updates inside of range', () => {
       __updated: true
     }
 
-    const query = new Query().from(0).to(5).orderBy('_updatedAt', 'desc')
+    const query = new Query()
+      .from(0)
+      .to(5)
+      .orderBy('_updatedAt', 'desc')
     const client = getMockClient({
       responses: [getSnapshotFixture(0, 10)],
       events: [mockMutation(newDocument)]
@@ -42,7 +45,10 @@ describe('updates inside of range', () => {
       __updated: true
     }
 
-    const query = new Query().from(12).to(17).orderBy('_updatedAt', 'desc')
+    const query = new Query()
+      .from(12)
+      .to(17)
+      .orderBy('_updatedAt', 'desc')
     const client = getMockClient({
       responses: [getSnapshotFixture(0, 35)],
       events: [mockMutation(newDocument)]

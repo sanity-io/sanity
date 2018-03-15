@@ -27,7 +27,6 @@ export const ObjectType = {
     }
   },
   extend(rawSubTypeDef, createMemberType) {
-
     const subTypeDef = {fields: [], ...rawSubTypeDef}
 
     const options = {...(subTypeDef.options || {})}
@@ -41,7 +40,7 @@ export const ObjectType = {
 
         const compiledField = {
           name,
-          fieldset,
+          fieldset
         }
 
         return lazyGetter(compiledField, 'type', () => {
@@ -59,7 +58,9 @@ export const ObjectType = {
 
     lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))
 
-    lazyGetter(parsed, '__unstable_searchFields', () => resolveSearchFields(parsed), {enumerable: false})
+    lazyGetter(parsed, '__unstable_searchFields', () => resolveSearchFields(parsed), {
+      enumerable: false
+    })
 
     return subtype(parsed)
 
@@ -84,9 +85,8 @@ export const ObjectType = {
   }
 }
 
-
 function createFieldsets(typeDef, fields) {
-  const fieldsetsDef = (typeDef.fieldsets || [])
+  const fieldsetsDef = typeDef.fieldsets || []
   const fieldsets = fieldsetsDef.map(fieldset => {
     const {name, title, description, options} = fieldset
     return {
@@ -105,7 +105,9 @@ function createFieldsets(typeDef, fields) {
       if (field.fieldset) {
         const fieldset = fieldsetsByName[field.fieldset]
         if (!fieldset) {
-          throw new Error(`Group '${field.fieldset}' is not defined in schema for type '${typeDef.name}'`)
+          throw new Error(
+            `Group '${field.fieldset}' is not defined in schema for type '${typeDef.name}'`
+          )
         }
         fieldset.fields.push(field)
         // Return the fieldset if its the first time we encounter a field in this fieldset

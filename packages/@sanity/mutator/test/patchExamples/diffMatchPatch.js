@@ -8,7 +8,7 @@ export default [
     },
     patch: {
       diffMatchPatch: {
-        'a': '@@ -1,13 +1,12 @@\n The \n-rabid\n+nice\n  dog\n'
+        a: '@@ -1,13 +1,12 @@\n The \n-rabid\n+nice\n  dog\n'
       }
     },
     after: {
@@ -29,5 +29,5 @@ export default [
     after: {
       a: ['The nice dog']
     }
-  },
+  }
 ]

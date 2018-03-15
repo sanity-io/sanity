@@ -32,13 +32,14 @@ function warnAboutHiddenTypes() {
   hasWarned = true
   // eslint-disable-next-line no-console, prefer-template
   console.warn(
-    '👋 Hi there! Looks like you have hidden types configured in your studio\'s config/@sanity/data-aspects.json'
-    + ` This config is now obsolete and should be removed. Read more at ${generateHelpUrl('toplevel-objects-to-document-type')}`
+    "👋 Hi there! Looks like you have hidden types configured in your studio's config/@sanity/data-aspects.json" +
+      ` This config is now obsolete and should be removed. Read more at ${generateHelpUrl(
+        'toplevel-objects-to-document-type'
+      )}`
   )
 }
 
 class DataAspectsResolver {
-
   constructor(schema) {
     this.schema = schema
     this.config = Object.assign({hiddenTypes: [], typeOptions: {}}, config || {})
@@ -57,22 +58,24 @@ class DataAspectsResolver {
   }
 
   inferTypesLegacy() {
-    return (this.schema.getTypeNames() || [])
-      .filter(typeName => {
-        // Exclude types which come bundled with Sanity
-        return !bundledTypeNames.includes(typeName)
-          // Exclude types which are explicitly named in (legacy) hiddenTypes config
-          && !this.config.hiddenTypes.includes(typeName)
-          // Only include if its an object type
-          && isObjectType(this.getType(typeName))
-      })
+    return (this.schema.getTypeNames() || []).filter(typeName => {
+      // Exclude types which come bundled with Sanity
+      return (
+        !bundledTypeNames.includes(typeName) &&
+        // Exclude types which are explicitly named in (legacy) hiddenTypes config
+        !this.config.hiddenTypes.includes(typeName) &&
+        // Only include if its an object type
+        isObjectType(this.getType(typeName))
+      )
+    })
   }
 
   getDocumentTypes() {
     if (this.config.hiddenTypes.length > 0) {
       warnAboutHiddenTypes()
     }
-    return this.schema.getTypeNames()
+    return this.schema
+      .getTypeNames()
       .filter(typeName => !isBundledDocType(typeName) && isDocumentType(this.schema.get(typeName)))
   }
 
@@ -120,7 +123,6 @@ class DataAspectsResolver {
     const selection = `"${keyForId}": _id, "${keyForDisplayFieldName}": ${fieldName}`
     return `${this.schema.name}.${typeName} [${constraints}] {${selection}}`
   }
-
 }
 
 export default DataAspectsResolver

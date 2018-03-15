@@ -42,7 +42,9 @@ describe('child rules', () => {
       .all([Rule.string().regex(/^[A-Z]/), Rule.string().regex(/[a-z]+/)])
       .error('Needs to start with a capital letter and then follow with lowercase characters')
 
-    await expect(rule.validate('moop')).resolves.toMatchSnapshot('all() rules - single failure, common error')
+    await expect(rule.validate('moop')).resolves.toMatchSnapshot(
+      'all() rules - single failure, common error'
+    )
   })
 
   test('all() rules - single failure, custom, common error', async () => {
@@ -66,7 +68,9 @@ describe('child rules', () => {
         .error('Must be hex color with #-prefix')
     ])
 
-    await expect(rule.validate('rgb(16, 22, 133)')).resolves.toMatchSnapshot('either() rules - match')
+    await expect(rule.validate('rgb(16, 22, 133)')).resolves.toMatchSnapshot(
+      'either() rules - match'
+    )
     await expect(rule.validate('#bf')).resolves.toMatchSnapshot(
       'either() rules - single failure, custom message'
     )

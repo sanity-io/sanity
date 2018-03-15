@@ -40,7 +40,17 @@ export default class DefaultFormField extends React.Component {
   }
 
   render() {
-    const {level, label, labelFor, description, children, inline, wrapped, className, markers} = this.props
+    const {
+      level,
+      label,
+      labelFor,
+      description,
+      children,
+      inline,
+      wrapped,
+      className,
+      markers
+    } = this.props
 
     const {showValidationMessages} = this.state
 
@@ -72,7 +82,9 @@ export default class DefaultFormField extends React.Component {
               </div>
             </div>
           )}
-          <div className={showValidationMessages ? styles.validationList : styles.validationListClosed}>
+          <div
+            className={showValidationMessages ? styles.validationList : styles.validationListClosed}
+          >
             <ValidationList markers={markers} />
           </div>
           <div className={styles.content}>{children}</div>

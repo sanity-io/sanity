@@ -12,12 +12,15 @@ export default function UnauthorizedUser(props) {
   return (
     <FullscreenDialog title="Unauthorized" isOpen centered>
       <p>
-        You are not authorized to access this studio.
-        Maybe you could ask someone to invite you to collaborate on this project?
+        You are not authorized to access this studio. Maybe you could ask someone to invite you to
+        collaborate on this project?
       </p>
       <p>
-        If you think this is an error, verify that you are logged in with the correct account.
-        You are currently logged in as <span>{props.user.name} ({props.user.email})</span>
+        If you think this is an error, verify that you are logged in with the correct account. You
+        are currently logged in as{' '}
+        <span>
+          {props.user.name} ({props.user.email})
+        </span>
       </p>
 
       <Button onClick={handleLogout}>Logout</Button>

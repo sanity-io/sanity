@@ -5,6 +5,7 @@
 import {BufferedDocument, Mutation} from '../../src/document'
 import {extract} from '../../src/jsonpath'
 import debugLogger from 'debug'
+
 const debug = debugLogger('buffered-document-tester')
 
 export default class BufferedDocumentTester {
@@ -154,24 +155,15 @@ export default class BufferedDocumentTester {
     return this
   }
   assertLOCALDeleted() {
-    this.tap.ok(
-      this.doc.LOCAL === null,
-      `LOCAL should be deleted ${this.context}`
-    )
+    this.tap.ok(this.doc.LOCAL === null, `LOCAL should be deleted ${this.context}`)
     return this
   }
   assertEDGEDeleted() {
-    this.tap.ok(
-      this.doc.document.EDGE === null,
-      `EDGE should be deleted ${this.context}`
-    )
+    this.tap.ok(this.doc.document.EDGE === null, `EDGE should be deleted ${this.context}`)
     return this
   }
   assertHEADDeleted() {
-    this.tap.ok(
-      this.doc.document.HEAD === null,
-      `HEAD should be deleted ${this.context}`
-    )
+    this.tap.ok(this.doc.document.HEAD === null, `HEAD should be deleted ${this.context}`)
     return this
   }
   assertALLDeleted() {
@@ -201,24 +193,15 @@ export default class BufferedDocumentTester {
     return this
   }
   onDeleteDidFire() {
-    this.tap.ok(
-      this.onDeleteCalled,
-      `should fire onDelete event ${this.context}`
-    )
+    this.tap.ok(this.onDeleteCalled, `should fire onDelete event ${this.context}`)
     return this
   }
   onDeleteDidNotFire() {
-    this.tap.notOk(
-      this.onDeleteCalled,
-      `should not fire onDelete event ${this.context}`
-    )
+    this.tap.notOk(this.onDeleteCalled, `should not fire onDelete event ${this.context}`)
     return this
   }
   isConsistent() {
-    this.tap.ok(
-      this.doc.document.isConsistent(),
-      `should be consistent ${this.context}`
-    )
+    this.tap.ok(this.doc.document.isConsistent(), `should be consistent ${this.context}`)
     this.tap.same(
       this.doc.document.EDGE,
       this.doc.document.HEAD,
@@ -227,10 +210,7 @@ export default class BufferedDocumentTester {
     return this
   }
   isInconsistent() {
-    this.tap.notOk(
-      this.doc.document.isConsistent(),
-      `should not be consistent ${this.context}`
-    )
+    this.tap.notOk(this.doc.document.isConsistent(), `should not be consistent ${this.context}`)
     this.tap.notSame(
       this.doc.document.EDGE,
       this.doc.document.HEAD,
@@ -253,31 +233,19 @@ export default class BufferedDocumentTester {
     return this
   }
   hasLocalEdits() {
-    this.tap.true(
-      this.doc.buffer.hasChanges(),
-      `should have local edits ${this.context}`
-    )
+    this.tap.true(this.doc.buffer.hasChanges(), `should have local edits ${this.context}`)
     return this
   }
   hasNoLocalEdits() {
-    this.tap.false(
-      this.doc.buffer.hasChanges(),
-      `should not have local edits ${this.context}`
-    )
+    this.tap.false(this.doc.buffer.hasChanges(), `should not have local edits ${this.context}`)
     return this
   }
   hasPendingCommit() {
-    this.tap.ok(
-      this.doc.committerRunning,
-      `should have pending commits ${this.context}`
-    )
+    this.tap.ok(this.doc.committerRunning, `should have pending commits ${this.context}`)
     return this
   }
   hasNoPendingCommit() {
-    this.tap.notOk(
-      this.doc.committerRunning,
-      `should not have pending commits ${this.context}`
-    )
+    this.tap.notOk(this.doc.committerRunning, `should not have pending commits ${this.context}`)
     return this
   }
   end() {

@@ -41,7 +41,7 @@ export default function clientWrapper(manifest, configPath) {
   const requester = client.requester.clone()
   requester.use(authErrors())
 
-  return function (opts = {}) {
+  return function(opts = {}) {
     const {requireUser, requireProject, api} = {...defaults, ...opts}
     const userConfig = getUserConfig()
     const userApiConf = userConfig.get('api')
@@ -64,8 +64,8 @@ export default function clientWrapper(manifest, configPath) {
 
     if (requireProject && !apiConfig.projectId) {
       throw new Error(
-        `"${configPath}" does not contain a project identifier ("api.projectId"), `
-        + 'which is required for the Sanity CLI to communicate with the Sanity API'
+        `"${configPath}" does not contain a project identifier ("api.projectId"), ` +
+          'which is required for the Sanity CLI to communicate with the Sanity API'
       )
     }
 
