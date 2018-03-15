@@ -13,15 +13,21 @@ const typeValidators = {
 }
 
 module.exports = (rule, value, options = {}) => {
-  const type = rule._type
-  const validators = typeValidators[type] || genericValidator
+  let rules = rule._rules
 
-  // Short-circuit on optional, empty fields
-  if (!rule._required && (value === null || typeof value === 'undefined')) {
+  const valueIsUndefined = value === null || typeof value === 'undefined'
+  if (typeof rule._required === 'undefined' && valueIsUndefined) {
+    // Run all _custom_ functions if the rule is not set to required or optional
+    rules = rules.filter(curr => curr.flag === 'custom')
+  } else if (!rule._required && valueIsUndefined) {
+    // Short-circuit on optional, empty fields
     return Promise.resolve([])
   }
 
-  const tasks = rule._rules.map(createValidationTask)
+  const type = rule._type
+  const validators = typeValidators[type] || genericValidator
+
+  const tasks = rules.map(createValidationTask)
   return Promise.all(tasks)
     .then(results => results.filter(Boolean))
     .then(flatten)
