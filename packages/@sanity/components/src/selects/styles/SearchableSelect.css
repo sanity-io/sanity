@@ -15,6 +15,7 @@
 .arrow {
   transition: transform 0.1s linear, opacity 0.1s linear;
   outline: none;
+  user-select: initial;
 
   @nest &:hover, &:focus {
     opacity: 1;
