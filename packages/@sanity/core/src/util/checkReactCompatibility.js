@@ -1,10 +1,15 @@
 const path = require('path')
 const semver = require('semver')
 const resolveFrom = require('resolve-from')
+const generateHelpUrl = require('@sanity/generate-help-url')
 
 const supported = {
   react: '^15 || ^16',
   'react-dom': '^15 || ^16'
+}
+const deprecated = {
+  react: '^15',
+  'react-dom': '^15'
 }
 
 module.exports = workDir => {
@@ -21,6 +26,15 @@ module.exports = workDir => {
       ? require(manifestPath).version
       : dependencies[pkg].replace(/[\D.]/g, '')
 
+    if (semver.satisfies(installed, deprecated[pkg])) {
+      console.warn(
+        `[WARN] ${pkg} ${
+          deprecated[pkg]
+        } is deprecated and will be unsupported as of the next release of Sanity. Please upgrade the ${pkg} package. Read more at ${generateHelpUrl(
+          'upgrade-react'
+        )} `
+      )
+    }
     if (!semver.satisfies(installed, supported[pkg])) {
       throw new Error(
         `Sanity currently only supports ${pkg}@${supported[pkg]}. Installed version: ${installed}.`
