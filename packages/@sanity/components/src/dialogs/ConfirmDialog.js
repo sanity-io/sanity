@@ -69,7 +69,7 @@ export default class DefaultDialog extends React.PureComponent {
                   <Button
                     onClick={onCancel}
                     icon={CloseIcon}
-                    kind="secondary"
+                    inverted
                   >
                     {cancelButtonText}
                   </Button>

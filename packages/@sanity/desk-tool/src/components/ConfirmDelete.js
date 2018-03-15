@@ -36,7 +36,7 @@ export default enhanceWithReferringDocuments(class ConfirmDelete extends React.P
 
     const actions = [
       canContinue && {name: 'confirm', title: hasReferringDocuments ? 'Try to delete anyway' : 'Delete now'},
-      {name: 'cancel', title: 'Cancel', kind: 'secondary'}
+      {name: 'cancel', title: 'Cancel', kind: 'simple'}
     ].filter(Boolean)
 
     const title = isCheckingReferringDocuments ? 'Checking…' : 'Confirm delete'
