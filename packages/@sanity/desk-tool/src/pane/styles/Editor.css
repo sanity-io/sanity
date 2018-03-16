@@ -108,7 +108,12 @@
 }
 
 .publishButton {
-  padding: 0 1rem;
+  font-size: 0.8em;
+
+  @media (--screen-medium) {
+    font-size: 1em;
+    padding: 0 1rem;
+  }
 }
 
 .syncSpinnerContainer {

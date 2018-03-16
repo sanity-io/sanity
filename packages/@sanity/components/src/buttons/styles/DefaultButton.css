@@ -97,10 +97,10 @@
 .padding_default {
   @nest & .inner {
     @nest :not(.onlyIcon) & {
-      padding: 0.7em 0.7em 0.8em 0.7em;
+      padding: 0.7em;
 
       @media (--screen-medium) {
-        padding: 0.7em 1.2em 0.8em 1.2em;
+        padding: 0.7em 1.2em;
       }
     }
   }
@@ -109,10 +109,10 @@
 .padding_small {
   @nest & .inner {
     @nest :not(.onlyIcon) & {
-      padding: 0.7em 0.7em 0.8em 0.7em;
+      padding: 0.7em;
 
       @media (--screen-medium) {
-        padding: 0.7em 0.6em 0.8em 0.6em;
+        padding: 0.7em 0.6em;
       }
     }
   }
