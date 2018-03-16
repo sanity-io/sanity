@@ -9,7 +9,7 @@ function ActionModal(props) {
   return (
     <Dialog className={styles.modal} title={props.title} onClose={props.onClose} isOpen>
       <div className={styles.content}>
-        <h1>Create new item</h1>
+        <h1>Create new</h1>
         <ul className={styles.list}>
           {
             props.actions.map(action => {
