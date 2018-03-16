@@ -30,12 +30,17 @@
 .list {
   display: grid;
   grid-gap: var(--medium-padding);
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   padding: 0;
   margin: 0;
   font-size: 1em;
   color: inherit;
   max-width: 100%;
+  box-sizing: border-box;
+
+  @media (min-width: 25rem) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 
   @media (--screen-medium) {
     grid-gap: var(--large-padding);
