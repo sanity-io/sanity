@@ -1,0 +1,10 @@
+.root {
+  margin-bottom: 0 !important;
+  background-color: transparent;
+
+  /* z-index: 1; */
+
+  @nest & label {
+    display: none;
+  }
+}

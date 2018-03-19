@@ -71,17 +71,6 @@
   display: none;
 }
 
-.noResultText {
-  text-align: center;
-  padding: 0.5em;
-}
-
-.spinner {
-  position: absolute;
-  top: 0.5em;
-  right: 0.75em;
-}
-
 .item {
   display: block;
   position: relative;
@@ -104,6 +93,10 @@
   &:active {
     background-color: var(--gray-light--transparent);
   }
+
+  @nest &.itemSelected {
+    background-color: var(--selectable-item-color-hover);
+  }
 }
 
 .itemContent {
@@ -111,7 +104,7 @@
   padding: 0.5em 0;
 }
 
-.itemSelected {
+.itemActive {
   composes: item;
   background-color: var(--selected-item-color);
   color: var(--selected-item-color--inverted);
@@ -131,4 +124,13 @@
   font-size: 1em;
   width: 2em;
   overflow: hidden;
+}
+
+.focused {
+  border: 1px solid var(--input-border-color-focus);
+  box-shadow: 0 0 8px color(var(--input-border-color-focus) a(35%));
+}
+
+.disabled {
+  opacity: 0.2;
 }

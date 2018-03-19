@@ -1,0 +1,91 @@
+[
+  {
+    "object": "operation",
+    "type": "remove_node",
+    "path": [0]
+  },
+  {
+    "object": "operation",
+    "type": "insert_node",
+    "path": [0],
+    "node": {
+      "object": "block",
+      "type": "contentBlock",
+      "isVoid": false,
+      "data": {
+        "_type": "block",
+        "style": "normal"
+      },
+      "nodes": [
+        {
+          "object": "text",
+          "leaves": [
+            {
+              "object": "leaf",
+              "text": "Slate ",
+              "marks": []
+            }
+          ]
+        },
+        {
+          "object": "text",
+          "leaves": [
+            {
+              "object": "leaf",
+              "text": "value",
+              "marks": [
+                {
+                  "object": "mark",
+                  "type": "code",
+                  "data": {}
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "object": "text",
+          "leaves": [
+            {
+              "object": "leaf",
+              "text": ".",
+              "marks": []
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "object": "operation",
+    "type": "merge_node",
+    "path": [0, 2],
+    "position": 5,
+    "properties": {
+      "data": {}
+    },
+    "target": null
+  },
+  {
+    "object": "operation",
+    "type": "merge_node",
+    "path": [0, 1],
+    "position": 6,
+    "properties": {
+      "data": {}
+    },
+    "target": null
+  },
+  {
+    "object": "operation",
+    "type": "set_node",
+    "path": [0],
+    "properties": {
+      "data": {
+        "_type": "block",
+        "style": "normal",
+        "_key": "2e21689d71b6"
+      }
+    }
+  }
+]

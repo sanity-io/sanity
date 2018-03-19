@@ -1,0 +1,11 @@
+.root {
+  text-decoration: underline;
+  color: blue;
+  display: inline;
+  position: relative;
+}
+
+.editAnnotationContainer {
+  position: absolute;
+  margin-top: 1.2em;
+}
