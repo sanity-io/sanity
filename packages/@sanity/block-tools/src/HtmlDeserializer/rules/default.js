@@ -190,9 +190,7 @@ export default function createDefaultRules(blockContentType, options = {}) {
           markDef: markDef,
           children: linkEnabled
             ? next(el.childNodes)
-            : el.appendChild(
-                new Text(` (${href})`) // TODO: make server side compatible
-              ) && next(el.childNodes)
+            : el.appendChild(el.ownerDocument.createTextNode(` (${href})`)) && next(el.childNodes)
         }
       }
     }

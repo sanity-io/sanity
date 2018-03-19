@@ -1,0 +1,10 @@
+.root {
+  margin: 0;
+  padding: 0.5em 1em 0.5em 3em;
+}
+
+.quote {
+  composes: blockquote from "part:@sanity/base/theme/typography/text-blocks-style";
+  padding: 0;
+  margin: 0;
+}

@@ -1,0 +1,95 @@
+{
+  "kind": "state",
+  "document": {
+    "data": {},
+    "kind": "document",
+    "nodes": [
+      {
+        "kind": "block",
+        "isVoid": false,
+        "key": "37369d86a5ce",
+        "type": "contentBlock",
+        "data": {
+          "_type": "block",
+          "_key": "37369d86a5ce",
+          "style": "normal"
+        },
+        "nodes": [
+          {
+            "key": "randomKey0",
+            "kind": "text",
+            "leaves": [
+              {
+                "kind": "leaf",
+                "text": "Bold ",
+                "marks": [{ "kind": "mark", "type": "strong" }]
+              }
+            ]
+          },
+          {
+            "key": "randomKey1",
+            "kind": "text",
+            "leaves": [
+              {
+                "kind": "leaf",
+                "text": "italic",
+                "marks": [
+                  { "kind": "mark", "type": "strong" },
+                  { "kind": "mark", "type": "em" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "block",
+        "key": "745d6428661b",
+        "isVoid": false,
+        "type": "contentBlock",
+        "data": {
+          "_type": "block",
+          "_key": "745d6428661b",
+          "style": "normal"
+        },
+        "nodes": [
+          {
+            "key": "randomKey2",
+            "kind": "text",
+            "leaves": [
+              {
+                "kind": "leaf",
+                "text": "Italic",
+                "marks": [{ "kind": "mark", "type": "em" }]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "block",
+        "isVoid": false,
+        "key": "5c7d58f13d18",
+        "type": "contentBlock",
+        "data": {
+          "_type": "block",
+          "_key": "5c7d58f13d18",
+          "style": "normal"
+        },
+        "nodes": [
+          {
+            "key": "randomKey3",
+            "kind": "text",
+            "leaves": [
+              {
+                "kind": "leaf",
+                "text": "Code",
+                "marks": [{ "kind": "mark", "type": "code" }]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

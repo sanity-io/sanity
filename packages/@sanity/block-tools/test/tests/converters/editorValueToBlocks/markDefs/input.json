@@ -1,0 +1,48 @@
+{
+  "kind": "state",
+  "document": {
+    "kind": "document",
+    "data": {},
+    "nodes": [
+      {
+        "kind": "block",
+        "isVoid": false,
+        "type": "contentBlock",
+        "data": {
+          "_type": "block",
+          "style": "normal"
+        },
+        "nodes": [
+          {
+            "kind": "text",
+            "leaves": [{ "kind": "leaf", "text": "", "marks": [] }]
+          },
+          {
+            "kind": "inline",
+            "isVoid": false,
+            "type": "span",
+            "data": {
+              "annotations": {
+                "link": {
+                  "_key": "4713633924e9",
+                  "_type": "link",
+                  "href": "1234"
+                }
+              }
+            },
+            "nodes": [
+              {
+                "kind": "text",
+                "leaves": [{ "kind": "leaf", "text": "Link", "marks": [] }]
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "leaves": [{ "kind": "leaf", "text": "", "marks": [] }]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "kind": "state",
+  "document": {
+    "kind": "document",
+    "data": {},
+    "nodes": [
+      {
+        "kind": "block",
+        "isVoid": false,
+        "key": "37369d86a5ce",
+        "type": "contentBlock",
+        "data": {
+          "_type": "block",
+          "_key": "37369d86a5ce",
+          "style": "normal"
+        },
+        "nodes": [
+          {
+            "kind": "text",
+            "key": "37369d86a5ce0",
+            "leaves": [{ "kind": "leaf", "text": "", "marks": [] }]
+          },
+          {
+            "kind": "inline",
+            "isVoid": false,
+            "key": "37369d86a5ce1",
+            "type": "span",
+            "data": {
+              "annotations": {
+                "link": {
+                  "_key": "4713633924e9",
+                  "_type": "link",
+                  "href": "1234"
+                }
+              }
+            },
+            "nodes": [
+              {
+                "key": "37369d86a5ce10",
+                "kind": "text",
+                "leaves": [{ "kind": "leaf", "text": "Link", "marks": [] }]
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "key": "37369d86a5ce2",
+            "leaves": [{ "kind": "leaf", "text": "", "marks": [] }]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -3,7 +3,5 @@
 /packages/*/dist
 /packages/@sanity/*/dist
 /packages/*/lib
-/packages/*/coverage
 /packages/@sanity/*/lib
-/packages/@sanity/*/coverage
 /packages/@sanity/client/umd

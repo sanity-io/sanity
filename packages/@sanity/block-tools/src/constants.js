@@ -4,7 +4,7 @@ export const BLOCK_DEFAULT_STYLE = 'normal'
 
 // Slate block
 export const SLATE_DEFAULT_BLOCK = Object.freeze({
-  kind: 'block',
+  object: 'block',
   type: 'contentBlock',
   data: {
     style: BLOCK_DEFAULT_STYLE
@@ -28,12 +28,12 @@ export const HTML_BLOCK_TAGS = {
 }
 
 export const HTML_SPAN_TAGS = {
-  span: {kind: 'text'}
+  span: {object: 'text'}
 }
 
 export const HTML_LIST_CONTAINER_TAGS = {
-  ol: {kind: null},
-  ul: {kind: null}
+  ol: {object: null},
+  ul: {object: null}
 }
 
 export const HTML_HEADER_TAGS = {

@@ -1,0 +1,43 @@
+[
+  {
+    "object": "operation",
+    "type": "insert_node",
+    "path": [3],
+    "node": {
+      "object": "block",
+      "type": "contentBlock",
+      "isVoid": false,
+      "data": {
+        "style": "normal",
+        "_key": "r32u932urwer3"
+      },
+      "nodes": []
+    }
+  },
+  {
+    "object": "operation",
+    "type": "insert_node",
+    "path": [3, 0],
+    "node": {
+      "object": "text",
+      "leaves": [
+        {
+          "object": "leaf",
+          "text": "",
+          "marks": []
+        }
+      ]
+    }
+  },
+  {
+    "object": "operation",
+    "type": "insert_text",
+    "path": [
+      3,
+      0
+    ],
+    "offset": 2,
+    "text": "3",
+    "marks": []
+  }
+]

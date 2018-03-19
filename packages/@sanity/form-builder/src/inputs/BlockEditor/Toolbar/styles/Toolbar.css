@@ -1,0 +1,74 @@
+@import "part:@sanity/base/theme/variables-style";
+
+.root {
+  font-size: 0.6rem;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  height: 2.5rem;
+
+  @media (--screen-medium) {
+    font-size: 0.8rem;
+  }
+
+  @nest &.fullscreen {
+    position: fixed;
+    box-sizing: border-box;
+    width: 100vw;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.2);
+    background-color: color(var(--white) a(95%));
+    padding: var(--small-padding);
+    height: 4rem;
+
+    @media (--screen-medium) {
+      padding: var(--medium-padding);
+    }
+  }
+}
+
+.blockFormatContainer {
+  max-width: 5em;
+  min-width: 4em;
+  padding-right: 0.5em;
+
+  @media (--screen-medium) {
+    max-width: none;
+    min-width: 8em;
+    padding-top: 0.2em;
+  }
+}
+
+.formatButtonsContainer {
+  display: flex;
+  flex-wrap: nowrap;
+  vertical-align: center;
+}
+
+.decoratorButtonsContainer {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  border-right: 1px solid #ccc;
+}
+
+.annotationButtonsContainer {
+  padding-left: 0.5em;
+}
+
+.fullscreenButtonContainer {
+  margin-left: auto;
+  height: 100%;
+
+  @nest & svg {
+    transform: scale(1.5);
+  }
+}
+
+.canBeMinimized {
+  flex-grow: 1;
+  display: flex;
+  flex-wrap: nowrap;
+}

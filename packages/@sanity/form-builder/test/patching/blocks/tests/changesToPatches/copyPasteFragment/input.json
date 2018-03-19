@@ -1,0 +1,28 @@
+[
+  {
+    "_key": "26dc8825373e",
+    "_type": "block",
+    "children": [
+      {
+        "_key": "26dc8825373e0",
+        "_type": "span",
+        "marks": [],
+        "text": "1"
+      },
+      {
+        "_key": "26dc8825373e1",
+        "_type": "span",
+        "marks": ["strong"],
+        "text": "2"
+      },
+      {
+        "_key": "26dc8825373e2",
+        "_type": "span",
+        "marks": [],
+        "text": "3"
+      }
+    ],
+    "markDefs": [],
+    "style": "normal"
+  }
+]

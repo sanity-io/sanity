@@ -43,14 +43,14 @@ const blockContentType = defaultSchema.get('blogPost')
 // Convert HTML to blocks
 const blocks = blockTools.htmlToBlocks(
   '<html><body><h1>Hello world!</h1><body></html>',
-  {blockContentType}
+  blockContentType
 )
 
-// Convert a Slate state to blocks
-const blocks = blockTools.slateStateToBlocks(slateJson, blockContentType)
+// Convert an editor value to blocks
+const blocks = blockTools.editorValueToBlocks(editorValue, blockContentType)
 
-// Convert blocks to a JSON serialized Slate state
-const slateState = blockTools.blocksToSlateState(blocks, blockContentType)
+// Convert blocks to a editor value
+const slateState = blockTools.blocksToEditorValue(blocks, blockContentType)
 
 // Get the feature-set of a blockContentType
 const features = blockTools.getBlockContentFeatures(blockContentType)
@@ -85,8 +85,8 @@ const {JSDOM} = jsdom
 
 const blocks = blockTools.htmlToBlocks(
   '<html><body><h1>Hello world!</h1><body></html>',
+  blockContentType,
   {
-    blockContentType,
     parseHtml: html => new JSDOM(html).window.document
   }
 )
@@ -101,8 +101,8 @@ You may add your own rules to deal with special HTML cases.
 ```js
 blockTools.htmlToBlocks(
   '<html><body><pre><code>const foo = "bar"</code></pre></body></html>',
+  blockContentType,
   {
-    blockContentType: compiledBlockContentType,
     parseHtml: html => new JSDOM(html),
     rules: [
 
@@ -134,12 +134,12 @@ blockTools.htmlToBlocks(
 
 ```
 
-### ``blocksToSlateState(blocks, blockContentTypeSchema)``
+### ``blocksToEditorValue(blocks, blockContentTypeSchema)``
 
-Convert blocks to a serialized Slate state respecting the input schema.
+Convert blocks to a serialized editor value respecting the input schema.
 
 
-### ``slateStateToBlocks(slateState, blockContentTypeSchema)``
+### ``editorValueToBlocks(slateState, blockContentTypeSchema)``
 
 Convert a slate state to blocks respecting the input schema.
 
@@ -150,23 +150,23 @@ Will return an object with the features enabled for the input block content type
 
 ```js
 {
-  enabledBlockAnnotations: ['link'],
-  enabledSpanDecorators: [
-    'strong',
-    'em',
-    'code',
-    'underline',
-    'strike-through'
+  annotations: [{title: 'Link', value: 'link'}],
+  decorators: [
+    {title: 'Strong', value: 'strong'},
+    {title: 'Emphasis', value: 'em'},
+    {title: 'Code', value: 'code'},
+    {title: 'Underline', value: 'underline'},
+    {title: 'Strike', value: 'strike-through'}
   ],
-  enabledBlockStyles: [
-    'normal',
-    'h1',
-    'h2',
-    'h3',
-    'h4',
-    'h5',
-    'h6',
-    'blockquote'
+  styles: [
+    {title: 'Normal', value: 'normal'},
+    {title: 'Heading 1', value: 'h1'},
+    {title: 'H2', value: 'h2'},
+    {title: 'H3', value: 'h3'},
+    {title: 'H4', value: 'h4'},
+    {title: 'H5', value: 'h5'},
+    {title: 'H6', value: 'h6'},
+    {title: 'Quote', value: 'blockquote'}
   ]
 }
 ```

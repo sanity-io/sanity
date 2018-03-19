@@ -1,0 +1,17 @@
+.root {
+  color: red;
+  text-decoration: underline;
+  text-decoration-color: red;
+  cursor: pointer;
+}
+
+.tooltip {
+  position: absolute;
+  box-sizing: content-box;
+  height: 1em;
+  padding: 0.2em;
+  background-color: beige;
+  color: brown;
+  text-decoration: none;
+  width: auto;
+}

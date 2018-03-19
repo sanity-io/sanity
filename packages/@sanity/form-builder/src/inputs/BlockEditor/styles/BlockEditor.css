@@ -1,0 +1,24 @@
+@import "part:@sanity/base/theme/variables-style";
+
+.root {
+  display: block;
+}
+
+.editor {
+  display: block;
+}
+
+.fullscreen {
+  position: fixed;
+  z-index: var(--zindex-portal);
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background-color: var(--gray-lighter);
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+  box-sizing: border-box;
+  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
+  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
+}
