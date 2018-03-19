@@ -23,7 +23,7 @@
         ]
       }
     ],
-    "prettier/prettier": "warn", // set to error to enable project wide prettier
+    "prettier/prettier": "error",
     "import/no-extraneous-dependencies": "off",
     "flowtype/define-flow-type": 1,
     "flowtype/use-flow-type": 1,
