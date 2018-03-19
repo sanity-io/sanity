@@ -154,6 +154,7 @@ export default function urlBuilder(options) {
   if (options && typeof options.clientConfig == 'object') {
     // Inherit config from client
     return new ImageUrlBuilder(null, {
+      baseUrl: options.clientConfig.apiHost.replace(/^https:\/\/api\./, 'https://cdn.'),
       projectId: options.clientConfig.projectId,
       dataset: options.clientConfig.dataset
     })

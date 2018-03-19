@@ -138,9 +138,9 @@ function parseAssetId(ref) {
 
 /* eslint-disable complexity */
 function specToImageUrl(spec) {
-  const baseUrl = `https://cdn.sanity.io/images/${spec.projectId}/${spec.dataset}/${
-    spec.asset.id
-  }-${spec.asset.width}x${spec.asset.height}.${spec.asset.format}`
+  const cdnUrl = spec.baseUrl || 'https://cdn.sanity.io'
+  const filename = `${spec.asset.id}-${spec.asset.width}x${spec.asset.height}.${spec.asset.format}`
+  const baseUrl = `${cdnUrl}/images/${spec.projectId}/${spec.dataset}/${filename}`
 
   const params = []
 

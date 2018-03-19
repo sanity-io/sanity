@@ -1,5 +1,5 @@
-import urlForHotspotImage from '../src/urlForImage'
 import should from 'should'
+import urlForHotspotImage from '../src/urlForImage'
 import {uncroppedImage, croppedImage, noHostpotImage} from './fixtures'
 
 describe('urlForHotspotImage', () => {
