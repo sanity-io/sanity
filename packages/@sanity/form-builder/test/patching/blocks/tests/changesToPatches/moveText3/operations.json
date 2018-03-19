@@ -1,0 +1,23 @@
+[
+  {
+    "object": "operation",
+    "type": "remove_text",
+    "path": [2, 0],
+    "offset": 2,
+    "text": "34",
+    "marks": []
+  },
+  {"object": "operation", "type": "remove_node", "path": [1]},
+  {
+    "object": "operation",
+    "type": "insert_node",
+    "path": [1],
+    "node": {
+      "object": "block",
+      "type": "contentBlock",
+      "isVoid": false,
+      "data": {"_type": "block", "_key": "f6b5d174ccf7", "style": "normal"},
+      "nodes": [{"object": "text", "leaves": [{"object": "leaf", "text": "34", "marks": []}]}]
+    }
+  }
+]

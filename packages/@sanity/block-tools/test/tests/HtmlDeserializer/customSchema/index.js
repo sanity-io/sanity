@@ -4,9 +4,5 @@ const blockContentType = customSchema.get('blogPost').fields.find(field => field
   .type
 
 export default (html, blockTools, commonOptions) => {
-  const options = {
-    ...commonOptions,
-    blockContentType
-  }
-  return blockTools.htmlToBlocks(html, options)
+  return blockTools.htmlToBlocks(html, blockContentType, commonOptions)
 }

@@ -6,19 +6,20 @@ import FaAngleDown from 'part:@sanity/base/angle-down-icon'
 import enhanceWithClickOutside from 'react-click-outside'
 import CircleThinIcon from 'part:@sanity/base/circle-thin-icon'
 import CircleCheckIcon from 'part:@sanity/base/circle-check-icon'
-import Escapable from '../utilities/Escapable'
-import {List, Item} from 'part:@sanity/components/lists/default'
 
 class StyleSelect extends React.Component {
   static propTypes = {
-    placeholder: PropTypes.string,
     onChange: PropTypes.func,
     onOpen: PropTypes.func,
+    onFocus: PropTypes.func,
+    onBlur: PropTypes.func,
     onClose: PropTypes.func,
     value: PropTypes.array,
+    error: PropTypes.bool,
     renderItem: PropTypes.func,
     className: PropTypes.string,
     transparent: PropTypes.bool,
+    disabled: PropTypes.bool,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string,
@@ -29,37 +30,67 @@ class StyleSelect extends React.Component {
 
   static defaultProps = {
     className: '',
+    disabled: false,
     onChange() {},
     onOpen() {},
-    onClose() {}
+    onClose() {},
+    items: []
   }
 
+  _inputId = uniqueId('StyleSelect')
+  _keyUpHandler = null
+  _keyDownHandler = null
+
   state = {
-    showList: false
+    hasFocus: false,
+    arrowNavigationPosition: 0
+  }
+
+  componentDidMount() {
+    this._keyUpHandler = document.body.addEventListener('keyup', this.handleKeyUp)
+    this._keyDownHandler = document.body.addEventListener('keydown', this.handleKeyDown)
+  }
+
+  componentWillUnmount() {
+    document.body.removeEventListener('keyup', this._keyUpHandler)
+    document.body.removeEventListener('keydown', this._keyDownHandler)
   }
 
   handleClickOutside = () => {
     this.handleCloseList()
   }
 
-  handleSelect = event => {
-    const index = event.currentTarget.dataset.index
-    if (!index) {
-      return
+  handleFocus = event => {
+    this.setState({
+      hasFocus: true
+    })
+    if (this.props.onFocus) {
+      this.props.onFocus(event)
     }
-    const item = this.props.items[index]
-    if (!item) {
-      return
+  }
+
+  handleBlur = event => {
+    this.setState({
+      hasFocus: false
+    })
+    if (this.props.onBlur) {
+      this.props.onBlur(event)
     }
+  }
+
+  handleSelect = item => {
     this.props.onChange(item)
     this.handleCloseList()
   }
 
   handleOpenList = () => {
-    this.setState({
-      showList: true
-    })
-    this.props.onOpen()
+    const {disabled} = this.props
+    if (!disabled) {
+      this.setState({
+        showList: true
+      })
+      this.props.onOpen()
+    }
   }
 
   handleCloseList = () => {
@@ -77,61 +108,107 @@ class StyleSelect extends React.Component {
     }
   }
 
-  handleRootKeyPress = () => {
-    this.handleOpenList()
+  handleKeyDown = event => {
+    const {items, value} = this.props
+    const {hasFocus, showList, arrowNavigationPosition} = this.state
+    if (!hasFocus) {
+      return
+    }
+    if (event.key === 'Tab') {
+      this.handleCloseList()
+    }
+    if (items) {
+      if (['ArrowUp', 'ArrowDown'].includes(event.key) && !showList) {
+        const openPosition = value ? items.indexOf(value[0]) || 0 : 0
+        this.setState({showList: true, arrowNavigationPosition: openPosition})
+      }
+      if (showList && event.key == 'ArrowUp' && arrowNavigationPosition > 0) {
+        this.setState({
+          arrowNavigationPosition: arrowNavigationPosition - 1
+        })
+        return
+      }
+      if (showList && event.key == 'ArrowDown' && arrowNavigationPosition < items.length - 1) {
+        this.setState({
+          arrowNavigationPosition: arrowNavigationPosition + 1
+        })
+      }
+    }
+  }
+
+  handleKeyUp = event => {
+    const {items} = this.props
+    const {hasFocus, arrowNavigationPosition} = this.state
+    if (!hasFocus) {
+      return
+    }
+    if (event.key === 'Escape') {
+      this.setState({showList: false})
+    }
+    if (event.key === 'Enter') {
+      this.setState({showList: true})
+      this.handleSelect(items[arrowNavigationPosition])
+    }
   }
 
   render() {
-    const {value, transparent, items, className, placeholder, renderItem} = this.props
-    const {showList} = this.state
+    const {className, disabled, error, items, transparent, value} = this.props
+
+    const {hasFocus, showList} = this.state
 
     return (
       <div
-        className={`${styles.root} ${className || ''} ${transparent ? styles.transparent : ''}`}
-        onBlur={this.handleCloseList}
-        onKeyPress={this.handleRootKeyPress}
-        tabIndex={0}
+        className={`
+          ${styles.root}
+          ${hasFocus && !disabled ? styles.focused : ''}
+          ${error ? styles.error : ''}
+          ${transparent ? styles.transparent : ''}
+          ${disabled ? styles.disabled : ''}
+          ${className || ''}
+        `}
       >
+        <div style={{position: 'absolute', width: '0px', overflow: 'hidden'}}>
+          <input type="text" onFocus={this.handleFocus} onBlur={this.handleBlur} />
+        </div>
+
         <div className={styles.inner} onClick={this.handleInnerClick}>
           <div className={styles.selectContainer}>
             <span className={styles.text}>
               {value && value.length > 1 && 'Multiple'}
-              {value && value.length == 1 && value[0].title}
-              {!value && placeholder}
+              {value && value.length === 1 && value[0].title}
             </span>
-            <div className={styles.arrow}>
+            <div className={styles.icon}>
               <FaAngleDown color="inherit" />
             </div>
           </div>
         </div>
-        <Escapable onEscape={this.handleCloseList} />
-        {showList && (
-          <List className={styles.list}>
-            {items.map((item, index) => {
-              const isSemiSelected = value && value.length > 1 && includes(value, item)
-              const isSelected = value && value.length === 1 && value[0] == item
-              const classNames = `
-                  ${isSelected ? styles.itemSelected : styles.item}
-                  ${isSemiSelected ? styles.itemSemiSelected : ''}
-                `
-              return (
-                <Item
-                  key={item.key}
-                  title={item.title}
-                  data-index={index}
-                  onClick={this.handleSelect}
-                  className={classNames}
-                >
-                  <div className={styles.itemIcon}>
-                    {isSelected && <CircleCheckIcon />}
-                    {isSemiSelected && <CircleThinIcon />}
-                  </div>
-                  <div className={styles.itemContent}>{renderItem(item)}</div>
-                </Item>
-              )
-            })}
-          </List>
-        )}
+
+        <div className={`${showList ? styles.listContainer : styles.listContainerHidden}`}>
+          {items.map((item, index) => {
+            const isMultiple = value && value.length > 1 && includes(value, item)
+            const isActive = value && value.length === 1 && value[0] == item
+            const isSelected = index === this.state.arrowNavigationPosition
+            const classNames = [
+              isActive ? styles.itemActive : styles.item,
+              isMultiple ? styles.itemMultiple : null,
+              isSelected ? styles.itemSelected : null
+            ].filter(Boolean)
+            return (
+              <a
+                className={classNames.join(' ')}
+                key={item.key}
+                title={item.title}
+                onClick={() => this.handleSelect(item)}
+              >
+                <div className={styles.itemIcon}>
+                  {isActive && <CircleCheckIcon />}
+                  {isMultiple && <CircleThinIcon />}
+                </div>
+                <div className={styles.itemContent}>{this.props.renderItem(item)}</div>
+              </a>
+            )
+          })}
+        </div>
       </div>
     )
   }
