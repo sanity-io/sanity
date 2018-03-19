@@ -5,16 +5,14 @@ import Button from 'part:@sanity/components/buttons/default'
 
 const ITEM_SHAPE = {
   icon: PropTypes.node,
-  title: PropTypes.string,
+  title: PropTypes.string
 }
 export default class ToggleButtons extends React.Component {
   static propTypes = {
     label: PropTypes.string,
     onChange: PropTypes.func,
     value: PropTypes.shape(ITEM_SHAPE),
-    items: PropTypes.arrayOf(
-      PropTypes.shape(ITEM_SHAPE)
-    )
+    items: PropTypes.arrayOf(PropTypes.shape(ITEM_SHAPE))
   }
 
   handleClick = event => {
@@ -28,26 +26,22 @@ export default class ToggleButtons extends React.Component {
 
     return (
       <div className={styles.root}>
-        <div className={styles.label}>
-          {label}
-        </div>
+        <div className={styles.label}>{label}</div>
 
-        {
-          items.map((item, i) => {
-            return (
-              <Button
-                className={item == value ? styles.selectedButton : styles.button}
-                kind="simple"
-                key={i}
-                icon={item.icon}
-                onClick={this.handleClick}
-                data-index={i}
-              >
-                {item.title}
-              </Button>
-            )
-          })
-        }
+        {items.map((item, i) => {
+          return (
+            <Button
+              className={item == value ? styles.selectedButton : styles.button}
+              kind="simple"
+              key={i}
+              icon={item.icon}
+              onClick={this.handleClick}
+              data-index={i}
+            >
+              {item.title}
+            </Button>
+          )
+        })}
       </div>
     )
   }

@@ -31,12 +31,8 @@ export default class ProgressBar extends React.Component {
           <div className={styles.barContainer}>
             <div className={styles.bar} style={barStyle} />
           </div>
-          {
-            showPercent && <div className={styles.percent}>{Math.round(percent, 1)}%</div>
-          }
-          {
-            text && <div className={styles.text}>{text}</div>
-          }
+          {showPercent && <div className={styles.percent}>{Math.round(percent, 1)}%</div>}
+          {text && <div className={styles.text}>{text}</div>}
         </div>
       </div>
     )

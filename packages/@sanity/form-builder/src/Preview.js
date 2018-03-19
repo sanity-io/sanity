@@ -3,7 +3,6 @@ import React from 'react'
 import {PreviewAny} from './utils/fallback-preview/PreviewAny'
 
 export default class Preview extends React.Component {
-
   static propTypes = {
     layout: PropTypes.string,
     value: PropTypes.any,

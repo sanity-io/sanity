@@ -26,11 +26,13 @@ fs.readFile(bundlePath, (bundleErr, bundle) => {
         `Minified + gzip: ${size(gzipedSize)}`
       ].join('\n')
 
-      console.log(boxen(output, {
-        padding: 1,
-        borderColor: 'yellow',
-        align: 'right'
-      }))
+      console.log(
+        boxen(output, {
+          padding: 1,
+          borderColor: 'yellow',
+          align: 'right'
+        })
+      )
     })
   })
 })

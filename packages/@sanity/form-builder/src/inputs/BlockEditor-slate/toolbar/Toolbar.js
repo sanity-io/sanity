@@ -11,9 +11,7 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import AnnotationButton from './AnnotationButton'
 
 export default class Toolbar extends React.Component {
-
   static propTypes = {
-
     className: PropTypes.string,
     style: PropTypes.object,
 
@@ -28,9 +26,7 @@ export default class Toolbar extends React.Component {
     annotations: PropTypes.arrayOf(PropTypes.object),
     decorators: PropTypes.arrayOf(decorator),
     insertBlocks: PropTypes.arrayOf(insertBlockShape),
-    listItems: PropTypes.arrayOf(
-      listItem
-    ),
+    listItems: PropTypes.arrayOf(listItem),
 
     onInsertBlock: PropTypes.func,
     onFullscreenEnable: PropTypes.func,
@@ -38,14 +34,14 @@ export default class Toolbar extends React.Component {
     onListButtonClick: PropTypes.func,
     onBlockStyleChange: PropTypes.func,
     onAnnotationButtonClick: PropTypes.func
-  };
+  }
 
   shouldComponentUpdate(nextProps, nextState) {
     return (
-      this.props.decorators !== nextProps.decorators
-      || this.props.blockStyles !== nextProps.blockStyles
-      || this.props.fullscreen !== nextProps.fullscreen
-      || this.props.annotations !== nextProps.annotations
+      this.props.decorators !== nextProps.decorators ||
+      this.props.blockStyles !== nextProps.blockStyles ||
+      this.props.fullscreen !== nextProps.fullscreen ||
+      this.props.annotations !== nextProps.annotations
     )
   }
 
@@ -69,39 +65,44 @@ export default class Toolbar extends React.Component {
     return (
       <div className={`${styles.root} ${className}`} style={style}>
         <div className={styles.blockFormatContainer}>
-          <BlockStyle value={blockStyles.value} items={blockStyles.items} onSelect={onBlockStyleChange} />
+          <BlockStyle
+            value={blockStyles.value}
+            items={blockStyles.items}
+            onSelect={onBlockStyleChange}
+          />
         </div>
 
         <div className={styles.canBeMinimized}>
-
           <div className={styles.formatButtons}>
-            {decorators && decorators.length > 0 && (
-              <div className={styles.decoratorContainer}>
-                <Decorators decorators={decorators} onClick={onMarkButtonClick} />
-              </div>
-            )}
+            {decorators &&
+              decorators.length > 0 && (
+                <div className={styles.decoratorContainer}>
+                  <Decorators decorators={decorators} onClick={onMarkButtonClick} />
+                </div>
+              )}
 
-            {listItems && listItems.length > 0 && (
-              <div className={styles.listFormatContainer}>
-                <ListItems listItems={listItems} onClick={onListButtonClick} />
-              </div>
-            )}
+            {listItems &&
+              listItems.length > 0 && (
+                <div className={styles.listFormatContainer}>
+                  <ListItems listItems={listItems} onClick={onListButtonClick} />
+                </div>
+              )}
           </div>
 
-          {annotations && annotations.length > 0 && (
-            <div className={styles.annotationsContainer}>
-              {
-                annotations.map(annotation => {
+          {annotations &&
+            annotations.length > 0 && (
+              <div className={styles.annotationsContainer}>
+                {annotations.map(annotation => {
                   return (
                     <AnnotationButton
                       key={`annotationButton${annotation.type.name}`}
-                      annotation={annotation} onClick={onAnnotationButtonClick}
+                      annotation={annotation}
+                      onClick={onAnnotationButtonClick}
                     />
                   )
-                })
-              }
-            </div>
-          )}
+                })}
+              </div>
+            )}
         </div>
 
         {insertBlocks.length > 0 && (

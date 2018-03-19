@@ -14,7 +14,7 @@ export default class MediaPreview extends React.PureComponent {
       width: PropTypes.number,
       height: PropTypes.number,
       fit: PropTypes.oneOf(['clip', 'crop', 'fill', 'fillmax', 'max', 'scale', 'min']),
-      aspect: PropTypes.number,
+      aspect: PropTypes.number
     }),
     children: PropTypes.node,
     isPlaceholder: PropTypes.bool
@@ -44,7 +44,10 @@ export default class MediaPreview extends React.PureComponent {
     if (isPlaceholder) {
       return (
         <div className={styles.root}>
-          <div className={styles.padder} style={{paddingTop: `${100 / mediaDimensions.aspect || 100}%`}} />
+          <div
+            className={styles.padder}
+            style={{paddingTop: `${100 / mediaDimensions.aspect || 100}%`}}
+          />
           <div className={styles.mediaContainer}>
             <SvgPlaceholder styles={styles} />
           </div>
@@ -54,48 +57,21 @@ export default class MediaPreview extends React.PureComponent {
 
     return (
       <div className={styles.root} title={title}>
-        <div className={styles.padder} style={{paddingTop: `${100 / mediaDimensions.aspect || 100}%`}} />
+        <div
+          className={styles.padder}
+          style={{paddingTop: `${100 / mediaDimensions.aspect || 100}%`}}
+        />
         <div className={styles.mediaContainer}>
-          {
-            typeof media === 'undefined' && (
-              <div className={styles.mediaString}>{title}</div>
-            )
-          }
-          {
-            typeof media === 'function' && (
-              media({dimensions: mediaDimensions, layout: 'media'})
-            )
-          }
-          {
-            typeof media === 'string' && (
-              <div className={styles.mediaString}>{media}</div>
-            )
-          }
-          {
-            React.isValidElement(media) && media
-          }
+          {typeof media === 'undefined' && <div className={styles.mediaString}>{title}</div>}
+          {typeof media === 'function' && media({dimensions: mediaDimensions, layout: 'media'})}
+          {typeof media === 'string' && <div className={styles.mediaString}>{media}</div>}
+          {React.isValidElement(media) && media}
         </div>
         <div className={styles.meta}>
           <div className={styles.metaInner}>
-            {
-              title && (
-                <h2 className={styles.title}>
-                  {title}
-                </h2>
-              )
-            }
-            {
-              subtitle && (
-                <h3 className={styles.subtitle}>
-                  {subtitle}
-                </h3>
-              )
-            }
-            {
-              description && (
-                <p className={styles.description}>{description}</p>
-              )
-            }
+            {title && <h2 className={styles.title}>{title}</h2>}
+            {subtitle && <h3 className={styles.subtitle}>{subtitle}</h3>}
+            {description && <p className={styles.description}>{description}</p>}
           </div>
         </div>
         {children}

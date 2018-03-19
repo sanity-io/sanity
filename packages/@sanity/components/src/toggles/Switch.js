@@ -85,9 +85,7 @@ export default class Switch extends React.Component {
             onFocus={this.handleFocus}
           />
           <div className={styles.label}>{label}</div>
-          {
-            description && <div className={styles.description}>{description}</div>
-          }
+          {description && <div className={styles.description}>{description}</div>}
         </div>
       </label>
     )

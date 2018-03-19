@@ -7,13 +7,15 @@ const listItems = ['bullet', 'number', 'roman']
 function ListItem(props) {
   const listItem = props.listItem
   if (!listItems.includes(listItem)) {
-    throw new Error(`Don't know how to handle listItem '${listItem}'. `
-      + `Expected one of '${listItems.join("', '")}'`)
+    throw new Error(
+      `Don't know how to handle listItem '${listItem}'. ` +
+        `Expected one of '${listItems.join("', '")}'`
+    )
   }
   const className = `${styles[listItem]} ${styles[`level-${props.level}`]}`
   return (
     <div {...props.attributes} className={className}>
-      { props.contentComponent({children: props.children}) }
+      {props.contentComponent({children: props.children})}
     </div>
   )
 }

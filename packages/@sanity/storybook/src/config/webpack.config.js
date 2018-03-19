@@ -32,11 +32,7 @@ function getWebpackConfig(baseConfig, env) {
   config.module.rules.unshift(sanityWpConfig.module.rules.find(isCssLoader))
 
   config.resolve = Object.assign({}, config.resolve, sanityWpConfig.resolve, {
-    alias: Object.assign(
-      {},
-      config.resolve.alias || {},
-      sanityWpConfig.resolve.alias || {}
-    )
+    alias: Object.assign({}, config.resolve.alias || {}, sanityWpConfig.resolve.alias || {})
   })
   return config
 }

@@ -17,13 +17,10 @@ export function generateCommandsDocumentation(commandGroups, group = 'default') 
   const rows = [
     'usage: sanity [-v|--version] [-d|--debug] [-h|--help] <command> [<args>]',
     '',
-    'Commands:',
-  ].concat(commandGroup.map(cmd =>
-    `   ${padEnd(cmd.name, cmdLength)} ${cmd.description}`
-  )).concat([
-    '',
-    'See \'sanity help <command>\' for specific information on a subcommand.'
-  ])
+    'Commands:'
+  ]
+    .concat(commandGroup.map(cmd => `   ${padEnd(cmd.name, cmdLength)} ${cmd.description}`))
+    .concat(['', "See 'sanity help <command>' for specific information on a subcommand."])
 
   return rows.join('\n')
 }
@@ -33,9 +30,10 @@ export function generateCommandsDocumentation(commandGroups, group = 'default') 
  */
 export function generateCommandDocumentation(command, group, subCommand) {
   if (!command) {
-    throw new Error(subCommand
-      ? `"${subCommand}" is not a subcommand of "${group}". See 'sanity help ${group}'`
-      : noSuchCommandText(group)
+    throw new Error(
+      subCommand
+        ? `"${subCommand}" is not a subcommand of "${group}". See 'sanity help ${group}'`
+        : noSuchCommandText(group)
     )
   }
 

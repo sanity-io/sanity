@@ -11,7 +11,6 @@ import {
 } from '../../constants'
 import {tagName} from '../helpers'
 
-
 export function resolveListItem(listNodeTagName) {
   let listStyle
   switch (listNodeTagName) {
@@ -29,16 +28,15 @@ export function resolveListItem(listNodeTagName) {
 
 export default function createDefaultRules(blockContentType, options = {}) {
   return [
-
     // Text nodes
     {
       deserialize(el) {
-        const isValidText = (el.textContent !== ' ' && tagName(el.parentNode) !== 'body')
+        const isValidText = el.textContent !== ' ' && tagName(el.parentNode) !== 'body'
         if (el.nodeName === '#text' && isValidText) {
           return {
             ...DEFAULT_SPAN,
             marks: [],
-            text: (el.value || el.nodeValue)
+            text: el.value || el.nodeValue
           }
         }
         return undefined
@@ -55,8 +53,7 @@ export default function createDefaultRules(blockContentType, options = {}) {
         delete blocks.blockquote
         const children = []
         el.childNodes.forEach((node, index) => {
-          if (node.nodeType === 1
-              && Object.keys(blocks).includes(node.localName.toLowerCase())) {
+          if (node.nodeType === 1 && Object.keys(blocks).includes(node.localName.toLowerCase())) {
             const span = el.ownerDocument.createElement('span')
             span.appendChild(el.ownerDocument.createTextNode('\r'))
             node.childNodes.forEach(cn => {
@@ -142,9 +139,7 @@ export default function createDefaultRules(blockContentType, options = {}) {
     {
       deserialize(el, next) {
         const listItem = HTML_LIST_ITEM_TAGS[tagName(el)]
-        if (!listItem
-            || !el.parentNode
-            || !HTML_LIST_CONTAINER_TAGS[tagName(el.parentNode)]) {
+        if (!listItem || !el.parentNode || !HTML_LIST_CONTAINER_TAGS[tagName(el.parentNode)]) {
           return undefined
         }
         listItem.listItem = resolveListItem(tagName(el.parentNode))
@@ -195,11 +190,9 @@ export default function createDefaultRules(blockContentType, options = {}) {
           markDef: markDef,
           children: linkEnabled
             ? next(el.childNodes)
-            : (
-              el.appendChild(
+            : el.appendChild(
                 new Text(` (${href})`) // TODO: make server side compatible
               ) && next(el.childNodes)
-            )
         }
       }
     }

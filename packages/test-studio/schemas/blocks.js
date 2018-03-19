@@ -9,7 +9,7 @@ export default {
     {
       name: 'title',
       title: 'Title',
-      type: 'string',
+      type: 'string'
     },
     {
       name: 'defaults',
@@ -19,7 +19,8 @@ export default {
       of: [
         {type: 'image', title: 'Image'},
         {
-          type: 'reference', name: 'authorReference',
+          type: 'reference',
+          name: 'authorReference',
           to: {type: 'author'},
           title: 'Reference to author'
         },
@@ -44,26 +45,30 @@ export default {
           title: 'Color (block)'
         },
         {
-          type: 'object', title: 'Test object', name: 'testObject',
+          type: 'object',
+          title: 'Test object',
+          name: 'testObject',
           fields: [{name: 'field1', type: 'string'}]
         },
         {
-          type: 'object', title: 'Other test object', name: 'otherTestObject',
+          type: 'object',
+          title: 'Other test object',
+          name: 'otherTestObject',
           fields: [
             {name: 'field1', type: 'string'},
             {
               name: 'field3',
               type: 'array',
               of: [
-                {type: 'object', fields: [
-                  {name: 'aString', type: 'string'},
-                  {name: 'aNumber', type: 'number'},
-                ]}
+                {
+                  type: 'object',
+                  fields: [{name: 'aString', type: 'string'}, {name: 'aNumber', type: 'number'}]
+                }
               ]
             }
           ]
         },
-        {type: 'block'},
+        {type: 'block'}
       ]
     },
     {
@@ -75,7 +80,8 @@ export default {
       of: [
         {type: 'image', title: 'Image'},
         {
-          type: 'reference', name: 'authorReference',
+          type: 'reference',
+          name: 'authorReference',
           to: {type: 'author'},
           title: 'Reference to author'
         },
@@ -100,26 +106,30 @@ export default {
           title: 'Color (block)'
         },
         {
-          type: 'object', title: 'Test object', name: 'testObject',
+          type: 'object',
+          title: 'Test object',
+          name: 'testObject',
           fields: [{name: 'field1', type: 'string'}]
         },
         {
-          type: 'object', title: 'Other test object', name: 'otherTestObject',
+          type: 'object',
+          title: 'Other test object',
+          name: 'otherTestObject',
           fields: [
             {name: 'field1', type: 'string'},
             {
               name: 'field3',
               type: 'array',
               of: [
-                {type: 'object', fields: [
-                    {name: 'aString', type: 'string'},
-                    {name: 'aNumber', type: 'number'},
-                  ]}
+                {
+                  type: 'object',
+                  fields: [{name: 'aString', type: 'string'}, {name: 'aNumber', type: 'number'}]
+                }
               ]
             }
           ]
         },
-        {type: 'block'},
+        {type: 'block'}
       ]
     },
     {
@@ -153,16 +163,12 @@ export default {
             {title: 'H2', value: 'h2'},
             {title: 'Quote', value: 'blockquote'}
           ],
-          lists: [
-            {title: 'Bullet', value: 'bullet'},
-            {title: 'Numbered', value: 'number'}
-          ],
+          lists: [{title: 'Bullet', value: 'bullet'}, {title: 'Numbered', value: 'number'}],
           marks: {
-            decorators: [
-              {title: 'Strong', value: 'strong'},
-              {title: 'Emphasis', value: 'em'}
-            ],
-            annotations: [{name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}]
+            decorators: [{title: 'Strong', value: 'strong'}, {title: 'Emphasis', value: 'em'}],
+            annotations: [
+              {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}
+            ]
           }
         }
       ]
@@ -188,16 +194,12 @@ export default {
                 {title: 'H2', value: 'h2'},
                 {title: 'Quote', value: 'blockquote'}
               ],
-              lists: [
-                {title: 'Bullet', value: 'bullet'},
-                {title: 'Numbered', value: 'number'}
-              ],
+              lists: [{title: 'Bullet', value: 'bullet'}, {title: 'Numbered', value: 'number'}],
               marks: {
-                decorators: [
-                  {title: 'Strong', value: 'strong'},
-                  {title: 'Emphasis', value: 'em'}
-                ],
-                annotations: [{name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}]
+                decorators: [{title: 'Strong', value: 'strong'}, {title: 'Emphasis', value: 'em'}],
+                annotations: [
+                  {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}
+                ]
               }
             }
           ]

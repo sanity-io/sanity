@@ -10,4 +10,3 @@ export default {
     output.print(datasets.map(set => set.name).join('\n'))
   }
 }
-

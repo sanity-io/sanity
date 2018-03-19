@@ -44,7 +44,8 @@ function readManifest(opts = {}) {
     return readManifestSync(manifestPath, options)
   }
 
-  return fse.readFile(manifestPath, {encoding: 'utf8'})
+  return fse
+    .readFile(manifestPath, {encoding: 'utf8'})
     .then(raw => parseManifest(raw, options))
     .catch(err => handleManifestReadError(err, options))
 }

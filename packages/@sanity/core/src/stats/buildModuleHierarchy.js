@@ -32,7 +32,6 @@ function buildHierarchy(modules) {
   return root
 }
 
-
 function getFile(module, fileName, parentTree) {
   const charIndex = fileName.indexOf('/')
 

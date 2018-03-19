@@ -11,10 +11,11 @@ const ROOT_MARGIN_PX = 150
   Adapted from the polyfill at https://github.com/WICG/IntersectionObserver
 */
 function isIntersectionObserverSupported() {
-  if ('IntersectionObserver' in window
-    && 'IntersectionObserverEntry' in window
-    && 'intersectionRatio' in IntersectionObserverEntry.prototype) {
-
+  if (
+    'IntersectionObserver' in window &&
+    'IntersectionObserverEntry' in window &&
+    'intersectionRatio' in IntersectionObserverEntry.prototype
+  ) {
     // Minimal polyfill for Edge 15's lack of `isIntersecting`
     // See: https://github.com/WICG/IntersectionObserver/issues/211
     if (!('isIntersecting' in IntersectionObserverEntry.prototype)) {
@@ -29,9 +30,9 @@ function isIntersectionObserverSupported() {
   return false
 }
 
-export default isIntersectionObserverSupported()
+export default (isIntersectionObserverSupported()
   ? createIntersectionObserverBased()
-  : createLegacyBased()
+  : createLegacyBased())
 
 function createIntersectionObserverBased() {
   const intersectionObserverEntries$$ = new Multicast()
@@ -70,10 +71,10 @@ function createLegacyBased() {
 
   function intersects(rect, viewport, margin) {
     return (
-      rect.left <= viewport.right + margin
-      && rect.right >= viewport.left - margin
-      && rect.top <= viewport.bottom + margin
-      && rect.bottom >= viewport.top - margin
+      rect.left <= viewport.right + margin &&
+      rect.right >= viewport.left - margin &&
+      rect.top <= viewport.bottom + margin &&
+      rect.bottom >= viewport.top - margin
     )
   }
 
@@ -83,12 +84,13 @@ function createLegacyBased() {
 
   return function intersectionObservableFor(element) {
     const isElementInViewport = inViewport(element)
-    return Observable.of(isElementInViewport())
-      .merge(resize$.merge(scroll$))
-      .merge(orientationChange$)
-      .map(isElementInViewport)
-      // todo: consider "faking" more of the IntersectionObserverEntry api if possible
-      .map(isIntersecting => ({isIntersecting}))
+    return (
+      Observable.of(isElementInViewport())
+        .merge(resize$.merge(scroll$))
+        .merge(orientationChange$)
+        .map(isElementInViewport)
+        // todo: consider "faking" more of the IntersectionObserverEntry api if possible
+        .map(isIntersecting => ({isIntersecting}))
+    )
   }
-
 }

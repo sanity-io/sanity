@@ -61,24 +61,13 @@ export default class DefaultDialog extends React.PureComponent {
           >
             <div className={styles.dialog} onClick={this.handleDialogClick}>
               <div className={styles.inner}>
-                <div className={styles.content}>
-                  {this.props.children}
-                </div>
+                <div className={styles.content}>{this.props.children}</div>
 
                 <div className={styles.footer}>
-                  <Button
-                    onClick={onCancel}
-                    icon={CloseIcon}
-                    inverted
-                  >
+                  <Button onClick={onCancel} icon={CloseIcon} inverted>
                     {cancelButtonText}
                   </Button>
-                  <Button
-                    onClick={onConfirm}
-                    color={confirmColor}
-                    icon={CheckIcon}
-                    autoFocus
-                  >
+                  <Button onClick={onConfirm} color={confirmColor} icon={CheckIcon} autoFocus>
                     {confirmButtonText}
                   </Button>
                 </div>

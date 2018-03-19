@@ -11,26 +11,22 @@ function ActionModal(props) {
       <div className={styles.content}>
         <h1>Create new</h1>
         <ul className={styles.list}>
-          {
-            props.actions.map(action => {
-              const Icon = action.params && action.params.icon
-              return (
-                <li className={styles.listItem} key={action.title}>
-                  <IntentLink
-                    onClick={props.onClose}
-                    className={styles.actionLink}
-                    intent="create"
-                    params={action.params}
-                  >
-                    <span className={styles.icon}>
-                      {Icon ? <Icon /> : <FileIcon />}
-                    </span>
-                    <span>{action.title}</span>
-                  </IntentLink>
-                </li>
-              )
-            })
-          }
+          {props.actions.map(action => {
+            const Icon = action.params && action.params.icon
+            return (
+              <li className={styles.listItem} key={action.title}>
+                <IntentLink
+                  onClick={props.onClose}
+                  className={styles.actionLink}
+                  intent="create"
+                  params={action.params}
+                >
+                  <span className={styles.icon}>{Icon ? <Icon /> : <FileIcon />}</span>
+                  <span>{action.title}</span>
+                </IntentLink>
+              </li>
+            )
+          })}
         </ul>
       </div>
     </Dialog>

@@ -4,57 +4,48 @@ import type {Node} from '../src/types'
 import test from './_util/test'
 import resolveStateFromPath from '../src/resolveStateFromPath'
 
-const node : Node = {
+const node: Node = {
   route: {
     raw: '/foo/:bar',
-    segments: [
-      {type: 'dir', name: 'foo'},
-      {type: 'param', name: 'bar'},
-    ],
+    segments: [{type: 'dir', name: 'foo'}, {type: 'param', name: 'bar'}]
   },
   transform: {},
   children: [
     {
       route: {
         raw: '/dynamic/:foo',
-        segments: [
-          {type: 'dir', name: 'dynamic'},
-          {type: 'param', name: 'foo'},
-        ],
+        segments: [{type: 'dir', name: 'dynamic'}, {type: 'param', name: 'foo'}]
       },
       transform: {},
       children(state) {
         if (state.foo === 'foo') {
-          return [{
+          return [
+            {
+              route: {
+                raw: '/:whenfoo',
+                segments: [{type: 'param', name: 'whenfoo'}]
+              },
+              transform: {},
+              children: []
+            }
+          ]
+        }
+        return [
+          {
             route: {
-              raw: '/:whenfoo',
-              segments: [
-                {type: 'param', name: 'whenfoo'},
-              ]
+              raw: '/:notfoo',
+              segments: [{type: 'param', name: 'notfoo'}]
             },
             transform: {},
             children: []
-          }]
-        }
-        return [{
-          route: {
-            raw: '/:notfoo',
-            segments: [
-              {type: 'param', name: 'notfoo'},
-            ],
-          },
-          transform: {},
-          children: []
-        }]
+          }
+        ]
       }
     },
     {
       route: {
         raw: '/nix/:animal',
-        segments: [
-          {type: 'dir', name: 'nix'},
-          {type: 'param', name: 'animal'},
-        ],
+        segments: [{type: 'dir', name: 'nix'}, {type: 'param', name: 'animal'}]
       },
       transform: {},
       children: []
@@ -62,10 +53,7 @@ const node : Node = {
     {
       route: {
         raw: '/qux/:animal',
-        segments: [
-          {type: 'dir', name: 'qux'},
-          {type: 'param', name: 'animal'},
-        ]
+        segments: [{type: 'dir', name: 'qux'}, {type: 'param', name: 'animal'}]
       },
       transform: {
         animal: {
@@ -74,7 +62,7 @@ const node : Node = {
         }
       },
       children: []
-    },
+    }
   ]
 }
 
@@ -82,24 +70,36 @@ const examples = [
   ['/foo/bar', {bar: 'bar'}],
   ['foo/bar', {bar: 'bar'}],
   ['foo/bar/baz', null],
-  ['/foo/bar/qux/cat', {
-    animal: {name: 'CAT'},
-    bar: 'bar'
-  }],
-  ['/foo/bar/nix/cat', {
-    animal: 'cat',
-    bar: 'bar'
-  }],
-  ['/foo/bar/nix/cat', {
-    animal: 'cat',
-    bar: 'bar'
-  }],
+  [
+    '/foo/bar/qux/cat',
+    {
+      animal: {name: 'CAT'},
+      bar: 'bar'
+    }
+  ],
+  [
+    '/foo/bar/nix/cat',
+    {
+      animal: 'cat',
+      bar: 'bar'
+    }
+  ],
+  [
+    '/foo/bar/nix/cat',
+    {
+      animal: 'cat',
+      bar: 'bar'
+    }
+  ],
   ['/nope/bar', null],
-  ['/foo/bar/dynamic/foo/thisisfoo', {
-    bar: 'bar',
-    foo: 'foo',
-    whenfoo: 'thisisfoo',
-  }],
+  [
+    '/foo/bar/dynamic/foo/thisisfoo',
+    {
+      bar: 'bar',
+      foo: 'foo',
+      whenfoo: 'thisisfoo'
+    }
+  ],
   ['/foo', null]
 ].filter(Boolean)
 

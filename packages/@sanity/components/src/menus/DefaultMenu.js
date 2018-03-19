@@ -121,40 +121,36 @@ class DefaultMenu extends React.Component {
         className={`${isOpen ? styles.isOpen : styles.closed} ${className || ''}`}
       >
         <ul className={styles.list}>
-          {
-            items.map((item, i) => {
-              const Icon = item.icon
-              return (
-                <li
-                  key={i}
-                  className={
-                    classNames([
-                      item === focusedItem ? styles.focusedItem : styles.item,
-                      item.isDisabled && styles.isDisabled,
-                      item.divider && styles.divider
-                    ])
-                  }
+          {items.map((item, i) => {
+            const Icon = item.icon
+            return (
+              <li
+                key={i}
+                className={classNames([
+                  item === focusedItem ? styles.focusedItem : styles.item,
+                  item.isDisabled && styles.isDisabled,
+                  item.divider && styles.divider
+                ])}
+              >
+                <a
+                  onClick={item.isDisabled ? null : this.handleItemClick}
+                  data-action-id={i}
+                  className={item.danger ? styles.dangerLink : styles.link}
+                  onFocus={this.handleFocus}
+                  tabIndex="0"
+                  onKeyPress={this.handleKeyPress}
                 >
-                  <a
-                    onClick={item.isDisabled ? null : this.handleItemClick}
-                    data-action-id={i}
-                    className={item.danger ? styles.dangerLink : styles.link}
-                    onFocus={this.handleFocus}
-                    tabIndex="0"
-                    onKeyPress={this.handleKeyPress}
-                  >
-                    {
-                      Icon && <span className={styles.iconContainer}><Icon className={styles.icon} /></span>
-                    }
-                    {item.title}
-                    {
-                      ripple && !item.isDisabled && <Ink duration={200} opacity={0.10} radius={200} />
-                    }
-                  </a>
-                </li>
-              )
-            })
-          }
+                  {Icon && (
+                    <span className={styles.iconContainer}>
+                      <Icon className={styles.icon} />
+                    </span>
+                  )}
+                  {item.title}
+                  {ripple && !item.isDisabled && <Ink duration={200} opacity={0.1} radius={200} />}
+                </a>
+              </li>
+            )
+          })}
         </ul>
       </div>
     )

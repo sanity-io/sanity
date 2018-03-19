@@ -5,10 +5,7 @@ import {withKnobs, object, boolean, text, number, select} from 'part:@sanity/sto
 
 storiesOf('Date Picker')
   .addDecorator(withKnobs)
-  .add(
-  'Default',
-  () => {
-
+  .add('Default', () => {
     const dateFormat = text('dateFormat', 'YYYY-MM-DD')
     const timeFormat = text('timeFormat', 'HH:mm')
     const inputUtc = boolean('inputUtc', false)
@@ -41,5 +38,4 @@ storiesOf('Date Picker')
         }}
       />
     )
-  }
-)
+  })

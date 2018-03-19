@@ -1,21 +1,24 @@
-import { test } from 'tap'
+import {test} from 'tap'
 
 import parse from '../src/jsonpath/parse'
 
 const cases = {
-  'a': {
+  a: {
     type: 'attribute',
     name: 'a'
   },
   'a.b': {
     type: 'path',
-    nodes: [{
-      type: 'attribute',
-      name: 'a'
-    }, {
-      type: 'attribute',
-      name: 'b'
-    }]
+    nodes: [
+      {
+        type: 'attribute',
+        name: 'a'
+      },
+      {
+        type: 'attribute',
+        name: 'b'
+      }
+    ]
   },
   '[7]': {
     type: 'union',
@@ -37,60 +40,72 @@ const cases = {
   },
   'a.b[7]': {
     type: 'path',
-    nodes: [{
-      type: 'attribute',
-      name: 'a'
-    }, {
-      type: 'attribute',
-      name: 'b'
-    }, {
-      type: 'union',
-      nodes: [
-        {
-          type: 'index',
-          value: 7
-        }
-      ]
-    }]
+    nodes: [
+      {
+        type: 'attribute',
+        name: 'a'
+      },
+      {
+        type: 'attribute',
+        name: 'b'
+      },
+      {
+        type: 'union',
+        nodes: [
+          {
+            type: 'index',
+            value: 7
+          }
+        ]
+      }
+    ]
   },
   'some.array[@ == "snafu"]': {
     type: 'path',
-    nodes: [{
-      type: 'attribute',
-      name: 'some'
-    }, {
-      type: 'attribute',
-      name: 'array'
-    }, {
-      type: 'union',
-      nodes: [{
-        type: 'constraint',
-        operator: '==',
-        lhs: {
-          type: 'alias',
-          target: 'self'
-        },
-        rhs: {
-          type: 'string',
-          value: 'snafu'
-        }
-      }]
-    }]
+    nodes: [
+      {
+        type: 'attribute',
+        name: 'some'
+      },
+      {
+        type: 'attribute',
+        name: 'array'
+      },
+      {
+        type: 'union',
+        nodes: [
+          {
+            type: 'constraint',
+            operator: '==',
+            lhs: {
+              type: 'alias',
+              target: 'self'
+            },
+            rhs: {
+              type: 'string',
+              value: 'snafu'
+            }
+          }
+        ]
+      }
+    ]
   },
   '[count > 5]': {
     type: 'union',
-    nodes: [{
-      type: 'constraint',
-      operator: '>',
-      lhs: {
-        type: 'attribute',
-        name: 'count'
-      },
-      rhs: {
-        type: 'number',
-        value: 5
+    nodes: [
+      {
+        type: 'constraint',
+        operator: '>',
+        lhs: {
+          type: 'attribute',
+          name: 'count'
+        },
+        rhs: {
+          type: 'number',
+          value: 5
+        }
       }
-    }]
+    ]
   },
   '..a': {
     type: 'recursive',
@@ -105,29 +120,35 @@ const cases = {
   },
   '[0,1]._weak': {
     type: 'path',
-    nodes: [{
-      type: 'union',
-      nodes: [{
-        type: 'index',
-        value: 0
-      }, {
-        type: 'index',
-        value: 1
-      }]
-    }, {
-      type: 'attribute',
-      name: '_weak'
-    }]
+    nodes: [
+      {
+        type: 'union',
+        nodes: [
+          {
+            type: 'index',
+            value: 0
+          },
+          {
+            type: 'index',
+            value: 1
+          }
+        ]
+      },
+      {
+        type: 'attribute',
+        name: '_weak'
+      }
+    ]
   },
   '[_ref?]': {
     nodes: [
       {
         lhs: {
           name: '_ref',
-          type: 'attribute',
+          type: 'attribute'
         },
         operator: '?',
-        type: 'constraint',
+        type: 'constraint'
       }
     ],
     type: 'union'

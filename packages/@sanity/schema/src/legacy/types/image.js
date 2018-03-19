@@ -28,11 +28,8 @@ export const ImageType = {
   extend(subTypeDef, extendMember) {
     const options = {...(subTypeDef.options || DEFAULT_OPTIONS)}
 
-    const fields = (subTypeDef.fields || []).concat([
-      options.hotspot && HOTSPOT_FIELD,
-      options.hotspot && CROP_FIELD,
-      ASSET_FIELD
-    ])
+    const fields = (subTypeDef.fields || [])
+      .concat([options.hotspot && HOTSPOT_FIELD, options.hotspot && CROP_FIELD, ASSET_FIELD])
       .filter(Boolean)
 
     const parsed = Object.assign(pick(IMAGE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
@@ -64,7 +61,9 @@ export const ImageType = {
           if (extensionDef.fields) {
             throw new Error('Cannot override `fields` of subtypes of "image"')
           }
-          const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {type: parent})
+          const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
+            type: parent
+          })
           return subtype(current)
         }
       }

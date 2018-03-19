@@ -18,47 +18,47 @@ import {isEqual} from 'lodash'
 import debug from './debug'
 
 type SubmissionResponder = {
-  success : Function,
-  failure : Function
+  success: Function,
+  failure: Function
 }
 
 export default class Document {
   // Incoming patches from the server waiting to be applied to HEAD
-  incoming : Array<Mutation>
+  incoming: Array<Mutation>
   // Patches we know has been subitted to the server, but has not been seen yet in the return channel
   // so we can't be sure about the ordering yet (someone else might have slipped something between them)
-  submitted : Array<Mutation>
+  submitted: Array<Mutation>
   pending: Array<Mutation>
   // Our model of the document according to the incoming patches from the server
-  HEAD : Object
+  HEAD: Object
   // Our optimistic model of what the document will probably look like as soon as all our patches have been
   // processed. Updated every time we stage a new mutation, but also might revert back to previous states
   // if our mutations fail, or could change if unexpected mutations arrive between our own. The onRebase
   // callback will be called when EDGE changes in this manner.
-  EDGE : Object
+  EDGE: Object
   // Called with the EDGE document when that document changes for a reason other than us staging a new patch
   // or receiving a mutation from the server while our EDGE is in sync with HEAD: I.e. when EDGE changes because
   // the order of mutations has changed in relation to our optimistic predictions.
-  onRebase : Function
+  onRebase: Function
   // Called when we receive a patch in the normal order of things, but the mutation is not ours
-  onMutation : Function
+  onMutation: Function
   // Called when consistency state changes with the boolean value of the current consistency state
-  onConsistencyChanged : Function
+  onConsistencyChanged: Function
   // We are consistent when there are no unresolved mutations of our own, and no un-applicable incoming mutations.
   // When this has been going on for too long, and there has been a while since we staged a new mutation,
   //  it is time to reset your state.
-  inconsistentAt : ?Date
+  inconsistentAt: ?Date
   // The last time we staged a patch of our own. If we have been inconsistent for a while, but it hasn't been long since
   // we staged a new mutation, the reason is probably just because the user is typing or something. Should be used as
   // a guard agains resetting state for inconsistensy reasons.
-  lastStagedAt : Date
+  lastStagedAt: Date
 
-  constructor(doc : Object) {
+  constructor(doc: Object) {
     this.reset(doc)
   }
 
   // Reset the state of the Document, used to recover from unsavory states by reloading the document
-  reset(doc : Object) {
+  reset(doc: Object) {
     this.incoming = []
     this.submitted = []
     this.pending = []
@@ -70,7 +70,7 @@ export default class Document {
   }
 
   // Call when a mutation arrives from Sanity
-  arrive(mutation : Mutation) {
+  arrive(mutation: Mutation) {
     this.incoming.push(mutation)
     this.considerIncoming()
     this.updateConsistencyFlag()
@@ -79,7 +79,7 @@ export default class Document {
   // Call to signal that we are submitting a mutation. Returns a callback object with a
   // success and failure handler that must be called according to the outcome of our
   // submission.
-  stage(mutation : Mutation, silent? : bool) : SubmissionResponder {
+  stage(mutation: Mutation, silent?: boolean): SubmissionResponder {
     if (!mutation.transactionId) {
       throw new Error('Mutations _must_ have transactionId when submitted')
     }
@@ -125,7 +125,7 @@ export default class Document {
   // applicable patches to be applied
   considerIncoming() {
     let mustRebase = false
-    let nextMut : Mutation
+    let nextMut: Mutation
     // Filter mutations that are older than the document
     if (this.HEAD) {
       const updatedAt = new Date(this.HEAD._updatedAt)
@@ -147,7 +147,10 @@ export default class Document {
       }
       mustRebase = mustRebase || this.applyIncoming(nextMut)
       if (protect++ > 100) {
-        throw new Error('Mutator stuck flushing incoming mutations. Probably stuck here:', JSON.stringify(nextMut))
+        throw new Error(
+          'Mutator stuck flushing incoming mutations. Probably stuck here:',
+          JSON.stringify(nextMut)
+        )
       }
     } while (nextMut)
 
@@ -163,7 +166,8 @@ export default class Document {
   // check current consistency state, update flag and invoke callback if needed
   updateConsistencyFlag() {
     const wasConsistent = this.isConsistent()
-    const isConsistent = this.pending.length == 0 && this.submitted.length == 0 && this.incoming.length == 0
+    const isConsistent =
+      this.pending.length == 0 && this.submitted.length == 0 && this.incoming.length == 0
     // Update the consistency state, taking care not to update the timestamp if we were inconsistent and still are
     if (isConsistent) {
       this.inconsistentAt = null
@@ -182,29 +186,40 @@ export default class Document {
   }
 
   // apply an incoming patch that has been prequalified as the next in line for this document
-  applyIncoming(mut : Mutation) {
+  applyIncoming(mut: Mutation) {
     if (!mut) {
       return false
     }
-    debug('Applying mutation %s -> %s to rev %s', mut.previousRev, mut.resultRev, this.HEAD && this.HEAD._rev)
+    debug(
+      'Applying mutation %s -> %s to rev %s',
+      mut.previousRev,
+      mut.resultRev,
+      this.HEAD && this.HEAD._rev
+    )
 
     this.HEAD = mut.apply(this.HEAD)
 
     // Eliminate from incoming set
     this.incoming = this.incoming.filter(m => m.transactionId != mut.transactionId)
 
-
     if (this.anyUnresolvedMutations()) {
       const needRebase = this.consumeUnresolved(mut.transactionId)
       if (debug.enabled) {
-        debug(`Incoming mutation ${mut.transactionId} appeared while there were pending or submitted local mutations`)
+        debug(
+          `Incoming mutation ${
+            mut.transactionId
+          } appeared while there were pending or submitted local mutations`
+        )
         debug(`Submitted txnIds: ${this.submitted.map(m => m.transactionId).join(', ')}`)
         debug(`Pending txnIds: ${this.pending.map(m => m.transactionId).join(', ')}`)
         debug(`needRebase == %s`, needRebase)
       }
       return needRebase
     }
-    debug(`Remote mutation %s arrived w/o any pending or submitted local mutations`, mut.transactionId)
+    debug(
+      `Remote mutation %s arrived w/o any pending or submitted local mutations`,
+      mut.transactionId
+    )
     this.EDGE = this.HEAD
     if (this.onMutation) {
       this.onMutation({
@@ -228,7 +243,7 @@ export default class Document {
   // no rebase is needed, but we might have the wrong idea about the ordering of mutations, so in
   // that case we are given the flag `needRebase` to tell us that this mutation arrived out of order
   // in terms of our optimistic version, so a rebase is needed.
-  consumeUnresolved(txnId : string) {
+  consumeUnresolved(txnId: string) {
     // If we have nothing queued up, we are in sync and can apply patch with no
     // rebasing
     if (this.submitted.length == 0 && this.pending.length == 0) {
@@ -237,17 +252,27 @@ export default class Document {
     // If we can consume the directly upcoming mutation, we won't have to rebase
     if (this.submitted.length != 0) {
       if (this.submitted[0].transactionId == txnId) {
-        debug(`Remote mutation %s matches upcoming submitted mutation, consumed from 'submitted' buffer`, txnId)
+        debug(
+          `Remote mutation %s matches upcoming submitted mutation, consumed from 'submitted' buffer`,
+          txnId
+        )
         this.submitted.shift()
         return false
       }
     } else if (this.pending.length > 0 && this.pending[0].transactionId == txnId) {
       // There are no submitted, but some are pending so let's check the upcoming pending
-      debug(`Remote mutation %s matches upcoming pending mutation, consumed from 'pending' buffer`, txnId)
+      debug(
+        `Remote mutation %s matches upcoming pending mutation, consumed from 'pending' buffer`,
+        txnId
+      )
       this.pending.shift()
       return false
     }
-    debug('The mutation was not the upcoming mutation, scrubbing. Pending: %d, Submitted: %d', this.pending.length, this.submitted.length)
+    debug(
+      'The mutation was not the upcoming mutation, scrubbing. Pending: %d, Submitted: %d',
+      this.pending.length,
+      this.submitted.length
+    )
     // The mutation was not the upcoming mutation, so we'll have to check everything to
     // see if we have an out of order situation
     this.submitted = this.submitted.filter(mut => mut.transactionId != txnId)
@@ -258,7 +283,7 @@ export default class Document {
     return true
   }
 
-  pendingSuccessfullySubmitted(pendingTxnId : string) {
+  pendingSuccessfullySubmitted(pendingTxnId: string) {
     if (this.pending.length == 0) {
       // If there are no pending, it has probably arrived allready
       return
@@ -288,7 +313,7 @@ export default class Document {
     this.rebase()
   }
 
-  pendingFailed(pendingTxnId : string) {
+  pendingFailed(pendingTxnId: string) {
     this.pending = this.pending.filter(mutation => mutation.transactionId != pendingTxnId)
     // Rebase to revert document to what it looked like before the failed mutation
     this.rebase()
@@ -306,6 +331,4 @@ export default class Document {
       this.onRebase(this.EDGE)
     }
   }
-
 }
-

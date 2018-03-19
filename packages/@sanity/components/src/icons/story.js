@@ -39,11 +39,21 @@ function createIconPreview(title, Icon, role) {
       <div className={styles.role}>
         import {Icon.name} from &lsquo;{role}&lsquo;
       </div>
-      <span className={styles.iconPreviewXL}><Icon /></span>
-      <span className={styles.iconPreviewL}><Icon /></span>
-      <span className={styles.iconPreviewM}><Icon /></span>
-      <span className={styles.iconPreviewS}><Icon /></span>
-      <span className={styles.iconPreviewXS}><Icon /></span>
+      <span className={styles.iconPreviewXL}>
+        <Icon />
+      </span>
+      <span className={styles.iconPreviewL}>
+        <Icon />
+      </span>
+      <span className={styles.iconPreviewM}>
+        <Icon />
+      </span>
+      <span className={styles.iconPreviewS}>
+        <Icon />
+      </span>
+      <span className={styles.iconPreviewXS}>
+        <Icon />
+      </span>
     </li>
   )
 }
@@ -69,20 +79,55 @@ storiesOf('Icons')
 
           {createIconPreview('Upload', UploadIcon, 'part:@sanity/base/upload-icon')}
           {createIconPreview('Format bold', FormatBoldIcon, 'part:@sanity/base/format-bold-icon')}
-          {createIconPreview('Format italic', FormatItalicIcon, 'part:@sanity/base/format-italic-icon')}
-          {createIconPreview('Format List (bulleted)', FormatListBulletedIcon, 'part:@sanity/base/format-list-bulleted-icon')}
-          {createIconPreview('Format List (numbered)', FormatListNumberedIcon, 'part:@sanity/base/format-list-numbered-icon')}
-          {createIconPreview('Format quote', FormatQuoteIcon, 'part:@sanity/base/format-quote-icon')}
-          {createIconPreview('Format strikethrough', FormatStrikethroughIcon, 'part:@sanity/base/format-strikethrough-icon')}
-          {createIconPreview('Format underlined', FormatUnderlinedIcon, 'part:@sanity/base/format-underlined-icon')}
+          {createIconPreview(
+            'Format italic',
+            FormatItalicIcon,
+            'part:@sanity/base/format-italic-icon'
+          )}
+          {createIconPreview(
+            'Format List (bulleted)',
+            FormatListBulletedIcon,
+            'part:@sanity/base/format-list-bulleted-icon'
+          )}
+          {createIconPreview(
+            'Format List (numbered)',
+            FormatListNumberedIcon,
+            'part:@sanity/base/format-list-numbered-icon'
+          )}
+          {createIconPreview(
+            'Format quote',
+            FormatQuoteIcon,
+            'part:@sanity/base/format-quote-icon'
+          )}
+          {createIconPreview(
+            'Format strikethrough',
+            FormatStrikethroughIcon,
+            'part:@sanity/base/format-strikethrough-icon'
+          )}
+          {createIconPreview(
+            'Format underlined',
+            FormatUnderlinedIcon,
+            'part:@sanity/base/format-underlined-icon'
+          )}
           {createIconPreview('Fullscreen', FullscreenIcon, 'part:@sanity/base/fullscreen-icon')}
-          {createIconPreview('Fullscreen exit', FullscreenExitIcon, 'part:@sanity/base/fullscreen-exit-icon')}
+          {createIconPreview(
+            'Fullscreen exit',
+            FullscreenExitIcon,
+            'part:@sanity/base/fullscreen-exit-icon'
+          )}
           {createIconPreview('Plus', PlusIcon, 'part:@sanity/base/plus-icon')}
-          {createIconPreview('Arrow Drop Down', ArrowDropDownIcon, 'part:@sanity/base/arrow-drop-down')}
+          {createIconPreview(
+            'Arrow Drop Down',
+            ArrowDropDownIcon,
+            'part:@sanity/base/arrow-drop-down'
+          )}
           {createIconPreview('Trash', TrashIcon, 'part:@sanity/base/trash-icon')}
           {createIconPreview('Undo', UndoIcon, 'part:@sanity/base/undo-icon')}
-          {createIconPreview('Visibility off', VisibilityOffIcon, 'part:@sanity/base/visibility-off-icon')}
-
+          {createIconPreview(
+            'Visibility off',
+            VisibilityOffIcon,
+            'part:@sanity/base/visibility-off-icon'
+          )}
         </ul>
       )
     },
@@ -91,10 +136,63 @@ storiesOf('Icons')
 
 storiesOf('Logos')
   .addDecorator(withKnobs)
-  .add(
-    'Sanity',
-    () => {
-      return (
+  .add('Sanity', () => {
+    return (
+      <div
+        style={{
+          height: '100vh',
+          display: 'flex',
+          color: color('color', '#fff'),
+          backgroundColor: color('background', '#f43')
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            height: '50vh',
+            width: '50vw',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)'
+          }}
+        >
+          <Sanity part="part:@sanity/base/sanity-logo" propTables={[SanityLogo]}>
+            <SanityLogo />
+          </Sanity>
+        </div>
+      </div>
+    )
+  })
+  .add('Sanity Icon', () => {
+    return (
+      <div
+        style={{
+          height: '100vh',
+          display: 'flex',
+          color: color('color', '#fff'),
+          backgroundColor: color('background', '#f43')
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            height: '50vh',
+            width: '50vw',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)'
+          }}
+        >
+          <Sanity part="part:@sanity/base/sanity-logo-icon" propTables={[SanityLogoIcon]}>
+            <SanityLogoIcon />
+          </Sanity>
+        </div>
+      </div>
+    )
+  })
+  .add('Sanity Alpha', () => {
+    return (
+      <Sanity part="part:@sanity/base/sanity-logo-alpha" propTables={[SanityLogoAlpha]}>
         <div
           style={{
             height: '100vh',
@@ -103,104 +201,81 @@ storiesOf('Logos')
             backgroundColor: color('background', '#f43')
           }}
         >
-          <div style={{position: 'absolute', height: '50vh', width: '50vw', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}}>
-            <Sanity part="part:@sanity/base/sanity-logo" propTables={[SanityLogo]}>
-              <SanityLogo />
-            </Sanity>
-          </div>
-        </div>
-      )
-    }
-  )
-  .add(
-    'Sanity Icon',
-    () => {
-      return (
-        <div
-          style={{
-            height: '100vh',
-            display: 'flex',
-            color: color('color', '#fff'),
-            backgroundColor: color('background', '#f43')
-          }}
-        >
-          <div style={{position: 'absolute', height: '50vh', width: '50vw', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}}>
-            <Sanity part="part:@sanity/base/sanity-logo-icon" propTables={[SanityLogoIcon]}>
-              <SanityLogoIcon />
-            </Sanity>
-          </div>
-        </div>
-      )
-    }
-  )
-  .add(
-    'Sanity Alpha',
-    () => {
-      return (
-        <Sanity part="part:@sanity/base/sanity-logo-alpha" propTables={[SanityLogoAlpha]}>
           <div
             style={{
-              height: '100vh',
-              display: 'flex',
-              color: color('color', '#fff'),
-              backgroundColor: color('background', '#f43')
+              position: 'absolute',
+              height: '50vh',
+              width: '50vw',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)'
             }}
           >
-            <div style={{position: 'absolute', height: '50vh', width: '50vw', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}}>
-              <SanityLogoAlpha />
-            </div>
+            <SanityLogoAlpha />
           </div>
-        </Sanity>
-      )
-    }
-  )
+        </div>
+      </Sanity>
+    )
+  })
 
-  .add(
-    'Brand',
-    () => {
-      if (!BrandLogo) {
-        return (
-          <div>
-            No brand logo. Implement <code>part:@sanity/base/brand-logo</code>
-          </div>
-        )
-      }
+  .add('Brand', () => {
+    if (!BrandLogo) {
       return (
-        <div
-          style={{
-            height: '100vh',
-            display: 'flex',
-            color: color('color', '#fff'),
-            backgroundColor: color('background', '#f43')
-          }}
-        >
-          <div style={{position: 'absolute', height: '50vh', width: '50vw', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}}>
-            <Sanity part="part:@sanity/base/brand-logo" propTables={[BrandLogo]}>
-              <BrandLogo />
-            </Sanity>
-          </div>
+        <div>
+          No brand logo. Implement <code>part:@sanity/base/brand-logo</code>
         </div>
       )
     }
-  )
-  .add(
-    'Sanity Studio',
-    () => {
-      return (
+    return (
+      <div
+        style={{
+          height: '100vh',
+          display: 'flex',
+          color: color('color', '#fff'),
+          backgroundColor: color('background', '#f43')
+        }}
+      >
         <div
           style={{
-            height: '100vh',
-            display: 'flex',
-            color: color('color', '#fff'),
-            backgroundColor: color('background', '#f43')
+            position: 'absolute',
+            height: '50vh',
+            width: '50vw',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)'
           }}
         >
-          <div style={{position: 'absolute', height: '50vh', width: '50vw', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}}>
-            <Sanity part="part:@sanity/base/sanity-studio-logo" propTables={[SanityStudioLogo]}>
-              <SanityStudioLogo />
-            </Sanity>
-          </div>
+          <Sanity part="part:@sanity/base/brand-logo" propTables={[BrandLogo]}>
+            <BrandLogo />
+          </Sanity>
         </div>
-      )
-    }
-  )
+      </div>
+    )
+  })
+  .add('Sanity Studio', () => {
+    return (
+      <div
+        style={{
+          height: '100vh',
+          display: 'flex',
+          color: color('color', '#fff'),
+          backgroundColor: color('background', '#f43')
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            height: '50vh',
+            width: '50vw',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)'
+          }}
+        >
+          <Sanity part="part:@sanity/base/sanity-studio-logo" propTables={[SanityStudioLogo]}>
+            <SanityStudioLogo />
+          </Sanity>
+        </div>
+      </div>
+    )
+  })

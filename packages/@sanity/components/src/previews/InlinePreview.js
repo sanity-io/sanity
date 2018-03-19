@@ -13,7 +13,7 @@ export default class InlinePreview extends React.PureComponent {
       width: PropTypes.number,
       height: PropTypes.number,
       fit: PropTypes.oneOf(['clip', 'crop', 'fill', 'fillmax', 'max', 'scale', 'min']),
-      aspect: PropTypes.number,
+      aspect: PropTypes.number
     })
   }
 
@@ -25,12 +25,7 @@ export default class InlinePreview extends React.PureComponent {
   }
 
   render() {
-    const {
-      title,
-      media,
-      mediaDimensions,
-      children
-    } = this.props
+    const {title, media, mediaDimensions, children} = this.props
 
     if (!title && !media) {
       return <span />
@@ -38,28 +33,15 @@ export default class InlinePreview extends React.PureComponent {
 
     return (
       <span className={styles.root}>
-        {
-          media && (
-            <span className={styles.media}>
-              {
-                typeof media === 'function' && (
-                  media({dimensions: mediaDimensions, layout: 'default'})
-                )
-              }
-              {
-                typeof media !== 'function' && media
-              }
-              {
-                React.isValidElement(media) && media
-              }
-            </span>
-          )
-        }
+        {media && (
+          <span className={styles.media}>
+            {typeof media === 'function' && media({dimensions: mediaDimensions, layout: 'default'})}
+            {typeof media !== 'function' && media}
+            {React.isValidElement(media) && media}
+          </span>
+        )}
         <span className={styles.title}>
-          {
-            (typeof title === 'function' && title({layout: 'inline'}))
-            || title
-          }
+          {(typeof title === 'function' && title({layout: 'inline'})) || title}
         </span>
         {children && <span>{children}</span>}
       </span>

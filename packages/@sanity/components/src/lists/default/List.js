@@ -2,7 +2,5 @@
 import React from 'react'
 
 export default function DefaultList(props) {
-  return (
-    <ul {...props} />
-  )
+  return <ul {...props} />
 }

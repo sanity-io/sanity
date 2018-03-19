@@ -19,7 +19,9 @@ export default class QuickstartExample extends React.Component {
     return (
       <SanityIntlProvider supportedLanguages={['en-US']}>
         <FormBuilder value={this.state.editorValue} onChange={this.handleChange} />
-        <button type="button" onClick={this.handleLogClick}>Output current value to console</button>
+        <button type="button" onClick={this.handleLogClick}>
+          Output current value to console
+        </button>
       </SanityIntlProvider>
     )
   }

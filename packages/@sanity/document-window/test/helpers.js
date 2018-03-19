@@ -20,9 +20,7 @@ function getMockClient(opts) {
       return Observable.from([response])
     }
 
-    throw new Error(
-      `Tried to call fetch() without a mock (on call #${fetchCalls})`
-    )
+    throw new Error(`Tried to call fetch() without a mock (on call #${fetchCalls})`)
   })
 
   const listenObservable = new Observable(observer => {
@@ -32,12 +30,7 @@ function getMockClient(opts) {
       timers.push(setTimeout(() => observer.next(event), 20 + 5 * i))
     })
 
-    timers.push(
-      setTimeout(
-        () => observer.complete(),
-        20 + (5 * options.events.length + 1)
-      )
-    )
+    timers.push(setTimeout(() => observer.complete(), 20 + (5 * options.events.length + 1)))
 
     return () => {
       timers.forEach(timer => clearTimeout(timer))
@@ -64,10 +57,7 @@ function expectRangeQueryToMatchRange(client, expected) {
 function willBackfill(docWindow, options) {
   return new Promise((resolve, reject) => {
     let hasTimedOut = false
-    const timer = setTimeout(
-      rejectOnTimeout,
-      (Constants.DEFAULT_DEBOUNCE_MS || 1) * 1.1
-    )
+    const timer = setTimeout(rejectOnTimeout, (Constants.DEFAULT_DEBOUNCE_MS || 1) * 1.1)
 
     docWindow.on('backfill', data => {
       if (!hasTimedOut) {
@@ -149,11 +139,7 @@ function gatherWindows(docWindow, numWindows = 2) {
 
     function rejectOnTimeout() {
       hasTimedOut = true
-      reject(
-        new Error(
-          `Timed out while waiting for data emit number ${windows.length + 1}`
-        )
-      )
+      reject(new Error(`Timed out while waiting for data emit number ${windows.length + 1}`))
     }
   })
 }

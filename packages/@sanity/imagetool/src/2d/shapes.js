@@ -46,7 +46,6 @@ class Corners {
 }
 
 export class Rect {
-
   static fromEdges({left, right, top, bottom}) {
     return new Rect(left, top, 1 - left - right, 1 - top - bottom)
   }
@@ -69,11 +68,11 @@ export class Rect {
   setCenter(x, y) {
     const width = this.width || 0
     const height = this.height || 0
-    return new Rect(x - (width / 2), y - (height / 2), width || 0, height || 0)
+    return new Rect(x - width / 2, y - height / 2, width || 0, height || 0)
   }
 
   get center() {
-    return new Point(this.left + (this.width / 2), this.top + (this.height / 2))
+    return new Point(this.left + this.width / 2, this.top + this.height / 2)
   }
 
   get corners() {
@@ -90,15 +89,20 @@ export class Rect {
 
   multiply(rect) {
     return new Rect(
-        (this.left || 0) + (this.width * rect.left),
-        (this.top || 0) + (this.height * rect.top),
-        this.width * rect.width,
-        this.height * rect.height
+      (this.left || 0) + this.width * rect.left,
+      (this.top || 0) + this.height * rect.top,
+      this.width * rect.width,
+      this.height * rect.height
     )
   }
 
   grow(delta) {
-    return new Rect(this.left - delta, this.top - delta, this.width + (delta * 2), this.height + (delta * 2))
+    return new Rect(
+      this.left - delta,
+      this.top - delta,
+      this.width + delta * 2,
+      this.height + delta * 2
+    )
   }
 
   shrink(delta) {
@@ -106,8 +110,8 @@ export class Rect {
   }
 
   cropRelative(crop) {
-    const top = this.top + (crop.top * this.height)
-    const left = this.left + (crop.left * this.width)
+    const top = this.top + crop.top * this.height
+    const left = this.left + crop.left * this.width
     const height = this.height * crop.height
     const width = this.width * crop.width
     return new Rect(left, top, width, height)
@@ -134,11 +138,6 @@ export class Rect {
       top = bounds.bottom - height
     }
 
-    return new Rect(
-        Math.max(left, bounds.left),
-        Math.max(top, bounds.top),
-        width,
-        height
-    )
+    return new Rect(Math.max(left, bounds.left), Math.max(top, bounds.top), width, height)
   }
 }

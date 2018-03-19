@@ -8,13 +8,13 @@
  *
  * Fill this stub out by replacing all the `any` types.
  *
- * Once filled out, we encourage you to share your work with the 
- * community by sending a pull request to: 
+ * Once filled out, we encourage you to share your work with the
+ * community by sending a pull request to:
  * https://github.com/flowtype/flow-typed
  */
 
 declare module 'diff-match-patch' {
-  declare module.exports: any;
+  declare module.exports: any
 }
 
 /**
@@ -23,16 +23,16 @@ declare module 'diff-match-patch' {
  * needed.
  */
 declare module 'diff-match-patch/test/index' {
-  declare module.exports: any;
+  declare module.exports: any
 }
 
 // Filename aliases
 declare module 'diff-match-patch/index' {
-  declare module.exports: $Exports<'diff-match-patch'>;
+  declare module.exports: $Exports<'diff-match-patch'>
 }
 declare module 'diff-match-patch/index.js' {
-  declare module.exports: $Exports<'diff-match-patch'>;
+  declare module.exports: $Exports<'diff-match-patch'>
 }
 declare module 'diff-match-patch/test/index.js' {
-  declare module.exports: $Exports<'diff-match-patch/test/index'>;
+  declare module.exports: $Exports<'diff-match-patch/test/index'>
 }

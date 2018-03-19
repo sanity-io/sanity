@@ -44,7 +44,16 @@ export default class EditItemPopOver extends React.PureComponent {
   }
 
   renderPopper(isActive) {
-    const {title, color, children, actions, onClose, onClickOutside, onEscape, modifiers} = this.props
+    const {
+      title,
+      color,
+      children,
+      actions,
+      onClose,
+      onClickOutside,
+      onEscape,
+      modifiers
+    } = this.props
     return (
       <Popper
         className={`${styles.popper} ${styles[`color_${color}`]}`}

@@ -16,7 +16,6 @@ const PREVIEW_ASPECT_RATIOS = [
 ].map(([title, aspect]) => ({title, aspect}))
 
 export default class ImageToolDemo extends React.PureComponent {
-
   static propTypes = {
     src: PropTypes.string.isRequired
   }
@@ -65,12 +64,18 @@ export default class ImageToolDemo extends React.PureComponent {
   renderPreview = aspectRatio => {
     const {value} = this.state
     const {src} = this.props
-    const previewStyle = aspectRatio.aspect === 'auto' ? {height: 150, width: 200, display: 'inline-block'} : {}
+    const previewStyle =
+      aspectRatio.aspect === 'auto' ? {height: 150, width: 200, display: 'inline-block'} : {}
     return (
       <div>
         <h3>{aspectRatio.title}</h3>
         <div style={{...previewStyle, outline: '1px solid #eee'}}>
-          <Preview src={src} aspectRatio={aspectRatio.aspect} hotspot={value.hotspot} crop={value.crop} />
+          <Preview
+            src={src}
+            aspectRatio={aspectRatio.aspect}
+            hotspot={value.hotspot}
+            crop={value.crop}
+          />
         </div>
       </div>
     )
@@ -80,16 +85,12 @@ export default class ImageToolDemo extends React.PureComponent {
     const value = this.state.value
     const {src} = this.props
     const HOTSPOT_WIDTH = 400
-    const thumbWidth = (HOTSPOT_WIDTH - (IMAGES.length * 4)) / IMAGES.length
+    const thumbWidth = (HOTSPOT_WIDTH - IMAGES.length * 4) / IMAGES.length
     return (
       <div style={{width: '100%', margin: 15, clear: 'both'}}>
         <div style={{float: 'left'}}>
           <div style={{height: 200, width: HOTSPOT_WIDTH}}>
-            <ImageTool
-              value={value}
-              src={src}
-              onChange={this.handleChange}
-            />
+            <ImageTool value={value} src={src} onChange={this.handleChange} />
           </div>
           <div style={{width: HOTSPOT_WIDTH, outline: '1px dotted #aaa'}}>
             <ImageSelector thumbWidth={thumbWidth} images={IMAGES} />
@@ -105,11 +106,19 @@ export default class ImageToolDemo extends React.PureComponent {
           </label>
           <label>
             height:
-            <this.range value={Math.abs(value.hotspot.height)} onChange={this.handleHotspotChange} property="height" />
+            <this.range
+              value={Math.abs(value.hotspot.height)}
+              onChange={this.handleHotspotChange}
+              property="height"
+            />
           </label>
           <label>
             width:
-            <this.range value={Math.abs(value.hotspot.width)} onChange={this.handleHotspotChange} property="width" />
+            <this.range
+              value={Math.abs(value.hotspot.width)}
+              onChange={this.handleHotspotChange}
+              property="width"
+            />
           </label>
           <h2>Crop</h2>
           <label>
@@ -118,7 +127,11 @@ export default class ImageToolDemo extends React.PureComponent {
           </label>
           <label>
             right:
-            <this.range value={value.crop.right} onChange={this.handleCropChange} property="right" />
+            <this.range
+              value={value.crop.right}
+              onChange={this.handleCropChange}
+              property="right"
+            />
           </label>
           <label>
             top:
@@ -126,12 +139,14 @@ export default class ImageToolDemo extends React.PureComponent {
           </label>
           <label>
             bottom:
-            <this.range value={value.crop.bottom} onChange={this.handleCropChange} property="bottom" />
+            <this.range
+              value={value.crop.bottom}
+              onChange={this.handleCropChange}
+              property="bottom"
+            />
           </label>
           <h2>Value</h2>
-          <pre>
-            {JSON.stringify(value, null, 2)}
-          </pre>
+          <pre>{JSON.stringify(value, null, 2)}</pre>
         </div>
         <div style={{padding: 5, margin: 5, float: 'left'}}>
           <ul className="previews">
@@ -158,5 +173,3 @@ export default class ImageToolDemo extends React.PureComponent {
     )
   }
 }
-
-

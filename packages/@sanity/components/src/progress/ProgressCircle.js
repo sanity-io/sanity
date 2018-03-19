@@ -43,13 +43,7 @@ export default class ProgressCircle extends React.Component {
     return (
       <div className={rootClasses} style={style}>
         <div className={styles.inner}>
-
-          <svg
-            className={styles.svg}
-            width={width}
-            height={height}
-            viewBox={viewBox}
-          >
+          <svg className={styles.svg} width={width} height={height} viewBox={viewBox}>
             <circle
               className={styles.background}
               cx={radius}
@@ -68,8 +62,8 @@ export default class ProgressCircle extends React.Component {
                 strokeDashoffset: dashOffset
               }}
             />
-            {
-              showPercent && <text
+            {showPercent && (
+              <text
                 className={styles.percent}
                 x={radius}
                 y={text ? radius - 5 : radius}
@@ -78,16 +72,18 @@ export default class ProgressCircle extends React.Component {
               >
                 {`${Math.round(percent, 1)}%`}
               </text>
-            }
-            {
-              text && <text
+            )}
+            {text && (
+              <text
                 className={styles.status}
                 x={radius}
-                y={(radius * radiusFactor) - 5}
+                y={radius * radiusFactor - 5}
                 dy=".4em"
                 textAnchor="middle"
-              >{text}</text>
-            }
+              >
+                {text}
+              </text>
+            )}
           </svg>
         </div>
       </div>

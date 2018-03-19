@@ -23,7 +23,9 @@ function extractProps(component) {
     return Object.assign(props, {[property]: {property, propType, required, defaultValue}})
   }, {})
 
-  return Object.keys(properties).sort().map(property => properties[property])
+  return Object.keys(properties)
+    .sort()
+    .map(property => properties[property])
 }
 
 function extractPropsForComponents(components) {

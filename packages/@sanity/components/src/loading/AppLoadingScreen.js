@@ -3,7 +3,6 @@ import React from 'react'
 import SanityLogo from 'part:@sanity/base/sanity-logo-icon'
 import SpinnerIcon from 'part:@sanity/base/spinner-icon'
 
-
 const AppLoadingScreenStyles = `
 @-webkit-keyframes sanity-app-loader__spin {
   0% {
@@ -167,9 +166,7 @@ export default class AppLoadingScreen extends React.Component {
           <div className="sanity-app-loading-screen__logo">
             <SanityLogo />
           </div>
-          <div className="sanity-app-loading-screen__text">
-            {this.props.text}
-          </div>
+          <div className="sanity-app-loading-screen__text">{this.props.text}</div>
         </div>
         <div className="sanity-app-loading-screen__spinner">
           <div className="sanity-app-loader__spinner-inner">

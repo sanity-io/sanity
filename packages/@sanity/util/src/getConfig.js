@@ -12,8 +12,7 @@ const defaults = {
 }
 
 const configContainer = values => ({
-  get: (dotPath, defaultValue) =>
-    get(values, dotPath, defaultValue)
+  get: (dotPath, defaultValue) => get(values, dotPath, defaultValue)
 })
 
 const getConfig = rootDir => {

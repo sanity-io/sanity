@@ -43,26 +43,23 @@ const MOCKED_QUERY_RESULT = [
 ]
 
 test('combineSelections()', () => {
-  expect(combineSelections(INPUT))
-    .toEqual([
-      {paths: ['fieldA', 'fieldB', 'fieldC.fieldCA'], ids: ['doc1', 'doc2', 'doc3'], map: [0, 1, 3]},
-      {paths: ['fieldX', 'fieldY'], ids: ['doc7'], map: [2]}
-    ])
+  expect(combineSelections(INPUT)).toEqual([
+    {paths: ['fieldA', 'fieldB', 'fieldC.fieldCA'], ids: ['doc1', 'doc2', 'doc3'], map: [0, 1, 3]},
+    {paths: ['fieldX', 'fieldY'], ids: ['doc7'], map: [2]}
+  ])
 })
 
 test('toGradientQuery()', () => {
-  expect(toGradientQuery(combineSelections(INPUT)))
-    .toEqual(
-      '[*[_id in ["doc1","doc2","doc3"]]{_id,_type,fieldA,fieldB,fieldC.fieldCA},*[_id in ["doc7"]]{_id,_type,fieldX,fieldY}]'
-    )
+  expect(toGradientQuery(combineSelections(INPUT))).toEqual(
+    '[*[_id in ["doc1","doc2","doc3"]]{_id,_type,fieldA,fieldB,fieldC.fieldCA},*[_id in ["doc7"]]{_id,_type,fieldX,fieldY}]'
+  )
 })
 
 test('reassemble()', () => {
-  expect(reassemble(MOCKED_QUERY_RESULT, combineSelections(INPUT)))
-    .toEqual([
-      RESULTS.doc1,
-      RESULTS.doc2,
-      RESULTS.doc7,
-      RESULTS.doc3
-    ])
+  expect(reassemble(MOCKED_QUERY_RESULT, combineSelections(INPUT))).toEqual([
+    RESULTS.doc1,
+    RESULTS.doc2,
+    RESULTS.doc7,
+    RESULTS.doc3
+  ])
 })

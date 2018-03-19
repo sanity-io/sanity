@@ -1,4 +1,3 @@
-
 export type Id = string
 
 export type Reference = {_ref: string}

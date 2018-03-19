@@ -1,4 +1,4 @@
-export default function arrayify<T>(val : Array<T> | T) : Array<T> {
+export default function arrayify<T>(val: Array<T> | T): Array<T> {
   if (Array.isArray(val)) {
     return val
   }

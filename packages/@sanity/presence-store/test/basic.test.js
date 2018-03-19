@@ -174,11 +174,7 @@ test('removes state for disconnected clients', t => {
       session: 'session1'
     }
   })
-  t.deepEqual(
-    mock.store.getStateReport(),
-    [],
-    'report should be empty because client disconnected'
-  )
+  t.deepEqual(mock.store.getStateReport(), [], 'report should be empty because client disconnected')
   mock.close()
   t.end()
 })

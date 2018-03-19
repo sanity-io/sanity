@@ -10,9 +10,7 @@ test('toplevel', t => {
 
 test('scopes all the way down', t => {
   const router = route.scope('first', '/foo/:bar', [
-    route.scope('second', '/baz/:qux', [
-      route.scope('third', '/omg/:lol')
-    ])
+    route.scope('second', '/baz/:qux', [route.scope('third', '/omg/:lol')])
   ])
 
   t.same({first: {bar: 'bar'}}, router.decode('/foo/bar'))
@@ -21,26 +19,32 @@ test('scopes all the way down', t => {
   t.same({first: {bar: 'bar', second: {qux: 'qux'}}}, router.decode('/foo/bar/baz/qux'))
   t.same('/foo/bar/baz/qux', router.encode({first: {bar: 'bar', second: {qux: 'qux'}}}))
 
-  t.same({
-    first: {
-      bar: 'bar',
-      second: {
-        qux: 'qux',
-        third: {
-          lol: 'lol'
+  t.same(
+    {
+      first: {
+        bar: 'bar',
+        second: {
+          qux: 'qux',
+          third: {
+            lol: 'lol'
+          }
         }
       }
-    }
-  }, router.decode('/foo/bar/baz/qux/omg/lol'))
-  t.same('/foo/bar/baz/qux/omg/lol', router.encode({
-    first: {
-      bar: 'bar',
-      second: {
-        qux: 'qux',
-        third: {
-          lol: 'lol'
+    },
+    router.decode('/foo/bar/baz/qux/omg/lol')
+  )
+  t.same(
+    '/foo/bar/baz/qux/omg/lol',
+    router.encode({
+      first: {
+        bar: 'bar',
+        second: {
+          qux: 'qux',
+          third: {
+            lol: 'lol'
+          }
         }
       }
-    }
-  }))
+    })
+  )
 })

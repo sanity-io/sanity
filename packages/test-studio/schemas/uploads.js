@@ -54,10 +54,7 @@ export default {
       title: 'Images and files',
       description: 'An array that accepts images and files',
       type: 'array',
-      of: [
-        {type: 'file', title: 'File'},
-        {type: 'image', title: 'Image'}
-      ]
+      of: [{type: 'file', title: 'File'}, {type: 'image', title: 'Image'}]
     },
     {
       name: 'imagesAndFilesInGrid',
@@ -67,10 +64,7 @@ export default {
       options: {
         layout: 'grid'
       },
-      of: [
-        {type: 'file', title: 'File'},
-        {type: 'image', title: 'Image'}
-      ]
+      of: [{type: 'file', title: 'File'}, {type: 'image', title: 'Image'}]
     },
     {
       name: 'onlyPNGAndPdf',

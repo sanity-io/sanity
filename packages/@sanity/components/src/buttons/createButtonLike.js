@@ -8,7 +8,10 @@ import cx from 'classnames'
 
 export default function createButtonLike(Component, {displayName, defaultProps = {}}) {
   return class ButtonLike extends React.Component {
-    static displayName = displayName || `ButtonLike(${typeof Component === 'string' ? Component : (Component.displayName || Component.name)})`
+    static displayName = displayName ||
+      `ButtonLike(${
+        typeof Component === 'string' ? Component : Component.displayName || Component.name
+      })`
 
     static propTypes = {
       kind: PropTypes.oneOf(['default', 'simple']),
@@ -22,7 +25,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
       className: PropTypes.string,
       disabled: PropTypes.bool,
       tabIndex: PropTypes.number,
-      padding: PropTypes.oneOf(['default', 'small']),
+      padding: PropTypes.oneOf(['default', 'small'])
     }
 
     static defaultProps = {
@@ -53,8 +56,18 @@ export default function createButtonLike(Component, {displayName, defaultProps =
     }
 
     render() {
-
-      const {kind, ripple, inverted, color, icon: Icon, loading, className, children, padding, ...rest} = this.props
+      const {
+        kind,
+        ripple,
+        inverted,
+        color,
+        icon: Icon,
+        loading,
+        className,
+        children,
+        padding,
+        ...rest
+      } = this.props
 
       // Should not be part of the destructing, cause it should be passed to component through rest
       const disabled = this.props.disabled
@@ -76,14 +89,17 @@ export default function createButtonLike(Component, {displayName, defaultProps =
           onClick={this.handleClick}
           ref={this.setRootElement}
           tabIndex={0}
-
         >
           <span className={styles.inner} tabIndex={-1}>
             <span className={styles.content}>
-              {loading && <span className={styles.spinner}><Spinner inline /></span>}
+              {loading && (
+                <span className={styles.spinner}>
+                  <Spinner inline />
+                </span>
+              )}
               {Icon && <Icon className={styles.icon} />}
               {children && <span className={styles.content}>{children}</span>}
-              {ripple && !disabled && <Ink duration={1000} opacity={0.10} radius={200} />}
+              {ripple && !disabled && <Ink duration={1000} opacity={0.1} radius={200} />}
             </span>
           </span>
         </Component>

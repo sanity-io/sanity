@@ -9,7 +9,7 @@ export default class CustomSelect extends React.Component {
     onChange: PropTypes.func,
     value: PropTypes.object,
     renderItem: PropTypes.func,
-    items: PropTypes.array,
+    items: PropTypes.array
   }
 
   static defaultProps = {
@@ -41,8 +41,7 @@ export default class CustomSelect extends React.Component {
       if (isOpen && activeIndex > -1) {
         this.selectIndex(activeIndex)
         this.setState({isOpen: false})
-      }
-      else {
+      } else {
         this.setState({isOpen: true})
       }
     }
@@ -80,9 +79,7 @@ export default class CustomSelect extends React.Component {
           tabIndex={0}
         >
           <div className={styles.selectContainer}>
-            <span className={styles.text}>
-              {renderItem(value)}
-            </span>
+            <span className={styles.text}>{renderItem(value)}</span>
             <div className={styles.arrow}>
               <FaAngleDown color="inherit" />
             </div>
@@ -90,11 +87,7 @@ export default class CustomSelect extends React.Component {
         </div>
         {isOpen && (
           <div className={styles.listContainer}>
-            <ul
-              className={styles.items}
-              onKeyDown={this.handleKeyDown}
-              ref={this.setListContainer}
-            >
+            <ul className={styles.items} onKeyDown={this.handleKeyDown} ref={this.setListContainer}>
               {items.map((item, index) => {
                 const isActive = index === activeIndex
                 const isSelected = item === value
@@ -106,7 +99,8 @@ export default class CustomSelect extends React.Component {
                   <li
                     key={index}
                     className={className}
-                    onClick={this.handleItemClick} data-item-index={index}
+                    onClick={this.handleItemClick}
+                    data-item-index={index}
                   >
                     {renderItem(item, {index, isActive, isSelected})}
                   </li>

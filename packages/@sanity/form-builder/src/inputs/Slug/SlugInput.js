@@ -62,9 +62,7 @@ export default withDocument(
         onChange(PatchEvent.from(unset(['current'])))
         return
       }
-      onChange(
-        PatchEvent.from(setIfMissing({_type: type.name}), set(current, ['current']))
-      )
+      onChange(PatchEvent.from(setIfMissing({_type: type.name}), set(current, ['current'])))
     }
 
     slugify(sourceValue) {

@@ -68,9 +68,7 @@ export default async (args, context) => {
     const statistics = await compile()
     const stats = statistics.toJson()
     if (stats.errors && stats.errors.length > 0) {
-      throw new Error(
-        `Errors while building:\n\n${stats.errors.join('\n\n')}`
-      )
+      throw new Error(`Errors while building:\n\n${stats.errors.join('\n\n')}`)
     }
 
     spin.text = `Building Sanity (${stats.time}ms)`
@@ -96,15 +94,18 @@ export default async (args, context) => {
     // Build new index document with correct hashes
     const indexStart = Date.now()
     spin = output.spinner('Building index document').start()
-    const doc = await getDocumentElement({...compilationConfig, hashes: chunkMap, project: config.get('project')}, {
-      scripts: ['vendor.bundle.js', 'app.bundle.js'].map(asset => {
-        const assetPath = absoluteMatch.test(asset) ? asset : `js/${asset}`
-        return {
-          path: assetPath,
-          hash: chunkMap[assetPath] || chunkMap[asset]
-        }
-      })
-    })
+    const doc = await getDocumentElement(
+      {...compilationConfig, hashes: chunkMap, project: config.get('project')},
+      {
+        scripts: ['vendor.bundle.js', 'app.bundle.js'].map(asset => {
+          const assetPath = absoluteMatch.test(asset) ? asset : `js/${asset}`
+          return {
+            path: assetPath,
+            hash: chunkMap[assetPath] || chunkMap[asset]
+          }
+        })
+      }
+    )
 
     // Write index file to output destination
     await fse.writeFile(
@@ -119,19 +120,20 @@ export default async (args, context) => {
 
     if (flags.stats) {
       output.print('\nLargest modules (unminified, uncompressed sizes):')
-      sortModulesBySize(bundle.stats.modules).slice(0, 10).forEach(module =>
-        output.print(`[${filesize(module.size)}] ${module.name}`)
-      )
+      sortModulesBySize(bundle.stats.modules)
+        .slice(0, 10)
+        .forEach(module => output.print(`[${filesize(module.size)}] ${module.name}`))
     }
 
     // Now compress the JS bundles
     if (!compilationConfig.skipMinify) {
       spin = output.spinner('Minifying Javascript bundles').start()
       const compressStart = Date.now()
-      await Promise.all(Object.keys(chunkMap)
-        .filter(fileName => path.extname(fileName) === '.js')
-        .map(fileName => path.join(compilationConfig.outputPath, fileName))
-        .map(compressJavascript)
+      await Promise.all(
+        Object.keys(chunkMap)
+          .filter(fileName => path.extname(fileName) === '.js')
+          .map(fileName => path.join(compilationConfig.outputPath, fileName))
+          .map(compressJavascript)
       )
 
       spin.text = `Minifying Javascript bundles (${Date.now() - compressStart}ms)`
@@ -150,7 +152,5 @@ export default async (args, context) => {
 
 function resolveStaticPath(rootDir, config) {
   const {staticPath} = config
-  return path.isAbsolute(staticPath)
-    ? staticPath
-    : path.resolve(path.join(rootDir, staticPath))
+  return path.isAbsolute(staticPath) ? staticPath : path.resolve(path.join(rootDir, staticPath))
 }

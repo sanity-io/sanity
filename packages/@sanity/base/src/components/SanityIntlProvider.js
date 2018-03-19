@@ -8,7 +8,6 @@ import messageFetcher from 'part:@sanity/base/locale-message-fetcher'
 import Spinner from 'part:@sanity/components/loading/spinner'
 
 class SanityIntlProvider extends React.Component {
-
   constructor(props) {
     super(props)
 
@@ -27,22 +26,27 @@ class SanityIntlProvider extends React.Component {
 
   componentDidMount() {
     const {supportedLanguages} = this.props
-    resolveLanguage(supportedLanguages).then(language => {
-      messageFetcher.fetchLocalizedMessages(language).then(localizedMessages => {
-        const languagePrefix = language.split('-')[0]
-        const localeData = require(`react-intl/locale-data/${languagePrefix}`)
-        addLocaleData(localeData)
+    resolveLanguage(supportedLanguages)
+      .then(language => {
+        messageFetcher
+          .fetchLocalizedMessages(language)
+          .then(localizedMessages => {
+            const languagePrefix = language.split('-')[0]
+            const localeData = require(`react-intl/locale-data/${languagePrefix}`)
+            addLocaleData(localeData)
 
-        // In order to get a proper stacktrace on rendering errors,
-        // we need to move this out of the current call stack
-        this.mountTimer = setTimeout(() => {
-          this.setState({
-            messages: localizedMessages,
-            language: language
+            // In order to get a proper stacktrace on rendering errors,
+            // we need to move this out of the current call stack
+            this.mountTimer = setTimeout(() => {
+              this.setState({
+                messages: localizedMessages,
+                language: language
+              })
+            }, 0)
           })
-        }, 0)
-      }).catch(this.catchError)
-    }).catch(this.catchError)
+          .catch(this.catchError)
+      })
+      .catch(this.catchError)
   }
 
   componentWillUnmount() {
@@ -55,7 +59,9 @@ class SanityIntlProvider extends React.Component {
       return (
         <div>
           <h2>Error fetching locale data</h2>
-          <code><pre>{error.stack}</pre></code>
+          <code>
+            <pre>{error.stack}</pre>
+          </code>
         </div>
       )
     }
@@ -66,9 +72,7 @@ class SanityIntlProvider extends React.Component {
 
     return (
       <IntlProvider locale={language} messages={messages}>
-        <IntlWrapper>
-          {this.props.children}
-        </IntlWrapper>
+        <IntlWrapper>{this.props.children}</IntlWrapper>
       </IntlProvider>
     )
   }

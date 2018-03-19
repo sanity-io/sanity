@@ -8,9 +8,7 @@ function go(event) {
 }
 
 export default function Link(props) {
-  return (
-    <a {...props} onClick={go} data-url={props.href} />
-  )
+  return <a {...props} onClick={go} data-url={props.href} />
 }
 
 Link.propTypes = {

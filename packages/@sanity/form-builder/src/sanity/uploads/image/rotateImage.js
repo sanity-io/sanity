@@ -14,7 +14,9 @@ function loadImage(url: string) {
     const image = new window.Image()
     //console.time("read image");
     image.onerror = () => {
-      observer.error(new Error(`Could not load image from url "${url}". Image may be of an unsupported format`))
+      observer.error(
+        new Error(`Could not load image from url "${url}". Image may be of an unsupported format`)
+      )
     }
     image.onload = () => {
       //console.timeEnd("read image");
@@ -30,6 +32,5 @@ function loadImage(url: string) {
 
 export default function rotateImage(file: File, orientation: OrientationId) {
   /* global window */
-  return loadImage(window.URL.createObjectURL(file))
-    .mergeMap(image => orient(image, orientation))
+  return loadImage(window.URL.createObjectURL(file)).mergeMap(image => orient(image, orientation))
 }

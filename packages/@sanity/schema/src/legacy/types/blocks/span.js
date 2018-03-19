@@ -60,7 +60,9 @@ export const SpanType = {
           if (extensionDef.fields) {
             throw new Error('Cannot override `fields` of subtypes of "span"')
           }
-          const current = Object.assign({}, parent, pick(extensionDef, INHERITED_FIELDS), {type: parent})
+          const current = Object.assign({}, parent, pick(extensionDef, INHERITED_FIELDS), {
+            type: parent
+          })
           return subtype(current)
         }
       }

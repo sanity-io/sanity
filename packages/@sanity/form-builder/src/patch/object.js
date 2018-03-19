@@ -6,7 +6,8 @@ export default function apply(value, patch) {
   if (patch.path.length === 0) {
     // its directed to me
     if (patch.type === 'set') {
-      if (!isObject(patch.value)) { // eslint-disable-line max-depth
+      if (!isObject(patch.value)) {
+        // eslint-disable-line max-depth
         throw new Error('Cannot set value of an object to a non-object')
       }
       return patch.value

@@ -11,19 +11,20 @@ async function reinitializePluginConfigs(options, flags = {}) {
 
   const localChecksums = await getChecksums(workDir)
   const allPlugins = await resolveTree({basePath: workDir})
-  const pluginsWithDistConfig = (await Promise.all(allPlugins.map(pluginHasDistConfig))).filter(Boolean)
+  const pluginsWithDistConfig = (await Promise.all(allPlugins.map(pluginHasDistConfig))).filter(
+    Boolean
+  )
   const distChecksums = await Promise.all(pluginsWithDistConfig.map(getPluginConfigChecksum))
   const withLocalConfigs = await Promise.all(distChecksums.map(hasLocalConfig))
   const missingConfigs = await Promise.all(withLocalConfigs.map(createMissingConfig))
   const configPlugins = missingConfigs.map(warnOnDifferingChecksum)
 
-  return missingConfigs.length > 0
-    ? saveNewChecksums(configPlugins)
-    : Promise.resolve()
+  return missingConfigs.length > 0 ? saveNewChecksums(configPlugins) : Promise.resolve()
 
   function hasLocalConfig(plugin) {
-    return localConfigExists(workDir, plugin.name)
-      .then(configDeployed => Object.assign({}, plugin, {configDeployed}))
+    return localConfigExists(workDir, plugin.name).then(configDeployed =>
+      Object.assign({}, plugin, {configDeployed})
+    )
   }
 
   function createMissingConfig(plugin) {
@@ -36,7 +37,9 @@ async function reinitializePluginConfigs(options, flags = {}) {
     const prtPath = path.relative(workDir, dstPath)
 
     if (!flags.quiet) {
-      output.print(`Plugin "${plugin.name}" is missing local configuration file, creating ${prtPath}`)
+      output.print(
+        `Plugin "${plugin.name}" is missing local configuration file, creating ${prtPath}`
+      )
     }
 
     return fse.copy(srcPath, dstPath).then(() => plugin)
@@ -50,7 +53,9 @@ async function reinitializePluginConfigs(options, flags = {}) {
     const local = localChecksums[plugin.name]
     if (typeof local !== 'undefined' && local !== plugin.configChecksum) {
       const name = normalizePluginName(plugin.name)
-      output.print(`[WARN] Default configuration file for plugin "${name}" has changed since local copy was created`)
+      output.print(
+        `[WARN] Default configuration file for plugin "${name}" has changed since local copy was created`
+      )
     }
 
     return plugin
@@ -106,6 +111,7 @@ function pluginHasDistConfig(plugin) {
 }
 
 function getPluginConfigChecksum(plugin) {
-  return generateConfigChecksum(getPluginConfigPath(plugin))
-    .then(configChecksum => Object.assign({}, plugin, {configChecksum}))
+  return generateConfigChecksum(getPluginConfigPath(plugin)).then(configChecksum =>
+    Object.assign({}, plugin, {configChecksum})
+  )
 }

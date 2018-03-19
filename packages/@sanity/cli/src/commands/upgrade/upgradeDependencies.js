@@ -25,9 +25,10 @@ export default async (args, context) => {
   // Find which modules needs update according to the target range
   const allNeedsUpdate = await getModulesInNeedOfUpdate(context, targetRange)
 
-  const needsUpdate = modules.length === 0
-    ? allNeedsUpdate
-    : allNeedsUpdate.filter(outOfDate => modules.indexOf(outOfDate.name) !== -1)
+  const needsUpdate =
+    modules.length === 0
+      ? allNeedsUpdate
+      : allNeedsUpdate.filter(outOfDate => modules.indexOf(outOfDate.name) !== -1)
 
   // If all modules are up-to-date, say so and exit
   if (needsUpdate.length === 0) {
@@ -41,15 +42,15 @@ export default async (args, context) => {
   const oldManifest = await readLocalManifest(workDir)
   const newManifest = needsUpdate.reduce((target, mod) => {
     if (oldManifest.dependencies && oldManifest.dependencies[mod.name]) {
-      target.dependencies[mod.name] = mod.latest === 'unknown'
-        ? oldManifest.dependencies[mod.name]
-        : (versionPrefix + mod.latest)
+      target.dependencies[mod.name] =
+        mod.latest === 'unknown' ? oldManifest.dependencies[mod.name] : versionPrefix + mod.latest
     }
 
     if (oldManifest.devDependencies && oldManifest.devDependencies[mod.name]) {
-      target.devDependencies[mod.name] = mod.latest === 'unknown'
-        ? oldManifest.devDependencies[mod.name]
-        : (versionPrefix + mod.latest)
+      target.devDependencies[mod.name] =
+        mod.latest === 'unknown'
+          ? oldManifest.devDependencies[mod.name]
+          : versionPrefix + mod.latest
     }
 
     return target

@@ -76,7 +76,6 @@ class StateMenu extends React.Component {
       const {router} = this.props // todo: this should not be here
       router.navigate(selectedItem.linkState)
     }
-
   }
 
   render() {
@@ -84,29 +83,28 @@ class StateMenu extends React.Component {
     const originStyle = styles[`origin__${origin}`]
 
     return (
-      <div className={`${this.props.opened ? styles.opened : styles.closed} ${originStyle} ${fullWidth && styles.fullWidth} ${className}`}>
+      <div
+        className={`${
+          this.props.opened ? styles.opened : styles.closed
+        } ${originStyle} ${fullWidth && styles.fullWidth} ${className}`}
+      >
         <ul className={styles.list}>
-          {
-            items.map((item, i) => {
-              const Icon = item.icon
-              return (
-                <li key={i} className={`${styles.item} ${item.divider && styles.divider}`}>
-                  <StateLink
-                    state={item.linkState}
-                    className={styles.link}
-                  >
-                    {
-                      Icon && <span className={styles.iconContainer}><Icon className={styles.icon} /></span>
-                    }
-                    {item.title}
-                    {
-                      ripple && <Ink />
-                    }
-                  </StateLink>
-                </li>
-              )
-            })
-          }
+          {items.map((item, i) => {
+            const Icon = item.icon
+            return (
+              <li key={i} className={`${styles.item} ${item.divider && styles.divider}`}>
+                <StateLink state={item.linkState} className={styles.link}>
+                  {Icon && (
+                    <span className={styles.iconContainer}>
+                      <Icon className={styles.icon} />
+                    </span>
+                  )}
+                  {item.title}
+                  {ripple && <Ink />}
+                </StateLink>
+              </li>
+            )
+          })}
         </ul>
       </div>
     )

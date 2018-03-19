@@ -1,11 +1,11 @@
 import {flatten} from 'lodash'
 
-function createTypeWithMembersProblemsAccessor(memberPropertyName, getMembers = type => type[memberPropertyName]) {
+function createTypeWithMembersProblemsAccessor(
+  memberPropertyName,
+  getMembers = type => type[memberPropertyName]
+) {
   return function getProblems(type, parentPath) {
-    const currentPath = [
-      ...parentPath,
-      {kind: 'type', type: type.type, name: type.name}
-    ]
+    const currentPath = [...parentPath, {kind: 'type', type: type.type, name: type.name}]
     const members = getMembers(type) || []
 
     const memberProblems = members.map(memberType => {
@@ -23,10 +23,7 @@ function createTypeWithMembersProblemsAccessor(memberPropertyName, getMembers = 
   }
 }
 
-const arrify = val => (Array.isArray(val)
-  ? val
-  : ((typeof val === 'undefined' && []) || [val])
-)
+const arrify = val => (Array.isArray(val) ? val : (typeof val === 'undefined' && []) || [val])
 
 const getObjectProblems = createTypeWithMembersProblemsAccessor('fields')
 const getArrayProblems = createTypeWithMembersProblemsAccessor('of')
@@ -62,7 +59,5 @@ export function getTypeProblems(type, path = []) {
 }
 
 export default function groupProblems(types) {
-  return flatten(types
-    .map(type => getTypeProblems(type)))
-    .filter(type => type.problems.length > 0)
+  return flatten(types.map(type => getTypeProblems(type))).filter(type => type.problems.length > 0)
 }

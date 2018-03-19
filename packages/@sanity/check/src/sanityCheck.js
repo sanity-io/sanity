@@ -27,8 +27,8 @@ function checkImplementations(result, options) {
         path: impl.path,
         dirName: path.dirname(impl.path),
         fileName: path.basename(impl.path)
-      })
-    ))
+      }))
+    )
   }, [])
 
   return getFolderContents(fulfillers.map(impl => impl.dirName))
@@ -37,9 +37,7 @@ function checkImplementations(result, options) {
 }
 
 function throwOnErrors(results, options) {
-  const errors = results
-    .filter(result => result instanceof Error)
-    .map(err => ` * ${err.message}`)
+  const errors = results.filter(result => result instanceof Error).map(err => ` * ${err.message}`)
 
   if (errors.length > 0) {
     if (options.productionMode) {
@@ -54,18 +52,20 @@ function throwOnErrors(results, options) {
 }
 
 function getFolderContents(dirs) {
-  return promiseProps(dirs.reduce((folders, dir) => {
-    if (!folders[dir]) {
-      folders[dir] = fse.readdir(dir).catch(() => [])
-    }
-    return folders
-  }, {}))
+  return promiseProps(
+    dirs.reduce((folders, dir) => {
+      if (!folders[dir]) {
+        folders[dir] = fse.readdir(dir).catch(() => [])
+      }
+      return folders
+    }, {})
+  )
 }
 
 function verifyImplementationsExist(implementations, folderContents) {
-  return Promise.all(implementations.map(impl =>
-    verifyImplementationExists(impl, folderContents[impl.dirName])
-  ))
+  return Promise.all(
+    implementations.map(impl => verifyImplementationExists(impl, folderContents[impl.dirName]))
+  )
 }
 
 function verifyImplementationExists(impl, parentDirContent) {
@@ -81,15 +81,15 @@ function verifyImplementationExists(impl, parentDirContent) {
   // Case-insensitive check
   const targetFile = impl.fileName.toLowerCase()
   const targetJsFile = `${targetFile}.js`
-  const found = parentDirContent.find(file =>
-    file.toLowerCase() === targetFile || file.toLowerCase() === targetJsFile
+  const found = parentDirContent.find(
+    file => file.toLowerCase() === targetFile || file.toLowerCase() === targetJsFile
   )
 
   if (found) {
     return new Error(
-      `Part "${impl.partName}" was attempted to be implemented by "${impl.path}",`
-      + `but the file is actually located at "${path.join(impl.dirName, found)}" -`
-      + ' Sanity uses case-sensitive file names.'
+      `Part "${impl.partName}" was attempted to be implemented by "${impl.path}",` +
+        `but the file is actually located at "${path.join(impl.dirName, found)}" -` +
+        ' Sanity uses case-sensitive file names.'
     )
   }
 
@@ -98,22 +98,25 @@ function verifyImplementationExists(impl, parentDirContent) {
 }
 
 function checkImplementationMsg(impl) {
-  const location = impl.plugin === '(project root)'
-    ? 'Check "sanity.json"'
-    : `Check "${impl.plugin}"`
+  const location =
+    impl.plugin === '(project root)' ? 'Check "sanity.json"' : `Check "${impl.plugin}"`
 
   return `${location} and keep in mind that paths in Sanity are case-sensitive.`
 }
 
 function isFileOrDirectoryWithIndex(impl) {
-  return fse.stat(impl.path).then(stats => {
-    return stats.isDirectory()
-      ? directoryHasIndex(impl)
-      : true
-  }).catch(() => new Error(
-    `Part "${impl.partName}" was attempted to be implemented by "${impl.path}", `
-    + `which does not seem to exist. ${checkImplementationMsg(impl)}`
-  ))
+  return fse
+    .stat(impl.path)
+    .then(stats => {
+      return stats.isDirectory() ? directoryHasIndex(impl) : true
+    })
+    .catch(
+      () =>
+        new Error(
+          `Part "${impl.partName}" was attempted to be implemented by "${impl.path}", ` +
+            `which does not seem to exist. ${checkImplementationMsg(impl)}`
+        )
+    )
 }
 
 function directoryHasIndex(impl) {
@@ -121,21 +124,21 @@ function directoryHasIndex(impl) {
     return includes(dirContent, 'index.js')
       ? true
       : new Error(
-        `Part "${impl.partName}" was attempted to be implemented by "${impl.path}", `
-        + 'which is a directory without an "index.js". Please point to a filename.'
-      )
+          `Part "${impl.partName}" was attempted to be implemented by "${impl.path}", ` +
+            'which is a directory without an "index.js". Please point to a filename.'
+        )
   })
 }
 
 /* eslint-disable prefer-template */
 function getProductionHint() {
   return (
-    '[NOTE]: sanity-check is running in production mode - '
-    + 'perhaps you have defined a `compiled` path in `sanity.json`? '
-    + 'This tells Sanity to look for the files in a different location '
-    + 'when running in production mode. When publishing plugins to npm '
-    + 'you should make sure to publish precompiled files. See '
-    + generateHelpUrl('source-vs-compiled-paths')
+    '[NOTE]: sanity-check is running in production mode - ' +
+    'perhaps you have defined a `compiled` path in `sanity.json`? ' +
+    'This tells Sanity to look for the files in a different location ' +
+    'when running in production mode. When publishing plugins to npm ' +
+    'you should make sure to publish precompiled files. See ' +
+    generateHelpUrl('source-vs-compiled-paths')
   )
 }
 /* eslint-enable prefer-template */

@@ -16,7 +16,7 @@ const valueStyles = {
   number: {color: '#a11'},
   string: {color: '#22a', wordBreak: 'break-word'},
   bool: {color: '#a11'},
-  empty: {color: '#777'},
+  empty: {color: '#777'}
 }
 
 function previewArray(val) {
@@ -32,11 +32,7 @@ function previewArray(val) {
     delete items[`c${val.length - 1}`]
   }
 
-  return (
-    <span style={valueStyles.array}>
-      [{createFragment(items)}]
-    </span>
-  )
+  return <span style={valueStyles.array}>[{createFragment(items)}]</span>
 }
 
 function previewObject(val) {
@@ -57,7 +53,9 @@ function previewObject(val) {
 
   return (
     <span style={valueStyles.object}>
-      {'{'}{createFragment(items)}{'}'}
+      {'{'}
+      {createFragment(items)}
+      {'}'}
     </span>
   )
 }
@@ -92,9 +90,7 @@ function previewProp(value) {
     content = previewObject(val)
   }
 
-  return braceWrap
-    ? <span>&#123;{content}&#125;</span>
-    : content
+  return braceWrap ? <span>&#123;{content}&#125;</span> : content
 }
 
 export default function PropVal(props) {

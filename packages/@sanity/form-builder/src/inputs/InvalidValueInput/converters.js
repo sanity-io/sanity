@@ -7,11 +7,11 @@ const BOOL_STRINGS = TRUTHY_STRINGS.concat(FALSEY_STRINGS)
 
 const TRUE = () => true
 
-const has = prop => val => (val && val[prop])
+const has = prop => val => val && val[prop]
 const is = typeName => val => (val && val._type) === typeName
 
 function toLocalDate(input) {
-  const newDate = new Date(input.getTime() + (input.getTimezoneOffset() * 60 * 1000))
+  const newDate = new Date(input.getTime() + input.getTimezoneOffset() * 60 * 1000)
   const offset = input.getTimezoneOffset() / 60
   const hours = input.getHours()
   newDate.setHours(hours - offset)
@@ -25,7 +25,6 @@ function getTZName() {
   return null
 }
 
-
 export default {
   string: {
     number: {
@@ -34,7 +33,9 @@ export default {
     },
     boolean: {
       test: value => BOOL_STRINGS.includes(value.toLowerCase()),
-      convert: value => TRUTHY_STRINGS.includes(value.toLowerCase()) || !FALSEY_STRINGS.includes(value.toLowerCase())
+      convert: value =>
+        TRUTHY_STRINGS.includes(value.toLowerCase()) ||
+        !FALSEY_STRINGS.includes(value.toLowerCase())
     },
     richDate: {
       test: val => isValidDate(parseDate(val)),

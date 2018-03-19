@@ -15,9 +15,10 @@ export function getOptions(props) {
 }
 
 export function getPlaceholderText(options) {
-  return `${options.inputDate ? options.placeholderDate : ''} ${options.inputTime ? options.placeholderTime : ''}`
+  return `${options.inputDate ? options.placeholderDate : ''} ${
+    options.inputTime ? options.placeholderTime : ''
+  }`
 }
-
 
 export function getTimeIntervals(value, options) {
   const {timeStep, timeFormat} = options
@@ -30,7 +31,8 @@ export function getTimeIntervals(value, options) {
     timeIntervals.push(beginningOfDay.clone().add(i * timeStep, 'minutes'))
   }
   return timeIntervals.map(time => {
-    const isActive = activeTime && time.format(options.timeFormat) === activeTime.format(options.timeFormat)
+    const isActive =
+      activeTime && time.format(options.timeFormat) === activeTime.format(options.timeFormat)
     return {
       title: time.format(timeFormat),
       value: time,

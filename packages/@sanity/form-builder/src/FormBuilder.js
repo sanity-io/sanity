@@ -5,7 +5,7 @@ import FormBuilderContext from './FormBuilderContext'
 
 // Todo: consider deprecating this in favor of <FormBuilderContext ...><FormBuilderInput .../></FormBuilderContext>
 export default class FormBuilder extends React.Component {
-  static createPatchChannel = FormBuilderContext.createPatchChannel;
+  static createPatchChannel = FormBuilderContext.createPatchChannel
   static propTypes = {
     value: PropTypes.any,
     schema: PropTypes.object.isRequired,
@@ -19,7 +19,7 @@ export default class FormBuilder extends React.Component {
   }
 
   static defaultProps = {
-    value: undefined,
+    value: undefined
   }
 
   render() {
@@ -45,13 +45,7 @@ export default class FormBuilder extends React.Component {
         resolvePreviewComponent={resolvePreviewComponent}
         patchChannel={patchChannel}
       >
-        <FormBuilderInput
-          value={value}
-          type={type}
-          onChange={onChange}
-          level={0}
-          isRoot
-        />
+        <FormBuilderInput value={value} type={type} onChange={onChange} level={0} isRoot />
       </FormBuilderContext>
     )
   }

@@ -70,10 +70,12 @@ function promptOnAlteredConfiguration(plugin, sameChecksum, prompt) {
     return Promise.resolve({deleteConfig: true})
   }
 
-  return prompt([{
-    type: 'confirm',
-    name: 'deleteConfig',
-    message: `Local configuration for '${plugin}' has modifications - remove anyway?`,
-    default: true
-  }])
+  return prompt([
+    {
+      type: 'confirm',
+      name: 'deleteConfig',
+      message: `Local configuration for '${plugin}' has modifications - remove anyway?`,
+      default: true
+    }
+  ])
 }

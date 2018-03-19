@@ -8,10 +8,6 @@ export default class CustomPreview extends React.PureComponent {
 
   render() {
     const {children} = this.props
-    return (
-      <div>
-        {children}
-      </div>
-    )
+    return <div>{children}</div>
   }
 }

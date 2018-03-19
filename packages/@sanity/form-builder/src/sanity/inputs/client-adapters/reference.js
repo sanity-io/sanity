@@ -30,11 +30,12 @@ function buildConstraintFromType(type, terms) {
 }
 
 export function search(textTerm, referenceType) {
-
   const terms = textTerm.split(/\s+/)
   const typeConstraints = referenceType.to.map(type => buildConstraintFromType(type, terms))
 
-  const query = `*[!(_id in path('drafts.**')) && (${typeConstraints.map(wrapInParens).join('||')})]`
+  const query = `*[!(_id in path('drafts.**')) && (${typeConstraints
+    .map(wrapInParens)
+    .join('||')})]`
 
   return client.observable.fetch(query, {term: `${textTerm}*`})
 }

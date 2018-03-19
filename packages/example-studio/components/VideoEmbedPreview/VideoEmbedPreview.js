@@ -50,8 +50,8 @@ export default class VideoEmbedPreview extends React.Component {
       return (
         <div className={styles.root}>
           <div className={styles.unrecognizedService}>
-            Unrecognized video service. Supported services
-            are {humanizeList(SUPPORTED_SERVICES.map(s => s.title))}
+            Unrecognized video service. Supported services are{' '}
+            {humanizeList(SUPPORTED_SERVICES.map(s => s.title))}
           </div>
         </div>
       )
@@ -60,11 +60,7 @@ export default class VideoEmbedPreview extends React.Component {
     const Icon = service.icon || FaFilm
     return (
       <div className={styles.root}>
-        <iframe
-          src={service.url(value.id)}
-          frameBorder="0"
-          allowFullScreen
-        />
+        <iframe src={service.url(value.id)} frameBorder="0" allowFullScreen />
         <Icon size={30} />
       </div>
     )

@@ -1,6 +1,5 @@
 import {ImmutableAccessor} from '@sanity/mutator'
 
-
 import accessorForSlateValue from './accessorForSlateValue'
 import fromSlate from '../../../../src/inputs/BlockEditor-slate/conversion/fromSlate'
 import toSlate from '../../../../src/inputs/BlockEditor-slate/conversion/toSlate'

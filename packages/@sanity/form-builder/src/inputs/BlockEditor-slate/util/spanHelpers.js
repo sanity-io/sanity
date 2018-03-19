@@ -2,13 +2,11 @@ import findComponentFromDOMNode from './findComponentFromDOMNode'
 import {findDOMNode} from 'slate'
 
 export function getSpanType(blockArrayType) {
-  return getSpansField(blockArrayType)
-    .type.of.find(type => type.name === 'span')
+  return getSpansField(blockArrayType).type.of.find(type => type.name === 'span')
 }
 
 export function getSpansField(blockArrayType) {
-  return getBlockField(blockArrayType)
-    .fields.find(field => field.name === 'spans')
+  return getBlockField(blockArrayType).fields.find(field => field.name === 'spans')
 }
 
 export function getBlockField(blockArrayType) {

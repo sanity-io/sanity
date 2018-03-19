@@ -2,9 +2,7 @@ import {Block, Data, Document} from 'slate'
 import randomKey from '../util/randomKey'
 
 function formBuilderNodeOnPaste(formBuilder, editorFields) {
-
   function processNode(node) {
-
     if (!node.get('nodes')) {
       return node
     }

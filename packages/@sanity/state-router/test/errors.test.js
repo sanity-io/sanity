@@ -2,7 +2,7 @@
 import test from './_util/test'
 import route from '../src/route'
 
-function mock(obj : Object, methodName : string, mockFn : Function) {
+function mock(obj: Object, methodName: string, mockFn: Function) {
   const original = obj[methodName]
   obj[methodName] = mockFn
   return function restore() {

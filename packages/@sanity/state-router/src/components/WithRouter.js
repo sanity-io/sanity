@@ -6,7 +6,7 @@ import type {Node} from 'react'
 
 type Props = {
   router: Router,
-  children: (Router) => Node
+  children: Router => Node
 }
 
 const WithRouter = withRouterHOC((props: Props) => props.children(props.router))

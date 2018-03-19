@@ -14,7 +14,7 @@ type Hotspot = {
   x: number,
   y: number,
   height: number,
-  width: number,
+  width: number
 }
 
 type Crop = {
@@ -32,7 +32,7 @@ type Value = {
 type Props = {
   imageUrl: string,
   value?: Value,
-  onChange: (PatchEvent) => void,
+  onChange: PatchEvent => void,
   readOnly: ?boolean,
   level: number
 }
@@ -60,10 +60,7 @@ export default class ImageToolInput extends React.Component<Props, State> {
     const {onChange, readOnly} = this.props
     const {value} = this.state
     if (!readOnly) {
-      onChange(PatchEvent.from([
-        set(value.crop, ['crop']),
-        set(value.hotspot, ['hotspot'])
-      ]))
+      onChange(PatchEvent.from([set(value.crop, ['crop']), set(value.hotspot, ['hotspot'])]))
     }
     this.setState({value: this.props.value})
   }
@@ -102,17 +99,19 @@ export default class ImageToolInput extends React.Component<Props, State> {
                       <h4>{title}</h4>
                       <div className={styles.previewImage}>
                         <ImageLoader src={imageUrl}>
-                          {({image, error}) => (
-                            error
-                              ? <span>Unable to load image: {error.message}</span>
-                              : <HotspotImage
+                          {({image, error}) =>
+                            error ? (
+                              <span>Unable to load image: {error.message}</span>
+                            ) : (
+                              <HotspotImage
                                 aspectRatio={ratio}
                                 src={image.src}
                                 srcAspectRatio={image.width / image.height}
                                 hotspot={value.hotspot || DEFAULT_HOTSPOT}
                                 crop={value.crop || DEFAULT_CROP}
                               />
-                          )}
+                            )
+                          }
                         </ImageLoader>
                       </div>
                     </div>

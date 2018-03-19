@@ -25,10 +25,10 @@ export default class VideoEmbedInput extends React.Component {
     value: PropTypes.shape({
       _type: PropTypes.string,
       id: PropTypes.string,
-      service: PropTypes.string,
+      service: PropTypes.string
     }),
     onChange: PropTypes.func.isRequired
-  };
+  }
 
   state = {
     errorMessage: null,
@@ -80,13 +80,12 @@ export default class VideoEmbedInput extends React.Component {
   render() {
     const {errorMessage, result} = this.state
     const {type, value, level} = this.props
-    const placeholder = `Paste URL or embed code from ${humanizeList(SUPPORTED_SERVICES.map(s => s.title), {conjunction: 'or'})}…`
+    const placeholder = `Paste URL or embed code from ${humanizeList(
+      SUPPORTED_SERVICES.map(s => s.title),
+      {conjunction: 'or'}
+    )}…`
     return (
-      <FormField
-        label={type.title}
-        level={level}
-        description={type.description}
-      >
+      <FormField label={type.title} level={level} description={type.description}>
         <textarea
           className={styles.pasteBox}
           type="text"

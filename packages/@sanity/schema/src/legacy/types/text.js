@@ -1,7 +1,15 @@
 import {pick} from 'lodash'
 import primitivePreview from '../preview/primitivePreview'
 
-const OVERRIDABLE_FIELDS = ['jsonType', 'type', 'name', 'title', 'description', 'options', 'fieldsets']
+const OVERRIDABLE_FIELDS = [
+  'jsonType',
+  'type',
+  'name',
+  'title',
+  'description',
+  'options',
+  'fieldsets'
+]
 
 const TEXT_CORE = {
   name: 'text',
@@ -27,7 +35,9 @@ export const TextType = {
           return parent
         },
         extend: extensionDef => {
-          const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {type: parent})
+          const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
+            type: parent
+          })
           return subtype(current)
         }
       }

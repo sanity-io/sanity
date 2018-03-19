@@ -39,8 +39,9 @@ export default class UnknownFields extends React.Component<Props> {
                   </ActivateOnFocus>
                   {readOnly ? (
                     <div>
-                      This value is <em>read only</em> according to its enclosing schema type and cannot be unset.
-                      If you want to unset, make sure you remove the <strong>readOnly</strong> property from the enclosing type
+                      This value is <em>read only</em> according to its enclosing schema type and
+                      cannot be unset. If you want to unset, make sure you remove the{' '}
+                      <strong>readOnly</strong> property from the enclosing type
                     </div>
                   ) : (
                     <DefaultButton onClick={() => this.handleUnsetClick(fieldName)} color="danger">

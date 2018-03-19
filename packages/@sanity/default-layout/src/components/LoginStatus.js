@@ -19,8 +19,9 @@ class LoginStatus extends React.PureComponent {
   }
 
   componentWillMount() {
-    this.userSubscription = userStore.currentUser
-      .subscribe(event => this.setState({user: event.user}))
+    this.userSubscription = userStore.currentUser.subscribe(event =>
+      this.setState({user: event.user})
+    )
   }
 
   componentWillUnmount() {
@@ -52,7 +53,6 @@ class LoginStatus extends React.PureComponent {
 
     return (
       <div className={`${styles.root} ${className}`}>
-
         <div onClick={this.handleUserMenuToggle}>
           <img src={user.profileImage} className={styles.userImage} />
         </div>
@@ -63,18 +63,19 @@ class LoginStatus extends React.PureComponent {
           <div className={styles.userMenu}>
             <Menu
               onAction={this.handleUserMenuItemClick}
-              items={[{
-                title: `Log out ${user.name}`,
-                icon: IconSignOut,
-                index: 'signOut'
-              }]}
+              items={[
+                {
+                  title: `Log out ${user.name}`,
+                  icon: IconSignOut,
+                  index: 'signOut'
+                }
+              ]}
               opened
               origin="top-right"
               onClickOutside={this.handleUserMenuClose}
             />
           </div>
-        )
-        }
+        )}
       </div>
     )
   }

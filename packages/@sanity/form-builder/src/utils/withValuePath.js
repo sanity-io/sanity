@@ -7,7 +7,7 @@ export default function withValuePath(ComposedComponent: any) {
 
     static contextTypes = {
       getValuePath: PropTypes.func,
-      formBuilder: PropTypes.any,
+      formBuilder: PropTypes.any
     }
 
     focus() {

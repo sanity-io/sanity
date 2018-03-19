@@ -24,8 +24,7 @@ export function getChecksum(sanityPath, pluginName) {
 }
 
 export function getChecksums(sanityPath) {
-  return fse.readJson(getChecksumsPath(sanityPath))
-    .catch(() => baseChecksums)
+  return fse.readJson(getChecksumsPath(sanityPath)).catch(() => baseChecksums)
 }
 
 export function getChecksumsPath(sanityPath) {
@@ -33,8 +32,7 @@ export function getChecksumsPath(sanityPath) {
 }
 
 export function hasSameChecksum(sanityPath, pluginName, checksum) {
-  return getChecksum(sanityPath, pluginName)
-    .then(sum => sum === checksum)
+  return getChecksum(sanityPath, pluginName).then(sum => sum === checksum)
 }
 
 export function localConfigExists(sanityPath, pluginName) {

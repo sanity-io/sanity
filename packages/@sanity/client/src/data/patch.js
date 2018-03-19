@@ -13,11 +13,7 @@ function Patch(selection, operations = {}, client = null) {
 
 assign(Patch.prototype, {
   clone() {
-    return new Patch(
-      this.selection,
-      assign({}, this.operations),
-      this.client
-    )
+    return new Patch(this.selection, assign({}, this.operations), this.client)
   },
 
   merge(props) {
@@ -36,9 +32,7 @@ assign(Patch.prototype, {
 
   unset(attrs) {
     if (!Array.isArray(attrs)) {
-      throw new Error(
-        'unset(attrs) takes an array of attributes to unset, non-array given'
-      )
+      throw new Error('unset(attrs) takes an array of attributes to unset, non-array given')
     }
 
     this.operations = assign({}, this.operations, {unset: attrs})
@@ -105,8 +99,8 @@ assign(Patch.prototype, {
   commit(options = {}) {
     if (!this.client) {
       throw new Error(
-        'No `client` passed to patch, either provide one or pass the '
-        + 'patch to a clients `mutate()` method'
+        'No `client` passed to patch, either provide one or pass the ' +
+          'patch to a clients `mutate()` method'
       )
     }
 

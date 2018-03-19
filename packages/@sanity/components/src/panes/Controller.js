@@ -5,7 +5,6 @@ import {debounce} from 'lodash'
 import Pane from './DefaultPane'
 import elementResizeDetectorMaker from 'element-resize-detector'
 
-
 export default class PanesController extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
@@ -35,7 +34,6 @@ export default class PanesController extends React.Component {
   }
 
   _elementResizeDetector = elementResizeDetectorMaker({strategy: 'scroll'})
-
 
   componentDidMount() {
     this.setWidth()
@@ -79,8 +77,8 @@ export default class PanesController extends React.Component {
       currentSelectedIndex: nextProps.selectedIndex
     })
     // if (nextProps.children.length !== this.props.children.length) {
-      //this.updatePanesStatus(nextProps.children)
-      // this.checkPanes(nextProps.children)
+    //this.updatePanesStatus(nextProps.children)
+    // this.checkPanes(nextProps.children)
     // }
   }
   // onResize = debounce(() => {
@@ -92,8 +90,11 @@ export default class PanesController extends React.Component {
 
     const newPanesStatus = React.Children.toArray(panes).map((pane, i) => {
       const minWidth = pane.props.minWidth
-      const width = this.panesStatus[i] && this.panesStatus[i].element && this.panesStatus[i].element.offsetWidth
-      let isCollapsed = (this.panesStatus[i] && this.panesStatus[i].isCollapsed)
+      const width =
+        this.panesStatus[i] &&
+        this.panesStatus[i].element &&
+        this.panesStatus[i].element.offsetWidth
+      let isCollapsed = this.panesStatus[i] && this.panesStatus[i].isCollapsed
 
       if (width < minWidth) {
         isCollapsed = true
@@ -132,7 +133,6 @@ export default class PanesController extends React.Component {
     //   panesState: panesState
     // })
   }
-
 
   handleResize = debounce(event => {
     // this.setWidth()

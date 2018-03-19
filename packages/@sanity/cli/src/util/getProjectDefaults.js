@@ -52,7 +52,8 @@ function getSanityUserInfo(context) {
     return null
   }
 
-  return client.users.getById('me')
+  return client.users
+    .getById('me')
     .then(user => `${user.name} <${user.email}>`)
     .catch(() => null)
 }

@@ -11,7 +11,7 @@ export default class IntentLink extends React.PureComponent<*, *> {
     params?: Object,
     children: Node,
     className: string
-  };
+  }
 
   context: RouterProviderContext
 

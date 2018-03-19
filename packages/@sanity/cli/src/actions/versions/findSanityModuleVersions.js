@@ -21,8 +21,8 @@ export default async (context, target) => {
   spin.stop()
 
   return packages.map(mod => {
-    mod.needsUpdate
-      = target === 'latest'
+    mod.needsUpdate =
+      target === 'latest'
         ? semverCompare(mod.version, mod.latest) === -1
         : mod.version !== mod.latest
     return mod

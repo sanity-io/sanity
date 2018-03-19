@@ -1,10 +1,9 @@
 export function decodeParams(pathsegment) {
-  return pathsegment.split(';')
-    .reduce((params, pair) => {
-      const [key, value] = pair.split('=')
-      params[key] = value
-      return params
-    }, {})
+  return pathsegment.split(';').reduce((params, pair) => {
+    const [key, value] = pair.split('=')
+    params[key] = value
+    return params
+  }, {})
 }
 
 export function encodeParams(params) {

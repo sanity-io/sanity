@@ -17,9 +17,7 @@ console.log('Building CLI to a single file')
 
 // Make sure there are no native modules
 const isBinding = file => path.basename(file.path) === 'binding.gyp'
-const bindings = klawSync(modulesDir, {nodir: true, filter: isBinding}).filter(
-  whitelistNative
-)
+const bindings = klawSync(modulesDir, {nodir: true, filter: isBinding}).filter(whitelistNative)
 
 if (bindings.length > 0) {
   console.error('Eek! Found native module at:')
@@ -31,9 +29,7 @@ const opnDir = path.dirname(require.resolve('opn'))
 const xdgPath = path.join(opnDir, 'xdg-open')
 fse.copy(xdgPath, path.join(basedir, 'bin', 'xdg-open'))
 
-const babelRc = JSON.parse(
-  fse.readFileSync(path.join(basedir, '.babelrc'), 'utf8')
-)
+const babelRc = JSON.parse(fse.readFileSync(path.join(basedir, '.babelrc'), 'utf8'))
 
 // Use the real node __dirname and __filename in order to get Yarn's source
 // files on the user's system. See constants.js

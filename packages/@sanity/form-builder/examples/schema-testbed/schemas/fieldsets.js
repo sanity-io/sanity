@@ -11,7 +11,7 @@ export default {
           title: 'Headings',
           description: 'FIELDSET HEADINGS DESCRIPTION',
           options: {
-            columns: 2,
+            columns: 2
           }
         },
         {
@@ -83,7 +83,8 @@ export default {
         },
         {
           name: 'checkTwo',
-          title: 'Check two?, But this one we but a long label on. Very very very long. Like REALLY long.',
+          title:
+            'Check two?, But this one we but a long label on. Very very very long. Like REALLY long.',
           description: 'Description',
           type: 'boolean',
           fieldset: 'checkboxes'
@@ -123,13 +124,13 @@ export default {
               name: 'petpeeve',
               type: 'string',
               title: 'Pet peeve',
-              description: 'Description',
+              description: 'Description'
             },
             {
               name: 'color',
               type: 'string',
               title: 'Color',
-              description: 'Description',
+              description: 'Description'
             }
           ]
         }
@@ -185,6 +186,6 @@ export default {
         {name: 'lastname', type: 'string', title: 'Last name', description: 'Description'},
         {name: 'address', type: 'address', title: 'Address', description: 'Description'}
       ]
-    },
+    }
   ]
 }

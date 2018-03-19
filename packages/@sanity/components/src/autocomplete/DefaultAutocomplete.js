@@ -67,7 +67,11 @@ export default class DefaultAutocomplete extends React.Component {
     const isOpen = suggestions.length > 1
 
     return (
-      <FormField className={`${isOpen ? styles.opened : styles.closed}`} label={label} labelFor={this._inputId}>
+      <FormField
+        className={`${isOpen ? styles.opened : styles.closed}`}
+        label={label}
+        labelFor={this._inputId}
+      >
         <div className={styles.input}>
           <TextInput
             id={this._inputId}
@@ -78,11 +82,7 @@ export default class DefaultAutocomplete extends React.Component {
           />
         </div>
         <div className={styles.suggestionsContainer}>
-          <List
-            items={suggestions}
-            className={styles.suggestions}
-            onSelect={this.handleSelect}
-          />
+          <List items={suggestions} className={styles.suggestions} onSelect={this.handleSelect} />
         </div>
       </FormField>
     )

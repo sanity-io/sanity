@@ -122,14 +122,13 @@ export default [
   {
     name: 'By key',
     before: {
-      a: [{key: 'one'}, {key: 'two'}],
+      a: [{key: 'one'}, {key: 'two'}]
     },
     patch: {
       unset: ['a[key=="one"]']
     },
     after: {
-      a: [{key: 'two'}],
+      a: [{key: 'two'}]
     }
   }
-
 ]

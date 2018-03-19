@@ -8,7 +8,7 @@ type ListProps = {
   className: string,
   movingItemClass: string,
   useDragHandle: boolean,
-  onSort: ({ oldIndex: number, newIndex: number }) => void,
+  onSort: ({oldIndex: number, newIndex: number}) => void,
   distance: number,
   lockToContainerEdges: boolean,
   transitionDuration: number,
@@ -17,7 +17,6 @@ type ListProps = {
 }
 
 export function createSortableList(element: Element) {
-
   // Delegate to SortableContainer from react-sortable-hoc
   const Sortable = SortableContainer(element)
 
@@ -75,7 +74,8 @@ export function createSortableItem(element: Element) {
   // Delegate to SortableElement from react-sortable-hoc
   return function SortableItem(props: ItemProps) {
     const {
-      collection, disabled, // omit to avoid {...rest} leakage
+      collection,
+      disabled, // omit to avoid {...rest} leakage
       index,
       ...rest
     } = props

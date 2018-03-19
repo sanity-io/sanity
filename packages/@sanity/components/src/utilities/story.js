@@ -6,25 +6,28 @@ import Sanity from 'part:@sanity/storybook/addons/sanity'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 
 storiesOf('Utilities')
-.addDecorator(withKnobs)
-.add(
-  'Activate on focus',
-  () => {
+  .addDecorator(withKnobs)
+  .add('Activate on focus', () => {
     return (
       <Sanity part="part:@sanity/components/utilities/activate-on-focus" propTables={[Switch]}>
-        <div style={{height: '700px', width: '500px', border: '3px dotted #ccc', position: 'relative', padding: '20px'}}>
+        <div
+          style={{
+            height: '700px',
+            width: '500px',
+            border: '3px dotted #ccc',
+            position: 'relative',
+            padding: '20px'
+          }}
+        >
           <ActivateOnFocus
             onFocus={action('onFocus')}
             onBlur={action('onBlur')}
             message={text('message (prop)')}
             enableBlur={boolean('enableBlur (prop)', false)}
           >
-            <textarea rows="30">
-              This should not be selected on first click
-            </textarea>
+            <textarea rows="30">This should not be selected on first click</textarea>
           </ActivateOnFocus>
         </div>
       </Sanity>
     )
-  }
-)
+  })

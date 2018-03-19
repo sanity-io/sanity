@@ -62,7 +62,7 @@ export default {
           description: 'inputType is browse',
           options: {
             inputType: 'browser',
-            searchable: false,
+            searchable: false
           },
           to: [
             {
@@ -78,7 +78,7 @@ export default {
           description: 'inputType is browser, and searchable is true',
           options: {
             inputType: 'browser',
-            searchable: true,
+            searchable: true
           },
           to: [
             {
@@ -94,7 +94,7 @@ export default {
           type: 'reference',
           options: {
             inputType: 'select',
-            searchable: false,
+            searchable: false
           },
           to: [
             {
@@ -110,7 +110,7 @@ export default {
           type: 'reference',
           options: {
             inputType: 'select',
-            searchable: true,
+            searchable: true
           },
           to: [
             {

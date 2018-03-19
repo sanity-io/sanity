@@ -4,7 +4,11 @@ import tools from 'all:part:@sanity/base/tool'
 
 function RenderTool(props) {
   if (!tools.length) {
-    return <div>No tools fulfills the part <code>`part:@sanity/base/tool`</code></div>
+    return (
+      <div>
+        No tools fulfills the part <code>`part:@sanity/base/tool`</code>
+      </div>
+    )
   }
 
   const activeToolName = props.tool
@@ -14,9 +18,7 @@ function RenderTool(props) {
   }
 
   const ActiveTool = activeTool.component
-  return (
-    <ActiveTool {...props} />
-  )
+  return <ActiveTool {...props} />
 }
 
 RenderTool.propTypes = {

@@ -19,8 +19,7 @@ module.exports = async function runCli(cliRoot) {
   installUnhandledRejectionsHandler()
 
   const args = parseArguments()
-  const isInit =
-    args.groupOrCommand === 'init' && args.argsWithoutOptions[0] !== 'plugin'
+  const isInit = args.groupOrCommand === 'init' && args.argsWithoutOptions[0] !== 'plugin'
   const cwd = checkCwdPresence()
   const workDir = isInit ? process.cwd() : resolveRootDir(cwd)
 
@@ -90,9 +89,7 @@ function checkCwdPresence() {
     pwd = process.cwd()
   } catch (err) {
     if (err.code === 'ENOENT') {
-      console.error(
-        '[ERR] Could not resolve working directory, does the current folder exist?'
-      )
+      console.error('[ERR] Could not resolve working directory, does the current folder exist?')
       process.exit(1)
     } else {
       throw err
@@ -113,11 +110,7 @@ function resolveRootDir(cwd) {
     )
   } catch (err) {
     console.warn(
-      chalk.red(
-        ['Error occured trying to resolve project root:', err.message].join(
-          '\n'
-        )
-      )
+      chalk.red(['Error occured trying to resolve project root:', err.message].join('\n'))
     )
     process.exit(1)
   }
@@ -136,9 +129,7 @@ function warnOnInferredProjectDir(isInit, cwd, workDir) {
     return
   }
 
-  console.log(
-    `Not in project directory, assuming context of project at ${workDir}`
-  )
+  console.log(`Not in project directory, assuming context of project at ${workDir}`)
 }
 
 function warnOnNonProductionEnvironment() {
@@ -150,9 +141,7 @@ function warnOnNonProductionEnvironment() {
     chalk.yellow(
       knownEnvs.includes(sanityEnv)
         ? `[WARN] Running in ${sanityEnv} environment mode\n`
-        : `[WARN] Running in ${chalk.red(
-            'UNKNOWN'
-          )} "${sanityEnv}" environment mode\n`
+        : `[WARN] Running in ${chalk.red('UNKNOWN')} "${sanityEnv}" environment mode\n`
     )
   )
 }

@@ -60,10 +60,7 @@ test('should be able to include the sanity debug part', t => {
   pluginLoader({basePath: path.join(__dirname, 'fixture')})
   const debug = require('sanity:debug')
   t.is(debug.plugins[0].name, 'date')
-  t.is(
-    debug.implementations['part:base/bar'][0],
-    path.join(__dirname, 'fixture', 'getBar.js')
-  )
+  t.is(debug.implementations['part:base/bar'][0], path.join(__dirname, 'fixture', 'getBar.js'))
 })
 
 test('should be able to load sanity instance config', t => {

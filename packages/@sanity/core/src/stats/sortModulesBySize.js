@@ -8,7 +8,6 @@ export default function sortModulesBySize(modules) {
     .sort((modA, modB) => modB.size - modA.size)
 }
 
-
 function findLargestModules(list, node) {
   let modList = list
   if (node.children) {

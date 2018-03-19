@@ -25,5 +25,4 @@ module.exports = function createObservableCache() {
     cache[key] = value
     return cache[key]
   }
-
 }

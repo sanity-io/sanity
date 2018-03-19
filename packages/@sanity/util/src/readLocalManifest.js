@@ -9,9 +9,7 @@ async function readLocalManifest(dirName, fileName = 'package.json') {
       return {}
     }
 
-    throw new Error(
-      `Error while attempting to read projects "${fileName}":\n${err.message}`
-    )
+    throw new Error(`Error while attempting to read projects "${fileName}":\n${err.message}`)
   }
 }
 

@@ -8,7 +8,7 @@ import UnsetPatch from './UnsetPatch'
 import DiffMatchPatch from './DiffMatchPatch'
 
 // Parses a Gradient patch into our own personal patch implementations
-export default function parse(patch : Object) : Array<Object> {
+export default function parse(patch: Object): Array<Object> {
   const result = []
   if (Array.isArray(patch)) {
     return patch.reduce((r, p) => r.concat(parse(p)), result)
@@ -45,8 +45,8 @@ export default function parse(patch : Object) : Array<Object> {
     })
   }
   if (patch.insert) {
-    let location : string
-    let path : string
+    let location: string
+    let path: string
     const spec = patch.insert
     if (spec.before) {
       location = 'before'

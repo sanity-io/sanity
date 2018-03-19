@@ -19,10 +19,12 @@ export default {
       title: 'Highlighted lines',
       name: 'highlightedLines',
       type: 'array',
-      of: [{
-        type: 'number',
-        title: 'Highlighted line'
-      }]
+      of: [
+        {
+          type: 'number',
+          title: 'Highlighted line'
+        }
+      ]
     }
   ],
   preview: {

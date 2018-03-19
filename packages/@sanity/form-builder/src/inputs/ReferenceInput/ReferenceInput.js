@@ -36,7 +36,7 @@ type State = {
   isFetching: boolean,
   hits: Array<SearchHit>,
   previewSnapshot: ?PreviewSnapshot,
-  refCache: { [string]: SearchHit }
+  refCache: {[string]: SearchHit}
 }
 
 const MISSING_SNAPSHOT = {}
@@ -79,10 +79,12 @@ export default class ReferenceInput extends React.Component<Props, State> {
     }
     const {getPreviewSnapshot, type} = this.props
 
-    this.subscriptions.replace('previewSnapshot', getPreviewSnapshot(value, type)
-      .subscribe(snapshot => {
+    this.subscriptions.replace(
+      'previewSnapshot',
+      getPreviewSnapshot(value, type).subscribe(snapshot => {
         this.setState({previewSnapshot: snapshot || MISSING_SNAPSHOT})
-      }))
+      })
+    )
   }
 
   getMemberTypeFor(typeName: string) {
@@ -98,21 +100,23 @@ export default class ReferenceInput extends React.Component<Props, State> {
 
   handleChange = (item: SearchHit) => {
     const {type} = this.props
-    this.props.onChange(PatchEvent.from(
-      setIfMissing({
-        _type: type.name,
-        _ref: item._id,
-      }),
-      type.weak === true ? set(true, ['_weak']) : unset(['_weak']),
-      set(item._id, ['_ref'])
-    ))
+    this.props.onChange(
+      PatchEvent.from(
+        setIfMissing({
+          _type: type.name,
+          _ref: item._id
+        }),
+        type.weak === true ? set(true, ['_weak']) : unset(['_weak']),
+        set(item._id, ['_ref'])
+      )
+    )
   }
 
   handleFixWeak = () => {
     const {type} = this.props
-    this.props.onChange(PatchEvent.from(
-      type.weak === true ? set(true, ['_weak']) : unset(['_weak'])
-    ))
+    this.props.onChange(
+      PatchEvent.from(type.weak === true ? set(true, ['_weak']) : unset(['_weak']))
+    )
   }
 
   handleClear = () => {
@@ -134,8 +138,9 @@ export default class ReferenceInput extends React.Component<Props, State> {
       isFetching: true
     })
 
-    this.subscriptions.replace('search', onSearch(query, type)
-      .subscribe((items: Array<SearchHit>) => {
+    this.subscriptions.replace(
+      'search',
+      onSearch(query, type).subscribe((items: Array<SearchHit>) => {
         const updatedCache = items.reduce((cache, item) => {
           cache[item._id] = item
           return cache
@@ -146,18 +151,13 @@ export default class ReferenceInput extends React.Component<Props, State> {
           isFetching: false,
           refCache: updatedCache
         })
-      }))
+      })
+    )
   }
 
   renderHit = (item: SearchHit) => {
     const type = this.getMemberTypeFor(item._type)
-    return (
-      <Preview
-        type={type}
-        value={item}
-        layout="default"
-      />
-    )
+    return <Preview type={type} value={item} layout="default" />
   }
 
   renderOpenItemElement = () => {
@@ -188,15 +188,7 @@ export default class ReferenceInput extends React.Component<Props, State> {
   }
 
   render() {
-    const {
-      type,
-      value,
-      level,
-      readOnly,
-      onSearch,
-      getPreviewSnapshot,
-      ...rest
-    } = this.props
+    const {type, value, level, readOnly, onSearch, getPreviewSnapshot, ...rest} = this.props
 
     const {previewSnapshot, isFetching, hits} = this.state
     const valueFromHit = value && hits.find(hit => hit._id === value._ref)
@@ -208,7 +200,7 @@ export default class ReferenceInput extends React.Component<Props, State> {
     const hasRef = value && value._ref
     const hasWeakMismatch = hasRef && !isMissing && weakIs !== weakShouldBe
 
-    let inputValue = value ? (previewSnapshot && previewSnapshot.title) : undefined
+    let inputValue = value ? previewSnapshot && previewSnapshot.title : undefined
 
     if (previewSnapshot && !previewSnapshot.title) {
       inputValue = 'Untitled document'
@@ -216,10 +208,11 @@ export default class ReferenceInput extends React.Component<Props, State> {
 
     return (
       <FormField label={type.title} level={level} description={type.description}>
-        <div className={(hasWeakMismatch || isMissing) ? styles.hasWarnings : ''}>
+        <div className={hasWeakMismatch || isMissing ? styles.hasWarnings : ''}>
           {hasWeakMismatch && (
             <div className={styles.weakRefMismatchWarning}>
-              Warning: This reference is <em>{weakIs}</em>, but should be <em>{weakShouldBe}</em> according to schema.
+              Warning: This reference is <em>{weakIs}</em>, but should be <em>{weakShouldBe}</em>{' '}
+              according to schema.
               <div>
                 <Button onClick={this.handleFixWeak}>Convert to {weakShouldBe}</Button>
               </div>
@@ -228,7 +221,11 @@ export default class ReferenceInput extends React.Component<Props, State> {
           <SearchableSelect
             {...rest}
             placeholder="Type to search…"
-            title={(isMissing && hasRef) ? `Document id: ${value._ref || 'unknown'}` : (previewSnapshot && previewSnapshot.description)}
+            title={
+              isMissing && hasRef
+                ? `Document id: ${value._ref || 'unknown'}`
+                : previewSnapshot && previewSnapshot.description
+            }
             onOpen={this.handleOpen}
             onFocus={this.handleFocus}
             onSearch={this.handleSearch}

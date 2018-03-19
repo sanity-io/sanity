@@ -5,7 +5,7 @@ import StateLink from '../../src/components/StateLink'
 export default class NotFound extends React.PureComponent {
   static propTypes = {
     location: PropTypes.string
-  };
+  }
 
   render() {
     return (

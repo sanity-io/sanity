@@ -35,10 +35,8 @@ class DefaultTextFieldTagsImplementation extends React.Component {
 }
 
 storiesOf('Tags')
-.addDecorator(withKnobs)
-.add(
-  'Tags',
-  () => {
+  .addDecorator(withKnobs)
+  .add('Tags', () => {
     const tags = ['Test', 'Sanity']
 
     return (
@@ -51,18 +49,27 @@ storiesOf('Tags')
         />
       </Sanity>
     )
-  }
-)
+  })
 
-.add(
-  'Tags (test)',
-  () => {
-    const tags = ['Test', 'Sanity', 'React', 'Computer', 'Macbook', 'Awesome', 'Windows', 'CPU', 'Moore', 'Intel', 'Ada', 'Enigma']
+  .add('Tags (test)', () => {
+    const tags = [
+      'Test',
+      'Sanity',
+      'React',
+      'Computer',
+      'Macbook',
+      'Awesome',
+      'Windows',
+      'CPU',
+      'Moore',
+      'Intel',
+      'Ada',
+      'Enigma'
+    ]
 
     return (
       <Sanity part="part:@sanity/components/tags/textfield" propTables={[TagsTextField]}>
         <DefaultTextFieldTagsImplementation tags={array('tags (prop)', tags)} />
       </Sanity>
     )
-  }
-)
+  })
