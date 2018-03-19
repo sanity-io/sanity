@@ -7,11 +7,18 @@
     "clean": "rimraf lib",
     "typecheck": "flow check",
     "tap": "tap --node-arg -r --node-arg ./test/.init.js",
-    "test": "npm run tap ./test/*.test.js ./test/**/*.test.js",
+    "test": "NODE_ENV=test jest",
     "start": "npm run example-testbed",
     "example-testbed": "cd examples/schema-testbed && sanity start",
     "example-undo": "cd examples/undo && sanity start",
     "example-quickstart": "cd examples/quickstart && sanity start"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "setupTestFrameworkScriptFile": "./test/setup.js",
+    "collectCoverageFrom": [
+      "src/**.js"
+    ]
   },
   "keywords": [
     "sanity",
@@ -41,6 +48,7 @@
     "humanize-list": "^1.0.1",
     "immutable": "^3.8.1",
     "is-equal": "^1.5.5",
+    "is-hotkey": "^0.1.2",
     "lodash": "^4.17.4",
     "moment": "^2.19.1",
     "nano-pubsub": "^1.0.2",
@@ -50,11 +58,11 @@
     "react-datepicker": "^1.3.0",
     "rxjs": "^6.1.0",
     "shallow-equals": "^1.0.0",
-    "slate": "^0.25.2",
-    "slate-base64-serializer": "^0.1.9",
+    "slate": "0.33.3",
+    "slate-base64-serializer": "^0.2.28",
     "slate-insert-block-on-enter": "^0.0.5",
-    "slate-react": "0.1.10",
-    "slate-soft-break": "^0.4.1",
+    "slate-react": "0.12.3",
+    "slate-soft-break": "^0.6.0",
     "speakingurl": "^13.0.0"
   },
   "devDependencies": {
@@ -67,8 +75,11 @@
     "@sanity/core": "0.134.0",
     "@sanity/plugin-loader": "0.134.0",
     "@sanity/server": "0.134.0",
+    "assert": "^1.4.1",
     "flow-typed": "^2.2.3",
     "in-publish": "^2.0.0",
+    "jest": "^22.4.2",
+    "jest-cli": "^22.4.2",
     "jsdom": "^11.3.0",
     "json-markup": "^1.1.0",
     "path-to-regexp": "^1.7.0",

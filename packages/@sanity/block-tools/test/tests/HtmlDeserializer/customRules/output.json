@@ -2,6 +2,7 @@
   {
     "_type": "block",
     "children": [
+      { "_type": "span", "marks": ["strong"], "text": "Hei" },
       { "_type": "span", "marks": ["code"], "text": "const foo = 'bar'" }
     ],
     "markDefs": [],
