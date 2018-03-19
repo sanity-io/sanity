@@ -1,9 +1,11 @@
 // @flow
 
 import blockContentTypeToOptions from './util/blockContentTypeToOptions'
-import blocksToSlateState from './converters/blocksToSlateState'
+import _blocksToEditorValue from './converters/blocksToEditorValue'
+import _editorValueToBlocks from './converters/editorValueToBlocks'
 import HtmlDeserializer from './HtmlDeserializer'
-import slateStateToBlocks from './converters/slateStateToBlocks'
+import {SLATE_DEFAULT_BLOCK} from './constants'
+import _normalizeBlock from './util/normalizeBlock'
 
 /**
  * BlockTools - various tools for Sanity block content
@@ -12,7 +14,7 @@ import slateStateToBlocks from './converters/slateStateToBlocks'
  *    The compiled schema for the block content type to work with
  *
  */
-export default {
+const blockContentFunctions = {
   /**
    * Convert HTML to blocks respecting the block content type's schema
    *
@@ -27,32 +29,31 @@ export default {
    *      API compatible model as returned from DOMParser for using server side.
    * @returns {Array} Blocks
    */
-  htmlToBlocks(html, options = {}) {
-    const deserializer = new HtmlDeserializer(options)
+  htmlToBlocks(html: string, blockContentType: {}, options = {}) {
+    const deserializer = new HtmlDeserializer(blockContentType, options)
     return deserializer.deserialize(html)
   },
 
   /**
-   * Convert a serialized Slate state to blocks
+   * Convert a serialized editor value to blocks
    *
-   * @param {Object} An object representing the structure of the Slate JSON.
+   * @param {Object} An object representing the structure of the editor value.
    * @param {Object} blockContentType
    * @returns {Array} Blocks
    */
-  slateStateToBlocks(slateJson, blockContentType) {
-    return slateStateToBlocks(slateJson, blockContentType)
+  editorValueToBlocks(value, blockContentType, options = {}) {
+    return _editorValueToBlocks(value, blockContentType, options)
   },
 
   /**
-   * Convert blocks to a serialized Slate state
+   * Convert blocks to a serialized editor value
    *
    * @param {Array} blocks
    * @param {Object} blockContentType
-   * @returns {Object} An object representing the serialized Slate state.
+   * @returns {Object} An object representing the serialized editor value.
    */
-
-  blocksToSlateState(blocks, blockContentType) {
-    return blocksToSlateState(blocks, blockContentType)
+  blocksToEditorValue(blocks, blockContentType, options = {}) {
+    return _blocksToEditorValue(blocks, blockContentType, options)
   },
 
   /**
@@ -61,7 +62,16 @@ export default {
    * @param {Object} blockContentType
    * @returns {Object} The feature-set
    */
-  getBlockContentFeatures(blockType) {
-    return blockContentTypeToOptions(blockType)
+  getBlockContentFeatures(blockContentType) {
+    return blockContentTypeToOptions(blockContentType)
   }
 }
+
+export default blockContentFunctions
+
+export const EDITOR_DEFAULT_BLOCK_TYPE = SLATE_DEFAULT_BLOCK
+export const htmlToBlocks = blockContentFunctions.htmlToBlocks
+export const editorValueToBlocks = blockContentFunctions.editorValueToBlocks
+export const blocksToEditorValue = blockContentFunctions.blocksToEditorValue
+export const getBlockContentFeatures = blockContentFunctions.getBlockContentFeatures
+export const normalizeBlock = _normalizeBlock

@@ -14,4 +14,4 @@ export {default as PatchEvent} from '../PatchEvent'
 export {default as HashFocusManager} from './focusManagers/HashFocusManager'
 export {default as SimpleFocusManager} from './focusManagers/SimpleFocusManager'
 export {patches}
-export {BlockEditor} from '..'
+export {default as BlockEditor} from '../inputs/BlockEditor'

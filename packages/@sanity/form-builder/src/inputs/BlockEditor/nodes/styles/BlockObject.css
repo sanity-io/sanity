@@ -1,0 +1,54 @@
+@import "part:@sanity/base/theme/variables/forms-style";
+
+.root {
+  user-select: none;
+  position: relative;
+  lost-utility: clearfix;
+  padding: 1em 0;
+}
+
+.previewContainer {
+  display: block;
+  cursor: move;
+  border: 1px solid var(--form-builder-block-border-color);
+
+  @nest &:hover {
+    background-color: var(--form-builder-block-background-hover);
+  }
+}
+
+.inputContainer {
+  position: absolute;
+  top: calc(50% + 0.5em);
+  left: 3rem;
+}
+
+.focused {
+  composes: root;
+}
+
+.focused > .previewContainer {
+  border: 1px solid var(--form-builder-block-border-color-focus);
+}
+
+.selected {
+  composes: root;
+}
+
+.selected > .previewContainer {
+  background-color: var(--form-builder-block-background-selected);
+}
+
+.editBlockContainerPopOver {
+  position: absolute;
+  top: 50%;
+  left: 25%;
+}
+
+.editBlockContainerFold {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 1px;
+  width: 100%;
+}

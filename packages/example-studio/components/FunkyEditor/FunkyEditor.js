@@ -3,6 +3,9 @@ import React from 'react'
 import {BlockEditor} from 'part:@sanity/form-builder'
 
 function extractTextFromBlocks(blocks) {
+  if (!blocks) {
+    return ''
+  }
   return blocks
     .filter(val => val._type === 'block')
     .map(block => {
@@ -25,12 +28,12 @@ export default class FunkyEditor extends React.Component {
   }
 
   render() {
-    const {type, value = [], level, onChange} = this.props
     return (
       <div>
-        <BlockEditor type={type} level={level} value={value} onChange={onChange} />
+        <BlockEditor {...this.props} />
         <p>
-          Your funkyness is <strong>{extractTextFromBlocks(value).length}</strong> characters long
+          Your funkyness is <strong>{extractTextFromBlocks(this.props.value).length}</strong>{' '}
+          characters long
         </p>
       </div>
     )

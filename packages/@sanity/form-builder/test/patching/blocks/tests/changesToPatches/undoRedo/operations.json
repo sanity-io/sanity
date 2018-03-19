@@ -1,0 +1,78 @@
+[
+  {
+    "object": "operation",
+    "type": "remove_node",
+    "path": [
+      0
+    ]
+  },
+  {
+    "object": "operation",
+    "type": "insert_node",
+    "path": [
+      0
+    ],
+    "node": {
+      "object": "block",
+      "type": "image",
+      "isVoid": true,
+      "data": {
+        "_key": "11d2ff546ad4",
+        "value": {
+          "_key": "11d2ff546ad4",
+          "_type": "image"
+        }
+      },
+      "nodes": [
+        {
+          "object": "text",
+          "leaves": [
+            {
+              "object": "leaf",
+              "text": "",
+              "marks": []
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "object": "operation",
+    "type": "remove_node",
+    "path": [
+      0
+    ]
+  },
+  {
+    "object": "operation",
+    "type": "insert_node",
+    "path": [
+      0
+    ],
+    "node": {
+      "object": "block",
+      "type": "image",
+      "isVoid": true,
+      "data": {
+        "_key": "11d2ff546ad4",
+        "value": {
+          "_key": "11d2ff546ad4",
+          "_type": "image"
+        }
+      },
+      "nodes": [
+        {
+          "object": "text",
+          "leaves": [
+            {
+              "object": "leaf",
+              "text": "",
+              "marks": []
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

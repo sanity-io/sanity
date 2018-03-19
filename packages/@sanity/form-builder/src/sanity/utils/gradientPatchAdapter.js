@@ -31,18 +31,18 @@ function toFormBuilderPatch(origin: Origin, patch: GradientPatch): Patch {
             }
           })
         }
+        if (type === 'insert') {
+          const position = 'before' in patch.insert ? 'before' : 'after'
+          return {
+            type: 'insert',
+            position: position,
+            path: convertPath.toFormBuilder(patch.insert[position]),
+            items: patch.insert.items,
+            origin
+          }
+        }
         return Object.keys(patch[type])
           .map(gradientPath => {
-            if (type === 'insert') {
-              const position = 'before' in patch.insert ? 'before' : 'after'
-              return {
-                type: 'insert',
-                position: position,
-                path: convertPath.toFormBuilder(patch.insert[position]),
-                items: patch.insert.items,
-                origin
-              }
-            }
             if (type === 'set') {
               return {
                 type: 'set',
