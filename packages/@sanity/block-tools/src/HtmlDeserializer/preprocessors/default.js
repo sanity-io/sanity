@@ -1,7 +1,6 @@
 import {_XPathResult} from './index'
 
 export default (html, doc) => {
-
   // Remove this cruft from the document
   const unwantedWordDocumentPaths = [
     '/html/text()',

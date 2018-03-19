@@ -33,9 +33,7 @@ const serializeInjected = {
     delete newVal.__injected
     delete newVal.__updated
     const serialized = serialize(newVal).replace(/\n\s\s/g, '\n')
-    const wrapped = indent(
-      `\n----[${text}]----\n${serialized}\n---[/${text}]----\n\n`
-    )
+    const wrapped = indent(`\n----[${text}]----\n${serialized}\n---[/${text}]----\n\n`)
     return wrapped
       .replace(/\n\s\s/g, '\n')
       .split('\n')
@@ -44,10 +42,7 @@ const serializeInjected = {
   },
 
   test(val) {
-    return (
-      val &&
-      (val.hasOwnProperty('__injected') || val.hasOwnProperty('__updated'))
-    )
+    return val && (val.hasOwnProperty('__injected') || val.hasOwnProperty('__updated'))
   }
 }
 

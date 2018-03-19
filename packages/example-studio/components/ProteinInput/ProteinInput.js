@@ -98,11 +98,7 @@ export default class ProteinInput extends React.Component {
   }
 
   updateViewerCamera = camera => {
-    this.viewer.setCamera(
-      camera.rotation,
-      camera.center,
-      camera.zoom
-    )
+    this.viewer.setCamera(camera.rotation, camera.center, camera.zoom)
   }
 
   resetViewerCamera = () => {
@@ -124,14 +120,19 @@ export default class ProteinInput extends React.Component {
   saveCamera = () => {
     const {onChange, type} = this.props
     const {_rotation, _center, _zoom} = this.viewer._cam
-    onChange(PatchEvent.from([
-      setIfMissing({_type: type.name, pdb: DEFAULT_PDB}),
-      set({
-        rotation: Array.from(_rotation),
-        center: Array.from(_center),
-        zoom: _zoom
-      }, ['camera'])
-    ]))
+    onChange(
+      PatchEvent.from([
+        setIfMissing({_type: type.name, pdb: DEFAULT_PDB}),
+        set(
+          {
+            rotation: Array.from(_rotation),
+            center: Array.from(_center),
+            zoom: _zoom
+          },
+          ['camera']
+        )
+      ])
+    )
   }
 
   handleSelectChange = item => {
@@ -140,7 +141,7 @@ export default class ProteinInput extends React.Component {
 
   handlePdbStringChange = event => {
     const pdbId = event.target.value
-    if (pdbId && (pdbId.length === 4)) {
+    if (pdbId && pdbId.length === 4) {
       this.setPdb(pdbId)
     }
   }
@@ -170,11 +171,7 @@ export default class ProteinInput extends React.Component {
     const {isLoading} = this.state
 
     return (
-      <Fieldset
-        legend={type.title}
-        level={level}
-        description={type.description}
-      >
+      <Fieldset legend={type.title} level={level} description={type.description}>
         <Select
           label="Choose existing…"
           items={PDBS}
@@ -184,7 +181,14 @@ export default class ProteinInput extends React.Component {
         <TextField label="PDB" value={pdbId} onChange={this.handlePdbStringChange} />
         <div style={{height: '500px', width: '100%', position: 'relative', overflow: 'hidden'}}>
           {isLoading && (
-            <div style={{zIndex: 100, backgroundColor: 'rgba(255,255,255,0.8)', width: '100%', height: '100%'}}>
+            <div
+              style={{
+                zIndex: 100,
+                backgroundColor: 'rgba(255,255,255,0.8)',
+                width: '100%',
+                height: '100%'
+              }}
+            >
               <Spinner center />
             </div>
           )}

@@ -2,8 +2,12 @@ import {once} from 'lodash'
 import ReferenceInput from '../inputs/SanityReferenceInput'
 
 /* eslint-disable no-console */
-const warnInputTypeNotSupported = once(() => console.warn('The option "inputType" on references is removed.'))
-const warnSearchableOptionNotSupported = once(() => console.warn('The option "searchable" on references has been removed.'))
+const warnInputTypeNotSupported = once(() =>
+  console.warn('The option "inputType" on references is removed.')
+)
+const warnSearchableOptionNotSupported = once(() =>
+  console.warn('The option "searchable" on references has been removed.')
+)
 /* eslint-enable no-console */
 
 export default function resolveReferenceInput(type) {

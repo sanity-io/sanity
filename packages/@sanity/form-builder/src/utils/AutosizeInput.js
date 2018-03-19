@@ -8,7 +8,7 @@ const sizerStyle = {
   visibility: 'hidden',
   height: 0,
   overflow: 'scroll',
-  whiteSpace: 'pre',
+  whiteSpace: 'pre'
 }
 
 class AutosizeInput extends Component {
@@ -16,7 +16,9 @@ class AutosizeInput extends Component {
     super(props)
     this.state = {
       inputWidth: props.minWidth,
-      inputId: `_${Math.random().toString(36).substr(2, 12)}`,
+      inputId: `_${Math.random()
+        .toString(36)
+        .substr(2, 12)}`
     }
   }
   componentDidMount() {
@@ -77,7 +79,10 @@ class AutosizeInput extends Component {
       return
     }
     let newInputWidth
-    if (this.props.placeholder && (!this.props.value || (this.props.value && this.props.placeholderIsMinWidth))) {
+    if (
+      this.props.placeholder &&
+      (!this.props.value || (this.props.value && this.props.placeholderIsMinWidth))
+    ) {
       newInputWidth = Math.max(this.sizer.scrollWidth, this.placeHolderSizer.scrollWidth) + 2
     } else {
       newInputWidth = this.sizer.scrollWidth + 2
@@ -87,7 +92,7 @@ class AutosizeInput extends Component {
     }
     if (newInputWidth !== this.state.inputWidth) {
       this.setState({
-        inputWidth: newInputWidth,
+        inputWidth: newInputWidth
       })
     }
   }
@@ -104,12 +109,14 @@ class AutosizeInput extends Component {
     this.input.select()
   }
   render() {
-    const sizerValue = [this.props.defaultValue, this.props.value, ''].reduce((previousValue, currentValue) => {
-      if (previousValue !== null && previousValue !== undefined) {
-        return previousValue
+    const sizerValue = [this.props.defaultValue, this.props.value, ''].reduce(
+      (previousValue, currentValue) => {
+        if (previousValue !== null && previousValue !== undefined) {
+          return previousValue
+        }
+        return currentValue
       }
-      return currentValue
-    })
+    )
 
     const wrapperStyle = {...this.props.style}
     if (!wrapperStyle.display) {
@@ -132,15 +139,18 @@ class AutosizeInput extends Component {
       <div className={this.props.className} style={wrapperStyle}>
         <style
           dangerouslySetInnerHTML={{
-            __html: [`input#${this.state.id}::-ms-clear {display: none;}`].join('\n'),
+            __html: [`input#${this.state.id}::-ms-clear {display: none;}`].join('\n')
           }}
         />
         <input id={this.state.id} {...inputProps} ref={this.inputRef} />
-        <div ref={this.sizerRef} style={sizerStyle}>{sizerValue}</div>
-        {this.props.placeholder
-          ? <div ref={this.placeHolderSizerRef} style={sizerStyle}>{this.props.placeholder}</div>
-          : null
-        }
+        <div ref={this.sizerRef} style={sizerStyle}>
+          {sizerValue}
+        </div>
+        {this.props.placeholder ? (
+          <div ref={this.placeHolderSizerRef} style={sizerStyle}>
+            {this.props.placeholder}
+          </div>
+        ) : null}
       </div>
     )
   }
@@ -152,19 +162,20 @@ AutosizeInput.propTypes = {
   inputClassName: PropTypes.string, // className for the input element
   inputRef: PropTypes.func, // ref callback for the input element
   inputStyle: PropTypes.object, // css styles for the input element
-  minWidth: PropTypes.oneOfType([ // minimum width for input element
+  minWidth: PropTypes.oneOfType([
+    // minimum width for input element
     PropTypes.number,
-    PropTypes.string,
+    PropTypes.string
   ]),
   onAutosize: PropTypes.func, // onAutosize handler: function(newWidth) {}
   onChange: PropTypes.func, // onChange handler: function(newValue) {}
   placeholder: PropTypes.string, // placeholder text
   placeholderIsMinWidth: PropTypes.bool, // don't collapse size to less than the placeholder
   style: PropTypes.object, // css styles for the outer element
-  value: PropTypes.any, // field value
+  value: PropTypes.any // field value
 }
 AutosizeInput.defaultProps = {
-  minWidth: 1,
+  minWidth: 1
 }
 
 export default AutosizeInput

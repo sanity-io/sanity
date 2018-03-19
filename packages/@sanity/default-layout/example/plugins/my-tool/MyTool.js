@@ -3,11 +3,7 @@ import {route} from 'part:@sanity/base/router'
 import React from 'react'
 
 function MyTool(props) {
-  return (
-    <div>
-      This is a tool
-    </div>
-  )
+  return <div>This is a tool</div>
 }
 
 export default {

@@ -4,7 +4,6 @@ require('should')
 // Todo: write test for cropping container too
 
 describe('calculateStyles', () => {
-
   describe('default aspect ratio', () => {
     it('defaults to the source image aspect ratio when no crop is given', () => {
       const style = calculateStyles({

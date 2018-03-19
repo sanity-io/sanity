@@ -58,7 +58,7 @@ export default [
         {a: 7, p: 'Thorvald Meyers gt.', zz: {yyy: 55, zzz: 100}},
         {b: 7, p: 'Thorvald Meyers gt.', zz: {yyy: 55, zzz: 10}}
       ]
-    },
+    }
   },
 
   // Potentially redundant, added to exactly match a test case from @sanity/form-builder that was failing.
@@ -67,7 +67,11 @@ export default [
     before: {
       addresses: [
         {_type: 'address', street: 'Thorvald Meyers gate', location: {_type: 'latlon', lat: 45}},
-        {_type: 'address', street: 'Thorvald Meyers gate', location: {_type: 'latlon', lat: 41, lon: 22}},
+        {
+          _type: 'address',
+          street: 'Thorvald Meyers gate',
+          location: {_type: 'latlon', lat: 41, lon: 22}
+        }
       ]
     },
     patch: {
@@ -77,8 +81,16 @@ export default [
     },
     after: {
       addresses: [
-        {_type: 'address', street: 'Thorvald Meyers gate', location: {_type: 'latlon', lat: 45, lon: 61}},
-        {_type: 'address', street: 'Thorvald Meyers gate', location: {_type: 'latlon', lat: 41, lon: 22}},
+        {
+          _type: 'address',
+          street: 'Thorvald Meyers gate',
+          location: {_type: 'latlon', lat: 45, lon: 61}
+        },
+        {
+          _type: 'address',
+          street: 'Thorvald Meyers gate',
+          location: {_type: 'latlon', lat: 41, lon: 22}
+        }
       ]
     }
   }

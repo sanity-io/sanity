@@ -18,9 +18,7 @@ type Props = {
   focusPath: ?any,
   onFocus: () => {},
   onBlur: () => {},
-  children: (
-    ChildArgs
-  ) => any
+  children: ChildArgs => any
 }
 
 type State = {

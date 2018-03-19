@@ -41,7 +41,9 @@ function isAncestor(path1, path2) {
 }
 
 function shouldReset(path, patches) {
-  return patches.some(patch => isAncestor(patch.path, path) && (patch.type === 'set' || patch.type === 'unset'))
+  return patches.some(
+    patch => isAncestor(patch.path, path) && (patch.type === 'set' || patch.type === 'unset')
+  )
 }
 
 function getValueAtPath(value, path) {
@@ -59,7 +61,7 @@ type SubscriberArg = {
   snapshot: any
 }
 
-type Subscriber = (SubscriberArg) => void
+type Subscriber = SubscriberArg => void
 
 export default function withPatchSubscriber(ComposedComponent: any) {
   return class SubscribePatch extends React.Component {
@@ -67,12 +69,11 @@ export default function withPatchSubscriber(ComposedComponent: any) {
 
     static contextTypes = {
       getValuePath: PropTypes.func,
-      formBuilder: PropTypes.any,
+      formBuilder: PropTypes.any
     }
 
     subscribe = (subscriber: Subscriber) => {
       return this.context.formBuilder.onPatch(({snapshot, patches}) => {
-
         const selfPath = this.context.getValuePath()
         const filtered = patches
           .filter(patch => startsWith(patch.path, selfPath))

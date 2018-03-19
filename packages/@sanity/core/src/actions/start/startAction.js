@@ -15,7 +15,7 @@ export default async (args, context) => {
   const config = sanityConfig.get('server')
   const getServer = isProduction ? getProdServer : getDevServer
   const {port, hostname} = config
-  const httpHost = flags.host === 'all' ? '0.0.0.0' : (flags.host || hostname)
+  const httpHost = flags.host === 'all' ? '0.0.0.0' : flags.host || hostname
   const httpPort = flags.port || port
 
   const serverOptions = {
@@ -66,7 +66,9 @@ export default async (args, context) => {
     const hasWarnings = stats.hasWarnings()
 
     if (!hasErrors && !hasWarnings) {
-      output.print(chalk.green(`Compiled successfully! Server listening on http://${httpHost}:${httpPort}`))
+      output.print(
+        chalk.green(`Compiled successfully! Server listening on http://${httpHost}:${httpPort}`)
+      )
       return
     }
 
@@ -93,30 +95,29 @@ export default async (args, context) => {
   }
 }
 
-
 function resolveStaticPath(rootDir, config) {
   const {staticPath} = config
-  return path.isAbsolute(staticPath)
-    ? staticPath
-    : path.resolve(path.join(rootDir, staticPath))
+  return path.isAbsolute(staticPath) ? staticPath : path.resolve(path.join(rootDir, staticPath))
 }
 
 function gracefulDeath(httpHost, config, err) {
   if (err.code === 'EADDRINUSE') {
-    throw new Error('Port number for Sanity server is already in use, configure `server.port` in `sanity.json`')
+    throw new Error(
+      'Port number for Sanity server is already in use, configure `server.port` in `sanity.json`'
+    )
   }
 
   if (err.code === 'EACCES') {
-    const help = config.port < 1024
-      ? 'port numbers below 1024 requires root privileges'
-      : `do you have access to listen to the given host (${httpHost})?`
+    const help =
+      config.port < 1024
+        ? 'port numbers below 1024 requires root privileges'
+        : `do you have access to listen to the given host (${httpHost})?`
 
     throw new Error(`Sanity server does not have access to listen to given port - ${help}`)
   }
 
   throw err
 }
-
 
 function printErrors(output, errors) {
   output.print(chalk.red('Failed to compile.'))
@@ -137,10 +138,8 @@ function printWarnings(output, warnings) {
   output.print(chalk.yellow('Compiled with warnings.'))
   output.print()
 
-  warnings
-    .map(message => `Warning in ${formatMessage(message)}`)
-    .forEach(message => {
-      output.print(message)
-      output.print()
-    })
+  warnings.map(message => `Warning in ${formatMessage(message)}`).forEach(message => {
+    output.print(message)
+    output.print()
+  })
 }

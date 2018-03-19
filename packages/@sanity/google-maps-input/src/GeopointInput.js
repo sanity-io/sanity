@@ -104,8 +104,8 @@ class GeopointInput extends React.Component {
       return (
         <div>
           <p>
-            The <a href="https://sanity.io/docs/schema-types/geopoint-type">Geopoint type</a> needs a Google
-            Maps API key with access to:
+            The <a href="https://sanity.io/docs/schema-types/geopoint-type">Geopoint type</a> needs
+            a Google Maps API key with access to:
           </p>
           <ul>
             <li>Google Maps JavaScript API</li>
@@ -123,7 +123,12 @@ class GeopointInput extends React.Component {
     }
 
     return (
-      <Fieldset legend={type.title} description={type.description} className={styles.root} markers={markers}>
+      <Fieldset
+        legend={type.title}
+        description={type.description}
+        className={styles.root}
+        markers={markers}
+      >
         {value && (
           <div>
             <img className={styles.previewImage} src={getStaticImageUrl(value)} />

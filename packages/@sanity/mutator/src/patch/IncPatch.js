@@ -1,8 +1,8 @@
 export default class IncPatch {
-  path : string
-  value : number
-  id : string
-  constructor(id : string, path : string, value : number) {
+  path: string
+  value: number
+  id: string
+  constructor(id: string, path: string, value: number) {
     this.path = path
     this.value = value
     this.id = id

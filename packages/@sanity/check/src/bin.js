@@ -15,12 +15,11 @@ const dir = path.resolve(process.cwd(), relativeDir || '.')
 const manifestDir = path.join(dir, 'sanity.json')
 const showHelp = includes(args, '-h') || includes(args, '--help')
 const showVersion = includes(args, '-v') || includes(args, '--version')
-const productionMode = (
-  process.env.NODE_ENV === 'production'
-  || publish.inPublish()
-  || includes(args, '-p')
-  || includes(args, '--production')
-)
+const productionMode =
+  process.env.NODE_ENV === 'production' ||
+  publish.inPublish() ||
+  includes(args, '-p') ||
+  includes(args, '--production')
 
 if (showHelp) {
   console.log('Usage: sanity-check [DIRECTORY]')
@@ -39,19 +38,16 @@ if (showVersion) {
   process.exit()
 }
 
-fse.readJson(manifestDir)
+fse
+  .readJson(manifestDir)
   .catch(err => {
-    console.error(chalk.red(
-      `${tag} Failed to read "${manifestDir}":\n${err.message}`
-    ))
+    console.error(chalk.red(`${tag} Failed to read "${manifestDir}":\n${err.message}`))
 
     process.exit(1)
   })
   .then(() => sanityCheck({dir, productionMode}))
   .catch(err => {
-    console.error(chalk.red(
-      err.sanityCheck ? `${tag}\n\n${err.message}` : err.stack
-    ))
+    console.error(chalk.red(err.sanityCheck ? `${tag}\n\n${err.message}` : err.stack))
 
     process.exit(1)
   })

@@ -126,7 +126,8 @@ export default function makeDragAware(Component) {
           onMouseDown={!readOnly && this.handleDragStart}
           onTouchMove={!readOnly && this.handleDrag}
           {...omit(this.props, ['onDragStart', 'onDragEnd', 'onDrag'])}
-        />)
+        />
+      )
     }
   }
 }

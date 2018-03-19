@@ -19,7 +19,7 @@ export default class Details extends React.Component {
   static propTypes = {
     children: PropTypes.node,
     isOpen: PropTypes.bool,
-    title: PropTypes.string,
+    title: PropTypes.string
   }
 
   static defaultProps = {
@@ -44,9 +44,7 @@ export default class Details extends React.Component {
     return (
       <div>
         <div tabIndex="0" onClick={this.handleToggle} style={CONTAINER_STYLE}>
-          <span style={ARROW_STYLE}>
-            {isOpen ? '▼' : '▶'}
-          </span>
+          <span style={ARROW_STYLE}>{isOpen ? '▼' : '▶'}</span>
           {title}
         </div>
         {isOpen ? children : null}

@@ -48,7 +48,7 @@ export class TextSpanAccessor {
   serialize() {
     const result = {
       _type: 'textspan',
-      content: this.content,
+      content: this.content
     }
     if (this.marks.length > 0) {
       result.marks = this.marks
@@ -118,7 +118,9 @@ export class SpansAccessor {
     const spans = flatten(
       paragraph.nodes.toArray().map(childNode => {
         if (childNode.kind === 'text') {
-          return splitTextNodeIntoArraysOfCharacterBySpan(childNode).map(textNode => TextSpanAccessor.createFromTextNode(childNode.key, textNode))
+          return splitTextNodeIntoArraysOfCharacterBySpan(childNode).map(textNode =>
+            TextSpanAccessor.createFromTextNode(childNode.key, textNode)
+          )
         }
         return new NodeAccessor(childNode)
       })
@@ -256,7 +258,10 @@ export class SpansAccessor {
     if (this.spans.length == 0 && pos == 0) {
       nextSpans = itemAccessors
     } else {
-      nextSpans = this.spans.slice(0, pos).concat(itemAccessors).concat(this.spans.slice(pos))
+      nextSpans = this.spans
+        .slice(0, pos)
+        .concat(itemAccessors)
+        .concat(this.spans.slice(pos))
     }
     return new SpansAccessor(nextSpans)
   }

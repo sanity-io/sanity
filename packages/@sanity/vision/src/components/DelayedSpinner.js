@@ -10,10 +10,7 @@ class DelayedSpinner extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.timer = setTimeout(
-      () => this.setState({show: true}),
-      this.props.delay
-    )
+    this.timer = setTimeout(() => this.setState({show: true}), this.props.delay)
   }
 
   componentWillUnmount() {
@@ -21,9 +18,7 @@ class DelayedSpinner extends React.PureComponent {
   }
 
   render() {
-    return this.state.show
-      ? <LoadingSpinner />
-      : null
+    return this.state.show ? <LoadingSpinner /> : null
   }
 }
 

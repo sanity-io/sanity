@@ -9,13 +9,15 @@ import applyStaticLoaderFix from './util/applyStaticLoaderFix'
 import {getDocumentElement} from './baseServer'
 
 const getWebpackCompiler = baseConfig => {
-  const config = baseConfig.env === 'production'
-    ? getWebpackProdConfig(baseConfig)
-    : getWebpackDevConfig(baseConfig)
+  const config =
+    baseConfig.env === 'production'
+      ? getWebpackProdConfig(baseConfig)
+      : getWebpackDevConfig(baseConfig)
 
   return webpack(config)
 }
 
+// exported to allow reuse of same React version from CLI
 export {
   getDevServer,
   getProdServer,
@@ -25,5 +27,5 @@ export {
   getWebpackProdConfig,
   getDocumentElement,
   applyStaticLoaderFix,
-  ReactDOM // exported to allow reuse of same React version from CLI
+  ReactDOM
 }

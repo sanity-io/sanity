@@ -53,17 +53,27 @@ const renderMenu = isCollapsed => {
 const renderFunctions = isCollapsed => {
   return (
     <div className={renderFunctionsStyles.root}>
-      <Button kind="simple" icon={PlusIcon} color="primary" title="Add" className={renderFunctionsStyles.button} />
-      <Button kind="simple" icon={TrashIcon} color="danger" title="Delete" className={renderFunctionsStyles.button} />
+      <Button
+        kind="simple"
+        icon={PlusIcon}
+        color="primary"
+        title="Add"
+        className={renderFunctionsStyles.button}
+      />
+      <Button
+        kind="simple"
+        icon={TrashIcon}
+        color="danger"
+        title="Delete"
+        className={renderFunctionsStyles.button}
+      />
     </div>
   )
 }
 
 storiesOf('Panes')
-.addDecorator(withKnobs)
-.add(
-  'Pane',
-  () => {
+  .addDecorator(withKnobs)
+  .add('Pane', () => {
     return (
       <Sanity part="part:@sanity/components/panes/default" propTables={[DefaultPane]}>
         <DefaultPane
@@ -77,58 +87,54 @@ storiesOf('Panes')
         />
       </Sanity>
     )
-  }
-)
+  })
 
-// .add(
-//   'Controller',
-//   () => {
-//     const panes = range(number('#Panes', 4)).map((pane, i) => {
-//       return {
-//         title: `Pane ${i} is the best pane`,
-//         layout: i > 3 ? 'default' : 'main'
-//       }
-//     })
-//
-//     const selectedPaneIndex = number('Selected pane', 1)
-//     const knobsPanes = object('Panes', panes)
-//
-//     return (
-//       <Sanity part="part:@sanity/components/panes/controller" propTables={[PanesController]}>
-//         <PanesController selectedIndex={selectedPaneIndex}>
-//           {
-//             knobsPanes.map((pane, i) => {
-//               return (
-//                 <DefaultPane
-//                   title={pane.title}
-//                   key={pane.title}
-//                   renderFunctions={renderFunctions}
-//                   renderMenu={renderMenu}
-//                   onExpand={action('expand')}
-//                   onCollapse={action('onCollapse')}
-//                   onMenuToggle={action('onMenuToggle')}
-//                   minWidth={300}
-//                 />
-//               )
-//             })
-//           }
-//         </PanesController>
-//       </Sanity>
-//     )
-//   }
-// )
+  // .add(
+  //   'Controller',
+  //   () => {
+  //     const panes = range(number('#Panes', 4)).map((pane, i) => {
+  //       return {
+  //         title: `Pane ${i} is the best pane`,
+  //         layout: i > 3 ? 'default' : 'main'
+  //       }
+  //     })
+  //
+  //     const selectedPaneIndex = number('Selected pane', 1)
+  //     const knobsPanes = object('Panes', panes)
+  //
+  //     return (
+  //       <Sanity part="part:@sanity/components/panes/controller" propTables={[PanesController]}>
+  //         <PanesController selectedIndex={selectedPaneIndex}>
+  //           {
+  //             knobsPanes.map((pane, i) => {
+  //               return (
+  //                 <DefaultPane
+  //                   title={pane.title}
+  //                   key={pane.title}
+  //                   renderFunctions={renderFunctions}
+  //                   renderMenu={renderMenu}
+  //                   onExpand={action('expand')}
+  //                   onCollapse={action('onCollapse')}
+  //                   onMenuToggle={action('onMenuToggle')}
+  //                   minWidth={300}
+  //                 />
+  //               )
+  //             })
+  //           }
+  //         </PanesController>
+  //       </Sanity>
+  //     )
+  //   }
+  // )
 
-
-.add(
-  'Split',
-  () => {
+  .add('Split', () => {
     const panes = range(number('#Panes', 2)).map((pane, i) => {
       return {
         title: `Pane ${i} is a long pane an it has a name and it should cap somewhere`,
         key: `pane${i}`,
         isCollapsed: [true][i],
         minWidth: [100, 100, 400][i] || 300,
-        defaultWidth: [200, 200, 700][i] || 300,
+        defaultWidth: [200, 200, 700][i] || 300
       }
     })
 
@@ -158,38 +164,35 @@ storiesOf('Panes')
 
     return (
       <Sanity part="part:@sanity/components/panes/controller" propTables={[PanesController]}>
-        <SplitController selectedIndex={selectedPaneIndex} onCollapse={handleControllerCollapse} onUnCollapse={handleControllerUnCollapse}>
-          {
-            knobsPanes.map((pane, i) => {
-              return (
-                <SplitPaneWrapper
-                  minWidth={pane.minWidth}
-                  defaultWidth={pane.defaultWidth}
-                  key={pane.key}
+        <SplitController
+          selectedIndex={selectedPaneIndex}
+          onCollapse={handleControllerCollapse}
+          onUnCollapse={handleControllerUnCollapse}
+        >
+          {knobsPanes.map((pane, i) => {
+            return (
+              <SplitPaneWrapper
+                minWidth={pane.minWidth}
+                defaultWidth={pane.defaultWidth}
+                key={pane.key}
+                isCollapsed={pane.isCollapsed}
+              >
+                <DefaultPane
+                  title={pane.title}
+                  renderFunctions={renderFunctions}
+                  renderMenu={renderSplitMenu}
+                  onExpand={action('expand')}
+                  onCollapse={action('onCollapse')}
                   isCollapsed={pane.isCollapsed}
+                  onMenuToggle={action('onMenuToggle')}
                 >
-                  <DefaultPane
-                    title={pane.title}
-                    renderFunctions={renderFunctions}
-                    renderMenu={renderSplitMenu}
-                    onExpand={action('expand')}
-                    onCollapse={action('onCollapse')}
-                    isCollapsed={pane.isCollapsed}
-                    onMenuToggle={action('onMenuToggle')}
-                  >
-                    <div>
-                      defaultWidth: {pane.defaultWidth}
-                    </div>
-                    <div>
-                      minWidth: {pane.minWidth}
-                    </div>
-                  </DefaultPane>
-                </SplitPaneWrapper>
-              )
-            })
-          }
+                  <div>defaultWidth: {pane.defaultWidth}</div>
+                  <div>minWidth: {pane.minWidth}</div>
+                </DefaultPane>
+              </SplitPaneWrapper>
+            )
+          })}
         </SplitController>
       </Sanity>
     )
-  }
-)
+  })

@@ -10,26 +10,17 @@ import SanityStudioLogo from 'part:@sanity/base/sanity-studio-logo'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import UnauthorizedUser from './UnauthorizedUser'
 
-
 const isProjectLogin = client.config().useProjectHostname
-const projectId = (isProjectLogin && client.config().projectId)
-  ? client.config().projectId : null
+const projectId = isProjectLogin && client.config().projectId ? client.config().projectId : null
 
 export default class LoginWrapper extends React.PureComponent {
-
   static propTypes = {
-    children: PropTypes.oneOfType([
-      PropTypes.node,
-      PropTypes.func
-    ]).isRequired,
+    children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
     title: PropTypes.node,
     description: PropTypes.node,
     sanityLogo: PropTypes.node,
     SanityLogo: PropTypes.func,
-    LoadingScreen: PropTypes.oneOfType([
-      PropTypes.node,
-      PropTypes.func
-    ])
+    LoadingScreen: PropTypes.oneOfType([PropTypes.node, PropTypes.func])
   }
 
   static defaultProps = {
@@ -38,16 +29,15 @@ export default class LoginWrapper extends React.PureComponent {
     sanityLogo: null,
     SanityLogo: SanityStudioLogo,
     LoadingScreen: Spinner
-  };
+  }
 
   state = {isLoading: true, user: null, error: null}
 
   componentWillMount() {
-    this.userSubscription = userStore.currentUser
-      .subscribe({
-        next: evt => this.setState({user: evt.user, error: evt.error, isLoading: false}),
-        error: error => this.setState({error, isLoading: false})
-      })
+    this.userSubscription = userStore.currentUser.subscribe({
+      next: evt => this.setState({user: evt.user, error: evt.error, isLoading: false}),
+      error: error => this.setState({error, isLoading: false})
+    })
   }
 
   componentWillUnmount() {
@@ -63,9 +53,11 @@ export default class LoginWrapper extends React.PureComponent {
     const {error, user, isLoading} = this.state
     const {children, LoadingScreen, SanityLogo, sanityLogo} = this.props
     if (isLoading) {
-      return typeof LoadingScreen === 'function'
-        ? <LoadingScreen center fullscreen />
-        : LoadingScreen
+      return typeof LoadingScreen === 'function' ? (
+        <LoadingScreen center fullscreen />
+      ) : (
+        LoadingScreen
+      )
     }
 
     if (error) {

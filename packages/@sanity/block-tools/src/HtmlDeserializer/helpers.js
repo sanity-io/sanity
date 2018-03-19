@@ -2,12 +2,11 @@ import {
   DEFAULT_BLOCK,
   DEFAULT_SUPPORTED_STYLES,
   DEFAULT_SUPPORTED_DECORATORS,
-  DEFAULT_SUPPORTED_ANNOTATIONS,
+  DEFAULT_SUPPORTED_ANNOTATIONS
 } from '../constants'
 import blockContentTypeToOptions from '../util/blockContentTypeToOptions'
 import preprocessors from './preprocessors'
 import resolveJsType from '../util/resolveJsType'
-
 
 /**
  * A utility function to create the options needed for the various rule sets,
@@ -43,7 +42,6 @@ export function tagName(el) {
   return el.tagName.toLowerCase()
 }
 
-
 // TODO: make this plugin-style
 export function preprocess(html, parseHtml, evaluate) {
   const compactHtml = html
@@ -67,9 +65,9 @@ export function preprocess(html, parseHtml, evaluate) {
 export function defaultParseHtml() {
   if (resolveJsType(DOMParser) === 'undefined') {
     throw new Error(
-      'The native `DOMParser` global which the `Html` deserializer uses by '
-      + 'default is not present in this environment. '
-      + 'You must supply the `options.parseHtml` function instead.'
+      'The native `DOMParser` global which the `Html` deserializer uses by ' +
+        'default is not present in this environment. ' +
+        'You must supply the `options.parseHtml` function instead.'
     )
   }
   return html => {
@@ -108,11 +106,11 @@ export function trimWhitespace(blocks) {
   blocks.forEach(block => {
     const nextSpan = (child, index) => {
       const next = block.children[index + 1]
-      return (next && next._type === 'span') ? next : null
+      return next && next._type === 'span' ? next : null
     }
     const prevSpan = (child, index) => {
       const prev = block.children[index - 1]
-      return (prev && prev._type === 'span') ? prev : null
+      return prev && prev._type === 'span' ? prev : null
     }
     block.children.forEach((child, index) => {
       if (child._type !== 'span') {
@@ -123,18 +121,20 @@ export function trimWhitespace(blocks) {
       if (index === 0) {
         child.text = child.text.replace(/^[^\S\n]+/g, '')
       }
-      if (index === (block.children.length - 1)) {
+      if (index === block.children.length - 1) {
         child.text = child.text.replace(/[^\S\n]+$/g, '')
       }
-      if (/\s/.test(child.text.substring(child.text.length - 1))
-        && nextChild
-        && /\s/.test(nextChild.text.substring(0, 1))
+      if (
+        /\s/.test(child.text.substring(child.text.length - 1)) &&
+        nextChild &&
+        /\s/.test(nextChild.text.substring(0, 1))
       ) {
         child.text = child.text.replace(/[^\S\n]+$/g, '')
       }
-      if (/\s/.test(child.text.substring(0, 1))
-        && prevChild
-        && /\s/.test(prevChild.text.substring(prevChild.text.length - 1))
+      if (
+        /\s/.test(child.text.substring(0, 1)) &&
+        prevChild &&
+        /\s/.test(prevChild.text.substring(prevChild.text.length - 1))
       ) {
         child.text = child.text.replace(/^[^\S\n]+/g, '')
       }
@@ -148,7 +148,6 @@ export function trimWhitespace(blocks) {
 
 export function ensureRootIsBlocks(blocks) {
   return blocks.reduce((memo, node, i, original) => {
-
     if (node._type === 'block') {
       memo.push(node)
       return memo

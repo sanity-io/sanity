@@ -6,7 +6,7 @@ const formatters = {
   key: 'white',
   string: 'green',
   number: 'yellow',
-  literal: 'bold',
+  literal: 'bold'
 }
 
 function colorize(input, chalk) {
@@ -17,7 +17,11 @@ function colorize(input, chalk) {
     .map((token, i, arr) => {
       // Note how the following only works because we pretty-print the JSON
       const prevToken = i === 0 ? token : arr[i - 1]
-      if (token.type === 'string' && prevToken.type === 'whitespace' && /^\n\s+$/.test(prevToken.value)) {
+      if (
+        token.type === 'string' &&
+        prevToken.type === 'whitespace' &&
+        /^\n\s+$/.test(prevToken.value)
+      ) {
         token.type = 'key'
       }
 

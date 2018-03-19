@@ -19,7 +19,7 @@ type Props = {
   type: Type,
   children: () => {},
   className?: string,
-  onFocus: ?(Path => void),
+  onFocus: ?(Path) => void,
   getUploadOptions: (type: Type, file: File) => UploadOption,
   onUpload?: (type: Type, file: File) => Uploader
 }
@@ -36,9 +36,16 @@ type State = {
 }
 
 // this is a hack for Safari that reads pasted image(s) from an ContentEditable div instead of the onpaste event
-function convertImagesToFilesAndClearContentEditable(element: HTMLDivElement, targetFormat = 'image/jpeg') : Promise<Array<File>> {
+function convertImagesToFilesAndClearContentEditable(
+  element: HTMLDivElement,
+  targetFormat = 'image/jpeg'
+): Promise<Array<File>> {
   if (!element.isContentEditable) {
-    throw new Error(`Expected element to be contentEditable="true". Instead found a non contenteditable ${element.tagName}`)
+    throw new Error(
+      `Expected element to be contentEditable="true". Instead found a non contenteditable ${
+        element.tagName
+      }`
+    )
   }
 
   return new Promise(resolve => setTimeout(resolve, 10)) // add a delay so the paste event can finish
@@ -48,7 +55,9 @@ function convertImagesToFilesAndClearContentEditable(element: HTMLDivElement, ta
       return imageElements
     })
     .then(images => Promise.all(images.map(img => imageUrlToBlob(img.src))))
-    .then(imageBlobs => imageBlobs.map(blob => new File([blob], 'pasted-image.jpg', {type: targetFormat})))
+    .then(imageBlobs =>
+      imageBlobs.map(blob => new File([blob], 'pasted-image.jpg', {type: targetFormat}))
+    )
 }
 // needed by Edge
 function select(el) {
@@ -84,18 +93,23 @@ export function createUploadTarget(Component) {
     }
 
     handleKeyPress = (event: SyntheticKeyboardEvent<*>) => {
-      if (event.target === ReactDOM.findDOMNode(this) && (event.ctrlKey || event.metaKey) && event.key === 'v') {
+      if (
+        event.target === ReactDOM.findDOMNode(this) &&
+        (event.ctrlKey || event.metaKey) &&
+        event.key === 'v'
+      ) {
         this.setState({showPasteInput: true})
       }
     }
 
     handlePaste = (event: SyntheticClipboardEvent<*>) => {
-      extractPastedFiles(event.clipboardData).then(files => {
-        return files.length > 0
-          ? files
-          // Invoke Safari hack
-          : convertImagesToFilesAndClearContentEditable(this._pasteInput, 'image/jpeg')
-      })
+      extractPastedFiles(event.clipboardData)
+        .then(files => {
+          return files.length > 0
+            ? files
+            : // Invoke Safari hack
+              convertImagesToFilesAndClearContentEditable(this._pasteInput, 'image/jpeg')
+        })
         .then(files => {
           this.uploadFiles(files)
           this.setState({showPasteInput: false})
@@ -145,11 +159,9 @@ export function createUploadTarget(Component) {
         uploaderCandidates: this.props.getUploadOptions(file)
       }))
 
-      const ready = tasks
-        .filter(task => task.uploaderCandidates.length > 0)
+      const ready = tasks.filter(task => task.uploaderCandidates.length > 0)
 
-      const rejected = tasks
-        .filter(task => task.uploaderCandidates.length === 0)
+      const rejected = tasks.filter(task => task.uploaderCandidates.length === 0)
 
       this.setState({rejected})
 
@@ -158,10 +170,12 @@ export function createUploadTarget(Component) {
       // const ambiguous = tasks
       //   .filter(task => task.uploaderCandidates.length > 1)
 
-      ready
-        .forEach(task => {
-          this.uploadFile(task.file, sortBy(task.uploaderCandidates, cand => cand.uploader.priority)[0])
-        })
+      ready.forEach(task => {
+        this.uploadFile(
+          task.file,
+          sortBy(task.uploaderCandidates, cand => cand.uploader.priority)[0]
+        )
+      })
     }
 
     uploadFile(file: File, uploadOption: UploadOption) {
@@ -209,8 +223,8 @@ export function createUploadTarget(Component) {
             >
               {ambiguous.map(task => (
                 <div key={task.file.name}>
-                  The file {task.file.name} can be converted to several types of content.
-                  Please select how you want to represent it:
+                  The file {task.file.name} can be converted to several types of content. Please
+                  select how you want to represent it:
                   <ul>
                     {task.uploaderCandidates.map(uploaderCandidate => (
                       <li key={uploaderCandidate.type.name}>
@@ -259,9 +273,7 @@ export function createUploadTarget(Component) {
         >
           {isDraggingOver && (
             <div className={styles.dragStatus}>
-              <h2 className={styles.dragStatusInner}>
-                Drop to upload
-              </h2>
+              <h2 className={styles.dragStatusInner}>Drop to upload</h2>
             </div>
           )}
           {showPasteInput && (
@@ -272,9 +284,7 @@ export function createUploadTarget(Component) {
                 className={styles.pasteInput}
                 ref={this.setPasteInput}
               />
-              <h2 className={styles.dragStatusInner}>
-                Paste (Ctrl+V or ⌘+V) to upload
-              </h2>
+              <h2 className={styles.dragStatusInner}>Paste (Ctrl+V or ⌘+V) to upload</h2>
             </div>
           )}
           {children}

@@ -7,9 +7,7 @@ import createImageLoadProxy from '../../src/createImageLoadProxy'
 function Preview(props) {
   const {image, ...rest} = props
   const srcAspectRatio = image.width / image.height
-  return (
-    <HotspotImage {...rest} srcAspectRatio={srcAspectRatio} />
-  )
+  return <HotspotImage {...rest} srcAspectRatio={srcAspectRatio} />
 }
 Preview.propTypes = {
   image: PropTypes.shape({
@@ -23,4 +21,3 @@ export default createImageLoadProxy(Preview, {
     return <div>{error.message}</div>
   }
 })
-

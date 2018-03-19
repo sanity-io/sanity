@@ -2,11 +2,7 @@
 // use regular node require for unbundled context
 
 /* eslint-disable camelcase, no-undef */
-const requireFunc = (
-  typeof __webpack_require__ === 'function'
-    ? __non_webpack_require__
-    : require
-)
+const requireFunc = typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
 /* eslint-enable camelcase, no-undef */
 
 module.exports = request => {

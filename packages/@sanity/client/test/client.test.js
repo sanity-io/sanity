@@ -16,10 +16,8 @@ const sanityClient = require('../src/sanityClient')
 
 const SanityClient = sanityClient
 const noop = () => {} // eslint-disable-line no-empty-function
-const bufferFrom = (content, enc) => (Buffer.from
-  ? Buffer.from(content, enc)
-  : new Buffer(content, enc) // eslint-disable-line no-buffer-constructor
-)
+const bufferFrom = (content, enc) =>
+  Buffer.from ? Buffer.from(content, enc) : new Buffer(content, enc) // eslint-disable-line no-buffer-constructor
 
 const apiHost = 'api.sanity.url'
 const defaultProjectId = 'bf1942'
@@ -97,10 +95,7 @@ test('throws if no projectId is set', t => {
 })
 
 test('throws on invalid project ids', t => {
-  t.throws(
-    () => sanityClient({projectId: '*foo*'}),
-    /projectId.*?can only contain/i
-  )
+  t.throws(() => sanityClient({projectId: '*foo*'}), /projectId.*?can only contain/i)
   t.end()
 })
 
@@ -113,9 +108,12 @@ test('throws on invalid dataset names', t => {
 })
 
 test('can use request() for API-relative requests', t => {
-  nock(projectHost()).get('/v1/ping').reply(200, {pong: true})
+  nock(projectHost())
+    .get('/v1/ping')
+    .reply(200, {pong: true})
 
-  getClient().request({uri: '/ping'})
+  getClient()
+    .request({uri: '/ping'})
     .then(res => t.equal(res.pong, true))
     .catch(t.ifError)
     .then(t.end)
@@ -127,9 +125,21 @@ test('can use getUrl() to get API-relative paths', t => {
 })
 
 test('validation', t => {
-  t.doesNotThrow(() => validators.validateDocumentId('op', 'barfoo'), /document ID in format/, 'does not throw on valid ID')
-  t.doesNotThrow(() => validators.validateDocumentId('op', 'bar.foo.baz'), /document ID in format/, 'does not throw on valid ID')
-  t.throws(() => validators.validateDocumentId('op', 'blah#blah'), /not a valid document ID/, 'throws on invalid ID')
+  t.doesNotThrow(
+    () => validators.validateDocumentId('op', 'barfoo'),
+    /document ID in format/,
+    'does not throw on valid ID'
+  )
+  t.doesNotThrow(
+    () => validators.validateDocumentId('op', 'bar.foo.baz'),
+    /document ID in format/,
+    'does not throw on valid ID'
+  )
+  t.throws(
+    () => validators.validateDocumentId('op', 'blah#blah'),
+    /not a valid document ID/,
+    'throws on invalid ID'
+  )
   t.end()
 })
 
@@ -142,10 +152,14 @@ test('can request list of projects', t => {
     .reply(200, [{projectId: 'foo'}, {projectId: 'bar'}])
 
   const client = sanityClient({useProjectHostname: false, apiHost: `https://${apiHost}`})
-  client.projects.list().then(projects => {
-    t.equal(projects.length, 2, 'should have two projects')
-    t.equal(projects[0].projectId, 'foo', 'should have project id')
-  }).catch(t.ifError).then(t.end)
+  client.projects
+    .list()
+    .then(projects => {
+      t.equal(projects.length, 2, 'should have two projects')
+      t.equal(projects[0].projectId, 'foo', 'should have project id')
+    })
+    .catch(t.ifError)
+    .then(t.end)
 })
 
 test('can request project by id', t => {
@@ -162,10 +176,13 @@ test('can request project by id', t => {
     ]
   }
 
-  nock(`https://${apiHost}`).get('/v1/projects/n1f7y').reply(200, doc)
+  nock(`https://${apiHost}`)
+    .get('/v1/projects/n1f7y')
+    .reply(200, doc)
 
   const client = sanityClient({useProjectHostname: false, apiHost: `https://${apiHost}`})
-  client.projects.getById('n1f7y')
+  client.projects
+    .getById('n1f7y')
     .then(project => t.deepEqual(project, doc))
     .catch(t.ifError)
     .then(t.end)
@@ -185,20 +202,36 @@ test('throws when trying to delete dataset with invalid name', t => {
 })
 
 test('can create dataset', t => {
-  nock(projectHost()).put('/v1/datasets/bar').reply(200)
-  getClient().datasets.create('bar').catch(t.ifError).then(t.end)
+  nock(projectHost())
+    .put('/v1/datasets/bar')
+    .reply(200)
+  getClient()
+    .datasets.create('bar')
+    .catch(t.ifError)
+    .then(t.end)
 })
 
 test('can delete dataset', t => {
-  nock(projectHost()).delete('/v1/datasets/bar').reply(200)
-  getClient().datasets.delete('bar').catch(t.ifError).then(t.end)
+  nock(projectHost())
+    .delete('/v1/datasets/bar')
+    .reply(200)
+  getClient()
+    .datasets.delete('bar')
+    .catch(t.ifError)
+    .then(t.end)
 })
 
 test('can list datasets', t => {
-  nock(projectHost()).get('/v1/datasets').reply(200, ['foo', 'bar'])
-  getClient().datasets.list().then(sets => {
-    t.deepEqual(sets, ['foo', 'bar'])
-  }).catch(t.ifError).then(t.end)
+  nock(projectHost())
+    .get('/v1/datasets')
+    .reply(200, ['foo', 'bar'])
+  getClient()
+    .datasets.list()
+    .then(sets => {
+      t.deepEqual(sets, ['foo', 'bar'])
+    })
+    .catch(t.ifError)
+    .then(t.end)
 })
 
 /*****************
@@ -207,37 +240,51 @@ test('can list datasets', t => {
 test('can query for documents', t => {
   const query = 'beerfiesta.beer[.title == $beerName]'
   const params = {beerName: 'Headroom Double IPA'}
-  const qs = 'beerfiesta.beer%5B.title%20%3D%3D%20%24beerName%5D&%24beerName=%22Headroom%20Double%20IPA%22'
+  const qs =
+    'beerfiesta.beer%5B.title%20%3D%3D%20%24beerName%5D&%24beerName=%22Headroom%20Double%20IPA%22'
 
-  nock(projectHost()).get(`/v1/data/query/foo?query=${qs}`).reply(200, {
-    ms: 123,
-    q: query,
-    result: [{_id: 'njgNkngskjg', rating: 5}]
-  })
+  nock(projectHost())
+    .get(`/v1/data/query/foo?query=${qs}`)
+    .reply(200, {
+      ms: 123,
+      q: query,
+      result: [{_id: 'njgNkngskjg', rating: 5}]
+    })
 
-  getClient().fetch(query, params).then(res => {
-    t.equal(res.length, 1, 'length should match')
-    t.equal(res[0].rating, 5, 'data should match')
-  }).catch(t.ifError).then(t.end)
+  getClient()
+    .fetch(query, params)
+    .then(res => {
+      t.equal(res.length, 1, 'length should match')
+      t.equal(res[0].rating, 5, 'data should match')
+    })
+    .catch(t.ifError)
+    .then(t.end)
 })
 
 test('can query for documents and return full response', t => {
   const query = 'beerfiesta.beer[.title == $beerName]'
   const params = {beerName: 'Headroom Double IPA'}
-  const qs = 'beerfiesta.beer%5B.title%20%3D%3D%20%24beerName%5D&%24beerName=%22Headroom%20Double%20IPA%22'
+  const qs =
+    'beerfiesta.beer%5B.title%20%3D%3D%20%24beerName%5D&%24beerName=%22Headroom%20Double%20IPA%22'
 
-  nock(projectHost()).get(`/v1/data/query/foo?query=${qs}`).reply(200, {
-    ms: 123,
-    q: query,
-    result: [{_id: 'njgNkngskjg', rating: 5}]
-  })
+  nock(projectHost())
+    .get(`/v1/data/query/foo?query=${qs}`)
+    .reply(200, {
+      ms: 123,
+      q: query,
+      result: [{_id: 'njgNkngskjg', rating: 5}]
+    })
 
-  getClient().fetch(query, params, {filterResponse: false}).then(res => {
-    t.equal(res.ms, 123, 'should include timing info')
-    t.equal(res.q, query, 'should include query')
-    t.equal(res.result.length, 1, 'length should match')
-    t.equal(res.result[0].rating, 5, 'data should match')
-  }).catch(t.ifError).then(t.end)
+  getClient()
+    .fetch(query, params, {filterResponse: false})
+    .then(res => {
+      t.equal(res.ms, 123, 'should include timing info')
+      t.equal(res.q, query, 'should include query')
+      t.equal(res.result.length, 1, 'length should match')
+      t.equal(res.result[0].rating, 5, 'data should match')
+    })
+    .catch(t.ifError)
+    .then(t.end)
 })
 
 test('handles api errors gracefully', t => {
@@ -247,9 +294,13 @@ test('handles api errors gracefully', t => {
     message: 'You are not allowed to access this resource'
   }
 
-  nock(projectHost()).get('/v1/data/query/foo?query=area51').times(5).reply(403, response)
+  nock(projectHost())
+    .get('/v1/data/query/foo?query=area51')
+    .times(5)
+    .reply(403, response)
 
-  getClient().fetch('area51')
+  getClient()
+    .fetch('area51')
     .then(res => {
       t.fail('Resolve handler should not be called on failure')
       t.end()
@@ -275,9 +326,12 @@ test('handles db errors gracefully', t => {
     }
   }
 
-  nock(projectHost()).get('/v1/data/query/foo?query=foo.bar.baz%20%2012%23%5B%7B').reply(400, response)
+  nock(projectHost())
+    .get('/v1/data/query/foo?query=foo.bar.baz%20%2012%23%5B%7B')
+    .reply(400, response)
 
-  getClient().fetch('foo.bar.baz  12#[{')
+  getClient()
+    .fetch('foo.bar.baz  12#[{')
     .then(res => {
       t.fail('Resolve handler should not be called on failure')
       t.end()
@@ -292,20 +346,29 @@ test('handles db errors gracefully', t => {
 })
 
 test('can query for single document', t => {
-  nock(projectHost()).get('/v1/data/doc/foo/abc123').reply(200, {
-    ms: 123,
-    documents: [{_id: 'abc123', mood: 'lax'}]
-  })
+  nock(projectHost())
+    .get('/v1/data/doc/foo/abc123')
+    .reply(200, {
+      ms: 123,
+      documents: [{_id: 'abc123', mood: 'lax'}]
+    })
 
-  getClient().getDocument('abc123').then(res => {
-    t.equal(res.mood, 'lax', 'data should match')
-  }).catch(t.ifError).then(t.end)
+  getClient()
+    .getDocument('abc123')
+    .then(res => {
+      t.equal(res.mood, 'lax', 'data should match')
+    })
+    .catch(t.ifError)
+    .then(t.end)
 })
 
 test('gives http statuscode as error if no body is present on errors', t => {
-  nock(projectHost()).get('/v1/data/doc/foo/abc123').reply(400)
+  nock(projectHost())
+    .get('/v1/data/doc/foo/abc123')
+    .reply(400)
 
-  getClient().getDocument('abc123')
+  getClient()
+    .getDocument('abc123')
     .then(res => {
       t.fail('Resolve handler should not be called on failure')
       t.end()
@@ -318,9 +381,13 @@ test('gives http statuscode as error if no body is present on errors', t => {
 })
 
 test('populates response body on errors', t => {
-  nock(projectHost()).get('/v1/data/doc/foo/abc123').times(5).reply(400, 'Some Weird Error')
+  nock(projectHost())
+    .get('/v1/data/doc/foo/abc123')
+    .times(5)
+    .reply(400, 'Some Weird Error')
 
-  getClient().getDocument('abc123')
+  getClient()
+    .getDocument('abc123')
     .then(res => {
       t.fail('Resolve handler should not be called on failure')
       t.end()
@@ -334,14 +401,21 @@ test('populates response body on errors', t => {
 })
 
 test('throws if trying to perform data request without dataset', t => {
-  t.throws(() => sanityClient({projectId: 'foo'}).fetch('blah'), Error, /dataset.*?must be provided/)
+  t.throws(
+    () => sanityClient({projectId: 'foo'}).fetch('blah'),
+    Error,
+    /dataset.*?must be provided/
+  )
   t.end()
 })
 
 test('can create documents', t => {
   const doc = {_id: 'abc123', name: 'Raptor'}
 
-  nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', {mutations: [{create: doc}]})
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', {
+      mutations: [{create: doc}]
+    })
     .reply(200, {
       transactionId: 'abc123',
       results: [
@@ -352,7 +426,8 @@ test('can create documents', t => {
       ]
     })
 
-  getClient().create(doc)
+  getClient()
+    .create(doc)
     .then(res => {
       t.equal(res._id, doc._id, 'document id returned')
       t.ok(res._createdAt, 'server-generated attributes are included')
@@ -364,7 +439,8 @@ test('can create documents', t => {
 test('can create documents without specifying ID', t => {
   const doc = {name: 'Raptor'}
   const expectedBody = {mutations: [{create: Object.assign({}, doc)}]}
-  nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', expectedBody)
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', expectedBody)
     .reply(200, {
       transactionId: '123abc',
       results: [
@@ -375,7 +451,8 @@ test('can create documents without specifying ID', t => {
       ]
     })
 
-  getClient().create(doc)
+  getClient()
+    .create(doc)
     .then(res => {
       t.equal(res._id, 'abc456', 'document id returned')
     })
@@ -385,10 +462,12 @@ test('can create documents without specifying ID', t => {
 
 test('can tell create() not to return documents', t => {
   const doc = {_id: 'abc123', name: 'Raptor'}
-  nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true&visibility=sync', {mutations: [{create: doc}]})
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?returnIds=true&visibility=sync', {mutations: [{create: doc}]})
     .reply(200, {transactionId: 'abc123', results: [{id: 'abc123', operation: 'create'}]})
 
-  getClient().create(doc, {returnDocuments: false})
+  getClient()
+    .create(doc, {returnDocuments: false})
     .then(res => {
       t.equal(res.transactionId, 'abc123', 'returns transaction ID')
       t.equal(res.documentId, 'abc123', 'returns document id')
@@ -399,10 +478,17 @@ test('can tell create() not to return documents', t => {
 
 test('can tell create() to use non-default visibility mode', t => {
   const doc = {_id: 'abc123', name: 'Raptor'}
-  nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=async', {mutations: [{create: doc}]})
-    .reply(200, {transactionId: 'abc123', results: [{id: 'abc123', document: doc, operation: 'create'}]})
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=async', {
+      mutations: [{create: doc}]
+    })
+    .reply(200, {
+      transactionId: 'abc123',
+      results: [{id: 'abc123', document: doc, operation: 'create'}]
+    })
 
-  getClient().create(doc, {visibility: 'async'})
+  getClient()
+    .create(doc, {visibility: 'async'})
     .then(res => {
       t.equal(res._id, 'abc123', 'document id returned')
     })
@@ -413,19 +499,28 @@ test('can tell create() to use non-default visibility mode', t => {
 test('createIfNotExists() sends correct mutation', t => {
   const doc = {_id: 'abc123', name: 'Raptor'}
   const expectedBody = {mutations: [{createIfNotExists: doc}]}
-  nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', expectedBody)
-    .reply(200, {transactionId: '123abc', results: [{id: 'abc123', document: doc, operation: 'create'}]})
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', expectedBody)
+    .reply(200, {
+      transactionId: '123abc',
+      results: [{id: 'abc123', document: doc, operation: 'create'}]
+    })
 
-  getClient().createIfNotExists(doc).catch(t.ifError).then(() => t.end())
+  getClient()
+    .createIfNotExists(doc)
+    .catch(t.ifError)
+    .then(() => t.end())
 })
 
 test('can tell createIfNotExists() not to return documents', t => {
   const doc = {_id: 'abc123', name: 'Raptor'}
   const expectedBody = {mutations: [{createIfNotExists: doc}]}
-  nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true&visibility=sync', expectedBody)
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?returnIds=true&visibility=sync', expectedBody)
     .reply(200, {transactionId: 'abc123', results: [{id: 'abc123', operation: 'create'}]})
 
-  getClient().createIfNotExists(doc, {returnDocuments: false})
+  getClient()
+    .createIfNotExists(doc, {returnDocuments: false})
     .then(res => {
       t.equal(res.transactionId, 'abc123', 'returns transaction ID')
       t.equal(res.documentId, 'abc123', 'returns document id')
@@ -437,19 +532,25 @@ test('can tell createIfNotExists() not to return documents', t => {
 test('createOrReplace() sends correct mutation', t => {
   const doc = {_id: 'abc123', name: 'Raptor'}
   const expectedBody = {mutations: [{createOrReplace: doc}]}
-  nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', expectedBody)
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', expectedBody)
     .reply(200, {transactionId: '123abc', results: [{id: 'abc123', operation: 'create'}]})
 
-  getClient().createOrReplace(doc).catch(t.ifError).then(t.end)
+  getClient()
+    .createOrReplace(doc)
+    .catch(t.ifError)
+    .then(t.end)
 })
 
 test('can tell createOrReplace() not to return documents', t => {
   const doc = {_id: 'abc123', name: 'Raptor'}
   const expectedBody = {mutations: [{createOrReplace: doc}]}
-  nock(projectHost()).post('/v1/data/mutate/foo?returnIds=true&visibility=sync', expectedBody)
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?returnIds=true&visibility=sync', expectedBody)
     .reply(200, {transactionId: 'abc123', results: [{id: 'abc123', operation: 'create'}]})
 
-  getClient().createOrReplace(doc, {returnDocuments: false})
+  getClient()
+    .createOrReplace(doc, {returnDocuments: false})
     .then(res => {
       t.equal(res.transactionId, 'abc123', 'returns transaction ID')
       t.equal(res.documentId, 'abc123', 'returns document id')
@@ -464,7 +565,10 @@ test('delete() sends correct mutation', t => {
     .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', expectedBody)
     .reply(200, {transactionId: 'abc123', results: [{id: 'abc123', operation: 'delete'}]})
 
-  getClient().delete('abc123').catch(t.ifError).then(() => t.end())
+  getClient()
+    .delete('abc123')
+    .catch(t.ifError)
+    .then(() => t.end())
 })
 
 test('delete() can use query', t => {
@@ -473,7 +577,10 @@ test('delete() can use query', t => {
     .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', expectedBody)
     .reply(200, {transactionId: 'abc123'})
 
-  getClient().delete({query: 'foo.sometype'}).catch(t.ifError).then(() => t.end())
+  getClient()
+    .delete({query: 'foo.sometype'})
+    .catch(t.ifError)
+    .then(() => t.end())
 })
 
 test('delete() can be told not to return documents', t => {
@@ -482,7 +589,10 @@ test('delete() can be told not to return documents', t => {
     .post('/v1/data/mutate/foo?returnIds=true&visibility=sync', expectedBody)
     .reply(200, {transactionId: 'abc123', results: [{id: 'abc123', operation: 'delete'}]})
 
-  getClient().delete('abc123', {returnDocuments: false}).catch(t.ifError).then(() => t.end())
+  getClient()
+    .delete('abc123', {returnDocuments: false})
+    .catch(t.ifError)
+    .then(() => t.end())
 })
 
 test('mutate() accepts multiple mutations', t => {
@@ -491,26 +601,30 @@ test('mutate() accepts multiple mutations', t => {
       _id: 'movies.raiders-of-the-lost-ark',
       title: 'Raiders of the Lost Ark',
       year: 1981
-    }, {
+    },
+    {
       _id: 'movies.the-phantom-menace',
       title: 'Star Wars: Episode I - The Phantom Menace',
       year: 1999
     }
   ]
 
-  const mutations = [
-    {create: docs[0]},
-    {delete: {id: 'movies.the-phantom-menace'}}
-  ]
+  const mutations = [{create: docs[0]}, {delete: {id: 'movies.the-phantom-menace'}}]
 
   nock(projectHost())
     .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', {mutations})
-    .reply(200, {transactionId: 'foo', results: [
-      {id: 'movies.raiders-of-the-lost-ark', operation: 'create', document: docs[0]},
-      {id: 'movies.the-phantom-menace', operation: 'delete', document: docs[1]}
-    ]})
+    .reply(200, {
+      transactionId: 'foo',
+      results: [
+        {id: 'movies.raiders-of-the-lost-ark', operation: 'create', document: docs[0]},
+        {id: 'movies.the-phantom-menace', operation: 'delete', document: docs[1]}
+      ]
+    })
 
-  getClient().mutate(mutations).catch(t.ifError).then(() => t.end())
+  getClient()
+    .mutate(mutations)
+    .catch(t.ifError)
+    .then(() => t.end())
 })
 
 test('uses GET for queries below limit', t => {
@@ -536,10 +650,14 @@ test('uses GET for queries below limit', t => {
       result: [{_id: 'njgNkngskjg', rating: 5}]
     })
 
-  getClient().fetch(query, params).then(res => {
-    t.equal(res.length, 1, 'length should match')
-    t.equal(res[0].rating, 5, 'data should match')
-  }).catch(t.ifError).then(t.end)
+  getClient()
+    .fetch(query, params)
+    .then(res => {
+      t.equal(res.length, 1, 'length should match')
+      t.equal(res[0].rating, 5, 'data should match')
+    })
+    .catch(t.ifError)
+    .then(t.end)
 })
 
 test('uses POST for long queries', t => {
@@ -563,17 +681,22 @@ test('uses POST for long queries', t => {
       result: [{_id: 'njgNkngskjg', rating: 5}]
     })
 
-  getClient().fetch(query, params).then(res => {
-    t.equal(res.length, 1, 'length should match')
-    t.equal(res[0].rating, 5, 'data should match')
-  }).catch(t.ifError).then(t.end)
+  getClient()
+    .fetch(query, params)
+    .then(res => {
+      t.equal(res.length, 1, 'length should match')
+      t.equal(res[0].rating, 5, 'data should match')
+    })
+    .catch(t.ifError)
+    .then(t.end)
 })
 
 /*****************
  * PATCH OPS     *
  *****************/
 test('can build and serialize a patch of operations', t => {
-  const patch = getClient().patch('abc123')
+  const patch = getClient()
+    .patch('abc123')
     .inc({count: 1})
     .set({brownEyes: true})
     .serialize()
@@ -583,19 +706,26 @@ test('can build and serialize a patch of operations', t => {
 })
 
 test('patch() can take an array of IDs', t => {
-  const patch = getClient().patch(['abc123', 'foo.456']).inc({count: 1}).serialize()
+  const patch = getClient()
+    .patch(['abc123', 'foo.456'])
+    .inc({count: 1})
+    .serialize()
   t.deepEqual(patch, {id: ['abc123', 'foo.456'], inc: {count: 1}})
   t.end()
 })
 
 test('patch() can take a query', t => {
-  const patch = getClient().patch({query: 'beerfiesta.beer'}).inc({count: 1}).serialize()
+  const patch = getClient()
+    .patch({query: 'beerfiesta.beer'})
+    .inc({count: 1})
+    .serialize()
   t.deepEqual(patch, {query: 'beerfiesta.beer', inc: {count: 1}})
   t.end()
 })
 
 test('merge() patch can be applied multiple times', t => {
-  const patch = getClient().patch('abc123')
+  const patch = getClient()
+    .patch('abc123')
     .merge({count: 1, foo: 'bar'})
     .merge({count: 2, bar: 'foo'})
     .serialize()
@@ -605,7 +735,8 @@ test('merge() patch can be applied multiple times', t => {
 })
 
 test('setIfMissing() patch can be applied multiple times', t => {
-  const patch = getClient().patch('abc123')
+  const patch = getClient()
+    .patch('abc123')
     .setIfMissing({count: 1, foo: 'bar'})
     .setIfMissing({count: 2, bar: 'foo'})
     .serialize()
@@ -615,7 +746,8 @@ test('setIfMissing() patch can be applied multiple times', t => {
 })
 
 test('only last replace() patch call gets applied', t => {
-  const patch = getClient().patch('abc123')
+  const patch = getClient()
+    .patch('abc123')
     .replace({count: 1, foo: 'bar'})
     .replace({count: 2, bar: 'foo'})
     .serialize()
@@ -625,7 +757,8 @@ test('only last replace() patch call gets applied', t => {
 })
 
 test('can apply inc() and dec()', t => {
-  const patch = getClient().patch('abc123')
+  const patch = getClient()
+    .patch('abc123')
     .inc({count: 1}) // One step forward
     .dec({count: 2}) // Two steps back
     .serialize()
@@ -635,7 +768,8 @@ test('can apply inc() and dec()', t => {
 })
 
 test('can apply unset()', t => {
-  const patch = getClient().patch('abc123')
+  const patch = getClient()
+    .patch('abc123')
     .inc({count: 1})
     .unset(['bitter', 'enchilada'])
     .serialize()
@@ -645,14 +779,20 @@ test('can apply unset()', t => {
 })
 
 test('throws if non-array is passed to unset()', t => {
-  t.throws(() =>
-    getClient().patch('abc123').unset('bitter').serialize(),
-  /non-array given/)
+  t.throws(
+    () =>
+      getClient()
+        .patch('abc123')
+        .unset('bitter')
+        .serialize(),
+    /non-array given/
+  )
   t.end()
 })
 
 test('can apply insert()', t => {
-  const patch = getClient().patch('abc123')
+  const patch = getClient()
+    .patch('abc123')
     .inc({count: 1})
     .insert('after', 'tags[-1]', ['hotsauce'])
     .serialize()
@@ -666,22 +806,35 @@ test('can apply insert()', t => {
 })
 
 test('throws on invalid insert()', t => {
-  t.throws(() =>
-    getClient().patch('abc123').insert('bitter', 'sel', ['raf']),
-  /one of: "before", "after", "replace"/)
+  t.throws(
+    () =>
+      getClient()
+        .patch('abc123')
+        .insert('bitter', 'sel', ['raf']),
+    /one of: "before", "after", "replace"/
+  )
 
-  t.throws(() =>
-    getClient().patch('abc123').insert('before', 123, ['raf']),
-  /must be a string/)
+  t.throws(
+    () =>
+      getClient()
+        .patch('abc123')
+        .insert('before', 123, ['raf']),
+    /must be a string/
+  )
 
-  t.throws(() =>
-    getClient().patch('abc123').insert('before', 'prop', 'blah'),
-  /must be an array/)
+  t.throws(
+    () =>
+      getClient()
+        .patch('abc123')
+        .insert('before', 'prop', 'blah'),
+    /must be an array/
+  )
   t.end()
 })
 
 test('can apply append()', t => {
-  const patch = getClient().patch('abc123')
+  const patch = getClient()
+    .patch('abc123')
     .inc({count: 1})
     .append('tags', ['sriracha'])
     .serialize()
@@ -695,7 +848,8 @@ test('can apply append()', t => {
 })
 
 test('can apply prepend()', t => {
-  const patch = getClient().patch('abc123')
+  const patch = getClient()
+    .patch('abc123')
     .inc({count: 1})
     .prepend('tags', ['sriracha', 'hotsauce'])
     .serialize()
@@ -710,29 +864,53 @@ test('can apply prepend()', t => {
 
 test('can apply splice()', t => {
   const patch = () => getClient().patch('abc123')
-  const replaceFirst = patch().splice('tags', 0, 1, ['foo']).serialize()
-  const insertInMiddle = patch().splice('tags', 5, 0, ['foo']).serialize()
-  const deleteLast = patch().splice('tags', -1, 1).serialize()
-  const deleteAllFromIndex = patch().splice('tags', 3, -1).serialize()
-  const allFromIndexDefault = patch().splice('tags', 3).serialize()
-  const negativeDelete = patch().splice('tags', -2, -2, ['foo']).serialize()
+  const replaceFirst = patch()
+    .splice('tags', 0, 1, ['foo'])
+    .serialize()
+  const insertInMiddle = patch()
+    .splice('tags', 5, 0, ['foo'])
+    .serialize()
+  const deleteLast = patch()
+    .splice('tags', -1, 1)
+    .serialize()
+  const deleteAllFromIndex = patch()
+    .splice('tags', 3, -1)
+    .serialize()
+  const allFromIndexDefault = patch()
+    .splice('tags', 3)
+    .serialize()
+  const negativeDelete = patch()
+    .splice('tags', -2, -2, ['foo'])
+    .serialize()
 
   t.deepEqual(replaceFirst.insert, {replace: 'tags[0:1]', items: ['foo']})
   t.deepEqual(insertInMiddle.insert, {replace: 'tags[5:5]', items: ['foo']})
   t.deepEqual(deleteLast.insert, {replace: 'tags[-2:]', items: []})
   t.deepEqual(deleteAllFromIndex.insert, {replace: 'tags[3:-1]', items: []})
   t.deepEqual(allFromIndexDefault.insert, {replace: 'tags[3:-1]', items: []})
-  t.deepEqual(negativeDelete, patch().splice('tags', -2, 0, ['foo']).serialize())
+  t.deepEqual(
+    negativeDelete,
+    patch()
+      .splice('tags', -2, 0, ['foo'])
+      .serialize()
+  )
   t.end()
 })
 
 test('serializing invalid selectors throws', t => {
-  t.throws(() => getClient().patch(123).serialize(), /unknown selection/i)
+  t.throws(
+    () =>
+      getClient()
+        .patch(123)
+        .serialize(),
+    /unknown selection/i
+  )
   t.end()
 })
 
 test('can apply diffMatchPatch()', t => {
-  const patch = getClient().patch('abc123')
+  const patch = getClient()
+    .patch('abc123')
     .inc({count: 1})
     .diffMatchPatch({description: '@@ -1,13 +1,12 @@\n The \n-rabid\n+nice\n  dog\n'})
     .serialize()
@@ -749,11 +927,23 @@ test('all patch methods throw on non-objects being passed as argument', t => {
   const patch = getClient().patch('abc123')
   t.throws(() => patch.merge([]), /merge\(\) takes an object of properties/, 'merge throws')
   t.throws(() => patch.set(null), /set\(\) takes an object of properties/, 'set throws')
-  t.throws(() => patch.setIfMissing('foo'), /setIfMissing\(\) takes an object of properties/, 'setIfMissing throws')
-  t.throws(() => patch.replace('foo'), /replace\(\) takes an object of properties/, 'replace throws')
+  t.throws(
+    () => patch.setIfMissing('foo'),
+    /setIfMissing\(\) takes an object of properties/,
+    'setIfMissing throws'
+  )
+  t.throws(
+    () => patch.replace('foo'),
+    /replace\(\) takes an object of properties/,
+    'replace throws'
+  )
   t.throws(() => patch.inc('foo'), /inc\(\) takes an object of properties/, 'inc throws')
   t.throws(() => patch.dec('foo'), /dec\(\) takes an object of properties/, 'dec throws')
-  t.throws(() => patch.diffMatchPatch('foo'), /diffMatchPatch\(\) takes an object of properties/, 'diffMatchPatch throws')
+  t.throws(
+    () => patch.diffMatchPatch('foo'),
+    /diffMatchPatch\(\) takes an object of properties/,
+    'diffMatchPatch throws'
+  )
   t.end()
 })
 
@@ -763,7 +953,8 @@ test('executes patch when commit() is called', t => {
     .post('/v1/data/mutate/foo?returnIds=true&visibility=sync', {mutations: [expectedPatch]})
     .reply(200, {transactionId: 'blatti'})
 
-  getClient().patch('abc123')
+  getClient()
+    .patch('abc123')
     .inc({count: 1})
     .set({visited: true})
     .commit({returnDocuments: false})
@@ -779,20 +970,24 @@ test('returns patched document by default', t => {
   const expectedBody = {mutations: [expectedPatch]}
   nock(projectHost())
     .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', expectedBody)
-    .reply(200, {transactionId: 'blatti', results: [
-      {
-        id: 'abc123',
-        operation: 'update',
-        document: {
-          _id: 'abc123',
-          _createdAt: '2016-10-24T08:09:32.997Z',
-          count: 2,
-          visited: true
+    .reply(200, {
+      transactionId: 'blatti',
+      results: [
+        {
+          id: 'abc123',
+          operation: 'update',
+          document: {
+            _id: 'abc123',
+            _createdAt: '2016-10-24T08:09:32.997Z',
+            count: 2,
+            visited: true
+          }
         }
-      }
-    ]})
+      ]
+    })
 
-  getClient().patch('abc123')
+  getClient()
+    .patch('abc123')
     .inc({count: 1})
     .set({visited: true})
     .commit()
@@ -810,7 +1005,8 @@ test('commit() returns promise', t => {
     .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', expectedBody)
     .reply(400)
 
-  getClient().patch('abc123')
+  getClient()
+    .patch('abc123')
     .inc({count: 1})
     .set({visited: true})
     .commit()
@@ -840,7 +1036,10 @@ test('each patch operation returns same patch', t => {
 })
 
 test('can reset patches to no operations, keeping document ID', t => {
-  const patch = getClient().patch('abc123').inc({count: 1}).dec({visits: 1})
+  const patch = getClient()
+    .patch('abc123')
+    .inc({count: 1})
+    .dec({visits: 1})
   const reset = patch.reset()
 
   t.deepEqual(patch.serialize(), {id: 'abc123'}, 'correct patch')
@@ -850,7 +1049,9 @@ test('can reset patches to no operations, keeping document ID', t => {
 })
 
 test('patch has toJSON() which serializes patch', t => {
-  const patch = getClient().patch('abc123').inc({count: 1})
+  const patch = getClient()
+    .patch('abc123')
+    .inc({count: 1})
   t.deepEqual(
     JSON.parse(JSON.stringify(patch)),
     JSON.parse(JSON.stringify({id: 'abc123', inc: {count: 1}}))
@@ -861,7 +1062,10 @@ test('patch has toJSON() which serializes patch', t => {
 test('Patch is available on client and can be used without instantiated client', t => {
   const patch = new sanityClient.Patch('foo.bar')
   t.deepEqual(
-    patch.inc({foo: 1}).dec({bar: 2}).serialize(),
+    patch
+      .inc({foo: 1})
+      .dec({bar: 2})
+      .serialize(),
     {id: 'foo.bar', inc: {foo: 1}, dec: {bar: 2}},
     'patch should work without context'
   )
@@ -875,7 +1079,9 @@ test('patch commit() throws if called without a client', t => {
 })
 
 test('can manually call clone on patch', t => {
-  const patch1 = getClient().patch('abc123').inc({count: 1})
+  const patch1 = getClient()
+    .patch('abc123')
+    .inc({count: 1})
   const patch2 = patch1.clone()
 
   t.notEqual(patch1, patch2, 'actually cloned')
@@ -900,15 +1106,13 @@ test('can apply ifRevisionId constraint', t => {
  * TRANSACTIONS  *
  *****************/
 test('can build and serialize a transaction of operations', t => {
-  const trans = getClient().transaction()
+  const trans = getClient()
+    .transaction()
     .create({_id: 'moofoo', name: 'foobar'})
     .delete('nznjkAJnjgnk')
     .serialize()
 
-  t.deepEqual(trans, [
-    {create: {_id: 'moofoo', name: 'foobar'}},
-    {delete: {id: 'nznjkAJnjgnk'}}
-  ])
+  t.deepEqual(trans, [{create: {_id: 'moofoo', name: 'foobar'}}, {delete: {id: 'nznjkAJnjgnk'}}])
   t.end()
 })
 
@@ -930,7 +1134,8 @@ test('each transaction operation mutates transaction', t => {
 })
 
 test('transaction methods are chainable', t => {
-  const trans = getClient().transaction()
+  const trans = getClient()
+    .transaction()
     .create({moo: 'tools'})
     .createIfNotExists({_id: 'someId', j: 'query'})
     .createOrReplace({_id: 'someOtherId', do: 'jo'})
@@ -942,21 +1147,25 @@ test('transaction methods are chainable', t => {
       create: {
         moo: 'tools'
       }
-    }, {
+    },
+    {
       createIfNotExists: {
         _id: 'someId',
         j: 'query'
       }
-    }, {
+    },
+    {
       createOrReplace: {
         _id: 'someOtherId',
         do: 'jo'
       }
-    }, {
+    },
+    {
       delete: {
         id: 'prototype'
       }
-    }, {
+    },
+    {
       patch: {
         id: 'foobar',
         inc: {sales: 1}
@@ -969,7 +1178,8 @@ test('transaction methods are chainable', t => {
 })
 
 test('patches can be built with callback', t => {
-  const trans = getClient().transaction()
+  const trans = getClient()
+    .transaction()
     .patch('moofoo', p => p.inc({sales: 1}).dec({stock: 1}))
     .serialize()
 
@@ -987,7 +1197,10 @@ test('patches can be built with callback', t => {
 
 test('throws if patch builder does not return patch', t => {
   t.throws(
-    () => getClient().transaction().patch('moofoo', noop),
+    () =>
+      getClient()
+        .transaction()
+        .patch('moofoo', noop),
     /must return the patch/
   )
   t.end()
@@ -996,7 +1209,10 @@ test('throws if patch builder does not return patch', t => {
 test('patch can take an existing patch', t => {
   const client = getClient()
   const incPatch = client.patch('bar').inc({sales: 1})
-  const trans = getClient().transaction().patch(incPatch).serialize()
+  const trans = getClient()
+    .transaction()
+    .patch(incPatch)
+    .serialize()
 
   t.deepEqual(trans, [
     {
@@ -1015,7 +1231,8 @@ test('executes transaction when commit() is called', t => {
     .post('/v1/data/mutate/foo?returnIds=true&visibility=sync', {mutations})
     .reply(200, {transactionId: 'blatti'})
 
-  getClient().transaction()
+  getClient()
+    .transaction()
     .create({bar: true})
     .delete('barfoo')
     .commit()
@@ -1037,13 +1254,23 @@ test('throws when passing incorrect input to transaction operations', t => {
 
 test('throws when not including document ID in createOrReplace/createIfNotExists in transaction', t => {
   const trans = getClient().transaction()
-  t.throws(() => trans.createIfNotExists({_type: 'movie', a: 1}), /contains an ID/, 'throws on createIfNotExists()')
-  t.throws(() => trans.createOrReplace({_type: 'movie', a: 1}), /contains an ID/, 'throws on createOrReplace()')
+  t.throws(
+    () => trans.createIfNotExists({_type: 'movie', a: 1}),
+    /contains an ID/,
+    'throws on createIfNotExists()'
+  )
+  t.throws(
+    () => trans.createOrReplace({_type: 'movie', a: 1}),
+    /contains an ID/,
+    'throws on createOrReplace()'
+  )
   t.end()
 })
 
 test('can manually call clone on transaction', t => {
-  const trans1 = getClient().transaction().delete('foo.bar')
+  const trans1 = getClient()
+    .transaction()
+    .delete('foo.bar')
   const trans2 = trans1.clone()
 
   t.notEqual(trans1, trans2, 'actually cloned')
@@ -1052,11 +1279,10 @@ test('can manually call clone on transaction', t => {
 })
 
 test('transaction has toJSON() which serializes patch', t => {
-  const trans = getClient().transaction().create({count: 1})
-  t.deepEqual(
-    JSON.parse(JSON.stringify(trans)),
-    JSON.parse(JSON.stringify([{create: {count: 1}}]))
-  )
+  const trans = getClient()
+    .transaction()
+    .create({count: 1})
+  t.deepEqual(JSON.parse(JSON.stringify(trans)), JSON.parse(JSON.stringify([{create: {count: 1}}])))
   t.end()
 })
 
@@ -1083,7 +1309,8 @@ test('transaction can be given an explicit transaction ID', t => {
     .post('/v1/data/mutate/foo?returnIds=true&visibility=sync', {mutations, transactionId})
     .reply(200, {transactionId})
 
-  getClient().transaction()
+  getClient()
+    .transaction()
     .create({bar: true})
     .delete('barfoo')
     .transactionId(transactionId)
@@ -1094,7 +1321,6 @@ test('transaction can be given an explicit transaction ID', t => {
     .catch(t.ifError)
     .then(t.end)
 })
-
 
 /*****************
  * LISTENERS     *
@@ -1114,25 +1340,29 @@ test('listeners connect to listen endpoint, emits events', t => {
     'data: {"reason":"forcefully closed"}'
   ].join('\n')
 
-  nock(projectHost()).get('/v1/data/listen/foo?query=foo.bar&includeResult=true').reply(200, response, {
-    'cache-control': 'no-cache',
-    'content-type': 'text/event-stream; charset=utf-8',
-    'transfer-encoding': 'chunked',
-  })
+  nock(projectHost())
+    .get('/v1/data/listen/foo?query=foo.bar&includeResult=true')
+    .reply(200, response, {
+      'cache-control': 'no-cache',
+      'content-type': 'text/event-stream; charset=utf-8',
+      'transfer-encoding': 'chunked'
+    })
 
-  const sub = getClient().listen('foo.bar').subscribe({
-    next: evt => {
-      sub.unsubscribe()
-      t.deepEqual(evt.document, doc)
-      t.end()
-    },
-    error: err => {
-      sub.unsubscribe()
-      t.ifError(err)
-      t.fail('Should not call error handler')
-      t.end()
-    }
-  })
+  const sub = getClient()
+    .listen('foo.bar')
+    .subscribe({
+      next: evt => {
+        sub.unsubscribe()
+        t.deepEqual(evt.document, doc)
+        t.end()
+      },
+      error: err => {
+        sub.unsubscribe()
+        t.ifError(err)
+        t.fail('Should not call error handler')
+        t.end()
+      }
+    })
 })
 
 /*****************
@@ -1146,7 +1376,8 @@ test('uploads images', t => {
     .post('/v1/assets/images/foo', isImage)
     .reply(201, {document: {url: 'https://some.asset.url'}})
 
-  getClient().assets.upload('image', fs.createReadStream(fixturePath))
+  getClient()
+    .assets.upload('image', fs.createReadStream(fixturePath))
     .then(document => {
       t.equal(document.url, 'https://some.asset.url')
       t.end()
@@ -1161,7 +1392,8 @@ test('uploads images with given content type', t => {
     .post('/v1/assets/images/foo', isImage)
     .reply(201, {document: {url: 'https://some.asset.url'}})
 
-  getClient().assets.upload('image', fs.createReadStream(fixturePath), {contentType: 'image/jpeg'})
+  getClient()
+    .assets.upload('image', fs.createReadStream(fixturePath), {contentType: 'image/jpeg'})
     .then(document => {
       t.equal(document.url, 'https://some.asset.url')
       t.end()
@@ -1177,7 +1409,8 @@ test('uploads images with specified metadata to be extracted', t => {
     .reply(201, {document: {url: 'https://some.asset.url'}})
 
   const options = {extract: ['palette', 'location']}
-  getClient().assets.upload('image', fs.createReadStream(fixturePath), options)
+  getClient()
+    .assets.upload('image', fs.createReadStream(fixturePath), options)
     .then(document => {
       t.equal(document.url, 'https://some.asset.url')
       t.end()
@@ -1193,7 +1426,8 @@ test('empty extract array sends `none` as metadata', t => {
     .reply(201, {document: {url: 'https://some.asset.url'}})
 
   const options = {extract: []}
-  getClient().assets.upload('image', fs.createReadStream(fixturePath), options)
+  getClient()
+    .assets.upload('image', fs.createReadStream(fixturePath), options)
     .then(document => {
       t.equal(document.url, 'https://some.asset.url')
       t.end()
@@ -1209,13 +1443,10 @@ test('uploads images with progress events', t => {
     .reply(201, {url: 'https://some.asset.url'})
 
   // @todo write a test that asserts upload events (slowness)
-  getClient().observable.assets.upload('image', fs.createReadStream(fixturePath))
+  getClient()
+    .observable.assets.upload('image', fs.createReadStream(fixturePath))
     .filter(event => event.type === 'progress')
-    .subscribe(
-      event => t.equal(event.type, 'progress'),
-      ifError(t),
-      () => t.end()
-    )
+    .subscribe(event => t.equal(event.type, 'progress'), ifError(t), () => t.end())
 })
 
 test('uploads images with custom label', t => {
@@ -1226,7 +1457,8 @@ test('uploads images with custom label', t => {
     .post(`/v1/assets/images/foo?label=${encodeURIComponent(label)}`, isImage)
     .reply(201, {document: {label: label}})
 
-  getClient().assets.upload('image', fs.createReadStream(fixturePath), {label: label})
+  getClient()
+    .assets.upload('image', fs.createReadStream(fixturePath), {label: label})
     .then(body => {
       t.equal(body.label, label)
       t.end()
@@ -1241,7 +1473,8 @@ test('uploads files', t => {
     .post('/v1/assets/files/foo', isFile)
     .reply(201, {document: {url: 'https://some.asset.url'}})
 
-  getClient().assets.upload('file', fs.createReadStream(fixturePath))
+  getClient()
+    .assets.upload('file', fs.createReadStream(fixturePath))
     .then(document => {
       t.equal(document.url, 'https://some.asset.url')
       t.end()
@@ -1256,7 +1489,8 @@ test('uploads images and can cast to promise', t => {
     .post('/v1/assets/images/foo', isImage)
     .reply(201, {document: {url: 'https://some.asset.url'}})
 
-  getClient().assets.upload('image', fs.createReadStream(fixturePath))
+  getClient()
+    .assets.upload('image', fs.createReadStream(fixturePath))
     .then(document => {
       t.equal(document.url, 'https://some.asset.url')
       t.end()
@@ -1269,7 +1503,10 @@ test('delete assets', t => {
     .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', expectedBody)
     .reply(200, {transactionId: 'abc123', results: [{id: 'abc123', operation: 'delete'}]})
 
-  getClient().assets.delete('image', 'image-abc123_foobar-123x123-png').catch(t.ifError).then(() => t.end())
+  getClient()
+    .assets.delete('image', 'image-abc123_foobar-123x123-png')
+    .catch(t.ifError)
+    .then(() => t.end())
 })
 
 test('delete assets with prefix', t => {
@@ -1278,7 +1515,10 @@ test('delete assets with prefix', t => {
     .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', expectedBody)
     .reply(200, {transactionId: 'abc123', results: [{id: 'abc123', operation: 'delete'}]})
 
-  getClient().assets.delete('image', 'abc123_foobar-123x123-png').catch(t.ifError).then(() => t.end())
+  getClient()
+    .assets.delete('image', 'abc123_foobar-123x123-png')
+    .catch(t.ifError)
+    .then(() => t.end())
 })
 
 test('delete assets given whole asset document', t => {
@@ -1288,7 +1528,10 @@ test('delete assets given whole asset document', t => {
     .reply(200, {transactionId: 'abc123', results: [{id: 'abc123', operation: 'delete'}]})
 
   const doc = {_id: 'image-abc123_foobar-123x123-png', _type: 'sanity.imageAsset'}
-  getClient().assets.delete(doc, 'image-abc123_foobar-123x123-png').catch(t.ifError).then(() => t.end())
+  getClient()
+    .assets.delete(doc, 'image-abc123_foobar-123x123-png')
+    .catch(t.ifError)
+    .then(() => t.end())
 })
 
 test('can get an image URL from a reference ID string', t => {
@@ -1348,10 +1591,12 @@ test('can retrieve auth providers', t => {
     .get('/v1/auth/providers')
     .reply(200, response)
 
-  getClient().auth.getLoginProviders().then(body => {
-    t.deepEqual(body, response)
-    t.end()
-  }, ifError(t))
+  getClient()
+    .auth.getLoginProviders()
+    .then(body => {
+      t.deepEqual(body, response)
+      t.end()
+    }, ifError(t))
 })
 
 test('can logout', t => {
@@ -1359,7 +1604,9 @@ test('can logout', t => {
     .post('/v1/auth/logout')
     .reply(200)
 
-  getClient().auth.logout().then(() => t.end(), ifError(t))
+  getClient()
+    .auth.logout()
+    .then(() => t.end(), ifError(t))
 })
 
 /*****************
@@ -1377,10 +1624,12 @@ test('can retrieve user by id', t => {
     .get('/v1/users/me')
     .reply(200, response)
 
-  getClient().users.getById('me').then(body => {
-    t.deepEqual(body, response)
-    t.end()
-  }, ifError(t))
+  getClient()
+    .users.getById('me')
+    .then(body => {
+      t.deepEqual(body, response)
+      t.end()
+    }, ifError(t))
 })
 
 /*****************
@@ -1394,7 +1643,8 @@ test('will use live API by default', t => {
     .get('/v1/data/query/foo?query=*')
     .reply(200, response)
 
-  client.fetch('*')
+  client
+    .fetch('*')
     .then(docs => {
       t.equal(docs.length, 0)
     })
@@ -1410,7 +1660,8 @@ test('will use CDN API if told to', t => {
     .get('/v1/data/query/foo?query=*')
     .reply(200, response)
 
-  client.fetch('*')
+  client
+    .fetch('*')
     .then(docs => {
       t.equal(docs.length, 0)
     })
@@ -1425,7 +1676,8 @@ test('will use live API for mutations', t => {
     .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync')
     .reply(200, {})
 
-  client.create({_type: 'foo', title: 'yep'})
+  client
+    .create({_type: 'foo', title: 'yep'})
     .then(noop)
     .catch(t.ifError)
     .then(t.end)
@@ -1444,7 +1696,8 @@ test('will use live API if token is specified', t => {
     .get('/v1/data/query/foo?query=*')
     .reply(200, {result: []})
 
-  client.fetch('*')
+  client
+    .fetch('*')
     .then(noop)
     .catch(t.ifError)
     .then(t.end)
@@ -1455,14 +1708,15 @@ test('will use live API if withCredentials is set to true', t => {
     withCredentials: true,
     projectId: 'abc123',
     dataset: 'foo',
-    useCdn: true,
+    useCdn: true
   })
 
   nock('https://abc123.api.sanity.io')
     .get('/v1/data/query/foo?query=*')
     .reply(200, {result: []})
 
-  client.fetch('*')
+  client
+    .fetch('*')
     .then(noop)
     .catch(t.ifError)
     .then(t.end)
@@ -1476,9 +1730,12 @@ test('includes token if set', t => {
   const qs = '?query=foo.bar'
   const token = 'abcdefghijklmnopqrstuvwxyz'
   const reqheaders = {Authorization: `Bearer ${token}`}
-  nock(projectHost(), {reqheaders}).get(`/v1/data/query/foo${qs}`).reply(200, {result: []})
+  nock(projectHost(), {reqheaders})
+    .get(`/v1/data/query/foo${qs}`)
+    .reply(200, {result: []})
 
-  getClient({token}).fetch('foo.bar')
+  getClient({token})
+    .fetch('foo.bar')
     .then(docs => {
       t.equal(docs.length, 0)
     })
@@ -1493,19 +1750,22 @@ test('includes user agent in node', t => {
     .get('/v1/data/doc/foo/bar')
     .reply(200, {documents: []})
 
-  getClient().getDocument('bar')
+  getClient()
+    .getDocument('bar')
     .catch(t.ifError)
     .then(t.end)
 })
 
 // Don't rely on this unless you're working at Sanity Inc ;)
 test('can use alternative http requester', t => {
-  const requester = () => sanityObservable.of({
-    type: 'response',
-    body: {documents: [{foo: 'bar'}]}
-  })
+  const requester = () =>
+    sanityObservable.of({
+      type: 'response',
+      body: {documents: [{foo: 'bar'}]}
+    })
 
-  getClient({requester}).getDocument('foo.bar')
+  getClient({requester})
+    .getDocument('foo.bar')
     .then(res => {
       t.equal(res.foo, 'bar')
       t.end()
@@ -1562,7 +1822,8 @@ test('handles HTTP errors gracefully', t => {
     .times(6)
     .replyWithError(new Error('Something went wrong'))
 
-  getClient().create(doc)
+  getClient()
+    .create(doc)
     .then(() => {
       t.fail('Should not call success handler on error')
       t.end()
@@ -1584,7 +1845,8 @@ test.skip('handles connection timeouts gracefully', t => {
     .delay({head: 500, body: 750})
     .reply(200, {transactionId: 'abc123', documents: []})
 
-  getClient({timeout: 150}).create(doc)
+  getClient({timeout: 150})
+    .create(doc)
     .then(() => {
       t.fail('Should not call success handler on timeouts')
       t.end()
@@ -1605,7 +1867,8 @@ test.skip('handles socket timeouts gracefully', t => {
     .socketDelay(1000)
     .reply(200)
 
-  getClient({timeout: 150}).create(doc)
+  getClient({timeout: 150})
+    .create(doc)
     .then(() => {
       t.fail('Should not call success handler on timeouts')
       t.end()

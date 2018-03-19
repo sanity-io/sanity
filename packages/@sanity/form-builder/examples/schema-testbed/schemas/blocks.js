@@ -8,7 +8,7 @@ export default {
         {
           name: 'title',
           title: 'Title',
-          type: 'string',
+          type: 'string'
         },
         {
           name: 'content',
@@ -23,7 +23,7 @@ export default {
               type: 'address',
               title: 'Address'
             }
-          ],
+          ]
         }
       ]
     },
@@ -127,7 +127,7 @@ export default {
           fields: [
             {
               type: 'url',
-              name: 'href',
+              name: 'href'
             }
           ]
         },

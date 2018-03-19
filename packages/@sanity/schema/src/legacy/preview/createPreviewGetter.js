@@ -2,14 +2,12 @@ import {pick} from 'lodash'
 import guessPreviewConfig from './guessPreviewConfig'
 import {warnIfPreviewOnOptions, warnIfPreviewHasFields} from './deprecationUtils'
 
-
 function parseSelection(selection) {
   return selection.reduce((acc, field) => {
     acc[field] = field
     return acc
   }, {})
 }
-
 
 function parsePreview(preview) {
   if (!preview) {
@@ -21,7 +19,6 @@ function parsePreview(preview) {
       ...pick(preview, ['prepare', 'component']),
       select: parseSelection(select)
     }
-
   }
   return {
     ...pick(preview, ['prepare', 'component']),

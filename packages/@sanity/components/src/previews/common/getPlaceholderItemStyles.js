@@ -6,10 +6,10 @@ const pool = range(POOL_SIZE).map(createItemStyles)
 
 function createItemStyles() {
   return {
-    date: {width: `${(Math.random() * 10) + 15}%`},
-    title: {width: `${(Math.random() * 80) + 15}%`},
-    subtitle: {width: `${(Math.random() * 80) + 15}%`},
-    description: {width: `${(Math.random() * 80) + 15}%`}
+    date: {width: `${Math.random() * 10 + 15}%`},
+    title: {width: `${Math.random() * 80 + 15}%`},
+    subtitle: {width: `${Math.random() * 80 + 15}%`},
+    description: {width: `${Math.random() * 80 + 15}%`}
   }
 }
 

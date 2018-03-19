@@ -32,5 +32,4 @@ export default {
       media: 'person.image'
     }
   }
-
 }

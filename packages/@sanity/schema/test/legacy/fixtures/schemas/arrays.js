@@ -6,17 +6,15 @@ export default {
       type: 'array',
       of: [
         {
-          type: 'string',
+          type: 'string'
         }
       ]
     },
     {
-
       name: 'car',
       type: 'object',
       title: 'Car',
-      options: {
-      },
+      options: {},
       fields: [
         {
           name: 'brand',
@@ -38,10 +36,12 @@ export default {
           type: 'array',
           title: 'Array of related cars',
           description: 'This array are defined in the field.',
-          of: [{
-            title: 'Related car',
-            type: 'car'
-          }]
+          of: [
+            {
+              title: 'Related car',
+              type: 'car'
+            }
+          ]
         }
       ]
     },
@@ -61,19 +61,23 @@ export default {
           type: 'array',
           title: 'Custom tags',
           description: 'This array are defined in the field.',
-          of: [{
-            type: 'string'
-          }]
+          of: [
+            {
+              type: 'string'
+            }
+          ]
         },
         {
           name: 'car',
           type: 'array',
           title: 'Array of cars in a list',
           description: 'This array are defined in the field.',
-          of: [{
-            title: 'Car in a list',
-            type: 'car'
-          }]
+          of: [
+            {
+              title: 'Car in a list',
+              type: 'car'
+            }
+          ]
         },
         {
           name: 'mixed',
@@ -99,10 +103,12 @@ export default {
           options: {
             view: 'grid'
           },
-          of: [{
-            title: 'Car',
-            type: 'car'
-          }]
+          of: [
+            {
+              title: 'Car',
+              type: 'car'
+            }
+          ]
         },
         {
           name: 'carsSortable',
@@ -112,10 +118,12 @@ export default {
           options: {
             sortable: true
           },
-          of: [{
-            title: 'Car',
-            type: 'car'
-          }]
+          of: [
+            {
+              title: 'Car',
+              type: 'car'
+            }
+          ]
         }
       ]
     }

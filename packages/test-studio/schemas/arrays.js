@@ -28,11 +28,11 @@ export default {
           fields: [
             {
               name: 'title',
-              type: 'string',
+              type: 'string'
             },
             {
               name: 'name',
-              type: 'string',
+              type: 'string'
             }
           ]
         }
@@ -55,11 +55,11 @@ export default {
           fields: [
             {
               name: 'title',
-              type: 'string',
+              type: 'string'
             },
             {
               name: 'name',
-              type: 'string',
+              type: 'string'
             }
           ],
           preview: {
@@ -74,7 +74,11 @@ export default {
                   <div
                     style={{
                       backgroundColor: name,
-                      position: 'absolute', height: '100%', width: '100%', top: '0', left: '0'
+                      position: 'absolute',
+                      height: '100%',
+                      width: '100%',
+                      top: '0',
+                      left: '0'
                     }}
                   />
                 )
@@ -90,14 +94,15 @@ export default {
           {_type: 'color', title: 'Green', name: 'green', _key: 'green'},
           1, // invalid, not defined in list
           {_type: 'color', title: 'Blue', name: 'blue', _key: 'blue'},
-          {_type: 'color', title: 'Black', name: 'black', _key: 'black'},
+          {_type: 'color', title: 'Black', name: 'black', _key: 'black'}
         ]
-      },
+      }
     },
     {
       name: 'tags',
       title: 'Tags',
-      description: 'Enter a tag and press enter. Should result in an array of strings and should be possible to remove items',
+      description:
+        'Enter a tag and press enter. Should result in an array of strings and should be possible to remove items',
       type: 'array',
       options: {layout: 'tags'},
       of: [{type: 'string'}]
@@ -141,7 +146,8 @@ export default {
     {
       name: 'arrayOfStringsWithLegacyList',
       title: 'Array of strings with legacy format on lists',
-      description: 'Previously the `list` option took an array of {title, value} items. It should still be possible to check these values.',
+      description:
+        'Previously the `list` option took an array of {title, value} items. It should still be possible to check these values.',
       type: 'array',
       of: [{type: 'string'}],
       options: {

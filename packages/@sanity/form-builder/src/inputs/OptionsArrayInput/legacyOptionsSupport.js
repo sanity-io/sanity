@@ -1,4 +1,3 @@
-
 export function isLegacyOptionsItem(item) {
   if (item && typeof item === 'object') {
     const keys = Object.keys(item)

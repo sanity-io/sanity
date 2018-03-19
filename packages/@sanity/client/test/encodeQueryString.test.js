@@ -11,8 +11,8 @@ test('can encode queries with basic numeric parameters', t => {
   const query = 'gamedb.game[maxPlayers == $maxPlayers && score == $score]'
   t.equal(
     encode({query, params: {maxPlayers: 64, score: 3.45678}}),
-    '?query=gamedb.game%5BmaxPlayers%20%3D%3D%20%24maxPlayers%20%26%26%20score%20%3D%3D%20%24score%5D'
-    + '&%24maxPlayers=64&%24score=3.45678'
+    '?query=gamedb.game%5BmaxPlayers%20%3D%3D%20%24maxPlayers%20%26%26%20score%20%3D%3D%20%24score%5D' +
+      '&%24maxPlayers=64&%24score=3.45678'
   )
   t.end()
 })

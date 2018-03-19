@@ -14,7 +14,7 @@ class DefaultPreview extends React.PureComponent {
       width: PropTypes.number,
       height: PropTypes.number,
       fit: PropTypes.oneOf(['clip', 'crop', 'fill', 'fillmax', 'max', 'scale', 'min']),
-      aspect: PropTypes.number,
+      aspect: PropTypes.number
     }),
     status: fieldProp,
     media: fieldProp,
@@ -65,63 +65,35 @@ class DefaultPreview extends React.PureComponent {
           ${media ? styles.hasMedia : ''}
         `}
       >
-
         <div className={styles.media}>
-          {
-            typeof media === 'function' && (
-              media({dimensions: mediaDimensions, layout: 'default'})
-            )
-          }
-          {
-            typeof media === 'string' && (
-              <div className={styles.mediaString}>{media}</div>
-            )
-          }
-          {
-            React.isValidElement(media) && media
-          }
+          {typeof media === 'function' && media({dimensions: mediaDimensions, layout: 'default'})}
+          {typeof media === 'string' && <div className={styles.mediaString}>{media}</div>}
+          {React.isValidElement(media) && media}
         </div>
 
         <div className={styles.heading}>
           <h2 className={styles.title}>
-            {
-              typeof title !== 'function' && title
-            }
-            {
-              typeof title === 'function' && title({layout: 'default'})
-            }
+            {typeof title !== 'function' && title}
+            {typeof title === 'function' && title({layout: 'default'})}
           </h2>
-          {
-            subtitle && (
-              <h3 className={styles.subtitle}>
-                {
-                  (typeof subtitle === 'function' && subtitle({layout: 'default'}))
-                  || subtitle
-                }
-              </h3>
-            )
-          }
+          {subtitle && (
+            <h3 className={styles.subtitle}>
+              {(typeof subtitle === 'function' && subtitle({layout: 'default'})) || subtitle}
+            </h3>
+          )}
         </div>
-        {
-          status && (
-            <div className={styles.status}>
-              {
-                (typeof status === 'function' && status({layout: 'default'}))
-                || status
-              }
-            </div>
-          )
-        }
-        {
-          children && <div className={styles.children}>{children}</div>
-        }
-        {
-          typeof progress === 'number' && progress > -1 && (
+        {status && (
+          <div className={styles.status}>
+            {(typeof status === 'function' && status({layout: 'default'})) || status}
+          </div>
+        )}
+        {children && <div className={styles.children}>{children}</div>}
+        {typeof progress === 'number' &&
+          progress > -1 && (
             <div className={styles.progress}>
               <div className={styles.progressBar} style={{width: `${progress}%`}} />
             </div>
-          )
-        }
+          )}
       </div>
     )
   }

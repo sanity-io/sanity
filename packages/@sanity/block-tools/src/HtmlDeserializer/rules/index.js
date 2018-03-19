@@ -6,6 +6,6 @@ export default function createRules(blockContentType, options = {}) {
   return [
     ...createMiscRules(blockContentType, options),
     ...createWordRules(blockContentType, options),
-    ...createDefaultRules(blockContentType, options),
+    ...createDefaultRules(blockContentType, options)
   ]
 }

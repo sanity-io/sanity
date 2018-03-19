@@ -29,7 +29,8 @@ export default {
       name: 'mainImage',
       title: 'Image',
       type: 'image',
-      description: 'Image hotspot should be possible to change. Caption should be visible in image field, full description should be editable in modal',
+      description:
+        'Image hotspot should be possible to change. Caption should be visible in image field, full description should be editable in modal',
       options: {
         hotspot: true
       },
@@ -45,7 +46,8 @@ export default {
         {
           name: 'foo',
           type: 'string',
-          title: 'This is a rather longish title for a field. It should still work. This is a rather longish title for a field. It should still work.',
+          title:
+            'This is a rather longish title for a field. It should still work. This is a rather longish title for a field. It should still work.',
           options: {
             isHighlighted: true
           }
@@ -94,7 +96,8 @@ export default {
         {
           name: 'foo',
           type: 'string',
-          title: 'This is a rather longish title for a field. It should still work. This is a rather longish title for a field. It should still work.',
+          title:
+            'This is a rather longish title for a field. It should still work. This is a rather longish title for a field. It should still work.',
           options: {
             isHighlighted: true
           }

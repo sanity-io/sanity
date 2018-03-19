@@ -3,7 +3,6 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 import styles from './styles/enhanceWithAvailableHeight.css'
 
 export default function enhanceWithAvailHeight(Component) {
-
   return class enhancedWithAvailHeight extends React.PureComponent {
     static displayName = `enhanceWithAvailHeight(${Component.displayName || Component.name})`
     state = {}

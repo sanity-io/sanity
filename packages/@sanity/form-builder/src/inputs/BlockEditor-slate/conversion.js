@@ -3,7 +3,11 @@ import {Set} from 'immutable'
 
 // Converts custom paragraph nodes from sanity to slate form
 function customSanitySpanNodeToSlateRaw(node) {
-  throw new Error(`Unexpected call to customSanitySpanNodeToSlateRaw for span of type ${node._type} since we have no supported custom nodes yet`)
+  throw new Error(
+    `Unexpected call to customSanitySpanNodeToSlateRaw for span of type ${
+      node._type
+    } since we have no supported custom nodes yet`
+  )
 }
 
 // Converts a sanity 'textspan' to a 'range' for use in a slate 'text' node
@@ -54,7 +58,10 @@ function sanityParagraphToSlateRaw(input) {
     if (node._type == 'textspan') {
       consecutiveSpans.push(node)
     } else {
-      output.nodes = output.nodes.concat(consecutiveSpansToSlateText(consecutiveSpans), customSanitySpanNodeToSlateRaw(node))
+      output.nodes = output.nodes.concat(
+        consecutiveSpansToSlateText(consecutiveSpans),
+        customSanitySpanNodeToSlateRaw(node)
+      )
       consecutiveSpans = []
     }
   })
@@ -102,7 +109,9 @@ export function slateMarksToSanity(marks) {
 }
 
 export function sanityMarksToSlate(tags) {
-  return new Set(tags.map(tag => {
-    return Mark.create({type: tag, data: {}})
-  }))
+  return new Set(
+    tags.map(tag => {
+      return Mark.create({type: tag, data: {}})
+    })
+  )
 }

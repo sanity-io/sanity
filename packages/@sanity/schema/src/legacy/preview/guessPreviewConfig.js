@@ -5,7 +5,6 @@ import {createFallbackPrepare} from './fallbackPrepare'
 const TITLE_CANDIDATES = ['title', 'name', 'label', 'heading', 'header', 'caption']
 const DESCRIPTION_CANDIDATES = ['description', ...TITLE_CANDIDATES]
 
-
 function fieldHasReferenceTo(fieldDef, refType) {
   return arrify(fieldDef.to || []).some(memberTypeDef => memberTypeDef.type === refType)
 }
@@ -20,7 +19,9 @@ function resolveImageAssetPath(typeDef) {
   if (imageAssetField) {
     return imageAssetField.name
   }
-  const fieldWithImageAsset = fields.find(fieldDef => (fieldDef.fields || []).some(isImageAssetField))
+  const fieldWithImageAsset = fields.find(fieldDef =>
+    (fieldDef.fields || []).some(isImageAssetField)
+  )
 
   return fieldWithImageAsset ? `${fieldWithImageAsset.name}.asset` : undefined
 }
@@ -47,11 +48,11 @@ export default function guessPreviewFields(rawObjectTypeDef) {
     .map(field => field.name)
 
   // Check if we have fields with names that is listed in candidate fields
-  let titleField = TITLE_CANDIDATES
-    .find(candidate => stringFieldNames.includes(candidate))
+  let titleField = TITLE_CANDIDATES.find(candidate => stringFieldNames.includes(candidate))
 
-  let descField = DESCRIPTION_CANDIDATES
-    .find(candidate => candidate !== titleField && stringFieldNames.includes(candidate))
+  let descField = DESCRIPTION_CANDIDATES.find(
+    candidate => candidate !== titleField && stringFieldNames.includes(candidate)
+  )
 
   if (!titleField) {
     // Pick first defined string field
@@ -88,15 +89,17 @@ export default function guessPreviewFields(rawObjectTypeDef) {
     }
   }
 
-  const select = omitBy({
-    title: titleField,
-    description: descField,
-    imageUrl: (!mediaField && imageAssetPath) ? `${imageAssetPath}.url` : undefined,
-    media: mediaField ? mediaField.name : undefined
-  }, isUndefined)
+  const select = omitBy(
+    {
+      title: titleField,
+      description: descField,
+      imageUrl: !mediaField && imageAssetPath ? `${imageAssetPath}.url` : undefined,
+      media: mediaField ? mediaField.name : undefined
+    },
+    isUndefined
+  )
 
   return {
     select: select
   }
-
 }

@@ -17,12 +17,14 @@ export default class FullScreenDialog extends React.PureComponent {
     isOpen: PropTypes.bool,
     centered: PropTypes.bool,
     onAction: PropTypes.func,
-    actions: PropTypes.arrayOf(PropTypes.shape({
-      title: PropTypes.string.isRequired,
-      tooltip: PropTypes.string,
-      kind: PropTypes.string,
-      autoFocus: PropTypes.bool
-    }))
+    actions: PropTypes.arrayOf(
+      PropTypes.shape({
+        title: PropTypes.string.isRequired,
+        tooltip: PropTypes.string,
+        kind: PropTypes.string,
+        autoFocus: PropTypes.bool
+      })
+    )
   }
 
   static defaultProps = {
@@ -56,48 +58,43 @@ export default class FullScreenDialog extends React.PureComponent {
       <StackedEscapable onEscape={onClose}>
         <Portal>
           <div className={classNames}>
-            {
-              onClose && (
-                <button className={styles.closeButton} onClick={onClose}>
-                  <CloseIcon color="inherit" />
-                </button>
-              )
-            }
+            {onClose && (
+              <button className={styles.closeButton} onClick={onClose}>
+                <CloseIcon color="inherit" />
+              </button>
+            )}
             <div className={styles.inner}>
               <h1 className={styles.heading}>{title}</h1>
               <div className={styles.content}>
                 {this.props.children}
                 <div className={styles.actionsWrapper}>
-                  {
-                    actions.length > 0 && (
-                      <div className={styles.actions}>
-                        {
-                          actions.map((action, i) => {
-                            return (
-                              <div key={i}>
-                                <Button
-                                  onClick={this.handleActionClick}
-                                  data-action-index={i}
-                                  color={color === 'default' ? action.color : 'white'}
-                                  disabled={action.disabled}
-                                  inverted={typeof action.inverted === 'boolean' ? action.inverted : true}
-                                  kind={action.kind}
-                                  autoFocus={action.autoFocus}
-                                  className={`
+                  {actions.length > 0 && (
+                    <div className={styles.actions}>
+                      {actions.map((action, i) => {
+                        return (
+                          <div key={i}>
+                            <Button
+                              onClick={this.handleActionClick}
+                              data-action-index={i}
+                              color={color === 'default' ? action.color : 'white'}
+                              disabled={action.disabled}
+                              inverted={
+                                typeof action.inverted === 'boolean' ? action.inverted : true
+                              }
+                              kind={action.kind}
+                              autoFocus={action.autoFocus}
+                              className={`
                                     ${styles.button}
                                     ${styles[`button_${action.kind}`] || styles.button}
-                                  `
-                                  }
-                                >
-                                  {action.title}
-                                </Button>
-                              </div>
-                            )
-                          })
-                        }
-                      </div>
-                    )
-                  }
+                                  `}
+                            >
+                              {action.title}
+                            </Button>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

@@ -98,8 +98,8 @@ export default class SchemaPaneResolver extends React.Component {
               onCollapse={this.handleShouldCollapse}
             />
           </SplitPaneWrapper>
-          {
-            schemaType && selectedType && (
+          {schemaType &&
+            selectedType && (
               <SplitPaneWrapper
                 defaultWidth={300}
                 minWidth={100}
@@ -120,19 +120,16 @@ export default class SchemaPaneResolver extends React.Component {
                   onCollapse={this.handleShouldCollapse}
                 />
               </SplitPaneWrapper>
-            )
-          }
-          {
-            !schemaType && !selectedType && (
+            )}
+          {!schemaType &&
+            !selectedType && (
               <SplitPaneWrapper>
-                <div className={styles.selectContentType}>
-                  Select content type
-                </div>
+                <div className={styles.selectContentType}>Select content type</div>
               </SplitPaneWrapper>
-            )
-          }
-          {
-            schemaType && selectedDocumentId && action === 'edit' && (
+            )}
+          {schemaType &&
+            selectedDocumentId &&
+            action === 'edit' && (
               <SplitPaneWrapper>
                 <EditorWrapper
                   key={selectedDocumentId}
@@ -141,29 +138,31 @@ export default class SchemaPaneResolver extends React.Component {
                   schemaType={schemaType}
                 />
               </SplitPaneWrapper>
-            )
-          }
+            )}
 
-          {
-            selectedType && !schemaType && (
+          {selectedType &&
+            !schemaType && (
               <SplitPaneWrapper>
                 <h2 className={styles.emptyText}>
-                  Could not find any type
-                  named <strong><em>{selectedType}</em></strong> in
-                  schema <strong><em>{schema.name}</em></strong>…
+                  Could not find any type named{' '}
+                  <strong>
+                    <em>{selectedType}</em>
+                  </strong>{' '}
+                  in schema{' '}
+                  <strong>
+                    <em>{schema.name}</em>
+                  </strong>…
                 </h2>
               </SplitPaneWrapper>
-            )
-          }
+            )}
         </SplitController>
-        {
-          selectedType && schemaType && action && action !== 'edit' && (
+        {selectedType &&
+          schemaType &&
+          action &&
+          action !== 'edit' && (
             // this would normally never happen
-            <Snackbar kind="error">
-              Invalid action: {action}
-            </Snackbar>
-          )
-        }
+            <Snackbar kind="error">Invalid action: {action}</Snackbar>
+          )}
       </div>
     )
   }

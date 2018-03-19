@@ -55,13 +55,13 @@ function handleNavigate(nexturl) {
   history.push(nexturl)
 }
 function render(location) {
-  ReactDOM.render((
+  ReactDOM.render(
     <RouterProvider router={routes} location={location} onNavigate={handleNavigate}>
       <Root />
-    </RouterProvider>
-  ), document.getElementById('content'))
+    </RouterProvider>,
+    document.getElementById('content')
+  )
 }
 
 history.listen(render)
 render(history.location)
-

@@ -6,7 +6,7 @@ import {INCLUDE_FIELDS_QUERY} from '../constants'
 type CombinedSelection = {
   ids: Id[],
   fields: FieldName[],
-  map: number[],
+  map: number[]
 }
 
 type Doc = {
@@ -16,16 +16,18 @@ type Doc = {
 type Result = Doc[]
 
 export function combineSelections(selections: Selection[]): CombinedSelection[] {
-  return values(selections.reduce((output, [id, fields], index) => {
-    const key = sortBy(fields.join(','), identity)
-    if (!output[key]) {
-      output[key] = {fields: fields, ids: [], map: []}
-    }
-    const idx = output[key].ids.length
-    output[key].ids[idx] = id
-    output[key].map[idx] = index
-    return output
-  }, {}))
+  return values(
+    selections.reduce((output, [id, fields], index) => {
+      const key = sortBy(fields.join(','), identity)
+      if (!output[key]) {
+        output[key] = {fields: fields, ids: [], map: []}
+      }
+      const idx = output[key].ids.length
+      output[key].ids[idx] = id
+      output[key].map[idx] = index
+      return output
+    }, {})
+  )
 }
 
 function stringifyId(id: string) {

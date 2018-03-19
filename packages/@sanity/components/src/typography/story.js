@@ -8,7 +8,6 @@ import textBlocks from 'part:@sanity/base/theme/typography/text-blocks-style'
 import Chance from 'chance'
 const chance = new Chance()
 
-
 storiesOf('Typography').add(
   'Basic',
   // `
@@ -63,7 +62,6 @@ storiesOf('Typography').add(
         <blockquote className={textBlocks.blockquote}>
           <p>{chance.paragraph({sentences: 3})}</p>
         </blockquote>
-
       </article>
     )
   },

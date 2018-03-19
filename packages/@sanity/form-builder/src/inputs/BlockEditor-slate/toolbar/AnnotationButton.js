@@ -7,7 +7,6 @@ import LinkIcon from 'part:@sanity/base/link-icon'
 import styles from './styles/AnnotationButton.css'
 
 export default class AnnotationButton extends React.Component {
-
   static propTypes = {
     onClick: PropTypes.func,
     annotation: PropTypes.object

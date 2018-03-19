@@ -7,10 +7,8 @@ import {storiesOf} from 'part:@sanity/storybook'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 storiesOf('Progress')
-.addDecorator(withKnobs)
-.add(
-  'Progress bar',
-  () => (
+  .addDecorator(withKnobs)
+  .add('Progress bar', () => (
     <Sanity part="part:@sanity/components/progress/bar" propTables={[ProgressBar]}>
       <ProgressBar
         percent={number('percentage (prop)', 10, {range: true, min: 0, max: 100, step: 1})}
@@ -19,11 +17,8 @@ storiesOf('Progress')
         completed={boolean('completed (prop)', false)}
       />
     </Sanity>
-  )
-)
-.add(
-  'Progress circle',
-  () => (
+  ))
+  .add('Progress circle', () => (
     <Sanity part="part:@sanity/components/progress/circle" propTables={[ProgressCircle]}>
       <ProgressCircle
         percent={number('percent (prop)', 10, {range: true, min: 0, max: 100, step: 1})}
@@ -32,5 +27,4 @@ storiesOf('Progress')
         completed={boolean('completed (prop)', false)}
       />
     </Sanity>
-  )
-)
+  ))

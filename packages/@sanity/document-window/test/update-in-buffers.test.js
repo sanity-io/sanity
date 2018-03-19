@@ -1,11 +1,6 @@
 const DocumentWindow = require('../src/DocumentWindow')
 const {getSnapshotFixture} = require('./fixtures')
-const {
-  getMockClient,
-  gatherWindows,
-  mockMutation,
-  willBackfill
-} = require('./helpers')
+const {getMockClient, gatherWindows, mockMutation, willBackfill} = require('./helpers')
 
 const Query = DocumentWindow.Query
 let docWindow = null
@@ -39,9 +34,7 @@ describe('update outside of main window, but within buffer', () => {
     expect(willBackfill(docWindow)).resolves.toBe(false)
     const windows = await gatherWindows(docWindow, 2)
 
-    expect(windows[0]).toMatchSnapshot(
-      '01. a) window prior to pre-buffer update'
-    )
+    expect(windows[0]).toMatchSnapshot('01. a) window prior to pre-buffer update')
     expect(windows[1]).toMatchSnapshot('01. b) window after pre-buffer update')
     expect(docWindow).toMatchSnapshot('01. c) buffers after pre-buffer update')
   })
@@ -67,9 +60,7 @@ describe('update outside of main window, but within buffer', () => {
     docWindow = new DocumentWindow({client, query})
     expect(willBackfill(docWindow)).resolves.toBe(false)
     const windows = await gatherWindows(docWindow, 2)
-    expect(windows[0]).toMatchSnapshot(
-      '02. a) window prior to post-buffer update'
-    )
+    expect(windows[0]).toMatchSnapshot('02. a) window prior to post-buffer update')
     expect(windows[1]).toMatchSnapshot('02. b) window after post-buffer update')
     expect(docWindow).toMatchSnapshot('02. c) buffers after post-buffer update')
   })
@@ -96,9 +87,7 @@ describe('update outside of main window, but within buffer', () => {
     expect(willBackfill(docWindow)).resolves.toBe(false)
     const windows = await gatherWindows(docWindow, 2)
 
-    expect(windows[0]).toMatchSnapshot(
-      '03. a) window prior to pre-buffer update'
-    )
+    expect(windows[0]).toMatchSnapshot('03. a) window prior to pre-buffer update')
     expect(windows[1]).toMatchSnapshot('03. b) window after pre-buffer update')
     expect(docWindow).toMatchSnapshot('03. c) buffers after pre-buffer update')
   })
@@ -124,9 +113,7 @@ describe('update outside of main window, but within buffer', () => {
     docWindow = new DocumentWindow({client, query})
     expect(willBackfill(docWindow)).resolves.toBe(false)
     const windows = await gatherWindows(docWindow, 2)
-    expect(windows[0]).toMatchSnapshot(
-      '04. a) window prior to post-buffer update'
-    )
+    expect(windows[0]).toMatchSnapshot('04. a) window prior to post-buffer update')
     expect(windows[1]).toMatchSnapshot('04. b) window after post-buffer update')
     expect(docWindow).toMatchSnapshot('04. c) buffers after post-buffer update')
   })
@@ -153,12 +140,8 @@ describe('update outside of main window, but within buffer', () => {
 
     docWindow = new DocumentWindow({client, query})
     const windows = await gatherWindows(docWindow, 3)
-    expect(windows[0]).toMatchSnapshot(
-      '05. a) window prior to transition out of pre-buffer'
-    )
-    expect(docWindow).toMatchSnapshot(
-      '05. c) buffers after transition out of pre-buffer'
-    )
+    expect(windows[0]).toMatchSnapshot('05. a) window prior to transition out of pre-buffer')
+    expect(docWindow).toMatchSnapshot('05. c) buffers after transition out of pre-buffer')
 
     await docWindow.onSettle()
   })
@@ -185,12 +168,8 @@ describe('update outside of main window, but within buffer', () => {
 
     docWindow = new DocumentWindow({client, query})
     const windows = await gatherWindows(docWindow, 3)
-    expect(windows[0]).toMatchSnapshot(
-      '06. a) window prior to transition out of post-buffer'
-    )
-    expect(docWindow).toMatchSnapshot(
-      '06. c) buffers after transition out of post-buffer'
-    )
+    expect(windows[0]).toMatchSnapshot('06. a) window prior to transition out of post-buffer')
+    expect(docWindow).toMatchSnapshot('06. c) buffers after transition out of post-buffer')
 
     await docWindow.onSettle()
   })

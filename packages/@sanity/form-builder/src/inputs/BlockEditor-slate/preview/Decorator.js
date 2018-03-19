@@ -3,7 +3,11 @@ import React from 'react'
 import styles from '../styles/contentStyles/Decorator.css'
 
 function Decorator(props) {
-  return <span {...props.attributes} className={styles[props.mark.type]}>{props.children}</span>
+  return (
+    <span {...props.attributes} className={styles[props.mark.type]}>
+      {props.children}
+    </span>
+  )
 }
 
 Decorator.propTypes = {

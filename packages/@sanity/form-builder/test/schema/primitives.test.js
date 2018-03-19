@@ -4,9 +4,7 @@ import {Schema} from '../../src'
 test('strings with default options', t => {
   const schema = Schema.compile({
     name: 'my-schema',
-    types: [
-      {name: 'foo', type: 'string'}
-    ]
+    types: [{name: 'foo', type: 'string'}]
   })
   t.deepEqual(schema.getType('foo'), {name: 'foo', type: 'string', format: 'plain'})
   t.end()
@@ -19,9 +17,7 @@ test('objects with default options', t => {
       {
         name: 'foo',
         type: 'object',
-        fields: [
-          {name: 'garfield', type: 'string'}
-        ]
+        fields: [{name: 'garfield', type: 'string'}]
       }
     ]
   })

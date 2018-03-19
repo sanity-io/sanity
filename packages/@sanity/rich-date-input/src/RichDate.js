@@ -12,21 +12,15 @@ import {getOptions, getTimeIntervals, getPlaceholderText} from './util'
 
 const DEPRECATION_WARNING = (
   <div className={styles.deprecationWarning}>
-    This field has <code>type: {'date'}</code>, which is deprecated and should
-    be changed to <code>type: {'richDate'}</code>.
-    Please update your schema and migrate your data. {' '}
-    <a
-      href={generateHelpUrl('migrate-to-rich-date')}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
+    This field has <code>type: {'date'}</code>, which is deprecated and should be changed to{' '}
+    <code>type: {'richDate'}</code>. Please update your schema and migrate your data.{' '}
+    <a href={generateHelpUrl('migrate-to-rich-date')} target="_blank" rel="noopener noreferrer">
       More info
     </a>
   </div>
 )
 
 export default class RichDateInput extends React.PureComponent {
-
   assembleOutgoingValue(newMoment) {
     if (!newMoment || !newMoment.isValid()) {
       return undefined
@@ -74,21 +68,17 @@ export default class RichDateInput extends React.PureComponent {
     const format = [
       options.inputDate ? options.dateFormat : null,
       options.inputTime ? options.timeFormat : null
-    ].filter(Boolean).join(' ')
+    ]
+      .filter(Boolean)
+      .join(' ')
     const timeIntervals = getTimeIntervals(value, options)
     const activeTimeInterval = timeIntervals.find(time => time.isActive === true)
 
-    const placeholder = typeof type.placeholder === 'function'
-      ? type.placeholder()
-      : type.placeholder
+    const placeholder =
+      typeof type.placeholder === 'function' ? type.placeholder() : type.placeholder
 
     return (
-      <FormField
-        labelFor={this.inputId}
-        label={title}
-        level={level}
-        description={description}
-      >
+      <FormField labelFor={this.inputId} label={title} level={level} description={description}>
         {type.name === 'date' && DEPRECATION_WARNING}
         <div className={options.inputTime ? styles.rootWithTime : styles.root}>
           {options.inputDate && (
@@ -110,15 +100,14 @@ export default class RichDateInput extends React.PureComponent {
             />
           )}
 
-          {
-            !options.inputDate && options.inputTime && (
+          {!options.inputDate &&
+            options.inputTime && (
               <DefaultSelect
                 items={timeIntervals}
                 value={activeTimeInterval}
                 onChange={this.handleTimeChange}
               />
-            )
-          }
+            )}
         </div>
       </FormField>
     )

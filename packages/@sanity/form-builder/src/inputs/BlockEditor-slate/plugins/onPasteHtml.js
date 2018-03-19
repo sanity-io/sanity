@@ -2,7 +2,6 @@ import blockTools from '@sanity/block-tools'
 import {Document} from 'slate'
 
 function onPasteHtml(blockEditor) {
-
   function onPaste(event, data, change) {
     if (data.type != 'html') {
       return null

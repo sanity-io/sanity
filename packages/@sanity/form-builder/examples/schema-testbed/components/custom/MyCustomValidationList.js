@@ -14,11 +14,11 @@ class ValidationList extends React.Component {
     }
     return (
       <ul className={styles.validationList}>
-        {messages.map((msg, i) =>
+        {messages.map((msg, i) => (
           <li key={i} className={styles[msg.type]}>
             {msg.message}
           </li>
-        )}
+        ))}
       </ul>
     )
   }

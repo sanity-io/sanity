@@ -44,7 +44,7 @@ const AppLoadingScreenStyles = `
 
 export default class AppLoadingScreen extends React.PureComponent {
   static propTypes = {
-    text: PropTypes.string,
+    text: PropTypes.string
   }
 
   static defaultProps = {
@@ -63,8 +63,7 @@ export default class AppLoadingScreen extends React.PureComponent {
           filter="drop-shadow(0px 0px 5px rgba(0,0,0,0.20))"
         >
           <style>
-            {
-              `
+            {`
             @keyframes ContetStudioLogoRed2_o {
               0%,60.9375%,85.9375%,to{opacity:1}75%{opacity:0}
             }
@@ -85,35 +84,45 @@ export default class AppLoadingScreen extends React.PureComponent {
             d="M31.8-.2C14.6-.2-.2 5.3-.2 14v14c0-15.8 24.1-17 32-17 8 0 32 1.3 32 17V14C63.8 5.2 49-.2 31.8-.2z"
             fill="#666"
             transform="rotate(135 29.6 26.5)"
-            style={{animation: 'ContetStudioLogoRed2_o 2s linear infinite both,ContetStudioLogoRed2_d 2s linear infinite both'}}
+            style={{
+              animation:
+                'ContetStudioLogoRed2_o 2s linear infinite both,ContetStudioLogoRed2_d 2s linear infinite both'
+            }}
           />
           <path
             id="ContetStudioLogoBlue1"
             d="M32-.3C14.6-.3-.2 7.3-.2 16v14c0-15.8 24-19 32-19 7.9 0 32 5 32 19V16c0-8.7-14.8-16.3-32-16.3z"
             fill="#999"
             transform="rotate(45 21.2 27.7)"
-            style={{animation: 'ContetStudioLogoBlue1_o 2s linear infinite both,ContetStudioLogoBlue1_d 2s linear infinite both'}}
+            style={{
+              animation:
+                'ContetStudioLogoBlue1_o 2s linear infinite both,ContetStudioLogoBlue1_d 2s linear infinite both'
+            }}
           />
           <path
             id="ContetStudioLogoBlue2"
             d="M32 0C14.8 0 0 7.3 0 16v14c0-15.8 23.3-18.9 31.2-18.9C39.1 11.1 64 14.3 64 30c-.2-4.3 0-10.2 0-14C64 7.2 49.2 0 32 0z"
             fill="#eee"
             transform="rotate(-135 33.9 27.5)"
-            style={{animation: 'ContetStudioLogoBlue2_o 2s linear infinite both,ContetStudioLogoBlue2_d 2s linear infinite both'}}
+            style={{
+              animation:
+                'ContetStudioLogoBlue2_o 2s linear infinite both,ContetStudioLogoBlue2_d 2s linear infinite both'
+            }}
           />
           <path
             id="ContetStudioLogoRed1"
             d="M32 0C14.8 0 0 7.3 0 16v14c0-15.8 23.3-18.9 31.2-18.9C39.1 11.1 64 14.3 64 30c-.2-4.3 0-10.2 0-14C64 7.2 49.2 0 32 0z"
             fill="#444"
             transform="rotate(-45 42.9 27.5)"
-            style={{animation: 'ContetStudioLogoRed1_o 2s linear infinite both,ContetStudioLogoRed1_d 2s linear infinite both'}}
+            style={{
+              animation:
+                'ContetStudioLogoRed1_o 2s linear infinite both,ContetStudioLogoRed1_d 2s linear infinite both'
+            }}
           />
         </svg>
 
         <div className="sanity-app-loading-screen__inner">
-          <div className="sanity-app-loading-screen__text">
-            {this.props.text}
-          </div>
+          <div className="sanity-app-loading-screen__text">{this.props.text}</div>
         </div>
       </div>
     )

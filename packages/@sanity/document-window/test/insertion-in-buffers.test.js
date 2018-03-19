@@ -1,11 +1,6 @@
 const DocumentWindow = require('../src/DocumentWindow')
 const {getSnapshotFixture} = require('./fixtures')
-const {
-  getMockClient,
-  gatherWindows,
-  mockMutation,
-  willBackfill
-} = require('./helpers')
+const {getMockClient, gatherWindows, mockMutation, willBackfill} = require('./helpers')
 
 const Query = DocumentWindow.Query
 let docWindow = null
@@ -25,7 +20,10 @@ describe('insertion outside of main window, but within buffer', () => {
       __injected: true
     }
 
-    const query = new Query().from(12).to(17).orderBy('_updatedAt', 'desc')
+    const query = new Query()
+      .from(12)
+      .to(17)
+      .orderBy('_updatedAt', 'desc')
     const client = getMockClient({
       responses: [getSnapshotFixture(0, 35)],
       events: [mockMutation(newDocument)]
@@ -35,15 +33,9 @@ describe('insertion outside of main window, but within buffer', () => {
     expect(willBackfill(docWindow)).resolves.toBe(false)
     const windows = await gatherWindows(docWindow, 2)
 
-    expect(windows[0]).toMatchSnapshot(
-      '01. a) window prior to pre-buffer injection'
-    )
-    expect(windows[1]).toMatchSnapshot(
-      '01. b) window after pre-buffer injection'
-    )
-    expect(docWindow).toMatchSnapshot(
-      '01. c) buffers after pre-buffer injection'
-    )
+    expect(windows[0]).toMatchSnapshot('01. a) window prior to pre-buffer injection')
+    expect(windows[1]).toMatchSnapshot('01. b) window after pre-buffer injection')
+    expect(docWindow).toMatchSnapshot('01. c) buffers after pre-buffer injection')
   })
 
   test('shifts window by one item when item is added within post-buffer', async () => {
@@ -54,7 +46,10 @@ describe('insertion outside of main window, but within buffer', () => {
       __injected: true
     }
 
-    const query = new Query().from(12).to(17).orderBy('_updatedAt', 'desc')
+    const query = new Query()
+      .from(12)
+      .to(17)
+      .orderBy('_updatedAt', 'desc')
     const client = getMockClient({
       responses: [getSnapshotFixture(0, 35)],
       events: [mockMutation(newDocument)]
@@ -63,14 +58,8 @@ describe('insertion outside of main window, but within buffer', () => {
     docWindow = new DocumentWindow({client, query})
     expect(willBackfill(docWindow)).resolves.toBe(false)
     const windows = await gatherWindows(docWindow, 2)
-    expect(windows[0]).toMatchSnapshot(
-      '02. a) window prior to post-buffer injection'
-    )
-    expect(windows[1]).toMatchSnapshot(
-      '02. b) window after post-buffer injection'
-    )
-    expect(docWindow).toMatchSnapshot(
-      '02. c) buffers after post-buffer injection'
-    )
+    expect(windows[0]).toMatchSnapshot('02. a) window prior to post-buffer injection')
+    expect(windows[1]).toMatchSnapshot('02. b) window after post-buffer injection')
+    expect(docWindow).toMatchSnapshot('02. c) buffers after post-buffer injection')
   })
 })

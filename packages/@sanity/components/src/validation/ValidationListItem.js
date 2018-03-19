@@ -36,7 +36,6 @@ export default class ValidationListItem extends React.PureComponent {
     }
   }
 
-
   handleKeyPress = event => {
     if (event.key === 'Enter') {
       this.handleClick(event)
@@ -86,12 +85,8 @@ export default class ValidationListItem extends React.PureComponent {
         </span>
 
         <div className={styles.content}>
-          <span className={styles.path}>
-            {path}
-          </span>
-          <span className={styles.message}>
-            {marker.item.message}
-          </span>
+          <span className={styles.path}>{path}</span>
+          <span className={styles.message}>{marker.item.message}</span>
         </div>
 
         {shouldRenderLink && (

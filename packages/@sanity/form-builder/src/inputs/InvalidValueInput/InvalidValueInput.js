@@ -55,9 +55,12 @@ export default class InvalidValue extends React.PureComponent {
     }
     return (
       <div>
-        Only the following types are valid here according to schema: {
-          validTypes.map(validType => (<li key={validType}><code>{validType}</code></li>))
-        }
+        Only the following types are valid here according to schema:{' '}
+        {validTypes.map(validType => (
+          <li key={validType}>
+            <code>{validType}</code>
+          </li>
+        ))}
       </div>
     )
   }
@@ -67,7 +70,9 @@ export default class InvalidValue extends React.PureComponent {
     const converters = getConverters(value, actualType, validTypes)
     return (
       <div className={styles.root}>
-        <h3>Content has invalid type: <code>{actualType}</code></h3>
+        <h3>
+          Content has invalid type: <code>{actualType}</code>
+        </h3>
         <Details>
           Encountered a value of type <code>{actualType}</code>.
           {this.renderValidTypes()}
@@ -77,7 +82,7 @@ export default class InvalidValue extends React.PureComponent {
             className={styles.currentValueDump}
             onFocus={e => e.target.select()}
             readOnly
-            value={(value && typeof value === 'object') ? JSON.stringify(value, null, 2) : value}
+            value={value && typeof value === 'object' ? JSON.stringify(value, null, 2) : value}
           />
           {converters.map(converter => (
             <DefaultButton

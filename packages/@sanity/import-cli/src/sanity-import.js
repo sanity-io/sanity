@@ -100,11 +100,7 @@ getStream()
     currentProgress.text = `[100%] ${currentStep} (${timeSpent})`
     currentProgress.succeed()
 
-    console.log(
-      'Done! Imported %d documents to dataset "%s"',
-      imported,
-      dataset
-    )
+    console.log('Done! Imported %d documents to dataset "%s"', imported, dataset)
   })
   .catch(err => {
     error(err.message)
@@ -115,9 +111,7 @@ function getStream() {
     return getUriStream(source)
   }
 
-  return Promise.resolve(
-    source === '-' ? process.stdin : fs.createReadStream(source)
-  )
+  return Promise.resolve(source === '-' ? process.stdin : fs.createReadStream(source))
 }
 
 function getUriStream(uri) {

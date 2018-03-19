@@ -7,10 +7,8 @@ import FileInputButton from 'part:@sanity/components/fileinput/button'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 storiesOf('File Input')
-.addDecorator(withKnobs)
-.add(
-  'Default',
-  () => {
+  .addDecorator(withKnobs)
+  .add('Default', () => {
     return (
       <Sanity part="part:@sanity/components/fileinput/default" propTables={[FileInput]}>
         <FileInput onSelect={action('onSelect')}>
@@ -18,17 +16,11 @@ storiesOf('File Input')
         </FileInput>
       </Sanity>
     )
-  }
-)
-.add(
-  'Button',
-  () => {
+  })
+  .add('Button', () => {
     return (
       <Sanity part="part:@sanity/components/fileinput/button" propTables={[FileInputButton]}>
-        <FileInputButton onSelect={action('onSelect')}>
-          Upload file…
-        </FileInputButton>
+        <FileInputButton onSelect={action('onSelect')}>Upload file…</FileInputButton>
       </Sanity>
     )
-  }
-)
+  })

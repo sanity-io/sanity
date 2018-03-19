@@ -1,4 +1,3 @@
-
 const testProperties = ['', 'webkit', 'moz', 'ms', 'o'].map(prefix => `${prefix}backingStoreRatio`)
 let foundProperty = -1
 

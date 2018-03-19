@@ -23,7 +23,7 @@ function createValidationResult(
   message: string,
   helpId: ?string
 ): ValidationResult {
-  if (helpId && !Object.keys(HELP_IDS).some(id => (HELP_IDS[id] === helpId))) {
+  if (helpId && !Object.keys(HELP_IDS).some(id => HELP_IDS[id] === helpId)) {
     throw new Error(
       `Used the unknown helpId "${helpId}", please add it to the array in createValidationResult.js`
     )

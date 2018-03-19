@@ -14,14 +14,19 @@ export default function ReferringDocumentsList(props) {
         const schemaType = schema.get(document._type)
         return (
           <DefaultItem className={styles.item} key={document._id}>
-            {schemaType
-              ? (
-                <IntentLink className={styles.link} intent="edit" params={{id: document._id, type: document._type}}>
-                  <Preview value={document} type={schemaType} />
-                </IntentLink>
-              )
-              : <div>A document of the unknown type <em>{document._type}</em></div>
-            }
+            {schemaType ? (
+              <IntentLink
+                className={styles.link}
+                intent="edit"
+                params={{id: document._id, type: document._type}}
+              >
+                <Preview value={document} type={schemaType} />
+              </IntentLink>
+            ) : (
+              <div>
+                A document of the unknown type <em>{document._type}</em>
+              </div>
+            )}
           </DefaultItem>
         )
       })}
@@ -30,8 +35,10 @@ export default function ReferringDocumentsList(props) {
 }
 
 ReferringDocumentsList.propTypes = {
-  documents: PropTypes.arrayOf(PropTypes.shape({
-    _id: PropTypes.string,
-    _type: PropTypes.string
-  }))
+  documents: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string,
+      _type: PropTypes.string
+    })
+  )
 }

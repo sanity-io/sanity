@@ -52,7 +52,10 @@ class SpaceSwitcher extends React.PureComponent {
     return (
       <div className={styles.root}>
         <div title={title} onClick={this.handleMenuToggle} className={styles.currentSpace}>
-          {title && `${title}`}<span className={styles.arrow}><ArrowDropDown /></span>
+          {title && `${title}`}
+          <span className={styles.arrow}>
+            <ArrowDropDown />
+          </span>
         </div>
         {menuOpen && (
           <div className={styles.menu}>
@@ -64,8 +67,7 @@ class SpaceSwitcher extends React.PureComponent {
               onClickOutside={this.handleMenuClose}
             />
           </div>
-        )
-        }
+        )}
       </div>
     )
   }

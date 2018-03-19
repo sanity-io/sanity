@@ -25,7 +25,7 @@ const FILE_CORE = {
 }
 
 const DEFAULT_OPTIONS = {
-  accept: '',
+  accept: ''
 }
 
 export const FileType = {
@@ -35,10 +35,7 @@ export const FileType = {
   extend(subTypeDef, extendMember) {
     const options = {...(subTypeDef.options || DEFAULT_OPTIONS)}
 
-    const fields = (subTypeDef.fields || []).concat([
-      ASSET_FIELD
-    ])
-      .filter(Boolean)
+    const fields = (subTypeDef.fields || []).concat([ASSET_FIELD]).filter(Boolean)
 
     const parsed = Object.assign(pick(FILE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: FILE_CORE,
@@ -68,7 +65,9 @@ export const FileType = {
           if (extensionDef.fields) {
             throw new Error('Cannot override `fields` of subtypes of "file"')
           }
-          const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {type: parent})
+          const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
+            type: parent
+          })
           return subtype(current)
         }
       }

@@ -14,9 +14,7 @@ To the following:
 const apiConfig = {...config.api, withCredentials: true, useCdn: false}
 const client = sanityClient(apiConfig)
 
-const configuredClient = configureClient
-  ? configureClient(sanityClient(apiConfig))
-  : client
+const configuredClient = configureClient ? configureClient(sanityClient(apiConfig)) : client
 
 // Warn when people use `.default`
 Object.defineProperty(configuredClient, 'default', {

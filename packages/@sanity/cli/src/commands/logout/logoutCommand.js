@@ -21,8 +21,13 @@ export default {
     }
 
     if (type === 'provisional') {
-      output.print(chalk.yellow.inverse('[WARN]') + chalk.yellow(' You are currently logged in as a temporary user!'))
-      output.print(chalk.yellow('Logging out will make it super hard to claim your beautiful project :\'('))
+      output.print(
+        chalk.yellow.inverse('[WARN]') +
+          chalk.yellow(' You are currently logged in as a temporary user!')
+      )
+      output.print(
+        chalk.yellow("Logging out will make it super hard to claim your beautiful project :'(")
+      )
     }
 
     const confirm = await prompt.single({

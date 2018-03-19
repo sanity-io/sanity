@@ -10,14 +10,19 @@ function addLevel(prefix, depth, n = 0) {
   ].filter(Boolean)
 }
 
-exports.routes = ['/', range(ROUTES).map(prefix => {
-  return addLevel(prefix, DEPTH)
-})]
+exports.routes = [
+  '/',
+  range(ROUTES).map(prefix => {
+    return addLevel(prefix, DEPTH)
+  })
+]
 
 exports.states = range(ROUTES).map(prefix => {
   const stateKeys = range(DEPTH).map(level => `level-${prefix}-${level}`)
   const state = stateKeys.reduce((acc, key) => {
-    acc[key] = Math.random().toString(32).substring(2)
+    acc[key] = Math.random()
+      .toString(32)
+      .substring(2)
     return acc
   }, {})
 

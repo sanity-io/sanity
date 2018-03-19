@@ -11,7 +11,7 @@ const inputStyles = {
     padding: '4px 10% 3px',
     border: 'none',
     boxShadow: 'inset 0 0 0 1px #ccc',
-    fontSize: '11px',
+    fontSize: '11px'
   },
   label: {
     display: 'block',
@@ -20,25 +20,32 @@ const inputStyles = {
     color: '#222',
     paddingTop: '3px',
     paddingBottom: '4px',
-    textTransform: 'capitalize',
-  },
+    textTransform: 'capitalize'
+  }
 }
 
 export const ColorPickerFields = ({onChange, rgb, hsl, hex, disableAlpha}) => {
   const handleChange = (data, e) => {
     if (data.hex) {
-      color.isValidHex(data.hex) && onChange({
-        hex: data.hex,
-        source: 'hex',
-      }, e)
+      color.isValidHex(data.hex) &&
+        onChange(
+          {
+            hex: data.hex,
+            source: 'hex'
+          },
+          e
+        )
     } else if (data.r || data.g || data.b) {
-      onChange({
-        r: data.r || rgb.r,
-        g: data.g || rgb.g,
-        b: data.b || rgb.b,
-        a: rgb.a,
-        source: 'rgb',
-      }, e)
+      onChange(
+        {
+          r: data.r || rgb.r,
+          g: data.g || rgb.g,
+          b: data.b || rgb.b,
+          a: rgb.a,
+          source: 'rgb'
+        },
+        e
+      )
     } else if (data.a) {
       if (data.a < 0) {
         data.a = 0
@@ -47,13 +54,16 @@ export const ColorPickerFields = ({onChange, rgb, hsl, hex, disableAlpha}) => {
       }
 
       data.a /= 100
-      onChange({
-        h: hsl.h,
-        s: hsl.s,
-        l: hsl.l,
-        a: data.a,
-        source: 'rgb',
-      }, e)
+      onChange(
+        {
+          h: hsl.h,
+          s: hsl.s,
+          l: hsl.l,
+          a: data.a,
+          source: 'rgb'
+        },
+        e
+      )
     }
   }
 
@@ -97,20 +107,18 @@ export const ColorPickerFields = ({onChange, rgb, hsl, hex, disableAlpha}) => {
           dragMax="255"
         />
       </div>
-      {
-        !disableAlpha && (
-          <div className={styles.alpha}>
-            <EditableInput
-              style={inputStyles}
-              label="a"
-              value={Math.round(rgb.a * 100)}
-              onChange={handleChange}
-              dragLabel="true"
-              dragMax="100"
-            />
-          </div>
-        )
-      }
+      {!disableAlpha && (
+        <div className={styles.alpha}>
+          <EditableInput
+            style={inputStyles}
+            label="a"
+            value={Math.round(rgb.a * 100)}
+            onChange={handleChange}
+            dragLabel="true"
+            dragMax="100"
+          />
+        </div>
+      )}
     </div>
   )
 }

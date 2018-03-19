@@ -4,10 +4,7 @@ const Constants = require('./Constants')
 const concatWindows = (winA, winB, end = Constants.REAR) => {
   const idsInA = winA.map(item => item._id)
   const itemsToMerge = winB.filter(item => !idsInA.includes(item._id))
-  const items =
-    end === Constants.FRONT
-      ? itemsToMerge.concat(winA)
-      : winA.concat(itemsToMerge)
+  const items = end === Constants.FRONT ? itemsToMerge.concat(winA) : winA.concat(itemsToMerge)
 
   return items
 }

@@ -4,18 +4,19 @@ import schema from 'part:@sanity/base/schema'
 import {SchemaErrors} from './SchemaErrors'
 
 function renderPath(path) {
-  return path.map(segment => {
-    if (segment.kind === 'type') {
-      return `${segment.name || '<unnamed>'}(${segment.type})`
-    }
-    if (segment.kind === 'property') {
-      return segment.name
-    }
-    if (segment.kind === 'type') {
-      return `${segment.type}(${segment.name || '<unnamed>'})`
-    }
-    return null
-  })
+  return path
+    .map(segment => {
+      if (segment.kind === 'type') {
+        return `${segment.name || '<unnamed>'}(${segment.type})`
+      }
+      if (segment.kind === 'property') {
+        return segment.name
+      }
+      if (segment.kind === 'type') {
+        return `${segment.type}(${segment.name || '<unnamed>'})`
+      }
+      return null
+    })
     .filter(Boolean)
     .join(' > ')
 }
@@ -27,9 +28,9 @@ function reportWarnings() {
   /* eslint-disable no-console */
   const problemGroups = schema._validation
 
-  const groupsWithWarnings = problemGroups
-    .filter(group => group.problems
-      .some(problem => problem.severity === 'warning'))
+  const groupsWithWarnings = problemGroups.filter(group =>
+    group.problems.some(problem => problem.severity === 'warning')
+  )
   if (groupsWithWarnings.length === 0) {
     return
   }
@@ -51,14 +52,12 @@ export class SchemaErrorReporter extends React.Component {
   render() {
     const problemGroups = schema._validation
 
-    const groupsWithErrors = problemGroups
-      .filter(group => group.problems
-        .some(problem => problem.severity === 'error'))
+    const groupsWithErrors = problemGroups.filter(group =>
+      group.problems.some(problem => problem.severity === 'error')
+    )
 
     if (groupsWithErrors.length > 0) {
-      return (
-        <SchemaErrors problemGroups={groupsWithErrors} />
-      )
+      return <SchemaErrors problemGroups={groupsWithErrors} />
     }
 
     return this.props.children()

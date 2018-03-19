@@ -6,7 +6,5 @@ module.exports = params => {
     }
   }
 
-  return qs.length > 0
-    ? `?${qs.join('&')}`
-    : ''
+  return qs.length > 0 ? `?${qs.join('&')}` : ''
 }

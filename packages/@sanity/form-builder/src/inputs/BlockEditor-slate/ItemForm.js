@@ -8,11 +8,11 @@ export default class ItemForm extends React.PureComponent {
     value: PropTypes.any,
     level: PropTypes.number,
     onChange: PropTypes.func
-  };
+  }
 
   static contextTypes = {
     formBuilder: PropTypes.object
-  };
+  }
 
   resolveInputComponent(type, fieldType) {
     return this.context.formBuilder.resolveInputComponent(type, fieldType)
@@ -28,20 +28,9 @@ export default class ItemForm extends React.PureComponent {
 
     const InputComponent = this.context.formBuilder.resolveInputComponent(type)
     if (!InputComponent) {
-      return (
-        <div>
-          No input component resolved for type {`"${type.name}"`}
-        </div>
-      )
+      return <div>No input component resolved for type {`"${type.name}"`}</div>
     }
 
-    return (
-      <InputComponent
-        value={value}
-        type={type}
-        level={level}
-        onChange={this.handleChange}
-      />
-    )
+    return <InputComponent value={value} type={type} level={level} onChange={this.handleChange} />
   }
 }

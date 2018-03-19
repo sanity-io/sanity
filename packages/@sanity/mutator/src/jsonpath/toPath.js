@@ -2,11 +2,11 @@
 // Converts a parsed expression back into jsonpath2, roughly - mostly for use
 // with tests.
 
-export default function toPath(expr : Object) : string {
+export default function toPath(expr: Object): string {
   return toPathInner(expr, false)
 }
 
-function toPathInner(expr : Object, inUnion : bool) : string {
+function toPathInner(expr: Object, inUnion: boolean): string {
   switch (expr.type) {
     case 'attribute':
       return expr.name
@@ -40,7 +40,10 @@ function toPathInner(expr : Object, inUnion : bool) : string {
       }
       return `[${expr.value}]`
     case 'constraint':
-      const inner = `${toPathInner(expr.lhs, false)} ${expr.operator} ${toPathInner(expr.rhs, false)}`
+      const inner = `${toPathInner(expr.lhs, false)} ${expr.operator} ${toPathInner(
+        expr.rhs,
+        false
+      )}`
       if (inUnion) {
         return inner
       }

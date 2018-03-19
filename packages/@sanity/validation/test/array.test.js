@@ -17,7 +17,9 @@ describe('array', () => {
 
   test('max length constraint', async () => {
     const rule = Rule.array().max(2)
-    await expect(rule.validate(['a', 'b', 'c', 'd'])).resolves.toMatchSnapshot('max length: too long')
+    await expect(rule.validate(['a', 'b', 'c', 'd'])).resolves.toMatchSnapshot(
+      'max length: too long'
+    )
     await expect(rule.validate(['a'])).resolves.toMatchSnapshot('max length: valid')
   })
 
@@ -30,8 +32,12 @@ describe('array', () => {
 
   test('unique constraint (default, simple values)', async () => {
     const rule = Rule.array().unique()
-    await expect(rule.validate(['a', 'b', 'c', 'd'])).resolves.toMatchSnapshot('simple unique: valid')
-    await expect(rule.validate(['a', 'b', 'c', 'a'])).resolves.toMatchSnapshot('simple unique: duplicates')
+    await expect(rule.validate(['a', 'b', 'c', 'd'])).resolves.toMatchSnapshot(
+      'simple unique: valid'
+    )
+    await expect(rule.validate(['a', 'b', 'c', 'a'])).resolves.toMatchSnapshot(
+      'simple unique: duplicates'
+    )
   })
 
   test('unique constraint (default, object values)', async () => {
@@ -59,7 +65,9 @@ describe('array', () => {
   test('unique constraint (default, bool values)', async () => {
     const rule = Rule.array().unique()
     await expect(rule.validate([true, false])).resolves.toMatchSnapshot('boolean unique: valid')
-    await expect(rule.validate([false, true, false])).resolves.toMatchSnapshot('boolean unique: duplicates')
+    await expect(rule.validate([false, true, false])).resolves.toMatchSnapshot(
+      'boolean unique: duplicates'
+    )
   })
 
   test('unique constraint (default, numeric values)', async () => {

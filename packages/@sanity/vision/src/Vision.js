@@ -10,7 +10,7 @@ class Vision extends React.PureComponent {
       client: this.props.client,
       styles: this.props.styles,
       schema: this.props.schema,
-      components: this.props.components,
+      components: this.props.components
     }
   }
 

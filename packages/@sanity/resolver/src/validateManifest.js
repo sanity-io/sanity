@@ -21,25 +21,29 @@ export default function validateManifest(manifest, plugin) {
     throw new Error(`Plugin "${plugin}" has a non-array "parts" property. Must be an array.`)
   }
 
-  (manifest.parts || []).forEach((part, i) => {
+  ;(manifest.parts || []).forEach((part, i) => {
     const baseError = `Part defined at index ${i} of plugin "${plugin}" is invalid`
     const isImplementation = isDefined(part.path)
 
     const hasPart = isDefined(part.name) || isDefined(part.implements)
     if (isImplementation && !hasPart) {
-      throw new Error([
-        baseError,
-        'A part that has a defined `path` needs to also define either `name` or `implements`',
-        `See ${generateHelpUrl('plugin-parts-syntax')}`
-      ].join('\n'))
+      throw new Error(
+        [
+          baseError,
+          'A part that has a defined `path` needs to also define either `name` or `implements`',
+          `See ${generateHelpUrl('plugin-parts-syntax')}`
+        ].join('\n')
+      )
     }
 
     if (!isDefined(part.path) && !isDefined(part.description)) {
-      throw new Error([
-        baseError,
-        'A part that has not defined a `path` needs to include a `description`',
-        `See ${generateHelpUrl('plugin-parts-syntax')}`
-      ].join('\n'))
+      throw new Error(
+        [
+          baseError,
+          'A part that has not defined a `path` needs to include a `description`',
+          `See ${generateHelpUrl('plugin-parts-syntax')}`
+        ].join('\n')
+      )
     }
 
     if (isDefined(part.name)) {
@@ -68,14 +72,13 @@ function validatePartName(name, baseError) {
   const examples = [
     'Examples:',
     '- part:package-name/part-name',
-    '- part:package-name/part-name-style', '',
+    '- part:package-name/part-name-style',
+    '',
     `See ${generateHelpUrl('part-name-format')}`
   ].join('\n')
 
   if (name.indexOf('all:') !== -1) {
-    throw new Error(
-      `${baseError}\nPart "${name}" is invalid - can't contain "all:". ${examples}`
-    )
+    throw new Error(`${baseError}\nPart "${name}" is invalid - can't contain "all:". ${examples}`)
   }
 
   if (matchers.partMultiPrefixed.test(name)) {

@@ -21,9 +21,7 @@ export function resolvePlugin(options) {
   const parentDir = parentPluginPath || basePath
   const isDirPlugin = dirMatcher.test(name)
 
-  const pluginName = isDirPlugin
-    ? readPluginName(parentDir, name)
-    : name
+  const pluginName = isDirPlugin ? readPluginName(parentDir, name) : name
 
   if (sync) {
     const manifestDir = isDirPlugin
@@ -49,27 +47,30 @@ export function resolvePlugin(options) {
     }
   }
 
-  const dirResolver = Promise.resolve(isDirPlugin
-    ? resolver(path.resolve(parentDir, name))
-    : resolvePluginPath({name, basePath, parentPluginPath}, sync))
+  const dirResolver = Promise.resolve(
+    isDirPlugin
+      ? resolver(path.resolve(parentDir, name))
+      : resolvePluginPath({name, basePath, parentPluginPath}, sync)
+  )
 
   return dirResolver.then(manifestDir => {
     const plugin = {name: pluginName, path: manifestDir}
-    return readManifest({basePath, manifestDir: plugin.path, plugin: pluginName})
-      .then(manifest => promiseProps(Object.assign(plugin, {
-        manifest,
-        plugins: resolvePlugins(manifest.plugins || [], {
-          basePath,
-          parentPluginPath: plugin.path
+    return readManifest({basePath, manifestDir: plugin.path, plugin: pluginName}).then(manifest =>
+      promiseProps(
+        Object.assign(plugin, {
+          manifest,
+          plugins: resolvePlugins(manifest.plugins || [], {
+            basePath,
+            parentPluginPath: plugin.path
+          })
         })
-      })))
+      )
+    )
   })
 }
 
 function resolvePluginPath(plugin, sync) {
-  const pluginDir = plugin.name[0] === '@'
-    ? plugin.name
-    : `sanity-plugin-${plugin.name}`
+  const pluginDir = plugin.name[0] === '@' ? plugin.name : `sanity-plugin-${plugin.name}`
 
   let locations = [
     path.join(plugin.basePath, 'plugins', pluginDir),
@@ -110,11 +111,13 @@ function resolvePluginPath(plugin, sync) {
 }
 
 function getPluginNotFoundError(pluginName, locations) {
-  const err = new Error([
-    `Plugin "${pluginName}" not found.\n`,
-    'Locations tried:\n  * ',
-    locations.join('\n  * ')
-  ].join(''))
+  const err = new Error(
+    [
+      `Plugin "${pluginName}" not found.\n`,
+      'Locations tried:\n  * ',
+      locations.join('\n  * ')
+    ].join('')
+  )
 
   err.code = 'PluginNotFound'
   err.plugin = pluginName

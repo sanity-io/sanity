@@ -46,10 +46,9 @@ export const HTML_HEADER_TAGS = {
 }
 
 export const HTML_MISC_TAGS = {
-  br: {...DEFAULT_BLOCK, style: 'normal'},
+  br: {...DEFAULT_BLOCK, style: 'normal'}
 }
 export const HTML_DECORATOR_TAGS = {
-
   b: 'strong',
   strong: 'strong',
 
@@ -79,7 +78,7 @@ export const ELEMENT_MAP = {
   ...HTML_LIST_CONTAINER_TAGS,
   ...HTML_LIST_ITEM_TAGS,
   ...HTML_HEADER_TAGS,
-  ...HTML_MISC_TAGS,
+  ...HTML_MISC_TAGS
 }
 
 export const DEFAULT_SUPPORTED_STYLES = uniq(
@@ -89,8 +88,7 @@ export const DEFAULT_SUPPORTED_STYLES = uniq(
 )
 
 export const DEFAULT_SUPPORTED_DECORATORS = uniq(
-  Object.keys(HTML_DECORATOR_TAGS)
-    .map(tag => HTML_DECORATOR_TAGS[tag])
+  Object.keys(HTML_DECORATOR_TAGS).map(tag => HTML_DECORATOR_TAGS[tag])
 )
 
 export const DEFAULT_SUPPORTED_ANNOTATIONS = ['link']

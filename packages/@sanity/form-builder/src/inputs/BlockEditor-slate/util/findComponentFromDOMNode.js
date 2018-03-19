@@ -1,4 +1,4 @@
-export default function (DOMNode) {
+export default function(DOMNode) {
   for (const key in DOMNode) {
     if (key.startsWith('__reactInternalInstance$')) {
       const compInternals = DOMNode[key]._currentElement

@@ -50,9 +50,10 @@ async function copyConfiguration(rootDir, fullName, shortName, output) {
   }
 
   // Configuration exists, check if user has local configuration already
-  if ( // eslint-disable-line no-constant-condition
-    false /* disabled for now until we can offer the user a way to fix this */
-    && fse.existsSync(dstPath)
+  if (
+    // eslint-disable-line no-constant-condition
+    false /* disabled for now until we can offer the user a way to fix this */ &&
+    fse.existsSync(dstPath)
   ) {
     const distChecksum = await generateConfigChecksum(configPath)
     const sameChecksum = await hasSameChecksum(rootDir, fullName, distChecksum)
@@ -68,9 +69,11 @@ async function copyConfiguration(rootDir, fullName, shortName, output) {
 // @todo Improve with some sort of helpful key differ or similar
 function warnOnDifferentChecksum(plugin, sameChecksum, printer) {
   if (!sameChecksum) {
-    printer([
-      `[Warning] Default configuration for plugin '${plugin}' has changed since you first installed it,`,
-      'check local configuration vs distributed configuration to ensure your configuration is up to date'
-    ].join(' '))
+    printer(
+      [
+        `[Warning] Default configuration for plugin '${plugin}' has changed since you first installed it,`,
+        'check local configuration vs distributed configuration to ensure your configuration is up to date'
+      ].join(' ')
+    )
   }
 }

@@ -117,7 +117,7 @@ export default [
     before: {},
     patch: {
       set: {
-        'a': 'hello'
+        a: 'hello'
       }
     },
     after: {

@@ -2,8 +2,12 @@
 import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
 
-import {List as GridList, Item as GridItem,} from 'part:@sanity/components/lists/grid'
-import {List as SortableGridList, Item as SortableGridItem, DragHandle} from 'part:@sanity/components/lists/sortable-grid'
+import {List as GridList, Item as GridItem} from 'part:@sanity/components/lists/grid'
+import {
+  List as SortableGridList,
+  Item as SortableGridItem,
+  DragHandle
+} from 'part:@sanity/components/lists/sortable-grid'
 
 import CardPreview from 'part:@sanity/components/previews/card'
 import MediaPreview from 'part:@sanity/components/previews/media'
@@ -25,7 +29,7 @@ const containerStyle = {
   position: 'fixed',
   top: '50%',
   left: '50%',
-  transform: 'translateX(-50%) translateY(-50%)',
+  transform: 'translateX(-50%) translateY(-50%)'
 }
 
 class SortableGridTester extends React.Component {
@@ -49,8 +53,7 @@ class SortableGridTester extends React.Component {
     const {renderWith: Preview} = this.props
 
     return (
-      <SortableGridList
-        onSort={this.handleOnSort}>
+      <SortableGridList onSort={this.handleOnSort}>
         {items.map((item, index) => (
           <SortableGridItem key={item.key} index={index}>
             <DragHandle />
@@ -81,7 +84,7 @@ storiesOf('List (grid)')
         <GridList>
           {items.map(item => (
             <GridItem key={item.key}>
-              <MediaPreview item={item}/>
+              <MediaPreview item={item} />
             </GridItem>
           ))}
         </GridList>
@@ -89,7 +92,9 @@ storiesOf('List (grid)')
     )
   })
 
-  .add('MediaPreview (sortable)', () => {
+  .add(
+    'MediaPreview (sortable)',
+    () => {
       const items = range(50).map((item, i) => {
         const width = random(10, 80) * 10
         const height = random(10, 50) * 10
@@ -115,7 +120,6 @@ storiesOf('List (grid)')
     }
   )
   .add('Cards', () => {
-
     const items = range(50).map((item, i) => {
       const width = 300
       const height = 120

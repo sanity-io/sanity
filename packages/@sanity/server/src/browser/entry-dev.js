@@ -5,7 +5,9 @@ import {AppContainer} from 'react-hot-loader'
 
 function render(RootComponent) {
   ReactDOM.render(
-    <AppContainer><RootComponent /></AppContainer>,
+    <AppContainer>
+      <RootComponent />
+    </AppContainer>,
     document.getElementById('sanity')
   )
 }

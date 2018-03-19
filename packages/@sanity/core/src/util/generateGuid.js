@@ -5,8 +5,5 @@ function s4() {
 }
 
 export default function generateGuid() {
-  return [
-    s4(), s4(), '-', s4(), '-', s4(),
-    '-', s4(), '-', s4(), s4(), s4()
-  ].join('')
+  return [s4(), s4(), '-', s4(), '-', s4(), '-', s4(), '-', s4(), s4(), s4()].join('')
 }

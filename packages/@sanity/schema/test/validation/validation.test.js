@@ -16,7 +16,11 @@ const schemaDef = [
   {
     type: 'object',
     name: 'myObject',
-    fields: [{type: 'string', name: {foo: 'bar'}}, {type: 'string'}, {name: 'objectWithoutFields', type: 'object'}]
+    fields: [
+      {type: 'string', name: {foo: 'bar'}},
+      {type: 'string'},
+      {name: 'objectWithoutFields', type: 'object'}
+    ]
   }
 ]
 

@@ -3,19 +3,17 @@ import PropTypes from 'prop-types'
 import ResultCollection from './ResultCollection'
 import JsonDump from './JsonDump'
 
-const dumpableTypes = [
-  'string',
-  'number',
-  'boolean',
-]
+const dumpableTypes = ['string', 'number', 'boolean']
 
 function ResultView(props) {
   const {data, viewMode} = props
 
   const isDumpable = data === null || dumpableTypes.includes(typeof data)
-  return isDumpable
-    ? <JsonDump data={data} />
-    : <ResultCollection data={data} viewMode={viewMode} />
+  return isDumpable ? (
+    <JsonDump data={data} />
+  ) : (
+    <ResultCollection data={data} viewMode={viewMode} />
+  )
 }
 
 ResultView.propTypes = {

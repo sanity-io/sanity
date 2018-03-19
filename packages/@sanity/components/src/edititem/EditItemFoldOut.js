@@ -4,11 +4,10 @@ import styles from 'part:@sanity/components/edititem/fold-style'
 import CloseIcon from 'part:@sanity/base/close-icon'
 
 export default class EditItemFoldOut extends React.PureComponent {
-
   static propTypes = {
     title: PropTypes.string,
     children: PropTypes.node.isRequired,
-    onClose: PropTypes.func,
+    onClose: PropTypes.func
   }
 
   static defaultProps = {
@@ -37,26 +36,20 @@ export default class EditItemFoldOut extends React.PureComponent {
     return (
       <div className={styles.root}>
         <div className={styles.wrapper}>
-          {
-            title && (
-              <div className={styles.head}>
-                {title}
-                <button className={styles.close} type="button" onClick={onClose}>
-                  <CloseIcon />
-                </button>
-              </div>
-            )
-          }
-          {
-            !title && (
-              <button className={styles.closeDark} type="button" onClick={this.handleClose}>
+          {title && (
+            <div className={styles.head}>
+              {title}
+              <button className={styles.close} type="button" onClick={onClose}>
                 <CloseIcon />
               </button>
-            )
-          }
-          <div className={styles.content}>
-            {children}
-          </div>
+            </div>
+          )}
+          {!title && (
+            <button className={styles.closeDark} type="button" onClick={this.handleClose}>
+              <CloseIcon />
+            </button>
+          )}
+          <div className={styles.content}>{children}</div>
         </div>
       </div>
     )

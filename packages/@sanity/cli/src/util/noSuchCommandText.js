@@ -35,13 +35,12 @@ export default (cmdName, parentGroupName, groups) => {
 
 function suggestCommand(cmdName, group, parentGroupName = null) {
   // Try to find something similar
-  const closest = group
-    .map(command => leven(command.name, cmdName))
-    .reduce((current, distance, index) => {
-      return distance < current.distance
-        ? {index, distance}
-        : current
-    }, {index: null, distance: +Infinity})
+  const closest = group.map(command => leven(command.name, cmdName)).reduce(
+    (current, distance, index) => {
+      return distance < current.distance ? {index, distance} : current
+    },
+    {index: null, distance: +Infinity}
+  )
 
   // Given we are within our target threshold, suggest the command
   let suggestCmd = ''

@@ -41,15 +41,19 @@ export function splitTextNodeIntoArraysOfCharacterBySpan(textNode) {
 // Take a number of consecutive sanity spans and join them together into an immutable character array for use with slate
 function consecutiveSanitySpansToSlateText(key, spans, firstIndex) {
   let index = firstIndex
-  const chars = flatten(spans.map(span => {
-    // Convert the marks from the span and add the book-keeping tag to keep track of which span each character belongs to
-    const marks = sanityMarksToSlate(span.marks).add(Mark.create({
-      type: '__spanIdx',
-      data: {index}
-    }))
-    index += 1
-    return span.content.split('').map(char => ({text: char, marks: marks}))
-  }))
+  const chars = flatten(
+    spans.map(span => {
+      // Convert the marks from the span and add the book-keeping tag to keep track of which span each character belongs to
+      const marks = sanityMarksToSlate(span.marks).add(
+        Mark.create({
+          type: '__spanIdx',
+          data: {index}
+        })
+      )
+      index += 1
+      return span.content.split('').map(char => ({text: char, marks: marks}))
+    })
+  )
   return Text.create({
     key,
     characters: Immutable.List(chars.map(({text, marks}) => Character.create({text, marks})))
@@ -66,10 +70,13 @@ export function spanAccessorsToSlateNodes(spans) {
       const firstIndex = i
       // consume until we get something else
       let next = i
-      while (next < spans.length && (spans[next] instanceof TextSpanAccessor)) { // eslint-disable-line max-depth
+      while (next < spans.length && spans[next] instanceof TextSpanAccessor) {
+        // eslint-disable-line max-depth
         next++
       }
-      joined = joined.push(consecutiveSanitySpansToSlateText(span.key, spans.slice(i, next), firstIndex))
+      joined = joined.push(
+        consecutiveSanitySpansToSlateText(span.key, spans.slice(i, next), firstIndex)
+      )
       i = next
     }
   }

@@ -20,19 +20,15 @@ const UPLOAD_FILE: UploaderDef = {
 const UPLOAD_TEXT: UploaderDef = {
   type: 'string',
   accepts: 'text/*',
-  upload: (file: File, type: Type) => uploadFile(file)
-    .map(content => ({
+  upload: (file: File, type: Type) =>
+    uploadFile(file).map(content => ({
       patches: [set(content)]
     }))
 }
 
 // Todo: promote this to a "first-class" form-builder abstraction
 // and make it possible to register custom uploaders
-const uploaders: Array<Uploader> = [
-  UPLOAD_IMAGE,
-  UPLOAD_TEXT,
-  UPLOAD_FILE
-].map((uploader, i) => ({
+const uploaders: Array<Uploader> = [UPLOAD_IMAGE, UPLOAD_TEXT, UPLOAD_FILE].map((uploader, i) => ({
   ...uploader,
   priority: i
 }))

@@ -42,9 +42,9 @@ type Props = {
   value?: Value,
   type: Type,
   level: number,
-  onChange: (PatchEvent) => void,
+  onChange: PatchEvent => void,
   resolveUploader: UploaderResolver,
-  materialize: (string) => ObservableI<Object>,
+  materialize: string => ObservableI<Object>,
   onBlur: () => void,
   onFocus: () => void,
   readOnly: ?boolean,
@@ -71,9 +71,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
   }
 
   handleRemoveButtonClick = (event: SyntheticEvent<*>) => {
-    this.props.onChange(
-      PatchEvent.from(unset(['asset']))
-    )
+    this.props.onChange(PatchEvent.from(unset(['asset'])))
   }
 
   clearUploadStatus() {
@@ -97,7 +95,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
   uploadFirstAccepted(fileList: FileList) {
     const {resolveUploader, type} = this.props
 
-    let match: ?{ uploader: Uploader, file: File }
+    let match: ?{uploader: Uploader, file: File}
 
     Array.from(fileList).some(file => {
       const uploader = resolveUploader(type, file)
@@ -111,7 +109,6 @@ export default class ImageInput extends React.PureComponent<Props, State> {
     if (match) {
       this.uploadWith(match.uploader, match.file)
     }
-
   }
 
   uploadWith(uploader: Uploader, file: File) {
@@ -120,27 +117,21 @@ export default class ImageInput extends React.PureComponent<Props, State> {
     this.setState({isUploading: true})
     onChange(PatchEvent.from([setIfMissing({_type: type.name})]))
 
-    this.uploadSubscription = uploader.upload(file, type)
-      .subscribe({
-        next: uploadEvent => {
-          if (uploadEvent.patches) {
-            onChange(PatchEvent.from(uploadEvent.patches))
-          }
-        },
-        error: err => {
-          this.setState({uploadError: err})
-          this.clearUploadStatus()
-        },
-        complete: () => {
-          onChange(
-            PatchEvent.from([
-              unset(['hotspot']),
-              unset(['crop'])
-            ])
-          )
-          this.setState({isUploading: false})
+    this.uploadSubscription = uploader.upload(file, type).subscribe({
+      next: uploadEvent => {
+        if (uploadEvent.patches) {
+          onChange(PatchEvent.from(uploadEvent.patches))
         }
-      })
+      },
+      error: err => {
+        this.setState({uploadError: err})
+        this.clearUploadStatus()
+      },
+      complete: () => {
+        onChange(PatchEvent.from([unset(['hotspot']), unset(['crop'])]))
+        this.setState({isUploading: false})
+      }
+    })
   }
 
   renderMaterializedAsset = (assetDocument: Object): Node => {
@@ -158,7 +149,8 @@ export default class ImageInput extends React.PureComponent<Props, State> {
 
   renderUploadState(uploadState: any) {
     const {isUploading} = this.state
-    const isComplete = (uploadState.progress === 100) && !!(this.props.value && this.props.value.asset)
+    const isComplete =
+      uploadState.progress === 100 && !!(this.props.value && this.props.value.asset)
     return (
       <div className={styles.progress}>
         <div>
@@ -172,11 +164,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
             />
           </div>
           {isUploading && (
-            <Button
-              kind="simple"
-              color="danger"
-              onClick={this.handleCancelUpload}
-            >
+            <Button kind="simple" color="danger" onClick={this.handleCancelUpload}>
               Cancel
             </Button>
           )}
@@ -188,11 +176,13 @@ export default class ImageInput extends React.PureComponent<Props, State> {
   handleFieldChange = (event: PatchEvent, field: FieldT) => {
     const {onChange, type} = this.props
 
-    onChange(event
-      .prefixAll(field.name)
-      .prepend(setIfMissing({
-        _type: type.name
-      })))
+    onChange(
+      event.prefixAll(field.name).prepend(
+        setIfMissing({
+          _type: type.name
+        })
+      )
+    )
   }
 
   handleStartAdvancedEdit = () => {
@@ -217,17 +207,22 @@ export default class ImageInput extends React.PureComponent<Props, State> {
 
   handleSelectAsset = (asset: Object) => {
     const {onChange, type} = this.props
-    onChange(PatchEvent.from([
-      setIfMissing({
-        _type: type.name
-      }),
-      unset(['hotspot']),
-      unset(['crop']),
-      set({
-        _type: 'reference',
-        _ref: asset._id
-      }, ['asset'])
-    ]))
+    onChange(
+      PatchEvent.from([
+        setIfMissing({
+          _type: type.name
+        }),
+        unset(['hotspot']),
+        unset(['crop']),
+        set(
+          {
+            _type: 'reference',
+            _ref: asset._id
+          },
+          ['asset']
+        )
+      ])
+    )
 
     this.setState({
       isSelectAssetOpen: false
@@ -257,10 +252,8 @@ export default class ImageInput extends React.PureComponent<Props, State> {
                 />
               )}
             </WithMaterializedReference>
-        )}
-        <div className={styles.advancedEditFields}>
-          {this.renderFields(fields)}
-        </div>
+          )}
+        <div className={styles.advancedEditFields}>{this.renderFields(fields)}</div>
         <Button onClick={this.handleStopAdvancedEdit}>Close</Button>
       </Dialog>
     )
@@ -275,10 +268,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
     const fieldValue = value && value[field.name]
 
     return (
-      <div
-        className={styles.field}
-        key={field.name}
-      >
+      <div className={styles.field} key={field.name}>
         <FormBuilderInput
           value={fieldValue}
           type={field.type}
@@ -325,7 +315,6 @@ export default class ImageInput extends React.PureComponent<Props, State> {
   }
 
   handleUpload = ({file, uploader}) => {
-
     this.uploadWith(uploader, file)
   }
 
@@ -366,34 +355,39 @@ export default class ImageInput extends React.PureComponent<Props, State> {
         )}
         <div className={styles.content}>
           <div className={styles.assetWrapper}>
-            {value && value._upload && (
-              <div className={styles.uploadState}>
-                {this.renderUploadState(value._upload)}
-              </div>
-            )}
+            {value &&
+              value._upload && (
+                <div className={styles.uploadState}>{this.renderUploadState(value._upload)}</div>
+              )}
             {hasAsset ? (
               <WithMaterializedReference reference={value.asset} materialize={materialize}>
                 {this.renderMaterializedAsset}
               </WithMaterializedReference>
-            ) : (readOnly ? <span>Field is read only</span> : <UploadPlaceholder hasFocus={hasFocus} />)}
+            ) : readOnly ? (
+              <span>Field is read only</span>
+            ) : (
+              <UploadPlaceholder hasFocus={hasFocus} />
+            )}
           </div>
           {highlightedFields.length > 0 && (
-            <div className={styles.fieldsWrapper}>
-              {this.renderFields(highlightedFields)}
-            </div>
+            <div className={styles.fieldsWrapper}>{this.renderFields(highlightedFields)}</div>
           )}
         </div>
         <div className={styles.functions}>
-          {!readOnly && <FileInputButton
-            icon={UploadIcon}
-            onSelect={this.handleSelectFile}
-            accept={''/* todo build from this.props.resolveUploaders */}
-          >
-            Upload
-          </FileInputButton>}
-          {!readOnly && <Button onClick={this.handleOpenSelectAsset} kind="simple">
-            Select from library
-          </Button>}
+          {!readOnly && (
+            <FileInputButton
+              icon={UploadIcon}
+              onSelect={this.handleSelectFile}
+              accept={'' /* todo build from this.props.resolveUploaders */}
+            >
+              Upload
+            </FileInputButton>
+          )}
+          {!readOnly && (
+            <Button onClick={this.handleOpenSelectAsset} kind="simple">
+              Select from library
+            </Button>
+          )}
           {showAdvancedEditButton && (
             <Button
               icon={readOnly ? VisibilityIcon : EditIcon}
@@ -404,9 +398,12 @@ export default class ImageInput extends React.PureComponent<Props, State> {
               {readOnly ? 'View details' : 'Edit'}
             </Button>
           )}
-          {hasAsset && !readOnly && (
-            <Button color="danger" kind="simple" onClick={this.handleRemoveButtonClick}>Remove</Button>
-          )}
+          {hasAsset &&
+            !readOnly && (
+              <Button color="danger" kind="simple" onClick={this.handleRemoveButtonClick}>
+                Remove
+              </Button>
+            )}
         </div>
         {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
         {isSelectAssetOpen && (

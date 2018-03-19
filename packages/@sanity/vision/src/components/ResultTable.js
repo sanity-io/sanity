@@ -65,12 +65,14 @@ class ResultTable extends React.PureComponent {
 
 ResultTable.propTypes = {
   query: PropTypes.string.isRequired,
-  documents: PropTypes.arrayOf(PropTypes.shape({
-    _id: PropTypes.string.isRequired,
-    _type: PropTypes.string.isRequired,
-    _updatedAt: PropTypes.string.isRequired,
-    _createdAt: PropTypes.string.isRequired
-  }))
+  documents: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      _type: PropTypes.string.isRequired,
+      _updatedAt: PropTypes.string.isRequired,
+      _createdAt: PropTypes.string.isRequired
+    })
+  )
 }
 
 export default ResultTable

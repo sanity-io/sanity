@@ -30,7 +30,6 @@ const HOTSPOT = {
 }
 
 export default class HotspotImageDemo extends React.PureComponent {
-
   static propTypes = {
     src: PropTypes.string
   }
@@ -54,13 +53,14 @@ export default class HotspotImageDemo extends React.PureComponent {
         <pre>{JSON.stringify({hotspot: HOTSPOT, crop: CROP}, null, 2)}</pre>
         <select value={ASPECT_RATIO_OPTIONS.indexOf(selectedOption)} onChange={this.handleSelect}>
           {ASPECT_RATIO_OPTIONS.map((option, i) => {
-            const text = [
-              option.title,
-              option.wrapperStyle && JSON.stringify(option.wrapperStyle)
-            ]
+            const text = [option.title, option.wrapperStyle && JSON.stringify(option.wrapperStyle)]
               .filter(Boolean)
               .join(' ')
-            return <option key={i} value={i}>{text}</option>
+            return (
+              <option key={i} value={i}>
+                {text}
+              </option>
+            )
           })}
         </select>
         <div style={{border: '2px solid cyan', ...wrapperStyle}}>
@@ -70,5 +70,3 @@ export default class HotspotImageDemo extends React.PureComponent {
     )
   }
 }
-
-

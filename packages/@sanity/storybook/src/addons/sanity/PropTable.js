@@ -34,12 +34,14 @@ function PropTable({propTypes}) {
 
 PropTable.displayName = 'PropTable'
 PropTable.propTypes = {
-  propTypes: PropTypes.arrayOf(PropTypes.shape({
-    property: PropTypes.string.isRequired,
-    propType: PropTypes.string.isRequired,
-    required: PropTypes.bool.isRequired,
-    defaultValue: PropTypes.any
-  }))
+  propTypes: PropTypes.arrayOf(
+    PropTypes.shape({
+      property: PropTypes.string.isRequired,
+      propType: PropTypes.string.isRequired,
+      required: PropTypes.bool.isRequired,
+      defaultValue: PropTypes.any
+    })
+  )
 }
 
 export default PropTable

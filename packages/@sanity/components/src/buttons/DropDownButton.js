@@ -77,47 +77,38 @@ export default class DropDownButton extends React.PureComponent {
       <div ref={this.setRootElement} className={className}>
         <Manager>
           <Target>
-            <Button
-              {...rest}
-              className={`${styles.root}`}
-              onClick={this.handleOnClick}
-              kind={kind}
-            >
-              <span className={styles.title}>
-                {children}
-              </span>
+            <Button {...rest} className={`${styles.root}`} onClick={this.handleOnClick} kind={kind}>
+              <span className={styles.title}>{children}</span>
 
               <span className={styles.arrow}>
                 <ArrowIcon color="inherit" />
               </span>
             </Button>
           </Target>
-          {
-            menuOpened && (
-              <Portal>
-                <Stacked>
-                  {isActive => (
-                    <Popper className={styles.popper}>
-                      <div
-                        className={styles.wrapper}
-                        ref={this.setMenuElement}
-                        style={{minWidth: `${width}px`}}
-                      >
-                        <Escapable onEscape={isActive && this.handleClose} />
-                        <Menu
-                          items={items}
-                          isOpen
-                          className={styles.menu}
-                          onAction={this.handleAction}
-                          onClickOutside={isActive && this.handleClose}
-                        />
-                      </div>
-                    </Popper>
-                  )}
-                </Stacked>
-              </Portal>
-            )
-          }
+          {menuOpened && (
+            <Portal>
+              <Stacked>
+                {isActive => (
+                  <Popper className={styles.popper}>
+                    <div
+                      className={styles.wrapper}
+                      ref={this.setMenuElement}
+                      style={{minWidth: `${width}px`}}
+                    >
+                      <Escapable onEscape={isActive && this.handleClose} />
+                      <Menu
+                        items={items}
+                        isOpen
+                        className={styles.menu}
+                        onAction={this.handleAction}
+                        onClickOutside={isActive && this.handleClose}
+                      />
+                    </div>
+                  </Popper>
+                )}
+              </Stacked>
+            </Portal>
+          )}
         </Manager>
       </div>
     )

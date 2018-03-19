@@ -6,10 +6,8 @@ import {withKnobs, boolean, text} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 storiesOf('Textfields')
-.addDecorator(withKnobs)
-.add(
-  'Default',
-  () => {
+  .addDecorator(withKnobs)
+  .add('Default', () => {
     return (
       <Sanity part="part:@sanity/components/textfields/default" propTables={[DefaultTextField]}>
         <DefaultTextField
@@ -25,11 +23,8 @@ storiesOf('Textfields')
         />
       </Sanity>
     )
-  }
-)
-.add(
-  'Search',
-  () => {
+  })
+  .add('Search', () => {
     return (
       <Sanity part="part:@sanity/components/textfields/search" propTables={[SearchTextField]}>
         <SearchTextField
@@ -42,5 +37,4 @@ storiesOf('Textfields')
         />
       </Sanity>
     )
-  }
-)
+  })

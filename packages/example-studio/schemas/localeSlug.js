@@ -7,8 +7,8 @@ export default {
     {
       name: 'translations',
       title: 'Translations',
-      options: { collapsable: true },
-    },
+      options: {collapsable: true}
+    }
   ],
   fields: SUPPORTED_LANGUAGES.map(lang => ({
     name: lang.id,
@@ -16,9 +16,9 @@ export default {
     title: lang.title,
     fieldset: lang.default ? null : 'translations',
     options: {
-      source: document => ((document && document.title) ? document.title[lang.id] : ''),
+      source: document => (document && document.title ? document.title[lang.id] : ''),
       maxLength: 96,
-      auto: true,
-    },
-  })),
+      auto: true
+    }
+  }))
 }

@@ -7,7 +7,7 @@ import {ObservableI} from '../typedefs/observable'
 
 type Props = {
   reference: Reference,
-  materialize: (string) => ObservableI<Object>,
+  materialize: string => ObservableI<Object>,
   children: Object => null | Node
 }
 

@@ -18,8 +18,10 @@ export default function assetUrlBuilder(url, options) {
     width && `w=${width}`,
     height && `h=${height}`,
     `fit=${fit ? fit : defaultFit}`,
-    'q=85',
-  ].filter(Boolean).join('&')
+    'q=85'
+  ]
+    .filter(Boolean)
+    .join('&')
 
   return `${url}?${params}`
 }

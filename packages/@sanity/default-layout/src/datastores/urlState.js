@@ -46,9 +46,10 @@ function resolveIntentState(currentState, intentState) {
   const currentTool = currentState.tool ? tools.find(tool => tool.name === currentState.tool) : null
 
   // If current tool can handle intent and if so, give it precedence
-  const matchingTool = (currentTool ? [currentTool, ...tools] : tools)
-    .find(tool =>
-      (tool && typeof tool.canHandleIntent === 'function' && tool.canHandleIntent(intent, params)))
+  const matchingTool = (currentTool ? [currentTool, ...tools] : tools).find(
+    tool =>
+      tool && typeof tool.canHandleIntent === 'function' && tool.canHandleIntent(intent, params)
+  )
 
   if (matchingTool) {
     const toolState = matchingTool.getIntentState(intent, params)
@@ -96,8 +97,7 @@ export function navigate(newUrl, options) {
   locationStore.actions.navigate(newUrl, options)
 }
 
-export const state = locationStore
-  .state
+export const state = locationStore.state
   .map(decodeUrlState)
   .scan(maybeHandleIntent, null)
   .filter(Boolean)
@@ -108,7 +108,8 @@ export const state = locationStore
 
 if (HAS_SPACES) {
   // Uglybugly mutation ahead.
-  state.map(event => event.state)
+  state
+    .map(event => event.state)
     .filter(Boolean)
     .do(reconfigureClient)
     .subscribe()

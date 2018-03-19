@@ -8,6 +8,5 @@ export default function luid() {
       .toString(36)
       .substring(1)
   }
-  return `${s4() + s4()}-${s4()}-${s4()}-${
-    s4()}-${s4()}${s4()}${s4()}`
+  return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`
 }

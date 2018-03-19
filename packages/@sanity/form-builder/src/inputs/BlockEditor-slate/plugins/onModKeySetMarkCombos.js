@@ -1,4 +1,3 @@
-
 function createOnKeyDown(blockEditor) {
   return function onKeyDown(event, data, change) {
     if (!data.isMod) {

@@ -5,7 +5,9 @@ import styles from '../styles/contentStyles/Blockquote.css'
 function Blockquote(props) {
   return (
     <div className={styles.root}>
-      <blockquote {...props.attributes} className={styles.quote}>{props.children}</blockquote>
+      <blockquote {...props.attributes} className={styles.quote}>
+        {props.children}
+      </blockquote>
     </div>
   )
 }

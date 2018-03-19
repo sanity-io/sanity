@@ -70,15 +70,12 @@ export default class PanesSplitController extends React.Component {
           onDragFinished={this.handleDragFinished}
           onChange={newSize => this.handleSplitPaneChange(newSize, pane1)}
         >
-          <div
-            className={isCollapsed ? styles.paneInSplittedCollapsed : styles.paneInSplitted}
-          >
+          <div className={isCollapsed ? styles.paneInSplittedCollapsed : styles.paneInSplitted}>
             {pane1}
           </div>
 
           {/* <div className={styles.paneInSplitted}></div> */}
           {pane2 || ' '}
-
         </SplitPane>
       </div>
     )
@@ -97,10 +94,7 @@ export default class PanesSplitController extends React.Component {
 
     // Recursive
     const remainingPanes = panes.slice(1)
-    return this.renderSplitPane(
-      panes[0],
-      this.renderRecursivePanes(remainingPanes)
-    )
+    return this.renderSplitPane(panes[0], this.renderRecursivePanes(remainingPanes))
   }
 
   render() {
@@ -117,9 +111,7 @@ export default class PanesSplitController extends React.Component {
 
     return (
       <div className={styles.vertical}>
-        {
-          isMobile ? children : this.renderRecursivePanes(panes.filter(pane => pane.type !== 'div'))
-        }
+        {isMobile ? children : this.renderRecursivePanes(panes.filter(pane => pane.type !== 'div'))}
       </div>
     )
   }

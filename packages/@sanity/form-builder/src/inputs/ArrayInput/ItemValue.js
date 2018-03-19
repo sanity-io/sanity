@@ -188,20 +188,14 @@ export default class RenderItemValue extends React.Component<Props> {
     if (options.editModal === 'fold') {
       return (
         <div className={styles.popupAnchorRelative}>
-          <EditItemFold
-            title={`Edit ${memberType.title}`}
-            onClose={this.handleEditStop}
-          >
+          <EditItemFold title={`Edit ${memberType.title}`} onClose={this.handleEditStop}>
             {content}
           </EditItemFold>
         </div>
       )
     }
 
-    const actions = [
-      CLOSE_ACTION,
-      !readOnly && DELETE_ACTION
-    ].filter(Boolean)
+    const actions = [CLOSE_ACTION, !readOnly && DELETE_ACTION].filter(Boolean)
 
     if (options.editModal === 'popover') {
       return (

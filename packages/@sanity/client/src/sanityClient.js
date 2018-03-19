@@ -63,17 +63,17 @@ assign(SanityClient.prototype, {
 
   _requestObservable(options) {
     const uri = options.url || options.uri
-    const canUseCdn = (
-      this.clientConfig.useCdn
-      && ['GET', 'HEAD'].indexOf(options.method || 'GET') >= 0
-      && uri.indexOf('/data/') === 0
-    )
+    const canUseCdn =
+      this.clientConfig.useCdn &&
+      ['GET', 'HEAD'].indexOf(options.method || 'GET') >= 0 &&
+      uri.indexOf('/data/') === 0
 
-    return httpRequest(mergeOptions(
-      getRequestOptions(this.clientConfig),
-      options,
-      {url: this.getUrl(uri, canUseCdn)}
-    ), this.clientConfig.requester)
+    return httpRequest(
+      mergeOptions(getRequestOptions(this.clientConfig), options, {
+        url: this.getUrl(uri, canUseCdn)
+      }),
+      this.clientConfig.requester
+    )
   },
 
   request(options) {
@@ -81,9 +81,7 @@ assign(SanityClient.prototype, {
       .filter(event => event.type === 'response')
       .map(event => event.body)
 
-    return this.isPromiseAPI()
-      ? toPromise(observable)
-      : observable
+    return this.isPromiseAPI() ? toPromise(observable) : observable
   }
 })
 

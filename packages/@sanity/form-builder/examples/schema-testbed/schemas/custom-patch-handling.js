@@ -18,9 +18,7 @@ export default {
         {
           name: 'customPatchHandlingInArray',
           type: 'array',
-          of: [
-            {type: 'customPatchHandlingExampleType'}
-          ]
+          of: [{type: 'customPatchHandlingExampleType'}]
         },
         {
           name: 'complex',

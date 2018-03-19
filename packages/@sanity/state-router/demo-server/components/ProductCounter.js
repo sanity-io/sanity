@@ -13,7 +13,9 @@ export default withRouterHOC((props: Props) => {
     <div>
       <h1>My parent never updates. Should still get router state updates.</h1>
       <h3>Current router state (scoped):</h3>
-      <pre><code>{JSON.stringify(router.state, null, 2)}</code></pre>
+      <pre>
+        <code>{JSON.stringify(router.state, null, 2)}</code>
+      </pre>
     </div>
   )
 })

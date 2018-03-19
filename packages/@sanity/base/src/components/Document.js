@@ -23,32 +23,20 @@ function assetUrl(staticPath, item) {
 }
 
 function Document(props) {
-  const stylesheets = props.stylesheets.map(item =>
-    <link
-      key={item.path}
-      rel="stylesheet"
-      href={assetUrl(props.staticPath, item)}
-    />
-  )
+  const stylesheets = props.stylesheets.map(item => (
+    <link key={item.path} rel="stylesheet" href={assetUrl(props.staticPath, item)} />
+  ))
 
-  const subresources = props.scripts.map(item =>
-    <link
-      key={item.path}
-      rel="subresource"
-      href={assetUrl(props.staticPath, item)}
-    />
-  )
+  const subresources = props.scripts.map(item => (
+    <link key={item.path} rel="subresource" href={assetUrl(props.staticPath, item)} />
+  ))
 
   const scripts = props.scripts.map(item => assetUrl(props.staticPath, item))
   const scriptLoader = generateScriptLoader(scripts)
 
-  const favicons = props.favicons.map((item, index) =>
-    <link
-      key={item.path + index}
-      rel="icon"
-      href={assetUrl(props.staticPath, item)}
-    />
-  )
+  const favicons = props.favicons.map((item, index) => (
+    <link key={item.path + index} rel="icon" href={assetUrl(props.staticPath, item)} />
+  ))
   return (
     <html>
       <head>
@@ -85,7 +73,7 @@ Document.defaultProps = {
   staticPath: '/static',
   favicons: [{path: 'favicon.ico'}],
   stylesheets: [],
-  scripts: [],
+  scripts: []
 }
 
 Document.propTypes = {

@@ -17,12 +17,16 @@ let supportsPassive = () => {
 
 export default function fromEvent(target, eventType, options) {
   if (typeof options === 'boolean') {
-    throw new TypeError('The third argument to fromEvent(..) should be an EventListenerOptions object, not a boolean')
+    throw new TypeError(
+      'The third argument to fromEvent(..) should be an EventListenerOptions object, not a boolean'
+    )
   }
   let compatOptions = options
   if (options && !supportsPassive()) {
     // eslint-disable-next-line no-console
-    console.warn('This browser does not support EventListenerOptions, only `options.capture` will be used when calling addEventListener')
+    console.warn(
+      'This browser does not support EventListenerOptions, only `options.capture` will be used when calling addEventListener'
+    )
     compatOptions = options.capture
   }
   return new Observable(observer => {

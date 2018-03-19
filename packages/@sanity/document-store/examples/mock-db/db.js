@@ -5,32 +5,37 @@ const assert = require('assert')
 const {Patcher} = require('@sanity/mutator')
 
 function randomString() {
-  return Math.random().toString(32).substring(2)
+  return Math.random()
+    .toString(32)
+    .substring(2)
 }
 
 function randomInt(max) {
   return Math.abs(Math.random() * max)
 }
 
-const RECORDS = range(100)
-  .map(createRecord)
+const RECORDS = range(100).map(createRecord)
 
 const INDEX = keyBy(RECORDS, 'id')
-const delay = ms => new Observable(observer => {
-  const timeout = setTimeout(() => {
-    observer.next()
-    observer.complete()
-  }, ms)
-  return () => clearTimeout(timeout)
-})
+const delay = ms =>
+  new Observable(observer => {
+    const timeout = setTimeout(() => {
+      observer.next()
+      observer.complete()
+    }, ms)
+    return () => clearTimeout(timeout)
+  })
 
 function createRecord(id, snapshot = {}) {
   return {
     id: id,
-    snapshot: Object.assign({
-      _id: id,
-      _rev: 0
-    }, snapshot),
+    snapshot: Object.assign(
+      {
+        _id: id,
+        _rev: 0
+      },
+      snapshot
+    ),
     events: pubsub()
   }
 }
@@ -81,14 +86,13 @@ function applyPatch(patch) {
   return new Patcher(patch).apply(prevDocument)
 }
 function applyPatches(patches) {
-
   const patchesByDocId = groupBy(patches, 'patch.id')
 
   // Apply all patches for same ids together
   return Object.keys(patchesByDocId).map(id => {
     const patches = patchesByDocId[id]
     const record = getRecord(id)
-    let previousDocument = record.snapshot
+    const previousDocument = record.snapshot
     const intermediateDocs = patches.map(mut => applyPatch(mut.patch))
     const nextDocument = intermediateDocs[intermediateDocs.length - 1]
     record.snapshot = nextDocument
@@ -99,7 +103,6 @@ function applyPatches(patches) {
       mutations: patches
     }
   })
-
 }
 
 function listen(documentId) {
@@ -111,7 +114,6 @@ function listen(documentId) {
     })
     return record.events.subscribe(event => observer.next(event))
   })
-
 }
 
 module.exports = {
@@ -131,14 +133,16 @@ module.exports = {
 
     const patchResults = applyPatches(patches)
 
-    const results = flatten(patchResults.map(patchResult => {
-      return patchResult.intermediateDocs.map(document => {
-        return {
-          id: document._id,
-          document: document
-        }
+    const results = flatten(
+      patchResults.map(patchResult => {
+        return patchResult.intermediateDocs.map(document => {
+          return {
+            id: document._id,
+            document: document
+          }
+        })
       })
-    }))
+    )
 
     const events = patchResults.map(patchResult => {
       return mutationEvent({
@@ -150,29 +154,29 @@ module.exports = {
     })
 
     events.forEach(event => {
-        delay(randomInt(50)).subscribe(() =>
-          getRecord(event.documentId).events.publish(event))
-      })
+      delay(randomInt(50)).subscribe(() => getRecord(event.documentId).events.publish(event))
+    })
 
-    return delay(randomInt(50)).map(() =>
-      ({
-        transactionId,
-        results
-      }))
+    return delay(randomInt(50)).map(() => ({
+      transactionId,
+      results
+    }))
   },
   createRecord(document) {
     const docId = randomString()
-    return delay(randomInt(50)).map(() => {
-      const record = createRecord(docId, document)
-      RECORDS.push(record)
-      INDEX[record.id] = record
-      return record.snapshot
-    })
+    return delay(randomInt(50))
+      .map(() => {
+        const record = createRecord(docId, document)
+        RECORDS.push(record)
+        INDEX[record.id] = record
+        return record.snapshot
+      })
       .map(document =>
         mutationResponse({
           operation: 'create',
           nextDocument: document,
           transactionId: randomString()
-        }))
+        })
+      )
   }
 }

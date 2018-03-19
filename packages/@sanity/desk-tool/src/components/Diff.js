@@ -14,7 +14,7 @@
  *
  *
  *
-  */
+ */
 import PropTypes from 'prop-types'
 import React from 'react'
 import {diffJson} from 'diff'
@@ -46,7 +46,9 @@ export default class Diff extends React.PureComponent {
     return (
       <pre>
         {diff.map((part, index) => (
-          <span key={index} className={styles[getDiffStatKey(part)]}>{part.value}</span>
+          <span key={index} className={styles[getDiffStatKey(part)]}>
+            {part.value}
+          </span>
         ))}
       </pre>
     )

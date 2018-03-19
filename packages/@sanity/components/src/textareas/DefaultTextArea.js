@@ -89,13 +89,12 @@ export default class DefaultTextArea extends React.Component {
           ref={this.setInput}
           {...rest}
         />
-        {
-          isClearable && !this.props.disabled && (
+        {isClearable &&
+          !this.props.disabled && (
             <button className={styles.clearButton} onClick={onClear}>
               <IoAndroidClose color="inherit" />
             </button>
-          )
-        }
+          )}
       </div>
     )
   }

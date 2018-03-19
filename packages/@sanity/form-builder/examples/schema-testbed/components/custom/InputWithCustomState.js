@@ -63,7 +63,7 @@ function applyPatch(currentValue: Deserialized, patch: Patch): Deserialized {
 type Props = {
   value: Serialized,
   type: any,
-  onChange: (PatchEvent) => void
+  onChange: PatchEvent => void
 }
 
 export default class InputWithCustomState extends React.Component {
@@ -77,10 +77,12 @@ export default class InputWithCustomState extends React.Component {
 
   setField(fieldName: string, inputValue: value) {
     const {onChange, type} = this.props
-    onChange(PatchEvent.from(
-      setIfMissing({_type: type.name}),
-      inputValue === '' ? unset([fieldName]) : set(inputValue, [fieldName])
-    ))
+    onChange(
+      PatchEvent.from(
+        setIfMissing({_type: type.name}),
+        inputValue === '' ? unset([fieldName]) : set(inputValue, [fieldName])
+      )
+    )
   }
 
   render() {

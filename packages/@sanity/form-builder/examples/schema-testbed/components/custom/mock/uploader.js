@@ -23,13 +23,14 @@ function simulateProgress() {
       }
       clearTimeout(progressTimer)
     }
-  })
-    .map(createProgressEvent)
+  }).map(createProgressEvent)
 }
 
 const REFS_DB = []
 function createReference(type, props) {
-  const id = Math.random().toString(32).substring(2)
+  const id = Math.random()
+    .toString(32)
+    .substring(2)
   REFS_DB.push({
     _id: id,
     _type: type,
@@ -41,17 +42,16 @@ function createReference(type, props) {
 }
 
 function mockUpload(getBody) {
-  return simulateProgress()
-    .flatMap(event => {
-      const values = [
-        event,
-        event.percent === 100 && {
-          type: 'complete',
-          id: getBody()
-        }
-      ].filter(Boolean)
-      return Observable.of(...values)
-    })
+  return simulateProgress().flatMap(event => {
+    const values = [
+      event,
+      event.percent === 100 && {
+        type: 'complete',
+        id: getBody()
+      }
+    ].filter(Boolean)
+    return Observable.of(...values)
+  })
 }
 
 function mockUploadImage(image) {
@@ -74,8 +74,4 @@ function mockMaterializeReference(id) {
   return Promise.resolve(REFS_DB.find(ref => ref._id == id))
 }
 
-export {
-  mockUploadFile,
-  mockUploadImage,
-  mockMaterializeReference
-}
+export {mockUploadFile, mockUploadImage, mockMaterializeReference}

@@ -10,7 +10,7 @@ const ACTIONS = [
   {name: 'cancel', title: 'Cancel'}
 ]
 const NOTHING_TO_PUBLISH_ACTIONS = [
-  {name: 'cancel', title: 'Close', color: 'success', autoFocus: true},
+  {name: 'cancel', title: 'Close', color: 'success', autoFocus: true}
 ]
 
 export default class ConfirmPublish extends React.PureComponent {
@@ -61,11 +61,14 @@ export default class ConfirmPublish extends React.PureComponent {
           <p>
             Are you sure you would like to publish the document{' '}
             <strong>
-              <DocTitle document={(draft || published)} />
+              <DocTitle document={draft || published} />
             </strong>?
           </p>
           <p>
-            {published && `It was last published ${distanceInWordsToNow(published._updatedAt, {addSuffix: true})}.`}
+            {published &&
+              `It was last published ${distanceInWordsToNow(published._updatedAt, {
+                addSuffix: true
+              })}.`}
           </p>
         </div>
       </Dialog>
