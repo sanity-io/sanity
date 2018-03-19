@@ -30,11 +30,7 @@
   },
   "devDependencies": {
     "babel-preset-env": "^1.6.1",
-    "eslint": "^4.13.1",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-config-sanity": "^3.1.0",
-    "jest": "^22.1.4",
-    "prettier": "^1.9.2"
+    "jest": "^22.1.4"
   },
   "dependencies": {
     "clone-deep": "^2.0.1",
