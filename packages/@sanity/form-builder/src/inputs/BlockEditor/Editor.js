@@ -39,7 +39,6 @@ type Props = {
   isFocused: boolean,
   onBlur: void => void,
   onChange: (change: SlateChange) => void,
-  onBeforeInput: (event: any, change: SlateChange, editor: Node) => void,
   onFocus: void => void,
   onFormBuilderInputBlur: (nextPath: []) => void,
   onFormBuilderInputFocus: (nextPath: []) => void,
@@ -183,15 +182,7 @@ export default class Editor extends React.Component<Props> {
   }
 
   render() {
-    const {
-      onBeforeInput,
-      onBlur,
-      onChange,
-      onFocus,
-      editorValue,
-      isFocused,
-      fullscreen
-    } = this.props
+    const {onBlur, onChange, onFocus, editorValue, isFocused, fullscreen} = this.props
 
     const classNames = [
       styles.root,
@@ -207,7 +198,6 @@ export default class Editor extends React.Component<Props> {
           value={editorValue}
           onBlur={onBlur}
           onChange={onChange}
-          onBeforeInput={onBeforeInput}
           onFocus={onFocus}
           validateNode={this._validateNode}
           plugins={this._plugins}
