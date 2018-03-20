@@ -3,13 +3,16 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import generateHelpUrl from '@sanity/generate-help-url'
+
 import FormField from 'part:@sanity/components/formfields/default'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import PatchEvent from '../../PatchEvent'
 import Input from './Input'
-import patchesToChange from './utils/patchesToChange'
+
 import changeToPatches from './utils/changeToPatches'
 import deserialize from './utils/deserialize'
+import patchesToChange from './utils/patchesToChange'
+
 import styles from './styles/SyncWrapper.css'
 
 function findBlockType(type) {
@@ -62,17 +65,17 @@ export default withPatchSubscriber(
             ? deserialize([], props.type)
             : deserialize(props.value, props.type)
       }
-      this.unsubscribe = props.subscribe(this.receivePatches)
+      this.unsubscribe = props.subscribe(this.handleRemotePatches)
     }
 
-    handleChange = (change: SlateChange) => {
+    handleEditorChange = (change: SlateChange) => {
       const {value, onChange, type} = this.props
       const {patches, selection} = changeToPatches(this.state.editorValue, change, value, type)
       this.setState({editorValue: change.value, selection})
       return onChange(PatchEvent.from(patches))
     }
 
-    handlePatch = (event: PatchEvent) => {
+    handleFormBuilderPatch = (event: PatchEvent) => {
       const {onChange, type} = this.props
       const {editorValue} = this.state
       const change = patchesToChange(event.patches, editorValue, null, type)
@@ -84,7 +87,7 @@ export default withPatchSubscriber(
       this._input.focus()
     }
 
-    receivePatches = ({patches, shouldReset, snapshot}) => {
+    handleRemotePatches = ({patches, shouldReset, snapshot}) => {
       const {editorValue} = this.state
       const {type} = this.props
       const remotePatches = patches.filter(patch => patch.origin === 'remote')
@@ -112,8 +115,8 @@ export default withPatchSubscriber(
           {!isDeprecated && (
             <Input
               editorValue={editorValue}
-              onChange={this.handleChange}
-              onPatch={this.handlePatch}
+              onChange={this.handleEditorChange}
+              onPatch={this.handleFormBuilderPatch}
               ref={this.refInput}
               {...rest}
             />
