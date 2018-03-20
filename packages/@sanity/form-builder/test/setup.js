@@ -1,6 +1,4 @@
 import {setKeyGenerator} from 'slate'
-import randomKey from '../../block-tools/lib/util/randomKey'
-import randomKey2 from '../src/inputs/BlockEditor/utils/randomKey'
 
 let mockIndex = 0
 

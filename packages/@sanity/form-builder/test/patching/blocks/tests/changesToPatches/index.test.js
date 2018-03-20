@@ -1,14 +1,15 @@
 import assert from 'assert'
 import fs from 'fs'
 import path from 'path'
-import {Change, Value, Operation} from 'slate'
+import {Value, Operation} from 'slate'
 import {List} from 'immutable'
 import {blocksToEditorValue, editorValueToBlocks} from '@sanity/block-tools'
 import blocksSchema from '../../../../fixtures/blocksSchema'
 import changeToPatches from '../../../../../src/inputs/BlockEditor/utils/changeToPatches'
 import patchesToChange from '../../../../../src/inputs/BlockEditor/utils/patchesToChange'
 import {applyAll} from '../../../../../src/simplePatch'
-import {resetKeyGenerator} from '../../../../setup'
+
+jest.mock('part:@sanity/base/client', () => null, {virtual: true})
 
 const blockContentType = blocksSchema.get('blogPost').fields.find(field => field.name === 'body')
   .type
