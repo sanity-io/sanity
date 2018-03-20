@@ -18,7 +18,6 @@ type Props = {
   editorValue: SlateValue,
   focusKey: ?string,
   level: number,
-  onBeforeInput: (event: any, change: SlateChange, editor: Node) => void,
   onBlur: (nextPath: []) => void,
   onChange: (change: SlateChange) => void,
   onFocus: (nextPath: []) => void,
@@ -27,22 +26,11 @@ type Props = {
   value: Block[]
 }
 
-type Focus = {
-  block: ?string,
-  span: ?string,
-  current: ?{
-    path?: string[],
-    key?: string
-  }
-}
-
 type State = {
   fullscreen: boolean,
   editorIsFocused: boolean,
-  focus: Focus
+  focusBlockKey: string
 }
-
-const emptyFocus = {block: null, span: null, current: null}
 
 export default class BlockEditorInput extends React.Component<Props, State> {
   _inputId = uniqueId('BlockEditor')
@@ -52,7 +40,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
   state = {
     fullscreen: false,
     editorIsFocused: false,
-    focus: emptyFocus
+    focusBlockKey: null
   }
 
   blockContentFeatures = {
@@ -105,18 +93,13 @@ export default class BlockEditorInput extends React.Component<Props, State> {
     this.setState({editorIsFocused: true})
   }
 
-  setEditorFocusState(props: Props) {
+  setEditorFocus(props: Props) {
     const {editorValue} = props || this.props
-    const focusKey = editorValue.selection.focusKey
-    const current = {
-      key: focusKey
+    const focusBlockKey = editorValue.focusBlock ? editorValue.focusBlock.key : null
+    if (focusBlockKey && this.state.editorIsFocused) {
+      this.setState({focusBlockKey})
+      this.props.onFocus([{_key: focusBlockKey}])
     }
-    const focus = {
-      block: editorValue.focusBlock ? editorValue.focusBlock.key : null,
-      span: editorValue.focusText ? editorValue.focusText.key : null,
-      current: current
-    }
-    this.setState({focus})
   }
 
   componentWillReceiveProps(nextProps: Props) {
@@ -125,22 +108,21 @@ export default class BlockEditorInput extends React.Component<Props, State> {
       return
     }
     const focusKey = editorValue.selection.focusKey
-    const currentFocusKey = this.state.focus.current
-    if (focusKey !== currentFocusKey) {
-      this.setEditorFocusState(nextProps)
+    const currentFocusBlockKey = this.state.focusBlockKey
+    if (focusKey !== currentFocusBlockKey) {
+      this.setEditorFocus(nextProps)
     }
   }
 
   renderEditor(): ReactElement<typeof Editor> {
     const {fullscreen, editorIsFocused} = this.state
-    const {editorValue, onChange, onPatch, onBeforeInput, type, value} = this.props
+    const {editorValue, onChange, onPatch, type, value} = this.props
     return (
       <Editor
         blockContentFeatures={this.blockContentFeatures}
         editorValue={editorValue}
         fullscreen={fullscreen}
         isFocused={editorIsFocused}
-        onBeforeInput={onBeforeInput}
         onBlur={this.handleEditorBlur}
         onFocus={this.handleEditorFocus}
         onFormBuilderInputBlur={this.handleFormBuilderInputBlur}
@@ -174,7 +156,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
             <input tabIndex={0} type="text" id={this._inputId} onFocus={this.handleFakeFocus} />
           </div>
         )}
-        {false && JSON.stringify(this.state.focus)}
+        {JSON.stringify(this.state.focus)}
         <BlockEditor
           blockContentFeatures={this.blockContentFeatures}
           editor={editor}
