@@ -31,8 +31,6 @@ export default function PastePlugin(options: Options = {}) {
     throw new Error("Missing required option 'blockContentType'")
   }
 
-  console.log(blockContentType)
-
   function onPaste(event, change, editor) {
     event.preventDefault()
     const {shiftKey} = event
