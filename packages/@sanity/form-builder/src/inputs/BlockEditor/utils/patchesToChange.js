@@ -123,7 +123,7 @@ export default function patchesToChange(
   // console.log('EDITORVALUE', JSON.stringify(editorValue.document.toJSON(VALUE_TO_JSON_OPTS), null, 2))
   // console.log('BLOCKS', JSON.stringify(blocks, null, 2))
   patches.forEach((patch: Patch) => {
-    console.log('INCOMING PATCH', JSON.stringify(patch, null, 2))
+    // console.log('INCOMING PATCH', JSON.stringify(patch, null, 2))
     if (patch.path.length > 1) {
       patchDataValue(patch, change, type)
     } else {
