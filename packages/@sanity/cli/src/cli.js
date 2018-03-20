@@ -1,4 +1,5 @@
 /* eslint-disable no-console, no-process-exit, no-sync */
+// eslint-disable-next-line import/no-unassigned-import
 import 'babel-polyfill'
 import path from 'path'
 import chalk from 'chalk'
@@ -38,8 +39,8 @@ module.exports = async function runCli(cliRoot) {
   const commands = mergeCommands(baseCommands, options.corePath)
 
   if (core.v || core.version) {
-    console.log(`${pkg.name} version ${pkg.version}`) // eslint-disable-line no-console
-    process.exit() // eslint-disable-line no-process-exit
+    console.log(`${pkg.name} version ${pkg.version}`)
+    process.exit()
   }
 
   // Translate `sanity -h <command>` to `sanity help <command>`
