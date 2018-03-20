@@ -1,0 +1,111 @@
+[
+  {
+    "object": "operation",
+    "type": "remove_node",
+    "path": [0]
+  },
+  {
+    "object": "operation",
+    "type": "insert_node",
+    "path": [0],
+    "node": {
+      "object": "block",
+      "type": "contentBlock",
+      "isVoid": false,
+      "data": {},
+      "nodes": [
+        {
+          "object": "text",
+          "leaves": [
+            {
+              "object": "leaf",
+              "text": "PATCHES",
+              "marks": []
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "object": "operation",
+    "type": "set_node",
+    "path": [0],
+    "properties": {
+      "data": {
+        "_key": "faa6cf178be2"
+      }
+    }
+  },
+  {
+    "object": "operation",
+    "type": "split_node",
+    "path": [0, 0],
+    "position": 7,
+    "properties": {
+      "data": {}
+    },
+    "target": null
+  },
+  {
+    "object": "operation",
+    "type": "split_node",
+    "path": [0],
+    "position": 1,
+    "properties": {
+      "data": {
+        "_key": "faa6cf178be2"
+      },
+      "type": "contentBlock"
+    },
+    "target": 7
+  },
+  {
+    "object": "operation",
+    "type": "set_node",
+    "path": [1],
+    "properties": {
+      "data": {
+        "_key": "3ce9b989e0ea"
+      }
+    }
+  },
+  {
+    "object": "operation",
+    "type": "remove_node",
+    "path": [1]
+  },
+  {
+    "object": "operation",
+    "type": "insert_node",
+    "path": [1],
+    "node": {
+      "object": "block",
+      "type": "contentBlock",
+      "isVoid": false,
+      "data": {},
+      "nodes": [
+        {
+          "object": "text",
+          "leaves": [
+            {
+              "object": "leaf",
+              "text": "PATCHES",
+              "marks": []
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "object": "operation",
+    "type": "set_node",
+    "path": [1],
+    "properties": {
+      "data": {
+        "_key": "fdd317aacca2"
+      }
+    }
+  }
+]

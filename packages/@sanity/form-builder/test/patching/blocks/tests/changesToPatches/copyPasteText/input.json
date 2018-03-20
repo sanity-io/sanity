@@ -1,13 +1,13 @@
 [
   {
-    "_key": "9ed945a83b90",
+    "_key": "587f2c0a90e4",
     "_type": "block",
     "children": [
       {
-        "_key": "9ed945a83b900",
+        "_key": "587f2c0a90e40",
         "_type": "span",
         "marks": [],
-        "text": "1"
+        "text": ""
       }
     ],
     "markDefs": [],
