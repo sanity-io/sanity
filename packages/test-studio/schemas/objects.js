@@ -57,6 +57,18 @@ export default {
       title: 'This field is of type objectsTest',
       type: 'objectsTest',
       fieldset: 'recursive'
+    },
+    {
+      name: 'collapsibleObject',
+      title: 'Collapsible object',
+      type: 'object',
+      options: {collapsible: true, collapsed: false},
+      description:
+        'This is a field of (anonymous, inline) object type. Values here should never get a `_type` property',
+      fields: [
+        {name: 'field1', type: 'string', description: 'This is a string field'},
+        {name: 'field2', type: 'string', description: 'This is a collapsed field'}
+      ]
     }
   ]
 }
