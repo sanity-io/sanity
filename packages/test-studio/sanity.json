@@ -5,18 +5,18 @@
   },
   "__experimental_spaces": [
     {
-      "name": "production",
-      "title": "Prod",
+      "name": "test",
+      "title": "Test (public)",
       "default": true,
       "api": {
         "dataset": "test"
       }
     },
     {
-      "name": "staging",
-      "title": "Staging",
+      "name": "playground",
+      "title": "Private",
       "api": {
-        "dataset": "staging"
+        "dataset": "playground"
       }
     }
   ],
