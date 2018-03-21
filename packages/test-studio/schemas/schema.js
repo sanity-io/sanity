@@ -11,6 +11,7 @@ import images, {myImage} from './images'
 import strings from './strings'
 import texts from './texts'
 import objects, {myObject} from './objects'
+import recursiveObjectTest, {recursiveObject} from './recursiveObject'
 import arrays from './arrays'
 import files from './files'
 import uploads from './uploads'
@@ -74,6 +75,8 @@ export default createSchema({
     recursive,
     recursiveArray,
     recursivePopover,
+    recursiveObjectTest,
+    recursiveObject,
     myObject,
     codeInputType,
     notitle,

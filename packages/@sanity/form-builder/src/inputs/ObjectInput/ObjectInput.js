@@ -1,5 +1,5 @@
+//@flow
 import PropTypes from 'prop-types'
-//@flow weak
 import React from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
 import Field from './Field'
@@ -18,11 +18,12 @@ function getCollapsedWithDefaults(options = {}, level) {
       collapsible: true,
       collapsed: options.collapsed !== false
     }
-  } else if (options.collapsible === false && options.collapsable === false) {
+  } else if (options.collapsible === false || options.collapsable === false) {
     // collapsible explicit set to false
     return {
-      collapsible: false,
-      collapsed: false
+      // hard limit to avoid infinite recursion
+      collapsible: level > 9,
+      collapsed: level > 9
     }
   }
 
@@ -72,8 +73,8 @@ export default class ObjectInput extends React.PureComponent {
         const valueTypeName = value && value._type
         const schemaTypeName = type.name
 
+        // eslint-disable-next-line max-depth
         if (valueTypeName && schemaTypeName === 'object') {
-          // eslint-disable-line max-depth
           // The value has a _type key, but the type name from schema is 'object',
           // but _type: 'object' is implicit so we should fix it by removing it
           event = event.prepend(unset(['_type']))
@@ -115,7 +116,7 @@ export default class ObjectInput extends React.PureComponent {
     const {level, focusPath} = this.props
     const columns = fieldset.options && fieldset.options.columns
 
-    const collapsibleOpts = getCollapsedWithDefaults(fieldset.options)
+    const collapsibleOpts = getCollapsedWithDefaults(fieldset.options, level)
 
     const isExpanded =
       focusPath.length > 0 && fieldset.fields.some(field => focusPath[0] === field.name)
@@ -189,7 +190,7 @@ export default class ObjectInput extends React.PureComponent {
   }
 
   render() {
-    const {type, level} = this.props
+    const {type, level, focusPath} = this.props
 
     const renderedFields = this.getRenderedFields()
     const renderedUnknownFields = this.renderUnknownFields()
@@ -203,10 +204,20 @@ export default class ObjectInput extends React.PureComponent {
       )
     }
 
+    const collapsibleOpts = getCollapsedWithDefaults(type.options, level)
+    const isExpanded = focusPath.length > 0
+
     const columns = type.options && type.options.columns
 
     return (
-      <Fieldset level={level} legend={type.title} description={type.description} columns={columns}>
+      <Fieldset
+        level={level}
+        legend={type.title}
+        description={type.description}
+        columns={columns}
+        isCollapsible={collapsibleOpts.collapsible}
+        isCollapsed={!isExpanded && collapsibleOpts.collapsed}
+      >
         {renderedFields}
         {renderedUnknownFields}
       </Fieldset>
