@@ -78,6 +78,7 @@ export default withPatchSubscriber(
     handleFormBuilderPatch = (event: PatchEvent) => {
       const {onChange, type} = this.props
       const {editorValue} = this.state
+      console.log(event)
       const change = patchesToChange(event.patches, editorValue, null, type)
       this.setState({editorValue: change.value})
       return onChange(event)
