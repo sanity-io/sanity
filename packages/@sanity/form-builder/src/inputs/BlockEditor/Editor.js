@@ -28,6 +28,7 @@ import TextBlockOnEnterKeyPlugin from './plugins/TextBlockOnEnterKeyPlugin'
 import BlockObject from './nodes/BlockObject'
 import ContentBlock from './nodes/ContentBlock'
 import Decorator from './nodes/Decorator'
+import EditNode from './EditNode'
 import Span from './nodes/Span'
 
 import styles from './styles/Editor.css'
@@ -36,10 +37,12 @@ type Props = {
   blockContentFeatures: BlockContentFeatures,
   editorValue: SlateValue,
   fullscreen: boolean,
+  focusPath: [],
   isFocused: boolean,
-  onBlur: void => void,
   onChange: (change: SlateChange) => void,
-  onFocus: void => void,
+  onEditorBlur: void => void,
+  onEditorFocus: void => void,
+  onFocus: (nextPath: []) => void,
   onFormBuilderInputBlur: (nextPath: []) => void,
   onFormBuilderInputFocus: (nextPath: []) => void,
   type: Type,
@@ -114,14 +117,37 @@ export default class Editor extends React.Component<Props> {
     this._blockDragMarker = blockDragMarker
   }
 
+  renderEditNode() {
+    const {focusPath, editorValue, type, onPatch, onFocus} = this.props
+    const editNodeKey = focusPath[0]._key
+
+    const node = editorValue.document.getDescendant(editNodeKey)
+    if (!node) {
+      // eslint-disable-next-line no-console
+      console.error(new Error(`Could not find node with key ${editNodeKey}`))
+      return null
+    }
+    const nodeValue = node.data.get('value')
+
+    return (
+      <EditNode
+        value={nodeValue}
+        type={type}
+        onChange={onPatch}
+        focusPath={focusPath}
+        onFocus={onFocus}
+      />
+    )
+  }
+
   renderNode = (props: SlateComponentProps) => {
     const {
       blockContentFeatures,
       editorValue,
+      isFocused,
       onChange,
+      onFocus,
       onPatch,
-      onFormBuilderInputBlur,
-      onFormBuilderInputFocus,
       type
     } = this.props
     const nodeType = props.node.type
@@ -136,9 +162,8 @@ export default class Editor extends React.Component<Props> {
             editorValue={editorValue}
             node={props.node}
             onChange={onChange}
+            onFocus={onFocus}
             onPatch={onPatch}
-            onFormBuilderInputBlur={onFormBuilderInputBlur}
-            onFormBuilderInputFocus={onFormBuilderInputFocus}
             type={resolveSchemaType(type, nodeType)}
           >
             {props.children}
@@ -150,13 +175,14 @@ export default class Editor extends React.Component<Props> {
             attributes={props.attributes}
             blockContentFeatures={blockContentFeatures}
             editorValue={editorValue}
+            editorIsFocused={isFocused}
             node={props.node}
             editor={props.editor}
             onChange={onChange}
+            onFocus={onFocus}
             onPatch={onPatch}
             onDrag={this.handleDrag}
-            onFormBuilderInputBlur={onFormBuilderInputBlur}
-            onFormBuilderInputFocus={onFormBuilderInputFocus}
+            isSelected={props.isSelected}
             onShowBlockDragMarker={this.handleShowBlockDragMarker}
             onHideBlockDragMarker={this.handleHideBlockDragMarker}
             type={resolveSchemaType(type, nodeType)}
@@ -182,7 +208,17 @@ export default class Editor extends React.Component<Props> {
   }
 
   render() {
-    const {onBlur, onChange, onFocus, editorValue, isFocused, fullscreen} = this.props
+    const {
+      focusPath,
+      onChange,
+      onEditorBlur,
+      onEditorFocus,
+      editorValue,
+      isFocused,
+      fullscreen
+    } = this.props
+
+    const isExpanded = (focusPath || []).length > 1
 
     const classNames = [
       styles.root,
@@ -196,9 +232,9 @@ export default class Editor extends React.Component<Props> {
           className={styles.editor}
           ref={this.refEditor}
           value={editorValue}
-          onBlur={onBlur}
+          onBlur={onEditorBlur}
           onChange={onChange}
-          onFocus={onFocus}
+          onFocus={onEditorFocus}
           validateNode={this._validateNode}
           plugins={this._plugins}
           renderNode={this.renderNode}
@@ -210,6 +246,7 @@ export default class Editor extends React.Component<Props> {
           ref={this.refBlockDragMarker}
           style={{display: 'none'}}
         />
+        {isExpanded && this.renderEditNode()}
       </div>
     )
   }
