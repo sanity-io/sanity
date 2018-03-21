@@ -127,7 +127,7 @@ function insertNodePatch(
     patches.push(insert([newBlock], position, [{_key: afterKey}]))
   }
 
-  if (operation.path.length === 2) {
+  if (operation.path.length > 1) {
     const block = appliedBlocks[operation.path[0]]
     if (block._type === 'block') {
       setKey(block._key, block)
@@ -169,7 +169,7 @@ function splitNodePatch(
     }
     patches.push(insert([newBlock], 'after', [{_key: blocks[operation.path[0]]._key}]))
   }
-  if (operation.path.length === 2) {
+  if (operation.path.length > 1) {
     patches.push(set(splitBlock, [{_key: splitBlock._key}]))
   }
   return patches
@@ -199,7 +199,7 @@ function mergeNodePatch(
     )
     patches.push(set(targetBlock, [{_key: blocks[operation.path[0] - 1]._key}]))
   }
-  if (operation.path.length === 2) {
+  if (operation.path.length > 1) {
     const targetBlock = appliedBlocks[operation.path[0]]
     setKey(targetBlock._key, targetBlock)
     patches.push(set(targetBlock, [{_key: blocks[operation.path[0]]._key}]))
@@ -249,7 +249,7 @@ function removeNodePatch(
     // Unset block
     patches.push(unset([{_key: block._key}]))
   }
-  if (operation.path.length === 2) {
+  if (operation.path.length > 1) {
     // Only relevant for 'block' type blocks
     if (block._type !== 'block') {
       return patches

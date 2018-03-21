@@ -1,6 +1,7 @@
 // @flow
 import type {Element as ReactElement} from 'react'
 import React from 'react'
+import {isEqual} from 'lodash'
 
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen?'
 
@@ -15,20 +16,14 @@ type Props = {
   blockContentFeatures: BlockContentFeatures,
   editor: ReactElement<typeof Editor>,
   editorValue: SlateValue,
+  focusPath: [],
   fullscreen: boolean,
   onChange: (change: SlateChange) => void,
   onToggleFullScreen: void => void,
   type: Type
 }
 
-export default class BlockEditor extends React.Component<Props> {
-  shouldComponentUpdate(nextProps: Props) {
-    return (
-      nextProps.fullscreen !== this.props.fullscreen ||
-      nextProps.editorValue !== this.props.editorValue
-    )
-  }
-
+export default class BlockEditor extends React.PureComponent<Props> {
   renderFullScreen() {
     return (
       <FullscreenDialog isOpen onClose={this.props.onToggleFullScreen}>
