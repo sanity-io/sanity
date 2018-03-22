@@ -29,6 +29,13 @@ export default {
       title: 'Label'
     },
     {
+      name: 'sha1hash',
+      type: 'string',
+      title: 'SHA1 hash',
+      readOnly: true,
+      fieldset: 'system'
+    },
+    {
       name: 'extension',
       type: 'string',
       readOnly: true,
