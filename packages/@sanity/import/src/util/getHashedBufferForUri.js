@@ -1,0 +1,45 @@
+const crypto = require('crypto')
+const miss = require('mississippi')
+const getUri = require('@rexxars/get-uri')
+
+module.exports = function getHashedBufferForUri(uri) {
+  return new Promise(async (resolve, reject) => {
+    const stream = await getStream(uri)
+    const hash = crypto.createHash('sha1')
+    const chunks = []
+
+    stream.on('data', chunk => {
+      chunks.push(chunk)
+      hash.update(chunk)
+    })
+
+    miss.finished(stream, err => {
+      if (err) {
+        reject(err)
+        return
+      }
+
+      resolve({
+        buffer: Buffer.concat(chunks),
+        sha1hash: hash.digest('hex')
+      })
+    })
+  })
+}
+
+function getStream(uri) {
+  return new Promise((resolve, reject) =>
+    getUri(uri, (err, stream) => {
+      if (err) {
+        reject(new Error(readError(uri, err)))
+        return
+      }
+
+      resolve(stream)
+    })
+  )
+}
+
+function readError(uri, err) {
+  return `Error while fetching asset from "${uri}":\n${err.message}`
+}
