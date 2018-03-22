@@ -1,6 +1,6 @@
 {
   "name": "@sanity/preview",
-  "version": "0.128.2",
+  "version": "0.128.3",
   "description": "Utilities for previewing content in Sanity",
   "main": "index.js",
   "scripts": {
@@ -25,8 +25,8 @@
     "url": "https://github.com/sanity-io/sanity/issues"
   },
   "dependencies": {
-    "@sanity/image-url": "0.128.2",
-    "@sanity/observable": "0.128.2",
+    "@sanity/image-url": "0.128.3",
+    "@sanity/observable": "0.128.3",
     "lodash": "^4.17.4",
     "observable-props": "^2.0.0",
     "shallow-equals": "^1.0.0"
