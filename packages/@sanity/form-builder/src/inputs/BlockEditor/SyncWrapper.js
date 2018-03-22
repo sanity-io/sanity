@@ -9,6 +9,7 @@ import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import PatchEvent from '../../PatchEvent'
 import Input from './Input'
 
+import changeToFocusPath from './utils/changeToFocusPath'
 import changeToPatches from './utils/changeToPatches'
 import deserialize from './utils/deserialize'
 import patchesToChange from './utils/patchesToChange'
@@ -68,17 +69,29 @@ export default withPatchSubscriber(
       this.unsubscribe = props.subscribe(this.handleRemotePatches)
     }
 
-    handleEditorChange = (change: SlateChange) => {
-      const {value, onChange, type} = this.props
-      const {patches, selection} = changeToPatches(this.state.editorValue, change, value, type)
-      this.setState({editorValue: change.value, selection})
-      return onChange(PatchEvent.from(patches))
+    handleEditorChange = (change: SlateChange, callback: void => void) => {
+      const {value, onChange, onFocus, type} = this.props
+      const patches = changeToPatches(this.state.editorValue, change, value, type)
+      this.setState({editorValue: change.value})
+
+      const currentFocusPath = this.props.focusPath
+      if (!currentFocusPath || (currentFocusPath && currentFocusPath.length < 2)) {
+        const focusPath = changeToFocusPath(change)
+        onFocus(focusPath)
+      }
+
+      onChange(PatchEvent.from(patches))
+
+      if (callback) {
+        return callback()
+      }
+
+      return change
     }
 
     handleFormBuilderPatch = (event: PatchEvent) => {
-      const {onChange, type} = this.props
+      const {onChange, type, value} = this.props
       const {editorValue} = this.state
-      console.log(event)
       const change = patchesToChange(event.patches, editorValue, null, type)
       this.setState({editorValue: change.value})
       return onChange(event)
