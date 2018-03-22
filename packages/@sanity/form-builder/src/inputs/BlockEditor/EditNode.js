@@ -1,14 +1,29 @@
+// @flow
+import type {Block, SlateChange} from './typeDefs'
+
 import React from 'react'
-import {resolveTypeName} from '../../utils/resolveTypeName'
 import {get} from 'lodash'
-import {FormBuilderInput} from '../../FormBuilderInput'
+
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Popover from 'part:@sanity/components/dialogs/popover'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
+
+import {FormBuilderInput} from '../../FormBuilderInput'
+
+import {resolveTypeName} from '../../utils/resolveTypeName'
+
 import styles from './styles/EditNode.css'
 
-export default class EditNode extends React.Component {
+type Props = {
+  focusPath: [],
+  onChange: (change: SlateChange) => void,
+  onFocus: (nextPath: []) => void,
+  type: Type,
+  value: Block[]
+}
+
+export default class EditNode extends React.Component<Props> {
   getMemberTypeOf(value) {
     const {type} = this.props
     const typeName = resolveTypeName(value)
