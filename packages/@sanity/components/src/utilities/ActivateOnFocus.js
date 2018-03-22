@@ -7,7 +7,8 @@ class ActivateOnFocus extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
     message: PropTypes.string,
-    isActive: PropTypes.bool
+    isActive: PropTypes.bool,
+    onActivate: PropTypes.func
   }
 
   static defaultProps = {
@@ -24,6 +25,10 @@ class ActivateOnFocus extends React.Component {
       this.setState({
         hasFocus: true
       })
+      const {onActivate} = this.props
+      if (onActivate) {
+        onActivate()
+      }
     }
   }
 
