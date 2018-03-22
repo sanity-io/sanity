@@ -2,7 +2,7 @@
 import type {Element as ReactElement} from 'react'
 import type {Block, BlockArrayType, SlateChange, SlateValue} from './typeDefs'
 
-import {uniqueId} from 'lodash'
+import {uniqueId, isEqual} from 'lodash'
 
 import React from 'react'
 import blockTools from '@sanity/block-tools'
@@ -21,6 +21,7 @@ type Props = {
   editorValue: SlateValue,
   focusPath: [],
   level: number,
+  onBlur: (nextPath: []) => void,
   onChange: (change: SlateChange) => void,
   onFocus: (nextPath: []) => void,
   onPatch: (event: PatchEvent) => void,
@@ -41,8 +42,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
 
   state = {
     fullscreen: false,
-    editorIsFocused: false,
-    focusBlockKey: null
+    editorIsFocused: false
   }
 
   blockContentFeatures = {
@@ -74,18 +74,6 @@ export default class BlockEditorInput extends React.Component<Props, State> {
     }
   }
 
-  handleFakeFocus = () => {
-    if (!this.state.editorIsFocused) {
-      this.setState({editorIsFocused: true})
-      this.focus()
-      const {editorValue} = this.props
-      const focusBlockKey = editorValue.focusBlock ? editorValue.focusBlock.key : null
-      if (focusBlockKey) {
-        this.props.onFocus([{_key: focusBlockKey}])
-      }
-    }
-  }
-
   handleEditorFocus = () => {
     if (!this.state.editorIsFocused) {
       this.setState({editorIsFocused: true})
@@ -102,33 +90,22 @@ export default class BlockEditorInput extends React.Component<Props, State> {
     this.focus()
   }
 
-  setEditorFocus(props: Props) {
-    const {editorValue, focusPath} = props || this.props
-    const focusBlockKey = editorValue.focusBlock ? editorValue.focusBlock.key : null
-    if (focusBlockKey && this.state.editorIsFocused) {
-      this.setState({focusBlockKey})
-      if (!focusPath || (focusPath && focusPath.length < 2)) {
-        this.setState({focusBlockKey})
-        this.props.onFocus([{_key: focusBlockKey}])
-      }
-    }
-  }
-
-  componentWillReceiveProps(nextProps: Props) {
-    const {editorValue} = nextProps
-    if (!editorValue) {
-      return
-    }
-    const focusKey = editorValue.selection.focusKey
-    const currentFocusBlockKey = this.state.focusBlockKey
-    if (focusKey !== currentFocusBlockKey) {
-      this.setEditorFocus(nextProps)
+  componentWillUpdate(nextProps: Props) {
+    const {focusPath} = nextProps
+    if (
+      focusPath &&
+      focusPath.length &&
+      focusPath.length < 2 &&
+      !this.state.editorIsFocused &&
+      !isEqual(this.props.focusPath, focusPath)
+    ) {
+      this.handleEditorFocus()
     }
   }
 
   renderEditor(): ReactElement<typeof Editor> {
     const {fullscreen, editorIsFocused} = this.state
-    const {editorValue, focusPath, onFocus, onChange, onPatch, type, value} = this.props
+    const {editorValue, focusPath, onBlur, onFocus, onChange, onPatch, type, value} = this.props
     return (
       <Editor
         blockContentFeatures={this.blockContentFeatures}
@@ -139,6 +116,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
         onEditorBlur={this.handleEditorBlur}
         onEditorFocus={this.handleEditorFocus}
         onFocus={onFocus}
+        onBlur={onBlur}
         onChange={onChange}
         onPatch={onPatch}
         ref={this.refEditor}
@@ -149,9 +127,9 @@ export default class BlockEditorInput extends React.Component<Props, State> {
   }
 
   render() {
-    const {editorValue, focusPath, level, onChange, onPatch, type} = this.props
+    const {editorValue, focusPath, level, onChange, onBlur, onFocus, onPatch, type} = this.props
 
-    const {fullscreen, editorIsFocused} = this.state
+    const {fullscreen} = this.state
 
     const editor = this.renderEditor()
 
@@ -168,19 +146,24 @@ export default class BlockEditorInput extends React.Component<Props, State> {
           type="button"
           tabIndex={0}
           className={styles.focusSkipper}
-          onClick={this.handleFakeFocus}
+          onClick={this.handleEditorFocus}
         >
           Jump to editor
         </button>
-        <ActivateOnFocus isActive={isActive} message="Click to edit">
+        <ActivateOnFocus
+          onActivate={this.handleEditorFocus}
+          isActive={isActive}
+          message="Click to edit"
+        >
           <BlockEditor
             blockContentFeatures={this.blockContentFeatures}
             editor={editor}
             editorValue={editorValue}
-            fullscreen={fullscreen}
-            editorIsFocused={editorIsFocused}
             focusPath={focusPath}
+            fullscreen={fullscreen}
             onChange={onChange}
+            onFocus={onFocus}
+            onBlur={onBlur}
             onPatch={onPatch}
             onToggleFullScreen={this.handleToggleFullScreen}
             type={type}

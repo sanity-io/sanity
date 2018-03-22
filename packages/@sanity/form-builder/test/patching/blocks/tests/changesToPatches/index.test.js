@@ -50,7 +50,7 @@ describe('changesToPatches', () => {
 
       const change = editorValue.change()
       change.applyOperations(operations)
-      const {patches} = changeToPatches(editorValue, change, input, blockContentType)
+      const patches = changeToPatches(editorValue, change, input, blockContentType)
 
       // Some tests creates new keys, so use hardcoded expectations for those
       let expectedValue = output

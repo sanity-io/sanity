@@ -17,14 +17,23 @@ import styles from './styles/Toolbar.css'
 type Props = {
   blockContentFeatures: BlockContentFeatures,
   editorValue: SlateValue,
+  focusPath: [],
   fullscreen: boolean,
   onChange: (change: SlateChange) => void,
+  onFocus: (nextPath: []) => void,
   onToggleFullScreen: void => void
 }
 
 export default class Toolbar extends React.PureComponent<Props> {
   render() {
-    const {blockContentFeatures, fullscreen, editorValue, onChange, onToggleFullScreen} = this.props
+    const {
+      blockContentFeatures,
+      fullscreen,
+      editorValue,
+      onChange,
+      onFocus,
+      onToggleFullScreen
+    } = this.props
     const className = `${styles.root}${fullscreen ? ` ${styles.fullscreen}` : ''}`
 
     return (
@@ -77,6 +86,7 @@ export default class Toolbar extends React.PureComponent<Props> {
               types={blockContentFeatures.blockObjectTypes}
               editorValue={editorValue}
               onChange={onChange}
+              onFocus={onFocus}
             />
           </div>
         )}
