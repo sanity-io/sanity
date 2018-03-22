@@ -14,47 +14,47 @@ async function uploadAssets(assets, options) {
   // Build a Map where the keys are `type#url` and the value is an array of all
   // objects containing document id and path to inject asset reference to.
   // `assets` is an array of objects with shape: {documentId, path, url, type}
-  const assetMap = getAssetMap(assets)
+  const assetRefMap = getAssetRefMap(assets)
 
   // We might have additional assets that is not referenced by any documents, but was part of a
   // dataset when exporting, for instance. Add these to the map without any references to update.
   ;(options.unreferencedAssets || []).forEach(asset => {
-    if (!assetMap.has(asset)) {
-      assetMap.set(asset, [])
+    if (!assetRefMap.has(asset)) {
+      assetRefMap.set(asset, [])
     }
   })
 
   // Create a function we can call for every completed upload to report progress
   const progress = progressStepper(options.onProgress, {
     step: 'Importing assets (files/images)',
-    total: assetMap.size
+    total: assetRefMap.size
   })
 
   // Loop over all unique URLs and ensure they exist, and if not, upload them
   const mapOptions = {concurrency: ASSET_UPLOAD_CONCURRENCY}
   const assetIds = await pMap(
-    assetMap.keys(),
+    assetRefMap.keys(),
     ensureAsset.bind(null, options, progress),
     mapOptions
   )
 
   // Loop over all documents that need asset references to be set
-  const batches = await setAssetReferences(assetMap, assetIds, options)
+  const batches = await setAssetReferences(assetRefMap, assetIds, options)
   return batches.reduce((prev, add) => prev + add, 0)
 }
 
-function getAssetMap(assets) {
-  return assets.reduce((assetMap, item) => {
+function getAssetRefMap(assets) {
+  return assets.reduce((assetRefMap, item) => {
     const {documentId, path, url, type} = item
     const key = `${type}#${url}`
-    let refs = assetMap.get(key)
+    let refs = assetRefMap.get(key)
     if (!refs) {
       refs = []
-      assetMap.set(key, refs)
+      assetRefMap.set(key, refs)
     }
 
     refs.push({documentId, path})
-    return assetMap
+    return assetRefMap
   }, new Map())
 }
 
@@ -111,9 +111,9 @@ function getHash(buffer) {
     .digest('hex')
 }
 
-function setAssetReferences(assetMap, assetIds, options) {
+function setAssetReferences(assetRefMap, assetIds, options) {
   const {client} = options
-  const lookup = assetMap.values()
+  const lookup = assetRefMap.values()
   const patchTasks = assetIds.reduce((tasks, assetId) => {
     const documents = lookup.next().value
     return tasks.concat(
