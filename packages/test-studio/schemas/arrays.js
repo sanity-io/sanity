@@ -144,6 +144,18 @@ export default {
       ]
     },
     {
+      name: 'arrayOfEmails',
+      title: 'Array of email addresses',
+      description: 'This array contains only email addresses',
+      type: 'array',
+      of: [
+        {
+          type: 'email',
+          title: ''
+        }
+      ]
+    },
+    {
       name: 'arrayOfStringsWithLegacyList',
       title: 'Array of strings with legacy format on lists',
       description:
