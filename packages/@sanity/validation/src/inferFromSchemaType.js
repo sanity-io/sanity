@@ -1,4 +1,5 @@
 const Rule = require('./Rule')
+const {slugValidator} = require('./validators/slugValidator')
 
 // eslint-disable-next-line complexity
 function inferFromSchemaType(typeDef) {
@@ -16,7 +17,7 @@ function inferFromSchemaType(typeDef) {
   }
 
   const type = typeDef.type
-  const typed = Rule[typeDef.jsonType] && Rule[typeDef.jsonType]
+  const typed = Rule[typeDef.jsonType]
   let base = typed ? typed() : new Rule()
 
   if (type && type.name === 'datetime') {
@@ -25,6 +26,10 @@ function inferFromSchemaType(typeDef) {
 
   if (type && type.name === 'url') {
     base = base.uri()
+  }
+
+  if (type && type.name === 'slug') {
+    base = base.custom(slugValidator)
   }
 
   if (type && type.name === 'reference') {
@@ -42,11 +47,11 @@ function inferFromSchemaType(typeDef) {
   typeDef.validation = inferValidation(typeDef, base)
 
   if (typeDef.fields) {
-    typeDef.fields.forEach(field => inferFromSchemaType(field.type, false))
+    typeDef.fields.forEach(field => inferFromSchemaType(field.type))
   }
 
   if (typeDef.of && typeDef.jsonType === 'array') {
-    typeDef.of.forEach(candidate => inferFromSchemaType(candidate, false))
+    typeDef.of.forEach(candidate => inferFromSchemaType(candidate))
   }
 
   return typeDef
