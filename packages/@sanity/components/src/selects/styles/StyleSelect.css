@@ -3,6 +3,7 @@
 .root {
   composes: root from 'part:@sanity/components/selects/default-style';
   position: relative;
+  z-index: var(--zindex-dropdown);
 
   @nest &:focus {
     box-shadow:
@@ -53,7 +54,6 @@
   height: auto;
   width: auto;
   overflow-y: auto;
-  z-index: var(--zindex-dropdown);
 }
 
 .text {
