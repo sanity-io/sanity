@@ -49,6 +49,14 @@ function toFormBuilderPatch(origin: Origin, patch: GradientPatch): Patch {
                 origin
               }
             }
+            if (type === 'inc' || type === 'dec') {
+              return {
+                type: type,
+                path: convertPath.toFormBuilder(gradientPath),
+                value: patch[type][gradientPath],
+                origin
+              }
+            }
             if (type === 'setIfMissing') {
               return {
                 type: 'setIfMissing',

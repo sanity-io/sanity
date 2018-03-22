@@ -1,10 +1,10 @@
 // @flow
 import type {PathSegment, Patch} from './utils/patches'
-import {prefixPath, set, unset, setIfMissing, insert} from './utils/patches'
+import {prefixPath, set, unset, setIfMissing, insert, inc, dec} from './utils/patches'
 
 import {flatten} from 'lodash'
 
-export {set, unset, setIfMissing, insert}
+export {set, unset, setIfMissing, insert, inc, dec}
 
 type PatchArg = Patch | Array<Patch>
 
