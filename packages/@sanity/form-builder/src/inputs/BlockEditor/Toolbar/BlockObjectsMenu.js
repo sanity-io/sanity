@@ -5,11 +5,13 @@ import type {Type, SlateChange, SlateValue} from '../typeDefs'
 import React from 'react'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 
+import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 import {insertBlock} from '../utils/changes'
 
 type Props = {
   editorValue: SlateValue,
   onChange: (change: SlateChange) => void,
+  onFocus: (nextPath: []) => void,
   types: Type[]
 }
 
@@ -31,10 +33,13 @@ export default class InsertBlocks extends React.Component<Props> {
   }
 
   handleOnAction = (item: BlockItem) => {
-    const {editorValue, onChange} = this.props
+    const {editorValue, onChange, onFocus} = this.props
     const change = editorValue.change()
     change.call(insertBlock, item.value)
-    onChange(change)
+    const focusKey = change.value.selection.focusKey
+    const focusBlock = change.value.document.getClosestBlock(focusKey)
+    const focusPath = [{_key: focusBlock.key}, FOCUS_TERMINATOR]
+    onChange(change, () => onFocus(focusPath))
   }
 
   render() {
