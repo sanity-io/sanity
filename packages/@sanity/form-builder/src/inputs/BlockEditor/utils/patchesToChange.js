@@ -100,15 +100,21 @@ function replaceValue(snapshot: ?(Blocks[]), change: () => void, type: Type) {
   throw new Error('No snapshot given!')
 }
 
-function patchDataValue(patch: Patch, change: () => void, type: Type) {
+function patchDataValue(patch: Patch, change: () => void, type: Type, snapshot: Block[]) {
   const doc = change.value.document
   const blockKey = patch.path[0]._key
   const block = doc.nodes.find(node => node.key === blockKey)
   const data = block.data.toObject()
-  const _patch = {...patch}
-  _patch.path = _patch.path.slice(1)
-  const newValue = applyAll(data.value, [_patch])
-  data.value = newValue
+  // A gradient patch because snapshot, set value from there
+  if (snapshot) {
+    data.value = snapshot.find(blk => blk._key === blockKey)
+  } else {
+    // Do a simple formbuilderPatch
+    const _patch = {...patch}
+    _patch.path = _patch.path.slice(1)
+    const newValue = applyAll(data.value, [_patch])
+    data.value = newValue
+  }
   change.setNodeByKey(blockKey, {data})
   return change
 }
@@ -125,7 +131,7 @@ export default function patchesToChange(
   patches.forEach((patch: Patch) => {
     // console.log('INCOMING PATCH', JSON.stringify(patch, null, 2))
     if (patch.path.length > 1) {
-      patchDataValue(patch, change, type)
+      patchDataValue(patch, change, type, snapshot)
     } else {
       switch (patch.type) {
         case 'set':
