@@ -1,4 +1,5 @@
 const Rule = require('./Rule')
+const {slugValidator} = require('./validators/slugValidator')
 
 // eslint-disable-next-line complexity
 function inferFromSchemaType(typeDef) {
@@ -25,6 +26,10 @@ function inferFromSchemaType(typeDef) {
 
   if (type && type.name === 'url') {
     base = base.uri()
+  }
+
+  if (type && type.name === 'slug') {
+    base = base.custom(slugValidator)
   }
 
   if (type && type.name === 'reference') {
