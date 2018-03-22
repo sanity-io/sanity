@@ -4,6 +4,7 @@
   display: block;
   outline: none;
   position: relative;
+  z-index: var(--zindex-dropdown);
 
   @nest &:focus {
     box-shadow:
