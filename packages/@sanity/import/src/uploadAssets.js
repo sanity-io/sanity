@@ -3,8 +3,8 @@ const parseUrl = require('url').parse
 const crypto = require('crypto')
 const debug = require('debug')('sanity:import')
 const pMap = require('p-map')
-const getBufferForUri = require('./util/getBufferForUri')
 const progressStepper = require('./util/progressStepper')
+const getHashedBufferForUri = require('./util/getHashedBufferForUri')
 
 const ASSET_UPLOAD_CONCURRENCY = 3
 const ASSET_PATCH_CONCURRENCY = 3
@@ -59,56 +59,57 @@ function getAssetRefMap(assets) {
 }
 
 async function ensureAsset(options, progress, assetKey, i) {
-  const {client} = options
+  const {client, assetMap = {}} = options
   const [type, url] = assetKey.split('#', 2)
 
   // Download the asset in order for us to create a hash
   debug('[Asset #%d] Downloading %s', i, url)
-  const buffer = await getBufferForUri(url)
-  const label = getHash(buffer)
+  const {buffer, sha1hash} = await getHashedBufferForUri(url)
 
   // See if the item exists on the server
-  debug('[Asset #%d] Checking for asset with hash %s', i, label)
-  const assetId = await getAssetIdForLabel(client, type, label)
-  if (assetId) {
+  debug('[Asset #%d] Checking for asset with hash %s', i, sha1hash)
+  const assetDocId = await getAssetDocumentIdForHash(client, type, sha1hash)
+  if (assetDocId) {
     // Same hash means we want to reuse the asset
-    debug('[Asset #%d] Found %s for hash %s', i, type, label)
+    debug('[Asset #%d] Found %s for hash %s', i, type, sha1hash)
     progress()
-    return assetId
+    return assetDocId
   }
 
+  const assetMeta = assetMap[`${type}-${sha1hash}`]
+  const hasFilename = assetMeta && assetMeta.originalFilename
+  const hasNonFilenameMeta = assetMeta && Object.keys(assetMap).length > 1
   const {pathname} = parseUrl(url)
-  const filename = basename(pathname)
+  const filename = hasFilename ? assetMeta.originalFilename : basename(pathname)
 
   // If it doesn't exist, we want to upload it
   debug('[Asset #%d] Uploading %s with URL %s', i, type, url)
-  const asset = await client.assets.upload(type, buffer, {label, filename})
+  const asset = await client.assets.upload(type, buffer, {filename})
   progress()
+
+  // If we have more metadata to provide, update the asset document
+  if (hasNonFilenameMeta) {
+    await client.patch(asset._id).set(assetMeta)
+  }
+
   return asset._id
 }
 
-async function getAssetIdForLabel(client, type, label, attemptNum = 0) {
+async function getAssetDocumentIdForHash(client, type, sha1hash, attemptNum = 0) {
   // @todo remove retry logic when client has reintroduced it
   try {
     const dataType = type === 'file' ? 'sanity.fileAsset' : 'sanity.imageAsset'
-    const query = '*[_type == $dataType && label == $label][0]._id'
-    const assetDocId = await client.fetch(query, {dataType, label})
+    const query = '*[_type == $dataType && sha1hash == $sha1hash][0]._id'
+    const assetDocId = await client.fetch(query, {dataType, sha1hash})
     return assetDocId
   } catch (err) {
     if (attemptNum < 3) {
-      return getAssetIdForLabel(client, type, label, attemptNum + 1)
+      return getAssetDocumentIdForHash(client, type, sha1hash, attemptNum + 1)
     }
 
     err.attempts = attemptNum
     throw new Error(`Error while attempt to query Sanity API:\n${err.message}`)
   }
-}
-
-function getHash(buffer) {
-  return crypto
-    .createHash('sha256')
-    .update(buffer)
-    .digest('hex')
 }
 
 function setAssetReferences(assetRefMap, assetIds, options) {
