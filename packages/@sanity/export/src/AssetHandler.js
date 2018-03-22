@@ -1,11 +1,14 @@
 const path = require('path')
+const crypto = require('crypto')
 const fse = require('fs-extra')
 const miss = require('mississippi')
 const PQueue = require('p-queue')
+const {omit} = require('lodash')
 const pkg = require('../package.json')
 const requestStream = require('./requestStream')
 const debug = require('./debug')
 
+const EXCLUDE_PROPS = ['_id', '_type', 'assetId', 'extension', 'mimeType', 'path', 'url']
 const ACTION_REMOVE = 'remove'
 const ACTION_REWRITE = 'rewrite'
 
@@ -16,6 +19,7 @@ class AssetHandler {
     this.assetDirsCreated = false
 
     this.assetsSeen = new Map()
+    this.assetMap = {}
     this.filesWritten = 0
     this.queueSize = 0
     this.queue = options.queue || new PQueue({concurrency: 3})
@@ -33,7 +37,7 @@ class AssetHandler {
   finish() {
     return new Promise((resolve, reject) => {
       this.reject = reject
-      this.queue.onIdle().then(resolve)
+      this.queue.onIdle().then(() => resolve(this.assetMap))
     })
   }
 
@@ -44,7 +48,7 @@ class AssetHandler {
       const type = doc._type === 'sanity.imageAsset' ? 'image' : 'file'
       const filePath = `${type}s/${generateFilename(doc._id)}`
       this.assetsSeen.set(doc._id, type)
-      this.queueAssetDownload(doc, filePath)
+      this.queueAssetDownload(doc, filePath, type)
       callback()
       return
     }
@@ -77,7 +81,7 @@ class AssetHandler {
 
   noop = miss.through.obj((doc, enc, callback) => callback(null, doc))
 
-  queueAssetDownload(assetDoc, dstPath) {
+  queueAssetDownload(assetDoc, dstPath, type) {
     if (!assetDoc.url) {
       debug('Asset document "%s" does not have a URL property, skipping', assetDoc._id)
       return
@@ -85,10 +89,11 @@ class AssetHandler {
 
     debug('Adding download task for %s (destination: %s)', assetDoc._id, dstPath)
     this.queueSize++
-    this.queue.add(() => this.downloadAsset(assetDoc.url, dstPath))
+    this.queue.add(() => this.downloadAsset(assetDoc, dstPath))
   }
 
-  async downloadAsset(url, dstPath) {
+  async downloadAsset(assetDoc, dstPath) {
+    const {url} = assetDoc
     const headers = {'User-Agent': `${pkg.name}@${pkg.version}`}
     const stream = await requestStream({url, headers})
 
@@ -107,7 +112,14 @@ class AssetHandler {
     }
 
     debug('Asset stream ready, writing to filesystem at %s', dstPath)
-    await writeStream(path.join(this.tmpDir, dstPath), stream)
+    const hash = await writeHashedStream(path.join(this.tmpDir, dstPath), stream)
+    const type = assetDoc._type === 'sanity.imageAsset' ? 'image' : 'file'
+    const id = `${type}-${hash}`
+
+    const metaProps = omit(assetDoc, EXCLUDE_PROPS)
+    if (Object.keys(metaProps).length > 0) {
+      this.assetMap[id] = metaProps
+    }
 
     this.filesWritten++
   }
@@ -188,10 +200,16 @@ function generateFilename(assetId) {
   return asset ? `${asset}.${extension}` : `${assetId}.bin`
 }
 
-function writeStream(filePath, stream) {
+function writeHashedStream(filePath, stream) {
+  const hash = crypto.createHash('sha1')
+  const hasher = miss.through((chunk, enc, cb) => {
+    hash.update(chunk)
+    cb(null, chunk)
+  })
+
   return new Promise((resolve, reject) =>
-    miss.pipe(stream, fse.createWriteStream(filePath), err => {
-      return err ? reject(err) : resolve()
+    miss.pipe(stream, hasher, fse.createWriteStream(filePath), err => {
+      return err ? reject(err) : resolve(hash.digest('hex'))
     })
   )
 }

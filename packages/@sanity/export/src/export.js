@@ -129,7 +129,8 @@ function exportDataset(opts) {
 
       debug('Waiting for asset handler to complete downloads')
       try {
-        await assetHandler.finish()
+        const assetMap = await assetHandler.finish()
+        archive.append(JSON.stringify(assetMap), {name: 'assets.json', prefix})
         clearInterval(progressInterval)
       } catch (assetErr) {
         clearInterval(progressInterval)
