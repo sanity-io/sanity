@@ -7,6 +7,12 @@ export default {
   action: async (args, context) => {
     const {apiClient, output} = context
     const [action, ds, aclMode] = args.argsWithoutOptions
+    const client = apiClient()
+
+    if (!client.datasets.edit) {
+      throw new Error('@sanity/cli must be upgraded first:\n  npm install -g @sanity/cli')
+    }
+
     if (!action) {
       throw new Error('Action must be provided (get/set)')
     }
@@ -24,7 +30,6 @@ export default {
     }
 
     const dataset = `${ds}`
-    const client = apiClient()
     const current = (await client.datasets.list()).find(curr => curr.name === dataset)
 
     if (!current) {
@@ -47,7 +52,7 @@ export default {
       )
     }
 
-    await apiClient().datasets.edit(dataset, {aclMode})
+    await client.datasets.edit(dataset, {aclMode})
     output.print('Dataset visibility changed')
   }
 }
