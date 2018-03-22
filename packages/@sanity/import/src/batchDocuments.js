@@ -1,4 +1,4 @@
-const MAX_PAYLOAD_SIZE = 1024 * 512 // 512KB
+const MAX_PAYLOAD_SIZE = 1024 * 256 // 256KB
 
 function batchDocuments(docs) {
   let currentBatch = []
