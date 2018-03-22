@@ -273,10 +273,6 @@ function removeNodePatch(
   return patches
 }
 
-function setSelection(operation: SlateOperation, selection: Range) {
-  return Object.assign(selection, operation.properties)
-}
-
 function applyPatchesOnValue(patches, value) {
   let _patches = patches
   if (!patches || (Array.isArray(patches) && !patches.length)) {
@@ -295,7 +291,6 @@ export default function changeToPatches(
   blockContentType: Type
 ) {
   const {operations} = change
-  const selection = {}
   let blocks = value ? [...value] : []
   const _change = unchangedEditorValue.change()
   const patches = flatten(
@@ -304,10 +299,6 @@ export default function changeToPatches(
         let _patches
         // console.log('OPERATION:', JSON.stringify(operation.toJSON(), null, 2))
         switch (operation.type) {
-          case 'set_selection':
-            setSelection(operation, selection)
-            _patches = []
-            break
           case 'insert_text':
             _patches = setNodePatchSimple(_change, operation, blocks, blockContentType)
             break
@@ -349,5 +340,5 @@ export default function changeToPatches(
       })
       .toArray()
   ).filter(Boolean)
-  return {patches, selection}
+  return patches
 }
