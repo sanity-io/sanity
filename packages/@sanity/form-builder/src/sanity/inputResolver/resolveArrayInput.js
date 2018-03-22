@@ -5,8 +5,10 @@ import TagsArrayInput from '../../inputs/TagsArrayInput'
 import * as is from '../../utils/is'
 import {get} from 'lodash'
 
+const PRIMITIVES = ['string', 'number', 'boolean']
+
 export function isArrayOfPrimitives(type) {
-  return type.of.every(is.primitive)
+  return type.of.every(ofType => PRIMITIVES.includes(ofType.jsonType))
 }
 
 function isTagsArray(type) {

@@ -109,7 +109,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
 
   getMemberType(typeName) {
     const {type} = this.props
-    return type.of.find(memberType => memberType.name === typeName)
+    return type.of.find(memberType => memberType.name === typeName || memberType.jsonType === typeName)
   }
 
   renderItem = (item, index) => {
