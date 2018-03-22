@@ -62,6 +62,7 @@
     "eslint-import-resolver-webpack": "^0.8.4",
     "eslint-plugin-flowtype": "^2.46.1",
     "eslint-plugin-flowtype-errors": "^3.5.1",
+    "eslint-plugin-es5": "^1.2.0",
     "eslint-plugin-import": "^2.9.0",
     "eslint-plugin-prettier": "^2.6.0",
     "eslint-plugin-react": "^7.7.0",
