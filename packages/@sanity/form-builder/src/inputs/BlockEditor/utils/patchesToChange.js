@@ -42,8 +42,10 @@ function setIfMissingPatch(patch: Patch, change: () => void, type: Type) {
   const block = doc.nodes.find(node => node.key === blockKey)
   if (block.isVoid) {
     const data = block.data.toObject()
-    const newData = {...data, value: {...data.value, ...patch.value}}
-    change.setNodeByKey(blockKey, {data: newData})
+    if (!data.value) {
+      const newData = {...data, value: patch.value}
+      change.setNodeByKey(blockKey, {data: newData})
+    }
   } else {
     throw new Error(`Invalid patch, looks like it should be an insert: ${JSON.stringify(patch)}`)
   }
