@@ -21,7 +21,7 @@
     "@sanity/storybook": "0.128.3",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
-    "react-dom": "^15.6.1"
+    "react-dom": "^16.2.0"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
