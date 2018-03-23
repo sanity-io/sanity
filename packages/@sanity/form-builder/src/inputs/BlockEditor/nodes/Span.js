@@ -5,17 +5,11 @@ import type {Node} from 'react'
 import React from 'react'
 import {Inline} from 'slate'
 
-import DefaultButton from 'part:@sanity/components/buttons/default'
-import Popover from 'part:@sanity/components/dialogs/popover'
-
 import PatchEvent from '../../../PatchEvent'
 import {applyAll} from '../../../simplePatch'
+import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 
 import {removeSpan} from '../utils/changes'
-
-import {FormBuilderInput} from '../../../FormBuilderInput'
-
-import StopPropagation from '../StopPropagation'
 
 import styles from './styles/Span.css'
 
@@ -35,6 +29,7 @@ type Props = {
   editorValue: SlateValue,
   node: Inline,
   onChange: (change: SlateChange) => void,
+  onFocus: (nextPath: []) => void,
   onFormBuilderInputBlur: (nextPath: []) => void,
   onFormBuilderInputFocus: (nextPath: []) => void,
   type: ?Type
@@ -54,21 +49,15 @@ export default class Span extends React.Component<Props, State> {
     super(props)
     const focusedAnnotationName = this.props.node.data.get('focusedAnnotationName')
     this.state = {
-      isEditing: !!focusedAnnotationName,
       focusedAnnotationName: focusedAnnotationName,
-      rootElement: null
+      isEditing: !!focusedAnnotationName
     }
   }
 
-  shouldComponentUpdate(nextProps: Props, nextState: State) {
-    const {editorValue} = nextProps
-    return (
-      nextState.isEditing !== this.state.isEditing ||
-      nextState.focusedAnnotationName !== this.state.focusedAnnotationName ||
-      nextState.rootElement !== this.state.rootElement ||
-      editorValue.focusOffset !== this.props.editorValue.focusOffset ||
-      nextProps.node.data !== this.props.node.data
-    )
+  componentWillUnmount() {
+    if (this.state.isEditing) {
+      this.setState({isEditing: false, focusedAnnotationName: undefined})
+    }
   }
 
   componentWillUpdate(nextProps: Props, nextState: State) {
@@ -81,7 +70,7 @@ export default class Span extends React.Component<Props, State> {
   componentDidUpdate() {
     // Close popover and clean up if it is unnanotated and no annotation type is in focus
     if (this.isUnannotated() && this.state.isEditing && !this.state.focusedAnnotationName) {
-      this.handleCloseInput()
+      this.handleClose()
     }
   }
 
@@ -112,11 +101,10 @@ export default class Span extends React.Component<Props, State> {
     return this.props.node.data.get('annotations')
   }
 
-  handleCloseInput = () => {
-    if (this.state.isEditing) {
-      this.setState({isEditing: false, focusedAnnotationName: undefined})
-    }
+  handleClose = () => {
+    const {node, onFocus} = this.props
     this.garbageCollect()
+    onFocus([{_key: node.key}])
   }
 
   garbageCollect() {
@@ -162,9 +150,12 @@ export default class Span extends React.Component<Props, State> {
   // but don't act on double clicks (mark text as normal)
   handleMouseDown = () => {
     this._isMarkingText = true
+    const {editorValue, node, onFocus} = this.props
+    const block = editorValue.document.getClosestBlock(node.key)
     setTimeout(() => {
       if (this._clickCounter === 1 && !this._isMarkingText) {
         this.setState({isEditing: true})
+        onFocus([{_key: block.key}, {_key: node.key}, FOCUS_TERMINATOR])
       }
       this._clickCounter = 0
     }, 350)
@@ -218,94 +209,7 @@ export default class Span extends React.Component<Props, State> {
     onChange(change)
   }
 
-  renderFormBuilderInput() {
-    const {onFormBuilderInputBlur, onFormBuilderInputFocus} = this.props
-    const annotations = this.getAnnotations()
-    if (!this.props.type) {
-      return null
-    }
-    const annotationTypes = this.props.type.annotations
-    const {focusedAnnotationName, rootElement} = this.state
-
-    const annotationTypeInFocus =
-      annotationTypes &&
-      annotationTypes.find(type => {
-        return type.name === focusedAnnotationName
-      })
-    const focusedAnnotationKey = Object.keys(annotations).find(key => {
-      return annotations[key]._type === focusedAnnotationName
-    })
-    const annotationValue = focusedAnnotationKey && annotations && annotations[focusedAnnotationKey]
-
-    const style = {}
-    if (rootElement) {
-      const {width} = rootElement.getBoundingClientRect()
-      style.marginLeft = `-${width / 2}px`
-    }
-
-    return (
-      <span className={styles.editAnnotationContainer} style={style}>
-        <Popover
-          onClose={this.handleCloseInput}
-          onEscape={this.handleCloseInput}
-          onClickOutside={this.handleCloseInput}
-          modifiers={{
-            flip: {
-              boundariesElement: 'scrollParent'
-            },
-            preventOverflow: {
-              boundariesElement: 'scrollParent'
-            }
-          }}
-        >
-          {/* Buttons for selecting annotation when there are several, and none is focused  */}
-          {!focusedAnnotationName &&
-            Object.keys(annotations).length > 1 && (
-              <div>
-                <h3>Which annotation?</h3>
-                {Object.keys(annotations).map(annotationKey => {
-                  if (!annotations[annotationKey]) {
-                    return null
-                  }
-                  const setFieldFunc = () => {
-                    this.focusAnnotation(annotations[annotationKey]._type)
-                  }
-                  const annotationType =
-                    annotationTypes &&
-                    annotationTypes.find(type => type.name === annotations[annotationKey]._type)
-
-                  return (
-                    <DefaultButton key={`annotationButton${annotationKey}`} onClick={setFieldFunc}>
-                      {annotationType ? annotationType.title : null}
-                    </DefaultButton>
-                  )
-                })}
-              </div>
-            )}
-          {/* Render input for focused annotation  */}
-          {focusedAnnotationName && (
-            <div>
-              <FormBuilderInput
-                value={annotationValue}
-                type={annotationTypeInFocus}
-                level={0}
-                onBlur={onFormBuilderInputBlur}
-                onFocus={onFormBuilderInputFocus}
-                onChange={this.handleChange}
-              />
-            </div>
-          )}
-        </Popover>
-      </span>
-    )
-  }
-
-  refSpan = (span: ?HTMLSpanElement) => {
-    this.setState({rootElement: span})
-  }
-
   render() {
-    const {isEditing} = this.state
     const {attributes, blockContentFeatures} = this.props
     let children = this.props.children
     if (!this.isUnannotated()) {
@@ -335,10 +239,6 @@ export default class Span extends React.Component<Props, State> {
         ref={this.refSpan}
       >
         {children}
-
-        {isEditing && (
-          <StopPropagation tagName="span">{this.renderFormBuilderInput()}</StopPropagation>
-        )}
       </span>
     )
   }

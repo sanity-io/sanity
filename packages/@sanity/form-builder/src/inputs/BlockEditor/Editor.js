@@ -151,17 +151,17 @@ export default class Editor extends React.Component<Props> {
           <BlockObject
             attributes={props.attributes}
             blockContentFeatures={blockContentFeatures}
-            editorValue={editorValue}
-            editorIsFocused={isFocused}
-            node={props.node}
             editor={props.editor}
-            onChange={onChange}
-            onFocus={onFocus}
-            onPatch={onPatch}
-            onDrag={this.handleDrag}
+            editorIsFocused={isFocused}
+            editorValue={editorValue}
             isSelected={props.isSelected}
-            onShowBlockDragMarker={this.handleShowBlockDragMarker}
+            node={props.node}
+            onChange={onChange}
+            onDrag={this.handleDrag}
+            onFocus={onFocus}
             onHideBlockDragMarker={this.handleHideBlockDragMarker}
+            onPatch={onPatch}
+            onShowBlockDragMarker={this.handleShowBlockDragMarker}
             type={resolveSchemaType(type, nodeType)}
           >
             {props.children}

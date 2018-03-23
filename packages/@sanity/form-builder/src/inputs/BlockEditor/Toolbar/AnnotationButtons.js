@@ -6,6 +6,7 @@ import React from 'react'
 import {Change, Value as SlateValue, Range} from 'slate'
 
 import {createFormBuilderSpan, removeAnnotationFromSpan} from '../utils/changes'
+import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 
 import CustomIcon from './CustomIcon'
 import LinkIcon from 'part:@sanity/base/link-icon'
@@ -23,7 +24,8 @@ type AnnotationItem = BlockContentFeature & {
 type Props = {
   blockContentFeatures: BlockContentFeatures,
   editorValue: SlateValue,
-  onChange: Change => void
+  onChange: Change => void,
+  onFocus: (nextPath: []) => void
 }
 
 function getIcon(type: string) {
@@ -63,7 +65,7 @@ export default class AnnotationButtons extends React.Component<Props> {
   }
 
   handleClick = (item: AnnotationItem, originalSelection: Range) => {
-    const {onChange, editorValue} = this.props
+    const {editorValue, onChange, onFocus} = this.props
     const change = editorValue.change()
     if (item.active) {
       const spans = editorValue.inlines.filter(inline => inline.type === 'span')
@@ -74,7 +76,15 @@ export default class AnnotationButtons extends React.Component<Props> {
       return
     }
     change.call(createFormBuilderSpan, item.value, originalSelection)
-    onChange(change)
+    const focusKey = change.value.selection.focusKey
+    const focusBlock = change.value.document.getClosestBlock(focusKey)
+    const focusInline = change.value.document.getClosestInline(focusKey)
+    const focusPath = [{_key: focusBlock.key}]
+    if (focusInline) {
+      focusPath.push({_key: focusInline.key})
+    }
+    focusPath.push(FOCUS_TERMINATOR)
+    onChange(change, () => onFocus(focusPath))
   }
 
   renderAnnotationButton = (item: AnnotationItem) => {

@@ -74,6 +74,7 @@ export default class Toolbar extends React.PureComponent<Props> {
               <AnnotationButtons
                 editorValue={editorValue}
                 onChange={onChange}
+                onFocus={onFocus}
                 blockContentFeatures={blockContentFeatures}
               />
             </div>
