@@ -11,8 +11,6 @@ import EditItemFold from 'part:@sanity/components/edititem/fold'
 
 import {FormBuilderInput} from '../../FormBuilderInput'
 
-import {resolveTypeName} from '../../utils/resolveTypeName'
-
 import styles from './styles/EditNode.css'
 
 type Props = {
@@ -24,12 +22,6 @@ type Props = {
 }
 
 export default class EditNode extends React.Component<Props> {
-  getMemberTypeOf(value) {
-    const {type} = this.props
-    const typeName = resolveTypeName(value)
-    return type.of.find(memberType => memberType.name === typeName)
-  }
-
   handleChange = patchEvent => {
     const {onChange, value} = this.props
     onChange(patchEvent.prefixAll({_key: value._key}))
@@ -37,7 +29,7 @@ export default class EditNode extends React.Component<Props> {
 
   handleClose = () => {
     const {focusPath, onFocus} = this.props
-    onFocus(focusPath.slice(0, -1))
+    onFocus(focusPath.slice(0, 1))
   }
 
   render() {
@@ -46,12 +38,11 @@ export default class EditNode extends React.Component<Props> {
       return <div>No value???</div>
     }
     const editModalLayout = get(type.options, 'editModal')
-    const memberType = this.getMemberTypeOf(value)
 
     const input = (
       <div style={{minWidth: '30rem', padding: '1rem'}}>
         <FormBuilderInput
-          type={memberType}
+          type={type}
           level={1}
           value={value}
           onChange={this.handleChange}
