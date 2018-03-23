@@ -1,6 +1,6 @@
 // @flow
 import type {Block, Type} from '../typeDefs'
-import {Change, Range, Operation} from 'slate'
+import {Change, Operation} from 'slate'
 import {flatten, isEqual} from 'lodash'
 import {editorValueToBlocks, normalizeBlock} from '@sanity/block-tools'
 import {unset, set, insert, setIfMissing} from '../../../PatchEvent'
