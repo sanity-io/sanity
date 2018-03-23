@@ -17,9 +17,10 @@ function resolveEnabledStyles(blockType) {
 function resolveEnabledAnnotationTypes(spanType) {
   return spanType.annotations.map(annotation => {
     return {
+      blockEditor: annotation.blockEditor,
       title: annotation.title,
-      value: annotation.name,
-      blockEditor: annotation.blockEditor
+      type: annotation,
+      value: annotation.name
     }
   })
 }
