@@ -41,7 +41,7 @@
   "devDependencies": {
     "@sanity/client": "0.128.3",
     "get-it": "^4.0.1",
-    "jest": "^22.0.5",
+    "jest": "^22.1.4",
     "prettier": "^1.10.2",
     "rimraf": "^2.6.2"
   },
