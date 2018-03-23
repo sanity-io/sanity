@@ -13,6 +13,7 @@ import Toolbar from './Toolbar/Toolbar'
 import styles from './styles/BlockEditor.css'
 
 import type {BlockContentFeatures, SlateChange, SlateValue, Type} from './typeDefs'
+import {findDOMNode} from 'slate-react'
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
@@ -26,6 +27,10 @@ type Props = {
   onFocus: (nextPath: []) => void,
   onToggleFullScreen: void => void,
   type: Type
+}
+
+function findDOMNodeForKey(editorValue, key) {
+  return editorValue.document.getDescendant(key)
 }
 
 export default class BlockEditor extends React.PureComponent<Props> {
@@ -42,36 +47,36 @@ export default class BlockEditor extends React.PureComponent<Props> {
     const focusKey = editorValue.selection.focusKey
     const focusInline = editorValue.document.getClosestInline(focusKey)
 
-    let editNodeKey = focusPath[0]._key
-    if (focusInline) {
-      editNodeKey = focusInline.key
-    }
-    const node = editorValue.document.getDescendant(editNodeKey)
+    const editNodeKey = focusInline ? focusInline.key : focusPath[0]._key
 
-    if (!node) {
+    const slateNode = findDOMNodeForKey(editorValue, editNodeKey)
+
+    if (!slateNode) {
       // eslint-disable-next-line no-console
       console.error(new Error(`Could not find node with key ${editNodeKey}`))
       return null
     }
     let value
     let type
-    if (node.type === 'span') {
-      const annotations = node.data.get('annotations')
-      const focusedAnnotationName = node.data.get('focusedAnnotationName')
+    if (slateNode.type === 'span') {
+      const annotations = slateNode.data.get('annotations')
+      const focusedAnnotationName = slateNode.data.get('focusedAnnotationName')
       value = annotations[focusedAnnotationName]
       type = blockContentFeatures.annotations.find(an => an.value === focusedAnnotationName).type
     } else {
-      value = node.data.get('value')
+      value = slateNode.data.get('value')
       type = blockContentFeatures.blockObjectTypes.find(obj => obj.name === value._type)
     }
-    return this.renderEditNode(value, type)
+    return this.renderEditNode(value, type, slateNode)
   }
 
-  renderEditNode(value, type) {
+  renderEditNode(value, type, node) {
     const {focusPath, onBlur, onFocus, onPatch} = this.props
+    const domNode = findDOMNode(node.key)
     return (
       <EditNode
         focusPath={focusPath}
+        anchorNode={domNode}
         onBlur={onBlur}
         onChange={onPatch}
         onFocus={onFocus}
