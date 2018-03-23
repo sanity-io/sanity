@@ -140,16 +140,14 @@ export default withRouterHOC(
       writeSettingsForType(this.props.selectedType, this.state.settings)
     }
 
-    handleToggleMenu = () => {
-      this.setState({
-        menuIsOpen: !this.state.menuIsOpen
-      })
+    handleToggleMenu = evt => {
+      evt.stopPropagation()
+      this.setState(prevState => ({menuIsOpen: !prevState.menuIsOpen}))
     }
 
-    handleCloseMenu = () => {
-      this.setState({
-        menuIsOpen: !this.state.menuIsOpen
-      })
+    handleCloseMenu = evt => {
+      evt.stopPropagation()
+      this.setState(prevState => ({menuIsOpen: !prevState.menuIsOpen}))
     }
 
     getOrderingOptions(selectedType) {

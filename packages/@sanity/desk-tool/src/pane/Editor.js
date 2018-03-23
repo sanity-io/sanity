@@ -297,16 +297,14 @@ export default withRouterHOC(
       this.props.onCreate(deletedSnapshot)
     }
 
-    handleMenuToggle = () => {
-      this.setState(prevState => ({
-        isMenuOpen: !prevState.isMenuOpen
-      }))
+    handleMenuToggle = evt => {
+      evt.stopPropagation()
+      this.setState(prevState => ({isMenuOpen: !prevState.isMenuOpen}))
     }
 
-    handleMenuClose = () => {
-      this.setState({
-        isMenuOpen: false
-      })
+    handleMenuClose = evt => {
+      evt.stopPropagation()
+      this.setState({isMenuOpen: false})
     }
 
     handlePublishRequested = () => {
