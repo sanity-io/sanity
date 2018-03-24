@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import PatchEvent, {unset, set, setIfMissing} from '@sanity/form-builder/PatchEvent'
+import {PatchEvent, unset, set, setIfMissing} from 'part:@sanity/form-builder/patch-event'
 import {io, Viewer} from 'bio-pv'
 import Select from 'part:@sanity/components/selects/default'
 import TextField from 'part:@sanity/components/textfields/default'

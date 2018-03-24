@@ -3,6 +3,7 @@
 import * as patches from '../utils/patches'
 
 export {default} from './SanityFormBuilder'
+export {default as FormBuilder} from './SanityFormBuilder'
 export {default as FormBuilderContext} from './SanityFormBuilderContext'
 export {default as WithFormBuilderValue} from './WithFormBuilderValue'
 export {default as withDocument} from '../utils/withDocument'
