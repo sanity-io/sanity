@@ -98,7 +98,7 @@ function registerLoader(options) {
     // consisting of an array which holds all the implementations, then add it
     // to the require cache
     if (loadAll) {
-      const implementers = parts.implementations[partName]
+      const implementers = parts.implementations[partName] || []
 
       // Overrides should be plain objects, not paths to modules
       // Actual resolved parts are paths to implementations
