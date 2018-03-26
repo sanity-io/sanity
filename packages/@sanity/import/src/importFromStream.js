@@ -15,6 +15,7 @@ module.exports = (stream, options, importers) =>
     debug('Importing from stream')
 
     let isTarStream = false
+    let jsonDocuments
 
     miss.pipe(stream, gunzipMaybe(), untarMaybe(), err => {
       if (err) {
@@ -22,11 +23,11 @@ module.exports = (stream, options, importers) =>
         return
       }
 
-      if (!isTarStream) {
-        return // Will be resolved by concatenation
+      if (isTarStream) {
+        findAndImport()
+      } else {
+        resolve(importers.fromArray(jsonDocuments, options))
       }
-
-      findAndImport()
     })
 
     function untarMaybe() {
@@ -38,13 +39,15 @@ module.exports = (stream, options, importers) =>
         }
 
         debug('Stream is an ndjson file, streaming JSON')
-        return swap(null, miss.pipeline(getJsonStreamer(), miss.concat(resolveNdjsonStream)))
+        const ndjsonStream = miss.pipeline(getJsonStreamer(), miss.concat(resolveNdjsonStream))
+        ndjsonStream.on('error', reject)
+        return swap(null, ndjsonStream)
       })
     }
 
     function resolveNdjsonStream(documents) {
       debug('Finished reading ndjson stream')
-      resolve(importers.fromArray(documents, options))
+      jsonDocuments = documents
     }
 
     async function findAndImport() {
