@@ -21,9 +21,16 @@ module.exports = function getJsonStreamer() {
 
       return doc
     } catch (err) {
-      this.emit('error', new Error(`Failed to parse line #${lineNumber}: ${err.message}`))
+      this.emit('error', new Error(getErrorMessage(err)))
     }
 
     return undefined
+  }
+
+  function getErrorMessage(err) {
+    const suffix =
+      lineNumber === 1 ? '\n\nMake sure this is valid ndjson (one JSON-document *per line*)' : ''
+
+    return `Failed to parse line #${lineNumber}: ${err.message}${suffix}`
   }
 }
