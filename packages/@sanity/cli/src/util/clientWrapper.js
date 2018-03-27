@@ -1,7 +1,11 @@
 import client from '@sanity/client'
 import getUserConfig from './getUserConfig'
 
-const sanityEnv = process.env.SANITY_ENV || 'production' // eslint-disable-line no-process-env
+/* eslint-disable no-process-env */
+const envAuthToken = process.env.SANITY_AUTH_TOKEN
+const sanityEnv = process.env.SANITY_ENV || 'production'
+/* eslint-enable no-process-env */
+
 const apiHosts = {
   staging: 'https://api.sanity.work',
   development: 'http://api.sanity.wtf'
@@ -19,7 +23,7 @@ const defaults = {
 
 const authErrors = () => ({
   onError: err => {
-    if (!err || !err.response) {
+    if (envAuthToken || !err || !err.response) {
       return err
     }
 
@@ -45,7 +49,7 @@ export default function clientWrapper(manifest, configPath) {
     const {requireUser, requireProject, api} = {...defaults, ...opts}
     const userConfig = getUserConfig()
     const userApiConf = userConfig.get('api')
-    const token = userConfig.get('authToken')
+    const token = envAuthToken || userConfig.get('authToken')
     const apiHost = apiHosts[sanityEnv]
     const apiConfig = Object.assign(
       {},
