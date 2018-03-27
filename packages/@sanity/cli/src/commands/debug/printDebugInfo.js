@@ -11,6 +11,7 @@ import {printResult as printVersionsResult} from '../versions/printVersionResult
 import findSanityModuleVersions from '../../actions/versions/findSanityModuleVersions'
 
 export default async (args, context) => {
+  const flags = args.extOptions
   const {user, globalConfig, projectConfig, project, versions} = await gatherInfo(context)
   const {chalk} = context
 
@@ -37,15 +38,21 @@ export default async (args, context) => {
   }
 
   // Auth info
-  if (globalConfig.authToken) {
+  // eslint-disable-next-line no-process-env
+  const authToken = process.env.SANITY_AUTH_TOKEN || globalConfig.authToken
+  if (authToken) {
     context.output.print('Authentication:')
     printKeyValue(
       {
         'User type': globalConfig.authType || 'normal',
-        'Auth token': globalConfig.authToken
+        'Auth token': flags.secrets ? authToken : `<redacted>`
       },
       context
     )
+
+    if (!flags.secrets) {
+      context.output.print('  (run with --secrets to reveal token)\n')
+    }
   }
 
   // Global configuration (user home dir config file)
