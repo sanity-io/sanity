@@ -141,12 +141,18 @@ export default withRouterHOC(
     }
 
     handleToggleMenu = evt => {
-      evt.stopPropagation()
+      if (evt) {
+        evt.stopPropagation()
+      }
+
       this.setState(prevState => ({menuIsOpen: !prevState.menuIsOpen}))
     }
 
     handleCloseMenu = evt => {
-      evt.stopPropagation()
+      if (evt) {
+        evt.stopPropagation()
+      }
+
       this.setState(prevState => ({menuIsOpen: !prevState.menuIsOpen}))
     }
 
