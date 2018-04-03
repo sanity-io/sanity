@@ -36,6 +36,7 @@ export default class InsertBlocks extends React.Component<Props> {
     const {editorValue, onChange, onFocus} = this.props
     const change = editorValue.change()
     change.call(insertBlock, item.value)
+    change.blur()
     const focusKey = change.value.selection.focusKey
     const focusBlock = change.value.document.getClosestBlock(focusKey)
     const focusPath = [{_key: focusBlock.key}, FOCUS_TERMINATOR]
