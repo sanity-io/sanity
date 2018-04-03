@@ -188,10 +188,10 @@ export default function patchesToChange(
   patches.forEach((patch: Patch) => {
     console.log('INCOMING PATCH', JSON.stringify(patch, null, 2))
     if (patch.path.length > 1) {
-      if (patch.path.length < 2) {
-        patchBlockData(patch, change, type, snapshot)
-      } else if (patch.path[1] === 'markDefs') {
+      if (patch.path[1] === 'markDefs') {
         patchAnnotationData(patch, change, type, snapshot)
+      } else {
+        patchBlockData(patch, change, type, snapshot)
       }
     } else {
       switch (patch.type) {
