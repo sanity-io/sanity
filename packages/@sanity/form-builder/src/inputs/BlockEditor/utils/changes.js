@@ -175,7 +175,7 @@ export function removeAnnotationFromSpan(change, spanNode, annotationType) {
   return change
 }
 
-export function insertBlock(change, type) {
+export function insertBlockObject(change, type) {
   const key = randomKey(12)
   const block = {
     type: type.name,
@@ -187,6 +187,19 @@ export function insertBlock(change, type) {
     }
   }
   change.insertBlock(block)
-  change.focus()
   return change
+}
+
+export function insertInlineObject(change, type) {
+  const key = randomKey(12)
+  const inline = {
+    type: type.name,
+    isVoid: true,
+    key: key,
+    data: {
+      _key: key,
+      value: {_type: type.name, _key: key}
+    }
+  }
+  change.insertInline(inline)
 }
