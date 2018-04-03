@@ -16,6 +16,11 @@ function processNode(node) {
   if (newData.value && newData.value._key) {
     newData.value._key = newKey
   }
+  if (newData.annotations) {
+    Object.keys(newData.annotations).forEach(key => {
+      newData.annotations[key]._key = randomKey(12)
+    })
+  }
   return new SlateType({
     data: Data.create(newData),
     isVoid: node.get('isVoid'),
