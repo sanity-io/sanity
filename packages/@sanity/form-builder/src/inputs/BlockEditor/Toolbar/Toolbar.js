@@ -30,6 +30,7 @@ export default class Toolbar extends React.PureComponent<Props> {
       blockContentFeatures,
       fullscreen,
       editorValue,
+      focusPath,
       onChange,
       onFocus,
       onToggleFullScreen
@@ -75,6 +76,7 @@ export default class Toolbar extends React.PureComponent<Props> {
                 editorValue={editorValue}
                 onChange={onChange}
                 onFocus={onFocus}
+                focusPath={focusPath}
                 blockContentFeatures={blockContentFeatures}
               />
             </div>
