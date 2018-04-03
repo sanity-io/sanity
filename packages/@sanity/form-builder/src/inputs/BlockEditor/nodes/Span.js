@@ -150,16 +150,26 @@ export default class Span extends React.Component<Props, State> {
   // but don't act on double clicks (mark text as normal)
   handleMouseDown = () => {
     this._isMarkingText = true
-    const {editorValue, node, onFocus} = this.props
-    const block = editorValue.document.getClosestBlock(node.key)
     setTimeout(() => {
       if (this._clickCounter === 1 && !this._isMarkingText) {
-        this.setState({isEditing: true})
-        onFocus([{_key: block.key}, {_key: node.key}, FOCUS_TERMINATOR])
+        this.startEditing()
       }
       this._clickCounter = 0
     }, 350)
     this._clickCounter++
+  }
+
+  startEditing() {
+    const {editorValue, node, onFocus} = this.props
+    this.setState({isEditing: true})
+    const block = editorValue.document.getClosestBlock(node.key)
+    const focusPath = [
+      {_key: block.key},
+      'markDefs',
+      {_key: node.data.get('annotations')[this.state.focusedAnnotationName]._key},
+      FOCUS_TERMINATOR
+    ]
+    onFocus(focusPath)
   }
 
   handleMouseUp = () => {

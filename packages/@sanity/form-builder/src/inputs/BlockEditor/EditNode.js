@@ -17,14 +17,19 @@ type Props = {
   focusPath: [],
   onChange: (change: SlateChange) => void,
   onFocus: (nextPath: []) => void,
+  path: [],
   type: Type,
   value: Block[]
 }
 
 export default class EditNode extends React.Component<Props> {
   handleChange = patchEvent => {
-    const {onChange, value} = this.props
-    onChange(patchEvent.prefixAll({_key: value._key}))
+    const {onChange, path} = this.props
+    let _patchEvent = patchEvent
+    path.reverse().forEach(segment => {
+      _patchEvent = _patchEvent.prefixAll(segment)
+    })
+    onChange(_patchEvent)
   }
 
   handleClose = () => {
@@ -33,7 +38,7 @@ export default class EditNode extends React.Component<Props> {
   }
 
   render() {
-    const {value, type, onFocus, focusPath} = this.props
+    const {value, type, onFocus, focusPath, path} = this.props
     if (!value) {
       return <div>No value???</div>
     }
@@ -48,7 +53,7 @@ export default class EditNode extends React.Component<Props> {
           onChange={this.handleChange}
           onFocus={onFocus}
           focusPath={focusPath}
-          path={[{_key: value._key}]}
+          path={path}
         />
       </div>
     )

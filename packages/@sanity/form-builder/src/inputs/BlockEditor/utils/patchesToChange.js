@@ -21,6 +21,23 @@ function findLastKey(path: Path[]) {
   return key
 }
 
+function findInlineByAnnotationKey(key, document) {
+  return document
+    .filterDescendants(desc => {
+      if (desc.object !== 'inline') {
+        return false
+      }
+      const annotations = desc.data.get('annotations')
+      if (!annotations) {
+        return false
+      }
+      return Object.keys(annotations).map(annotationName => {
+        return annotations[annotationName]._key === key
+      })
+    })
+    .get(0)
+}
+
 function setPatch(patch: Patch, change: () => void, type: Type) {
   if (Array.isArray(patch.value)) {
     if (patch.path.length === 0) {
@@ -38,6 +55,16 @@ function setIfMissingPatch(patch: Patch, change: () => void, type: Type) {
     return replaceValue(patch.value, change, type)
   }
   const doc = change.value.document
+  if (patch.path[1] === 'markDefs') {
+    const blockKey = patch.path[0]._key
+    console.log(blockKey)
+    const inline = doc.findDescendant(blockKey).findDescendant(node => {
+      const annotations = node.data.get('annotations')
+      return annotations ? annotations[patch.value._type] : null
+    })
+    console.log(inline)
+    return
+  }
   const blockKey = patch.path[0]._key
   const block = doc.nodes.find(node => node.key === blockKey)
   if (block.isVoid) {
@@ -102,10 +129,38 @@ function replaceValue(snapshot: ?(Blocks[]), change: () => void, type: Type) {
   throw new Error('No snapshot given!')
 }
 
-function patchDataValue(patch: Patch, change: () => void, type: Type, snapshot: Block[]) {
+function patchAnnotationData(patch: Patch, change: () => void, type: Type, snapshot: Block[]) {
+  const doc = change.value.document
+  const blockKey = patch.path[0]._key
+  const markDefKey = patch.path[2]._key
+  const node = findInlineByAnnotationKey(markDefKey, doc)
+
+  const data = node.data.toObject()
+  data.annotations = data.annotations || {}
+  const annotationKey = Object.keys(data.annotations).find(
+    key => data.annotations[key]._key === markDefKey
+  )
+  if (!annotationKey) {
+    throw new Error('Annotation not found in data')
+  }
+  if (snapshot) {
+    data.annotations[annotationKey] = snapshot
+      .find(blk => blk._key === blockKey)
+      .markDefs.find(def => def._key === markDefKey)
+  } else {
+    const _patch = {...patch}
+    _patch.path = patch.path.slice(2)
+    const annotation = data.annotations[annotationKey]
+    data.annotations[annotationKey] = applyAll([annotation], [_patch])[0]
+  }
+  return change.setNodeByKey(node.key, {data})
+}
+
+function patchBlockData(patch: Patch, change: () => void, type: Type, snapshot: Block[]) {
   const doc = change.value.document
   const blockKey = patch.path[0]._key
   const block = doc.nodes.find(node => node.key === blockKey)
+
   const data = block.data.toObject()
   // A gradient patch because snapshot, set value from there
   if (snapshot) {
@@ -117,7 +172,7 @@ function patchDataValue(patch: Patch, change: () => void, type: Type, snapshot: 
     const newValue = applyAll(data.value, [_patch])
     data.value = newValue
   }
-  change.setNodeByKey(blockKey, {data})
+  change.setNodeByKey(block.key, {data})
   return change
 }
 
@@ -131,9 +186,13 @@ export default function patchesToChange(
   // console.log('EDITORVALUE', JSON.stringify(editorValue.document.toJSON(VALUE_TO_JSON_OPTS), null, 2))
   // console.log('BLOCKS', JSON.stringify(blocks, null, 2))
   patches.forEach((patch: Patch) => {
-    // console.log('INCOMING PATCH', JSON.stringify(patch, null, 2))
+    console.log('INCOMING PATCH', JSON.stringify(patch, null, 2))
     if (patch.path.length > 1) {
-      patchDataValue(patch, change, type, snapshot)
+      if (patch.path.length < 2) {
+        patchBlockData(patch, change, type, snapshot)
+      } else if (patch.path[1] === 'markDefs') {
+        patchAnnotationData(patch, change, type, snapshot)
+      }
     } else {
       switch (patch.type) {
         case 'set':
