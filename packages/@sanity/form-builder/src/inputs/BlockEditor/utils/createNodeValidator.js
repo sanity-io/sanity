@@ -59,6 +59,26 @@ export default function createNodeValidator(blockContentType: Type, getValue: vo
         }
       }
     }
+
+    // Ensure that inlines always have the proper keys
+    if (node.object === 'inline') {
+      let changed = false
+      const newData = {...node.data.toObject()}
+      if (!newData._key || newData._key !== node.key) {
+        newData._key = node.key
+        changed = true
+      }
+      if (newData.value && newData.value._key !== node.key) {
+        newData.value._key = node.key
+        changed = true
+      }
+      if (changed) {
+        return change => {
+          change.setNodeByKey(node.key, {data: newData})
+        }
+      }
+    }
+
     return undefined
   }
 }

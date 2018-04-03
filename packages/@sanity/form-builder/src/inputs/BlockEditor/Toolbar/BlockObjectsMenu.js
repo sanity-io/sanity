@@ -6,7 +6,7 @@ import React from 'react'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
-import {insertBlock} from '../utils/changes'
+import {insertBlockObject, insertInlineObject} from '../utils/changes'
 
 type Props = {
   editorValue: SlateValue,
@@ -33,9 +33,14 @@ export default class InsertBlocks extends React.Component<Props> {
   }
 
   handleOnAction = (item: BlockItem) => {
+    const isInline = item.value.options && item.value.options.inline
     const {editorValue, onChange, onFocus} = this.props
     const change = editorValue.change()
-    change.call(insertBlock, item.value)
+    if (isInline) {
+      change.call(insertInlineObject, item.value)
+    } else {
+      change.call(insertBlockObject, item.value)
+    }
     change.blur()
     const focusKey = change.value.selection.focusKey
     const focusBlock = change.value.document.getClosestBlock(focusKey)

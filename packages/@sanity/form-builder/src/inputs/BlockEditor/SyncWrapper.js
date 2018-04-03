@@ -79,7 +79,6 @@ export default withPatchSubscriber(
       if (!currentFocusPath || (currentFocusPath && currentFocusPath.length < 2)) {
         onFocus(changeToFocusPath(change))
       }
-
       onChange(PatchEvent.from(patches))
 
       if (callback) {
