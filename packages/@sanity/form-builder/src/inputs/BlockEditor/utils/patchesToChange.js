@@ -31,7 +31,7 @@ function findInlineByAnnotationKey(key, document) {
       if (!annotations) {
         return false
       }
-      return Object.keys(annotations).map(annotationName => {
+      return Object.keys(annotations).find(annotationName => {
         return annotations[annotationName]._key === key
       })
     })
@@ -186,7 +186,7 @@ export default function patchesToChange(
   // console.log('EDITORVALUE', JSON.stringify(editorValue.document.toJSON(VALUE_TO_JSON_OPTS), null, 2))
   // console.log('BLOCKS', JSON.stringify(blocks, null, 2))
   patches.forEach((patch: Patch) => {
-    console.log('INCOMING PATCH', JSON.stringify(patch, null, 2))
+    // console.log('INCOMING PATCH', JSON.stringify(patch, null, 2))
     if (patch.path.length > 1) {
       if (patch.path[1] === 'markDefs') {
         patchAnnotationData(patch, change, type, snapshot)
