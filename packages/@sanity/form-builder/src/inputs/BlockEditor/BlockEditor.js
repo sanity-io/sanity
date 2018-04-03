@@ -56,7 +56,6 @@ export default class BlockEditor extends React.PureComponent<Props> {
     }
     let value
     let type
-    console.log(slateNode)
     if (slateNode.type === 'contentBlock') {
       return null
     } else if (slateNode.type === 'span') {
