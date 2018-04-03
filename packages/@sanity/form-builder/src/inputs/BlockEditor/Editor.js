@@ -28,6 +28,7 @@ import TextBlockOnEnterKeyPlugin from './plugins/TextBlockOnEnterKeyPlugin'
 import BlockObject from './nodes/BlockObject'
 import ContentBlock from './nodes/ContentBlock'
 import Decorator from './nodes/Decorator'
+import InlineObject from './nodes/InlineObject'
 import Span from './nodes/Span'
 
 import styles from './styles/Editor.css'
@@ -128,6 +129,11 @@ export default class Editor extends React.Component<Props> {
       type
     } = this.props
     const nodeType = props.node.type
+    const schemaType = resolveSchemaType(type, nodeType)
+    let ObjectClass = BlockObject
+    if (schemaType && schemaType.options && schemaType.options.inline) {
+      ObjectClass = InlineObject
+    }
     switch (nodeType) {
       case 'contentBlock':
         return <ContentBlock {...props} blockContentFeatures={blockContentFeatures} />
@@ -141,14 +147,14 @@ export default class Editor extends React.Component<Props> {
             onChange={onChange}
             onFocus={onFocus}
             onPatch={onPatch}
-            type={resolveSchemaType(type, nodeType)}
+            type={schemaType}
           >
             {props.children}
           </Span>
         )
       default:
         return (
-          <BlockObject
+          <ObjectClass
             attributes={props.attributes}
             blockContentFeatures={blockContentFeatures}
             editor={props.editor}
@@ -162,10 +168,10 @@ export default class Editor extends React.Component<Props> {
             onHideBlockDragMarker={this.handleHideBlockDragMarker}
             onPatch={onPatch}
             onShowBlockDragMarker={this.handleShowBlockDragMarker}
-            type={resolveSchemaType(type, nodeType)}
+            type={schemaType}
           >
             {props.children}
-          </BlockObject>
+          </ObjectClass>
         )
     }
   }

@@ -72,10 +72,43 @@ export default class BlockEditor extends React.PureComponent<Props> {
     }
     value = slateNode.data.get('value')
     type = blockContentFeatures.blockObjectTypes.find(obj => obj.name === value._type)
-    return this.renderEditBlockNode(value, type, slateNode)
+    const isInline = type.options && type.options.inline
+    return isInline
+      ? this.renderEditInlineObject(value, type, slateNode)
+      : this.renderEditBlockObject(value, type, slateNode)
   }
 
-  renderEditBlockNode(value, type, node) {
+  renderEditInlineNode(value, type, node) {
+    const {focusPath, onBlur, onFocus, onPatch} = this.props
+    return (
+      <EditNode
+        focusPath={focusPath}
+        onBlur={onBlur}
+        onChange={onPatch}
+        onFocus={onFocus}
+        path={[{_key: value._key}]}
+        type={type}
+        value={value}
+      />
+    )
+  }
+
+  renderEditInlineObject(value, type, node) {
+    const {focusPath, onBlur, onFocus, onPatch} = this.props
+    return (
+      <EditNode
+        focusPath={focusPath}
+        onBlur={onBlur}
+        onChange={onPatch}
+        onFocus={onFocus}
+        path={[focusPath[0], 'children', {_key: value._key}]}
+        type={type}
+        value={value}
+      />
+    )
+  }
+
+  renderEditBlockObject(value, type, node) {
     const {focusPath, onBlur, onFocus, onPatch} = this.props
     return (
       <EditNode
