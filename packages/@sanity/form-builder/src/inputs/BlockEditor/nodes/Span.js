@@ -9,8 +9,6 @@ import PatchEvent from '../../../PatchEvent'
 import {applyAll} from '../../../simplePatch'
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 
-import {removeSpan} from '../utils/changes'
-
 import styles from './styles/Span.css'
 
 function isEmpty(object, ignoreKeys) {
@@ -60,25 +58,11 @@ export default class Span extends React.Component<Props, State> {
     }
   }
 
-  componentWillUpdate(nextProps: Props, nextState: State) {
-    // If annotations where emptied, just destroy this span (unwrap it to text)
-    if (!nextProps.node.data.get('annotations')) {
-      this.destroy()
-    }
-  }
-
   componentDidUpdate() {
     // Close popover and clean up if it is unnanotated and no annotation type is in focus
     if (this.isUnannotated() && this.state.isEditing && !this.state.focusedAnnotationName) {
       this.handleClose()
     }
-  }
-
-  destroy = () => {
-    const {editorValue, onChange} = this.props
-    const change = editorValue.change()
-    change.call(removeSpan, this.props.node)
-    onChange(change)
   }
 
   isUnannotated() {
@@ -102,9 +86,7 @@ export default class Span extends React.Component<Props, State> {
   }
 
   handleClose = () => {
-    const {node, onFocus} = this.props
     this.garbageCollect()
-    onFocus([{_key: node.key}])
   }
 
   garbageCollect() {
