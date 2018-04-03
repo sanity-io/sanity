@@ -79,7 +79,10 @@ export default class AnnotationButtons extends React.Component<Props> {
     }
     const key = randomKey(12)
     change.call(createFormBuilderSpan, item.value, key, originalSelection)
-    change.collapseToEndOf(change.value.inlines.first())
+    change
+      .collapseToEndOf(change.value.inlines.first())
+      .extendToStartOf(change.value.inlines.first())
+      .blur()
     onChange(change, () => onFocus([focusPath[0], 'markDefs', {_key: key}, FOCUS_TERMINATOR]))
   }
 
