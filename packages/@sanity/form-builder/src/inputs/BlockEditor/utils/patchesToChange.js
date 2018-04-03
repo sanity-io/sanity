@@ -176,6 +176,32 @@ function patchBlockData(patch: Patch, change: () => void, type: Type, snapshot: 
   return change
 }
 
+function patchInlineData(patch: Patch, change: () => void, type: Type, snapshot: Block[]) {
+  const doc = change.value.document
+  const blockKey = patch.path[0]._key
+  const inlineKey = patch.path[2]._key
+  const block = doc.nodes.find(node => node.key === blockKey)
+  const inline = block.nodes.find(
+    node => node.data && node.data.get('value') && node.data.get('value')._key === inlineKey
+  )
+
+  const data = inline.data.toObject()
+  // A gradient patch because snapshot, set value from there
+  if (snapshot) {
+    data.value = snapshot
+      .find(blk => blk._key === blockKey)
+      .children.find(child => child._key === inlineKey)
+  } else {
+    // Do a simple formbuilderPatch
+    const _patch = {...patch}
+    _patch.path = _patch.path.slice(3)
+    const newValue = applyAll(data.value, [_patch])
+    data.value = newValue
+  }
+  change.setNodeByKey(inline.key, {data})
+  return change
+}
+
 export default function patchesToChange(
   patches: Patch[],
   editorValue: Value,
@@ -190,6 +216,8 @@ export default function patchesToChange(
     if (patch.path.length > 1) {
       if (patch.path[1] === 'markDefs') {
         patchAnnotationData(patch, change, type, snapshot)
+      } else if (patch.path[1] === 'children') {
+        patchInlineData(patch, change, type, snapshot)
       } else {
         patchBlockData(patch, change, type, snapshot)
       }
