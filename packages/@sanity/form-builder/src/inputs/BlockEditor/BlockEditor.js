@@ -56,6 +56,7 @@ export default class BlockEditor extends React.PureComponent<Props> {
     }
     let value
     let type
+    console.log(slateNode)
     if (slateNode.type === 'contentBlock') {
       return null
     } else if (slateNode.type === 'span') {
@@ -77,11 +78,9 @@ export default class BlockEditor extends React.PureComponent<Props> {
 
   renderEditBlockNode(value, type, node) {
     const {focusPath, onBlur, onFocus, onPatch} = this.props
-    const domNode = findDOMNode(node.key)
     return (
       <EditNode
         focusPath={focusPath}
-        anchorNode={domNode}
         onBlur={onBlur}
         onChange={onPatch}
         onFocus={onFocus}
