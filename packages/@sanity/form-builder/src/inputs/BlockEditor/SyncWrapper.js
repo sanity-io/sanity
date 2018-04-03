@@ -74,10 +74,10 @@ export default withPatchSubscriber(
       const patches = changeToPatches(this.state.editorValue, change, value, type)
       this.setState({editorValue: change.value})
 
+      // Track focus
       const currentFocusPath = this.props.focusPath
       if (!currentFocusPath || (currentFocusPath && currentFocusPath.length < 2)) {
-        const focusPath = changeToFocusPath(change)
-        onFocus(focusPath)
+        onFocus(changeToFocusPath(change))
       }
 
       onChange(PatchEvent.from(patches))

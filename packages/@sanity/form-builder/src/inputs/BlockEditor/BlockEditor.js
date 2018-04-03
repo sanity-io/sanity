@@ -1,10 +1,9 @@
 // @flow
 import type {Element as ReactElement} from 'react'
 import React from 'react'
+import {findDOMNode} from 'slate-react'
 
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen?'
-
-import {resolveTypeName} from '../../utils/resolveTypeName'
 
 import EditNode from './EditNode'
 import Editor from './Editor'
@@ -13,7 +12,6 @@ import Toolbar from './Toolbar/Toolbar'
 import styles from './styles/BlockEditor.css'
 
 import type {BlockContentFeatures, SlateChange, SlateValue, Type} from './typeDefs'
-import {findDOMNode} from 'slate-react'
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
@@ -58,19 +56,26 @@ export default class BlockEditor extends React.PureComponent<Props> {
     }
     let value
     let type
-    if (slateNode.type === 'span') {
+    if (slateNode.type === 'contentBlock') {
+      return null
+    } else if (slateNode.type === 'span') {
       const annotations = slateNode.data.get('annotations')
-      const focusedAnnotationName = slateNode.data.get('focusedAnnotationName')
+      const focusedAnnotationName = Object.keys(annotations).find(
+        key => annotations[key]._key === focusPath[2]._key
+      )
+      if (!focusedAnnotationName) {
+        return null
+      }
       value = annotations[focusedAnnotationName]
       type = blockContentFeatures.annotations.find(an => an.value === focusedAnnotationName).type
-    } else {
-      value = slateNode.data.get('value')
-      type = blockContentFeatures.blockObjectTypes.find(obj => obj.name === value._type)
+      return this.renderEditSpanNode(value, type)
     }
-    return this.renderEditNode(value, type, slateNode)
+    value = slateNode.data.get('value')
+    type = blockContentFeatures.blockObjectTypes.find(obj => obj.name === value._type)
+    return this.renderEditBlockNode(value, type, slateNode)
   }
 
-  renderEditNode(value, type, node) {
+  renderEditBlockNode(value, type, node) {
     const {focusPath, onBlur, onFocus, onPatch} = this.props
     const domNode = findDOMNode(node.key)
     return (
@@ -80,6 +85,7 @@ export default class BlockEditor extends React.PureComponent<Props> {
         onBlur={onBlur}
         onChange={onPatch}
         onFocus={onFocus}
+        path={[{_key: value._key}]}
         type={type}
         value={value}
       />
@@ -94,6 +100,7 @@ export default class BlockEditor extends React.PureComponent<Props> {
         onBlur={onBlur}
         onChange={onPatch}
         onFocus={onFocus}
+        path={[focusPath[0], 'markDefs', {_key: value._key}]}
         type={type}
         value={value}
       />
@@ -105,6 +112,7 @@ export default class BlockEditor extends React.PureComponent<Props> {
       blockContentFeatures,
       editorValue,
       editor,
+      focusPath,
       fullscreen,
       onChange,
       onFocus,
@@ -121,6 +129,7 @@ export default class BlockEditor extends React.PureComponent<Props> {
           blockContentFeatures={blockContentFeatures}
           editorValue={editorValue}
           fullscreen={fullscreen}
+          focusPath={focusPath}
           onChange={onChange}
           onFocus={onFocus}
           onToggleFullScreen={onToggleFullScreen}
