@@ -114,13 +114,12 @@ export function removeSpan(change, spanNode) {
   return change
 }
 
-export function createFormBuilderSpan(change, annotationName, originalSelection) {
+export function createFormBuilderSpan(change, annotationName, key, originalSelection) {
   const {value} = change
   const {selection} = value
   if (!selection.isExpanded) {
     expandToFocusedWord(change)
   }
-  const key = randomKey(12)
   const span = {
     isVoid: false,
     type: 'span',
