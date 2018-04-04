@@ -7,7 +7,7 @@ import {Portal} from '../utilities/Portal'
 import Stacked from '../utilities/Stacked'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Escapable from '../utilities/Escapable'
-import {Manager, Target, Popper, Arrow} from 'react-popper'
+import {Manager, Target, Popper, Arrow} from '@bjoerge/react-popper'
 
 export default class EditItemPopOver extends React.PureComponent {
   static propTypes = {
