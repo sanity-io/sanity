@@ -24,12 +24,10 @@ type Props = {
 
 export default class StringSelect extends React.Component<Props> {
   _input: ?(RadioSelect | Select)
+  name = uniqueId('RadioName')
+
   static defaultProps = {
     value: ''
-  }
-
-  componentDidMount() {
-    this.name = uniqueId('RadioName')
   }
 
   handleChange = (item: Object) => {
@@ -62,7 +60,7 @@ export default class StringSelect extends React.Component<Props> {
           // todo: make separate inputs
           <RadioSelect
             {...rest}
-            name={this.name || type.name}
+            name={this.name}
             legend={type.title}
             items={items}
             onChange={this.handleChange}
