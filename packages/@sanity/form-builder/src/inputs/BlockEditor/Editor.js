@@ -16,6 +16,8 @@ import ReactDOM from 'react-dom'
 import SoftBreakPlugin from 'slate-soft-break'
 import {Editor as SlateEditor} from 'slate-react'
 import {EDITOR_DEFAULT_BLOCK_TYPE} from '@sanity/block-tools'
+import insertBlockOnEnter from 'slate-insert-block-on-enter'
+
 import resolveSchemaType from './utils/resolveSchemaType'
 import createNodeValidator from './utils/createNodeValidator'
 
@@ -70,7 +72,8 @@ export default class Editor extends React.Component<Props> {
         onlyIn: [EDITOR_DEFAULT_BLOCK_TYPE.type],
         shift: true
       }),
-      PastePlugin({blockContentType: props.type})
+      PastePlugin({blockContentType: props.type}),
+      insertBlockOnEnter(EDITOR_DEFAULT_BLOCK_TYPE)
     ]
     this._validateNode = createNodeValidator(props.type, this.getValue)
   }
