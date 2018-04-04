@@ -510,7 +510,10 @@ export default withRouterHOC(
                 padding="small"
                 onClick={this.handleToggleValidationResults}
               >
-                {errors.length} <ChevronDown />
+                {errors.length}
+                <span style={{paddingLeft: '0.5em'}}>
+                  <ChevronDown />
+                </span>
               </Button>
             </Tooltip>
           )}

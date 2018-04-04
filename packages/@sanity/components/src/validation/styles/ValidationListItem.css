@@ -10,14 +10,14 @@
   cursor: pointer;
   box-sizing: border-box;
   outline: none;
-
-  @nest &:focus {
-    background-color: color(var(--state-danger-color) a(15%));
-  }
 }
 
 .error {
   color: var(--state-danger-color);
+
+  @nest &:focus {
+    background-color: color(var(--state-danger-color) a(15%));
+  }
 
   @nest &:not(:last-child) {
     border-bottom: 1px solid color(var(--state-danger-color) a(10%));
@@ -26,6 +26,11 @@
 
 .warning {
   color: var(--state-warning-color);
+
+  @nest &:hover,
+  &:focus {
+    background-color: color(var(--state-warning-color) a(10%));
+  }
 
   @nest &:not(:last-child) {
     border-bottom: 1px solid color(var(--state-warning-color) a(10%));
