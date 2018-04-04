@@ -4,7 +4,6 @@ import fse from 'fs-extra'
 import sanityImport from '@sanity/import'
 import padStart from 'lodash/padStart'
 import prettyMs from 'pretty-ms'
-import linecount from 'linecount/promise'
 import chooseDatasetPrompt from '../../actions/dataset/chooseDatasetPrompt'
 import debug from '../../debug'
 
@@ -44,16 +43,22 @@ export default {
     debug(`Target dataset has been set to "${targetDataset}"`)
 
     const isUrl = /^https?:\/\//i.test(file)
-    const sourceFile = isUrl ? file : path.resolve(process.cwd(), file)
-    const inputSource = isUrl ? getUrlStream(sourceFile) : fse.createReadStream(sourceFile)
-    const inputStream = await inputSource
+    let inputStream
+    let sourceIsFolder = false
 
-    const documentCount = isUrl ? 0 : await linecount(sourceFile)
-    debug(
-      documentCount
-        ? 'Could not count documents in source'
-        : `Found ${documentCount} lines in source file`
-    )
+    if (isUrl) {
+      debug('Input is a URL, streaming from source URL')
+      inputStream = await getUrlStream(file)
+    } else {
+      const sourceFile = path.resolve(process.cwd(), file)
+      const fileStats = await fse.stat(sourceFile).catch(() => null)
+      if (!fileStats) {
+        throw new Error(`${sourceFile} does not exist or is not readable`)
+      }
+
+      sourceIsFolder = fileStats.isDirectory()
+      inputStream = sourceIsFolder ? sourceFile : await fse.createReadStream(sourceFile)
+    }
 
     const importClient = client.clone().config({dataset: targetDataset})
 
@@ -116,7 +121,7 @@ export default {
         })
         currentProgress.text = `[100%] ${currentStep} (${timeSpent})`
         currentProgress.succeed()
-      } else {
+      } else if (currentProgress) {
         currentProgress.fail()
       }
     }
