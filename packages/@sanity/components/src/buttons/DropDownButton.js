@@ -9,7 +9,7 @@ import {omit} from 'lodash'
 import {Portal} from '../utilities/Portal'
 import Stacked from '../utilities/Stacked'
 import Escapable from '../utilities/Escapable'
-import {Manager, Target, Popper} from 'react-popper'
+import {Manager, Target, Popper} from '@bjoerge/react-popper'
 
 export default class DropDownButton extends React.PureComponent {
   static propTypes = {

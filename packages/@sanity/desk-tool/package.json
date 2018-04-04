@@ -27,7 +27,7 @@
     "@sanity/form-builder": "0.128.7",
     "@sanity/mutator": "0.128.3",
     "@sanity/observable": "0.128.3",
-    "@sanity/react-tippy": "^1.2.4",
+    "@sanity/react-tippy": "1.2.6",
     "@sanity/uuid": "0.128.3",
     "@sanity/validation": "0.128.3",
     "classnames": "^2.2.5",
