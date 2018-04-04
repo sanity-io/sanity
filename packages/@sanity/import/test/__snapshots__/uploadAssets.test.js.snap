@@ -1,6 +1,54 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`batch patching (batch #1) 1`] = `
+exports[`fails if asset download fails 1`] = `
+[Error: Error while fetching asset from "http://127.0.0.1:49999/img.gif":
+connect ECONNREFUSED 127.0.0.1:49999]
+`;
+
+exports[`fails if asset lookup fails 1`] = `
+[Error: Error while attempt to query Sanity API:
+Some network err]
+`;
+
+exports[`will reuse an existing asset if it exists: single asset mutation 1`] = `
+Object {
+  "mutations": Array [
+    Object {
+      "patch": Object {
+        "id": "movie_1",
+        "set": Object {
+          "metadata.poster._type": "someAssetI",
+          "metadata.poster.asset": Object {
+            "_ref": "someAssetId",
+            "_type": "reference",
+          },
+        },
+      },
+    },
+  ],
+}
+`;
+
+exports[`will upload asset that do not already exist: single create mutation 1`] = `
+Object {
+  "mutations": Array [
+    Object {
+      "patch": Object {
+        "id": "movie_1",
+        "set": Object {
+          "metadata.poster._type": "newAssetI",
+          "metadata.poster.asset": Object {
+            "_ref": "newAssetId",
+            "_type": "reference",
+          },
+        },
+      },
+    },
+  ],
+}
+`;
+
+exports[`will upload once but batch patches: batch patching (batch #1) 1`] = `
 Object {
   "mutations": Array [
     Object {
@@ -607,7 +655,7 @@ Object {
 }
 `;
 
-exports[`batch patching (batch #2) 1`] = `
+exports[`will upload once but batch patches: batch patching (batch #2) 1`] = `
 Object {
   "mutations": Array [
     Object {
@@ -725,54 +773,6 @@ Object {
           "some.path._type": "someAssetI",
           "some.path.asset": Object {
             "_ref": "someAssetId",
-            "_type": "reference",
-          },
-        },
-      },
-    },
-  ],
-}
-`;
-
-exports[`fails if asset download fails 1`] = `
-[Error: Error while fetching asset from "http://127.0.0.1:49999/img.gif":
-connect ECONNREFUSED 127.0.0.1:49999]
-`;
-
-exports[`fails if asset lookup fails 1`] = `
-[Error: Error while attempt to query Sanity API:
-Some network err]
-`;
-
-exports[`single asset mutation 1`] = `
-Object {
-  "mutations": Array [
-    Object {
-      "patch": Object {
-        "id": "movie_1",
-        "set": Object {
-          "metadata.poster._type": "someAssetI",
-          "metadata.poster.asset": Object {
-            "_ref": "someAssetId",
-            "_type": "reference",
-          },
-        },
-      },
-    },
-  ],
-}
-`;
-
-exports[`single create mutation 1`] = `
-Object {
-  "mutations": Array [
-    Object {
-      "patch": Object {
-        "id": "movie_1",
-        "set": Object {
-          "metadata.poster._type": "newAssetI",
-          "metadata.poster.asset": Object {
-            "_ref": "newAssetId",
             "_type": "reference",
           },
         },

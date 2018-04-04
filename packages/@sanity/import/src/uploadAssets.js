@@ -1,6 +1,5 @@
 const basename = require('path').basename
 const parseUrl = require('url').parse
-const crypto = require('crypto')
 const debug = require('debug')('sanity:import')
 const pMap = require('p-map')
 const progressStepper = require('./util/progressStepper')

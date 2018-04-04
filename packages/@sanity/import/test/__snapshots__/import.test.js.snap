@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`employee creation 1`] = `
+exports[`accepts a stream as source: employee creation 1`] = `
 Object {
   "mutations": Array [
     Object {
@@ -21,7 +21,7 @@ Object {
 }
 `;
 
-exports[`employee creation 2`] = `
+exports[`accepts an array as source: employee creation 1`] = `
 Object {
   "mutations": Array [
     Object {

@@ -1,3 +1,4 @@
+const fse = require('fs-extra')
 const noop = require('lodash/noop')
 const defaults = require('lodash/defaults')
 
@@ -11,8 +12,10 @@ function validateOptions(input, opts) {
     onProgress: noop
   })
 
-  if (!input || (typeof input.pipe !== 'function' && !Array.isArray(input))) {
-    throw new Error('Stream does not seem to be a readable stream or an array')
+  if (!isValidInput(input)) {
+    throw new Error(
+      'Stream does not seem to be a readable stream, an array or a path to a directory'
+    )
   }
 
   if (!options.client) {
@@ -37,6 +40,36 @@ function validateOptions(input, opts) {
   }
 
   return options
+}
+
+function isValidInput(input) {
+  if (!input) {
+    return false
+  }
+
+  if (typeof input.pipe === 'function') {
+    return true
+  }
+
+  if (Array.isArray(input)) {
+    return true
+  }
+
+  if (typeof input === 'string' && isDirectory(input)) {
+    return true
+  }
+
+  return false
+}
+
+function isDirectory(path) {
+  try {
+    // eslint-disable-next-line no-sync
+    const stats = fse.statSync(path)
+    return stats.isDirectory()
+  } catch (err) {
+    return false
+  }
 }
 
 module.exports = validateOptions
