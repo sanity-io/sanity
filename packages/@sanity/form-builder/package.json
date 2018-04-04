@@ -60,7 +60,7 @@
     "shallow-equals": "^1.0.0",
     "slate": "0.33.3",
     "slate-base64-serializer": "^0.2.28",
-    "slate-insert-block-on-enter": "^0.0.5",
+    "slate-insert-block-on-enter": "^0.1.0",
     "slate-react": "0.12.3",
     "slate-soft-break": "^0.6.0",
     "speakingurl": "^13.0.0"
