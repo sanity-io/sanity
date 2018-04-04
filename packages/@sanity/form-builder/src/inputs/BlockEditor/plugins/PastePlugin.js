@@ -47,12 +47,14 @@ export default function PastePlugin(options: Options = {}) {
         key: fragment.key,
         nodes: newNodesList
       })
-      return change.insertFragment(newDoc)
+      return change.insertFragment(newDoc).collapseToEndOfBlock()
     }
     if (type === 'html' && !shiftKey) {
       const blocks = blockTools.htmlToBlocks(html, blockContentType)
-      const {document} = blockTools.blocksToEditorValue(blocks, blockContentType)
-      return change.insertFragment(Document.fromJSON(document))
+      const doc = Document.fromJSON(
+        blockTools.blocksToEditorValue(blocks, blockContentType).document
+      )
+      return change.insertFragment(doc).collapseToEndOfBlock()
     }
     return undefined
   }
