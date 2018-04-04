@@ -5,6 +5,7 @@ import RadioSelect from 'part:@sanity/components/selects/radio'
 import PatchEvent, {set} from '../PatchEvent'
 import FormField from 'part:@sanity/components/formfields/default'
 import type {Type, Marker} from '../typedefs'
+import {uniqueId} from 'lodash'
 
 const EMPTY_ITEM = {title: '', value: undefined}
 
@@ -27,6 +28,10 @@ export default class StringSelect extends React.Component<Props> {
     value: ''
   }
 
+  componentDidMount() {
+    this.name = uniqueId('RadioName')
+  }
+
   handleChange = (item: Object) => {
     const {onChange} = this.props
 
@@ -45,19 +50,19 @@ export default class StringSelect extends React.Component<Props> {
 
   render() {
     const {value, readOnly, markers, type, level, ...rest} = this.props
-
     const items = toSelectItems(type.options.list || [])
 
     const currentItem = items.find(item => item.value === value)
 
     const isRadio = type.options && type.options.layout === 'radio'
+
     return (
       <FormField markers={markers} level={level} label={type.title} description={type.description}>
         {isRadio ? (
           // todo: make separate inputs
           <RadioSelect
             {...rest}
-            name={type.name}
+            name={this.name || type.name}
             legend={type.title}
             items={items}
             onChange={this.handleChange}
