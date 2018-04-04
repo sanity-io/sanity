@@ -21,7 +21,8 @@ module.exports = function getJsonStreamer() {
 
       return doc
     } catch (err) {
-      this.emit('error', new Error(getErrorMessage(err)))
+      const errorMessage = getErrorMessage(err)
+      this.emit('error', new Error(errorMessage))
     }
 
     return undefined

@@ -2,6 +2,11 @@ const noop = require('lodash/noop')
 const sanityClient = require('@sanity/client')
 const {injectResponse} = require('get-it/middleware')
 
+process.on('unhandledRejection', reason => {
+  // eslint-disable-next-line no-console
+  console.error('UNHANDLED REJECTION', reason)
+})
+
 const defaultClientOptions = {
   projectId: 'foo',
   dataset: 'bar',

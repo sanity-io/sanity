@@ -9,10 +9,20 @@ const importers = {
   fromArray
 }
 
-module.exports = (input, opts) => {
-  const options = validateOptions(input, opts)
+module.exports = async (input, opts) => {
+  const options = await validateOptions(input, opts)
 
-  return Array.isArray(input)
-    ? fromArray(input, options, importers)
-    : fromStream(input, options, importers)
+  if (typeof input.pipe === 'function') {
+    return fromStream(input, options, importers)
+  }
+
+  if (Array.isArray(input)) {
+    return fromArray(input, options, importers)
+  }
+
+  if (typeof input === 'string') {
+    return fromFolder(input, options, importers)
+  }
+
+  throw new Error('Stream does not seem to be a readable stream, an array or a path to a directory')
 }
