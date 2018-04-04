@@ -6,7 +6,20 @@
   outline: none;
 }
 
+.root:hover .arrow {
+  color: var(--input-border-color-focus);
+}
+
+.root:focus-within .arrow {
+  color: var(--input-border-color-focus);
+}
+
 .disabled {
+  composes: root;
+  opacity: 0.5;
+}
+
+.hasFocus {
   composes: root;
 }
 
@@ -17,6 +30,16 @@
   appearance: none;
   position: relative;
   overflow: hidden;
+  color: var(--text-color);
+
+  @nest .root:hover & {
+    border-color: var(--input-border-color-hover);
+  }
+
+  @nest &:focus {
+    border-color: var(--input-border-color-focus);
+    box-shadow: var(--input-box-shadow--focus);
+  }
 }
 
 .selectContainer {
@@ -36,26 +59,24 @@
   composes: selectContainer;
   opacity: 0.5;
   color: var(--input-color);
+  color: var(--text-color);
 
   @nest &:hover {
     color: inherit;
   }
 
+  @nest .root:hover & {
+    border-color: var(--input-border-color-hover);
+  }
+
   @nest .hasFocus & {
     color: inherit;
   }
-}
 
-.disabled .arrow {
-  opacity: 0.2;
-}
-
-.root:hover .arrow {
-  color: var(--input-border-color-focus);
-}
-
-.root:focus-within .arrow {
-  color: var(--input-border-color-focus);
+  @nest &:focus {
+    border-color: var(--input-border-color-focus);
+    box-shadow: var(--input-box-shadow--focus);
+  }
 }
 
 .functions {
