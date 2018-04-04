@@ -2,8 +2,8 @@
 const fs = require('fs')
 const path = require('path')
 const sanityClient = require('@sanity/client')
-const {getSanityClient} = require('./helpers')
 const importer = require('../')
+const {getSanityClient} = require('./helpers')
 
 const defaultClient = sanityClient({
   projectId: 'foo',
@@ -25,20 +25,23 @@ const getFixtureArray = fix =>
     .map(JSON.parse)
 
 test('rejects on invalid input type (null/undefined)', async () => {
+  expect.assertions(1)
   await expect(importer(null, importOptions)).rejects.toHaveProperty(
     'message',
-    'Stream does not seem to be a readable stream or an array'
+    'Stream does not seem to be a readable stream, an array or a path to a directory'
   )
 })
 
 test('rejects on invalid input type (non-array)', async () => {
+  expect.assertions(1)
   await expect(importer({}, importOptions)).rejects.toHaveProperty(
     'message',
-    'Stream does not seem to be a readable stream or an array'
+    'Stream does not seem to be a readable stream, an array or a path to a directory'
   )
 })
 
 test('rejects on invalid JSON', async () => {
+  expect.assertions(1)
   await expect(importer(getFixtureStream('invalid-json'), importOptions)).rejects.toHaveProperty(
     'message',
     'Failed to parse line #3: Unexpected token _ in JSON at position 1'
@@ -46,6 +49,7 @@ test('rejects on invalid JSON', async () => {
 })
 
 test('rejects on invalid `_id` property', async () => {
+  expect.assertions(1)
   await expect(importer(getFixtureStream('invalid-id'), importOptions)).rejects.toHaveProperty(
     'message',
     'Failed to parse line #2: Document contained an invalid "_id" property - must be a string'
@@ -53,6 +57,7 @@ test('rejects on invalid `_id` property', async () => {
 })
 
 test('rejects on invalid `_id` property format', async () => {
+  expect.assertions(1)
   await expect(
     importer(getFixtureStream('invalid-id-format'), importOptions)
   ).rejects.toHaveProperty(
@@ -62,6 +67,7 @@ test('rejects on invalid `_id` property format', async () => {
 })
 
 test('rejects on missing `_type` property', async () => {
+  expect.assertions(1)
   await expect(importer(getFixtureStream('missing-type'), importOptions)).rejects.toHaveProperty(
     'message',
     'Failed to parse line #3: Document did not contain required "_type" property of type string'
@@ -69,6 +75,7 @@ test('rejects on missing `_type` property', async () => {
 })
 
 test('rejects on missing `_type` property (from array)', async () => {
+  expect.assertions(1)
   await expect(importer(getFixtureArray('missing-type'), importOptions)).rejects.toHaveProperty(
     'message',
     'Failed to parse document at index #2: Document did not contain required "_type" property of type string'
@@ -76,6 +83,7 @@ test('rejects on missing `_type` property (from array)', async () => {
 })
 
 test('accepts an array as source', async () => {
+  expect.assertions(2)
   const docs = getFixtureArray('employees')
   const client = getSanityClient(getMockMutationHandler())
   const res = await importer(docs, {client})
@@ -83,12 +91,14 @@ test('accepts an array as source', async () => {
 })
 
 test('accepts a stream as source', async () => {
+  expect.assertions(2)
   const client = getSanityClient(getMockMutationHandler())
   const res = await importer(getFixtureStream('employees'), {client})
   expect(res).toBe(2)
 })
 
 test('generates uuids for documents without id', async () => {
+  expect.assertions(4)
   const match = body => {
     expect(body.mutations[0].create._id).toMatch(uuidMatcher)
     expect(body.mutations[1].create._id).toBe('pk')

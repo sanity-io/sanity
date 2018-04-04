@@ -19,12 +19,12 @@ const fetchFailClient = {
 }
 
 test('fails if asset download fails', () => {
+  expect.assertions(1)
   const asset = Object.assign({}, fileAsset, {
     url: 'http://127.0.0.1:49999/img.gif'
   })
 
-  const upload = uploadAssets([asset], {client: null, onProgress: noop})
-  return expect(upload).rejects.toMatchSnapshot()
+  return expect(uploadAssets([asset], {client: null, onProgress: noop})).rejects.toMatchSnapshot()
 })
 
 test('fails if asset lookup fails', () => {

@@ -1,4 +1,5 @@
 const os = require('os')
+const fs = require('fs')
 const path = require('path')
 const miss = require('mississippi')
 const gunzipMaybe = require('gunzip-maybe')
@@ -7,6 +8,7 @@ const isTar = require('is-tar')
 const tar = require('tar-fs')
 const globby = require('globby')
 const debug = require('debug')('sanity:import:stream')
+const {noop} = require('lodash')
 const getJsonStreamer = require('./util/getJsonStreamer')
 
 module.exports = (stream, options, importers) =>
@@ -17,7 +19,8 @@ module.exports = (stream, options, importers) =>
     let isTarStream = false
     let jsonDocuments
 
-    miss.pipe(stream, gunzipMaybe(), untarMaybe(), err => {
+    const uncompressStream = miss.pipeline(gunzipMaybe(), untarMaybe())
+    miss.pipe(stream, uncompressStream, err => {
       if (err) {
         reject(err)
         return
@@ -39,8 +42,14 @@ module.exports = (stream, options, importers) =>
         }
 
         debug('Stream is an ndjson file, streaming JSON')
-        const ndjsonStream = miss.pipeline(getJsonStreamer(), miss.concat(resolveNdjsonStream))
-        ndjsonStream.on('error', reject)
+        const jsonStreamer = getJsonStreamer()
+        const concatter = miss.concat(resolveNdjsonStream)
+        const ndjsonStream = miss.pipeline(jsonStreamer, concatter)
+        ndjsonStream.on('error', err => {
+          uncompressStream.emit('error', err)
+          destroy([uncompressStream, jsonStreamer, concatter, ndjsonStream])
+          reject(err)
+        })
         return swap(null, ndjsonStream)
       })
     }
@@ -63,3 +72,32 @@ module.exports = (stream, options, importers) =>
       resolve(importers.fromFolder(importBaseDir, {...options, deleteOnComplete: true}, importers))
     }
   })
+
+function destroy(streams) {
+  streams.forEach(stream => {
+    if (isFS(stream)) {
+      // use close for fs streams to avoid fd leaks
+      stream.close(noop)
+    } else if (isRequest(stream)) {
+      // request.destroy just do .end - .abort is what we want
+      stream.abort()
+    } else if (isFn(stream.destroy)) {
+      stream.destroy()
+    }
+  })
+}
+
+function isFn(fn) {
+  return typeof fn === 'function'
+}
+
+function isFS(stream) {
+  return (
+    (stream instanceof (fs.ReadStream || noop) || stream instanceof (fs.WriteStream || noop)) &&
+    isFn(stream.close)
+  )
+}
+
+function isRequest(stream) {
+  return stream.setHeader && isFn(stream.abort)
+}

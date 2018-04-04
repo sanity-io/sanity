@@ -3,28 +3,30 @@ const miss = require('mississippi')
 const getUri = require('@rexxars/get-uri')
 
 module.exports = function getHashedBufferForUri(uri) {
-  return new Promise(async (resolve, reject) => {
-    const stream = await getStream(uri)
-    const hash = crypto.createHash('sha1')
-    const chunks = []
+  return getStream(uri).then(
+    stream =>
+      new Promise((resolve, reject) => {
+        const hash = crypto.createHash('sha1')
+        const chunks = []
 
-    stream.on('data', chunk => {
-      chunks.push(chunk)
-      hash.update(chunk)
-    })
+        stream.on('data', chunk => {
+          chunks.push(chunk)
+          hash.update(chunk)
+        })
 
-    miss.finished(stream, err => {
-      if (err) {
-        reject(err)
-        return
-      }
+        miss.finished(stream, err => {
+          if (err) {
+            reject(err)
+            return
+          }
 
-      resolve({
-        buffer: Buffer.concat(chunks),
-        sha1hash: hash.digest('hex')
+          resolve({
+            buffer: Buffer.concat(chunks),
+            sha1hash: hash.digest('hex')
+          })
+        })
       })
-    })
-  })
+  )
 }
 
 function getStream(uri) {
