@@ -1,6 +1,6 @@
 {
   "name": "@sanity/components",
-  "version": "0.128.5",
+  "version": "0.128.7",
   "description": "Basic UX components",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -41,6 +41,7 @@
     "lodash": "^4.17.4",
     "lost": "^8.0.0",
     "nano-pubsub": "^1.0.2",
+    "popper.js": "1.14.1",
     "postcss-cssnext": "^3.0.2",
     "react-addons-css-transition-group": "^15.4.1",
     "react-addons-shallow-compare": "^15.4.1",
@@ -51,7 +52,6 @@
     "react-element-query": "^3.0.2",
     "react-ink": "^6.1.0",
     "react-popper": "^0.8.2",
-    "popper.js": "1.14.1",
     "react-sortable-hoc": "^0.6.3",
     "react-split-pane": "^0.1.63",
     "scroll": "^2.0.0"
