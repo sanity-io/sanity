@@ -7,7 +7,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import styles from '../styles/GeopointInput.css'
-import PatchEvent, {set, unset} from 'part:@sanity/form-builder/patch-event'
+import {PatchEvent, set, unset} from 'part:@sanity/form-builder/patch-event'
 
 const getLocale = context => {
   const intl = context.intl || {}

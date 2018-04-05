@@ -2,7 +2,7 @@ import React, {PureComponent} from 'react'
 import PropTypes from 'prop-types'
 import AceEditor from 'react-ace'
 import {get, has} from 'lodash'
-import PatchEvent, {set, insert, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
+import {PatchEvent, set, insert, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
 
 import FormField from 'part:@sanity/components/formfields/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'

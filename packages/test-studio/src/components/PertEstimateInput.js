@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import PatchEvent, {set, unset, setIfMissing} from '@sanity/form-builder/PatchEvent'
+import {PatchEvent, set, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
 
 const calculateEstimate = estimates => {
   const {optimistic, nominal, pessimistic} = estimates || {}
