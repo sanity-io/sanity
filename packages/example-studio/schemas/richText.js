@@ -1,6 +1,6 @@
 import icon from 'react-icons/lib/fa/font'
-import Highlight from '../parts/blockEditor/Highlight'
 import AuthorIcon from 'react-icons/lib/fa/user'
+import Highlight from '../parts/blockEditor/Highlight'
 import AuthorAnnotation from '../parts/blockEditor/AuthorAnnotation'
 import TitleStyle from '../parts/blockEditor/TitleStyle'
 
@@ -77,9 +77,17 @@ export default {
             {
               name: 'caption',
               type: 'string',
-              title: 'Caption'
+              title: 'Caption',
+              options: {isHighlighted: true}
             }
           ]
+        },
+        {
+          name: 'author',
+          title: 'Author',
+          type: 'reference',
+          to: {type: 'author'},
+          options: {inline: true}
         }
       ]
     }
