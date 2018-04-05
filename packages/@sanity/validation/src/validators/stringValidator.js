@@ -1,9 +1,9 @@
-const URL = require('url-parse')
 const ValidationError = require('../ValidationError')
-const createUriRegex = require('../util/createUriRegex')
 const genericValidator = require('./genericValidator')
 
+const DUMMY_ORIGIN = 'http://sanity'
 const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+const isRelativeUrl = url => /^\.*\//.test(url)
 
 const min = (minLength, value, message) => {
   if (!value || value.length >= minLength) {
@@ -33,29 +33,36 @@ const length = (wantedLength, value, message) => {
 // eslint-disable-next-line complexity
 const uri = (constraints, value, message) => {
   const strValue = value || ''
-  const {options, regex} = constraints
+  const {options} = constraints
   const {allowCredentials, relativeOnly} = options
+  const allowRelative = options.allowRelative || relativeOnly
 
-  const matchesConstraint = regex.test(strValue)
-  if (matchesConstraint) {
-    const url = new URL(strValue, true)
-    if (!allowCredentials && url.auth) {
-      return new ValidationError(message || `Username/password not allowed`)
-    }
-
-    return true
-  }
-
-  const isValidUri = createUriRegex().test(strValue)
-  if (!isValidUri) {
+  let url
+  try {
+    url = new URL(strValue, allowRelative ? DUMMY_ORIGIN : undefined)
+  } catch (err) {
     return new ValidationError(message || 'Not a valid URL')
   }
 
-  if (relativeOnly) {
+  if (relativeOnly && url.origin !== DUMMY_ORIGIN) {
     return new ValidationError(message || 'Only relative URLs are allowed')
   }
 
-  return new ValidationError(message || 'Does not match allowed protocols/schemes')
+  if (!allowRelative && url.origin === DUMMY_ORIGIN && isRelativeUrl(strValue)) {
+    return new ValidationError(message || 'Relative URLs are not allowed')
+  }
+
+  if (!allowCredentials && (url.username || url.password)) {
+    return new ValidationError(message || `Username/password not allowed`)
+  }
+
+  const urlScheme = url.protocol.replace(/:$/, '')
+  const matchesAllowedScheme = options.scheme.some(scheme => scheme.test(urlScheme))
+  if (!matchesAllowedScheme) {
+    return new ValidationError(message || 'Does not match allowed protocols/schemes')
+  }
+
+  return true
 }
 
 const stringCasing = (casing, value, message) => {
