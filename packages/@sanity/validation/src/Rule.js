@@ -1,7 +1,6 @@
 const cloneDeep = require('clone-deep')
-const validate = require('./validate')
 const escapeRegex = require('./util/escapeRegex')
-const createUriRegex = require('./util/createUriRegex')
+const validate = require('./validate')
 
 const knownTypes = ['Object', 'String', 'Number', 'Boolean', 'Array', 'Date']
 const isExclusive = ['type', 'uri', 'email']
@@ -215,54 +214,27 @@ class Rule {
     return this.cloneWithRules([{flag: 'email', constraint: options}])
   }
 
-  // eslint-disable-next-line complexity
   uri(opts = {}) {
     const options = Object.assign(
       {scheme: ['http', 'https'], allowRelative: false, relativeOnly: false},
       opts
     )
 
-    let customScheme = ''
+    const allowedSchemes = Array.isArray(options.scheme) ? options.scheme : [options.scheme]
+    options.scheme = allowedSchemes.map(scheme => {
+      const schemeIsString = typeof scheme === 'string'
+      if (!(scheme instanceof RegExp) && schemeIsString === false) {
+        throw new Error('scheme must be a RegExp or a String')
+      }
 
-    if (
-      !(options.scheme instanceof RegExp) &&
-      typeof options.scheme !== 'string' &&
-      !Array.isArray(options.scheme)
-    ) {
-      throw new Error('scheme must be a RegExp, String, or Array')
-    }
-
-    if (!Array.isArray(options.scheme)) {
-      options.scheme = [options.scheme]
-    }
+      return schemeIsString ? new RegExp(`^${escapeRegex(scheme)}$`) : scheme
+    })
 
     if (!options.scheme.length) {
       throw new Error('scheme must have at least 1 scheme specified')
     }
 
-    // Flatten the array into a string to be used to match the schemes.
-    for (let i = 0; i < options.scheme.length; ++i) {
-      const scheme = options.scheme[i]
-      if (!(scheme instanceof RegExp) && typeof scheme !== 'string') {
-        throw new Error(`scheme at position ${i} must be a RegExp or String`)
-      }
-
-      // Add OR separators if a value already exists
-      customScheme += customScheme ? '|' : ''
-
-      const schemePattern = scheme instanceof RegExp ? scheme.source : escapeRegex(scheme)
-
-      // If someone wants to match HTTP or HTTPS for example then we need to support
-      // both RegExp and String so we don't escape their pattern unknowingly.
-      if (!(scheme instanceof RegExp) && !/[a-zA-Z][a-zA-Z0-9+-\.]*/.test(scheme)) {
-        throw new Error(`scheme at position ${i} must be a valid scheme`)
-      }
-
-      customScheme += schemePattern
-    }
-
-    const regex = createUriRegex(customScheme, options.allowRelative, options.relativeOnly)
-    return this.cloneWithRules([{flag: 'uri', constraint: {options, regex}}])
+    return this.cloneWithRules([{flag: 'uri', constraint: {options}}])
   }
 
   // Array only
