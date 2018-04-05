@@ -4,8 +4,6 @@ import {prefixPath, set, unset, setIfMissing, insert, inc, dec} from './utils/pa
 
 import {flatten} from 'lodash'
 
-export {set, unset, setIfMissing, insert, inc, dec}
-
 type PatchArg = Patch | Array<Patch>
 
 export default class PatchEvent {
@@ -31,3 +29,5 @@ export default class PatchEvent {
     return PatchEvent.from(this.patches.map(patch => prefixPath(patch, segment)))
   }
 }
+
+export {PatchEvent, set, unset, setIfMissing, insert, inc, dec}

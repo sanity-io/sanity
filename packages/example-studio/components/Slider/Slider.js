@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import FormField from 'part:@sanity/components/formfields/default'
-import PatchEvent, {set, unset} from 'part:@sanity/form-builder/patch-event'
+import {PatchEvent, set, unset} from 'part:@sanity/form-builder/patch-event'
 
 import styles from './Slider.css'
 
