@@ -4,10 +4,13 @@ import webpack from 'webpack'
 import resolveFrom from 'resolve-from'
 import webpackIntegration from '@sanity/webpack-integration/v3'
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
+import getStaticBasePath from '../util/getStaticBasePath'
 
 const resolve = mod => require.resolve(mod)
 
+// eslint-disable-next-line complexity
 export default (config = {}) => {
+  const staticPath = getStaticBasePath(config)
   const env = config.env || 'development'
   const wpIntegrationOptions = {basePath: config.basePath, env: config.env}
   const basePath = config.basePath || process.cwd()
@@ -65,7 +68,7 @@ export default (config = {}) => {
     output: {
       path: config.outputPath || path.join(__dirname, '..', '..', 'dist'),
       filename: 'js/[name].bundle.js',
-      publicPath: '/static/'
+      publicPath: `${staticPath}/`
     },
     resolve: {
       alias: {

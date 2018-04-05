@@ -4,14 +4,16 @@ import webpackDevMiddleware from 'webpack-dev-middleware'
 import webpackHotMiddleware from 'webpack-hot-middleware'
 import {getBaseServer, applyStaticRoutes, callInitializers} from './baseServer'
 import getWebpackDevConfig from './configs/webpack.config.dev'
+import getStaticBasePath from './util/getStaticBasePath'
 
 export default function getDevServer(config = {}) {
+  const staticPath = getStaticBasePath(config)
   const app = getBaseServer(config)
   const webpackConfig = config.webpack || getWebpackDevConfig(config)
 
   // Serve an empty CSS file for the main stylesheet,
   // as they are injected dynamically in development mode
-  app.get('/static/css/main.css', (req, res) => {
+  app.get(`${staticPath}/css/main.css`, (req, res) => {
     res.set('Content-Type', 'text/css')
     res.send()
   })

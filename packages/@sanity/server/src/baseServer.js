@@ -4,6 +4,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/server'
 import requireUncached from 'require-uncached'
 import {resolveParts} from '@sanity/resolver'
+import getStaticBasePath from './util/getStaticBasePath'
 
 const docPart = 'part:@sanity/base/document'
 const initPart = 'part:@sanity/server/initializer'
@@ -40,11 +41,15 @@ export function getBaseServer() {
 
 export function getDocumentElement({project, basePath, hashes}, props = {}) {
   const assetHashes = hashes || {}
+
+  // Project filesystem base path
   return getDocumentComponent(basePath).then(Document =>
     React.createElement(
       Document,
       Object.assign(
         {
+          // URL base path
+          basePath: (project && project.basePath) || '',
           title: getTitle(project),
           stylesheets: ['css/main.css'].map(item => assetify(item, assetHashes)),
           scripts: ['js/vendor.bundle.js', 'js/app.bundle.js'].map(item =>
@@ -59,10 +64,12 @@ export function getDocumentElement({project, basePath, hashes}, props = {}) {
 
 export function applyStaticRoutes(app, config = {}) {
   const staticPath = config.staticPath || path.join(__dirname, '..', 'public')
-  app.use('/static', express.static(staticPath))
+  const staticBasePath = getStaticBasePath(config)
+
+  app.use(staticBasePath, express.static(staticPath))
 
   app.get('*', (req, res) => {
-    if (req.url.indexOf('/static') === 0) {
+    if (req.url.startsWith(staticBasePath)) {
       return res.status(404).send('File not found')
     }
 
