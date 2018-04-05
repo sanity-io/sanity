@@ -83,6 +83,15 @@ describe('string', () => {
     await expect(rule.validate('https://sanity.io/')).resolves.toHaveLength(0)
   })
 
+  test('uri constraint (with unicode chars)', async () => {
+    const rule = Rule.string().uri()
+    await expect(rule.validate('Blåbærsyltetøy')).resolves.toMatchSnapshot('uri: non-match')
+    await expect(rule.validate('https://en.wikipedia.org/wiki/San_&_Søn')).resolves.toHaveLength(0)
+    await expect(rule.validate('https://zh.wikipedia.org/wiki/心形符號')).resolves.toHaveLength(0)
+    await expect(rule.validate('https://ru.wikipedia.org/wiki/Зонтичные')).resolves.toHaveLength(0)
+    await expect(rule.validate('https://påtapp.no/oslo')).resolves.toHaveLength(0)
+  })
+
   test('uri constraint (invalid protocol)', async () => {
     const rule = Rule.string().uri({scheme: ['http', 'ftp']})
     await expect(rule.validate('https://sanity.io/')).resolves.toMatchSnapshot(

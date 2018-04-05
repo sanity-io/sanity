@@ -231,6 +231,15 @@ Array [
 ]
 `;
 
+exports[`string uri constraint (with unicode chars): uri: non-match 1`] = `
+Array [
+  Object {
+    "item": [ValidationError: Not a valid URL],
+    "level": "error",
+  },
+]
+`;
+
 exports[`string uri constraint: uri: non-match 1`] = `
 Array [
   Object {
