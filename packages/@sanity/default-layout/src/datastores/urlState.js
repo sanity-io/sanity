@@ -1,8 +1,8 @@
-import getOrderedTools from '../util/getOrderedTools'
-import rootRouter from '../defaultLayoutRouter'
 import locationStore from 'part:@sanity/base/location'
+import getOrderedTools from '../util/getOrderedTools'
 import reconfigureClient from '../util/reconfigureClient'
 import {HAS_SPACES, CONFIGURED_SPACES} from '../util/spaces'
+import rootRouter from '../defaultLayoutRouter'
 
 function resolveUrlStateWithDefaultSpace(state) {
   if (!HAS_SPACES || !state || state.space) {

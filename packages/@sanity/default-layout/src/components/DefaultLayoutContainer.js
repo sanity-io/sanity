@@ -1,17 +1,21 @@
 import React from 'react'
-import DefaultLayout from './DefaultLayout'
 import LoginWrapper from 'part:@sanity/base/login-wrapper?'
-import {RouterProvider, RouteScope} from 'part:@sanity/base/router'
-import NotFound from './NotFound'
-import getOrderedTools from '../util/getOrderedTools'
-import rootRouter from '../defaultLayoutRouter'
-import * as urlStateStore from '../datastores/urlState'
+import {RouterProvider} from 'part:@sanity/base/router'
 import AppLoadingScreen from 'part:@sanity/base/app-loading-screen'
+import * as urlStateStore from '../datastores/urlState'
+import getOrderedTools from '../util/getOrderedTools'
+import rootRouter, {maybeRedirectToBase} from '../defaultLayoutRouter'
+import DefaultLayout from './DefaultLayout'
+import NotFound from './NotFound'
+
+const handleNavigate = urlStateStore.navigate
 
 export default class DefaultLayoutContainer extends React.PureComponent {
   state = {}
 
   componentWillMount() {
+    maybeRedirectToBase()
+
     this.urlStateSubscription = urlStateStore.state.subscribe({
       next: event =>
         this.setState({
@@ -24,10 +28,6 @@ export default class DefaultLayoutContainer extends React.PureComponent {
 
   componentWillUnmount() {
     this.urlStateSubscription.unsubscribe()
-  }
-
-  handleNavigate(newUrl, options) {
-    urlStateStore.navigate(newUrl, options)
   }
 
   render() {
@@ -48,7 +48,7 @@ export default class DefaultLayoutContainer extends React.PureComponent {
     )
 
     const router = (
-      <RouterProvider router={rootRouter} state={urlState} onNavigate={this.handleNavigate}>
+      <RouterProvider router={rootRouter} state={urlState} onNavigate={handleNavigate}>
         {content}
       </RouterProvider>
     )
