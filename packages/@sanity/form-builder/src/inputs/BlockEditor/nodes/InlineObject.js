@@ -190,7 +190,7 @@ export default class InlineObject extends React.Component<Props, State> {
   handleEditStart = () => {
     const {editorValue, node, onFocus} = this.props
     const {focusBlock} = editorValue
-    onFocus([{_key: focusBlock.key}, {_key: node.key}, FOCUS_TERMINATOR])
+    onFocus([{_key: focusBlock.key}, 'children', {_key: node.key}, FOCUS_TERMINATOR])
   }
 
   handleClose = () => {
