@@ -30,15 +30,27 @@
   appearance: none;
   position: relative;
   overflow: hidden;
-  color: var(--text-color);
 
-  @nest .root:hover & {
-    border-color: var(--input-border-color-hover);
-  }
+  @nest &:not(:disabled) {
+    @nest &:hover {
+      box-shadow: var(--input-box-shadow--hover);
+      border-color: var(--input-border-color-hover);
+    }
 
-  @nest &:focus {
-    border-color: var(--input-border-color-focus);
-    box-shadow: var(--input-box-shadow--focus);
+    @nest &:focus, &:focus-within {
+      box-shadow: var(--input-box-shadow--focus);
+      border-color: var(--input-border-color-focus);
+    }
+
+    @nest &:active {
+      border-color: var(--input-border-color-active);
+    }
+
+    @nest &:invalid {
+      border-color: var(--input-border-color-invalid);
+      background-color: var(--input-bg-error);
+      box-shadow: var(--input-box-shadow--error);
+    }
   }
 }
 
