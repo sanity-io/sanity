@@ -5,9 +5,8 @@ import ReactDOM from 'react-dom'
 import Base64 from 'slate-base64-serializer'
 
 import React from 'react'
-import {Inline, Block, Range} from 'slate'
+import {Block, Range} from 'slate'
 import {Editor, setEventTransfer, getEventRange} from 'slate-react'
-import {throttle} from 'lodash'
 
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 
@@ -35,6 +34,13 @@ type State = {
   isDragging: boolean,
   isEditing: boolean,
   isSelected: boolean
+}
+
+function shouldUpdateDropTarget(range, dropTarget) {
+  if (!dropTarget) {
+    return true
+  }
+  return range.focusOffset !== dropTarget.range.focusOffset
 }
 
 export default class InlineObject extends React.Component<Props, State> {
@@ -85,7 +91,7 @@ export default class InlineObject extends React.Component<Props, State> {
     this._dropTarget = null
   }
 
-  handleDragOverOtherNode = throttle(event => {
+  handleDragOverOtherNode = event => {
     if (!this.state.isDragging) {
       return
     }
@@ -98,11 +104,10 @@ export default class InlineObject extends React.Component<Props, State> {
       return
     }
 
-    const {editorValue} = this.props
+    const {editorValue, onChange} = this.props
 
     const range = getEventRange(event, editorValue)
-
-    if (range === null) {
+    if (range === null || typeof range.focusOffset === undefined) {
       return
     }
 
@@ -119,12 +124,16 @@ export default class InlineObject extends React.Component<Props, State> {
       return
     }
 
-    const finalRange = this.moveCursor(range, targetNode)
-    this._dropTarget = {node: targetNode, range: finalRange}
-  }, 200)
+    const moveCursorChange = this.moveCursor(range, targetNode)
+    const finalRange = moveCursorChange.value.selection
+    if (shouldUpdateDropTarget(finalRange, this._dropTarget)) {
+      this._dropTarget = {node: targetNode, range: finalRange}
+      onChange(moveCursorChange)
+    }
+  }
 
   moveCursor(range, node) {
-    const {editorValue, onChange} = this.props
+    const {editorValue} = this.props
     let theOffset = range.focusOffset
 
     // Check if it is acceptable to move the cursor here
@@ -146,8 +155,7 @@ export default class InlineObject extends React.Component<Props, State> {
       .collapseToStartOf(node)
       .move(theOffset)
       .focus()
-    onChange(change)
-    return change.value.selection
+    return change
   }
 
   handleDragEnd = event => {
