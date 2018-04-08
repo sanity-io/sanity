@@ -3,9 +3,6 @@ import React from 'react'
 import generateScriptLoader from '../util/generateScriptLoader'
 import AppLoadingScreen from './AppLoadingScreen'
 
-// todo: investigate this. Doesn't seem like NODE_ENV gets set on sanity.io
-const ENV = process.env.NODE_ENV || 'development'
-
 function assetUrl(staticPath, item) {
   const isAbsolute = item.path.match(/^https?:\/\//)
   if (isAbsolute) {
@@ -23,20 +20,24 @@ function assetUrl(staticPath, item) {
 }
 
 function Document(props) {
+  const basePath = props.basePath.replace(/\/+$/, '')
+  const staticPath = `${basePath}${props.staticPath}`
+
   const stylesheets = props.stylesheets.map(item => (
-    <link key={item.path} rel="stylesheet" href={assetUrl(props.staticPath, item)} />
+    <link key={item.path} rel="stylesheet" href={assetUrl(staticPath, item)} />
   ))
 
   const subresources = props.scripts.map(item => (
-    <link key={item.path} rel="subresource" href={assetUrl(props.staticPath, item)} />
+    <link key={item.path} rel="subresource" href={assetUrl(staticPath, item)} />
   ))
 
-  const scripts = props.scripts.map(item => assetUrl(props.staticPath, item))
+  const scripts = props.scripts.map(item => assetUrl(staticPath, item))
   const scriptLoader = generateScriptLoader(scripts)
 
   const favicons = props.favicons.map((item, index) => (
-    <link key={item.path + index} rel="icon" href={assetUrl(props.staticPath, item)} />
+    <link key={item.path} rel="icon" href={assetUrl(staticPath, item)} />
   ))
+
   return (
     <html>
       <head>
@@ -66,6 +67,7 @@ const asset = PropTypes.shape({
 })
 
 Document.defaultProps = {
+  basePath: '',
   charset: 'utf-8',
   title: 'Sanity',
   viewport: 'width=device-width, initial-scale=1',
@@ -77,6 +79,7 @@ Document.defaultProps = {
 }
 
 Document.propTypes = {
+  basePath: PropTypes.string,
   charset: PropTypes.string,
   title: PropTypes.string,
   viewport: PropTypes.string,
