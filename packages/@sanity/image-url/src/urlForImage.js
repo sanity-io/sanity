@@ -61,20 +61,23 @@ export default function urlForImage(options) {
 }
 
 // Convert an asset-id, asset or image to an image record suitable for processing
-function parseSource(source) {
+export function parseSource(source) {
   let image
 
   // Did we just get an asset id?
-  if (typeof source == 'string') {
+  if (typeof source === 'string') {
     image = {
-      asset: {_ref: image}
+      asset: {_ref: source}
     }
-  } else if (source._type == 'sanity.imageAsset') {
+  } else if (
+    source._type === 'sanity.imageAsset' ||
+    (typeof source === 'object' && typeof source._ref === 'string')
+  ) {
     // We just got passed an asset directly
     image = {
       asset: source
     }
-  } else if (typeof source == 'object' && typeof source.asset == 'object') {
+  } else if (typeof source === 'object' && typeof source.asset === 'object') {
     image = source
   } else {
     // We got something that does not look like an image, or it is an image
