@@ -31,7 +31,8 @@ export default async (args, context) => {
     outputPath: path.join(outputDir, 'static'),
     sourceMaps: flags['source-maps'],
     skipMinify: !flags.minify,
-    profile: flags.profile
+    profile: flags.profile,
+    project: config.get('project')
   }
 
   await tryInitializePluginConfigs({workDir, output})
@@ -96,7 +97,7 @@ export default async (args, context) => {
     const indexStart = Date.now()
     spin = output.spinner('Building index document').start()
     const doc = await getDocumentElement(
-      {...compilationConfig, hashes: chunkMap, project: config.get('project')},
+      {...compilationConfig, hashes: chunkMap},
       {
         scripts: ['vendor.bundle.js', 'app.bundle.js'].map(asset => {
           const assetPath = absoluteMatch.test(asset) ? asset : `js/${asset}`

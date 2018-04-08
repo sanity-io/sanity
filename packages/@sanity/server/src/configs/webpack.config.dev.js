@@ -1,6 +1,6 @@
 import webpack from 'webpack'
-import getBaseConfig from './webpack.config'
 import applyStaticLoaderFix from '../util/applyStaticLoaderFix'
+import getBaseConfig from './webpack.config'
 
 export default config => {
   const baseConfig = getBaseConfig(config)
