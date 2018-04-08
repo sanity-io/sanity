@@ -9,7 +9,7 @@ function compareParsedSource(outputSource, exptectedSource) {
   should(outputSource).have.keys('crop', 'hotspot')
 }
 
-describe.only('[image-url] parseSource', () => {
+describe('[image-url] parseSource', () => {
   it('does correctly parse full image object', () => {
     const parsedSource = parseSource(imageWithNoCropSpecified())
     compareParsedSource(parsedSource, imageWithNoCropSpecified())
