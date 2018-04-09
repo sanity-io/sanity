@@ -10,7 +10,7 @@ import blockTools from '@sanity/block-tools'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import FormField from 'part:@sanity/components/formfields/default'
 
-import PatchEvent from '../../PatchEvent'
+import {PatchEvent} from '../../PatchEvent'
 import {getBlockObjectTypes} from './utils/resolveSchemaType'
 import BlockEditor from './BlockEditor'
 import Editor from './Editor'
