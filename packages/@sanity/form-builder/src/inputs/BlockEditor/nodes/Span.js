@@ -1,5 +1,5 @@
 // @flow
-import type {BlockContentFeatures, SlateValue, Type, SlateChange} from '../typeDefs'
+import type {BlockContentFeatures, SlateValue, Type, SlateChange, Marker} from '../typeDefs'
 import type {Node} from 'react'
 
 import React from 'react'
@@ -25,6 +25,7 @@ type Props = {
   children: Node,
   editorValue: SlateValue,
   node: Inline,
+  markers: Marker[],
   onChange: (change: SlateChange) => void,
   onFocus: (nextPath: []) => void,
   onFormBuilderInputBlur: (nextPath: []) => void,

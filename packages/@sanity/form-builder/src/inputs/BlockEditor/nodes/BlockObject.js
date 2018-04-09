@@ -1,5 +1,5 @@
 // @flow
-import type {BlockContentFeatures, SlateValue, Type, SlateChange} from '../typeDefs'
+import type {BlockContentFeatures, SlateValue, Type, SlateChange, Marker} from '../typeDefs'
 import type {Node} from 'react'
 import ReactDOM from 'react-dom'
 import Base64 from 'slate-base64-serializer'
@@ -21,6 +21,7 @@ type Props = {
   blockContentFeatures: BlockContentFeatures,
   children: Node,
   editorValue: SlateValue,
+  markers: Marker[],
   node: Block,
   editor: Editor,
   editorIsFocused: boolean,
