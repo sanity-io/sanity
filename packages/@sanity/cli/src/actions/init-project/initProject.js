@@ -328,7 +328,7 @@ export default async function initSanity(args, context) {
   }
 
   function selectProjectTemplate() {
-    const defaultTemplate = unattended ? flags.template || 'clean' : null
+    const defaultTemplate = unattended || flags.template ? flags.template || 'clean' : null
     return (
       defaultTemplate ||
       prompt.single({
