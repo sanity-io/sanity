@@ -1,6 +1,6 @@
 // @flow
 import type {Element as ReactElement} from 'react'
-import type {Block, BlockArrayType, SlateChange, SlateValue} from './typeDefs'
+import type {Block, BlockArrayType, SlateChange, SlateValue, Marker} from './typeDefs'
 
 import {uniqueId, isEqual} from 'lodash'
 
@@ -21,6 +21,7 @@ type Props = {
   editorValue: SlateValue,
   focusPath: [],
   level: number,
+  markers: Marker[],
   onBlur: (nextPath: []) => void,
   onChange: (change: SlateChange) => void,
   onFocus: (nextPath: []) => void,
@@ -105,7 +106,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
 
   renderEditor(): ReactElement<typeof Editor> {
     const {fullscreen, editorIsFocused} = this.state
-    const {editorValue, focusPath, onBlur, onFocus, onChange, onPatch, type, value} = this.props
+    const {editorValue, focusPath, markers, onBlur, onFocus, onChange, onPatch, type, value} = this.props
     return (
       <Editor
         blockContentFeatures={this.blockContentFeatures}
@@ -113,6 +114,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
         fullscreen={fullscreen}
         isFocused={editorIsFocused}
         focusPath={focusPath}
+        markers={markers},
         onEditorBlur={this.handleEditorBlur}
         onEditorFocus={this.handleEditorFocus}
         onFocus={onFocus}

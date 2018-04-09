@@ -2,6 +2,7 @@
 import type {Map, List} from 'immutable'
 import type {Node, ComponentType} from 'react'
 import type {Patch as _Patch} from '../../utils/patches'
+import type {Marker as _Marker} from '../../typedefs'
 import {
   Change,
   Block as SlateBlock,
@@ -97,3 +98,5 @@ export type SlateComponentProps = {
   readOnly?: boolean,
   blockContentFeatures?: BlockContentFeatures
 }
+
+export type Marker = _Marker

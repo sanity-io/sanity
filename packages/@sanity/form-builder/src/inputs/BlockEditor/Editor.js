@@ -2,6 +2,7 @@
 import type {
   Block,
   BlockContentFeatures,
+  Marker,
   SlateChange,
   SlateComponentProps,
   SlateMarkProps,
@@ -40,6 +41,7 @@ type Props = {
   editorValue: SlateValue,
   fullscreen: boolean,
   isFocused: boolean,
+  markers: Marker[],
   onBlur: (nextPath: []) => void,
   onChange: (change: SlateChange) => void,
   onEditorBlur: void => void,
@@ -126,6 +128,7 @@ export default class Editor extends React.Component<Props> {
       blockContentFeatures,
       editorValue,
       isFocused,
+      markers,
       onChange,
       onFocus,
       onPatch,
@@ -146,6 +149,7 @@ export default class Editor extends React.Component<Props> {
             attributes={props.attributes}
             blockContentFeatures={blockContentFeatures}
             editorValue={editorValue}
+            markers={markers}
             node={props.node}
             onChange={onChange}
             onFocus={onFocus}
@@ -164,6 +168,7 @@ export default class Editor extends React.Component<Props> {
             editorIsFocused={isFocused}
             editorValue={editorValue}
             isSelected={props.isSelected}
+            markers={markers}
             node={props.node}
             onChange={onChange}
             onDrag={this.handleDrag}
