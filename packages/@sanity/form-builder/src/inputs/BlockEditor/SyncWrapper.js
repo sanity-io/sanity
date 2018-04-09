@@ -1,12 +1,13 @@
 // @flow
 
-import PropTypes from 'prop-types'
+import type {Block, BlockArrayType, SlateValue} from './typeDefs'
+
 import React from 'react'
 import generateHelpUrl from '@sanity/generate-help-url'
 
 import FormField from 'part:@sanity/components/formfields/default'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
-import PatchEvent from '../../PatchEvent'
+import {PatchEvent} from '../../PatchEvent'
 import Input from './Input'
 
 import changeToFocusPath from './utils/changeToFocusPath'
@@ -39,19 +40,26 @@ function isDeprecatedBlockValue(value) {
   return false
 }
 
-export default withPatchSubscriber(
-  class SyncWrapper extends React.PureComponent {
-    static propTypes = {
-      focusPath: PropTypes.array,
-      onBlur: PropTypes.func,
-      onChange: PropTypes.func,
-      onFocus: PropTypes.func,
-      schema: PropTypes.object,
-      subscribe: PropTypes.func,
-      type: PropTypes.object.isRequired,
-      value: PropTypes.array
-    }
+type Props = {
+  focusPath: [],
+  onBlur: (nextPath: []) => void,
+  onChange: (change: SlateChange) => void,
+  onFocus: (nextPath: []) => void,
+  onPatch: (event: PatchEvent) => void,
+  schema: Schema,
+  subscribe: (() => void) => void,
+  type: BlockArrayType,
+  value: Block[]
+}
 
+type State = {
+  deprecatedSchema: boolean,
+  deprecatedBlockValue: boolean,
+  editorValue: SlateValue
+}
+
+export default withPatchSubscriber(
+  class SyncWrapper extends React.PureComponent<Props, State> {
     _input = null
 
     constructor(props) {
