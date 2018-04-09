@@ -5,7 +5,6 @@ import type {Node} from 'react'
 import React from 'react'
 import {Inline} from 'slate'
 
-import PatchEvent from '../../../PatchEvent'
 import {applyAll} from '../../../simplePatch'
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 
@@ -49,12 +48,6 @@ export default class Span extends React.Component<Props, State> {
     this.state = {
       focusedAnnotationName: focusedAnnotationName,
       isEditing: !!focusedAnnotationName
-    }
-  }
-
-  componentWillUnmount() {
-    if (this.state.isEditing) {
-      this.setState({isEditing: false, focusedAnnotationName: undefined})
     }
   }
 
@@ -137,7 +130,7 @@ export default class Span extends React.Component<Props, State> {
         this.startEditing()
       }
       this._clickCounter = 0
-    }, 350)
+    }, 200)
     this._clickCounter++
   }
 
