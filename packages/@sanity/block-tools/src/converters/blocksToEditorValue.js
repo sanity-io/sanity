@@ -29,12 +29,14 @@ function toRawMark(markName) {
 function sanitySpanToRawSlateBlockNode(span, sanityBlock, blockContentFeatures, childIndex) {
   // Inline object
   if (span._type !== 'span') {
+    const spanKey = `${sanityBlock._key}${childIndex()}`
+    span._key = spanKey
     return {
       object: 'inline',
       isVoid: true,
-      key: `${sanityBlock._key}${childIndex()}`,
+      key: spanKey,
       type: span._type,
-      data: {value: span, _key: span._key},
+      data: {value: span, _key: spanKey},
       nodes: [
         {
           object: 'text',
@@ -74,12 +76,15 @@ function sanitySpanToRawSlateBlockNode(span, sanityBlock, blockContentFeatures, 
     return {object: 'text', leaves: [leaf], key: `${sanityBlock._key}${childIndex()}`}
   }
 
+  const spanKey = `${sanityBlock._key}${childIndex()}`
+
   return {
     object: 'inline',
     isVoid: false,
     type: 'span',
-    data: {annotations},
-    nodes: [{object: 'text', leaves: [leaf], key: `${sanityBlock._key}${childIndex()}`}]
+    key: spanKey,
+    data: {_key: spanKey, annotations: annotations},
+    nodes: [{object: 'text', leaves: [leaf]}]
   }
 }
 
