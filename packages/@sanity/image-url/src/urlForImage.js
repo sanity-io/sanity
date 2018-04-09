@@ -112,7 +112,7 @@ export function parseSource(source) {
 function parseAssetId(ref) {
   const [, id, dimensionString, format] = ref.split('-')
 
-  if (!(typeof dimensionString == 'string')) {
+  if (!(typeof dimensionString === 'string')) {
     throw new Error(
       `Malformed asset _ref '${ref}'. Expected an id on the form "image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg.`
     )
@@ -125,8 +125,8 @@ function parseAssetId(ref) {
 
   if (
     !(
-      typeof id == 'string' &&
-      typeof format == 'string' &&
+      typeof id === 'string' &&
+      typeof format === 'string' &&
       Number.isFinite(width) &&
       Number.isFinite(height)
     )
@@ -139,7 +139,7 @@ function parseAssetId(ref) {
   return {id, width, height, format}
 }
 
-/* eslint-disable complexity */
+// eslint-disable-next-line complexity
 function specToImageUrl(spec) {
   const cdnUrl = spec.baseUrl || 'https://cdn.sanity.io'
   const filename = `${spec.asset.id}-${spec.asset.width}x${spec.asset.height}.${spec.asset.format}`
@@ -176,7 +176,7 @@ function specToImageUrl(spec) {
     }
   })
 
-  if (params.length == 0) {
+  if (params.length === 0) {
     return baseUrl
   }
 

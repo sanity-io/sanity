@@ -1,5 +1,5 @@
-import sanityImage from '../src/builder'
 import should from 'should'
+import sanityImage from '../src/builder'
 import {imageWithNoCropSpecified, croppedImage} from './fixtures'
 
 const urlFor = sanityImage()
