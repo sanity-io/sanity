@@ -1,6 +1,6 @@
 {
   "name": "@sanity/form-builder",
-  "version": "0.128.11",
+  "version": "0.128.12",
   "description": "Sanity form builder",
   "main": "lib/index.js",
   "scripts": {
@@ -26,7 +26,7 @@
   "dependencies": {
     "@sanity/block-tools": "0.128.5",
     "@sanity/generate-help-url": "0.128.3",
-    "@sanity/image-url": "0.128.3",
+    "@sanity/image-url": "0.128.12",
     "@sanity/imagetool": "0.128.5",
     "@sanity/mutator": "0.128.3",
     "@sanity/observable": "0.128.3",
@@ -58,13 +58,13 @@
     "speakingurl": "^13.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "0.128.5",
+    "@sanity/base": "0.128.12",
     "@sanity/check": "0.128.3",
     "@sanity/cli": "0.128.5",
-    "@sanity/components": "0.128.11",
-    "@sanity/core": "0.128.5",
+    "@sanity/components": "0.128.12",
+    "@sanity/core": "0.128.12",
     "@sanity/plugin-loader": "0.128.5",
-    "@sanity/server": "0.128.5",
+    "@sanity/server": "0.128.12",
     "flow-typed": "^2.2.3",
     "in-publish": "^2.0.0",
     "jsdom": "^11.3.0",
