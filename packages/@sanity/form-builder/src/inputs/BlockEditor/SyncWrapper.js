@@ -1,6 +1,6 @@
 // @flow
 
-import type {Block, BlockArrayType, SlateValue} from './typeDefs'
+import type {Block, BlockArrayType, SlateValue, Marker} from './typeDefs'
 
 import React from 'react'
 import generateHelpUrl from '@sanity/generate-help-url'
@@ -42,6 +42,7 @@ function isDeprecatedBlockValue(value) {
 
 type Props = {
   focusPath: [],
+  markers: Marker[],
   onBlur: (nextPath: []) => void,
   onChange: (change: SlateChange) => void,
   onFocus: (nextPath: []) => void,
