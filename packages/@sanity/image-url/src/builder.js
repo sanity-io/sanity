@@ -151,7 +151,7 @@ class ImageUrlBuilder {
 
 export default function urlBuilder(options) {
   // Did we get a SanityClient?
-  if (options && typeof options.clientConfig == 'object') {
+  if (options && typeof options.clientConfig === 'object') {
     // Inherit config from client
     return new ImageUrlBuilder(null, {
       baseUrl: options.clientConfig.apiHost.replace(/^https:\/\/api\./, 'https://cdn.'),
