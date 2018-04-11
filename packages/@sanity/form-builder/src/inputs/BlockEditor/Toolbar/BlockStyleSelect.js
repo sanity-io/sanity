@@ -10,8 +10,6 @@ import {setBlockStyle} from '../utils/changes'
 import ContentBlock from '../nodes/ContentBlock'
 import StyleSelect from 'part:@sanity/components/selects/style'
 
-import styles from './styles/BlockStyleSelect.css'
-
 export type BlockStyleItem = {
   key: string,
   active: boolean,
@@ -90,7 +88,7 @@ export default class BlockStyleSelect extends React.Component<Props> {
     const {focusBlock} = editorValue
     const disabled = focusBlock ? focusBlock.isVoid : false
     return (
-      <label className={styles.root}>
+      <label>
         <span style={{display: 'none'}}>Text</span>
         <StyleSelect
           items={items}
