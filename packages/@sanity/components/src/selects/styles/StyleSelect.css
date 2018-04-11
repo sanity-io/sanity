@@ -4,19 +4,32 @@
   display: block;
   outline: none;
   position: relative;
-  z-index: var(--zindex-dropdown);
-
-  @nest &:focus {
-    box-shadow:
-      0 0 2px 1px color(var(--input-border-color-focus)),
-      0 0 4px 0 color(var(--input-border-color-focus) a(60%)),
-      0 0 10px 5px color(var(--input-border-color-focus) a(10%));
-  }
 }
 
-.inner {
+.selectContainer {
   composes: root from 'part:@sanity/base/theme/forms/text-input-style';
-  cursor: default;
+  composes: selectContainer from 'part:@sanity/components/selects/default-style';
+  display: flex;
+
+  @nest &:hover {
+    box-shadow: var(--input-box-shadow--hover);
+    border-color: var(--input-border-color-hover);
+  }
+
+  @nest &:focus, &:focus-within {
+    box-shadow: var(--input-box-shadow--focus);
+    border-color: var(--input-border-color-focus);
+  }
+
+  @nest &:active {
+    border-color: var(--input-border-color-active);
+  }
+
+  @nest &:invalid {
+    border-color: var(--input-border-color-invalid);
+    background-color: var(--input-bg-error);
+    box-shadow: var(--input-box-shadow--error);
+  }
 
   @nest .transparent & {
     transition: all 0.05s linear;
@@ -30,16 +43,11 @@
   }
 }
 
-.transparent:not(:hover) .inner {
-  box-shadow: none;
-}
-
-.selectContainer {
-  composes: selectContainer from 'part:@sanity/components/selects/default-style';
-}
-
-.arrow {
+.functions {
   composes: functions from './SearchableSelect.css';
+  position: static;
+  padding-left: 0.5em;
+  height: 2em;
 }
 
 .portal {
@@ -55,7 +63,6 @@
   display: block;
   position: absolute;
   overflow: hidden;
-  composes: shadow-4dp from "part:@sanity/base/theme/shadows-style";
   box-sizing: border-box;
   transform: translateY(-1px);
   background-color: var(--component-bg);
@@ -125,11 +132,6 @@
   font-size: 1em;
   width: 2em;
   overflow: hidden;
-}
-
-.focused {
-  border: 1px solid var(--input-border-color-focus);
-  box-shadow: 0 0 8px color(var(--input-border-color-focus) a(35%));
 }
 
 .disabled {
