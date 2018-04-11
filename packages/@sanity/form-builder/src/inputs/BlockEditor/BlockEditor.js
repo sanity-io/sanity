@@ -3,7 +3,9 @@ import type {Element as ReactElement} from 'react'
 import React from 'react'
 import {findDOMNode} from 'slate-react'
 
-import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen?'
+import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
+import {Portal} from 'part:@sanity/components/utilities/portal'
+import StackedEscapable from 'part:@sanity/components/utilities/stacked-escapable'
 
 import EditNode from './EditNode'
 import Editor from './Editor'
@@ -18,7 +20,9 @@ type Props = {
   editor: ReactElement<typeof Editor>,
   editorValue: SlateValue,
   fullscreen: boolean,
+  isActive: boolean,
   focusPath: [],
+  toolbarStyle: {},
   onPatch: (event: PatchEvent) => void,
   onChange: (change: SlateChange) => void,
   onBlur: (nextPath: []) => void,
@@ -32,12 +36,29 @@ function findDOMNodeForKey(editorValue, key) {
 }
 
 export default class BlockEditor extends React.PureComponent<Props> {
-  renderFullScreen() {
-    return (
-      <FullscreenDialog isOpen onClose={this.props.onToggleFullScreen}>
-        {this.renderEditor()}
-      </FullscreenDialog>
-    )
+  state = {
+    preventScroll: false,
+    toolbarStyle: {}
+  }
+
+  componentDidMount() {
+    this.checkScrollHeight()
+
+    if (this._scrollContainer) {
+      this._scrollContainer.addEventListener('scroll', this.handleScroll, {passive: true})
+    }
+  }
+
+  componentWillUnmount() {
+    if (this._scrollContainer) {
+      this._scrollContainer.removeEventListener('scroll', this.handleScroll, {passive: true})
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps !== this.props) {
+      this.checkScrollHeight()
+    }
   }
 
   renderNodeEditor() {
@@ -138,8 +159,45 @@ export default class BlockEditor extends React.PureComponent<Props> {
     )
   }
 
+  setScrollContainer = element => {
+    this._scrollContainer = element
+  }
+
+  setEditorWrapper = element => {
+    this._editorWrapper = element
+  }
+
+  checkScrollHeight = () => {
+    if (this._scrollContainer && this._editorWrapper) {
+      this.setState({
+        preventScroll: this._scrollContainer.offsetHeight < this._editorWrapper.offsetHeight
+      })
+    }
+  }
+
+  handleScroll = event => {
+    if (!this.props.fullscreen) {
+      this.setState({
+        toolbarStyle: {}
+      })
+    }
+    const threshold = 100
+    const scrollTop = event.target.scrollTop
+    let ratio = scrollTop / threshold
+    if (ratio >= 1) {
+      ratio = 1
+    }
+    this.setState({
+      toolbarStyle: {
+        backgroundColor: `rgba(255, 255, 255, ${ratio * 0.95})`,
+        boxShadow: `0 2px ${5 * ratio}px rgba(0, 0, 0, ${ratio * 0.3})`
+      }
+    })
+  }
+
   renderEditor() {
     const {
+      isActive,
       blockContentFeatures,
       editorValue,
       editor,
@@ -150,23 +208,29 @@ export default class BlockEditor extends React.PureComponent<Props> {
       onToggleFullScreen,
       type
     } = this.props
-    const classNames = [styles.editor]
-    if (fullscreen) {
-      classNames.push(styles.fullscreen)
-    }
+
     return (
-      <div className={classNames.join(' ')}>
-        <Toolbar
-          blockContentFeatures={blockContentFeatures}
-          editorValue={editorValue}
-          fullscreen={fullscreen}
-          focusPath={focusPath}
-          onChange={onChange}
-          onFocus={onFocus}
-          onToggleFullScreen={onToggleFullScreen}
-          type={type}
-        />
-        {editor}
+      <div>
+        <div className={styles.toolbar}>
+          <Toolbar
+            blockContentFeatures={blockContentFeatures}
+            editorValue={editorValue}
+            fullscreen={fullscreen}
+            focusPath={focusPath}
+            onChange={onChange}
+            onFocus={onFocus}
+            onToggleFullScreen={onToggleFullScreen}
+            style={fullscreen ? this.state.toolbarStyle : {}}
+            type={type}
+          />
+        </div>
+        <ActivateOnFocus isActive={!this.state.preventScroll || fullscreen || isActive}>
+          <div className={styles.scrollContainer} onScroll={this.handleScroll}>
+            <div className={styles.editorWrapper} ref={this.setEditorWrapper}>
+              {editor}
+            </div>
+          </div>
+        </ActivateOnFocus>
       </div>
     )
   }
@@ -176,7 +240,14 @@ export default class BlockEditor extends React.PureComponent<Props> {
     const isEditingNode = (focusPath || []).length > 1
     return (
       <div className={styles.root}>
-        {fullscreen ? this.renderFullScreen() : this.renderEditor()}
+        {fullscreen && (
+          <StackedEscapable onEscape={this.props.onToggleFullScreen}>
+            <Portal>
+              <div className={styles.fullscreen}>{this.renderEditor()}</div>
+            </Portal>
+          </StackedEscapable>
+        )}
+        {!fullscreen && this.renderEditor()}
         {isEditingNode && this.renderNodeEditor()}
       </div>
     )

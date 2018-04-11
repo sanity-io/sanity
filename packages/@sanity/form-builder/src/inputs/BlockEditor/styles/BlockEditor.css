@@ -2,23 +2,67 @@
 
 .root {
   display: block;
-}
-
-.editor {
-  display: block;
+  position: relative;
 }
 
 .fullscreen {
   position: fixed;
-  z-index: var(--zindex-portal);
-  height: 100%;
-  width: 100%;
   top: 0;
   left: 0;
-  background-color: var(--gray-lighter);
-  padding-top: 6rem;
-  padding-bottom: 6rem;
-  box-sizing: border-box;
+  z-index: var(--zindex-portal);
+  background-color: var(--body-bg);
+  width: 100vw;
+  height: 100vh;
+}
+
+.toolbar {
+  display: block;
+}
+
+.scrollContainer {
   composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
   composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
+  display: block;
+  height: 15rem;
+  border: 1px solid var(--input-border-color);
+  border-radius: var(--input-border-radius);
+  background-color: var(--input-bg);
+  padding: 1em;
+  box-sizing: border-box;
+
+  @nest .fullscreen & {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: color(var(--body-bg) lightness(- 2%));
+  }
+
+  @nest .focus:not(.fullscreen) & {
+    border: 1px solid var(--input-border-color-focus);
+    box-shadow: 0 0 8px color(var(--input-border-color-focus) a(35%));
+  }
+}
+
+.editorWrapper {
+  /* make it fill its parent */
+  composes: shadow-2dp from 'part:@sanity/base/theme/shadows-style';
+  position: relative;
+  min-height: 100%;
+  display: flex;
+}
+
+.fullscreen .editorWrapper {
+  width: 90vw;
+  max-width: 50em;
+  min-height: 90vh;
+  margin: 5rem auto;
+  border: 1px solid var(--input-border-color);
+  background-color: var(--input-bg);
+  padding: var(--large-padding);
+}
+
+.root :not(.fullscreen) .editorWrapper {
+  box-shadow: none;
 }
