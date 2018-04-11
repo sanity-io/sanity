@@ -7,7 +7,6 @@ import {uniqueId, isEqual} from 'lodash'
 import React from 'react'
 import blockTools from '@sanity/block-tools'
 
-import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import FormField from 'part:@sanity/components/formfields/default'
 
 import {PatchEvent} from '../../PatchEvent'
@@ -152,25 +151,20 @@ export default class BlockEditorInput extends React.Component<Props, State> {
         >
           Jump to editor
         </button>
-        <ActivateOnFocus
-          onActivate={this.handleEditorFocus}
+        <BlockEditor
+          blockContentFeatures={this.blockContentFeatures}
+          editor={editor}
+          editorValue={editorValue}
+          focusPath={focusPath}
+          fullscreen={fullscreen}
+          onChange={onChange}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          onPatch={onPatch}
+          onToggleFullScreen={this.handleToggleFullScreen}
           isActive={isActive}
-          message="Click to edit"
-        >
-          <BlockEditor
-            blockContentFeatures={this.blockContentFeatures}
-            editor={editor}
-            editorValue={editorValue}
-            focusPath={focusPath}
-            fullscreen={fullscreen}
-            onChange={onChange}
-            onFocus={onFocus}
-            onBlur={onBlur}
-            onPatch={onPatch}
-            onToggleFullScreen={this.handleToggleFullScreen}
-            type={type}
-          />
-        </ActivateOnFocus>
+          type={type}
+        />
       </FormField>
     )
   }
