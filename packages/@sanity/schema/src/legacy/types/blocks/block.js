@@ -126,7 +126,7 @@ const DEFAULT_ANNOTATIONS = [DEFAULT_LINK_ANNOTATION]
 
 function createSpansField(marks) {
   return {
-    name: 'spans',
+    name: 'children',
     title: 'Content',
     type: 'array',
     of: [
