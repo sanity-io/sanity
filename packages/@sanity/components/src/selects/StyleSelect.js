@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/selects/style-style'
@@ -160,28 +161,21 @@ class StyleSelect extends React.Component {
       <div
         className={`
           ${styles.root}
-          ${hasFocus && !disabled ? styles.focused : ''}
           ${error ? styles.error : ''}
           ${transparent ? styles.transparent : ''}
           ${disabled ? styles.disabled : ''}
           ${className || ''}
         `}
       >
-        <div style={{position: 'absolute', width: '0px', overflow: 'hidden'}}>
-          <input type="text" onFocus={this.handleFocus} onBlur={this.handleBlur} />
-        </div>
-
-        <div className={styles.inner} onClick={this.handleInnerClick}>
-          <div className={styles.selectContainer}>
-            <span className={styles.text}>
-              {value && value.length > 1 && 'Multiple'}
-              {value && value.length === 1 && value[0].title}
-            </span>
-            <div className={styles.icon}>
-              <FaAngleDown color="inherit" />
-            </div>
+        <span className={styles.selectContainer} tabIndex={0} onClick={this.handleInnerClick}>
+          <span className={styles.text}>
+            {value && value.length > 1 && 'Multiple'}
+            {value && value.length === 1 && value[0].title}
+          </span>
+          <div className={styles.functions}>
+            <FaAngleDown color="inherit" />
           </div>
-        </div>
+        </span>
 
         <div className={`${showList ? styles.listContainer : styles.listContainerHidden}`}>
           {items.map((item, index) => {
