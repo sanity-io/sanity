@@ -20,7 +20,6 @@
     right: 0;
     z-index: 1;
     padding: var(--small-padding);
-    height: 4rem;
 
     @media (--screen-medium) {
       padding: var(--medium-padding--em);
@@ -30,6 +29,10 @@
 
 .compactable {
   display: none;
+}
+
+.expanded {
+  composes: shadow-10dp from 'part:@sanity/base/theme/shadows-style';
 }
 
 .largeContainer .compactable {
@@ -44,7 +47,6 @@
   width: calc(100% - var(--medium-padding) * 2);
   top: 0;
   left: 0;
-  box-shadow: 0 0 2rem color(#000 a(30%));
   background-color: var(--component-bg);
   padding: var(--small-padding);
   box-sizing: border-box;
