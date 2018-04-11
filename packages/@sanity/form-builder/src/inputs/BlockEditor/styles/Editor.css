@@ -1,51 +1,26 @@
 @import "part:@sanity/base/theme/variables-style";
 
+/*
+  The flex alignment here is to stretch the editor to
+  fit its parrent, and to make the last child selectable for editing
+*/
+
 .root {
   display: flex;
   padding: 0;
   margin: 0;
   position: relative;
-  justify-content: center;
+  justify-content: flex-start;
   flex-direction: column;
-
-  @nest &.fullscreen {
-    flex-direction: initial;
-  }
+  width: 100%;
+  min-height: 100%;
 }
 
 .editor {
   display: flex;
   flex-direction: column;
   justify-content: stretch;
-  height: 15rem;
-  border: 1px solid var(--input-border-color);
-  border-radius: var(--input-border-radius);
-  background-color: var(--input-bg);
-  padding: 1em;
-  box-sizing: content-box;
-
-  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
-  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
-
-  @nest .focus:not(.fullscreen) & {
-    border: 1px solid var(--input-border-color-focus);
-    box-shadow: 0 0 8px color(var(--input-border-color-focus) a(35%));
-  }
-
-  @nest .fullscreen & {
-    border: 0;
-    background-color: var(--brand-lightest);
-    color: var(--brand-darkest);
-    width: 90%;
-    height: auto;
-    justify-content: center;
-    min-height: calc(100vh - 10rem);
-    max-height: none;
-    max-width: 50em;
-    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
-    overflow: visible;
-    padding: 3rem;
-  }
+  flex-grow: 1;
 }
 
 .editor > *:last-child {
