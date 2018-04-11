@@ -27,7 +27,7 @@
   border: 1px solid var(--input-border-color);
   border-radius: var(--input-border-radius);
   background-color: var(--input-bg);
-  padding: 1em;
+  padding: var(--medium-padding);
   box-sizing: border-box;
 
   @nest .fullscreen & {
@@ -49,6 +49,7 @@
   /* make it fill its parent */
   composes: shadow-2dp from 'part:@sanity/base/theme/shadows-style';
   position: relative;
+  box-sizing: border-box;
   min-height: 100%;
   display: flex;
 }
@@ -60,7 +61,11 @@
   margin: 5rem auto;
   border: 1px solid var(--input-border-color);
   background-color: var(--input-bg);
-  padding: var(--large-padding);
+  padding: var(--medium-padding);
+
+  @media (--screen-medium) {
+    padding: var(--large-padding);
+  }
 }
 
 .root :not(.fullscreen) .editorWrapper {
