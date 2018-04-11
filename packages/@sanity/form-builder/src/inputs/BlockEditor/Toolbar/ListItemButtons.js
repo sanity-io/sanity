@@ -89,11 +89,8 @@ export default class ListItemButtons extends React.Component<Props> {
           onClick={NOOP}
           title={item.title}
           className={styles.button}
-        >
-          <div className={styles.iconContainer}>
-            <Icon />
-          </div>
-        </ToggleButton>
+          icon={Icon}
+        />
       </ToolbarClickAction>
     )
   }
