@@ -37,5 +37,10 @@
   --medium-padding: 1rem;
   --large-padding: 1.5rem;
   --extra-large-padding: 3rem;
+  --extra-small-padding--em: 0.25em;
+  --small-padding--em: 0.5em;
+  --medium-padding--em: 1em;
+  --large-padding--em: 1.5em;
+  --extra-large-padding--em: 3em;
   --text-selection-color: color(var(--brand-primary) alpha(20%));
 }
