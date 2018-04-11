@@ -67,6 +67,7 @@
   pointer-events: none;
   transition: opacity 0.1s linear;
   opacity: 0;
+  text-align: center;
 
   @nest .noFocus:hover & {
     opacity: 1;
