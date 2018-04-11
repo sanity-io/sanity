@@ -74,16 +74,8 @@ export default class DecoratorButtons extends React.Component<Props> {
 
   renderDecoratorButton = (item: DecoratorItem) => {
     const {editorValue} = this.props
-    let Icon
     const icon = item.blockEditor ? item.blockEditor.icon : null
-    if (icon) {
-      if (typeof icon === 'string') {
-        Icon = () => <CustomIcon icon={icon} active={!!item.active} />
-      } else if (typeof icon === 'function') {
-        Icon = icon
-      }
-    }
-    Icon = Icon || getIcon(item.value)
+    const Icon = icon || getIcon(item.value)
     // We must not do a click-event here, because that messes with the editor focus!
     const onAction = () => {
       this.handleClick(item)
@@ -102,11 +94,8 @@ export default class DecoratorButtons extends React.Component<Props> {
           onClick={NOOP}
           title={title}
           className={styles.button}
-        >
-          <div className={styles.iconContainer}>
-            <Icon />
-          </div>
-        </ToggleButton>
+          icon={Icon}
+        />
       </ToolbarClickAction>
     )
   }
