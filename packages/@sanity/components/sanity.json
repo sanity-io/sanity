@@ -803,7 +803,14 @@
       "implements": "part:@sanity/components/utilities/activate-on-focus",
       "path": "utilities/ActivateOnFocus.js"
     },
-
+    {
+      "name": "part:@sanity/components/utilities/portal",
+      "description": "Portal with react 15 fallback"
+    },
+    {
+      "implements": "part:@sanity/components/utilities/portal",
+      "path": "utilities/Portal/index.js"
+    },
     {
       "name": "part:@sanity/components/panes/default",
       "description": "Default Pane"
