@@ -224,8 +224,15 @@ export default class BlockEditor extends React.PureComponent<Props> {
             type={type}
           />
         </div>
-        <ActivateOnFocus isActive={!this.state.preventScroll || fullscreen || isActive}>
-          <div className={styles.scrollContainer} onScroll={this.handleScroll}>
+        <ActivateOnFocus
+          isActive={!this.state.preventScroll || fullscreen || isActive}
+          message="Click to scroll"
+        >
+          <div
+            className={styles.scrollContainer}
+            ref={this.setScrollContainer}
+            onScroll={this.handleScroll}
+          >
             <div className={styles.editorWrapper} ref={this.setEditorWrapper}>
               {editor}
             </div>
