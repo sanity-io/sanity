@@ -51,7 +51,7 @@ export default function blockContentTypeToOptions(blockContentType) {
     throw new Error("'block' type is not defined in this schema (required).")
   }
   const spanType = blockType.fields
-    .find(field => field.name === 'spans')
+    .find(field => field.name === 'children')
     .type.of.find(ofType => ofType.name === 'span')
   return {
     styles: resolveEnabledStyles(blockType),
