@@ -114,7 +114,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
         fullscreen={fullscreen}
         isFocused={editorIsFocused}
         focusPath={focusPath}
-        markers={markers},
+        markers={markers}
         onEditorBlur={this.handleEditorBlur}
         onEditorFocus={this.handleEditorFocus}
         onFocus={onFocus}
