@@ -48,7 +48,12 @@ export default class DefaultSelect extends React.Component {
   render() {
     const {hasError, items, value, disabled, hasFocus, readOnly, ...rest} = this.props
     return (
-      <div className={disabled || readOnly ? styles.disabled : styles.root}>
+      <div
+        className={`
+          ${disabled || readOnly ? styles.disabled : ''}
+          ${hasFocus ? styles.hasFocus : styles.root}
+        `}
+      >
         <select
           {...rest}
           className={styles.select}
