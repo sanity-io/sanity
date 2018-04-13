@@ -19,7 +19,6 @@ import {Editor as SlateEditor} from 'slate-react'
 import {EDITOR_DEFAULT_BLOCK_TYPE} from '@sanity/block-tools'
 import insertBlockOnEnter from 'slate-insert-block-on-enter'
 
-import resolveSchemaType from './utils/resolveSchemaType'
 import createNodeValidator from './utils/createNodeValidator'
 
 import ListItemOnEnterKeyPlugin from './plugins/ListItemOnEnterKeyPlugin'
@@ -131,30 +130,46 @@ export default class Editor extends React.Component<Props> {
       markers,
       onChange,
       onFocus,
-      onPatch,
-      type
+      onPatch
     } = this.props
-    const nodeType = props.node.type
-    const schemaType = resolveSchemaType(type, nodeType)
+    const {node} = props
+
     let ObjectClass = BlockObject
-    if (schemaType && schemaType.options && schemaType.options.inline) {
+    let ObjectType = blockContentFeatures.types.blockObjects.find(
+      memberType => memberType.name === node.type
+    )
+    if (props.node.object === 'inline') {
       ObjectClass = InlineObject
+      ObjectType = blockContentFeatures.types.inlineObjects.find(
+        memberType => memberType.name === node.type
+      )
     }
-    switch (nodeType) {
+
+    const childMarkers = markers.filter(
+      marker => marker.path[0]._key === props.node.data.get('_key')
+    )
+
+    switch (node.type) {
       case 'contentBlock':
-        return <ContentBlock {...props} blockContentFeatures={blockContentFeatures} />
+        return (
+          <ContentBlock
+            {...props}
+            markers={childMarkers}
+            blockContentFeatures={blockContentFeatures}
+          />
+        )
       case 'span':
         return (
           <Span
             attributes={props.attributes}
             blockContentFeatures={blockContentFeatures}
             editorValue={editorValue}
-            markers={markers}
+            markers={childMarkers}
             node={props.node}
             onChange={onChange}
             onFocus={onFocus}
             onPatch={onPatch}
-            type={schemaType}
+            type={blockContentFeatures.types.span}
           >
             {props.children}
           </Span>
@@ -168,7 +183,7 @@ export default class Editor extends React.Component<Props> {
             editorIsFocused={isFocused}
             editorValue={editorValue}
             isSelected={props.isSelected}
-            markers={markers}
+            markers={childMarkers}
             node={props.node}
             onChange={onChange}
             onDrag={this.handleDrag}
@@ -176,7 +191,7 @@ export default class Editor extends React.Component<Props> {
             onHideBlockDragMarker={this.handleHideBlockDragMarker}
             onPatch={onPatch}
             onShowBlockDragMarker={this.handleShowBlockDragMarker}
-            type={schemaType}
+            type={ObjectType}
           >
             {props.children}
           </ObjectClass>

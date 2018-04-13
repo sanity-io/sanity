@@ -1,7 +1,6 @@
 // @flow
 import type {Element as ReactElement} from 'react'
 import React from 'react'
-import {findDOMNode} from 'slate-react'
 
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import {Portal} from 'part:@sanity/components/utilities/portal'
@@ -31,7 +30,23 @@ type Props = {
   type: Type
 }
 
-function findDOMNodeForKey(editorValue, key) {
+function findEditNodeKey(focusPath, editorValue) {
+  const focusBlockKey = focusPath[0]._key
+  const focusInlineKey = focusPath[2] && focusPath[1] !== 'markDefs' && focusPath[2]._key
+  const markDefKey = focusPath[2] && focusPath[1] === 'markDefs' && focusPath[2]._key
+  let key
+  if (markDefKey) {
+    const block = editorValue.document.getDescendant(focusBlockKey)
+    const span = block.filterDescendants(desc => desc.type === 'span').find(node => {
+      const annotations = node.data.get('annotations') || {}
+      return Object.keys(annotations).find(aKey => annotations[aKey]._key === markDefKey)
+    })
+    return span
+  } else if (focusInlineKey) {
+    key = focusInlineKey
+  } else {
+    key = focusBlockKey
+  }
   return editorValue.document.getDescendant(key)
 }
 
@@ -63,23 +78,13 @@ export default class BlockEditor extends React.PureComponent<Props> {
 
   renderNodeEditor() {
     const {blockContentFeatures, editorValue, focusPath} = this.props
-    const focusKey = editorValue.selection.focusKey
-    const focusInline = editorValue.document.getClosestInline(focusKey)
-
-    const editNodeKey = focusInline ? focusInline.key : focusPath[0]._key
-
-    const slateNode = findDOMNodeForKey(editorValue, editNodeKey)
-
-    if (!slateNode) {
-      // eslint-disable-next-line no-console
-      console.error(new Error(`Could not find node with key ${editNodeKey}`))
+    const slateNode = findEditNodeKey(focusPath, editorValue)
+    if (!slateNode || slateNode.type === 'contentBlock') {
       return null
     }
     let value
     let type
-    if (slateNode.type === 'contentBlock') {
-      return null
-    } else if (slateNode.type === 'span') {
+    if (slateNode.type === 'span') {
       const annotations = slateNode.data.get('annotations')
       const focusedAnnotationName = Object.keys(annotations).find(
         key => annotations[key]._key === focusPath[2]._key
@@ -92,26 +97,13 @@ export default class BlockEditor extends React.PureComponent<Props> {
       return this.renderEditSpanNode(value, type)
     }
     value = slateNode.data.get('value')
-    type = blockContentFeatures.blockObjectTypes.find(obj => obj.name === value._type)
-    const isInline = type.options && type.options.inline
-    return isInline
-      ? this.renderEditInlineObject(value, type, slateNode)
-      : this.renderEditBlockObject(value, type, slateNode)
-  }
-
-  renderEditInlineNode(value, type, node) {
-    const {focusPath, onBlur, onFocus, onPatch} = this.props
-    return (
-      <EditNode
-        focusPath={focusPath}
-        onBlur={onBlur}
-        onChange={onPatch}
-        onFocus={onFocus}
-        path={[{_key: value._key}]}
-        type={type}
-        value={value}
-      />
-    )
+    const findType = obj => obj.name === value._type
+    if (slateNode.object === 'inline') {
+      type = blockContentFeatures.types.inlineObjects.find(findType)
+      return this.renderEditInlineObject(value, type, slateNode)
+    }
+    type = blockContentFeatures.types.blockObjects.find(findType)
+    return this.renderEditBlockObject(value, type, slateNode)
   }
 
   renderEditInlineObject(value, type, node) {

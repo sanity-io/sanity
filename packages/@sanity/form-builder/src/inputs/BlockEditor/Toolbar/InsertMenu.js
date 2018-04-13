@@ -12,7 +12,8 @@ type Props = {
   editorValue: SlateValue,
   onChange: (change: SlateChange) => void,
   onFocus: (nextPath: []) => void,
-  types: Type[]
+  inlineTypes: Type[],
+  blockTypes: Type[]
 }
 
 type BlockItem = {
@@ -22,21 +23,30 @@ type BlockItem = {
 
 export default class InsertBlocks extends React.Component<Props> {
   shouldComponentUpdate(nextProps: Props) {
-    return this.props.types !== nextProps.types
+    return (
+      this.props.blockTypes !== nextProps.blockTypes ||
+      this.props.inlineTypes !== nextProps.inlineTypes
+    )
   }
 
   getItems() {
-    return this.props.types.map(type => ({
-      title: type.title,
-      value: type
+    const blockItems = this.props.blockTypes.map(type => ({
+      title: `${type.title} ¶`,
+      value: type,
+      isInline: false
     }))
+    const inlineItems = this.props.inlineTypes.map(type => ({
+      title: type.title,
+      value: type,
+      isInline: true
+    }))
+    return blockItems.concat(inlineItems)
   }
 
   handleOnAction = (item: BlockItem) => {
-    const isInline = item.value.options && item.value.options.inline
     const {editorValue, onChange, onFocus} = this.props
     const change = editorValue.change()
-    if (isInline) {
+    if (item.isInline) {
       change.call(insertInlineObject, item.value)
     } else {
       change.call(insertBlockObject, item.value)
