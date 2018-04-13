@@ -10,7 +10,6 @@ import blockTools from '@sanity/block-tools'
 import FormField from 'part:@sanity/components/formfields/default'
 
 import {PatchEvent} from '../../PatchEvent'
-import {getBlockObjectTypes} from './utils/resolveSchemaType'
 import BlockEditor from './BlockEditor'
 import Editor from './Editor'
 
@@ -55,7 +54,6 @@ export default class BlockEditorInput extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
     this.blockContentFeatures = blockTools.getBlockContentFeatures(props.type)
-    this.blockContentFeatures.blockObjectTypes = getBlockObjectTypes(props.type)
   }
 
   handleToggleFullScreen = () => {
@@ -105,7 +103,17 @@ export default class BlockEditorInput extends React.Component<Props, State> {
 
   renderEditor(): ReactElement<typeof Editor> {
     const {fullscreen, editorIsFocused} = this.state
-    const {editorValue, focusPath, markers, onBlur, onFocus, onChange, onPatch, type, value} = this.props
+    const {
+      editorValue,
+      focusPath,
+      markers,
+      onBlur,
+      onFocus,
+      onChange,
+      onPatch,
+      type,
+      value
+    } = this.props
     return (
       <Editor
         blockContentFeatures={this.blockContentFeatures}

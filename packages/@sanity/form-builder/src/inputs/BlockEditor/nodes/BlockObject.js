@@ -8,6 +8,10 @@ import React from 'react'
 import {Block} from 'slate'
 import {Editor, findDOMNode, findNode, setEventTransfer} from 'slate-react'
 
+import {IntentLink} from 'part:@sanity/base/router'
+import LinkIcon from 'part:@sanity/base/link-icon'
+import ValidationStatus from 'part:@sanity/components/validation/status'
+
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 
 import createRange from '../utils/createRange'
@@ -189,8 +193,14 @@ export default class BlockObject extends React.Component<Props, State> {
     return this.props.node.data.get('value')
   }
 
+  handleRemoveValue = (event: PatchEvent) => {
+    const {onPatch} = this.props
+    const value = this.getValue()
+    onPatch(event.prefixAll({_key: value._key}), value)
+  }
+
   renderPreview() {
-    const {type} = this.props
+    const {type, markers} = this.props
     const value = this.getValue()
     if (!type) {
       return (
@@ -198,11 +208,28 @@ export default class BlockObject extends React.Component<Props, State> {
           validTypes={[type]}
           actualType={type}
           value={value}
-          onChange={this.handleInvalidValueChange}
+          onChange={this.handleRemoveValue}
         />
       )
     }
-    return <Preview type={type} value={this.getValue()} layout="block" />
+    const errors = []
+    return (
+      <div className={errors.length > 0 ? styles.innerWithError : styles.inner}>
+        <div className={styles.previewWrapper}>
+          <Preview type={type} value={value} layout="block" />
+        </div>
+        <div className={styles.functions}>
+          <div className={styles.validationStatus}>
+            <ValidationStatus markers={markers} />
+          </div>
+          {value._ref && (
+            <IntentLink className={styles.linkToReference} intent="edit" params={{id: value._ref}}>
+              <LinkIcon />
+            </IntentLink>
+          )}
+        </div>
+      </div>
+    )
   }
 
   render() {

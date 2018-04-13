@@ -84,7 +84,12 @@ export type BlockContentFeatures = {
   styles: BlockContentFeature[],
   annotations: BlockContentFeature[],
   lists: BlockContentFeature[],
-  blockObjectTypes: Type[]
+  types: {
+    span: Type,
+    blockContent: Type,
+    inlineObjects: Type[],
+    blockObjects: Type[]
+  }
 }
 
 export type SlateComponentProps = {
