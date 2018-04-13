@@ -33,7 +33,7 @@ export default class ValidationList extends React.PureComponent {
     documentType: null,
     onClose: () => undefined,
     showLink: false,
-    onFocus: undefined
+    onFocus: () => undefined
   }
 
   componentWillUnmount() {
@@ -70,33 +70,42 @@ export default class ValidationList extends React.PureComponent {
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
     const warnings = validation.filter(marker => marker.level === 'warning')
+
+    if (errors.length === 0 && warnings.length === 0) {
+      return <div />
+    }
+
     return (
       <div className={styles.root}>
-        {errors.length > 0 && (
-          <div className={styles.items}>
-            <ul>
-              {errors.map((error, i) => (
+        <div className={styles.items}>
+          <ul>
+            {errors.length > 0 &&
+              errors.map((error, i) => (
                 <ValidationListItem
                   key={i}
-                  hasFocus={i === 0 && isOpen}
+                  // focus is not ready yet
+                  // hasFocus={i === 0 && isOpen}
                   path={this.resolvePathTitle(error.path)}
                   marker={error}
                   onClick={this.handleClick}
                   showLink={showLink}
                 />
               ))}
-              {warnings.map((warning, i) => (
+
+            {warnings.length > 0 &&
+              warnings.map((warning, i) => (
                 <ValidationListItem
                   key={i}
-                  hasFocus={i === 0 && isOpen}
+                  // focus is not ready yet
+                  // hasFocus={i === 0 && isOpen}
+                  path={this.resolvePathTitle(warning.path)}
                   marker={warning}
                   onClick={this.handleClick}
                   showLink={showLink}
                 />
               ))}
-            </ul>
-          </div>
-        )}
+          </ul>
+        </div>
       </div>
     )
   }
