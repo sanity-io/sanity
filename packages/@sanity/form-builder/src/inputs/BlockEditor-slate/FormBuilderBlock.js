@@ -265,7 +265,7 @@ export default class FormBuilderBlock extends React.Component {
     const memberType = this.getMemberTypeOf(value)
 
     return (
-      <div style={{minWidth: '30rem', padding: '1rem'}}>
+      <div style={{padding: '1rem'}}>
         <FormBuilderInput
           type={memberType}
           level={1}
