@@ -37,9 +37,9 @@ export const BlockType = {
   extend(subTypeDef, extendMember) {
     const options = {...(subTypeDef.options || DEFAULT_OPTIONS)}
 
-    const {marks, styles, lists, ...rest} = subTypeDef
+    const {marks, styles, lists, of, ...rest} = subTypeDef
 
-    const spansField = createSpansField(marks)
+    const spansField = createSpansField(marks, of)
     const stylesField = createStylesField(styles)
     const listsField = createListsField(lists)
 
@@ -98,19 +98,6 @@ function createStylesField(styles) {
   }
 }
 
-function createDecoratorField(decorators) {
-  return {
-    name: 'decorators',
-    type: 'array',
-    title: 'Decorators',
-    of: [{type: 'string'}],
-    options: {
-      direction: 'vertical',
-      list: decorators || DEFAULT_DECORATORS
-    }
-  }
-}
-
 function createListsField(lists) {
   return {
     name: 'list',
@@ -124,7 +111,7 @@ function createListsField(lists) {
 
 const DEFAULT_ANNOTATIONS = [DEFAULT_LINK_ANNOTATION]
 
-function createSpansField(marks) {
+function createSpansField(marks, of = []) {
   return {
     name: 'children',
     title: 'Content',
@@ -135,7 +122,8 @@ function createSpansField(marks) {
         fields: [DEFAULT_TEXT_FIELD, DEFAULT_MARKS_FIELD],
         annotations: marks && marks.annotations ? marks.annotations : DEFAULT_ANNOTATIONS,
         decorators: marks && marks.decorators ? marks.decorators : DEFAULT_DECORATORS
-      }
+      },
+      ...of.filter(memberType => memberType.type !== 'span')
     ]
   }
 }
