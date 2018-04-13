@@ -1,11 +1,11 @@
 // @flow
-import type {BlockContentFeatures, SlateValue, SlateChange} from '../typeDefs'
+import type {BlockContentFeatures, SlateValue, SlateChange, Type} from '../typeDefs'
 
 import React from 'react'
 
 import AnnotationButtons from './AnnotationButtons'
 import BlockStyleSelect from './BlockStyleSelect'
-import BlockObjectsMenu from './BlockObjectsMenu'
+import InsertMenu from './InsertMenu'
 import Button from 'part:@sanity/components/buttons/default'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import DecoratorButtons from './DecoratorButtons'
@@ -22,11 +22,12 @@ type Props = {
   blockContentFeatures: BlockContentFeatures,
   editorValue: SlateValue,
   focusPath: [],
-  style: {},
   fullscreen: boolean,
   onChange: (change: SlateChange) => void,
   onFocus: (nextPath: []) => void,
-  onToggleFullScreen: void => void
+  onToggleFullScreen: void => void,
+  style: {},
+  type: Type
 }
 
 const query = {
@@ -67,10 +68,15 @@ class Toolbar extends React.PureComponent<Props> {
       onChange,
       onFocus,
       onToggleFullScreen,
-      style
+      style,
+      type
     } = this.props
 
     const {expanded} = this.state
+
+    const insertItems = blockContentFeatures.types.inlineObjects.concat(
+      blockContentFeatures.types.blockObjects
+    )
 
     return (
       <ContainerQuery query={query}>
@@ -96,7 +102,10 @@ class Toolbar extends React.PureComponent<Props> {
                 <ArrowIcon color="inherit" />
               </span>
             </Button>
-            <div className={`${styles.compactable} ${expanded ? styles.expanded : ''}`} onClick={this.handleContract}>
+            <div
+              className={`${styles.compactable} ${expanded ? styles.expanded : ''}`}
+              onClick={this.handleContract}
+            >
               {blockContentFeatures.decorators.length > 0 && (
                 <div className={styles.decoratorButtonsContainer}>
                   <DecoratorButtons
@@ -127,10 +136,12 @@ class Toolbar extends React.PureComponent<Props> {
                 </div>
               )}
 
-              {blockContentFeatures.blockObjectTypes.length > 0 && (
+              {insertItems.length && (
                 <div className={styles.insertContainer}>
-                  <BlockObjectsMenu
-                    types={blockContentFeatures.blockObjectTypes}
+                  <InsertMenu
+                    type={type}
+                    blockTypes={blockContentFeatures.types.blockObjects}
+                    inlineTypes={blockContentFeatures.types.inlineObjects}
                     editorValue={editorValue}
                     onChange={onChange}
                     onFocus={onFocus}
@@ -138,7 +149,6 @@ class Toolbar extends React.PureComponent<Props> {
                 </div>
               )}
             </div>
-
             <div className={styles.fullscreenButtonContainer} onClick={this.handleContract}>
               <Button
                 kind="simple"

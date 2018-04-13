@@ -55,16 +55,6 @@ function setIfMissingPatch(patch: Patch, change: () => void, type: Type) {
     return replaceValue(patch.value, change, type)
   }
   const doc = change.value.document
-  if (patch.path[1] === 'markDefs') {
-    const blockKey = patch.path[0]._key
-    console.log(blockKey)
-    const inline = doc.findDescendant(blockKey).findDescendant(node => {
-      const annotations = node.data.get('annotations')
-      return annotations ? annotations[patch.value._type] : null
-    })
-    console.log(inline)
-    return
-  }
   const blockKey = patch.path[0]._key
   const block = doc.nodes.find(node => node.key === blockKey)
   if (block.isVoid) {
