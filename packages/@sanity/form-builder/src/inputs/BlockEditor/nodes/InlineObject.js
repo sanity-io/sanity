@@ -1,5 +1,5 @@
 // @flow
-import type {BlockContentFeatures, SlateValue, Type, SlateChange, Marker} from '../typeDefs'
+import type {SlateValue, Type, SlateChange, Marker} from '../typeDefs'
 import type {Node} from 'react'
 import ReactDOM from 'react-dom'
 import Base64 from 'slate-base64-serializer'
@@ -17,7 +17,6 @@ import styles from './styles/InlineObject.css'
 
 type Props = {
   attributes: {},
-  blockContentFeatures: BlockContentFeatures,
   children: Node,
   editorValue: SlateValue,
   markers: Marker[],
@@ -184,6 +183,13 @@ export default class InlineObject extends React.Component<Props, State> {
     this.resetDropTarget()
   }
 
+  handleRemoveValue = (event: PatchEvent) => {
+    const {editorValue, node, onPatch} = this.props
+    const {focusBlock} = editorValue
+    const value = this.getValue()
+    onPatch(event.prefixAll([{_key: focusBlock.key}, 'children', {_key: node.key}]), value)
+  }
+
   handleCancelEvent = event => {
     event.preventDefault()
   }
@@ -220,11 +226,11 @@ export default class InlineObject extends React.Component<Props, State> {
           validTypes={[type]}
           actualType={type}
           value={value}
-          onChange={this.handleInvalidValueChange}
+          onChange={this.handleRemoveValue}
         />
       )
     }
-    return <Preview type={type} value={this.getValue()} layout="block" />
+    return <Preview type={type} value={this.getValue()} layout="inline" />
   }
 
   render() {

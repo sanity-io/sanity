@@ -63,8 +63,12 @@ export default withPatchSubscriber(
   class SyncWrapper extends React.PureComponent<Props, State> {
     _input = null
 
+    static defaultProps = {
+      markers: []
+    }
+
     constructor(props) {
-      super()
+      super(props)
       const deprecatedSchema = isDeprecatedBlockSchema(props.type)
       const deprecatedBlockValue = isDeprecatedBlockValue(props.value)
       this.state = {
@@ -83,11 +87,11 @@ export default withPatchSubscriber(
       const patches = changeToPatches(this.state.editorValue, change, value, type)
       this.setState({editorValue: change.value})
 
-      // Track focus
-      const currentFocusPath = this.props.focusPath
-      if (!currentFocusPath || (currentFocusPath && currentFocusPath.length < 2)) {
-        onFocus(changeToFocusPath(change))
-      }
+      // // Track focus
+      // const currentFocusPath = this.props.focusPath
+      // if (!currentFocusPath || (currentFocusPath && currentFocusPath.length < 2)) {
+      //   onFocus(changeToFocusPath(change))
+      // }
       onChange(PatchEvent.from(patches))
 
       if (callback) {
