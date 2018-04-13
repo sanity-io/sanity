@@ -55,8 +55,12 @@ export default class ValidationStatus extends React.PureComponent {
       tooltipText = warningText
     }
 
-    if (errors.length === 1) {
+    if (errors.length === 1 && warnings.length === 0) {
       tooltipText = errors[0].item.message
+    }
+
+    if (warnings.length === 1 && errors.length === 0) {
+      tooltipText = warnings[0].item.message
     }
 
     return (
