@@ -50,13 +50,20 @@ export default function blockContentTypeToOptions(blockContentType) {
   if (!blockType) {
     throw new Error("'block' type is not defined in this schema (required).")
   }
-  const spanType = blockType.fields
-    .find(field => field.name === 'children')
-    .type.of.find(ofType => ofType.name === 'span')
+  const ofType = blockType.fields.find(field => field.name === 'children').type.of
+  const spanType = ofType.find(memberType => memberType.name === 'span')
+  const inlineObjectTypes = ofType.filter(memberType => memberType.name !== 'span')
+  const blockObjectTypes = blockContentType.of.filter(field => field.name !== 'block')
   return {
     styles: resolveEnabledStyles(blockType),
     decorators: resolveEnabledDecorators(spanType),
     annotations: resolveEnabledAnnotationTypes(spanType),
-    lists: resolveEnabledListItems(blockType)
+    lists: resolveEnabledListItems(blockType),
+    types: {
+      block: blockContentType,
+      span: spanType,
+      inlineObjects: inlineObjectTypes,
+      blockObjects: blockObjectTypes
+    }
   }
 }
