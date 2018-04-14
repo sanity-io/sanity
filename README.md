@@ -1,11 +1,11 @@
 <h1 align="center">
   <a href="https://www.sanity.io">
-    <img style="width:40%" alt="Sanity Logo" src="https://www.sanity.io/static/images/logo_red.svg?v=2"/>
+    <img width="40%" alt="Sanity Logo" src="https://www.sanity.io/static/images/logo_red.svg?v=2"/>
   </a>
 </h1>
 
 <h4 align="center">
-  Sanity is a real-time content infrastructure. It has an editor called Content Studio built on  React.js, which you can customize freely, and a hosted backend with a graph-oriented query language.
+  <a href="https://www.sanity.io">Sanity</a> is a real-time content infrastructure. The editor, built in JavaScript and React.js, lives in this repo. It connects to a scalable, hosted backend featuring a Graph Oriented Query Language (GROQ) and asset pipelines.
 </h4>
 
 <p align="center">
@@ -16,8 +16,8 @@
 
 *  <a href="#getting-started">Getting Started</a>
 *  <a href="#key-features">Key Features</a>
-*  <a href="#useful-links-and-resources">Key Features</a>
-*  <a href="#contribute">Contribute</a>
+*  <a href="#useful-links-and-resources">Links and resources</a>
+*  <a href="#want-to-contribute">Contribute</a>
 *  <a href="#license">License</a>
 
 
