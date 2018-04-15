@@ -102,6 +102,11 @@ Feel totally free to [ping us on Gitter](https://gitter.im/sanity-io/sanity) for
 * [Headless in Love with Sanity](https://hackernoon.com/headless-in-love-with-sanity-689960571dc)
 * [Put your chatbot where your headless CMS is](https://hackernoon.com/put-your-chatbot-where-your-headless-cms-is-15cf174774c6) – Sanity with serverless Webtask and Google's Dialogflow 
 
+### Stay up to date
+
+* [@Sanity_io](https://twitter.com/sanity_io) on Twitter
+* [Newsletter](http://eepurl.com/b2yaDz)
+
 ## Want to contribute?
 
 Found a bug, or want to contribute code? Pull requests and issues are most welcome. You might want to take a look at our [Contributing guidelines](https://github.com/sanity-io/sanity/blob/master/CONTRIBUTING.md) also.
