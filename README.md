@@ -32,7 +32,11 @@ npm install -g @sanity/cli
 sanity init
 ```
 
-Then check out the [documentation](https://www.sanity.io/docs) to customize your schema. When you're happy just `sanity deploy` and head over to the [sanity.io](https://www.sanity.io/manage) to invite editors. While they're merrily content managing you could then check out a [sample front-end](#sample-frontends).
+Then check out the [schema documentation](https://www.sanity.io/docs/content-studio/the-schema) and customize your data structure. When you're happy, just `sanity deploy` to host the editor with us and head over to [sanity.io](https://www.sanity.io/manage) to invite editors. 
+
+As they're merrily content managing you can start setting up a front-end to render your data based on one of the [demos](#sample-frontends) we have available.
+
+Feel totally free to [ping us on Gitter](https://gitter.im/sanity-io/sanity) for a chat should you have questions along the way!
 
 ## Key Features
 
