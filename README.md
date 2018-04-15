@@ -104,8 +104,8 @@ Feel totally free to [ping us on Gitter](https://gitter.im/sanity-io/sanity) for
 
 ### Stay up to date
 
-* [@Sanity_io](https://twitter.com/sanity_io) on Twitter
-* [Newsletter](http://eepurl.com/b2yaDz)
+* Follow [@sanity_io](https://twitter.com/sanity_io) on Twitter
+* Subscribe to our [newsletter](http://eepurl.com/b2yaDz)
 
 ## Want to contribute?
 
