@@ -21,7 +21,7 @@
 *  <a href="#license">License</a>
 
 
-[![Screenshot](https://cdn.sanity.io/images/3do82whm/production/cllejaievr_1QvGplh3diVAteYXT8aRNtLV-2376x1260.png?fm=jpg)](https://www.sanity.io)
+[![Content Studio, Backend and Content Interfaces](https://public.sanity.io/modell_@2x.png)](https://www.sanity.io)
 
 ## Getting started
 
@@ -58,14 +58,23 @@ Feel totally free to [ping us on Gitter](https://gitter.im/sanity-io/sanity) for
 
 ## Useful links and resources
 
-* [Documentation](https://www.sanity.io/docs/introduction/getting-started)
+![Roll of paper](https://public.sanity.io/modell_followup_2_@2x.png)
+
+### Documentation
+The [documentation](https://www.sanity.io/docs/introduction/getting-started) covers [how to work with content in Sanity](https://www.sanity.io/docs/introduction/the-sanity-way), [schema types(https://www.sanity.io/docs/reference/schema-types), [extending the content studio](https://www.sanity.io/docs/content-studio/extending), how to [query the API](https://www.sanity.io/docs/data-store/how-queries-work), [importing data](https://www.sanity.io/docs/data-store/importing-data) and [useful tips for presenting your content in a frontend](https://www.sanity.io/docs/front-ends).
+
+
 
 ### Content Studio plugins
 
-* [Vision](https://github.com/sanity-io/sanity/blob/next/packages/%40sanity/vision/README.md) (`sanity install @sanity/vision`)
-* [Google Maps input](https://github.com/sanity-io/sanity/blob/next/packages/%40sanity/google-maps-input) (`sanity install @sanity/google-maps-input`)
-* Color Picker (`sanity install @sanity/color-picker`)
-* Syntax highlighted editor blocks (`sanity install @sanity/code`)
+#### Input types
+* [Google Maps input](https://www.sanity.io/docs/schema-types/geopoint-type) (`sanity install @sanity/google-maps-input`)
+* [Color input](https://www.npmjs.com/package/@sanity/color-input) (`sanity install @sanity/color-input`)
+* [Code input (syntax highlighted blocks)](https://www.npmjs.com/package/@sanity/code-input) (`sanity install @sanity/code-input`)
+* [Rich Date input](https://www.npmjs.com/package/@sanity/rich-date-input) (`sanity install @sanity/rich-date-input`)
+
+#### Tools
+* [Vision - GROQ sandbox tool](https://www.npmjs.com/package/@sanity/vision) (`sanity install @sanity/vision`)
 
 ### Schema plugins
 
@@ -73,7 +82,9 @@ Feel totally free to [ping us on Gitter](https://gitter.im/sanity-io/sanity) for
 
 ### Migration tools
 
-* [contentful-to-sanity](https://github.com/sanity-io/contentful-to-sanity)
+* [Tools for processing Sanity block content](https://www.npmjs.com/package/@sanity/block-tools) (`npm i @sanity/block-tools`)
+* [Convert Sanity block content into a genereic tree](https://www.npmjs.com/package/@sanity/block-content-to-tree) (`npm i @sanity/block-content-to-tree`)
+* [Migrate from Contentful to Sanity](https://github.com/sanity-io/contentful-to-sanity) (`npm install -g contentful-to-sanity`)
 
 ### API Clients
 
@@ -82,7 +93,8 @@ Feel totally free to [ping us on Gitter](https://gitter.im/sanity-io/sanity) for
 
 #### Community contributed
 
-* [C# /.NET](https://github.com/onybo/sanity-client)
+* [C# /.NET](https://github.com/onybo/sanity-client) (Thanks [@onybo](https://github.com/onybo)!)
+* [Laravel (PHP)](https://github.com/eastslopestudio/laravel-sanity) (Thanks [@eastslopestudio](https://github.com/eastslopestudio)!)
 
 ### Sample frontends
 
@@ -91,16 +103,20 @@ Feel totally free to [ping us on Gitter](https://gitter.im/sanity-io/sanity) for
 * [Vue.js](https://github.com/sanity-io/example-frontend-vue-js)
 * [Silex + Twig](https://github.com/sanity-io/example-frontend-silex-twig)
 
-### Block content rendering
+### Frontend rendering
 
-* [Block content to HTML](https://github.com/sanity-io/block-content-to-html)
-* [Block content to React](https://www.npmjs.com/package/@sanity/block-content-to-react)
-* [Block content to Hyperscript](https://www.npmjs.com/package/@sanity/block-content-to-hyperscript)
+* [Block content to HTML](https://www.npmjs.com/package/@sanity/block-content-to-html) (`npm i @sanity/block-content-to-html`)
+* [Block content to React](https://www.npmjs.com/package/@sanity/block-content-to-react) (`npm i @sanity/block-content-to-react`)
+* [Block content to Hyperscript](https://www.npmjs.com/package/@sanity/block-content-to-hyperscript) (`npm i @sanity/block-content-to-hyperscript`)
+* [Quickly generate image urls from Sanity image records](https://www.npmjs.com/package/@sanity/image-url) (`sanity install @sanity/image-url`)
 
 ### Blogs, tutorials and other reads
 
 * [Headless in Love with Sanity](https://hackernoon.com/headless-in-love-with-sanity-689960571dc)
-* [Put your chatbot where your headless CMS is](https://hackernoon.com/put-your-chatbot-where-your-headless-cms-is-15cf174774c6) – Sanity with serverless Webtask and Google's Dialogflow 
+* [Sanity with serverless Webtask and Google's Dialogflow ](https://hackernoon.com/put-your-chatbot-where-your-headless-cms-is-15cf174774c6)
+* [Build an Angular E-Commerce App on Top of Sanity's Headless CMS
+](https://snipcart.com/blog/headless-angular-ecommerce-app)
+* [Make your own podcasting platform](https://hackernoon.com/make-your-own-podcasting-platform-ab833cf16e1c)
 
 ### Stay up to date
 
@@ -115,4 +131,4 @@ Found a bug, or want to contribute code? Pull requests and issues are most welco
 
 The Sanity Content Studio is available under the *MIT License*
 
-
+![](https://cdn.sanity.io/images/3do82whm/production/iFi4bnMdiVHd37lfdaRV6lZQ-1600x800.png?w=1000&h=350&fit=max)
