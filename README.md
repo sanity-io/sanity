@@ -17,6 +17,7 @@
 *  <a href="#getting-started">Getting Started</a>
 *  <a href="#key-features">Key Features</a>
 *  <a href="#useful-links-and-resources">Links and resources</a>
+*  <a href="#code-of-conduct">Code of conduct</a>
 *  <a href="#want-to-contribute">Contribute</a>
 *  <a href="#license">License</a>
 
@@ -71,7 +72,6 @@ The [documentation](https://www.sanity.io/docs/introduction/getting-started) cov
 * [Google Maps input](https://www.sanity.io/docs/schema-types/geopoint-type) (`sanity install @sanity/google-maps-input`)
 * [Color input](https://www.npmjs.com/package/@sanity/color-input) (`sanity install @sanity/color-input`)
 * [Code input (syntax highlighted blocks)](https://www.npmjs.com/package/@sanity/code-input) (`sanity install @sanity/code-input`)
-* [Rich Date input](https://www.npmjs.com/package/@sanity/rich-date-input) (`sanity install @sanity/rich-date-input`)
 
 #### Tools
 * [Vision - GROQ sandbox tool](https://www.npmjs.com/package/@sanity/vision) (`sanity install @sanity/vision`)
@@ -123,12 +123,15 @@ The [documentation](https://www.sanity.io/docs/introduction/getting-started) cov
 * Follow [@sanity_io](https://twitter.com/sanity_io) on Twitter
 * Subscribe to our [newsletter](http://eepurl.com/b2yaDz)
 
+## Code of Conduct
+We aim to be an inclusive, welcoming community for everyone. To make that explicit, we have a [code of conduct](https://github.com/sanity-io/sanity/blob/master/CODE_OF_CONDUCT.md) that applies to communication around the project.
+
 ## Want to contribute?
 
 Found a bug, or want to contribute code? Pull requests and issues are most welcome. You might want to take a look at our [Contributing guidelines](https://github.com/sanity-io/sanity/blob/master/CONTRIBUTING.md) also.
 
 ## License
 
-The Sanity Content Studio is available under the *MIT License*
+The Sanity Content Studio is available under the [*MIT License*](https://github.com/sanity-io/sanity/blob/master/LICENSE)
 
 ![](https://cdn.sanity.io/images/3do82whm/production/iFi4bnMdiVHd37lfdaRV6lZQ-1600x800.png?w=1000&h=350&fit=max)
