@@ -19,7 +19,7 @@ const reference = (unused, value, message) => {
   }
 
   if (typeof value._ref !== 'string') {
-    return new ValidationError(message || 'Must be a reference to a document')
+    return new ValidationError(message || 'Must be a reference to a document', {paths: ['$']})
   }
 
   return true
