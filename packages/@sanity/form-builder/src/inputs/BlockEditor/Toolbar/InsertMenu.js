@@ -9,11 +9,12 @@ import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 import {insertBlockObject, insertInlineObject} from '../utils/changes'
 
 type Props = {
+  blockTypes: Type[],
   editorValue: SlateValue,
+  inlineTypes: Type[],
   onChange: (change: SlateChange) => void,
   onFocus: (nextPath: []) => void,
-  inlineTypes: Type[],
-  blockTypes: Type[]
+  type: Type
 }
 
 type BlockItem = {
@@ -21,7 +22,7 @@ type BlockItem = {
   value: Type
 }
 
-export default class InsertBlocks extends React.Component<Props> {
+export default class InsertMenu extends React.Component<Props> {
   shouldComponentUpdate(nextProps: Props) {
     return (
       this.props.blockTypes !== nextProps.blockTypes ||
@@ -44,17 +45,23 @@ export default class InsertBlocks extends React.Component<Props> {
   }
 
   handleOnAction = (item: BlockItem) => {
-    const {editorValue, onChange, onFocus} = this.props
+    const {editorValue, onChange, onFocus, type} = this.props
     const change = editorValue.change()
+    const focusKey = change.value.selection.focusKey
+    const focusBlock = change.value.document.getClosestBlock(focusKey)
+    let focusPath = [{_key: focusBlock.key}, FOCUS_TERMINATOR]
     if (item.isInline) {
-      change.call(insertInlineObject, item.value)
+      change.call(insertInlineObject, item.value, type)
+      focusPath = [
+        {_key: focusBlock.key},
+        'children',
+        {_key: change.value.focusInline.key},
+        FOCUS_TERMINATOR
+      ]
     } else {
       change.call(insertBlockObject, item.value)
     }
     change.blur()
-    const focusKey = change.value.selection.focusKey
-    const focusBlock = change.value.document.getClosestBlock(focusKey)
-    const focusPath = [{_key: focusBlock.key}, FOCUS_TERMINATOR]
     onChange(change, () => onFocus(focusPath))
   }
 

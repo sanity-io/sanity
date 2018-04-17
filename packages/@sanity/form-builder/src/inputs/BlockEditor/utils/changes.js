@@ -1,4 +1,7 @@
+import {Block} from 'slate'
+import {editorValueToBlocks, blocksToEditorValue} from '@sanity/block-tools'
 import randomKey from './randomKey'
+import {VALUE_TO_JSON_OPTS} from './changeToPatches'
 
 export function setBlockStyle(change, styleName) {
   const {selection, startBlock, endBlock} = change.value
@@ -190,16 +193,34 @@ export function insertBlockObject(change, type) {
   return change
 }
 
-export function insertInlineObject(change, type) {
+export function insertInlineObject(change, objectType, blockContentType) {
   const key = randomKey(12)
   const inline = {
-    type: type.name,
+    type: objectType.name,
     isVoid: true,
     key: key,
     data: {
       _key: key,
-      value: {_type: type.name, _key: key}
+      value: {_type: objectType.name, _key: key, _oldKey: key}
     }
   }
   change.insertInline(inline)
+  const {value} = change
+  const {focusBlock} = value
+  const appliedBlocks = editorValueToBlocks(
+    {document: {nodes: [focusBlock.toJSON(VALUE_TO_JSON_OPTS)]}},
+    blockContentType
+  )
+  const newBlock = Block.fromJSON(
+    blocksToEditorValue(appliedBlocks, blockContentType).document.nodes[0]
+  )
+  const inlineObject = newBlock.nodes.find(
+    node => node.data && node.data.get('value')._oldKey === key
+  )
+  const newData = inlineObject.data.toObject()
+  delete newData.value._oldKey
+  change.replaceNodeByKey(focusBlock.key, newBlock.toJSON(VALUE_TO_JSON_OPTS))
+  change.setNodeByKey(inlineObject.key, {data: newData})
+  change.collapseToEndOf(inlineObject)
+  return change
 }

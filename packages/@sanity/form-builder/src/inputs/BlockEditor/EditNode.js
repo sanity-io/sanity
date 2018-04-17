@@ -1,5 +1,5 @@
 // @flow
-import type {Block, SlateChange} from './typeDefs'
+import type {Block, SlateChange, Marker} from './typeDefs'
 
 import React from 'react'
 import {get} from 'lodash'
@@ -18,6 +18,7 @@ type Props = {
   onChange: (change: SlateChange) => void,
   onFocus: (nextPath: []) => void,
   path: [],
+  markers: Marker[],
   type: Type,
   value: Block[]
 }
@@ -38,7 +39,7 @@ export default class EditNode extends React.Component<Props> {
   }
 
   render() {
-    const {value, type, onFocus, focusPath, path} = this.props
+    const {value, type, onFocus, focusPath, path, markers} = this.props
     if (!value) {
       return <div>No value???</div>
     }
@@ -54,6 +55,7 @@ export default class EditNode extends React.Component<Props> {
           onFocus={onFocus}
           focusPath={focusPath}
           path={path}
+          markers={markers}
         />
       </div>
     )
