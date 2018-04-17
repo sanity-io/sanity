@@ -427,6 +427,8 @@ export default withRouterHOC(
       const {showSavingStatus, showValidationTooltip} = this.state
 
       const value = draft || published
+      const selectedSchemaType = schema.get(type.name)
+      const isDraftsEnabled = selectedSchemaType.draft !== false
 
       const validation = markers.filter(marker => marker.type === 'validation')
       const errors = validation.filter(marker => marker.level === 'error')
@@ -517,20 +519,22 @@ export default withRouterHOC(
               </Button>
             </Tooltip>
           )}
-          <Tooltip
-            arrow
-            theme="light"
-            className={styles.publishButton}
-            title={errors.length > 0 ? 'Fix errors before publishing' : 'Ctrl+Alt+P'}
-          >
-            <Button
-              disabled={isReconnecting || !draft || errors.length > 0}
-              onClick={this.handlePublishRequested}
-              color="primary"
+          {isDraftsEnabled && (
+            <Tooltip
+              arrow
+              theme="light"
+              className={styles.publishButton}
+              title={errors.length > 0 ? 'Fix errors before publishing' : 'Ctrl+Alt+P'}
             >
-              {published ? 'Publish changes' : 'Publish'}
-            </Button>
-          </Tooltip>
+              <Button
+                disabled={isReconnecting || !draft || errors.length > 0}
+                onClick={this.handlePublishRequested}
+                color="primary"
+              >
+                {published ? 'Publish changes' : 'Publish'}
+              </Button>
+            </Tooltip>
+          )}
         </div>
       )
     }
