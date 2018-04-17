@@ -6,7 +6,7 @@ import {editorValueToBlocks, normalizeBlock} from '@sanity/block-tools'
 import {unset, set, insert, setIfMissing} from '../../../PatchEvent'
 import {applyAll} from '../../../simplePatch'
 
-const VALUE_TO_JSON_OPTS = {
+export const VALUE_TO_JSON_OPTS = {
   preserveData: true,
   preserveKeys: true,
   preserveSelection: false,
