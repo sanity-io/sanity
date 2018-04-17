@@ -47,6 +47,7 @@ type Props = {
   onChange: (change: SlateChange) => void,
   onFocus: (nextPath: []) => void,
   onPatch: (event: PatchEvent) => void,
+  readOnly?: boolean,
   schema: Schema,
   subscribe: (() => void) => void,
   type: BlockArrayType,
@@ -86,12 +87,8 @@ export default withPatchSubscriber(
       const {value, onChange, onFocus, type} = this.props
       const patches = changeToPatches(this.state.editorValue, change, value, type)
       this.setState({editorValue: change.value})
-
-      // // Track focus
-      // const currentFocusPath = this.props.focusPath
-      // if (!currentFocusPath || (currentFocusPath && currentFocusPath.length < 2)) {
-      //   onFocus(changeToFocusPath(change))
-      // }
+      // Track focus
+      onFocus(changeToFocusPath(change))
       onChange(PatchEvent.from(patches))
 
       if (callback) {
