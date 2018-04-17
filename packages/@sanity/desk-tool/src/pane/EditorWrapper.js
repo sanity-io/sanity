@@ -316,10 +316,9 @@ export default class EditorWrapper extends React.Component {
 
   handleChange = event => {
     const {published, draft} = this.state
-    // TODO compare schema type with type and disable drafts as needed
     const {typeName} = this.props
-    const type = schema.get(typeName)
-    console.log('type?', type)
+    const selectedSchemaType = schema.get(typeName)
+
     if (!draft.snapshot) {
       this.draft.createIfNotExists({
         ...omit(published.snapshot, '_updatedAt'),
@@ -329,6 +328,10 @@ export default class EditorWrapper extends React.Component {
     }
 
     this.draft.patch(event.patches)
+    if (selectedSchemaType.draft === false) {
+      this.published.patch(event.patches)
+      this.commit()
+    }
     this.commit()
   }
 
@@ -342,8 +345,11 @@ export default class EditorWrapper extends React.Component {
 
   commit = throttle(
     () => {
+      const selectedSchemaType = schema.get(this.props.typeName)
+      const currentDoc = selectedSchemaType.draft === false ? this.published : this.draft
       this.setStateIfMounted({isSaving: true})
-      this.draft.commit().subscribe({
+
+      currentDoc.commit().subscribe({
         next: () => {
           // todo
         },
