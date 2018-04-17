@@ -1,26 +1,26 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import Spinner from 'part:@sanity/components/loading/spinner'
-import styles from './styles/DocumentsPane.css'
 import {StateLink, IntentLink, withRouterHOC} from 'part:@sanity/base/router'
 import SortIcon from 'part:@sanity/base/sort-icon'
 import Ink from 'react-ink'
-
-import ListView from './ListView'
 import {partition, uniqBy, get} from 'lodash'
 import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import QueryContainer from 'part:@sanity/base/query-container'
-import {DRAFTS_FOLDER, getPublishedId, isDraftId, getDraftId} from '../utils/draftUtils'
-import {isPublishedId} from '../utils/draftUtils'
 import schema from 'part:@sanity/base/schema'
 import Preview from 'part:@sanity/base/preview'
 import Pane from 'part:@sanity/components/panes/default'
-import DocumentsPaneMenu from './DocumentsPaneMenu'
 import Button from 'part:@sanity/components/buttons/default'
 import PlusIcon from 'part:@sanity/base/plus-icon'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import {Tooltip} from '@sanity/react-tippy'
+import {isPublishedId} from '../utils/draftUtils'
+import {DRAFTS_FOLDER, getPublishedId, isDraftId, getDraftId} from '../utils/draftUtils'
+import DocumentsPaneMenu from './DocumentsPaneMenu'
+import ListView from './ListView'
+import styles from './styles/DocumentsPane.css'
+
 const NOOP = () => {} // eslint-disable-line
 
 const LOCALSTORAGE_KEY = 'desk-tool.documents-pane-settings'
@@ -184,6 +184,7 @@ export default withRouterHOC(
     renderDocumentsPaneMenu = () => {
       const {selectedType} = this.props
       const type = schema.get(selectedType)
+
       return (
         <DocumentsPaneMenu
           onSetListLayout={this.handleSetListLayout}
@@ -199,6 +200,10 @@ export default withRouterHOC(
     }
 
     renderStatus = item => {
+      const {selectedType} = this.props
+      const selectedSchemaType = schema.get(selectedType)
+      const isDraftsEnabled = selectedSchemaType.draft !== false
+
       return (
         <div className={styles.itemStatus}>
           {!item.hasPublished && (
@@ -208,7 +213,8 @@ export default withRouterHOC(
               </i>
             </Tooltip>
           )}
-          {item.hasDraft &&
+          {isDraftsEnabled &&
+            item.hasDraft &&
             item.hasPublished && (
               <Tooltip
                 title="Has changes not yet published"
