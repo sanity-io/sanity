@@ -24,7 +24,10 @@ function findBlockType(type) {
 function isDeprecatedBlockSchema(type) {
   const blockType = findBlockType(type)
   if (blockType.span !== undefined) {
-    return true
+    return 'deprecatedSpan'
+  }
+  if (type.of.find(memberType => memberType.options && memberType.options.inline)) {
+    return 'deprecatedInline'
   }
   return false
 }
@@ -159,15 +162,28 @@ export default withPatchSubscriber(
                     !deprecatedSchema &&
                     " block text that hasn't been updated."}
                 </p>
-                <p>
-                  <a
-                    href={generateHelpUrl('migrate-to-block-children')}
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    Read more
-                  </a>
-                </p>
+                {deprecatedSchema === 'deprecatedInline' && (
+                  <p>
+                    <a
+                      href={generateHelpUrl('migrate-to-block-inline-types')}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      Read more
+                    </a>
+                  </p>
+                )}
+                {deprecatedSchema === 'deprecatedSpan' && (
+                  <p>
+                    <a
+                      href={generateHelpUrl('migrate-to-block-children')}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      Read more
+                    </a>
+                  </p>
+                )}
               </div>
             </FormField>
           )}
