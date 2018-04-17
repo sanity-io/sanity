@@ -13,6 +13,7 @@ export default {
   title: 'Book',
   description: 'This is just a simple type for generating some test data',
   icon: BookIcon,
+  draft: false,
   fields: [
     {
       name: 'title',

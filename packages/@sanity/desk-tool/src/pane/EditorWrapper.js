@@ -316,8 +316,10 @@ export default class EditorWrapper extends React.Component {
 
   handleChange = event => {
     const {published, draft} = this.state
+    // TODO compare schema type with type and disable drafts as needed
     const {typeName} = this.props
-
+    const type = schema.get(typeName)
+    console.log('type?', type)
     if (!draft.snapshot) {
       this.draft.createIfNotExists({
         ...omit(published.snapshot, '_updatedAt'),

@@ -10,5 +10,13 @@ export const DocumentType = {
   get() {
     return DOCUMENT_CORE
   },
-  extend: ObjectType.extend
+  extend(subTypeDef, createMemberType) {
+    return ObjectType.extend(
+      {
+        ...subTypeDef,
+        draft: subTypeDef.draft !== false
+      },
+      createMemberType
+    )
+  }
 }
