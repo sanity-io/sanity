@@ -30,6 +30,7 @@ type Props = {
   onFocus: (nextPath: []) => void,
   onFormBuilderInputBlur: (nextPath: []) => void,
   onFormBuilderInputFocus: (nextPath: []) => void,
+  readOnly?: boolean,
   type: ?Type
 }
 
@@ -113,6 +114,9 @@ export default class Span extends React.Component<Props, State> {
   focusAnnotation(annotationName: string) {
     const {editorValue, node, onChange} = this.props
     this.setState({focusedAnnotationName: annotationName})
+    if (node.data.get('focusedAnnotationName') === annotationName) {
+      return
+    }
     const data = {
       ...node.data.toObject(),
       focusedAnnotationName: annotationName
@@ -136,7 +140,10 @@ export default class Span extends React.Component<Props, State> {
   }
 
   startEditing() {
-    const {editorValue, node, onFocus} = this.props
+    const {editorValue, node, onFocus, readOnly} = this.props
+    if (readOnly) {
+      return
+    }
     this.setState({isEditing: true})
     const block = editorValue.document.getClosestBlock(node.key)
     const focusPath = [
@@ -153,7 +160,10 @@ export default class Span extends React.Component<Props, State> {
   }
 
   handleClick = () => {
-    const {type} = this.props
+    const {type, readOnly} = this.props
+    if (readOnly) {
+      return
+    }
     if (!type) {
       return
     }

@@ -12,7 +12,7 @@ import Toolbar from './Toolbar/Toolbar'
 
 import styles from './styles/BlockEditor.css'
 
-import type {BlockContentFeatures, SlateChange, SlateValue, Type} from './typeDefs'
+import type {BlockContentFeatures, SlateChange, SlateValue, Marker, Type} from './typeDefs'
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
@@ -21,16 +21,17 @@ type Props = {
   fullscreen: boolean,
   isActive: boolean,
   focusPath: [],
-  toolbarStyle: {},
+  markers: Marker[],
   onPatch: (event: PatchEvent) => void,
   onChange: (change: SlateChange) => void,
   onBlur: (nextPath: []) => void,
   onFocus: (nextPath: []) => void,
   onToggleFullScreen: void => void,
+  readOnly?: boolean,
   type: Type
 }
 
-function findEditNodeKey(focusPath, editorValue) {
+function findEditNode(focusPath, editorValue) {
   const focusBlockKey = focusPath[0]._key
   const focusInlineKey = focusPath[2] && focusPath[1] !== 'markDefs' && focusPath[2]._key
   const markDefKey = focusPath[2] && focusPath[1] === 'markDefs' && focusPath[2]._key
@@ -78,7 +79,7 @@ export default class BlockEditor extends React.PureComponent<Props> {
 
   renderNodeEditor() {
     const {blockContentFeatures, editorValue, focusPath} = this.props
-    const slateNode = findEditNodeKey(focusPath, editorValue)
+    const slateNode = findEditNode(focusPath, editorValue)
     if (!slateNode || slateNode.type === 'contentBlock') {
       return null
     }
@@ -94,57 +95,28 @@ export default class BlockEditor extends React.PureComponent<Props> {
       }
       value = annotations[focusedAnnotationName]
       type = blockContentFeatures.annotations.find(an => an.value === focusedAnnotationName).type
-      return this.renderEditSpanNode(value, type)
+      return this.renderEditNode(value, type, [focusPath[0], 'markDefs', {_key: value._key}])
     }
     value = slateNode.data.get('value')
     const findType = obj => obj.name === value._type
     if (slateNode.object === 'inline') {
       type = blockContentFeatures.types.inlineObjects.find(findType)
-      return this.renderEditInlineObject(value, type, slateNode)
+      return this.renderEditNode(value, type, [focusPath[0], 'children', {_key: value._key}])
     }
     type = blockContentFeatures.types.blockObjects.find(findType)
-    return this.renderEditBlockObject(value, type, slateNode)
+    return this.renderEditNode(value, type, [{_key: value._key}])
   }
 
-  renderEditInlineObject(value, type, node) {
-    const {focusPath, onBlur, onFocus, onPatch} = this.props
+  renderEditNode(value, type, path) {
+    const {focusPath, onBlur, onFocus, onPatch, markers} = this.props
     return (
       <EditNode
         focusPath={focusPath}
+        markers={markers}
         onBlur={onBlur}
         onChange={onPatch}
         onFocus={onFocus}
-        path={[focusPath[0], 'children', {_key: value._key}]}
-        type={type}
-        value={value}
-      />
-    )
-  }
-
-  renderEditBlockObject(value, type, node) {
-    const {focusPath, onBlur, onFocus, onPatch} = this.props
-    return (
-      <EditNode
-        focusPath={focusPath}
-        onBlur={onBlur}
-        onChange={onPatch}
-        onFocus={onFocus}
-        path={[{_key: value._key}]}
-        type={type}
-        value={value}
-      />
-    )
-  }
-
-  renderEditSpanNode(value, type) {
-    const {focusPath, onBlur, onFocus, onPatch} = this.props
-    return (
-      <EditNode
-        focusPath={focusPath}
-        onBlur={onBlur}
-        onChange={onPatch}
-        onFocus={onFocus}
-        path={[focusPath[0], 'markDefs', {_key: value._key}]}
+        path={path}
         type={type}
         value={value}
       />
@@ -198,9 +170,16 @@ export default class BlockEditor extends React.PureComponent<Props> {
       onChange,
       onFocus,
       onToggleFullScreen,
+      readOnly,
       type
     } = this.props
-
+    if (readOnly) {
+      return <div>{editor}</div>
+    }
+    const classNames = [styles.editor]
+    if (fullscreen) {
+      classNames.push(styles.fullscreen)
+    }
     return (
       <div>
         <div className={styles.toolbar}>
@@ -235,8 +214,8 @@ export default class BlockEditor extends React.PureComponent<Props> {
   }
 
   render() {
-    const {focusPath, fullscreen} = this.props
-    const isEditingNode = (focusPath || []).length > 1
+    const {focusPath, fullscreen, readOnly} = this.props
+    const isEditingNode = !readOnly && (focusPath || []).length > 1
     return (
       <div className={styles.root}>
         {fullscreen && (

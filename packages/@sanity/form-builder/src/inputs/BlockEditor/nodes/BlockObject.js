@@ -12,11 +12,14 @@ import {IntentLink} from 'part:@sanity/base/router'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 
+import {PatchEvent} from '../../../PatchEvent'
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 
 import createRange from '../utils/createRange'
 import InvalidValue from '../../InvalidValueInput'
 import Preview from '../../../Preview'
+import ConfirmButton from '../ConfirmButton'
+import EditButton from '../EditButton'
 
 import styles from './styles/BlockObject.css'
 
@@ -24,17 +27,18 @@ type Props = {
   attributes: {},
   blockContentFeatures: BlockContentFeatures,
   children: Node,
-  editorValue: SlateValue,
-  markers: Marker[],
-  node: Block,
   editor: Editor,
   editorIsFocused: boolean,
+  editorValue: SlateValue,
+  isSelected: boolean,
+  markers: Marker[],
+  node: Block,
   onChange: (change: SlateChange) => void,
   onFocus: (nextPath: []) => void,
+  onHideBlockDragMarker: void => void,
   onPatch: (event: PatchEvent) => void,
   onShowBlockDragMarker: (pos: string, node: HTMLDivElement) => void,
-  onHideBlockDragMarker: void => void,
-  isSelected: boolean,
+  readOnly: ?boolean,
   type: ?Type
 }
 
@@ -61,6 +65,10 @@ export default class BlockObject extends React.Component<Props, State> {
   }
 
   addDragHandlers() {
+    const {readOnly} = this.props
+    if (readOnly) {
+      return
+    }
     this._editorNode.addEventListener('dragover', this.handleDragOverOtherNode)
     this._editorNode.addEventListener('dragleave', this.handleDragLeave)
   }
@@ -146,12 +154,12 @@ export default class BlockObject extends React.Component<Props, State> {
     this.setState({isDragging: false})
     this.removeDragHandlers()
 
-    const {editor, node, editorValue} = this.props
+    const {onChange, node, editorValue} = this.props
 
     const target = this._dropTarget
 
     // Return if this is our node
-    if (!target || target.node === node) {
+    if (!target || target.node.key === node.key) {
       this.resetDropTarget()
       return
     }
@@ -162,18 +170,21 @@ export default class BlockObject extends React.Component<Props, State> {
       .collapseToEndOf(node)
       .focus()
 
-    editor.onChange(nextChange)
+    onChange(nextChange)
 
     this.resetDropTarget()
   }
 
   handleCancelEvent = event => {
     event.preventDefault()
+    event.stopPropagation()
   }
 
-  handleEditStart = () => {
-    const {node, onFocus} = this.props
-    onFocus([{_key: node.key}, FOCUS_TERMINATOR])
+  handleEditStart = event => {
+    event.stopPropagation()
+    const {node, onFocus, onChange, editorValue} = this.props
+    const change = editorValue.change().collapseToEndOf(node)
+    onChange(change, () => onFocus([{_key: node.key}, FOCUS_TERMINATOR]))
   }
 
   handleClose = () => {
@@ -193,14 +204,20 @@ export default class BlockObject extends React.Component<Props, State> {
     return this.props.node.data.get('value')
   }
 
-  handleRemoveValue = (event: PatchEvent) => {
+  handleInvalidValue = (event: PatchEvent) => {
     const {onPatch} = this.props
     const value = this.getValue()
     onPatch(event.prefixAll({_key: value._key}), value)
   }
 
+  handleRemoveValue = () => {
+    const {editorValue, node, onChange} = this.props
+    const change = editorValue.change()
+    onChange(change.removeNodeByKey(node.key))
+  }
+
   renderPreview() {
-    const {type, markers} = this.props
+    const {type, markers, readOnly} = this.props
     const value = this.getValue()
     if (!type) {
       return (
@@ -208,32 +225,51 @@ export default class BlockObject extends React.Component<Props, State> {
           validTypes={[type]}
           actualType={type}
           value={value}
-          onChange={this.handleRemoveValue}
+          onChange={this.handleInvalidValue}
         />
       )
     }
-    const errors = []
+    const validation = markers.filter(marker => marker.type === 'validation')
+    const errors = validation.filter(marker => marker.level === 'error')
+    const scopedValidation = validation.map(marker => {
+      if (marker.path.length <= 1) {
+        return marker
+      }
+
+      const level = marker.level === 'error' ? 'errors' : 'warnings'
+      return Object.assign({}, marker, {
+        item: marker.item.cloneWithMessage(`Contains ${level}`)
+      })
+    })
     return (
       <div className={errors.length > 0 ? styles.innerWithError : styles.inner}>
-        <div className={styles.previewWrapper}>
-          <Preview type={type} value={value} layout="block" />
-        </div>
-        <div className={styles.functions}>
-          <div className={styles.validationStatus}>
-            <ValidationStatus markers={markers} />
+        <Preview type={type} value={value} layout="block" />
+        {!readOnly && (
+          <div className={styles.functions}>
+            <div className={styles.validationStatus}>
+              <ValidationStatus markers={scopedValidation} />
+            </div>
+            {value._ref && (
+              <IntentLink
+                className={styles.linkToReference}
+                intent="edit"
+                params={{id: value._ref}}
+              >
+                <LinkIcon />
+              </IntentLink>
+            )}
+            {!readOnly && <EditButton title="Edit this block" onClick={this.handleEditStart} />}
+            {!readOnly && (
+              <ConfirmButton title="Remove this block" onConfirm={this.handleRemoveValue} />
+            )}
           </div>
-          {value._ref && (
-            <IntentLink className={styles.linkToReference} intent="edit" params={{id: value._ref}}>
-              <LinkIcon />
-            </IntentLink>
-          )}
-        </div>
+        )}
       </div>
     )
   }
 
   render() {
-    const {attributes, node, editorValue, editorIsFocused, isSelected} = this.props
+    const {attributes, node, editorValue, editorIsFocused, isSelected, readOnly} = this.props
     const isFocused = editorIsFocused && editorValue.selection.hasFocusIn(node)
 
     let className
@@ -255,14 +291,13 @@ export default class BlockObject extends React.Component<Props, State> {
         onDragEnter={this.handleCancelEvent}
         onDragLeave={this.handleCancelEvent}
         onDrop={this.handleCancelEvent}
-        draggable
-        onClick={this.handleEditStart}
+        draggable={!readOnly}
         ref={this.refFormBuilderBlock}
         className={className}
       >
-        <span ref={this.refPreview} className={styles.previewContainer}>
+        <div ref={this.refPreview} className={styles.previewContainer}>
           {this.renderPreview()}
-        </span>
+        </div>
       </div>
     )
   }
