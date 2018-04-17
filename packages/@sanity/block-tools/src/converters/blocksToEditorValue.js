@@ -174,8 +174,10 @@ function sanityBlocksArrayToRawNodes(blockArray, type, blockContentFeatures, opt
 export default function blocksToEditorValue(array: [], type: any, options = {}) {
   const blockContentFeatures = blockContentTypeToOptions(type)
   return {
-    object: 'state',
+    object: 'value',
+    data: {},
     document: {
+      key: randomKey(12),
       object: 'document',
       data: {},
       nodes:
