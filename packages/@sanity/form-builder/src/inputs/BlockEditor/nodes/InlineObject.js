@@ -7,11 +7,17 @@ import Base64 from 'slate-base64-serializer'
 import React from 'react'
 import {Block, Range} from 'slate'
 import {Editor, setEventTransfer, getEventRange} from 'slate-react'
+import {IntentLink} from 'part:@sanity/base/router'
+import LinkIcon from 'part:@sanity/base/link-icon'
+import ValidationStatus from 'part:@sanity/components/validation/status'
 
+import {PatchEvent, unset} from '../../../PatchEvent'
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 
 import InvalidValue from '../../InvalidValueInput'
 import Preview from '../../../Preview'
+import ConfirmButton from '../ConfirmButton'
+import EditButton from '../EditButton'
 
 import styles from './styles/InlineObject.css'
 
@@ -27,6 +33,7 @@ type Props = {
   onFocus: (nextPath: []) => void,
   onPatch: (event: PatchEvent) => void,
   isSelected: boolean,
+  readOnly?: boolean,
   type: ?Type
 }
 
@@ -183,21 +190,31 @@ export default class InlineObject extends React.Component<Props, State> {
     this.resetDropTarget()
   }
 
-  handleRemoveValue = (event: PatchEvent) => {
+  handleInvalidValue = (event: PatchEvent) => {
     const {editorValue, node, onPatch} = this.props
     const {focusBlock} = editorValue
     const value = this.getValue()
     onPatch(event.prefixAll([{_key: focusBlock.key}, 'children', {_key: node.key}]), value)
   }
 
+  handleRemoveValue = () => {
+    const {editorValue, node, onChange} = this.props
+    const change = editorValue.change()
+    onChange(change.removeNodeByKey(node.key))
+  }
+
   handleCancelEvent = event => {
     event.preventDefault()
   }
 
-  handleEditStart = () => {
-    const {editorValue, node, onFocus} = this.props
+  handleEditStart = event => {
+    event.stopPropagation()
+    const {node, onFocus, onChange, editorValue} = this.props
     const {focusBlock} = editorValue
-    onFocus([{_key: focusBlock.key}, 'children', {_key: node.key}, FOCUS_TERMINATOR])
+    const change = editorValue.change().collapseToEndOf(node)
+    onChange(change, () =>
+      onFocus([{_key: focusBlock.key}, 'children', {_key: node.key}, FOCUS_TERMINATOR])
+    )
   }
 
   handleClose = () => {
@@ -218,7 +235,7 @@ export default class InlineObject extends React.Component<Props, State> {
   }
 
   renderPreview() {
-    const {type} = this.props
+    const {type, markers, readOnly} = this.props
     const value = this.getValue()
     if (!type) {
       return (
@@ -226,15 +243,51 @@ export default class InlineObject extends React.Component<Props, State> {
           validTypes={[type]}
           actualType={type}
           value={value}
-          onChange={this.handleRemoveValue}
+          onChange={this.handleInvalidValue}
         />
       )
     }
-    return <Preview type={type} value={this.getValue()} layout="inline" />
+    const validation = markers.filter(marker => marker.type === 'validation')
+    const errors = validation.filter(marker => marker.level === 'error')
+    const scopedValidation = validation.map(marker => {
+      if (marker.path.length <= 1) {
+        return marker
+      }
+
+      const level = marker.level === 'error' ? 'errors' : 'warnings'
+      return Object.assign({}, marker, {
+        item: marker.item.cloneWithMessage(`Contains ${level}`)
+      })
+    })
+    return (
+      <div className={errors.length > 0 ? styles.innerWithError : styles.inner}>
+        <Preview type={type} value={value} layout="inline" />
+        {!readOnly && (
+          <div className={styles.functions}>
+            <div className={styles.validationStatus}>
+              <ValidationStatus markers={scopedValidation} />
+            </div>
+            {value._ref && (
+              <IntentLink
+                className={styles.linkToReference}
+                intent="edit"
+                params={{id: value._ref}}
+              >
+                <LinkIcon />
+              </IntentLink>
+            )}
+            {!readOnly && <EditButton title="Edit this object" onClick={this.handleEditStart} />}
+            {!readOnly && (
+              <ConfirmButton title="Remove this object" onConfirm={this.handleRemoveValue} />
+            )}
+          </div>
+        )}
+      </div>
+    )
   }
 
   render() {
-    const {attributes, node, editorValue, editorIsFocused, isSelected} = this.props
+    const {attributes, node, editorValue, editorIsFocused, isSelected, readOnly} = this.props
     const isFocused = editorIsFocused && editorValue.selection.hasFocusIn(node)
 
     let className
@@ -256,8 +309,7 @@ export default class InlineObject extends React.Component<Props, State> {
         onDragEnter={this.handleCancelEvent}
         onDragLeave={this.handleCancelEvent}
         onDrop={this.handleCancelEvent}
-        draggable
-        onClick={this.handleEditStart}
+        draggable={!readOnly}
         ref={this.refFormBuilderBlock}
         className={className}
       >

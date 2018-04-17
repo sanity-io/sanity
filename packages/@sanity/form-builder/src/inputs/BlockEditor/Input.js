@@ -24,6 +24,7 @@ type Props = {
   onChange: (change: SlateChange) => void,
   onFocus: (nextPath: []) => void,
   onPatch: (event: PatchEvent) => void,
+  readOnly?: boolean,
   type: BlockArrayType,
   value: Block[]
 }
@@ -111,6 +112,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
       onFocus,
       onChange,
       onPatch,
+      readOnly,
       type,
       value
     } = this.props
@@ -128,6 +130,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
         onBlur={onBlur}
         onChange={onChange}
         onPatch={onPatch}
+        readOnly={readOnly}
         ref={this.refEditor}
         value={value}
         type={type}
@@ -136,13 +139,24 @@ export default class BlockEditorInput extends React.Component<Props, State> {
   }
 
   render() {
-    const {editorValue, focusPath, level, onChange, onBlur, onFocus, onPatch, type} = this.props
+    const {
+      editorValue,
+      focusPath,
+      level,
+      markers,
+      onChange,
+      onBlur,
+      onFocus,
+      onPatch,
+      readOnly,
+      type
+    } = this.props
 
     const {fullscreen} = this.state
 
     const editor = this.renderEditor()
 
-    const isActive = Array.isArray(focusPath) && focusPath.length >= 1
+    const isActive = readOnly || (Array.isArray(focusPath) && focusPath.length >= 1)
 
     return (
       <FormField
@@ -169,6 +183,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
           onFocus={onFocus}
           onBlur={onBlur}
           onPatch={onPatch}
+          markers={markers}
           onToggleFullScreen={this.handleToggleFullScreen}
           isActive={isActive}
           type={type}

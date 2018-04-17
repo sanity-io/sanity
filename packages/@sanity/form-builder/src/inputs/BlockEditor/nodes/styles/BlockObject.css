@@ -51,10 +51,6 @@
   border: 1px solid var(--form-builder-block-border-color-focus);
 }
 
-.previewWrapper {
-  flex-grow: 1;
-}
-
 .functions {
   display: flex;
   align-items: center;

@@ -23,9 +23,11 @@ import createNodeValidator from './utils/createNodeValidator'
 
 import ListItemOnEnterKeyPlugin from './plugins/ListItemOnEnterKeyPlugin'
 import ListItemOnTabKeyPlugin from './plugins/ListItemOnTabKeyPlugin'
+import OnDropPlugin from './plugins/OnDropPlugin'
 import PastePlugin from './plugins/PastePlugin'
 import SetMarksOnKeyComboPlugin from './plugins/SetMarksOnKeyComboPlugin'
 import TextBlockOnEnterKeyPlugin from './plugins/TextBlockOnEnterKeyPlugin'
+import UpdateCustomNodesPlugin from './plugins/UpdateCustomNodesPlugin'
 
 import BlockObject from './nodes/BlockObject'
 import ContentBlock from './nodes/ContentBlock'
@@ -49,6 +51,7 @@ type Props = {
   onFormBuilderInputBlur: (nextPath: []) => void,
   onFormBuilderInputFocus: (nextPath: []) => void,
   onPatch: (event: PatchEvent) => void,
+  readOnly?: boolean,
   type: Type,
   value: Block[]
 }
@@ -74,7 +77,9 @@ export default class Editor extends React.Component<Props> {
         shift: true
       }),
       PastePlugin({blockContentType: props.type}),
-      insertBlockOnEnter(EDITOR_DEFAULT_BLOCK_TYPE)
+      insertBlockOnEnter(EDITOR_DEFAULT_BLOCK_TYPE),
+      UpdateCustomNodesPlugin(),
+      OnDropPlugin()
     ]
     this._validateNode = createNodeValidator(props.type, this.getValue)
   }
@@ -130,10 +135,11 @@ export default class Editor extends React.Component<Props> {
       markers,
       onChange,
       onFocus,
-      onPatch
+      onPatch,
+      readOnly
     } = this.props
     const {node} = props
-
+    let childMarkers = markers.filter(marker => marker.path[0]._key === props.node.data.get('_key'))
     let ObjectClass = BlockObject
     let ObjectType = blockContentFeatures.types.blockObjects.find(
       memberType => memberType.name === node.type
@@ -143,19 +149,23 @@ export default class Editor extends React.Component<Props> {
       ObjectType = blockContentFeatures.types.inlineObjects.find(
         memberType => memberType.name === node.type
       )
+      childMarkers = markers.filter(
+        marker => marker.path[2] && marker.path[2]._key === props.node.data.get('_key')
+      )
     }
-
-    const childMarkers = markers.filter(
-      marker => marker.path[0]._key === props.node.data.get('_key')
-    )
-
+    if (props.node.type === 'span') {
+      childMarkers = markers.filter(
+        marker => marker.path[2] && marker.path[2]._key === props.node.data.get('_key')
+      )
+    }
     switch (node.type) {
       case 'contentBlock':
         return (
           <ContentBlock
             {...props}
-            markers={childMarkers}
             blockContentFeatures={blockContentFeatures}
+            markers={childMarkers}
+            readOnly={readOnly}
           />
         )
       case 'span':
@@ -169,6 +179,7 @@ export default class Editor extends React.Component<Props> {
             onChange={onChange}
             onFocus={onFocus}
             onPatch={onPatch}
+            readOnly={readOnly}
             type={blockContentFeatures.types.span}
           >
             {props.children}
@@ -191,10 +202,9 @@ export default class Editor extends React.Component<Props> {
             onHideBlockDragMarker={this.handleHideBlockDragMarker}
             onPatch={onPatch}
             onShowBlockDragMarker={this.handleShowBlockDragMarker}
+            readOnly={readOnly}
             type={ObjectType}
-          >
-            {props.children}
-          </ObjectClass>
+          />
         )
     }
   }
@@ -214,7 +224,15 @@ export default class Editor extends React.Component<Props> {
   }
 
   render() {
-    const {onChange, onEditorBlur, onEditorFocus, editorValue, isFocused, fullscreen} = this.props
+    const {
+      editorValue,
+      fullscreen,
+      isFocused,
+      onChange,
+      onEditorBlur,
+      onEditorFocus,
+      readOnly
+    } = this.props
 
     const classNames = [
       styles.root,
@@ -233,9 +251,9 @@ export default class Editor extends React.Component<Props> {
           onFocus={onEditorFocus}
           validateNode={this._validateNode}
           plugins={this._plugins}
+          readOnly={readOnly}
           renderNode={this.renderNode}
           renderMark={this.renderMark}
-          onShowDragMarker={this.handleShowBlockDragMarker}
         />
         <div
           className={styles.blockDragMarker}
