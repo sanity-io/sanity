@@ -64,7 +64,9 @@ export default {
               {
                 type: 'object',
                 name: 'link',
-                fields: [{name: 'href', type: 'string', title: 'Url'}]
+                fields: [
+                  {name: 'href', type: 'string', title: 'Url', validation: Rule => Rule.required()}
+                ]
               },
               {
                 name: 'author',
@@ -90,6 +92,63 @@ export default {
                 render: TitleStyle
               }
             }
+          ],
+          of: [
+            {
+              name: 'author',
+              title: 'Author',
+              type: 'reference',
+              to: {type: 'author'}
+            },
+            {
+              title: 'Image',
+              type: 'image',
+              fields: [
+                {
+                  name: 'caption',
+                  type: 'string',
+                  title: 'Caption',
+                  options: {isHighlighted: true},
+                  validation: Rule => Rule.required()
+                }
+              ]
+            },
+            {
+              name: 'test',
+              title: 'Test',
+              type: 'object',
+              fields: [
+                {
+                  type: 'string',
+                  name: 'title',
+                  validation: Rule =>
+                    Rule.required()
+                      .min(10)
+                      .max(80)
+                }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'author',
+          title: 'Author',
+          type: 'reference',
+          to: {type: 'author'}
+        },
+        {
+          name: 'test',
+          title: 'Test',
+          type: 'object',
+          fields: [
+            {
+              type: 'string',
+              name: 'title',
+              validation: Rule =>
+                Rule.required()
+                  .min(10)
+                  .max(80)
+            }
           ]
         },
         {
@@ -100,16 +159,10 @@ export default {
               name: 'caption',
               type: 'string',
               title: 'Caption',
-              options: {isHighlighted: true}
+              options: {isHighlighted: true},
+              validation: Rule => Rule.required()
             }
           ]
-        },
-        {
-          name: 'author',
-          title: 'Author',
-          type: 'reference',
-          to: {type: 'author'},
-          options: {inline: true}
         }
       ]
     }
