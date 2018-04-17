@@ -1,10 +1,10 @@
 import createSchema from 'part:@sanity/base/schema-creator'
 import codeInputType from 'part:@sanity/form-builder/input/code/schema'
 import schemaTypes from 'all:part:@sanity/base/schema-type'
+import richDateType from 'part:@sanity/form-builder/input/rich-date/schema'
 
 import book from './book'
 import author from './author'
-
 import blocks from './blocks'
 import references from './references'
 import images, {myImage} from './images'
@@ -18,6 +18,7 @@ import uploads from './uploads'
 import code from './code'
 import customNumber from './customNumber'
 import color from './color'
+import noDraft from './noDraft'
 import recursive from './recursive'
 import recursiveArray from './recursiveArray'
 import recursivePopover from './recursivePopover'
@@ -36,7 +37,6 @@ import customInputs from './customInputs'
 import notitle from './notitle'
 import typeWithNoToplevelStrings from './typeWithNoToplevelStrings'
 
-import richDateType from 'part:@sanity/form-builder/input/rich-date/schema'
 import focus from './focus'
 import previewImageUrlTest from './previewImageUrlTest'
 import previewMediaTest from './previewMediaTest'
@@ -64,6 +64,7 @@ export default createSchema({
     uploads,
     code,
     color,
+    noDraft,
     images,
     files,
     references,
