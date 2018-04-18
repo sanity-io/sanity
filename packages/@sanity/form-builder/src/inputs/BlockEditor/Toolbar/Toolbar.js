@@ -136,7 +136,7 @@ class Toolbar extends React.PureComponent<Props> {
                 </div>
               )}
 
-              {insertItems.length && (
+              {insertItems.length > 0 && (
                 <div className={styles.insertContainer}>
                   <InsertMenu
                     type={type}
