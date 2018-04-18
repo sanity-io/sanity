@@ -34,22 +34,9 @@ export default {
       }
     },
     {
-      type: 'reference',
-      title: 'Movie',
-      name: 'movieRef',
-      to: [{type: 'movie'}]
-    },
-    {
-      type: 'reference',
-      title: 'Person',
-      name: 'personRef',
-      to: {type: 'person'}
-    },
-    {
-      type: 'reference',
-      title: 'Screening',
-      name: 'screeningRef',
-      to: {type: 'screening'}
+      name: 'summaries',
+      type: 'plotSummaries',
+      title: 'Plot Summaries'
     },
     {
       title: 'Image',
