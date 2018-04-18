@@ -6,8 +6,17 @@ import castMember from './castMember'
 import movie from './movie'
 import person from './person'
 import screening from './screening'
+import plotSummaries from './plotSummaries'
 
 export default createSchema({
   name: 'default',
-  types: schemaTypes.concat([blockContent, castMember, crewMember, movie, person, screening])
+  types: schemaTypes.concat([
+    blockContent,
+    castMember,
+    crewMember,
+    movie,
+    person,
+    screening,
+    plotSummaries
+  ])
 })
