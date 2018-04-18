@@ -18,7 +18,7 @@ import uploads from './uploads'
 import code from './code'
 import customNumber from './customNumber'
 import color from './color'
-import noDraft from './noDraft'
+import liveEdit from './liveEdit'
 import recursive from './recursive'
 import recursiveArray from './recursiveArray'
 import recursivePopover from './recursivePopover'
@@ -64,7 +64,7 @@ export default createSchema({
     uploads,
     code,
     color,
-    noDraft,
+    liveEdit,
     images,
     files,
     references,

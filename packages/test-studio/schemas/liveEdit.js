@@ -8,10 +8,10 @@ function formatSubtitle(thesis) {
 }
 
 export default {
-  title: 'Thesis',
+  title: 'Thesis (live edit)',
   name: 'thesis',
   type: 'document',
-  draft: false,
+  liveEdit: true,
   description: 'A simple type for testing draft: false',
   icon: BookIcon,
   fields: [
