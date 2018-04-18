@@ -7,8 +7,8 @@
 
 .root {
   display: flex;
-  padding: 0;
   margin: 0;
+  padding: 0;
   position: relative;
   justify-content: flex-start;
   flex-direction: column;
@@ -23,9 +23,45 @@
   flex-grow: 1;
 }
 
+.editor > * {
+  padding-left: var(--small-padding);
+  padding-right: var(--small-padding);
+
+  @media (--screen-medium) {
+    padding-left: var(--medium-padding);
+    padding-right: var(--medium-padding);
+  }
+
+  @nest .fullscreen & {
+    padding-left: var(--large-padding);
+    padding-right: var(--large-padding);
+  }
+}
+
+.editor > *:first-child {
+  margin-top: var(--small-padding);
+
+  @media (--screen-medium) {
+    margin-top: var(--medium-padding);
+  }
+
+  @nest .fullscreen & {
+    margin-top: var(--large-padding);
+  }
+}
+
 .editor > *:last-child {
   align-self: stretch;
   flex-grow: 1;
+  margin-bottom: var(--small-padding);
+
+  @media (--screen-medium) {
+    margin-bottom: var(--medium-padding);
+  }
+
+  @nest .fullscreen & {
+    margin-bottom: var(--large-padding);
+  }
 }
 
 .blockDragMarker {
