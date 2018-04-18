@@ -3,10 +3,14 @@ node_js:
   - '6'
   - '8'
   - '9'
-cache: yarn
+
+cache:
+  directories:
+  - "$HOME/.npm"
+
 before_script:
-  - travis_wait yarn run bootstrap
-  - yarn run build
+  - travis_wait npm run bootstrap
+  - npm run build
 script:
   # Allow running the Sanity CLI tool without specifying absolute path
   - export PATH="${TRAVIS_BUILD_DIR}/packages/@sanity/cli/bin:$PATH"
