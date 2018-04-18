@@ -410,6 +410,11 @@ export default withRouterHOC(
       this.setState(prevState => ({showValidationTooltip: !prevState.showValidationTooltip}))
     }
 
+    isLiveEditEnabled() {
+      const selectedSchemaType = schema.get(this.props.type.name)
+      return selectedSchemaType.liveEdit === true
+    }
+
     getTitle(value) {
       const {type} = this.props
       if (!value) {
@@ -427,8 +432,6 @@ export default withRouterHOC(
       const {showSavingStatus, showValidationTooltip} = this.state
 
       const value = draft || published
-      const selectedSchemaType = schema.get(type.name)
-      const isDraftsEnabled = selectedSchemaType.draft !== false
 
       const validation = markers.filter(marker => marker.type === 'validation')
       const errors = validation.filter(marker => marker.level === 'error')
@@ -519,7 +522,7 @@ export default withRouterHOC(
               </Button>
             </Tooltip>
           )}
-          {isDraftsEnabled && (
+          {!this.isLiveEditEnabled() && (
             <Tooltip
               arrow
               theme="light"
@@ -625,15 +628,17 @@ export default withRouterHOC(
                   </span>
                 )}
               </div>
-              <div className={styles.publishedDate}>
-                {published ? (
-                  <span>
-                    Published <TimeAgo time={published._updatedAt} />
-                  </span>
-                ) : (
-                  'Not published'
-                )}
-              </div>
+              {!this.isLiveEditEnabled() && (
+                <div className={styles.publishedDate}>
+                  {published ? (
+                    <span>
+                      Published <TimeAgo time={published._updatedAt} />
+                    </span>
+                  ) : (
+                    'Not published'
+                  )}
+                </div>
+              )}
             </div>
             <form
               className={styles.editor}

@@ -174,6 +174,11 @@ export default class EditorWrapper extends React.Component {
     this.dispose()
   }
 
+  isLiveEditEnabled() {
+    const selectedSchemaType = schema.get(this.props.typeName)
+    return selectedSchemaType.liveEdit === true
+  }
+
   dispose() {
     if (this.subscription) {
       this.subscription.unsubscribe()
@@ -317,20 +322,23 @@ export default class EditorWrapper extends React.Component {
   handleChange = event => {
     const {published, draft} = this.state
     const {typeName} = this.props
-    const selectedSchemaType = schema.get(typeName)
 
-    if (!draft.snapshot) {
-      this.draft.createIfNotExists({
-        ...omit(published.snapshot, '_updatedAt'),
-        _id: this.getDraftId(),
+    if (this.isLiveEditEnabled()) {
+      // No drafting, patch and commit the published document
+      this.published.createIfNotExists({
+        _id: this.getPublishedId(),
         _type: typeName
       })
-    }
-
-    this.draft.patch(event.patches)
-    if (selectedSchemaType.draft === false) {
       this.published.patch(event.patches)
-      this.commit()
+    } else {
+      if (!draft.snapshot) {
+        this.draft.createIfNotExists({
+          ...omit(published.snapshot, '_updatedAt'),
+          _id: this.getDraftId(),
+          _type: typeName
+        })
+      }
+      this.draft.patch(event.patches)
     }
     this.commit()
   }
@@ -345,8 +353,7 @@ export default class EditorWrapper extends React.Component {
 
   commit = throttle(
     () => {
-      const selectedSchemaType = schema.get(this.props.typeName)
-      const currentDoc = selectedSchemaType.draft === false ? this.published : this.draft
+      const currentDoc = this.isLiveEditEnabled() ? this.published : this.draft
       this.setStateIfMounted({isSaving: true})
 
       currentDoc.commit().subscribe({

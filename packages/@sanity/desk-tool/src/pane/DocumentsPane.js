@@ -165,6 +165,11 @@ export default withRouterHOC(
       this.setState(prevState => ({menuIsOpen: !prevState.menuIsOpen}))
     }
 
+    isLiveEditEnabled() {
+      const selectedSchemaType = schema.get(this.props.selectedType)
+      return selectedSchemaType.liveEdit === true
+    }
+
     getOrderingOptions(selectedType) {
       const type = schema.get(selectedType)
 
@@ -209,9 +214,7 @@ export default withRouterHOC(
     }
 
     renderStatus = item => {
-      const {selectedType} = this.props
-      const selectedSchemaType = schema.get(selectedType)
-      const isDraftsEnabled = selectedSchemaType.draft !== false
+      const isLiveEditEnabled = this.isLiveEditEnabled()
 
       return (
         <div className={styles.itemStatus}>
@@ -222,7 +225,7 @@ export default withRouterHOC(
               </i>
             </Tooltip>
           )}
-          {isDraftsEnabled &&
+          {!isLiveEditEnabled &&
             item.hasDraft &&
             item.hasPublished && (
               <Tooltip
