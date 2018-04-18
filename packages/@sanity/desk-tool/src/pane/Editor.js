@@ -59,21 +59,27 @@ const getDuplicateItem = (draft, published) => ({
   isDisabled: !draft && !published
 })
 
-const getDiscardItem = (draft, published) => ({
-  action: 'discard',
-  title: 'Discard changes…',
-  icon: UndoIcon,
-  divider: true,
-  isDisabled: !draft || !published
-})
+const getDiscardItem = (draft, published, isLiveEditEnabled) =>
+  isLiveEditEnabled
+    ? null
+    : {
+        action: 'discard',
+        title: 'Discard changes…',
+        icon: UndoIcon,
+        divider: true,
+        isDisabled: !draft || !published
+      }
 
-const getUnpublishItem = (draft, published) => ({
-  action: 'unpublish',
-  title: 'Unpublish…',
-  icon: VisibilityOffIcon,
-  divider: true,
-  isDisabled: !published
-})
+const getUnpublishItem = (draft, published, isLiveEditEnabled) =>
+  isLiveEditEnabled
+    ? null
+    : {
+        action: 'unpublish',
+        title: 'Unpublish…',
+        icon: VisibilityOffIcon,
+        divider: true,
+        isDisabled: !published
+      }
 
 const getDeleteItem = (draft, published) => ({
   action: 'delete',
@@ -127,7 +133,7 @@ const getProductionPreviewItem = (draft, published) => {
   )
 }
 
-const getMenuItems = (draft, published) =>
+const getMenuItems = (draft, published, isLiveEditEnabled) =>
   [
     getProductionPreviewItem,
     getDiscardItem,
@@ -136,7 +142,7 @@ const getMenuItems = (draft, published) =>
     getDeleteItem,
     getInspectItem
   ]
-    .map(fn => fn(draft, published))
+    .map(fn => fn(draft, published, isLiveEditEnabled))
     .filter(Boolean)
 
 const isValidationError = marker => marker.type === 'validation' && marker.level === 'error'
@@ -410,6 +416,11 @@ export default withRouterHOC(
       this.setState(prevState => ({showValidationTooltip: !prevState.showValidationTooltip}))
     }
 
+    isLiveEditEnabled() {
+      const selectedSchemaType = schema.get(this.props.type.name)
+      return selectedSchemaType.liveEdit === true
+    }
+
     getTitle(value) {
       const {type} = this.props
       if (!value) {
@@ -517,20 +528,22 @@ export default withRouterHOC(
               </Button>
             </Tooltip>
           )}
-          <Tooltip
-            arrow
-            theme="light"
-            className={styles.publishButton}
-            title={errors.length > 0 ? 'Fix errors before publishing' : 'Ctrl+Alt+P'}
-          >
-            <Button
-              disabled={isReconnecting || !draft || errors.length > 0}
-              onClick={this.handlePublishRequested}
-              color="primary"
+          {!this.isLiveEditEnabled() && (
+            <Tooltip
+              arrow
+              theme="light"
+              className={styles.publishButton}
+              title={errors.length > 0 ? 'Fix errors before publishing' : 'Ctrl+Alt+P'}
             >
-              {published ? 'Publish changes' : 'Publish'}
-            </Button>
-          </Tooltip>
+              <Button
+                disabled={isReconnecting || !draft || errors.length > 0}
+                onClick={this.handlePublishRequested}
+                color="primary"
+              >
+                {published ? 'Publish changes' : 'Publish'}
+              </Button>
+            </Tooltip>
+          )}
         </div>
       )
     }
@@ -543,7 +556,7 @@ export default withRouterHOC(
           isOpen={this.state.isMenuOpen}
           onClose={this.handleMenuClose}
           onClickOutside={this.handleMenuClose}
-          items={getMenuItems(draft, published)}
+          items={getMenuItems(draft, published, this.isLiveEditEnabled())}
           origin="top-right"
         />
       )
@@ -621,15 +634,17 @@ export default withRouterHOC(
                   </span>
                 )}
               </div>
-              <div className={styles.publishedDate}>
-                {published ? (
-                  <span>
-                    Published <TimeAgo time={published._updatedAt} />
-                  </span>
-                ) : (
-                  'Not published'
-                )}
-              </div>
+              {!this.isLiveEditEnabled() && (
+                <div className={styles.publishedDate}>
+                  {published ? (
+                    <span>
+                      Published <TimeAgo time={published._updatedAt} />
+                    </span>
+                  ) : (
+                    'Not published'
+                  )}
+                </div>
+              )}
             </div>
             <form
               className={styles.editor}
