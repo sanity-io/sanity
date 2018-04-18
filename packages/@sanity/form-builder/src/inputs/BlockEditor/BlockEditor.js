@@ -20,6 +20,7 @@ type Props = {
   editorValue: SlateValue,
   fullscreen: boolean,
   isActive: boolean,
+  isFocused: boolean,
   focusPath: [],
   markers: Marker[],
   onPatch: (event: PatchEvent) => void,
@@ -28,6 +29,7 @@ type Props = {
   onFocus: (nextPath: []) => void,
   onToggleFullScreen: void => void,
   readOnly?: boolean,
+  setFocus: void => void,
   type: Type
 }
 
@@ -171,14 +173,11 @@ export default class BlockEditor extends React.PureComponent<Props> {
       onFocus,
       onToggleFullScreen,
       readOnly,
+      setFocus,
       type
     } = this.props
     if (readOnly) {
       return <div>{editor}</div>
-    }
-    const classNames = [styles.editor]
-    if (fullscreen) {
-      classNames.push(styles.fullscreen)
     }
     return (
       <div>
@@ -198,6 +197,7 @@ export default class BlockEditor extends React.PureComponent<Props> {
         <ActivateOnFocus
           isActive={!this.state.preventScroll || fullscreen || isActive}
           message="Click to scroll"
+          onActivate={setFocus}
         >
           <div
             className={styles.scrollContainer}
@@ -214,7 +214,7 @@ export default class BlockEditor extends React.PureComponent<Props> {
   }
 
   render() {
-    const {focusPath, fullscreen, readOnly} = this.props
+    const {focusPath, fullscreen, readOnly, isFocused} = this.props
     const isEditingNode = !readOnly && (focusPath || []).length > 1
     return (
       <div className={styles.root}>
@@ -225,7 +225,7 @@ export default class BlockEditor extends React.PureComponent<Props> {
             </Portal>
           </StackedEscapable>
         )}
-        {!fullscreen && this.renderEditor()}
+        {!fullscreen && <div className={isFocused ? styles.focus : ''}>{this.renderEditor()}</div>}
         {isEditingNode && this.renderNodeEditor()}
       </div>
     )

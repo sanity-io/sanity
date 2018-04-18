@@ -224,22 +224,9 @@ export default class Editor extends React.Component<Props> {
   }
 
   render() {
-    const {
-      editorValue,
-      fullscreen,
-      isFocused,
-      onChange,
-      onEditorBlur,
-      onEditorFocus,
-      readOnly
-    } = this.props
+    const {editorValue, fullscreen, onChange, onEditorBlur, onEditorFocus, readOnly} = this.props
 
-    const classNames = [
-      styles.root,
-      fullscreen ? styles.fullscreen : null,
-      isFocused ? styles.focus : null
-    ].filter(Boolean)
-
+    const classNames = [styles.root, fullscreen ? styles.fullscreen : null].filter(Boolean)
     return (
       <div className={classNames.join(' ')}>
         <SlateEditor

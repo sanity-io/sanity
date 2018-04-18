@@ -152,7 +152,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
       type
     } = this.props
 
-    const {fullscreen} = this.state
+    const {fullscreen, editorIsFocused} = this.state
 
     const editor = this.renderEditor()
 
@@ -179,13 +179,16 @@ export default class BlockEditorInput extends React.Component<Props, State> {
           editorValue={editorValue}
           focusPath={focusPath}
           fullscreen={fullscreen}
+          isActive={isActive}
+          isFocused={editorIsFocused}
+          markers={markers}
+          onBlur={onBlur}
           onChange={onChange}
           onFocus={onFocus}
-          onBlur={onBlur}
           onPatch={onPatch}
-          markers={markers}
           onToggleFullScreen={this.handleToggleFullScreen}
-          isActive={isActive}
+          readOnly={readOnly}
+          setFocus={this.focus}
           type={type}
         />
       </FormField>
