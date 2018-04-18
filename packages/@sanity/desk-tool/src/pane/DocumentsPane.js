@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import Spinner from 'part:@sanity/components/loading/spinner'
-import {StateLink, IntentLink, withRouterHOC} from 'part:@sanity/base/router'
+import {StateLink, withRouterHOC} from 'part:@sanity/base/router'
 import SortIcon from 'part:@sanity/base/sort-icon'
 import Ink from 'react-ink'
 import {partition, uniqBy, get} from 'lodash'
@@ -15,8 +15,13 @@ import Button from 'part:@sanity/components/buttons/default'
 import PlusIcon from 'part:@sanity/base/plus-icon'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import {Tooltip} from '@sanity/react-tippy'
-import {isPublishedId} from '../utils/draftUtils'
-import {DRAFTS_FOLDER, getPublishedId, isDraftId, getDraftId} from '../utils/draftUtils'
+import {
+  DRAFTS_FOLDER,
+  getPublishedId,
+  isDraftId,
+  isPublishedId,
+  getDraftId
+} from '../utils/draftUtils'
 import DocumentsPaneMenu from './DocumentsPaneMenu'
 import ListView from './ListView'
 import styles from './styles/DocumentsPane.css'
@@ -85,10 +90,14 @@ function writeSettingsForType(type, settings) {
 export default withRouterHOC(
   class DocumentsPane extends React.PureComponent {
     static propTypes = {
+      loading: PropTypes.bool,
       selectedType: PropTypes.string,
       selectedDocumentId: PropTypes.string,
       schemaType: PropTypes.object,
       isCollapsed: PropTypes.bool,
+      published: PropTypes.array,
+      drafts: PropTypes.array,
+      onSetListLayout: PropTypes.any,
       router: PropTypes.object
     }
 
