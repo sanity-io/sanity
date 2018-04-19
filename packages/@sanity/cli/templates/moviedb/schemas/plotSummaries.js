@@ -21,7 +21,7 @@ export default {
             {
               title: 'Summary',
               name: 'summary',
-              type: 'blockContent'
+              type: 'text'
             },
             {
               title: 'Author',
