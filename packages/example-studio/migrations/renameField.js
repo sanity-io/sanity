@@ -8,9 +8,9 @@ import baseClient from 'part:@sanity/base/client'
 // This will migrate documents in batches of 100 and continue patching until no more documents are
 // returned from the query.
 //
-// This migration script can safely be run even if others are currently editing content.
-// If a document has been edited in between the document is fetched and migrated, the migration will
-// fail, but can safely be re-run until it passes.
+// This script can safely be run, even if documents are being concurrently modified by others.
+// If a document gets modified in the time between fetch => submit patch, this script will fail,
+// but can safely be re-run multiple times until it eventually runs out of documents to migrate.
 
 // A few things to note:
 // - This script will exit if any of the mutations fail due to a revision mismatch (which means the
@@ -63,4 +63,7 @@ const migrateNextBatch = async () => {
   return migrateNextBatch()
 }
 
-migrateNextBatch().catch(console.error)
+migrateNextBatch().catch(err => {
+  console.error(err)
+  process.exit(1)
+})
