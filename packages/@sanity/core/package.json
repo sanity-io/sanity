@@ -33,6 +33,7 @@
     "babel-preset-env": "^1.6.1",
     "babel-register": "^6.26.0",
     "batch-stream-operation": "^1.0.2",
+    "configstore": "^3.0.0",
     "debug": "^3.1.0",
     "deep-sort-object": "^1.0.1",
     "es6-promisify": "^6.0.0",

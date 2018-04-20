@@ -1,9 +1,11 @@
+const path = require('path')
 const spawn = require('child_process').spawn
 const fse = require('fs-extra')
-const path = require('path')
 
 module.exports = async args => {
-  const [script] = args.argsWithoutOptions
+  // In case of specifying --with-user-token <file.js>, use the "token" as the script
+  const script = args.argsWithoutOptions[0] || args.extOptions['with-user-token']
+  const withToken = Boolean(args.extOptions['with-user-token'])
   const scriptPath = path.resolve(script)
 
   if (!script) {
@@ -16,7 +18,11 @@ module.exports = async args => {
 
   const babel = require.resolve('./babel')
   const loader = require.resolve('@sanity/plugin-loader/register')
-  const proc = spawn(process.argv[0], ['-r', babel, '-r', loader, scriptPath])
+  const nodeArgs = ['-r', babel, '-r', loader]
+    .concat(withToken ? ['-r', require.resolve('./configClient')] : [])
+    .concat(scriptPath)
+
+  const proc = spawn(process.argv[0], nodeArgs)
 
   proc.stdout.pipe(process.stdout)
   proc.stderr.pipe(process.stderr)
