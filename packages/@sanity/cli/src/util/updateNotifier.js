@@ -72,7 +72,7 @@ export default options => {
       return
     }
 
-    if (!newVersion) {
+    if (!newVersion || semverCompare(newVersion, version) <= 0) {
       return
     }
 
