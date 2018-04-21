@@ -2,7 +2,7 @@
 import {error, HELP_IDS, warning} from '../createValidationResult'
 import inspect from '../../inspect'
 
-const VALID_FIELD_RE = /^[A-Za-z]+[0-9A-Za-z_\s-]*$/
+const VALID_FIELD_RE = /^[A-Za-z]+[0-9A-Za-z_]*$/
 const CONVENTIONAL_FIELD_RE = /^[A-Za-z_]+[0-9A-Za-z_]*$/
 
 function validateFieldName(name): Array<any> {
@@ -26,9 +26,9 @@ function validateFieldName(name): Array<any> {
   if (!VALID_FIELD_RE.test(name)) {
     return [
       error(
-        `Invalid field name: ${name}. Fields can only contain characters from a-z, numbers and underscores and should not start with a number (${String(
+        `Invalid field name: "${name}". Fields can only contain characters from A-Z, numbers and underscores and should not start with a number (must pass the regular expression ${String(
           VALID_FIELD_RE
-        )})`,
+        )}).`,
         HELP_IDS.OBJECT_FIELD_NAME_INVALID
       )
     ]
