@@ -21,13 +21,13 @@ import Pane from 'part:@sanity/components/panes/default'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
 import SyncIcon from 'part:@sanity/base/sync-icon'
 import CheckIcon from 'part:@sanity/base/check-icon'
+import CheckCircleIcon from 'part:@sanity/base/circle-check-icon'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import resolveProductionPreviewUrl from 'part:@sanity/transitional/production-preview/resolve-production-url?'
 import ValidationList from 'part:@sanity/components/validation/list'
 import {Tooltip} from '@sanity/react-tippy'
 import ChevronDown from 'part:@sanity/base/chevron-down-icon'
 import WarningIcon from 'part:@sanity/base/warning-icon'
-import ConfirmPublish from '../components/ConfirmPublish'
 import ConfirmDiscard from '../components/ConfirmDiscard'
 import ConfirmDelete from '../components/ConfirmDelete'
 import ConfirmUnpublish from '../components/ConfirmUnpublish'
@@ -36,6 +36,7 @@ import copyDocument from '../utils/copyDocument'
 import {getPublishedId, newDraftFrom} from '../utils/draftUtils'
 import TimeAgo from '../components/TimeAgo'
 import styles from './styles/Editor.css'
+import DocTitle from '../components/DocTitle'
 
 function navigateUrl(url) {
   window.open(url)
@@ -152,7 +153,6 @@ const INITIAL_STATE = {
   isMenuOpen: false,
   isCreatingDraft: false,
   showSavingStatus: false,
-  showConfirmPublish: false,
   showConfirmDiscard: false,
   showConfirmDelete: false,
   showConfirmUnpublish: false,
@@ -246,6 +246,8 @@ export default withRouterHOC(
     }
 
     componentWillReceiveProps(nextProps) {
+      this.setState({didPublish: this.props.isPublishing && !nextProps.isPublishing})
+
       if (this.props.isSaving && !nextProps.isSaving) {
         this.setState({
           showSavingStatus: true
@@ -314,7 +316,7 @@ export default withRouterHOC(
     }
 
     handlePublishRequested = () => {
-      const {markers, validationPending} = this.props
+      const {markers, validationPending, onPublish, draft} = this.props
       const errors = markers.filter(isValidationError)
       const hasErrors = errors.length > 0
 
@@ -325,11 +327,7 @@ export default withRouterHOC(
         return
       }
 
-      this.setState({showConfirmPublish: true})
-    }
-
-    handleCancelConfirmPublish = () => {
-      this.setState({showConfirmPublish: false})
+      onPublish(draft)
     }
 
     handleCancelUnpublish = () => {
@@ -342,12 +340,6 @@ export default withRouterHOC(
 
     handleCancelDiscard = () => {
       this.setState({showConfirmDiscard: false})
-    }
-
-    handleConfirmPublish = () => {
-      const {onPublish, draft} = this.props
-      onPublish(draft)
-      this.setState({showConfirmPublish: false})
     }
 
     handleConfirmUnpublish = () => {
@@ -391,10 +383,6 @@ export default withRouterHOC(
 
       if (item.action === 'unpublish') {
         this.setState({showConfirmUnpublish: true})
-      }
-
-      if (item.action === 'publish') {
-        this.setState({showConfirmPublish: true})
       }
 
       if (item.action === 'duplicate') {
@@ -581,10 +569,10 @@ export default withRouterHOC(
       const {
         inspect,
         focusPath,
-        showConfirmPublish,
         showConfirmDelete,
         showConfirmDiscard,
-        showConfirmUnpublish
+        showConfirmUnpublish,
+        didPublish
       } = this.state
 
       const value = draft || published
@@ -669,14 +657,6 @@ export default withRouterHOC(
             ))}
 
             {inspect && <InspectView value={value} onClose={this.handleHideInspector} />}
-            {showConfirmPublish && (
-              <ConfirmPublish
-                draft={draft}
-                published={published}
-                onCancel={this.handleCancelConfirmPublish}
-                onConfirm={this.handleConfirmPublish}
-              />
-            )}
             {showConfirmDiscard && (
               <ConfirmDiscard
                 draft={draft}
@@ -704,6 +684,14 @@ export default withRouterHOC(
             {isReconnecting && (
               <Snackbar kind="warning">
                 <WarningIcon /> Connection lost. Reconnecting…
+              </Snackbar>
+            )}
+            {didPublish && (
+              <Snackbar kind="success" timeout={4}>
+                <CheckCircleIcon /> You just published{' '}
+                <em>
+                  <DocTitle document={draft || published} />
+                </em>
               </Snackbar>
             )}
             {transactionResult &&
