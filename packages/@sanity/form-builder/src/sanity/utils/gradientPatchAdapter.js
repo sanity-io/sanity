@@ -15,10 +15,12 @@ export function toFormBuilder(origin: Origin, patches: GradientPatch[]): Patch[]
   return flatten(patches.map(patch => toFormBuilderPatch(origin, patch)))
 }
 
+const notIn = values => value => !values.includes(value)
+
 function toFormBuilderPatch(origin: Origin, patch: GradientPatch): Patch {
   return flatten(
     Object.keys(patch)
-      .filter(key => key !== 'id')
+      .filter(notIn(['id', 'ifRevisionID', 'query']))
       .map(type => {
         if (type === 'unset') {
           return patch.unset.map(path => {
@@ -70,13 +72,6 @@ function toFormBuilderPatch(origin: Origin, patch: GradientPatch): Patch {
                 type: 'diffMatchPatch',
                 path: convertPath.toFormBuilder(gradientPath),
                 value: patch[type][gradientPath],
-                origin
-              }
-            }
-            if (type === 'ifRevisionID') {
-              return {
-                type: 'ifRevisionID',
-                value: patch[type],
                 origin
               }
             }
