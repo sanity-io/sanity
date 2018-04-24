@@ -1,9 +1,8 @@
 import path from 'path'
 import chalk from 'chalk'
 import {promisify} from 'es6-promisify'
-import {getProdServer, getDevServer} from '@sanity/server'
+import {getDevServer} from '@sanity/server'
 import getConfig from '@sanity/util/lib/getConfig'
-import isProduction from '../../util/isProduction'
 import {tryInitializePluginConfigs} from '../../actions/config/reinitializePluginConfigs'
 import checkReactCompatibility from '../../util/checkReactCompatibility'
 import {formatMessage, isLikelyASyntaxError} from './formatMessage'
@@ -13,7 +12,6 @@ export default async (args, context) => {
   const {output, workDir} = context
   const sanityConfig = getConfig(workDir)
   const config = sanityConfig.get('server')
-  const getServer = isProduction ? getProdServer : getDevServer
   const {port, hostname} = config
   const httpHost = flags.host === 'all' ? '0.0.0.0' : flags.host || hostname
   const httpPort = flags.port || port
@@ -34,7 +32,7 @@ export default async (args, context) => {
   await tryInitializePluginConfigs({workDir, output})
   configSpinner.succeed()
 
-  const server = getServer(serverOptions)
+  const server = getDevServer(serverOptions)
   const compiler = server.locals.compiler
 
   // "invalid" doesn't mean the bundle is invalid, but that it is *invalidated*,
