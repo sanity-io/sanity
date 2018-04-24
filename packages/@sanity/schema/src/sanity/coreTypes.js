@@ -5,6 +5,7 @@ export default [
   {name: 'block', jsonType: 'object'},
   {name: 'boolean', jsonType: 'boolean'},
   {name: 'datetime', jsonType: 'string'},
+  {name: 'date', jsonType: 'string'},
   {name: 'document', jsonType: 'object'},
   {name: 'email', jsonType: 'string'},
   {name: 'file', jsonType: 'object'},
