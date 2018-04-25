@@ -3,21 +3,13 @@ import type {BlockContentFeatures, SlateValue, Type, SlateChange, Marker} from '
 import type {Node} from 'react'
 
 import React from 'react'
+import {isEqual} from 'lodash'
 import {Inline} from 'slate'
 
 import {applyAll} from '../../../simplePatch'
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 
 import styles from './styles/Span.css'
-
-function isEmpty(object, ignoreKeys) {
-  for (const key in object) {
-    if (!ignoreKeys.includes(key)) {
-      return false
-    }
-  }
-  return true
-}
 
 type Props = {
   attributes: {},
@@ -53,62 +45,8 @@ export default class Span extends React.Component<Props, State> {
     }
   }
 
-  componentDidUpdate() {
-    // Close popover and clean up if it is unnanotated and no annotation type is in focus
-    if (this.isUnannotated() && this.state.isEditing && !this.state.focusedAnnotationName) {
-      this.handleClose()
-    }
-  }
-
-  isUnannotated() {
-    const annotations = this.getAnnotations()
-    if (!annotations) {
-      return true
-    }
-    return (
-      !Object.keys(annotations).filter(key => {
-        return !this.isEmptyAnnotation(annotations[key])
-      }).length === 0
-    )
-  }
-
-  isEmptyAnnotation = (annotation: {}) => {
-    return isEmpty(annotation, ['_type', '_key'])
-  }
-
   getAnnotations() {
     return this.props.node.data.get('annotations')
-  }
-
-  handleClose = () => {
-    this.garbageCollect()
-  }
-
-  garbageCollect() {
-    const {editorValue, node, onChange} = this.props
-    const nextAnnotations = {...this.getAnnotations()}
-    Object.keys(nextAnnotations).forEach(key => {
-      if (this.isEmptyAnnotation(nextAnnotations[key])) {
-        delete nextAnnotations[key]
-      }
-    })
-    const originalSelection = node.data.get('originalSelection')
-
-    const data = {
-      ...node.data.toObject(),
-      focusedAnnotationName: undefined,
-      annotations: Object.keys(nextAnnotations).length === 0 ? undefined : nextAnnotations
-    }
-    const change = editorValue.change()
-    change.setNodeByKey(node.key, {data})
-    if (Object.keys(nextAnnotations).length === 0) {
-      change.unwrapInlineByKey(node.key)
-      if (originalSelection) {
-        change.select(originalSelection)
-      }
-    }
-    change.focus()
-    onChange(change)
   }
 
   focusAnnotation(annotationName: string) {
@@ -187,44 +125,24 @@ export default class Span extends React.Component<Props, State> {
     // If no focusedAnnotationName was found, buttons to edit respective annotations will be show
   }
 
-  handleChange = (event: PatchEvent) => {
-    const {editorValue, node, onChange} = this.props
-    const name = this.state.focusedAnnotationName
-    const annotations = this.getAnnotations()
-    const nextAnnotations = {
-      ...annotations,
-      [name]: applyAll(annotations[name], event.patches)
-    }
-    const data = {
-      ...node.data.toObject(),
-      focusedAnnotationName: this.state.focusedAnnotationName,
-      annotations: nextAnnotations
-    }
-    const change = editorValue.change()
-    change.setNodeByKey(node.key, {data})
-    onChange(change)
-  }
-
   render() {
     const {attributes, blockContentFeatures} = this.props
     let children = this.props.children
-    if (!this.isUnannotated()) {
-      const annotations = this.getAnnotations()
-      const annotationTypes = blockContentFeatures.annotations.filter(item =>
-        Object.keys(annotations).includes(item.value)
-      )
-      annotationTypes.forEach(annotation => {
-        const CustomComponent =
-          annotation && annotation.blockEditor && annotation.blockEditor.render
-            ? annotation.blockEditor.render
-            : null
-        if (CustomComponent) {
-          children = (
-            <CustomComponent {...annotations[annotation.value]}>{children}</CustomComponent>
-          )
-        }
-      })
-    }
+    const annotations = this.getAnnotations()
+    const annotationTypes = blockContentFeatures.annotations.filter(item =>
+      Object.keys(annotations).includes(item.value)
+    )
+    annotationTypes.forEach(annotation => {
+      const CustomComponent =
+        annotation && annotation.blockEditor && annotation.blockEditor.render
+          ? annotation.blockEditor.render
+          : null
+      if (CustomComponent) {
+        children = (
+          <CustomComponent {...annotations[annotation.value]}>{children}</CustomComponent>
+        )
+      }
+    })
     return (
       <span
         {...attributes}
