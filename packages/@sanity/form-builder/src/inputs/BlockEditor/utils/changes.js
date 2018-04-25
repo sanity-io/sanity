@@ -215,7 +215,7 @@ export function insertInlineObject(change, objectType, blockContentType) {
     blocksToEditorValue(appliedBlocks, blockContentType).document.nodes[0]
   )
   const inlineObject = newBlock.nodes.find(
-    node => node.data && node.data.get('value')._oldKey === key
+    node => node.data && node.data.get('value') && node.data.get('value')._oldKey === key
   )
   const newData = inlineObject.data.toObject()
   delete newData.value._oldKey
