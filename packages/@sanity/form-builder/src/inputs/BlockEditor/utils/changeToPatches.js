@@ -42,6 +42,12 @@ function setNodePatchSimple(
     return set(appliedBlocks, [])
   }
   const changedBlock = appliedBlocks[operation.path[0]]
+
+  // Don't do anything if nothing is changed
+  if (isEqual(changedBlock, blocks[operation.path[0]])) {
+    return []
+  }
+
   setKey(changedBlock._key, changedBlock)
   return set(changedBlock, [{_key: blocks[operation.path[0]]._key}])
 }
@@ -78,6 +84,12 @@ function setNodePatch(
     return set(appliedBlocks, [])
   }
   const changedBlock = appliedBlocks[operation.path[0]]
+
+  // Don't do anything if nothing is changed
+  if (isEqual(changedBlock, blocks[operation.path[0]])) {
+    return []
+  }
+
   setKey(changedBlock._key, changedBlock)
   return set(changedBlock, [{_key: blocks[operation.path[0]]._key}])
 }
