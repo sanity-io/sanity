@@ -7,7 +7,8 @@ import sanityClient from 'part:@sanity/base/client'
 export default class AuthorAnnotation extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
-    _ref: PropTypes.string
+    _ref: PropTypes.string,
+    _key: PropTypes.string
   }
 
   state = {
@@ -15,29 +16,40 @@ export default class AuthorAnnotation extends React.Component {
   }
 
   fetchAuthor() {
-    return sanityClient.getDocument(this.props._ref).then(author => {
-      this.setState({author: author})
-    })
+    if (this.props._ref) {
+      return sanityClient.getDocument(this.props._ref).then(author => {
+        this.setState({author: author})
+      })
+    }
+  }
+
+  componentDidMount() {
+    this.fetchAuthor()
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps._ref !== this.props._ref) {
+    if (this.props._ref && prevProps._ref !== this.props._ref) {
       this.fetchAuthor()
     }
   }
 
-  renderToolTip() {
+  renderToolTip(toolTipId) {
     if (!this.state.author) {
       return null
     }
-    return <span>{this.state.author.name}</span>
+    return (
+      <ReactTooltip className={styles.reactToolTip} id={toolTipId}>
+        {this.state.author.name}
+      </ReactTooltip>
+    )
   }
 
   render() {
+    const toolTipId = `tooltip${this.props._key}`
     return (
-      <span className={styles.root} data-tip="" data-for="tooltip">
+      <span className={styles.root} data-tip="" data-for={toolTipId}>
         {this.props.children}
-        <ReactTooltip id="tooltip">{this.renderToolTip()}</ReactTooltip>
+        {this.renderToolTip(toolTipId)}
       </span>
     )
   }

@@ -15,3 +15,7 @@
   text-decoration: none;
   width: auto;
 }
+
+.reactToolTip {
+  display: inline-block;
+}
