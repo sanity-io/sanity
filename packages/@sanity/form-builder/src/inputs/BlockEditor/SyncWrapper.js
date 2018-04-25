@@ -87,11 +87,15 @@ export default withPatchSubscriber(
     }
 
     handleEditorChange = (change: SlateChange, callback: void => void) => {
-      const {value, onChange, onFocus, type} = this.props
+      const {value, focusPath, onChange, onFocus, type} = this.props
       const patches = changeToPatches(this.state.editorValue, change, value, type)
       this.setState({editorValue: change.value})
       // Track focus
-      onFocus(changeToFocusPath(change))
+      const newFocusPath = changeToFocusPath(change, focusPath)
+      if (newFocusPath) {
+        onFocus(newFocusPath)
+      }
+      // Do the change
       onChange(PatchEvent.from(patches))
 
       if (callback) {
