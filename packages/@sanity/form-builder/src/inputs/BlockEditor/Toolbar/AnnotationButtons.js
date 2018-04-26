@@ -47,7 +47,9 @@ export default class AnnotationButtons extends React.Component<Props> {
     const spans = editorValue.inlines.filter(inline => inline.type === 'span')
     return spans.some(span => {
       const annotations = span.data.get('annotations') || {}
-      return Object.keys(annotations).find(key => annotations[key]._type === annotationName)
+      return Object.keys(annotations).find(
+        key => annotations[key] && annotations[key]._type === annotationName
+      )
     })
   }
 
