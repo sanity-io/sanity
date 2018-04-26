@@ -1,6 +1,6 @@
 // @flow
 
-import {get, flatten} from 'lodash'
+import {get, flatten, uniq} from 'lodash'
 import randomKey from '../util/randomKey'
 import normalizeBlock from '../util/normalizeBlock'
 import {BLOCK_DEFAULT_STYLE} from '../constants'
@@ -55,7 +55,7 @@ function toSanitySpan(node, sanityBlock, spanIndex) {
           _type: 'span',
           _key: `${sanityBlock._key}${spanIndex()}`,
           text: leaf.text,
-          marks: leaf.marks.map(mark => mark.type).concat(annotationKeys)
+          marks: uniq(leaf.marks.map(mark => mark.type).concat(annotationKeys))
         }))
       })
     )
@@ -74,9 +74,6 @@ function toSanityBlock(block, options = {}) {
     const spanIndex = () => {
       return index++
     }
-    // if (!sanityBlock._key) {
-    //   throw new Error('Block got no key!')
-    // }
     if (!sanityBlock._key) {
       sanityBlock._key = sanityBlock.key || randomKey(12)
     }
