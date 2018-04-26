@@ -42,6 +42,7 @@ import previewImageUrlTest from './previewImageUrlTest'
 import previewMediaTest from './previewMediaTest'
 import species from './species'
 import date from './date'
+import invalidPreviews from './invalidPreviews'
 
 export default createSchema({
   name: 'test-examples',
@@ -86,6 +87,7 @@ export default createSchema({
     typeWithNoToplevelStrings,
     previewImageUrlTest,
     previewMediaTest,
+    invalidPreviews,
     readOnly,
     empty
   ])

@@ -46,19 +46,24 @@ async function reinitializePluginConfigs(options, flags = {}) {
   }
 
   function warnOnDifferingChecksum(plugin) {
-    if (flags.quiet) {
-      return plugin
-    }
-
-    const local = localChecksums[plugin.name]
-    if (typeof local !== 'undefined' && local !== plugin.configChecksum) {
-      const name = normalizePluginName(plugin.name)
-      output.print(
-        `[WARN] Default configuration file for plugin "${name}" has changed since local copy was created`
-      )
-    }
-
     return plugin
+
+    // Disabled for now, until we can provide a way to fix.
+    // NOTE: A similar checksum diff check is also done when running the install command
+    // See https://github.com/sanity-io/sanity/pull/298
+    // if (flags.quiet) {
+    //   return plugin
+    // }
+    //
+    // const local = localChecksums[plugin.name]
+    // if (typeof local !== 'undefined' && local !== plugin.configChecksum) {
+    //   const name = normalizePluginName(plugin.name)
+    //   output.print(
+    //     `[WARN] Default configuration file for plugin "${name}" has changed since local copy was created`
+    //   )
+    // }
+    //
+    // return plugin
   }
 
   function saveNewChecksums(plugins) {
