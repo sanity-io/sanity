@@ -5,6 +5,14 @@ import observeForPreview from '../observeForPreview'
 import shallowEquals from 'shallow-equals'
 import intersectionObservableFor from '../streams/intersectionObservableFor'
 import visibilityChange$ from '../streams/visibilityChange'
+import {INVALID_PREVIEW_CONFIG} from '../constants'
+import WarningIcon from 'part:@sanity/base/warning-icon'
+
+const INVALID_PREVIEW_FALLBACK = {
+  title: <span style={{fontStyle: 'italic'}}>Invalid preview config</span>,
+  subtitle: <span style={{fontStyle: 'italic'}}>Check the error log in the console</span>,
+  media: WarningIcon
+}
 
 // How long to wait before signalling tear down of subscriptions
 const DELAY_MS = 20 * 1000
@@ -95,16 +103,13 @@ export default class PreviewSubscriber extends React.PureComponent {
   render() {
     const {result, isLive, error} = this.state
     const {children: Child, ...props} = this.props
+    const snapshot =
+      result.snapshot === INVALID_PREVIEW_CONFIG ? INVALID_PREVIEW_FALLBACK : result.snapshot
+
     return (
       // note: the root element here should be a span since this component may be used to display inline previews
       <span ref={this.setElement}>
-        <Child
-          snapshot={result.snapshot}
-          type={result.type}
-          isLive={isLive}
-          error={error}
-          {...props}
-        />
+        <Child snapshot={snapshot} type={result.type} isLive={isLive} error={error} {...props} />
       </span>
     )
   }
