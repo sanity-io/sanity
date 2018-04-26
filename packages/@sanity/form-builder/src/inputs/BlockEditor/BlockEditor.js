@@ -30,7 +30,8 @@ type Props = {
   onToggleFullScreen: void => void,
   readOnly?: boolean,
   setFocus: void => void,
-  type: Type
+  type: Type,
+  value: Block[]
 }
 
 function findEditNode(focusPath, editorValue) {
@@ -42,7 +43,9 @@ function findEditNode(focusPath, editorValue) {
     const block = editorValue.document.getDescendant(focusBlockKey)
     const span = block.filterDescendants(desc => desc.type === 'span').find(node => {
       const annotations = node.data.get('annotations') || {}
-      return Object.keys(annotations).find(aKey => annotations[aKey]._key === markDefKey)
+      return Object.keys(annotations).find(
+        aKey => annotations[aKey] && annotations[aKey]._key === markDefKey
+      )
     })
     return span
   } else if (focusInlineKey) {
@@ -109,17 +112,18 @@ export default class BlockEditor extends React.PureComponent<Props> {
     return this.renderEditNode(value, type, [{_key: value._key}])
   }
 
-  renderEditNode(value, type, path) {
-    const {focusPath, onBlur, onFocus, onPatch, markers} = this.props
+  renderEditNode(nodeValue, type, path) {
+    const {focusPath, onBlur, onFocus, onPatch, markers, value} = this.props
     return (
       <EditNode
         focusPath={focusPath}
         markers={markers}
         onBlur={onBlur}
-        onChange={onPatch}
+        onPatch={onPatch}
         onFocus={onFocus}
         path={path}
         type={type}
+        nodeValue={nodeValue}
         value={value}
       />
     )
