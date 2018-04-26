@@ -133,6 +133,16 @@ function patchAnnotationData(patch: Patch, change: () => void, type: Type, snaps
   if (!annotationKey) {
     throw new Error('Annotation not found in data')
   }
+  // If this is a unset patch, remove the annotation
+  if (patch.type === 'unset') {
+    delete data.annotations[annotationKey]
+    // If no more annotations, unwrap the inline
+    if (Object.keys(data.annotations).length === 0) {
+      return change.unwrapInlineByKey(node.key)
+    }
+    return change.setNodeByKey(node.key, {data})
+  }
+  // Annotation is changed, update it's data
   if (snapshot) {
     data.annotations[annotationKey] = snapshot
       .find(blk => blk._key === blockKey)
@@ -150,19 +160,21 @@ function patchBlockData(patch: Patch, change: () => void, type: Type, snapshot: 
   const doc = change.value.document
   const blockKey = patch.path[0]._key
   const block = doc.nodes.find(node => node.key === blockKey)
-
-  const data = block.data.toObject()
-  // A gradient patch because snapshot, set value from there
-  if (snapshot) {
-    data.value = snapshot.find(blk => blk._key === blockKey)
-  } else {
-    // Do a simple formbuilderPatch
-    const _patch = {...patch}
-    _patch.path = _patch.path.slice(1)
-    const newValue = applyAll(data.value, [_patch])
-    data.value = newValue
+  // Only act on formbuilder blocks
+  if (block.isVoid) {
+    const data = block.data.toObject()
+    // A gradient patch because snapshot, set value from there
+    if (snapshot) {
+      data.value = snapshot.find(blk => blk._key === blockKey)
+    } else {
+      // Do a simple formbuilderPatch
+      const _patch = {...patch}
+      _patch.path = _patch.path.slice(1)
+      const newValue = applyAll(data.value, [_patch])
+      data.value = newValue
+    }
+    change.setNodeByKey(block.key, {data})
   }
-  change.setNodeByKey(block.key, {data})
   return change
 }
 
@@ -174,7 +186,6 @@ function patchInlineData(patch: Patch, change: () => void, type: Type, snapshot:
   const inline = block.nodes.find(
     node => node.data && node.data.get('value') && node.data.get('value')._key === inlineKey
   )
-
   const data = inline.data.toObject()
   // A gradient patch because snapshot, set value from there
   if (snapshot) {
