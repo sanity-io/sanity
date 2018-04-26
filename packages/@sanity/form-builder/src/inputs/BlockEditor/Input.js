@@ -149,7 +149,8 @@ export default class BlockEditorInput extends React.Component<Props, State> {
       onFocus,
       onPatch,
       readOnly,
-      type
+      type,
+      value
     } = this.props
 
     const {fullscreen, editorIsFocused} = this.state
@@ -190,6 +191,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
           readOnly={readOnly}
           setFocus={this.focus}
           type={type}
+          value={value}
         />
       </FormField>
     )

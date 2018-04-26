@@ -47,7 +47,7 @@ type Props = {
   focusPath: [],
   markers: Marker[],
   onBlur: (nextPath: []) => void,
-  onChange: (change: SlateChange) => void,
+  onChange: PatchEvent => void,
   onFocus: (nextPath: []) => void,
   onPatch: (event: PatchEvent) => void,
   readOnly?: boolean,
@@ -118,7 +118,7 @@ export default withPatchSubscriber(
     }
 
     handleRemotePatches = ({patches, shouldReset, snapshot}) => {
-      const {editorValue} = this.state
+      let {editorValue} = this.state
       const {type} = this.props
       const remotePatches = patches.filter(patch => patch.origin === 'remote')
       if (remotePatches.length) {
