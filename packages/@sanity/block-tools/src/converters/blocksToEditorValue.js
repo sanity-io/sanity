@@ -1,5 +1,6 @@
 // @flow
 
+import {uniq} from 'lodash'
 import randomKey from '../util/randomKey'
 import resolveJsType from '../util/resolveJsType'
 import blockContentTypeToOptions from '../util/blockContentTypeToOptions'
@@ -53,10 +54,12 @@ function sanitySpanToRawSlateBlockNode(span, sanityBlock, blockContentFeatures, 
   }
 
   const {text, marks = []} = span
-  const decorators = marks.filter(mark => {
-    return !sanityBlock.markDefs.map(def => def._key).includes(mark)
-  })
-  const annotationKeys = marks.filter(x => decorators.indexOf(x) == -1)
+  const schemaDecorators = blockContentFeatures.decorators.map(decorator => decorator.value)
+  const decorators = marks.filter(mark => schemaDecorators.includes(mark))
+  const annotationKeys = marks.filter(
+    mark =>
+      decorators.indexOf(mark) === -1 && sanityBlock.markDefs.map(def => def._key).includes(mark)
+  )
   let annotations
   if (annotationKeys.length) {
     annotations = {}
@@ -70,7 +73,7 @@ function sanitySpanToRawSlateBlockNode(span, sanityBlock, blockContentFeatures, 
   const leaf = {
     object: 'leaf',
     text: text,
-    marks: decorators.filter(Boolean).map(toRawMark)
+    marks: uniq(decorators.concat(annotationKeys).filter(Boolean)).map(toRawMark)
   }
   if (!annotations) {
     return {object: 'text', leaves: [leaf], key: `${sanityBlock._key}${childIndex()}`}
