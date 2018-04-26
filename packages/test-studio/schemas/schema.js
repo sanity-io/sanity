@@ -41,6 +41,7 @@ import focus from './focus'
 import previewImageUrlTest from './previewImageUrlTest'
 import previewMediaTest from './previewMediaTest'
 import species from './species'
+import date from './date'
 import invalidPreviews from './invalidPreviews'
 
 export default createSchema({
@@ -59,6 +60,7 @@ export default createSchema({
     objects,
     fieldsets,
     datetime,
+    date,
     richDateTest,
     validation,
     arrays,

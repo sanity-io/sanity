@@ -3,7 +3,7 @@ import EmailInput from '../../inputs/EmailInput'
 import NumberInput from '../../inputs/NumberInput'
 import ObjectInput from '../../inputs/ObjectInput'
 import StringInput from '../../inputs/StringInput'
-import DateTimeInput from '../../inputs/DateTimeInput'
+import {DateTimeInput, DateInput} from '../../inputs/DateInputs'
 import TextInput from '../../inputs/TextInput'
 import UrlInput from '../../inputs/UrlInput'
 import SlugInput from '../../inputs/Slug/SlugInput'
@@ -20,6 +20,7 @@ export default {
   text: TextInput,
   email: EmailInput,
   datetime: DateTimeInput,
+  date: DateInput,
   url: UrlInput,
   image: Image,
   file: File,
