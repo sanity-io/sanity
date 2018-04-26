@@ -40,9 +40,11 @@ module.exports = function listen(query, params, opts = {}) {
     let es = getEventSource()
     let reconnectTimer
     let stopped = false
+    let didOpen = false
 
     function onError() {
-      if (stopped) {
+      // it is explicitly stopped, or never opened before failing.
+      if (stopped || !didOpen) {
         return
       }
 
@@ -80,6 +82,10 @@ module.exports = function listen(query, params, opts = {}) {
       observer.complete()
     }
 
+    function onOpen(evt) {
+      didOpen = true
+    }
+
     function unsubscribe() {
       es.removeEventListener('error', onError, false)
       es.removeEventListener('channelError', onChannelError, false)
@@ -97,6 +103,7 @@ module.exports = function listen(query, params, opts = {}) {
     function getEventSource() {
       const evs = new EventSource(uri, esOptions)
       evs.addEventListener('error', onError, false)
+      evs.addEventListener('open', onOpen, false)
       evs.addEventListener('channelError', onChannelError, false)
       evs.addEventListener('disconnect', onDisconnect, false)
       listenFor.forEach(type => evs.addEventListener(type, onMessage, false))
