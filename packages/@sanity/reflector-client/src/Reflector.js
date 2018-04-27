@@ -1,8 +1,5 @@
 /* global window, navigator */
 
-import getIt from 'get-it'
-import getItJsonResponse from 'get-it/lib/middleware/jsonResponse'
-import getItPromise from 'get-it/lib/middleware/promise'
 import Observable from '@sanity/observable/minimal'
 
 const EventSource =
@@ -17,10 +14,10 @@ function parseEvent(event) {
     return err
   }
 }
-export default class Reflector {
+
+class Reflector {
   constructor(sanityClient) {
     this.sanityClient = sanityClient
-    this.request = getIt([getItJsonResponse(), getItPromise()])
   }
 
   listen(channel) {
@@ -57,21 +54,10 @@ export default class Reflector {
   }
 
   send(channel, message) {
-    const url = this.sanityClient.getUrl(`presence/send/${channel}`)
-
-    let headers = {}
-    const {token} = this.sanityClient.clientConfig
-    if (token) {
-      headers = {
-        Authorization: `Bearer ${token}`
-      }
-    }
-
-    return this.request({
-      url,
+    return this.sanityClient.request({
+      url: `presence/send/${channel}`,
       method: 'POST',
-      headers,
-      body: JSON.stringify(message)
+      body: message
     })
   }
 
@@ -97,3 +83,6 @@ export default class Reflector {
     }
   }
 }
+
+// eslint-disable-next-line import/no-commonjs
+module.exports = Reflector
