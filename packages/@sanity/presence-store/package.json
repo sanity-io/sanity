@@ -2,7 +2,7 @@
   "name": "@sanity/presence-store",
   "version": "0.128.3",
   "description": "Client side presence channel handler",
-  "main": "lib/Connector.js",
+  "main": "lib/PresenceStore.js",
   "scripts": {
     "clean": "rimraf lib",
     "compile": "babel src --copy-files --out-dir lib",
