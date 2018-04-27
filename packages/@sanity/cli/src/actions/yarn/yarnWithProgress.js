@@ -40,7 +40,13 @@ export default function yarnWithProgress(args, options = {}) {
   )
 
   const nodePath = process.argv[0]
-  const nodeArgs = [yarnPath].concat(args, ['--json', '--non-interactive', '--ignore-engines'])
+  const nodeArgs = [yarnPath].concat(args, [
+    '--json',
+    '--non-interactive',
+    '--ignore-engines',
+    '--registry',
+    'https://registry.npmjs.org'
+  ])
 
   const state = {firstStepReceived: false, currentProgressStep: null}
   state.progress = new Gauge(process.stderr, {
