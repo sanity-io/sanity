@@ -64,12 +64,7 @@ export default class PresenceStore {
   // Updates state for a client based on an incoming state message
   updateClientState(msg) {
     // Construct next state object
-    const state = Object.assign(
-      {
-        identity: msg.i
-      },
-      msg.m
-    )
+    const state = {identity: msg.i, ...msg.m}
     delete state.type
 
     // The cache key for this state
@@ -80,6 +75,7 @@ export default class PresenceStore {
       this.states.set(key, state)
       this.handleRemoteChange()
     }
+
     // Update timestamp for this cache key
     this.timestamps.set(key, Date.now())
   }
@@ -108,7 +104,7 @@ export default class PresenceStore {
   // Purge state objects for clients that have not reported for STATE_TIMEOUT_INTERVAL millis
   performPurge = () => {
     const now = Date.now()
-    this.states.keys().forEach(key => {
+    Array.from(this.states.keys()).forEach(key => {
       const age = now - this.timestamps.get(key)
       if (age > STATE_TIMEOUT_INTERVAL) {
         this.states.delete(key)
@@ -149,14 +145,10 @@ export default class PresenceStore {
   }
 
   send(msgType, msg) {
-    return this.connection.send(
-      Object.assign(
-        {
-          type: msgType,
-          session: this.sessionId
-        },
-        msg
-      )
-    )
+    return this.connection.send({
+      type: msgType,
+      session: this.sessionId,
+      ...msg
+    })
   }
 }
