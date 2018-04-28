@@ -11,7 +11,7 @@ function hashKeyForState(identity, session) {
   return `${identity}__${session}`
 }
 
-export default class PresenceStore {
+class PresenceStore {
   constructor(connection, channel) {
     this.connection = connection
     this.unsubscribeListener = this.connection.listen().subscribe(this.handleMessage).unsubscribe
@@ -152,3 +152,6 @@ export default class PresenceStore {
     })
   }
 }
+
+// eslint-disable-next-line import/no-commonjs
+module.exports = PresenceStore
