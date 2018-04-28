@@ -14,7 +14,8 @@ function parseEvent(event) {
     return err
   }
 }
-export default class Reflector {
+
+class Reflector {
   constructor(sanityClient) {
     this.sanityClient = sanityClient
   }
@@ -82,3 +83,6 @@ export default class Reflector {
     }
   }
 }
+
+// eslint-disable-next-line import/no-commonjs
+module.exports = Reflector
