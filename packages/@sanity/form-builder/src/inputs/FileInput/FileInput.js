@@ -137,7 +137,7 @@ export default class FileInput extends React.PureComponent<Props, State> {
         </div>
         <div>
           {assetDocument.originalFilename}{' '}
-          <a href={assetDocument.url} download>
+          <a href={`${assetDocument.url}?dl`} download>
             Download
           </a>
         </div>
