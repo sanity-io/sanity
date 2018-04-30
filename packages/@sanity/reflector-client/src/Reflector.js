@@ -1,6 +1,6 @@
 /* global window, navigator */
 
-import Observable from '@sanity/observable/minimal'
+import {Observable} from 'rxjs'
 
 const EventSource =
   typeof window !== 'undefined' && window.EventSource

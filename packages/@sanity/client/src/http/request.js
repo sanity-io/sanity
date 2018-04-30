@@ -4,7 +4,7 @@ const assign = require('object-assign')
 const observable = require('get-it/lib/middleware/observable')
 const jsonRequest = require('get-it/lib/middleware/jsonRequest')
 const jsonResponse = require('get-it/lib/middleware/jsonResponse')
-const SanityObservable = require('@sanity/observable/minimal')
+const {Observable} = require('rxjs')
 const progress = require('get-it/lib/middleware/progress')
 const {ClientError, ServerError} = require('./errors')
 
@@ -28,7 +28,7 @@ const middleware = envSpecific.concat([
   jsonResponse(),
   progress(),
   httpError,
-  observable({implementation: SanityObservable})
+  observable({implementation: Observable})
 ])
 
 const request = getIt(middleware)

@@ -1,5 +1,5 @@
-import Multicast from '@sanity/observable/multicast'
-import Observable from '@sanity/observable'
+import {Subject, Observable} from 'rxjs'
+import {map, merge, mergeMap, filter} from 'rxjs/operators'
 
 import resize$ from './resize'
 import scroll$ from './scroll'
@@ -35,7 +35,7 @@ export default (isIntersectionObserverSupported()
   : createLegacyBased())
 
 function createIntersectionObserverBased() {
-  const intersectionObserverEntries$$ = new Multicast()
+  const intersectionObserverEntries$$ = new Subject()
   const intersectionObserver = new IntersectionObserver(callback, {
     threshold: 0,
     rootMargin: `${ROOT_MARGIN_PX}px`
@@ -52,9 +52,10 @@ function createIntersectionObserverBased() {
       intersectionObserver.observe(element)
       observer.next()
       return () => intersectionObserver.unobserve(element)
-    })
-      .mergeMap(() => intersectionObserverEntries$$.asObservable())
-      .filter(event => event.target === element)
+    }).pipe(
+      mergeMap(() => intersectionObserverEntries$$.asObservable()),
+      filter(event => event.target === element)
+    )
   }
 }
 
@@ -84,13 +85,12 @@ function createLegacyBased() {
 
   return function intersectionObservableFor(element) {
     const isElementInViewport = inViewport(element)
-    return (
-      Observable.of(isElementInViewport())
-        .merge(resize$.merge(scroll$))
-        .merge(orientationChange$)
-        .map(isElementInViewport)
-        // todo: consider "faking" more of the IntersectionObserverEntry api if possible
-        .map(isIntersecting => ({isIntersecting}))
+    return Observable.of(isElementInViewport()).pipe(
+      merge(resize$.merge(scroll$)),
+      merge(orientationChange$),
+      map(isElementInViewport),
+      // todo: consider "faking" more of the IntersectionObserverEntry api if possible
+      map(isIntersecting => ({isIntersecting}))
     )
   }
 }

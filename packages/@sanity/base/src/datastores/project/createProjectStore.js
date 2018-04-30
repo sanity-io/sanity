@@ -1,4 +1,4 @@
-import Observable from '@sanity/observable'
+import {Observable} from 'rxjs'
 import createActions from '../utils/createActions'
 import projectFetcher from 'part:@sanity/base/project-fetcher'
 import config from 'config:sanity'

@@ -1,5 +1,5 @@
 const assign = require('object-assign')
-const Observable = require('@sanity/observable/minimal')
+const {Observable} = require('rxjs')
 const polyfilledEventSource = require('@sanity/eventsource')
 const pick = require('../util/pick')
 const defaults = require('../util/defaults')

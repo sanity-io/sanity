@@ -1,19 +1,13 @@
 const assign = require('object-assign')
 const queryString = require('../http/queryString')
 const validators = require('../validators')
+const {filter, map} = require('rxjs/operators')
 
 function AssetsClient(client) {
   this.client = client
 }
 
-function toPromise(observable) {
-  return observable
-    .filter(event => event.type === 'response')
-    .map(event => event.body)
-    .toPromise()
-}
-
-function resolveWithDocument(body) {
+function toDocument(body) {
   // todo: rewrite to just return body.document in a while
   const document = body.document
   Object.defineProperty(document, 'document', {
@@ -82,7 +76,11 @@ assign(AssetsClient.prototype, {
       body
     })
 
-    return this.client.isPromiseAPI() ? toPromise(observable).then(resolveWithDocument) : observable
+    return this.client.isPromiseAPI()
+      ? observable
+          .pipe(filter(event => event.type === 'response'), map(event => toDocument(event.body)))
+          .toPromise()
+      : observable
   },
 
   delete(type, id) {

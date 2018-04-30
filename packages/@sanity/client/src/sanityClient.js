@@ -10,6 +10,7 @@ const AuthClient = require('./auth/authClient')
 const httpRequest = require('./http/request')
 const getRequestOptions = require('./http/requestOptions')
 const {defaultConfig, initConfig} = require('./config')
+const {filter, map} = require('rxjs/operators')
 
 const toPromise = observable => observable.toPromise()
 
@@ -77,9 +78,10 @@ assign(SanityClient.prototype, {
   },
 
   request(options) {
-    const observable = this._requestObservable(options)
-      .filter(event => event.type === 'response')
-      .map(event => event.body)
+    const observable = this._requestObservable(options).pipe(
+      filter(event => event.type === 'response'),
+      map(event => event.body)
+    )
 
     return this.isPromiseAPI() ? toPromise(observable) : observable
   }

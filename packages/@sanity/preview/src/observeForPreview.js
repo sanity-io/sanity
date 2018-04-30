@@ -1,7 +1,8 @@
 // @flow
 import resolveRefType from './resolveRefType'
 import prepareForPreview, {invokePrepare} from './prepareForPreview'
-import Observable from '@sanity/observable'
+import {of as observableOf} from 'rxjs'
+import {map, switchMap} from 'rxjs/operators'
 import observePaths from './observePaths'
 import type {FieldName, Type, ViewOptions} from './types'
 
@@ -20,19 +21,21 @@ export default function observeForPreview(
     // if the value is of type reference, but has no _ref property, we cannot prepare any value for the preview
     // and the most sane thing to do is to return `null` for snapshot
     if (!value._ref) {
-      return Observable.of({snapshot: null})
+      return observableOf({snapshot: null})
     }
     // Previewing references actually means getting the referenced value,
     // and preview using the preview config of its type
     // todo: We need a way of knowing the type of the referenced value by looking at the reference record alone
-    return resolveRefType(value, type).switchMap(
-      refType =>
-        refType
-          ? observeForPreview(value, refType, fields)
-          : Observable.of({
-              type: type,
-              snapshot: null
-            })
+    return resolveRefType(value, type).pipe(
+      switchMap(
+        refType =>
+          refType
+            ? observeForPreview(value, refType, fields)
+            : observableOf({
+                type: type,
+                snapshot: null
+              })
+      )
     )
   }
 
@@ -43,12 +46,14 @@ export default function observeForPreview(
       ? configFields.filter(fieldName => fields.includes(fieldName))
       : configFields
     const paths = targetFields.map(key => selection[key].split('.'))
-    return observePaths(value, paths).map(snapshot => ({
-      type: type,
-      snapshot: snapshot && prepareForPreview(snapshot, type, viewOptions)
-    }))
+    return observePaths(value, paths).pipe(
+      map(snapshot => ({
+        type: type,
+        snapshot: snapshot && prepareForPreview(snapshot, type, viewOptions)
+      }))
+    )
   }
-  return Observable.of({
+  return observableOf({
     type: type,
     snapshot: invokePrepare(type, value, viewOptions)
   })

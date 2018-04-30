@@ -1,76 +1,74 @@
-import Observable from '@sanity/observable'
+import {of as observableOf} from 'rxjs'
+import {concatMap, map} from 'rxjs/operators'
+
 import createDocumentStore from '@sanity/document-store'
 import client from 'part:@sanity/base/client'
 
 function fetchDocumentSnapshot(id) {
-  return client.observable.getDocument(id).map(document => {
-    return {
+  return client.observable.getDocument(id).pipe(
+    map(document => ({
       type: 'snapshot',
       document: document
-    }
-  })
+    }))
+  )
 }
 
 function fetchQuerySnapshot(query, params) {
-  return client.observable.fetch(query, params).map(documents => {
-    return {
+  return client.observable.fetch(query, params).pipe(
+    map(documents => ({
       type: 'snapshot',
       documents: documents
-    }
-  })
+    }))
+  )
 }
 
 const serverConnection = {
   byId(id) {
-    return Observable.from(
-      client.listen(
+    return client
+      .listen(
         '*[_id == $id]',
         {id: id},
         {includeResult: false, events: ['welcome', 'mutation', 'reconnect']}
       )
-    ).concatMap(event => {
-      return event.type === 'welcome'
-        ? Observable.from(fetchDocumentSnapshot(id))
-        : Observable.of(event)
-    })
+      .pipe(
+        concatMap(event => {
+          return event.type === 'welcome' ? fetchDocumentSnapshot(id) : observableOf(event)
+        })
+      )
   },
 
   query(query, params) {
-    return Observable.from(
-      client.observable.listen(query, params || {}, {
+    return client.observable
+      .listen(query, params || {}, {
         includeResult: false,
         events: ['welcome', 'mutation', 'reconnect']
       })
-    ).concatMap(event => {
-      return event.type === 'welcome'
-        ? Observable.from(fetchQuerySnapshot(query, params))
-        : Observable.of(event)
-    })
+      .pipe(
+        concatMap(event => {
+          return event.type === 'welcome' ? fetchQuerySnapshot(query, params) : observableOf(event)
+        })
+      )
   },
 
   mutate(mutations) {
-    return Observable.from(
-      client.observable.dataRequest('mutate', mutations, {
-        visibility: 'async',
-        returnDocuments: false
-      })
-    )
+    return client.observable.dataRequest('mutate', mutations, {
+      visibility: 'async',
+      returnDocuments: false
+    })
   },
 
   delete(id) {
-    return Observable.from(
-      client.observable.delete(id, {visibility: 'async', returnDocuments: false})
-    )
+    return client.observable.delete(id, {visibility: 'async', returnDocuments: false})
   },
 
   create(doc) {
-    return Observable.from(client.observable.create(doc))
+    return client.observable.create(doc)
   },
   createIfNotExists(doc) {
-    return Observable.from(client.observable.createIfNotExists(doc))
+    return client.observable.createIfNotExists(doc)
   },
   createOrReplace(doc) {
-    return Observable.from(client.observable.createOrReplace(doc))
+    return client.observable.createOrReplace(doc)
   }
 }
 
