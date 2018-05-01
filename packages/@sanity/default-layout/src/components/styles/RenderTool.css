@@ -1,0 +1,48 @@
+:root {
+  @custom-media --error-expand-at (min-width: 700px);
+}
+
+.error {
+  display: block;
+  justify-content: center;
+  margin: 0 10px;
+
+  @media (--error-expand-at) {
+    display: flex;
+  }
+}
+
+.errorSplash {
+  flex: 0.4;
+  max-width: 400px;
+  text-align: center;
+  min-width: 212px;
+  margin: 20px auto;
+
+  @media (--error-expand-at) {
+    margin: 20px 0;
+  }
+}
+
+.errorSplash svg {
+  max-height: 35vh;
+
+  @media (--error-expand-at) {
+    max-height: 50vh;
+  }
+}
+
+.errorDetails {
+  flex: 1;
+  overflow: auto;
+  max-width: 800px;
+}
+
+.errorStackTrace,
+.errorComponentStack {
+  font-size: 0.9em;
+}
+
+.errorActionButton button {
+  margin: 0 5px;
+}
