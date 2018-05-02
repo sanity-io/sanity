@@ -136,7 +136,8 @@ const STUDIOS = [
   {name: 'test-studio', port: '3333'},
   {name: 'movies-studio', port: '3334'},
   {name: 'example-studio', port: '3335'},
-  {name: 'blog-studio', port: '3336'}
+  {name: 'blog-studio', port: '3336'},
+  {name: 'ecommerce-studio', port: '3337'}
 ]
 
 STUDIOS.forEach(studio => {

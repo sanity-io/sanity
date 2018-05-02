@@ -9,6 +9,7 @@
     "packages/eslint-config-sanity",
     "packages/test-studio",
     "packages/movies-studio",
+    "packages/ecommerce-studio",
     "packages/blog-studio",
     "packages/storybook"
   ],

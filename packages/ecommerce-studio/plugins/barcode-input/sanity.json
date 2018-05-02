@@ -1,0 +1,8 @@
+{
+  "parts": [
+    {
+      "implements": "part:@sanity/base/schema-type",
+      "path": "./BarcodeType.js"
+    }
+  ]
+}

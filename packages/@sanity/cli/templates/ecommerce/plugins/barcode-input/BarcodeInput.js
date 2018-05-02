@@ -12,7 +12,7 @@ export default class BarcodeInput extends PureComponent {
     valid: true
   }
 
-  propTypes = {
+  static propTypes = {
     level: PropTypes.number,
     value: PropTypes.object,
     onChange: PropTypes.func,
