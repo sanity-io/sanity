@@ -96,6 +96,14 @@ test('should be able to load CSS files through PostCSS', t => {
   t.is(styles.zebra, 'datepicker__zebra___1_qke')
 })
 
+test('should be able stub CSS loading', t => {
+  pluginLoader({basePath: path.join(__dirname, 'fixture'), stubCss: true})
+
+  const styles = require('part:date/datepicker-style')
+  t.is(typeof styles, 'object')
+  t.is(Object.keys(styles).length, 0)
+})
+
 test('should resolve correctly when using optional part requires (?-postfix)', t => {
   pluginLoader({basePath: path.join(__dirname, 'fixture')})
 

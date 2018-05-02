@@ -2,9 +2,9 @@ const path = require('path')
 const Module = require('module')
 const interopRequire = require('interop-require')
 const cssHook = require('css-modules-require-hook')
-const postcss = require('@sanity/webpack-integration/v3')
 const resolver = require('@sanity/resolver')
 const util = require('@sanity/util')
+
 const reduceConfig = util.reduceConfig
 const getSanityVersions = util.getSanityVersions
 
@@ -149,12 +149,19 @@ function registerLoader(options) {
   }
 
   // Register CSS hook
-  cssHook({
-    generateScopedName: options.generateScopedName || '[name]__[local]___[hash:base64:5]',
-    prepend: postcss
-      .getPostcssPlugins({basePath: basePath})
-      .filter(plugin => plugin.postcssPlugin !== 'postcss-import')
-  })
+  if (options.stubCss) {
+    require.extensions['.css'] = function stubCssHook(mod, filename) {
+      return mod._compile(`module.exports = {} `, filename)
+    }
+  } else {
+    const postcss = require('@sanity/webpack-integration/v3')
+    cssHook({
+      generateScopedName: options.generateScopedName || '[name]__[local]___[hash:base64:5]',
+      prepend: postcss
+        .getPostcssPlugins({basePath: basePath})
+        .filter(plugin => plugin.postcssPlugin !== 'postcss-import')
+    })
+  }
 }
 
 function getModule(request, moduleExports) {
