@@ -18,11 +18,6 @@ export default {
       }
     },
     {
-      name: 'isMain',
-      title: 'Is main category',
-      type: 'boolean'
-    },
-    {
       name: 'description',
       title: 'Description',
       type: 'text'
