@@ -340,6 +340,10 @@ export default async function initSanity(args, context) {
             name: 'Movie database (schema + sample data)'
           },
           {
+            value: 'ecommerce',
+            name: 'E-commerce (schema + sample data)'
+          },
+          {
             value: 'blog',
             name: 'Blog (schema)'
           }

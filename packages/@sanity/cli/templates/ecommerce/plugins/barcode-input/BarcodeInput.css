@@ -1,0 +1,28 @@
+.barcode {
+  @nest & svg {
+    display: block;
+    margin: 1em auto;
+    max-width: 100%;
+  }
+}
+
+.barcodeValid {
+  composes: barcode;
+}
+
+.barcodeInvalid {
+  composes: barcode;
+  display: none;
+}
+
+.fieldWrapper {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-gap: 1em;
+}
+
+.errorMessage {
+  color: #e66666;
+  text-align: center;
+  padding: 1em;
+}
