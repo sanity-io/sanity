@@ -1,3 +1,5 @@
+// Copied from packages/@sanity/cli/templates/ecommerce/plugins/barcode-input/BarcodeType.js
+
 export default {
   name: 'barcode',
   title: 'Barcode',
