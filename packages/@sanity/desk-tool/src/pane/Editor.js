@@ -317,6 +317,9 @@ export default withRouterHOC(
 
     handlePublishRequested = () => {
       const {markers, validationPending, onPublish, draft} = this.props
+      if (!draft) {
+        return
+      }
       const errors = markers.filter(isValidationError)
       const hasErrors = errors.length > 0
 
