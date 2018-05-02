@@ -28,8 +28,8 @@ export default {
       type: 'text'
     },
     {
-      name: 'categories',
-      title: 'Part of categories',
+      name: 'parent',
+      title: 'Parent categories',
       type: 'array',
       of: [
         {
