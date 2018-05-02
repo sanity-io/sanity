@@ -1,5 +1,5 @@
 export const importPrompt = 'Import a sampling of products to start your e-commerce project?'
-export const datasetUrl = 'https://public.sanity.io/ecommerce-2018-04-25.tar.gz'
+export const datasetUrl = 'https://public.sanity.io/ecommerce-2018-05-02.tar.gz'
 
 export const dependencies = {
   'react-barcode': '^1.3.2'
