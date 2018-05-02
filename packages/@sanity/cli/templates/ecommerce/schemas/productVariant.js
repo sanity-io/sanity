@@ -29,11 +29,6 @@ export default {
       type: 'boolean'
     },
     {
-      title: 'Requires Shipping',
-      name: 'requires_shipping',
-      type: 'boolean'
-    },
-    {
       name: 'images',
       title: 'Images',
       type: 'array',
