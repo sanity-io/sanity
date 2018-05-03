@@ -1,7 +1,8 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  composes: root from 'part:@sanity/components/selects/default-style';
+  display: block;
+  outline: none;
   position: relative;
 
   @nest &:focus {
@@ -13,7 +14,7 @@
 }
 
 .inner {
-  composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
+  composes: root from 'part:@sanity/base/theme/forms/text-input-style';
   cursor: default;
 
   @nest .transparent & {
@@ -40,6 +41,10 @@
   composes: functions from './SearchableSelect.css';
 }
 
+.portal {
+  z-index: var(--zindex-portal);
+}
+
 .list {
   margin: 0;
   padding: 0;
@@ -53,7 +58,6 @@
   height: auto;
   width: auto;
   overflow-y: auto;
-  z-index: var(--zindex-dropdown);
 }
 
 .text {

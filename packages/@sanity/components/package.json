@@ -20,7 +20,6 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@bjoerge/react-popper": "^0.9.2",
     "@sanity/date-input": "0.128.12",
     "@sanity/imagetool": "0.128.5",
     "@sanity/observable": "0.128.3",
@@ -54,6 +53,7 @@
     "react-ink": "^6.1.0",
     "react-sortable-hoc": "^0.6.3",
     "react-split-pane": "^0.1.63",
+    "react-popper": "^0.10.4",
     "scroll": "^2.0.0"
   },
   "devDependencies": {
