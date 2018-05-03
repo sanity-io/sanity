@@ -1,10 +1,20 @@
 import path from 'path'
 import fse from 'fs-extra'
 import semver from 'semver'
-import {padStart} from 'lodash'
+import {padStart, noop} from 'lodash'
 import readLocalManifest from '@sanity/util/lib/readLocalManifest'
 import findSanityModuleVersions from '../../actions/versions/findSanityModuleVersions'
 import {getFormatters} from '../versions/printVersionResult'
+import debug from '../../debug'
+
+async function deleteIfNotSymlink(modPath) {
+  const stats = await fse.lstat(modPath).catch(noop)
+  if (!stats || stats.isSymbolicLink()) {
+    return null
+  }
+
+  return fse.remove(modPath)
+}
 
 export default async (args, context) => {
   const {output, workDir, yarn, chalk} = context
@@ -24,6 +34,7 @@ export default async (args, context) => {
 
   // Find which modules needs update according to the target range
   const allNeedsUpdate = await getModulesInNeedOfUpdate(context, targetRange)
+  debug('In need of update: %s', allNeedsUpdate.map(mod => mod.name).join(', '))
 
   const needsUpdate =
     modules.length === 0
@@ -36,6 +47,15 @@ export default async (args, context) => {
     context.output.print(`${chalk.green('✔')} ${specified} Sanity modules are at latest versions`)
     return
   }
+
+  // Forcefully remove non-symlinked module paths to force upgrade
+  await Promise.all(
+    needsUpdate.map(mod =>
+      deleteIfNotSymlink(
+        path.join(context.workDir, 'node_modules', mod.name.replace(/\//g, path.sep))
+      )
+    )
+  )
 
   // Replace versions in `package.json`
   const versionPrefix = saveExact ? '' : '^'
@@ -71,6 +91,8 @@ export default async (args, context) => {
   // Run `yarn install`
   const flags = extOptions.offline ? ['--offline'] : []
   const cmd = ['install'].concat(flags)
+
+  debug('Running yarn %s', cmd.join(' '))
   await yarn(cmd, {...output, rootDir: workDir})
 
   context.output.print('')
@@ -85,6 +107,6 @@ export default async (args, context) => {
 }
 
 async function getModulesInNeedOfUpdate(context, target) {
-  const versions = await findSanityModuleVersions(context, target)
+  const versions = await findSanityModuleVersions(context, target, {includeCli: false})
   return versions.filter(mod => mod.needsUpdate)
 }

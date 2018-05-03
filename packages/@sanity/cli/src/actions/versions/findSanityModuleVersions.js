@@ -7,11 +7,16 @@ import dynamicRequire from '../../util/dynamicRequire'
 import getLocalVersion from '../../util/getLocalVersion'
 import pkg from '../../../package.json'
 
-export default async (context, target) => {
+const defaultOptions = {
+  includeCli: true
+}
+
+export default async (context, target, opts = {}) => {
   const {spinner} = context.output
+  const options = Object.assign({}, defaultOptions, opts)
 
   const sanityModules = filterSanityModules(getLocalManifest(context.workDir))
-  const resolveOpts = {includeCli: true, target}
+  const resolveOpts = {includeCli: options.includeCli, target}
   const spin = spinner('Resolving latest versions').start()
   const versions = await promiseProps(
     buildPackageArray(sanityModules, context.workDir, resolveOpts)
