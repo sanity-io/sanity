@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import config from 'config:@sanity/google-maps-input'
-import GoogleMapsLoadProxy from './GoogleMapsLoadProxy'
-import GeopointSelect from './GeopointSelect'
 import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
+import {PatchEvent, set, setIfMissing, unset} from 'part:@sanity/form-builder/patch-event'
 import styles from '../styles/GeopointInput.css'
-import {PatchEvent, set, unset} from 'part:@sanity/form-builder/patch-event'
+import GeopointSelect from './GeopointSelect'
+import GoogleMapsLoadProxy from './GoogleMapsLoadProxy'
 
 const getLocale = context => {
   const intl = context.intl || {}
@@ -72,19 +72,19 @@ class GeopointInput extends React.Component {
   }
 
   handleToggleModal() {
-    this.setState({modalOpen: !this.state.modalOpen})
+    this.setState(prevState => ({modalOpen: !prevState.modalOpen}))
   }
 
   handleChange = latLng => {
     const {type, onChange} = this.props
     onChange(
-      PatchEvent.from(
-        set({
-          _type: type.name,
-          lat: latLng.lat(),
-          lng: latLng.lng()
-        })
-      )
+      PatchEvent.from([
+        setIfMissing({
+          _type: type.name
+        }),
+        set(latLng.lat(), ['lat']),
+        set(latLng.lng(), ['lng'])
+      ])
     )
   }
 
