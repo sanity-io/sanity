@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/selects/style-style'
-import {includes} from 'lodash'
 import FaAngleDown from 'part:@sanity/base/angle-down-icon'
 import enhanceWithClickOutside from 'react-click-outside'
 import CircleThinIcon from 'part:@sanity/base/circle-thin-icon'
@@ -122,7 +121,7 @@ class StyleSelect extends React.Component {
                 <div ref={this.setPopperElement}>
                   <List className={styles.list}>
                     {items.map((item, index) => {
-                      const isSemiSelected = value && value.length > 1 && includes(value, item)
+                      const isSemiSelected = value && value.length > 1 && value.includes(item)
                       const isSelected = value && value.length === 1 && value[0] == item
                       const classNames = `
                           ${isSelected ? styles.itemSelected : styles.item}
