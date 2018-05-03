@@ -66,6 +66,11 @@ function hasFocusInPath(path, value) {
   return path.length === 1 && PathUtils.isSegmentEqual(path[0], pathSegmentFrom(value))
 }
 
+const IGNORE_KEYS = ['_key', '_type', '_weak']
+function isEmpty(value) {
+  return Object.keys(value).every(key => IGNORE_KEYS.includes(key))
+}
+
 export default class RenderItemValue extends React.Component<Props> {
   _focusArea: ?FocusArea
 
@@ -98,7 +103,11 @@ export default class RenderItemValue extends React.Component<Props> {
   }
 
   handleEditStop = () => {
-    this.setFocus()
+    if (isEmpty(this.props.value)) {
+      this.handleRemove()
+    } else {
+      this.setFocus()
+    }
   }
 
   handleKeyPress = (event: SyntheticKeyboardEvent<*>) => {
@@ -163,7 +172,7 @@ export default class RenderItemValue extends React.Component<Props> {
       <FormBuilderInput
         type={memberType}
         level={0}
-        value={item}
+        value={isEmpty(item) ? undefined : item}
         onChange={this.handleChange}
         onFocus={onFocus}
         onBlur={onBlur}
