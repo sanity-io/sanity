@@ -85,6 +85,6 @@ export default async (args, context) => {
 }
 
 async function getModulesInNeedOfUpdate(context, target) {
-  const versions = await findSanityModuleVersions(context, target)
+  const versions = await findSanityModuleVersions(context, target, {includeCli: false})
   return versions.filter(mod => mod.needsUpdate)
 }
