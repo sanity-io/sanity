@@ -2,6 +2,12 @@
 
 .root {
   display: block;
+  position: relative;
+}
+
+.rootReadOnly {
+  composes: root;
+  opacity: 0.5;
 }
 
 .tags {
@@ -43,7 +49,7 @@
   width: 1.5em;
   text-align: center;
 
-  &:hover {
+  @nest &:hover {
     color: var(--black);
   }
 }
@@ -53,14 +59,14 @@
 }
 
 .content {
-  composes: input from 'part:@sanity/components/textinputs/default-style';
+  composes: root from 'part:@sanity/base/theme/forms/text-input-style';
   display: block;
   overflow: hidden;
   padding-left: 0.3em;
 
-  @nest :focus-within & {
+  /* @nest :focus-within & {
     border-color: var(--input-border-color-focus);
-  }
+  } */
 }
 
 .input {
@@ -77,11 +83,7 @@
   padding-left: 0.1em;
   z-index: 1;
 
-  &:focus {
+  @nest &:focus {
     outline: none;
   }
-}
-
-.wrapper {
-  position: relative;
 }
