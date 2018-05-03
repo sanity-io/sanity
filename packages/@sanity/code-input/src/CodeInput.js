@@ -189,7 +189,11 @@ export default class CodeInput extends PureComponent {
 
     if (has(type, 'options.language')) {
       return (
-        <Fieldset styles={fieldsetStyles} legend={type.title} description={type.description}>
+        <Fieldset
+          className={fieldsetStyles.content}
+          legend={type.title}
+          description={type.description}
+        >
           {this.renderEditor()}
         </Fieldset>
       )
@@ -206,7 +210,11 @@ export default class CodeInput extends PureComponent {
     const languageField = type.fields.find(field => field.name === 'language')
 
     return (
-      <Fieldset legend={type.title} description={type.description}>
+      <Fieldset
+        legend={type.title}
+        description={type.description}
+        className={fieldsetStyles.content}
+      >
         <FormField level={level + 1} label={languageField.type.title}>
           <DefaultSelect
             onChange={this.handleLanguageChange}

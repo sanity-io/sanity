@@ -3,6 +3,9 @@
 .root {
   width: 100%;
   position: relative;
+
+  /* forces bigger dialog when in dialog */
+  composes: largeContent from 'part:@sanity/components/dialogs/default-style';
 }
 
 .textarea {
