@@ -64,9 +64,9 @@
   overflow: hidden;
   padding-left: 0.3em;
 
-  /* @nest :focus-within & {
+  @nest :focus-within & {
     border-color: var(--input-border-color-focus);
-  } */
+  }
 }
 
 .input {
