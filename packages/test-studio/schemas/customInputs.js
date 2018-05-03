@@ -1,7 +1,8 @@
+import icon from 'react-icons/lib/md/extension'
 import CustomStringInput from '../src/components/CustomStringInput'
 import CustomMyObjectInput from '../src/components/CustomMyObjectInput'
 import CustomFontStringInput from '../src/components/CustomFontStringInput'
-import icon from 'react-icons/lib/md/extension'
+import AuthorReferenceInput from '../src/components/AuthorReferenceInput'
 
 export default {
   name: 'customInputsTest',
@@ -9,6 +10,13 @@ export default {
   type: 'document',
   icon,
   fields: [
+    {
+      name: 'author',
+      title: 'Author',
+      type: 'reference',
+      to: {type: 'author'},
+      inputComponent: AuthorReferenceInput
+    },
     {
       name: 'title',
       title: 'A custom input',
