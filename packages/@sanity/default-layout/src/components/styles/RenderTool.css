@@ -1,13 +1,11 @@
-:root {
-  @custom-media --error-expand-at (min-width: 700px);
-}
+@import 'part:@sanity/base/theme/variables-style';
 
 .error {
   display: block;
   justify-content: center;
   margin: 0 10px;
 
-  @media (--error-expand-at) {
+  @media (--screen-default) {
     display: flex;
   }
 }
@@ -19,7 +17,7 @@
   min-width: 212px;
   margin: 20px auto;
 
-  @media (--error-expand-at) {
+  @media (--screen-default) {
     margin: 20px 0;
   }
 }
@@ -27,7 +25,7 @@
 .errorSplash svg {
   max-height: 35vh;
 
-  @media (--error-expand-at) {
+  @media (--screen-default) {
     max-height: 50vh;
   }
 }
