@@ -1,12 +1,17 @@
-.dialog {
-  background: #fefefe;
-}
+@import 'part:@sanity/base/theme/variables-style';
 
 .content {
   padding: 1rem;
+  box-sizing: border-box;
+  width: 80vw;
+  height: 80vw;
+}
+
+.toolbar {
+  margin-bottom: 1rem;
 }
 
 .raw {
   font: 14px/1.4 Consolas, monospace;
-  outline-color: #2097ac;
+  outline-color: var(--brand-primary);
 }
