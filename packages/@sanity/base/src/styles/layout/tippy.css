@@ -1,3 +1,5 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 :global(.tippy-touch) {
   cursor: pointer !important;
 }
@@ -600,7 +602,7 @@
   float: left;
 }
 
-@media (max-width: 450px) {
+@media (--max-screen-medium) {
   :global(.tippy-popper) {
     max-width: calc(100% - 20px);
   }

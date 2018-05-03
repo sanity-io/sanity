@@ -163,7 +163,8 @@
 
   @media (--screen-medium) {
     max-height: 90vh;
-    max-width: 80vw;
+    max-width: calc(100vw - var(--medium-padding) * 4);
+    min-width: 25em;
   }
 
   @nest .hasFunctions & {
@@ -259,5 +260,23 @@
 
   @nest .danger & {
     background-color: color(var(--white) a(60%));
+  }
+}
+
+/*
+  Composed by content that needs sizing only inside
+  the dialog.
+*/
+.root .largeContent {
+  @media (--screen-medium) {
+    min-width: 27rem;
+  }
+
+  @media (--screen-default) {
+    min-width: 33rem;
+  }
+
+  @media (--screen-large) {
+    min-width: 35rem;
   }
 }

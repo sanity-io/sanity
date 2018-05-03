@@ -81,12 +81,12 @@ export default class InspectView extends React.PureComponent {
         isOpen
         showHeader
         title={`Inspecting ${getPublishedId(value._id)}`}
-        className={styles.dialog}
         onClose={onClose}
       >
         <div className={styles.content}>
-          <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+          <div className={styles.toolbar}>
             <ToggleButtons
+              label="View"
               value={viewMode}
               items={VIEW_MODES}
               onChange={this.handleChangeViewMode}
