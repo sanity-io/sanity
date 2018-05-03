@@ -63,6 +63,7 @@
 
 .editor {
   padding: var(--medium-padding);
+  max-width: 40em;
 }
 
 .syncStatus {
