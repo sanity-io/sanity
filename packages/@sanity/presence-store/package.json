@@ -1,6 +1,6 @@
 {
   "name": "@sanity/presence-store",
-  "version": "0.128.3",
+  "version": "0.130.0",
   "description": "Client side presence channel handler",
   "main": "lib/PresenceStore.js",
   "scripts": {
