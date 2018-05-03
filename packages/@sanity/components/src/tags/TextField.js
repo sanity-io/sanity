@@ -15,6 +15,7 @@ export default class TagsTextField extends React.Component {
     onBlur: PropTypes.func,
     readOnly: PropTypes.bool,
     markers: PropTypes.array,
+    readOnly: PropTypes.bool,
     value: PropTypes.arrayOf(PropTypes.string)
   }
 
@@ -94,8 +95,8 @@ export default class TagsTextField extends React.Component {
     const {onChange, value, readOnly, markers, ...rest} = this.props
 
     return (
-      <div className={styles.wrapper}>
-        <div className={`${styles.inner}`}>
+      <div className={readOnly ? styles.rootReadOnly : styles.root}>
+        <div className={styles.inner}>
           <div className={styles.content}>
             <ul className={styles.tags}>
               {value.map((tag, i) => {
