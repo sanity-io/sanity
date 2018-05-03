@@ -11,7 +11,7 @@ import Stacked from '../utilities/Stacked'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Escapable from '../utilities/Escapable'
 import {Portal} from '../utilities/Portal'
-import {Manager, Target, Popper} from '@bjoerge/react-popper'
+import {Manager, Target, Popper} from 'react-popper'
 import {get} from 'lodash'
 
 const noop = () => {}
