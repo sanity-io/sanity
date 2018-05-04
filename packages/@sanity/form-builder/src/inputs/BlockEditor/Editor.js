@@ -16,9 +16,11 @@ import ReactDOM from 'react-dom'
 
 import SoftBreakPlugin from 'slate-soft-break'
 import {Editor as SlateEditor} from 'slate-react'
+import {isEqual} from 'lodash'
 import {EDITOR_DEFAULT_BLOCK_TYPE} from '@sanity/block-tools'
 import insertBlockOnEnter from 'slate-insert-block-on-enter'
 
+import {hasItemFocus} from '../../utils/pathUtils'
 import createNodeValidator from './utils/createNodeValidator'
 
 import ListItemOnEnterKeyPlugin from './plugins/ListItemOnEnterKeyPlugin'
@@ -84,6 +86,31 @@ export default class Editor extends React.Component<Props> {
     this._validateNode = createNodeValidator(props.type, this.getValue)
   }
 
+  // When focusPath has changed, but the editorValue has another focusBlock,
+  // select the block according to the focusPath
+  componentWillUpdate(nextProps: Props) {
+    const {focusPath, editorValue, onChange} = nextProps
+    const focusPathChanged = !isEqual(this.props.focusPath, nextProps.focusPath)
+    if (focusPathChanged && !isEqual(focusPath, [{_key: editorValue.focusBlock.key}])) {
+      const block = editorValue.document.getDescendant(focusPath[0]._key)
+      onChange(editorValue.change().collapseToStartOf(block))
+    }
+  }
+
+  // When user changes the selection in the editor, update focusPath accordingly.
+  handleChange = (change: slateChange) => {
+    const {onChange, onFocus, focusPath} = this.props
+    const {focusBlock} = change.value
+    const path = []
+    if (focusBlock) {
+      path.push({_key: focusBlock.key})
+    }
+    if (path.length && (!focusPath || focusPath.length === 1)) {
+      return onChange(change, () => onFocus(path))
+    }
+    return onChange(change)
+  }
+
   getValue = () => {
     return this.props.value
   }
@@ -131,6 +158,7 @@ export default class Editor extends React.Component<Props> {
     const {
       blockContentFeatures,
       editorValue,
+      focusPath,
       isFocused,
       markers,
       onChange,
@@ -139,31 +167,39 @@ export default class Editor extends React.Component<Props> {
       readOnly
     } = this.props
     const {node} = props
-    let childMarkers = markers.filter(marker => marker.path[0]._key === props.node.data.get('_key'))
+    let childMarkers = markers.filter(marker => marker.path[0]._key === node.data.get('_key'))
     let ObjectClass = BlockObject
     let ObjectType = blockContentFeatures.types.blockObjects.find(
       memberType => memberType.name === node.type
     )
-    if (props.node.object === 'inline') {
+    if (node.object === 'inline') {
       ObjectClass = InlineObject
       ObjectType = blockContentFeatures.types.inlineObjects.find(
         memberType => memberType.name === node.type
       )
       childMarkers = markers.filter(
-        marker => marker.path[2] && marker.path[2]._key === props.node.data.get('_key')
+        marker => marker.path[2] && marker.path[2]._key === node.data.get('_key')
       )
     }
-    if (props.node.type === 'span') {
+    if (node.type === 'span') {
       childMarkers = markers.filter(
-        marker => marker.path[2] && marker.path[2]._key === props.node.data.get('_key')
+        marker => marker.path[2] && marker.path[2]._key === node.data.get('_key')
       )
     }
+
+    // Set prop on blocks that are included in focusPath
+    let hasFormBuilderFocus = false
+    if (node.object === 'block') {
+      hasFormBuilderFocus = focusPath ? hasItemFocus(focusPath, {_key: node.key}) : false
+    }
+
     switch (node.type) {
       case 'contentBlock':
         return (
           <ContentBlock
             {...props}
             blockContentFeatures={blockContentFeatures}
+            hasFormBuilderFocus={hasFormBuilderFocus}
             markers={childMarkers}
             readOnly={readOnly}
           />
@@ -193,6 +229,7 @@ export default class Editor extends React.Component<Props> {
             editor={props.editor}
             editorIsFocused={isFocused}
             editorValue={editorValue}
+            hasFormBuilderFocus={hasFormBuilderFocus}
             isSelected={props.isSelected}
             markers={childMarkers}
             node={props.node}
@@ -224,7 +261,7 @@ export default class Editor extends React.Component<Props> {
   }
 
   render() {
-    const {editorValue, fullscreen, onChange, onEditorBlur, onEditorFocus, readOnly} = this.props
+    const {editorValue, fullscreen, onEditorBlur, onEditorFocus, readOnly} = this.props
 
     const classNames = [styles.root, fullscreen ? styles.fullscreen : null].filter(Boolean)
     return (
@@ -234,7 +271,7 @@ export default class Editor extends React.Component<Props> {
           ref={this.refEditor}
           value={editorValue}
           onBlur={onEditorBlur}
-          onChange={onChange}
+          onChange={this.handleChange}
           onFocus={onEditorFocus}
           validateNode={this._validateNode}
           plugins={this._plugins}

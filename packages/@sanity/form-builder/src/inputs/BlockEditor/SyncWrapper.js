@@ -4,13 +4,11 @@ import type {Block, BlockArrayType, SlateValue, Marker} from './typeDefs'
 
 import React from 'react'
 import generateHelpUrl from '@sanity/generate-help-url'
-
 import FormField from 'part:@sanity/components/formfields/default'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {PatchEvent} from '../../PatchEvent'
 import Input from './Input'
 
-import changeToFocusPath from './utils/changeToFocusPath'
 import changeToPatches from './utils/changeToPatches'
 import deserialize from './utils/deserialize'
 import patchesToChange from './utils/patchesToChange'
@@ -87,14 +85,10 @@ export default withPatchSubscriber(
     }
 
     handleEditorChange = (change: SlateChange, callback: void => void) => {
-      const {value, focusPath, onChange, onFocus, type} = this.props
+      const {value, onChange, type} = this.props
       const patches = changeToPatches(this.state.editorValue, change, value, type)
       this.setState({editorValue: change.value})
-      // Track focus
-      const newFocusPath = changeToFocusPath(change, focusPath)
-      if (newFocusPath) {
-        onFocus(newFocusPath)
-      }
+
       // Do the change
       onChange(PatchEvent.from(patches))
 
@@ -118,7 +112,7 @@ export default withPatchSubscriber(
     }
 
     handleRemotePatches = ({patches, shouldReset, snapshot}) => {
-      let {editorValue} = this.state
+      const {editorValue} = this.state
       const {type} = this.props
       const remotePatches = patches.filter(patch => patch.origin === 'remote')
       if (remotePatches.length) {
