@@ -30,6 +30,7 @@ type Props = {
   editor: Editor,
   editorIsFocused: boolean,
   editorValue: SlateValue,
+  hasFormBuilderFocus: boolean,
   isSelected: boolean,
   markers: Marker[],
   node: Block,
