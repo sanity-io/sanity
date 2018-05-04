@@ -19,13 +19,6 @@
 
 .gridItem {
   composes: root;
-
-  @nest & .functions {
-    position: absolute;
-    top: 0.1em;
-    right: 0;
-    z-index: 1;
-  }
 }
 
 .editRoot {
@@ -117,6 +110,22 @@
 
   @nest & > * {
     margin-right: var(--small-padding);
+  }
+}
+
+.functionsInGrid {
+  composes: functions;
+  background-color: color(var(--component-bg) a(70%));
+  position: absolute;
+  top: var(--small-padding);
+  right: var(--small-padding);
+  font-size: var(--font-size-tiny);
+  border-radius: var(--border-radius-base);
+  z-index: 1;
+  color: var(--text-color);
+
+  @nest & > * {
+    margin: 0;
   }
 }
 
