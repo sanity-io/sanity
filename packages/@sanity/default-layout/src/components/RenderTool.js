@@ -5,6 +5,12 @@ import Button from 'part:@sanity/components/buttons/default'
 import styles from './styles/RenderTool.css'
 import ErrorBorkImage from './ErrorBorkImage'
 
+function getErrorWithStack(err) {
+  const stack = err.stack.toString()
+  const message = err.message
+  return stack.indexOf(message) === -1 ? `${message}\n\n${stack}` : stack
+}
+
 export default class RenderTool extends Component {
   static propTypes = {
     tool: PropTypes.string
@@ -53,7 +59,7 @@ export default class RenderTool extends Component {
           <div className={styles.errorDetails}>
             <div className={styles.errorStackTrace}>
               <h3>Stack trace:</h3>
-              <pre>{error.stack}</pre>
+              <pre>{getErrorWithStack(error)}</pre>
             </div>
 
             <div className={styles.errorComponentStack}>
