@@ -6,86 +6,77 @@ const radiusFactor = 1.3
 const widthFactor = 1.2
 const heightFactor = 1.2
 
-export default class ProgressCircle extends React.Component {
+export default class ProgressCircle extends React.PureComponent {
   static propTypes = {
-    className: PropTypes.string,
     percent: PropTypes.number,
-    animation: PropTypes.bool,
     text: PropTypes.string,
     style: PropTypes.object,
-    showPercent: PropTypes.bool,
-    radius: PropTypes.number,
-    strokeWidth: PropTypes.number,
-    status: PropTypes.string,
-    completed: PropTypes.bool
+    showPercent: PropTypes.bool
   }
 
   static defaultProps = {
-    radius: 50,
-    percentage: 0,
-    strokeWidth: 10
+    percent: 0,
+    style: {},
+    text: undefined,
+    showPercent: false
   }
 
   render() {
-    const {percent, completed, text, style, showPercent, radius, strokeWidth} = this.props
-    const rootClasses = `
-      ${completed ? styles.completed : styles.uncompleted}
-      ${percent >= 100 && styles.hundredPercent}
-    `
+    const {percent, text, style, showPercent} = this.props
 
+    const radius = 50
+    const strokeWidth = 10
     const width = radius * 2
     const height = radius * 2
     const viewBox = `-10 -10 ${width * widthFactor} ${height * heightFactor}`
 
-    const dashArray = this.props.radius * Math.PI * 2
-    const dashOffset = dashArray - dashArray * percent / 100 //eslint-disable-line no-mixed-operators
+    const dashArray = radius * Math.PI * 2
+    const dashOffset = dashArray - dashArray * percent / 100
 
     return (
-      <div className={rootClasses} style={style}>
-        <div className={styles.inner}>
-          <svg className={styles.svg} width={width} height={height} viewBox={viewBox}>
-            <circle
-              className={styles.background}
-              cx={radius}
-              cy={radius}
-              r={radius}
-              strokeWidth={`${strokeWidth}px`}
-            />
-            <circle
-              className={styles.foreground}
-              cx={radius}
-              cy={radius}
-              r={radius}
-              strokeWidth={`${strokeWidth}px`}
-              style={{
-                strokeDasharray: dashArray,
-                strokeDashoffset: dashOffset
-              }}
-            />
-            {showPercent && (
-              <text
-                className={styles.percent}
-                x={radius}
-                y={text ? radius - 5 : radius}
-                dy=".4em"
-                textAnchor="middle"
-              >
-                {`${Math.round(percent, 1)}%`}
-              </text>
-            )}
-            {text && (
-              <text
-                className={styles.status}
-                x={radius}
-                y={radius * radiusFactor - 5}
-                dy=".4em"
-                textAnchor="middle"
-              >
-                {text}
-              </text>
-            )}
-          </svg>
-        </div>
+      <div className={percent >= 100 ? styles.completed : styles.unCompleted} style={style}>
+        <svg className={styles.svg} width={width} height={height} viewBox={viewBox}>
+          <circle
+            className={styles.background}
+            cx={radius}
+            cy={radius}
+            r={radius}
+            strokeWidth={`${strokeWidth}px`}
+          />
+          <circle
+            className={styles.foreground}
+            cx={radius}
+            cy={radius}
+            r={radius}
+            strokeWidth={`${strokeWidth}px`}
+            style={{
+              strokeDasharray: dashArray,
+              strokeDashoffset: dashOffset
+            }}
+          />
+          {showPercent && (
+            <text
+              className={styles.percent}
+              x={radius}
+              y={text ? radius - 5 : radius}
+              dy=".4em"
+              textAnchor="middle"
+            >
+              {`${Math.round(percent, 1)}%`}
+            </text>
+          )}
+          {text && (
+            <text
+              className={styles.status}
+              x={radius}
+              y={radius * radiusFactor - 5}
+              dy=".4em"
+              textAnchor="middle"
+            >
+              {text}
+            </text>
+          )}
+        </svg>
       </div>
     )
   }
