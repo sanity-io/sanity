@@ -1,7 +1,10 @@
+/* eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/previews/media-style'
+import ProgressCircle from 'part:@sanity/components/progress/circle'
 import SvgPlaceholder from './common/SvgPlaceholder'
+
 const fieldProp = PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.func])
 
 export default class MediaPreview extends React.PureComponent {
@@ -10,6 +13,7 @@ export default class MediaPreview extends React.PureComponent {
     subtitle: fieldProp,
     description: fieldProp,
     media: fieldProp,
+    progress: PropTypes.number,
     mediaDimensions: PropTypes.shape({
       width: PropTypes.number,
       height: PropTypes.number,
@@ -25,6 +29,7 @@ export default class MediaPreview extends React.PureComponent {
     subtitle: undefined,
     description: undefined,
     media: undefined,
+    progress: undefined,
     isPlaceholder: false,
     children: undefined,
     mediaDimensions: {width: 160, height: 160, aspect: 1, fit: 'crop'}
@@ -38,7 +43,8 @@ export default class MediaPreview extends React.PureComponent {
       media,
       mediaDimensions,
       children,
-      isPlaceholder
+      isPlaceholder,
+      progress
     } = this.props
 
     if (isPlaceholder) {
@@ -48,9 +54,6 @@ export default class MediaPreview extends React.PureComponent {
             className={styles.padder}
             style={{paddingTop: `${100 / mediaDimensions.aspect || 100}%`}}
           />
-          <div className={styles.mediaContainer}>
-            <SvgPlaceholder styles={styles} />
-          </div>
         </div>
       )
     }
@@ -61,12 +64,20 @@ export default class MediaPreview extends React.PureComponent {
           className={styles.padder}
           style={{paddingTop: `${100 / mediaDimensions.aspect || 100}%`}}
         />
+
         <div className={styles.mediaContainer}>
           {typeof media === 'undefined' && <div className={styles.mediaString}>{title}</div>}
           {typeof media === 'function' && media({dimensions: mediaDimensions, layout: 'media'})}
           {typeof media === 'string' && <div className={styles.mediaString}>{media}</div>}
           {React.isValidElement(media) && media}
+          {typeof progress === 'number' &&
+            progress > -1 && (
+              <div className={styles.progress}>
+                <ProgressCircle percent={progress} showPercent text="Uploaded" />
+              </div>
+            )}
         </div>
+
         <div className={styles.meta}>
           <div className={styles.metaInner}>
             {title && <h2 className={styles.title}>{title}</h2>}
