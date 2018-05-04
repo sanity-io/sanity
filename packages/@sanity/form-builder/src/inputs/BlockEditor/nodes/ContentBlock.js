@@ -6,7 +6,14 @@ import React from 'react'
 import ListItem from './ListItem'
 import Text from './Text'
 
-export default function ContentBlock(props: SlateComponentProps) {
+type ExtraProps = {
+  blockContentFeatures: BlockContentFeatures,
+  hasFormBuilderFocus: boolean,
+  markers: Marker[],
+  readOnly: ?boolean
+}
+
+export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
   const {attributes, children, node, blockContentFeatures} = props
   const data = node.data
   const listItem = data ? data.get('listItem') : null
