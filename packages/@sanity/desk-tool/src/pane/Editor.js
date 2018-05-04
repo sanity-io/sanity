@@ -449,8 +449,8 @@ export default withRouterHOC(
                 <span className={styles.syncSpinner}>
                   <SyncIcon />
                 </span>
+                &nbsp;Syncing…
               </span>
-              &nbsp;Syncing…
             </Tooltip>
           )}
           {isReconnecting && (
@@ -466,8 +466,8 @@ export default withRouterHOC(
                 <span className={styles.syncSpinner}>
                   <SyncIcon />
                 </span>
+                &nbsp;Reconnecting…
               </span>
-              &nbsp;Reconnecting…
             </Tooltip>
           )}
           {value &&
