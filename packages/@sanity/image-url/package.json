@@ -5,10 +5,11 @@
   "main": "index.js",
   "scripts": {
     "build": "npm run clean && npm run compile",
+    "coverage": "jest --coverage",
     "compile": "babel --source-maps --copy-files -d lib/ src/",
     "clean": "rimraf lib",
     "postpublish": "npm run clean",
-    "test": "mocha --recursive --require babel-register test"
+    "test": "jest"
   },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
@@ -16,9 +17,8 @@
     "access": "public"
   },
   "devDependencies": {
-    "mocha": "^5.0.1",
-    "rimraf": "^2.6.2",
-    "should": "^11.1.0"
+    "jest": "^22.4.3",
+    "rimraf": "^2.6.2"
   },
   "repository": {
     "type": "git",

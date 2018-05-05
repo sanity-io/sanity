@@ -1,4 +1,3 @@
-import should from 'should'
 import sanityImage from '../src/builder'
 import {imageWithNoCropSpecified, croppedImage} from './fixtures'
 
@@ -19,6 +18,28 @@ const cases = [
       .url(),
     expect:
       'https://cdn.sanity.io/images/zp7mbokg/production/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg?rect=200,300,1600,1280&w=100&h=80'
+  },
+
+  {
+    name: 'can be told to ignore hotspot',
+    url: urlFor
+      .image(croppedImage())
+      .ignoreImageParams()
+      .size(100, 80)
+      .url(),
+    expect:
+      'https://cdn.sanity.io/images/zp7mbokg/production/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg?w=100&h=80'
+  },
+
+  {
+    name: 'toString() aliases url()',
+    url: urlFor
+      .image(croppedImage())
+      .ignoreImageParams()
+      .size(100, 80)
+      .toString(),
+    expect:
+      'https://cdn.sanity.io/images/zp7mbokg/production/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg?w=100&h=80'
   },
 
   {
@@ -78,6 +99,7 @@ const cases = [
         .invert(true)
         .orientation(90)
         .quality(50)
+        .sharpen(7)
         .forceDownload('a.png')
         .flipHorizontal()
         .flipVertical()
@@ -86,7 +108,7 @@ const cases = [
     ),
     // eslint-disable-next-line max-len
     expect:
-      'rect=200,300,1600,2400&flip=hv&fm=png&dl=a.png&blur=50&invert=true&or=90&min-h=150&max-h=300&min-w=100&max-w=200&q=50&fit=crop'
+      'rect=200,300,1600,2400&flip=hv&fm=png&dl=a.png&blur=50&sharp=7&invert=true&or=90&min-h=150&max-h=300&min-w=100&max-w=200&q=50&fit=crop'
   },
 
   {
@@ -120,16 +142,16 @@ const cases = [
 
 describe('builder', () => {
   cases.forEach(testCase => {
-    it(testCase.name, () => {
-      should(testCase.url).equal(testCase.expect)
+    test(testCase.name, () => {
+      expect(testCase.url).toBe(testCase.expect)
     })
   })
 
-  it('should throw on invalid fit mode', () => {
-    should.throws(() => urlFor.image(croppedImage()).fit('moo'), /Invalid fit mode "moo"/)
+  test('should throw on invalid fit mode', () => {
+    expect(() => urlFor.image(croppedImage()).fit('moo')).toThrowError(/Invalid fit mode "moo"/)
   })
 
-  it('should throw on invalid crop mode', () => {
-    should.throws(() => urlFor.image(croppedImage()).crop('moo'), /Invalid crop mode "moo"/)
+  test('should throw on invalid crop mode', () => {
+    expect(() => urlFor.image(croppedImage()).crop('moo')).toThrowError(/Invalid crop mode "moo"/)
   })
 })
