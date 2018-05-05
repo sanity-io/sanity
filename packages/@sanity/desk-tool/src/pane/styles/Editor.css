@@ -113,32 +113,27 @@
 
   @media (--screen-medium) {
     font-size: 1em;
-    padding: 0 1rem;
+
+    /* padding: 0 1rem; */
   }
 }
 
 .syncSpinnerContainer {
-  display: inline-block;
-  height: 1em;
+  display: flex;
   position: relative;
-  margin-right: 1em;
+  align-items: center;
 }
 
 .syncSpinner {
   display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1em;
-  height: 1em;
-  transform-origin: center center;
-  animation-name: spin;
-  animation-duration: 2s;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
 
   @nest & > svg {
     display: block;
+    transform-origin: center center;
+    animation-name: spin;
+    animation-duration: 2s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
   }
 }
 
