@@ -22,6 +22,10 @@ import listHooksCommand from './hook/listHooksCommand'
 import printHookAttemptCommand from './hook/printHookAttemptCommand'
 import listHookLogsCommand from './hook/listHookLogsCommand'
 import execCommand from './exec/execCommand'
+import corsGroup from './cors/corsGroup'
+import addCorsOriginCommand from './cors/addCorsOriginCommand'
+import listCorsOriginsCommand from './cors/listCorsOriginsCommand'
+import deleteCorsOriginCommand from './cors/deleteCorsOriginCommand'
 
 export default [
   buildCommand,
@@ -35,6 +39,10 @@ export default [
   exportDatasetCommand,
   importDatasetCommand,
   deleteDatasetCommand,
+  corsGroup,
+  listCorsOriginsCommand,
+  addCorsOriginCommand,
+  deleteCorsOriginCommand,
   hookGroup,
   listHooksCommand,
   createHookCommand,
