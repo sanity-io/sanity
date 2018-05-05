@@ -69,6 +69,43 @@ export default {
         {name: 'field1', type: 'string', description: 'This is a string field'},
         {name: 'field2', type: 'string', description: 'This is a collapsed field'}
       ]
+    },
+    {
+      name: 'events',
+      title: 'Events',
+      type: 'array',
+      of: [
+        {
+          name: 'mbwEvent',
+          type: 'object',
+          preview: {
+            prepare({where, what}) {
+              return {
+                title: where,
+                subtitle: (what || []).join(', '),
+                media: () => (where || '').slice(0, 1)
+              }
+            }
+          },
+          fields: [
+            {
+              name: 'where',
+              title: 'Where',
+              description: 'Victoriagade? Baghaven? Koelschip?',
+              type: 'string',
+              validation: Rule => Rule.required()
+            },
+            {
+              name: 'what',
+              title: 'What',
+              description: 'Party? Bottle release? Tap takeover?',
+              type: 'array',
+              of: [{type: 'string'}],
+              validation: Rule => Rule.min(1)
+            }
+          ]
+        }
+      ]
     }
   ]
 }
