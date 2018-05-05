@@ -86,6 +86,16 @@ const cases = [
   },
 
   {
+    name: 'can specify options with url params',
+    url: urlFor
+      .image(croppedImage())
+      .withOptions({w: 320, h: 240})
+      .url(),
+    expect:
+      'https://cdn.sanity.io/images/zp7mbokg/production/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg?rect=200,300,1600,2400&w=320&h=240'
+  },
+
+  {
     name: 'all hotspot/crop-compatible params',
     url: stripPath(
       urlFor
