@@ -11,9 +11,9 @@
       "path": "index.js"
     },
     {
-      "name": "part:@sanity/storybook/decorators/center",
+      "name": "part:@sanity/storybook/addons/centered",
       "description": "Center decorator for storybook",
-      "path": "addons/Center.js"
+      "path": "addons/Centered.js"
     },
     {
       "name": "part:@sanity/storybook/iframe",

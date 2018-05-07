@@ -26,6 +26,8 @@
     "@sanity/server": "0.128.12",
     "@sanity/webpack-integration": "0.128.5",
     "@storybook/addon-knobs": "^3.4.3",
+    "@storybook/addon-centered": "^3.4.3",
+    "@storybook/addon-viewport": "^3.4.3",
     "@storybook/addons": "^3.4.3",
     "@storybook/react": "3.4.3",
     "normalize.css": "^5.0.0",
