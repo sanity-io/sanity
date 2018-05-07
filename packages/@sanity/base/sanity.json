@@ -647,6 +647,14 @@
       "path": "components/icons/Sort.js"
     },
     {
+      "implements": "part:@sanity/base/sort-asc-icon",
+      "path": "components/icons/SortAsc.js"
+    },
+    {
+      "implements": "part:@sanity/base/sort-desc-icon",
+      "path": "components/icons/SortDesc.js"
+    },
+    {
       "implements": "part:@sanity/base/bars-icon",
       "path": "components/icons/Bars.js"
     },

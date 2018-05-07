@@ -129,7 +129,8 @@ class DefaultMenu extends React.Component {
                 className={classNames([
                   item === focusedItem ? styles.focusedItem : styles.item,
                   item.isDisabled && styles.isDisabled,
-                  item.divider && styles.divider
+                  item.divider && styles.divider,
+                  item.active && styles.activeItem
                 ])}
               >
                 <a

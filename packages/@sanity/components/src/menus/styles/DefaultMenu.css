@@ -37,6 +37,10 @@
   margin-right: 0.5em;
 }
 
+.activeItem {
+  font-weight: 600;
+}
+
 .link {
   display: block;
   position: relative;

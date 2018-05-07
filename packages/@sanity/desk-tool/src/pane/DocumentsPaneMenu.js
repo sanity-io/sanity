@@ -80,6 +80,7 @@ export default class DocumentsPaneMenu extends React.PureComponent {
         icon: orderingOption.icon || NULL_COMPONENT,
         ordering: orderingOption,
         action: 'setOrdering',
+        active: orderingOption.active,
         key: orderingOption.name
       }))
       .concat(LIST_VIEW_ITEMS)

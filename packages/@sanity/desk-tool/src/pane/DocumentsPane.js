@@ -3,6 +3,8 @@ import React from 'react'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import {StateLink, withRouterHOC} from 'part:@sanity/base/router'
 import SortIcon from 'part:@sanity/base/sort-icon'
+import SortAscIcon from 'part:@sanity/base/sort-asc-icon'
+import SortDescIcon from 'part:@sanity/base/sort-desc-icon'
 import Ink from 'react-ink'
 import {partition, uniqBy, get} from 'lodash'
 import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
@@ -198,7 +200,17 @@ export default withRouterHOC(
       return selectedSchemaType.liveEdit === true
     }
 
-    getOrderingOptions(selectedType) {
+    getSortIcon = direction => {
+      if (direction === 'desc') {
+        return SortDescIcon
+      }
+      if (direction === 'asc') {
+        return SortAscIcon
+      }
+      return SortIcon
+    }
+
+    getOrderingOptions = selectedType => {
       const type = schema.get(selectedType)
 
       const optionsWithDefaults = type.orderings
@@ -206,12 +218,15 @@ export default withRouterHOC(
         : DEFAULT_ORDERING_OPTIONS
 
       return uniqBy(optionsWithDefaults, 'name').map(option => {
+        const direction = option.by[0] && option.by[0].direction
+
         return {
           ...option,
-          icon: option.icon || SortIcon,
+          icon: option.icon || this.getSortIcon(direction),
+          active: option.name === this.state.settings.ordering,
           title: (
             <span>
-              Sort by <b>{option.title}</b>
+              Sort by {option.title} ({direction})
             </span>
           )
         }
