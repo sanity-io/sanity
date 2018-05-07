@@ -56,7 +56,7 @@ export default {
     {
       name: 'blurb',
       title: 'Blurb',
-      type: 'localeText'
+      type: 'localeString'
     },
     {
       name: 'categories',
