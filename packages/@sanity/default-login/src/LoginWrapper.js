@@ -18,6 +18,7 @@ export default class LoginWrapper extends React.PureComponent {
     children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
     title: PropTypes.node,
     description: PropTypes.node,
+    sanityLogo: PropTypes.node,
     SanityLogo: PropTypes.func,
     LoadingScreen: PropTypes.oneOfType([PropTypes.node, PropTypes.func])
   }
@@ -25,6 +26,7 @@ export default class LoginWrapper extends React.PureComponent {
   static defaultProps = {
     title: 'Choose login provider',
     description: null,
+    sanityLogo: null,
     SanityLogo: SanityStudioLogo,
     LoadingScreen: Spinner
   }
@@ -49,7 +51,13 @@ export default class LoginWrapper extends React.PureComponent {
 
   render() {
     const {error, user, isLoading} = this.state
-    const {children, LoadingScreen, SanityLogo} = this.props
+    const {children, LoadingScreen, sanityLogo, SanityLogo} = this.props
+    if (sanityLogo) {
+      const warning =
+        'sanityLogo is a deprecated property on LoginWrapper. Pass a React component to the SanityLogo property instead.'
+      console.warn(warning) // eslint-disable-line no-console
+    }
+
     if (isLoading) {
       return typeof LoadingScreen === 'function' ? (
         <LoadingScreen center fullscreen />
