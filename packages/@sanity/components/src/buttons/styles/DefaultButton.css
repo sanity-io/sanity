@@ -43,6 +43,14 @@
   outline: none;
 }
 
+.spacing {
+  display: inline-block;
+}
+
+.spacing + .spacing {
+  margin-left: var(--small-padding);
+}
+
 .root {
   margin: 0;
   padding: 0;
@@ -59,10 +67,7 @@
   transition: background-color 0.15s, color 0.15s, opacity 0.15s;
   border-radius: var(--button-border-radius);
   text-transform: uppercase;
-}
-
-.root + .root {
-  margin-left: var(--small-padding);
+  composes: spacing;
 }
 
 .root:focus {
@@ -349,7 +354,8 @@
 }
 
 .icon {
-  transform: scale(1.2);
+  height: 1em;
+  /* transform: scale(1.2); */
   margin-right: var(--small-padding);
 }
 
