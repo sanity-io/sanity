@@ -3,11 +3,11 @@ import React from 'react'
 import client from 'part:@sanity/base/client'
 import userStore from 'part:@sanity/base/user'
 
-import CookieTest from './CookieTest'
 import LoginDialog from 'part:@sanity/base/login-dialog'
-import ErrorDialog from './ErrorDialog'
 import SanityStudioLogo from 'part:@sanity/base/sanity-studio-logo'
 import Spinner from 'part:@sanity/components/loading/spinner'
+import CookieTest from './CookieTest'
+import ErrorDialog from './ErrorDialog'
 import UnauthorizedUser from './UnauthorizedUser'
 
 const isProjectLogin = client.config().useProjectHostname
@@ -18,7 +18,6 @@ export default class LoginWrapper extends React.PureComponent {
     children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
     title: PropTypes.node,
     description: PropTypes.node,
-    sanityLogo: PropTypes.node,
     SanityLogo: PropTypes.func,
     LoadingScreen: PropTypes.oneOfType([PropTypes.node, PropTypes.func])
   }
@@ -26,7 +25,6 @@ export default class LoginWrapper extends React.PureComponent {
   static defaultProps = {
     title: 'Choose login provider',
     description: null,
-    sanityLogo: null,
     SanityLogo: SanityStudioLogo,
     LoadingScreen: Spinner
   }
@@ -51,7 +49,7 @@ export default class LoginWrapper extends React.PureComponent {
 
   render() {
     const {error, user, isLoading} = this.state
-    const {children, LoadingScreen, SanityLogo, sanityLogo} = this.props
+    const {children, LoadingScreen, SanityLogo} = this.props
     if (isLoading) {
       return typeof LoadingScreen === 'function' ? (
         <LoadingScreen center fullscreen />
@@ -70,8 +68,7 @@ export default class LoginWrapper extends React.PureComponent {
           <LoginDialog
             title={this.props.title}
             description={this.props.description}
-            SanityLogo={!sanityLogo && SanityLogo}
-            sanityLogo={sanityLogo}
+            SanityLogo={SanityLogo}
             projectId={projectId}
           />
         </CookieTest>
