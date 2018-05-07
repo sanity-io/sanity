@@ -24,6 +24,10 @@
       "description": "Input component for the core array type"
     },
     {
+      "name": "part:@sanity/form-builder/input/array/functions",
+      "description": "React component defining array functions such as add item"
+    },
+    {
       "name": "part:@sanity/form-builder/input/boolean",
       "description": "Input component for the core boolean type"
     },
@@ -78,6 +82,11 @@
     {
       "name": "part:@sanity/form-builder/patch-event",
       "path": "PatchEvent.js"
+    },
+    {
+      "name": "part:@sanity/form-builder/input/array/functions-default",
+      "implements": "part:@sanity/form-builder/input/array/functions",
+      "path": "inputs/ArrayInput/ArrayFunctions.js"
     }
   ]
 }

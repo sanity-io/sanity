@@ -3,6 +3,7 @@ import React from 'react'
 import {get} from 'lodash'
 import {Item as DefaultItem, List as DefaultList} from 'part:@sanity/components/lists/default'
 import {Item as SortableItem, List as SortableList} from 'part:@sanity/components/lists/sortable'
+import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import Button from 'part:@sanity/components/buttons/default'
 import Item from './Item'
@@ -60,9 +61,15 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
     this.props.onFocus([Math.max(0, index - 1)])
   }
 
-  append(type) {
+  append = itemValue => {
     const {value = [], onFocus} = this.props
-    this.set(value.concat(getEmptyValue(type)))
+    this.set(value.concat(itemValue))
+    onFocus([value.length])
+  }
+
+  prepend = itemValue => {
+    const {value = [], onFocus} = this.props
+    this.set([itemValue].concat(value))
     onFocus([value.length])
   }
 
@@ -74,14 +81,6 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
 
   handleRemoveItem = (index: number) => {
     this.removeAt(index)
-  }
-
-  handleDropDownAction = action => {
-    this.append(action.type)
-  }
-
-  handleAddBtnClick = () => {
-    this.append(this.props.type.of[0])
   }
 
   handleItemChange = event => {
@@ -109,7 +108,9 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
 
   getMemberType(typeName) {
     const {type} = this.props
-    return type.of.find(memberType => memberType.name === typeName || memberType.jsonType === typeName)
+    return type.of.find(
+      memberType => memberType.name === typeName || memberType.jsonType === typeName
+    )
   }
 
   renderItem = (item, index) => {
@@ -183,23 +184,12 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
     }
   }
 
-  renderSelectType() {
-    const {type} = this.props
-
-    const items = type.of.map(memberDef => ({
-      title: memberDef.title || memberDef.type.name,
-      type: memberDef
-    }))
-
-    return (
-      <DropDownButton items={items} onAction={this.handleDropDownAction}>
-        New {this.props.type.title}
-      </DropDownButton>
-    )
+  handleFocusItem = index => {
+    this.props.onFocus([index])
   }
 
   render() {
-    const {type, value, level, markers, readOnly, onFocus} = this.props
+    const {type, value, level, markers, readOnly, onChange, onFocus} = this.props
     return (
       <Fieldset
         legend={type.title}
@@ -212,17 +202,16 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
       >
         <div className={styles.root}>
           <div className={styles.list}>{value && value.length > 0 && this.renderList(value)}</div>
-          {!readOnly && (
-            <div className={styles.functions}>
-              {type.of.length === 1 ? (
-                <Button onClick={this.handleAddBtnClick} className={styles.addButton}>
-                  Add
-                </Button>
-              ) : (
-                this.renderSelectType()
-              )}
-            </div>
-          )}
+          <ArrayFunctions
+            type={type}
+            value={value}
+            readOnly={readOnly}
+            appendItem={this.append}
+            prependItem={this.prepend}
+            focusItem={this.handleFocusItem}
+            createValue={getEmptyValue}
+            onChange={onChange}
+          />
         </div>
       </Fieldset>
     )

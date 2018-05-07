@@ -3,6 +3,7 @@ import type {ArrayType, ItemValue} from './typedefs'
 import React from 'react'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import Button from 'part:@sanity/components/buttons/default'
+import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'
 import RenderItemValue from './ItemValue'
 import styles from './styles/ArrayInput.css'
 import randomKey from './randomKey'
@@ -57,17 +58,19 @@ export default class ArrayInput extends React.Component<Props, State> {
     isMoving: false
   }
 
-  insert(itemValue: ItemValue, position: 'before' | 'after', atIndex: number) {
+  insert = (itemValue: ItemValue, position: 'before' | 'after', atIndex: number) => {
     const {onChange} = this.props
     onChange(PatchEvent.from(setIfMissing([]), insert([itemValue], position, [atIndex])))
   }
 
-  prepend(value: ItemValue) {
+  prepend = (value: ItemValue) => {
     this.insert(value, 'before', 0)
+    this.handleFocusItem(value)
   }
 
-  append(value: ItemValue) {
+  append = (value: ItemValue) => {
     this.insert(value, 'after', -1)
+    this.handleFocusItem(value)
   }
 
   handleRemoveItem = (item: ItemValue) => {
@@ -78,25 +81,8 @@ export default class ArrayInput extends React.Component<Props, State> {
     this.props.onFocus([FOCUS_TERMINATOR])
   }
 
-  setItemExpanded(item: ItemValue) {
+  handleFocusItem = (item: ItemValue) => {
     this.props.onFocus([{_key: item._key}, FOCUS_TERMINATOR])
-  }
-
-  handleDropDownAction = (menuItem: {type: Type}) => {
-    const item = createProtoValue(menuItem.type)
-    this.append(item)
-    this.setItemExpanded(item)
-  }
-
-  handleAddBtnClick = () => {
-    const {type} = this.props
-    const memberType = type.of[0]
-    if (!memberType) {
-      throw new Error('Nothing to add')
-    }
-    const item = createProtoValue(memberType)
-    this.setItemExpanded(item)
-    this.append(item)
   }
 
   removeItem(item: ItemValue) {
@@ -110,23 +96,6 @@ export default class ArrayInput extends React.Component<Props, State> {
     const idx = value.indexOf(item)
     const nextItem = value[idx + 1] || value[idx - 1]
     onFocus([nextItem ? {_key: nextItem._key} : FOCUS_TERMINATOR])
-  }
-
-  renderSelectType() {
-    const {type} = this.props
-
-    const items = type.of.map((memberDef, i) => {
-      return {
-        title: memberDef.title || memberDef.type.name,
-        type: memberDef
-      }
-    })
-
-    return (
-      <DropDownButton items={items} onAction={this.handleDropDownAction}>
-        Add
-      </DropDownButton>
-    )
   }
 
   handleItemChange = (event: PatchEvent, item: ItemValue) => {
@@ -290,7 +259,7 @@ export default class ArrayInput extends React.Component<Props, State> {
   }
 
   render() {
-    const {type, level, markers, readOnly, value} = this.props
+    const {type, level, markers, readOnly, onChange, value} = this.props
 
     return (
       <UploadTargetFieldset
@@ -307,16 +276,16 @@ export default class ArrayInput extends React.Component<Props, State> {
         ref={this.setElement}
       >
         {value && value.length > 0 && this.renderList()}
-        {!readOnly && (
-          <div className={styles.functions}>
-            {this.props.type.of.length === 1 && (
-              <Button onClick={this.handleAddBtnClick} className={styles.addButton}>
-                Add
-              </Button>
-            )}
-            {this.props.type.of.length > 1 && this.renderSelectType()}
-          </div>
-        )}
+        <ArrayFunctions
+          type={type}
+          value={value}
+          readOnly={readOnly}
+          appendItem={this.append}
+          prependItem={this.prepend}
+          focusItem={this.handleFocusItem}
+          createValue={createProtoValue}
+          onChange={onChange}
+        />
       </UploadTargetFieldset>
     )
   }
