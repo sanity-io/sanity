@@ -61,6 +61,10 @@
   text-transform: uppercase;
 }
 
+.root + .root {
+  margin-left: var(--small-padding);
+}
+
 .root:focus {
   box-shadow: var(--focus-shadow);
 
