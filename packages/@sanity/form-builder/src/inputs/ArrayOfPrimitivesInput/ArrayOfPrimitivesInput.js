@@ -5,19 +5,16 @@ import {Item as DefaultItem, List as DefaultList} from 'part:@sanity/components/
 import {Item as SortableItem, List as SortableList} from 'part:@sanity/components/lists/sortable'
 import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import Button from 'part:@sanity/components/buttons/default'
-import Item from './Item'
-import styles from './styles/ArrayOfPrimitivesInput.css'
-import PatchEvent, {set, unset} from '../../PatchEvent'
-import DropDownButton from 'part:@sanity/components/buttons/dropdown'
-import getEmptyValue from './getEmptyValue'
-
+import {PatchEvent, set, unset} from '../../PatchEvent'
 import {startsWith} from '../../utils/pathUtils'
 import {resolveTypeName} from '../../utils/resolveTypeName'
-import InvalidValue from '../InvalidValueInput'
-import type {ItemValue} from '../ArrayInput/typedefs'
 import type {Path} from '../../typedefs/path'
 import type {Type, Marker} from '../../typedefs'
+import type {ItemValue} from '../ArrayInput/typedefs'
+import InvalidValue from '../InvalidValueInput'
+import styles from './styles/ArrayOfPrimitivesInput.css'
+import getEmptyValue from './getEmptyValue'
+import Item from './Item'
 
 function move(arr, from, to) {
   const copy = arr.slice()
