@@ -1,27 +1,43 @@
-.list {
-  padding: 4rem;
-  overflow: hidden;
+.recipe {
+  margin: 2rem;
+  text-align: center;
+  width: auto;
+  background-color: #000;
+  color: #eee;
+  padding: 2em;
+}
+
+.sanityIcons {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-gap: 3em;
+  margin-bottom: 2rem;
 }
 
 .item {
-  float: left;
-  width: 4rem;
-  margin: 1rem;
+  display: block;
+  margin: 0;
+  padding: 0;
+  text-align: center;
 }
 
 .iconName {
   text-align: center;
-  font-size: 0.5rem;
+  font-size: 0.8rem;
+  margin-top: 1em;
+  color: #000;
+}
+
+.icon {
+  text-align: center;
 }
 
 .icon svg {
-  height: 3rem;
-  width: 3rem;
-  margin: 0 auto;
-}
-
-.sanityIcons {
-  padding: 2rem;
+  display: inline-block;
+  height: 3em;
+  width: 3em;
 }
 
 .sanityIcon {
@@ -30,17 +46,14 @@
   color: inherit;
 }
 
-.title {
-  font-size: 1.5em;
-}
-
-.role {
+.part {
   composes: root from 'part:@sanity/base/theme/typography/code-style';
+  font-size: 0.5em;
   background-color: inherit;
   color: inherit;
 }
 
-.iconPreview {
+/* .iconPreview {
   color: inherit;
 }
 
@@ -67,4 +80,4 @@
 .iconPreviewXS {
   composes: iconPreview;
   font-size: 0.5em;
-}
+} */

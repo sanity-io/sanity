@@ -807,6 +807,10 @@
       "path": "components/icons/ChevronDown.js"
     },
     {
+      "implements": "part:@sanity/base/icons",
+      "path": "components/icons/index.js"
+    },
+    {
       "implements": "part:@sanity/base/sanity-logo",
       "path": "components/logos/SanityLogo.js"
     },
