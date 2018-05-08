@@ -52,7 +52,7 @@ export function croppedImage() {
   }
 }
 
-export function noHostpotImage() {
+export function noHotspotImage() {
   return {
     _type: 'image',
     asset: {
