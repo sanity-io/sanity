@@ -58,13 +58,13 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
     this.props.onFocus([Math.max(0, index - 1)])
   }
 
-  append = itemValue => {
+  handleAppend = itemValue => {
     const {value = [], onFocus} = this.props
     this.set(value.concat(itemValue))
     onFocus([value.length])
   }
 
-  prepend = itemValue => {
+  handlePrepend = itemValue => {
     const {value = [], onFocus} = this.props
     this.set([itemValue].concat(value))
     onFocus([value.length])
@@ -203,9 +203,9 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
             type={type}
             value={value}
             readOnly={readOnly}
-            appendItem={this.append}
-            prependItem={this.prepend}
-            focusItem={this.handleFocusItem}
+            onAppendItem={this.handleAppend}
+            onPrependItem={this.handlePrepend}
+            onFocusItem={this.handleFocusItem}
             createValue={getEmptyValue}
             onChange={onChange}
           />

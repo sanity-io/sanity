@@ -12,10 +12,10 @@ type Props = {
   children: ?Node,
   value: Array<ItemValue>,
   readOnly: ?boolean,
-  appendItem: (itemValue: ItemValue) => void,
-  prependItem: (itemValue: ItemValue) => void,
-  focusItem: (item: ItemValue) => void,
-  createValue: (type: Type) => ItemValue,
+  onAppendItem: (itemValue: ItemValue) => void,
+  onPrependItem: (itemValue: ItemValue) => void,
+  onFocusItem: (item: ItemValue) => void,
+  onCreateValue: (type: Type) => ItemValue,
   onChange: (event: PatchEvent) => void
 }
 
@@ -29,9 +29,9 @@ export default class ArrayFunctions extends React.Component<Props> {
   }
 
   handleInsertItem = type => {
-    const {createValue, appendItem} = this.props
-    const item = createValue(type)
-    appendItem(item)
+    const {onCreateValue, onAppendItem} = this.props
+    const item = onCreateValue(type)
+    onAppendItem(item)
   }
 
   renderSelectType() {

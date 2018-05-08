@@ -61,12 +61,12 @@ export default class ArrayInput extends React.Component<Props, State> {
     onChange(PatchEvent.from(setIfMissing([]), insert([itemValue], position, [atIndex])))
   }
 
-  prepend = (value: ItemValue) => {
+  handlePrepend = (value: ItemValue) => {
     this.insert(value, 'before', 0)
     this.handleFocusItem(value)
   }
 
-  append = (value: ItemValue) => {
+  handleAppend = (value: ItemValue) => {
     this.insert(value, 'after', -1)
     this.handleFocusItem(value)
   }
@@ -244,7 +244,7 @@ export default class ArrayInput extends React.Component<Props, State> {
     const item = createProtoValue(type)
 
     const key = item._key
-    this.append(item)
+    this.handleAppend(item)
 
     const events$ = uploader
       .upload(file, type)
@@ -278,10 +278,10 @@ export default class ArrayInput extends React.Component<Props, State> {
           type={type}
           value={value}
           readOnly={readOnly}
-          appendItem={this.append}
-          prependItem={this.prepend}
-          focusItem={this.handleFocusItem}
-          createValue={createProtoValue}
+          onAppendItem={this.handleAppend}
+          onPrependItem={this.handlePrepend}
+          onFocusItem={this.handleFocusItem}
+          onCreateValue={createProtoValue}
           onChange={onChange}
         />
       </UploadTargetFieldset>

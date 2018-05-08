@@ -21,8 +21,8 @@ export default class SearchableArrayFunctions extends React.Component {
     }).isRequired,
     value: PropTypes.array,
     readOnly: PropTypes.bool,
-    appendItem: PropTypes.func.isRequired,
-    createValue: PropTypes.func.isRequired
+    onAppendItem: PropTypes.func.isRequired,
+    onCreateValue: PropTypes.func.isRequired
   }
 
   static defaultProps = {
@@ -37,9 +37,9 @@ export default class SearchableArrayFunctions extends React.Component {
   }
 
   handleInsertItem = type => {
-    const {createValue, appendItem} = this.props
-    const item = createValue(type)
-    appendItem(item)
+    const {onCreateValue, onAppendItem} = this.props
+    const item = onCreateValue(type)
+    onAppendItem(item)
   }
 
   getMatchingResults = (query, type) => {
