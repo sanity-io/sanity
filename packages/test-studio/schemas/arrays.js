@@ -1,5 +1,6 @@
 import React from 'react'
 import icon from 'react-icons/lib/md/format-list-numbered'
+
 export default {
   name: 'arraysTest',
   type: 'document',
@@ -292,6 +293,15 @@ export default {
           to: [{type: 'book', title: 'Reference to book'}]
         }
       ]
+    },
+    {
+      name: 'arrayOfSoManyDifferentTypes',
+      type: 'array',
+      title: 'Array of SO MANY different types',
+      describe: 'Uses custom "Add" functionality',
+      of: ['author', 'book', 'code', 'color', 'geopoint', 'image', 'slug', 'species'].map(type => ({
+        type
+      }))
     }
   ]
 }
