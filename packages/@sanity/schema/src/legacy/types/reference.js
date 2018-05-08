@@ -1,6 +1,20 @@
-import {pick} from 'lodash'
 import arrify from 'arrify'
+import {pick} from 'lodash'
 import {lazyGetter} from './utils'
+
+export const REF_FIELD = {
+  name: '_ref',
+  title: 'Referenced document ID',
+  type: 'string'
+}
+
+export const WEAK_FIELD = {
+  name: '_weak',
+  title: 'Weak reference',
+  type: 'boolean'
+}
+
+const REFERENCE_FIELDS = [REF_FIELD, WEAK_FIELD]
 
 const OVERRIDABLE_FIELDS = ['jsonType', 'type', 'name', 'title', 'description', 'options']
 
@@ -46,6 +60,16 @@ export const ReferenceType = {
     const parsed = Object.assign(pick(REFERENCE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: REFERENCE_CORE,
       title: subTypeDef.title || buildTitle(subTypeDef)
+    })
+
+    lazyGetter(parsed, 'fields', () => {
+      return REFERENCE_FIELDS.map(fieldDef => {
+        const {name, ...type} = fieldDef
+        return {
+          name: name,
+          type: createMemberType(type)
+        }
+      })
     })
 
     lazyGetter(parsed, 'to', () => {
