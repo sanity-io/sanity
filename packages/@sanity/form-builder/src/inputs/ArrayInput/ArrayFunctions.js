@@ -19,7 +19,7 @@ type Props = {
   onChange: (event: PatchEvent) => void
 }
 
-export default class ArrayFunctions extends React.Component<Props, State> {
+export default class ArrayFunctions extends React.Component<Props> {
   handleDropDownAction = (menuItem: {type: Type}) => {
     this.handleInsertItem(menuItem.type)
   }
