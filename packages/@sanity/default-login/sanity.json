@@ -6,12 +6,20 @@
 
   "parts": [
     {
-      "implements": "part:@sanity/base/login-dialog",
-      "path": "LoginDialog.js"
+      "name": "part:@sanity/base/login-dialog-content",
+      "description": "React component which renders login page and available providers"
     },
     {
       "implements": "part:@sanity/base/login-wrapper",
       "path": "LoginWrapper.js"
+    },
+    {
+      "implements": "part:@sanity/base/login-dialog",
+      "path": "LoginDialog.js"
+    },
+    {
+      "implements": "part:@sanity/base/login-dialog-content",
+      "path": "LoginDialogContent.js"
     },
     {
       "implements": "part:@sanity/base/authentication-fetcher",
