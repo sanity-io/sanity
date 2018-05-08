@@ -3,11 +3,11 @@ import React from 'react'
 import client from 'part:@sanity/base/client'
 import userStore from 'part:@sanity/base/user'
 
-import CookieTest from './CookieTest'
 import LoginDialog from 'part:@sanity/base/login-dialog'
-import ErrorDialog from './ErrorDialog'
 import SanityStudioLogo from 'part:@sanity/base/sanity-studio-logo'
 import Spinner from 'part:@sanity/components/loading/spinner'
+import CookieTest from './CookieTest'
+import ErrorDialog from './ErrorDialog'
 import UnauthorizedUser from './UnauthorizedUser'
 
 const isProjectLogin = client.config().useProjectHostname
@@ -51,7 +51,13 @@ export default class LoginWrapper extends React.PureComponent {
 
   render() {
     const {error, user, isLoading} = this.state
-    const {children, LoadingScreen, SanityLogo, sanityLogo} = this.props
+    const {children, LoadingScreen, sanityLogo, SanityLogo} = this.props
+    if (sanityLogo) {
+      const warning =
+        'sanityLogo is a deprecated property on LoginWrapper. Pass a React component to the SanityLogo property instead.'
+      console.warn(warning) // eslint-disable-line no-console
+    }
+
     if (isLoading) {
       return typeof LoadingScreen === 'function' ? (
         <LoadingScreen center fullscreen />
@@ -70,8 +76,7 @@ export default class LoginWrapper extends React.PureComponent {
           <LoginDialog
             title={this.props.title}
             description={this.props.description}
-            SanityLogo={!sanityLogo && SanityLogo}
-            sanityLogo={sanityLogo}
+            SanityLogo={SanityLogo}
             projectId={projectId}
           />
         </CookieTest>
