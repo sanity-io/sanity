@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/previews/media-style'
 import ProgressCircle from 'part:@sanity/components/progress/circle'
-import SvgPlaceholder from './common/SvgPlaceholder'
 
 const fieldProp = PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.func])
 
@@ -29,7 +28,6 @@ export default class MediaPreview extends React.PureComponent {
     subtitle: undefined,
     description: undefined,
     media: undefined,
-    progress: undefined,
     isPlaceholder: false,
     children: undefined,
     mediaDimensions: {width: 160, height: 160, aspect: 1, fit: 'crop'}
