@@ -112,7 +112,7 @@ export function parseSource(source) {
 function parseAssetId(ref) {
   const [, id, dimensionString, format] = ref.split('-')
 
-  if (!(typeof dimensionString === 'string')) {
+  if (typeof dimensionString !== 'string') {
     throw new Error(
       `Malformed asset _ref '${ref}'. Expected an id on the form "image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg.`
     )
@@ -168,11 +168,13 @@ function specToImageUrl(spec) {
     params.push(`flip=${spec.flipHorizontal ? 'h' : ''}${spec.flipVertical ? 'v' : ''}`)
   }
 
-  // Map from spec name to url param name
+  // Map from spec name to url param name, and allow using the actual param name as an alternative
   SPEC_NAME_TO_URL_NAME_MAPPINGS.forEach(mapping => {
     const [specName, param] = mapping
-    if (typeof spec[specName] != 'undefined') {
+    if (typeof spec[specName] !== 'undefined') {
       params.push(`${param}=${encodeURIComponent(spec[specName])}`)
+    } else if (typeof spec[param] !== 'undefined') {
+      params.push(`${param}=${encodeURIComponent(spec[param])}`)
     }
   })
 

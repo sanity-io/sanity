@@ -1,31 +1,35 @@
-import should from 'should'
 import {parseSource} from '../src/urlForImage'
 import {imageWithNoCropSpecified, croppedImage} from './fixtures'
 
 function compareParsedSource(outputSource, exptectedSource) {
-  should(outputSource).be.an.Object()
-  should(outputSource.asset).be.an.Object()
-  should(outputSource.asset._ref).be.eql(exptectedSource.asset._ref)
-  should(outputSource).have.keys('crop', 'hotspot')
+  expect(typeof outputSource).toBe('object')
+  expect(typeof outputSource.asset).toBe('object')
+  expect(outputSource.asset._ref).toEqual(exptectedSource.asset._ref)
+  expect(outputSource).toHaveProperty('crop')
+  expect(outputSource).toHaveProperty('hotspot')
 }
 
 describe('parseSource', () => {
-  it('does correctly parse full image object', () => {
+  test('does correctly parse full image object', () => {
     const parsedSource = parseSource(imageWithNoCropSpecified())
     compareParsedSource(parsedSource, imageWithNoCropSpecified())
   })
 
-  it('does correctly parse asset object', () => {
+  test('does correctly parse asset object', () => {
     const parsedSource = parseSource(imageWithNoCropSpecified().asset._ref)
     compareParsedSource(parsedSource, imageWithNoCropSpecified())
   })
 
-  it('does correctly parse image asset _ref', () => {
+  test('does correctly parse image asset _ref', () => {
     const parsedSource = parseSource(imageWithNoCropSpecified().asset)
     compareParsedSource(parsedSource, imageWithNoCropSpecified())
   })
 
-  it('does not overwrite cropp or hotspot settings', () => {
-    should(parseSource(croppedImage())).deepEqual(croppedImage())
+  test('does not overwrite crop or hotspot settings', () => {
+    expect(parseSource(croppedImage())).toEqual(croppedImage())
+  })
+
+  test('returns null on non-image object', () => {
+    expect(parseSource({})).toEqual(null)
   })
 })
