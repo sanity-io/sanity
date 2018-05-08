@@ -17,7 +17,7 @@ export default class ProgressCircle extends React.PureComponent {
   static defaultProps = {
     percent: 0,
     style: {},
-    text: undefined,
+    text: '',
     showPercent: false
   }
 
