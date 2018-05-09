@@ -75,7 +75,7 @@ export default class SanityDefaultPreview extends React.PureComponent {
   renderIcon = options => {
     const {type} = this.props
     const Icon = type.icon
-    return Icon && <Icon />
+    return Icon && <Icon className="sanity-studio__preview-fallback-icon" />
   }
 
   resolveMedia = () => {
