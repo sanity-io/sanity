@@ -3,6 +3,10 @@
 .root {
   display: inline-block;
   position: relative;
+
+  @nest &:hover {
+    color: var(--state-danger-color);
+  }
 }
 
 .popoverAnchor {

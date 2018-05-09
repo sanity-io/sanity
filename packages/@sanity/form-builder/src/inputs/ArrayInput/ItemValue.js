@@ -1,4 +1,5 @@
 // @flow
+/* eslint-disable complexity */
 import type {ArrayType, ItemValue} from './typedefs'
 
 import type {Node} from 'react'
@@ -275,7 +276,7 @@ export default class RenderItemValue extends React.Component<Props> {
           </div>
         </div>
 
-        <div className={styles.functions}>
+        <div className={isGrid ? styles.functionsInGrid : styles.functions}>
           <div className={styles.validationStatus}>
             <ValidationStatus markers={scopedValidation} />
           </div>
