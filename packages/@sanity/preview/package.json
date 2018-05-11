@@ -42,7 +42,7 @@
   },
   "peerDependencies": {
     "prop-types": "^15.6 || ^16",
-    "react": "^15.6 || ^16"
+    "react": "^16"
   },
   "homepage": "https://www.sanity.io/",
   "repository": {
