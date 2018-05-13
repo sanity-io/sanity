@@ -4,12 +4,12 @@ const resolveFrom = require('resolve-from')
 const generateHelpUrl = require('@sanity/generate-help-url')
 
 const supported = {
-  react: '^15 || ^16',
-  'react-dom': '^15 || ^16'
+  react: '^16.2',
+  'react-dom': '^16.2'
 }
+
 const deprecated = {
-  react: '^15',
-  'react-dom': '^15'
+  // add packages to deprecate support for here
 }
 
 module.exports = workDir => {
@@ -30,8 +30,8 @@ module.exports = workDir => {
       console.warn(
         `[WARN] ${pkg} ${
           deprecated[pkg]
-        } is deprecated and will be unsupported as of the next release of Sanity. Please upgrade the ${pkg} package. Read more at ${generateHelpUrl(
-          'upgrade-react'
+        } is deprecated and will be unsupported in an upcoming release of Sanity. Please upgrade the ${pkg} package. Read more at ${generateHelpUrl(
+          'upgrade-package'
         )} `
       )
     }
