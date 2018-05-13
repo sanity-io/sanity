@@ -68,8 +68,8 @@
   },
   "peerDependencies": {
     "prop-types": "^15.6 || ^16",
-    "react": "^15.6 || ^16",
-    "react-dom": "^15.6 || ^16"
+    "react": "^16.2",
+    "react-dom": "^16.2"
   },
   "repository": {
     "type": "git",
