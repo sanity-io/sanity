@@ -107,27 +107,39 @@ const reportErrors = debounce(() => {
   /* eslint-enable no-console */
 }, 1000)
 
-const stringValidatorFor = fieldName => value =>
-  typeof value === 'string'
-    ? EMPTY
-    : [
-        assignType(
-          'returnValueError',
-          new Error(`The "${fieldName}" field should be a string, instead saw ${inspect(value)}`)
-        )
-      ]
-
+const isRenderable = fieldName => value => {
+  const type = typeof value
+  if (
+    value === null ||
+    type === 'undefined' ||
+    type === 'string' ||
+    type === 'number' ||
+    type === 'boolean'
+  ) {
+    return EMPTY
+  }
+  return [
+    assignType(
+      'returnValueError',
+      new Error(
+        `The "${fieldName}" field should be a string, number, boolean, undefined or null, instead saw ${inspect(
+          value
+        )}`
+      )
+    )
+  ]
+}
 const FIELD_NAME_VALIDATORS = {
   media: () => {
     // not sure how to validate media as it would  possibly involve executing a function and check the
     // return value
     return EMPTY
   },
-  title: stringValidatorFor('title'),
-  subtitle: stringValidatorFor('subtitle'),
-  description: stringValidatorFor('description'),
-  imageUrl: stringValidatorFor('imageUrl'),
-  date: stringValidatorFor('date')
+  title: isRenderable('title'),
+  subtitle: isRenderable('subtitle'),
+  description: isRenderable('description'),
+  imageUrl: isRenderable('imageUrl'),
+  date: isRenderable('date')
 }
 
 function inspect(val, prefixType = true) {
