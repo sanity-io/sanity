@@ -1,10 +1,10 @@
-import {parseSource} from '../src/urlForImage'
-import {imageWithNoCropSpecified, croppedImage} from './fixtures'
+import parseSource from '../src/parseSource'
+import {imageWithNoCropSpecified, croppedImage, assetDocument, noHotspotImage} from './fixtures'
 
-function compareParsedSource(outputSource, exptectedSource) {
+function compareParsedSource(outputSource, expectedSource) {
   expect(typeof outputSource).toBe('object')
   expect(typeof outputSource.asset).toBe('object')
-  expect(outputSource.asset._ref).toEqual(exptectedSource.asset._ref)
+  expect(outputSource.asset._ref).toEqual(expectedSource.asset._ref)
   expect(outputSource).toHaveProperty('crop')
   expect(outputSource).toHaveProperty('hotspot')
 }
@@ -15,14 +15,19 @@ describe('parseSource', () => {
     compareParsedSource(parsedSource, imageWithNoCropSpecified())
   })
 
-  test('does correctly parse asset object', () => {
+  test('does correctly parse asset document ID', () => {
     const parsedSource = parseSource(imageWithNoCropSpecified().asset._ref)
     compareParsedSource(parsedSource, imageWithNoCropSpecified())
   })
 
-  test('does correctly parse image asset _ref', () => {
+  test('does correctly parse image asset object', () => {
     const parsedSource = parseSource(imageWithNoCropSpecified().asset)
     compareParsedSource(parsedSource, imageWithNoCropSpecified())
+  })
+
+  test('does correctly parse image asset document', () => {
+    const parsedSource = parseSource(assetDocument())
+    compareParsedSource(parsedSource, noHotspotImage())
   })
 
   test('does not overwrite crop or hotspot settings', () => {

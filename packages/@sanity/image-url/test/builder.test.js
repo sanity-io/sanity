@@ -1,5 +1,5 @@
 import sanityImage from '../src/builder'
-import {imageWithNoCropSpecified, croppedImage} from './fixtures'
+import {imageWithNoCropSpecified, noHotspotImage, croppedImage} from './fixtures'
 
 const urlFor = sanityImage()
   .projectId('zp7mbokg')
@@ -93,6 +93,28 @@ const cases = [
       .url(),
     expect:
       'https://cdn.sanity.io/images/zp7mbokg/production/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg?rect=200,300,1600,2400&w=320&h=240'
+  },
+
+  {
+    name: 'flip horizontal',
+    url: stripPath(
+      urlFor
+        .image(noHotspotImage())
+        .flipHorizontal()
+        .url()
+    ),
+    expect: 'flip=h'
+  },
+
+  {
+    name: 'flip vertical',
+    url: stripPath(
+      urlFor
+        .image(noHotspotImage())
+        .flipVertical()
+        .url()
+    ),
+    expect: 'flip=v'
   },
 
   {
