@@ -5,6 +5,12 @@ export default {
   type: 'document',
   title: 'Numbers test',
   icon,
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'myNumberField'
+    }
+  },
   fields: [
     {
       name: 'title',

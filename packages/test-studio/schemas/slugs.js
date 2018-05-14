@@ -1,5 +1,3 @@
-import React from 'react'
-
 export default {
   name: 'slugsTest',
   type: 'document',
@@ -12,7 +10,7 @@ export default {
     prepare: ({title, subtitle}) => {
       return {
         title: title,
-        subtitle: <span style={{fontFamily: 'monospace'}}>{`/${subtitle}/`}</span>
+        subtitle: `/${subtitle}/`
       }
     }
   },
