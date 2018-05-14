@@ -13,7 +13,10 @@ export default (baseCommands, corePath, options = {}) => {
   const {cwd, workDir} = options
   const core = dynamicRequire(corePath)
 
-  if (core.requiredCliVersionRange && !semver.satisfies(version, core.requiredCliVersionRange)) {
+  if (
+    core.requiredCliVersionRange &&
+    !semver.satisfies(semver.coerce(version), core.requiredCliVersionRange)
+  ) {
     const upgradeCmd = chalk.yellow(getUpgradeCommand({cwd, workDir}))
     /* eslint-disable no-console, no-process-exit */
     console.error(
