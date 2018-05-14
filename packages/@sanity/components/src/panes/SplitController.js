@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from './styles/SplitController.css'
@@ -18,7 +19,23 @@ export default class PanesSplitController extends React.Component {
     onSholdExpand() {}
   }
 
+  state = {
+    windowWidth: 1000
+  }
+
   isResizing = false
+
+  componentDidMount() {
+    if (window) {
+      window.addEventListener('resize', this.handleResize)
+    }
+  }
+
+  componentWillUnmont() {
+    if (window) {
+      window.removeEventListener('resize', this.handleResize)
+    }
+  }
 
   handleSplitPaneChange = debounce((size, pane) => {
     if (size <= pane.props.minWidth) {
@@ -97,6 +114,14 @@ export default class PanesSplitController extends React.Component {
     return this.renderSplitPane(panes[0], this.renderRecursivePanes(remainingPanes))
   }
 
+  handleResize = () => {
+    if (window && this.state.windowWidth !== window.innerWidth) {
+      this.setState({
+        windowWidth: window.innerWidth
+      })
+    }
+  }
+
   render() {
     const {children} = this.props
     const panes = React.Children.toArray(children)
@@ -107,7 +132,7 @@ export default class PanesSplitController extends React.Component {
 
     // TODO We need a way to target mobile devices in JS
     // --screen-medium-break: 32em;  ~32 * 16 = 512
-    const isMobile = window && window.innerWidth < 512
+    const isMobile = this.state.windowWidth < 512
 
     return (
       <div className={styles.vertical}>
