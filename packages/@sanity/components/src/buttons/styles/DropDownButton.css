@@ -2,6 +2,12 @@
 
 .root {
   position: relative;
+  display: inline-block;
+  composes: spacing from 'part:@sanity/components/buttons/default-style';
+}
+
+.button {
+  position: relative;
 }
 
 .title {

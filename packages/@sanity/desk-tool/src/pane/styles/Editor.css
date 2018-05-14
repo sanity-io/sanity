@@ -105,16 +105,14 @@
   flex-wrap: nowrap;
   align-items: center;
   padding-right: 0;
-  font-size: var(--font-size-small);
-}
-
-.publishButton {
-  font-size: 0.8em;
+  font-size: var(--font-size-xsmall);
 
   @media (--screen-medium) {
     font-size: 1em;
+  }
 
-    /* padding: 0 1rem; */
+  @nest & > *:not(:last-child) {
+    margin-right: var(--small-padding);
   }
 }
 
@@ -149,8 +147,4 @@
   @media (--screen-medium) {
     height: calc(100vh - 6rem); /* 6rem is aprox the height of the header stuff */
   }
-}
-
-.validationButton {
-  border: 5px solid red;
 }
