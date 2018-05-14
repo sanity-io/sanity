@@ -1,3 +1,6 @@
+import parseSource from './parseSource'
+import parseAssetId from './parseAssetId'
+
 const SPEC_NAME_TO_URL_NAME_MAPPINGS = [
   ['width', 'w'],
   ['height', 'h'],
@@ -60,85 +63,6 @@ export default function urlForImage(options) {
   return specToImageUrl(spec)
 }
 
-// Convert an asset-id, asset or image to an image record suitable for processing
-export function parseSource(source) {
-  let image
-
-  // Did we just get an asset id?
-  if (typeof source === 'string') {
-    image = {
-      asset: {_ref: source}
-    }
-  } else if (
-    source._type === 'sanity.imageAsset' ||
-    (typeof source === 'object' && typeof source._ref === 'string')
-  ) {
-    // We just got passed an asset directly
-    image = {
-      asset: source
-    }
-  } else if (typeof source === 'object' && typeof source.asset === 'object') {
-    image = source
-  } else {
-    // We got something that does not look like an image, or it is an image
-    // that currently isn't sporting an asset.
-    return null
-  }
-
-  if (!image.crop || !image.hotspot) {
-    // Mock crop and hotspot if image lacks it
-    image = Object.assign(
-      {
-        crop: {
-          left: 0,
-          top: 0,
-          bottom: 0,
-          right: 0
-        },
-        hotspot: {
-          x: 0.5,
-          y: 0.5,
-          height: 1.0,
-          width: 1.0
-        }
-      },
-      image
-    )
-  }
-
-  return image
-}
-
-function parseAssetId(ref) {
-  const [, id, dimensionString, format] = ref.split('-')
-
-  if (typeof dimensionString !== 'string') {
-    throw new Error(
-      `Malformed asset _ref '${ref}'. Expected an id on the form "image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg.`
-    )
-  }
-
-  const [imgWidthStr, imgHeightStr] = dimensionString.split('x')
-
-  const width = +imgWidthStr
-  const height = +imgHeightStr
-
-  if (
-    !(
-      typeof id === 'string' &&
-      typeof format === 'string' &&
-      Number.isFinite(width) &&
-      Number.isFinite(height)
-    )
-  ) {
-    throw new Error(
-      `Malformed asset _ref '${ref}'. Expected an id on the form "image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg.`
-    )
-  }
-
-  return {id, width, height, format}
-}
-
 // eslint-disable-next-line complexity
 function specToImageUrl(spec) {
   const cdnUrl = spec.baseUrl || 'https://cdn.sanity.io'
@@ -184,7 +108,6 @@ function specToImageUrl(spec) {
 
   return `${baseUrl}?${params.join('&')}`
 }
-/* eslint-enable complexity */
 
 function fit(source, spec) {
   const result = {
@@ -248,3 +171,6 @@ function fit(source, spec) {
   }
   return result
 }
+
+// For backwards-compatibility
+export {parseSource}
