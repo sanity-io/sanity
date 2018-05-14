@@ -6,10 +6,10 @@ import Button from 'part:@sanity/components/buttons/default'
 import ArrowIcon from 'part:@sanity/base/angle-down-icon'
 import Menu from 'part:@sanity/components/menus/default'
 import {omit} from 'lodash'
+import {Manager, Target, Popper} from 'react-popper'
 import {Portal} from '../utilities/Portal'
 import Stacked from '../utilities/Stacked'
 import Escapable from '../utilities/Escapable'
-import {Manager, Target, Popper} from 'react-popper'
 
 export default class DropDownButton extends React.PureComponent {
   static propTypes = {
@@ -37,10 +37,9 @@ export default class DropDownButton extends React.PureComponent {
   }
 
   state = {
-    menuOpened: false
+    menuOpened: false,
+    width: 100
   }
-
-  width = 100
 
   handleClose = () => {
     this.setState({menuOpened: false})
@@ -59,9 +58,19 @@ export default class DropDownButton extends React.PureComponent {
 
   handleOnClick = event => {
     this.setState({
-      menuOpened: !this.state.menuOpened,
+      menuOpened: true,
       width: event.target.offsetWidth
     })
+  }
+
+  handleClickOutside = event => {
+    if (this._rootElement && this._rootElement.contains(event.target)) {
+      // Stop the open button from being clicked
+      event.stopPropagation()
+      this.handleClose()
+    } else {
+      this.handleClose()
+    }
   }
 
   handleAction = item => {
@@ -74,12 +83,11 @@ export default class DropDownButton extends React.PureComponent {
     const {menuOpened, width} = this.state
 
     return (
-      <div ref={this.setRootElement} className={className}>
+      <div ref={this.setRootElement} className={`${styles.root} ${className}`}>
         <Manager>
           <Target>
-            <Button {...rest} className={`${styles.root}`} onClick={this.handleOnClick} kind={kind}>
+            <Button {...rest} onClick={this.handleOnClick} kind={kind}>
               <span className={styles.title}>{children}</span>
-
               <span className={styles.arrow}>
                 <ArrowIcon color="inherit" />
               </span>
@@ -101,7 +109,7 @@ export default class DropDownButton extends React.PureComponent {
                         isOpen
                         className={styles.menu}
                         onAction={this.handleAction}
-                        onClickOutside={isActive && this.handleClose}
+                        onClickOutside={isActive && this.handleClickOutside}
                       />
                     </div>
                   </Popper>

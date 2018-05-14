@@ -16,6 +16,16 @@ const getButtonKinds = () => select('kind (prop)', ['default', 'simple', 'second
 const getColorKinds = () =>
   select('color (prop)', [false, 'primary', 'success', 'danger', 'white'], false)
 
+const items = [
+  {index: '1', title: 'Test'},
+  {index: '2', title: 'Test 2'},
+  {index: '3', title: 'Test 3'},
+  {index: '4', title: 'Test 4'},
+  {index: '5', title: 'Test 5'},
+  {index: '6', title: 'Test 6'},
+  {index: '7', title: 'Test 7'}
+]
+
 storiesOf('Buttons', module)
   .addDecorator(withKnobs)
   .add('Default', () => {
@@ -96,6 +106,9 @@ storiesOf('Buttons', module)
         <Button onClick={action('clicked')} color="success" inverted disabled={disabled}>
           Success
         </Button>
+        <DropDownButton items={items} onAction={action('Clicked item')} disabled={disabled}>
+          Dropdown
+        </DropDownButton>
 
         <h2>Colors (simple)</h2>
         <Button onClick={action('clicked')} kind="simple" disabled={disabled}>
@@ -132,6 +145,16 @@ storiesOf('Buttons', module)
         >
           Danger, inverted & icon
         </Button>
+        <DropDownButton
+          icon={SanityLogoIcon}
+          inverted
+          color="danger"
+          items={items}
+          onAction={action('Clicked item')}
+          disabled={disabled}
+        >
+          Dropdown
+        </DropDownButton>
 
         <h2>Only icons</h2>
         <Button
@@ -197,16 +220,6 @@ storiesOf('Buttons', module)
     )
   })
   .add('DropDownButton', () => {
-    // eslint-disable-next-line max-len
-    const items = [
-      {index: '1', title: 'Test'},
-      {index: '2', title: 'Test 2'},
-      {index: '3', title: 'Test 3'},
-      {index: '4', title: 'Test 4'},
-      {index: '5', title: 'Test 5'},
-      {index: '6', title: 'Test 6'},
-      {index: '7', title: 'Test 7'}
-    ]
     return (
       <Sanity part="part:@sanity/components/buttons/dropdown" propTables={[DropDownButton]}>
         <div>
