@@ -1,7 +1,7 @@
 {
   "name": "ecommerce-studio",
   "private": true,
-  "version": "0.131.0",
+  "version": "0.131.1",
   "description": "",
   "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
@@ -25,7 +25,7 @@
     "@sanity/core": "0.131.0",
     "@sanity/default-layout": "0.131.0",
     "@sanity/default-login": "0.131.0",
-    "@sanity/desk-tool": "0.131.0",
+    "@sanity/desk-tool": "0.131.1",
     "@sanity/vision": "0.131.0",
     "prop-types": "^15.6",
     "react": "^16.2",
