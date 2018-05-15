@@ -244,7 +244,7 @@ export default class ArrayInput extends React.Component<Props, State> {
     const item = createProtoValue(type)
 
     const key = item._key
-    this.handleAppend(item)
+    this.insert(item, 'after', -1)
 
     const events$ = uploader
       .upload(file, type)
