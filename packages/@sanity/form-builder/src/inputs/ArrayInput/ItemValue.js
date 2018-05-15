@@ -1,11 +1,8 @@
 // @flow
 /* eslint-disable complexity */
-import type {ArrayType, ItemValue} from './typedefs'
 
 import type {Node} from 'react'
 import React from 'react'
-import styles from './styles/ItemValue.css'
-import ConfirmButton from './ConfirmButton'
 import LinkIcon from 'part:@sanity/base/link-icon'
 
 import EditItemFold from 'part:@sanity/components/edititem/fold'
@@ -14,17 +11,20 @@ import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 
+import {createDragHandle} from 'part:@sanity/components/lists/sortable'
+import {IntentLink} from 'part:@sanity/base/router'
+import DragBarsIcon from 'part:@sanity/base/bars-icon'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import PatchEvent from '../../PatchEvent'
 import Preview from '../../Preview'
 
-import {createDragHandle} from 'part:@sanity/components/lists/sortable'
-import {IntentLink} from 'part:@sanity/base/router'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import type {Path} from '../../typedefs/path'
 import type {Type, Marker} from '../../typedefs'
 import * as PathUtils from '../../utils/pathUtils'
-import DragBarsIcon from 'part:@sanity/base/bars-icon'
+import ConfirmButton from './ConfirmButton'
+import styles from './styles/ItemValue.css'
+import type {ArrayType, ItemValue} from './typedefs'
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
@@ -35,6 +35,11 @@ const DragHandle = createDragHandle(() => (
 const CLOSE_ACTION = {
   name: 'close',
   title: 'Close'
+}
+
+const CANCEL_ACTION = {
+  name: 'close',
+  title: 'Cancel'
 }
 
 const DELETE_ACTION = {
@@ -205,7 +210,11 @@ export default class RenderItemValue extends React.Component<Props> {
       )
     }
 
-    const actions = [CLOSE_ACTION, !readOnly && DELETE_ACTION].filter(Boolean)
+    const isItemEmpty = isEmpty(item)
+    const actions = [
+      isItemEmpty ? CANCEL_ACTION : CLOSE_ACTION,
+      !isItemEmpty && !readOnly && DELETE_ACTION
+    ].filter(Boolean)
 
     if (options.editModal === 'popover') {
       return (
