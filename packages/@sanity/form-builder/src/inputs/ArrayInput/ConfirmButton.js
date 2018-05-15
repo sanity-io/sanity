@@ -20,7 +20,6 @@ export default class ConfirmButton extends React.Component {
     this.setState({
       showConfirmDialog: false
     })
-    this._button.focus()
   }
 
   open() {
@@ -46,9 +45,12 @@ export default class ConfirmButton extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (!prevState.showConfirmDialog && this.state.showConfirmDialog) {
-      // todo: does not work as the popover is not in sync
-      //this._confirmButton.focus()
+    const wasOpen = prevState.showConfirmDialog
+    const isOpen = this.state.showConfirmDialog
+    if (!wasOpen && isOpen) {
+      this._confirmButton.focus()
+    } else if (wasOpen && !isOpen) {
+      this._button.focus()
     }
   }
 
@@ -77,6 +79,7 @@ export default class ConfirmButton extends React.Component {
                   color="white"
                   inverted
                   onClick={onConfirm}
+                  onBlur={this.handleConfirmPopoverClose}
                   icon={TrashIcon}
                   ref={this.setConfirmButton}
                 >
