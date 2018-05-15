@@ -8,7 +8,8 @@ const Sortable = createSortableList(GridList)
 type Props = {
   className: string,
   movingItemClass: string,
-  onSort: ({oldIndex: number, newIndex: number}) => void
+  onSortStart: () => void,
+  onSortEnd: ({oldIndex: number, newIndex: number}) => void
 }
 
 export default function SortableGridList(props: Props) {
