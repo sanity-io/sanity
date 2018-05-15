@@ -134,7 +134,7 @@ function patchAnnotationData(patch: Patch, change: () => void, type: Type, snaps
     throw new Error('Annotation not found in data')
   }
   // If this is a unset patch, remove the annotation
-  if (patch.type === 'unset') {
+  if (patch.type === 'unset' && patch.path.length === 3) {
     delete data.annotations[annotationKey]
     // If no more annotations, unwrap the inline
     if (Object.keys(data.annotations).length === 0) {
