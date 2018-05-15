@@ -206,7 +206,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
             onAppendItem={this.handleAppend}
             onPrependItem={this.handlePrepend}
             onFocusItem={this.handleFocusItem}
-            createValue={getEmptyValue}
+            onCreateValue={getEmptyValue}
             onChange={onChange}
           />
         </div>
