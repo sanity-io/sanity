@@ -8,7 +8,8 @@ type ListProps = {
   className: string,
   movingItemClass: string,
   useDragHandle: boolean,
-  onSort: ({oldIndex: number, newIndex: number}) => void,
+  onSortEnd: ({oldIndex: number, newIndex: number}) => void,
+  onSortStart: () => void,
   distance: number,
   lockToContainerEdges: boolean,
   transitionDuration: number,
@@ -20,48 +21,59 @@ export function createSortableList(element: Element) {
   // Delegate to SortableContainer from react-sortable-hoc
   const Sortable = SortableContainer(element)
 
-  return function SortableList(props: ListProps) {
-    const {
-      onSort,
-      movingItemClass,
-      distance,
-      useDragHandle,
-      lockToContainerEdges,
-      axis,
-      lockAxis,
-      transitionDuration,
-      // Remove react-sortable-hoc props so they don't accidentally leak through usage of {...rest}
-      /* eslint-disable react/prop-types */
-      helperClass,
-      pressDelay,
-      pressThreshold,
-      shouldCancelStart,
-      // onSortStart,
-      onSortMove,
-      //onSortEnd,
-      useWindowAsScrollContainer,
-      hideSortableGhost,
-      lockOffset,
-      getContainer,
-      getHelperDimensions,
-      /* eslint-enable react/prop-types */
-      // ------------------------------
-      ...rest
-    } = props
+  return class SortableList extends React.Component<ListProps> {
+    handleSortStart = (_ignore /*{node, index, collection}*/, event) => {
+      const {onSortStart} = this.props
+      event.preventDefault()
+      if (onSortStart) {
+        onSortStart()
+      }
+    }
+    render() {
+      const {
+        movingItemClass,
+        distance,
+        useDragHandle,
+        lockToContainerEdges,
+        axis,
+        lockAxis,
+        transitionDuration,
+        onSortStart,
+        onSortEnd,
 
-    return (
-      <Sortable
-        {...rest}
-        // onSortEnd={onSort}
-        distance={distance}
-        helperClass={movingItemClass}
-        lockToContainerEdges={lockToContainerEdges}
-        transitionDuration={transitionDuration}
-        axis={axis}
-        lockAxis={lockAxis}
-        useDragHandle={useDragHandle}
-      />
-    )
+        // Remove react-sortable-hoc props so they don't accidentally leak through usage of {...rest}
+        /* eslint-disable react/prop-types */
+        onSort,
+        helperClass,
+        pressDelay,
+        pressThreshold,
+        shouldCancelStart,
+        onSortMove,
+        useWindowAsScrollContainer,
+        hideSortableGhost,
+        lockOffset,
+        getContainer,
+        getHelperDimensions,
+        /* eslint-enable react/prop-types */
+        // ------------------------------
+        ...rest
+      } = this.props
+
+      return (
+        <Sortable
+          {...rest}
+          onSortStart={this.handleSortStart}
+          onSortEnd={onSortEnd}
+          distance={distance}
+          helperClass={movingItemClass}
+          lockToContainerEdges={lockToContainerEdges}
+          transitionDuration={transitionDuration}
+          axis={axis}
+          lockAxis={lockAxis}
+          useDragHandle={useDragHandle}
+        />
+      )
+    }
   }
 }
 
