@@ -2,7 +2,7 @@
 import type {Block, Marker} from './typeDefs'
 
 import React from 'react'
-import {get} from 'lodash'
+import {get, isEqual} from 'lodash'
 
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
@@ -27,30 +27,31 @@ type Props = {
 
 export default class EditNode extends React.Component<Props> {
   handleChange = patchEvent => {
-    const {onPatch, path, value} = this.props
+    const {onPatch, path, value, onFocus, focusPath} = this.props
     let _patchEvent = patchEvent
     path.reverse().forEach(segment => {
       _patchEvent = _patchEvent.prefixAll(segment)
     })
     // Intercept patches that unsets markDefs.
-    // The node using the markDef must have that mark removed,
-    // so create patches that rewrite that block without the mark
-    const unsetMarkDefPatches = _patchEvent.patches.filter(
-      patch => patch.path[1] === 'markDefs' && patch.type === 'unset'
-    )
-    if (unsetMarkDefPatches.length) {
-      unsetMarkDefPatches.forEach(patch => {
+    // The child using the markDef must have that mark removed,
+    // so insert patches that rewrite that block without the mark
+    _patchEvent.patches.forEach((patch, index) => {
+      if (patch.path.length === 3 && patch.path[1] === 'markDefs' && patch.type === 'unset') {
         const block = value.find(blk => blk._key === patch.path[0]._key)
         const _block = {...block}
-        const markKey = patch.path.slice(-1)[0]._key
+        const markKey = patch.path[2]._key
         _block.children.forEach(child => {
-          if (child._type === 'span' && child.marks.includes(markKey)) {
-            child.marks = child.marks.filter(mark => mark !== markKey)
-          }
+          child.marks = child.marks.filter(mark => mark !== markKey)
         })
-        _patchEvent.patches.push(set(_block, [{_key: _block._key}]))
-      })
-    }
+        const blockPath = [{_key: _block._key}]
+        _block.markDefs = _block.markDefs.filter(def => def._key !== markKey)
+        _patchEvent.patches.splice(index + 1, 0, set(_block, blockPath))
+        // Set focus away from the annotation, and to the block itself
+        if (focusPath && isEqual(patch.path, focusPath.slice(0, patch.path.length))) {
+          onFocus(blockPath)
+        }
+      }
+    })
     onPatch(_patchEvent)
   }
 
