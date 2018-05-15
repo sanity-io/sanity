@@ -9,6 +9,7 @@
 
   /* forces bigger dialog when in dialog */
   composes: largeContent from 'part:@sanity/components/dialogs/default-style';
+  composes: largeContent from 'part:@sanity/components/dialogs/popover-style';
   position: static;
 }
 

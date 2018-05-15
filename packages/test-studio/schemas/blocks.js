@@ -207,6 +207,43 @@ export default {
       ]
     },
     {
+      title: 'Block in block',
+      name: 'blockInBlock',
+      type: 'array',
+      of: [
+        {type: 'block'},
+        {
+          name: 'footnote',
+          title: 'Footnote',
+          type: 'object',
+          options: {
+            inline: true
+          },
+          fields: [
+            {
+              title: 'Footnote',
+              name: 'footnote',
+              type: 'array',
+              of: [
+                {
+                  type: 'block',
+                  lists: [],
+                  styles: [],
+                  marks: {
+                    decorators: [
+                      {title: 'Strong', value: 'strong'},
+                      {title: 'Emphasis', value: 'em'}
+                    ],
+                    annotations: []
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       name: 'recursive',
       type: 'object',
       fields: [

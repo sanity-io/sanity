@@ -261,3 +261,17 @@
   padding: 0;
   margin: 0;
 }
+
+/*
+  Composed by content that needs sizing only inside
+  the popper. See blockEditor for example
+*/
+.popper .largeContent {
+  @media (--screen-medium) {
+    width: 30rem;
+  }
+
+  @media (--screen-default) {
+    width: 38rem;
+  }
+}
