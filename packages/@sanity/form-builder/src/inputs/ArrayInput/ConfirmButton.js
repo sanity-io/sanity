@@ -85,13 +85,6 @@ export default class ConfirmButton extends React.Component {
                 >
                   Confirm remove
                 </Button>
-
-                {/*
-                  the following button is needed to prevent tab key from navigating out of window context. Since the
-                  enclosing popover opens in a portal, it is usually the last item in the DOM, and hitting the
-                  tab key will navigate *out* of the document, typically setting focus to a browser UI control.
-                */}
-                <button type="button" className={styles.captureTabFocus} />
               </div>
             </PopOver>
           )}

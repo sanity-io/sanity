@@ -20,12 +20,3 @@
 .wrapper {
   padding: var(--medium-padding);
 }
-
-.captureTabFocus {
-  position: absolute;
-  height: 1px;
-  width: 1px;
-  margin: 0;
-  overflow: hidden;
-  clip: rect(1px, 1px, 1px, 1px);
-}

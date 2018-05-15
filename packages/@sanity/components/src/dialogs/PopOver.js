@@ -9,7 +9,7 @@ import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Escapable from '../utilities/Escapable'
 import {Manager, Target, Popper, Arrow} from 'react-popper'
 
-export default class EditItemPopOver extends React.PureComponent {
+export default class PopOver extends React.PureComponent {
   static propTypes = {
     title: PropTypes.string,
     children: PropTypes.node.isRequired,
