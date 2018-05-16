@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom'
 
 import DefaultButton from 'part:@sanity/components/buttons/default'
 import Popover from 'part:@sanity/components/dialogs/popover'
+import DialogContent from 'part:@sanity/components/dialogs/content'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import styles from './styles/FormBuilderSpan.css'
 import {applyAll} from '../../simplePatch'
@@ -226,10 +227,11 @@ export default class FormBuilderSpan extends React.Component {
           onClickOutside={this.handleCloseInput}
           modifiers={{
             flip: {
-              boundariesElement: 'scrollParent'
+              boundariesElement: 'viewport'
             },
             preventOverflow: {
-              boundariesElement: 'scrollParent'
+              priority: ['bottom', 'top', 'right', 'left'],
+              boundariesElement: 'viewport'
             }
           }}
         >
@@ -259,7 +261,7 @@ export default class FormBuilderSpan extends React.Component {
 
           {/* Render input for focused annotation  */}
           {focusedAnnotationName && (
-            <div>
+            <DialogContent size="medium">
               <FormBuilderInput
                 value={annotationValue}
                 type={annotationTypeInFocus}
@@ -267,7 +269,7 @@ export default class FormBuilderSpan extends React.Component {
                 onChange={this.handleAnnotationChange}
                 autoFocus
               />
-            </div>
+            </DialogContent>
           )}
         </Popover>
       </span>
