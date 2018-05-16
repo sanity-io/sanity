@@ -16,7 +16,7 @@
 
 .inputWrapper {
   justify-content: space-between;
-  composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
+  composes: root from 'part:@sanity/base/theme/forms/text-input-style';
   width: 100%;
   display: flex;
 
