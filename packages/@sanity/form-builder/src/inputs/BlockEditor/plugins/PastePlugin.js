@@ -40,14 +40,26 @@ export default function PastePlugin(options: Options = {}) {
     event.preventDefault()
     const {shiftKey} = event
     const transfer = getEventTransfer(event)
-    const {type, fragment, html} = transfer
+    const {fragment, html} = transfer
+    let type = transfer.type
     if (type === 'fragment') {
-      const newNodesList = Block.createList(fragment.nodes.map(processNode))
-      const newDoc = new Document({
-        key: fragment.key,
-        nodes: newNodesList
-      })
-      return change.insertFragment(newDoc).collapseToEndOfBlock()
+      // Check if we have all block types in the schema,
+      // otherwise, use html version
+      const allSchemaBlockTypes = blockContentType.of
+        .map(ofType => ofType.name)
+        .concat('contentBlock')
+      const allBlocksHasSchemaDef = fragment.nodes
+        .map(node => node.type)
+        .every(nodeType => allSchemaBlockTypes.includes(nodeType))
+      if (allBlocksHasSchemaDef) {
+        const newNodesList = Block.createList(fragment.nodes.map(processNode))
+        const newDoc = new Document({
+          key: fragment.key,
+          nodes: newNodesList
+        })
+        return change.insertFragment(newDoc).collapseToEndOfBlock()
+      }
+      type = 'html'
     }
     if (type === 'html' && !shiftKey) {
       const blocks = blockTools.htmlToBlocks(html, blockContentType)
