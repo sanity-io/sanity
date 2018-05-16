@@ -1,7 +1,8 @@
 const assign = require('object-assign')
+const {map} = require('@sanity/observable/operators/map')
+const {filter} = require('@sanity/observable/operators/map')
 const queryString = require('../http/queryString')
 const validators = require('../validators')
-const {filter, map} = require('rxjs/operators')
 
 function AssetsClient(client) {
   this.client = client

@@ -1,4 +1,6 @@
 const assign = require('object-assign')
+const {filter} = require('@sanity/observable/operators/filter')
+const {map} = require('@sanity/observable/operators/map')
 const Patch = require('./data/patch')
 const Transaction = require('./data/transaction')
 const dataMethods = require('./data/dataMethods')
@@ -10,7 +12,6 @@ const AuthClient = require('./auth/authClient')
 const httpRequest = require('./http/request')
 const getRequestOptions = require('./http/requestOptions')
 const {defaultConfig, initConfig} = require('./config')
-const {filter, map} = require('rxjs/operators')
 
 const toPromise = observable => observable.toPromise()
 

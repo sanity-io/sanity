@@ -1,11 +1,12 @@
 const assign = require('object-assign')
+const {filter} = require('@sanity/observable/operators/filter')
+const {map} = require('@sanity/observable/operators/map')
 const validators = require('../validators')
 const getSelection = require('../util/getSelection')
 const encodeQueryString = require('./encodeQueryString')
 const Transaction = require('./transaction')
 const Patch = require('./patch')
 const listen = require('./listen')
-const {filter, map} = require('rxjs/operators')
 
 const excludeFalsey = (param, defValue) => {
   const value = typeof param === 'undefined' ? defValue : param

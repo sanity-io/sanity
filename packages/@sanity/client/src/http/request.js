@@ -4,8 +4,8 @@ const assign = require('object-assign')
 const observable = require('get-it/lib/middleware/observable')
 const jsonRequest = require('get-it/lib/middleware/jsonRequest')
 const jsonResponse = require('get-it/lib/middleware/jsonResponse')
-const {Observable} = require('rxjs')
 const progress = require('get-it/lib/middleware/progress')
+const Observable = require('@sanity/observable/minimal')
 const {ClientError, ServerError} = require('./errors')
 
 const httpError = {

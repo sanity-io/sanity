@@ -1,11 +1,11 @@
 {
   "name": "@sanity/observable",
-  "description": "A small-ish RxJS based Observable implementation for Sanity",
+  "description": "[deprecated] This package exists for legacy reasons only",
   "version": "0.128.3",
-  "main": "index.js",
+  "main": "minimal.js",
   "scripts": {
     "clean": "rimraf lib",
-    "test": "tap --node-arg=--require --node-arg=babel-register test/*.test.js test/**/*.test.js"
+    "test": "tap --node-arg=--require --node-arg=babel-register --node-arg=--require --node-arg=symbol-observable test/*.test.js test/**/*.test.js"
   },
   "keywords": [
     "sanity",
@@ -25,9 +25,9 @@
     "is-observable": "^1.1.0",
     "rimraf": "^2.6.2",
     "tap": "^11.0.1",
-    "zen-observable": "^0.7.1"
+    "zen-observable": "^0.7.1",
+    "symbol-observable": "^1.2.0"
   },
-  "runkitExampleFilename": "./example.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git"
