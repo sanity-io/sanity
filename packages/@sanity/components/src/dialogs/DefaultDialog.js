@@ -100,7 +100,11 @@ export default class DefaultDialog extends React.Component {
                     {!showHeader &&
                       onClose &&
                       showCloseButton && (
-                        <button className={styles.closeButtonOutside} onClick={onClose}>
+                        <button
+                          className={styles.closeButtonOutside}
+                          onClick={onClose}
+                          type="button"
+                        >
                           <CloseIcon color="inherit" />
                         </button>
                       )}
@@ -109,7 +113,7 @@ export default class DefaultDialog extends React.Component {
                       title && (
                         <div className={styles.header}>
                           <h1 className={styles.title}>{title}</h1>
-                          <button className={styles.closeButton} onClick={onClose}>
+                          <button className={styles.closeButton} onClick={onClose} type="button">
                             <CloseIcon color="inherit" />
                           </button>
                         </div>

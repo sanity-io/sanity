@@ -160,24 +160,6 @@
   box-sizing: border-box;
   max-height: calc(100vh - 200px);
   max-width: 100vw;
-
-  @media (--screen-medium) {
-    max-height: 90vh;
-    max-width: calc(100vw - var(--medium-padding) * 4);
-    min-width: 25em;
-  }
-
-  @nest .hasFunctions & {
-    max-height: calc(var(--dialog-max-height) - var(--dialog-functions-height));
-  }
-
-  @nest .hasHeader & {
-    max-height: calc(var(--dialog-max-height) - var(--dialog-header-height));
-  }
-
-  @nest .hasFunctions.hasHeader & {
-    max-height: calc(var(--dialog-max-height) - var(--dialog-header-height) - var(--dialog-functions-height));
-  }
 }
 
 .title {
@@ -219,7 +201,7 @@
 .closeButtonOutside {
   composes: closeButton;
   composes: shadow-5dp from 'part:@sanity/base/theme/shadows-style';
-  color: inherit;
+  color: var(--black);
   border-radius: 50%;
   background-color: var(--component-bg);
   font-size: 1rem;
@@ -260,23 +242,5 @@
 
   @nest .danger & {
     background-color: color(var(--white) a(60%));
-  }
-}
-
-/*
-  Composed by content that needs sizing only inside
-  the dialog.
-*/
-.root .largeContent {
-  @media (--screen-medium) {
-    min-width: 27rem;
-  }
-
-  @media (--screen-default) {
-    min-width: 33rem;
-  }
-
-  @media (--screen-large) {
-    min-width: 35rem;
   }
 }

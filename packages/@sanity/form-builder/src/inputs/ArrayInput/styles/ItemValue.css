@@ -132,20 +132,6 @@
 .defaultDialogContent {
   padding: var(--medium-padding);
   box-sizing: border-box;
-  width: 100%;
-
-  /* Guessed default sizes for different screens */
-  @media (--screen-medium) {
-    min-width: 28rem;
-  }
-
-  @media (--screen-default) {
-    min-width: 35rem;
-  }
-
-  @media (--screen-large) {
-    min-width: 40rem;
-  }
 }
 
 .validationIconError {

@@ -9,6 +9,7 @@ import EditItemFold from 'part:@sanity/components/edititem/fold'
 import Popover from 'part:@sanity/components/dialogs/popover'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
+import DialogContent from 'part:@sanity/components/dialogs/content'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 
 import {createDragHandle} from 'part:@sanity/components/lists/sortable'
@@ -210,6 +211,8 @@ export default class RenderItemValue extends React.Component<Props> {
       )
     }
 
+    const dialogSize = 'medium'
+
     const isItemEmpty = isEmpty(item)
     const actions = [
       isItemEmpty ? CANCEL_ACTION : CLOSE_ACTION,
@@ -227,7 +230,7 @@ export default class RenderItemValue extends React.Component<Props> {
             actions={actions}
             onAction={this.handleDialogAction}
           >
-            {content}
+            <DialogContent size={dialogSize}>{content}</DialogContent>
           </Popover>
         </div>
       )
@@ -242,7 +245,9 @@ export default class RenderItemValue extends React.Component<Props> {
         onAction={this.handleDialogAction}
         showCloseButton={false}
       >
-        <div className={styles.defaultDialogContent}>{content}</div>
+        <div className={styles.defaultDialogContent}>
+          <DialogContent size={dialogSize}>{content}</DialogContent>
+        </div>
       </DefaultDialog>
     )
   }

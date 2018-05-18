@@ -9,6 +9,7 @@ import Base64 from 'slate-base64-serializer'
 import {findDOMNode} from 'slate-react'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
+import DialogContent from 'part:@sanity/components/dialogs/content'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Button from 'part:@sanity/components/buttons/default'
 import Popover from 'part:@sanity/components/dialogs/popover'
@@ -292,16 +293,6 @@ export default class FormBuilderBlock extends React.Component {
       )
     }
 
-    if (editModalLayout === 'fold') {
-      return (
-        <div className={styles.editBlockContainerFold}>
-          <EditItemFold isOpen title={this.props.node.title} onClose={this.handleClose}>
-            {input}
-          </EditItemFold>
-        </div>
-      )
-    }
-
     if (editModalLayout === 'popover') {
       return (
         <div className={styles.editBlockContainerPopOver}>
@@ -313,7 +304,7 @@ export default class FormBuilderBlock extends React.Component {
             onAction={this.handleDialogAction}
             actions={DIALOG_ACTIONS}
           >
-            {input}
+            <DialogContent size="medium">{input}</DialogContent>
           </Popover>
         </div>
       )
@@ -327,7 +318,7 @@ export default class FormBuilderBlock extends React.Component {
         onAction={this.handleDialogAction}
         actions={DIALOG_ACTIONS}
       >
-        {input}
+        <DialogContent size="medium">{input}</DialogContent>
       </DefaultDialog>
     )
   }

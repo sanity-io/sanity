@@ -43,15 +43,17 @@
   z-index: var(--zindex-portal);
   position: relative;
 
-  @media (--max-screen-medium) {
-    position: fixed;
-    box-sizing: border-box;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 100vh;
-    width: 100vw;
-    overflow: auto;
+  @nest .responsive & {
+    @media (--max-screen-medium) {
+      position: fixed;
+      box-sizing: border-box;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100vh;
+      width: 100vw;
+      overflow: auto;
+    }
   }
 }
 
@@ -99,10 +101,6 @@
       clip-path: polygon(100% 100%, 100% 0, 0 0);
     }
   }
-
-  @media (--max-screen-medium) {
-    display: none;
-  }
 }
 
 .filledArrow {
@@ -127,19 +125,21 @@
     background-color: var(--state-danger-color);
   }
 
-  @media (--max-screen-medium) {
-    box-shadow: none;
-    position: fixed !important;
-    box-sizing: border-box;
-    top: 0 !important;
-    left: 0 !important;
-    height: 100vh !important;
-    width: 100vw !important;
-    margin: 0 !important;
-    transform: translate(0, 0) !important;
-    min-width: 100vw !important;
-    padding-bottom: 3rem;
-    overflow: hidden;
+  @nest .responsive & {
+    @media (--max-screen-medium) {
+      box-shadow: none;
+      position: fixed !important;
+      box-sizing: border-box;
+      top: 0 !important;
+      left: 0 !important;
+      height: 100vh !important;
+      width: 100vw !important;
+      margin: 0 !important;
+      transform: translate(0, 0) !important;
+      min-width: 100vw !important;
+      padding-bottom: 3rem;
+      overflow: hidden;
+    }
   }
 }
 
@@ -180,9 +180,11 @@
     background-color: transparent;
   }
 
-  @media (--max-screen-medium) {
-    top: var(--small-padding);
-    right: var(--small-padding);
+  @nest .responsive & {
+    @media (--max-screen-medium) {
+      top: var(--small-padding);
+      right: var(--small-padding);
+    }
   }
 }
 
@@ -193,14 +195,10 @@
   overflow: auto;
   max-height: 40em;
 
-  /*
-  min-width: 20em;
-  width: 30em;
-  padding-bottom: 5rem;
-  */
-
-  @media (--max-screen-medium) {
-    max-height: calc(100vh - var(--header-height)) !important;
+  @nest .responsive & {
+    @media (--max-screen-medium) {
+      max-height: calc(100vh - var(--header-height)) !important;
+    }
   }
 }
 
@@ -209,7 +207,7 @@
   padding-bottom: 5rem;
 }
 
-.head {
+.responsive .head {
   /* Mobile header */
   font-size: 1em;
   padding: 0.5em;
@@ -234,10 +232,12 @@
   font-weight: 400;
   border-radius: var(--border-radius-base) var(--border-radius-base) 0 0;
 
-  @media (--max-screen-medium) {
-    height: var(--header-height);
-    line-height: var(--header-height);
-    padding: 0 var(--small-padding);
+  @nest .responsive & {
+    @media (--max-screen-medium) {
+      height: var(--header-height);
+      line-height: var(--header-height);
+      padding: 0 var(--small-padding);
+    }
   }
 }
 
@@ -260,18 +260,4 @@
 .paddingDummy {
   padding: 0;
   margin: 0;
-}
-
-/*
-  Composed by content that needs sizing only inside
-  the popper. See blockEditor for example
-*/
-.popper .largeContent {
-  @media (--screen-medium) {
-    width: 30rem;
-  }
-
-  @media (--screen-default) {
-    width: 38rem;
-  }
 }
