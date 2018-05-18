@@ -24,6 +24,8 @@ export default async (args, context) => {
   const defaultOutputDir = path.resolve(path.join(workDir, 'dist'))
   const outputDir = path.resolve(args.argsWithoutOptions[0] || defaultOutputDir)
   const config = getConfig(workDir)
+  const project = config.get('project')
+
   const compilationConfig = {
     env: 'production',
     staticPath: resolveStaticPath(workDir, config.get('server')),
@@ -32,7 +34,7 @@ export default async (args, context) => {
     sourceMaps: flags['source-maps'],
     skipMinify: !flags.minify,
     profile: flags.profile,
-    project: config.get('project')
+    project: project
   }
 
   await tryInitializePluginConfigs({workDir, output})
@@ -99,6 +101,7 @@ export default async (args, context) => {
     const doc = await getDocumentElement(
       {...compilationConfig, hashes: chunkMap},
       {
+        basePath: flags.basePath || (project && project.basePath) || '',
         scripts: ['vendor.bundle.js', 'app.bundle.js'].map(asset => {
           const assetPath = absoluteMatch.test(asset) ? asset : `js/${asset}`
           return {
