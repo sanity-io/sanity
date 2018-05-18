@@ -9,6 +9,7 @@ import Base64 from 'slate-base64-serializer'
 import {Selection} from 'slate'
 import ItemForm from './ItemForm'
 import Popover from 'part:@sanity/components/dialogs/popover'
+import DialogContent from 'part:@sanity/components/dialogs/content'
 import Preview from '../../Preview'
 import styles from './styles/FormBuilderInline.css'
 import createRange from './util/createRange'
@@ -267,7 +268,7 @@ export default class FormBuilderInline extends React.Component {
           }
         ]}
       >
-        <div style={{padding: '1rem'}}>
+        <DialogContent size="medium">
           <ItemForm
             onDrop={this.handleCancelEvent}
             type={memberType}
@@ -275,7 +276,7 @@ export default class FormBuilderInline extends React.Component {
             value={this.getValue()}
             onChange={this.handleChange}
           />
-        </div>
+        </DialogContent>
       </Popover>
     )
   }

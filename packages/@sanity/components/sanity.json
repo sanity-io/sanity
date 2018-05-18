@@ -239,8 +239,16 @@
       "description": "Default dialog"
     },
     {
+      "name": "part:@sanity/components/dialogs/content",
+      "description": "Used for sizing content to size the dialog"
+    },
+    {
       "name": "part:@sanity/components/dialogs/default-style",
       "description": "Default dialog styling"
+    },
+    {
+      "name": "part:@sanity/components/dialogs/content-style",
+      "description": "Sizing content to size the dialog"
     },
     {
       "name": "part:@sanity/components/dialogs/confirm",
@@ -520,6 +528,10 @@
       "path": "dialogs/DefaultDialog.js"
     },
     {
+      "implements":  "part:@sanity/components/dialogs/content",
+      "path": "dialogs/DialogContent.js"
+    },
+    {
       "implements":  "part:@sanity/components/dialogs/confirm",
       "path": "dialogs/ConfirmDialog.js"
     },
@@ -686,6 +698,10 @@
     {
       "implements":  "part:@sanity/components/dialogs/default-style",
       "path": "dialogs/styles/DefaultDialog.css"
+    },
+    {
+      "implements":  "part:@sanity/components/dialogs/content-style",
+      "path": "dialogs/styles/DialogContent.css"
     },
     {
       "implements": "part:@sanity/components/fieldsets/default-style",
