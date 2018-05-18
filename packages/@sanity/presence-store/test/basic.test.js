@@ -1,5 +1,5 @@
 import test from 'tape'
-import Observable from '@sanity/observable/minimal'
+import {Observable} from 'rxjs'
 import PresenceStore from '../src/PresenceStore'
 
 function assembleMock() {

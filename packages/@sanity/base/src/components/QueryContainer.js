@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import {throttle, union} from 'lodash'
+import {filter} from 'rxjs/operators'
 import store from 'part:@sanity/base/datastore/document'
 import shallowEquals from 'shallow-equals'
 
@@ -65,8 +66,10 @@ export default class QueryContainer extends React.Component {
     this.unsubscribe()
     this._subscription = store
       .query(query, params)
-      .filter(
-        event => event.type === 'snapshot' || RESPOND_TO_TRANSITIONS.includes(event.transition)
+      .pipe(
+        filter(
+          event => event.type === 'snapshot' || RESPOND_TO_TRANSITIONS.includes(event.transition)
+        )
       )
       .subscribe(this)
   }

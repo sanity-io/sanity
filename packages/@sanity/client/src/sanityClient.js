@@ -1,4 +1,6 @@
 const assign = require('object-assign')
+const {filter} = require('@sanity/observable/operators/filter')
+const {map} = require('@sanity/observable/operators/map')
 const Patch = require('./data/patch')
 const Transaction = require('./data/transaction')
 const dataMethods = require('./data/dataMethods')
@@ -77,9 +79,10 @@ assign(SanityClient.prototype, {
   },
 
   request(options) {
-    const observable = this._requestObservable(options)
-      .filter(event => event.type === 'response')
-      .map(event => event.body)
+    const observable = this._requestObservable(options).pipe(
+      filter(event => event.type === 'response'),
+      map(event => event.body)
+    )
 
     return this.isPromiseAPI() ? toPromise(observable) : observable
   }

@@ -44,6 +44,7 @@
     "promise-props": "^1.0.0",
     "react-icons": "^2.2.7",
     "react-intl": "^2.2.2",
+    "rxjs": "^6.1.0",
     "semver-compare": "^1.0.0",
     "shallow-equals": "^1.0.0"
   },

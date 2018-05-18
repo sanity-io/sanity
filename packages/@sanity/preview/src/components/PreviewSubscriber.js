@@ -1,6 +1,17 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Observable from '@sanity/observable'
+import {Observable, of as observableOf} from 'rxjs'
+import {
+  map,
+  filter,
+  switchMap,
+  distinctUntilChanged,
+  refCount,
+  publishReplay,
+  concat,
+  debounceTime,
+  mapTo
+} from 'rxjs/operators'
 import observeForPreview from '../observeForPreview'
 import shallowEquals from 'shallow-equals'
 import intersectionObservableFor from '../streams/intersectionObservableFor'
@@ -17,24 +28,26 @@ const INVALID_PREVIEW_FALLBACK = {
 // How long to wait before signalling tear down of subscriptions
 const DELAY_MS = 20 * 1000
 
-const isVisible$ = visibilityChange$.map(event => !event.target.hidden)
-const visibilityOn$ = isVisible$.filter(Boolean)
-const visibilityOff$ = isVisible$.filter(isVisible => !isVisible)
+const isVisible$ = visibilityChange$.pipe(map(event => !event.target.hidden))
+const visibilityOn$ = isVisible$.pipe(filter(Boolean))
+const visibilityOff$ = isVisible$.pipe(filter(isVisible => !isVisible))
 
 // A stream of booleans to signal whether preview component should keep
 // subscriptions active or not
 const keepActive$ = new Observable(observer => {
   observer.next(!document.hidden)
   observer.complete()
-})
-  .concat(
-    visibilityOn$.switchMap(on =>
-      Observable.of(on).concat(visibilityOff$.debounceTime(DELAY_MS).map(() => false))
-    )
+}).pipe(
+  concat(
+    visibilityOn$
+      .pipe(
+        switchMap(on =>
+          observableOf(on).pipe(concat(visibilityOff$.pipe(debounceTime(DELAY_MS), mapTo(false))))
+        )
+      )
+      .pipe(distinctUntilChanged(), publishReplay(1), refCount())
   )
-  .distinctUntilChanged()
-  .publishReplay(1)
-  .refCount()
+)
 
 export default class PreviewSubscriber extends React.PureComponent {
   static propTypes = {
@@ -77,16 +90,20 @@ export default class PreviewSubscriber extends React.PureComponent {
 
     const viewOptions = this.props.ordering ? {ordering: this.props.ordering} : {}
 
-    const inViewport$ = intersectionObservableFor(this._element).map(event => event.isIntersecting)
+    const inViewport$ = intersectionObservableFor(this._element).pipe(
+      map(event => event.isIntersecting)
+    )
 
     this.subscription = keepActive$
-      .switchMap(isVisible => (isVisible ? inViewport$ : Observable.of(false)))
-      .distinctUntilChanged()
-      .switchMap(isInViewport => {
-        return isInViewport
-          ? observeForPreview(value, type, fields, viewOptions)
-          : Observable.of(null)
-      })
+      .pipe(
+        switchMap(isVisible => (isVisible ? inViewport$ : observableOf(false))),
+        distinctUntilChanged(),
+        switchMap(isInViewport => {
+          return isInViewport
+            ? observeForPreview(value, type, fields, viewOptions)
+            : observableOf(null)
+        })
+      )
       .subscribe(result => {
         if (result) {
           this.setState({result, isLive: true})

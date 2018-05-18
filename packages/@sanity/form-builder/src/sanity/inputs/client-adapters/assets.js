@@ -1,40 +1,42 @@
 import client from 'part:@sanity/base/client'
 import {observePaths} from 'part:@sanity/base/preview'
+import {mergeMap, map, catchError} from 'rxjs/operators'
+import {from as observableFrom, of as observableOf} from 'rxjs'
 import {withMaxConcurrency} from '../../utils/withMaxConcurrency'
-import Observable from '@sanity/observable'
 
 const MAX_CONCURRENT_UPLOADS = 4
 
 function uploadSanityAsset(assetType, file) {
-  return Observable.from(hashFile(file))
-    .catch(error =>
+  return observableFrom(hashFile(file)).pipe(
+    catchError(error =>
       // ignore if hashing fails for some reason
-      Observable.of(null)
-    )
-    .mergeMap(
-      hash => (hash ? fetchExisting(`sanity.${assetType}Asset`, hash) : Observable.of(null))
-    )
-    .mergeMap(existing => {
+      observableOf(null)
+    ),
+    mergeMap(hash => (hash ? fetchExisting(`sanity.${assetType}Asset`, hash) : observableOf(null))),
+    mergeMap(existing => {
       if (existing) {
-        return Observable.of({
+        return observableOf({
           // complete with the existing asset document
           type: 'complete',
           id: existing._id,
           asset: existing
         })
       }
-      return client.observable.assets.upload(assetType, file).map(
-        event =>
-          event.type === 'response'
-            ? {
-                // rewrite to a 'complete' event
-                type: 'complete',
-                id: event.body.document._id,
-                asset: event.body.document
-              }
-            : event
+      return client.observable.assets.upload(assetType, file).pipe(
+        map(
+          event =>
+            event.type === 'response'
+              ? {
+                  // rewrite to a 'complete' event
+                  type: 'complete',
+                  id: event.body.document._id,
+                  asset: event.body.document
+                }
+              : event
+        )
       )
     })
+  )
 }
 
 const uploadAsset = withMaxConcurrency(uploadSanityAsset, MAX_CONCURRENT_UPLOADS)

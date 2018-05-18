@@ -22,7 +22,6 @@
   "dependencies": {
     "@sanity/date-input": "0.131.0",
     "@sanity/imagetool": "0.131.0",
-    "@sanity/observable": "0.128.3",
     "@sanity/react-tippy": "1.2.6",
     "attr-accept": "^1.1.0",
     "canvas-to-blob": "^0.0.0",
@@ -54,6 +53,7 @@
     "react-popper": "^0.10.4",
     "react-sortable-hoc": "^0.6.3",
     "react-split-pane": "^0.1.63",
+    "rxjs": "^6.1.0",
     "scroll": "^2.0.0"
   },
   "devDependencies": {

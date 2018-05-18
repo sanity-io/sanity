@@ -2,7 +2,8 @@ import React from 'react'
 import schema from 'part:@sanity/base/schema?'
 import client from 'part:@sanity/base/client?'
 import Preview from 'part:@sanity/base/preview?'
-import Multicast from '@sanity/observable/multicast'
+import {Subject} from 'rxjs'
+import {takeUntil, tap, debounceTime, map, switchMap} from 'rxjs/operators'
 import {IntentLink} from 'part:@sanity/base/router'
 import {flow, compact, flatten, union} from 'lodash'
 import SearchIcon from 'part:@sanity/base/search-icon'
@@ -74,8 +75,8 @@ function search(query) {
 
 export default enhanceClickOutside(
   class Search extends React.Component {
-    input$ = new Multicast()
-    componentWillUnmount$ = new Multicast()
+    input$ = new Subject()
+    componentWillUnmount$ = new Subject()
 
     state = {
       isOpen: false,
@@ -87,31 +88,35 @@ export default enhanceClickOutside(
     componentDidMount() {
       this.input$
         .asObservable()
-        .map(event => event.target.value)
-        .do(inputValue => this.setState({inputValue}))
-        .takeUntil(this.componentWillUnmount$.asObservable())
+        .pipe(
+          map(event => event.target.value),
+          tap(inputValue => this.setState({inputValue})),
+          takeUntil(this.componentWillUnmount$.asObservable())
+        )
         .subscribe()
 
       this.input$
         .asObservable()
-        .map(event => event.target.value)
-        .debounceTime(100)
-        .do(() => {
-          this.setState({
-            isSearching: true
-          })
-        })
-        .switchMap(search)
-        // we need this filtering because the search may return documents of types not in schema
-        .map(hits => hits.filter(hit => schema.has(hit._type)))
-        .map(removeDupes)
-        .do(hits => {
-          this.setState({
-            isSearching: false,
-            hits: hits
-          })
-        })
-        .takeUntil(this.componentWillUnmount$.asObservable())
+        .pipe(
+          map(event => event.target.value),
+          debounceTime(100),
+          tap(() => {
+            this.setState({
+              isSearching: true
+            })
+          }),
+          switchMap(search),
+          // we need this filtering because the search may return documents of types not in schema
+          map(hits => hits.filter(hit => schema.has(hit._type))),
+          map(removeDupes),
+          tap(hits => {
+            this.setState({
+              isSearching: false,
+              hits: hits
+            })
+          }),
+          takeUntil(this.componentWillUnmount$.asObservable())
+        )
         .subscribe()
     }
 

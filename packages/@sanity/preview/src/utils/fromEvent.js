@@ -1,4 +1,4 @@
-import Observable from '@sanity/observable'
+import {Observable} from 'rxjs'
 
 let supportsPassive = () => {
   supportsPassive = () => false

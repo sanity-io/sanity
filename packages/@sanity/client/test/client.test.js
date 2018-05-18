@@ -11,7 +11,8 @@ const assign = require('xtend')
 const path = require('path')
 const fs = require('fs')
 const validators = require('../src/validators')
-const sanityObservable = require('@sanity/observable')
+const observableOf = require('rxjs').of
+const {filter} = require('rxjs/operators')
 const sanityClient = require('../src/sanityClient')
 
 const SanityClient = sanityClient
@@ -1445,7 +1446,7 @@ test('uploads images with progress events', t => {
   // @todo write a test that asserts upload events (slowness)
   getClient()
     .observable.assets.upload('image', fs.createReadStream(fixturePath))
-    .filter(event => event.type === 'progress')
+    .pipe(filter(event => event.type === 'progress'))
     .subscribe(event => t.equal(event.type, 'progress'), ifError(t), () => t.end())
 })
 
@@ -1759,7 +1760,7 @@ test('includes user agent in node', t => {
 // Don't rely on this unless you're working at Sanity Inc ;)
 test('can use alternative http requester', t => {
   const requester = () =>
-    sanityObservable.of({
+    observableOf({
       type: 'response',
       body: {documents: [{foo: 'bar'}]}
     })

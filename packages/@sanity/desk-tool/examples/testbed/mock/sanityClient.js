@@ -1,6 +1,6 @@
 import {range} from 'lodash'
 import {Patch} from '@sanity/client'
-import Observable from '@sanity/observable'
+import {Observable} from 'rxjs'
 
 function generateId(n) {
   return ((n + 1) / 1.1111111111111).toString(32).substring(2)

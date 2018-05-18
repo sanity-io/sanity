@@ -1,6 +1,6 @@
 const {range, keyBy, groupBy, flatten} = require('lodash')
 const pubsub = require('nano-pubsub')
-const Observable = require('@sanity/observable')
+const {Observable} = require('rxjs')
 const assert = require('assert')
 const {Patcher} = require('@sanity/mutator')
 
