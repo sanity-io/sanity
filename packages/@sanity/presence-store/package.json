@@ -15,9 +15,9 @@
     "tape": "^4.8.0"
   },
   "dependencies": {
-    "@sanity/observable": "0.128.3",
     "@sanity/uuid": "0.128.3",
-    "deep-equal": "^1.0.1"
+    "deep-equal": "^1.0.1",
+    "rxjs": "^6.1.0"
   },
   "publishConfig": {
     "access": "public"

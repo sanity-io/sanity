@@ -26,7 +26,6 @@
     "@sanity/data-aspects": "0.128.3",
     "@sanity/form-builder": "0.131.2",
     "@sanity/mutator": "0.128.3",
-    "@sanity/observable": "0.128.3",
     "@sanity/react-tippy": "1.2.6",
     "@sanity/uuid": "0.128.3",
     "@sanity/validation": "0.129.1",
@@ -42,6 +41,7 @@
     "react-ink": "^6.1.0",
     "react-json-inspector": "rexxars/react-json-inspector#react-15",
     "react-tiny-virtual-list": "^2.0.5",
+    "rxjs": "^6.1.0",
     "shallow-equals": "^1.0.0"
   },
   "devDependencies": {

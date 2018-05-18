@@ -124,6 +124,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
         }
       },
       error: err => {
+        console.error(err)
         this.setState({uploadError: err})
         this.clearUploadStatus()
       },

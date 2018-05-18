@@ -1,6 +1,6 @@
 /* global window */
 
-import Observable from '@sanity/observable/minimal'
+import {Observable} from 'rxjs'
 import UUID from '@sanity/uuid'
 import deepEqual from 'deep-equal'
 

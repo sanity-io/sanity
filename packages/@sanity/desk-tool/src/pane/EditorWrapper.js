@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types'
 // Connects the FormBuilder with various sanity roles
 import React from 'react'
-import Observable from '@sanity/observable'
+import {catchError, map, tap} from 'rxjs/operators'
+import {merge, of as observableOf} from 'rxjs'
 import {validateDocument} from '@sanity/validation'
 import promiseLatest from 'promise-latest'
 import {omit, throttle, debounce} from 'lodash'
@@ -88,24 +89,25 @@ export default class EditorWrapper extends React.Component {
     this.draft = checkout(getDraftId(documentId))
     this.validateLatestDocument = debounce(promiseLatest(this.validateDocument, 300))
 
-    this.subscription = this.published.events
-      .map(event => ({...event, version: 'published'}))
-      .merge(
-        this.draft.events.do(this.receiveDraftEvent).map(event => ({...event, version: 'draft'}))
-      )
-      .subscribe(event => {
-        this.setState(prevState => {
-          const version = event.version // either 'draft' or 'published'
-          return {
-            validationPending: true,
-            [version]: {
-              ...(prevState[version] || {}),
-              ...documentEventToState(event),
-              isLoading: false
-            }
+    const published$ = this.published.events
+    const draft$ = this.draft.events.pipe(tap(this.receiveDraftEvent))
+
+    this.subscription = merge(
+      published$.pipe(map(event => ({...event, version: 'published'}))),
+      draft$.pipe(map(event => ({...event, version: 'draft'})))
+    ).subscribe(event => {
+      this.setState(prevState => {
+        const version = event.version // either 'draft' or 'published'
+        return {
+          validationPending: true,
+          [version]: {
+            ...(prevState[version] || {}),
+            ...documentEventToState(event),
+            isLoading: false
           }
-        }, this.validateLatestDocument)
-      })
+        }
+      }, this.validateLatestDocument)
+    })
   }
 
   validateDocument = async () => {
@@ -203,24 +205,28 @@ export default class EditorWrapper extends React.Component {
 
   handleDelete = () => {
     const {documentId} = this.props
+
     const tx = client.observable
       .transaction()
       .delete(getPublishedId(documentId))
       .delete(getDraftId(documentId))
 
-    Observable.from(tx.commit())
-      .map(result => ({
-        type: 'success',
-        result: result
-      }))
-      .catch(error =>
-        Observable.of({
-          type: 'error',
-          message: `An error occurred while attempting to delete document.
-        This usually means that you attempted to delete a document that other documents
-        refers to.`,
-          error
-        })
+    tx
+      .commit()
+      .pipe(
+        map(result => ({
+          type: 'success',
+          result: result
+        })),
+        catchError(error =>
+          observableOf({
+            type: 'error',
+            message: `An error occurred while attempting to delete document.
+              This usually means that you attempted to delete a document that other documents
+              refers to.`,
+            error
+          })
+        )
       )
       .subscribe(result => {
         this.setStateIfMounted({transactionResult: result})
@@ -244,19 +250,22 @@ export default class EditorWrapper extends React.Component {
       })
     }
 
-    Observable.from(tx.commit())
-      .map(result => ({
-        type: 'success',
-        result: result
-      }))
-      .catch(error =>
-        Observable.of({
-          type: 'error',
-          message: `An error occurred while attempting to unpublish document.
+    tx
+      .commit()
+      .pipe(
+        map(result => ({
+          type: 'success',
+          result: result
+        })),
+        catchError(error =>
+          observableOf({
+            type: 'error',
+            message: `An error occurred while attempting to unpublish document.
         This usually means that you attempted to unpublish a document that other documents
         refers to.`,
-          error
-        })
+            error
+          })
+        )
       )
       .subscribe(result => {
         this.setStateIfMounted({transactionResult: result})
@@ -295,17 +304,20 @@ export default class EditorWrapper extends React.Component {
     tx.delete(getDraftId(documentId))
 
     // @todo add error handling for revision mismatch
-    Observable.from(tx.commit())
-      .map(result => ({
-        type: 'success',
-        result: result
-      }))
-      .catch(error =>
-        Observable.of({
-          type: 'error',
-          message: 'An error occurred while attempting to publishing document',
-          error
-        })
+    tx
+      .commit()
+      .pipe(
+        map(result => ({
+          type: 'success',
+          result: result
+        })),
+        catchError(error =>
+          observableOf({
+            type: 'error',
+            message: 'An error occurred while attempting to publishing document',
+            error
+          })
+        )
       )
       .subscribe({
         next: result => {

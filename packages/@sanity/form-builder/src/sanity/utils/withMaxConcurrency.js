@@ -3,9 +3,7 @@
 // Takes a observable-returning function and returns a new function that limits on the number of
 // concurrent observables.
 
-import Multicast from '@sanity/observable/multicast'
-import Observable from '@sanity/observable'
-import type {ObservableI, Subscription} from '../../typedefs/observable'
+import {Subject, Subscription, Observable, from as observableFrom} from 'rxjs'
 
 const DEFAULT_CONCURRENCY = 4
 
@@ -18,21 +16,21 @@ function remove<T>(array: Array<T>, item: T): Array<T> {
 }
 
 export function withMaxConcurrency(
-  func: any => ObservableI<*>,
+  func: any => Observable<*>,
   concurrency: number = DEFAULT_CONCURRENCY
 ) {
   const throttler = createThrottler(concurrency)
-  return (...args: Array<any>) => Observable.from(throttler(func(...args)))
+  return (...args: Array<any>) => observableFrom(throttler(func(...args)))
 }
 
 export function createThrottler(concurrency: number = DEFAULT_CONCURRENCY) {
   const currentSubscriptions: Array<Subscription> = []
-  const pendingObservables: Array<ObservableI<*>> = []
-  const ready$ = new Multicast()
+  const pendingObservables: Array<Observable<*>> = []
+  const ready$ = new Subject()
 
   return request
 
-  function request(observable: ObservableI<*>) {
+  function request(observable: Observable<*>) {
     return new Observable(observer => {
       if (currentSubscriptions.length >= concurrency) {
         return scheduleAndWait(observable)

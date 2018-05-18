@@ -1,9 +1,8 @@
-const {Observable} = require('rxjs/Observable')
-const {map} = require('rxjs/operator/map')
-const {filter} = require('rxjs/operator/filter')
-const {reduce} = require('rxjs/operator/reduce')
-const {toPromise} = require('rxjs/operator/toPromise')
+const {Observable} = require('rxjs/internal/Observable')
 const assign = require('object-assign')
+const {map} = require('../operators/map')
+const {filter} = require('../operators/filter')
+const {reduce} = require('../operators/reduce')
 
 /*
  A minimal rxjs based observable that align as closely as possible with the current es-observable spec,
@@ -28,9 +27,23 @@ SanityObservableMinimal.prototype.lift = function lift(operator) {
   return observable
 }
 
-SanityObservableMinimal.prototype.map = map
-SanityObservableMinimal.prototype.filter = filter
-SanityObservableMinimal.prototype.reduce = reduce
-SanityObservableMinimal.prototype.toPromise = toPromise
+function createDeprecatedMemberOp(name, op) {
+  let hasWarned = false
+  return function deprecatedOperator() {
+    if (!hasWarned) {
+      hasWarned = true
+      console.warn(
+        new Error(
+          `Calling observable.${name}(...) is deprecated. Please use observable.pipe(${name}(...)) instead`
+        )
+      )
+    }
+    return this.pipe(op.apply(this, arguments))
+  }
+}
+
+SanityObservableMinimal.prototype.map = createDeprecatedMemberOp('map', map)
+SanityObservableMinimal.prototype.filter = createDeprecatedMemberOp('filter', filter)
+SanityObservableMinimal.prototype.reduce = createDeprecatedMemberOp('filter', reduce)
 
 module.exports = SanityObservableMinimal

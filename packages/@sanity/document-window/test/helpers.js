@@ -1,4 +1,5 @@
-const Observable = require('@sanity/observable')
+const {Observable} = require('rxjs')
+const observableFrom = require('rxjs').from
 const pick = require('object.pick')
 const Constants = require('../src/Constants')
 
@@ -17,7 +18,7 @@ function getMockClient(opts) {
   fetch.mockImplementation(() => {
     const response = options.responses[fetchCalls++]
     if (response) {
-      return Observable.from([response])
+      return observableFrom([response])
     }
 
     throw new Error(`Tried to call fetch() without a mock (on call #${fetchCalls})`)

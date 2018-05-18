@@ -40,11 +40,11 @@ function run(t) {
       'map',
       'filter',
       'reduce',
-      'toPromise',
       'subscribe',
       '_trySubscribe', // rxjs internals
       'forEach', // spec
-      'pipe'
+      'pipe',
+      'toPromise'
     ])
     ;['map', 'filter', 'reduce', 'toPromise', 'lift', 'pipe', 'subscribe', 'forEach'].forEach(
       method =>

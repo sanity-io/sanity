@@ -7,9 +7,12 @@ import {CONFIGURED_SPACES} from '../util/spaces'
 import {state as urlState} from '../datastores/urlState'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import ArrowDropDown from 'part:@sanity/base/arrow-drop-down'
-const currentSpace$ = urlState
-  .map(event => event.state && event.state.space)
-  .map(spaceName => CONFIGURED_SPACES.find(sp => sp.name === spaceName))
+import {map} from 'rxjs/operators'
+
+const currentSpace$ = urlState.pipe(
+  map(event => event.state && event.state.space),
+  map(spaceName => CONFIGURED_SPACES.find(sp => sp.name === spaceName))
+)
 
 class SpaceSwitcher extends React.PureComponent {
   static propTypes = {

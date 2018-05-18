@@ -1,4 +1,4 @@
-import Observable from '@sanity/observable'
+import {Observable} from 'rxjs'
 
 // Takes a observable returning function and returns a debounced function that
 // collects arguments until wait time has passed without receiving new calls.

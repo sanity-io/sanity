@@ -1,6 +1,7 @@
 // @flow
 import React from 'react'
 import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'
+import {map} from 'rxjs/operators'
 import type {Uploader} from '../../sanity/uploads/typedefs'
 import type {Type, Marker} from '../../typedefs'
 import type {Path} from '../../typedefs/path'
@@ -248,7 +249,7 @@ export default class ArrayInput extends React.Component<Props, State> {
 
     const events$ = uploader
       .upload(file, type)
-      .map(uploadEvent => PatchEvent.from(uploadEvent.patches).prefixAll({_key: key}))
+      .pipe(map(uploadEvent => PatchEvent.from(uploadEvent.patches).prefixAll({_key: key})))
 
     this.uploadSubscriptions = {
       ...this.uploadSubscriptions,

@@ -1,5 +1,5 @@
 // @flow
-import Observable from '@sanity/observable'
+import {Observable} from 'rxjs'
 
 function createProgressEvent(progress) {
   return {type: 'progress', stage: 'upload', percent: progress}

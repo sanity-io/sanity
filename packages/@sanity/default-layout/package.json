@@ -30,10 +30,10 @@
   "homepage": "https://www.sanity.io/",
   "dependencies": {
     "@sanity/generate-help-url": "0.128.3",
-    "@sanity/observable": "0.128.3",
     "lodash": "^4.17.4",
     "react-click-outside": "^2.3.1",
-    "react-ink": "^6.1.0"
+    "react-ink": "^6.1.0",
+    "rxjs": "^6.1.0"
   },
   "devDependencies": {
     "@sanity/base": "0.131.0",
@@ -41,7 +41,6 @@
     "@sanity/cli": "0.131.2",
     "@sanity/components": "0.131.0",
     "@sanity/core": "0.131.0",
-    "@sanity/observable": "0.128.3",
     "@sanity/schema": "0.131.0",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",

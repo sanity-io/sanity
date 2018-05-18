@@ -1,5 +1,6 @@
 // @flow
-import Observable from '@sanity/observable'
+import {of as observableOf, from as observableFrom} from 'rxjs'
+import {map, merge, filter, concat, mergeMap, catchError, tap} from 'rxjs/operators'
 import readExif from './image/readExif'
 import rotateImage from './image/rotateImage'
 import {DEFAULT_ORIENTATION} from './image/orient'
@@ -22,13 +23,13 @@ type Exif = {
 }
 
 export default function uploadImage(file: File): ObservableI<UploadEvent> {
-  const upload$ = uploadImageAsset(file)
-    .filter(event => event.stage !== 'download')
-    .map(event => ({
+  const upload$ = uploadImageAsset(file).pipe(
+    filter(event => event.stage !== 'download'),
+    map(event => ({
       ...event,
       progress: 2 + event.percent / 100 * 98
-    }))
-    .map(event => {
+    })),
+    map(event => {
       if (event.type === 'complete') {
         return createUploadEvent([
           set({_type: 'reference', _ref: event.asset._id}, ['asset']),
@@ -37,10 +38,11 @@ export default function uploadImage(file: File): ObservableI<UploadEvent> {
       }
       return createUploadEvent([set(event.percent, [UPLOAD_STATUS_KEY, 'progress'])])
     })
+  )
 
-  const setPreviewUrl$ = readExif(file)
-    .mergeMap((exifData: Exif) => rotateImage(file, exifData.orientation || DEFAULT_ORIENTATION))
-    .catch(error => {
+  const setPreviewUrl$ = readExif(file).pipe(
+    mergeMap((exifData: Exif) => rotateImage(file, exifData.orientation || DEFAULT_ORIENTATION)),
+    catchError(error => {
       // eslint-disable-next-line no-console
       console.warn(
         'Image preprocessing failed for "%s" with the error: %s',
@@ -48,12 +50,14 @@ export default function uploadImage(file: File): ObservableI<UploadEvent> {
         error.message
       )
       // something went wrong, but continue still
-      return Observable.of(null)
-    })
-    .filter(Boolean)
-    .map(imageUrl => createUploadEvent([set(imageUrl, [UPLOAD_STATUS_KEY, 'previewImage'])]))
+      return observableOf(null)
+    }),
+    filter(Boolean),
+    map(imageUrl => createUploadEvent([set(imageUrl, [UPLOAD_STATUS_KEY, 'previewImage'])]))
+  )
 
-  return Observable.of(createInitialUploadEvent(file))
-    .concat(Observable.from(upload$).merge(setPreviewUrl$))
-    .concat(Observable.of(CLEANUP_EVENT))
+  return observableOf(createInitialUploadEvent(file)).pipe(
+    concat(observableFrom(upload$).pipe(merge(setPreviewUrl$))),
+    concat(observableOf(CLEANUP_EVENT))
+  )
 }

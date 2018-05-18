@@ -3,6 +3,7 @@ import getOrderedTools from '../util/getOrderedTools'
 import reconfigureClient from '../util/reconfigureClient'
 import {HAS_SPACES, CONFIGURED_SPACES} from '../util/spaces'
 import rootRouter from '../defaultLayoutRouter'
+import {map, filter, scan, publishReplay, refCount, tap} from 'rxjs/operators'
 
 function resolveUrlStateWithDefaultSpace(state) {
   if (!HAS_SPACES || !state || state.space) {
@@ -97,20 +98,17 @@ export function navigate(newUrl, options) {
   locationStore.actions.navigate(newUrl, options)
 }
 
-export const state = locationStore.state
-  .map(decodeUrlState)
-  .scan(maybeHandleIntent, null)
-  .filter(Boolean)
-  .map(maybeRedirectDefaultState)
-  .filter(Boolean)
-  .publishReplay(1)
-  .refCount()
+export const state = locationStore.state.pipe(
+  map(decodeUrlState),
+  scan(maybeHandleIntent, null),
+  filter(Boolean),
+  map(maybeRedirectDefaultState),
+  filter(Boolean),
+  publishReplay(1),
+  refCount()
+)
 
 if (HAS_SPACES) {
   // Uglybugly mutation ahead.
-  state
-    .map(event => event.state)
-    .filter(Boolean)
-    .do(reconfigureClient)
-    .subscribe()
+  state.pipe(map(event => event.state), filter(Boolean), tap(reconfigureClient)).subscribe()
 }
