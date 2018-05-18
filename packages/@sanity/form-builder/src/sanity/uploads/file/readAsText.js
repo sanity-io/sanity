@@ -1,4 +1,4 @@
-import Observable from '@sanity/observable'
+import {Observable} from 'rxjs'
 
 export function readAsText(file: File) {
   return new Observable(observer => {

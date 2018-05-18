@@ -1,5 +1,6 @@
 // @flow
-import Observable from '@sanity/observable'
+import {Observable} from 'rxjs'
+import {mergeMap} from 'rxjs/operators'
 import orient from './orient'
 
 // The eslint import plugin doesn't work well with opaque types
@@ -32,5 +33,7 @@ function loadImage(url: string) {
 
 export default function rotateImage(file: File, orientation: OrientationId) {
   /* global window */
-  return loadImage(window.URL.createObjectURL(file)).mergeMap(image => orient(image, orientation))
+  return loadImage(window.URL.createObjectURL(file)).pipe(
+    mergeMap(image => orient(image, orientation))
+  )
 }

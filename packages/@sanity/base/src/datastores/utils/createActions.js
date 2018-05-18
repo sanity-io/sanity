@@ -1,6 +1,6 @@
 // Todo: refactor out
 import pubsub from 'nano-pubsub'
-import Observable from '@sanity/observable'
+import {Observable} from 'rxjs'
 
 export default function createActions(actions) {
   return Object.keys(actions).reduce((acc, name) => {

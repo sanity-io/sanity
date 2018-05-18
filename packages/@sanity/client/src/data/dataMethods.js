@@ -1,4 +1,6 @@
 const assign = require('object-assign')
+const {filter} = require('@sanity/observable/operators/filter')
+const {map} = require('@sanity/observable/operators/map')
 const validators = require('../validators')
 const getSelection = require('../util/getSelection')
 const encodeQueryString = require('./encodeQueryString')
@@ -40,15 +42,16 @@ module.exports = {
   fetch(query, params, options = {}) {
     const mapResponse = options.filterResponse === false ? res => res : res => res.result
 
-    const observable = this._dataRequest('query', {query, params}).map(mapResponse)
+    const observable = this._dataRequest('query', {query, params}).pipe(map(mapResponse))
     return this.isPromiseAPI() ? toPromise(observable) : observable
   },
 
   getDocument(id) {
     const options = {uri: this.getDataUrl('doc', id), json: true}
-    const observable = this._requestObservable(options)
-      .filter(isResponse)
-      .map(event => event.body.documents && event.body.documents[0])
+    const observable = this._requestObservable(options).pipe(
+      filter(isResponse),
+      map(event => event.body.documents && event.body.documents[0])
+    )
 
     return this.isPromiseAPI() ? toPromise(observable) : observable
   },
@@ -79,11 +82,7 @@ module.exports = {
     const mut = mutations instanceof Patch ? mutations.serialize() : mutations
     const muts = Array.isArray(mut) ? mut : [mut]
 
-    return this.dataRequest(
-      'mutate',
-      {mutations: muts, transactionId: options && options.transactionId},
-      options
-    )
+    return this.dataRequest('mutate', {mutations: muts}, options)
   },
 
   transaction(operations) {
@@ -116,10 +115,10 @@ module.exports = {
       query: isMutation && getMutationQuery(options)
     }
 
-    return this._requestObservable(reqOptions)
-      .filter(isResponse)
-      .map(getBody)
-      .map(res => {
+    return this._requestObservable(reqOptions).pipe(
+      filter(isResponse),
+      map(getBody),
+      map(res => {
         if (!isMutation) {
           return res
         }
@@ -139,6 +138,7 @@ module.exports = {
           [key]: ids
         }
       })
+    )
   },
 
   _create(doc, op, options = {}) {

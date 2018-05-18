@@ -1,4 +1,6 @@
-import Observable from '@sanity/observable'
+import {Observable, merge} from 'rxjs'
+import {share, filter, map, concat, switchMap, tap} from 'rxjs/operators'
+
 import {omit} from 'lodash'
 import pubsub from 'nano-pubsub'
 import {BufferedDocument, Mutation} from '@sanity/mutator'
@@ -6,14 +8,15 @@ import {BufferedDocument, Mutation} from '@sanity/mutator'
 const NOOP = () => {}
 
 function createBufferedDocument(documentId, server) {
-  const serverEvents$ = Observable.from(server.byId(documentId)).share()
-  const reconnects$ = serverEvents$.filter(event => event.type === 'reconnect')
+  const serverEvents$ = server.byId(documentId).pipe(share())
+  const reconnects$ = serverEvents$.pipe(filter(event => event.type === 'reconnect'))
+
   const saves = pubsub()
 
-  const bufferedDocs$ = serverEvents$
-    .filter(event => event.type === 'snapshot')
-    .map(event => event.document)
-    .map(snapshot => {
+  const bufferedDocs$ = serverEvents$.pipe(
+    filter(event => event.type === 'snapshot'),
+    map(event => event.document),
+    map(snapshot => {
       const bufferedDocument = new BufferedDocument(snapshot || null)
 
       bufferedDocument.commitHandler = function commitHandler(opts) {
@@ -39,7 +42,7 @@ function createBufferedDocument(documentId, server) {
         return () => {
           bufferedDocument.onRebase = NOOP
         }
-      }).share()
+      }).pipe(share())
 
       const mutation$ = new Observable(mutationObserver => {
         bufferedDocument.onMutation = ({mutation, remote}) => {
@@ -52,30 +55,23 @@ function createBufferedDocument(documentId, server) {
         }
 
         const serverMutations = serverEvents$
-          .filter(event => event.type === 'mutation')
-          // .do(event => {
-          //   console.log('server event arrived', event)
-          // })
+          .pipe(filter(event => event.type === 'mutation'))
           .subscribe(event => bufferedDocument.arrive(new Mutation(event)))
 
         return () => {
           serverMutations.unsubscribe()
           bufferedDocument.onMutation = NOOP
         }
-      }).share()
+      }).pipe(share())
 
       return {
         events: new Observable(observer => {
           observer.next({type: 'snapshot', document: bufferedDocument.LOCAL})
-          return mutation$
-            .merge(rebase$)
-            .merge(reconnects$)
-            .subscribe(observer)
-        }),
+          observer.complete()
+        }).pipe(concat(merge(mutation$, rebase$, reconnects$))),
+
         patch(patches) {
-          const mutations = patches
-            .map(patch => Object.assign({}, patch, {id: documentId}))
-            .map(patch => ({patch: patch}))
+          const mutations = patches.map(patch => ({patch: {...patch, id: documentId}}))
 
           bufferedDocument.add(new Mutation({mutations: mutations}))
         },
@@ -105,8 +101,9 @@ function createBufferedDocument(documentId, server) {
           })
         }
       }
-    })
-    .share()
+    }),
+    share()
+  )
 
   let currentBuffered
   const cachedBuffered = new Observable(observer => {
@@ -115,14 +112,16 @@ function createBufferedDocument(documentId, server) {
       observer.complete()
     }
     return bufferedDocs$
-      .do(doc => {
-        currentBuffered = doc
-      })
+      .pipe(
+        tap(doc => {
+          currentBuffered = doc
+        })
+      )
       .subscribe(observer)
   })
 
   return {
-    events: cachedBuffered.switchMap(bufferedDoc => bufferedDoc.events),
+    events: cachedBuffered.pipe(switchMap(bufferedDoc => bufferedDoc.events)),
     patch(patches) {
       cachedBuffered.subscribe(bufferedDoc => bufferedDoc.patch(patches))
     },
@@ -139,12 +138,12 @@ function createBufferedDocument(documentId, server) {
       cachedBuffered.subscribe(bufferedDoc => bufferedDoc.delete())
     },
     commit() {
-      return cachedBuffered.switchMap(bufferedDoc => bufferedDoc.commit())
+      return cachedBuffered.pipe(switchMap(bufferedDoc => bufferedDoc.commit()))
     }
   }
 }
 
-export default function createDocumentStore({serverConnection}) {
+module.exports = function createDocumentStore({serverConnection}) {
   return {
     byId,
     byIds,
@@ -188,18 +187,18 @@ export default function createDocumentStore({serverConnection}) {
   }
 
   function query(_query, params) {
-    return Observable.from(serverConnection.query(_query, params))
+    return serverConnection.query(_query, params)
   }
 
   function create(document) {
-    return Observable.from(serverConnection.create(document))
+    return serverConnection.create(document)
   }
 
   function createIfNotExists(document) {
-    return Observable.from(serverConnection.createIfNotExists(document))
+    return serverConnection.createIfNotExists(document)
   }
 
   function createOrReplace(document) {
-    return Observable.from(serverConnection.createOrReplace(document))
+    return serverConnection.createOrReplace(document)
   }
 }

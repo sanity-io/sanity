@@ -1,5 +1,5 @@
 // @flow
-import Observable from '@sanity/observable/minimal'
+import {Observable} from 'rxjs'
 
 /* eslint-disable */
 // Polyfills HTMLCanvasElement.toBlob

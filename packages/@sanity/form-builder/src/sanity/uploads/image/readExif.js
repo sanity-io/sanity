@@ -1,5 +1,6 @@
 // @flow
-import Observable from '@sanity/observable'
+import {Observable, of as observableOf, from as observableFrom} from 'rxjs'
+import {map, catchError} from 'rxjs/operators'
 import exif from 'exif-component'
 
 function readFileAsArrayBuffer(file: File, length: number) {
@@ -22,13 +23,14 @@ const SKIP_EXIF_ERROR_RE = /(invalid image format)|(No exif data)/i
 const EXIF_BUFFER_LENGTH = 128000
 
 export default function readExif(file: File) {
-  return Observable.from(readFileAsArrayBuffer(file, EXIF_BUFFER_LENGTH))
-    .map(buf => exif(buf))
-    .catch(error => {
+  return observableFrom(readFileAsArrayBuffer(file, EXIF_BUFFER_LENGTH)).pipe(
+    map(buf => exif(buf)),
+    catchError(error => {
       if (!SKIP_EXIF_ERROR_RE.test(error.message)) {
         // Exif read failed, we do not want to fail hard
         console.warn(`Exif read failed, continuing anyway: ${error.message}`) // eslint-disable-line no-console
       }
-      return Observable.of({})
+      return observableOf({})
     })
+  )
 }

@@ -21,9 +21,9 @@
   "license": "MIT",
   "dependencies": {
     "@sanity/mutator": "0.128.3",
-    "@sanity/observable": "0.128.3",
     "lodash": "^4.17.4",
-    "nano-pubsub": "^1.0.2"
+    "nano-pubsub": "^1.0.2",
+    "rxjs": "^6.1.0"
   },
   "devDependencies": {
     "get-random-values": "^1.2.0",

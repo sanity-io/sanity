@@ -1,4 +1,4 @@
-import Observable from '@sanity/observable'
+import {Observable} from 'rxjs'
 import createActions from '../utils/createActions'
 import pubsub from 'nano-pubsub'
 import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'

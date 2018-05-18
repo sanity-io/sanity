@@ -1,10 +1,11 @@
 import client from 'part:@sanity/base/client'
+import {map} from 'rxjs/operators'
 import {flatten} from 'lodash'
 
 import {observeForPreview} from 'part:@sanity/base/preview'
 
 export function getPreviewSnapshot(value, referenceType) {
-  return observeForPreview(value, referenceType).map(result => result.snapshot)
+  return observeForPreview(value, referenceType).pipe(map(result => result.snapshot))
 }
 
 function wrapIn(chars = '') {

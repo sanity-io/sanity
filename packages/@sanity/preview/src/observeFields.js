@@ -1,6 +1,17 @@
 // @flow
 import client from 'part:@sanity/base/client'
-import Observable from '@sanity/observable'
+import {Observable, merge, combineLatest, from as observableFrom, of as observableOf} from 'rxjs'
+import {
+  map,
+  filter,
+  share,
+  publishReplay,
+  refCount,
+  switchMap,
+  mergeMap,
+  tap,
+  distinctUntilChanged
+} from 'rxjs/operators'
 import debounceCollect from './utils/debounceCollect'
 import {combineSelections, reassemble, toGradientQuery} from './utils/optimizeQuery'
 import {flatten, difference} from 'lodash'
@@ -12,13 +23,13 @@ import isUniqueBy from './utils/isUniqueBy'
 let _globalListener
 const getGlobalEvents = () => {
   if (!_globalListener) {
-    const allEvents$ = Observable.from(
+    const allEvents$ = observableFrom(
       client.listen(
         '*[!(_id in path("_.**"))]',
         {},
         {events: ['welcome', 'mutation'], includeResult: false}
       )
-    ).share()
+    ).pipe(share())
 
     // This will keep the listener active forever and in turn reduce the number of initial fetches
     // as less 'welcome' events will be emitted.
@@ -29,11 +40,12 @@ const getGlobalEvents = () => {
       // This is a stream of welcome events from the server, each telling us that we have established listener connection
       // We map these to snapshot fetch/sync. It is good to wait for the first welcome event before fetching any snapshots as, we may miss
       // events that happens in the time period after initial fetch and before the listener is established.
-      welcome$: allEvents$
-        .filter(event => event.type === 'welcome')
-        .publishReplay(1)
-        .refCount(),
-      mutations$: allEvents$.filter(event => event.type === 'mutation')
+      welcome$: allEvents$.pipe(
+        filter(event => event.type === 'welcome'),
+        publishReplay(1),
+        refCount()
+      ),
+      mutations$: allEvents$.pipe(filter(event => event.type === 'mutation'))
     }
   }
   return _globalListener
@@ -41,8 +53,9 @@ const getGlobalEvents = () => {
 
 function listen(id: Id) {
   const globalEvents = getGlobalEvents()
-  return globalEvents.welcome$.merge(
-    globalEvents.mutations$.filter(event => event.documentId === id)
+  return merge(
+    globalEvents.welcome$,
+    globalEvents.mutations$.pipe(filter(event => event.documentId === id))
   )
 }
 
@@ -50,25 +63,29 @@ function fetchAllDocumentPaths(selections: Selection[]) {
   const combinedSelections = combineSelections(selections)
   return client.observable
     .fetch(toGradientQuery(combinedSelections))
-    .map(result => reassemble(result, combinedSelections))
+    .pipe(map(result => reassemble(result, combinedSelections)))
 }
 
 const fetchDocumentPathsFast = debounceCollect(fetchAllDocumentPaths, 100)
 const fetchDocumentPathsSlow = debounceCollect(fetchAllDocumentPaths, 1000)
 
 function listenFields(id: Id, fields: FieldName[]) {
-  return listen(id).switchMap(event => {
-    if (event.type === 'welcome') {
-      return fetchDocumentPathsFast(id, fields).mergeMap(result => {
-        return result === undefined
-          ? // hack: if we get undefined as result here it is most likely because the document has
-            // just been created and is not yet indexed. We therefore need to wait a bit and then re-fetch.
-            fetchDocumentPathsSlow(id, fields)
-          : Observable.of(result)
-      })
-    }
-    return fetchDocumentPathsSlow(id, fields)
-  })
+  return listen(id).pipe(
+    switchMap(event => {
+      if (event.type === 'welcome') {
+        return fetchDocumentPathsFast(id, fields).pipe(
+          mergeMap(result => {
+            return result === undefined
+              ? // hack: if we get undefined as result here it is most likely because the document has
+                // just been created and is not yet indexed. We therefore need to wait a bit and then re-fetch.
+                fetchDocumentPathsSlow(id, fields)
+              : observableOf(result)
+          })
+        )
+      }
+      return fetchDocumentPathsSlow(id, fields)
+    })
+  )
 }
 
 // keep for debugging purposes for now
@@ -88,15 +105,13 @@ const CACHE: Cache = {} // todo: use a LRU cache instead (e.g. hashlru or quick-
 
 function createCachedFieldObserver(id, fields): CachedFieldObserver {
   let latest = null
-  const changes$ = new Observable(observer => {
-    observer.next(latest)
-    observer.complete()
-  })
-    .filter(Boolean)
-    .merge(listenFields(id, fields))
-    .do(v => (latest = v))
-    .publishReplay(1)
-    .refCount()
+  const changes$ = merge(
+    new Observable(observer => {
+      observer.next(latest)
+      observer.complete()
+    }).pipe(filter(Boolean)),
+    listenFields(id, fields)
+  ).pipe(tap(v => (latest = v)), publishReplay(1), refCount())
 
   return {id, fields, changes$}
 }
@@ -120,17 +135,16 @@ export default function cachedObserveFields(id: Id, fields: FieldName[]) {
     .filter(observer => observer.fields.some(fieldName => fields.includes(fieldName)))
     .map(cached => cached.changes$)
 
-  return (
-    Observable.combineLatest(cachedFieldObservers)
-      // in the event that a document gets deleted, the cached values will be updated to store `undefined`
-      // if this happens, we should not pick any fields from it, but rather just return null
-      .map(snapshots => snapshots.filter(Boolean))
-      // make sure all snapshots agree on same revision
-      .filter(snapshots => isUniqueBy(snapshots, snapshot => snapshot._rev))
-      // pass on value with the requested fields (or null if value is deleted)
-      .map(snapshots => (snapshots.length === 0 ? null : pickFrom(snapshots, fields)))
-      // emit values only if changed
-      .distinctUntilChanged(hasEqualFields(fields))
+  return combineLatest(cachedFieldObservers).pipe(
+    // in the event that a document gets deleted, the cached values will be updated to store `undefined`
+    // if this happens, we should not pick any fields from it, but rather just return null
+    map(snapshots => snapshots.filter(Boolean)),
+    // make sure all snapshots agree on same revision
+    filter(snapshots => isUniqueBy(snapshots, snapshot => snapshot._rev)),
+    // pass on value with the requested fields (or null if value is deleted)
+    map(snapshots => (snapshots.length === 0 ? null : pickFrom(snapshots, fields))),
+    // emit values only if changed
+    distinctUntilChanged(hasEqualFields(fields))
   )
 }
 

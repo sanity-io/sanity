@@ -1,10 +1,10 @@
 // @flow
 import {isObject, uniq} from 'lodash'
-import Observable from '@sanity/observable'
-import {configure} from 'observable-props'
-import type {FieldName, Id, Path, Reference, Document, Value} from './types'
+import {of as observableOf} from 'rxjs'
+import {switchMap} from 'rxjs/operators'
+import props from './utils/props'
 
-const props = configure({Observable})
+import type {FieldName, Id, Path, Reference, Document, Value} from './types'
 
 function isReference(value: Reference | Document | Object) {
   return '_ref' in value
@@ -30,7 +30,7 @@ type ObserveFieldsFn = (id: string, fields: FieldName[]) => any
 function observePaths(value: Value, paths: Path[], observeFields: ObserveFieldsFn) {
   if (!isObject(value)) {
     // Reached a leaf. Return as is
-    return Observable.of(value)
+    return observableOf(value)
   }
   const pathsWithMissingHeads = resolveMissingHeads(value, paths)
   if (pathsWithMissingHeads.length > 0) {
@@ -42,20 +42,22 @@ function observePaths(value: Value, paths: Path[], observeFields: ObserveFieldsF
     const isRef = isReference(value)
     if (isReference(value) || isDocument(value)) {
       const id = isRef ? value._ref : value._id
-      return observeFields(id, nextHeads).switchMap(snapshot => {
-        if (snapshot === null) {
-          return Observable.of(null)
-        }
-        return observePaths(
-          {
-            ...createEmpty(nextHeads),
-            ...(isRef ? {} : value),
-            ...snapshot
-          },
-          paths,
-          observeFields
-        )
-      })
+      return observeFields(id, nextHeads).pipe(
+        switchMap(snapshot => {
+          if (snapshot === null) {
+            return observableOf(null)
+          }
+          return observePaths(
+            {
+              ...createEmpty(nextHeads),
+              ...(isRef ? {} : value),
+              ...snapshot
+            },
+            paths,
+            observeFields
+          )
+        })
+      )
     }
   }
 
@@ -82,7 +84,7 @@ function observePaths(value: Value, paths: Path[], observeFields: ObserveFieldsF
     {...value}
   )
 
-  return props(Observable.of(next), {wait: true})
+  return observableOf(next).pipe(props({wait: true}))
 }
 
 // Normalizes path arguments so it supports both dot-paths and array paths, e.g.

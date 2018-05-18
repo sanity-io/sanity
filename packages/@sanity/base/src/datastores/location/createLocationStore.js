@@ -1,4 +1,6 @@
-import Observable from '@sanity/observable'
+import {Observable} from 'rxjs'
+import {map, share} from 'rxjs/operators'
+
 import Location from '../utils/Location'
 import createHistory from 'history/createBrowserHistory'
 import createActions from '../utils/createActions'
@@ -42,12 +44,13 @@ function navigate(nextUrl, options) {
 
 const locationChange$ = new Observable(observer => {
   return history.listen(() => observer.next(readLocation()))
-})
-  .map(location => ({
+}).pipe(
+  map(location => ({
     type: 'change',
     location: location
-  }))
-  .share()
+  })),
+  share()
+)
 
 export default function createLocationStore(options = {}) {
   const eventStream = new Observable(observer => {
