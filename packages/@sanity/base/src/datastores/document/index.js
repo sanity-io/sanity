@@ -1,8 +1,9 @@
 import {of as observableOf} from 'rxjs'
-import {concatMap, map} from 'rxjs/operators'
 
 import createDocumentStore from '@sanity/document-store'
 import client from 'part:@sanity/base/client'
+import {getPairListener} from './getPairListener'
+import {concatMap, map} from 'rxjs/operators'
 
 function fetchDocumentSnapshot(id) {
   return client.observable.getDocument(id).pipe(
@@ -23,6 +24,9 @@ function fetchQuerySnapshot(query, params) {
 }
 
 const serverConnection = {
+  byIdPair(idPair) {
+    return getPairListener(idPair)
+  },
   byId(id) {
     return client
       .listen(

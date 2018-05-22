@@ -2,6 +2,7 @@ import React from 'react'
 import schema from 'part:@sanity/base/schema?'
 import client from 'part:@sanity/base/client?'
 import Preview from 'part:@sanity/base/preview?'
+import {getPublishedId, isDraftId, getDraftId} from 'part:@sanity/base/util/draft-utils'
 import {Subject} from 'rxjs'
 import {takeUntil, tap, debounceTime, map, switchMap} from 'rxjs/operators'
 import {IntentLink} from 'part:@sanity/base/router'
@@ -21,21 +22,6 @@ function isParentOf(possibleParent, possibleChild) {
     current = current.parentNode
   }
   return false
-}
-
-export const DRAFTS_FOLDER = 'drafts'
-const DRAFTS_PREFIX = `${DRAFTS_FOLDER}.`
-
-function isDraftId(id) {
-  return id.startsWith(DRAFTS_PREFIX)
-}
-
-function getPublishedId(id) {
-  return isDraftId(id) ? id.slice(DRAFTS_PREFIX.length) : id
-}
-
-function getDraftId(id) {
-  return isDraftId(id) ? id : DRAFTS_PREFIX + id
 }
 
 // Removes published documents that also has a draft

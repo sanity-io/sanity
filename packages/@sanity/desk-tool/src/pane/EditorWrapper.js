@@ -6,11 +6,11 @@ import {merge, of as observableOf} from 'rxjs'
 import {validateDocument} from '@sanity/validation'
 import promiseLatest from 'promise-latest'
 import {omit, throttle, debounce} from 'lodash'
-import {FormBuilder, checkout} from 'part:@sanity/form-builder'
+import {FormBuilder, checkoutPair} from 'part:@sanity/form-builder'
 import schema from 'part:@sanity/base/schema'
 import Button from 'part:@sanity/components/buttons/default'
 import client from 'part:@sanity/base/client'
-import {getDraftId, getPublishedId} from '../utils/draftUtils'
+import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import Editor from './Editor'
 import styles from './styles/EditorWrapper.css'
 
@@ -85,8 +85,12 @@ export default class EditorWrapper extends React.Component {
 
   setup(documentId) {
     this.dispose()
-    this.published = checkout(getPublishedId(documentId))
-    this.draft = checkout(getDraftId(documentId))
+    const publishedId = getPublishedId(documentId)
+    const draftId = getDraftId(documentId)
+
+    const {published, draft} = checkoutPair({publishedId, draftId})
+    this.published = published
+    this.draft = draft
     this.validateLatestDocument = debounce(promiseLatest(this.validateDocument, 300))
 
     const published$ = this.published.events

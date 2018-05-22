@@ -21,7 +21,8 @@ import {
   isDraftId,
   isPublishedId,
   getDraftId
-} from '../utils/draftUtils'
+} from 'part:@sanity/base/util/draft-utils'
+
 import DocumentsPaneMenu from './DocumentsPaneMenu'
 import ListView from './ListView'
 import styles from './styles/DocumentsPane.css'
