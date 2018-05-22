@@ -3,6 +3,7 @@ import React from 'react'
 import type {Node} from 'react'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import Button from 'part:@sanity/components/buttons/default'
+import ButtonsCollection from 'part:@sanity/components/buttons/collection'
 import type {Type} from '../../typedefs'
 import styles from './styles/ArrayInput.css'
 import type {ArrayType, ItemValue} from './typedefs'
@@ -55,15 +56,17 @@ export default class ArrayFunctions extends React.Component<Props> {
 
     return (
       <div className={styles.functions}>
-        {type.of.length === 1 ? (
-          <Button onClick={this.handleAddBtnClick} className={styles.addButton}>
-            Add
-          </Button>
-        ) : (
-          this.renderSelectType()
-        )}
+        <ButtonsCollection align="start">
+          {type.of.length === 1 ? (
+            <Button onClick={this.handleAddBtnClick} className={styles.addButton}>
+              Add
+            </Button>
+          ) : (
+            this.renderSelectType()
+          )}
 
-        {children || null}
+          {children || null}
+        </ButtonsCollection>
       </div>
     )
   }

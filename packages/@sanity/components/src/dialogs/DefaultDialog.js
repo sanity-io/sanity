@@ -4,6 +4,7 @@ import React from 'react'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import styles from 'part:@sanity/components/dialogs/default-style'
 import Button from 'part:@sanity/components/buttons/default'
+import ButtonCollection from 'part:@sanity/components/buttons/collection'
 import {Portal} from '../utilities/Portal'
 import Escapable from '../utilities/Escapable'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
@@ -11,7 +12,7 @@ import Stacked from '../utilities/Stacked'
 
 export default class DefaultDialog extends React.Component {
   static propTypes = {
-    kind: PropTypes.oneOf(['default', 'warning', 'success', 'danger', 'info']),
+    color: PropTypes.oneOf(['default', 'warning', 'success', 'danger', 'info']),
     className: PropTypes.string,
     title: PropTypes.string,
     children: PropTypes.node,
@@ -36,7 +37,7 @@ export default class DefaultDialog extends React.Component {
     onAction() {},
     onOpen() {},
     actions: [],
-    kind: 'default'
+    color: 'default'
   }
 
   openDialogElement() {
@@ -51,37 +52,57 @@ export default class DefaultDialog extends React.Component {
     this.dialog = element
   }
 
+  createButtonFromAction = (action, i) => {
+    return (
+      <Button
+        key={i}
+        onClick={() => this.props.onAction(action)}
+        data-action-index={i}
+        color={action.color}
+        disabled={action.disabled}
+        kind={action.kind}
+        autoFocus={action.autoFocus}
+        className={action.secondary ? styles.actionSecondary : ''}
+      >
+        {action.title}
+      </Button>
+    )
+  }
+
   renderActions = actions => {
     if (!actions || actions.length < 1) {
       return undefined
     }
 
+    const primaryButtons = actions
+      .map((action, i) => {
+        if (!action.secondary) {
+          return this.createButtonFromAction(action, i)
+        }
+        return false
+      })
+      .filter(Boolean)
+
+    const secondaryButtons = actions
+      .map((action, i) => {
+        if (action.secondary) {
+          return this.createButtonFromAction(action, i)
+        }
+        return false
+      })
+      .filter(Boolean)
+
     return (
-      <div className={styles.actions}>
-        {actions.map((action, i) => {
-          return (
-            <Button
-              key={i}
-              onClick={() => this.props.onAction(action)}
-              data-action-index={i}
-              color={action.color}
-              disabled={action.disabled}
-              kind={action.kind}
-              autoFocus={action.autoFocus}
-              className={action.secondary ? styles.actionSecondary : ''}
-            >
-              {action.title}
-            </Button>
-          )
-        })}
-      </div>
+      <ButtonCollection align="end" secondary={secondaryButtons}>
+        {primaryButtons}
+      </ButtonCollection>
     )
   }
 
   render() {
-    const {title, actions, showHeader, kind, onClose, className, showCloseButton} = this.props
+    const {title, actions, showHeader, color, onClose, className, showCloseButton} = this.props
     const classNames = `
-      ${styles[kind]}
+      ${styles[color]}
       ${styles.isOpen}
       ${showHeader ? styles.hasHeader : ''}
       ${actions && actions.length > 0 ? styles.hasFunctions : ''}

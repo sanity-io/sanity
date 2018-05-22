@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/dialogs/popover-style'
 import Button from 'part:@sanity/components/buttons/default'
+import ButtonsCollection from 'part:@sanity/components/buttons/collection'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import {Portal} from '../utilities/Portal'
 import Stacked from '../utilities/Stacked'
@@ -43,6 +44,23 @@ export default class PopOver extends React.PureComponent {
     }
   }
 
+  createActionButton = (action, i) => {
+    return (
+      <Button
+        key={i}
+        onClick={() => this.props.onAction(action)}
+        data-action-index={i}
+        color={action.color}
+        disabled={action.disabled}
+        kind={action.kind}
+        autoFocus={action.autoFocus}
+        className={action.secondary ? styles.actionSecondary : ''}
+      >
+        {action.title}
+      </Button>
+    )
+  }
+
   renderPopper(isActive) {
     const {
       title,
@@ -79,24 +97,16 @@ export default class PopOver extends React.PureComponent {
             </div>
             {actions.length > 0 && (
               <div className={styles.footer}>
-                <div className={styles.actions}>
-                  {actions.map((action, i) => {
-                    return (
-                      <Button
-                        key={i}
-                        onClick={() => this.props.onAction(action)}
-                        data-action-index={i}
-                        color={action.color}
-                        disabled={action.disabled}
-                        kind={action.kind}
-                        autoFocus={action.autoFocus}
-                        className={action.secondary ? styles.actionSecondary : ''}
-                      >
-                        {action.title}
-                      </Button>
-                    )
-                  })}
-                </div>
+                <ButtonsCollection
+                  align="end"
+                  secondary={actions
+                    .map((action, i) => action.secondary && this.createActionButton(action, i))
+                    .filter(Boolean)}
+                >
+                  {actions
+                    .map((action, i) => !action.secondary && this.createActionButton(action, i))
+                    .filter(Boolean)}
+                </ButtonsCollection>
               </div>
             )}
           </div>
