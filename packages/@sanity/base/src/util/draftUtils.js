@@ -20,3 +20,24 @@ export function getDraftId(id) {
 export function getPublishedId(id) {
   return isDraftId(id) ? id.slice(DRAFTS_PREFIX.length) : id
 }
+
+export function createDraftFrom(document) {
+  return {
+    _id: getDraftId(document._id),
+    ...document
+  }
+}
+
+export function newDraftFrom(document) {
+  return {
+    _id: DRAFTS_PREFIX,
+    ...document
+  }
+}
+
+export function createPublishedFrom(document) {
+  return {
+    _id: getPublishedId(document._id),
+    ...document
+  }
+}
