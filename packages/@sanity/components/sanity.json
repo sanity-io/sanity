@@ -18,12 +18,20 @@
       "description": "Default button"
     },
     {
+      "name": "part:@sanity/components/buttons/collection",
+      "description": "Use this to wrap buttons"
+    },
+    {
       "name": "part:@sanity/components/buttons/anchor",
       "description": "Same as default button, but with an <a>. Takes href"
     },
     {
       "name": "part:@sanity/components/buttons/default-style",
       "description": "Default button styling"
+    },
+    {
+      "name": "part:@sanity/components/buttons/collection-style",
+      "description": "Styling for buttons collection"
     },
     {
       "name": "part:@sanity/components/buttons/fab",
@@ -408,6 +416,10 @@
       "path": "buttons/DefaultButton.js"
     },
     {
+      "implements": "part:@sanity/components/buttons/collection",
+      "path": "buttons/ButtonsCollection.js"
+    },
+    {
       "implements": "part:@sanity/components/buttons/anchor",
       "path": "buttons/AnchorButton.js"
     },
@@ -594,6 +606,10 @@
     {
       "implements": "part:@sanity/components/buttons/default-style",
       "path": "buttons/styles/DefaultButton.css"
+    },
+    {
+      "implements": "part:@sanity/components/buttons/collection-style",
+      "path": "buttons/styles/ButtonsCollection.css"
     },
     {
       "implements": "part:@sanity/components/buttons/dropdown-style",
