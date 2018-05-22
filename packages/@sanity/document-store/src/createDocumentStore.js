@@ -7,8 +7,7 @@ import {BufferedDocument, Mutation} from '@sanity/mutator'
 
 const NOOP = () => {}
 
-function createBufferedDocument(documentId, server) {
-  const serverEvents$ = server.byId(documentId).pipe(share())
+function createBufferedDocument(documentId, serverEvents$, doCommit) {
   const reconnects$ = serverEvents$.pipe(filter(event => event.type === 'reconnect'))
 
   const saves = pubsub()
@@ -26,7 +25,7 @@ function createBufferedDocument(documentId, server) {
         // right now the BufferedDocument just commits fire-and-forget-ish
         // We should be able to handle failures and retry here
 
-        server.mutate(omit(payload, 'resultRev')).subscribe({
+        doCommit(omit(payload, 'resultRev')).subscribe({
           next: res => {
             opts.success(res)
             saves.publish()
@@ -143,6 +142,8 @@ function createBufferedDocument(documentId, server) {
   }
 }
 
+const isDocId = id => event => event.documentId === id
+
 module.exports = function createDocumentStore({serverConnection}) {
   return {
     byId,
@@ -150,6 +151,7 @@ module.exports = function createDocumentStore({serverConnection}) {
     query,
     create,
     checkout,
+    checkoutPair,
     patch: patchDoc,
     delete: deleteDoc,
     createOrReplace: createOrReplace,
@@ -172,8 +174,27 @@ module.exports = function createDocumentStore({serverConnection}) {
     return checkout(documentId).events
   }
 
+  function checkoutPair(idPair) {
+    const {publishedId, draftId} = idPair
+
+    const serverEvents$ = serverConnection.byIdPair({publishedId, draftId}).pipe(share())
+
+    const draft = createBufferedDocument(
+      draftId,
+      serverEvents$.pipe(filter(isDocId(draftId))),
+      doCommit
+    )
+    const published = createBufferedDocument(
+      publishedId,
+      serverEvents$.pipe(filter(isDocId(publishedId))),
+      doCommit
+    )
+    return {draft, published}
+  }
+
   function checkout(documentId) {
-    return createBufferedDocument(documentId, serverConnection)
+    const serverEvents$ = serverConnection.byId(documentId).pipe(share())
+    return createBufferedDocument(documentId, serverEvents$, doCommit)
   }
 
   function byIds(documentIds) {
@@ -200,5 +221,9 @@ module.exports = function createDocumentStore({serverConnection}) {
 
   function createOrReplace(document) {
     return serverConnection.createOrReplace(document)
+  }
+
+  function doCommit(payload) {
+    return serverConnection.mutate(payload)
   }
 }
