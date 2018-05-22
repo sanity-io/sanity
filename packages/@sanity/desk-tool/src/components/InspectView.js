@@ -7,7 +7,7 @@ import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import ToggleButtons from 'part:@sanity/components/toggles/buttons'
 import {isObject} from 'lodash'
 import HLRU from 'hashlru'
-import {getPublishedId} from '../utils/draftUtils'
+import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 
 const lru = HLRU(1000)
 

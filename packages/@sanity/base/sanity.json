@@ -257,6 +257,10 @@
       "path": "schema/createSchema.js"
     },
     {
+      "implements": "part:@sanity/base/util/draft-utils",
+      "path": "util/draftUtils.js"
+    },
+    {
       "implements": "part:@sanity/base/theme/variables-style",
       "path": "styles/variables.css"
     },

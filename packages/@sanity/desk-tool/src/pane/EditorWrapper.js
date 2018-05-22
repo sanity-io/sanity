@@ -10,7 +10,7 @@ import {FormBuilder, checkout} from 'part:@sanity/form-builder'
 import schema from 'part:@sanity/base/schema'
 import Button from 'part:@sanity/components/buttons/default'
 import client from 'part:@sanity/base/client'
-import {getDraftId, getPublishedId} from '../utils/draftUtils'
+import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import Editor from './Editor'
 import styles from './styles/EditorWrapper.css'
 
