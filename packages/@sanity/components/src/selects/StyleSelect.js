@@ -114,40 +114,42 @@ class StyleSelect extends React.Component {
               </div>
             </div>
           </Target>
-          <Portal className={styles.portal}>
-            <Escapable onEscape={this.handleCloseList} />
-            {showList && (
-              <Popper placement="bottom-start">
-                <div ref={this.setPopperElement}>
-                  <List className={styles.list}>
-                    {items.map((item, index) => {
-                      const isSemiSelected = value && value.length > 1 && value.includes(item)
-                      const isSelected = value && value.length === 1 && value[0] == item
-                      const classNames = `
-                          ${isSelected ? styles.itemSelected : styles.item}
-                          ${isSemiSelected ? styles.itemSemiSelected : ''}
-                        `
-                      return (
-                        <div
-                          key={item.key}
-                          title={item.title}
-                          data-index={index}
-                          onClick={this.handleSelect}
-                          className={classNames}
-                        >
-                          <div className={styles.itemIcon}>
-                            {isSelected && <CircleCheckIcon />}
-                            {isSemiSelected && <CircleThinIcon />}
+          {showList && (
+            <Portal>
+              <div className={styles.portal}>
+                <Escapable onEscape={this.handleCloseList} />
+                <Popper placement="bottom-start">
+                  <div ref={this.setPopperElement}>
+                    <List className={styles.list}>
+                      {items.map((item, index) => {
+                        const isSemiSelected = value && value.length > 1 && value.includes(item)
+                        const isSelected = value && value.length === 1 && value[0] == item
+                        const classNames = `
+                            ${isSelected ? styles.itemSelected : styles.item}
+                            ${isSemiSelected ? styles.itemSemiSelected : ''}
+                          `
+                        return (
+                          <div
+                            key={item.key}
+                            title={item.title}
+                            data-index={index}
+                            onClick={this.handleSelect}
+                            className={classNames}
+                          >
+                            <div className={styles.itemIcon}>
+                              {isSelected && <CircleCheckIcon />}
+                              {isSemiSelected && <CircleThinIcon />}
+                            </div>
+                            <div className={styles.itemContent}>{renderItem(item)}</div>
                           </div>
-                          <div className={styles.itemContent}>{renderItem(item)}</div>
-                        </div>
-                      )
-                    })}
-                  </List>
-                </div>
-              </Popper>
-            )}
-          </Portal>
+                        )
+                      })}
+                    </List>
+                  </div>
+                </Popper>
+              </div>
+            </Portal>
+          )}
         </div>
       </Manager>
     )
