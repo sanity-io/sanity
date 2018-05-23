@@ -49,7 +49,7 @@ export function getDocumentElement({project, basePath, hashes}, props = {}) {
       Object.assign(
         {
           // URL base path
-          basePath: (project && project.basePath) || '',
+          basePath: process.env.STUDIO_BASEPATH || (project && project.basePath) || '',
           title: getTitle(project),
           stylesheets: ['css/main.css'].map(item => assetify(item, assetHashes)),
           scripts: ['js/vendor.bundle.js', 'js/app.bundle.js'].map(item =>
