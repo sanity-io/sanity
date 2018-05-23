@@ -81,13 +81,21 @@ function selectWithJoins(schemaType, orderBy) {
 const ORDER_BY_UPDATED_AT = {
   title: 'Last edited',
   name: 'updatedAt',
-  by: [{field: '_updatedAt', direction: 'desc'}]
+  by: [{field: '_updatedAt', direction: 'desc'}],
+  toggle: {
+    title: 'Newest edited',
+    by: [{field: '_updatedAt', direction: 'asc'}]
+  }
 }
 
 const ORDER_BY_CREATED_AT = {
   title: 'Created',
   name: 'createdAt',
-  by: [{field: '_createdAt', direction: 'desc'}]
+  by: [{field: '_createdAt', direction: 'desc'}],
+  toggle: {
+    name: 'Created reverse',
+    by: [{field: '_createdAt', direction: 'asc'}]
+  }
 }
 
 const DEFAULT_SELECTED_ORDERING_OPTION = ORDER_BY_UPDATED_AT
@@ -136,7 +144,7 @@ export default withRouterHOC(
       isCollapsed: false,
       published: [],
       drafts: [],
-      onSetListLayout: NOOP
+      onSetListLayout: NOOP,
     }
 
     handleSetListLayout = listLayout => {
@@ -157,18 +165,23 @@ export default withRouterHOC(
       this.state = {
         settings: (settings && settings[props.selectedType]) || {
           listLayout: 'default',
-          ordering: DEFAULT_SELECTED_ORDERING_OPTION
+          ordering: DEFAULT_SELECTED_ORDERING_OPTION,
+          toggledOrdering: false
         },
         menuIsOpen: false
       }
     }
 
     handleSetOrdering = ordering => {
+      const {toggledOrdering} = this.state.settings
+      const isActive = ordering.name === this.state.settings.ordering
+      const newToggledOrdering = !toggledOrdering && isActive && !!ordering.toggle
       this.setState(
         prevState => ({
           settings: {
             ...prevState.settings,
-            ordering: ordering.name
+            ordering: ordering.name,
+            toggledOrdering: newToggledOrdering
           }
         }),
         this.writeSettings
@@ -218,17 +231,19 @@ export default withRouterHOC(
         : DEFAULT_ORDERING_OPTIONS
 
       return uniqBy(optionsWithDefaults, 'name').map(option => {
-        const direction = option.by[0] && option.by[0].direction
+        const isActive = option.name === this.state.settings.ordering
+        const isToggled = isActive && this.state.settings.toggledOrdering
+        const displayedOption = option.toggle && isToggled ? option.toggle : option
+        const displayedDirection = displayedOption.by[0] && displayedOption.by[0].direction
 
         return {
           ...option,
-          icon: option.icon || this.getSortIcon(direction),
-          active: option.name === this.state.settings.ordering,
-          title: (
-            <span>
-              Sort by {option.title} ({direction})
-            </span>
-          )
+          icon:
+            displayedOption.icon ||
+            (option.toggle && this.getSortIcon(displayedDirection)) ||
+            SortIcon,
+          active: isActive,
+          title: <span>Sort by {displayedOption.title || option.title}</span>
         }
       })
     }
@@ -290,7 +305,7 @@ export default withRouterHOC(
 
     renderDocumentPaneItem = (item, index, options = {}) => {
       const {selectedType, selectedDocumentId} = this.props
-      const {settings} = this.state
+      const {settings, toggledOrdering} = this.state
 
       const ordering = this.getOrderingOptions(selectedType).find(
         option => option.name === settings.ordering
@@ -311,7 +326,7 @@ export default withRouterHOC(
           <div className={isSelected ? styles.selectedItem : styles.item}>
             <Preview
               value={item}
-              ordering={ordering}
+              ordering={toggledOrdering ? ordering.toggle : ordering}
               layout={settings.listLayout}
               type={type}
               status={() => this.renderStatus(item)}
@@ -344,6 +359,8 @@ export default withRouterHOC(
       const {selectedDocumentId, schemaType, isCollapsed, router} = this.props
 
       const {settings} = this.state
+      const {toggledOrdering} = settings
+
       const currentOrderingOption =
         this.getOrderingOptions(schemaType.name).find(
           option => option.name === settings.ordering
@@ -352,7 +369,11 @@ export default withRouterHOC(
       const query = `*[_type == $type] [0...10000] {_id, _type, ${selectWithJoins(
         schemaType,
         currentOrderingOption.by
-      )}} | order(${toGradientOrderClause(currentOrderingOption.by)}){_id, _type}`
+      )}} | order(${toGradientOrderClause(
+        toggledOrdering && currentOrderingOption.toggle
+          ? currentOrderingOption.toggle.by
+          : currentOrderingOption.by
+      )}){_id, _type}`
       const {selectedType, action} = router.state
       const isSelected = selectedType && !action && !selectedDocumentId
       return (
