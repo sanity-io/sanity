@@ -3,3 +3,7 @@
 .item {
   padding: var(--small-padding);
 }
+
+.searchableSelect {
+  composes: spacing from 'part:@sanity/components/buttons/default-style';
+}

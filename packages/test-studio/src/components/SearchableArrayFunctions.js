@@ -67,13 +67,15 @@ export default class SearchableArrayFunctions extends React.Component {
 
     return (
       <DefaultArrayFunctions {...this.props}>
-        <SearchableSelect
-          placeholder="Type to search…"
-          onSearch={this.handleSearch}
-          onChange={this.handleChange}
-          renderItem={SearchItem}
-          items={this.state.results}
-        />
+        <div className={styles.searchableSelect}>
+          <SearchableSelect
+            placeholder="Type to search…"
+            onSearch={this.handleSearch}
+            onChange={this.handleChange}
+            renderItem={SearchItem}
+            items={this.state.results}
+          />
+        </div>
       </DefaultArrayFunctions>
     )
   }

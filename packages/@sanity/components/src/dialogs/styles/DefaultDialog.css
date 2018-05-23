@@ -221,26 +221,15 @@
   }
 }
 
-.actions {
-  composes: buttonsCollection from 'part:@sanity/base/theme/typography/forms-style';
-  flex-direction: row-reverse;
-}
-
-.actionSecondary {
-  margin-right: auto !important;
-  order: 1;
-}
-
 .footer {
   font-size: var(--font-size-small);
   box-sizing: border-box;
-  padding: var(--dialog-padding);
-  background-color: var(--body-bg);
-  border-top: 1px solid var(--component-border-color);
-  height: var(--dialog-functions-height);
+  padding: var(--medium-padding);
+  background-color: color(var(--body-bg) a(50%));
   border-radius: 0 0 var(--border-radius-large) var(--border-radius-large);
+  display: flex;
 
-  @nest .danger & {
-    background-color: color(var(--white) a(60%));
+  @nest .default & {
+    border-top: 1px solid var(--component-border-color);
   }
 }

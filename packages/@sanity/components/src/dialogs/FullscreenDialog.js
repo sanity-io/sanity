@@ -3,8 +3,10 @@ import React from 'react'
 
 import styles from 'part:@sanity/components/dialogs/fullscreen-style'
 import CloseIcon from 'part:@sanity/base/close-icon'
-import {Portal} from '../utilities/Portal'
 import Button from 'part:@sanity/components/buttons/default'
+import ButtonCollection from 'part:@sanity/components/buttons/button-collection'
+import {partition} from 'lodash'
+import {Portal} from '../utilities/Portal'
 import StackedEscapable from '../utilities/StackedEscapable'
 
 export default class FullScreenDialog extends React.PureComponent {
@@ -42,6 +44,24 @@ export default class FullScreenDialog extends React.PureComponent {
     this.props.onAction(this.props.actions[actionIndex])
   }
 
+  createActionButton = (action, i) => {
+    const {color} = this.props
+    return (
+      <Button
+        key={i}
+        onClick={this.handleActionClick}
+        data-action-index={i}
+        color={color === 'default' ? action.color : 'white'}
+        disabled={action.disabled}
+        inverted={color !== 'default'} // invert buttons for colored dialogs
+        kind={action.kind}
+        autoFocus={action.autoFocus}
+      >
+        {action.title}
+      </Button>
+    )
+  }
+
   render() {
     const {color, title, className, onClose, centered, isOpen, actions} = this.props
 
@@ -54,12 +74,14 @@ export default class FullScreenDialog extends React.PureComponent {
       .filter(Boolean)
       .join(' ')
 
+    const [primary, secondary] = partition(actions, action => action.primary)
+
     return (
       <StackedEscapable onEscape={onClose}>
         <Portal>
           <div className={classNames}>
             {onClose && (
-              <button className={styles.closeButton} onClick={onClose}>
+              <button className={styles.closeButton} onClick={onClose} type="button">
                 <CloseIcon color="inherit" />
               </button>
             )}
@@ -69,31 +91,12 @@ export default class FullScreenDialog extends React.PureComponent {
                 {this.props.children}
                 <div className={styles.actionsWrapper}>
                   {actions.length > 0 && (
-                    <div className={styles.actions}>
-                      {actions.map((action, i) => {
-                        return (
-                          <div key={i}>
-                            <Button
-                              onClick={this.handleActionClick}
-                              data-action-index={i}
-                              color={color === 'default' ? action.color : 'white'}
-                              disabled={action.disabled}
-                              inverted={
-                                typeof action.inverted === 'boolean' ? action.inverted : true
-                              }
-                              kind={action.kind}
-                              autoFocus={action.autoFocus}
-                              className={`
-                                    ${styles.button}
-                                    ${styles[`button_${action.kind}`] || styles.button}
-                                  `}
-                            >
-                              {action.title}
-                            </Button>
-                          </div>
-                        )
-                      })}
-                    </div>
+                    <ButtonCollection
+                      align="start"
+                      secondary={secondary.map(this.createActionButton)}
+                    >
+                      {primary.map(this.createActionButton)}
+                    </ButtonCollection>
                   )}
                 </div>
               </div>
