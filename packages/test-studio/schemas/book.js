@@ -62,7 +62,10 @@ export default {
     {
       title: 'Title',
       name: 'title',
-      by: [{field: 'title', direction: 'asc'}, {field: 'publicationYear', direction: 'asc'}]
+      by: [{field: 'title', direction: 'asc'}, {field: 'publicationYear', direction: 'asc'}],
+      toggle: {
+        by: [{field: 'title', direction: 'desc'}, {field: 'publicationYear', direction: 'asc'}]
+      }
     },
     {
       title: 'Author name',
@@ -82,7 +85,15 @@ export default {
     {
       title: 'Swedish title',
       name: 'swedishTitle',
-      by: [{field: 'translations.se', direction: 'asc'}, {field: 'title', direction: 'asc'}]
+      by: [{field: 'translations.se', direction: 'asc'}, {field: 'title', direction: 'asc'}],
+      toggle: {
+        by: [{field: 'translations.se', direction: 'desc'}, {field: 'title', direction: 'desc'}]
+      }
+    },
+    {
+      title: 'Publication year',
+      name: 'publicationYear',
+      by: [{field: 'publicationYear', direction: 'asc'}]
     }
   ],
   preview: {
