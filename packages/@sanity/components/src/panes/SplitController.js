@@ -1,11 +1,32 @@
 /* eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React from 'react'
-import styles from './styles/SplitController.css'
 import SplitPane from 'react-split-pane'
 import {debounce} from 'lodash'
+import {Observable, merge} from 'rxjs'
+import styles from './styles/SplitController.css'
+import {map, share, debounceTime, distinctUntilChanged, startWith} from 'rxjs/operators'
 
 const COLLAPSED_WIDTH = 54
+
+const fromWindowEvent = eventName =>
+  new Observable(subscriber => {
+    const handler = event => subscriber.next(event)
+    window.addEventListener(eventName, handler)
+    return () => {
+      window.removeEventListener(eventName, handler)
+    }
+  })
+
+const orientationChange$ = fromWindowEvent('orientationchange')
+const resize$ = fromWindowEvent('resize')
+
+const windowWidth$ = merge(orientationChange$, resize$).pipe(
+  share(),
+  debounceTime(50),
+  map(() => window.innerWidth),
+  distinctUntilChanged()
+)
 
 export default class PanesSplitController extends React.Component {
   static propTypes = {
@@ -26,15 +47,15 @@ export default class PanesSplitController extends React.Component {
   isResizing = false
 
   componentDidMount() {
-    if (window) {
-      window.addEventListener('resize', this.handleResize)
-    }
+    this.resizeSubscriber = windowWidth$
+      .pipe(startWith(window.innerWidth))
+      .subscribe(windowWidth => {
+        this.setState({windowWidth})
+      })
   }
 
-  componentWillUnmont() {
-    if (window) {
-      window.removeEventListener('resize', this.handleResize)
-    }
+  componentWillUnmount() {
+    this.resizeSubscriber.unsubscribe()
   }
 
   handleSplitPaneChange = debounce((size, pane) => {
@@ -112,14 +133,6 @@ export default class PanesSplitController extends React.Component {
     // Recursive
     const remainingPanes = panes.slice(1)
     return this.renderSplitPane(panes[0], this.renderRecursivePanes(remainingPanes))
-  }
-
-  handleResize = () => {
-    if (window && this.state.windowWidth !== window.innerWidth) {
-      this.setState({
-        windowWidth: window.innerWidth
-      })
-    }
   }
 
   render() {
