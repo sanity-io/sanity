@@ -24,8 +24,7 @@ const resize$ = fromWindowEvent('resize')
 const windowWidth$ = merge(orientationChange$, resize$).pipe(
   share(),
   debounceTime(50),
-  map(() => window.innerWidth),
-  distinctUntilChanged()
+  map(() => window.innerWidth)
 )
 
 export default class PanesSplitController extends React.Component {
@@ -41,14 +40,14 @@ export default class PanesSplitController extends React.Component {
   }
 
   state = {
-    windowWidth: 1000
+    windowWidth: typeof window === 'undefined' ? 1000 : window.innerWidth
   }
 
   isResizing = false
 
   componentDidMount() {
     this.resizeSubscriber = windowWidth$
-      .pipe(startWith(window.innerWidth))
+      .pipe(startWith(window.innerWidth), distinctUntilChanged())
       .subscribe(windowWidth => {
         this.setState({windowWidth})
       })
