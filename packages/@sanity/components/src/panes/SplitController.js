@@ -132,11 +132,13 @@ export default class PanesSplitController extends React.Component {
 
     // TODO We need a way to target mobile devices in JS
     // --screen-medium-break: 32em;  ~32 * 16 = 512
-    const isMobile = this.state.windowWidth < 512
+    const isLessThanScreenMedium = this.state.windowWidth < 512
 
     return (
       <div className={styles.vertical}>
-        {isMobile ? children : this.renderRecursivePanes(panes.filter(pane => pane.type !== 'div'))}
+        {isLessThanScreenMedium
+          ? children
+          : this.renderRecursivePanes(panes.filter(pane => pane.type !== 'div'))}
       </div>
     )
   }
