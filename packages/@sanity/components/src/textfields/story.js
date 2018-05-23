@@ -38,3 +38,13 @@ storiesOf('Textfields')
       </Sanity>
     )
   })
+  .add('Spacing test', () => {
+    return (
+      <div style={{margin: '1rem'}}>
+        <DefaultTextField label="Label" placeholder="Placeholder" />
+        <DefaultTextField label="Label" placeholder="Placeholder" />
+        <DefaultTextField label="Label" placeholder="Placeholder" />
+        <DefaultTextField label="Label" placeholder="Placeholder" />
+      </div>
+    )
+  })
