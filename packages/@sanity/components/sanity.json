@@ -18,7 +18,7 @@
       "description": "Default button"
     },
     {
-      "name": "part:@sanity/components/buttons/collection",
+      "name": "part:@sanity/components/buttons/button-collection",
       "description": "Use this to wrap buttons"
     },
     {
@@ -30,7 +30,7 @@
       "description": "Default button styling"
     },
     {
-      "name": "part:@sanity/components/buttons/collection-style",
+      "name": "part:@sanity/components/buttons/button-collection-style",
       "description": "Styling for buttons collection"
     },
     {
@@ -416,8 +416,8 @@
       "path": "buttons/DefaultButton.js"
     },
     {
-      "implements": "part:@sanity/components/buttons/collection",
-      "path": "buttons/ButtonsCollection.js"
+      "implements": "part:@sanity/components/buttons/button-collection",
+      "path": "buttons/ButtonCollection.js"
     },
     {
       "implements": "part:@sanity/components/buttons/anchor",
@@ -608,8 +608,8 @@
       "path": "buttons/styles/DefaultButton.css"
     },
     {
-      "implements": "part:@sanity/components/buttons/collection-style",
-      "path": "buttons/styles/ButtonsCollection.css"
+      "implements": "part:@sanity/components/buttons/button-collection-style",
+      "path": "buttons/styles/ButtonCollection.css"
     },
     {
       "implements": "part:@sanity/components/buttons/dropdown-style",
