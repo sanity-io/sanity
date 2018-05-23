@@ -1,9 +1,15 @@
+/* eslint-disable no-process-env */
 const getStaticBasePath = config => {
-  if (!config.project || !config.project.basePath) {
+  if (!process.env.STUDIO_BASEPATH && (!config.project || !config.project.basePath)) {
     return '/static'
   }
 
-  const basePath = ((config.project && config.project.basePath) || '').replace(/\/+$/, '')
+  const basePath = (
+    process.env.STUDIO_BASEPATH ||
+    (config.project && config.project.basePath) ||
+    ''
+  ).replace(/\/+$/, '')
+
   return `${basePath}/static`
 }
 
