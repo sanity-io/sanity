@@ -12,7 +12,7 @@ export default class ButtonsCollection extends React.PureComponent {
 
   static defaultProps = {
     align: 'start',
-    secondary: undefined
+    secondary: null
   }
 
   render() {
