@@ -4,7 +4,7 @@ import React from 'react'
 import styles from 'part:@sanity/components/dialogs/fullscreen-style'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import Button from 'part:@sanity/components/buttons/default'
-import ButtonsCollection from 'part:@sanity/components/buttons/button-collection'
+import ButtonCollection from 'part:@sanity/components/buttons/button-collection'
 import {partition} from 'lodash'
 import {Portal} from '../utilities/Portal'
 import StackedEscapable from '../utilities/StackedEscapable'
@@ -91,12 +91,12 @@ export default class FullScreenDialog extends React.PureComponent {
                 {this.props.children}
                 <div className={styles.actionsWrapper}>
                   {actions.length > 0 && (
-                    <ButtonsCollection
+                    <ButtonCollection
                       align="start"
                       secondary={secondary.map(this.createActionButton)}
                     >
                       {primary.map(this.createActionButton)}
-                    </ButtonsCollection>
+                    </ButtonCollection>
                   )}
                 </div>
               </div>

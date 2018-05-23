@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/dialogs/popover-style'
 import Button from 'part:@sanity/components/buttons/default'
-import ButtonsCollection from 'part:@sanity/components/buttons/button-collection'
+import ButtonCollection from 'part:@sanity/components/buttons/button-collection'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import {Manager, Target, Popper, Arrow} from 'react-popper'
 import {partition} from 'lodash'
@@ -100,9 +100,9 @@ export default class PopOver extends React.PureComponent {
             </div>
             {actions.length > 0 && (
               <div className={styles.footer}>
-                <ButtonsCollection align="end" secondary={primary.map(this.createActionButton)}>
+                <ButtonCollection align="end" secondary={primary.map(this.createActionButton)}>
                   {secondary.map(this.createActionButton)}
-                </ButtonsCollection>
+                </ButtonCollection>
               </div>
             )}
           </div>
