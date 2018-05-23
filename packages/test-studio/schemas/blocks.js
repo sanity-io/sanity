@@ -153,7 +153,21 @@ export default {
       title: 'Customized with block types',
       type: 'array',
       of: [
-        {type: 'image', title: 'Image', options: {inline: true}},
+        {
+          type: 'image',
+          title: 'Image',
+          fields: [
+            {title: 'Caption', name: 'caption', type: 'string', options: {isHighlighted: true}},
+            {
+              title: 'Authors',
+              name: 'authors',
+              type: 'array',
+              options: {isHighlighted: true},
+              of: [{type: 'author', title: 'Author'}]
+            }
+          ],
+          options: {inline: true}
+        },
         {type: 'author', title: 'Author'},
         {
           type: 'block',

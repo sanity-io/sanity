@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import FormBuilderPropTypes from '../../FormBuilderPropTypes'
+import FocusManager from '../../sanity/focusManagers/SimpleFocusManager'
 
 export default class ItemForm extends React.PureComponent {
   static propTypes = {
@@ -31,6 +32,20 @@ export default class ItemForm extends React.PureComponent {
       return <div>No input component resolved for type {`"${type.name}"`}</div>
     }
 
-    return <InputComponent value={value} type={type} level={level} onChange={this.handleChange} />
+    return (
+      <FocusManager>
+        {({onFocus, onBlur, focusPath}) => (
+          <InputComponent
+            value={value}
+            type={type}
+            level={level}
+            onChange={this.handleChange}
+            onFocus={onFocus}
+            focusPath={focusPath}
+            onBlur={onBlur}
+          />
+        )}
+      </FocusManager>
+    )
   }
 }
