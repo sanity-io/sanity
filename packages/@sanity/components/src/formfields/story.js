@@ -15,7 +15,6 @@ storiesOf('Form fields')
         <DefaultFormField
           label={text('label (prop)', 'This is the label')}
           description={text('Description (prop)', 'This is the description')}
-          labelFor={id}
           level={number('Level (prop)', 0)}
           inline={boolean('Inline (prop)', false)}
           wrapped={boolean('Wrapped (prop)', false)}
@@ -23,5 +22,23 @@ storiesOf('Form fields')
           <DefaultTextInput id={id} value="" />
         </DefaultFormField>
       </Sanity>
+    )
+  })
+  .add('Spacing test', () => {
+    return (
+      <div style={{margin: '1rem'}}>
+        <DefaultFormField label="Label" description="Description">
+          <DefaultTextInput value="" />
+        </DefaultFormField>
+        <DefaultFormField label="Label" description="Description">
+          <DefaultTextInput value="" />
+        </DefaultFormField>
+        <DefaultFormField label="Label" description="Description">
+          <DefaultTextInput value="" />
+        </DefaultFormField>
+        <DefaultFormField label="Label" description="Description">
+          <DefaultTextInput value="" />
+        </DefaultFormField>
+      </div>
     )
   })

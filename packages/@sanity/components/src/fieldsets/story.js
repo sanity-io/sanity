@@ -178,3 +178,17 @@ storiesOf('Fieldsets')
       </Sanity>
     )
   })
+  .add('Spacing test', () => {
+    return (
+      <div style={{margin: '1rem'}}>
+        <Fieldset legend="Test" description={chance.paragraph()}>
+          <DefaultTextField label="Label" placeholder="Placeholder" />
+          <DefaultTextField label="Label" placeholder="Placeholder" />
+        </Fieldset>
+        <Fieldset legend="Test 2" description={chance.paragraph()}>
+          <DefaultTextField label="Label" placeholder="Placeholder" />
+        </Fieldset>
+        <Fieldset legend="Test 3" description={chance.paragraph()} />
+      </div>
+    )
+  })
