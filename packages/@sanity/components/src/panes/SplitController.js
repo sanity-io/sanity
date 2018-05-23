@@ -5,7 +5,7 @@ import SplitPane from 'react-split-pane'
 import {debounce} from 'lodash'
 import {Observable, merge} from 'rxjs'
 import styles from './styles/SplitController.css'
-import {map, share, debounceTime, distinctUntilChanged, startWith} from 'rxjs/operators'
+import {map, share, debounceTime, distinctUntilChanged} from 'rxjs/operators'
 
 const COLLAPSED_WIDTH = 54
 
@@ -46,11 +46,9 @@ export default class PanesSplitController extends React.Component {
   isResizing = false
 
   componentDidMount() {
-    this.resizeSubscriber = windowWidth$
-      .pipe(startWith(window.innerWidth), distinctUntilChanged())
-      .subscribe(windowWidth => {
-        this.setState({windowWidth})
-      })
+    this.resizeSubscriber = windowWidth$.pipe(distinctUntilChanged()).subscribe(windowWidth => {
+      this.setState({windowWidth})
+    })
   }
 
   componentWillUnmount() {
