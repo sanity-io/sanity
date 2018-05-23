@@ -1,10 +1,31 @@
+/* eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React from 'react'
-import styles from './styles/SplitController.css'
 import SplitPane from 'react-split-pane'
 import {debounce} from 'lodash'
+import {Observable, merge} from 'rxjs'
+import styles from './styles/SplitController.css'
+import {map, share, debounceTime, distinctUntilChanged} from 'rxjs/operators'
 
 const COLLAPSED_WIDTH = 54
+
+const fromWindowEvent = eventName =>
+  new Observable(subscriber => {
+    const handler = event => subscriber.next(event)
+    window.addEventListener(eventName, handler)
+    return () => {
+      window.removeEventListener(eventName, handler)
+    }
+  })
+
+const orientationChange$ = fromWindowEvent('orientationchange')
+const resize$ = fromWindowEvent('resize')
+
+const windowWidth$ = merge(orientationChange$, resize$).pipe(
+  share(),
+  debounceTime(50),
+  map(() => window.innerWidth)
+)
 
 export default class PanesSplitController extends React.Component {
   static propTypes = {
@@ -18,7 +39,21 @@ export default class PanesSplitController extends React.Component {
     onSholdExpand() {}
   }
 
+  state = {
+    windowWidth: typeof window === 'undefined' ? 1000 : window.innerWidth
+  }
+
   isResizing = false
+
+  componentDidMount() {
+    this.resizeSubscriber = windowWidth$.pipe(distinctUntilChanged()).subscribe(windowWidth => {
+      this.setState({windowWidth})
+    })
+  }
+
+  componentWillUnmount() {
+    this.resizeSubscriber.unsubscribe()
+  }
 
   handleSplitPaneChange = debounce((size, pane) => {
     if (size <= pane.props.minWidth) {
@@ -107,11 +142,13 @@ export default class PanesSplitController extends React.Component {
 
     // TODO We need a way to target mobile devices in JS
     // --screen-medium-break: 32em;  ~32 * 16 = 512
-    const isMobile = window && window.innerWidth < 512
+    const isLessThanScreenMedium = this.state.windowWidth < 512
 
     return (
       <div className={styles.vertical}>
-        {isMobile ? children : this.renderRecursivePanes(panes.filter(pane => pane.type !== 'div'))}
+        {isLessThanScreenMedium
+          ? children
+          : this.renderRecursivePanes(panes.filter(pane => pane.type !== 'div'))}
       </div>
     )
   }
