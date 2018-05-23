@@ -3,6 +3,7 @@ import {storiesOf, action, linkTo} from 'part:@sanity/storybook'
 import {withKnobs, text, select, boolean, object} from 'part:@sanity/storybook/addons/knobs'
 import Button from 'part:@sanity/components/buttons/default'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
+import DialogContent from 'part:@sanity/components/dialogs/content'
 import ConfirmDialog from 'part:@sanity/components/dialogs/confirm'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
@@ -39,6 +40,7 @@ storiesOf('Dialogs')
       {
         index: '1',
         title: 'Finish',
+        color: 'primary',
         autoFocus: true
       },
       {
@@ -48,11 +50,12 @@ storiesOf('Dialogs')
       {
         index: '3',
         title: 'Secondary',
-        kind: 'secondary'
+        kind: 'simple',
+        secondary: true
       }
     ]
 
-    const dialogActions = boolean('has actions', false) ? actions : false
+    const dialogActions = boolean('has actions', false) ? actions : []
 
     return (
       <Sanity part="part:@sanity/components/dialogs/default" propTables={[DefaultDialog]}>
@@ -62,12 +65,16 @@ storiesOf('Dialogs')
             title={text('title', 'This is the title')}
             isOpen={boolean('is Open', true)}
             showHeader={boolean('Show Header', false)}
-            kind={select('Kind', [false, 'danger', 'success', 'info', 'warning', false])}
+            color={select('Color', ['default', 'danger', 'success', 'info', 'warning'])}
             onClose={action('onClose')}
             onAction={action('onAction')}
-            actions={object('actions', dialogActions)}
+            actions={dialogActions ? object('Actions (prop)', actions) : undefined}
           >
-            {text('content', 'This is the content')}
+            <DialogContent>
+              <div style={{padding: '2em'}}>
+                {text('content', 'This is the content and it is big. Very big yes so big.')}
+              </div>
+            </DialogContent>
           </DefaultDialog>
         </div>
       </Sanity>
@@ -94,11 +101,12 @@ storiesOf('Dialogs')
       {
         index: '4',
         title: 'Secondary',
-        kind: 'secondary'
+        kind: 'simple',
+        secondary: true
       }
     ]
 
-    const dialogActions = boolean('has actions', false) ? actions : false
+    const dialogActions = boolean('has actions', false) ? actions : []
 
     return (
       <Sanity part="part:@sanity/components/dialogs/fullscreen" propTables={[FullscreenDialog]}>
@@ -124,11 +132,36 @@ storiesOf('Dialogs')
   })
 
   .add('PopOver', () => {
+    const actions = [
+      {
+        index: '1',
+        title: 'Default'
+      },
+      {
+        index: '2',
+        title: 'Finish',
+        color: 'success',
+        autoFocus: true
+      },
+      {
+        index: '3',
+        title: 'Cancel',
+        color: 'danger'
+      },
+      {
+        index: '4',
+        title: 'Secondary',
+        kind: 'simple',
+        secondary: true
+      }
+    ]
+
     return (
       <div style={{top: '50%', left: '50%', position: 'absolute'}}>
         <Sanity part="part:@sanity/components/dialogs/confirm" propTables={[ConfirmDialog]}>
           <PopOverDialog
-            color={select('color (prop)', [false, 'danger', 'success', 'info', 'warning', false])}
+            actions={boolean('has actions', false) ? actions : []}
+            color={select('color (prop)', [undefined, 'danger', 'success', 'info', 'warning'])}
           >
             {text('children (prop)', 'Do you really want to?')}
           </PopOverDialog>
@@ -141,14 +174,13 @@ storiesOf('Dialogs')
     return (
       <Sanity part="part:@sanity/components/dialogs/confirm" propTables={[ConfirmDialog]}>
         <ConfirmDialog
-          color={select('color (prop)', [false, 'danger', 'success', 'info', 'warning', false])}
+          color={select('color (prop)', [undefined, 'danger', 'success', 'info', 'warning'])}
           confirmColor={select('confirmColor (prop)', [
-            false,
+            undefined,
             'danger',
             'success',
             'info',
-            'warning',
-            false
+            'warning'
           ])}
           onConfirm={action('onConfirm')}
           onCancel={action('onCancel')}

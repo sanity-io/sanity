@@ -1,0 +1,44 @@
+@import "part:@sanity/base/theme/variables-style";
+
+.root {
+  display: flex;
+  flex-wrap: nowrap;
+  align-content: stretch;
+  width: 100%;
+}
+
+.alignStart {
+  composes: root;
+  flex-direction: row;
+}
+
+.alignEnd {
+  composes: root;
+  flex-direction: row-reverse;
+}
+
+.small {
+  font-size: var(--font-size-small);
+}
+
+.primary {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  flex-grow: 1;
+
+  @nest .alignStart & {
+    justify-content: flex-start;
+  }
+}
+
+.secondary {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  flex-grow: 1;
+
+  @nest .alignStart & {
+    justify-content: flex-end;
+  }
+}

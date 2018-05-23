@@ -11,7 +11,7 @@ import StackedEscapable from '../utilities/StackedEscapable'
 export default class DefaultDialog extends React.PureComponent {
   static propTypes = {
     color: PropTypes.oneOf(['warning', 'success', 'danger', 'info']),
-    confirmColor: PropTypes.oneOf(['success', 'danger']),
+    confirmColor: PropTypes.oneOf(['warning', 'success', 'danger', 'info']),
     className: PropTypes.string,
     children: PropTypes.node,
     onClose: PropTypes.func,
@@ -64,7 +64,7 @@ export default class DefaultDialog extends React.PureComponent {
                 <div className={styles.content}>{this.props.children}</div>
 
                 <div className={styles.footer}>
-                  <Button onClick={onCancel} icon={CloseIcon} inverted>
+                  <Button onClick={onCancel} icon={CloseIcon} kind="simple">
                     {cancelButtonText}
                   </Button>
                   <Button onClick={onConfirm} color={confirmColor} icon={CheckIcon} autoFocus>
