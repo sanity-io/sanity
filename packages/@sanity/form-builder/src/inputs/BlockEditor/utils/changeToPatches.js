@@ -30,9 +30,19 @@ function setNodePatchSimple(
   blockContentType
 ) {
   const appliedBlocks = editorValueToBlocks(
-    change.applyOperations([operation]).value.toJSON(VALUE_TO_JSON_OPTS),
+    {
+      document: {
+        nodes: [
+          change
+            .applyOperations([operation])
+            .value.document.nodes.get(operation.path[0])
+            .toJSON(VALUE_TO_JSON_OPTS)
+        ]
+      }
+    },
     blockContentType
   )
+
   // Value is undefined
   if (!blocks && appliedBlocks) {
     return setIfMissing(appliedBlocks)
@@ -41,15 +51,10 @@ function setNodePatchSimple(
   if (blocks && blocks.length === 0) {
     return set(appliedBlocks, [])
   }
-  const changedBlock = appliedBlocks[operation.path[0]]
-
-  // Don't do anything if nothing is changed
-  if (isEqual(changedBlock, blocks[operation.path[0]])) {
-    return []
-  }
+  const changedBlock = appliedBlocks[0]
 
   setKey(changedBlock._key, changedBlock)
-  return set(changedBlock, [{_key: blocks[operation.path[0]]._key}])
+  return set(changedBlock, [{_key: changedBlock._key}])
 }
 
 function setNodePatch(
@@ -124,18 +129,8 @@ function insertNodePatch(
       afterKey = blocks[operation.path[0] - 1]._key
     }
     const newBlock = appliedBlocks[operation.path[0]]
-    let newKey
-    const operationIndex = operations.indexOf(operation)
-    const nextOperation = operations.get(operationIndex + 1)
-    if (
-      nextOperation &&
-      nextOperation.type === 'set_node' &&
-      nextOperation.path[0] === operation.path[0] + 1 &&
-      (newKey = nextOperation.properties.data.get('_key'))
-    ) {
-      setKey(newKey, newBlock)
-      operations.splice(operationIndex + 1, 1)
-    }
+    const newKey = change.value.document.nodes.get(operation.path[0]).key
+    setKey(newKey, newBlock)
     patches.push(insert([newBlock], position, [{_key: afterKey}]))
   }
 
@@ -166,19 +161,8 @@ function splitNodePatch(
   if (operation.path.length === 1) {
     patches.push(set(splitBlock, [{_key: splitBlock._key}]))
     const newBlock = appliedBlocks[operation.path[0] + 1]
-    let newKey
-    const operationIndex = operations.indexOf(operation)
-    const nextOperation = operations.get(operationIndex + 1)
-    if (
-      nextOperation &&
-      nextOperation.type === 'set_node' &&
-      nextOperation.path[0] === operation.path[0] + 1 &&
-      isEqual(Object.keys(nextOperation.properties), ['data']) &&
-      (newKey = nextOperation.properties.data.get('_key'))
-    ) {
-      setKey(newKey, newBlock)
-      operations.splice(operationIndex + 1, 1)
-    }
+    const newKey = change.value.document.nodes.get(operation.path[0] + 1).key
+    setKey(newKey, newBlock)
     patches.push(insert([newBlock], 'after', [{_key: blocks[operation.path[0]]._key}]))
   }
   if (operation.path.length > 1) {
@@ -352,5 +336,8 @@ export default function changeToPatches(
       })
       .toArray()
   ).filter(Boolean)
+  if (change.__isUndoRedo) {
+    patches.push(set({}, [{_key: 'undoRedoVoidPatch'}]))
+  }
   return patches
 }

@@ -9,6 +9,7 @@ import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {PatchEvent} from '../../PatchEvent'
 import Input from './Input'
 
+import createSelectionOperation from './utils/createSelectionOperation'
 import changeToPatches from './utils/changeToPatches'
 import deserialize from './utils/deserialize'
 import patchesToChange from './utils/patchesToChange'
@@ -64,6 +65,8 @@ type State = {
 export default withPatchSubscriber(
   class SyncWrapper extends React.PureComponent<Props, State> {
     _input = null
+    _selection = null
+    _undoRedoStack = {undo: [], redo: []}
 
     static defaultProps = {
       markers: []
@@ -81,13 +84,17 @@ export default withPatchSubscriber(
             ? deserialize([], props.type)
             : deserialize(props.value, props.type)
       }
-      this.unsubscribe = props.subscribe(this.handleRemotePatches)
+      this.unsubscribe = props.subscribe(this.handleDocumentPatches)
     }
 
     handleEditorChange = (change: SlateChange, callback: void => void) => {
       const {value, onChange, type} = this.props
-      const patches = changeToPatches(this.state.editorValue, change, value, type)
+      const currentEditorValue = this.state.editorValue
+
       this.setState({editorValue: change.value})
+
+      const patches = changeToPatches(currentEditorValue, change, value, type)
+      this._selection = createSelectionOperation(change)
 
       // Do the change
       onChange(PatchEvent.from(patches))
@@ -111,12 +118,51 @@ export default withPatchSubscriber(
       this._input.focus()
     }
 
-    handleRemotePatches = ({patches, shouldReset, snapshot}) => {
-      const {editorValue} = this.state
-      const {type} = this.props
-      const remotePatches = patches.filter(patch => patch.origin === 'remote')
-      if (remotePatches.length) {
-        const change = patchesToChange(remotePatches, editorValue, snapshot, type)
+    // eslint-disable-next-line complexity
+    handleDocumentPatches = ({patches, shouldReset, snapshot}) => {
+      const {type, focusPath} = this.props
+      const hasRemotePatches = patches.some(patch => patch.origin === 'remote')
+      const hasInsertUnsetPatches = patches.some(patch => ['insert', 'unset'].includes(patch.type))
+      const shouldSetNewState = hasRemotePatches || hasInsertUnsetPatches || shouldReset
+      const localPatches = patches.filter(patch => patch.origin === 'local')
+      // Handle undo/redo
+      if (localPatches.length) {
+        const lastPatch = localPatches.slice(-1)[0]
+        // Until the FormBuilder can support some kind of patch tagging,
+        // we create a void patch with key 'undoRedoVoidPatch' in changesToPatches
+        // to know if this is undo/redo operation or not.
+        const isUndoRedoPatch =
+          lastPatch && lastPatch.path[0] && lastPatch.path[0]._key === 'undoRedoVoidPatch'
+        if (!isUndoRedoPatch) {
+          this._undoRedoStack.undo.push({
+            patches: localPatches,
+            editorValue: this.state.editorValue,
+            selection: this._selection
+          })
+          // Redo stack must be reset here
+          this._undoRedoStack.redo = []
+        }
+      }
+
+      // Set a new editorValue from the snapshot,
+      // and restore the user's selection
+      if (snapshot && shouldSetNewState) {
+        const editorValue = deserialize(snapshot, type)
+        const change = editorValue.change()
+        if (this._selection) {
+          // eslint-disable-next-line max-depth
+          try {
+            change.applyOperations([this._selection])
+          } catch (err) {
+            // eslint-disable-next-line max-depth
+            if (!err.message.match('Could not find a descendant')) {
+              console.error(err) // eslint-disable-line no-console
+            }
+          }
+        }
+        if ((focusPath || []).length) {
+          change.focus()
+        }
         this.setState({editorValue: change.value})
       }
     }
@@ -141,6 +187,7 @@ export default withPatchSubscriber(
               editorValue={editorValue}
               onChange={this.handleEditorChange}
               onPatch={this.handleFormBuilderPatch}
+              undoRedoStack={this._undoRedoStack}
               ref={this.refInput}
               {...rest}
             />

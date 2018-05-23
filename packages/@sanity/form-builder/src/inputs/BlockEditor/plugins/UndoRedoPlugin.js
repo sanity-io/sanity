@@ -13,7 +13,7 @@ type Options = {
   blockContentType: Type
 }
 
-// This plugin handles tab key when focus is on list element, and changes the level on it
+// This plugin handles our own undo redo (disables Slate built in handling)
 
 export default function UndoRedoPlugin(options: Options = {}) {
   const {stack, blockContentType, onChange} = options
