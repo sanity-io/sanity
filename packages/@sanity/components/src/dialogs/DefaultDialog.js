@@ -5,6 +5,7 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import styles from 'part:@sanity/components/dialogs/default-style'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonCollection from 'part:@sanity/components/buttons/collection'
+import {partition} from 'lodash'
 import {Portal} from '../utilities/Portal'
 import Escapable from '../utilities/Escapable'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
@@ -70,31 +71,15 @@ export default class DefaultDialog extends React.Component {
   }
 
   renderActions = actions => {
-    if (!actions || actions.length < 1) {
-      return undefined
+    if (!actions || actions.length === 0) {
+      return null
     }
 
-    const primaryButtons = actions
-      .map((action, i) => {
-        if (!action.secondary) {
-          return this.createButtonFromAction(action, i)
-        }
-        return false
-      })
-      .filter(Boolean)
-
-    const secondaryButtons = actions
-      .map((action, i) => {
-        if (action.secondary) {
-          return this.createButtonFromAction(action, i)
-        }
-        return false
-      })
-      .filter(Boolean)
+    const [primary, secondary] = partition(actions, action => action.primary)
 
     return (
-      <ButtonCollection align="end" secondary={secondaryButtons}>
-        {primaryButtons}
+      <ButtonCollection align="end" secondary={secondary.map(this.createButtonFromAction)}>
+        {primary.map(this.createButtonFromAction)}
       </ButtonCollection>
     )
   }

@@ -5,6 +5,7 @@ import styles from 'part:@sanity/components/dialogs/fullscreen-style'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonsCollection from 'part:@sanity/components/buttons/collection'
+import {partition} from 'lodash'
 import {Portal} from '../utilities/Portal'
 import StackedEscapable from '../utilities/StackedEscapable'
 
@@ -73,6 +74,8 @@ export default class FullScreenDialog extends React.PureComponent {
       .filter(Boolean)
       .join(' ')
 
+    const [primary, secondary] = partition(actions, action => action.primary)
+
     return (
       <StackedEscapable onEscape={onClose}>
         <Portal>
@@ -90,13 +93,9 @@ export default class FullScreenDialog extends React.PureComponent {
                   {actions.length > 0 && (
                     <ButtonsCollection
                       align="start"
-                      secondary={actions
-                        .map((action, i) => action.secondary && this.createActionButton(action, i))
-                        .filter(Boolean)}
+                      secondary={secondary.map(this.createActionButton)}
                     >
-                      {actions
-                        .map((action, i) => !action.secondary && this.createActionButton(action, i))
-                        .filter(Boolean)}
+                      {primary.map(this.createActionButton)}
                     </ButtonsCollection>
                   )}
                 </div>

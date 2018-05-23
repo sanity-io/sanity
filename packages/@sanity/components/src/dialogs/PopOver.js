@@ -4,11 +4,12 @@ import styles from 'part:@sanity/components/dialogs/popover-style'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonsCollection from 'part:@sanity/components/buttons/collection'
 import CloseIcon from 'part:@sanity/base/close-icon'
+import {Manager, Target, Popper, Arrow} from 'react-popper'
+import {partition} from 'lodash'
 import {Portal} from '../utilities/Portal'
 import Stacked from '../utilities/Stacked'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Escapable from '../utilities/Escapable'
-import {Manager, Target, Popper, Arrow} from 'react-popper'
 
 export default class PopOver extends React.PureComponent {
   static propTypes = {
@@ -72,6 +73,8 @@ export default class PopOver extends React.PureComponent {
       onEscape,
       modifiers
     } = this.props
+
+    const [primary, secondary] = partition(actions, action => action.primary)
     return (
       <Popper
         className={`${styles.popper} ${styles[`color_${color}`]}`}
@@ -97,15 +100,8 @@ export default class PopOver extends React.PureComponent {
             </div>
             {actions.length > 0 && (
               <div className={styles.footer}>
-                <ButtonsCollection
-                  align="end"
-                  secondary={actions
-                    .map((action, i) => action.secondary && this.createActionButton(action, i))
-                    .filter(Boolean)}
-                >
-                  {actions
-                    .map((action, i) => !action.secondary && this.createActionButton(action, i))
-                    .filter(Boolean)}
+                <ButtonsCollection align="end" secondary={primary.map(this.createActionButton)}>
+                  {secondary.map(this.createActionButton)}
                 </ButtonsCollection>
               </div>
             )}
