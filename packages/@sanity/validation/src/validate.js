@@ -63,6 +63,10 @@ module.exports = (rule, value, options = {}) => {
   }
 
   function processResult(result) {
+    if (Array.isArray(result)) {
+      return flatten(result.map(processResult))
+    }
+
     const hasError = result instanceof ValidationError
     if (!hasError) {
       return null
