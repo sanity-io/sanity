@@ -30,7 +30,7 @@ export default {
       client.request({uri: '/features'})
     ])
 
-    if (flags.visibility && allowedModes.includes(flags.visibility)) {
+    if (flags.visibility && !allowedModes.includes(flags.visibility)) {
       throw new Error(`Visibility mode "${flags.visibility}" not allowed`)
     }
 
