@@ -22,12 +22,12 @@
     "ndjson"
   ],
   "dependencies": {
-    "@rexxars/get-uri": "^2.0.2",
     "@sanity/mutator": "0.132.0",
     "@sanity/uuid": "0.132.0",
     "debug": "^3.1.0",
     "file-url": "^2.0.2",
     "fs-extra": "^5.0.0",
+    "get-uri": "^2.0.2",
     "globby": "^8.0.0",
     "gunzip-maybe": "^1.4.1",
     "is-tar": "^1.0.0",

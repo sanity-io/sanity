@@ -4,6 +4,7 @@ const {get} = require('lodash')
 const {extractWithPath} = require('@sanity/mutator')
 const serializePath = require('./serializePath')
 const progressStepper = require('./util/progressStepper')
+const retryOnFailure = require('./util/retryOnFailure')
 
 const STRENGTHEN_CONCURRENCY = 3
 const STRENGTHEN_BATCH_SIZE = 30
@@ -70,11 +71,13 @@ function strengthenReferences(strongRefs, options) {
 
 function unsetWeakBatch(client, progress, batch) {
   debug('Strengthening batch of %d documents', batch.length)
-  return batch
-    .reduce(reducePatch, client.transaction())
-    .commit({visibility: 'async'})
-    .then(progress)
-    .then(res => res.results.length)
+  return retryOnFailure(() =>
+    batch
+      .reduce(reducePatch, client.transaction())
+      .commit({visibility: 'async'})
+      .then(progress)
+      .then(res => res.results.length)
+  )
 }
 
 function reducePatch(trx, task) {
