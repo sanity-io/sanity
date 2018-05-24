@@ -362,7 +362,8 @@ export default async function initSanity(args, context) {
       {argsWithoutOptions: [template.datasetUrl, datasetName], extOptions: {}},
       Object.assign({}, context, {
         apiClient: clientWrapper(manifest, manifestPath),
-        workDir: outputPath
+        workDir: outputPath,
+        fromInitCommand: true
       })
     )
   }

@@ -36,7 +36,7 @@ export default {
   description: 'Import documents to given dataset from ndjson file',
   helpText,
   action: async (args, context) => {
-    const {apiClient, output, chalk} = context
+    const {apiClient, output, chalk, fromInitCommand} = context
 
     const operation = getMutationOperation(args.extOptions)
     const client = apiClient()
@@ -152,7 +152,7 @@ export default {
       endTask({success: false})
 
       let error = err.message
-      if (err.response && err.response.statusCode === 409) {
+      if (!fromInitCommand && err.response && err.response.statusCode === 409) {
         error = [
           err.message,
           '',
@@ -160,9 +160,11 @@ export default {
           ' --replace (replace existing documents with same IDs)',
           ' --missing (only import documents that do not already exist)'
         ].join('\n')
+
+        err.message = error
       }
 
-      output.error(chalk.red(`\n${error}\n`))
+      throw err
     }
   }
 }
