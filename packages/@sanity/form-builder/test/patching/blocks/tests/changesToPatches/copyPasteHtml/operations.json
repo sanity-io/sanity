@@ -75,17 +75,5 @@
       "data": {}
     },
     "target": null
-  },
-  {
-    "object": "operation",
-    "type": "set_node",
-    "path": [0],
-    "properties": {
-      "data": {
-        "_type": "block",
-        "style": "normal",
-        "_key": "2e21689d71b6"
-      }
-    }
   }
 ]

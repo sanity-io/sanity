@@ -1,0 +1,45 @@
+[
+  {
+    "_key": "78bc4e48add1",
+    "_type": "block",
+    "children": [
+      {
+        "_key": "78bc4e48add10",
+        "_type": "span",
+        "marks": [],
+        "text": ""
+      },
+      {
+        "_key": "78bc4e48add11",
+        "_type": "span",
+        "marks": ["ab5cc0bf7d03"],
+        "text": "123"
+      },
+      {
+        "_key": "78bc4e48add12",
+        "_type": "span",
+        "marks": [],
+        "text": ""
+      },
+      {
+        "_key": "78bc4e48add13",
+        "_type": "span",
+        "marks": ["ab5cc0bf7d03"],
+        "text": "4"
+      },
+      {
+        "_key": "78bc4e48add14",
+        "_type": "span",
+        "marks": [],
+        "text": ""
+      }
+    ],
+    "markDefs": [
+      {
+        "_key": "ab5cc0bf7d03",
+        "_type": "link"
+      }
+    ],
+    "style": "normal"
+  }
+]
