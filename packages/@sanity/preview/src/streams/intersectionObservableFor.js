@@ -1,6 +1,5 @@
-import {Subject, Observable} from 'rxjs'
-import {map, merge, mergeMap, filter} from 'rxjs/operators'
-
+import {Subject, Observable, merge, of as observableOf} from 'rxjs'
+import {map, mergeMap, filter} from 'rxjs/operators'
 import resize$ from './resize'
 import scroll$ from './scroll'
 import orientationChange$ from './orientationChange'
@@ -85,9 +84,7 @@ function createLegacyBased() {
 
   return function intersectionObservableFor(element) {
     const isElementInViewport = inViewport(element)
-    return Observable.of(isElementInViewport()).pipe(
-      merge(resize$.merge(scroll$)),
-      merge(orientationChange$),
+    return merge(observableOf(isElementInViewport()), resize$, scroll$, orientationChange$).pipe(
       map(isElementInViewport),
       // todo: consider "faking" more of the IntersectionObserverEntry api if possible
       map(isIntersecting => ({isIntersecting}))
