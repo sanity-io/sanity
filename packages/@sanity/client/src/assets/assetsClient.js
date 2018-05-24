@@ -1,6 +1,6 @@
 const assign = require('object-assign')
 const {map} = require('@sanity/observable/operators/map')
-const {filter} = require('@sanity/observable/operators/map')
+const {filter} = require('@sanity/observable/operators/filter')
 const queryString = require('../http/queryString')
 const validators = require('../validators')
 
