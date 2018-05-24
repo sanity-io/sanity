@@ -20,13 +20,16 @@ function createCustomBlockFromData(block) {
 }
 
 function toSanitySpan(node, sanityBlock, spanIndex, blockContentFeatures, options = {}) {
+  const allowedDecorators = blockContentFeatures.decorators.map(decorator => decorator.value)
   if (node.object === 'text') {
     return node.leaves.map(leaf => {
       return {
         _type: 'span',
         _key: `${sanityBlock._key}${spanIndex()}`,
         text: leaf.text,
-        marks: leaf.marks.map(mark => mark.type)
+        marks: uniq(
+          leaf.marks.map(mark => mark.type).filter(markType => allowedDecorators.includes(markType))
+        )
       }
     })
   }
@@ -44,7 +47,6 @@ function toSanitySpan(node, sanityBlock, spanIndex, blockContentFeatures, option
         }
       })
     }
-    const allowedDecorators = blockContentFeatures.decorators.map(decorator => decorator.value)
     return flatten(
       nodes.map(nodesNode => {
         if (nodesNode.object !== 'text') {
