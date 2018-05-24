@@ -26,30 +26,6 @@
   },
   {
     "object": "operation",
-    "type": "set_node",
-    "path": [1],
-    "properties": {
-      "data": {
-        "_type": "block",
-        "_key": "080856c61d55",
-        "style": "normal"
-      }
-    }
-  },
-  {
-    "object": "operation",
-    "type": "set_node",
-    "path": [1],
-    "properties": {
-      "data": {
-        "_type": "block",
-        "_key": "9ed945a83b90",
-        "style": "normal"
-      }
-    }
-  },
-  {
-    "object": "operation",
     "type": "merge_node",
     "path": [1],
     "position": 1,

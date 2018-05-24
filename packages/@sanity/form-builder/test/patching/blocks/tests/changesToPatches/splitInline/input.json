@@ -1,0 +1,33 @@
+[
+  {
+    "_key": "1fa29a7dc948",
+    "_type": "block",
+    "children": [
+      {
+        "_key": "1fa29a7dc9480",
+        "_type": "span",
+        "marks": [],
+        "text": ""
+      },
+      {
+        "_key": "1fa29a7dc9481",
+        "_type": "span",
+        "marks": ["69acd3a4f488"],
+        "text": "1234"
+      },
+      {
+        "_key": "1fa29a7dc9482",
+        "_type": "span",
+        "marks": [],
+        "text": " Lala"
+      }
+    ],
+    "markDefs": [
+      {
+        "_key": "69acd3a4f488",
+        "_type": "link"
+      }
+    ],
+    "style": "normal"
+  }
+]
