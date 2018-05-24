@@ -4,6 +4,7 @@ const debug = require('debug')('sanity:import')
 const pMap = require('p-map')
 const progressStepper = require('./util/progressStepper')
 const getHashedBufferForUri = require('./util/getHashedBufferForUri')
+const retryOnFailure = require('./util/retryOnFailure')
 
 const ASSET_UPLOAD_CONCURRENCY = 3
 const ASSET_PATCH_CONCURRENCY = 3
@@ -33,7 +34,7 @@ async function uploadAssets(assets, options) {
   const mapOptions = {concurrency: ASSET_UPLOAD_CONCURRENCY}
   const assetIds = await pMap(
     assetRefMap.keys(),
-    ensureAsset.bind(null, options, progress),
+    ensureAssetWithRetries.bind(null, options, progress),
     mapOptions
   )
 
@@ -55,6 +56,10 @@ function getAssetRefMap(assets) {
     refs.push({documentId, path})
     return assetRefMap
   }, new Map())
+}
+
+function ensureAssetWithRetries(...args) {
+  return retryOnFailure(() => ensureAsset(...args))
 }
 
 async function ensureAsset(options, progress, assetKey, i) {
@@ -146,11 +151,13 @@ function setAssetReferences(assetRefMap, assetIds, options) {
 
 function setAssetReferenceBatch(client, progress, batch) {
   debug('Setting asset references on %d documents', batch.length)
-  return batch
-    .reduce(reducePatch, client.transaction())
-    .commit({visibility: 'async'})
-    .then(progress)
-    .then(res => res.results.length)
+  return retryOnFailure(() =>
+    batch
+      .reduce(reducePatch, client.transaction())
+      .commit({visibility: 'async'})
+      .then(progress)
+      .then(res => res.results.length)
+  )
 }
 
 function getAssetType(assetId) {
