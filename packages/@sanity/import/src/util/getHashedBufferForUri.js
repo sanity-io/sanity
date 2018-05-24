@@ -1,8 +1,11 @@
 const crypto = require('crypto')
 const miss = require('mississippi')
-const getUri = require('@rexxars/get-uri')
+const getUri = require('get-uri')
+const retryOnFailure = require('./retryOnFailure')
 
-module.exports = function getHashedBufferForUri(uri) {
+module.exports = uri => retryOnFailure(() => getHashedBufferForUri(uri))
+
+function getHashedBufferForUri(uri) {
   return getStream(uri).then(
     stream =>
       new Promise((resolve, reject) => {

@@ -1,5 +1,6 @@
 const pMap = require('p-map')
 const progressStepper = require('./util/progressStepper')
+const retryOnFailure = require('./util/retryOnFailure')
 
 const DOCUMENT_IMPORT_CONCURRENCY = 3
 
@@ -17,11 +18,17 @@ async function importBatches(batches, options) {
 
 function importBatch(options, progress, batch) {
   const {client, operation} = options
-  return batch
-    .reduce((trx, doc) => trx[operation](doc), client.transaction())
-    .commit({visibility: 'async'})
-    .then(progress)
-    .then(res => res.results.length)
+  const maxRetries = operation === 'create' ? 1 : 3
+
+  return retryOnFailure(
+    () =>
+      batch
+        .reduce((trx, doc) => trx[operation](doc), client.transaction())
+        .commit({visibility: 'async'})
+        .then(progress)
+        .then(res => res.results.length),
+    {maxRetries}
+  )
 }
 
 module.exports = importBatches
