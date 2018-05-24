@@ -52,8 +52,7 @@ function setNodePatchSimple(
     return set(appliedBlocks, [])
   }
   const changedBlock = appliedBlocks[0]
-
-  setKey(changedBlock._key, changedBlock)
+  setKey(changedBlock._key, normalizeBlock(changedBlock))
   return set(changedBlock, [{_key: changedBlock._key}])
 }
 
@@ -64,18 +63,6 @@ function setNodePatch(
   blocks: Block[],
   blockContentType
 ) {
-  const operationIndex = operations.indexOf(operation)
-  const nextOperation = operations.get(operationIndex + 1)
-  if (
-    nextOperation &&
-    nextOperation.type === 'merge_node' &&
-    nextOperation.path.length === 1 &&
-    nextOperation.path[0] === operation.path[0] &&
-    operation.type === 'set_node' &&
-    isEqual(Object.keys(operation.properties), ['data'])
-  ) {
-    return []
-  }
   const appliedBlocks = editorValueToBlocks(
     change.applyOperations([operation]).value.toJSON(VALUE_TO_JSON_OPTS),
     blockContentType
@@ -96,7 +83,7 @@ function setNodePatch(
   }
 
   setKey(changedBlock._key, changedBlock)
-  return set(changedBlock, [{_key: blocks[operation.path[0]]._key}])
+  return set(normalizeBlock(changedBlock), [{_key: blocks[operation.path[0]]._key}])
 }
 
 function insertNodePatch(
@@ -130,14 +117,15 @@ function insertNodePatch(
     }
     const newBlock = appliedBlocks[operation.path[0]]
     const newKey = change.value.document.nodes.get(operation.path[0]).key
+    change.setNodeByKey(newKey, {data: {_key: newKey}})
     setKey(newKey, newBlock)
     patches.push(insert([newBlock], position, [{_key: afterKey}]))
   }
 
   if (operation.path.length > 1) {
     const block = appliedBlocks[operation.path[0]]
+    setKey(block._key, block)
     if (block._type === 'block') {
-      setKey(block._key, block)
       patches.push(set(normalizeBlock(block), [{_key: block._key}]))
     }
   }
@@ -157,13 +145,16 @@ function splitNodePatch(
     blockContentType
   )
   const splitBlock = appliedBlocks[operation.path[0]]
+  setKey(splitBlock._key, splitBlock)
 
   if (operation.path.length === 1) {
     patches.push(set(splitBlock, [{_key: splitBlock._key}]))
     const newBlock = appliedBlocks[operation.path[0] + 1]
     const newKey = change.value.document.nodes.get(operation.path[0] + 1).key
+    // Update the change value data with new key
+    change.setNodeByKey(newKey, {data: {_key: newKey}})
     setKey(newKey, newBlock)
-    patches.push(insert([newBlock], 'after', [{_key: blocks[operation.path[0]]._key}]))
+    patches.push(insert([newBlock], 'after', [{_key: splitBlock._key}]))
   }
   if (operation.path.length > 1) {
     patches.push(set(splitBlock, [{_key: splitBlock._key}]))
@@ -198,7 +189,7 @@ function mergeNodePatch(
   if (operation.path.length > 1) {
     const targetBlock = appliedBlocks[operation.path[0]]
     setKey(targetBlock._key, targetBlock)
-    patches.push(set(targetBlock, [{_key: blocks[operation.path[0]]._key}]))
+    patches.push(set(targetBlock, [{_key: targetBlock._key}]))
   }
   return patches
 }
@@ -228,6 +219,17 @@ function moveNodePatch(change: Change, operation: Operation, blocks: Block[], bl
     }
     setKey(block._key, block)
     patches.push(insert([block], position, [{_key: posKey}]))
+  } else {
+    const appliedBlocks = editorValueToBlocks(
+      change.value.toJSON(VALUE_TO_JSON_OPTS),
+      blockContentType
+    )
+    const changedBlockFrom = appliedBlocks[operation.path[0]]
+    const changedBlockTo = appliedBlocks[operation.newPath[0]]
+    setKey(changedBlockFrom._key, changedBlockFrom)
+    setKey(changedBlockTo._key, changedBlockTo)
+    patches.push(set(changedBlockFrom, [{_key: changedBlockFrom._key}]))
+    patches.push(set(changedBlockTo, [{_key: changedBlockTo._key}]))
   }
   return patches
 }
@@ -250,16 +252,13 @@ function removeNodePatch(
     if (block._type !== 'block') {
       return patches
     }
-    const childToUnset = block.children[operation.path[1]]
-    // Keep keys consistent, so replace the whole block
-    const newBlock = {...block}
-    newBlock.children = newBlock.children
-      .filter(child => child._key !== childToUnset._key)
-      .map((child, index) => {
-        child._key = `${newBlock._key}${index}`
-        return child
-      })
-    patches.push(set(newBlock, [{_key: newBlock._key}]))
+    const appliedBlocks = editorValueToBlocks(
+      change.value.toJSON(VALUE_TO_JSON_OPTS),
+      blockContentType
+    )
+    const changedBlock = appliedBlocks[operation.path[0]]
+    setKey(changedBlock._key, changedBlock)
+    patches.push(set(changedBlock, [{_key: changedBlock._key}]))
   }
   if (patches.length === 0) {
     throw new Error(
