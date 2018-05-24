@@ -90,7 +90,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
           ref={this.setRootElement}
           tabIndex={0}
         >
-          <span className={styles.inner} tabIndex={-1}>
+          <span className={styles.inner}>
             <span className={styles.content}>
               {loading && (
                 <span className={styles.spinner}>
