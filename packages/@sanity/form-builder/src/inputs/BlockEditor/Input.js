@@ -2,7 +2,7 @@
 import type {Element as ReactElement} from 'react'
 import type {Block, BlockArrayType, SlateChange, SlateValue, Marker} from './typeDefs'
 
-import {uniqueId, isEqual} from 'lodash'
+import {uniqueId} from 'lodash'
 
 import React from 'react'
 import blockTools from '@sanity/block-tools'
@@ -26,13 +26,12 @@ type Props = {
   onPatch: (event: PatchEvent) => void,
   readOnly?: boolean,
   type: BlockArrayType,
+  undoRedoStack: {undo: [], redo: []},
   value: Block[]
 }
 
 type State = {
-  fullscreen: boolean,
-  editorIsFocused: boolean,
-  focusBlockKey: string
+  fullscreen: boolean
 }
 
 export default class BlockEditorInput extends React.Component<Props, State> {
@@ -41,8 +40,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
   _editor = null
 
   state = {
-    fullscreen: false,
-    editorIsFocused: false
+    fullscreen: false
   }
 
   blockContentFeatures = {
@@ -68,42 +66,18 @@ export default class BlockEditorInput extends React.Component<Props, State> {
   }
 
   focus = () => {
-    if (this._editor) {
-      this._editor.focus()
-    }
+    const {onFocus, onChange, editorValue} = this.props
+    const change = editorValue.change().focus()
+    const {focusBlock} = change.value
+    onChange(change, () => onFocus([{_key: focusBlock.key}]))
   }
 
-  handleEditorFocus = () => {
-    if (!this.state.editorIsFocused) {
-      this.setState({editorIsFocused: true})
-    }
+  handleFocusSkipper = () => {
     this.focus()
-  }
-
-  handleEditorBlur = () => {
-    this.setState({editorIsFocused: false})
-  }
-
-  handleCanvasClick = () => {
-    this.setState({editorIsFocused: true})
-    this.focus()
-  }
-
-  componentWillUpdate(nextProps: Props) {
-    const {focusPath} = nextProps
-    if (
-      focusPath &&
-      focusPath.length &&
-      focusPath.length < 2 &&
-      !this.state.editorIsFocused &&
-      !isEqual(this.props.focusPath, focusPath)
-    ) {
-      this.handleEditorFocus()
-    }
   }
 
   renderEditor(): ReactElement<typeof Editor> {
-    const {fullscreen, editorIsFocused} = this.state
+    const {fullscreen} = this.state
     const {
       editorValue,
       focusPath,
@@ -114,6 +88,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
       onPatch,
       readOnly,
       type,
+      undoRedoStack,
       value
     } = this.props
     return (
@@ -121,18 +96,17 @@ export default class BlockEditorInput extends React.Component<Props, State> {
         blockContentFeatures={this.blockContentFeatures}
         editorValue={editorValue}
         fullscreen={fullscreen}
-        isFocused={editorIsFocused}
         focusPath={focusPath}
         markers={markers}
-        onEditorBlur={this.handleEditorBlur}
-        onEditorFocus={this.handleEditorFocus}
         onFocus={onFocus}
+        setFocus={this.focus}
         onBlur={onBlur}
         onChange={onChange}
         onPatch={onPatch}
         readOnly={readOnly}
         ref={this.refEditor}
         value={value}
+        undoRedoStack={undoRedoStack}
         type={type}
       />
     )
@@ -153,7 +127,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
       value
     } = this.props
 
-    const {fullscreen, editorIsFocused} = this.state
+    const {fullscreen} = this.state
 
     const editor = this.renderEditor()
 
@@ -170,7 +144,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
           type="button"
           tabIndex={0}
           className={styles.focusSkipper}
-          onClick={this.handleEditorFocus}
+          onClick={this.handleFocusSkipper}
         >
           Jump to editor
         </button>
@@ -181,7 +155,6 @@ export default class BlockEditorInput extends React.Component<Props, State> {
           focusPath={focusPath}
           fullscreen={fullscreen}
           isActive={isActive}
-          isFocused={editorIsFocused}
           markers={markers}
           onBlur={onBlur}
           onChange={onChange}
