@@ -3,10 +3,8 @@ import type {BlockContentFeatures, SlateValue, Type, SlateChange, Marker} from '
 import type {Node} from 'react'
 
 import React from 'react'
-import {isEqual} from 'lodash'
 import {Inline} from 'slate'
 
-import {applyAll} from '../../../simplePatch'
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 
 import styles from './styles/Span.css'
@@ -40,8 +38,7 @@ export default class Span extends React.Component<Props, State> {
     super(props)
     const focusedAnnotationName = this.props.node.data.get('focusedAnnotationName')
     this.state = {
-      focusedAnnotationName: focusedAnnotationName,
-      isEditing: !!focusedAnnotationName
+      focusedAnnotationName: focusedAnnotationName
     }
   }
 
@@ -82,7 +79,6 @@ export default class Span extends React.Component<Props, State> {
     if (readOnly) {
       return
     }
-    this.setState({isEditing: true})
     const block = editorValue.document.getClosestBlock(node.key)
     const focusPath = [
       {_key: block.key},
@@ -126,7 +122,7 @@ export default class Span extends React.Component<Props, State> {
   }
 
   render() {
-    const {attributes, blockContentFeatures} = this.props
+    const {attributes, blockContentFeatures, markers} = this.props
     let children = this.props.children
     const annotations = this.getAnnotations()
     const annotationTypes = blockContentFeatures.annotations.filter(item =>
@@ -138,18 +134,22 @@ export default class Span extends React.Component<Props, State> {
           ? annotation.blockEditor.render
           : null
       if (CustomComponent) {
-        children = (
-          <CustomComponent {...annotations[annotation.value]}>{children}</CustomComponent>
-        )
+        children = <CustomComponent {...annotations[annotation.value]}>{children}</CustomComponent>
       }
     })
+    const validation = markers.filter(marker => marker.type === 'validation')
+    const errors = validation.filter(marker => marker.level === 'error')
+    const classNames = [styles.root]
+    if (errors.length) {
+      classNames.push(styles.error)
+    }
     return (
       <span
         {...attributes}
         onMouseDown={this.handleMouseDown}
         onMouseUp={this.handleMouseUp}
         onClick={this.handleClick}
-        className={styles.root}
+        className={classNames.join(' ')}
         ref={this.refSpan}
       >
         {children}

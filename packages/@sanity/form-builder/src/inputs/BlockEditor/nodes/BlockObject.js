@@ -14,6 +14,7 @@ import ValidationStatus from 'part:@sanity/components/validation/status'
 
 import {PatchEvent} from '../../../PatchEvent'
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
+import {resolveTypeName} from '../../../utils/resolveTypeName'
 
 import createRange from '../utils/createRange'
 import InvalidValue from '../../InvalidValueInput'
@@ -211,23 +212,30 @@ export default class BlockObject extends React.Component<Props, State> {
     onPatch(event.prefixAll({_key: value._key}), value)
   }
 
-  handleRemoveValue = () => {
+  handleRemoveValue = event => {
     const {editorValue, node, onChange} = this.props
     const change = editorValue.change()
     onChange(change.removeNodeByKey(node.key))
   }
 
   renderPreview() {
-    const {type, markers, readOnly} = this.props
+    const {type, markers, readOnly, blockContentFeatures} = this.props
     const value = this.getValue()
-    if (!type) {
+    const valueType = resolveTypeName(value)
+    const validTypes = blockContentFeatures.types.blockObjects
+      .map(objType => objType.name)
+      .concat('block')
+
+    if (!validTypes.includes(valueType)) {
       return (
-        <InvalidValue
-          validTypes={[type]}
-          actualType={type}
-          value={value}
-          onChange={this.handleInvalidValue}
-        />
+        <div onClick={this.handleCancelEvent}>
+          <InvalidValue
+            validTypes={validTypes}
+            actualType={valueType}
+            value={value}
+            onChange={this.handleInvalidValue}
+          />
+        </div>
       )
     }
     const validation = markers.filter(marker => marker.type === 'validation')

@@ -117,8 +117,12 @@ function insertNodePatch(
     }
     const newBlock = appliedBlocks[operation.path[0]]
     const newKey = change.value.document.nodes.get(operation.path[0]).key
-    change.setNodeByKey(newKey, {data: {_key: newKey}})
     setKey(newKey, newBlock)
+    const oldData = change.value.document.nodes.get(operation.path[0]).data.toObject()
+    if (oldData.value && oldData.value._key) {
+      oldData.value._key = newKey
+    }
+    change.setNodeByKey(newKey, {data: {...oldData, _key: newKey}})
     patches.push(insert([newBlock], position, [{_key: afterKey}]))
   }
 
@@ -151,9 +155,13 @@ function splitNodePatch(
     patches.push(set(splitBlock, [{_key: splitBlock._key}]))
     const newBlock = appliedBlocks[operation.path[0] + 1]
     const newKey = change.value.document.nodes.get(operation.path[0] + 1).key
-    // Update the change value data with new key
-    change.setNodeByKey(newKey, {data: {_key: newKey}})
     setKey(newKey, newBlock)
+    // Update the change value data with new key
+    const oldData = change.value.document.nodes.get(operation.path[0] + 1).data.toObject()
+    if (oldData.value && oldData.value._key) {
+      oldData.value._key = newKey
+    }
+    change.setNodeByKey(newKey, {data: {...oldData, _key: newKey}})
     patches.push(insert([newBlock], 'after', [{_key: splitBlock._key}]))
   }
   if (operation.path.length > 1) {
