@@ -92,7 +92,7 @@ function sanitySpanToRawSlateBlockNode(span, sanityBlock, blockContentFeatures, 
 }
 
 // Block type object
-function sanityBlockToRawNode(sanityBlock, type, blockContentFeatures, options = {}) {
+function sanityBlockToRawNode(sanityBlock, blockContentFeatures, options = {}) {
   const {children, _type, markDefs, ...rest} = sanityBlock
   let restData = {}
   if (hasKeys(rest)) {
@@ -135,14 +135,14 @@ function sanityBlockToRawNode(sanityBlock, type, blockContentFeatures, options =
 }
 
 // Embedded object
-function sanityBlockItemToRaw(blockItem, type) {
+function sanityBlockItemToRaw(blockItem) {
   if (!blockItem._key) {
     blockItem._key = randomKey(12)
   }
   return {
     object: 'block',
     key: blockItem._key,
-    type: type ? type.name : '__unknown',
+    type: blockItem._type,
     isVoid: true,
     data: {value: blockItem, _key: blockItem._key},
     nodes: [
@@ -163,11 +163,9 @@ function sanityBlockItemToRaw(blockItem, type) {
 function sanityBlockItemToRawNode(blockItem, type, blockContentFeatures, options) {
   const blockItemType = resolveTypeName(blockItem)
 
-  const memberType = type.of.find(ofType => ofType.name === blockItemType)
-
   return blockItemType === 'block'
-    ? sanityBlockToRawNode(blockItem, memberType, blockContentFeatures, options)
-    : sanityBlockItemToRaw(blockItem, memberType)
+    ? sanityBlockToRawNode(blockItem, blockContentFeatures, options)
+    : sanityBlockItemToRaw(blockItem)
 }
 
 function sanityBlocksArrayToRawNodes(blockArray, type, blockContentFeatures, options = {}) {
