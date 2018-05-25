@@ -1,7 +1,7 @@
 import path from 'path'
 import test from 'ava'
-import pluginLoader from '../loader'
 import interopRequire from 'interop-require'
+import pluginLoader from '../loader'
 
 test('throws if options object is not passed', t => {
   t.throws(pluginLoader, /options/)
@@ -76,6 +76,13 @@ test('should be able to load config for a plugin', t => {
 
   const config = require('config:better-date')
   t.true(config.superduper)
+})
+
+test('should be able to load config for a namespaced plugin', t => {
+  pluginLoader({basePath: path.join(__dirname, 'fixture')})
+
+  const config = require('config:@sanity/some-plugin')
+  t.is(config.subway, 'coding')
 })
 
 test('should be able to load sanity plugin versions', t => {

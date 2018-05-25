@@ -13,7 +13,7 @@ const sanityEnv = process.env.SANITY_ENV
 const env = typeof sanityEnv === 'undefined' ? process.env.NODE_ENV : sanityEnv
 /* eslint-enable no-process-env */
 
-const configMatcher = /^config:@?([A-Za-z0-9_-]+\/[A-Za-z0-9_-]+|[A-Za-z0-9_-]+)$/
+const configMatcher = /^config:(@?[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+|[A-Za-z0-9_-]+)$/
 const resolveParts = resolver.resolveParts
 const defaultResult = {
   definitions: {},
