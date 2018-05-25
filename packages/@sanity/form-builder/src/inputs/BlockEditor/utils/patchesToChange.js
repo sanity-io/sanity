@@ -4,6 +4,13 @@ import {blocksToEditorValue} from '@sanity/block-tools'
 import {Value, Operation} from 'slate'
 import {applyAll} from '../../../simplePatch'
 
+const VALUE_TO_JSON_OPTS = {
+  preserveData: true,
+  preserveKeys: true,
+  preserveSelection: false,
+  preserveHistory: false
+}
+
 type Path = string | {_key: string}
 
 type Patch = {
@@ -240,7 +247,6 @@ export default function patchesToChange(
           replaceValue(snapshot, change, type)
       }
     }
-    // console.log('CHANGE', JSON.stringify(change.value.document.toJSON(VALUE_TO_JSON_OPTS), null, 2))
   })
   return change
 }

@@ -5,7 +5,6 @@
   position: relative;
 }
 
-.editAnnotationContainer {
-  position: absolute;
-  margin-top: 1.2em;
+.error {
+  border: 1px solid red;
 }

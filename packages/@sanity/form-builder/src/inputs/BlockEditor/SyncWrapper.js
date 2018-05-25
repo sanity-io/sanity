@@ -8,6 +8,8 @@ import FormField from 'part:@sanity/components/formfields/default'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {PatchEvent} from '../../PatchEvent'
 import Input from './Input'
+import InvalidValueInput from '../InvalidValueInput'
+import {resolveTypeName} from '../../utils/resolveTypeName'
 
 import createSelectionOperation from './utils/createSelectionOperation'
 import changeToPatches from './utils/changeToPatches'
@@ -32,7 +34,7 @@ function isDeprecatedBlockSchema(type) {
 }
 
 function isDeprecatedBlockValue(value) {
-  if (!value) {
+  if (!value || !Array.isArray(value)) {
     return false
   }
   const block = value.find(item => item._type === 'block')
@@ -40,6 +42,16 @@ function isDeprecatedBlockValue(value) {
     return true
   }
   return false
+}
+
+function isInvalidBlockValue(value) {
+  if (Array.isArray(value)) {
+    return false
+  }
+  if (typeof value === 'undefined') {
+    return false
+  }
+  return true
 }
 
 type Props = {
@@ -59,6 +71,7 @@ type Props = {
 type State = {
   deprecatedSchema: boolean,
   deprecatedBlockValue: boolean,
+  invalidBlockValue: boolean,
   editorValue: SlateValue
 }
 
@@ -74,15 +87,18 @@ export default withPatchSubscriber(
 
     constructor(props) {
       super(props)
-      const deprecatedSchema = isDeprecatedBlockSchema(props.type)
-      const deprecatedBlockValue = isDeprecatedBlockValue(props.value)
+      const {value, type} = props
+      const deprecatedSchema = isDeprecatedBlockSchema(type)
+      const deprecatedBlockValue = isDeprecatedBlockValue(value)
+      const invalidBlockValue = isInvalidBlockValue(value)
       this.state = {
         deprecatedSchema,
         deprecatedBlockValue,
+        invalidBlockValue,
         editorValue:
-          deprecatedSchema || deprecatedBlockValue
-            ? deserialize([], props.type)
-            : deserialize(props.value, props.type)
+          deprecatedSchema || deprecatedBlockValue || invalidBlockValue
+            ? deserialize([], type)
+            : deserialize(value, type)
       }
       this.unsubscribe = props.subscribe(this.handleDocumentPatches)
     }
@@ -90,7 +106,6 @@ export default withPatchSubscriber(
     handleEditorChange = (change: SlateChange, callback: void => void) => {
       const {value, onChange, type} = this.props
       const currentEditorValue = this.state.editorValue
-
       this.setState({editorValue: change.value})
 
       const patches = changeToPatches(currentEditorValue, change, value, type)
@@ -102,7 +117,6 @@ export default withPatchSubscriber(
       if (callback) {
         return callback()
       }
-
       return change
     }
 
@@ -175,21 +189,35 @@ export default withPatchSubscriber(
       this._input = input
     }
 
+    handleInvalidValue = () => {
+
+    }
+
     render() {
-      const {editorValue, deprecatedSchema, deprecatedBlockValue} = this.state
+      const {editorValue, deprecatedSchema, deprecatedBlockValue, invalidBlockValue} = this.state
       const {onChange, ...rest} = this.props
-      const {type} = this.props
+      const {type, value} = this.props
       const isDeprecated = deprecatedSchema || deprecatedBlockValue
       return (
         <div className={styles.root}>
-          {!isDeprecated && (
-            <Input
-              editorValue={editorValue}
-              onChange={this.handleEditorChange}
-              onPatch={this.handleFormBuilderPatch}
-              undoRedoStack={this._undoRedoStack}
-              ref={this.refInput}
-              {...rest}
+          {!isDeprecated &&
+            !invalidBlockValue && (
+              <Input
+                editorValue={editorValue}
+                onChange={this.handleEditorChange}
+                onPatch={this.handleFormBuilderPatch}
+                undoRedoStack={this._undoRedoStack}
+                ref={this.refInput}
+                {...rest}
+              />
+            )}
+
+          {invalidBlockValue && (
+            <InvalidValueInput
+              validTypes={type.of.map(mType => mType.name)}
+              actualType={resolveTypeName(value)}
+              value={value}
+              onChange={this.handleInvalidValue}
             />
           )}
 
