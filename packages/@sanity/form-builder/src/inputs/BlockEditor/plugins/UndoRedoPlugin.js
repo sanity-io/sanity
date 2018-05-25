@@ -33,7 +33,7 @@ export default function UndoRedoPlugin(options: Options = {}) {
           // Remove the original non-undo operations
           patchChange.operations = patchChange.operations.splice(0, originalOperationIndex)
           // Restore the selection
-          patchChange.select(editorValue.selection)
+          patchChange.select(editorValue.selection).focus()
           // Tag the change, so that changeToPatches know's it's a undoRedo change.
           patchChange.__isUndoRedo = 'undo'
           stack.redo.push(item)
@@ -44,7 +44,7 @@ export default function UndoRedoPlugin(options: Options = {}) {
           const {patches, editorValue, selection} = item
           const patchChange = patchesToChange(patches, editorValue, null, blockContentType)
           // Restore the selection
-          patchChange.applyOperations([selection])
+          patchChange.applyOperations([selection]).focus()
           patchChange.__isUndoRedo = 'redo'
           stack.undo.push(item)
           onChange(patchChange)
