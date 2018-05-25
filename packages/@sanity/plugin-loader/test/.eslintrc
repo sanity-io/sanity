@@ -1,5 +1,10 @@
 {
+  "env": {
+    "node": true,
+    "jest": true
+  },
   "rules": {
-    "id-length": 0
+    "id-length": 0,
+    "import/no-dynamic-require": 0
   }
 }
