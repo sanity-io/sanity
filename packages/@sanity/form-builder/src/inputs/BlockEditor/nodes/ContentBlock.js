@@ -20,27 +20,27 @@ export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
   const level = data ? data.get('level') : 1
   const style = data ? data.get('style') : 'normal'
 
-  // Should be render a custom style?
-  let Style
+  // Should we render a custom style?
+  let styleComponent
   const customStyle =
     blockContentFeatures && style
       ? blockContentFeatures.styles.find(item => item.value === style)
       : null
   if (customStyle) {
-    Style = customStyle.blockEditor && customStyle.blockEditor.render
+    styleComponent = customStyle.blockEditor && customStyle.blockEditor.render
   }
 
   if (listItem) {
     return (
       <ListItem listStyle={listItem} level={level}>
-        <Text style={style} attributes={attributes} Style={Style}>
+        <Text style={style} attributes={attributes} styleComponent={styleComponent}>
           {children}
         </Text>
       </ListItem>
     )
   }
   return (
-    <Text style={style} Style={Style} attributes={attributes}>
+    <Text style={style} styleComponent={styleComponent} attributes={attributes}>
       {children}
     </Text>
   )

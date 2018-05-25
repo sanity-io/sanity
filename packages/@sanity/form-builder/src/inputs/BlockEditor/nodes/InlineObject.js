@@ -1,5 +1,5 @@
 // @flow
-import type {SlateValue, Type, SlateChange, Marker} from '../typeDefs'
+import type {BlockContentFeatures, SlateValue, Type, SlateChange, Marker} from '../typeDefs'
 import type {Node} from 'react'
 import ReactDOM from 'react-dom'
 import Base64 from 'slate-base64-serializer'
@@ -11,7 +11,8 @@ import {IntentLink} from 'part:@sanity/base/router'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 
-import {PatchEvent, unset} from '../../../PatchEvent'
+import {resolveTypeName} from '../../../utils/resolveTypeName'
+import {PatchEvent} from '../../../PatchEvent'
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 
 import InvalidValue from '../../InvalidValueInput'
@@ -23,16 +24,18 @@ import styles from './styles/InlineObject.css'
 
 type Props = {
   attributes: {},
+  blockContentFeatures: BlockContentFeatures,
   children: Node,
-  editorValue: SlateValue,
-  markers: Marker[],
-  node: Block,
   editor: Editor,
   editorIsFocused: boolean,
+  editorValue: SlateValue,
+  hasFormBuilderFocus: boolean,
+  isSelected: boolean,
+  markers: Marker[],
+  node: Block,
   onChange: (change: SlateChange) => void,
   onFocus: (nextPath: []) => void,
   onPatch: (event: PatchEvent) => void,
-  isSelected: boolean,
   readOnly?: boolean,
   type: ?Type
 }
@@ -191,10 +194,15 @@ export default class InlineObject extends React.Component<Props, State> {
   }
 
   handleInvalidValue = (event: PatchEvent) => {
-    const {editorValue, node, onPatch} = this.props
+    let _event = event
+    const {editorValue, onPatch} = this.props
     const {focusBlock} = editorValue
     const value = this.getValue()
-    onPatch(event.prefixAll([{_key: focusBlock.key}, 'children', {_key: node.key}]), value)
+    const path = [{_key: focusBlock.key}, 'children', {_key: value._key}]
+    path.reverse().forEach(part => {
+      _event = _event.prefixAll(part)
+    })
+    onPatch(_event, value)
   }
 
   handleRemoveValue = () => {
@@ -204,6 +212,7 @@ export default class InlineObject extends React.Component<Props, State> {
   }
 
   handleCancelEvent = event => {
+    event.stopPropagation()
     event.preventDefault()
   }
 
@@ -235,16 +244,21 @@ export default class InlineObject extends React.Component<Props, State> {
   }
 
   renderPreview() {
-    const {type, markers, readOnly} = this.props
+    const {type, markers, readOnly, blockContentFeatures} = this.props
     const value = this.getValue()
-    if (!type) {
+    const valueType = resolveTypeName(value)
+    const validTypes = blockContentFeatures.types.inlineObjects.map(objType => objType.name)
+
+    if (!validTypes.includes(valueType)) {
       return (
-        <InvalidValue
-          validTypes={[type]}
-          actualType={type}
-          value={value}
-          onChange={this.handleInvalidValue}
-        />
+        <div onClick={this.handleCancelEvent}>
+          <InvalidValue
+            validTypes={validTypes}
+            actualType={valueType}
+            value={value}
+            onChange={this.handleInvalidValue}
+          />
+        </div>
       )
     }
     const validation = markers.filter(marker => marker.type === 'validation')

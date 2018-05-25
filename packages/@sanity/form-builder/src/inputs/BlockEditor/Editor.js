@@ -30,6 +30,7 @@ import PastePlugin from './plugins/PastePlugin'
 import SetMarksOnKeyComboPlugin from './plugins/SetMarksOnKeyComboPlugin'
 import TextBlockOnEnterKeyPlugin from './plugins/TextBlockOnEnterKeyPlugin'
 import UpdateCustomNodesPlugin from './plugins/UpdateCustomNodesPlugin'
+import UndoRedoPlugin from './plugins/UndoRedoPlugin'
 
 import BlockObject from './nodes/BlockObject'
 import ContentBlock from './nodes/ContentBlock'
@@ -54,7 +55,9 @@ type Props = {
   onFormBuilderInputFocus: (nextPath: []) => void,
   onPatch: (event: PatchEvent) => void,
   readOnly?: boolean,
+  setFocus: void => void,
   type: Type,
+  undoRedoStack: {undo: [], redo: []},
   value: Block[]
 }
 
@@ -81,19 +84,44 @@ export default class Editor extends React.Component<Props> {
       PastePlugin({blockContentType: props.type}),
       insertBlockOnEnter(EDITOR_DEFAULT_BLOCK_TYPE),
       UpdateCustomNodesPlugin(),
-      OnDropPlugin()
+      OnDropPlugin(),
+      UndoRedoPlugin({
+        stack: props.undoRedoStack,
+        onChange: props.onChange,
+        editorValue: props.editorValue,
+        blockContentType: props.type
+      })
     ]
     this._validateNode = createNodeValidator(props.type, this.getValue)
   }
 
   // When focusPath has changed, but the editorValue has another focusBlock,
   // select the block according to the focusPath
+  // eslint-disable-next-line complexity
   componentWillUpdate(nextProps: Props) {
     const {focusPath, editorValue, onChange} = nextProps
+    if (!focusPath || focusPath.length === 0) {
+      return
+    }
     const focusPathChanged = !isEqual(this.props.focusPath, nextProps.focusPath)
-    if (focusPathChanged && !isEqual(focusPath, [{_key: editorValue.focusBlock.key}])) {
+    const focusPathIsNotSingleBlock =
+      editorValue.focusBlock && !isEqual(focusPath, [{_key: editorValue.focusBlock.key}])
+    const change = editorValue.change()
+    if (focusPathChanged && focusPathIsNotSingleBlock) {
+      // This is a inline block
       const block = editorValue.document.getDescendant(focusPath[0]._key)
-      onChange(editorValue.change().collapseToStartOf(block))
+      if (focusPath[1] && focusPath[1] === 'children' && focusPath[2]) {
+        const inline = editorValue.document.getDescendant(focusPath[2]._key)
+        change.collapseToStartOf(inline)
+      } else if (focusPath[1] && focusPath[1] === 'markDefs' && focusPath[2]) {
+        // TODO: sort out the annotation inline and collapseToStart
+      } else if (block) {
+        change.collapseToStartOf(block)
+        onChange(change)
+      }
+    } else if (focusPathChanged) {
+      change.focus()
+      onChange(change)
     }
   }
 
@@ -105,7 +133,7 @@ export default class Editor extends React.Component<Props> {
     if (focusBlock) {
       path.push({_key: focusBlock.key})
     }
-    if (path.length && (!focusPath || focusPath.length === 1)) {
+    if (path.length && focusPath && focusPath.length === 1) {
       return onChange(change, () => onFocus(path))
     }
     return onChange(change)
@@ -123,10 +151,9 @@ export default class Editor extends React.Component<Props> {
     this._editor = editor
   }
 
-  focus() {
-    if (this._editor) {
-      this._editor.focus()
-    }
+  handleEditorFocus = () => {
+    const {setFocus} = this.props
+    setFocus()
   }
 
   handleShowBlockDragMarker = (pos: string, node: HTMLDivElement) => {
@@ -172,6 +199,7 @@ export default class Editor extends React.Component<Props> {
     let ObjectType = blockContentFeatures.types.blockObjects.find(
       memberType => memberType.name === node.type
     )
+
     if (node.object === 'inline') {
       ObjectClass = InlineObject
       ObjectType = blockContentFeatures.types.inlineObjects.find(
@@ -181,10 +209,26 @@ export default class Editor extends React.Component<Props> {
         marker => marker.path[2] && marker.path[2]._key === node.data.get('_key')
       )
     }
+
     if (node.type === 'span') {
       childMarkers = markers.filter(
         marker => marker.path[2] && marker.path[2]._key === node.data.get('_key')
       )
+      // Add any markers for related markDefs here as well
+      let annotations
+      if ((annotations = node.data.get('annotations'))) {
+        const block = editorValue.document.getParent(node.key)
+        Object.keys(annotations).forEach(key => {
+          childMarkers = childMarkers.concat(
+            markers.filter(
+              marker =>
+                marker.path[0]._key === block.key &&
+                marker.path[1] === 'markDefs' &&
+                marker.path[2]._key === annotations[key]._key
+            )
+          )
+        })
+      }
     }
 
     // Set prop on blocks that are included in focusPath
@@ -261,18 +305,18 @@ export default class Editor extends React.Component<Props> {
   }
 
   render() {
-    const {editorValue, fullscreen, onEditorBlur, onEditorFocus, readOnly} = this.props
+    const {editorValue, fullscreen, readOnly} = this.props
 
     const classNames = [styles.root, fullscreen ? styles.fullscreen : null].filter(Boolean)
     return (
       <div className={classNames.join(' ')}>
         <SlateEditor
+          spellCheck={false}
           className={styles.editor}
           ref={this.refEditor}
           value={editorValue}
-          onBlur={onEditorBlur}
           onChange={this.handleChange}
-          onFocus={onEditorFocus}
+          onFocus={this.handleEditorFocus}
           validateNode={this._validateNode}
           plugins={this._plugins}
           readOnly={readOnly}

@@ -20,7 +20,6 @@ type Props = {
   editorValue: SlateValue,
   fullscreen: boolean,
   isActive: boolean,
-  isFocused: boolean,
   focusPath: [],
   markers: Marker[],
   onPatch: (event: PatchEvent) => void,
@@ -41,6 +40,9 @@ function findEditNode(focusPath, editorValue) {
   let key
   if (markDefKey) {
     const block = editorValue.document.getDescendant(focusBlockKey)
+    if (!block) {
+      return null
+    }
     const span = block.filterDescendants(desc => desc.type === 'span').find(node => {
       const annotations = node.data.get('annotations') || {}
       return Object.keys(annotations).find(
@@ -218,8 +220,9 @@ export default class BlockEditor extends React.PureComponent<Props> {
   }
 
   render() {
-    const {focusPath, fullscreen, readOnly, isFocused} = this.props
+    const {focusPath, fullscreen, readOnly} = this.props
     const isEditingNode = !readOnly && (focusPath || []).length > 1
+    const isFocused = (focusPath || []).length
     return (
       <div className={styles.root}>
         {fullscreen && (

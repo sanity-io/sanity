@@ -12,15 +12,16 @@ type Props = {
   attributes?: {},
   style: string,
   children: Node,
-  Style?: ComponentType<*>
+  styleComponent?: ComponentType<*>
 }
 
 export default function Text(props: Props) {
-  const {style, Style} = props
+  const {style, styleComponent} = props
   const attributes = props.attributes || {}
 
-  if (Style) {
-    return <Style attributes={attributes}>{props.children}</Style>
+  if (styleComponent) {
+    const CustomStyle = styleComponent
+    return <CustomStyle attributes={attributes}>{props.children}</CustomStyle>
   }
 
   if (HEADER_STYLES.includes(style)) {
