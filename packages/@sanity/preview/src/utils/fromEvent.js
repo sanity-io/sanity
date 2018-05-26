@@ -23,10 +23,12 @@ export default function fromEvent(target, eventType, options) {
   }
   let compatOptions = options
   if (options && !supportsPassive()) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'This browser does not support EventListenerOptions, only `options.capture` will be used when calling addEventListener'
-    )
+    if (__DEV__) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'This browser does not support EventListenerOptions, only `options.capture` will be used when calling addEventListener'
+      )
+    }
     compatOptions = options.capture
   }
   return new Observable(observer => {
