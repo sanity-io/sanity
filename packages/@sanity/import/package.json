@@ -42,7 +42,6 @@
     "@sanity/client": "0.132.0",
     "get-it": "^4.0.1",
     "jest": "^22.1.4",
-    "prettier": "^1.10.2",
     "rimraf": "^2.6.2"
   },
   "repository": {
