@@ -33,7 +33,8 @@
     "commitmsg": "node scripts/validateCommitMessage.js",
     "release-notes": "node scripts/printReleaseNotesTemplate.js",
     "versions": "node scripts/normalizeDependencyVersions.js",
-    "normalize-pkgfields": "node scripts/normalizePackageFields.js"
+    "normalize-pkgfields": "node scripts/normalizePackageFields.js",
+    "prettify": "lerna run clean && prettier --write \"**/*.js\""
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -79,7 +80,7 @@
     "gulp-watch": "^5.0.0",
     "husky": "^0.14.3",
     "lerna": "^2.10.2",
-    "prettier": "^1.10.2",
+    "prettier": "^1.13.0",
     "pre-commit": "^1.2.2",
     "rimraf": "^2.6.2",
     "semver": "^5.5.0",

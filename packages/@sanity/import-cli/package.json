@@ -33,7 +33,6 @@
     "simple-get": "^2.7.0"
   },
   "devDependencies": {
-    "prettier": "^1.10.2",
     "rimraf": "^2.6.2"
   },
   "repository": {
