@@ -68,6 +68,7 @@ export default class BlockStyleSelect extends React.Component<Props> {
   }
 
   handleChange = (item: BlockStyleItem) => {
+    console.log(item)
     const {onChange, editorValue} = this.props
     const change = editorValue.change()
     change.call(setBlockStyle, item.style)
