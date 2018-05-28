@@ -111,7 +111,11 @@ function createCachedFieldObserver(id, fields): CachedFieldObserver {
       observer.complete()
     }).pipe(filter(Boolean)),
     listenFields(id, fields)
-  ).pipe(tap(v => (latest = v)), publishReplay(1), refCount())
+  ).pipe(
+    tap(v => (latest = v)),
+    publishReplay(1),
+    refCount()
+  )
 
   return {id, fields, changes$}
 }

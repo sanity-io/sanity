@@ -110,5 +110,11 @@ export const state = locationStore.state.pipe(
 
 if (HAS_SPACES) {
   // Uglybugly mutation ahead.
-  state.pipe(map(event => event.state), filter(Boolean), tap(reconfigureClient)).subscribe()
+  state
+    .pipe(
+      map(event => event.state),
+      filter(Boolean),
+      tap(reconfigureClient)
+    )
+    .subscribe()
 }
