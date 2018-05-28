@@ -1,6 +1,5 @@
-
 // Needed because we import/require ProseMirror, which refers to `window` at source compile time
-const jsdom = require("jsdom").jsdom
+const jsdom = require('jsdom').jsdom
 
 function setupJSDom() {
   if (typeof global.document !== 'undefined') return

@@ -12,7 +12,7 @@ module.exports = async args => {
     throw new Error('SCRIPT must be provided. `sanity exec <script>`')
   }
 
-  if (!await fse.exists(scriptPath)) {
+  if (!(await fse.exists(scriptPath))) {
     throw new Error(`${scriptPath} does not exist`)
   }
 

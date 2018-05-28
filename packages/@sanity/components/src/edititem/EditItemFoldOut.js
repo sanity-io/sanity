@@ -12,7 +12,7 @@ export default class EditItemFoldOut extends React.PureComponent {
 
   static defaultProps = {
     title: '',
-    onClose() {}, // eslint-disable-line
+    onClose() {} // eslint-disable-line
   }
 
   componentDidMount() {

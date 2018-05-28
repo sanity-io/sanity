@@ -49,7 +49,8 @@ class UpdateNotifierDialog extends Component {
         </table>
 
         <p className={styles.upgradeText}>
-          To upgrade, run the Sanity CLI command <code className={styles.code}>sanity upgrade</code> in your project folder.
+          To upgrade, run the Sanity CLI command <code className={styles.code}>sanity upgrade</code>{' '}
+          in your project folder.
         </p>
       </div>
     )

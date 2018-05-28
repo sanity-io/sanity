@@ -224,8 +224,8 @@ export default class ImageTool extends React.PureComponent {
     const {image, value, onChange} = this.props
     const scale = this.getScale()
     const delta = {
-      x: pos.x * scale / image.width,
-      y: pos.y * scale / image.height
+      x: (pos.x * scale) / image.width,
+      y: (pos.y * scale) / image.height
     }
 
     onChange(this.applyHotspotMoveBy(value, delta))
@@ -235,11 +235,11 @@ export default class ImageTool extends React.PureComponent {
     const {image, onChange, value} = this.props
     const scale = this.getScale()
     const delta = {}
-    delta.left = pos.x * scale / image.width
-    delta.right = -pos.x * scale / image.width
+    delta.left = (pos.x * scale) / image.width
+    delta.right = (-pos.x * scale) / image.width
 
-    delta.top = pos.y * scale / image.height
-    delta.bottom = -pos.y * scale / image.height
+    delta.top = (pos.y * scale) / image.height
+    delta.bottom = (-pos.y * scale) / image.height
 
     if (checkCropBoundaries(value, delta)) {
       onChange(this.applyCropMoveBy(value, delta))
@@ -252,15 +252,15 @@ export default class ImageTool extends React.PureComponent {
     const delta = {}
 
     if (side == 'left' || side === 'topLeft' || side === 'bottomLeft') {
-      delta.left = pos.x * scale / image.width
+      delta.left = (pos.x * scale) / image.width
     } else if (side == 'right' || side === 'topRight' || side === 'bottomRight') {
-      delta.right = -pos.x * scale / image.width
+      delta.right = (-pos.x * scale) / image.width
     }
 
     if (side == 'top' || side === 'topLeft' || side === 'topRight') {
-      delta.top = pos.y * scale / image.height
+      delta.top = (pos.y * scale) / image.height
     } else if (side == 'bottom' || side === 'bottomLeft' || side === 'bottomRight') {
-      delta.bottom = -pos.y * scale / image.height
+      delta.bottom = (-pos.y * scale) / image.height
     }
 
     const newValue = limitToBoundaries(value, delta).value
@@ -274,8 +274,8 @@ export default class ImageTool extends React.PureComponent {
     const scale = this.getScale()
 
     const delta = {
-      x: pos.x * scale * 2 / image.width,
-      y: pos.y * scale * 2 / image.height
+      x: (pos.x * scale * 2) / image.width,
+      y: (pos.y * scale * 2) / image.height
     }
     onChange(this.applyHotspotResizeBy(value, {height: delta.y, width: delta.x}))
   }

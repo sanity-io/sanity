@@ -152,7 +152,11 @@ function exportDataset(opts) {
     })
 
     archive.append(jsonStream, {name: 'data.ndjson', prefix})
-    miss.pipe(archive, outputStream, onComplete)
+    miss.pipe(
+      archive,
+      outputStream,
+      onComplete
+    )
 
     async function onComplete(err) {
       onProgress({step: 'Clearing temporary files...'})

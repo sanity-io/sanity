@@ -224,7 +224,7 @@ function getPercentage(opts) {
     return ''
   }
 
-  const percent = Math.floor(opts.current / opts.total * 100)
+  const percent = Math.floor((opts.current / opts.total) * 100)
   return `[${padStart(percent, 3, ' ')}%] `
 }
 

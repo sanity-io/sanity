@@ -31,7 +31,7 @@ export default class ProgressCircle extends React.PureComponent {
     const viewBox = `-10 -10 ${width * widthFactor} ${height * heightFactor}`
 
     const dashArray = radius * Math.PI * 2
-    const dashOffset = dashArray - dashArray * percent / 100
+    const dashOffset = dashArray - (dashArray * percent) / 100
 
     return (
       <div className={percent >= 100 ? styles.completed : styles.unCompleted} style={style}>

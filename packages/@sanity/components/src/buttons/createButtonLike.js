@@ -8,7 +8,8 @@ import cx from 'classnames'
 
 export default function createButtonLike(Component, {displayName, defaultProps = {}}) {
   return class ButtonLike extends React.Component {
-    static displayName = displayName ||
+    static displayName =
+      displayName ||
       `ButtonLike(${
         typeof Component === 'string' ? Component : Component.displayName || Component.name
       })`
