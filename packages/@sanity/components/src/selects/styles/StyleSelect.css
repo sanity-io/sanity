@@ -4,32 +4,18 @@
   display: block;
   outline: none;
   position: relative;
+
+  @nest &:focus {
+    box-shadow:
+      0 0 2px 1px color(var(--input-border-color-focus)),
+      0 0 4px 0 color(var(--input-border-color-focus) a(60%)),
+      0 0 10px 5px color(var(--input-border-color-focus) a(10%));
+  }
 }
 
-.selectContainer {
+.inner {
   composes: root from 'part:@sanity/base/theme/forms/text-input-style';
-  composes: selectContainer from 'part:@sanity/components/selects/default-style';
-  display: flex;
-
-  @nest &:hover {
-    box-shadow: var(--input-box-shadow--hover);
-    border-color: var(--input-border-color-hover);
-  }
-
-  @nest &:focus, &:focus-within {
-    box-shadow: var(--input-box-shadow--focus);
-    border-color: var(--input-border-color-focus);
-  }
-
-  @nest &:active {
-    border-color: var(--input-border-color-active);
-  }
-
-  @nest &:invalid {
-    border-color: var(--input-border-color-invalid);
-    background-color: var(--input-bg-error);
-    box-shadow: var(--input-box-shadow--error);
-  }
+  cursor: default;
 
   @nest .transparent & {
     transition: all 0.05s linear;
@@ -43,11 +29,16 @@
   }
 }
 
-.functions {
+.transparent:not(:hover) .inner {
+  box-shadow: none;
+}
+
+.selectContainer {
+  composes: selectContainer from 'part:@sanity/components/selects/default-style';
+}
+
+.arrow {
   composes: functions from './SearchableSelect.css';
-  position: static;
-  padding-left: 0.5em;
-  height: 2em;
 }
 
 .portal {
@@ -63,6 +54,7 @@
   display: block;
   position: absolute;
   overflow: hidden;
+  composes: shadow-4dp from "part:@sanity/base/theme/shadows-style";
   box-sizing: border-box;
   transform: translateY(-1px);
   background-color: var(--component-bg);
@@ -77,6 +69,17 @@
 
 .listContainerHidden {
   display: none;
+}
+
+.noResultText {
+  text-align: center;
+  padding: 0.5em;
+}
+
+.spinner {
+  position: absolute;
+  top: 0.5em;
+  right: 0.75em;
 }
 
 .item {
@@ -101,10 +104,6 @@
   &:active {
     background-color: var(--gray-light--transparent);
   }
-
-  @nest &.itemSelected {
-    background-color: var(--selectable-item-color-hover);
-  }
 }
 
 .itemContent {
@@ -123,6 +122,12 @@
   }
 }
 
+.itemSelected {
+  composes: item;
+  background-color: var(--selectable-item-color-hover);
+  color: var(--selected-item-color--inverted);
+}
+
 .itemIcon {
   display: block;
   position: absolute;
@@ -132,8 +137,4 @@
   font-size: 1em;
   width: 2em;
   overflow: hidden;
-}
-
-.disabled {
-  opacity: 0.2;
 }
