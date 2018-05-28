@@ -79,7 +79,10 @@ assign(AssetsClient.prototype, {
 
     return this.client.isPromiseAPI()
       ? observable
-          .pipe(filter(event => event.type === 'response'), map(event => toDocument(event.body)))
+          .pipe(
+            filter(event => event.type === 'response'),
+            map(event => toDocument(event.body))
+          )
           .toPromise()
       : observable
   },

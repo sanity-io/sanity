@@ -13,7 +13,8 @@ export default class DefaultFileInput extends React.PureComponent {
   componentDidMount() {
     if ('value' in this.props) {
       // eslint-disable-next-line
-      console.error(new Error(
+      console.error(
+        new Error(
           'Warning: A `value` prop was passed to FileSelect. This is most likely not intended as this' +
             ' component is only for letting users select file(s) from their hard drive'
         )

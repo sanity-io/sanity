@@ -41,8 +41,8 @@ export default function urlForImage(options) {
   crop.height = Math.round(asset.height - image.crop.bottom * asset.height - crop.top)
 
   // Compute hot spot rect in terms of pixel coordinates
-  const hotSpotVerticalRadius = image.hotspot.height * asset.height / 2
-  const hotSpotHorizontalRadius = image.hotspot.width * asset.width / 2
+  const hotSpotVerticalRadius = (image.hotspot.height * asset.height) / 2
+  const hotSpotHorizontalRadius = (image.hotspot.width * asset.width) / 2
   const hotSpotCenterX = image.hotspot.x * asset.width
   const hotSpotCenterY = image.hotspot.y * asset.height
   const hotspot = {

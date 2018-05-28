@@ -215,8 +215,7 @@ export default class EditorWrapper extends React.Component {
       .delete(getPublishedId(documentId))
       .delete(getDraftId(documentId))
 
-    tx
-      .commit()
+    tx.commit()
       .pipe(
         map(result => ({
           type: 'success',
@@ -254,8 +253,7 @@ export default class EditorWrapper extends React.Component {
       })
     }
 
-    tx
-      .commit()
+    tx.commit()
       .pipe(
         map(result => ({
           type: 'success',
@@ -293,23 +291,20 @@ export default class EditorWrapper extends React.Component {
     } else {
       // If it exists already, we only want to update it if the revision on the remote server
       // matches what our local state thinks it's at
-      tx
-        .patch(getPublishedId(documentId), {
-          // Hack until other mutations support revision locking
-          unset: ['_reserved_prop_'],
-          ifRevisionID: published.snapshot._rev
-        })
-        .createOrReplace({
-          ...omit(draft.snapshot, '_updatedAt'),
-          _id: getPublishedId(documentId)
-        })
+      tx.patch(getPublishedId(documentId), {
+        // Hack until other mutations support revision locking
+        unset: ['_reserved_prop_'],
+        ifRevisionID: published.snapshot._rev
+      }).createOrReplace({
+        ...omit(draft.snapshot, '_updatedAt'),
+        _id: getPublishedId(documentId)
+      })
     }
 
     tx.delete(getDraftId(documentId))
 
     // @todo add error handling for revision mismatch
-    tx
-      .commit()
+    tx.commit()
       .pipe(
         map(result => ({
           type: 'success',

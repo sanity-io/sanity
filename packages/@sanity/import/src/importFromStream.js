@@ -20,18 +20,22 @@ module.exports = (stream, options, importers) =>
     let jsonDocuments
 
     const uncompressStream = miss.pipeline(gunzipMaybe(), untarMaybe())
-    miss.pipe(stream, uncompressStream, err => {
-      if (err) {
-        reject(err)
-        return
-      }
+    miss.pipe(
+      stream,
+      uncompressStream,
+      err => {
+        if (err) {
+          reject(err)
+          return
+        }
 
-      if (isTarStream) {
-        findAndImport()
-      } else {
-        resolve(importers.fromArray(jsonDocuments, options))
+        if (isTarStream) {
+          findAndImport()
+        } else {
+          resolve(importers.fromArray(jsonDocuments, options))
+        }
       }
-    })
+    )
 
     function untarMaybe() {
       return peek({newline: false, maxBuffer: 300}, (data, swap) => {

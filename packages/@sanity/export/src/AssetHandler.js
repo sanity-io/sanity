@@ -208,9 +208,14 @@ function writeHashedStream(filePath, stream) {
   })
 
   return new Promise((resolve, reject) =>
-    miss.pipe(stream, hasher, fse.createWriteStream(filePath), err => {
-      return err ? reject(err) : resolve(hash.digest('hex'))
-    })
+    miss.pipe(
+      stream,
+      hasher,
+      fse.createWriteStream(filePath),
+      err => {
+        return err ? reject(err) : resolve(hash.digest('hex'))
+      }
+    )
   )
 }
 
