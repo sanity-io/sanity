@@ -113,7 +113,7 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
   // The scale at which the hotspot would fill the viewport exactly in the X direction
   const maxHotspotXScale = 1.0 / hotspot.width
   // The scale at which the hotspot would fill the veiwport exactly in the Y direction
-  const maxHotspotYScale = 1.0 / hotspot.height * cropAspect / viewportAspect
+  const maxHotspotYScale = ((1.0 / hotspot.height) * cropAspect) / viewportAspect
   // This is the largest scale the image can have while still not cropping the hotspot:
   const maxScale = Math.min(maxHotspotXScale, maxHotspotYScale)
 
@@ -147,10 +147,10 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
 
     outCrop = {
       width: letterboxScale,
-      height: letterboxScale / cropAspect * viewportAspect
+      height: (letterboxScale / cropAspect) * viewportAspect
     }
 
-    const hotspotLeft = hotspot.x * outCrop.width - hotspot.width * outCrop.width / 2
+    const hotspotLeft = hotspot.x * outCrop.width - (hotspot.width * outCrop.width) / 2
     switch (alignment.x) {
       case 'left':
         outCrop.left = cropIsTaller ? 0 : -hotspotLeft
@@ -167,7 +167,7 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
           `Invalid x alignment: '${alignment.x}'. Must be either 'left', 'right' or 'center'`
         )
     }
-    const hotspotTop = hotspot.y * outCrop.height - hotspot.height * outCrop.height / 2
+    const hotspotTop = hotspot.y * outCrop.height - (hotspot.height * outCrop.height) / 2
     switch (alignment.y) {
       case 'top':
         outCrop.top = cropIsTaller ? -hotspotTop : 0
@@ -188,8 +188,8 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
     // TODO: Clamp hotspot offset to avoid moving image off canvas
     method = 'full_width'
 
-    let top = -hotspot.y / cropAspect * viewportAspect + 0.5
-    const height = minFullBleedScale / cropAspect * viewportAspect
+    let top = (-hotspot.y / cropAspect) * viewportAspect + 0.5
+    const height = (minFullBleedScale / cropAspect) * viewportAspect
     // Clamp top so that we will not move the image off of the viewport
     if (top > 0) {
       top = 0
@@ -218,7 +218,7 @@ function calculateHotSpotCrop(sourceAspect, descriptor, spec) {
     // Clamp left so that we will not move the image off of the viewport.
     outCrop = {
       width,
-      height: minFullBleedScale / cropAspect * viewportAspect,
+      height: (minFullBleedScale / cropAspect) * viewportAspect,
       top: 0,
       // Place the X center of the hotspot at the center of the viewport
       left

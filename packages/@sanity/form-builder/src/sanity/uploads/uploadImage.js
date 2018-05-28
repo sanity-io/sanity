@@ -27,7 +27,7 @@ export default function uploadImage(file: File): ObservableI<UploadEvent> {
     filter(event => event.stage !== 'download'),
     map(event => ({
       ...event,
-      progress: 2 + event.percent / 100 * 98
+      progress: 2 + (event.percent / 100) * 98
     })),
     map(event => {
       if (event.type === 'complete') {

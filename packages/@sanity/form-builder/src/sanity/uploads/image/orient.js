@@ -35,12 +35,8 @@ function rotate(ctx, options: RotateOpts) {
 // Based on github.com/component/flip
 function flip(canvas: HTMLCanvasElement, x: boolean, y: boolean) {
   const ctx = canvas.getContext('2d')
-  ctx.translate(
-    x ? canvas.width : 0,
-    y ? canvas.height : 0)
-  ctx.scale(
-    x ? -1 : 1,
-    y ? -1 : 1)
+  ctx.translate(x ? canvas.width : 0, y ? canvas.height : 0)
+  ctx.scale(x ? -1 : 1, y ? -1 : 1)
 }
 
 const ORIENTATION_OPS = [
@@ -55,14 +51,14 @@ const ORIENTATION_OPS = [
 ]
 
 export opaque type OrientationId =
-  'top-left' |
-  'top-right' |
-  'bottom-right' |
-  'bottom-left' |
-  'left-top' |
-  'right-top' |
-  'right-bottom' |
-  'left-bottom'
+  | 'top-left'
+  | 'top-right'
+  | 'bottom-right'
+  | 'bottom-left'
+  | 'left-top'
+  | 'right-top'
+  | 'right-bottom'
+  | 'left-bottom'
 
 const ORIENTATIONS: Array<OrientationId> = [
   'top-left',
@@ -125,7 +121,6 @@ function _orient(img: Image, orientationNumber: number): HTMLCanvasElement {
   ctx.drawImage(img, 0, 0, img.width, img.height)
   return canvas
 }
-
 
 /* eslint-enable */
 export default function orient(image: Image, orientationId: OrientationId) {
