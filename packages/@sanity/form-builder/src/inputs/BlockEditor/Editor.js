@@ -19,9 +19,12 @@ import {Editor as SlateEditor} from 'slate-react'
 import {isEqual} from 'lodash'
 import {EDITOR_DEFAULT_BLOCK_TYPE} from '@sanity/block-tools'
 import insertBlockOnEnter from 'slate-insert-block-on-enter'
+import onPaste from 'part:@sanity/form-builder/input/block-editor/on-paste?'
+import onCopy from 'part:@sanity/form-builder/input/block-editor/on-copy?'
 
 import {hasItemFocus} from '../../utils/pathUtils'
 import createNodeValidator from './utils/createNodeValidator'
+import PatchEvent, {insert} from '../../../PatchEvent'
 
 import ListItemOnEnterKeyPlugin from './plugins/ListItemOnEnterKeyPlugin'
 import ListItemOnTabKeyPlugin from './plugins/ListItemOnTabKeyPlugin'
@@ -177,6 +180,36 @@ export default class Editor extends React.Component<Props> {
     }
   }
 
+  handlePaste = event => {
+    const {focusPath, onPatch, value, type} = this.props
+    if (onPaste) {
+      const {editorValue} = this.props
+      const change = editorValue.change()
+      const {focusBlock, focusKey, focusText, focusInline} = change.value
+      const path = []
+      if (focusBlock) {
+        path.push({_key: focusBlock.key})
+      }
+      if (focusInline || focusText) {
+        path.push('children')
+        path.push({_key: focusKey})
+      }
+      const result = onPaste({event, value, path, type})
+      if (result && result.insert) {
+        onPatch(PatchEvent.from([insert([result.insert], 'after', result.path || focusPath)]))
+        return result.insert
+      }
+    }
+    return undefined
+  }
+
+  handleCopy = event => {
+    if (onCopy) {
+      return onCopy({event})
+    }
+    return undefined
+  }
+
   refBlockDragMarker = (blockDragMarker: ?HTMLDivElement) => {
     this._blockDragMarker = blockDragMarker
   }
@@ -316,7 +349,9 @@ export default class Editor extends React.Component<Props> {
           ref={this.refEditor}
           value={editorValue}
           onChange={this.handleChange}
+          onCopy={this.handleCopy}
           onFocus={this.handleEditorFocus}
+          onPaste={this.handlePaste}
           validateNode={this._validateNode}
           plugins={this._plugins}
           readOnly={readOnly}
