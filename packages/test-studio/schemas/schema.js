@@ -32,7 +32,7 @@ import fieldsets from './fieldsets'
 import empty from './empty'
 import readOnly from './readOnly'
 import validation from './validation'
-
+import experiment from './experiment'
 import customInputs from './customInputs'
 import notitle from './notitle'
 import typeWithNoToplevelStrings from './typeWithNoToplevelStrings'
@@ -70,6 +70,7 @@ export default createSchema({
     liveEdit,
     images,
     files,
+    experiment,
     references,
     geopoint,
     blocks,
