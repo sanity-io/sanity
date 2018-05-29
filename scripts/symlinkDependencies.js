@@ -5,9 +5,11 @@
 const fs = require('fs')
 const path = require('path')
 const rimraf = require('rimraf')
+const minimist = require('minimist')
 
-const pkgPath = path.join(__dirname, '..', 'packages')
-const targetDir = process.argv[2]
+const argv = minimist(process.argv.slice(2), {boolean: ['all']})
+
+const targetDir = argv._[0]
 if (!targetDir) {
   throw new Error('Target directory must be specified (`.` for current dir)')
 }
@@ -16,6 +18,7 @@ const notSanity = dir => dir !== '@sanity'
 const prefix = name => `@sanity/${name}`
 const normalize = dir => dir.replace(/@sanity\//g, `@sanity${path.sep}`)
 
+const pkgPath = path.join(__dirname, '..', 'packages')
 const rootPackages = fs.readdirSync(pkgPath).filter(notSanity)
 const sanityPackages = fs.readdirSync(path.join(pkgPath, '@sanity')).map(prefix)
 const packages = [].concat(rootPackages, sanityPackages)
@@ -23,16 +26,26 @@ const packages = [].concat(rootPackages, sanityPackages)
 const targetPath = path.resolve(path.relative(process.cwd(), targetDir))
 const targetDepsPath = path.join(targetPath, 'node_modules')
 
-const targetPkg = require(path.join(targetPath, 'package.json'))
-const targetDeclared = Object.assign({}, targetPkg.dependencies, targetPkg.devDependencies)
-const targetDeps = Object.keys(targetDeclared)
+let targetDeps = packages
+if (!argv.all) {
+  // eslint-disable-next-line import/no-dynamic-require
+  const targetPkg = require(path.join(targetPath, 'package.json'))
+  const targetDeclared = Object.assign({}, targetPkg.dependencies, targetPkg.devDependencies)
+  targetDeps = Object.keys(targetDeclared)
+}
 
 const targetRootPackages = fs.readdirSync(targetDepsPath).filter(notSanity)
 const targetSanityPackages = fs.readdirSync(path.join(targetDepsPath, '@sanity')).map(prefix)
-const targetPackages = [].concat(targetRootPackages, targetSanityPackages, targetDeps)
 
-const sharedPackages = packages.filter(pkg => targetPackages.indexOf(pkg) > -1)
-const sharedDeclared = packages.filter(pkg => targetDeps.indexOf(pkg) > -1)
+// All the dependencies in the root of node_modules and node_modules/@sanity
+const targetPackages = [].concat(targetRootPackages, targetSanityPackages, targetDeps)
+const sharedPackages = argv.all
+  ? packages
+  : packages.filter(pkgName => targetPackages.indexOf(pkgName) > -1)
+
+const sharedDeclared = argv.all
+  ? packages
+  : packages.filter(pkgName => targetDeps.indexOf(pkgName) > -1)
 
 const removeFolders = sharedPackages.map(normalize).map(dir => path.join(targetDepsPath, dir))
 
