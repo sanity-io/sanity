@@ -224,7 +224,7 @@ export default function patchesToChange(
     if (patch.path.length > 1) {
       if (patch.path[1] === 'markDefs') {
         patchAnnotationData(patch, change, type, snapshot)
-      } else if (patch.path[1] === 'children') {
+      } else if (patch.path[1] === 'children' && patch.path.length > 3) {
         patchInlineData(patch, change, type, snapshot)
       } else {
         patchBlockData(patch, change, type, snapshot)
