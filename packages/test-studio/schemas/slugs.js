@@ -76,6 +76,12 @@ export default {
       ]
     },
     {
+      name: 'experiments',
+      title: 'Experiments',
+      type: 'array',
+      of: [{type: 'experiment'}]
+    },
+    {
       name: 'deprecatedSlugifyFnField',
       type: 'slug',
       title: 'Slug field using deprecated "slugifyFn" option',
