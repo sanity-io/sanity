@@ -215,7 +215,7 @@ export default class BlockObject extends React.Component<Props, State> {
   handleRemoveValue = event => {
     const {editorValue, node, onChange} = this.props
     const change = editorValue.change()
-    onChange(change.removeNodeByKey(node.key))
+    onChange(change.removeNodeByKey(node.key).focus())
   }
 
   renderPreview() {
