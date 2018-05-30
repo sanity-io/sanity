@@ -208,7 +208,7 @@ export default class InlineObject extends React.Component<Props, State> {
   handleRemoveValue = () => {
     const {editorValue, node, onChange} = this.props
     const change = editorValue.change()
-    onChange(change.removeNodeByKey(node.key))
+    onChange(change.removeNodeByKey(node.key).focus())
   }
 
   handleCancelEvent = event => {
