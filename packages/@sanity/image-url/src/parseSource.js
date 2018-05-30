@@ -1,4 +1,5 @@
 // Convert an asset-id, asset or image to an image record suitable for processing
+// eslint-disable-next-line complexity
 export default function parseSource(source) {
   if (!source) {
     return null
@@ -6,8 +7,13 @@ export default function parseSource(source) {
 
   let image
 
-  // Did we just get an asset id?
-  if (typeof source === 'string') {
+  if (typeof source === 'string' && isUrl(source)) {
+    // Someone passed an existing image url?
+    image = {
+      asset: {_ref: urlToId(source)}
+    }
+  } else if (typeof source === 'string') {
+    // Just an asset id
     image = {
       asset: {_ref: source}
     }
@@ -23,6 +29,12 @@ export default function parseSource(source) {
         _ref: source._id
       }
     }
+  } else if (source.asset && source.asset.url && !source.asset._ref) {
+    image = {
+      asset: {
+        _ref: urlToId(source.asset.url)
+      }
+    }
   } else if (typeof source.asset === 'object') {
     image = source
   } else {
@@ -32,6 +44,15 @@ export default function parseSource(source) {
   }
 
   return applyDefaultHotspot(image)
+}
+
+function isUrl(url) {
+  return /^https?:\/\//.test(`${url}`)
+}
+
+function urlToId(url) {
+  const [filename] = url.split('/').slice(-1)
+  return `image-${filename}`.replace(/\.([a-z]+)$/, '-$1')
 }
 
 // Mock crop and hotspot if image lacks it
