@@ -282,6 +282,29 @@ export default {
           ]
         }
       ]
+    },
+    {
+      name: 'blockList',
+      title: 'Array of blocks',
+      type: 'array',
+      of: [
+        {
+          name: 'blockListEntry',
+          type: 'object',
+          fields: [
+            {
+              name: 'title',
+              title: 'Title',
+              type: 'string'
+            },
+            {
+              name: 'blocks',
+              type: 'array',
+              of: [{type: 'block'}]
+            }
+          ]
+        }
+      ]
     }
   ]
 }
