@@ -62,6 +62,14 @@ export function noHotspotImage() {
   }
 }
 
+export function assetWithUrl() {
+  return {
+    asset: {
+      url: 'https://cdn.sanity.io/images/ppsg7ml5/test/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg'
+    }
+  }
+}
+
 export function assetDocument() {
   return {
     _id: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg',

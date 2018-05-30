@@ -1,5 +1,11 @@
 import parseSource from '../src/parseSource'
-import {imageWithNoCropSpecified, croppedImage, assetDocument, noHotspotImage} from './fixtures'
+import {
+  imageWithNoCropSpecified,
+  croppedImage,
+  assetDocument,
+  noHotspotImage,
+  assetWithUrl
+} from './fixtures'
 
 function compareParsedSource(outputSource, expectedSource) {
   expect(typeof outputSource).toBe('object')
@@ -27,6 +33,16 @@ describe('parseSource', () => {
 
   test('does correctly parse image asset document', () => {
     const parsedSource = parseSource(assetDocument())
+    compareParsedSource(parsedSource, noHotspotImage())
+  })
+
+  test('does correctly parse asset object with only url', () => {
+    const parsedSource = parseSource(assetWithUrl())
+    compareParsedSource(parsedSource, noHotspotImage())
+  })
+
+  test('does correctly parse only asset url', () => {
+    const parsedSource = parseSource(assetWithUrl().asset.url)
     compareParsedSource(parsedSource, noHotspotImage())
   })
 
