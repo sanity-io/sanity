@@ -221,6 +221,16 @@ export default {
       ]
     },
     {
+      title: 'Array of articles',
+      name: 'arrayOfArticles',
+      type: 'array',
+      of: [
+        {
+          type: 'blocksTest'
+        }
+      ]
+    },
+    {
       title: 'Block in block',
       name: 'blockInBlock',
       type: 'array',
