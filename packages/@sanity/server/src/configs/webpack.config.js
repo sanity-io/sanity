@@ -4,8 +4,8 @@ import webpack from 'webpack'
 import resolveFrom from 'resolve-from'
 import webpackIntegration from '@sanity/webpack-integration/v3'
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
-import getStaticBasePath from '../util/getStaticBasePath'
 import rxPaths from 'rxjs/_esm5/path-mapping'
+import getStaticBasePath from '../util/getStaticBasePath'
 
 const resolve = mod => require.resolve(mod)
 
@@ -99,9 +99,44 @@ export default (config = {}) => {
         },
         {
           test: /\.css(\?|$)/,
-          use: isProd
-            ? ExtractTextPlugin.extract({use: [cssLoader, postcssLoader]})
-            : [resolve('style-loader'), cssLoader, postcssLoader]
+          oneOf: [
+            {
+              resourceQuery: /raw/, // foo.css?raw
+              use: isProd
+                ? ExtractTextPlugin.extract({
+                    fallback: {
+                      loader: resolve('style-loader'),
+                      options: {
+                        hmr: false
+                      }
+                    },
+                    use: [
+                      {
+                        loader: resolve('css-loader'),
+                        options: {
+                          importLoaders: 1,
+                          minimize: true,
+                          sourceMap: true
+                        }
+                      }
+                    ]
+                  })
+                : [
+                    resolve('style-loader'),
+                    {
+                      loader: resolve('css-loader'),
+                      options: {
+                        importLoaders: 1
+                      }
+                    }
+                  ]
+            },
+            {
+              use: isProd
+                ? ExtractTextPlugin.extract({use: [cssLoader, postcssLoader]})
+                : [resolve('style-loader'), cssLoader, postcssLoader]
+            }
+          ]
         },
         {
           test: /\.(jpe?g|png|gif|svg|webp|woff|woff2|ttf|eot|otf)$/,

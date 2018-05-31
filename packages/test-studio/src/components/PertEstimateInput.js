@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {PatchEvent, set, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
+import './PertEstimate.css?raw' // eslint-disable-line
 
 const calculateEstimate = estimates => {
   const {optimistic, nominal, pessimistic} = estimates || {}
@@ -39,7 +40,7 @@ export default class PertEstimateInput extends React.Component {
   render() {
     const {value, type} = this.props
     return (
-      <div>
+      <div className="pert-global">
         <h3>{type.title}</h3>
         <p>{type.description}</p>
         <table>
