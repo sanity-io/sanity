@@ -24,6 +24,7 @@ import onCopy from 'part:@sanity/form-builder/input/block-editor/on-copy?'
 
 import {hasItemFocus} from '../../utils/pathUtils'
 import createNodeValidator from './utils/createNodeValidator'
+import findInlineByAnnotationKey from './utils/findInlineByAnnotationKey'
 import PatchEvent, {insert} from '../../../PatchEvent'
 
 import ListItemOnEnterKeyPlugin from './plugins/ListItemOnEnterKeyPlugin'
@@ -110,29 +111,36 @@ export default class Editor extends React.Component<Props> {
     const focusPathIsNotSingleBlock =
       editorValue.focusBlock && !isEqual(focusPath, [{_key: editorValue.focusBlock.key}])
     const change = editorValue.change()
-    const scrollOpts = {behavior: 'instant', block: 'end', inline: 'nearest'}
     if (focusPathChanged && focusPathIsNotSingleBlock) {
-      // This is a inline block
+      let inline
       const block = editorValue.document.getDescendant(focusPath[0]._key)
       if (focusPath[1] && focusPath[1] === 'children' && focusPath[2]) {
-        const inline = editorValue.document.getDescendant(focusPath[2]._key)
-        change.collapseToStartOf(inline)
-        const element = findDOMNode(inline)
-        element.scrollIntoView(scrollOpts)
-        onChange(change)
-      }
-      // TODO: sort out the annotation inline and collapseToStart:
-      // else if (focusPath[1] && focusPath[1] === 'markDefs' && focusPath[2]) {
-      else if (block) {
-        change.collapseToEndOf(block)
-        const element = findDOMNode(block)
-        element.scrollIntoView(scrollOpts)
-        onChange(change)
+        // Inline object
+        inline = editorValue.document.getDescendant(focusPath[2]._key)
+        this.scrollIntoView(change, inline)
+      } else if (
+        // Annotation
+        focusPath[1] &&
+        focusPath[1] === 'markDefs' &&
+        focusPath[2] &&
+        (inline = findInlineByAnnotationKey(focusPath[2]._key, block))
+      ) {
+        this.scrollIntoView(change, inline)
+      } else if (block) {
+        // Regular block
+        this.scrollIntoView(change, block)
       }
     } else if (focusPathChanged) {
       change.focus()
       onChange(change)
     }
+  }
+
+  scrollIntoView(change, node) {
+    change.collapseToEndOf(node)
+    const element = findDOMNode(node)
+    element.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'center'})
+    this.props.onChange(change)
   }
 
   // When user changes the selection in the editor, update focusPath accordingly.

@@ -85,7 +85,9 @@ export default class AnnotationButtons extends React.Component<Props> {
       .collapseToEndOf(change.value.inlines.first())
       .extendToStartOf(change.value.inlines.first())
       .blur()
-    onChange(change, () => onFocus([focusPath[0], 'markDefs', {_key: key}, FOCUS_TERMINATOR]))
+    onChange(change, () =>
+      setTimeout(() => onFocus([focusPath[0], 'markDefs', {_key: key}, FOCUS_TERMINATOR]), 200)
+    )
   }
 
   renderAnnotationButton = (item: AnnotationItem) => {

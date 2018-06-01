@@ -3,13 +3,14 @@ import type {Type, Block} from '../typeDefs'
 import {blocksToEditorValue} from '@sanity/block-tools'
 import {Value, Operation} from 'slate'
 import {applyAll} from '../../../simplePatch'
+import findInlineByAnnotationKey from './findInlineByAnnotationKey'
 
-const VALUE_TO_JSON_OPTS = {
-  preserveData: true,
-  preserveKeys: true,
-  preserveSelection: false,
-  preserveHistory: false
-}
+// const VALUE_TO_JSON_OPTS = {
+//   preserveData: true,
+//   preserveKeys: true,
+//   preserveSelection: false,
+//   preserveHistory: false
+// }
 
 type Path = string | {_key: string}
 
@@ -26,23 +27,6 @@ function findLastKey(path: Path[]) {
     }
   })
   return key
-}
-
-function findInlineByAnnotationKey(key, document) {
-  return document
-    .filterDescendants(desc => {
-      if (desc.object !== 'inline') {
-        return false
-      }
-      const annotations = desc.data.get('annotations')
-      if (!annotations) {
-        return false
-      }
-      return Object.keys(annotations).find(annotationName => {
-        return annotations[annotationName]._key === key
-      })
-    })
-    .get(0)
 }
 
 function setPatch(patch: Patch, change: () => void, type: Type) {
