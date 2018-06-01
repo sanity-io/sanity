@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import {fallbackInputs} from './fallbackInputs'
-
 import Schema from '@sanity/schema'
 import pubsub from 'nano-pubsub'
+import {fallbackInputs} from './fallbackInputs'
 
 const NOOP = () => {}
 
@@ -61,7 +60,7 @@ export default class FormBuilderContext extends React.Component {
     children: PropTypes.any.isRequired,
     patchChannel: PropTypes.shape({
       onPatch: PropTypes.func
-    }).isRequired,
+    }),
     resolveInputComponent: PropTypes.func.isRequired,
     resolvePreviewComponent: PropTypes.func.isRequired
   }
