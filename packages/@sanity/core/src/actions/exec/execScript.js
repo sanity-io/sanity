@@ -21,6 +21,7 @@ module.exports = async args => {
   const nodeArgs = ['-r', babel, '-r', loader]
     .concat(withToken ? ['-r', require.resolve('./configClient')] : [])
     .concat(scriptPath)
+    .concat(args.extraArguments || [])
 
   const proc = spawn(process.argv[0], nodeArgs)
 
