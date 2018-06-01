@@ -195,7 +195,6 @@ export default class BlockEditor extends React.Component {
 
   handleBlockStyleChange = selectedValue => {
     this.operations.setBlockStyle(selectedValue.style.value)
-    this.refreshCSS()
   }
 
   hasDecorator(decoratorName) {
@@ -243,23 +242,6 @@ export default class BlockEditor extends React.Component {
 
   refBlockDragMarker = marker => {
     this.blockDragMarker = marker
-  }
-
-  // Webkit hack to force the browser to reapply CSS rules
-  // This is needed to make ::before and ::after CSS rules work properly
-  // under certain conditions (like the list counters for number lists)
-  // http://stackoverflow.com/questions/3485365/how-can-i-force-webkit-to-redraw-repaint-to-propagate-style-changes/3485654#3485654
-  refreshCSS = () => {
-    const isWebkit = 'WebkitAppearance' in document.documentElement.style
-    if (!isWebkit) {
-      return
-    }
-    // Must be body because we have several scrollcontainers loosing state
-    const resetNode = document.body
-    resetNode.style.display = 'none'
-    // eslint-disable-next-line no-unused-expressions
-    resetNode.offsetHeight // Looks weird, but it actually has an effect!
-    resetNode.style.display = ''
   }
 
   showBlockDragMarker(pos, node) {
