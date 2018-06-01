@@ -206,7 +206,7 @@ export default withPatchSubscriber(
               <br />
               We&apos;re sorry for the inconvenience and working hard to get it working properly.
               <p>
-                <Button inverted kind="primary" onClick={this.handleSynchronize}>
+                <Button inverted onClick={this.handleSynchronize}>
                   Load remote changes
                 </Button>
               </p>

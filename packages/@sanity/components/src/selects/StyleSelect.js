@@ -1,16 +1,18 @@
+/* eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/selects/style-style'
 import FaAngleDown from 'part:@sanity/base/angle-down-icon'
-import enhanceWithClickOutside from 'react-click-outside'
 import CircleThinIcon from 'part:@sanity/base/circle-thin-icon'
 import CircleCheckIcon from 'part:@sanity/base/circle-check-icon'
+import Stacked from '../utilities/Stacked'
 import Escapable from '../utilities/Escapable'
+import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import {List, Item} from 'part:@sanity/components/lists/default'
 import {Manager, Target, Popper} from 'react-popper'
 import {Portal} from '../utilities/Portal'
 
-class StyleSelect extends React.Component {
+class StyleSelect extends React.PureComponent {
   static propTypes = {
     placeholder: PropTypes.string,
     onChange: PropTypes.func,
@@ -37,12 +39,6 @@ class StyleSelect extends React.Component {
 
   state = {
     showList: false
-  }
-
-  handleClickOutside = event => {
-    if (this._popperElement && !this._popperElement.contains(event.target)) {
-      this.handleCloseList()
-    }
   }
 
   handleSelect = event => {
@@ -116,38 +112,49 @@ class StyleSelect extends React.Component {
           </Target>
           {showList && (
             <Portal>
-              <div className={styles.portal}>
-                <Escapable onEscape={this.handleCloseList} />
-                <Popper placement="bottom-start">
-                  <div ref={this.setPopperElement}>
-                    <List className={styles.list}>
-                      {items.map((item, index) => {
-                        const isSemiSelected = value && value.length > 1 && value.includes(item)
-                        const isSelected = value && value.length === 1 && value[0] == item
-                        const classNames = `
-                            ${isSelected ? styles.itemSelected : styles.item}
-                            ${isSemiSelected ? styles.itemSemiSelected : ''}
-                          `
-                        return (
-                          <div
-                            key={item.key}
-                            title={item.title}
-                            data-index={index}
-                            onClick={this.handleSelect}
-                            className={classNames}
-                          >
-                            <div className={styles.itemIcon}>
-                              {isSelected && <CircleCheckIcon />}
-                              {isSemiSelected && <CircleThinIcon />}
-                            </div>
-                            <div className={styles.itemContent}>{renderItem(item)}</div>
+              <Stacked>
+                {isActive => {
+                  return (
+                    <div className={styles.portal}>
+                      <Popper placement="bottom-start">
+                        <Escapable onEscape={isActive ? this.handleCloseList : undefined} />
+                        <CaptureOutsideClicks
+                          onClickOutside={isActive ? this.handleCloseList : undefined}
+                        >
+                          <div ref={this.setPopperElement}>
+                            <List className={styles.list}>
+                              {items.map((item, index) => {
+                                const isSemiSelected =
+                                  value && value.length > 1 && value.includes(item)
+                                const isSelected = value && value.length === 1 && value[0] == item
+                                const classNames = `
+                                    ${isSelected ? styles.itemSelected : styles.item}
+                                    ${isSemiSelected ? styles.itemSemiSelected : ''}
+                                  `
+                                return (
+                                  <div
+                                    key={item.key}
+                                    title={item.title}
+                                    data-index={index}
+                                    onClick={this.handleSelect}
+                                    className={classNames}
+                                  >
+                                    <div className={styles.itemIcon}>
+                                      {isSelected && <CircleCheckIcon />}
+                                      {isSemiSelected && <CircleThinIcon />}
+                                    </div>
+                                    <div className={styles.itemContent}>{renderItem(item)}</div>
+                                  </div>
+                                )
+                              })}
+                            </List>
                           </div>
-                        )
-                      })}
-                    </List>
-                  </div>
-                </Popper>
-              </div>
+                        </CaptureOutsideClicks>
+                      </Popper>
+                    </div>
+                  )
+                }}
+              </Stacked>
             </Portal>
           )}
         </div>
@@ -156,4 +163,4 @@ class StyleSelect extends React.Component {
   }
 }
 
-export default enhanceWithClickOutside(StyleSelect)
+export default StyleSelect
