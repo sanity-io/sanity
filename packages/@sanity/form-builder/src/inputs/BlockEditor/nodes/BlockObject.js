@@ -10,6 +10,7 @@ import {Editor, findDOMNode, findNode, setEventTransfer} from 'slate-react'
 
 import {IntentLink} from 'part:@sanity/base/router'
 import LinkIcon from 'part:@sanity/base/link-icon'
+import MarkerWrapper from 'part:@sanity/form-builder/input/block-editor/block-marker-wrapper'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 
 import {PatchEvent} from '../../../PatchEvent'
@@ -185,7 +186,11 @@ export default class BlockObject extends React.Component<Props, State> {
   handleEditStart = event => {
     event.stopPropagation()
     const {node, onFocus, onChange, editorValue} = this.props
-    const change = editorValue.change().collapseToEndOf(node)
+    const change = editorValue
+      .change()
+      .collapseToEndOf(node)
+      .focus()
+      .blur()
     onChange(change, () => onFocus([{_key: node.key}, FOCUS_TERMINATOR]))
   }
 
@@ -278,7 +283,15 @@ export default class BlockObject extends React.Component<Props, State> {
   }
 
   render() {
-    const {attributes, node, editorValue, editorIsFocused, isSelected, readOnly} = this.props
+    const {
+      attributes,
+      node,
+      editorValue,
+      editorIsFocused,
+      isSelected,
+      readOnly,
+      markers
+    } = this.props
     const isFocused = editorIsFocused && editorValue.selection.hasFocusIn(node)
 
     let className
@@ -293,21 +306,23 @@ export default class BlockObject extends React.Component<Props, State> {
     }
 
     return (
-      <div
-        {...attributes}
-        onDragStart={this.handleDragStart}
-        onDragEnd={this.handleDragEnd}
-        onDragEnter={this.handleCancelEvent}
-        onDragLeave={this.handleCancelEvent}
-        onDrop={this.handleCancelEvent}
-        draggable={!readOnly}
-        ref={this.refFormBuilderBlock}
-        className={className}
-      >
-        <div ref={this.refPreview} className={styles.previewContainer}>
-          {this.renderPreview()}
+      <MarkerWrapper markers={markers}>
+        <div
+          {...attributes}
+          onDragStart={this.handleDragStart}
+          onDragEnd={this.handleDragEnd}
+          onDragEnter={this.handleCancelEvent}
+          onDragLeave={this.handleCancelEvent}
+          onDrop={this.handleCancelEvent}
+          draggable={!readOnly}
+          ref={this.refFormBuilderBlock}
+          className={className}
+        >
+          <div ref={this.refPreview} className={styles.previewContainer}>
+            {this.renderPreview()}
+          </div>
         </div>
-      </div>
+      </MarkerWrapper>
     )
   }
 }

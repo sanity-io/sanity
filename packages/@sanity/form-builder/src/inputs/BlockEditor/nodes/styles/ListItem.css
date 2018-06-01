@@ -46,7 +46,7 @@
 }
 
 .root > * {
-  display: block;
+  display: table-row;
   margin: 0 0 1em 0;
   padding: 0;
 
@@ -57,11 +57,8 @@
   @nest &:before {
     display: table-cell;
     vertical-align: top;
+    min-width: 0.75em;
   }
-}
-
-.root > * {
-  display: table-row;
 }
 
 .bullet {

@@ -3,6 +3,7 @@ import type {SlateComponentProps} from '../typeDefs'
 
 import React from 'react'
 
+import MarkerWrapper from 'part:@sanity/form-builder/input/block-editor/block-marker-wrapper'
 import ListItem from './ListItem'
 import Text from './Text'
 
@@ -14,7 +15,7 @@ type ExtraProps = {
 }
 
 export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
-  const {attributes, children, node, blockContentFeatures} = props
+  const {attributes, children, node, blockContentFeatures, markers} = props
   const data = node.data
   const listItem = data ? data.get('listItem') : null
   const level = data ? data.get('level') : 1
@@ -32,16 +33,20 @@ export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
 
   if (listItem) {
     return (
-      <ListItem listStyle={listItem} level={level}>
-        <Text style={style} attributes={attributes} styleComponent={styleComponent}>
-          {children}
-        </Text>
-      </ListItem>
+      <MarkerWrapper markers={markers}>
+        <ListItem listStyle={listItem} level={level}>
+          <Text style={style} attributes={attributes} styleComponent={styleComponent}>
+            {children}
+          </Text>
+        </ListItem>
+      </MarkerWrapper>
     )
   }
   return (
-    <Text style={style} styleComponent={styleComponent} attributes={attributes}>
-      {children}
-    </Text>
+    <MarkerWrapper markers={markers}>
+      <Text style={style} styleComponent={styleComponent} attributes={attributes}>
+        {children}
+      </Text>
+    </MarkerWrapper>
   )
 }
