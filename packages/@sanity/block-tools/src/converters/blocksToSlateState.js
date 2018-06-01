@@ -37,7 +37,18 @@ function sanitySpanToRawSlateBlockNode(span, sanityBlock) {
       type: span._type,
       key: span._key,
       data: {value: span},
-      nodes: []
+      nodes: [
+        {
+          kind: 'text',
+          ranges: [
+            {
+              kind: 'range',
+              text: '',
+              marks: []
+            }
+          ]
+        }
+      ]
     }
   }
 
@@ -106,7 +117,18 @@ function sanityBlockItemToRaw(blockItem, type) {
     type: type ? type.name : '__unknown', // __unknown is needed to map to component in slate schema, see prepareSlateForBlockEditor.js
     isVoid: true,
     data: {value: blockItem},
-    nodes: []
+    nodes: [
+      {
+        kind: 'text',
+        ranges: [
+          {
+            kind: 'range',
+            text: '',
+            marks: []
+          }
+        ]
+      }
+    ]
   }
 }
 
