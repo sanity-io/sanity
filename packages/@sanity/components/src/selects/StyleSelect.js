@@ -15,23 +15,23 @@ import {Portal} from '../utilities/Portal'
 
 class StyleSelect extends React.PureComponent {
   static propTypes = {
-    onChange: PropTypes.func,
-    onOpen: PropTypes.func,
-    onFocus: PropTypes.func,
-    onBlur: PropTypes.func,
-    onClose: PropTypes.func,
-    value: PropTypes.array,
-    error: PropTypes.bool,
-    renderItem: PropTypes.func,
     className: PropTypes.string,
-    transparent: PropTypes.bool,
     disabled: PropTypes.bool,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string,
         active: PropTypes.bool
       })
-    )
+    ),
+    onBlur: PropTypes.func,
+    onChange: PropTypes.func,
+    onClose: PropTypes.func,
+    onFocus: PropTypes.func,
+    onOpen: PropTypes.func,
+    placeholder: PropTypes.string,
+    renderItem: PropTypes.func,
+    transparent: PropTypes.bool,
+    value: PropTypes.array
   }
 
   static defaultProps = {
@@ -125,16 +125,19 @@ class StyleSelect extends React.PureComponent {
     }
     if (items) {
       if (['ArrowUp', 'ArrowDown'].includes(event.key) && !showList) {
+        event.preventDefault()
         const openPosition = value ? items.indexOf(value[0]) || 0 : 0
         this.setState({showList: true, arrowNavigationPosition: openPosition})
       }
       if (showList && event.key == 'ArrowUp' && arrowNavigationPosition > 0) {
+        event.preventDefault()
         this.setState({
           arrowNavigationPosition: arrowNavigationPosition - 1
         })
         return
       }
       if (showList && event.key == 'ArrowDown' && arrowNavigationPosition < items.length - 1) {
+        event.preventDefault()
         this.setState({
           arrowNavigationPosition: arrowNavigationPosition + 1
         })
@@ -144,13 +147,16 @@ class StyleSelect extends React.PureComponent {
 
   handleKeyUp = event => {
     const {items} = this.props
-    const {hasFocus, arrowNavigationPosition} = this.state
+    const {showList, hasFocus, arrowNavigationPosition} = this.state
     if (!hasFocus) {
       return
     }
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && showList) {
       this.setState({showList: true})
       this.handleSelect(items[arrowNavigationPosition])
+    }
+    if (event.key === 'Enter' && !showList) {
+      this.handleOpenList()
     }
   }
 
@@ -159,7 +165,7 @@ class StyleSelect extends React.PureComponent {
   }
 
   render() {
-    const {className, disabled, error, items, transparent, value} = this.props
+    const {className, disabled, items, placeholder, transparent, value} = this.props
 
     const {showList} = this.state
 
@@ -168,28 +174,28 @@ class StyleSelect extends React.PureComponent {
         <div
           className={`
             ${styles.root}
-            ${error ? styles.error : ''}
             ${transparent ? styles.transparent : ''}
             ${disabled ? styles.disabled : ''}
             ${className || ''}
           `}
+          tabIndex={0}
+          onClick={this.handleInnerClick}
+          onBlur={this.handleBlur}
+          onFocus={this.handleFocus}
         >
           <Target>
-            <span
-              className={styles.selectContainer}
-              onBlur={this.handleBlur}
-              onFocus={this.handleFocus}
-              tabIndex={0}
-              onClick={this.handleInnerClick}
-            >
-              <span className={styles.text}>
-                {value && value.length > 1 && 'Multiple'}
-                {value && value.length === 1 && value[0].title}
-              </span>
-              <div className={styles.functions}>
-                <FaAngleDown color="inherit" />
+            <div className={styles.inner}>
+              <div className={styles.selectContainer}>
+                <span className={styles.text}>
+                  {value && value.length > 1 && 'Multiple'}
+                  {value && value.length === 1 && value[0].title}
+                  {!value && placeholder}
+                </span>
+                <div className={styles.arrow}>
+                  <FaAngleDown color="inherit" />
+                </div>
               </div>
-            </span>
+            </div>
           </Target>
           {showList && (
             <Portal>
