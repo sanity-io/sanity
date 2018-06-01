@@ -58,7 +58,15 @@
 }
 
 .blockFormatContainer {
-  padding-right: var(--medium-padding--em);
+  max-width: 5em;
+  min-width: 4em;
+  padding-right: 0.5em;
+
+  @media (--screen-medium) {
+    max-width: none;
+    min-width: 8em;
+    padding-top: 0.2em;
+  }
 }
 
 .decoratorButtonsContainer {
