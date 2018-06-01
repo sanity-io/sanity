@@ -2,10 +2,10 @@ import PropTypes from 'prop-types'
 import React, {PureComponent} from 'react'
 import client from 'part:@sanity/base/client'
 import config from 'config:sanity'
-import styles from './styles/LoginDialog.css'
 import Button from 'part:@sanity/components/buttons/default'
 import BrandLogo from 'part:@sanity/base/brand-logo?'
 import Spinner from 'part:@sanity/components/loading/spinner'
+import styles from './styles/CookieTest.css'
 
 const projectName = (config.project && config.project.name) || ''
 
@@ -68,7 +68,7 @@ class CookieTest extends PureComponent {
           </div>
 
           <div className={styles.title}>
-            <h2 className={styles.headline}>Accept the Cookie</h2>
+            <h2>Accept the Cookie</h2>
           </div>
           <div className={styles.description}>
             <p>
