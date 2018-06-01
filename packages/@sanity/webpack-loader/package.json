@@ -28,7 +28,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
-    "@sanity/resolver": "0.132.2",
+    "@sanity/resolver": "0.132.3",
     "@sanity/util": "0.132.2",
     "loader-utils": "^1.1.0"
   },

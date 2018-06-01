@@ -25,7 +25,7 @@
   ],
   "dependencies": {
     "@sanity/generate-help-url": "0.132.2",
-    "@sanity/resolver": "0.132.2",
+    "@sanity/resolver": "0.132.3",
     "chalk": "^2.3.0",
     "fs-extra": "^5.0.0",
     "in-publish": "^2.0.0",

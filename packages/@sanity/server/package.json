@@ -34,7 +34,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
-    "@sanity/resolver": "0.132.2",
+    "@sanity/resolver": "0.132.3",
     "@sanity/webpack-integration": "0.132.2",
     "@sanity/webpack-loader": "0.132.2",
     "babel-core": "^6.26.0",
