@@ -188,7 +188,7 @@ export default withPatchSubscriber(
             }
           }
         }
-        if ((focusPath || []).length) {
+        if ((focusPath || []).length === 1) {
           change.focus()
         }
         this.setState({editorValue: change.value})
