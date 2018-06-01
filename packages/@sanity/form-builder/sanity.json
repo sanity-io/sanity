@@ -80,6 +80,10 @@
       "description": "Function for handling on-copy event in the block editor"
     },
     {
+      "name": "part:@sanity/form-builder/input/block-editor/block-marker-wrapper",
+      "description": "Component that wraps and handles markers within a block"
+    },
+    {
       "implements": "part:@sanity/base/locale-messages",
       "path": "sanity/locale/strings.json"
     },
@@ -95,6 +99,12 @@
       "name": "part:@sanity/form-builder/input/array/functions-default",
       "implements": "part:@sanity/form-builder/input/array/functions",
       "path": "inputs/ArrayInput/ArrayFunctions.js"
+    },
+    {
+      "name": "part:@sanity/form-builder/input/block-editor/block-marker-wrapper-default",
+      "implements": "part:@sanity/form-builder/input/block-editor/block-marker-wrapper",
+      "path": "inputs/BlockEditor/nodes/MarkerWrapper.js"
     }
+
   ]
 }

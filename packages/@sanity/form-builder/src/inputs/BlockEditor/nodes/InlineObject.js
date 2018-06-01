@@ -220,7 +220,11 @@ export default class InlineObject extends React.Component<Props, State> {
     event.stopPropagation()
     const {node, onFocus, onChange, editorValue} = this.props
     const {focusBlock} = editorValue
-    const change = editorValue.change().collapseToEndOf(node)
+    const change = editorValue
+      .change()
+      .collapseToEndOf(node)
+      .focus()
+      .blur()
     onChange(change, () =>
       onFocus([{_key: focusBlock.key}, 'children', {_key: node.key}, FOCUS_TERMINATOR])
     )

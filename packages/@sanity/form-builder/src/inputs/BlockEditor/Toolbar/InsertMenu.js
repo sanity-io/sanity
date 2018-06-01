@@ -49,7 +49,7 @@ export default class InsertMenu extends React.Component<Props> {
     const change = editorValue.change()
     const focusKey = change.value.selection.focusKey
     const focusBlock = change.value.document.getClosestBlock(focusKey)
-    let focusPath = [{_key: focusBlock.key}, FOCUS_TERMINATOR]
+    let focusPath = [{_key: focusBlock.key}]
     if (item.isInline) {
       change.call(insertInlineObject, item.value, type)
       focusPath = [
@@ -59,10 +59,10 @@ export default class InsertMenu extends React.Component<Props> {
         FOCUS_TERMINATOR
       ]
     } else {
-      change.call(insertBlockObject, item.value)
+      change.call(insertBlockObject, item.value).focus()
+      focusPath = [{_key: change.value.focusBlock.key}, FOCUS_TERMINATOR]
     }
-    change.blur()
-    onChange(change, () => onFocus(focusPath))
+    onChange(change, () => setTimeout(() => onFocus(focusPath), 200))
   }
 
   render() {

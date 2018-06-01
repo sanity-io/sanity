@@ -4,6 +4,8 @@ import type {Block, BlockArrayType, SlateValue, Marker} from './typeDefs'
 
 import React from 'react'
 import generateHelpUrl from '@sanity/generate-help-url'
+import {uniq} from 'lodash'
+import {Value} from 'slate'
 import FormField from 'part:@sanity/components/formfields/default'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {PatchEvent} from '../../PatchEvent'
@@ -115,7 +117,8 @@ export default withPatchSubscriber(
       onChange(PatchEvent.from(patches))
 
       if (callback) {
-        return callback()
+        callback(change)
+        return change
       }
       return change
     }
@@ -136,9 +139,20 @@ export default withPatchSubscriber(
     handleDocumentPatches = ({patches, shouldReset, snapshot}) => {
       const {type, focusPath} = this.props
       const hasRemotePatches = patches.some(patch => patch.origin === 'remote')
-      const hasInsertUnsetPatches = patches.some(patch => ['insert', 'unset'].includes(patch.type))
-      const shouldSetNewState = hasRemotePatches || hasInsertUnsetPatches || shouldReset
+      const hasInsertUnsetPatchesOnRootLevel = patches.some(
+        patch => ['insert', 'unset'].includes(patch.type) && patch.path.length === 1
+      )
+      const hasMultipleDestinations =
+        uniq(patches.map(patch => patch.path[0] && patch.path[0]._key).filter(Boolean)).length > 1
+      const hasComplexity = patches.length > 3
+      const shouldSetNewState =
+        hasRemotePatches ||
+        hasInsertUnsetPatchesOnRootLevel ||
+        hasMultipleDestinations ||
+        hasComplexity ||
+        shouldReset
       const localPatches = patches.filter(patch => patch.origin === 'local')
+
       // Handle undo/redo
       if (localPatches.length) {
         const lastPatch = localPatches.slice(-1)[0]
@@ -189,9 +203,7 @@ export default withPatchSubscriber(
       this._input = input
     }
 
-    handleInvalidValue = () => {
-
-    }
+    handleInvalidValue = () => {}
 
     render() {
       const {editorValue, deprecatedSchema, deprecatedBlockValue, invalidBlockValue} = this.state

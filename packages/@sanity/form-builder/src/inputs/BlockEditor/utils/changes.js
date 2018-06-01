@@ -180,7 +180,7 @@ export function removeAnnotationFromSpan(change, spanNode, annotationType) {
 
 export function insertBlockObject(change, type) {
   const key = randomKey(12)
-  const block = {
+  const block = Block.create({
     type: type.name,
     isVoid: true,
     key: key,
@@ -188,8 +188,8 @@ export function insertBlockObject(change, type) {
       _key: key,
       value: {_type: type.name, _key: key}
     }
-  }
-  change.insertBlock(block)
+  })
+  change.insertBlock(block).collapseToEndOfBlock()
   return change
 }
 

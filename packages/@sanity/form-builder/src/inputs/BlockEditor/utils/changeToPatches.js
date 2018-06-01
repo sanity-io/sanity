@@ -122,7 +122,7 @@ function insertNodePatch(
     if (oldData.value && oldData.value._key) {
       oldData.value._key = newKey
     }
-    change.setNodeByKey(newKey, {data: {...oldData, _key: newKey}})
+    change.setNodeByKey(newKey, {data: {...oldData, _key: newKey}}, {normalize: false})
     patches.push(insert([newBlock], position, [{_key: afterKey}]))
   }
 
@@ -161,7 +161,7 @@ function splitNodePatch(
     if (oldData.value && oldData.value._key) {
       oldData.value._key = newKey
     }
-    change.setNodeByKey(newKey, {data: {...oldData, _key: newKey}})
+    change.setNodeByKey(newKey, {data: {...oldData, _key: newKey}}, {normalize: false})
     patches.push(insert([newBlock], 'after', [{_key: splitBlock._key}]))
   }
   if (operation.path.length > 1) {
@@ -300,7 +300,6 @@ export default function changeToPatches(
     operations
       .map((operation: Operation, index: number) => {
         let _patches
-        // console.log('OPERATION:', JSON.stringify(operation.toJSON(), null, 2))
         switch (operation.type) {
           case 'insert_text':
             _patches = setNodePatchSimple(_change, operation, blocks, blockContentType)

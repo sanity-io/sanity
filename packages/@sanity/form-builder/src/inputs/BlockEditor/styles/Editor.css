@@ -39,28 +39,28 @@
 }
 
 .editor > *:first-child {
-  margin-top: var(--small-padding);
+  padding-top: var(--small-padding);
 
   @media (--screen-medium) {
-    margin-top: var(--medium-padding);
+    padding-top: var(--medium-padding);
   }
 
   @nest .fullscreen & {
-    margin-top: var(--large-padding);
+    padding-top: var(--large-padding);
   }
 }
 
 .editor > *:last-child {
   align-self: stretch;
   flex-grow: 1;
-  margin-bottom: var(--small-padding);
+  padding-bottom: var(--small-padding);
 
   @media (--screen-medium) {
-    margin-bottom: var(--medium-padding);
+    padding-bottom: var(--medium-padding);
   }
 
   @nest .fullscreen & {
-    margin-bottom: var(--large-padding);
+    padding-bottom: var(--large-padding);
   }
 }
 

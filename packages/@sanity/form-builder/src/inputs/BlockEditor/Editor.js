@@ -15,7 +15,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 import SoftBreakPlugin from 'slate-soft-break'
-import {Editor as SlateEditor} from 'slate-react'
+import {findDOMNode, Editor as SlateEditor} from 'slate-react'
 import {isEqual} from 'lodash'
 import {EDITOR_DEFAULT_BLOCK_TYPE} from '@sanity/block-tools'
 import insertBlockOnEnter from 'slate-insert-block-on-enter'
@@ -110,16 +110,23 @@ export default class Editor extends React.Component<Props> {
     const focusPathIsNotSingleBlock =
       editorValue.focusBlock && !isEqual(focusPath, [{_key: editorValue.focusBlock.key}])
     const change = editorValue.change()
+    const scrollOpts = {behavior: 'instant', block: 'end', inline: 'nearest'}
     if (focusPathChanged && focusPathIsNotSingleBlock) {
       // This is a inline block
       const block = editorValue.document.getDescendant(focusPath[0]._key)
       if (focusPath[1] && focusPath[1] === 'children' && focusPath[2]) {
         const inline = editorValue.document.getDescendant(focusPath[2]._key)
         change.collapseToStartOf(inline)
-      } else if (focusPath[1] && focusPath[1] === 'markDefs' && focusPath[2]) {
-        // TODO: sort out the annotation inline and collapseToStart
-      } else if (block) {
-        change.collapseToStartOf(block)
+        const element = findDOMNode(inline)
+        element.scrollIntoView(scrollOpts)
+        onChange(change)
+      }
+      // TODO: sort out the annotation inline and collapseToStart:
+      // else if (focusPath[1] && focusPath[1] === 'markDefs' && focusPath[2]) {
+      else if (block) {
+        change.collapseToEndOf(block)
+        const element = findDOMNode(block)
+        element.scrollIntoView(scrollOpts)
         onChange(change)
       }
     } else if (focusPathChanged) {
