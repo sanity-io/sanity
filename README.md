@@ -10,6 +10,7 @@
 
 <p>
   <a href="https://gitter.im/sanity-io/sanity"><img src="https://badges.gitter.im/sanity-io/sanity.svg"></a>
+  <a href="https://slack.sanity.io/"><img src="https://slack.sanity.io/badge.svg"></a>
 </p>
 
 ## Table of contents
