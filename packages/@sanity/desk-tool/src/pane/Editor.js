@@ -524,14 +524,18 @@ export default withRouterHOC(
               arrow
               theme="light"
               className={styles.publishButton}
-              title={errors.length > 0 ? 'Fix errors before publishing' : 'Ctrl+Alt+P'}
+              title={
+                errors.length > 0
+                  ? 'Fix errors before publishing'
+                  : `${published ? 'Publish changes' : 'Publish'} (Ctrl+Alt+P)`
+              }
             >
               <Button
                 disabled={isReconnecting || !draft || errors.length > 0}
                 onClick={this.handlePublishRequested}
                 color="primary"
               >
-                {published ? 'Publish changes' : 'Publish'}
+                Publish
               </Button>
             </Tooltip>
           )}
