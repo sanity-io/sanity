@@ -30,7 +30,6 @@ type Props = {
   blockContentFeatures: BlockContentFeatures,
   children: Node,
   editor: Editor,
-  editorIsFocused: boolean,
   editorValue: SlateValue,
   hasFormBuilderFocus: boolean,
   isSelected: boolean,
@@ -283,16 +282,8 @@ export default class BlockObject extends React.Component<Props, State> {
   }
 
   render() {
-    const {
-      attributes,
-      node,
-      editorValue,
-      editorIsFocused,
-      isSelected,
-      readOnly,
-      markers
-    } = this.props
-    const isFocused = editorIsFocused && editorValue.selection.hasFocusIn(node)
+    const {attributes, node, editorValue, isSelected, readOnly, markers} = this.props
+    const isFocused = editorValue.selection.hasFocusIn(node)
 
     let className
     if (isFocused && !isSelected) {
