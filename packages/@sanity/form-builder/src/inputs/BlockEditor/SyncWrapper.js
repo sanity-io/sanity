@@ -5,7 +5,6 @@ import type {Block, BlockArrayType, SlateValue, Marker} from './typeDefs'
 import React from 'react'
 import generateHelpUrl from '@sanity/generate-help-url'
 import {uniq} from 'lodash'
-import {Value} from 'slate'
 import FormField from 'part:@sanity/components/formfields/default'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {PatchEvent} from '../../PatchEvent'
@@ -87,6 +86,9 @@ export default withPatchSubscriber(
       markers: []
     }
 
+    // Keep track of what the editor value is (as seen in the editor) before it is changed through state.
+    _unchanedEditorValue = null
+
     constructor(props) {
       super(props)
       const {value, type} = props
@@ -107,10 +109,10 @@ export default withPatchSubscriber(
 
     handleEditorChange = (change: SlateChange, callback: void => void) => {
       const {value, onChange, type} = this.props
-      const currentEditorValue = this.state.editorValue
+      this._unchanedEditorValue = this.state.editorValue
       this.setState({editorValue: change.value})
 
-      const patches = changeToPatches(currentEditorValue, change, value, type)
+      const patches = changeToPatches(this._unchanedEditorValue, change, value, type)
       this._selection = createSelectionOperation(change)
 
       // Do the change
@@ -164,7 +166,7 @@ export default withPatchSubscriber(
         if (!isUndoRedoPatch) {
           this._undoRedoStack.undo.push({
             patches: localPatches,
-            editorValue: this.state.editorValue,
+            editorValue: this._unchanedEditorValue,
             selection: this._selection
           })
           // Redo stack must be reset here
