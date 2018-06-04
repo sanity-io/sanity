@@ -48,7 +48,6 @@ type Props = {
   blockContentFeatures: BlockContentFeatures,
   editorValue: SlateValue,
   fullscreen: boolean,
-  isFocused: boolean,
   markers: Marker[],
   onBlur: (nextPath: []) => void,
   onChange: (change: SlateChange) => void,
@@ -107,13 +106,14 @@ export default class Editor extends React.Component<Props> {
     if (!focusPath || focusPath.length === 0) {
       return
     }
+    const focusPathIsSingleBlock =
+      editorValue.focusBlock && isEqual(focusPath, [{_key: editorValue.focusBlock.key}])
     const focusPathChanged = !isEqual(this.props.focusPath, nextProps.focusPath)
-    const focusPathIsNotSingleBlock =
-      editorValue.focusBlock && !isEqual(focusPath, [{_key: editorValue.focusBlock.key}])
     const change = editorValue.change()
-    if (focusPathChanged && focusPathIsNotSingleBlock) {
-      let inline
-      const block = editorValue.document.getDescendant(focusPath[0]._key)
+    const block = editorValue.document.getDescendant(focusPath[0]._key)
+    let inline
+
+    if (focusPathChanged && !focusPathIsSingleBlock) {
       if (focusPath[1] && focusPath[1] === 'children' && focusPath[2]) {
         // Inline object
         inline = editorValue.document.getDescendant(focusPath[2]._key)
@@ -137,10 +137,11 @@ export default class Editor extends React.Component<Props> {
   }
 
   scrollIntoView(change, node) {
+    const {onChange} = this.props
     change.collapseToEndOf(node)
     const element = findDOMNode(node)
-    element.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'center'})
-    this.props.onChange(change)
+    element.scrollIntoView({behavior: 'instant', block: 'center', inline: 'center'})
+    onChange(change)
   }
 
   // When user changes the selection in the editor, update focusPath accordingly.
@@ -167,11 +168,6 @@ export default class Editor extends React.Component<Props> {
 
   refEditor = (editor: ?SlateEditor) => {
     this._editor = editor
-  }
-
-  handleEditorFocus = () => {
-    const {setFocus} = this.props
-    setFocus()
   }
 
   handleShowBlockDragMarker = (pos: string, node: HTMLDivElement) => {
@@ -234,7 +230,6 @@ export default class Editor extends React.Component<Props> {
       blockContentFeatures,
       editorValue,
       focusPath,
-      isFocused,
       markers,
       onChange,
       onFocus,
@@ -319,7 +314,6 @@ export default class Editor extends React.Component<Props> {
             attributes={props.attributes}
             blockContentFeatures={blockContentFeatures}
             editor={props.editor}
-            editorIsFocused={isFocused}
             editorValue={editorValue}
             hasFormBuilderFocus={hasFormBuilderFocus}
             isSelected={props.isSelected}
@@ -365,7 +359,6 @@ export default class Editor extends React.Component<Props> {
           value={editorValue}
           onChange={this.handleChange}
           onCopy={this.handleCopy}
-          onFocus={this.handleEditorFocus}
           onPaste={this.handlePaste}
           validateNode={this._validateNode}
           plugins={this._plugins}
