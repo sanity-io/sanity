@@ -158,6 +158,11 @@ export default class Editor extends React.Component<Props> {
     return onChange(change)
   }
 
+  handleEditorFocus = () => {
+    const {setFocus} = this.props
+    setFocus()
+  }
+
   getValue = () => {
     return this.props.value
   }
@@ -358,6 +363,7 @@ export default class Editor extends React.Component<Props> {
           ref={this.refEditor}
           value={editorValue}
           onChange={this.handleChange}
+          onFocus={this.handleEditorFocus}
           onCopy={this.handleCopy}
           onPaste={this.handlePaste}
           validateNode={this._validateNode}
