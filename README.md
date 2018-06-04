@@ -105,9 +105,9 @@ The [documentation](https://www.sanity.io/docs/introduction/getting-started) cov
 
 * [Block content to HTML](https://www.npmjs.com/package/@sanity/block-content-to-html) (`npm i @sanity/block-content-to-html`)
 * [Block content to Hyperscript](https://www.npmjs.com/package/@sanity/block-content-to-hyperscript) (`npm i @sanity/block-content-to-hyperscript`)
-* [Block content to Markdown](https://github.com/sanity-io/block-content-to-markdown) (`npm i @sanity/block-content-to-markdow`)
+* [Block content to Markdown](https://github.com/sanity-io/block-content-to-markdown) (`npm i @sanity/block-content-to-markdown`)
 * [Block content to React](https://www.npmjs.com/package/@sanity/block-content-to-react) (`npm i @sanity/block-content-to-react`)
-* [Quickly generate image urls from Sanity image records](https://www.npmjs.com/package/@sanity/image-url) (`sanity install @sanity/image-url`)
+* [Quickly generate image urls from Sanity image records](https://www.npmjs.com/package/@sanity/image-url) (`npm i @sanity/image-url`)
 
 
 ### Blogs, tutorials and other reads
