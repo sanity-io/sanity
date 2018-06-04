@@ -56,13 +56,7 @@ function setNodePatchSimple(
   return set(changedBlock, [{_key: changedBlock._key}])
 }
 
-function setNodePatch(
-  change: Change,
-  operation: Operation,
-  operations: Operation[],
-  blocks: Block[],
-  blockContentType
-) {
+function setNodePatch(change: Change, operation: Operation, blocks: Block[], blockContentType) {
   const appliedBlocks = editorValueToBlocks(
     change.applyOperations([operation]).value.toJSON(VALUE_TO_JSON_OPTS),
     blockContentType
@@ -86,13 +80,7 @@ function setNodePatch(
   return set(normalizeBlock(changedBlock), [{_key: blocks[operation.path[0]]._key}])
 }
 
-function insertNodePatch(
-  change: Change,
-  operation: Operation,
-  operations: Operation[],
-  blocks: Block[],
-  blockContentType
-) {
+function insertNodePatch(change: Change, operation: Operation, blocks: Block[], blockContentType) {
   const patches = []
   const appliedBlocks = editorValueToBlocks(
     change.applyOperations([operation]).value.toJSON(VALUE_TO_JSON_OPTS),
@@ -136,13 +124,7 @@ function insertNodePatch(
   return patches
 }
 
-function splitNodePatch(
-  change: Change,
-  operation: Operation,
-  operations: Operation[],
-  blocks: Block[],
-  blockContentType
-) {
+function splitNodePatch(change: Change, operation: Operation, blocks: Block[], blockContentType) {
   const patches = []
   const appliedBlocks = editorValueToBlocks(
     change.applyOperations([operation]).value.toJSON(VALUE_TO_JSON_OPTS),
@@ -170,13 +152,7 @@ function splitNodePatch(
   return patches
 }
 
-function mergeNodePatch(
-  change: Change,
-  operation: Operation,
-  operations: Operation,
-  blocks: Block[],
-  blockContentType
-) {
+function mergeNodePatch(change: Change, operation: Operation, blocks: Block[], blockContentType) {
   const patches = []
   const appliedBlocks = editorValueToBlocks(
     change.applyOperations([operation]).value.toJSON(VALUE_TO_JSON_OPTS),
@@ -276,6 +252,26 @@ function removeNodePatch(
   return patches
 }
 
+function noOpPatch(change: SlateChange, operation: Operation) {
+  change.applyOperations([operation])
+  return []
+}
+
+function setValuePatch(
+  change: SlateChange,
+  operation: Operation,
+  blocks: Block[],
+  blockContentType: Type
+) {
+  change.applyOperations([operation])
+  const appliedBlocks = editorValueToBlocks(
+    change.value.toJSON(VALUE_TO_JSON_OPTS),
+    blockContentType
+  )
+  console.log('setValuePatch', appliedBlocks)
+  return [set(appliedBlocks, [])]
+}
+
 function applyPatchesOnValue(patches, value) {
   let _patches = patches
   if (!patches || (Array.isArray(patches) && !patches.length)) {
@@ -299,6 +295,7 @@ export default function changeToPatches(
   const patches = flatten(
     operations
       .map((operation: Operation, index: number) => {
+        // console.log('OPERATION:', JSON.stringify(operation, null, 2))
         let _patches
         switch (operation.type) {
           case 'insert_text':
@@ -314,25 +311,25 @@ export default function changeToPatches(
             _patches = setNodePatchSimple(_change, operation, blocks, blockContentType)
             break
           case 'set_node':
-            _patches = setNodePatch(_change, operation, operations, blocks, blockContentType)
+            _patches = setNodePatch(_change, operation, blocks, blockContentType)
             break
           case 'insert_node':
-            _patches = insertNodePatch(_change, operation, operations, blocks, blockContentType)
+            _patches = insertNodePatch(_change, operation, blocks, blockContentType)
             break
           case 'remove_node':
             _patches = removeNodePatch(_change, operation, blocks, blockContentType)
             break
           case 'split_node':
-            _patches = splitNodePatch(_change, operation, operations, blocks, blockContentType)
+            _patches = splitNodePatch(_change, operation, blocks, blockContentType)
             break
           case 'merge_node':
-            _patches = mergeNodePatch(_change, operation, operations, blocks, blockContentType)
+            _patches = mergeNodePatch(_change, operation, blocks, blockContentType)
             break
           case 'move_node':
             _patches = moveNodePatch(_change, operation, blocks, blockContentType)
             break
           default:
-            _patches = []
+            _patches = noOpPatch(_change, operation)
         }
         // console.log('BLOCKS BEFORE:', JSON.stringify(blocks, null, 2))
         // console.log('PATCHES:', JSON.stringify(_patches, null, 2))
