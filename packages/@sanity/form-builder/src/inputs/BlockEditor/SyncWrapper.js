@@ -86,8 +86,8 @@ export default withPatchSubscriber(
       markers: []
     }
 
-    // Keep track of what the editor value is (as seen in the editor) before it is changed through state.
-    _unchanedEditorValue = null
+    // Keep track of what the editor value is (as seen in the editor) before it is changed by something.
+    _unchangedEditorValue = null
 
     constructor(props) {
       super(props)
@@ -109,10 +109,10 @@ export default withPatchSubscriber(
 
     handleEditorChange = (change: SlateChange, callback: void => void) => {
       const {value, onChange, type} = this.props
-      this._unchanedEditorValue = this.state.editorValue
+      this._unchangedEditorValue = this.state.editorValue
       this.setState({editorValue: change.value})
 
-      const patches = changeToPatches(this._unchanedEditorValue, change, value, type)
+      const patches = changeToPatches(this._unchangedEditorValue, change, value, type)
       this._selection = createSelectionOperation(change)
 
       // Do the change
@@ -166,7 +166,7 @@ export default withPatchSubscriber(
         if (!isUndoRedoPatch) {
           this._undoRedoStack.undo.push({
             patches: localPatches,
-            editorValue: this._unchanedEditorValue,
+            editorValue: this._unchangedEditorValue,
             selection: this._selection
           })
           // Redo stack must be reset here
