@@ -305,8 +305,8 @@ export default class InlineObject extends React.Component<Props, State> {
   }
 
   render() {
-    const {attributes, node, editorValue, editorIsFocused, isSelected, readOnly} = this.props
-    const isFocused = editorIsFocused && editorValue.selection.hasFocusIn(node)
+    const {attributes, node, editorValue, isSelected, readOnly} = this.props
+    const isFocused = editorValue.selection.hasFocusIn(node)
 
     let className
     if (isFocused && !isSelected) {
