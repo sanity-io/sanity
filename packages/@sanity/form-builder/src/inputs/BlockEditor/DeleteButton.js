@@ -1,19 +1,19 @@
 import React from 'react'
 import Button from 'part:@sanity/components/buttons/default'
-import EditIcon from 'part:@sanity/base/edit-icon'
+import TrashIcon from 'part:@sanity/base/trash-icon'
 
 type Props = {
   onClick: void => void,
   children: React.Element<*>
 }
 
-export default class EditButton extends React.Component<Props> {
+export default class DeleteButton extends React.Component<Props> {
   handleClick = event => {
     this.props.onClick(event)
   }
   render() {
     return (
-      <Button kind="simple" icon={EditIcon} onClick={this.handleClick}>
+      <Button kind="simple" color="danger" icon={TrashIcon} onClick={this.handleClick}>
         {this.props.children}
       </Button>
     )

@@ -21,6 +21,7 @@ import createRange from '../utils/createRange'
 import InvalidValue from '../../InvalidValueInput'
 import Preview from '../../../Preview'
 import ConfirmButton from '../ConfirmButton'
+import DeleteButton from '../DeleteButton'
 import EditButton from '../EditButton'
 
 import styles from './styles/BlockObject.css'
@@ -217,6 +218,8 @@ export default class BlockObject extends React.Component<Props, State> {
   }
 
   handleRemoveValue = event => {
+    event.preventDefault()
+    event.stopPropagation()
     const {editorValue, node, onChange} = this.props
     const change = editorValue.change()
     onChange(change.removeNodeByKey(node.key).focus())
@@ -273,7 +276,7 @@ export default class BlockObject extends React.Component<Props, State> {
             )}
             {!readOnly && <EditButton title="Edit this block" onClick={this.handleEditStart} />}
             {!readOnly && (
-              <ConfirmButton title="Remove this block" onConfirm={this.handleRemoveValue} />
+              <DeleteButton title="Remove this block" onClick={this.handleRemoveValue} />
             )}
           </div>
         )}
