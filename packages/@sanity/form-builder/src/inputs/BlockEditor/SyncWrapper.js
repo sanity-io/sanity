@@ -256,7 +256,7 @@ export default withPatchSubscriber(
                       rel="noopener noreferrer"
                       target="_blank"
                     >
-                      Read more
+                      Migrate schema to block.children inline types
                     </a>
                   </p>
                 )}
@@ -267,7 +267,7 @@ export default withPatchSubscriber(
                       rel="noopener noreferrer"
                       target="_blank"
                     >
-                      Read more
+                      Migrate schema to block.children
                     </a>
                   </p>
                 )}
