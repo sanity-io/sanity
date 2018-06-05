@@ -67,7 +67,6 @@ export default class BlockEditor extends React.PureComponent<Props> {
 
   componentDidMount() {
     this.checkScrollHeight()
-
     if (this._scrollContainer) {
       this._scrollContainer.addEventListener('scroll', this.handleScroll, {passive: true})
     }
@@ -231,13 +230,13 @@ export default class BlockEditor extends React.PureComponent<Props> {
   }
 
   render() {
-    const {focusPath, fullscreen, readOnly} = this.props
+    const {focusPath, fullscreen, readOnly, onToggleFullScreen} = this.props
     const isEditingNode = !readOnly && (focusPath || []).length > 1
     const isFocused = (focusPath || []).length
     return (
       <div className={styles.root}>
         {fullscreen && (
-          <StackedEscapable onEscape={this.props.onToggleFullScreen}>
+          <StackedEscapable onEscape={onToggleFullScreen}>
             <Portal>
               <div className={styles.fullscreen}>{this.renderEditor()}</div>
             </Portal>
