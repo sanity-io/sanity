@@ -1,25 +1,28 @@
 // @flow
 /* eslint-disable complexity */
 
+import type {BlockContentFeatures, SlateValue, SlateChange, Type} from '../typeDefs'
+
 import React from 'react'
+import classnames from 'classnames'
+import enhanceWithClickOutside from 'react-click-outside'
+
+import {ContainerQuery} from 'react-container-query'
+import {Tooltip} from '@sanity/react-tippy'
+
+import ArrowIcon from 'part:@sanity/base/angle-down-icon'
+import Button from 'part:@sanity/components/buttons/default'
+import ChevronDown from 'part:@sanity/base/chevron-down-icon'
+import CloseIcon from 'part:@sanity/base/close-icon'
+import FullscreenIcon from 'part:@sanity/base/fullscreen-icon'
+import ValidationList from 'part:@sanity/components/validation/list'
+import WarningIcon from 'part:@sanity/base/warning-icon'
 
 import AnnotationButtons from './AnnotationButtons'
 import BlockStyleSelect from './BlockStyleSelect'
-import InsertMenu from './InsertMenu'
-import Button from 'part:@sanity/components/buttons/default'
-import CloseIcon from 'part:@sanity/base/close-icon'
 import DecoratorButtons from './DecoratorButtons'
-import FullscreenIcon from 'part:@sanity/base/fullscreen-icon'
+import InsertMenu from './InsertMenu'
 import ListItemButtons from './ListItemButtons'
-import {ContainerQuery} from 'react-container-query'
-import classnames from 'classnames'
-import ArrowIcon from 'part:@sanity/base/angle-down-icon'
-import enhanceWithClickOutside from 'react-click-outside'
-import {Tooltip} from '@sanity/react-tippy'
-import type {BlockContentFeatures, SlateValue, SlateChange, Type} from '../typeDefs'
-import ValidationList from 'part:@sanity/components/validation/list'
-import WarningIcon from 'part:@sanity/base/warning-icon'
-import ChevronDown from 'part:@sanity/base/chevron-down-icon'
 
 import styles from './styles/Toolbar.css'
 
@@ -31,8 +34,14 @@ type Props = {
   onChange: (change: SlateChange) => void,
   onFocus: (nextPath: []) => void,
   onToggleFullScreen: void => void,
+  markers: [],
   style: {},
   type: Type
+}
+
+type State = {
+  expanded: boolean,
+  showValidationTooltip: boolean
 }
 
 const query = {
@@ -41,9 +50,10 @@ const query = {
   }
 }
 
-class Toolbar extends React.PureComponent<Props> {
+class Toolbar extends React.PureComponent<Props, State> {
   state = {
-    expanded: false
+    expanded: false,
+    showValidationTooltip: false
   }
 
   handleExpand = () => {
@@ -64,21 +74,34 @@ class Toolbar extends React.PureComponent<Props> {
     })
   }
 
+  handleFocus = (focusPath: []) => {
+    const {onFocus} = this.props
+    onFocus(focusPath)
+  }
+
+  handleCloseValidationResults = () => {
+    this.setState({showValidationTooltip: false})
+  }
+
+  handleToggleValidationResults = () => {
+    this.setState(prevState => ({showValidationTooltip: !prevState.showValidationTooltip}))
+  }
+
   render() {
     const {
       blockContentFeatures,
-      fullscreen,
       editorValue,
       focusPath,
+      fullscreen,
+      markers,
       onChange,
       onFocus,
       onToggleFullScreen,
       style,
-      type,
-      markers
+      type
     } = this.props
 
-    const {expanded} = this.state
+    const {expanded, showValidationTooltip} = this.state
 
     const insertItems = blockContentFeatures.types.inlineObjects.concat(
       blockContentFeatures.types.blockObjects
@@ -87,8 +110,6 @@ class Toolbar extends React.PureComponent<Props> {
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
     const warnings = validation.filter(marker => marker.level === 'warning')
-
-    console.log('errors', errors)
 
     return (
       <ContainerQuery query={query}>
@@ -103,9 +124,9 @@ class Toolbar extends React.PureComponent<Props> {
           >
             <div className={styles.blockFormatContainer} onClick={this.handleContract}>
               <BlockStyleSelect
+                blockContentFeatures={blockContentFeatures}
                 editorValue={editorValue}
                 onChange={onChange}
-                blockContentFeatures={blockContentFeatures}
               />
             </div>
             <Button className={styles.expandButton} onClick={this.handleExpand} kind="simple">
@@ -118,29 +139,29 @@ class Toolbar extends React.PureComponent<Props> {
               {blockContentFeatures.decorators.length > 0 && (
                 <div className={styles.decoratorButtonsContainer}>
                   <DecoratorButtons
+                    blockContentFeatures={blockContentFeatures}
                     editorValue={editorValue}
                     onChange={onChange}
-                    blockContentFeatures={blockContentFeatures}
                   />
                 </div>
               )}
               {blockContentFeatures.lists.length > 0 && (
                 <div className={styles.decoratorButtonsContainer}>
                   <ListItemButtons
+                    blockContentFeatures={blockContentFeatures}
                     editorValue={editorValue}
                     onChange={onChange}
-                    blockContentFeatures={blockContentFeatures}
                   />
                 </div>
               )}
               {blockContentFeatures.annotations.length > 0 && (
                 <div className={styles.annotationButtonsContainer}>
                   <AnnotationButtons
+                    blockContentFeatures={blockContentFeatures}
                     editorValue={editorValue}
+                    focusPath={focusPath}
                     onChange={onChange}
                     onFocus={onFocus}
-                    focusPath={focusPath}
-                    blockContentFeatures={blockContentFeatures}
                   />
                 </div>
               )}
@@ -148,12 +169,12 @@ class Toolbar extends React.PureComponent<Props> {
               {insertItems.length > 0 && (
                 <div className={styles.insertContainer}>
                   <InsertMenu
-                    type={type}
                     blockTypes={blockContentFeatures.types.blockObjects}
-                    inlineTypes={blockContentFeatures.types.inlineObjects}
                     editorValue={editorValue}
+                    inlineTypes={blockContentFeatures.types.inlineObjects}
                     onChange={onChange}
                     onFocus={onFocus}
+                    type={type}
                   />
                 </div>
               )}
@@ -162,29 +183,31 @@ class Toolbar extends React.PureComponent<Props> {
               (errors.length > 0 || warnings.length > 0) && (
                 <Tooltip
                   arrow
-                  theme="light noPadding"
-                  trigger="click"
-                  position="bottom"
-                  interactive
                   duration={100}
-                  onRequestClose={this.handleCloseValidationResults}
-                  style={{padding: 0}}
                   html={
                     <ValidationList
                       markers={validation}
                       showLink
+                      isOpen={showValidationTooltip}
                       documentType={type}
                       onClose={this.handleCloseValidationResults}
                       onFocus={this.handleFocus}
                     />
                   }
+                  interactive
+                  onRequestClose={this.handleCloseValidationResults}
+                  open={showValidationTooltip}
+                  position="bottom"
+                  style={{padding: 0}}
+                  theme="light noPadding"
+                  trigger="click"
                 >
                   <Button
                     color="danger"
                     icon={WarningIcon}
-                    padding="small"
                     kind="simple"
                     onClick={this.handleToggleValidationResults}
+                    padding="small"
                   >
                     {errors.length}
                     <span style={{paddingLeft: '0.5em'}}>
