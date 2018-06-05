@@ -2,58 +2,55 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  display: inline-block;
+  display: inline;
   position: relative;
   margin: 0 var(--small-padding);
-}
-
-.inner {
-  display: flex;
-  justify-content: space-between;
-}
-
-.innerWithError {
-  composes: inner;
 }
 
 .previewContainer {
   position: relative;
   display: inline-block;
   cursor: move;
-  border: 1px solid var(--form-builder-block-border-color);
-  padding: 0 0.2em;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  background-color: var(--form-builder-block-background);
 
   @nest &:hover {
     background-color: var(--form-builder-block-background-hover);
   }
 }
 
-.focused {
-  composes: root;
+.root.hasErrors > .previewContainer {
+  background-color: var(--state-danger-color);
 }
 
-.focused > .previewContainer {
+.root.focused > .previewContainer {
   border: 1px solid var(--form-builder-block-border-color-focus);
+  box-shadow: var(--form-builder-block-shadow--focus);
 }
 
-.selected {
-  composes: root;
-}
-
-.selected > .previewContainer {
+.root.selected > .previewContainer {
   background-color: var(--form-builder-block-background-selected);
 }
 
-.focusedAndSelected {
-  composes: root;
-}
-
-.focusedAndSelected > .previewContainer {
+.root.focused.selected > .previewContainer {
   border: 1px solid var(--form-builder-block-border-color-focus);
 }
 
+.root.selected.hasErrors > .previewContainer {
+  box-shadow: var(--input-box-shadow--error-focus);
+  border: 1px solid var(--state-danger-color);
+  background-color: color(var(--state-danger-color) blend(var(--form-builder-block-background-selected) 50%));
+}
+
+.root.focused.hasErrors > .previewContainer {
+  box-shadow: var(--input-box-shadow--error-focus);
+  border: 1px solid var(--state-danger-color);
+  background-color: color(var(--state-danger-color) a(80%));
+}
+
 .functions {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   flex-grow: 0;
   font-size: var(--font-size-small);
