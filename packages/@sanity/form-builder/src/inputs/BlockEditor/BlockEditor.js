@@ -5,6 +5,7 @@ import React from 'react'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import {Portal} from 'part:@sanity/components/utilities/portal'
 import StackedEscapable from 'part:@sanity/components/utilities/stacked-escapable'
+import Button from 'part:@sanity/components/buttons/default'
 
 import EditNode from './EditNode'
 import Editor from './Editor'
@@ -204,7 +205,15 @@ export default class BlockEditor extends React.PureComponent<Props> {
         </div>
         <ActivateOnFocus
           isActive={!this.state.preventScroll || fullscreen || isActive}
-          message="Click to scroll"
+          html={
+            <div className={styles.activeOnFocus}>
+              <h3>Click to scroll</h3>
+              <div>or</div>
+              <Button inverted onClick={onToggleFullScreen}>
+                Open in fullscreen
+              </Button>
+            </div>
+          }
           onActivate={setFocus}
         >
           <div
