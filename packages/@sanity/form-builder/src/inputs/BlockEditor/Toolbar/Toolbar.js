@@ -123,107 +123,109 @@ class Toolbar extends React.PureComponent<Props, State> {
             `}
             style={style}
           >
-            <div className={styles.blockFormatContainer} onClick={this.handleContract}>
-              <BlockStyleSelect
-                blockContentFeatures={blockContentFeatures}
-                editorValue={editorValue}
-                onChange={onChange}
-              />
-            </div>
-            <Button className={styles.expandButton} onClick={this.handleExpand} kind="simple">
-              More&nbsp;
-              <span className={styles.arrow}>
-                <ArrowIcon color="inherit" />
-              </span>
-            </Button>
-            <div className={`${styles.compactable} ${expanded ? styles.expanded : ''}`}>
-              {blockContentFeatures.decorators.length > 0 && (
-                <div className={styles.decoratorButtonsContainer}>
-                  <DecoratorButtons
-                    blockContentFeatures={blockContentFeatures}
-                    editorValue={editorValue}
-                    onChange={onChange}
-                  />
-                </div>
-              )}
-              {blockContentFeatures.lists.length > 0 && (
-                <div className={styles.decoratorButtonsContainer}>
-                  <ListItemButtons
-                    blockContentFeatures={blockContentFeatures}
-                    editorValue={editorValue}
-                    onChange={onChange}
-                  />
-                </div>
-              )}
-              {blockContentFeatures.annotations.length > 0 && (
-                <div className={styles.annotationButtonsContainer}>
-                  <AnnotationButtons
-                    blockContentFeatures={blockContentFeatures}
-                    editorValue={editorValue}
-                    focusPath={focusPath}
-                    onChange={onChange}
-                    onFocus={onFocus}
-                  />
-                </div>
-              )}
-
-              {insertItems.length > 0 && (
-                <div className={styles.insertContainer}>
-                  <InsertMenu
-                    blockTypes={blockContentFeatures.types.blockObjects}
-                    editorValue={editorValue}
-                    inlineTypes={blockContentFeatures.types.inlineObjects}
-                    onChange={onChange}
-                    onFocus={onFocus}
-                    type={type}
-                  />
-                </div>
-              )}
-            </div>
-            {fullscreen &&
-              (errors.length > 0 || warnings.length > 0) && (
-                <Tooltip
-                  arrow
-                  duration={100}
-                  html={
-                    <ValidationList
-                      markers={validation}
-                      showLink
-                      isOpen={showValidationTooltip}
-                      documentType={type}
-                      onClose={this.handleCloseValidationResults}
-                      onFocus={this.handleFocus}
+            <div className={styles.primary}>
+              <div className={styles.blockFormatContainer} onClick={this.handleContract}>
+                <BlockStyleSelect
+                  blockContentFeatures={blockContentFeatures}
+                  editorValue={editorValue}
+                  onChange={onChange}
+                />
+              </div>
+              <Button className={styles.expandButton} onClick={this.handleExpand} kind="simple">
+                More&nbsp;
+                <span className={styles.arrow}>
+                  <ArrowIcon color="inherit" />
+                </span>
+              </Button>
+              <div className={`${styles.compactable} ${expanded ? styles.expanded : ''}`}>
+                {blockContentFeatures.decorators.length > 0 && (
+                  <div className={styles.decoratorButtonsContainer}>
+                    <DecoratorButtons
+                      blockContentFeatures={blockContentFeatures}
+                      editorValue={editorValue}
+                      onChange={onChange}
                     />
-                  }
-                  interactive
-                  onRequestClose={this.handleCloseValidationResults}
-                  open={showValidationTooltip}
-                  position="bottom"
-                  style={{padding: 0}}
-                  theme="light noPadding"
-                  trigger="click"
-                >
-                  <Button
-                    color="danger"
-                    icon={WarningIcon}
-                    kind="simple"
-                    onClick={this.handleToggleValidationResults}
-                    padding="small"
+                  </div>
+                )}
+                {blockContentFeatures.lists.length > 0 && (
+                  <div className={styles.decoratorButtonsContainer}>
+                    <ListItemButtons
+                      blockContentFeatures={blockContentFeatures}
+                      editorValue={editorValue}
+                      onChange={onChange}
+                    />
+                  </div>
+                )}
+                {blockContentFeatures.annotations.length > 0 && (
+                  <div className={styles.annotationButtonsContainer}>
+                    <AnnotationButtons
+                      blockContentFeatures={blockContentFeatures}
+                      editorValue={editorValue}
+                      focusPath={focusPath}
+                      onChange={onChange}
+                      onFocus={onFocus}
+                    />
+                  </div>
+                )}
+                {insertItems.length > 0 && (
+                  <div className={styles.insertContainer}>
+                    <InsertMenu
+                      blockTypes={blockContentFeatures.types.blockObjects}
+                      editorValue={editorValue}
+                      inlineTypes={blockContentFeatures.types.inlineObjects}
+                      onChange={onChange}
+                      onFocus={onFocus}
+                      type={type}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className={styles.secondary}>
+              {fullscreen &&
+                (errors.length > 0 || warnings.length > 0) && (
+                  <Tooltip
+                    arrow
+                    duration={100}
+                    html={
+                      <ValidationList
+                        markers={validation}
+                        showLink
+                        isOpen={showValidationTooltip}
+                        documentType={type}
+                        onClose={this.handleCloseValidationResults}
+                        onFocus={this.handleFocus}
+                      />
+                    }
+                    interactive
+                    onRequestClose={this.handleCloseValidationResults}
+                    open={showValidationTooltip}
+                    position="bottom"
+                    style={{padding: 0}}
+                    theme="light noPadding"
+                    trigger="click"
                   >
-                    {errors.length}
-                    <span style={{paddingLeft: '0.5em'}}>
-                      <ChevronDown />
-                    </span>
-                  </Button>
-                </Tooltip>
-              )}
-            <div className={styles.fullscreenButtonContainer} onClick={this.handleContract}>
-              <Button
-                kind="simple"
-                onClick={onToggleFullScreen}
-                title={`Fullscreen (${toKeyName('mod+enter')})`}
-                icon={fullscreen ? CloseIcon : FullscreenIcon}
-              />
+                    <Button
+                      color="danger"
+                      icon={WarningIcon}
+                      kind="simple"
+                      onClick={this.handleToggleValidationResults}
+                      padding="small"
+                    >
+                      {errors.length}
+                      <span style={{paddingLeft: '0.5em'}}>
+                        <ChevronDown />
+                      </span>
+                    </Button>
+                  </Tooltip>
+                )}
+              <div className={styles.fullscreenButtonContainer} onClick={this.handleContract}>
+                <Button
+                  kind="simple"
+                  onClick={onToggleFullScreen}
+                  icon={fullscreen ? CloseIcon : FullscreenIcon}
+                />
+              </div>
             </div>
           </div>
         )}

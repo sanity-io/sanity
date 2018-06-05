@@ -4,7 +4,9 @@
   position: relative;
   font-size: 0.8rem;
   display: flex;
-  flex-wrap: wrap;
+  width: 100%;
+  justify-content: space-between;
+  flex-wrap: nowrap;
   padding-bottom: var(--small-padding);
 
   @media (--screen-medium) {
@@ -27,6 +29,15 @@
   }
 }
 
+.primary {
+  display: flex;
+}
+
+.secondary {
+  margin-left: auto;
+  display: flex;
+}
+
 .compactable {
   display: none;
 }
@@ -44,7 +55,7 @@
   flex-wrap: wrap;
   z-index: var(--zindex-dropdown);
   position: absolute;
-  width: calc(100% - var(--medium-padding) * 2);
+  max-width: calc(100% - var(--medium-padding) * 2);
   top: 0;
   left: 0;
   background-color: var(--component-bg);
