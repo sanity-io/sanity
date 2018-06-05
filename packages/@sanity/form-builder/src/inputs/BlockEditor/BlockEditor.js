@@ -1,6 +1,7 @@
 // @flow
 import type {Element as ReactElement} from 'react'
 import React from 'react'
+import {isKeyHotkey, toKeyName} from 'is-hotkey'
 
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import {Portal} from 'part:@sanity/components/utilities/portal'
@@ -67,12 +68,20 @@ export default class BlockEditor extends React.PureComponent<Props> {
 
   componentDidMount() {
     this.checkScrollHeight()
+
+    if (this._rootElement) {
+      this._rootElement.addEventListener('keydown', this.handleKeyDown, false)
+    }
+
     if (this._scrollContainer) {
       this._scrollContainer.addEventListener('scroll', this.handleScroll, {passive: true})
     }
   }
 
   componentWillUnmount() {
+    if (this._rootElement) {
+      this._rootElement.removeEventListener('keydown', this.handleKeyDown, false)
+    }
     if (this._scrollContainer) {
       this._scrollContainer.removeEventListener('scroll', this.handleScroll, {passive: true})
     }
@@ -139,6 +148,10 @@ export default class BlockEditor extends React.PureComponent<Props> {
     this._editorWrapper = element
   }
 
+  setRootElement = element => {
+    this._rootElement = element
+  }
+
   checkScrollHeight = () => {
     if (this._scrollContainer && this._editorWrapper) {
       this.setState({
@@ -165,6 +178,14 @@ export default class BlockEditor extends React.PureComponent<Props> {
         boxShadow: `0 2px ${5 * ratio}px rgba(0, 0, 0, ${ratio * 0.3})`
       }
     })
+  }
+
+  handleKeyDown = (event: SyntheticKeyboardEvent<*>) => {
+    const isFullscreenKey = isKeyHotkey('mod+enter')
+    const {onToggleFullScreen} = this.props
+    if (isFullscreenKey(event)) {
+      onToggleFullScreen()
+    }
   }
 
   renderEditor() {
@@ -209,7 +230,7 @@ export default class BlockEditor extends React.PureComponent<Props> {
               <h3>Click to scroll</h3>
               <div>or</div>
               <Button inverted onClick={onToggleFullScreen}>
-                Open in fullscreen
+                Open in fullscreen ({toKeyName('mod+enter')})
               </Button>
             </div>
           }
@@ -234,7 +255,7 @@ export default class BlockEditor extends React.PureComponent<Props> {
     const isEditingNode = !readOnly && (focusPath || []).length > 1
     const isFocused = (focusPath || []).length
     return (
-      <div className={styles.root}>
+      <div className={styles.root} ref={this.setRootElement}>
         {fullscreen && (
           <StackedEscapable onEscape={onToggleFullScreen}>
             <Portal>
