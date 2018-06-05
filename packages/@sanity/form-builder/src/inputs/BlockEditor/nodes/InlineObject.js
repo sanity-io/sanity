@@ -10,6 +10,7 @@ import {Editor, setEventTransfer, getEventRange} from 'slate-react'
 import {IntentLink} from 'part:@sanity/base/router'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import ValidationStatus from 'part:@sanity/components/validation/status'
+import {Tooltip} from '@sanity/react-tippy'
 
 import {resolveTypeName} from '../../../utils/resolveTypeName'
 import {PatchEvent} from '../../../PatchEvent'
@@ -247,6 +248,27 @@ export default class InlineObject extends React.Component<Props, State> {
     return this.props.node.data.get('value')
   }
 
+  renderMenu(value, scopedValidation) {
+    return (
+      <div className={styles.functions}>
+        <div className={styles.validationStatus}>
+          <ValidationStatus markers={scopedValidation} />
+        </div>
+        {value._ref && (
+          <IntentLink className={styles.linkToReference} intent="edit" params={{id: value._ref}}>
+            <LinkIcon />
+          </IntentLink>
+        )}
+        <EditButton title="Edit this object" onClick={this.handleEditStart}>
+          Edit
+        </EditButton>
+        <ConfirmButton title="Remove this object" onConfirm={this.handleRemoveValue}>
+          Delete
+        </ConfirmButton>
+      </div>
+    )
+  }
+
   renderPreview() {
     const {type, markers, readOnly, blockContentFeatures} = this.props
     const value = this.getValue()
@@ -278,29 +300,20 @@ export default class InlineObject extends React.Component<Props, State> {
       })
     })
     return (
-      <div className={errors.length > 0 ? styles.innerWithError : styles.inner}>
-        <Preview type={type} value={value} layout="inline" />
-        {!readOnly && (
-          <div className={styles.functions}>
-            <div className={styles.validationStatus}>
-              <ValidationStatus markers={scopedValidation} />
-            </div>
-            {value._ref && (
-              <IntentLink
-                className={styles.linkToReference}
-                intent="edit"
-                params={{id: value._ref}}
-              >
-                <LinkIcon />
-              </IntentLink>
-            )}
-            {!readOnly && <EditButton title="Edit this object" onClick={this.handleEditStart} />}
-            {!readOnly && (
-              <ConfirmButton title="Remove this object" onConfirm={this.handleRemoveValue} />
-            )}
-          </div>
-        )}
-      </div>
+      <span className={errors.length > 0 ? styles.innerWithError : styles.inner}>
+        <Tooltip
+          arrow
+          theme="light"
+          trigger="click"
+          position="bottom"
+          interactive
+          duration={100}
+          style={{padding: 0}}
+          html={!readOnly && this.renderMenu(value, scopedValidation)}
+        >
+          <Preview type={type} value={value} layout="inline" />
+        </Tooltip>
+      </span>
     )
   }
 
