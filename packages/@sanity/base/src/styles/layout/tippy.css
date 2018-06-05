@@ -11,7 +11,7 @@
 :global(.tippy-popper) {
   max-width: 400px;
   perspective: 800px;
-  z-index: 9999;
+  z-index: var(--zindex-portal) !important;
   outline: 0;
   transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
   pointer-events: none;
