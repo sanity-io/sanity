@@ -180,7 +180,8 @@ export default class BlockEditor extends React.PureComponent<Props> {
       onToggleFullScreen,
       readOnly,
       setFocus,
-      type
+      type,
+      markers
     } = this.props
     if (readOnly) {
       return <div>{editor}</div>
@@ -197,6 +198,7 @@ export default class BlockEditor extends React.PureComponent<Props> {
             onFocus={onFocus}
             onToggleFullScreen={onToggleFullScreen}
             style={fullscreen ? this.state.toolbarStyle : {}}
+            markers={markers}
             type={type}
           />
         </div>
