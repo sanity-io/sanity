@@ -11,6 +11,7 @@ import {IntentLink} from 'part:@sanity/base/router'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import {Tooltip} from '@sanity/react-tippy'
+import classNames from 'classnames'
 
 import {resolveTypeName} from '../../../utils/resolveTypeName'
 import {PatchEvent} from '../../../PatchEvent'
@@ -271,8 +272,35 @@ export default class InlineObject extends React.Component<Props, State> {
     )
   }
 
-  renderPreview() {
-    const {type, markers, readOnly, blockContentFeatures} = this.props
+  renderPreview(value, scopedValidation) {
+    const {type, readOnly} = this.props
+    return (
+      <Tooltip
+        arrow
+        theme="light"
+        trigger="click"
+        position="bottom"
+        interactive
+        duration={100}
+        style={{padding: 0, display: 'inline-block', minWidth: '1em'}}
+        html={!readOnly && this.renderMenu(value, scopedValidation)}
+      >
+        <Preview type={type} value={value} layout="inline" />
+      </Tooltip>
+    )
+  }
+
+  render() {
+    const {
+      attributes,
+      node,
+      editorValue,
+      isSelected,
+      readOnly,
+      markers,
+      blockContentFeatures
+    } = this.props
+    const isFocused = editorValue.selection.hasFocusIn(node)
     const value = this.getValue()
     const valueType = resolveTypeName(value)
     const validTypes = blockContentFeatures.types.inlineObjects.map(objType => objType.name)
@@ -301,38 +329,13 @@ export default class InlineObject extends React.Component<Props, State> {
         item: marker.item.cloneWithMessage(`Contains ${level}`)
       })
     })
-    return (
-      <span className={errors.length > 0 ? styles.innerWithError : styles.inner}>
-        <Tooltip
-          arrow
-          theme="light"
-          trigger="click"
-          position="bottom"
-          interactive
-          duration={100}
-          style={{padding: 0}}
-          html={!readOnly && this.renderMenu(value, scopedValidation)}
-        >
-          <Preview type={type} value={value} layout="inline" />
-        </Tooltip>
-      </span>
-    )
-  }
 
-  render() {
-    const {attributes, node, editorValue, isSelected, readOnly} = this.props
-    const isFocused = editorValue.selection.hasFocusIn(node)
-
-    let className
-    if (isFocused && !isSelected) {
-      className = styles.focused
-    } else if (isFocused && isSelected) {
-      className = styles.focusedAndSelected
-    } else if (isSelected) {
-      className = styles.selected
-    } else {
-      className = styles.root
-    }
+    const classname = classNames([
+      styles.root,
+      isFocused && styles.focused,
+      isSelected && styles.selected,
+      errors.length > 0 && styles.hasErrors
+    ])
 
     return (
       <span
@@ -344,10 +347,10 @@ export default class InlineObject extends React.Component<Props, State> {
         onDrop={this.handleCancelEvent}
         draggable={!readOnly}
         ref={this.refFormBuilderBlock}
-        className={className}
+        className={classname}
       >
         <span ref={this.refPreview} className={styles.previewContainer}>
-          {this.renderPreview()}
+          {this.renderPreview(value, scopedValidation)}
         </span>
       </span>
     )
