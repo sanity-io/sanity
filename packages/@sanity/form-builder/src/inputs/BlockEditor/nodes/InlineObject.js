@@ -16,10 +16,10 @@ import {resolveTypeName} from '../../../utils/resolveTypeName'
 import {PatchEvent} from '../../../PatchEvent'
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 
+import DeleteButton from '../DeleteButton'
+import EditButton from '../EditButton'
 import InvalidValue from '../../InvalidValueInput'
 import Preview from '../../../Preview'
-import ConfirmButton from '../ConfirmButton'
-import EditButton from '../EditButton'
 
 import styles from './styles/InlineObject.css'
 
@@ -206,7 +206,9 @@ export default class InlineObject extends React.Component<Props, State> {
     onPatch(_event, value)
   }
 
-  handleRemoveValue = () => {
+  handleRemoveValue = event => {
+    event.preventDefault()
+    event.stopPropagation()
     const {editorValue, node, onChange} = this.props
     const change = editorValue.change()
     onChange(change.removeNodeByKey(node.key).focus())
@@ -262,9 +264,9 @@ export default class InlineObject extends React.Component<Props, State> {
         <EditButton title="Edit this object" onClick={this.handleEditStart}>
           Edit
         </EditButton>
-        <ConfirmButton title="Remove this object" onConfirm={this.handleRemoveValue}>
+        <DeleteButton title="Remove this object" onClick={this.handleRemoveValue}>
           Delete
-        </ConfirmButton>
+        </DeleteButton>
       </div>
     )
   }
