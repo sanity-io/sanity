@@ -33,7 +33,8 @@
   --clear-cross-color-hover: var(--state-danger-color);
   --form-builder-block-border-color: color(var(--gray-light) alpha(80%));
   --form-builder-block-border-color-focus: var(--brand-primary);
-  --form-builder-block-background-hover: var(--gray-lighter);
+  --form-builder-block-background: var(--gray-lighter);
+  --form-builder-block-background-hover: var(--gray-light);
   --form-builder-block-background-selected: var(--text-selection-color);
   --input-box-shadow-base: var(--gray-base);
   --input-box-shadow: none;
@@ -50,4 +51,5 @@
   --fieldset-box-shadow--focus: var(--input-box-shadow--focus);
   --fieldset-box-shadow--invalid-focus: var(--input-box-shadow--invalid-focus);
   --fieldset-bg: transparent;
+  --form-builder-block-shadow--focus: var(--input-box-shadow--focus);
 }
