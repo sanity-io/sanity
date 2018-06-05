@@ -8,6 +8,7 @@ import classnames from 'classnames'
 import enhanceWithClickOutside from 'react-click-outside'
 
 import {ContainerQuery} from 'react-container-query'
+import {toKeyName} from 'is-hotkey'
 import {Tooltip} from '@sanity/react-tippy'
 
 import ArrowIcon from 'part:@sanity/base/angle-down-icon'
@@ -220,6 +221,7 @@ class Toolbar extends React.PureComponent<Props, State> {
               <Button
                 kind="simple"
                 onClick={onToggleFullScreen}
+                title={`Fullscreen (${toKeyName('mod+enter')})`}
                 icon={fullscreen ? CloseIcon : FullscreenIcon}
               />
             </div>
