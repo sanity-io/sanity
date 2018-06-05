@@ -17,6 +17,7 @@ import ReactDOM from 'react-dom'
 import SoftBreakPlugin from 'slate-soft-break'
 import {findDOMNode, Editor as SlateEditor} from 'slate-react'
 import {isEqual} from 'lodash'
+import {isKeyHotkey} from 'is-hotkey'
 import {EDITOR_DEFAULT_BLOCK_TYPE} from '@sanity/block-tools'
 import insertBlockOnEnter from 'slate-insert-block-on-enter'
 import onPaste from 'part:@sanity/form-builder/input/block-editor/on-paste?'
@@ -57,6 +58,7 @@ type Props = {
   onFormBuilderInputBlur: (nextPath: []) => void,
   onFormBuilderInputFocus: (nextPath: []) => void,
   onPatch: (event: PatchEvent) => void,
+  onToggleFullScreen: void => void,
   readOnly?: boolean,
   setFocus: void => void,
   type: Type,
@@ -226,6 +228,16 @@ export default class Editor extends React.Component<Props> {
     return undefined
   }
 
+  handleOnKeyDown = event => {
+    const isFullscreenKey = isKeyHotkey('mod+enter')
+    const {onToggleFullScreen} = this.props
+    if (isFullscreenKey(event)) {
+      event.preventDefault()
+      event.stopPropagation()
+      onToggleFullScreen()
+    }
+  }
+
   refBlockDragMarker = (blockDragMarker: ?HTMLDivElement) => {
     this._blockDragMarker = blockDragMarker
   }
@@ -366,6 +378,7 @@ export default class Editor extends React.Component<Props> {
           onFocus={this.handleEditorFocus}
           onCopy={this.handleCopy}
           onPaste={this.handlePaste}
+          onKeyDown={this.handleOnKeyDown}
           validateNode={this._validateNode}
           plugins={this._plugins}
           readOnly={readOnly}
