@@ -1,5 +1,5 @@
 // @flow
-import type {BlockContentFeatures, SlateValue, SlateChange, Type} from '../typeDefs'
+/* eslint-disable complexity */
 
 import React from 'react'
 
@@ -15,6 +15,11 @@ import {ContainerQuery} from 'react-container-query'
 import classnames from 'classnames'
 import ArrowIcon from 'part:@sanity/base/angle-down-icon'
 import enhanceWithClickOutside from 'react-click-outside'
+import {Tooltip} from '@sanity/react-tippy'
+import type {BlockContentFeatures, SlateValue, SlateChange, Type} from '../typeDefs'
+import ValidationList from 'part:@sanity/components/validation/list'
+import WarningIcon from 'part:@sanity/base/warning-icon'
+import ChevronDown from 'part:@sanity/base/chevron-down-icon'
 
 import styles from './styles/Toolbar.css'
 
@@ -69,7 +74,8 @@ class Toolbar extends React.PureComponent<Props> {
       onFocus,
       onToggleFullScreen,
       style,
-      type
+      type,
+      markers
     } = this.props
 
     const {expanded} = this.state
@@ -77,6 +83,12 @@ class Toolbar extends React.PureComponent<Props> {
     const insertItems = blockContentFeatures.types.inlineObjects.concat(
       blockContentFeatures.types.blockObjects
     )
+
+    const validation = markers.filter(marker => marker.type === 'validation')
+    const errors = validation.filter(marker => marker.level === 'error')
+    const warnings = validation.filter(marker => marker.level === 'warning')
+
+    console.log('errors', errors)
 
     return (
       <ContainerQuery query={query}>
@@ -102,10 +114,7 @@ class Toolbar extends React.PureComponent<Props> {
                 <ArrowIcon color="inherit" />
               </span>
             </Button>
-            <div
-              className={`${styles.compactable} ${expanded ? styles.expanded : ''}`}
-              onClick={this.handleContract}
-            >
+            <div className={`${styles.compactable} ${expanded ? styles.expanded : ''}`}>
               {blockContentFeatures.decorators.length > 0 && (
                 <div className={styles.decoratorButtonsContainer}>
                   <DecoratorButtons
@@ -149,6 +158,41 @@ class Toolbar extends React.PureComponent<Props> {
                 </div>
               )}
             </div>
+            {fullscreen &&
+              (errors.length > 0 || warnings.length > 0) && (
+                <Tooltip
+                  arrow
+                  theme="light noPadding"
+                  trigger="click"
+                  position="bottom"
+                  interactive
+                  duration={100}
+                  onRequestClose={this.handleCloseValidationResults}
+                  style={{padding: 0}}
+                  html={
+                    <ValidationList
+                      markers={validation}
+                      showLink
+                      documentType={type}
+                      onClose={this.handleCloseValidationResults}
+                      onFocus={this.handleFocus}
+                    />
+                  }
+                >
+                  <Button
+                    color="danger"
+                    icon={WarningIcon}
+                    padding="small"
+                    kind="simple"
+                    onClick={this.handleToggleValidationResults}
+                  >
+                    {errors.length}
+                    <span style={{paddingLeft: '0.5em'}}>
+                      <ChevronDown />
+                    </span>
+                  </Button>
+                </Tooltip>
+              )}
             <div className={styles.fullscreenButtonContainer} onClick={this.handleContract}>
               <Button
                 kind="simple"

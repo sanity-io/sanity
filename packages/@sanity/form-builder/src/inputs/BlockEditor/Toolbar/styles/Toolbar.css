@@ -42,7 +42,7 @@
 .root:not(.largeContainer) .compactable.expanded {
   display: flex;
   flex-wrap: wrap;
-  z-index: 1;
+  z-index: var(--zindex-dropdown);
   position: absolute;
   width: calc(100% - var(--medium-padding) * 2);
   top: 0;
