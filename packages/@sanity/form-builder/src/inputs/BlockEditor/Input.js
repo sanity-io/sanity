@@ -66,10 +66,16 @@ export default class BlockEditorInput extends React.Component<Props, State> {
   }
 
   focus = () => {
-    const {onFocus, onChange, editorValue} = this.props
+    const {onFocus, onChange, editorValue, value} = this.props
     const change = editorValue.change().focus()
     const {focusBlock} = change.value
-    onChange(change, () => onFocus([{_key: focusBlock.key}]))
+    if (focusBlock) {
+      return onChange(change, () => onFocus([{_key: focusBlock.key}]))
+    } else if (Array.isArray(value)) {
+      change.focus()
+      return onChange(change, () => onFocus([{_key: value[0]._key}]))
+    }
+    return change
   }
 
   handleFocusSkipper = () => {
