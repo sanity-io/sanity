@@ -11,6 +11,10 @@ export default class EditButton extends React.Component<Props> {
     this.props.onClick(event)
   }
   render() {
-    return <Button kind="simple" icon={EditIcon} onClick={this.handleClick} />
+    return (
+      <Button kind="simple" icon={EditIcon} onClick={this.handleClick}>
+        {this.props.children}
+      </Button>
+    )
   }
 }
