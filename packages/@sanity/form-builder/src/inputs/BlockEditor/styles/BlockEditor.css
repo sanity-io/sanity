@@ -65,3 +65,19 @@
 .root :not(.fullscreen) .editorWrapper {
   box-shadow: none;
 }
+
+.activeOnFocus {
+  @nest & > h3 {
+    margin: 0;
+    padding: 0;
+    margin-bottom: var(--medium-padding);
+    text-transform: uppercase;
+  }
+
+  @nest & > div {
+    margin: 0;
+    padding: 0;
+    margin-bottom: var(--medium-padding);
+    text-transform: uppercase;
+  }
+}
