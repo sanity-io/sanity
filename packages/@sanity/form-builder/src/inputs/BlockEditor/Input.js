@@ -109,6 +109,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
         onBlur={onBlur}
         onChange={onChange}
         onPatch={onPatch}
+        onToggleFullScreen={this.handleToggleFullScreen}
         readOnly={readOnly}
         ref={this.refEditor}
         value={value}
