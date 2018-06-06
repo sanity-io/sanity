@@ -13,7 +13,6 @@ import LinkIcon from 'part:@sanity/base/link-icon'
 import MarkerWrapper from 'part:@sanity/form-builder/input/block-editor/block-marker-wrapper'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import ButtonsCollection from 'part:@sanity/components/buttons/button-collection'
-import FakeButton from 'part:@sanity/components/buttons/anchor'
 
 import type {BlockContentFeatures, SlateValue, Type, SlateChange, Marker} from '../typeDefs'
 
@@ -24,7 +23,6 @@ import {resolveTypeName} from '../../../utils/resolveTypeName'
 import createRange from '../utils/createRange'
 import InvalidValue from '../../InvalidValueInput'
 import Preview from '../../../Preview'
-import ConfirmButton from '../ConfirmButton'
 import DeleteButton from '../DeleteButton'
 import EditButton from '../EditButton'
 
@@ -89,15 +87,17 @@ export default class BlockObject extends React.Component<Props, State> {
     const {node} = this.props
     this.setState({isDragging: true})
     this.addDragHandlers()
-    const element = ReactDOM.findDOMNode(this.previewContainer)
+    // const element = ReactDOM.findDOMNode(this.previewContainer)
     const encoded = Base64.serializeNode(node, {preserveKeys: true})
-    setEventTransfer(event, 'node', encoded)
     event.dataTransfer.effectAllowed = 'move'
-    event.dataTransfer.setDragImage(element, element.clientWidth / 2)
+    event.dataTransfer.dropEffect = 'none'
+    setEventTransfer(event, 'node', encoded)
+    // event.dataTransfer.setDragImage(element, element.clientWidth / 2, element.clientHeight)
   }
 
   // Remove the drop target if we leave the editors nodes
   handleDragLeave = event => {
+    event.dataTransfer.dropEffect = 'none'
     this.props.onHideBlockDragMarker()
     if (event.target === this._editorNode) {
       this.resetDropTarget()
@@ -109,7 +109,9 @@ export default class BlockObject extends React.Component<Props, State> {
     this.props.onHideBlockDragMarker()
   }
 
+  // eslint-disable-next-line complexity
   handleDragOverOtherNode = event => {
+    const {node} = this.props
     if (!this.state.isDragging) {
       return
     }
@@ -134,7 +136,25 @@ export default class BlockObject extends React.Component<Props, State> {
         ? targetNode
         : editorValue.document.getClosestBlock(targetNode.key)
 
-    if (!block || block.key === this.props.node.key) {
+    let isNextBlock
+    let isPreviousBlock
+
+    if (block) {
+      const nextBlock = editorValue.document.getNextBlock(block.key)
+      isNextBlock =
+        nextBlock &&
+        nextBlock.key === node.key &&
+        editorValue.document.nodes.last().key === nextBlock.key
+
+      const previousBlock = editorValue.document.getPreviousBlock(block.key)
+      isPreviousBlock =
+        previousBlock &&
+        previousBlock.key === node.key &&
+        editorValue.document.nodes.first().key === previousBlock.key
+    }
+    // If it is the same node, or the node in the nearest vincinity, reset and return
+    if (!block || block.key === node.key || isNextBlock || isPreviousBlock) {
+      event.dataTransfer.dropEffect = 'none'
       this.resetDropTarget()
       return
     }
@@ -154,13 +174,14 @@ export default class BlockObject extends React.Component<Props, State> {
     } else {
       this.props.onShowBlockDragMarker('after', domNode)
     }
+    event.dataTransfer.dropEffect = 'move'
     this._dropTarget = {node: block, isAtStart: rangeIsAtStart, offset: rangeOffset}
   }
 
   handleDragEnd = event => {
+    event.preventDefault()
     this.setState({isDragging: false})
     this.removeDragHandlers()
-
     const {onChange, node, editorValue} = this.props
 
     const target = this._dropTarget
