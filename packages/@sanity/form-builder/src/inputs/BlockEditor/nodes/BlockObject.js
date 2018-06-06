@@ -93,7 +93,7 @@ export default class BlockObject extends React.Component<Props, State> {
     const encoded = Base64.serializeNode(node, {preserveKeys: true})
     setEventTransfer(event, 'node', encoded)
     event.dataTransfer.effectAllowed = 'move'
-    event.dataTransfer.setDragImage(element, element.clientWidth / 2, -10)
+    event.dataTransfer.setDragImage(element, element.clientWidth / 2)
   }
 
   // Remove the drop target if we leave the editors nodes
