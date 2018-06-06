@@ -1,7 +1,7 @@
 // @flow
 import type {Element as ReactElement} from 'react'
 import React from 'react'
-import {isKeyHotkey, toKeyName} from 'is-hotkey'
+import {isKeyHotkey} from 'is-hotkey'
 
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import {Portal} from 'part:@sanity/components/utilities/portal'
@@ -13,6 +13,7 @@ import Editor from './Editor'
 import Toolbar from './Toolbar/Toolbar'
 
 import styles from './styles/BlockEditor.css'
+import IS_MAC from './utils/isMac'
 
 import type {BlockContentFeatures, SlateChange, SlateValue, Marker, Type} from './typeDefs'
 
@@ -230,7 +231,7 @@ export default class BlockEditor extends React.PureComponent<Props> {
               <h3>Click to scroll</h3>
               <div>or</div>
               <Button inverted onClick={onToggleFullScreen}>
-                Open in fullscreen ({toKeyName('mod+enter')})
+                Open in fullscreen ({IS_MAC ? 'cmd' : 'ctrl'}+enter)
               </Button>
             </div>
           }
