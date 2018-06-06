@@ -6,6 +6,7 @@ import Base64 from 'slate-base64-serializer'
 
 import React from 'react'
 import {Block, Range} from 'slate'
+import {isEqual} from 'lodash'
 import {Editor, setEventTransfer, getEventRange} from 'slate-react'
 import {IntentLink} from 'part:@sanity/base/router'
 import LinkIcon from 'part:@sanity/base/link-icon'
@@ -281,21 +282,26 @@ export default class InlineObject extends React.Component<Props, State> {
   renderPreview(value, scopedValidation) {
     const {type, readOnly} = this.props
     const {menuOpen} = this.state
+    const valueKeys = value ? Object.keys(value) : []
+    const isEmpty = !value || isEqual(valueKeys.sort(), ['_key', '_type'].sort())
     return (
-      <Tooltip
-        arrow
-        theme="light"
-        trigger="click"
-        position="bottom"
-        interactive
-        duration={100}
-        open={menuOpen}
-        onRequestClose={this.handleCloseMenu}
-        style={{padding: 0, display: 'inline-block', minWidth: '1em'}}
-        html={!readOnly && this.renderMenu(value, scopedValidation)}
-      >
-        <Preview type={type} value={value} layout="inline" />
-      </Tooltip>
+      <StackedEscapable onEscape={this.handleCloseMenu}>
+        <Tooltip
+          arrow
+          theme="light"
+          trigger="click"
+          position="bottom"
+          interactive
+          duration={100}
+          open={menuOpen}
+          onRequestClose={this.handleCloseMenu}
+          style={{padding: 0, display: 'inline-block', minWidth: '1em'}}
+          html={!readOnly && this.renderMenu(value, scopedValidation)}
+        >
+          {!isEmpty && <Preview type={type} value={value} layout="inline" />}
+          {isEmpty && <span>Click to edit</span>}
+        </Tooltip>
+      </StackedEscapable>
     )
   }
 
