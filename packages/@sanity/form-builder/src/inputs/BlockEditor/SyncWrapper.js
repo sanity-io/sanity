@@ -79,7 +79,7 @@ type State = {
 export default withPatchSubscriber(
   class SyncWrapper extends React.PureComponent<Props, State> {
     _input = null
-    _selectionOperation = null
+    _select = null
     _undoRedoStack = {undo: [], redo: []}
 
     static defaultProps = {
@@ -87,7 +87,7 @@ export default withPatchSubscriber(
     }
 
     // Keep track of what the editor value is (as seen in the editor) before it is changed by something.
-    _snapshotEditorValue = null
+    _beforeChangeEditorValue = null
 
     constructor(props) {
       super(props)
@@ -109,11 +109,11 @@ export default withPatchSubscriber(
 
     handleEditorChange = (change: SlateChange, callback: void => void) => {
       const {value, onChange, type} = this.props
-      this._snapshotEditorValue = this.state.editorValue
+      this._beforeChangeEditorValue = this.state.editorValue
       this.setState({editorValue: change.value})
 
-      const patches = changeToPatches(this._snapshotEditorValue, change, value, type)
-      this._selectionOperation = createSelectionOperation(change)
+      const patches = changeToPatches(this._beforeChangeEditorValue, change, value, type)
+      this._select = createSelectionOperation(change)
 
       // Do the change
       onChange(PatchEvent.from(patches))
@@ -166,8 +166,8 @@ export default withPatchSubscriber(
         if (!isUndoRedoPatch) {
           this._undoRedoStack.undo.push({
             patches: localPatches,
-            editorValue: this._snapshotEditorValue,
-            selection: this._selectionOperation
+            editorValue: this._beforeChangeEditorValue,
+            select: this._select
           })
           // Redo stack must be reset here
           this._undoRedoStack.redo = []
@@ -179,10 +179,10 @@ export default withPatchSubscriber(
       if (snapshot && shouldSetNewState) {
         const editorValue = deserialize(snapshot, type)
         const change = editorValue.change()
-        if (this._selectionOperation) {
+        if (this._select) {
           // eslint-disable-next-line max-depth
           try {
-            change.applyOperations([this._selectionOperation])
+            change.applyOperations([this._select])
           } catch (err) {
             // eslint-disable-next-line max-depth
             if (!err.message.match('Could not find a descendant')) {
