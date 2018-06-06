@@ -56,8 +56,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
   }
 
   handleToggleFullScreen = () => {
-    const {fullscreen} = this.state
-    this.setState({fullscreen: !fullscreen})
+    this.setState((prevState: State) => ({fullscreen: !prevState.fullscreen}))
     this.focus()
   }
 
