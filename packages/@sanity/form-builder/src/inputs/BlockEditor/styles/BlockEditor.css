@@ -90,3 +90,9 @@
   font-size: var(--font-size-xsmall);
   color: var(--text-muted);
 }
+
+.keyboardShortcut {
+  font-size: var(--font-size-xsmall);
+  opacity: var(--gray-light);
+  text-transform: none;
+}
