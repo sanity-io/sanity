@@ -8,7 +8,6 @@ import classnames from 'classnames'
 import enhanceWithClickOutside from 'react-click-outside'
 
 import {ContainerQuery} from 'react-container-query'
-import {toKeyName} from 'is-hotkey'
 import {Tooltip} from '@sanity/react-tippy'
 
 import ArrowIcon from 'part:@sanity/base/angle-down-icon'
@@ -24,6 +23,8 @@ import BlockStyleSelect from './BlockStyleSelect'
 import DecoratorButtons from './DecoratorButtons'
 import InsertMenu from './InsertMenu'
 import ListItemButtons from './ListItemButtons'
+
+import IS_MAC from '../utils/isMac'
 
 import styles from './styles/Toolbar.css'
 
@@ -223,6 +224,7 @@ class Toolbar extends React.PureComponent<Props, State> {
                 <Button
                   kind="simple"
                   onClick={onToggleFullScreen}
+                  title={`Open in fullscreen (${IS_MAC ? 'cmd' : 'ctrl'}+enter)`}
                   icon={fullscreen ? CloseIcon : FullscreenIcon}
                 />
               </div>
