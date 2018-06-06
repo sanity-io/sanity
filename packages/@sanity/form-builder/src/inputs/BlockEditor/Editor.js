@@ -100,10 +100,26 @@ export default class Editor extends React.Component<Props> {
     this._validateNode = createNodeValidator(props.type, this.getValue)
   }
 
+  componentDidMount() {
+    const {editorValue, focusPath} = this.props
+    if ((focusPath || []).length) {
+      const block = editorValue.document.getDescendant(focusPath[0]._key)
+      // Wait for things to get finshed rendered before scrolling there
+      setTimeout(
+        () =>
+          window.requestAnimationFrame(() => {
+            const element = findDOMNode(block)
+            element.scrollIntoView({behavior: 'instant', block: 'center', inline: 'nearest'})
+          }),
+        0
+      )
+    }
+  }
+
   // When focusPath has changed, but the editorValue has another focusBlock,
-  // select the block according to the focusPath
+  // select the block according to the focusPath and scroll there
   // eslint-disable-next-line complexity
-  componentWillUpdate(nextProps: Props) {
+  componentWillReceiveProps(nextProps: Props) {
     const {focusPath, editorValue, onChange} = nextProps
     if (!focusPath || focusPath.length === 0) {
       return
@@ -133,6 +149,7 @@ export default class Editor extends React.Component<Props> {
         this.scrollIntoView(change, block)
       }
     } else if (focusPathChanged) {
+      // Must be here to set focus after editing interfaces are closed
       change.focus()
       onChange(change)
     }
@@ -142,7 +159,7 @@ export default class Editor extends React.Component<Props> {
     const {onChange} = this.props
     change.collapseToEndOf(node)
     const element = findDOMNode(node)
-    element.scrollIntoView({behavior: 'instant', block: 'center', inline: 'center'})
+    element.scrollIntoView({behavior: 'instant', block: 'center', inline: 'nearest'})
     onChange(change)
   }
 
@@ -365,7 +382,6 @@ export default class Editor extends React.Component<Props> {
 
   render() {
     const {editorValue, fullscreen, readOnly} = this.props
-
     const classNames = [styles.root, fullscreen ? styles.fullscreen : null].filter(Boolean)
     return (
       <div className={classNames.join(' ')}>
