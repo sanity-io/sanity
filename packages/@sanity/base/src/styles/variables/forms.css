@@ -35,7 +35,7 @@
   --form-builder-block-border-color: color(var(--gray-light) alpha(80%));
   --form-builder-block-border-color-focus: var(--brand-primary);
   --form-builder-block-background: var(--gray-lighter);
-  --form-builder-block-background-hover: var(--gray-light);
+  --form-builder-block-background-hover: color(var(--gray-light) alpha(5%));
   --form-builder-block-background-selected: var(--text-selection-color);
   --input-box-shadow-base: var(--gray-base);
   --input-box-shadow: none;
