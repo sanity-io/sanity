@@ -136,24 +136,8 @@ export default class BlockObject extends React.Component<Props, State> {
         ? targetNode
         : editorValue.document.getClosestBlock(targetNode.key)
 
-    let isNextBlock
-    let isPreviousBlock
-
-    if (block) {
-      const nextBlock = editorValue.document.getNextBlock(block.key)
-      isNextBlock =
-        nextBlock &&
-        nextBlock.key === node.key &&
-        editorValue.document.nodes.last().key === nextBlock.key
-
-      const previousBlock = editorValue.document.getPreviousBlock(block.key)
-      isPreviousBlock =
-        previousBlock &&
-        previousBlock.key === node.key &&
-        editorValue.document.nodes.first().key === previousBlock.key
-    }
-    // If it is the same node, or the node in the nearest vincinity, reset and return
-    if (!block || block.key === node.key || isNextBlock || isPreviousBlock) {
+    // If no or same block reset and return
+    if (!block || block.key === node.key) {
       event.dataTransfer.dropEffect = 'none'
       this.resetDropTarget()
       return
@@ -166,6 +150,21 @@ export default class BlockObject extends React.Component<Props, State> {
     }
 
     const {rangeIsAtStart, rangeOffset} = range
+
+    // If the block in the nearest vincinity (same position target), reset and return
+    let nearestNeighbour = false
+    if (rangeIsAtStart) {
+      const nextBlock = editorValue.document.getNextBlock(node.key)
+      nearestNeighbour = nextBlock && nextBlock.key === block.key
+    } else {
+      const previousBlock = editorValue.document.getPreviousBlock(node.key)
+      nearestNeighbour = previousBlock && previousBlock.key === block.key
+    }
+    if (nearestNeighbour) {
+      event.dataTransfer.dropEffect = 'none'
+      this.resetDropTarget()
+      return
+    }
 
     const domNode = findDOMNode(block) // eslint-disable-line react/no-find-dom-node
 
