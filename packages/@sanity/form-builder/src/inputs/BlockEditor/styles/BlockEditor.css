@@ -89,5 +89,4 @@
 .shortcutHint {
   font-size: var(--font-size-xsmall);
   color: var(--text-muted);
-  padding-top: var(--medium-padding);
 }
