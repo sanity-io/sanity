@@ -1,0 +1,26 @@
+clone:
+  clone:
+    image: plugins/git
+    depth: 1
+
+pipeline:
+  build:
+    image: node:8
+    pull: true
+    when:
+      event: push
+      branches: [next, drone-ci]
+    secrets: [sanity_auth_token, npm_token]
+    commands:
+    # Install dependencies
+    - npm install -s
+    - npm run bootstrap
+    - npm run build
+
+    # Deploy the test-studio
+    - cd /drone/src/github.com/sanity-io/sanity/packages/test-studio
+    - /drone/src/github.com/sanity-io/sanity/packages/@sanity/cli/bin/sanity deploy
+
+    # Publish a new `next`
+    #- echo "//registry.npmjs.org/:_authToken=$${NPM_TOKEN}" > ~/.npmrc
+    #- /drone/src/github.com/sanity-io/sanity/node_modules/.bin/lerna publish --npm-tag=next --skip-git --cd-version=prepatch --preid=next --yes
