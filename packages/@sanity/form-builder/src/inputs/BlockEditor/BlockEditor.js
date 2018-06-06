@@ -185,6 +185,8 @@ export default class BlockEditor extends React.PureComponent<Props> {
     const isFullscreenKey = isKeyHotkey('mod+enter')
     const {onToggleFullScreen} = this.props
     if (isFullscreenKey(event)) {
+      event.preventDefault()
+      event.stopPropagation()
       onToggleFullScreen()
     }
   }
@@ -228,11 +230,15 @@ export default class BlockEditor extends React.PureComponent<Props> {
           isActive={!this.state.preventScroll || fullscreen || isActive}
           html={
             <div className={styles.activeOnFocus}>
-              <h3>Click to scroll</h3>
+              <h3>Click to edit</h3>
               <div>or</div>
               <Button inverted onClick={onToggleFullScreen}>
-                Open in fullscreen ({IS_MAC ? 'cmd' : 'ctrl'}+enter)
+                Open in fullscreen
               </Button>
+              <div className={styles.shortcutHint}>
+                <br />
+                Use <em>{IS_MAC ? 'cmd' : 'ctrl'}+enter</em> in editor to toggle fullscreen.
+              </div>
             </div>
           }
           onActivate={setFocus}
