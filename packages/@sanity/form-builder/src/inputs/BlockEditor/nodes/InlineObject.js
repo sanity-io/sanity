@@ -10,6 +10,7 @@ import {Editor, setEventTransfer, getEventRange} from 'slate-react'
 import {IntentLink} from 'part:@sanity/base/router'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import ValidationStatus from 'part:@sanity/components/validation/status'
+import StackedEscapable from 'part:@sanity/components/utilities/stacked-escapable'
 import {Tooltip} from '@sanity/react-tippy'
 import classNames from 'classnames'
 
@@ -44,8 +45,7 @@ type Props = {
 
 type State = {
   isDragging: boolean,
-  isEditing: boolean,
-  isSelected: boolean
+  menuOpen: boolean
 }
 
 function shouldUpdateDropTarget(range, dropTarget) {
@@ -59,7 +59,8 @@ export default class InlineObject extends React.Component<Props, State> {
   rootElement: ?HTMLDivElement = null
 
   state = {
-    isDragging: false
+    isDragging: false,
+    menuOpen: false
   }
 
   componentDidMount() {
@@ -234,9 +235,8 @@ export default class InlineObject extends React.Component<Props, State> {
     )
   }
 
-  handleClose = () => {
-    const {node, onFocus} = this.props
-    onFocus([{_key: node.key}])
+  handleCloseMenu = () => {
+    this.setState({menuOpen: false})
   }
 
   refFormBuilderBlock = formBuilderBlock => {
@@ -247,33 +247,40 @@ export default class InlineObject extends React.Component<Props, State> {
     this.previewContainer = previewContainer
   }
 
+  handleShowMenu = () => {
+    this.setState({menuOpen: true})
+  }
+
   getValue() {
     return this.props.node.data.get('value')
   }
 
   renderMenu(value, scopedValidation) {
     return (
-      <div className={styles.functions}>
-        <div className={styles.validationStatus}>
-          <ValidationStatus markers={scopedValidation} />
+      <StackedEscapable onEscape={this.handleCloseMenu}>
+        <div className={styles.functions}>
+          <div className={styles.validationStatus}>
+            <ValidationStatus markers={scopedValidation} />
+          </div>
+          {value._ref && (
+            <IntentLink className={styles.linkToReference} intent="edit" params={{id: value._ref}}>
+              <LinkIcon />
+            </IntentLink>
+          )}
+          <EditButton title="Edit this object" onClick={this.handleEditStart}>
+            Edit
+          </EditButton>
+          <DeleteButton title="Remove this object" onClick={this.handleRemoveValue}>
+            Delete
+          </DeleteButton>
         </div>
-        {value._ref && (
-          <IntentLink className={styles.linkToReference} intent="edit" params={{id: value._ref}}>
-            <LinkIcon />
-          </IntentLink>
-        )}
-        <EditButton title="Edit this object" onClick={this.handleEditStart}>
-          Edit
-        </EditButton>
-        <DeleteButton title="Remove this object" onClick={this.handleRemoveValue}>
-          Delete
-        </DeleteButton>
-      </div>
+      </StackedEscapable>
     )
   }
 
   renderPreview(value, scopedValidation) {
     const {type, readOnly} = this.props
+    const {menuOpen} = this.state
     return (
       <Tooltip
         arrow
@@ -282,6 +289,8 @@ export default class InlineObject extends React.Component<Props, State> {
         position="bottom"
         interactive
         duration={100}
+        open={menuOpen}
+        onRequestClose={this.handleCloseMenu}
         style={{padding: 0, display: 'inline-block', minWidth: '1em'}}
         html={!readOnly && this.renderMenu(value, scopedValidation)}
       >
@@ -348,6 +357,7 @@ export default class InlineObject extends React.Component<Props, State> {
         draggable={!readOnly}
         ref={this.refFormBuilderBlock}
         className={classname}
+        onClick={this.handleShowMenu}
       >
         <span ref={this.refPreview} className={styles.previewContainer}>
           {this.renderPreview(value, scopedValidation)}
