@@ -232,13 +232,16 @@ export default class BlockEditor extends React.PureComponent<Props> {
             <div className={styles.activeOnFocus}>
               <h3>Click to edit</h3>
               <div>or</div>
-              <Button inverted onClick={onToggleFullScreen}>
-                Open in fullscreen
-              </Button>
-              <div className={styles.shortcutHint}>
-                <br />
-                Use <em>{IS_MAC ? 'cmd' : 'ctrl'}+enter</em> in editor to toggle fullscreen.
+              <div>
+                <Button onClick={onToggleFullScreen} color="primary">
+                  Open in fullscreen
+                </Button>
               </div>
+              <p className={styles.keyboardShortcut}>
+                Tip: <br />
+                <strong>{IS_MAC ? '⌘' : 'ctrl'}&nbsp;+&nbsp;enter</strong> while editing to go in
+                fullscreen
+              </p>
             </div>
           }
           onActivate={setFocus}
