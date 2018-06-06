@@ -26,20 +26,24 @@ export default class InsertMenu extends React.Component<Props> {
   shouldComponentUpdate(nextProps: Props) {
     return (
       this.props.blockTypes !== nextProps.blockTypes ||
-      this.props.inlineTypes !== nextProps.inlineTypes
+      this.props.inlineTypes !== nextProps.inlineTypes ||
+      this.props.editorValue.focusBlock !== nextProps.editorValue.focusBlock
     )
   }
 
   getItems() {
+    const {editorValue} = this.props
     const blockItems = this.props.blockTypes.map(type => ({
       title: `${type.title} ¶`,
       value: type,
-      isInline: false
+      isInline: false,
+      isDisabled: false
     }))
     const inlineItems = this.props.inlineTypes.map(type => ({
       title: type.title,
       value: type,
-      isInline: true
+      isInline: true,
+      isDisabled: editorValue.focusBlock.isVoid
     }))
     return blockItems.concat(inlineItems)
   }
