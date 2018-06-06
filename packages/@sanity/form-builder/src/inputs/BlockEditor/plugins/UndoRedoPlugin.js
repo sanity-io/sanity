@@ -41,10 +41,10 @@ export default function UndoRedoPlugin(options: Options = {}) {
         }
         // Redo (pretty much as undo, just that we don't need to reverse any operations)
         if (Hotkeys.isRedo(event) && (item = stack.redo.pop())) {
-          const {patches, editorValue, selection} = item
+          const {patches, editorValue, select} = item
           const patchChange = patchesToChange(patches, editorValue, null, blockContentType)
           // Restore the selection
-          patchChange.applyOperations([selection]).focus()
+          patchChange.applyOperations([select]).focus()
           patchChange.__isUndoRedo = 'redo'
           stack.undo.push(item)
           onChange(patchChange)
