@@ -252,7 +252,9 @@ export default class Editor extends React.Component<Props> {
       event.preventDefault()
       event.stopPropagation()
       onToggleFullScreen()
+      return true
     }
+    return undefined
   }
 
   refBlockDragMarker = (blockDragMarker: ?HTMLDivElement) => {

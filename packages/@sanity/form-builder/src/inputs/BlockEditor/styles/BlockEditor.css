@@ -70,14 +70,24 @@
   @nest & > h3 {
     margin: 0;
     padding: 0;
-    margin-bottom: var(--medium-padding);
     text-transform: uppercase;
+    margin-bottom: var(--small-padding);
   }
 
   @nest & > div {
     margin: 0;
     padding: 0;
-    margin-bottom: var(--medium-padding);
     text-transform: uppercase;
+    margin-bottom: var(--small-padding);
   }
+
+  @nest & > button {
+    margin-bottom: var(--small-padding);
+  }
+}
+
+.shortcutHint {
+  font-size: var(--font-size-xsmall);
+  color: var(--text-muted);
+  padding-top: var(--medium-padding);
 }
