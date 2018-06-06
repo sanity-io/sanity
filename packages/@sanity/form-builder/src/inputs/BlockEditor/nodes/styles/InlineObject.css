@@ -22,6 +22,7 @@
 
 .root.hasErrors > .previewContainer {
   background-color: var(--state-danger-color);
+  border: 1px solid var(--form-builder-block-border-color-error);
 }
 
 .root.focused > .previewContainer {
@@ -38,9 +39,9 @@
 }
 
 .root.selected.hasErrors > .previewContainer {
-  box-shadow: var(--input-box-shadow--error-focus);
-  border: 1px solid var(--state-danger-color);
-  background-color: color(var(--state-danger-color) blend(var(--form-builder-block-background-selected) 50%));
+  box-shadow: none;
+  border: 1px solid color(var(--state-danger-color) blend(var(--form-builder-block-background-selected) 70%));
+  background-color: color(var(--state-danger-color) blend(var(--form-builder-block-background-selected) 70%));
 }
 
 .root.focused.hasErrors > .previewContainer {

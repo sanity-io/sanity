@@ -309,7 +309,6 @@ export default class InlineObject extends React.Component<Props, State> {
       markers,
       blockContentFeatures
     } = this.props
-    const isFocused = editorValue.selection.hasFocusIn(node)
     const value = this.getValue()
     const valueType = resolveTypeName(value)
     const validTypes = blockContentFeatures.types.inlineObjects.map(objType => objType.name)
@@ -341,7 +340,7 @@ export default class InlineObject extends React.Component<Props, State> {
 
     const classname = classNames([
       styles.root,
-      isFocused && styles.focused,
+      editorValue.selection.hasFocusIn(node) && styles.focused,
       isSelected && styles.selected,
       errors.length > 0 && styles.hasErrors
     ])
