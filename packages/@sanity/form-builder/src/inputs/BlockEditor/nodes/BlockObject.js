@@ -324,6 +324,7 @@ export default class BlockObject extends React.Component<Props, State> {
           onDragEnter={this.handleCancelEvent}
           onDragLeave={this.handleCancelEvent}
           onDrop={this.handleCancelEvent}
+          onDoubleClick={this.handleEditStart}
           draggable={!readOnly}
           ref={this.refFormBuilderBlock}
           className={classname}
