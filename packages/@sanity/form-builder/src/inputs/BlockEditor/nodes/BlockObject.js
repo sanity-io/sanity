@@ -1,5 +1,4 @@
 // @flow
-import type {BlockContentFeatures, SlateValue, Type, SlateChange, Marker} from '../typeDefs'
 import type {Node} from 'react'
 import ReactDOM from 'react-dom'
 import Base64 from 'slate-base64-serializer'
@@ -7,11 +6,16 @@ import Base64 from 'slate-base64-serializer'
 import React from 'react'
 import {Block} from 'slate'
 import {Editor, findDOMNode, findNode, setEventTransfer} from 'slate-react'
+import classNames from 'classnames'
 
 import {IntentLink} from 'part:@sanity/base/router'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import MarkerWrapper from 'part:@sanity/form-builder/input/block-editor/block-marker-wrapper'
 import ValidationStatus from 'part:@sanity/components/validation/status'
+import ButtonsCollection from 'part:@sanity/components/buttons/button-collection'
+import FakeButton from 'part:@sanity/components/buttons/anchor'
+
+import type {BlockContentFeatures, SlateValue, Type, SlateChange, Marker} from '../typeDefs'
 
 import {PatchEvent} from '../../../PatchEvent'
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
@@ -225,8 +229,54 @@ export default class BlockObject extends React.Component<Props, State> {
     onChange(change.removeNodeByKey(node.key).focus())
   }
 
-  renderPreview() {
-    const {type, markers, readOnly, blockContentFeatures} = this.props
+  renderPreview(value, scopedValidation) {
+    const {type, readOnly} = this.props
+    return (
+      <div>
+        <div className={styles.header}>
+          <div className={styles.type}>{type.title || type.name || 'Unknown'}</div>
+          {!readOnly && (
+            <ButtonsCollection align="end" className={styles.functions}>
+              <div className={styles.validationStatus}>
+                <ValidationStatus markers={scopedValidation} />
+              </div>
+              {value._ref && (
+                <IntentLink
+                  className={styles.linkToReference}
+                  intent="edit"
+                  params={{id: value._ref}}
+                >
+                  <LinkIcon />
+                </IntentLink>
+              )}
+              {!readOnly && (
+                <div>
+                  <EditButton title="Edit this block" onClick={this.handleEditStart} />
+                </div>
+              )}
+              {!readOnly && (
+                <div>
+                  <DeleteButton title="Remove this block" onClick={this.handleRemoveValue} />
+                </div>
+              )}
+            </ButtonsCollection>
+          )}
+        </div>
+        <Preview type={type} value={value} layout="block" />
+      </div>
+    )
+  }
+
+  render() {
+    const {
+      attributes,
+      node,
+      editorValue,
+      isSelected,
+      readOnly,
+      markers,
+      blockContentFeatures
+    } = this.props
     const value = this.getValue()
     const valueType = resolveTypeName(value)
     const validTypes = blockContentFeatures.types.blockObjects
@@ -257,47 +307,13 @@ export default class BlockObject extends React.Component<Props, State> {
         item: marker.item.cloneWithMessage(`Contains ${level}`)
       })
     })
-    return (
-      <div className={errors.length > 0 ? styles.innerWithError : styles.inner}>
-        <Preview type={type} value={value} layout="block" />
-        {!readOnly && (
-          <div className={styles.functions}>
-            <div className={styles.validationStatus}>
-              <ValidationStatus markers={scopedValidation} />
-            </div>
-            {value._ref && (
-              <IntentLink
-                className={styles.linkToReference}
-                intent="edit"
-                params={{id: value._ref}}
-              >
-                <LinkIcon />
-              </IntentLink>
-            )}
-            {!readOnly && <EditButton title="Edit this block" onClick={this.handleEditStart} />}
-            {!readOnly && (
-              <DeleteButton title="Remove this block" onClick={this.handleRemoveValue} />
-            )}
-          </div>
-        )}
-      </div>
-    )
-  }
 
-  render() {
-    const {attributes, node, editorValue, isSelected, readOnly, markers} = this.props
-    const isFocused = editorValue.selection.hasFocusIn(node)
-
-    let className
-    if (isFocused && !isSelected) {
-      className = styles.focused
-    } else if (isFocused && isSelected) {
-      className = styles.focusedAndSelected
-    } else if (isSelected) {
-      className = styles.selected
-    } else {
-      className = styles.root
-    }
+    const classname = classNames([
+      styles.root,
+      editorValue.selection.hasFocusIn(node) && styles.focused,
+      isSelected && styles.selected,
+      errors.length > 0 && styles.hasErrors
+    ])
 
     return (
       <MarkerWrapper markers={markers}>
@@ -310,10 +326,10 @@ export default class BlockObject extends React.Component<Props, State> {
           onDrop={this.handleCancelEvent}
           draggable={!readOnly}
           ref={this.refFormBuilderBlock}
-          className={className}
+          className={classname}
         >
           <div ref={this.refPreview} className={styles.previewContainer}>
-            {this.renderPreview()}
+            {this.renderPreview(value, scopedValidation)}
           </div>
         </div>
       </MarkerWrapper>

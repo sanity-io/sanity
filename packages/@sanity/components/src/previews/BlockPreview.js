@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/previews/block-style'
