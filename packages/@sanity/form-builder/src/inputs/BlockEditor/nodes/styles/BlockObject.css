@@ -39,8 +39,8 @@
   box-shadow: var(--form-builder-block-shadow--focus);
 }
 
-.root.selected > .previewContainer {
-  /* background-color: var(--form-builder-block-background-selected); */
+.root.selected:not(.focused) > .previewContainer {
+  background-color: var(--form-builder-block-background-selected);
 }
 
 .root.focused.selected > .previewContainer {
@@ -48,8 +48,8 @@
 }
 
 .root.selected.hasErrors > .previewContainer {
-  box-shadow: var(--form-builder-block-shadow--error-focus);
-  border: 1px solid var(--state-danger-color);
+  box-shadow: none;
+  border: 1px solid color(var(--state-danger-color) blend(var(--form-builder-block-background-selected) 70%));
 }
 
 .root.focused.hasErrors > .previewContainer {
