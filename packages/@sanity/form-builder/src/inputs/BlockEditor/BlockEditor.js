@@ -5,7 +5,9 @@ import {isKeyHotkey} from 'is-hotkey'
 
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import {Portal} from 'part:@sanity/components/utilities/portal'
-import StackedEscapable from 'part:@sanity/components/utilities/stacked-escapable'
+import Stacked from 'part:@sanity/components/utilities/stacked'
+import Escapable from 'part:@sanity/components/utilities/escapable'
+
 import Button from 'part:@sanity/components/buttons/default'
 
 import EditNode from './EditNode'
@@ -267,11 +269,16 @@ export default class BlockEditor extends React.PureComponent<Props> {
     return (
       <div className={styles.root} ref={this.setRootElement}>
         {fullscreen && (
-          <StackedEscapable onEscape={onToggleFullScreen}>
-            <Portal>
-              <div className={styles.fullscreen}>{this.renderEditor()}</div>
-            </Portal>
-          </StackedEscapable>
+          <Stacked>
+            {isActive => {
+              return (
+                <Portal>
+                  {isActive && <Escapable onEscape={onToggleFullScreen} />}
+                  <div className={styles.fullscreen}>{this.renderEditor()}</div>
+                </Portal>
+              )
+            }}
+          </Stacked>
         )}
         {!fullscreen && <div className={isFocused ? styles.focus : ''}>{this.renderEditor()}</div>}
         {isEditingNode && this.renderNodeEditor()}
