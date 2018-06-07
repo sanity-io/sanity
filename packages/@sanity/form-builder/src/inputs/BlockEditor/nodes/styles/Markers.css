@@ -4,8 +4,9 @@
   display: block;
   position: absolute;
   top: 0;
+  bottom: 0;
   right: 0;
-  transform: translateX(calc(100% + var(--medium-padding)));
+  transform: translateX(100%);
 }
 
 .markers {

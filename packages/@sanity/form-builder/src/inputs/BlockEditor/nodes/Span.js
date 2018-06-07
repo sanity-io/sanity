@@ -139,17 +139,13 @@ export default class Span extends React.Component<Props, State> {
     })
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
-    const classNames = [styles.root]
-    if (errors.length) {
-      classNames.push(styles.error)
-    }
     return (
       <span
         {...attributes}
         onMouseDown={this.handleMouseDown}
         onMouseUp={this.handleMouseUp}
         onClick={this.handleClick}
-        className={classNames.join(' ')}
+        className={errors.length ? styles.error : styles.valid}
         ref={this.refSpan}
       >
         {children}

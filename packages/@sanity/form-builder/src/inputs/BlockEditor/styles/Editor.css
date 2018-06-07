@@ -14,6 +14,7 @@
   flex-direction: column;
   width: 100%;
   min-height: 100%;
+  background-color: var(--input-bg);
 }
 
 .editor {
@@ -24,7 +25,8 @@
 }
 
 .root.hasMarkers:not(.fullscreen) {
-  padding-right: 5rem;
+  margin-right: 5rem;
+  border-right: 1px solid var(--gray);
 }
 
 /* less spacing on block objects / non-text objects */
@@ -54,11 +56,11 @@
   padding-top: var(--small-padding);
 
   @media (--screen-medium) {
-    padding-top: var(--medium-padding);
+    margin-top: var(--medium-padding);
   }
 
   @nest .fullscreen & {
-    padding-top: var(--large-padding);
+    margin-top: var(--large-padding);
   }
 }
 
