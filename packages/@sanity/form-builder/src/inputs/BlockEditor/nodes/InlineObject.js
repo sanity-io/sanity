@@ -11,7 +11,8 @@ import {Editor, setEventTransfer, getEventRange} from 'slate-react'
 import {IntentLink} from 'part:@sanity/base/router'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import ValidationStatus from 'part:@sanity/components/validation/status'
-import StackedEscapable from 'part:@sanity/components/utilities/stacked-escapable'
+import Stacked from 'part:@sanity/components/utilities/stacked'
+import Escapable from 'part:@sanity/components/utilities/escapable'
 import {Tooltip} from '@sanity/react-tippy'
 import classNames from 'classnames'
 
@@ -48,6 +49,8 @@ type State = {
   isDragging: boolean,
   menuOpen: boolean
 }
+
+const NOOP = () => {}
 
 function shouldUpdateDropTarget(range, dropTarget) {
   if (!dropTarget) {
@@ -258,24 +261,34 @@ export default class InlineObject extends React.Component<Props, State> {
 
   renderMenu(value, scopedValidation) {
     return (
-      <StackedEscapable onEscape={this.handleCloseMenu}>
-        <div className={styles.functions}>
-          <div className={styles.validationStatus}>
-            <ValidationStatus markers={scopedValidation} />
-          </div>
-          {value._ref && (
-            <IntentLink className={styles.linkToReference} intent="edit" params={{id: value._ref}}>
-              <LinkIcon />
-            </IntentLink>
-          )}
-          <EditButton title="Edit this object" onClick={this.handleEditStart}>
-            Edit
-          </EditButton>
-          <DeleteButton title="Remove this object" onClick={this.handleRemoveValue}>
-            Delete
-          </DeleteButton>
-        </div>
-      </StackedEscapable>
+      <Stacked>
+        {isActive => {
+          return (
+            <Escapable onEscape={isActive ? this.handleCloseMenu : NOOP}>
+              <div className={styles.functions}>
+                <div className={styles.validationStatus}>
+                  <ValidationStatus markers={scopedValidation} />
+                </div>
+                {value._ref && (
+                  <IntentLink
+                    className={styles.linkToReference}
+                    intent="edit"
+                    params={{id: value._ref}}
+                  >
+                    <LinkIcon />
+                  </IntentLink>
+                )}
+                <EditButton title="Edit this object" onClick={this.handleEditStart}>
+                  Edit
+                </EditButton>
+                <DeleteButton title="Remove this object" onClick={this.handleRemoveValue}>
+                  Delete
+                </DeleteButton>
+              </div>
+            </Escapable>
+          )
+        }}
+      </Stacked>
     )
   }
 
@@ -285,23 +298,23 @@ export default class InlineObject extends React.Component<Props, State> {
     const valueKeys = value ? Object.keys(value) : []
     const isEmpty = !value || isEqual(valueKeys.sort(), ['_key', '_type'].sort())
     return (
-      <StackedEscapable onEscape={this.handleCloseMenu}>
-        <Tooltip
-          arrow
-          theme="light"
-          trigger="click"
-          position="bottom"
-          interactive
-          duration={100}
-          open={menuOpen}
-          onRequestClose={this.handleCloseMenu}
-          style={{padding: 0, display: 'inline-block', minWidth: '1em'}}
-          html={!readOnly && this.renderMenu(value, scopedValidation)}
-        >
-          {!isEmpty && <Preview type={type} value={value} layout="inline" />}
-          {isEmpty && <span>Click to edit</span>}
-        </Tooltip>
-      </StackedEscapable>
+      <Tooltip
+        arrow
+        theme="light"
+        trigger="manual"
+        open={menuOpen}
+        position="bottom"
+        interactive
+        useContext
+        duration={100}
+        style={{padding: 0, display: 'inline-block', minWidth: '1em'}}
+        unmountHTMLWhenHide
+        onRequestClose={menuOpen && this.handleCloseMenu}
+        html={!readOnly && this.renderMenu(value, scopedValidation)}
+      >
+        {!isEmpty && <Preview type={type} value={value} layout="inline" />}
+        {isEmpty && <span>Click to edit</span>}
+      </Tooltip>
     )
   }
 
