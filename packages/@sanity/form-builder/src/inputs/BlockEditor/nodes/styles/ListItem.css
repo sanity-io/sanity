@@ -1,7 +1,9 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .root {
-  margin: 0;
   width: auto;
-  padding: 0 0 0.5em 1.1em;
+  composes: xsmallToxSmall from './Spacing.css';
+  margin-left: var(--large-padding);
 
   /* Important 'transform' in order to force refresh the ::before and ::after rules
      in Webkit: https://stackoverflow.com/a/21947628/831480
@@ -45,14 +47,14 @@
   margin-left: 27em;
 }
 
-.root > * {
+.root > .item {
   display: table-row;
-  margin: 0 0 1em 0;
+  margin: 0;
   padding: 0;
 
-  @nest &:after {
+  /* @nest &:after {
     content: ' ';
-  }
+  } */
 
   @nest &:before {
     display: table-cell;
@@ -64,48 +66,44 @@
 .bullet {
   composes: root;
 
-  @nest &.level-2 > * {
+  @nest & > .item:before {
+    content: '\25CF '; /* BLACK CIRCLE */
+  }
+
+  @nest &.level-2 > .item {
     @nest &:before {
-      content: '\25E6 '; /* WHITE CIRCLE */
+      content: '\25CB '; /* WHITE CIRCLE */
     }
   }
 
-  @nest &.level-3 > * {
+  @nest &.level-3 > .item {
     @nest &:before {
-      content: '\25AA '; /* SMALL BLACK SQUARE */
+      content: '\25A0 '; /* BIG BLACK SQUARE */
     }
   }
 
-  @nest &.level-5 > * {
+  @nest &.level-5 > .item {
     @nest &:before {
-      content: '\25E6 '; /* WHITE CIRCLE */
+      content: '\25CB '; /* WHITE CIRCLE */
     }
   }
 
-  @nest &.level-6 > * {
+  @nest &.level-6 > .item {
     @nest &:before {
-      content: '\25AA '; /* SMALL BLACK SQUARE */
+      content: '\25A0 '; /* BIG BLACK SQUARE */
     }
   }
 
-  @nest &.level-8 > * {
+  @nest &.level-8 > .item {
     @nest &:before {
-      content: '\25E6 '; /* WHITE CIRCLE */
+      content: '\25CB '; /* WHITE CIRCLE */
     }
   }
 
-  @nest &.level-9 > * {
+  @nest &.level-9 > .item {
     @nest &:before {
-      content: '\25AA '; /* SMALL BLACK SQUARE */
+      content: '\25A0 '; /* BIG BLACK SQUARE */
     }
-  }
-}
-
-.bullet > * {
-  @nest &:before {
-    font-size: 1.9em;
-    line-height: 0.8em;
-    content: '\2022 ';
   }
 }
 
@@ -165,62 +163,62 @@
     counter-reset: listItemNumber;
   }
 
-  @nest &.level-2 > * {
+  @nest &.level-2 > .item {
     @nest &:before {
       content: counter(listItemAlpha, lower-alpha) ". ";
     }
   }
 
-  @nest &.level-3 > * {
+  @nest &.level-3 > .item {
     @nest &:before {
       content: counter(listItemRoman, lower-roman) ". ";
     }
   }
 
-  @nest &.level-4 > * {
+  @nest &.level-4 > .item {
     @nest &:before {
       content: counter(listItemNumberNext) ". ";
     }
   }
 
-  @nest &.level-5 > * {
+  @nest &.level-5 > .item {
     @nest &:before {
       content: counter(listItemLetterNext, lower-alpha) ". ";
     }
   }
 
-  @nest &.level-6 > * {
+  @nest &.level-6 > .item {
     @nest &:before {
       content: counter(listItemRomanNext, lower-roman) ". ";
     }
   }
 
-  @nest &.level-7 > * {
+  @nest &.level-7 > .item {
     @nest &:before {
       content: counter(listItemNumberNextNext) ". ";
     }
   }
 
-  @nest &.level-8 > * {
+  @nest &.level-8 > .item {
     @nest &:before {
       content: counter(listItemAlphaNextNext, lower-alpha) ". ";
     }
   }
 
-  @nest &.level-9 > * {
+  @nest &.level-9 > .item {
     @nest &:before {
       content: counter(listItemRomanNextNext, lower-roman) ". ";
     }
   }
 
-  @nest &.level-10 > * {
+  @nest &.level-10 > .item {
     @nest &:before {
       content: counter(listItemNumberNextNextNext) ". ";
     }
   }
 }
 
-.number > * {
+.number > .item {
   @nest &:before {
     min-width: 1.6em;
     content: counter(listItemNumber) ". ";

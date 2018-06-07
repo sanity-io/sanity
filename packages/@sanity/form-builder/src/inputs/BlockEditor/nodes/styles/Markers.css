@@ -1,0 +1,21 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translateX(calc(100% + var(--medium-padding)));
+}
+
+.markers {
+  composes: root;
+  border-left: 2px solid var(--brand-primary);
+  height: 100%;
+  padding-left: var(--small-padding);
+}
+
+.marker {
+  display: flex;
+  flex-wrap: wrap;
+}

@@ -43,7 +43,7 @@ export default class InsertMenu extends React.Component<Props> {
       title: type.title,
       value: type,
       isInline: true,
-      isDisabled: editorValue.focusBlock.isVoid
+      isDisabled: editorValue.focusBlock ? editorValue.focusBlock.isVoid : true
     }))
     return blockItems.concat(inlineItems)
   }

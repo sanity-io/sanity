@@ -1,5 +1,5 @@
 .root {
-  display: block;
+  composes: default from './Spacing.css';
 }
 
 .h1 {
