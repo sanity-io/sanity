@@ -10,7 +10,7 @@ import classNames from 'classnames'
 
 import {IntentLink} from 'part:@sanity/base/router'
 import LinkIcon from 'part:@sanity/base/link-icon'
-import MarkerWrapper from 'part:@sanity/form-builder/input/block-editor/block-marker-wrapper'
+import Markers from 'part:@sanity/form-builder/input/block-editor/block-markers'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import ButtonsCollection from 'part:@sanity/components/buttons/button-collection'
 
@@ -336,24 +336,23 @@ export default class BlockObject extends React.Component<Props, State> {
     ])
 
     return (
-      <MarkerWrapper markers={markers}>
-        <div
-          {...attributes}
-          onDragStart={this.handleDragStart}
-          onDragEnd={this.handleDragEnd}
-          onDragEnter={this.handleCancelEvent}
-          onDragLeave={this.handleCancelEvent}
-          onDrop={this.handleCancelEvent}
-          onDoubleClick={this.handleEditStart}
-          draggable={!readOnly}
-          ref={this.refFormBuilderBlock}
-          className={classname}
-        >
-          <div ref={this.refPreview} className={styles.previewContainer}>
-            {this.renderPreview(value, scopedValidation)}
-          </div>
+      <div
+        {...attributes}
+        onDragStart={this.handleDragStart}
+        onDragEnd={this.handleDragEnd}
+        onDragEnter={this.handleCancelEvent}
+        onDragLeave={this.handleCancelEvent}
+        onDrop={this.handleCancelEvent}
+        onDoubleClick={this.handleEditStart}
+        draggable={!readOnly}
+        ref={this.refFormBuilderBlock}
+        className={classname}
+      >
+        <div ref={this.refPreview} className={styles.previewContainer}>
+          {this.renderPreview(value, scopedValidation)}
         </div>
-      </MarkerWrapper>
+        <Markers markers={markers} />
+      </div>
     )
   }
 }
