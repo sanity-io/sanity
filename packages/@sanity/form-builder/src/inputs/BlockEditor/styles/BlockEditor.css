@@ -26,7 +26,7 @@
   height: 15rem;
   border: 1px solid var(--input-border-color);
   border-radius: var(--input-border-radius);
-  background-color: var(--input-bg);
+  background-color: var(--gray-lighter);
   box-sizing: border-box;
 
   @nest .fullscreen & {

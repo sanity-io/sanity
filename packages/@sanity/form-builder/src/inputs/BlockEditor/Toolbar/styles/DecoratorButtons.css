@@ -1,7 +1,9 @@
+@import "part:@sanity/base/theme/variables-style";
+
 .root {
-  display: inline-block;
+  display: flex;
 }
 
-.iconContainer {
-  transform: scale(1.5);
+.buttonWrapper + .buttonWrapper {
+  margin-left: 0.1em;
 }

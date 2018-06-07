@@ -5,11 +5,9 @@
   outline: none;
   position: relative;
 
-  @nest &:focus {
-    box-shadow:
-      0 0 2px 1px color(var(--input-border-color-focus)),
-      0 0 4px 0 color(var(--input-border-color-focus) a(60%)),
-      0 0 10px 5px color(var(--input-border-color-focus) a(10%));
+  @nest &.disabled {
+    pointer-events: none;
+    opacity: 0.5;
   }
 }
 
@@ -17,20 +15,27 @@
   composes: root from 'part:@sanity/base/theme/forms/text-input-style';
   cursor: default;
 
-  @nest .transparent & {
-    transition: all 0.05s linear;
-    background-color: transparent;
-    border: 1px solid color(var(--gray-base) a(8%));
-
-    @nest &:hover {
-      background-color: var(--white);
-      border-color: var(--gray-light);
-    }
+  @nest &:hover {
+    box-shadow: var(--input-box-shadow--hover);
+    border-color: var(--input-border-color-hover);
   }
 }
 
-.transparent:not(:hover) .inner {
-  box-shadow: none;
+.transparent .inner {
+  background-color: transparent;
+}
+
+.transparent:hover .inner {
+  box-shadow: var(--input-box-shadow--hover);
+  border-color: var(--input-border-color-hover);
+  background-color: var(--input-bg);
+}
+
+.root:focus .inner,
+.root:focus:hover .inner {
+  box-shadow: var(--input-box-shadow--focus);
+  border-color: var(--input-border-color-focus);
+  background-color: var(--input-bg);
 }
 
 .selectContainer {
