@@ -83,20 +83,22 @@ export default class DecoratorButtons extends React.Component<Props> {
     const shortCut = keyMaps[item.value] ? `(${keyMaps[item.value]})` : ''
     const title = `${item.title} ${shortCut}`
     return (
-      <ToolbarClickAction
-        onAction={onAction}
-        editorValue={editorValue}
-        key={`decoratorButton${item.value}`}
-      >
-        <ToggleButton
-          selected={!!item.active}
-          disabled={item.disabled}
-          onClick={NOOP}
-          title={title}
-          className={styles.button}
-          icon={Icon}
-        />
-      </ToolbarClickAction>
+      <span className={styles.buttonWrapper}>
+        <ToolbarClickAction
+          onAction={onAction}
+          editorValue={editorValue}
+          key={`decoratorButton${item.value}`}
+        >
+          <ToggleButton
+            selected={!!item.active}
+            disabled={item.disabled}
+            onClick={NOOP}
+            title={title}
+            className={styles.button}
+            icon={Icon}
+          />
+        </ToolbarClickAction>
+      </span>
     )
   }
 
