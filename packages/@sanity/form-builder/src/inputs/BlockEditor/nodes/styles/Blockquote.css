@@ -1,6 +1,5 @@
 .root {
-  margin: 0;
-  padding: 0.5em 1em 0.5em 3em;
+  composes: default from './Spacing.css';
 }
 
 .quote {

@@ -23,7 +23,19 @@
   flex-grow: 1;
 }
 
-.editor > * {
+.root.hasMarkers:not(.fullscreen) {
+  padding-right: 5rem;
+}
+
+/* less spacing on block objects / non-text objects */
+.editor div[data-slate-void="true"] + div[data-slate-void="true"] {
+  padding-top: var(--small-padding);
+}
+
+.editor > div {
+  box-sizing: content-box;
+  position: relative;
+  padding-top: var(--medium-padding);
   padding-left: var(--small-padding);
   padding-right: var(--small-padding);
 

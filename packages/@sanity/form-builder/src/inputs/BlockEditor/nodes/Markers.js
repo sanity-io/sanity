@@ -3,19 +3,17 @@ import type {Node} from 'react'
 import React from 'react'
 
 import {Tooltip} from '@sanity/react-tippy'
-import Button from 'part:@sanity/components/buttons/default'
 import CommentIcon from 'part:@sanity/base/comment-icon'
 
-import styles from './styles/MarkerWrapper.css'
+import styles from './styles/Markers.css'
 
 type marker = {}
 
 type Props = {
-  children: Node,
   markers: marker[]
 }
 
-export default class MarkerWrapper extends React.Component<Props> {
+export default class Markers extends React.Component<Props> {
   static defaultProps = {
     markers: []
   }
@@ -28,19 +26,18 @@ export default class MarkerWrapper extends React.Component<Props> {
   }
 
   render() {
-    const {children, markers} = this.props
-    const customMarkers = markers.filter(mrkr => mrkr.type !== 'validation')
+    const {markers} = this.props
+    const customMarkers = markers
     if (customMarkers.length === 0) {
-      return <div>{children}</div>
+      return <div className={styles.root} />
     }
     const text = `${customMarkers.length} custom ${
       customMarkers.length > 1 ? 'markers' : 'marker'
     }, click to log to console.`
     return (
-      <div className={styles.root}>
-        <div className={styles.content}>{children}</div>
+      <div className={styles.markers}>
         {customMarkers.length > 0 && (
-          <div className={styles.markers}>
+          <div className={styles.marker}>
             <Tooltip
               title={text}
               trigger="mouseenter focus"

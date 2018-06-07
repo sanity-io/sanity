@@ -21,5 +21,9 @@ export default function ListItem(props: Props) {
     )
   }
   const className = `${styles[listStyle]} ${styles[`level-${level}`]}`
-  return <div className={className}>{props.children}</div>
+  return (
+    <div className={className}>
+      <div className={styles.item}>{props.children}</div>
+    </div>
+  )
 }

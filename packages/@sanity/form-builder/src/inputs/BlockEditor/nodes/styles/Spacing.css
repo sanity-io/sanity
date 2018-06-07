@@ -1,0 +1,27 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.default {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+.default + .default {
+  padding-top: var(--medium-padding);
+}
+
+.xsmallToxSmall + .xsmallToxSmall {
+  padding-top: 0.2rem;
+}
+
+.smallToSmall + .smallToSmall {
+  padding-top: var(--small-padding);
+}
+
+.largeToLarge + .largeToLarge {
+  padding-top: var(--large-padding);
+}
+
+.noneToNone + .noneToNone {
+  padding-top: 0;
+}
