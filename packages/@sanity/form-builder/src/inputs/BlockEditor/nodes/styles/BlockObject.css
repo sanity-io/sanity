@@ -1,11 +1,7 @@
-@import "part:@sanity/base/theme/variables/forms-style";
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  display: block;
-  position: relative;
-  padding-bottom: var(--small-padding);
-  box-sizing: border-box;
+  composes: default from './Spacing.css';
 }
 
 .previewContainer {

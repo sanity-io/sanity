@@ -1,4 +1,3 @@
 .root {
-  margin: 0;
-  padding: 1em 0;
+  composes: smallToSmall from './Spacing.css';
 }
