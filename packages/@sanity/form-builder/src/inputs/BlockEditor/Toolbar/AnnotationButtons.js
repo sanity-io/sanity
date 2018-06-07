@@ -55,10 +55,20 @@ export default class AnnotationButtons extends React.Component<Props> {
 
   getItems() {
     const {blockContentFeatures, editorValue} = this.props
-    const {inlines, focusBlock} = editorValue
+    const {inlines, focusBlock, focusText, selection} = editorValue
+    const {isCollapsed} = selection
+    const hasCharLeftOrRight =
+      isCollapsed &&
+      focusText &&
+      (
+        focusText.text.substring(selection.focusOffset - 1, selection.focusOffset).trim() === '' &&
+        focusText.text.substring(selection.focusOffset, selection.focusOffset + 1).trim() === ''
+      )
+
     const disabled =
       inlines.some(inline => inline.type !== 'span') ||
-      (focusBlock ? focusBlock.isVoid || focusBlock.text === '' : false)
+      (focusBlock ? focusBlock.isVoid || focusBlock.text === '' : false) ||
+      hasCharLeftOrRight
     return blockContentFeatures.annotations.map((annotation: BlockContentFeature) => {
       return {
         ...annotation,
