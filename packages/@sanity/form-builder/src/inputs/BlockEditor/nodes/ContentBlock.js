@@ -38,7 +38,7 @@ export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
         <Text style={style} attributes={attributes} styleComponent={styleComponent}>
           {children}
         </Text>
-        <div className={listItemStyles.markerWrapper}>
+        <div className={listItemStyles.markerWrapper} contentEditable={false}>
           <Markers markers={markers} />
         </div>
       </ListItem>
@@ -47,7 +47,7 @@ export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
   return (
     <Text style={style} styleComponent={styleComponent} attributes={attributes}>
       {children}
-      <Markers markers={markers} />
+      <Markers markers={markers} contentEditable={false} />
     </Text>
   )
 }
