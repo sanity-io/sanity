@@ -27,7 +27,7 @@ export default class Markers extends React.Component<Props> {
 
   render() {
     const {markers} = this.props
-    const customMarkers = markers
+    const customMarkers = markers.filter(mrkr => mrkr.type !== 'validation')
     if (customMarkers.length === 0) {
       return <div className={styles.root} />
     }
