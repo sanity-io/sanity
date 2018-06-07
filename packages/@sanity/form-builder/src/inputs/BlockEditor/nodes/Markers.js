@@ -29,13 +29,13 @@ export default class Markers extends React.Component<Props> {
     const {markers} = this.props
     const customMarkers = markers.filter(mrkr => mrkr.type !== 'validation')
     if (customMarkers.length === 0) {
-      return <div className={styles.root} />
+      return <div className={styles.root} contentEditable={false} />
     }
     const text = `${customMarkers.length} custom ${
       customMarkers.length > 1 ? 'markers' : 'marker'
     }, click to log to console.`
     return (
-      <div className={styles.markers}>
+      <div className={styles.markers} contentEditable={false}>
         {customMarkers.length > 0 && (
           <div className={styles.marker}>
             <Tooltip
