@@ -51,16 +51,17 @@
   display: table-row;
   margin: 0;
   padding: 0;
-
-  /* @nest &:after {
-    content: ' ';
-  } */
+  width: 100%;
 
   @nest &:before {
     display: table-cell;
     vertical-align: top;
-    min-width: 0.75em;
   }
+}
+
+/* Allow for cursor to show if item is empty */
+.root > .item > * {
+  padding-left: 0.01em;
 }
 
 .bullet {
