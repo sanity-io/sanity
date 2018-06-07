@@ -4,7 +4,6 @@
 .root {
   display: inline;
   position: relative;
-  margin: 0 var(--small-padding);
 }
 
 .previewContainer {
