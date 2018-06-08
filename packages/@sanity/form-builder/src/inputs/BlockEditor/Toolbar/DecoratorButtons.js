@@ -83,7 +83,7 @@ export default class DecoratorButtons extends React.Component<Props> {
     const shortCut = keyMaps[item.value] ? `(${keyMaps[item.value]})` : ''
     const title = `${item.title} ${shortCut}`
     return (
-      <span className={styles.buttonWrapper}>
+      <span className={styles.buttonWrapper} key={item.value}>
         <ToolbarClickAction
           onAction={onAction}
           editorValue={editorValue}

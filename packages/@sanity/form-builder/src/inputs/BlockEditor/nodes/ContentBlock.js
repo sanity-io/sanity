@@ -1,5 +1,5 @@
 // @flow
-import type {SlateComponentProps} from '../typeDefs'
+import type {SlateComponentProps, SlateChange, SlateValue} from '../typeDefs'
 
 import React from 'react'
 
@@ -10,13 +10,25 @@ import listItemStyles from './styles/ListItem.css'
 
 type ExtraProps = {
   blockContentFeatures: BlockContentFeatures,
+  editorValue: SlateValue,
   hasFormBuilderFocus: boolean,
   markers: Marker[],
+  onFocus: void => void,
+  onChange: (change: SlateChange) => void,
   readOnly: ?boolean
 }
 
 export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
-  const {attributes, children, node, blockContentFeatures, markers} = props
+  const {
+    attributes,
+    blockContentFeatures,
+    children,
+    editorValue,
+    markers,
+    node,
+    onChange,
+    onFocus
+  } = props
   const data = node.data
   const listItem = data ? data.get('listItem') : null
   const level = data ? data.get('level') : 1
@@ -39,7 +51,12 @@ export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
           {children}
         </Text>
         <div className={listItemStyles.markerWrapper} contentEditable={false}>
-          <Markers markers={markers} />
+          <Markers
+            markers={markers}
+            onFocus={onFocus}
+            onChange={onChange}
+            editorValue={editorValue}
+          />
         </div>
       </ListItem>
     )
@@ -47,7 +64,13 @@ export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
   return (
     <Text style={style} styleComponent={styleComponent} attributes={attributes}>
       {children}
-      <Markers markers={markers} contentEditable={false} />
+      <Markers
+        markers={markers}
+        contentEditable={false}
+        editorValue={editorValue}
+        onFocus={onFocus}
+        onChange={onChange}
+      />
     </Text>
   )
 }
