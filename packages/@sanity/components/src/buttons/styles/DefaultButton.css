@@ -34,13 +34,15 @@
 }
 
 .content {
-  display: flex;
-  align-items: center;
+  display: inline;
 }
 
 .inner {
-  display: block;
+  display: flex;
+  align-items: center;
   outline: none;
+  height: 1em;
+  overflow: hidden;
 }
 
 .spacing {
@@ -354,7 +356,6 @@
 }
 
 .icon {
-  height: 1em;
   /* transform: scale(1.2); */
   margin-right: var(--small-padding);
 }

@@ -92,16 +92,14 @@ export default function createButtonLike(Component, {displayName, defaultProps =
           tabIndex={0}
         >
           <span className={styles.inner}>
-            <span className={styles.content}>
-              {loading && (
-                <span className={styles.spinner}>
-                  <Spinner inline />
-                </span>
-              )}
-              {Icon && <Icon className={styles.icon} />}
-              {children && <span className={styles.content}>{children}</span>}
-              {ripple && !disabled && <Ink duration={1000} opacity={0.1} radius={200} />}
-            </span>
+            {loading && (
+              <span className={styles.spinner}>
+                <Spinner inline />
+              </span>
+            )}
+            {Icon && <Icon className={styles.icon} />}
+            {children && <span className={styles.content}>{children}</span>}
+            {ripple && !disabled && <Ink duration={1000} opacity={0.1} radius={200} />}
           </span>
         </Component>
       )
