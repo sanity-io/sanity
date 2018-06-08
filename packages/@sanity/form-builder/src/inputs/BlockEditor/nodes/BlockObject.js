@@ -11,7 +11,6 @@ import classNames from 'classnames'
 import {IntentLink} from 'part:@sanity/base/router'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import Markers from 'part:@sanity/form-builder/input/block-editor/block-markers'
-import ValidationStatus from 'part:@sanity/components/validation/status'
 import ButtonsCollection from 'part:@sanity/components/buttons/button-collection'
 
 import type {BlockContentFeatures, SlateValue, Type, SlateChange, Marker} from '../typeDefs'
@@ -249,7 +248,7 @@ export default class BlockObject extends React.Component<Props, State> {
     onChange(change.removeNodeByKey(node.key).focus())
   }
 
-  renderPreview(value, scopedValidation) {
+  renderPreview(value) {
     const {type, readOnly} = this.props
     return (
       <div>
@@ -257,9 +256,6 @@ export default class BlockObject extends React.Component<Props, State> {
           <div className={styles.type}>{type.title || type.name || 'Unknown'}</div>
           {!readOnly && (
             <ButtonsCollection align="end" className={styles.functions}>
-              <div className={styles.validationStatus}>
-                <ValidationStatus markers={scopedValidation} />
-              </div>
               {value._ref && (
                 <IntentLink
                   className={styles.linkToReference}
@@ -295,7 +291,9 @@ export default class BlockObject extends React.Component<Props, State> {
       isSelected,
       readOnly,
       markers,
-      blockContentFeatures
+      blockContentFeatures,
+      onFocus,
+      onChange
     } = this.props
     const value = this.getValue()
     const valueType = resolveTypeName(value)
@@ -317,16 +315,6 @@ export default class BlockObject extends React.Component<Props, State> {
     }
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
-    const scopedValidation = validation.map(marker => {
-      if (marker.path.length <= 1) {
-        return marker
-      }
-
-      const level = marker.level === 'error' ? 'errors' : 'warnings'
-      return Object.assign({}, marker, {
-        item: marker.item.cloneWithMessage(`Contains ${level}`)
-      })
-    })
 
     const classname = classNames([
       styles.root,
@@ -336,22 +324,29 @@ export default class BlockObject extends React.Component<Props, State> {
     ])
 
     return (
-      <div
-        {...attributes}
-        onDragStart={this.handleDragStart}
-        onDragEnd={this.handleDragEnd}
-        onDragEnter={this.handleCancelEvent}
-        onDragLeave={this.handleCancelEvent}
-        onDrop={this.handleCancelEvent}
-        onDoubleClick={this.handleEditStart}
-        draggable={!readOnly}
-        ref={this.refFormBuilderBlock}
-        className={classname}
-      >
-        <div ref={this.refPreview} className={styles.previewContainer}>
-          {this.renderPreview(value, scopedValidation)}
+      <div>
+        <div
+          {...attributes}
+          onDragStart={this.handleDragStart}
+          onDragEnd={this.handleDragEnd}
+          onDragEnter={this.handleCancelEvent}
+          onDragLeave={this.handleCancelEvent}
+          onDrop={this.handleCancelEvent}
+          onDoubleClick={this.handleEditStart}
+          draggable={!readOnly}
+          ref={this.refFormBuilderBlock}
+          className={classname}
+        >
+          <div ref={this.refPreview} className={styles.previewContainer}>
+            {this.renderPreview(value)}
+          </div>
         </div>
-        <Markers markers={markers} />
+        <Markers
+          markers={markers}
+          onFocus={onFocus}
+          onChange={onChange}
+          editorValue={editorValue}
+        />
       </div>
     )
   }
