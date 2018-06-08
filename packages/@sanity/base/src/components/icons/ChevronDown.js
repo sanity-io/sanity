@@ -1,3 +1,3 @@
-import ChevronDown from 'react-icons/lib/fa/chevron-down'
+import AngleDownIcon from './AngleDownIcon'
 
-export default ChevronDown
+export default AngleDownIcon
