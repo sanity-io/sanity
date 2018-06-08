@@ -106,6 +106,7 @@
   align-items: center;
   padding-right: 0;
   font-size: var(--font-size-xsmall);
+  line-height: 1em;
 
   @media (--screen-medium) {
     font-size: 1em;
