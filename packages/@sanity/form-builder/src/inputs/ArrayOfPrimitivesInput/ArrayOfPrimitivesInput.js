@@ -199,16 +199,18 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
       >
         <div className={styles.root}>
           <div className={styles.list}>{value && value.length > 0 && this.renderList(value)}</div>
-          <ArrayFunctions
-            type={type}
-            value={value}
-            readOnly={readOnly}
-            onAppendItem={this.handleAppend}
-            onPrependItem={this.handlePrepend}
-            onFocusItem={this.handleFocusItem}
-            onCreateValue={getEmptyValue}
-            onChange={onChange}
-          />
+          <div className={styles.functions}>
+            <ArrayFunctions
+              type={type}
+              value={value}
+              readOnly={readOnly}
+              onAppendItem={this.handleAppend}
+              onPrependItem={this.handlePrepend}
+              onFocusItem={this.handleFocusItem}
+              onCreateValue={getEmptyValue}
+              onChange={onChange}
+            />
+          </div>
         </div>
       </Fieldset>
     )
