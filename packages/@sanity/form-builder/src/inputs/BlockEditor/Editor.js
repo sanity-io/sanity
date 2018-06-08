@@ -321,6 +321,9 @@ export default class Editor extends React.Component<Props> {
         return (
           <ContentBlock
             {...props}
+            editorValue={editorValue}
+            onChange={onChange}
+            onFocus={onFocus}
             blockContentFeatures={blockContentFeatures}
             hasFormBuilderFocus={hasFormBuilderFocus}
             markers={childMarkers}
