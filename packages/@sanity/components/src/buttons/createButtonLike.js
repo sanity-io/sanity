@@ -38,8 +38,15 @@ export default function createButtonLike(Component, {displayName, defaultProps =
       ...defaultProps
     }
 
+    state = {
+      focusSetFromOutside: null
+    }
+
     focus() {
       if (this._element.focus) {
+        this.setState({
+          focusSetFromOutside: true
+        })
         this._element.focus()
       }
     }
@@ -48,12 +55,20 @@ export default function createButtonLike(Component, {displayName, defaultProps =
       this._element = el
     }
 
-    handleClick = event => {
+    handleBlur = event => {
       this.setState({
-        recentlyHovered: true
+        triggeredFocus: undefined
       })
+      // eslint-disable-next-line react/prop-types
+      if (this.props.onBlur) {
+        this.props.onBlur(event)
+      }
+    }
 
-      this.props.onClick(event)
+    handleInnerBlur = event => {
+      this.setState({
+        focusSetFromOutside: undefined
+      })
     }
 
     render() {
@@ -87,19 +102,31 @@ export default function createButtonLike(Component, {displayName, defaultProps =
         <Component
           {...rest}
           className={style}
-          onClick={this.handleClick}
           ref={this.setRootElement}
           tabIndex={0}
+          onBlur={this.handleBlur}
         >
-          <span className={styles.inner}>
-            {loading && (
-              <span className={styles.spinner}>
-                <Spinner inline />
-              </span>
-            )}
-            {Icon && <Icon className={styles.icon} />}
-            {children && <span className={styles.content}>{children}</span>}
-            {ripple && !disabled && <Ink duration={1000} opacity={0.1} radius={200} />}
+          {/*
+            To avoid visually annoying "tab-focus-styling" when clicking,
+            we catch the focus styling with tabIndex -1.
+            However, to avoid onBlur being called on an focused button (when focues from outside),
+            we need to check that the focus is not set from outside. (with .focus() )
+          */}
+          <span
+            className={styles.inner}
+            tabIndex={this.state.focusSetFromOutside ? undefined : -1}
+            onBlur={this.handleInnerBlur}
+          >
+            <span className={styles.content}>
+              {loading && (
+                <span className={styles.spinner}>
+                  <Spinner inline />
+                </span>
+              )}
+              {Icon && <Icon className={styles.icon} />}
+              {children && <span className={styles.content}>{children}</span>}
+              {ripple && !disabled && <Ink duration={1000} opacity={0.1} radius={200} />}
+            </span>
           </span>
         </Component>
       )
