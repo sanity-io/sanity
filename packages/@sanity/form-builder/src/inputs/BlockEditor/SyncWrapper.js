@@ -134,7 +134,9 @@ export default withPatchSubscriber(
     }
 
     focus() {
-      this._input.focus()
+      if (this._input) {
+        this._input.focus()
+      }
     }
 
     // eslint-disable-next-line complexity
