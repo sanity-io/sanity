@@ -20,7 +20,9 @@ export default class PopOver extends React.PureComponent {
     onEscape: PropTypes.func,
     onAction: PropTypes.func,
     modifiers: PropTypes.object,
+    useOverlay: PropTypes.bool,
     color: PropTypes.oneOf(['default', 'danger']),
+    padding: PropTypes.oneOf(['none', 'small', 'medium', 'large']),
     actions: PropTypes.arrayOf(
       PropTypes.shape({
         kind: PropTypes.string,
@@ -35,6 +37,7 @@ export default class PopOver extends React.PureComponent {
     onAction() {},
     actions: [],
     color: 'default',
+    padding: 'medium',
     modifiers: {
       flip: {
         boundariesElement: 'viewport'
@@ -71,7 +74,8 @@ export default class PopOver extends React.PureComponent {
       onClose,
       onClickOutside,
       onEscape,
-      modifiers
+      modifiers,
+      padding
     } = this.props
 
     const [primary, secondary] = partition(actions, action => action.primary)
@@ -95,7 +99,12 @@ export default class PopOver extends React.PureComponent {
               </button>
             )}
             {title && <h3 className={styles.title}>{title}</h3>}
-            <div className={actions.length > 0 ? styles.contentWithActions : styles.content}>
+            <div
+              className={`
+              ${actions.length > 0 ? styles.contentWithActions : styles.content}
+              ${styles[`padding_${padding}`]}
+            `}
+            >
               {children}
             </div>
             {actions.length > 0 && (
@@ -112,6 +121,7 @@ export default class PopOver extends React.PureComponent {
   }
 
   render() {
+    const {useOverlay} = this.props
     return (
       <Manager>
         <Target className={styles.target} />
@@ -119,7 +129,7 @@ export default class PopOver extends React.PureComponent {
           <Stacked>
             {isActive => (
               <div>
-                <div className={styles.overlay} />
+                {useOverlay && <div className={styles.overlay} />}
                 {this.renderPopper(isActive)}
               </div>
             )}

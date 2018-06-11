@@ -190,7 +190,6 @@
 
 .content {
   height: 100%;
-  padding: var(--medium-padding);
   box-sizing: border-box;
   overflow: auto;
   max-height: 40em;
@@ -205,6 +204,22 @@
 .contentWithActions {
   composes: content;
   padding-bottom: 5rem;
+}
+
+.content.padding_none {
+  padding: 0;
+}
+
+.content.padding_small {
+  padding: var(--small-padding);
+}
+
+.content.padding_medium {
+  padding: var(--medium-padding);
+}
+
+.content.padding_large {
+  padding: var(--large-padding);
 }
 
 .responsive .head {
