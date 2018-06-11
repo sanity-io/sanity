@@ -8,7 +8,7 @@ import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import DefaultFormField from 'part:@sanity/components/formfields/default'
 import InInputButton from 'part:@sanity/components/buttons/in-input'
 import InInputStyles from 'part:@sanity/components/buttons/in-input-style'
-import {storiesOf, action} from 'part:@sanity/storybook'
+import {storiesOf} from 'part:@sanity/storybook'
 import {withKnobs, text, select, boolean, object} from 'part:@sanity/storybook/addons/knobs'
 import PlusIcon from 'part:@sanity/base/plus-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
@@ -34,23 +34,45 @@ const items = [
   {index: '7', title: 'Test 7'}
 ]
 
+let testElement = null
+
+function testFocus() {
+  testElement.focus()
+}
+
+function setConfirmButton(element) {
+  testElement = element
+}
+
+function action(something) {
+  return () => console.log('action', something)
+}
+
 storiesOf('Buttons', module)
   .addDecorator(withKnobs)
   .add('Default', () => {
     return (
       <Sanity part="part:@sanity/components/buttons/default" propTables={[Button]}>
         <Button
+          id="testButton"
           kind={getButtonKinds()}
           onClick={action('clicked')}
           disabled={boolean('disabled (prop)', false)}
           inverted={boolean('inverted (prop)', false)}
+          onFocus={action('onFocus')}
+          onBlur={action('onBlur')}
           type={text('type (prop)', undefined)}
           color={getColorKinds()}
           loading={boolean('Loading (prop)', false)}
           icon={boolean('Show test icon', false) ? SanityLogoIcon : false}
+          ref={setConfirmButton}
         >
           {text('prop: children', 'Touch Me!')}
         </Button>
+        <p>
+          Click to focus:<br/>
+          <button onClick={testFocus}>Focus</button>
+        </p>
       </Sanity>
     )
   })
