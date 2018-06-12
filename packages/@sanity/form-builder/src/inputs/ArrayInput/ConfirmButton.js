@@ -32,6 +32,10 @@ export default class ConfirmButton extends React.Component {
     this.open()
   }
 
+  handleClickOutside = event => {
+    this.close()
+  }
+
   handleConfirmPopoverClose = event => {
     this.close()
   }
@@ -53,7 +57,6 @@ export default class ConfirmButton extends React.Component {
       this._button.focus()
     }
   }
-
   render() {
     const {showConfirmDialog} = this.state
     const {onConfirm, ...rest} = this.props
@@ -66,24 +69,32 @@ export default class ConfirmButton extends React.Component {
           onClick={this.handleClick}
           ref={this.setButton}
         />
-        <div className={styles.popoverAnchor}>
-          {showConfirmDialog && (
-            <PopOver color="danger" useOverlay={false} onEscape={this.handleConfirmPopoverClose}>
-              <div className={styles.wrapper}>
-                <Button
-                  color="white"
-                  inverted
-                  onClick={onConfirm}
-                  onBlur={this.handleConfirmPopoverClose}
-                  icon={TrashIcon}
-                  ref={this.setConfirmButton}
-                >
-                  Confirm remove
-                </Button>
-              </div>
-            </PopOver>
-          )}
-        </div>
+        {showConfirmDialog && (
+          <PopOver
+            color="danger"
+            useOverlay={false}
+            onEscape={this.handleConfirmPopoverClose}
+            onClickOutside={this.handleClickOutside}
+            padding="none"
+          >
+            <div className={styles.wrapper}>
+              {/*
+              Adding one focusable div befare and after button to close popover on tab and shift+tab
+              */}
+              <div tabIndex={0} onFocus={this.handleConfirmPopoverClose} />
+              <Button
+                color="white"
+                inverted
+                onClick={onConfirm}
+                icon={TrashIcon}
+                ref={this.setConfirmButton}
+              >
+                Confirm remove
+              </Button>
+              <div tabIndex={0} onFocus={this.handleConfirmPopoverClose} />
+            </div>
+          </PopOver>
+        )}
       </div>
     )
   }
