@@ -82,6 +82,12 @@ test('rejects on missing `_type` property (from array)', async () => {
   )
 })
 
+test('rejects on missing asset type prefix', async () => {
+  expect.assertions(1)
+  const docs = getFixtureArray('missing-asset-type')
+  await expect(importer(docs, importOptions)).rejects.toMatchSnapshot()
+})
+
 test('accepts an array as source', async () => {
   expect.assertions(2)
   const docs = getFixtureArray('employees')

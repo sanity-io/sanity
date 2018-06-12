@@ -41,3 +41,9 @@ Object {
   ],
 }
 `;
+
+exports[`rejects on missing asset type prefix 1`] = `
+[Error: Asset type is not specified.
+\`_sanityAsset\` values must be prefixed with a type, eg image@url or file@url.
+See document with ID "deadpool", path: image._sanityAsset]
+`;
