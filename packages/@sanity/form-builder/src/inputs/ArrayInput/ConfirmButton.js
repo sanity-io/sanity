@@ -78,6 +78,10 @@ export default class ConfirmButton extends React.Component {
             padding="none"
           >
             <div className={styles.wrapper}>
+              {/*
+              Adding one focusable div befare and after button to close popover on tab and shift+tab
+              */}
+              <div tabIndex={0} onFocus={this.handleConfirmPopoverClose} />
               <Button
                 color="white"
                 inverted
