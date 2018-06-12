@@ -1,3 +1,5 @@
+@import "part:@sanity/base/theme/variables-style";
+
 .previewImage {
   width: 100%;
   height: auto;
@@ -10,6 +12,9 @@
   width: 50rem;
   z-index: 0;
   position: relative;
+  box-sizing: border-box;
+  border-radius: var(--border-radius-large);
+  overflow: hidden;
 }
 
 .functions {
