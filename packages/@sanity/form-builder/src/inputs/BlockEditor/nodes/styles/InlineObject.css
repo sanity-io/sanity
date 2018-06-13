@@ -4,6 +4,7 @@
 .root {
   display: inline;
   position: relative;
+  margin: 0 0.25em; /* Allow cursor to show in nearby text */
 }
 
 .previewContainer {
