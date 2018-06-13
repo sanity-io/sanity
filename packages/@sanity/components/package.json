@@ -1,6 +1,6 @@
 {
   "name": "@sanity/components",
-  "version": "0.132.2",
+  "version": "0.132.4",
   "description": "Basic UX components",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -20,7 +20,7 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@sanity/date-input": "0.132.2",
+    "@sanity/date-input": "0.132.4",
     "@sanity/imagetool": "0.132.2",
     "@sanity/react-tippy": "1.2.6",
     "attr-accept": "^1.1.0",
@@ -57,9 +57,9 @@
     "scroll": "^2.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "0.132.2",
-    "@sanity/check": "0.132.2",
-    "@sanity/core": "0.132.2",
+    "@sanity/base": "0.132.4",
+    "@sanity/check": "0.132.4",
+    "@sanity/core": "0.132.4",
     "pre-commit": "^1.2.2",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
