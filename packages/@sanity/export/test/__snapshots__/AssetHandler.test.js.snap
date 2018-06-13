@@ -54,6 +54,8 @@ Object {
   "_type": "bike",
   "image": Object {
     "_sanityAsset": "image@file://./images/idx_abc123-3360x840.png",
+    "_type": "image",
+    "caption": "Scooter bike",
   },
   "name": "Scooter",
 }
@@ -65,6 +67,7 @@ Object {
   "_type": "bike",
   "image": Object {
     "_sanityAsset": "image@file://./images/idx_abc123-3360x840.png",
+    "_type": "image",
   },
   "name": "Dupe",
 }
@@ -76,6 +79,7 @@ Object {
   "_type": "bike",
   "image": Object {
     "_sanityAsset": "image@file://./images/idx_abc456-310x282.jpg",
+    "_type": "image",
   },
   "name": "Tandem",
 }
