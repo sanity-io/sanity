@@ -391,7 +391,7 @@ export default class Editor extends React.Component<Props> {
     const {editorValue, fullscreen, readOnly, markers} = this.props
     const classNames = [
       styles.root,
-      markers.length > 0 && styles.hasMarkers,
+      markers.filter(marker => marker.path.length > 0).length > 0 && styles.hasMarkers,
       fullscreen ? styles.fullscreen : null
     ].filter(Boolean)
     return (
