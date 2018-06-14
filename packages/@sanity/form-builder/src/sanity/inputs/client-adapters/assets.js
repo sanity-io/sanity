@@ -6,7 +6,8 @@ import {withMaxConcurrency} from '../../utils/withMaxConcurrency'
 
 const MAX_CONCURRENT_UPLOADS = 4
 
-function uploadSanityAsset(assetType, file) {
+function uploadSanityAsset(assetType, file, options = {}) {
+  const extract = options.metadata
   return observableFrom(hashFile(file)).pipe(
     catchError(error =>
       // ignore if hashing fails for some reason
@@ -22,7 +23,7 @@ function uploadSanityAsset(assetType, file) {
           asset: existing
         })
       }
-      return client.observable.assets.upload(assetType, file).pipe(
+      return client.observable.assets.upload(assetType, file, {extract}).pipe(
         map(
           event =>
             event.type === 'response'
@@ -41,8 +42,8 @@ function uploadSanityAsset(assetType, file) {
 
 const uploadAsset = withMaxConcurrency(uploadSanityAsset, MAX_CONCURRENT_UPLOADS)
 
-export const uploadImageAsset = file => uploadAsset('image', file)
-export const uploadFileAsset = file => uploadAsset('file', file)
+export const uploadImageAsset = (file, options) => uploadAsset('image', file, options)
+export const uploadFileAsset = (file, options) => uploadAsset('file', file, options)
 
 export function materializeReference(id) {
   return observePaths(id, ['originalFilename', 'url', 'metadata'])

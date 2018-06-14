@@ -120,6 +120,12 @@ export default {
             {name: 'muted', type: 'object', title: 'Muted', fields: PALETTE_FIELDS}
           ],
           fieldset: 'extra'
+        },
+        {
+          name: 'lqip',
+          title: 'LQIP (Low-Quality Image Placeholder)',
+          type: 'string',
+          readOnly: true
         }
       ]
     }

@@ -7,6 +7,10 @@ export type UploadEvent = {
   patches: ?Array<Patch>
 }
 
+export type UploadOptions = {
+  metadata: ?Array<String>
+}
+
 export type UploaderDef = {
   type: string,
   accepts: string,
@@ -16,7 +20,7 @@ export type UploaderDef = {
 export type Uploader = {
   type: string,
   accepts: string,
-  upload: (file: File, type: Type) => ObservableI<UploadEvent>,
+  upload: (file: File, type: Type, options?: UploadOptions) => ObservableI<UploadEvent>,
   priority: number
 }
 

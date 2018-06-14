@@ -3,6 +3,8 @@ import object from './validation/types/object'
 import reference from './validation/types/reference'
 import array from './validation/types/array'
 import slug from './validation/types/slug'
+import file from './validation/types/file'
+import image from './validation/types/image'
 import common from './validation/types/common'
 import rootType from './validation/types/rootType'
 
@@ -10,6 +12,8 @@ const typeVisitors = {
   array,
   object,
   slug,
+  file,
+  image,
   document: object,
   reference: reference
 }
