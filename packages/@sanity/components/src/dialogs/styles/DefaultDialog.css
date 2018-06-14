@@ -160,6 +160,10 @@
   box-sizing: border-box;
   max-height: calc(100vh - 50px);
   max-width: 100vw;
+
+  @nest .hasFunctions & {
+    max-height: calc(100vh - 6rem);
+  }
 }
 
 .title {
