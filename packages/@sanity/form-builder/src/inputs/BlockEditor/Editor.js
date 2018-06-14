@@ -273,7 +273,9 @@ export default class Editor extends React.Component<Props> {
       readOnly
     } = this.props
     const {node} = props
-    let childMarkers = markers.filter(marker => marker.path[0]._key === node.data.get('_key'))
+    let childMarkers = markers
+      .filter(marker => marker.path.length > 0)
+      .filter(marker => marker.path[0]._key === node.data.get('_key'))
     let ObjectClass = BlockObject
     let ObjectType = blockContentFeatures.types.blockObjects.find(
       memberType => memberType.name === node.type
