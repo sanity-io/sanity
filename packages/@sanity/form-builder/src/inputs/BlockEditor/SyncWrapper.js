@@ -116,7 +116,7 @@ export default withPatchSubscriber(
       this._select = createSelectionOperation(change)
 
       // Do the change
-      if(patches.length) {
+      if (patches.length) {
         onChange(PatchEvent.from(patches))
       }
 
