@@ -116,7 +116,9 @@ export default withPatchSubscriber(
       this._select = createSelectionOperation(change)
 
       // Do the change
-      onChange(PatchEvent.from(patches))
+      if(patches.length) {
+        onChange(PatchEvent.from(patches))
+      }
 
       if (callback) {
         callback(change)
