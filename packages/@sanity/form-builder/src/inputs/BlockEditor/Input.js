@@ -143,6 +143,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
       <FormField
         label={type.title}
         labelFor={this._inputId}
+        markers={markers}
         description={type.description}
         level={level}
       >
