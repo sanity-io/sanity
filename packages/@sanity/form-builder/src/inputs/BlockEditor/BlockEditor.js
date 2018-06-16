@@ -127,7 +127,7 @@ export default class BlockEditor extends React.PureComponent<Props> {
   }
 
   renderEditNode(nodeValue, type, path) {
-    const {focusPath, onBlur, onFocus, onPatch, markers, value} = this.props
+    const {focusPath, readOnly, onBlur, onFocus, onPatch, markers, value} = this.props
     return (
       <EditNode
         focusPath={focusPath}
@@ -137,6 +137,7 @@ export default class BlockEditor extends React.PureComponent<Props> {
         onFocus={onFocus}
         path={path}
         type={type}
+        readOnly={readOnly}
         nodeValue={nodeValue}
         value={value}
       />
@@ -263,8 +264,8 @@ export default class BlockEditor extends React.PureComponent<Props> {
   }
 
   render() {
-    const {focusPath, fullscreen, readOnly, onToggleFullScreen} = this.props
-    const isEditingNode = !readOnly && (focusPath || []).length > 1
+    const {focusPath, fullscreen, onToggleFullScreen} = this.props
+    const isEditingNode = (focusPath || []).length > 1
     const isFocused = (focusPath || []).length
     return (
       <div className={styles.root} ref={this.setRootElement}>
