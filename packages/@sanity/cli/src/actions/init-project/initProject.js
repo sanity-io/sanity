@@ -346,6 +346,10 @@ export default async function initSanity(args, context) {
           {
             value: 'blog',
             name: 'Blog (schema)'
+          },
+          {
+            value: 'clean',
+            name: 'Clean project with no predefined schemas'
           }
         ]
       })
@@ -507,3 +511,4 @@ async function promptForAclMode(prompt, output) {
 
   return mode
 }
+ 32e8383cdea0e851b1376c627075a3bc6155e0ea
