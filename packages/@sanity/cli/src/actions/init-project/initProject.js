@@ -346,6 +346,10 @@ export default async function initSanity(args, context) {
           {
             value: 'blog',
             name: 'Blog (schema)'
+          },
+          {
+            value: 'clean',
+            name: 'Clean project with no predefined schemas'
           }
         ]
       })
