@@ -14,19 +14,19 @@ Options
 
 Examples
   # Import "moviedb.ndjson" from the current directory to the dataset called "moviedb"
-  sanity import moviedb.ndjson moviedb
+  sanity dataset import moviedb.ndjson moviedb
 
   # Import "moviedb.tar.gz" from the current directory to the dataset called "moviedb",
   # replacing any documents encountered that have the same document IDs
-  sanity import moviedb.tar.gz moviedb --replace
+  sanity dataset import moviedb.tar.gz moviedb --replace
 
   # Import from a folder containing an ndjson file, such as an extracted tarball
   # retrieved through "sanity dataset export".
-  sanity import ~/some/folder moviedb
+  sanity dataset import ~/some/folder moviedb
 
   # Import from a remote URL. Will download and extract the tarball to a temporary
   # location before importing it.
-  sanity import https://some.url/moviedb.tar.gz moviedb --replace
+  sanity dataset import https://some.url/moviedb.tar.gz moviedb --replace
 `
 
 export default {
