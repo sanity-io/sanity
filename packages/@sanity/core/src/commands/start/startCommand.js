@@ -16,7 +16,7 @@ Examples
 export default {
   name: 'start',
   signature: '[--port <port>] [--host <host>]',
-  description: 'Starts a webserver that serves Sanity',
+  description: 'Starts a webserver that serves Sanity Content Studio',
   action: lazyRequire(require.resolve('../../actions/start/startAction')),
   helpText
 }
