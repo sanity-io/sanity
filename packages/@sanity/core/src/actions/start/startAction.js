@@ -65,7 +65,8 @@ export default async (args, context) => {
 
     if (!hasErrors && !hasWarnings) {
       output.print(
-        chalk.green(`Compiled successfully! Server listening on http://${httpHost}:${httpPort}`)
+        chalk.green(`Sanity Content Studio compiled successfully!
+        Open it locally at http://${httpHost}:${httpPort}`)
       )
       return
     }
@@ -81,7 +82,8 @@ export default async (args, context) => {
       printWarnings(output, warnings)
     }
 
-    output.print(chalk.green(`Server listening on http://${httpHost}:${httpPort}`))
+    output.print(chalk.green(`Open Sanity Content Studio
+    locally at http://${httpHost}:${httpPort}`))
   })
 
   function resetSpinner() {
@@ -111,7 +113,8 @@ function gracefulDeath(httpHost, config, err) {
         ? 'port numbers below 1024 requires root privileges'
         : `do you have access to listen to the given host (${httpHost})?`
 
-    throw new Error(`Sanity server does not have access to listen to given port - ${help}`)
+    throw new Error(`Sanity Content Studio server
+    does not have access to listen to given port - ${help}`)
   }
 
   throw err
