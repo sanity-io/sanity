@@ -75,10 +75,7 @@ export default class Span extends React.Component<Props, State> {
   }
 
   startEditing() {
-    const {editorValue, node, onFocus, readOnly} = this.props
-    if (readOnly) {
-      return
-    }
+    const {editorValue, node, onFocus} = this.props
     const block = editorValue.document.getClosestBlock(node.key)
     const focusPath = [
       {_key: block.key},
@@ -94,10 +91,7 @@ export default class Span extends React.Component<Props, State> {
   }
 
   handleClick = () => {
-    const {type, readOnly} = this.props
-    if (readOnly) {
-      return
-    }
+    const {type} = this.props
     if (!type) {
       return
     }
