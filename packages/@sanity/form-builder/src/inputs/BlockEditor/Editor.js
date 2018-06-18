@@ -122,7 +122,7 @@ export default class Editor extends React.Component<Props> {
   // select the block according to the focusPath and scroll there
   // eslint-disable-next-line complexity
   componentWillReceiveProps(nextProps: Props) {
-    const {focusPath, editorValue, onChange} = nextProps
+    const {focusPath, editorValue, onChange, readOnly} = nextProps
     if (!focusPath || focusPath.length === 0) {
       return
     }
@@ -150,7 +150,7 @@ export default class Editor extends React.Component<Props> {
         // Regular block
         this.scrollIntoView(change, block)
       }
-    } else if (focusPathChanged) {
+    } else if (focusPathChanged && !readOnly) {
       // Must be here to set focus after editing interfaces are closed
       change.focus()
       onChange(change)
@@ -158,11 +158,13 @@ export default class Editor extends React.Component<Props> {
   }
 
   scrollIntoView(change, node) {
-    const {onChange} = this.props
-    change.collapseToEndOf(node)
+    const {onChange, readOnly} = this.props
     const element = findDOMNode(node)
     element.scrollIntoView({behavior: 'instant', block: 'center', inline: 'nearest'})
-    onChange(change)
+    if (!readOnly) {
+      change.collapseToEndOf(node)
+      onChange(change)
+    }
   }
 
   // When user changes the selection in the editor, update focusPath accordingly.

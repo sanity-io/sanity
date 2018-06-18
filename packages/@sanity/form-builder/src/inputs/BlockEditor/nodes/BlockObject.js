@@ -25,6 +25,7 @@ import InvalidValue from '../../InvalidValueInput'
 import Preview from '../../../Preview'
 import DeleteButton from '../DeleteButton'
 import EditButton from '../EditButton'
+import ViewButton from '../ViewButton'
 
 import styles from './styles/BlockObject.css'
 
@@ -207,6 +208,12 @@ export default class BlockObject extends React.Component<Props, State> {
     event.stopPropagation()
   }
 
+  handleFocus = event => {
+    event.stopPropagation()
+    const {node, onFocus} = this.props
+    onFocus([{_key: node.key}, FOCUS_TERMINATOR])
+  }
+
   handleEditStart = event => {
     event.stopPropagation()
     const {node, onFocus, onChange, editorValue} = this.props
@@ -255,29 +262,31 @@ export default class BlockObject extends React.Component<Props, State> {
       <div>
         <div className={styles.header}>
           <div className={styles.type}>{type.title || type.name || 'Unknown'}</div>
-          {!readOnly && (
-            <ButtonsCollection align="end" className={styles.functions}>
-              {value._ref && (
-                <IntentLink
-                  className={styles.linkToReference}
-                  intent="edit"
-                  params={{id: value._ref}}
-                >
-                  <LinkIcon />
-                </IntentLink>
-              )}
-              {!readOnly && (
-                <div>
-                  <EditButton title="Edit this block" onClick={this.handleEditStart} />
-                </div>
-              )}
-              {!readOnly && (
-                <div>
-                  <DeleteButton title="Remove this block" onClick={this.handleRemoveValue} />
-                </div>
-              )}
-            </ButtonsCollection>
-          )}
+          <ButtonsCollection align="end" className={styles.functions}>
+            {value._ref && (
+              <IntentLink
+                className={styles.linkToReference}
+                intent="edit"
+                params={{id: value._ref}}
+              >
+                <LinkIcon />
+              </IntentLink>
+            )}
+            {readOnly ? (
+              <div>
+                <ViewButton title="View this block" onClick={this.handleFocus} />
+              </div>
+            ) : (
+              <div>
+                <EditButton title="Edit this block" onClick={this.handleEditStart} />
+              </div>
+            )}
+            {!readOnly && (
+              <div>
+                <DeleteButton title="Remove this block" onClick={this.handleRemoveValue} />
+              </div>
+            )}
+          </ButtonsCollection>
         </div>
         <Preview type={type} value={value} layout="block" />
       </div>

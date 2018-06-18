@@ -26,6 +26,7 @@ import InvalidValue from '../../InvalidValueInput'
 import Preview from '../../../Preview'
 
 import styles from './styles/InlineObject.css'
+import ViewButton from '../ViewButton'
 
 type Props = {
   attributes: {},
@@ -239,6 +240,13 @@ export default class InlineObject extends React.Component<Props, State> {
     )
   }
 
+  handleView = event => {
+    event.stopPropagation()
+    const {node, onFocus, editorValue} = this.props
+    const {focusBlock} = editorValue
+    onFocus([{_key: focusBlock.key}, 'children', {_key: node.key}, FOCUS_TERMINATOR])
+  }
+
   handleCloseMenu = () => {
     this.setState({menuOpen: false})
   }
@@ -260,6 +268,7 @@ export default class InlineObject extends React.Component<Props, State> {
   }
 
   renderMenu(value, scopedValidation) {
+    const {readOnly} = this.props
     return (
       <Stacked>
         {isActive => {
@@ -278,12 +287,21 @@ export default class InlineObject extends React.Component<Props, State> {
                     <LinkIcon />
                   </IntentLink>
                 )}
-                <EditButton title="Edit this object" onClick={this.handleEditStart}>
-                  Edit
-                </EditButton>
-                <DeleteButton title="Remove this object" onClick={this.handleRemoveValue}>
-                  Delete
-                </DeleteButton>
+                {readOnly && (
+                  <ViewButton title="View this object" onClick={this.handleView}>
+                    View
+                  </ViewButton>
+                )}
+                {!readOnly && (
+                  <EditButton title="Edit this object" onClick={this.handleEditStart}>
+                    Edit
+                  </EditButton>
+                )}
+                {!readOnly && (
+                  <DeleteButton title="Remove this object" onClick={this.handleRemoveValue}>
+                    Delete
+                  </DeleteButton>
+                )}
               </div>
             </Escapable>
           )
@@ -293,7 +311,7 @@ export default class InlineObject extends React.Component<Props, State> {
   }
 
   renderPreview(value, scopedValidation) {
-    const {type, readOnly} = this.props
+    const {type} = this.props
     const {menuOpen} = this.state
     const valueKeys = value ? Object.keys(value) : []
     const isEmpty = !value || isEqual(valueKeys.sort(), ['_key', '_type'].sort())
@@ -310,7 +328,7 @@ export default class InlineObject extends React.Component<Props, State> {
         style={{padding: 0, display: 'inline-block', minWidth: '1em'}}
         unmountHTMLWhenHide
         onRequestClose={menuOpen && this.handleCloseMenu}
-        html={!readOnly && this.renderMenu(value, scopedValidation)}
+        html={this.renderMenu(value, scopedValidation)}
       >
         {!isEmpty && <Preview type={type} value={value} layout="inline" />}
         {isEmpty && <span>Click to edit</span>}

@@ -61,7 +61,7 @@ export default class EditNode extends React.Component<Props> {
   }
 
   render() {
-    const {nodeValue, type, onFocus, focusPath, path, markers} = this.props
+    const {nodeValue, type, onFocus, readOnly, focusPath, path, markers} = this.props
     if (!nodeValue) {
       return <div>No value???</div>
     }
@@ -72,6 +72,7 @@ export default class EditNode extends React.Component<Props> {
         <FormBuilderInput
           type={type}
           level={1}
+          readOnly={readOnly || type.readOnly}
           value={nodeValue}
           onChange={this.handleChange}
           onFocus={onFocus}
