@@ -3,11 +3,12 @@ import boxen from 'boxen'
 import chalk from 'chalk'
 import latestVersion from 'latest-version'
 import semverCompare from 'semver-compare'
+import pTimeout from 'p-timeout'
 import debug from '../debug'
 import getUserConfig from './getUserConfig'
 import getUpgradeCommand from './getUpgradeCommand'
 
-const MAX_BLOCKING_TIME = 250
+const MAX_BLOCKING_TIME = 300
 const TWELVE_HOURS = 1000 * 60 * 60 * 12
 const isDisabled =
   process.env.CI || // Travis CI, CircleCI, Gitlab CI, Appveyor, CodeShip
@@ -31,18 +32,17 @@ export default options => {
       return
     }
 
-    const maxWait = setTimeout(printCachedResult, MAX_BLOCKING_TIME)
-    const result = await check
+    const result = await pTimeout(check, MAX_BLOCKING_TIME, printCachedResult)
     if (hasPrintedResult) {
+      debug('Has already printed result through timeout check, skipping result notification')
       return
     }
 
-    clearTimeout(maxWait)
     printResult(result)
   }
 
   function printCachedResult() {
-    debug('Max time reached waiting for latest version info')
+    debug('Max time (%dms) reached waiting for latest version info', MAX_BLOCKING_TIME)
     hasPrintedResult = true
 
     const cached = userConfig.get('cliHasUpdate')
@@ -73,6 +73,7 @@ export default options => {
     }
 
     if (!newVersion || semverCompare(newVersion, version) <= 0) {
+      debug(`New version is ${newVersion || 'unknown'}, current is ${version}. Falling back.`)
       return
     }
 
@@ -116,6 +117,7 @@ export default options => {
 
     let latestRemote
     try {
+      debug('Checking for latest remote version')
       latestRemote = await latestVersion(name)
       debug('Latest remote version is %s', latestRemote)
     } catch (err) {
