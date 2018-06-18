@@ -35,7 +35,7 @@ export default class InvalidValue extends React.PureComponent {
     value: PropTypes.any,
     onChange: PropTypes.func
   }
-  element = React.createRef()
+
   handleClearClick = () => {
     this.props.onChange(PatchEvent.from(unset()))
   }
@@ -45,7 +45,9 @@ export default class InvalidValue extends React.PureComponent {
   }
 
   focus() {
-    this.element.current.focus()
+    if (this.element) {
+      this.element.focus()
+    }
   }
 
   renderValidTypes() {
@@ -69,11 +71,14 @@ export default class InvalidValue extends React.PureComponent {
     )
   }
 
+  setElement = element => {
+    this.element = element
+  }
   render() {
     const {value, actualType, validTypes} = this.props
     const converters = getConverters(value, actualType, validTypes)
     return (
-      <div className={styles.root} tabIndex={0} ref={this.element}>
+      <div className={styles.root} tabIndex={0} ref={this.setElement}>
         <h3>
           Content has invalid type: <code>{actualType}</code>
         </h3>
