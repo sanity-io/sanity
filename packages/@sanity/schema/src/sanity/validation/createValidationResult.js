@@ -15,7 +15,8 @@ export const HELP_IDS = {
   ARRAY_OF_NOT_UNIQUE: 'schema-array-of-invalid',
   REFERENCE_TO_INVALID: 'schema-reference-to-invalid',
   REFERENCE_TO_NOT_UNIQUE: 'schema-reference-to-invalid',
-  SLUG_SLUGIFY_FN_RENAMED: 'slug-slugifyfn-renamed'
+  SLUG_SLUGIFY_FN_RENAMED: 'slug-slugifyfn-renamed',
+  ASSET_METADATA_FIELD_INVALID: 'asset-metadata-field-invalid'
 }
 
 function createValidationResult(

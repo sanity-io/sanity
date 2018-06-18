@@ -5,7 +5,7 @@ import readExif from './image/readExif'
 import rotateImage from './image/rotateImage'
 import {DEFAULT_ORIENTATION} from './image/orient'
 import {set} from '../../utils/patches'
-import type {UploadEvent} from './typedefs'
+import type {UploadEvent, UploadOptions} from './typedefs'
 
 // The eslint import plugin doesn't work well with opaque types
 // https://github.com/benmosher/eslint-plugin-import/issues/921
@@ -22,8 +22,8 @@ type Exif = {
   orientation: OrientationId
 }
 
-export default function uploadImage(file: File): ObservableI<UploadEvent> {
-  const upload$ = uploadImageAsset(file).pipe(
+export default function uploadImage(file: File, options?: UploadOptions): ObservableI<UploadEvent> {
+  const upload$ = uploadImageAsset(file, options).pipe(
     filter(event => event.stage !== 'download'),
     map(event => ({
       ...event,
