@@ -77,6 +77,16 @@ export default {
       }
     },
     {
+      name: 'jpegImageWithLqip',
+      title: 'JPEG image',
+      type: 'image',
+      description: 'Should only accept JPEGs and will extract only LQIP and location metadata',
+      options: {
+        accept: 'image/jpeg',
+        metadata: ['location', 'lqip']
+      }
+    },
+    {
       name: 'imageWithImage',
       title: 'Image with image',
       type: 'image',

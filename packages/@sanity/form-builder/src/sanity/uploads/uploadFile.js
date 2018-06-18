@@ -4,12 +4,12 @@ import type {Observable} from 'rxjs'
 import {map, concat} from 'rxjs/operators'
 import {uploadFileAsset} from '../inputs/client-adapters/assets'
 import {set} from '../../utils/patches'
-import type {UploadEvent} from './typedefs'
+import type {UploadEvent, UploadOptions} from './typedefs'
 import {UPLOAD_STATUS_KEY} from './constants'
 import {createUploadEvent, createInitialUploadEvent, CLEANUP_EVENT} from './utils'
 
-export default function uploadFile(file: File): Observable<UploadEvent> {
-  const upload$ = uploadFileAsset(file).pipe(
+export default function uploadFile(file: File, options?: UploadOptions): Observable<UploadEvent> {
+  const upload$ = uploadFileAsset(file, options).pipe(
     map(event => {
       if (event.type === 'complete') {
         return createUploadEvent([
