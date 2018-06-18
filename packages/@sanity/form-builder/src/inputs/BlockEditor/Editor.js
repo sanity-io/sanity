@@ -18,11 +18,13 @@ import SoftBreakPlugin from 'slate-soft-break'
 import {findDOMNode, Editor as SlateEditor} from 'slate-react'
 import {isEqual} from 'lodash'
 import {isKeyHotkey} from 'is-hotkey'
-import {EDITOR_DEFAULT_BLOCK_TYPE} from '@sanity/block-tools'
+import {EDITOR_DEFAULT_BLOCK_TYPE, editorValueToBlocks} from '@sanity/block-tools'
 import insertBlockOnEnter from 'slate-insert-block-on-enter'
 import onPaste from 'part:@sanity/form-builder/input/block-editor/on-paste?'
 import onCopy from 'part:@sanity/form-builder/input/block-editor/on-copy?'
+import BlockActions from 'part:@sanity/form-builder/input/block-editor/block-actions?'
 
+import {VALUE_TO_JSON_OPTS} from './utils/changeToPatches'
 import {hasItemFocus} from '../../utils/pathUtils'
 import createNodeValidator from './utils/createNodeValidator'
 import findInlineByAnnotationKey from './utils/findInlineByAnnotationKey'
@@ -270,7 +272,9 @@ export default class Editor extends React.Component<Props> {
       onChange,
       onFocus,
       onPatch,
-      readOnly
+      readOnly,
+      value,
+      type
     } = this.props
     const {node} = props
     let childMarkers = markers
@@ -330,6 +334,14 @@ export default class Editor extends React.Component<Props> {
             hasFormBuilderFocus={hasFormBuilderFocus}
             markers={childMarkers}
             readOnly={readOnly}
+            block={
+              value
+                ? value.find(blk => blk._key === node.key)
+                : editorValueToBlocks(
+                    {document: {nodes: [node.toJSON(VALUE_TO_JSON_OPTS)]}},
+                    type
+                  )[0]
+            }
           />
         )
       case 'span':
@@ -391,7 +403,8 @@ export default class Editor extends React.Component<Props> {
     const {editorValue, fullscreen, readOnly, markers} = this.props
     const classNames = [
       styles.root,
-      markers.filter(marker => marker.path.length > 0).length > 0 && styles.hasMarkers,
+      (BlockActions || markers.filter(marker => marker.path.length > 0).length > 0) &&
+        styles.hasMarkers,
       fullscreen ? styles.fullscreen : null
     ].filter(Boolean)
     return (

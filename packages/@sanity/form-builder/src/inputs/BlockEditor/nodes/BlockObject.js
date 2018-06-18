@@ -9,6 +9,7 @@ import {Editor, findDOMNode, findNode, setEventTransfer} from 'slate-react'
 import classNames from 'classnames'
 
 import {IntentLink} from 'part:@sanity/base/router'
+import BlockActions from 'part:@sanity/form-builder/input/block-editor/block-actions?'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import Markers from 'part:@sanity/form-builder/input/block-editor/block-markers'
 import ButtonsCollection from 'part:@sanity/components/buttons/button-collection'
@@ -347,6 +348,7 @@ export default class BlockObject extends React.Component<Props, State> {
           onChange={onChange}
           editorValue={editorValue}
         />
+        {BlockActions && <BlockActions contentEditable={false} />}
       </div>
     )
   }
