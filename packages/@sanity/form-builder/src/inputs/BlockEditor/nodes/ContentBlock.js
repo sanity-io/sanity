@@ -1,8 +1,9 @@
 // @flow
-import type {SlateComponentProps, SlateChange, SlateValue} from '../typeDefs'
+import type {Block, SlateComponentProps, SlateChange, SlateValue} from '../typeDefs'
 
 import React from 'react'
 
+import BlockActions from 'part:@sanity/form-builder/input/block-editor/block-actions?'
 import Markers from 'part:@sanity/form-builder/input/block-editor/block-markers'
 import ListItem from './ListItem'
 import Text from './Text'
@@ -15,12 +16,14 @@ type ExtraProps = {
   markers: Marker[],
   onFocus: void => void,
   onChange: (change: SlateChange) => void,
+  block: Block,
   readOnly: ?boolean
 }
 
 export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
   const {
     attributes,
+    block,
     blockContentFeatures,
     children,
     editorValue,
@@ -57,6 +60,7 @@ export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
             onChange={onChange}
             editorValue={editorValue}
           />
+          {BlockActions && <BlockActions contentEditable={false} block={block} />}
         </div>
       </ListItem>
     )
@@ -71,6 +75,7 @@ export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
         onFocus={onFocus}
         onChange={onChange}
       />
+      {BlockActions && <BlockActions contentEditable={false} block={block} />}
     </Text>
   )
 }
