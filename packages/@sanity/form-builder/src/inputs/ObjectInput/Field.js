@@ -62,6 +62,7 @@ export default class Field extends React.Component {
                 onChange={this.handleChange}
                 validTypes={[field.type.name]}
                 actualType={actualType}
+                ref={this.setInput}
               />
             </Fieldset>
           </div>
