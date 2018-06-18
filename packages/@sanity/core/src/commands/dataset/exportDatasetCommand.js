@@ -17,10 +17,10 @@ Options
   --overwrite   Overwrite any file with the same name
 
 Examples
-  sanity export moviedb localPath.tar.gz
-  sanity export moviedb assetless.tar.gz --no-assets
-  sanity export staging staging.tar.gz --raw
-  sanity export staging staging.tar.gz --types products,shops
+  sanity dataset export moviedb localPath.tar.gz
+  sanity dataset export moviedb assetless.tar.gz --no-assets
+  sanity dataset export staging staging.tar.gz --raw
+  sanity dataset export staging staging.tar.gz --types products,shops
 `
 
 export default {
