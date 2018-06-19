@@ -18,10 +18,9 @@
 }
 
 .editor {
-  display: flex;
-  flex-direction: column;
-  justify-content: stretch;
-  flex-grow: 1;
+  display: block;
+  height: 100%;
+  width: 100%;
 }
 
 .root.hasMarkers:not(.fullscreen) {
