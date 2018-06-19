@@ -6,7 +6,7 @@ import FormField from 'part:@sanity/components/formfields/default'
 import Preview from '../../Preview'
 import subscriptionManager from '../../utils/subscriptionManager'
 import PatchEvent, {set, setIfMissing, unset} from '../../../PatchEvent'
-import type {Reference, Type} from '../../typedefs'
+import type {Reference, Type, Marker} from '../../typedefs'
 import type {ObservableI} from '../../typedefs/observable'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import {IntentLink} from 'part:@sanity/base/router'
@@ -26,6 +26,8 @@ type PreviewSnapshot = {
 type Props = {
   value: ?Reference,
   type: Type,
+  markers: Array<Marker>,
+  readOnly: ?boolean,
   onSearch: (query: string, type: Type) => ObservableI<Array<SearchHit>>,
   getPreviewSnapshot: (Reference, Type) => ObservableI<PreviewSnapshot>,
   onChange: PatchEvent => void,
@@ -188,7 +190,16 @@ export default class ReferenceInput extends React.Component<Props, State> {
   }
 
   render() {
-    const {type, value, level, readOnly, onSearch, getPreviewSnapshot, ...rest} = this.props
+    const {
+      type,
+      value,
+      level,
+      markers,
+      readOnly,
+      onSearch,
+      getPreviewSnapshot,
+      ...rest
+    } = this.props
 
     const {previewSnapshot, isFetching, hits} = this.state
     const valueFromHit = value && hits.find(hit => hit._id === value._ref)
@@ -200,6 +211,9 @@ export default class ReferenceInput extends React.Component<Props, State> {
     const hasRef = value && value._ref
     const hasWeakMismatch = hasRef && !isMissing && weakIs !== weakShouldBe
 
+    const validation = markers.filter(marker => marker.type === 'validation')
+    const errors = validation.filter(marker => marker.level === 'error')
+
     let inputValue = value ? previewSnapshot && previewSnapshot.title : undefined
 
     if (previewSnapshot && !previewSnapshot.title) {
@@ -207,7 +221,7 @@ export default class ReferenceInput extends React.Component<Props, State> {
     }
 
     return (
-      <FormField label={type.title} level={level} description={type.description}>
+      <FormField markers={markers} label={type.title} level={level} description={type.description}>
         <div className={hasWeakMismatch || isMissing ? styles.hasWarnings : ''}>
           {hasWeakMismatch && (
             <div className={styles.weakRefMismatchWarning}>
@@ -226,6 +240,7 @@ export default class ReferenceInput extends React.Component<Props, State> {
                 ? `Document id: ${value._ref || 'unknown'}`
                 : previewSnapshot && previewSnapshot.description
             }
+            customValidity={errors.length > 0 ? errors[0].item.message : ''}
             onOpen={this.handleOpen}
             onFocus={this.handleFocus}
             onSearch={this.handleSearch}
