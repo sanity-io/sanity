@@ -151,7 +151,7 @@ export default {
                 return resolve(true)
               }
 
-              return client.fetch('*[_id == $id].coverImage', {id: value._ref}).then(cover => {
+              return client.fetch('*[_id == $id][0].coverImage', {id: value._ref}).then(cover => {
                 resolve(cover ? true : 'Referenced book must have a cover image')
               })
             })
