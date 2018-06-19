@@ -35,7 +35,6 @@
   "dependencies": {
     "clone-deep": "^2.0.1",
     "es6-error": "^4.0.2",
-    "throat": "^4.1.0",
     "type-of-is": "^3.5.1"
   },
   "jest": {

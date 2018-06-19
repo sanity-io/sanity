@@ -1,7 +1,6 @@
 const {get, flatten} = require('lodash')
 const ValidationError = require('./ValidationError')
 const genericValidator = require('./validators/genericValidator')
-const promiseLimiter = require('./util/promiseLimiter')
 
 const typeValidators = {
   Boolean: require('./validators/booleanValidator'),
@@ -27,15 +26,10 @@ module.exports = (rule, value, options = {}) => {
   const type = rule._type
   const validators = typeValidators[type] || genericValidator
 
-  const tasks = rules.map(createValidationTask)
+  const tasks = rules.map(validateRule)
   return Promise.all(tasks)
     .then(results => results.filter(Boolean))
     .then(flatten)
-
-  function createValidationTask(curr) {
-    const limiter = options.isChild ? promiseLimiter.children : promiseLimiter.root
-    return limiter(() => validateRule(curr))
-  }
 
   // eslint-disable-next-line complexity
   function validateRule(curr) {
