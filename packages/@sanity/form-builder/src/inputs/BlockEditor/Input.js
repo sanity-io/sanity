@@ -71,7 +71,6 @@ export default class BlockEditorInput extends React.Component<Props, State> {
     if (focusBlock) {
       return onChange(change, () => onFocus([{_key: focusBlock.key}]))
     } else if (Array.isArray(value)) {
-      change.focus()
       return onChange(change, () => onFocus([{_key: value[0]._key}]))
     }
     return change

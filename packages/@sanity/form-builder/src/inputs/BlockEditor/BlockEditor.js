@@ -40,7 +40,8 @@ type Props = {
 
 function findEditNode(focusPath, editorValue) {
   const focusBlockKey = focusPath[0]._key
-  const focusInlineKey = focusPath[2] && focusPath[1] !== 'markDefs' && focusPath[2]._key
+  const focusInlineKey =
+    focusPath[1] && focusPath[1] === 'children' && focusPath[2] && focusPath[2]._key
   const markDefKey = focusPath[2] && focusPath[1] === 'markDefs' && focusPath[2]._key
   let key
   if (markDefKey) {
