@@ -2,28 +2,6 @@
 
 .root {
   display: block;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  transform: translateX(100%);
-}
-
-.markers {
-  composes: root;
-  border-left: 2px solid var(--brand-primary);
-  height: 100%;
-  padding-left: var(--small-padding);
-}
-
-.markersWithError {
-  composes: markers;
-  border-left: 2px solid var(--state-danger-color);
-}
-
-.markerWithWarning {
-  composes: markers;
-  border-left: 2px solid var(--state-warning-color);
 }
 
 .marker {

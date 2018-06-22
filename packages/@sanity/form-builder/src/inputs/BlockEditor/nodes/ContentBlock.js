@@ -3,11 +3,9 @@ import type {Block, SlateComponentProps, SlateChange, SlateValue} from '../typeD
 
 import React from 'react'
 
-import BlockActions from 'part:@sanity/form-builder/input/block-editor/block-actions?'
-import Markers from 'part:@sanity/form-builder/input/block-editor/block-markers'
+import BlockExtras from 'part:@sanity/form-builder/input/block-editor/block-extras'
 import ListItem from './ListItem'
 import Text from './Text'
-import listItemStyles from './styles/ListItem.css'
 
 type ExtraProps = {
   blockContentFeatures: BlockContentFeatures,
@@ -53,29 +51,26 @@ export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
         <Text style={style} attributes={attributes} styleComponent={styleComponent}>
           {children}
         </Text>
-        <div className={listItemStyles.markerWrapper} contentEditable={false}>
-          <Markers
-            markers={markers}
-            onFocus={onFocus}
-            onChange={onChange}
-            editorValue={editorValue}
-          />
-          {BlockActions && <BlockActions contentEditable={false} block={block} />}
-        </div>
+        <BlockExtras
+          markers={markers}
+          onFocus={onFocus}
+          onChange={onChange}
+          block={block}
+          editorValue={editorValue}
+        />
       </ListItem>
     )
   }
   return (
     <Text style={style} styleComponent={styleComponent} attributes={attributes}>
       {children}
-      <Markers
+      <BlockExtras
         markers={markers}
-        contentEditable={false}
-        editorValue={editorValue}
         onFocus={onFocus}
         onChange={onChange}
+        block={block}
+        editorValue={editorValue}
       />
-      {BlockActions && <BlockActions contentEditable={false} block={block} />}
     </Text>
   )
 }

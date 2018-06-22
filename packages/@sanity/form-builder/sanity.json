@@ -92,6 +92,10 @@
       "description": "Component that renders actions or other custom content for a block"
     },
     {
+      "name": "part:@sanity/form-builder/input/block-editor/block-extras",
+      "description": "Component that renders block actions and markers for a block (all content in the right marigin)"
+    },
+    {
       "implements": "part:@sanity/base/locale-messages",
       "path": "sanity/locale/strings.json"
     },
@@ -117,7 +121,11 @@
       "name": "part:@sanity/form-builder/input/block-editor/custom-markers-default",
       "implements": "part:@sanity/form-builder/input/block-editor/custom-markers",
       "path": "inputs/BlockEditor/nodes/CustomMarkers.js"
+    },
+    {
+      "name": "part:@sanity/form-builder/input/block-editor/block-extras-default",
+      "implements": "part:@sanity/form-builder/input/block-editor/block-extras",
+      "path": "inputs/BlockEditor/nodes/BlockExtras.js"
     }
-
   ]
 }
