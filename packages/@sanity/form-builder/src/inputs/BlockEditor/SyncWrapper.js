@@ -8,9 +8,9 @@ import {uniq} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {PatchEvent} from '../../PatchEvent'
-import Input from './Input'
 import InvalidValueInput from '../InvalidValueInput'
 import {resolveTypeName} from '../../utils/resolveTypeName'
+import Input from './Input'
 
 import createSelectionOperation from './utils/createSelectionOperation'
 import changeToPatches from './utils/changeToPatches'
@@ -151,6 +151,10 @@ export default withPatchSubscriber(
       const hasMultipleDestinations =
         uniq(patches.map(patch => patch.path[0] && patch.path[0]._key).filter(Boolean)).length > 1
       const hasComplexity = patches.length > 3
+      // Some heuristics for when we should set a new state or just trust that the editor
+      // state is in sync with the formbuilder value. As setting a new state may be a performance
+      // hog, we don't want to do it for the most basic changes (like entering a new character).
+      // TODO: force sync the state every now and then just to be 100% sure we are in sync.
       const shouldSetNewState =
         hasRemotePatches ||
         hasInsertUnsetPatchesOnRootLevel ||
@@ -170,6 +174,8 @@ export default withPatchSubscriber(
         if (!isUndoRedoPatch) {
           this._undoRedoStack.undo.push({
             patches: localPatches,
+            // Use the _beforeChangeEditorValue here, because at this point we could be
+            // in the middle of changes, and the state.editorValue may be in a flux state
             editorValue: this._beforeChangeEditorValue,
             select: this._select
           })
@@ -194,6 +200,7 @@ export default withPatchSubscriber(
             }
           }
         }
+        // Keep the editor focused as we insert the new value
         if ((focusPath || []).length === 1) {
           change.focus()
         }
@@ -211,6 +218,7 @@ export default withPatchSubscriber(
 
     handleInvalidValue = () => {}
 
+    // eslint-disable-next-line complexity
     render() {
       const {editorValue, deprecatedSchema, deprecatedBlockValue, invalidBlockValue} = this.state
       const {onChange, ...rest} = this.props
