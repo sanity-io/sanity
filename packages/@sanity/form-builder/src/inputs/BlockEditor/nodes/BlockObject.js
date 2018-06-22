@@ -9,9 +9,8 @@ import {Editor, findDOMNode, findNode, setEventTransfer} from 'slate-react'
 import classNames from 'classnames'
 
 import {IntentLink} from 'part:@sanity/base/router'
-import BlockActions from 'part:@sanity/form-builder/input/block-editor/block-actions?'
+import BlockExtras from 'part:@sanity/form-builder/input/block-editor/block-extras'
 import LinkIcon from 'part:@sanity/base/link-icon'
-import Markers from 'part:@sanity/form-builder/input/block-editor/block-markers'
 import ButtonsCollection from 'part:@sanity/components/buttons/button-collection'
 
 import type {BlockContentFeatures, SlateValue, Type, SlateChange, Marker} from '../typeDefs'
@@ -351,13 +350,13 @@ export default class BlockObject extends React.Component<Props, State> {
             {this.renderPreview(value)}
           </div>
         </div>
-        <Markers
+        <BlockExtras
           markers={markers}
           onFocus={onFocus}
           onChange={onChange}
           editorValue={editorValue}
+          block={value}
         />
-        {BlockActions && <BlockActions contentEditable={false} />}
       </div>
     )
   }

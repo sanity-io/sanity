@@ -10,7 +10,6 @@ import {isEqual} from 'lodash'
 import {Editor, setEventTransfer, getEventRange} from 'slate-react'
 import {IntentLink} from 'part:@sanity/base/router'
 import LinkIcon from 'part:@sanity/base/link-icon'
-import ValidationStatus from 'part:@sanity/components/validation/status'
 import Stacked from 'part:@sanity/components/utilities/stacked'
 import Escapable from 'part:@sanity/components/utilities/escapable'
 import {Tooltip} from '@sanity/react-tippy'
@@ -267,7 +266,7 @@ export default class InlineObject extends React.Component<Props, State> {
     return this.props.node.data.get('value')
   }
 
-  renderMenu(value, scopedValidation) {
+  renderMenu(value) {
     const {readOnly} = this.props
     return (
       <Stacked>
@@ -275,9 +274,6 @@ export default class InlineObject extends React.Component<Props, State> {
           return (
             <Escapable onEscape={isActive ? this.handleCloseMenu : NOOP}>
               <div className={styles.functions}>
-                <div className={styles.validationStatus}>
-                  <ValidationStatus markers={scopedValidation} />
-                </div>
                 {value._ref && (
                   <IntentLink
                     className={styles.linkToReference}
@@ -310,7 +306,7 @@ export default class InlineObject extends React.Component<Props, State> {
     )
   }
 
-  renderPreview(value, scopedValidation) {
+  renderPreview(value) {
     const {type} = this.props
     const {menuOpen} = this.state
     const valueKeys = value ? Object.keys(value) : []
@@ -328,7 +324,7 @@ export default class InlineObject extends React.Component<Props, State> {
         style={{padding: 0, display: 'inline-block', minWidth: '1em'}}
         unmountHTMLWhenHide
         onRequestClose={menuOpen && this.handleCloseMenu}
-        html={this.renderMenu(value, scopedValidation)}
+        html={this.renderMenu(value)}
       >
         {!isEmpty && <Preview type={type} value={value} layout="inline" />}
         {isEmpty && <span>Click to edit</span>}
@@ -364,16 +360,6 @@ export default class InlineObject extends React.Component<Props, State> {
     }
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
-    const scopedValidation = validation.map(marker => {
-      if (marker.path.length <= 1) {
-        return marker
-      }
-
-      const level = marker.level === 'error' ? 'errors' : 'warnings'
-      return Object.assign({}, marker, {
-        item: marker.item.cloneWithMessage(`Contains ${level}`)
-      })
-    })
 
     const classname = classNames([
       styles.root,
@@ -396,7 +382,7 @@ export default class InlineObject extends React.Component<Props, State> {
         onClick={this.handleShowMenu}
       >
         <span ref={this.refPreview} className={styles.previewContainer}>
-          {this.renderPreview(value, scopedValidation)}
+          {this.renderPreview(value)}
         </span>
       </span>
     )
