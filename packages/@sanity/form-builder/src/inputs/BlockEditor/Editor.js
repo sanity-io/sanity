@@ -22,7 +22,6 @@ import {EDITOR_DEFAULT_BLOCK_TYPE, editorValueToBlocks} from '@sanity/block-tool
 import insertBlockOnEnter from 'slate-insert-block-on-enter'
 import onPaste from 'part:@sanity/form-builder/input/block-editor/on-paste?'
 import onCopy from 'part:@sanity/form-builder/input/block-editor/on-copy?'
-import BlockActions from 'part:@sanity/form-builder/input/block-editor/block-actions?'
 
 import {VALUE_TO_JSON_OPTS} from './utils/changeToPatches'
 import {hasItemFocus} from '../../utils/pathUtils'
@@ -410,10 +409,10 @@ export default class Editor extends React.Component<Props> {
   }
 
   render() {
-    const {editorValue, fullscreen, readOnly, markers} = this.props
+    const {editorValue, fullscreen, readOnly, markers, renderBlockActions} = this.props
     const classNames = [
       styles.root,
-      (BlockActions || markers.filter(marker => marker.path.length > 0).length > 0) &&
+      (renderBlockActions || markers.filter(marker => marker.path.length > 0).length > 0) &&
         styles.hasMarkers,
       fullscreen ? styles.fullscreen : null
     ].filter(Boolean)

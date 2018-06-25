@@ -3,6 +3,7 @@ import type {Marker, SlateChange, SlateValue} from './typeDefs'
 import React from 'react'
 
 import ValidationStatus from 'part:@sanity/components/validation/status'
+import CustomMarkers from 'part:@sanity/form-builder/input/block-editor/block-markers-custom-default'
 
 import styles from './styles/Markers.css'
 
@@ -54,6 +55,7 @@ export default class Markers extends React.Component<Props> {
         {customMarkers.length > 0 && (
           <div className={styles.markerGroup} onClick={this.handleCancelEvent}>
             {renderCustomMarkers && renderCustomMarkers({markers: customMarkers})}
+            {!renderCustomMarkers && <CustomMarkers markers={markers} />}
           </div>
         )}
       </div>
