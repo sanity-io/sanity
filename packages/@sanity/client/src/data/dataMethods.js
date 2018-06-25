@@ -79,10 +79,14 @@ module.exports = {
   },
 
   mutate(mutations, options) {
-    const mut = mutations instanceof Patch ? mutations.serialize() : mutations
-    const muts = Array.isArray(mut) ? mut : [mut]
+    const mut =
+      mutations instanceof Patch || mutations instanceof Transaction
+        ? mutations.serialize()
+        : mutations
 
-    return this.dataRequest('mutate', {mutations: muts}, options)
+    const muts = Array.isArray(mut) ? mut : [mut]
+    const transactionId = options && options.transactionId
+    return this.dataRequest('mutate', {mutations: muts, transactionId}, options)
   },
 
   transaction(operations) {
