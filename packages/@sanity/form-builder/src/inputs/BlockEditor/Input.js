@@ -25,6 +25,8 @@ type Props = {
   onFocus: (nextPath: []) => void,
   onPatch: (event: PatchEvent) => void,
   readOnly?: boolean,
+  renderBlockActions?: ({block: Block}) => React.Node,
+  renderCustomMarkers?: (Marker[]) => React.Node,
   type: BlockArrayType,
   undoRedoStack: {undo: [], redo: []},
   value: Block[]
@@ -91,6 +93,8 @@ export default class BlockEditorInput extends React.Component<Props, State> {
       onChange,
       onPatch,
       readOnly,
+      renderBlockActions,
+      renderCustomMarkers,
       type,
       undoRedoStack,
       value
@@ -109,6 +113,8 @@ export default class BlockEditorInput extends React.Component<Props, State> {
         onPatch={onPatch}
         onToggleFullScreen={this.handleToggleFullScreen}
         readOnly={readOnly}
+        renderBlockActions={renderBlockActions}
+        renderCustomMarkers={renderCustomMarkers}
         ref={this.refEditor}
         value={value}
         undoRedoStack={undoRedoStack}

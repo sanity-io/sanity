@@ -4,7 +4,7 @@
   display: block;
 }
 
-.marker {
+.markerGroup {
   display: inline-block;
   padding-right: var(--small-padding);
   cursor: pointer;

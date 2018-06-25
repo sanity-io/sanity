@@ -62,6 +62,8 @@ type Props = {
   onPatch: (event: PatchEvent) => void,
   onToggleFullScreen: void => void,
   readOnly?: boolean,
+  renderBlockActions?: ({block: Block}) => React.Node,
+  renderCustomMarkers?: (Marker[]) => React.Node,
   setFocus: void => void,
   type: Type,
   undoRedoStack: {undo: [], redo: []},
@@ -276,6 +278,8 @@ export default class Editor extends React.Component<Props> {
       onPatch,
       readOnly,
       value,
+      renderBlockActions,
+      renderCustomMarkers,
       type
     } = this.props
     const {node} = props
@@ -336,6 +340,8 @@ export default class Editor extends React.Component<Props> {
             hasFormBuilderFocus={hasFormBuilderFocus}
             markers={childMarkers}
             readOnly={readOnly}
+            renderBlockActions={renderBlockActions}
+            renderCustomMarkers={renderCustomMarkers}
             block={
               value
                 ? value.find(blk => blk._key === node.key)
@@ -381,6 +387,8 @@ export default class Editor extends React.Component<Props> {
             onPatch={onPatch}
             onShowBlockDragMarker={this.handleShowBlockDragMarker}
             readOnly={readOnly}
+            renderBlockActions={renderBlockActions}
+            renderCustomMarkers={renderCustomMarkers}
             type={ObjectType}
           />
         )

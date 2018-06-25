@@ -44,6 +44,8 @@ type Props = {
   onPatch: (event: PatchEvent) => void,
   onShowBlockDragMarker: (pos: string, node: HTMLDivElement) => void,
   readOnly: ?boolean,
+  renderBlockActions?: ({block: Block}) => React.Node,
+  renderCustomMarkers?: (Marker[]) => React.Node,
   type: ?Type
 }
 
@@ -295,14 +297,16 @@ export default class BlockObject extends React.Component<Props, State> {
   render() {
     const {
       attributes,
-      node,
+      blockContentFeatures,
       editorValue,
       isSelected,
-      readOnly,
       markers,
-      blockContentFeatures,
+      node,
+      onChange,
       onFocus,
-      onChange
+      readOnly,
+      renderBlockActions,
+      renderCustomMarkers
     } = this.props
     const value = this.getValue()
     const valueType = resolveTypeName(value)
@@ -356,6 +360,8 @@ export default class BlockObject extends React.Component<Props, State> {
           onChange={onChange}
           editorValue={editorValue}
           block={value}
+          renderBlockActions={renderBlockActions}
+          renderCustomMarkers={renderCustomMarkers}
         />
       </div>
     )
