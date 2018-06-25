@@ -15,6 +15,10 @@
     {
       "implements": "part:@sanity/base/schema-type",
       "path": "schema.js"
+    },
+    {
+      "name": "part:@sanity/color-input/schema",
+      "path": "schema.js"
     }
   ]
 }
