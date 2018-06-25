@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
-import ColorInput from './ColorInput'
 import React from 'react'
+import ColorInput from './ColorInput'
 
 export default {
   name: 'color',
