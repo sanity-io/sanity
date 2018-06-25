@@ -1297,6 +1297,21 @@ test('Transaction is available on client and can be used without instantiated cl
   t.end()
 })
 
+test('transaction can be created without client and passed to mutate()', t => {
+  const trx = new sanityClient.Transaction()
+  trx.delete('foo')
+
+  const mutations = [{delete: {id: 'foo'}}]
+  nock(projectHost())
+    .post('/v1/data/mutate/foo?returnIds=true&returnDocuments=true&visibility=sync', {mutations})
+    .reply(200, {results: [{id: 'foo', operation: 'delete'}]})
+
+  getClient()
+    .mutate(trx)
+    .catch(t.ifError)
+    .then(() => t.end())
+})
+
 test('transaction commit() throws if called without a client', t => {
   const trans = new sanityClient.Transaction()
   t.throws(() => trans.delete('foo.bar').commit(), /client.*mutate/i)
