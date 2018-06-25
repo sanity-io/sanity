@@ -63,6 +63,8 @@ type Props = {
   onFocus: (nextPath: []) => void,
   onPatch: (event: PatchEvent) => void,
   readOnly?: boolean,
+  renderBlockActions?: ({block: Block}) => React.Node,
+  renderCustomMarkers?: (Marker[]) => React.Node,
   schema: Schema,
   subscribe: (() => void) => void,
   type: BlockArrayType,

@@ -1,8 +1,7 @@
 // @flow
-import type {SlateChange, SlateValue} from './typeDefs'
+import type {Marker, SlateChange, SlateValue} from './typeDefs'
 import React from 'react'
 
-import CustomMarkers from 'part:@sanity/form-builder/input/block-editor/custom-markers'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 
 import styles from './styles/Markers.css'
@@ -13,7 +12,8 @@ type Props = {
   editorValue: SlateValue,
   markers: marker[],
   onFocus: void => void,
-  onChange: (change: SlateChange) => void
+  onChange: (change: SlateChange) => void,
+  renderCustomMarkers?: (Marker[]) => React.Node
 }
 
 export default class Markers extends React.Component<Props> {
@@ -37,7 +37,7 @@ export default class Markers extends React.Component<Props> {
   }
 
   render() {
-    const {markers} = this.props
+    const {markers, renderCustomMarkers} = this.props
     if (markers.length === 0) {
       return null
     }
@@ -45,15 +45,15 @@ export default class Markers extends React.Component<Props> {
     const validationMarkers = markers.filter(mrkr => mrkr.type === 'validation')
 
     return (
-      <div className={styles.markers} onClick={this.handleCancelEvent}>
+      <div onClick={this.handleCancelEvent}>
         {validationMarkers.length > 0 && (
-          <div className={styles.marker} onClick={this.handleValidationMarkerClick}>
+          <div className={styles.markerGroup} onClick={this.handleValidationMarkerClick}>
             <ValidationStatus markers={validationMarkers} />
           </div>
         )}
         {customMarkers.length > 0 && (
-          <div className={styles.marker} onClick={this.handleCancelEvent}>
-            <CustomMarkers markers={customMarkers} />
+          <div className={styles.markerGroup} onClick={this.handleCancelEvent}>
+            {renderCustomMarkers && renderCustomMarkers({markers: customMarkers})}
           </div>
         )}
       </div>

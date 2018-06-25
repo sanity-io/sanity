@@ -84,14 +84,6 @@
       "description": "Component that shows and handles all markers (validation and custom) within a block"
     },
     {
-      "name": "part:@sanity/form-builder/input/block-editor/custom-markers",
-      "description": "Component that shows and handles (only) custom markers within a block"
-    },
-    {
-      "name": "part:@sanity/form-builder/input/block-editor/block-actions",
-      "description": "Component that renders actions or other custom content for a block"
-    },
-    {
       "name": "part:@sanity/form-builder/input/block-editor/block-extras",
       "description": "Component that renders block actions and markers for a block (all content in the right marigin)"
     },
@@ -116,11 +108,6 @@
       "name": "part:@sanity/form-builder/input/block-editor/block-markers-default",
       "implements": "part:@sanity/form-builder/input/block-editor/block-markers",
       "path": "inputs/BlockEditor/nodes/Markers.js"
-    },
-    {
-      "name": "part:@sanity/form-builder/input/block-editor/custom-markers-default",
-      "implements": "part:@sanity/form-builder/input/block-editor/custom-markers",
-      "path": "inputs/BlockEditor/nodes/CustomMarkers.js"
     },
     {
       "name": "part:@sanity/form-builder/input/block-editor/block-extras-default",

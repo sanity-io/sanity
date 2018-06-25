@@ -15,7 +15,9 @@ type ExtraProps = {
   onFocus: void => void,
   onChange: (change: SlateChange) => void,
   block: Block,
-  readOnly: ?boolean
+  readOnly: ?boolean,
+  renderBlockActions?: ({block: Block}) => React.Node,
+  renderCustomMarkers?: (Marker[]) => React.Node
 }
 
 export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
@@ -28,7 +30,9 @@ export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
     markers,
     node,
     onChange,
-    onFocus
+    onFocus,
+    renderBlockActions,
+    renderCustomMarkers
   } = props
   const data = node.data
   const listItem = data ? data.get('listItem') : null
@@ -57,6 +61,8 @@ export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
           onChange={onChange}
           block={block}
           editorValue={editorValue}
+          renderBlockActions={renderBlockActions}
+          renderCustomMarkers={renderCustomMarkers}
         />
       </ListItem>
     )
@@ -70,6 +76,8 @@ export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
         onChange={onChange}
         block={block}
         editorValue={editorValue}
+        renderBlockActions={renderBlockActions}
+        renderCustomMarkers={renderCustomMarkers}
       />
     </Text>
   )
