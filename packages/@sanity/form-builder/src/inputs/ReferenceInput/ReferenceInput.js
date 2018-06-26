@@ -130,7 +130,7 @@ export default class ReferenceInput extends React.Component<Props, State> {
   }
 
   handleOpen = () => {
-    this.search('*')
+    this.search('')
   }
 
   search = (query: string) => {
