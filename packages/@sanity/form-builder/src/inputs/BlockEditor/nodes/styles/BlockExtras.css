@@ -9,6 +9,7 @@
   transform: translateX(100%);
   justify-content: flex-start;
   align-content: center;
+  user-select: none;
 }
 
 .withSomething {

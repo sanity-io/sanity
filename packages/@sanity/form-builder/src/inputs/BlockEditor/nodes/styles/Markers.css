@@ -1,11 +1,6 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.root {
-  display: block;
-}
-
 .markerGroup {
   display: inline-block;
   padding-right: var(--small-padding);
-  cursor: pointer;
 }

@@ -10,12 +10,11 @@ import styles from './styles/BlockExtras.css'
 type marker = {}
 
 type Props = {
-  block: Block,
   editorValue: SlateValue,
   markers: marker[],
   onChange: (change: SlateChange) => void,
   onFocus: void => void,
-  renderBlockActions?: ({block: Block}) => React.Node,
+  blockActions?: React.Node,
   renderCustomMarkers?: (Marker[]) => React.Node
 }
 
@@ -39,30 +38,22 @@ export default class BlockExtras extends React.PureComponent<Props> {
   }
 
   render() {
-    const {
-      block,
-      markers,
-      onFocus,
-      onChange,
-      editorValue,
-      renderBlockActions,
-      renderCustomMarkers
-    } = this.props
+    const {markers, onFocus, onChange, editorValue, blockActions, renderCustomMarkers} = this.props
     const scopedValidation = this.getValidationMarkers()
     const errors = scopedValidation.filter(mrkr => mrkr.level === 'error')
     const warnings = scopedValidation.filter(mrkr => mrkr.level === 'warning')
     return (
       <div
         className={classNames([
-          (renderBlockActions || markers.length > 0) && styles.withSomething,
+          styles.root,
+          (blockActions || markers.length > 0) && styles.withSomething,
           errors.length > 0 && styles.withError,
           warnings.length > 0 && !errors.length && styles.withWarning
         ])}
-        contentEditable={false}
+        suppressContentEditableWarning
+        contentEditable="false"
       >
-        {renderBlockActions && (
-          <div className={styles.blockActions}>{renderBlockActions({block: block})}</div>
-        )}
+        {blockActions && <div className={styles.blockActions}>{blockActions}</div>}
         {markers.length > 0 && (
           <div className={styles.markers}>
             <Markers
