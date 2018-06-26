@@ -11,8 +11,8 @@ export default function renderCustomMarkers(props: Props) {
   return (
     <div>
       {markers.map((marker, index) => {
-        if (marker.type === 'comment') {
-          return <div key={`marker${index}`}>Comment</div>
+        if (marker.type === 'customMarkerTest') {
+          return <div key={`marker${index}`}>Marker!</div>
         }
         return null
       })}
