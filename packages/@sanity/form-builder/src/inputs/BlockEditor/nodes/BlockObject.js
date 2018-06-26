@@ -336,7 +336,7 @@ export default class BlockObject extends React.Component<Props, State> {
       errors.length > 0 && styles.hasErrors
     ])
 
-    const blockActions = renderBlockActions({block: value})
+    const blockActions = renderBlockActions ? renderBlockActions({block: value}) : null
 
     return (
       <div>

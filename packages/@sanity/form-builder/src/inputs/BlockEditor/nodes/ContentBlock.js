@@ -20,6 +20,7 @@ type ExtraProps = {
   renderCustomMarkers?: (Marker[]) => React.Node
 }
 
+// eslint-disable-next-line complexity
 export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
   const {
     attributes,
@@ -49,7 +50,7 @@ export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
     styleComponent = customStyle.blockEditor && customStyle.blockEditor.render
   }
 
-  const blockActions = renderBlockActions({block: block})
+  const blockActions = renderBlockActions ? renderBlockActions({block: block}) : null
 
   if (listItem) {
     return (
