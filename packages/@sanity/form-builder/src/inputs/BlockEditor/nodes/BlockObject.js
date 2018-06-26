@@ -336,6 +336,8 @@ export default class BlockObject extends React.Component<Props, State> {
       errors.length > 0 && styles.hasErrors
     ])
 
+    const blockActions = renderBlockActions({block: value})
+
     return (
       <div>
         <div
@@ -360,7 +362,7 @@ export default class BlockObject extends React.Component<Props, State> {
           onChange={onChange}
           editorValue={editorValue}
           block={value}
-          renderBlockActions={renderBlockActions}
+          blockActions={blockActions}
           renderCustomMarkers={renderCustomMarkers}
         />
       </div>

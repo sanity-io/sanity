@@ -49,6 +49,8 @@ export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
     styleComponent = customStyle.blockEditor && customStyle.blockEditor.render
   }
 
+  const blockActions = renderBlockActions({block: block})
+
   if (listItem) {
     return (
       <ListItem listStyle={listItem} level={level}>
@@ -61,7 +63,7 @@ export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
           onChange={onChange}
           block={block}
           editorValue={editorValue}
-          renderBlockActions={renderBlockActions}
+          blockActions={blockActions}
           renderCustomMarkers={renderCustomMarkers}
         />
       </ListItem>
@@ -76,7 +78,7 @@ export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
         onChange={onChange}
         block={block}
         editorValue={editorValue}
-        renderBlockActions={renderBlockActions}
+        blockActions={blockActions}
         renderCustomMarkers={renderCustomMarkers}
       />
     </Text>
