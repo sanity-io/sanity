@@ -19,7 +19,7 @@ function buildConstraintFromType(type, terms) {
   const typeConstraint = `_type == '${type.name}'`
 
   const stringFieldPaths = type.__unstable_searchFields || []
-  if (stringFieldPaths.length === 0) {
+  if (terms.length === 0 || stringFieldPaths.length === 0) {
     return typeConstraint
   }
 
@@ -31,7 +31,7 @@ function buildConstraintFromType(type, terms) {
 }
 
 export function search(textTerm, referenceType) {
-  const terms = textTerm.split(/\s+/)
+  const terms = textTerm.split(/\s+/).filter(Boolean)
   const typeConstraints = referenceType.to.map(type => buildConstraintFromType(type, terms))
 
   const query = `*[!(_id in path('drafts.**')) && (${typeConstraints
