@@ -20,7 +20,7 @@ import {isEqual} from 'lodash'
 import {isKeyHotkey} from 'is-hotkey'
 import {EDITOR_DEFAULT_BLOCK_TYPE, editorValueToBlocks} from '@sanity/block-tools'
 import insertBlockOnEnter from 'slate-insert-block-on-enter'
-import onPaste from 'part:@sanity/form-builder/input/block-editor/on-paste?'
+import onPasteFromPart from 'part:@sanity/form-builder/input/block-editor/on-paste?'
 import onCopy from 'part:@sanity/form-builder/input/block-editor/on-copy?'
 
 import {VALUE_TO_JSON_OPTS} from './utils/changeToPatches'
@@ -58,6 +58,12 @@ type Props = {
   onFocus: (nextPath: []) => void,
   onFormBuilderInputBlur: (nextPath: []) => void,
   onFormBuilderInputFocus: (nextPath: []) => void,
+  onPaste?: (
+    event: SyntheticEvent,
+    path: [],
+    type: Type,
+    value: ?Value
+  ) => {insert?: Value, path?: []},
   onPatch: (event: PatchEvent) => void,
   onToggleFullScreen: void => void,
   readOnly?: boolean,
@@ -224,6 +230,7 @@ export default class Editor extends React.Component<Props> {
 
   handlePaste = event => {
     const {focusPath, onPatch, value, type} = this.props
+    const onPaste = this.props.onPaste || onPasteFromPart
     if (onPaste) {
       const {editorValue} = this.props
       const change = editorValue.change()
