@@ -24,6 +24,12 @@ type Props = {
   onChange: (change: SlateChange) => void,
   onFocus: (nextPath: []) => void,
   onPatch: (event: PatchEvent) => void,
+  onPaste?: (
+    event: SyntheticEvent,
+    path: [],
+    type: Type,
+    value: ?Value
+  ) => {insert?: Value, path?: []},
   readOnly?: boolean,
   renderBlockActions?: (block: Block) => React.Node,
   renderCustomMarkers?: (Marker[]) => React.Node,
@@ -92,6 +98,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
       onFocus,
       onChange,
       onPatch,
+      onPaste,
       readOnly,
       renderBlockActions,
       renderCustomMarkers,
@@ -111,6 +118,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
         onBlur={onBlur}
         onChange={onChange}
         onPatch={onPatch}
+        onPaste={onPaste}
         onToggleFullScreen={this.handleToggleFullScreen}
         readOnly={readOnly}
         renderBlockActions={renderBlockActions}

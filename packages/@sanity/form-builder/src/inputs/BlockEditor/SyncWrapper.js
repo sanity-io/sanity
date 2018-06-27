@@ -61,6 +61,12 @@ type Props = {
   onBlur: (nextPath: []) => void,
   onChange: PatchEvent => void,
   onFocus: (nextPath: []) => void,
+  onPaste?: (
+    event: SyntheticEvent,
+    path: [],
+    type: Type,
+    value: ?Value
+  ) => {insert?: Value, path?: []},
   onPatch: (event: PatchEvent) => void,
   readOnly?: boolean,
   renderBlockActions?: (block: Block) => React.Node,
