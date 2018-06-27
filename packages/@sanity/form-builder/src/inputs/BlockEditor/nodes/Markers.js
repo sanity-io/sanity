@@ -54,7 +54,7 @@ export default class Markers extends React.Component<Props> {
         )}
         {customMarkers.length > 0 && (
           <div className={styles.markerGroup} onClick={this.handleCancelEvent}>
-            {renderCustomMarkers && renderCustomMarkers({markers: customMarkers})}
+            {renderCustomMarkers && renderCustomMarkers(customMarkers)}
             {!renderCustomMarkers && <CustomMarkers markers={markers} />}
           </div>
         )}
