@@ -44,7 +44,7 @@ type Props = {
   onPatch: (event: PatchEvent) => void,
   onShowBlockDragMarker: (pos: string, node: HTMLDivElement) => void,
   readOnly: ?boolean,
-  renderBlockActions?: ({block: Block}) => React.Node,
+  blockActions?: React.Node,
   renderCustomMarkers?: (Marker[]) => React.Node,
   type: ?Type
 }
@@ -305,7 +305,7 @@ export default class BlockObject extends React.Component<Props, State> {
       onChange,
       onFocus,
       readOnly,
-      renderBlockActions,
+      blockActions,
       renderCustomMarkers
     } = this.props
     const value = this.getValue()
@@ -336,8 +336,6 @@ export default class BlockObject extends React.Component<Props, State> {
       errors.length > 0 && styles.hasErrors
     ])
 
-    const blockActions = renderBlockActions ? renderBlockActions({block: value}) : null
-
     return (
       <div>
         <div
@@ -356,15 +354,17 @@ export default class BlockObject extends React.Component<Props, State> {
             {this.renderPreview(value)}
           </div>
         </div>
-        <BlockExtras
-          markers={markers}
-          onFocus={onFocus}
-          onChange={onChange}
-          editorValue={editorValue}
-          block={value}
-          blockActions={blockActions}
-          renderCustomMarkers={renderCustomMarkers}
-        />
+        {(markers.length > 0 || blockActions) && (
+          <BlockExtras
+            markers={markers}
+            onFocus={onFocus}
+            onChange={onChange}
+            editorValue={editorValue}
+            block={value}
+            blockActions={blockActions}
+            renderCustomMarkers={renderCustomMarkers}
+          />
+        )}
       </div>
     )
   }

@@ -72,6 +72,8 @@ type Props = {
 export default class Editor extends React.Component<Props> {
   _blockDragMarker: ?HTMLDivElement
 
+  _blockActionsMap = {}
+
   _editor: ?(Node & SlateEditor) = null
 
   _plugins = []
@@ -339,7 +341,7 @@ export default class Editor extends React.Component<Props> {
             hasFormBuilderFocus={hasFormBuilderFocus}
             markers={childMarkers}
             readOnly={readOnly}
-            renderBlockActions={renderBlockActions}
+            blockActions={this._blockActionsMap[node.key]}
             renderCustomMarkers={renderCustomMarkers}
             block={
               value
@@ -386,7 +388,7 @@ export default class Editor extends React.Component<Props> {
             onPatch={onPatch}
             onShowBlockDragMarker={this.handleShowBlockDragMarker}
             readOnly={readOnly}
-            renderBlockActions={renderBlockActions}
+            blockActions={this._blockActionsMap[node.key]}
             renderCustomMarkers={renderCustomMarkers}
             type={ObjectType}
           />
@@ -409,13 +411,29 @@ export default class Editor extends React.Component<Props> {
   }
 
   render() {
-    const {editorValue, fullscreen, readOnly, markers, renderBlockActions} = this.props
+    const {editorValue, fullscreen, readOnly, markers, renderBlockActions, value} = this.props
+
+    const hasMarkers = markers.filter(marker => marker.path.length > 0).length > 0
+
+    // Figure out if we have any block actions
+    let hasBlockActions = renderBlockActions
+    if (hasBlockActions) {
+      this._blockActionsMap = {}
+      value.forEach(block => {
+        const actions = renderBlockActions({block})
+        if (actions) {
+          this._blockActionsMap[block._key] = actions
+        }
+      })
+      hasBlockActions = Object.keys(this._blockActionsMap).length > 0
+    }
+
     const classNames = [
       styles.root,
-      (renderBlockActions || markers.filter(marker => marker.path.length > 0).length > 0) &&
-        styles.hasMarkers,
+      (hasBlockActions || hasMarkers) && styles.hasBlockExtras,
       fullscreen ? styles.fullscreen : null
     ].filter(Boolean)
+
     return (
       <div className={classNames.join(' ')}>
         <SlateEditor

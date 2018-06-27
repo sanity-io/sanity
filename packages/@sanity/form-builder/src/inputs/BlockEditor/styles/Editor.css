@@ -23,7 +23,7 @@
   width: 100%;
 }
 
-.root.hasMarkers:not(.fullscreen) {
+.root.hasBlockExtras:not(.fullscreen) {
   margin-right: 5rem;
   border-right: 1px solid var(--gray);
 }

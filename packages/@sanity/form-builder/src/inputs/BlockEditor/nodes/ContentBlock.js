@@ -16,7 +16,7 @@ type ExtraProps = {
   onChange: (change: SlateChange) => void,
   block: Block,
   readOnly: ?boolean,
-  renderBlockActions?: ({block: Block}) => React.Node,
+  blockActions?: React.Node,
   renderCustomMarkers?: (Marker[]) => React.Node
 }
 
@@ -32,7 +32,7 @@ export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
     node,
     onChange,
     onFocus,
-    renderBlockActions,
+    blockActions,
     renderCustomMarkers
   } = props
   const data = node.data
@@ -50,14 +50,30 @@ export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
     styleComponent = customStyle.blockEditor && customStyle.blockEditor.render
   }
 
-  const blockActions = renderBlockActions ? renderBlockActions({block: block}) : null
-
   if (listItem) {
     return (
       <ListItem listStyle={listItem} level={level}>
         <Text style={style} attributes={attributes} styleComponent={styleComponent}>
           {children}
         </Text>
+        {(markers.length > 0 || blockActions) && (
+          <BlockExtras
+            markers={markers}
+            onFocus={onFocus}
+            onChange={onChange}
+            block={block}
+            editorValue={editorValue}
+            blockActions={blockActions}
+            renderCustomMarkers={renderCustomMarkers}
+          />
+        )}
+      </ListItem>
+    )
+  }
+  return (
+    <Text style={style} styleComponent={styleComponent} attributes={attributes}>
+      {children}
+      {(markers.length > 0 || blockActions) && (
         <BlockExtras
           markers={markers}
           onFocus={onFocus}
@@ -67,21 +83,7 @@ export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
           blockActions={blockActions}
           renderCustomMarkers={renderCustomMarkers}
         />
-      </ListItem>
-    )
-  }
-  return (
-    <Text style={style} styleComponent={styleComponent} attributes={attributes}>
-      {children}
-      <BlockExtras
-        markers={markers}
-        onFocus={onFocus}
-        onChange={onChange}
-        block={block}
-        editorValue={editorValue}
-        blockActions={blockActions}
-        renderCustomMarkers={renderCustomMarkers}
-      />
+      )}
     </Text>
   )
 }
