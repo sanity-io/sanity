@@ -32,4 +32,9 @@
 
 .blockActions {
   margin-right: var(--extra-small-padding);
+  font-size: 1rem;
+}
+
+.markers {
+  font-size: 1rem;
 }
