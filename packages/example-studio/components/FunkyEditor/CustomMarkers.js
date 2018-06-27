@@ -2,12 +2,7 @@
 
 import React from 'react'
 
-type Props = {
-  markers: {type: string, path: []}
-}
-
-export default function renderCustomMarkers(props: Props) {
-  const {markers} = props
+export default function renderCustomMarkers(markers: {type: string, path: []}[]) {
   return (
     <div>
       {markers.map((marker, index) => {
