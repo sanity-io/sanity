@@ -6,4 +6,5 @@
   composes: blockquote from "part:@sanity/base/theme/typography/text-blocks-style";
   padding: 0;
   margin: 0;
+  margin-left: 2.5rem;
 }
