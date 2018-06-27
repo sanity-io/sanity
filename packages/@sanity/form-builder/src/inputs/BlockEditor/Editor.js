@@ -61,7 +61,7 @@ type Props = {
   onPatch: (event: PatchEvent) => void,
   onToggleFullScreen: void => void,
   readOnly?: boolean,
-  renderBlockActions?: ({block: Block}) => React.Node,
+  renderBlockActions?: (block: Block) => React.Node,
   renderCustomMarkers?: (Marker[]) => React.Node,
   setFocus: void => void,
   type: Type,
@@ -279,7 +279,6 @@ export default class Editor extends React.Component<Props> {
       onPatch,
       readOnly,
       value,
-      renderBlockActions,
       renderCustomMarkers,
       type
     } = this.props
@@ -420,7 +419,7 @@ export default class Editor extends React.Component<Props> {
     if (hasBlockActions) {
       this._blockActionsMap = {}
       value.forEach(block => {
-        const actions = renderBlockActions({block})
+        const actions = renderBlockActions(block)
         if (actions) {
           this._blockActionsMap[block._key] = actions
         }

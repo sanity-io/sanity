@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import styles from './TitleStyle.css'
 
 const TitleStyle = props => {
-  return <span className={styles.root}>{props.children}</span>
+  return <div className={styles.root}>{props.children}</div>
 }
 
 TitleStyle.propTypes = {
