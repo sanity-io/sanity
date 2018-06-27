@@ -56,7 +56,7 @@ export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
         <Text style={style} attributes={attributes} styleComponent={styleComponent}>
           {children}
         </Text>
-        {(markers.length > 0 || blockActions) && (
+        {((markers && markers.length > 0) || blockActions) && (
           <BlockExtras
             markers={markers}
             onFocus={onFocus}
@@ -73,7 +73,7 @@ export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
   return (
     <Text style={style} styleComponent={styleComponent} attributes={attributes}>
       {children}
-      {(markers.length > 0 || blockActions) && (
+      {((markers && markers.length > 0) || blockActions) && (
         <BlockExtras
           markers={markers}
           onFocus={onFocus}
