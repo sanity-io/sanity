@@ -52,6 +52,7 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
     const {onChange, dateFormat, timeFormat} = this.props
     const parsed = moment(inputValue, getFormat(dateFormat, timeFormat), true)
     if (parsed.isValid()) {
+      this.setState({inputValue: null})
       onChange(parsed)
     } else {
       this.setState({inputValue: inputValue})
@@ -62,7 +63,6 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
     const {onChange} = this.props
     onChange(nextMoment)
     this.setState({inputValue: null})
-    this.close()
   }
 
   handleBlur = () => {
