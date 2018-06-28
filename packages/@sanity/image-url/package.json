@@ -3,12 +3,17 @@
   "version": "0.132.2",
   "description": "Tools to generate image urls from Sanity content",
   "main": "index.js",
+  "umd": "umd/sanityImageUrl.min.js",
+  "unpkg": "umd/sanityImageUrl.min.js",
   "scripts": {
-    "build": "npm run clean && npm run compile",
+    "build": "npm run clean && npm run compile && npm run browserify && npm run minify",
+    "browserify": "NODE_ENV=production BROWSERIFY_ENV=build DEBUG='' browserify -t envify -g uglifyify index.js -o umd/sanityImageUrl.js --standalone=SanityImageUrlBuilder",
     "coverage": "jest --coverage",
     "compile": "babel --source-maps --copy-files -d lib/ src/",
     "clean": "rimraf lib",
     "postpublish": "npm run clean",
+    "minify": "uglifyjs -c -m -- umd/sanityImageUrl.js > umd/sanityImageUrl.min.js",
+    "prepublishOnly": "npm run build",
     "test": "jest"
   },
   "author": "Sanity.io <hello@sanity.io>",
@@ -17,8 +22,13 @@
     "access": "public"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "browserify": "^14.3.0",
+    "envify": "^4.0.0",
     "jest": "^22.4.3",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.6.2",
+    "uglify-js": "^3.1.10",
+    "uglifyify": "^3.0.4"
   },
   "repository": {
     "type": "git",
