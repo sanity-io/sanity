@@ -1,6 +1,6 @@
 {
   "name": "@sanity/generate-help-url",
-  "version": "0.132.2",
+  "version": "0.132.5",
   "description": "Generates URLs to specific sections of the Sanity documentation",
   "main": "index.js",
   "scripts": {

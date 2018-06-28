@@ -1,6 +1,6 @@
 {
   "name": "@sanity/base",
-  "version": "0.132.4",
+  "version": "0.132.5",
   "description": "Sanity plugin containing the base components and roles for a Sanity configuration",
   "main": "lib/index.js",
   "scripts": {
@@ -28,14 +28,14 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
-    "@sanity/client": "0.132.2",
-    "@sanity/document-store": "0.132.2",
-    "@sanity/image-url": "0.132.2",
-    "@sanity/observable": "0.132.2",
-    "@sanity/preview": "0.132.2",
-    "@sanity/schema": "0.132.2",
-    "@sanity/state-router": "0.132.2",
-    "@sanity/validation": "0.132.2",
+    "@sanity/client": "0.132.5",
+    "@sanity/document-store": "0.132.5",
+    "@sanity/image-url": "0.132.5",
+    "@sanity/observable": "0.132.5",
+    "@sanity/preview": "0.132.5",
+    "@sanity/schema": "0.132.5",
+    "@sanity/state-router": "0.132.5",
+    "@sanity/validation": "0.132.5",
     "history": "^4.6.3",
     "in-publish": "^2.0.0",
     "lodash": "^4.17.4",
@@ -49,8 +49,8 @@
     "shallow-equals": "^1.0.0"
   },
   "devDependencies": {
-    "@sanity/check": "0.132.4",
-    "@sanity/plugin-loader": "0.132.4",
+    "@sanity/check": "0.132.5",
+    "@sanity/plugin-loader": "0.132.5",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "mocha": "^5.0.1",

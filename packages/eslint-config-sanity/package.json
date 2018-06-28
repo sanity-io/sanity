@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-sanity",
-  "version": "0.132.2",
+  "version": "0.132.5",
   "description": "Shared eslint configs for sanity-io",
   "main": "index.js",
   "scripts": {

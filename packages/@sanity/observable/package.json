@@ -1,7 +1,7 @@
 {
   "name": "@sanity/observable",
   "description": "[deprecated] This package exists for legacy reasons only",
-  "version": "0.132.2",
+  "version": "0.132.5",
   "main": "minimal.js",
   "scripts": {
     "clean": "rimraf lib",
