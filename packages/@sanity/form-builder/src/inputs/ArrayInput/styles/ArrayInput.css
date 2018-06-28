@@ -6,7 +6,6 @@
 }
 
 .list {
-  composes: root from 'part:@sanity/components/lists/default-style';
   user-select: none;
 }
 
