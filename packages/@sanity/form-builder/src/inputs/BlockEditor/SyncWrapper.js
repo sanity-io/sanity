@@ -153,9 +153,7 @@ export default withPatchSubscriber(
     handleDocumentPatches = ({patches, shouldReset, snapshot}) => {
       const {type, focusPath} = this.props
       const hasRemotePatches = patches.some(patch => patch.origin === 'remote')
-      const hasInsertUnsetPatchesOnRootLevel = patches.some(
-        patch => ['insert', 'unset'].includes(patch.type) && patch.path.length === 1
-      )
+      const hasInsertUnsetPatches = patches.some(patch => ['insert', 'unset'].includes(patch.type))
       const hasMultipleDestinations =
         uniq(patches.map(patch => patch.path[0] && patch.path[0]._key).filter(Boolean)).length > 1
       const hasComplexity = patches.length > 3
@@ -165,7 +163,7 @@ export default withPatchSubscriber(
       // TODO: force sync the state every now and then just to be 100% sure we are in sync.
       const shouldSetNewState =
         hasRemotePatches ||
-        hasInsertUnsetPatchesOnRootLevel ||
+        hasInsertUnsetPatches ||
         hasMultipleDestinations ||
         hasComplexity ||
         shouldReset

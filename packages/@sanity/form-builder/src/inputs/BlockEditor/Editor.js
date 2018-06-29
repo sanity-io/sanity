@@ -115,6 +115,9 @@ export default class Editor extends React.Component<Props> {
     const {editorValue, focusPath} = this.props
     if ((focusPath || []).length) {
       const block = editorValue.document.getDescendant(focusPath[0]._key)
+      if (!block) {
+        return
+      }
       // Wait for things to get finshed rendered before scrolling there
       setTimeout(
         () =>
