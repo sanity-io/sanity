@@ -9,7 +9,7 @@
  * └────────────────┘
  */
 
-var nodeVersion = Number(process.version.replace(/^v/i, '').split('.', 2)[0])
+const nodeVersion = Number(process.version.replace(/^v/i, '').split('.', 2)[0])
 if (nodeVersion < 6) {
   console.error('ERROR: Node.js version 6 or higher required. You are running ' + process.version)
   process.exit(1)
@@ -21,6 +21,7 @@ if (process.version === 'v8.1.0' || process.version === 'v8.1.1') {
   process.exit(1)
 }
 
-var path = require('path')
-var runCli = require('../lib/cli')
+const path = require('path')
+const runCli = require('../lib/cli')
+
 runCli(path.join(__dirname, '..'))

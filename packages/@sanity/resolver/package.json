@@ -42,7 +42,7 @@
   "dependencies": {
     "@sanity/generate-help-url": "0.132.5",
     "@sanity/util": "0.132.5",
-    "fs-extra": "^5.0.0",
+    "fs-extra": "^6.0.1",
     "lodash": "^4.17.4",
     "path-exists": "^3.0.0",
     "promise-props-recursive": "^1.0.0"
