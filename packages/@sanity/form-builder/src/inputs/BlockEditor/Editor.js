@@ -425,8 +425,8 @@ export default class Editor extends React.Component<Props> {
     const hasMarkers = markers.filter(marker => marker.path.length > 0).length > 0
 
     // Figure out if we have any block actions
-    let hasBlockActions = renderBlockActions
-    if (hasBlockActions) {
+    let hasBlockActions = false
+    if (renderBlockActions && value) {
       this._blockActionsMap = {}
       value.forEach(block => {
         const actions = renderBlockActions(block)
