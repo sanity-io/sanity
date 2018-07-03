@@ -1,0 +1,46 @@
+environment:
+  matrix:
+    - nodejs_version: "10"
+    - nodejs_version: "8"
+    - nodejs_version: "6"
+
+install:
+  - ps: Install-Product node $env:nodejs_version
+  - npm install
+  - npm run bootstrap
+  - npm run build
+
+test_script:
+  - node --version
+  - npm --version
+
+  # Allow running the Sanity CLI tool without specifying absolute path
+  - set PATH=%PATH%;%APPVEYOR_BUILD_FOLDER%\packages\@sanity\bin
+
+  # Build CLI to a single file
+  - cd packages\@sanity\cli
+  - npm run pack
+  - npm i -g
+
+  # Remove source and dependencies from CLI to ensure it works standalone
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - rd /s /q packages\@sanity\cli\node_modules
+  - rd /s /q packages\@sanity\cli\src
+  - rd /s /q packages\@sanity\cli\lib
+
+  # Test building the test studio with all customizations
+  - cd %APPVEYOR_BUILD_FOLDER%\packages\test-studio
+  - sanity build
+
+  # Test initializing a project in unattended mode
+  - mkdir %APPVEYOR_BUILD_FOLDER%\tmp
+  - sanity init -y --project=ppsg7ml5 --dataset=test --output-path=%APPVEYOR_BUILD_FOLDER%\tmp
+
+  # Use the newly commited changes instead of the latest dependencies from NPM
+  - cd %APPVEYOR_BUILD_FOLDER%\tmp
+  - node %APPVEYOR_BUILD_FOLDER%\scripts\symlinkDependencies.js .
+
+  # Test building the project with latest dependencies
+  - sanity build --skip-minify
+
+build: off
