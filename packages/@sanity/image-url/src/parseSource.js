@@ -43,6 +43,11 @@ export default function parseSource(source) {
     return null
   }
 
+  if (source && (source.crop || source.hotspot)) {
+    image.crop = source.crop
+    image.hotspot = source.hotspot
+  }
+
   return applyDefaultHotspot(image)
 }
 
@@ -51,8 +56,8 @@ function isUrl(url) {
 }
 
 function urlToId(url) {
-  const [filename] = url.split('/').slice(-1)
-  return `image-${filename}`.replace(/\.([a-z]+)$/, '-$1')
+  const parts = url.split('/').slice(-1)
+  return `image-${parts[0]}`.replace(/\.([a-z]+)$/, '-$1')
 }
 
 // Mock crop and hotspot if image lacks it
