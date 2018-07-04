@@ -1,7 +1,7 @@
-const createSchema = require('part:@sanity/base/schema-creator')
-const schemaTypes = require('all:part:@sanity/base/schema-type')
+import createSchema from 'part:@sanity/base/schema-creator'
+import schemaTypes from 'all:part:@sanity/base/schema-type'
 
-module.exports = createSchema({
+export default createSchema({
   name: 'default',
   types: schemaTypes.concat([
     /* Your types here! */
