@@ -30,13 +30,13 @@ const windowWidth$ = merge(orientationChange$, resize$).pipe(
 export default class PanesSplitController extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
-    onSholdCollapse: PropTypes.func,
-    onSholdExpand: PropTypes.func
+    onShouldCollapse: PropTypes.func,
+    onShouldExpand: PropTypes.func
   }
 
   static defaultProps = {
-    onSholdCollapse() {},
-    onSholdExpand() {}
+    onShouldCollapse() {},
+    onShouldExpand() {}
   }
 
   state = {
@@ -57,9 +57,9 @@ export default class PanesSplitController extends React.Component {
 
   handleSplitPaneChange = debounce((size, pane) => {
     if (size <= pane.props.minWidth) {
-      this.props.onSholdCollapse(pane)
+      this.props.onShouldCollapse(pane)
     } else {
-      this.props.onSholdExpand(pane)
+      this.props.onShouldExpand(pane)
     }
 
     this.lastPaneSize = size
