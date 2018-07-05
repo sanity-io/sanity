@@ -1,0 +1,45 @@
+{
+  "server": {
+    "hostname": "0.0.0.0"
+  },
+  "api": {
+    "dataset": "beerdata",
+    "projectId": "p8cw3hbp"
+  },
+  "plugins": [
+    "@sanity/base",
+    "@sanity/form-builder",
+    "@sanity/components",
+    "@sanity/data-aspects"
+  ],
+  "parts": [
+    {
+      "implements": "part:@sanity/base/root",
+      "path": "./Main.js"
+    },
+    {
+      "implements": "part:@sanity/base/action-button",
+      "path": "./ActionButton"
+    },
+    {
+      "implements": "part:@sanity/base/client",
+      "path": "./mock/sanityClient.js"
+    },
+    {
+      "implements": "part:@sanity/base/schema",
+      "path": "./schema.js"
+    },
+    {
+      "implements": "part:@sanity/desk-tool/pane-resolver",
+      "path": "../../src/SchemaPaneResolver"
+    },
+    {
+      "implements": "part:@sanity/desk-tool/pane",
+      "path": "../../src/pane/Pane"
+    },
+    {
+      "name": "part:@sanity/desk-tool/pane-container",
+      "path": "../../src/pane/PaneContainer.js"
+    }
+  ]
+}

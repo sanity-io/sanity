@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`builds menu items with only title and action 1`] = `
+Object {
+  "action": "foo",
+  "title": "Foo",
+}
+`;
+
+exports[`builds menu items with setters 1`] = `
+Object {
+  "action": "print",
+  "group": "old-school",
+  "icon": [Function],
+  "params": Object {
+    "foo": "bar",
+  },
+  "showAsAction": false,
+  "title": "Print",
+}
+`;
+
+exports[`throws if neither action nor intent is set 1`] = `"\`action\` or \`intent\` required for menu item with title foo"`;
+
+exports[`throws if no title is set 1`] = `"\`title\` is required for menu item"`;
+
+exports[`throws if setting both action AND intent 1`] = `"cannot set both \`action\` AND \`intent\`"`;

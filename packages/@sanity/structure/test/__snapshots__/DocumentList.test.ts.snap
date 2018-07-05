@@ -1,0 +1,96 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`builds document lists through setters (alt order #2) 1`] = `
+Object {
+  "canHandleIntent": undefined,
+  "defaultLayout": undefined,
+  "id": "books",
+  "menuItemGroups": Array [],
+  "menuItems": Array [],
+  "options": Object {
+    "defaultOrdering": Array [
+      Object {
+        "direction": "desc",
+        "field": "title",
+      },
+    ],
+    "filter": "_type == $type",
+    "params": Object {
+      "type": "book",
+    },
+  },
+  "resolveChildForItem": [Function],
+  "title": "Books",
+  "type": "documentList",
+}
+`;
+
+exports[`builds document lists through setters (alt order) 1`] = `
+Object {
+  "canHandleIntent": undefined,
+  "defaultLayout": undefined,
+  "id": "books",
+  "menuItemGroups": Array [],
+  "menuItems": Array [],
+  "options": Object {
+    "defaultOrdering": Array [
+      Object {
+        "direction": "desc",
+        "field": "title",
+      },
+    ],
+    "filter": "_type == $type",
+    "params": Object {
+      "type": "book",
+    },
+  },
+  "resolveChildForItem": [Function],
+  "title": "Books",
+  "type": "documentList",
+}
+`;
+
+exports[`builds document lists through setters 1`] = `
+Object {
+  "canHandleIntent": undefined,
+  "defaultLayout": undefined,
+  "id": "books",
+  "menuItemGroups": Array [],
+  "menuItems": Array [],
+  "options": Object {
+    "defaultOrdering": Array [
+      Object {
+        "direction": "asc",
+        "field": "title",
+      },
+    ],
+    "filter": "_type == $type",
+    "params": Object {
+      "type": "book",
+    },
+  },
+  "resolveChildForItem": [Function],
+  "title": "Books",
+  "type": "documentList",
+}
+`;
+
+exports[`builds document lists with only ID and filter 1`] = `
+Object {
+  "canHandleIntent": undefined,
+  "defaultLayout": undefined,
+  "id": "foo",
+  "menuItemGroups": Array [],
+  "menuItems": Array [],
+  "options": Object {
+    "filter": "_type == \\"book\\"",
+  },
+  "resolveChildForItem": [Function],
+  "title": undefined,
+  "type": "documentList",
+}
+`;
+
+exports[`throws if no filter is set 1`] = `"\`filter\` is required for document lists"`;
+
+exports[`throws if no id is set 1`] = `"\`id\` is required for document lists"`;

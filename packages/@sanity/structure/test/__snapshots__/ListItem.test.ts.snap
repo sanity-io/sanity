@@ -1,0 +1,86 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`builds list items with ID and title through setters 1`] = `
+Object {
+  "id": "authors",
+  "title": "Authors",
+}
+`;
+
+exports[`builds list items with child defined through builder 1`] = `
+Object {
+  "child": Object {
+    "canHandleIntent": undefined,
+    "defaultLayout": undefined,
+    "id": "asoiaf-books",
+    "menuItemGroups": Array [],
+    "menuItems": Array [],
+    "options": Object {
+      "filter": "author == \\"grrm\\"",
+    },
+    "resolveChildForItem": [Function],
+    "title": undefined,
+    "type": "documentList",
+  },
+  "id": "asoiaf",
+  "title": "A Song of Ice and Fire",
+}
+`;
+
+exports[`builds list items with only ID and title 1`] = `
+Object {
+  "id": "foo",
+  "title": "Foo",
+}
+`;
+
+exports[`builds list items with specific child (editor node) 1`] = `
+Object {
+  "child": Object {
+    "id": "foo",
+    "options": Object {
+      "id": "wow",
+      "type": "book",
+    },
+    "type": "editor",
+  },
+  "id": "wow",
+  "title": "The Winds of Winter",
+}
+`;
+
+exports[`builds list items with specific child (structure node) 1`] = `
+Object {
+  "child": Object {
+    "id": "foo",
+    "type": "custom",
+  },
+  "id": "books",
+  "title": "Books",
+}
+`;
+
+exports[`builds list items with specific child resolver 1`] = `
+Object {
+  "child": [Function],
+  "id": "wow",
+  "title": "The Winds of Winter",
+}
+`;
+
+exports[`builds list items with specified schema type 1`] = `
+Object {
+  "id": "foo",
+  "schemaType": Object {
+    "name": "book",
+    "type": Object {
+      "name": "object",
+    },
+  },
+  "title": "Foo",
+}
+`;
+
+exports[`throws if no id is set 1`] = `"\`id\` is required for list items"`;
+
+exports[`throws if no title is set 1`] = `"\`title\` is required for list items"`;
