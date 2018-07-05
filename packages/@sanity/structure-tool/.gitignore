@@ -1,0 +1,16 @@
+# Logs
+logs
+*.log
+
+# Coverage directory used by tools like istanbul
+coverage
+
+# Grunt intermediate storage
+.grunt
+
+# Dependency directories
+node_modules
+
+# Compiled version
+lib
+
