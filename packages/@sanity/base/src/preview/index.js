@@ -1,7 +1,8 @@
 export {
   SanityPreview as default,
   PreviewSubscriber,
-  PreviewFields
+  PreviewFields,
+  SanityDefaultPreview
 } from '@sanity/preview/components'
 
 // deprecated
