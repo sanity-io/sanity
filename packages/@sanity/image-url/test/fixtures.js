@@ -30,6 +30,29 @@ export function uncroppedImage() {
   }
 }
 
+export function materializedAssetWithCrop() {
+  return {
+    _type: 'image',
+    asset: {
+      _id: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg',
+      _type: 'sanity.imageAsset',
+      url: 'https://cdn.sanity.io/images/ppsg7ml5/test/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg'
+    },
+    crop: {
+      bottom: 0.1,
+      left: 0.1,
+      right: 0.1,
+      top: 0.1
+    },
+    hotspot: {
+      height: 0.3,
+      width: 0.3,
+      x: 0.3,
+      y: 0.3
+    }
+  }
+}
+
 export function croppedImage() {
   return {
     _type: 'image',

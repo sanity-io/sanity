@@ -1,6 +1,7 @@
 import parseSource from '../src/parseSource'
 import {
   imageWithNoCropSpecified,
+  materializedAssetWithCrop,
   croppedImage,
   assetDocument,
   noHotspotImage,
@@ -48,6 +49,17 @@ describe('parseSource', () => {
 
   test('does not overwrite crop or hotspot settings', () => {
     expect(parseSource(croppedImage())).toEqual(croppedImage())
+  })
+
+  test('does not overwrite crop or hotspot settings', () => {
+    expect(parseSource(materializedAssetWithCrop())).toMatchObject({
+      asset: {
+        _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg'
+      },
+      crop: {
+        bottom: 0.1
+      }
+    })
   })
 
   test('returns null on non-image object', () => {
