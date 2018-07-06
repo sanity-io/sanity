@@ -9,7 +9,14 @@ const corePkg = require('../package.json')
 
 const rootPath = path.join(__dirname, '..')
 const stripRange = version => version.replace(/^[~^]/, '')
-const sortRanges = ranges => ranges.sort((a, b) => semver.compare(stripRange(a), stripRange(b)))
+const sortRanges = ranges =>
+  ranges.sort((a, b) => {
+    try {
+      return semver.compare(stripRange(a), stripRange(b))
+    } catch (err) {
+      return 1
+    }
+  })
 const patterns = config.packages.map(pkg => path.join(pkg, 'package.json'))
 const flatten = (target, item) => target.concat(item)
 const globFlatten = (files, pattern) => glob.sync(pattern).reduce(flatten, files)
@@ -61,7 +68,13 @@ Object.keys(versionRanges).forEach(depName => {
   sortRanges(versions).forEach(range => {
     const packages = versionRanges[depName][range]
 
-    const isFixable = semver.satisfies(stripRange(range), `^${greatestMajor}`)
+    let isFixable
+    try {
+      isFixable = semver.satisfies(stripRange(range), `^${greatestMajor}`)
+    } catch (err) {
+      return
+    }
+
     const isGreatest = range === greatestRange
     const sign = isGreatest || isFixable ? chalk.green('✔') : chalk.red('✖')
 

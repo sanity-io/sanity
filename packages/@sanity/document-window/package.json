@@ -30,7 +30,7 @@
     "@sanity/client": "0.132.5",
     "chalk": "^2.3.0",
     "hard-rejection": "^1.0.0",
-    "jest": "^22.1.4",
+    "jest": "^22.4.3",
     "object.pick": "^1.3.0",
     "rxjs": "^6.1.0",
     "table": "^4.0.2"

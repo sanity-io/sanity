@@ -1,8 +1,8 @@
 import path from 'path'
 import {values} from 'lodash'
 import promiseProps from 'promise-props-recursive'
-import getPackageJson from 'package-json'
 import semverCompare from 'semver-compare'
+import getLatestVersion from 'get-latest-version'
 import dynamicRequire from '../../util/dynamicRequire'
 import getLocalVersion from '../../util/getLocalVersion'
 import pkg from '../../../package.json'
@@ -84,9 +84,4 @@ function buildPackageArray(packages, workDir, options = {}) {
 
 function tryFindLatestVersion(pkgName, range = 'latest') {
   return getLatestVersion(pkgName, range).catch(() => 'unknown')
-}
-
-async function getLatestVersion(pkgName, range = 'latest') {
-  const data = await getPackageJson(pkgName.toLowerCase(), {version: range})
-  return data.version
 }

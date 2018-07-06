@@ -39,10 +39,12 @@ const nodeOptions = {
 }
 
 const compiler = webpack({
+  mode: 'production',
   entry: {
     sanity: path.join(basedir, 'bin/sanity.js')
   },
   output: {
+    pathinfo: true,
     filename: 'sanity',
     path: path.join(basedir, 'bin'),
     libraryTarget: 'commonjs2'
@@ -104,5 +106,25 @@ compiler.run((err, stats) => {
   const outputPath = path.join(basedir, 'bin', 'sanity')
   fse.chmodSync(outputPath, 0o755)
 
+  // Make paths more dynamic
+  let replacePath = path.normalize(path.join(__dirname, '..'))
+  try {
+    const monorepoPkg = require('../../../../package.json')
+    if (monorepoPkg.name === 'sanity') {
+      replacePath = path.normalize(path.join(__dirname, '..', '..', '..', '..'))
+    }
+  } catch (reqErr) {
+    // do nothing
+  }
+
+  const content = fse.readFileSync(outputPath, 'utf8')
+  const replaceRegex = new RegExp(escapeRegex(`*** ${replacePath}`), 'ig')
+  const normalized = content.replace(replaceRegex, '*** ')
+  fse.writeFileSync(outputPath, normalized, 'utf8')
+
   console.log('Done packing.')
 })
+
+function escapeRegex(string) {
+  return `${string}`.replace(/([?!${}*:()|=^[\]/\\.+])/g, '\\$1')
+}

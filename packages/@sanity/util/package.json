@@ -29,7 +29,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
-    "fs-extra": "^5.0.0",
+    "fs-extra": "^6.0.1",
     "lodash": "^4.17.4",
     "resolve-from": "^4.0.0"
   },

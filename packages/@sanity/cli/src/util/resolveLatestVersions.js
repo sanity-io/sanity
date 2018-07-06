@@ -1,5 +1,5 @@
+import latestVersion from 'get-latest-version'
 import promiseProps from 'promise-props-recursive'
-import latestVersion from 'latest-version'
 
 export default (pkgs, {asRange}) =>
   promiseProps(
