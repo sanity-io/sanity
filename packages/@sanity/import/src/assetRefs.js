@@ -34,12 +34,14 @@ function absolutifyPaths(doc, absPath) {
 }
 
 function getAssetRefs(doc) {
-  return findAssetRefs(doc).map(path => ({
-    documentId: doc._id,
-    path: serializePath({path: path.filter(isNotAssetKey)}),
-    url: get(doc, path).replace(assetMatcher, '$2'),
-    type: get(doc, path).replace(assetMatcher, '$1')
-  }))
+  return findAssetRefs(doc)
+    .map(path => validateAssetImportKey(path, doc))
+    .map(path => ({
+      documentId: doc._id,
+      path: serializePath({path: path.filter(isNotAssetKey)}),
+      url: get(doc, path).replace(assetMatcher, '$2'),
+      type: get(doc, path).replace(assetMatcher, '$1')
+    }))
 }
 
 function isNotAssetKey(segment) {
@@ -50,6 +52,21 @@ function findAssetRefs(doc) {
   return extractWithPath(`..[${assetKey}]`, doc).map(match => match.path)
 }
 
+function validateAssetImportKey(path, doc) {
+  if (!assetMatcher.test(get(doc, path))) {
+    throw new Error(
+      [
+        'Asset type is not specified.',
+        '`_sanityAsset` values must be prefixed with a type, eg image@url or file@url.',
+        `See document with ID "${doc._id}", path: ${serializePath({path})}`
+      ].join('\n')
+    )
+  }
+
+  return path
+}
+
 exports.getAssetRefs = getAssetRefs
 exports.unsetAssetRefs = unsetAssetRefs
 exports.absolutifyPaths = absolutifyPaths
+exports.validateAssetImportKey = validateAssetImportKey
