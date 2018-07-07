@@ -4,7 +4,7 @@ import {get} from 'lodash'
 import shallowEquals from 'shallow-equals'
 import schema from 'part:@sanity/base/schema'
 import {withRouterHOC} from 'part:@sanity/base/router'
-import derivePanesFromRouterState from './utils/derivePanesFromRouterState'
+import resolvePanes from './utils/resolvePanes'
 import dataAspects from './utils/dataAspects'
 import DeskToolPanes from './DeskToolPanes'
 
@@ -14,30 +14,53 @@ const structure = {
   id: '__root__',
   title: 'Content',
   type: 'list',
-  options: {
-    items: dataAspects.getInferredTypes().map(typeName => ({
-      id: typeName,
-      title: dataAspects.getDisplayName(typeName),
-      schemaType: schema.get(typeName)
-    }))
+  resolveChildForItem(itemId, parent) {
+    const target = parent.options.items.find(item => item.id === itemId)
+    const child = target && target.child
+    return typeof child === 'function' ? child(itemId, parent) : child
   },
-  child: ({id}) => ({
-    id,
-    title: dataAspects.getDisplayName(id),
-    type: 'documentList',
-    options: {
-      filter: '_type == $type',
-      params: {type: id}
-    },
-    child: options => ({
-      id: 'editor',
-      type: 'document',
-      options: {
-        id: options.id,
-        type: get(options, 'parent.options.params.type')
-      }
-    })
-  })
+  options: {
+    items: dataAspects
+      .getInferredTypes()
+      .map(typeName => ({
+        id: typeName,
+        title: dataAspects.getDisplayName(typeName),
+        schemaType: schema.get(typeName),
+        child: (id, parent) => {
+          return {
+            id,
+            title: dataAspects.getDisplayName(id),
+            type: 'documentList',
+            options: {
+              filter: '_type == $type',
+              params: {type: id}
+            },
+            resolveChildForItem(documentId, parentItem) {
+              return {
+                id: 'editor',
+                type: 'document',
+                options: {
+                  id: documentId,
+                  type: get(parentItem, 'options.params.type')
+                }
+              }
+            }
+          }
+        }
+      }))
+      .concat({
+        id: 'mah-singleton',
+        title: 'Some singleton',
+        child: {
+          id: 'editor',
+          type: 'document',
+          options: {
+            id: 'achaeta-aberrans',
+            type: 'species'
+          }
+        }
+      })
+  }
 }
 
 export default withRouterHOC(
@@ -61,7 +84,7 @@ export default withRouterHOC(
     }
 
     derivePanes(props) {
-      derivePanesFromRouterState(structure, props.router.state)
+      resolvePanes(structure, props.router.state.panes || [])
         .then(panes => this.setStateIfMounted({panes}))
         .catch(error => this.setStateIfMounted({error}))
     }

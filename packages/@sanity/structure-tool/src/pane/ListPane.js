@@ -25,13 +25,18 @@ export default withRouterHOC(
             schemaType: PropTypes.shape({name: PropTypes.string})
           })
         )
-      })
+      }),
+      isCollapsed: PropTypes.bool.isRequired,
+      onExpand: PropTypes.func,
+      onCollapse: PropTypes.func
     }
 
     static defaultProps = {
       className: '',
+      options: {items: []},
       styles: undefined,
-      options: {items: []}
+      onExpand: undefined,
+      onCollapse: undefined
     }
 
     itemIsSelected(item) {
@@ -51,9 +56,26 @@ export default withRouterHOC(
     }
 
     render() {
-      const {title, styles, className, options, index} = this.props
+      const {
+        title,
+        styles,
+        className,
+        options,
+        index,
+        isCollapsed,
+        onCollapse,
+        onExpand
+      } = this.props
+
       return (
-        <DefaultPane title={title} styles={styles} className={className}>
+        <DefaultPane
+          title={title}
+          styles={styles}
+          className={className}
+          isCollapsed={isCollapsed}
+          onCollapse={onCollapse}
+          onExpand={onExpand}
+        >
           {options.items.map(item => (
             <PaneItem
               key={item.id}

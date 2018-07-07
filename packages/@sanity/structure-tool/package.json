@@ -9,8 +9,7 @@
     "clean": "rimraf lib",
     "example-testbed": "cd examples/testbed && sanity start",
     "start": "npm run example-testbed",
-    "test": "sanity-check",
-    "prepublish": "in-publish && sanity-check || not-in-publish"
+    "test": "jest"
   },
   "keywords": [
     "sanity",
@@ -34,7 +33,6 @@
     "diff": "^3.2.0",
     "element-resize-detector": "^1.1.14",
     "hashlru": "^2.1.0",
-    "in-publish": "^2.0.0",
     "lodash": "^4.17.4",
     "promise-latest": "^1.0.4",
     "react-click-outside": "^2.3.1",
@@ -46,11 +44,11 @@
   },
   "devDependencies": {
     "@sanity/base": "0.132.5",
-    "@sanity/check": "0.132.5",
     "@sanity/client": "0.132.5",
     "@sanity/components": "0.132.5",
     "@sanity/core": "0.132.5",
     "history": "^4.6.3",
+    "jest": "^22.1.4",
     "postcss-cssnext": "^3.0.2",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",

@@ -15,22 +15,51 @@ export default class DeskToolPanes extends React.Component {
     ).isRequired
   }
 
-  handleControllerCollapse = () => {}
-  handleControllerUnCollapse = () => {}
+  state = {collapsedPanes: []}
+
+  handleControllerCollapse = pane => {
+    console.log('ctrl collapse', pane)
+  }
+
+  handleControllerUnCollapse = pane => {
+    console.log('ctrl uncollapse', pane)
+  }
+
+  handlePaneExpand = index => {
+    this.setState(prevState => ({
+      collapsedPanes: prevState.collapsedPanes.filter(idx => idx !== index)
+    }))
+  }
+
+  handlePaneCollapse = index => {
+    this.setState(prevState => ({
+      collapsedPanes: prevState.collapsedPanes.concat(index)
+    }))
+  }
 
   render() {
     const {panes, keys} = this.props
     return (
       <div className={styles.deskToolPanes}>
         <SplitController
-          onCollapse={this.handleControllerCollapse}
-          onUnCollapse={this.handleControllerUnCollapse}
+          onShouldCollapse={this.handleControllerCollapse}
+          onShouldExpand={this.handleControllerUnCollapse}
         >
-          {panes.map((pane, i) => (
-            <SplitPaneWrapper key={pane.id} defaultWidth={200} isCollapsed={false}>
-              <Pane key={i === 0 ? '__root__' : keys[i - 1]} index={i} {...pane} />
-            </SplitPaneWrapper>
-          ))}
+          {panes.map((pane, i) => {
+            const isCollapsed = this.state.collapsedPanes.includes(i)
+            return (
+              <SplitPaneWrapper key={pane.id} defaultWidth={200} isCollapsed={isCollapsed}>
+                <Pane
+                  key={i === 0 ? '__root__' : keys[i - 1]}
+                  index={i}
+                  onExpand={this.handlePaneExpand}
+                  onCollapse={this.handlePaneCollapse}
+                  isCollapsed={isCollapsed}
+                  {...pane}
+                />
+              </SplitPaneWrapper>
+            )
+          })}
         </SplitController>
       </div>
     )

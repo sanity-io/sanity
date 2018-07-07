@@ -1,4 +1,4 @@
-export default (iterable, reducer, initVal) =>
+module.exports = (iterable, reducer, initVal) =>
   new Promise((resolve, reject) => {
     const iterator = iterable[Symbol.iterator]()
     let i = 0

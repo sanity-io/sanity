@@ -45,6 +45,7 @@ export default withRouterHOC(
     static propTypes = {
       index: PropTypes.number.isRequired,
       title: PropTypes.string.isRequired,
+      className: PropTypes.string,
       layout: PropTypes.string,
       styles: PropTypes.object, // eslint-disable-line react/forbid-prop-types
       router: PropTypes.shape({
@@ -55,12 +56,17 @@ export default withRouterHOC(
       options: PropTypes.shape({
         filter: PropTypes.string.isRequired,
         params: PropTypes.object // eslint-disable-line react/forbid-prop-types
-      }).isRequired
+      }).isRequired,
+      isCollapsed: PropTypes.bool.isRequired,
+      onExpand: PropTypes.func,
+      onCollapse: PropTypes.func
     }
 
     static defaultProps = {
       styles: {},
-      layout: 'default'
+      layout: 'default',
+      onExpand: undefined,
+      onCollapse: undefined
     }
 
     itemIsSelected(item) {
@@ -87,10 +93,17 @@ export default withRouterHOC(
     )
 
     render() {
-      const {title, options, layout} = this.props
+      const {title, options, layout, className, isCollapsed, onCollapse, onExpand} = this.props
       const {filter, params} = options
       return (
-        <DefaultPane title={title} styles={this.props.styles}>
+        <DefaultPane
+          title={title}
+          styles={this.props.styles}
+          className={className}
+          isCollapsed={isCollapsed}
+          onCollapse={onCollapse}
+          onExpand={onExpand}
+        >
           <QueryContainer
             // @todo filter the filter! Only allow the actual filter, not a full query
             query={`*[${filter}] | order(_createdAt desc) [0...10000] {_id, _type}`}
