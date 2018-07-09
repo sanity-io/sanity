@@ -49,11 +49,13 @@ function resolveIntentState(currentState, intentState) {
   // If current tool can handle intent and if so, give it precedence
   const matchingTool = (currentTool ? [currentTool, ...tools] : tools).find(
     tool =>
-      tool && typeof tool.canHandleIntent === 'function' && tool.canHandleIntent(intent, params)
+      tool &&
+      typeof tool.canHandleIntent === 'function' &&
+      tool.canHandleIntent(intent, params, currentState[tool.name])
   )
 
   if (matchingTool) {
-    const toolState = matchingTool.getIntentState(intent, params)
+    const toolState = matchingTool.getIntentState(intent, params, currentState[matchingTool.name])
     const currentWithState = resolveUrlStateWithDefaultSpace(currentState) || currentState
     return Object.assign({}, currentWithState, {
       tool: matchingTool.name,
