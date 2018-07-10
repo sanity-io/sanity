@@ -13,6 +13,20 @@ export default {
       description: 'This is a simple text field'
     },
     {
+      name: 'text2row',
+      type: 'text',
+      title: 'Simple text',
+      description: 'Should have 2 rows',
+      rows: 2
+    },
+    {
+      name: 'text30row',
+      type: 'text',
+      title: 'Simple text',
+      description: 'Should have 30 rows',
+      rows: 30
+    },
+    {
       name: 'readonlyField',
       type: 'text',
       title: 'A read only text',
