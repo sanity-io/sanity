@@ -61,7 +61,7 @@ class Pane extends React.PureComponent {
     }
   }
 
-  handleMenuToggle = event => {
+  handleToggleMenu = event => {
     if (this.props.isCollapsed) {
       this.props.onExpand(event)
     } else {
@@ -69,7 +69,7 @@ class Pane extends React.PureComponent {
     }
   }
 
-  handleToggle = event => {
+  handleToggleCollapsed = event => {
     if (this.props.isCollapsed) {
       this.props.onExpand(this)
     } else {
@@ -120,9 +120,11 @@ class Pane extends React.PureComponent {
       <div className={styles.menuWrapper}>
         <div className={styles.menuButtonContainer}>
           <Button
+            // Makes menu component ignore clicks on button (prevents double-toggling)
+            data-is-menu-button="true"
             kind="simple"
             icon={IconMoreVert}
-            onClick={this.handleMenuToggle}
+            onClick={this.handleToggleMenu}
             className={styles.menuButton}
           />
         </div>
@@ -147,7 +149,7 @@ class Pane extends React.PureComponent {
           style={{boxShadow: isCollapsed ? '' : this.state.headerStyle.boxShadow}}
         >
           <div className={styles.headerContent}>
-            <h2 className={styles.title} onClick={this.handleToggle}>
+            <h2 className={styles.title} onClick={this.handleToggleCollapsed}>
               {title}
             </h2>
             {renderFunctions && renderFunctions(isCollapsed)}

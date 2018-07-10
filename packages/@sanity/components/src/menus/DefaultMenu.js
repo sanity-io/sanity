@@ -5,6 +5,17 @@ import Ink from 'react-ink'
 import enhanceWithClickOutside from 'react-click-outside'
 import classNames from 'classnames'
 
+function parentButtonIsMenuButton(node) {
+  let el = node
+  do {
+    if (el.tagName === 'BUTTON' && el.dataset.isMenuButton) {
+      return true
+    }
+  } while ((el = el.parentNode))
+
+  return false
+}
+
 class DefaultMenu extends React.Component {
   static propTypes = {
     onAction: PropTypes.func.isRequired,
@@ -38,6 +49,12 @@ class DefaultMenu extends React.Component {
   }
 
   handleClickOutside = event => {
+    if (parentButtonIsMenuButton(event.target)) {
+      // Don't treat clicks on the open menu button as "outside" clicks -
+      // prevents us from double-toggling a menu as open/closed
+      return
+    }
+
     if (this.props.isOpen) {
       this.props.onClickOutside(event)
     }
@@ -99,19 +116,12 @@ class DefaultMenu extends React.Component {
     }
   }
 
-  setRootElement = element => {
-    this._rootElement = element
-  }
-
   render() {
     const {focusedItem} = this.state
     const {items, ripple, className, isOpen} = this.props
 
     return (
-      <div
-        ref={this.setRootElement}
-        className={`${isOpen ? styles.isOpen : styles.closed} ${className || ''}`}
-      >
+      <div className={classNames([isOpen ? styles.isOpen : styles.closed, className])}>
         <ul className={styles.list}>
           {items.map((item, i) => {
             const Icon = item.icon
