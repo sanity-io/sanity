@@ -4,6 +4,7 @@ import {get} from 'lodash'
 import shallowEquals from 'shallow-equals'
 import schema from 'part:@sanity/base/schema'
 import {withRouterHOC} from 'part:@sanity/base/router'
+import PlusIcon from 'part:@sanity/base/plus-icon'
 import resolvePanes from './utils/resolvePanes'
 import dataAspects from './utils/dataAspects'
 import DeskToolPanes from './DeskToolPanes'
@@ -27,13 +28,28 @@ const structure = {
         title: dataAspects.getDisplayName(typeName),
         schemaType: schema.get(typeName),
         child: (id, parent) => {
+          const title = dataAspects.getDisplayName(id)
           return {
             id,
-            title: dataAspects.getDisplayName(id),
+            title,
             type: 'documentList',
             options: {
               filter: '_type == $type',
               params: {type: id}
+            },
+            functions: [
+              {
+                id: 'createNew',
+                title: `Create new ${title}`,
+                icon: PlusIcon,
+                intent: {type: 'create', params: {type: id}}
+              }
+            ],
+            canHandleIntent(intentName, params) {
+              return (
+                (intentName === 'edit' && params.id) ||
+                (intentName === 'create' && params.type === id)
+              )
             },
             resolveChildForItem(documentId, parentItem) {
               return {
@@ -68,8 +84,12 @@ export default withRouterHOC(
   class DeskTool extends React.Component {
     static propTypes = {
       router: PropTypes.shape({
-        state: PropTypes.object
-      }).isRequired
+        navigate: PropTypes.func.isRequired,
+        state: PropTypes.shape({
+          panes: PropTypes.arrayOf(PropTypes.string)
+        })
+      }).isRequired,
+      onPaneChange: PropTypes.func.isRequired
     }
 
     state = {}
@@ -77,21 +97,43 @@ export default withRouterHOC(
     constructor(props) {
       super(props)
 
-      this.currentlyMounted = true
-
       // @todo probably switch to observables?
       this.derivePanes(props)
+      props.onPaneChange([])
     }
 
-    derivePanes(props) {
-      resolvePanes(structure, props.router.state.panes || [])
-        .then(panes => this.setStateIfMounted({panes}))
-        .catch(error => this.setStateIfMounted({error}))
+    derivePanes(props, addState = {}) {
+      const paneIds = props.router.state.panes || []
+      return resolvePanes(structure, paneIds)
+        .then(panes => this.setStateIfMounted({panes, ...addState}))
+        .catch(error => this.setStateIfMounted({error, ...addState}))
     }
 
-    componentDidUpdate(prevProps) {
-      if (!shallowEquals(prevProps.router.state.panes, this.props.router.state.panes)) {
-        this.derivePanes(this.props)
+    shouldComponentUpdate(nextProps, nextState) {
+      if (!shallowEquals(nextProps.router.state.panes, this.props.router.state.panes)) {
+        this.derivePanes(nextProps)
+      }
+
+      if (nextProps.onPaneChange !== this.props.onPaneChange) {
+        nextProps.onPaneChange(nextState.panes || [])
+      }
+
+      if (nextState.panes !== this.state.panes || nextState.error !== this.state.error) {
+        return true
+      }
+
+      return false
+    }
+
+    componentDidMount() {
+      this.currentlyMounted = true
+
+      this.props.onPaneChange(this.state.panes || [])
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+      if (prevState.panes !== this.state.panes) {
+        this.props.onPaneChange(this.state.panes)
       }
     }
 
@@ -99,8 +141,12 @@ export default withRouterHOC(
       this.currentlyMounted = false
     }
 
-    setStateIfMounted = (...args) => {
-      return this.currentlyMounted && this.setState(...args)
+    setStateIfMounted = (state, ...args) => {
+      if (this.currentlyMounted) {
+        this.setState(state, ...args)
+      }
+
+      return state
     }
 
     render() {

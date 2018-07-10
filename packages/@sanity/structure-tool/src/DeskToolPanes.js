@@ -17,6 +17,22 @@ export default class DeskToolPanes extends React.Component {
 
   state = {collapsedPanes: []}
 
+  componentDidUpdate(prevProps) {
+    if (this.props.panes.length < prevProps.panes.length) {
+      const cutoff = this.props.panes.length - 1
+      // @todo figure out how to do this outside of componentDidUpdate - we
+      // want to track the changing of pane depth and "reset" the collapsed
+      // state of any pane that is deeper than the current depth. Doing this
+      // in getDerivedStateFromProps() does work as you cannot reference the
+      // previous props, and cutting of at the current depth will disallow
+      // the last pane open from being collapsed
+      // eslint-disable-next-line react/no-did-update-set-state
+      this.setState(state => ({
+        collapsedPanes: state.collapsedPanes.filter(index => index < cutoff)
+      }))
+    }
+  }
+
   handleControllerCollapse = pane => {
     console.log('ctrl collapse', pane)
   }
@@ -37,29 +53,46 @@ export default class DeskToolPanes extends React.Component {
     }))
   }
 
-  render() {
+  renderPanes() {
     const {panes, keys} = this.props
+
+    // @todo improve message
+    if (panes.length === 0) {
+      return (
+        <SplitPaneWrapper>
+          <div>Configure some panes, first!</div>
+        </SplitPaneWrapper>
+      )
+    }
+
+    return panes.map((pane, i) => {
+      // Same pane might appear multiple times, so use index as tiebreaker
+      const paneKey = `${i}-${keys[i - 1] || 'root'}`
+      const wrapperKey = `${i}-${pane.id}`
+      const isCollapsed = this.state.collapsedPanes.includes(i)
+      return (
+        <SplitPaneWrapper key={wrapperKey} defaultWidth={200} isCollapsed={isCollapsed}>
+          <Pane
+            key={paneKey} // Use key to force rerendering pane on ID change
+            index={i}
+            onExpand={this.handlePaneExpand}
+            onCollapse={this.handlePaneCollapse}
+            isCollapsed={isCollapsed}
+            {...pane}
+          />
+        </SplitPaneWrapper>
+      )
+    })
+  }
+
+  render() {
     return (
       <div className={styles.deskToolPanes}>
         <SplitController
           onShouldCollapse={this.handleControllerCollapse}
           onShouldExpand={this.handleControllerUnCollapse}
         >
-          {panes.map((pane, i) => {
-            const isCollapsed = this.state.collapsedPanes.includes(i)
-            return (
-              <SplitPaneWrapper key={pane.id} defaultWidth={200} isCollapsed={isCollapsed}>
-                <Pane
-                  key={i === 0 ? '__root__' : keys[i - 1]}
-                  index={i}
-                  onExpand={this.handlePaneExpand}
-                  onCollapse={this.handlePaneCollapse}
-                  isCollapsed={isCollapsed}
-                  {...pane}
-                />
-              </SplitPaneWrapper>
-            )
-          })}
+          {this.renderPanes()}
         </SplitController>
       </div>
     )

@@ -86,6 +86,11 @@ export default class EditorPane extends React.Component {
   state = INITIAL_STATE
   patchChannel = FormBuilder.createPatchChannel()
 
+  constructor(props) {
+    super(props)
+    this.setup(props.options.id)
+  }
+
   setup(documentId) {
     this.dispose()
     const publishedId = getPublishedId(documentId)
@@ -159,7 +164,6 @@ export default class EditorPane extends React.Component {
 
   componentDidMount() {
     this._isMounted = true
-    this.setup(this.props.options.id)
   }
 
   componentWillUnmount() {

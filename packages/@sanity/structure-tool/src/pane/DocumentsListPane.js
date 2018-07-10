@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import {partition} from 'lodash'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import schema from 'part:@sanity/base/schema'
+import Button from 'part:@sanity/components/buttons/default'
+import IntentButton from 'part:@sanity/components/buttons/intent'
 import DefaultPane from 'part:@sanity/components/panes/default'
 import QueryContainer from 'part:@sanity/base/query-container'
 import Snackbar from 'part:@sanity/components/snackbar/default'
@@ -39,6 +41,11 @@ function getDocumentKey(document) {
   return getPublishedId(document._id)
 }
 
+function noActionFn(title) {
+  // eslint-disable-next-line no-console
+  console.warn('No action defined for function')
+}
+
 // eslint-disable-next-line react/prefer-stateless-function
 export default withRouterHOC(
   class DocumentsListPane extends React.PureComponent {
@@ -57,17 +64,30 @@ export default withRouterHOC(
         filter: PropTypes.string.isRequired,
         params: PropTypes.object // eslint-disable-line react/forbid-prop-types
       }).isRequired,
+      functions: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.string,
+          title: PropTypes.string.isRequired,
+          icon: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+          action: PropTypes.func,
+          intent: PropTypes.shape({type: PropTypes.string, params: PropTypes.object})
+        })
+      ),
       isCollapsed: PropTypes.bool.isRequired,
       onExpand: PropTypes.func,
       onCollapse: PropTypes.func
     }
 
     static defaultProps = {
+      className: '',
       styles: {},
+      functions: [],
       layout: 'default',
       onExpand: undefined,
       onCollapse: undefined
     }
+
+    actionHandlers = {}
 
     itemIsSelected(item) {
       const {router, index} = this.props
@@ -92,6 +112,40 @@ export default withRouterHOC(
       />
     )
 
+    renderIntentFunction = func => {
+      return (
+        <IntentButton
+          key={func.id || func.title}
+          title={func.title}
+          icon={func.icon}
+          color="primary"
+          kind="simple"
+          intent={func.intent.type}
+          params={func.intent.params}
+        />
+      )
+    }
+
+    renderFunction = func => {
+      const action = func.action || this.actionHandlers[func.id] || noActionFn
+      return (
+        <Button
+          key={func.id || func.title}
+          title={func.title}
+          icon={func.icon}
+          color="primary"
+          kind="simple"
+          onClick={action}
+        />
+      )
+    }
+
+    renderFunctions = isCollapsed => {
+      return this.props.functions.map(
+        func => (func.intent ? this.renderIntentFunction(func) : this.renderFunction(func))
+      )
+    }
+
     render() {
       const {title, options, layout, className, isCollapsed, onCollapse, onExpand} = this.props
       const {filter, params} = options
@@ -100,6 +154,7 @@ export default withRouterHOC(
           title={title}
           styles={this.props.styles}
           className={className}
+          renderFunctions={this.renderFunctions}
           isCollapsed={isCollapsed}
           onCollapse={onCollapse}
           onExpand={onExpand}
