@@ -5,13 +5,15 @@ import shallowEquals from 'shallow-equals'
 import schema from 'part:@sanity/base/schema'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import PlusIcon from 'part:@sanity/base/plus-icon'
+import ListIcon from 'part:@sanity/base/bars-icon'
+import DetailsIcon from 'part:@sanity/base/th-list-icon'
 import resolvePanes from './utils/resolvePanes'
 import dataAspects from './utils/dataAspects'
 import DeskToolPanes from './DeskToolPanes'
 
 const EMPTY_PANE_KEYS = []
 
-const structure = {
+let structure = {
   id: '__root__',
   title: 'Content',
   type: 'list',
@@ -39,10 +41,24 @@ const structure = {
             },
             functions: [
               {
-                id: 'createNew',
+                action: 'createNew',
                 title: `Create new ${title}`,
                 icon: PlusIcon,
                 intent: {type: 'create', params: {type: id}}
+              }
+            ],
+            menuItems: [
+              {
+                action: 'setLayout',
+                title: 'List',
+                icon: ListIcon,
+                params: {layout: 'default'}
+              },
+              {
+                action: 'setLayout',
+                title: 'Details',
+                icon: DetailsIcon,
+                params: {layout: 'detail'}
               }
             ],
             canHandleIntent(intentName, params) {

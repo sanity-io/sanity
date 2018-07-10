@@ -46,10 +46,6 @@ export default withRouterHOC(
     }
 
     getLinkStateForItem = name => {
-      if (!name) {
-        throw new Error('Tried to get link state item for falsey value')
-      }
-
       const {router, index} = this.props
       const panes = (router.state.panes || []).slice(0, index).concat(name)
       return {panes}
