@@ -1,17 +1,25 @@
 import React from 'react'
 
+import {RouterProvider, route} from 'part:@sanity/base/router'
 import Button from 'part:@sanity/components/buttons/default'
 import AnchorButton from 'part:@sanity/components/buttons/anchor'
+import IntentButton from 'part:@sanity/components/buttons/intent'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import DefaultFormField from 'part:@sanity/components/formfields/default'
 import InInputButton from 'part:@sanity/components/buttons/in-input'
 import InInputStyles from 'part:@sanity/components/buttons/in-input-style'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import {withKnobs, text, select, boolean, object} from 'part:@sanity/storybook/addons/knobs'
+import PlusIcon from 'part:@sanity/base/plus-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 
+const handleNavigate = () => {
+  /* intentional noop */
+}
+const router = route('/', [route('/bikes/:bikeId'), route.intents('/intents')])
+const preventDefault = evt => evt.preventDefault()
 const getButtonKinds = () => select('kind (prop)', ['default', 'simple', 'secondary'], 'default')
 const getColorKinds = () =>
   select('color (prop)', [false, 'primary', 'success', 'danger', 'white'], false)
@@ -67,156 +75,242 @@ storiesOf('Buttons', module)
   .add('Examples', () => {
     const disabled = boolean('Disabled', false)
     return (
-      <form style={{padding: '2rem'}}>
-        <h2>Default</h2>
-        <Button onClick={action('clicked')} icon={SanityLogoIcon} disabled={disabled}>
-          Default
-        </Button>
-        <Button onClick={action('clicked')} icon={SanityLogoIcon} inverted disabled={disabled}>
-          Inverted
-        </Button>
-        <Button onClick={action('clicked')} icon={SanityLogoIcon} kind="simple" disabled={disabled}>
-          Simple
-        </Button>
-
-        <h2>Colors</h2>
-        <Button onClick={action('clicked')} disabled={disabled}>
-          Undefined
-        </Button>
-        <Button onClick={action('clicked')} color="primary" disabled={disabled}>
-          Primary
-        </Button>
-        <Button onClick={action('clicked')} color="danger" disabled={disabled}>
-          Danger
-        </Button>
-        <Button onClick={action('clicked')} color="success" disabled={disabled}>
-          Success
-        </Button>
-
-        <h2>Colors (inverted)</h2>
-        <Button onClick={action('clicked')} inverted disabled={disabled}>
-          Undefined
-        </Button>
-        <Button onClick={action('clicked')} color="primary" inverted disabled={disabled}>
-          Primary
-        </Button>
-        <Button onClick={action('clicked')} color="danger" inverted disabled={disabled}>
-          Danger
-        </Button>
-        <Button onClick={action('clicked')} color="success" inverted disabled={disabled}>
-          Success
-        </Button>
-        <DropDownButton items={items} onAction={action('Clicked item')} disabled={disabled}>
-          Dropdown
-        </DropDownButton>
-
-        <h2>Colors (simple)</h2>
-        <Button onClick={action('clicked')} kind="simple" disabled={disabled}>
-          Undefined
-        </Button>
-        <Button onClick={action('clicked')} kind="simple" color="primary" disabled={disabled}>
-          Primary
-        </Button>
-        <Button onClick={action('clicked')} kind="simple" color="danger" disabled={disabled}>
-          Danger
-        </Button>
-        <Button onClick={action('clicked')} kind="simple" color="success" disabled={disabled}>
-          Success
-        </Button>
-
-        <h2>With icons</h2>
-        <Button onClick={action('clicked')} icon={SanityLogoIcon} disabled={disabled}>
-          With icon
-        </Button>
-        <Button
-          onClick={action('clicked')}
-          color="danger"
-          icon={SanityLogoIcon}
-          disabled={disabled}
-        >
-          Colored with icon
-        </Button>
-        <Button
-          onClick={action('clicked')}
-          color="danger"
-          icon={SanityLogoIcon}
-          inverted
-          disabled={disabled}
-        >
-          Danger, inverted & icon
-        </Button>
-        <DropDownButton
-          icon={SanityLogoIcon}
-          inverted
-          color="danger"
-          items={items}
-          onAction={action('Clicked item')}
-          disabled={disabled}
-        >
-          Dropdown
-        </DropDownButton>
-
-        <h2>Only icons</h2>
-        <Button
-          onClick={action('clicked')}
-          icon={SanityLogoIcon}
-          title="Default"
-          disabled={disabled}
-        />
-        <Button
-          onClick={action('clicked')}
-          icon={SanityLogoIcon}
-          color="danger"
-          title="Danger"
-          disabled={disabled}
-        />
-        <Button
-          onClick={action('clicked')}
-          icon={SanityLogoIcon}
-          inverted
-          title="Inverted"
-          disabled={disabled}
-        />
-        <Button
-          onClick={action('clicked')}
-          icon={SanityLogoIcon}
-          inverted
-          color="danger"
-          title="Inverted danger"
-          disabled={disabled}
-        />
-        <Button
-          onClick={action('clicked')}
-          icon={SanityLogoIcon}
-          kind="simple"
-          title="Simple"
-          disabled={disabled}
-        />
-        <Button
-          onClick={action('clicked')}
-          icon={SanityLogoIcon}
-          kind="simple"
-          color="danger"
-          title="Simple danger"
-          disabled={disabled}
-        />
-
-        <h2>On color areas</h2>
-        <div style={{backgroundColor: 'red', padding: '1rem'}}>
-          <Button onClick={action('clicked')} color="white" disabled={disabled}>
-            White
+      <RouterProvider
+        router={router}
+        onNavigate={handleNavigate}
+        state={router.decode(location.pathname)}
+      >
+        <form style={{padding: '2rem'}}>
+          <h2>Default</h2>
+          <Button onClick={action('clicked')} icon={SanityLogoIcon} disabled={disabled}>
+            Default
           </Button>
-          <Button onClick={action('clicked')} kind="simple" color="white" disabled={disabled}>
-            White simple
-          </Button>
-          <Button onClick={action('clicked')} inverted disabled={disabled}>
+          <Button onClick={action('clicked')} icon={SanityLogoIcon} inverted disabled={disabled}>
             Inverted
           </Button>
-          <Button onClick={action('clicked')} inverted color="white" disabled={disabled}>
-            White inverted
+          <Button
+            onClick={action('clicked')}
+            icon={SanityLogoIcon}
+            kind="simple"
+            disabled={disabled}
+          >
+            Simple
           </Button>
-        </div>
-      </form>
+
+          <h2>Colors</h2>
+          <Button onClick={action('clicked')} disabled={disabled}>
+            Undefined
+          </Button>
+          <Button onClick={action('clicked')} color="primary" disabled={disabled}>
+            Primary
+          </Button>
+          <Button onClick={action('clicked')} color="danger" disabled={disabled}>
+            Danger
+          </Button>
+          <Button onClick={action('clicked')} color="success" disabled={disabled}>
+            Success
+          </Button>
+
+          <h2>Colors (inverted)</h2>
+          <Button onClick={action('clicked')} inverted disabled={disabled}>
+            Undefined
+          </Button>
+          <Button onClick={action('clicked')} color="primary" inverted disabled={disabled}>
+            Primary
+          </Button>
+          <Button onClick={action('clicked')} color="danger" inverted disabled={disabled}>
+            Danger
+          </Button>
+          <Button onClick={action('clicked')} color="success" inverted disabled={disabled}>
+            Success
+          </Button>
+          <DropDownButton items={items} onAction={action('Clicked item')} disabled={disabled}>
+            Dropdown
+          </DropDownButton>
+
+          <h2>Colors (simple)</h2>
+          <Button onClick={action('clicked')} kind="simple" disabled={disabled}>
+            Undefined
+          </Button>
+          <Button onClick={action('clicked')} kind="simple" color="primary" disabled={disabled}>
+            Primary
+          </Button>
+          <Button onClick={action('clicked')} kind="simple" color="danger" disabled={disabled}>
+            Danger
+          </Button>
+          <Button onClick={action('clicked')} kind="simple" color="success" disabled={disabled}>
+            Success
+          </Button>
+
+          <h2>With icons</h2>
+          <Button onClick={action('clicked')} icon={SanityLogoIcon} disabled={disabled}>
+            With icon
+          </Button>
+          <Button
+            onClick={action('clicked')}
+            color="danger"
+            icon={SanityLogoIcon}
+            disabled={disabled}
+          >
+            Colored with icon
+          </Button>
+          <Button
+            onClick={action('clicked')}
+            color="danger"
+            icon={SanityLogoIcon}
+            inverted
+            disabled={disabled}
+          >
+            Danger, inverted & icon
+          </Button>
+          <DropDownButton
+            icon={SanityLogoIcon}
+            inverted
+            color="danger"
+            items={items}
+            onAction={action('Clicked item')}
+            disabled={disabled}
+          >
+            Dropdown
+          </DropDownButton>
+
+          <h2>Only icons</h2>
+          <Button
+            onClick={action('clicked')}
+            icon={SanityLogoIcon}
+            title="Default"
+            disabled={disabled}
+          />
+          <Button
+            onClick={action('clicked')}
+            icon={SanityLogoIcon}
+            color="danger"
+            title="Danger"
+            disabled={disabled}
+          />
+          <Button
+            onClick={action('clicked')}
+            icon={SanityLogoIcon}
+            inverted
+            title="Inverted"
+            disabled={disabled}
+          />
+          <Button
+            onClick={action('clicked')}
+            icon={SanityLogoIcon}
+            inverted
+            color="danger"
+            title="Inverted danger"
+            disabled={disabled}
+          />
+          <Button
+            onClick={action('clicked')}
+            icon={SanityLogoIcon}
+            kind="simple"
+            title="Simple"
+            disabled={disabled}
+          />
+          <Button
+            onClick={action('clicked')}
+            icon={SanityLogoIcon}
+            kind="simple"
+            color="danger"
+            title="Simple danger"
+            disabled={disabled}
+          />
+          <Button
+            onClick={action('clicked')}
+            icon={SanityLogoIcon}
+            kind="simple"
+            color="primary"
+            title="Simple primary"
+            disabled={disabled}
+          />
+
+          <h2>Intent buttons with only icons</h2>
+          <IntentButton
+            intent="create"
+            params={{type: 'book'}}
+            onClick={preventDefault}
+            icon={PlusIcon}
+            title="Default"
+            disabled={disabled}
+          />
+          <IntentButton
+            intent="create"
+            params={{type: 'book'}}
+            onClick={preventDefault}
+            icon={PlusIcon}
+            color="danger"
+            title="Danger"
+            disabled={disabled}
+          />
+          <IntentButton
+            intent="create"
+            params={{type: 'book'}}
+            onClick={preventDefault}
+            icon={PlusIcon}
+            inverted
+            title="Inverted"
+            disabled={disabled}
+          />
+          <IntentButton
+            intent="create"
+            params={{type: 'book'}}
+            onClick={preventDefault}
+            icon={PlusIcon}
+            inverted
+            color="danger"
+            title="Inverted danger"
+            disabled={disabled}
+          />
+          <IntentButton
+            intent="create"
+            params={{type: 'book'}}
+            onClick={preventDefault}
+            icon={PlusIcon}
+            kind="simple"
+            title="Simple"
+            disabled={disabled}
+          />
+          <IntentButton
+            intent="create"
+            params={{type: 'book'}}
+            onClick={preventDefault}
+            icon={PlusIcon}
+            kind="simple"
+            color="danger"
+            title="Simple danger"
+            disabled={disabled}
+          />
+          <IntentButton
+            intent="create"
+            params={{type: 'book'}}
+            onClick={preventDefault}
+            icon={PlusIcon}
+            kind="simple"
+            color="primary"
+            title="Simple primary"
+            disabled={disabled}
+          />
+
+          <h2>On color areas</h2>
+          <div style={{backgroundColor: 'red', padding: '1rem'}}>
+            <Button onClick={action('clicked')} color="white" disabled={disabled}>
+              White
+            </Button>
+            <Button onClick={action('clicked')} kind="simple" color="white" disabled={disabled}>
+              White simple
+            </Button>
+            <Button onClick={action('clicked')} inverted disabled={disabled}>
+              Inverted
+            </Button>
+            <Button onClick={action('clicked')} inverted color="white" disabled={disabled}>
+              White inverted
+            </Button>
+          </div>
+        </form>
+      </RouterProvider>
     )
   })
   .add('DropDownButton', () => {

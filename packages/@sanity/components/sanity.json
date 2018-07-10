@@ -26,6 +26,10 @@
       "description": "Same as default button, but with an <a>. Takes href"
     },
     {
+      "name": "part:@sanity/components/buttons/intent",
+      "description": "Same as default button, but takes an intent and generates an anchor"
+    },
+    {
       "name": "part:@sanity/components/buttons/default-style",
       "description": "Default button styling"
     },
@@ -428,7 +432,11 @@
       "path": "buttons/AnchorButton.js"
     },
     {
-      "implements":  "part:@sanity/components/loading/spinner",
+      "implements": "part:@sanity/components/buttons/intent",
+      "path": "buttons/IntentButton.js"
+    },
+    {
+      "implements": "part:@sanity/components/loading/spinner",
       "path": "loading/Spinner.js"
     },
     {
