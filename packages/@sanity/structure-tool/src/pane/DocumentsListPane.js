@@ -16,6 +16,8 @@ import {
   getDraftId
 } from 'part:@sanity/base/util/draft-utils'
 
+import NotPublishedStatus from '../components/NotPublishedStatus'
+import DraftStatus from '../components/DraftStatus'
 import styles from './styles/DocumentsListPane.css'
 import listStyles from './styles/ListView.css'
 import InfiniteList from './InfiniteList'
@@ -25,15 +27,11 @@ function removePublishedWithDrafts(documents) {
   const [draftIds, publishedIds] = partition(documents.map(doc => doc._id), isDraftId)
 
   return documents
-    .map(doc => {
-      const publishedId = getPublishedId(doc._id)
-      const draftId = getDraftId(doc._id)
-      return {
-        ...doc,
-        hasPublished: publishedIds.includes(publishedId),
-        hasDraft: draftIds.includes(draftId)
-      }
-    })
+    .map(doc => ({
+      ...doc,
+      hasPublished: publishedIds.includes(getPublishedId(doc._id)),
+      hasDraft: draftIds.includes(getDraftId(doc._id))
+    }))
     .filter(doc => !(isPublishedId(doc._id) && doc.hasDraft))
 }
 
@@ -44,6 +42,22 @@ function getDocumentKey(document) {
 function noActionFn(title) {
   // eslint-disable-next-line no-console
   console.warn('No action defined for function')
+}
+
+function isLiveEditEnabled(item) {
+  return schema.get(item._type).liveEdit === true
+}
+
+function getStatusIndicator(item) {
+  if (!item.hasPublished) {
+    return NotPublishedStatus
+  }
+
+  if (!isLiveEditEnabled(item) && item.hasDraft && item.hasPublished) {
+    return DraftStatus
+  }
+
+  return null
 }
 
 // eslint-disable-next-line react/prefer-stateless-function
@@ -92,12 +106,12 @@ export default withRouterHOC(
     itemIsSelected(item) {
       const {router, index} = this.props
       const selected = (router.state.panes || [])[index]
-      return selected && item === selected
+      return getPublishedId(item) === getPublishedId(selected)
     }
 
-    getLinkStateForItem = name => {
+    getLinkStateForItem = id => {
       const {router, index} = this.props
-      const panes = (router.state.panes || []).slice(0, index).concat(name)
+      const panes = (router.state.panes || []).slice(0, index).concat(getPublishedId(id))
       return {panes}
     }
 
@@ -107,6 +121,7 @@ export default withRouterHOC(
         getLinkState={this.getLinkStateForItem}
         layout={this.props.layout}
         value={item}
+        status={getStatusIndicator(item)}
         schemaType={schema.get(item._type)}
         isSelected={this.itemIsSelected(item._id)}
       />

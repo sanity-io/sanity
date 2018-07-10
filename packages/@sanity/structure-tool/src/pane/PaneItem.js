@@ -6,14 +6,14 @@ import {StateLink} from 'part:@sanity/base/router'
 import styles from './styles/PaneItem.css'
 
 export default function PaneItem(props) {
-  const {id, getLinkState, isSelected, schemaType, layout, value} = props
+  const {id, getLinkState, isSelected, schemaType, layout, status, value} = props
   return (
     <div className={isSelected ? styles.selected : styles.item}>
       <StateLink state={getLinkState(id)} className={styles.link}>
         {value && value._id ? (
-          <DocumentPreview value={value} layout={layout} type={schemaType} />
+          <DocumentPreview value={value} layout={layout} type={schemaType} status={status} />
         ) : (
-          <SanityDefaultPreview value={value} layout={layout} type={schemaType} />
+          <SanityDefaultPreview value={value} layout={layout} type={schemaType} status={status} />
         )}
         <Ink duration={1000} opacity={0.1} radius={200} />
       </StateLink>
@@ -26,12 +26,12 @@ PaneItem.propTypes = {
   getLinkState: PropTypes.func.isRequired,
   layout: PropTypes.string,
   isSelected: PropTypes.bool,
+  status: PropTypes.func,
   value: PropTypes.shape({
     _id: PropTypes.string,
     _type: PropTypes.string,
     title: PropTypes.string,
     subtitle: PropTypes.string,
-    status: PropTypes.string,
     media: PropTypes.oneOfType([PropTypes.node, PropTypes.func])
   }),
   schemaType: PropTypes.shape({
@@ -43,6 +43,7 @@ PaneItem.propTypes = {
 PaneItem.defaultProps = {
   layout: 'default',
   value: null,
+  status: undefined,
   isSelected: false,
   schemaType: {name: '-'}
 }
