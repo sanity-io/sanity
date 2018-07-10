@@ -21,14 +21,9 @@ class DefaultMenu extends React.Component {
     )
   }
 
-  lastWindowHeight = 0
-  scrollOffset = 0
-
   static defaultProps = {
-    menuOpened: false,
+    items: [],
     isOpen: false,
-    fullWidth: false,
-    icon: false,
     ripple: true,
     onClickOutside() {},
     onClose() {}
@@ -59,34 +54,33 @@ class DefaultMenu extends React.Component {
   }
 
   handleKeyDown = event => {
-    const {items} = this.props
+    const {items, isOpen} = this.props
     const {selectedItem} = this.state
     const currentIndex = items.indexOf(selectedItem) || 0
 
-    const isOpen = this.props.isOpen || this.props.opened // eslint-disable-line
-
-    if (event.key == 'Escape' && isOpen) {
+    if (event.key === 'Escape' && isOpen) {
       this.props.onClose()
     }
 
-    if (event.key == 'ArrowDown' && isOpen && currentIndex < items.length - 1) {
+    if (event.key === 'ArrowDown' && isOpen && currentIndex < items.length - 1) {
       this.setState({
-        focusedItem: this.props.items[currentIndex + 1]
+        focusedItem: items[currentIndex + 1]
       })
     }
 
-    if (event.key == 'ArrowUp' && isOpen && currentIndex > 0) {
+    if (event.key === 'ArrowUp' && isOpen && currentIndex > 0) {
       this.setState({
-        focusedItem: this.props.items[currentIndex - 1]
+        focusedItem: items[currentIndex - 1]
       })
     }
 
-    if (event.key == 'Enter' && isOpen && this.state.selectedItem) {
-      this.props.onAction(this.props.items[currentIndex])
+    if (event.key === 'Enter' && isOpen && selectedItem) {
+      this.props.onAction(items[currentIndex])
     }
   }
 
   handleItemClick = event => {
+    event.stopPropagation()
     const actionId = event.currentTarget.getAttribute('data-action-id')
     this.props.onAction(this.props.items[actionId])
   }
@@ -111,9 +105,7 @@ class DefaultMenu extends React.Component {
 
   render() {
     const {focusedItem} = this.state
-    const {items, ripple, className, opened} = this.props
-
-    const isOpen = opened || this.props.isOpen
+    const {items, ripple, className, isOpen} = this.props
 
     return (
       <div
