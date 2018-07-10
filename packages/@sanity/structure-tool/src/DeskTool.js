@@ -86,7 +86,9 @@ export default withRouterHOC(
       router: PropTypes.shape({
         navigate: PropTypes.func.isRequired,
         state: PropTypes.shape({
-          panes: PropTypes.arrayOf(PropTypes.string)
+          panes: PropTypes.arrayOf(PropTypes.string),
+          editDocumentId: PropTypes.string,
+          type: PropTypes.string
         })
       }).isRequired,
       onPaneChange: PropTypes.func.isRequired
@@ -102,9 +104,23 @@ export default withRouterHOC(
       props.onPaneChange([])
     }
 
+    maybeAddEditorPane = panes => {
+      const {editDocumentId, type} = this.props.router.state
+      if (!editDocumentId) {
+        return panes
+      }
+
+      return panes.concat({
+        id: 'editor',
+        type: 'document',
+        options: {id: editDocumentId, type}
+      })
+    }
+
     derivePanes(props, addState = {}) {
       const paneIds = props.router.state.panes || []
-      return resolvePanes(structure, paneIds)
+      return resolvePanes(structure, paneIds || [])
+        .then(this.maybeAddEditorPane)
         .then(panes => this.setStateIfMounted({panes, ...addState}))
         .catch(error => this.setStateIfMounted({error, ...addState}))
     }

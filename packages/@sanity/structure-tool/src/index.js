@@ -23,23 +23,27 @@ function DeskToolPaneStateSyncer(props) {
 }
 
 export default {
-  router: route('/:panes', {transform: {panes: {toState, toPath}}}),
+  router: route('/', [
+    route('/edit/:type/:editDocumentId'),
+    route('/:panes', {transform: {panes: {toState, toPath}}})
+  ]),
   canHandleIntent(intentName, params, currentState) {
     return (intentName === 'edit' && params.id) || (intentName === 'create' && params.type)
   },
   getIntentState(intentName, params, currentState) {
     const paneIds = (currentState && currentState.panes) || []
+    const activePanes = state.activePanes || []
+    const editDocumentId = params.id || UUID()
 
     // Loop through open panes and see if any of them can handle the intent
-    let resolvedPaneIds = null
-    for (let i = state.activePanes.length - 1; !resolvedPaneIds && i >= 0; i--) {
-      const pane = state.activePanes[i]
+    for (let i = activePanes.length - 1; i >= 0; i--) {
+      const pane = activePanes[i]
       if (pane.canHandleIntent && pane.canHandleIntent(intentName, params)) {
-        resolvedPaneIds = paneIds.slice(0, i).concat(params.id || UUID())
+        return {panes: paneIds.slice(0, i).concat(editDocumentId)}
       }
     }
 
-    return resolvedPaneIds ? {panes: resolvedPaneIds} : {}
+    return {editDocumentId, type: params.type}
   },
   title: 'Desk',
   name: 'desk',
