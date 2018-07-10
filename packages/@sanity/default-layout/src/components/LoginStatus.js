@@ -62,6 +62,7 @@ class LoginStatus extends React.PureComponent {
         {userMenuOpened && (
           <div className={styles.userMenu}>
             <Menu
+              isOpen
               onAction={this.handleUserMenuItemClick}
               items={[
                 {
@@ -70,7 +71,6 @@ class LoginStatus extends React.PureComponent {
                   index: 'signOut'
                 }
               ]}
-              opened
               origin="top-right"
               onClickOutside={this.handleUserMenuClose}
             />
