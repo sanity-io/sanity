@@ -47,28 +47,6 @@
   }
 }
 
-.thinLightScrollbars {
-  composes: lightScrollbars;
-
-  @nest &::-webkit-scrollbar {
-    width: 3px;
-
-    @media (--screen-medium) {
-      width: 3px;
-    }
-  }
-
-  @nest &:hover {
-    @nest &::-webkit-scrollbar {
-      width: 3px;
-
-      @media (--screen-medium) {
-        width: 3px;
-      }
-    }
-  }
-}
-
 .hideScrollbars {
   -ms-overflow-style: -ms-autohiding-scrollbar;
   overflow-style: overflow;

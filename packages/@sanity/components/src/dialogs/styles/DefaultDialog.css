@@ -155,7 +155,6 @@
 }
 
 .content {
-  composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
   composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
   box-sizing: border-box;
   max-height: calc(100vh - 50px);
