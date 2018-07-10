@@ -54,6 +54,7 @@
 }
 
 .root {
+  composes: spacing;
   margin: 0;
   padding: 0;
   position: relative;
@@ -69,7 +70,7 @@
   transition: background-color 0.15s, color 0.15s, opacity 0.15s;
   border-radius: var(--button-border-radius);
   text-transform: uppercase;
-  composes: spacing;
+  text-decoration: none;
 }
 
 .root:focus {
