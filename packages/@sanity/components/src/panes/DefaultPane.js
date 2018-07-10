@@ -35,10 +35,8 @@ class Pane extends React.PureComponent {
     children: <div />,
     onCollapse() {},
     onExpand() {},
-    renderMenu() {
-      return false
-    },
-    renderFunctions() {},
+    renderMenu: undefined,
+    renderFunctions: undefined,
     isActive: false,
     updateId: 0,
     scrollTop: undefined,
@@ -108,6 +106,30 @@ class Pane extends React.PureComponent {
     this.setScrollShadow(event.target.scrollTop)
   }
 
+  renderMenu() {
+    const {styles, isCollapsed, renderMenu} = this.props
+    const menu = renderMenu && renderMenu(isCollapsed)
+    if (!menu) {
+      return null
+    }
+
+    return (
+      <div className={styles.menuWrapper}>
+        <div className={styles.menuButtonContainer}>
+          {renderMenu(isCollapsed) && (
+            <Button
+              kind="simple"
+              icon={IconMoreVert}
+              onClick={this.handleMenuToggle}
+              className={styles.menuButton}
+            />
+          )}
+        </div>
+        <div className={styles.menuContainer}>{menu}</div>
+      </div>
+    )
+  }
+
   render() {
     const {
       title,
@@ -137,21 +159,9 @@ class Pane extends React.PureComponent {
             <h2 className={styles.title} onClick={this.handleToggle}>
               {title}
             </h2>
-            {renderFunctions(isCollapsed)}
+            {renderFunctions && renderFunctions(isCollapsed)}
           </div>
-          <div className={styles.menuWrapper}>
-            <div className={styles.menuButtonContainer}>
-              {renderMenu(isCollapsed) && (
-                <Button
-                  kind="simple"
-                  icon={IconMoreVert}
-                  onClick={this.handleMenuToggle}
-                  className={styles.menuButton}
-                />
-              )}
-            </div>
-            <div className={styles.menuContainer}>{renderMenu(isCollapsed)}</div>
-          </div>
+          {this.renderMenu(isCollapsed)}
           <div
             className={styles.headerBackground}
             style={{
