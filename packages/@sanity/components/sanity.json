@@ -756,6 +756,11 @@
       "path": "menus/styles/DefaultMenu.css"
     },
     {
+      "name": "part:@sanity/components/menus/divider",
+      "description": "Menu item divider symbol",
+      "path": "menus/divider.js"
+    },
+    {
       "implements": "part:@sanity/components/lists/default",
       "path": "lists/default"
     },

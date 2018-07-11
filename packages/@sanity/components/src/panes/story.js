@@ -9,6 +9,7 @@ import PanesController from 'part:@sanity/components/panes/controller'
 import SplitController from 'part:@sanity/components/panes/split-controller'
 import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
 import Menu from 'part:@sanity/components/menus/default'
+import MenuDivider from 'part:@sanity/components/menus/divider'
 import PlusIcon from 'part:@sanity/base/plus-icon'
 import TrashIcon from 'part:@sanity/base/trash-outline-icon'
 import Button from 'part:@sanity/components/buttons/default'
@@ -27,10 +28,10 @@ const menuItems = [
     title: 'Third item',
     key: '3'
   },
+  MenuDivider,
   {
     title: 'Extra item',
-    key: '4',
-    divider: true
+    key: '4'
   }
 ]
 
