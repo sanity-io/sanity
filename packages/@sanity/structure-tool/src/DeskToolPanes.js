@@ -33,13 +33,8 @@ export default class DeskToolPanes extends React.Component {
     }
   }
 
-  handleControllerCollapse = pane => {
-    console.log('ctrl collapse', pane)
-  }
-
-  handleControllerUnCollapse = pane => {
-    console.log('ctrl uncollapse', pane)
-  }
+  handleControllerCollapse = pane => {}
+  handleControllerUnCollapse = pane => {}
 
   handlePaneExpand = index => {
     this.setState(prevState => ({
@@ -71,7 +66,12 @@ export default class DeskToolPanes extends React.Component {
       const wrapperKey = `${i}-${pane.id}`
       const isCollapsed = this.state.collapsedPanes.includes(i)
       return (
-        <SplitPaneWrapper key={wrapperKey} defaultWidth={200} isCollapsed={isCollapsed}>
+        <SplitPaneWrapper
+          key={wrapperKey}
+          minWidth={70}
+          defaultWidth={300}
+          isCollapsed={isCollapsed}
+        >
           <Pane
             key={paneKey} // Use key to force rerendering pane on ID change
             index={i}

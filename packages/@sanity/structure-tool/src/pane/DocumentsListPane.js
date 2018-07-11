@@ -146,7 +146,7 @@ export default withRouterHOC(
       }
     }
 
-    state = {menuIsOpen: false}
+    state = {menuIsOpen: false, scrollTop: 0}
 
     itemIsSelected(item) {
       const {router, index} = this.props
@@ -232,6 +232,10 @@ export default withRouterHOC(
       this.setState(prev => ({menuIsOpen: !prev.menuIsOpen}))
     }
 
+    handleScroll = scrollTop => {
+      this.setState({scrollTop})
+    }
+
     renderMenu = (isCollapsed, menuId) => {
       if (!this.state.menuIsOpen || this.props.menuItems.length === 0) {
         return null
@@ -258,8 +262,9 @@ export default withRouterHOC(
       return (
         <DefaultPane
           title={title}
-          styles={this.props.styles}
           className={className}
+          styles={this.props.styles}
+          scrollTop={this.state.scrollTop}
           renderFunctions={this.renderFunctions}
           renderMenu={this.renderMenu}
           isSelected={isSelected}
