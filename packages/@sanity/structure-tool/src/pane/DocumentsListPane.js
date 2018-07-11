@@ -111,13 +111,16 @@ export default withRouterHOC(
         })
       ),
       menuItems: PropTypes.arrayOf(
-        PropTypes.shape({
-          title: PropTypes.string.isRequired,
-          icon: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-          action: PropTypes.oneOfType([PropTypes.func, PropTypes.string]).isRequired,
-          intent: PropTypes.shape({type: PropTypes.string, params: PropTypes.object}),
-          params: PropTypes.object
-        })
+        PropTypes.oneOfType([
+          PropTypes.symbol,
+          PropTypes.shape({
+            title: PropTypes.string.isRequired,
+            icon: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+            action: PropTypes.oneOfType([PropTypes.func, PropTypes.string]).isRequired,
+            intent: PropTypes.shape({type: PropTypes.string, params: PropTypes.object}),
+            params: PropTypes.object
+          })
+        ])
       ),
       isSelected: PropTypes.bool.isRequired,
       isCollapsed: PropTypes.bool.isRequired,
