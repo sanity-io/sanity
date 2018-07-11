@@ -10,7 +10,6 @@ import classNames from 'classnames'
 function parentButtonIsMenuButton(node, id) {
   let el = node
   do {
-    console.log(el.dataset.menuButtonId, id)
     if (el.tagName === 'BUTTON' && el.dataset.menuButtonId === id) {
       return true
     }
