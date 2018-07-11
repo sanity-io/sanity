@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import DefaultPane from 'part:@sanity/components/panes/default'
 import PaneItem from './PaneItem'
+import ListView from './ListView'
 
 // eslint-disable-next-line react/prefer-stateless-function
 export default withRouterHOC(
@@ -75,18 +76,20 @@ export default withRouterHOC(
           onCollapse={onCollapse}
           onExpand={onExpand}
         >
-          {options.items.map(item => (
-            <PaneItem
-              key={item.id}
-              id={item.id}
-              index={index}
-              value={item}
-              layout={options.defaultLayout}
-              isSelected={this.itemIsSelected(item)}
-              getLinkState={this.getLinkStateForItem}
-              schemaType={item.schemaType}
-            />
-          ))}
+          <ListView layout={options.defaultLayout}>
+            {options.items.map(item => (
+              <PaneItem
+                key={item.id}
+                id={item.id}
+                index={index}
+                value={item}
+                layout={options.defaultLayout}
+                isSelected={this.itemIsSelected(item)}
+                getLinkState={this.getLinkStateForItem}
+                schemaType={item.schemaType}
+              />
+            ))}
+          </ListView>
         </DefaultPane>
       )
     }
