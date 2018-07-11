@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {IntentLink, withRouterHOC} from 'part:@sanity/base/router'
 import styles from 'part:@sanity/components/menus/default-style'
+import MenuDivider from 'part:@sanity/components/menus/divider'
 import Ink from 'react-ink'
 import enhanceWithClickOutside from 'react-click-outside'
 import classNames from 'classnames'
@@ -26,10 +27,17 @@ class DefaultMenu extends React.Component {
     onClickOutside: PropTypes.func,
     onClose: PropTypes.func,
     items: PropTypes.arrayOf(
-      PropTypes.shape({
-        title: PropTypes.node.isRequired,
-        icon: PropTypes.func
-      })
+      PropTypes.oneOfType([
+        PropTypes.symbol,
+        PropTypes.shape({
+          title: PropTypes.node.isRequired,
+          icon: PropTypes.func,
+          intent: PropTypes.shape({
+            type: PropTypes.string.isRequired,
+            params: PropTypes.object
+          })
+        })
+      ])
     ),
     router: PropTypes.shape({
       navigateIntent: PropTypes.func.isRequired
@@ -37,6 +45,7 @@ class DefaultMenu extends React.Component {
   }
 
   static defaultProps = {
+    className: '',
     items: [],
     isOpen: false,
     ripple: true,
@@ -180,22 +189,28 @@ class DefaultMenu extends React.Component {
     return (
       <div className={classNames([isOpen ? styles.isOpen : styles.closed, className])}>
         <ul className={styles.list}>
-          {items.map((item, index) => {
-            return (
-              <li
-                key={index}
-                className={classNames([
-                  item === focusedItem ? styles.focusedItem : styles.item,
-                  item.isDisabled && styles.isDisabled,
-                  item.divider && styles.divider
-                ])}
-              >
-                {item.intent
-                  ? this.renderIntentLink(item, index)
-                  : this.renderFunctionLink(item, index)}
-              </li>
-            )
-          })}
+          {items
+            .map((item, index) => {
+              if (item === MenuDivider) {
+                return null
+              }
+
+              return (
+                <li
+                  key={index}
+                  className={classNames([
+                    item === focusedItem ? styles.focusedItem : styles.item,
+                    item.isDisabled && styles.isDisabled,
+                    items[index - 1] === MenuDivider && styles.divider
+                  ])}
+                >
+                  {item.intent
+                    ? this.renderIntentLink(item, index)
+                    : this.renderFunctionLink(item, index)}
+                </li>
+              )
+            })
+            .filter(Boolean)}
         </ul>
       </div>
     )
