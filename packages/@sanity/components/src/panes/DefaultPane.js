@@ -48,16 +48,24 @@ class Pane extends React.PureComponent {
     renderFunctions: undefined
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.scrollTop !== this.props.scrollTop) {
-      this.setScrollShadow(nextProps.scrollTop)
-    }
-  }
-
   state = {
     headerStyle: {
       opacity: 0,
       boxShadow: 'none'
+    }
+  }
+
+  constructor(props) {
+    super(props)
+
+    this.paneMenuId = Math.random()
+      .toString(36)
+      .substr(2, 6)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.scrollTop !== this.props.scrollTop) {
+      this.setScrollShadow(nextProps.scrollTop)
     }
   }
 
@@ -115,13 +123,13 @@ class Pane extends React.PureComponent {
       return null
     }
 
-    const menu = renderMenu && renderMenu(isCollapsed)
+    const menu = renderMenu && renderMenu(isCollapsed, this.paneMenuId)
     return (
       <div className={styles.menuWrapper}>
         <div className={styles.menuButtonContainer}>
           <Button
             // Makes menu component ignore clicks on button (prevents double-toggling)
-            data-is-menu-button="true"
+            data-menu-button-id={this.paneMenuId}
             kind="simple"
             icon={IconMoreVert}
             onClick={this.handleToggleMenu}

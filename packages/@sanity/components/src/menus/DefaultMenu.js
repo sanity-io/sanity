@@ -7,10 +7,11 @@ import Ink from 'react-ink'
 import enhanceWithClickOutside from 'react-click-outside'
 import classNames from 'classnames'
 
-function parentButtonIsMenuButton(node) {
+function parentButtonIsMenuButton(node, id) {
   let el = node
   do {
-    if (el.tagName === 'BUTTON' && el.dataset.isMenuButton) {
+    console.log(el.dataset.menuButtonId, id)
+    if (el.tagName === 'BUTTON' && el.dataset.menuButtonId === id) {
       return true
     }
   } while ((el = el.parentNode))
@@ -20,6 +21,7 @@ function parentButtonIsMenuButton(node) {
 
 class DefaultMenu extends React.Component {
   static propTypes = {
+    id: PropTypes.string,
     onAction: PropTypes.func.isRequired,
     isOpen: PropTypes.bool,
     ripple: PropTypes.bool,
@@ -45,6 +47,7 @@ class DefaultMenu extends React.Component {
   }
 
   static defaultProps = {
+    id: undefined,
     className: '',
     items: [],
     isOpen: false,
@@ -62,14 +65,15 @@ class DefaultMenu extends React.Component {
   }
 
   handleClickOutside = event => {
-    if (parentButtonIsMenuButton(event.target)) {
+    const {id, isOpen, onClickOutside} = this.props
+    if (id && parentButtonIsMenuButton(event.target, id)) {
       // Don't treat clicks on the open menu button as "outside" clicks -
       // prevents us from double-toggling a menu as open/closed
       return
     }
 
-    if (this.props.isOpen) {
-      this.props.onClickOutside(event)
+    if (isOpen) {
+      onClickOutside(event)
     }
   }
 
@@ -217,4 +221,4 @@ class DefaultMenu extends React.Component {
   }
 }
 
-export default enhanceWithClickOutside(withRouterHOC(DefaultMenu))
+export default withRouterHOC(enhanceWithClickOutside(DefaultMenu))
