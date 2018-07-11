@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import {IntentLink, withRouterHOC} from 'part:@sanity/base/router'
 import styles from 'part:@sanity/components/menus/default-style'
 import Ink from 'react-ink'
 import enhanceWithClickOutside from 'react-click-outside'
@@ -29,7 +30,10 @@ class DefaultMenu extends React.Component {
         title: PropTypes.node.isRequired,
         icon: PropTypes.func
       })
-    )
+    ),
+    router: PropTypes.shape({
+      navigateIntent: PropTypes.func.isRequired
+    }).isRequired
   }
 
   static defaultProps = {
@@ -70,29 +74,40 @@ class DefaultMenu extends React.Component {
     window.removeEventListener('keydown', this.handleKeyDown, false)
   }
 
+  // eslint-disable-next-line complexity
   handleKeyDown = event => {
-    const {items, isOpen} = this.props
-    const {selectedItem} = this.state
-    const currentIndex = items.indexOf(selectedItem) || 0
-
-    if (event.key === 'Escape' && isOpen) {
-      this.props.onClose()
+    const {isOpen, router} = this.props
+    if (!isOpen) {
+      return
     }
 
-    if (event.key === 'ArrowDown' && isOpen && currentIndex < items.length - 1) {
+    const {focusedItem} = this.state
+    const items = this.props.items.filter(item => !item.isDisabled)
+    const currentIndex = items.indexOf(focusedItem) || 0
+
+    if (event.key === 'Escape') {
+      this.props.onClose(event)
+    }
+
+    if (event.key === 'ArrowDown') {
       this.setState({
-        focusedItem: items[currentIndex + 1]
+        focusedItem: items[currentIndex < items.length - 1 ? currentIndex + 1 : 0]
       })
     }
 
-    if (event.key === 'ArrowUp' && isOpen && currentIndex > 0) {
+    if (event.key === 'ArrowUp') {
       this.setState({
-        focusedItem: items[currentIndex - 1]
+        focusedItem: items[currentIndex > 0 ? currentIndex - 1 : items.length - 1]
       })
     }
 
-    if (event.key === 'Enter' && isOpen && selectedItem) {
-      this.props.onAction(items[currentIndex])
+    if (event.key === 'Enter' && focusedItem) {
+      if (focusedItem.intent) {
+        router.navigateIntent(focusedItem.intent.type, focusedItem.intent.params)
+      } else {
+        event.stopPropagation()
+        this.props.onAction(items[currentIndex])
+      }
     }
   }
 
@@ -116,40 +131,68 @@ class DefaultMenu extends React.Component {
     }
   }
 
+  renderLinkChildren = item => {
+    const Icon = item.icon
+    return (
+      <React.Fragment>
+        {Icon && (
+          <span className={styles.iconContainer}>
+            <Icon className={styles.icon} />
+          </span>
+        )}
+        {item.title}
+        {this.props.ripple && !item.isDisabled && <Ink duration={200} opacity={0.1} radius={200} />}
+      </React.Fragment>
+    )
+  }
+
+  renderIntentLink = (item, index) => (
+    <IntentLink
+      onClick={this.props.onClose}
+      data-action-id={index}
+      className={item.danger ? styles.dangerLink : styles.link}
+      onFocus={this.handleFocus}
+      tabIndex="0"
+      onKeyPress={this.handleKeyDown}
+      intent={item.intent.type}
+      params={item.intent.params}
+    >
+      {this.renderLinkChildren(item)}
+    </IntentLink>
+  )
+
+  renderFunctionLink = (item, index) => (
+    <a
+      onClick={item.isDisabled ? null : this.handleItemClick}
+      data-action-id={index}
+      className={item.danger ? styles.dangerLink : styles.link}
+      onFocus={this.handleFocus}
+      tabIndex="0"
+    >
+      {this.renderLinkChildren(item)}
+    </a>
+  )
+
   render() {
     const {focusedItem} = this.state
-    const {items, ripple, className, isOpen} = this.props
+    const {items, className, isOpen} = this.props
 
     return (
       <div className={classNames([isOpen ? styles.isOpen : styles.closed, className])}>
         <ul className={styles.list}>
-          {items.map((item, i) => {
-            const Icon = item.icon
+          {items.map((item, index) => {
             return (
               <li
-                key={i}
+                key={index}
                 className={classNames([
                   item === focusedItem ? styles.focusedItem : styles.item,
                   item.isDisabled && styles.isDisabled,
                   item.divider && styles.divider
                 ])}
               >
-                <a
-                  onClick={item.isDisabled ? null : this.handleItemClick}
-                  data-action-id={i}
-                  className={item.danger ? styles.dangerLink : styles.link}
-                  onFocus={this.handleFocus}
-                  tabIndex="0"
-                  onKeyPress={this.handleKeyPress}
-                >
-                  {Icon && (
-                    <span className={styles.iconContainer}>
-                      <Icon className={styles.icon} />
-                    </span>
-                  )}
-                  {item.title}
-                  {ripple && !item.isDisabled && <Ink duration={200} opacity={0.1} radius={200} />}
-                </a>
+                {item.intent
+                  ? this.renderIntentLink(item, index)
+                  : this.renderFunctionLink(item, index)}
               </li>
             )
           })}
@@ -159,4 +202,4 @@ class DefaultMenu extends React.Component {
   }
 }
 
-export default enhanceWithClickOutside(DefaultMenu)
+export default enhanceWithClickOutside(withRouterHOC(DefaultMenu))

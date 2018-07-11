@@ -29,6 +29,7 @@
 
 .focusedItem {
   composes: item;
+  composes: selected from 'part:@sanity/base/theme/layout/selectable-style';
 }
 
 .iconContainer {
