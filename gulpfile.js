@@ -1,7 +1,9 @@
-/* eslint-disable import/no-commonjs */
+/* eslint-disable import/no-commonjs, import/no-unassigned-import */
 // Note: Node 6 compat, please!
+require('hard-rejection/register')
 
 const path = require('path')
+const childProcess = require('child_process')
 const gulp = require('gulp')
 const newer = require('gulp-newer')
 const babel = require('gulp-babel')
@@ -9,11 +11,18 @@ const watch = require('gulp-watch')
 const gutil = require('gulp-util')
 const filter = require('gulp-filter')
 const plumber = require('gulp-plumber')
+const ts = require('gulp-typescript')
+const sourcemaps = require('gulp-sourcemaps')
 const through = require('through2')
 const chalk = require('chalk')
-const childProcess = require('child_process')
+const globby = require('globby')
+const mergeStream = require('merge-stream')
 
 const isWindows = /^win/.test(process.platform)
+
+const tsPaths = globby.sync(['./packages/@sanity/*/tsconfig.json'])
+const tsProjects = tsPaths.map(conf => ts.createProject(conf))
+const tsScripts = tsPaths.map(proj => `${path.dirname(proj)}/src/**/*.ts`)
 const scripts = ['./packages/@sanity/*/src/**/*.js', './packages/sanity-plugin-*/src/**/*.js']
 const assets = ['./packages/@sanity/*/src/**/*', './packages/sanity-plugin-*/src/**/*']
 const srcOpts = {base: 'packages'}
@@ -42,15 +51,19 @@ if (path.win32 === path) {
   libFragment = '$1/lib/'
 }
 
+const logCompile = (file, enc, cb) => {
+  gutil.log('Compiling', `'${chalk.cyan(file._path || file.path)}'...`)
+  cb(null, file)
+}
+
 const mapToDest = orgPath => {
   const outPath = orgPath.replace(srcEx, libFragment).replace(srcRootEx, libFragment)
-
   return outPath
 }
 
 const dest = 'packages'
 
-gulp.task('default', ['build'])
+gulp.task('default', ['build', 'build-ts'])
 
 gulp.task('build', () => {
   const assetFilter = filter(['**/*.js'], {restore: true})
@@ -60,12 +73,7 @@ gulp.task('build', () => {
     .pipe(plumber({errorHandler: err => gutil.log(err.stack)}))
     .pipe(newer({map: mapToDest}))
     .pipe(assetFilter)
-    .pipe(
-      through.obj((file, enc, callback) => {
-        gutil.log('Compiling', `'${chalk.cyan(file.path)}'...`)
-        callback(null, file)
-      })
-    )
+    .pipe(through.obj(logCompile))
     .pipe(babel())
     .pipe(assetFilter.restore)
     .pipe(
@@ -90,15 +98,37 @@ gulp.task('watch-js', () => {
       })
     )
     .pipe(newer(dest))
-    .pipe(
-      through.obj((file, enc, callback) => {
-        gutil.log('Compiling', `'${chalk.cyan(file._path)}'...`)
-        callback(null, file)
-      })
-    )
+    .pipe(through.obj(logCompile))
     .pipe(babel())
     .pipe(gulp.dest(dest))
 })
+
+gulp.task('build-ts', () => {
+  const streams = tsProjects.map(project => {
+    const src = project
+      .src()
+      .pipe(plumber({errorHandler: err => gutil.log(err.stack)}))
+      .pipe(sourcemaps.init())
+      .pipe(project())
+
+    return mergeStream(
+      src.dts
+        .pipe(plumber({errorHandler: err => gutil.log(err.stack)}))
+        .pipe(sourcemaps.write('.', {includeContent: false, sourceRoot: './'}))
+        .pipe(gulp.dest(project.options.outDir)),
+
+      src.js
+        .pipe(plumber({errorHandler: err => gutil.log(err.stack)}))
+        .pipe(through.obj(logCompile))
+        .pipe(sourcemaps.write('.', {includeContent: false, sourceRoot: './'}))
+        .pipe(gulp.dest(project.options.outDir))
+    )
+  })
+
+  return mergeStream(...streams)
+})
+
+gulp.task('watch-ts', ['build-ts'], () => gulp.watch(tsScripts, ['build-ts']))
 
 gulp.task('watch-assets', () => {
   return gulp
@@ -122,7 +152,7 @@ gulp.task('watch-assets', () => {
     .pipe(gulp.dest(dest))
 })
 
-gulp.task('watch', ['watch-js', 'watch-assets'], callback => {
+gulp.task('watch', ['watch-js', 'watch-ts', 'watch-assets'], callback => {
   watch(scripts, {debounceDelay: 200}, () => {
     gulp.start('watch-js')
   })
@@ -141,7 +171,7 @@ const STUDIOS = [
 ]
 
 STUDIOS.forEach(studio => {
-  gulp.task(studio.name, ['watch-js', 'watch-assets'], cb => {
+  gulp.task(studio.name, ['watch-js', 'watch-ts', 'watch-assets'], cb => {
     watch(scripts, {debounceDelay: 200}, () => {
       gulp.start('watch-js')
     })
@@ -166,7 +196,7 @@ STUDIOS.forEach(studio => {
   })
 })
 
-gulp.task('storybook', ['watch-js', 'watch-assets'], () => {
+gulp.task('storybook', ['watch-js', 'watch-ts', 'watch-assets'], () => {
   watch(scripts, {debounceDelay: 200}, () => {
     gulp.start('watch-js')
   })
