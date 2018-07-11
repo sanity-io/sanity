@@ -353,6 +353,10 @@
       "path": "datastores/project"
     },
     {
+      "name": "part:@sanity/base/settings",
+      "path": "datastores/settings/settingsStore.js"
+    },
+    {
       "name": "part:@sanity/base/router",
       "path": "router"
     },
