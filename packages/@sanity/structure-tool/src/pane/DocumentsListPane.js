@@ -65,6 +65,19 @@ function getStatusIndicator(item) {
   return null
 }
 
+function toOrderClause(orderBy) {
+  return orderBy
+    .map(ordering =>
+      [ordering.field, (ordering.direction || '').toLowerCase()]
+        .map(str => str.trim())
+        .filter(Boolean)
+        .join(' ')
+    )
+    .join(', ')
+}
+
+const DEFAULT_ORDERING = [{field: '_createdAt', direction: 'desc'}]
+
 // eslint-disable-next-line react/prefer-stateless-function
 export default withRouterHOC(
   class DocumentsListPane extends React.PureComponent {
@@ -81,6 +94,12 @@ export default withRouterHOC(
       options: PropTypes.shape({
         defaultLayout: PropTypes.string,
         filter: PropTypes.string.isRequired,
+        defaultOrdering: PropTypes.arrayOf(
+          PropTypes.shape({
+            field: PropTypes.string.isRequired,
+            direction: PropTypes.oneOf(['asc', 'desc'])
+          })
+        ),
         params: PropTypes.object // eslint-disable-line react/forbid-prop-types
       }).isRequired,
       functions: PropTypes.arrayOf(
@@ -96,9 +115,11 @@ export default withRouterHOC(
           title: PropTypes.string.isRequired,
           icon: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
           action: PropTypes.oneOfType([PropTypes.func, PropTypes.string]).isRequired,
+          intent: PropTypes.shape({type: PropTypes.string, params: PropTypes.object}),
           params: PropTypes.object
         })
       ),
+      isSelected: PropTypes.bool.isRequired,
       isCollapsed: PropTypes.bool.isRequired,
       onExpand: PropTypes.func,
       onCollapse: PropTypes.func
@@ -116,6 +137,9 @@ export default withRouterHOC(
     actionHandlers = {
       setLayout: ({layout}) => {
         this.setState({layout})
+      },
+      setSortOrder: ({by}) => {
+        this.setState({sortBy: by})
       }
     }
 
@@ -188,7 +212,11 @@ export default withRouterHOC(
         noActionFn
 
       action(item.params, this)
-      this.handleCloseMenu()
+
+      // When closing the menu outright, the menu button will be focused and the "enter" keypress
+      // will bouble up to it and trigger a re-open of the menu. To work around this, use rAF to
+      // ensure the current event is completed before closing the menu
+      requestAnimationFrame(() => this.handleCloseMenu())
     }
 
     // Triggered by clicking "outside" of the menu when open, or after triggering action
@@ -219,8 +247,9 @@ export default withRouterHOC(
     }
 
     render() {
-      const {title, options, className, isCollapsed, onCollapse, onExpand} = this.props
-      const {filter, params, defaultLayout} = options
+      const {title, options, className, isCollapsed, isSelected, onCollapse, onExpand} = this.props
+      const {filter, params, defaultOrdering, defaultLayout} = options
+      const sortBy = this.state.sortBy || defaultOrdering || DEFAULT_ORDERING
       const layout = this.state.layout || defaultLayout || 'default'
       return (
         <DefaultPane
@@ -229,6 +258,7 @@ export default withRouterHOC(
           className={className}
           renderFunctions={this.renderFunctions}
           renderMenu={this.renderMenu}
+          isSelected={isSelected}
           isCollapsed={isCollapsed}
           onCollapse={onCollapse}
           onMenuToggle={this.handleMenuToggle}
@@ -236,7 +266,7 @@ export default withRouterHOC(
         >
           <QueryContainer
             // @todo filter the filter! Only allow the actual filter, not a full query
-            query={`*[${filter}] | order(_createdAt desc) [0...10000] {_id, _type}`}
+            query={`*[${filter}] | order(${toOrderClause(sortBy)}) [0...10000] {_id, _type}`}
             params={params}
           >
             {({result, loading, error, onRetry, type}) => {

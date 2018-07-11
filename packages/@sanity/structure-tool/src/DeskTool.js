@@ -5,15 +5,18 @@ import shallowEquals from 'shallow-equals'
 import schema from 'part:@sanity/base/schema'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import PlusIcon from 'part:@sanity/base/plus-icon'
+import SortIcon from 'part:@sanity/base/sort-icon'
 import ListIcon from 'part:@sanity/base/bars-icon'
 import DetailsIcon from 'part:@sanity/base/th-list-icon'
+import MenuDivider from 'part:@sanity/components/menus/divider'
 import resolvePanes from './utils/resolvePanes'
 import dataAspects from './utils/dataAspects'
+import styles from './styles/DeskTool.css'
 import DeskToolPanes from './DeskToolPanes'
 
 const EMPTY_PANE_KEYS = []
 
-let structure = {
+const structure = {
   id: '__root__',
   title: 'Content',
   type: 'list',
@@ -37,7 +40,8 @@ let structure = {
             type: 'documentList',
             options: {
               filter: '_type == $type',
-              params: {type: id}
+              params: {type: id},
+              defaultOrdering: [{field: 'title', direction: 'asc'}]
             },
             functions: [
               {
@@ -49,6 +53,19 @@ let structure = {
             ],
             menuItems: [
               {
+                action: 'setSortOrder',
+                title: 'Sort by Created',
+                icon: SortIcon,
+                params: {by: [{field: '_createdAt', direction: 'desc'}]}
+              },
+              {
+                action: 'setSortOrder',
+                title: 'Sort by Last edited',
+                icon: SortIcon,
+                params: {by: [{field: '_updatedAt', direction: 'desc'}]}
+              },
+              MenuDivider,
+              {
                 action: 'setLayout',
                 title: 'List',
                 icon: ListIcon,
@@ -59,6 +76,13 @@ let structure = {
                 title: 'Details',
                 icon: DetailsIcon,
                 params: {layout: 'detail'}
+              },
+              MenuDivider,
+              {
+                action: 'createNew',
+                title: 'Create new…',
+                icon: PlusIcon,
+                intent: {type: 'create', params: {type: id}}
               }
             ],
             canHandleIntent(intentName, params) {
@@ -184,16 +208,22 @@ export default withRouterHOC(
     render() {
       const {panes, error} = this.state
       if (error) {
+        // @todo probably not?
         return <pre>{error.stack}</pre>
       }
 
-      return panes ? (
-        <DeskToolPanes
-          panes={this.state.panes}
-          keys={this.props.router.state.panes || EMPTY_PANE_KEYS}
-        />
-      ) : (
-        <div>Loading</div>
+      return (
+        <div className={styles.deskTool}>
+          {panes ? (
+            <DeskToolPanes
+              panes={this.state.panes}
+              keys={this.props.router.state.panes || EMPTY_PANE_KEYS}
+            />
+          ) : (
+            // @todo proper loading
+            <div>Loading</div>
+          )}
+        </div>
       )
     }
   }

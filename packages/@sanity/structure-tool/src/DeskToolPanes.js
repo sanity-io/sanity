@@ -78,6 +78,7 @@ export default class DeskToolPanes extends React.Component {
             onExpand={this.handlePaneExpand}
             onCollapse={this.handlePaneCollapse}
             isCollapsed={isCollapsed}
+            isSelected={i === panes.length - 1}
             {...pane}
           />
         </SplitPaneWrapper>

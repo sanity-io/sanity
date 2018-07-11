@@ -2,21 +2,24 @@
 import PropTypes from 'prop-types'
 // Connects the FormBuilder with various sanity roles
 import React from 'react'
+import {debounce} from 'lodash'
+import {Tooltip} from '@sanity/react-tippy'
+import {withRouterHOC} from 'part:@sanity/base/router'
+import {PreviewFields} from 'part:@sanity/base/preview'
+import {getPublishedId, newDraftFrom} from 'part:@sanity/base/util/draft-utils'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import Button from 'part:@sanity/components/buttons/default'
 import FormBuilder from 'part:@sanity/form-builder'
-import {withRouterHOC} from 'part:@sanity/base/router'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import UndoIcon from 'part:@sanity/base/undo-icon'
 import PublicIcon from 'part:@sanity/base/public-icon'
 import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
 import BinaryIcon from 'part:@sanity/base/binary-icon'
 import Menu from 'part:@sanity/components/menus/default'
+import MenuDivider from 'part:@sanity/components/menus/divider'
 import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 import documentStore from 'part:@sanity/base/datastore/document'
 import schema from 'part:@sanity/base/schema'
-import {debounce} from 'lodash'
-import {PreviewFields} from 'part:@sanity/base/preview'
 import Pane from 'part:@sanity/components/panes/default'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
 import SyncIcon from 'part:@sanity/base/sync-icon'
@@ -25,18 +28,16 @@ import CheckCircleIcon from 'part:@sanity/base/circle-check-icon'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import resolveProductionPreviewUrl from 'part:@sanity/transitional/production-preview/resolve-production-url?'
 import ValidationList from 'part:@sanity/components/validation/list'
-import {Tooltip} from '@sanity/react-tippy'
 import ChevronDown from 'part:@sanity/base/chevron-down-icon'
 import WarningIcon from 'part:@sanity/base/warning-icon'
+import copyDocument from '../utils/copyDocument'
+import ConfirmUnpublish from '../components/ConfirmUnpublish'
 import ConfirmDiscard from '../components/ConfirmDiscard'
 import ConfirmDelete from '../components/ConfirmDelete'
-import ConfirmUnpublish from '../components/ConfirmUnpublish'
 import InspectView from '../components/InspectView'
-import copyDocument from '../utils/copyDocument'
-import {getPublishedId, newDraftFrom} from 'part:@sanity/base/util/draft-utils'
+import DocTitle from '../components/DocTitle'
 import TimeAgo from '../components/TimeAgo'
 import styles from './styles/Editor.css'
-import DocTitle from '../components/DocTitle'
 
 function navigateUrl(url) {
   window.open(url)
@@ -56,7 +57,6 @@ const getDuplicateItem = (draft, published) => ({
   action: 'duplicate',
   title: 'Duplicate',
   icon: ContentCopyIcon,
-  divider: true,
   isDisabled: !draft && !published
 })
 
@@ -67,7 +67,6 @@ const getDiscardItem = (draft, published, isLiveEditEnabled) =>
         action: 'discard',
         title: 'Discard changes…',
         icon: UndoIcon,
-        divider: true,
         isDisabled: !draft || !published
       }
 
@@ -78,7 +77,6 @@ const getUnpublishItem = (draft, published, isLiveEditEnabled) =>
         action: 'unpublish',
         title: 'Unpublish…',
         icon: VisibilityOffIcon,
-        divider: true,
         isDisabled: !published
       }
 
@@ -86,7 +84,6 @@ const getDeleteItem = (draft, published) => ({
   action: 'delete',
   title: 'Delete…',
   icon: TrashIcon,
-  divider: true,
   danger: true,
   isDisabled: !draft && !published
 })
@@ -99,7 +96,6 @@ const getInspectItem = (draft, published) => ({
     </span>
   ),
   icon: BinaryIcon,
-  divider: true,
   isDisabled: !(draft || published)
 })
 
@@ -145,6 +141,10 @@ const getMenuItems = (draft, published, isLiveEditEnabled) =>
   ]
     .map(fn => fn(draft, published, isLiveEditEnabled))
     .filter(Boolean)
+    .reduce((acc, item, index, arr) => {
+      // Add dividers after each item, except the last
+      return acc.concat(index === arr.length - 1 ? [item] : [item, MenuDivider])
+    }, [])
 
 const isValidationError = marker => marker.type === 'validation' && marker.level === 'error'
 

@@ -26,6 +26,7 @@ export default withRouterHOC(
           })
         )
       }),
+      isSelected: PropTypes.bool.isRequired,
       isCollapsed: PropTypes.bool.isRequired,
       onExpand: PropTypes.func,
       onCollapse: PropTypes.func
@@ -58,6 +59,7 @@ export default withRouterHOC(
         className,
         options,
         index,
+        isSelected,
         isCollapsed,
         onCollapse,
         onExpand
@@ -68,6 +70,7 @@ export default withRouterHOC(
           title={title}
           styles={styles}
           className={className}
+          isSelected={isSelected}
           isCollapsed={isCollapsed}
           onCollapse={onCollapse}
           onExpand={onExpand}
