@@ -313,7 +313,6 @@ export default withRouterHOC(
     }
 
     handleMenuClose = evt => {
-      evt.stopPropagation()
       this.setState({isMenuOpen: false})
     }
 
@@ -545,17 +544,20 @@ export default withRouterHOC(
       )
     }
 
-    renderMenu = () => {
+    renderMenu = (isCollapsed, menuId) => {
       const {draft, published} = this.props
       return (
-        <Menu
-          onAction={this.handleMenuClick}
-          isOpen={this.state.isMenuOpen}
-          onClose={this.handleMenuClose}
-          onClickOutside={this.handleMenuClose}
-          items={getMenuItems(draft, published, this.isLiveEditEnabled())}
-          origin="top-right"
-        />
+        this.state.isMenuOpen && (
+          <Menu
+            isOpen
+            id={menuId}
+            onAction={this.handleMenuClick}
+            onClose={this.handleMenuClose}
+            onClickOutside={this.handleMenuClose}
+            items={getMenuItems(draft, published, this.isLiveEditEnabled())}
+            origin="top-right"
+          />
+        )
       )
     }
 

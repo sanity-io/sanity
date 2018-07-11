@@ -232,7 +232,7 @@ export default withRouterHOC(
       this.setState(prev => ({menuIsOpen: !prev.menuIsOpen}))
     }
 
-    renderMenu = () => {
+    renderMenu = (isCollapsed, menuId) => {
       if (!this.state.menuIsOpen || this.props.menuItems.length === 0) {
         return null
       }
@@ -240,6 +240,7 @@ export default withRouterHOC(
       return (
         <Menu
           isOpen
+          id={menuId}
           items={this.props.menuItems}
           origin="top-right"
           onAction={this.handleMenuAction}
