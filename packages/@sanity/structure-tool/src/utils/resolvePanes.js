@@ -1,6 +1,6 @@
-const promiseReduce = require('./promiseReduce')
+import promiseReduce from './promiseReduce'
 
-module.exports = function resolvePanes(structure, ids) {
+export default function resolvePanes(structure, ids) {
   const paneIds = [structure.id].concat(ids).filter(Boolean)
   return promiseReduce(
     paneIds,

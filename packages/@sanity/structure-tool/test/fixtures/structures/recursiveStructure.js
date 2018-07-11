@@ -10,4 +10,4 @@ const listA = {
     new Promise(resolve => setImmediate(resolve, id === 'List' ? listA : editor))
 }
 
-module.exports = listA
+export default listA

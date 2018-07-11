@@ -1,6 +1,6 @@
-const singletonStructure = require('./singletonStructure')
+import singletonStructure from './singletonStructure'
 
-module.exports = Object.assign({}, singletonStructure, {
+export default Object.assign({}, singletonStructure, {
   resolveChildForItem: id =>
     new Promise(resolve =>
       setImmediate(resolve, {

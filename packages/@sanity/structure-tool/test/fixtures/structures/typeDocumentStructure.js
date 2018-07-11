@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   id: '__root__',
   title: 'Content',
   type: 'list',

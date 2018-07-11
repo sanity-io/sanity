@@ -1,9 +1,9 @@
-const resolvePanes = require('../src/utils/resolvePanes')
-const singletonStructure = require('./fixtures/structures/singletonStructure')
-const recursiveStructure = require('./fixtures/structures/recursiveStructure')
-const singleStatsStructure = require('./fixtures/structures/singleStatsStructure')
-const asyncSingletonStructure = require('./fixtures/structures/asyncSingletonStructure')
-const typeDocumentStructure = require('./fixtures/structures/typeDocumentStructure')
+import resolvePanes from '../src/utils/resolvePanes'
+import singletonStructure from './fixtures/structures/singletonStructure'
+import recursiveStructure from './fixtures/structures/recursiveStructure'
+import singleStatsStructure from './fixtures/structures/singleStatsStructure'
+import asyncSingletonStructure from './fixtures/structures/asyncSingletonStructure'
+import typeDocumentStructure from './fixtures/structures/typeDocumentStructure'
 
 test('can resolve one-pane structure', () =>
   expect(resolvePanes(singleStatsStructure, [])).resolves.toMatchObject([singleStatsStructure]))
