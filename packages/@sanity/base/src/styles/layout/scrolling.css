@@ -48,6 +48,8 @@
 }
 
 .thinLightScrollbars {
+  /* kept in case somebody uses it as a part */
+
   composes: lightScrollbars;
 
   @nest &::-webkit-scrollbar {

@@ -179,7 +179,6 @@
   box-sizing: border-box;
 
   @media (--screen-medium) {
-    composes: lightScrollbars from "part:@sanity/base/theme/layout/scrolling-style";
     composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
     position: absolute;
     top: -3rem;
