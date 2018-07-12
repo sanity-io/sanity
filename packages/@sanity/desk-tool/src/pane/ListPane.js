@@ -19,6 +19,7 @@ export default withRouterHOC(
         })
       }).isRequired,
       options: PropTypes.shape({
+        defaultLayout: PropTypes.string,
         items: PropTypes.arrayOf(
           PropTypes.shape({
             id: PropTypes.string.isRequired,

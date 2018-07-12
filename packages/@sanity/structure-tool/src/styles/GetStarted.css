@@ -1,7 +1,0 @@
-.content {
-  padding: 2em;
-}
-
-.lead {
-  composes: lead from 'part:@sanity/base/theme/typography/text-blocks-style';
-}

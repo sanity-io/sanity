@@ -7,7 +7,9 @@ export default function enhanceWithAvailHeight(Component) {
     static displayName = `enhanceWithAvailHeight(${Component.displayName || Component.name})`
     state = {}
 
-    componentWillMount() {
+    constructor() {
+      super()
+
       this.erd = elementResizeDetectorMaker({strategy: 'scroll'})
     }
 
