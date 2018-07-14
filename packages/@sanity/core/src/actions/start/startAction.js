@@ -65,7 +65,7 @@ export default async (args, context) => {
 
     if (!hasErrors && !hasWarnings) {
       output.print(
-        chalk.green(`Compiled successfully! Server listening on http://${httpHost}:${httpPort}`)
+        chalk.green(`Content Studio successfully compiled! Go to http://${httpHost}:${httpPort}`) // eslint-disable-line max-len
       )
       return
     }
@@ -81,7 +81,9 @@ export default async (args, context) => {
       printWarnings(output, warnings)
     }
 
-    output.print(chalk.green(`Server listening on http://${httpHost}:${httpPort}`))
+    output.print(
+      chalk.green(`Content Studio listening on http://${httpHost}:${httpPort}`)
+    )
   })
 
   function resetSpinner() {
@@ -101,7 +103,7 @@ function resolveStaticPath(rootDir, config) {
 function gracefulDeath(httpHost, config, err) {
   if (err.code === 'EADDRINUSE') {
     throw new Error(
-      'Port number for Sanity server is already in use, configure `server.port` in `sanity.json`'
+      'Port number is already in use, configure `server.port` in `sanity.json`'
     )
   }
 
@@ -111,7 +113,7 @@ function gracefulDeath(httpHost, config, err) {
         ? 'port numbers below 1024 requires root privileges'
         : `do you have access to listen to the given host (${httpHost})?`
 
-    throw new Error(`Sanity server does not have access to listen to given port - ${help}`)
+    throw new Error(`The Content Studio server does not have access to listen to given port - ${help}`) // eslint-disable-line max-len
   }
 
   throw err
