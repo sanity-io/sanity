@@ -103,32 +103,43 @@ gulp.task('watch-js', () => {
     .pipe(gulp.dest(dest))
 })
 
-gulp.task('build-ts', () => {
-  const streams = tsProjects.map(project => {
-    const src = project
-      .src()
-      .pipe(plumber({errorHandler: err => gutil.log(err.stack)}))
-      .pipe(sourcemaps.init())
-      .pipe(project())
+// build-ts / watch-ts-build
+;[
+  {name: 'build-ts', params: {throwOnError: true}},
+  {name: 'watch-ts-build', params: {throwOnError: false}}
+].forEach(task => {
+  gulp.task(task.name, () => {
+    const getErrorHandler = () =>
+      task.params.throwOnError
+        ? through.obj((chunk, enc, cb) => cb(null, chunk))
+        : plumber({errorHandler: err => gutil.log(err.stack)})
 
-    return mergeStream(
-      src.dts
-        .pipe(plumber({errorHandler: err => gutil.log(err.stack)}))
-        .pipe(sourcemaps.write('.', {includeContent: false, sourceRoot: './'}))
-        .pipe(gulp.dest(project.options.outDir)),
+    const streams = tsProjects.map(project => {
+      const src = project
+        .src()
+        .pipe(getErrorHandler())
+        .pipe(sourcemaps.init())
+        .pipe(project())
 
-      src.js
-        .pipe(plumber({errorHandler: err => gutil.log(err.stack)}))
-        .pipe(through.obj(logCompile))
-        .pipe(sourcemaps.write('.', {includeContent: false, sourceRoot: './'}))
-        .pipe(gulp.dest(project.options.outDir))
-    )
+      return mergeStream(
+        src.dts
+          .pipe(getErrorHandler())
+          .pipe(sourcemaps.write('.', {includeContent: false, sourceRoot: './'}))
+          .pipe(gulp.dest(project.options.outDir)),
+
+        src.js
+          .pipe(getErrorHandler())
+          .pipe(through.obj(logCompile))
+          .pipe(sourcemaps.write('.', {includeContent: false, sourceRoot: './'}))
+          .pipe(gulp.dest(project.options.outDir))
+      )
+    })
+
+    return mergeStream(...streams)
   })
-
-  return mergeStream(...streams)
 })
 
-gulp.task('watch-ts', ['build-ts'], () => gulp.watch(tsScripts, ['build-ts']))
+gulp.task('watch-ts', ['watch-ts-build'], () => gulp.watch(tsScripts, ['watch-ts-build']))
 
 gulp.task('watch-assets', () => {
   return gulp
