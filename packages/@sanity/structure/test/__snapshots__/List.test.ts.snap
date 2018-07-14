@@ -1,0 +1,185 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`builds lists where items are specified using builder 1`] = `
+Object {
+  "canHandleIntent": undefined,
+  "defaultLayout": undefined,
+  "id": "books",
+  "items": Array [
+    Object {
+      "id": "foo",
+      "title": "Foo",
+    },
+  ],
+  "menuItemGroups": Array [],
+  "menuItems": Array [],
+  "resolveChildForItem": [Function],
+  "title": undefined,
+  "type": "list",
+}
+`;
+
+exports[`builds lists with ID and title through constructor 1`] = `
+Object {
+  "canHandleIntent": undefined,
+  "defaultLayout": undefined,
+  "id": "books",
+  "items": Array [],
+  "menuItemGroups": Array [],
+  "menuItems": Array [],
+  "resolveChildForItem": [Function],
+  "title": "Books",
+  "type": "list",
+}
+`;
+
+exports[`builds lists with ID and title through setters 1`] = `
+Object {
+  "canHandleIntent": undefined,
+  "defaultLayout": undefined,
+  "id": "authors",
+  "items": Array [],
+  "menuItemGroups": Array [],
+  "menuItems": Array [],
+  "resolveChildForItem": [Function],
+  "title": "Authors",
+  "type": "list",
+}
+`;
+
+exports[`builds lists with layout 1`] = `
+Object {
+  "canHandleIntent": undefined,
+  "defaultLayout": "card",
+  "id": "books",
+  "items": Array [],
+  "menuItemGroups": Array [],
+  "menuItems": Array [],
+  "resolveChildForItem": [Function],
+  "title": undefined,
+  "type": "list",
+}
+`;
+
+exports[`builds lists with only ID 1`] = `
+Object {
+  "canHandleIntent": undefined,
+  "defaultLayout": undefined,
+  "id": "foo",
+  "items": Array [],
+  "menuItemGroups": Array [],
+  "menuItems": Array [],
+  "resolveChildForItem": [Function],
+  "title": undefined,
+  "type": "list",
+}
+`;
+
+exports[`builds lists with specific items 1`] = `
+Object {
+  "canHandleIntent": undefined,
+  "defaultLayout": undefined,
+  "id": "books",
+  "items": Array [
+    Object {
+      "id": "asoiaf-wow",
+      "title": "The Winds of Winter",
+    },
+  ],
+  "menuItemGroups": Array [],
+  "menuItems": Array [],
+  "resolveChildForItem": [Function],
+  "title": undefined,
+  "type": "list",
+}
+`;
+
+exports[`can set menu item groups 1`] = `
+Object {
+  "canHandleIntent": undefined,
+  "defaultLayout": undefined,
+  "id": "yeah",
+  "items": Array [],
+  "menuItemGroups": Array [
+    Object {
+      "id": "old-school",
+      "title": "Old-school",
+    },
+  ],
+  "menuItems": Array [
+    Object {
+      "action": [Function],
+      "group": "old-school",
+      "title": "Print",
+    },
+  ],
+  "resolveChildForItem": [Function],
+  "title": undefined,
+  "type": "list",
+}
+`;
+
+exports[`can set menu items 1`] = `
+Object {
+  "canHandleIntent": undefined,
+  "defaultLayout": undefined,
+  "id": "yeah",
+  "items": Array [],
+  "menuItemGroups": Array [],
+  "menuItems": Array [
+    Object {
+      "action": [Function],
+      "title": "Print",
+    },
+  ],
+  "resolveChildForItem": [Function],
+  "title": undefined,
+  "type": "list",
+}
+`;
+
+exports[`can set menu items groups with builder 1`] = `
+Object {
+  "canHandleIntent": undefined,
+  "defaultLayout": undefined,
+  "id": "yeah",
+  "items": Array [],
+  "menuItemGroups": Array [
+    Object {
+      "id": "old-school",
+      "title": "Old-school",
+    },
+  ],
+  "menuItems": Array [
+    Object {
+      "action": [Function],
+      "group": "old-school",
+      "title": "Print",
+    },
+  ],
+  "resolveChildForItem": [Function],
+  "title": undefined,
+  "type": "list",
+}
+`;
+
+exports[`can set menu items with builder 1`] = `
+Object {
+  "canHandleIntent": undefined,
+  "defaultLayout": undefined,
+  "id": "yeah",
+  "items": Array [],
+  "menuItemGroups": Array [],
+  "menuItems": Array [
+    Object {
+      "action": [Function],
+      "title": "Purge",
+    },
+  ],
+  "resolveChildForItem": [Function],
+  "title": undefined,
+  "type": "list",
+}
+`;
+
+exports[`throws if no id is set 1`] = `"\`id\` is required for lists"`;

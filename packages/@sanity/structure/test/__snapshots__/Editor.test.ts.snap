@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`builds editor node through constructor 1`] = `
+Object {
+  "id": "foo",
+  "options": Object {
+    "id": "docId",
+    "type": "book",
+  },
+  "title": "some title",
+  "type": "document",
+}
+`;
+
+exports[`can construct using builder (alt) 1`] = `
+Object {
+  "id": "yeah",
+  "options": Object {
+    "id": "wow",
+    "type": "book",
+  },
+  "title": "Yeah",
+  "type": "document",
+}
+`;
+
+exports[`can construct using builder 1`] = `
+Object {
+  "id": "yeah",
+  "options": Object {
+    "id": "wow",
+    "type": "book",
+  },
+  "title": "Yeah",
+  "type": "document",
+}
+`;

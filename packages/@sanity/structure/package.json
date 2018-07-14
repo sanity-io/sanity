@@ -1,0 +1,60 @@
+{
+  "name": "@sanity/structure",
+  "version": "0.132.5",
+  "description": "Build a navigation structure programatically",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "author": "Sanity.io <hello@sanity.io>",
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "license": "MIT",
+  "scripts": {
+    "test": "jest",
+    "clean": "rimraf lib coverage"
+  },
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "structure",
+    "check"
+  ],
+  "devDependencies": {
+    "@types/jest": "^22.0.0",
+    "ts-jest": "^22.4.3",
+    "jest": "^22.4.3",
+    "rimraf": "^2.6.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/",
+  "jest": {
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$",
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json",
+      "node"
+    ],
+    "moduleNameMapper": {
+      "^part:@sanity/base/schema$": "<rootDir>/test/mocks/schema.js",
+      "^part:@sanity/data-aspects/resolver$": "<rootDir>/test/mocks/dataAspects.js",
+      "^part:@sanity/base/.*?-icon$": "<rootDir>/test/mocks/icon.js"
+    },
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test/"
+    ]
+  }
+}
