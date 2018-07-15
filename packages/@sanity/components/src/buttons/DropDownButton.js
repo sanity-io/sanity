@@ -5,7 +5,7 @@ import styles from 'part:@sanity/components/buttons/dropdown-style'
 import Button from 'part:@sanity/components/buttons/default'
 import ArrowIcon from 'part:@sanity/base/angle-down-icon'
 import Menu from 'part:@sanity/components/menus/default'
-import {omit} from 'lodash'
+import {omit, uniqueId} from 'lodash'
 import {Manager, Target, Popper} from 'react-popper'
 import {Portal} from '../utilities/Portal'
 import Stacked from '../utilities/Stacked'
@@ -40,6 +40,8 @@ export default class DropDownButton extends React.PureComponent {
     menuOpened: false,
     width: 100
   }
+
+  menuId = uniqueId('menu_')
 
   handleClose = () => {
     this.setState({menuOpened: false})
@@ -86,7 +88,12 @@ export default class DropDownButton extends React.PureComponent {
       <div ref={this.setRootElement} className={`${styles.root} ${className}`}>
         <Manager>
           <Target>
-            <Button {...rest} onClick={this.handleOnClick} kind={kind}>
+            <Button
+              {...rest}
+              onClick={this.handleOnClick}
+              kind={kind}
+              data-menu-button-id={this.menuId}
+            >
               <span className={styles.title}>{children}</span>
               <span className={styles.arrow}>
                 <ArrowIcon color="inherit" />
@@ -105,6 +112,7 @@ export default class DropDownButton extends React.PureComponent {
                     >
                       <Escapable onEscape={isActive && this.handleClose} />
                       <Menu
+                        id={this.menuId}
                         items={items}
                         isOpen
                         className={styles.menu}
