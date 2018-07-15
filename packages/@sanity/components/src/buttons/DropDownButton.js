@@ -25,7 +25,7 @@ export default class DropDownButton extends React.PureComponent {
     ripple: PropTypes.bool,
     colored: PropTypes.bool,
     color: PropTypes.string,
-    className: PropTypes.string,
+    className: PropTypes.string
   }
 
   state = {
@@ -100,8 +100,8 @@ export default class DropDownButton extends React.PureComponent {
           {menuOpened && (
             <div className={styles.popper} style={{minWidth: `${width}px`}}>
               <Menu
-                items={items}
                 isOpen
+                items={items}
                 className={styles.menu}
                 onAction={this.handleAction}
                 onClickOutside={this.handleClickOutside}
