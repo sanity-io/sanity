@@ -1,11 +1,19 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import {negate} from 'lodash'
 import shallowEquals from 'shallow-equals'
+import classNames from 'classnames'
+import Menu from 'part:@sanity/components/menus/default'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import Button from 'part:@sanity/components/buttons/default'
+import IntentButton from 'part:@sanity/components/buttons/intent'
 import ScrollContainer from 'part:@sanity/components/utilities/scroll-container'
 import Styleable from '../utilities/Styleable'
 import defaultStyles from './styles/DefaultPane.css'
+
+function getActionKey(action, index) {
+  return (typeof action.action === 'string' ? action.action + action.title : action.title) || index
+}
 
 const getScrollShadowState = (scrollTop, prevState) => {
   const {headerStyleRatio} = prevState
@@ -54,6 +62,9 @@ const noop = () => {
   /* intentional noop */
 }
 
+const isActionButton = item => item.showAsAction
+const isMenuButton = negate(isActionButton)
+
 // eslint-disable-next-line
 class Pane extends React.Component {
   static propTypes = {
@@ -61,13 +72,25 @@ class Pane extends React.Component {
     isCollapsed: PropTypes.bool,
     onExpand: PropTypes.func,
     onCollapse: PropTypes.func,
-    shouldRenderMenuButton: PropTypes.func,
-    renderMenu: PropTypes.func,
-    renderFunctions: PropTypes.func,
     children: PropTypes.node,
     isSelected: PropTypes.bool,
-    onMenuToggle: PropTypes.func,
     scrollTop: PropTypes.number,
+    onAction: PropTypes.func,
+    renderActions: PropTypes.func,
+    menuItems: PropTypes.arrayOf(
+      PropTypes.shape({
+        showAsAction: PropTypes.oneOfType([
+          PropTypes.bool,
+          PropTypes.shape({whenCollapsed: PropTypes.bool})
+        ])
+      })
+    ),
+    menuItemGroups: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        title: PropTypes.string
+      })
+    ),
     styles: PropTypes.object // eslint-disable-line react/forbid-prop-types
   }
 
@@ -76,17 +99,18 @@ class Pane extends React.Component {
     isCollapsed: false,
     isSelected: false,
     scrollTop: undefined,
+    renderActions: undefined,
     styles: {},
     children: <div />,
+    onAction: noop,
     onCollapse: noop,
     onExpand: noop,
-    onMenuToggle: noop,
-    shouldRenderMenuButton: props => Boolean(props.renderMenu),
-    renderMenu: undefined,
-    renderFunctions: undefined
+    menuItems: [],
+    menuItemGroups: []
   }
 
   state = {
+    menuIsOpen: false,
     headerStyleRatio: -1,
     headerStyle: {
       opacity: 0,
@@ -97,8 +121,8 @@ class Pane extends React.Component {
   constructor(props) {
     super(props)
 
-    // Passed to `props.renderMenu` so it may pass it onto the rendered <Menu>. This prevents the
-    // "click outside" functionality from kicking in when pressing the toggle menu button
+    // Passed to rendered <Menu>. This prevents the "click outside" functionality
+    // from kicking in when pressing the toggle menu button
     this.paneMenuId = Math.random()
       .toString(36)
       .substr(2, 6)
@@ -110,6 +134,12 @@ class Pane extends React.Component {
     }
 
     return getScrollShadowState(props.scrollTop, state)
+  }
+
+  componentWillUnmount() {
+    if (this.closeRequest) {
+      cancelAnimationFrame(this.closeRequest)
+    }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -124,15 +154,12 @@ class Pane extends React.Component {
       return false
     }
 
-    return scrollPropChanged || headerStyleChanged || !shallowEquals(nextProps, this.props)
-  }
-
-  handleToggleMenu = event => {
-    if (this.props.isCollapsed) {
-      this.props.onExpand(event)
-    } else {
-      this.props.onMenuToggle(event)
-    }
+    return (
+      scrollPropChanged ||
+      headerStyleChanged ||
+      !shallowEquals(nextProps, this.props) ||
+      !shallowEquals(nextState, this.state)
+    )
   }
 
   handleToggleCollapsed = event => {
@@ -150,13 +177,70 @@ class Pane extends React.Component {
     }
   }
 
+  // Triggered by clicking "outside" of the menu when open, or after triggering action
+  handleCloseMenu = () => {
+    this.setState({menuIsOpen: false})
+  }
+
+  // Triggered by pane menu button
+  handleMenuToggle = () => {
+    this.setState(prev => ({menuIsOpen: !prev.menuIsOpen}))
+  }
+
+  handleMenuAction = item => {
+    // When closing the menu outright, the menu button will be focused and the "enter" keypress
+    // will bouble up to it and trigger a re-open of the menu. To work around this, use rAF to
+    // ensure the current event is completed before closing the menu
+    this.closeRequest = requestAnimationFrame(() => this.handleCloseMenu())
+
+    if (typeof item.action === 'function') {
+      item.action(item.params)
+      return
+    }
+
+    this.props.onAction(item)
+  }
+
+  renderIntentAction = (action, i) => {
+    return (
+      <IntentButton
+        key={getActionKey(action, i)}
+        title={action.title}
+        icon={action.icon}
+        color="primary"
+        kind="simple"
+        intent={action.intent.type}
+        params={action.intent.params}
+      />
+    )
+  }
+
+  renderAction = (act, i) => {
+    if (act.intent) {
+      return this.renderIntentAction(act, i)
+    }
+
+    return (
+      <Button
+        key={getActionKey(act, i)}
+        title={act.title}
+        icon={act.icon}
+        color="primary"
+        kind="simple"
+        onClick={this.handleMenuAction}
+      />
+    )
+  }
+
   renderMenu() {
-    const {styles, isCollapsed, renderMenu, shouldRenderMenuButton} = this.props
-    if (!shouldRenderMenuButton(this.props)) {
+    const {styles, menuItems, menuItemGroups, isCollapsed} = this.props
+    const {menuIsOpen} = this.state
+    const items = menuItems.filter(isMenuButton)
+
+    if (items.length === 0) {
       return null
     }
 
-    const menu = renderMenu && renderMenu(isCollapsed, this.paneMenuId)
     return (
       <div className={styles.menuWrapper}>
         <div className={styles.menuButtonContainer}>
@@ -165,25 +249,40 @@ class Pane extends React.Component {
             data-menu-button-id={this.paneMenuId}
             kind="simple"
             icon={IconMoreVert}
-            onClick={this.handleToggleMenu}
+            onClick={this.handleMenuToggle}
             className={styles.menuButton}
           />
         </div>
-        <div className={styles.menuContainer}>{menu}</div>
+        <div className={styles.menuContainer}>
+          {menuIsOpen && (
+            <Menu
+              id={this.paneMenuId}
+              items={items}
+              groups={menuItemGroups}
+              origin={isCollapsed ? 'top-left' : 'top-right'}
+              onAction={this.handleMenuAction}
+              onClose={this.handleCloseMenu}
+              onClickOutside={this.handleCloseMenu}
+            />
+          )}
+        </div>
       </div>
     )
   }
 
   render() {
-    const {title, children, isSelected, renderFunctions, isCollapsed, styles} = this.props
+    const {title, children, isSelected, isCollapsed, menuItems, styles, renderActions} = this.props
     const headerStyle = isCollapsed ? {} : this.state.headerStyle
+    const actions = menuItems.filter(
+      act => act.showAsAction && (!isCollapsed || act.showAsAction.whenCollapsed)
+    )
 
     return (
       <div
-        className={`
-          ${isCollapsed ? styles.isCollapsed : styles.root}
-          ${isSelected ? styles.isActive : styles.isDisabled}
-        `}
+        className={classNames([
+          isCollapsed ? styles.isCollapsed : styles.root,
+          isSelected ? styles.isActive : styles.isDisabled
+        ])}
         ref={this.setRootElement}
       >
         <div className={styles.header} style={{boxShadow: headerStyle.boxShadow}}>
@@ -191,7 +290,7 @@ class Pane extends React.Component {
             <h2 className={styles.title} onClick={this.handleToggleCollapsed}>
               {title}
             </h2>
-            {renderFunctions && renderFunctions(isCollapsed)}
+            {renderActions ? renderActions(actions) : actions.map(this.renderAction)}
           </div>
           {this.renderMenu()}
           <div className={styles.headerBackground} style={{opacity: headerStyle.opacity}} />
