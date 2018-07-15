@@ -63,10 +63,9 @@ class SpaceSwitcher extends React.PureComponent {
         {menuOpen && (
           <div className={styles.menu}>
             <Menu
-              isOpen
               onAction={this.handleMenuItemClick}
               items={CONFIGURED_SPACES}
-              origin="top-right"
+              origin="bottom-right"
               onClickOutside={this.handleMenuClose}
             />
           </div>

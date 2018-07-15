@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import {IntentLink, withRouterHOC} from 'part:@sanity/base/router'
+import {groupBy, flatten} from 'lodash'
+import {withRouterHOC} from 'part:@sanity/base/router'
 import styles from 'part:@sanity/components/menus/default-style'
-import MenuDivider from 'part:@sanity/components/menus/divider'
-import Ink from 'react-ink'
 import enhanceWithClickOutside from 'react-click-outside'
 import classNames from 'classnames'
+import MenuItem from './DefaultMenuItem'
+
+const ungrouped = Symbol('__ungrouped__')
 
 function parentButtonIsMenuButton(node, id) {
   let el = node
@@ -22,23 +24,25 @@ class DefaultMenu extends React.Component {
   static propTypes = {
     id: PropTypes.string,
     onAction: PropTypes.func.isRequired,
-    isOpen: PropTypes.bool,
     ripple: PropTypes.bool,
     className: PropTypes.string,
     onClickOutside: PropTypes.func,
     onClose: PropTypes.func,
     items: PropTypes.arrayOf(
-      PropTypes.oneOfType([
-        PropTypes.symbol,
-        PropTypes.shape({
-          title: PropTypes.node.isRequired,
-          icon: PropTypes.func,
-          intent: PropTypes.shape({
-            type: PropTypes.string.isRequired,
-            params: PropTypes.object
-          })
+      PropTypes.shape({
+        title: PropTypes.node.isRequired,
+        icon: PropTypes.func,
+        intent: PropTypes.shape({
+          type: PropTypes.string.isRequired,
+          params: PropTypes.object
         })
-      ])
+      })
+    ),
+    groups: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        title: PropTypes.string
+      })
     ),
     router: PropTypes.shape({
       navigateIntent: PropTypes.func.isRequired
@@ -49,10 +53,26 @@ class DefaultMenu extends React.Component {
     id: undefined,
     className: '',
     items: [],
-    isOpen: false,
+    groups: [],
     ripple: true,
     onClickOutside() {},
     onClose() {}
+  }
+
+  static getDerivedStateFromProps(props) {
+    const groups = props.items.reduce((acc, item) => {
+      if (!item.group) {
+        return acc
+      }
+
+      return acc.includes(item.group) ? acc : acc.concat(item.group)
+    }, (props.groups || []).map(group => group.id))
+
+    const byGroup = groupBy(props.items, item => item.group || ungrouped)
+    const hasUngrouped = typeof byGroup[ungrouped] !== 'undefined'
+    const targets = hasUngrouped ? [ungrouped].concat(groups) : groups
+    const items = flatten(targets.map(group => byGroup[group] || []))
+    return {items}
   }
 
   constructor(props) {
@@ -64,16 +84,14 @@ class DefaultMenu extends React.Component {
   }
 
   handleClickOutside = event => {
-    const {id, isOpen, onClickOutside} = this.props
+    const {id, onClickOutside} = this.props
     if (id && parentButtonIsMenuButton(event.target, id)) {
       // Don't treat clicks on the open menu button as "outside" clicks -
       // prevents us from double-toggling a menu as open/closed
       return
     }
 
-    if (isOpen) {
-      onClickOutside(event)
-    }
+    onClickOutside(event)
   }
 
   componentDidMount() {
@@ -88,13 +106,9 @@ class DefaultMenu extends React.Component {
 
   // eslint-disable-next-line complexity
   handleKeyDown = event => {
-    const {isOpen, router} = this.props
-    if (!isOpen) {
-      return
-    }
-
+    const {router} = this.props
     const {focusedItem} = this.state
-    const items = this.props.items.filter(item => !item.isDisabled)
+    const items = this.state.items.filter(item => !item.isDisabled)
     const currentIndex = items.indexOf(focusedItem) || 0
 
     if (event.key === 'Escape') {
@@ -117,23 +131,22 @@ class DefaultMenu extends React.Component {
       if (focusedItem.intent) {
         router.navigateIntent(focusedItem.intent.type, focusedItem.intent.params)
       } else {
-        event.stopPropagation()
-        this.props.onAction(items[currentIndex])
+        this.handleAction(event, focusedItem)
       }
     }
   }
 
-  handleItemClick = event => {
+  handleAction = (event, item) => {
     event.stopPropagation()
-    const actionId = event.currentTarget.getAttribute('data-action-id')
-    this.props.onAction(this.props.items[actionId])
+    if (item.intent) {
+      this.props.onClose()
+    } else {
+      this.props.onAction(item)
+    }
   }
 
-  handleFocus = event => {
-    const index = event.target.getAttribute('data-action-id')
-    this.setState({
-      focusedItem: this.props.items[index]
-    })
+  handleFocus = (event, focusedItem) => {
+    this.setState({focusedItem})
   }
 
   handleKeyPress = event => {
@@ -143,78 +156,33 @@ class DefaultMenu extends React.Component {
     }
   }
 
-  renderLinkChildren = item => {
-    const Icon = item.icon
-    return (
-      <React.Fragment>
-        {Icon && (
-          <span className={styles.iconContainer}>
-            <Icon className={styles.icon} />
-          </span>
-        )}
-        {item.title}
-        {this.props.ripple && !item.isDisabled && <Ink duration={200} opacity={0.1} radius={200} />}
-      </React.Fragment>
-    )
+  renderGroupedItems() {
+    const {ripple} = this.props
+    const {focusedItem, items} = this.state
+
+    return items.map((item, index) => {
+      const prev = items[index - 1]
+      return (
+        <MenuItem
+          key={index}
+          item={item}
+          ripple={ripple}
+          danger={item.danger}
+          isDisabled={item.isDisabled}
+          isFocused={item === focusedItem}
+          onFocus={this.handleFocus}
+          onAction={this.handleAction}
+          className={prev && prev.group !== item.group ? styles.divider : ''}
+        />
+      )
+    })
   }
 
-  renderIntentLink = (item, index) => (
-    <IntentLink
-      onClick={this.props.onClose}
-      data-action-id={index}
-      className={item.danger ? styles.dangerLink : styles.link}
-      onFocus={this.handleFocus}
-      tabIndex="0"
-      onKeyPress={this.handleKeyDown}
-      intent={item.intent.type}
-      params={item.intent.params}
-    >
-      {this.renderLinkChildren(item)}
-    </IntentLink>
-  )
-
-  renderFunctionLink = (item, index) => (
-    <a
-      onClick={item.isDisabled ? null : this.handleItemClick}
-      data-action-id={index}
-      className={item.danger ? styles.dangerLink : styles.link}
-      onFocus={this.handleFocus}
-      tabIndex="0"
-    >
-      {this.renderLinkChildren(item)}
-    </a>
-  )
-
   render() {
-    const {focusedItem} = this.state
-    const {items, className, isOpen} = this.props
-
+    const {className} = this.props
     return (
-      <div className={classNames([isOpen ? styles.isOpen : styles.closed, className])}>
-        <ul className={styles.list}>
-          {items
-            .map((item, index) => {
-              if (item === MenuDivider) {
-                return null
-              }
-
-              return (
-                <li
-                  key={index}
-                  className={classNames([
-                    item === focusedItem ? styles.focusedItem : styles.item,
-                    item.isDisabled && styles.isDisabled,
-                    items[index - 1] === MenuDivider && styles.divider
-                  ])}
-                >
-                  {item.intent
-                    ? this.renderIntentLink(item, index)
-                    : this.renderFunctionLink(item, index)}
-                </li>
-              )
-            })
-            .filter(Boolean)}
-        </ul>
+      <div className={classNames([styles.root, className])}>
+        <ul className={styles.list}>{this.renderGroupedItems()}</ul>
       </div>
     )
   }

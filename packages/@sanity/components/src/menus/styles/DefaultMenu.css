@@ -1,4 +1,4 @@
-@import "part:@sanity/base/theme/variables-style";
+@import 'part:@sanity/base/theme/variables-style';
 
 .root {
   background-color: var(--component-bg);
@@ -12,11 +12,11 @@
 }
 
 .list {
-  composes: resetList from "part:@sanity/base/theme/layout/helpers";
+  composes: resetList from 'part:@sanity/base/theme/layout/helpers';
 }
 
 .item {
-  composes: resetListItem from "part:@sanity/base/theme/layout/helpers";
+  composes: resetListItem from 'part:@sanity/base/theme/layout/helpers';
   composes: item from 'part:@sanity/base/theme/layout/selectable-style';
   white-space: nowrap;
 }
@@ -58,12 +58,6 @@
   border-top: 1px solid var(--gray-light);
 }
 
-.isOpen {
-  composes: root;
-  display: block;
-}
-
-.closed {
-  composes: root;
-  display: none;
+.isDisabled {
+  opacity: 0.4;
 }

@@ -46,7 +46,6 @@ storiesOf('Menus')
               onClickOutside={action('prop:onClickOutside')}
               items={items}
               origin={select('origin (prop)', origins)}
-              isOpen={boolean('isOpen (prop)', true)}
             />
           </div>
         </div>
