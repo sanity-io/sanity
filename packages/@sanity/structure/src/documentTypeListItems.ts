@@ -3,7 +3,7 @@ import {dataAspects} from './parts/DataAspects'
 import {ListItem, ListItemBuilder, SchemaType} from './ListItem'
 import {DocumentList, DocumentListBuilder} from './DocumentList'
 import {MenuItemBuilder} from './MenuItem'
-import {DEFAULT_ORDERING_OPTIONS} from './Sort'
+import {DEFAULT_ORDERING_OPTIONS, DEFAULT_SELECTED_ORDERING_OPTION} from './Sort'
 import {getPlusIcon, getSortIcon, getListIcon} from './parts/icon'
 import {EditorBuilder} from './Editor'
 
@@ -37,7 +37,7 @@ function getDocumentList(name: string, title: string, type: SchemaType): Documen
     .title(title)
     .filter('_type == $type')
     .params({type: name})
-    .defaultOrdering([]) // @todo
+    .defaultOrdering(DEFAULT_SELECTED_ORDERING_OPTION.by)
     .canHandleIntent(
       (intentName, params): boolean =>
         Boolean(intentName === 'edit' && params && params.id) ||
@@ -61,7 +61,7 @@ function getDocumentList(name: string, title: string, type: SchemaType): Documen
         .title(`Create new ${title}`)
         .icon(PlusIcon)
         .intent({type: 'create', params: {type: name}})
-        .showAsAction(true),
+        .showAsAction({whenCollapsed: true}),
 
       // Sort by <Y>
       ...getOrderingMenuItemsForSchemaType(type),

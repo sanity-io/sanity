@@ -18,16 +18,24 @@ export default withRouterHOC(
           panes: PropTypes.arrayOf(PropTypes.string)
         })
       }).isRequired,
-      options: PropTypes.shape({
-        defaultLayout: PropTypes.string,
-        items: PropTypes.arrayOf(
-          PropTypes.shape({
-            id: PropTypes.string.isRequired,
-            title: PropTypes.string.isRequired,
-            schemaType: PropTypes.shape({name: PropTypes.string})
-          })
-        )
-      }),
+      defaultLayout: PropTypes.string,
+      items: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.string.isRequired,
+          title: PropTypes.string.isRequired,
+          schemaType: PropTypes.shape({name: PropTypes.string})
+        })
+      ),
+      menuItems: PropTypes.arrayOf(
+        PropTypes.shape({
+          title: PropTypes.string.isRequired
+        })
+      ),
+      menuItemGroups: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.string.isRequired
+        })
+      ),
       isSelected: PropTypes.bool.isRequired,
       isCollapsed: PropTypes.bool.isRequired,
       onExpand: PropTypes.func,
@@ -36,10 +44,13 @@ export default withRouterHOC(
 
     static defaultProps = {
       className: '',
-      options: {items: []},
+      items: [],
+      menuItems: [],
+      menuItemGroups: [],
       styles: undefined,
       onExpand: undefined,
-      onCollapse: undefined
+      onCollapse: undefined,
+      defaultLayout: undefined
     }
 
     itemIsSelected(item) {
@@ -59,8 +70,11 @@ export default withRouterHOC(
         title,
         styles,
         className,
-        options,
+        defaultLayout,
+        items,
         index,
+        menuItems,
+        menuItemGroups,
         isSelected,
         isCollapsed,
         onCollapse,
@@ -76,15 +90,17 @@ export default withRouterHOC(
           isCollapsed={isCollapsed}
           onCollapse={onCollapse}
           onExpand={onExpand}
+          menuItems={menuItems}
+          menuItemGroups={menuItemGroups}
         >
-          <ListView layout={options.defaultLayout}>
-            {options.items.map(item => (
+          <ListView layout={defaultLayout}>
+            {items.map(item => (
               <PaneItem
                 key={item.id}
                 id={item.id}
                 index={index}
                 value={item}
-                layout={options.defaultLayout}
+                layout={defaultLayout}
                 isSelected={this.itemIsSelected(item)}
                 getLinkState={this.getLinkStateForItem}
                 schemaType={item.schemaType}

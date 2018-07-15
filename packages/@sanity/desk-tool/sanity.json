@@ -17,6 +17,14 @@
     {
       "name": "part:@sanity/desk-tool/after-editor-component",
       "description": "[DEPRECATED] Components to render directly after the editor form. Will be removed in future release."
+    },
+    {
+      "name": "part:@sanity/desk-tool/structure",
+      "description": "Definition of navigation structure"
+    },
+    {
+      "implements": "part:@sanity/desk-tool/structure",
+      "path": "defaultStructure.js"
     }
   ]
 }

@@ -3,9 +3,6 @@ import PropTypes from 'prop-types'
 import {partition} from 'lodash'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import schema from 'part:@sanity/base/schema'
-import Menu from 'part:@sanity/components/menus/default'
-import Button from 'part:@sanity/components/buttons/default'
-import IntentButton from 'part:@sanity/components/buttons/intent'
 import DefaultPane from 'part:@sanity/components/panes/default'
 import QueryContainer from 'part:@sanity/base/query-container'
 import Snackbar from 'part:@sanity/components/snackbar/default'
@@ -40,17 +37,13 @@ function getDocumentKey(document) {
   return getPublishedId(document._id)
 }
 
-function noActionFn(title) {
+function noActionFn() {
   // eslint-disable-next-line no-console
   console.warn('No action defined for function')
 }
 
 function isLiveEditEnabled(item) {
   return schema.get(item._type).liveEdit === true
-}
-
-function getFunctionKey(func, index) {
-  return (typeof func.action === 'string' ? func.action + func.title : func.title) || index
 }
 
 function getStatusIndicator(item) {
@@ -91,8 +84,8 @@ export default withRouterHOC(
           panes: PropTypes.arrayOf(PropTypes.string)
         })
       }).isRequired,
+      defaultLayout: PropTypes.string,
       options: PropTypes.shape({
-        defaultLayout: PropTypes.string,
         filter: PropTypes.string.isRequired,
         defaultOrdering: PropTypes.arrayOf(
           PropTypes.shape({
@@ -102,25 +95,15 @@ export default withRouterHOC(
         ),
         params: PropTypes.object // eslint-disable-line react/forbid-prop-types
       }).isRequired,
-      functions: PropTypes.arrayOf(
+      menuItems: PropTypes.arrayOf(
         PropTypes.shape({
-          title: PropTypes.string.isRequired,
-          icon: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-          action: PropTypes.oneOfType([PropTypes.func, PropTypes.string]).isRequired,
-          intent: PropTypes.shape({type: PropTypes.string, params: PropTypes.object})
+          title: PropTypes.string.isRequired
         })
       ),
-      menuItems: PropTypes.arrayOf(
-        PropTypes.oneOfType([
-          PropTypes.symbol,
-          PropTypes.shape({
-            title: PropTypes.string.isRequired,
-            icon: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-            action: PropTypes.oneOfType([PropTypes.func, PropTypes.string]).isRequired,
-            intent: PropTypes.shape({type: PropTypes.string, params: PropTypes.object}),
-            params: PropTypes.object
-          })
-        ])
+      menuItemGroups: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.string.isRequired
+        })
       ),
       isSelected: PropTypes.bool.isRequired,
       isCollapsed: PropTypes.bool.isRequired,
@@ -131,10 +114,11 @@ export default withRouterHOC(
     static defaultProps = {
       className: '',
       styles: {},
-      functions: [],
       menuItems: [],
+      menuItemGroups: [],
       onExpand: undefined,
-      onCollapse: undefined
+      onCollapse: undefined,
+      defaultLayout: undefined
     }
 
     actionHandlers = {
@@ -146,7 +130,7 @@ export default withRouterHOC(
       }
     }
 
-    state = {menuIsOpen: false, scrollTop: 0}
+    state = {scrollTop: 0}
 
     itemIsSelected(item) {
       const {router, index} = this.props
@@ -164,7 +148,7 @@ export default withRouterHOC(
       <PaneItem
         id={item._id}
         getLinkState={this.getLinkStateForItem}
-        layout={this.state.layout || this.props.options.defaultLayout || 'default'}
+        layout={this.state.layout || this.props.defaultLayout || 'default'}
         value={item}
         status={getStatusIndicator(item)}
         schemaType={schema.get(item._type)}
@@ -172,92 +156,32 @@ export default withRouterHOC(
       />
     )
 
-    renderIntentFunction = (func, i) => {
-      return (
-        <IntentButton
-          key={getFunctionKey(func, i)}
-          title={func.title}
-          icon={func.icon}
-          color="primary"
-          kind="simple"
-          intent={func.intent.type}
-          params={func.intent.params}
-        />
-      )
-    }
-
-    renderFunction = (func, i) => {
-      const action =
-        (typeof func.action === 'function' ? func.action : this.actionHandlers[func.action]) ||
-        noActionFn
-
-      return (
-        <Button
-          key={getFunctionKey(func, i)}
-          title={func.title}
-          icon={func.icon}
-          color="primary"
-          kind="simple"
-          onClick={action}
-        />
-      )
-    }
-
-    renderFunctions = isCollapsed => {
-      return this.props.functions.map(
-        func => (func.intent ? this.renderIntentFunction(func) : this.renderFunction(func))
-      )
-    }
-
-    handleMenuAction = item => {
-      const action =
-        (typeof item.action === 'function' ? item.action : this.actionHandlers[item.action]) ||
-        noActionFn
-
-      action(item.params, this)
-
-      // When closing the menu outright, the menu button will be focused and the "enter" keypress
-      // will bouble up to it and trigger a re-open of the menu. To work around this, use rAF to
-      // ensure the current event is completed before closing the menu
-      requestAnimationFrame(() => this.handleCloseMenu())
-    }
-
-    // Triggered by clicking "outside" of the menu when open, or after triggering action
-    handleCloseMenu = () => {
-      this.setState({menuIsOpen: false})
-    }
-
-    // Triggered by pane menu button
-    handleMenuToggle = () => {
-      this.setState(prev => ({menuIsOpen: !prev.menuIsOpen}))
+    handleAction = item => {
+      const handler = this.actionHandlers[item.action] || noActionFn
+      handler(item.params, this)
     }
 
     handleScroll = scrollTop => {
       this.setState({scrollTop})
     }
 
-    renderMenu = (isCollapsed, menuId) => {
-      if (!this.state.menuIsOpen || this.props.menuItems.length === 0) {
-        return null
-      }
-
-      return (
-        <Menu
-          isOpen
-          id={menuId}
-          items={this.props.menuItems}
-          origin="top-right"
-          onAction={this.handleMenuAction}
-          onClose={this.handleCloseMenu}
-          onClickOutside={this.handleCloseMenu}
-        />
-      )
-    }
-
     render() {
-      const {title, options, className, isCollapsed, isSelected, onCollapse, onExpand} = this.props
-      const {filter, params, defaultOrdering, defaultLayout} = options
-      const sortBy = this.state.sortBy || defaultOrdering || DEFAULT_ORDERING
+      const {
+        title,
+        options,
+        className,
+        isCollapsed,
+        isSelected,
+        onCollapse,
+        onExpand,
+        defaultLayout,
+        menuItems,
+        menuItemGroups
+      } = this.props
+
+      const {filter, params, defaultOrdering} = options
+      const sortBy = this.state.sortBy || defaultOrdering
+      const sort = sortBy.length > 0 ? sortBy : [DEFAULT_ORDERING]
       const layout = this.state.layout || defaultLayout || 'default'
       return (
         <DefaultPane
@@ -265,17 +189,17 @@ export default withRouterHOC(
           className={className}
           styles={this.props.styles}
           scrollTop={this.state.scrollTop}
-          renderFunctions={this.renderFunctions}
-          renderMenu={this.renderMenu}
+          menuItems={menuItems}
+          menuItemGroups={menuItemGroups}
           isSelected={isSelected}
           isCollapsed={isCollapsed}
           onCollapse={onCollapse}
-          onMenuToggle={this.handleMenuToggle}
+          onAction={this.handleAction}
           onExpand={onExpand}
         >
           <QueryContainer
             // @todo filter the filter! Only allow the actual filter, not a full query
-            query={`*[${filter}] | order(${toOrderClause(sortBy)}) [0...10000] {_id, _type}`}
+            query={`*[${filter}] | order(${toOrderClause(sort)}) [0...10000] {_id, _type}`}
             params={params}
           >
             {({result, loading, error, onRetry, type}) => {
