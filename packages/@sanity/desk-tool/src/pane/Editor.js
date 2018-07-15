@@ -15,8 +15,6 @@ import UndoIcon from 'part:@sanity/base/undo-icon'
 import PublicIcon from 'part:@sanity/base/public-icon'
 import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
 import BinaryIcon from 'part:@sanity/base/binary-icon'
-import Menu from 'part:@sanity/components/menus/default'
-import MenuDivider from 'part:@sanity/components/menus/divider'
 import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 import documentStore from 'part:@sanity/base/datastore/document'
 import schema from 'part:@sanity/base/schema'
@@ -83,6 +81,7 @@ const getUnpublishItem = (draft, published, isLiveEditEnabled) =>
       }
 
 const getDeleteItem = (draft, published) => ({
+  group: 'danger',
   action: 'delete',
   title: 'Delete…',
   icon: TrashIcon,
@@ -138,15 +137,11 @@ const getMenuItems = (draft, published, isLiveEditEnabled) =>
     getDiscardItem,
     getUnpublishItem,
     getDuplicateItem,
-    getDeleteItem,
-    getInspectItem
+    getInspectItem,
+    getDeleteItem
   ]
     .map(fn => fn(draft, published, isLiveEditEnabled))
     .filter(Boolean)
-    .reduce((acc, item, index, arr) => {
-      // Add dividers after each item, except the last
-      return acc.concat(index === arr.length - 1 ? [item] : [item, MenuDivider])
-    }, [])
 
 const isValidationError = marker => marker.type === 'validation' && marker.level === 'error'
 
@@ -383,7 +378,7 @@ export default withRouterHOC(
       this.setState({inspect: false})
     }
 
-    handleMenuClick = item => {
+    handleMenuAction = item => {
       if (item.action === 'production-preview') {
         navigateUrl(item.url)
       }
@@ -436,7 +431,7 @@ export default withRouterHOC(
       )
     }
 
-    renderFunctions = () => {
+    renderActions = () => {
       const {draft, published, markers, type, isReconnecting} = this.props
       const {showSavingStatus, showValidationTooltip} = this.state
 
@@ -556,23 +551,6 @@ export default withRouterHOC(
       )
     }
 
-    renderMenu = (isCollapsed, menuId) => {
-      const {draft, published} = this.props
-      return (
-        this.state.isMenuOpen && (
-          <Menu
-            isOpen
-            id={menuId}
-            onAction={this.handleMenuClick}
-            onClose={this.handleMenuClose}
-            onClickOutside={this.handleMenuClose}
-            items={getMenuItems(draft, published, this.isLiveEditEnabled())}
-            origin="top-right"
-          />
-        )
-      )
-    }
-
     render() {
       const {
         draft,
@@ -626,8 +604,9 @@ export default withRouterHOC(
         <Pane
           styles={this.props.paneStyles}
           title={this.getTitle(value)}
-          renderMenu={this.renderMenu}
-          renderFunctions={this.renderFunctions}
+          onAction={this.handleMenuAction}
+          menuItems={getMenuItems(draft, published, this.isLiveEditEnabled())}
+          renderActions={this.renderActions}
           onMenuToggle={this.handleMenuToggle}
           isSelected // last pane is always selected for now
         >

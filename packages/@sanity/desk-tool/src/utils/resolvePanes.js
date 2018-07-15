@@ -1,6 +1,12 @@
 import promiseReduce from './promiseReduce'
 
-export default function resolvePanes(structure, ids) {
+export default function resolvePanes(struct, ids) {
+  const structure = struct && typeof struct.serialize === 'function' ? struct.serialize() : struct
+  if (!structure) {
+    // @todo add help url link, log to console?
+    return Promise.reject(new Error('Structure not defined or invalid'))
+  }
+
   const paneIds = [structure.id].concat(ids).filter(Boolean)
   return promiseReduce(
     paneIds,

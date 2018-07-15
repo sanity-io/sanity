@@ -1,4 +1,5 @@
 import {Schema} from './schema'
+import getDefaultModule from './getDefaultModule'
 
 interface DataAspectsResolver {
   getDisplayName(typeName: string): string
@@ -7,6 +8,6 @@ interface DataAspectsResolver {
 
 // We are lazy-loading the part to work around typescript trying to resolve it
 export const dataAspects = (() => {
-  const Resolver = require('part:@sanity/data-aspects/resolver')
+  const Resolver = getDefaultModule(require('part:@sanity/data-aspects/resolver'))
   return (schema: Schema): DataAspectsResolver => new Resolver(schema)
 })()

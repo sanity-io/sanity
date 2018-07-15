@@ -4,10 +4,7 @@
     "compiled": "./lib"
   },
 
-  "plugins": [
-    "@sanity/form-builder",
-    "@sanity/data-aspects"
-  ],
+  "plugins": ["@sanity/form-builder", "@sanity/data-aspects"],
 
   "parts": [
     {
@@ -16,7 +13,8 @@
     },
     {
       "name": "part:@sanity/desk-tool/after-editor-component",
-      "description": "[DEPRECATED] Components to render directly after the editor form. Will be removed in future release."
+      "description":
+        "[DEPRECATED] Components to render directly after the editor form. Will be removed in future release."
     },
     {
       "name": "part:@sanity/desk-tool/language-select-component",
@@ -25,6 +23,14 @@
     {
       "name": "part:@sanity/desk-tool/filter-fields-fn",
       "description": "An observable that emits a function to filter fields in form builder"
+    },
+    {
+      "name": "part:@sanity/desk-tool/structure",
+      "description": "Definition of navigation structure"
+    },
+    {
+      "implements": "part:@sanity/desk-tool/structure",
+      "path": "defaultStructure.js"
     }
   ]
 }

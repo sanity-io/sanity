@@ -2,6 +2,10 @@ import {Intent} from './Intent'
 import {Partial} from './Partial'
 import {SortItem} from './Sort'
 
+type ShowAsAction = {
+  whenCollapsed: boolean
+}
+
 export interface MenuItem {
   title: string
   action?: string | Function
@@ -9,7 +13,7 @@ export interface MenuItem {
   group?: string
   icon?: Function
   params?: object
-  showAsAction?: boolean
+  showAsAction?: boolean | ShowAsAction
 }
 
 export type PartialMenuItem = Partial<MenuItem>
@@ -51,8 +55,8 @@ export class MenuItemBuilder {
     return this
   }
 
-  showAsAction(action: boolean): MenuItemBuilder {
-    this.spec.showAsAction = action
+  showAsAction(asAction: boolean | ShowAsAction): MenuItemBuilder {
+    this.spec.showAsAction = asAction
     return this
   }
 
