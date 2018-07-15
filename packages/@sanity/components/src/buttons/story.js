@@ -316,17 +316,23 @@ storiesOf('Buttons', module)
   .add('DropDownButton', () => {
     return (
       <Sanity part="part:@sanity/components/buttons/dropdown" propTables={[DropDownButton]}>
-        <div>
-          <DropDownButton
-            items={object('prop: items', items)}
-            onAction={action('Clicked item')}
-            color={getColorKinds()}
-            kind={getButtonKinds()}
-          >
-            {text('prop: children', 'This is a dropdown')}
-          </DropDownButton>
-          <div>This text should be under the menu</div>
-        </div>
+        <RouterProvider
+          router={router}
+          onNavigate={handleNavigate}
+          state={router.decode(location.pathname)}
+        >
+          <div>
+            <DropDownButton
+              items={object('prop: items', items)}
+              onAction={action('Clicked item')}
+              color={getColorKinds()}
+              kind={getButtonKinds()}
+            >
+              {text('prop: children', 'This is a dropdown')}
+            </DropDownButton>
+            <div>This text should be under the menu</div>
+          </div>
+        </RouterProvider>
       </Sanity>
     )
   })

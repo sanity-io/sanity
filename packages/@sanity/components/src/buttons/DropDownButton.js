@@ -114,7 +114,6 @@ export default class DropDownButton extends React.PureComponent {
                       <Menu
                         id={this.menuId}
                         items={items}
-                        isOpen
                         className={styles.menu}
                         onAction={this.handleAction}
                         onClickOutside={isActive && this.handleClickOutside}

@@ -59,13 +59,3 @@
 .isDisabled {
   opacity: 0.4;
 }
-
-.isOpen {
-  composes: root;
-  display: block;
-}
-
-.closed {
-  composes: root;
-  display: none;
-}
