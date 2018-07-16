@@ -1,5 +1,5 @@
 import {StructureBuilder as S} from '../src'
-import {defaultSchema} from '../src/parts/schema'
+import {defaultSchema} from '../src/parts/Schema'
 import {DocumentList} from '../src/DocumentList'
 
 test('generates correct document type list items from global schema', () => {
