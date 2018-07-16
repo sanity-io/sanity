@@ -1,4 +1,5 @@
-import {EditorNode} from './StructureNodes'
+import {EditorNode, SerializeOptions, Serializable} from './StructureNodes'
+import {SerializeError, HELP_URL} from './SerializeError'
 
 export type PartialEditorNode = {
   id?: string
@@ -9,7 +10,7 @@ export type PartialEditorNode = {
   }
 }
 
-export class EditorBuilder {
+export class EditorBuilder implements Serializable {
   protected spec: PartialEditorNode
 
   constructor(spec?: PartialEditorNode) {
@@ -44,18 +45,30 @@ export class EditorBuilder {
     return this
   }
 
-  serialize(): EditorNode {
+  serialize({path, index, hint}: SerializeOptions): EditorNode {
     const {id, options} = this.spec
     if (typeof id !== 'string' || !id) {
-      throw new Error('`id` is required for editor nodes')
+      throw new SerializeError('`id` is required for editor nodes', path, index, hint).withHelpUrl(
+        HELP_URL.ID_REQUIRED
+      )
     }
 
     if (!options || !options.id) {
-      throw new Error('document id (`id`) is required for editor nodes')
+      throw new SerializeError(
+        'document id (`id`) is required for editor nodes',
+        path,
+        id,
+        hint
+      ).withHelpUrl(HELP_URL.DOCUMENT_ID_REQUIRED)
     }
 
     if (!options || !options.type) {
-      throw new Error('document type (`type`) is required for editor nodes')
+      throw new SerializeError(
+        'document type (`type`) is required for editor nodes',
+        path,
+        id,
+        hint
+      ).withHelpUrl(HELP_URL.DOCUMENT_TYPE_REQUIRED)
     }
 
     return {

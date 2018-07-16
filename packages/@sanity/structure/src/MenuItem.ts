@@ -1,6 +1,8 @@
 import {Intent} from './Intent'
 import {Partial} from './Partial'
 import {SortItem} from './Sort'
+import {SerializeOptions, Serializable} from './StructureNodes'
+import {SerializeError, HELP_URL} from './SerializeError'
 
 type ShowAsAction = {
   whenCollapsed: boolean
@@ -18,7 +20,7 @@ export interface MenuItem {
 
 export type PartialMenuItem = Partial<MenuItem>
 
-export class MenuItemBuilder {
+export class MenuItemBuilder implements Serializable {
   protected spec: PartialMenuItem = {}
 
   constructor(spec: PartialMenuItem = {}) {
@@ -60,20 +62,34 @@ export class MenuItemBuilder {
     return this
   }
 
-  serialize(): MenuItem {
+  serialize(options: SerializeOptions): MenuItem {
     const {title, action, intent} = this.spec
     if (!title) {
-      throw new Error('`title` is required for menu item')
+      const hint = typeof action === 'string' ? `action: "${action}"` : undefined
+      throw new SerializeError(
+        '`title` is required for menu item',
+        options.path,
+        options.index,
+        hint
+      ).withHelpUrl(HELP_URL.TITLE_REQUIRED)
     }
 
     if (!action && !intent) {
-      throw new Error(
-        `\`action\` or \`intent\` required for menu item with title ${this.spec.title}`
-      )
+      throw new SerializeError(
+        `\`action\` or \`intent\` required for menu item with title ${this.spec.title}`,
+        options.path,
+        options.index,
+        `"${title}"`
+      ).withHelpUrl(HELP_URL.ACTION_OR_INTENT_REQUIRED)
     }
 
     if (intent && action) {
-      throw new Error('cannot set both `action` AND `intent`')
+      throw new SerializeError(
+        'cannot set both `action` AND `intent`',
+        options.path,
+        options.index,
+        `"${title}"`
+      ).withHelpUrl(HELP_URL.ACTION_AND_INTENT_MUTUALLY_EXCLUSIVE)
     }
 
     return {...this.spec, title}
