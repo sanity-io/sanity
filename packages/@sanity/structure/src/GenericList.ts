@@ -5,6 +5,7 @@ import {MenuItem, MenuItemBuilder} from './MenuItem'
 import {MenuItemGroup, MenuItemGroupBuilder} from './MenuItemGroup'
 import {IntentChecker} from './Intent'
 import {SerializeError} from './SerializeError'
+import {getSerializedChildResolver} from './util/getSerializedChildResolver'
 
 function maybeSerializeMenuItemGroup(
   item: MenuItemGroup | MenuItemGroupBuilder,
@@ -114,7 +115,9 @@ export abstract class GenericListBuilder<L extends BuildableGenericList> impleme
       title: this.spec.title,
       type: 'genericList',
       defaultLayout,
-      resolveChildForItem: this.spec.resolveChildForItem || noChildResolver,
+      resolveChildForItem: getSerializedChildResolver(
+        this.spec.resolveChildForItem || noChildResolver
+      ),
       canHandleIntent: this.intentChecker,
       menuItems: (this.spec.menuItems || []).map((item, i) =>
         maybeSerializeMenuItem(item, i, path)

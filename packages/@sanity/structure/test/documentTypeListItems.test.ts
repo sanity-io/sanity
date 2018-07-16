@@ -22,3 +22,20 @@ test('generated canHandleIntent responds to edit/create on document type', () =>
   expect(child.canHandleIntent('create', {type: 'author'})).toBe(true)
   expect(child.canHandleIntent('edit', {id: 'wow'})).toBe(true)
 })
+
+test('generated document panes responds with correct editor child', () => {
+  const listItems = S.documentTypeListItems().map(item => item.serialize())
+  expect(listItems).toHaveLength(2)
+  expect(listItems[0]).toMatchObject({id: 'author', title: 'Author'})
+  expect(listItems[0]).toHaveProperty('child')
+
+  const child = listItems[0].child as DocumentList
+  const itemChild = child.resolveChildForItem('grrm', child, {index: 0})
+  return expect(Promise.resolve(itemChild)).resolves.toMatchObject({
+    id: 'editor',
+    options: {
+      type: 'author',
+      id: 'grrm'
+    }
+  })
+})

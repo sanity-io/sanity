@@ -8,8 +8,9 @@ import {
 import {ChildResolver, ChildResolverOptions, ItemChild} from './ChildResolver'
 import {SortItem} from './Sort'
 import {SerializeError, HELP_URL} from './SerializeError'
+import {getSerializedChildResolver} from './util/getSerializedChildResolver'
 
-const resolveChildForItem: ChildResolver = (
+const resolveEditorChildForItem: ChildResolver = (
   itemId: string,
   parent: Collection,
   options: ChildResolverOptions
@@ -94,7 +95,9 @@ export class DocumentListBuilder extends GenericListBuilder<PartialDocumentList>
     return {
       ...super.serialize(options),
       type: 'documentList',
-      resolveChildForItem: this.spec.resolveChildForItem || resolveChildForItem,
+      resolveChildForItem: getSerializedChildResolver(
+        this.spec.resolveChildForItem || resolveEditorChildForItem
+      ),
       options: this.spec.options
     }
   }
