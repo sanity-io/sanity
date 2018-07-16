@@ -65,7 +65,7 @@ test('default child resolver resolves to editor', () => {
     .params({type: 'book'})
     .serialize()
 
-  expect(list.resolveChildForItem('asoiaf-wow', list, {index: 1})).toEqual({
+  expect(list.resolveChildForItem('asoiaf-wow', list, {index: 1})).resolves.toEqual({
     id: 'editor',
     type: 'document',
     options: {

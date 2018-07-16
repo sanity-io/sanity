@@ -8,6 +8,7 @@ import {
   GenericList,
   GenericListInput
 } from './GenericList'
+import {getSerializedChildResolver} from './util/getSerializedChildResolver'
 
 const resolveChildForItem: ChildResolver = (
   itemId: string,
@@ -81,7 +82,9 @@ export class ListBuilder extends GenericListBuilder<BuildableList> {
     return {
       ...super.serialize(options),
       type: 'list',
-      resolveChildForItem: this.spec.resolveChildForItem || resolveChildForItem,
+      resolveChildForItem: getSerializedChildResolver(
+        this.spec.resolveChildForItem || resolveChildForItem
+      ),
       items: (items || []).map((item, index) => maybeSerializeListItem(item, index, path))
     }
   }

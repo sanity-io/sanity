@@ -61,7 +61,7 @@ test('default child resolver can resolve directly to node', () => {
     .items([item])
     .serialize()
 
-  expect(list.resolveChildForItem(item.id, list, {index: 0})).toEqual(item.child)
+  return expect(list.resolveChildForItem(item.id, list, {index: 0})).resolves.toEqual(item.child)
 })
 
 test('default child resolver can resolve through promise', () => {
@@ -91,10 +91,20 @@ test('can provide custom child resolver', () => {
     }))
     .serialize()
 
-  return expect(list.resolveChildForItem('today', list, {index: 0})).toHaveProperty(
+  return expect(list.resolveChildForItem('today', list, {index: 0})).resolves.toHaveProperty(
     'options.id',
     new Date().toISOString().slice(0, 10)
   )
+})
+
+test('can resolve undefined child', () => {
+  const list = S.list()
+    .id('books')
+    .items([{id: 'today', title: 'Today'}])
+    .childResolver(() => undefined)
+    .serialize()
+
+  return expect(list.resolveChildForItem('today', list, {index: 0})).resolves.toBe(undefined)
 })
 
 test('can set menu items', () => {
