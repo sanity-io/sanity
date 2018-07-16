@@ -1,18 +1,17 @@
 import PropTypes from 'prop-types'
-// Connects the FormBuilder with various sanity roles
 import React from 'react'
-import {catchError, map, tap} from 'rxjs/operators'
-import {merge, of as observableOf} from 'rxjs'
-import {validateDocument} from '@sanity/validation'
 import promiseLatest from 'promise-latest'
+import {merge, of as observableOf} from 'rxjs'
+import {catchError, map, tap} from 'rxjs/operators'
+import {validateDocument} from '@sanity/validation'
 import {omit, throttle, debounce} from 'lodash'
 import {FormBuilder, checkoutPair} from 'part:@sanity/form-builder'
+import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import schema from 'part:@sanity/base/schema'
 import Button from 'part:@sanity/components/buttons/default'
 import client from 'part:@sanity/base/client'
-import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import Editor from './Editor'
 import styles from './styles/EditorWrapper.css'
+import Editor from './Editor'
 
 const INITIAL_DOCUMENT_STATE = {
   isLoading: true,
@@ -76,7 +75,6 @@ function isRecoverable(draft, published) {
 
 export default class EditorPane extends React.Component {
   static propTypes = {
-    styles: PropTypes.object, // eslint-disable-line react/forbid-prop-types
     options: PropTypes.shape({
       id: PropTypes.string.isRequired,
       type: PropTypes.string.isRequired
