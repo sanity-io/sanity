@@ -1,14 +1,23 @@
+import {getSerializedChildResolver} from './util/getSerializedChildResolver'
+import {client} from './parts/Client'
+import {SortItem} from './Sort'
+import {EditorBuilder} from './Editor'
+import {SerializeError, HELP_URL} from './SerializeError'
 import {SerializeOptions, Collection} from './StructureNodes'
+import {ChildResolver, ChildResolverOptions, ItemChild} from './ChildResolver'
 import {
   GenericListBuilder,
   BuildableGenericList,
   GenericList,
   GenericListInput
 } from './GenericList'
-import {ChildResolver, ChildResolverOptions, ItemChild} from './ChildResolver'
-import {SortItem} from './Sort'
-import {SerializeError, HELP_URL} from './SerializeError'
-import {getSerializedChildResolver} from './util/getSerializedChildResolver'
+
+const resolveTypeForDocument = (id: string): Promise<string | undefined> => {
+  const query = '*[_id in [$documentId, $draftId]]._type'
+  const documentId = id.replace(/^drafts\./, '')
+  const draftId = `drafts.${documentId}`
+  return client.fetch(query, {documentId, draftId}).then(types => types[0])
+}
 
 const resolveEditorChildForItem: ChildResolver = (
   itemId: string,
@@ -16,19 +25,17 @@ const resolveEditorChildForItem: ChildResolver = (
   options: ChildResolverOptions
 ): ItemChild | Promise<ItemChild> | undefined => {
   const parentItem = parent as DocumentList
-  return {
-    id: 'editor',
-    type: 'document',
-    options: {
-      id: itemId,
-      // @todo this aint always right
-      type: parentItem.options.params && parentItem.options.params.type
-    }
-  }
+  return Promise.resolve(parentItem.schemaTypeName || resolveTypeForDocument(itemId)).then(type =>
+    new EditorBuilder()
+      .id('editor')
+      .documentId(itemId)
+      .type(type || '')
+  )
 }
 
 interface PartialDocumentList extends BuildableGenericList {
   options?: DocumentListOptions
+  schemaTypeName?: string
 }
 
 export interface DocumentListInput extends GenericListInput {
@@ -38,6 +45,7 @@ export interface DocumentListInput extends GenericListInput {
 export interface DocumentList extends GenericList {
   options: DocumentListOptions
   resolveChildForItem: ChildResolver
+  schemaTypeName?: string
 }
 
 interface DocumentListOptions {
@@ -56,6 +64,11 @@ export class DocumentListBuilder extends GenericListBuilder<PartialDocumentList>
 
   filter(filter: string): DocumentListBuilder {
     this.spec.options = {...(this.spec.options || {}), filter}
+    return this
+  }
+
+  schemaTypeName(typeName: string): DocumentListBuilder {
+    this.spec.schemaTypeName = typeName
     return this
   }
 
@@ -95,6 +108,7 @@ export class DocumentListBuilder extends GenericListBuilder<PartialDocumentList>
     return {
       ...super.serialize(options),
       type: 'documentList',
+      schemaTypeName: this.spec.schemaTypeName,
       resolveChildForItem: getSerializedChildResolver(
         this.spec.resolveChildForItem || resolveEditorChildForItem
       ),

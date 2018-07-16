@@ -1,10 +1,10 @@
-import {Schema, defaultSchema} from './parts/schema'
+import {Schema, defaultSchema} from './parts/Schema'
 import {dataAspects} from './parts/DataAspects'
 import {ListItemBuilder, SchemaType} from './ListItem'
 import {DocumentListBuilder} from './DocumentList'
 import {MenuItemBuilder} from './MenuItem'
 import {DEFAULT_ORDERING_OPTIONS, DEFAULT_SELECTED_ORDERING_OPTION} from './Sort'
-import {getPlusIcon, getSortIcon, getListIcon} from './parts/icon'
+import {getPlusIcon, getSortIcon, getListIcon} from './parts/Icon'
 import {EditorBuilder} from './Editor'
 
 const PlusIcon = getPlusIcon()
@@ -36,6 +36,7 @@ function getDocumentList(name: string, title: string, type: SchemaType): Documen
     .title(title)
     .filter('_type == $type')
     .params({type: name})
+    .schemaTypeName(name)
     .defaultOrdering(DEFAULT_SELECTED_ORDERING_OPTION.by)
     .canHandleIntent(
       (intentName, params): boolean =>

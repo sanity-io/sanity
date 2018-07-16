@@ -20,6 +20,7 @@ Object {
       "filter": "author == \\"grrm\\"",
     },
     "resolveChildForItem": [Function],
+    "schemaTypeName": undefined,
     "title": undefined,
     "type": "documentList",
   },
