@@ -1,24 +1,43 @@
-import {StructureNode} from './StructureNodes'
-import {ChildResolverOptions, ChildResolver} from './ChildResolver'
+import {SerializePath, SerializeOptions, Collection, CollectionBuilder} from './StructureNodes'
+import {ChildResolverOptions, ChildResolver, ItemChild} from './ChildResolver'
 import {ListItem, ListItemBuilder} from './ListItem'
 import {GenericListBuilder, PartialGenericList, GenericList} from './GenericList'
+import {SerializeError, HELP_URL} from './SerializeError'
 
 const resolveChildForItem: ChildResolver = (
   itemId: string,
-  parent: StructureNode,
+  parent: Collection,
   options: ChildResolverOptions
-): StructureNode | Promise<StructureNode> | undefined => {
+): ItemChild | Promise<ItemChild> | undefined => {
   const parentItem = parent as List
-  const target = parentItem.items.find(item => item.id === itemId)
-  const child = target && target.child
-  return typeof child === 'function' ? child(itemId, parentItem, options) : child
+  const target = (parentItem.items.find(item => item.id === itemId) || {child: undefined}).child
+  if (!target || typeof target !== 'function') {
+    return target
+  }
+
+  const child = typeof target === 'function' ? target(itemId, parentItem, options) : target
+
+  return Promise.resolve(child).then(itemChild => {
+    const childBuilder = itemChild as CollectionBuilder
+    return childBuilder && typeof childBuilder.serialize === 'function'
+      ? childBuilder.serialize({
+          path: options.parentPath || [],
+          index: options.index,
+          hint: 'childResolver'
+        })
+      : itemChild
+  })
 }
 
-function maybeSerializeListItem(item: ListItem | ListItemBuilder): ListItem {
-  return item instanceof ListItemBuilder ? item.serialize() : item
+function maybeSerializeListItem(
+  item: ListItem | ListItemBuilder,
+  index: number,
+  path: SerializePath
+): ListItem {
+  return item instanceof ListItemBuilder ? item.serialize({path, index}) : item
 }
 
-interface List extends GenericList {
+export interface List extends GenericList {
   items: ListItem[]
 }
 
@@ -32,21 +51,26 @@ export class ListBuilder extends GenericListBuilder<PartialList> {
   }
 
   items(items: (ListItemBuilder | ListItem)[]): ListBuilder {
-    this.spec.items = items.map(maybeSerializeListItem)
+    this.spec.items = items
     return this
   }
 
-  serialize(): List {
+  serialize(options: SerializeOptions): List {
     const {id, items} = this.spec
     if (typeof id !== 'string' || !id) {
-      throw new Error('`id` is required for lists')
+      throw new SerializeError(
+        '`id` is required for lists',
+        options.path,
+        options.index
+      ).withHelpUrl(HELP_URL.ID_REQUIRED)
     }
 
+    const path = options.path.concat(id)
     return {
-      ...super.serialize(),
+      ...super.serialize(options),
       type: 'list',
       resolveChildForItem: this.spec.resolveChildForItem || resolveChildForItem,
-      items: (items || []).map(maybeSerializeListItem)
+      items: (items || []).map((item, index) => maybeSerializeListItem(item, index, path))
     }
   }
 }

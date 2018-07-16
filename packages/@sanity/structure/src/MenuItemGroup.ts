@@ -1,9 +1,12 @@
+import {SerializeOptions, Serializable} from './StructureNodes'
+import {SerializeError, HELP_URL} from './SerializeError'
+
 export interface MenuItemGroup {
   id: string
   title: string
 }
 
-export class MenuItemGroupBuilder {
+export class MenuItemGroupBuilder implements Serializable {
   protected _id: string
   protected _title: string
 
@@ -22,19 +25,28 @@ export class MenuItemGroupBuilder {
     return this
   }
 
-  serialize(): MenuItemGroup {
+  serialize(options: SerializeOptions): MenuItemGroup {
     const {_id, _title} = this
     if (!_id) {
-      throw new Error('`id` is required for a menu item group')
+      throw new SerializeError(
+        '`id` is required for a menu item group',
+        options.path,
+        options.index,
+        _title
+      ).withHelpUrl(HELP_URL.ID_REQUIRED)
     }
 
     if (!_title) {
-      throw new Error('`title` is required for a menu item group')
+      throw new SerializeError(
+        '`title` is required for a menu item group',
+        options.path,
+        _id
+      ).withHelpUrl(HELP_URL.TITLE_REQUIRED)
     }
 
     return {
-      id: this._id,
-      title: this._title
+      id: _id,
+      title: _title
     }
   }
 }

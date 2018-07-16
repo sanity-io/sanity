@@ -1,7 +1,7 @@
 import {Schema, defaultSchema} from './parts/schema'
 import {dataAspects} from './parts/DataAspects'
-import {ListItem, ListItemBuilder, SchemaType} from './ListItem'
-import {DocumentList, DocumentListBuilder} from './DocumentList'
+import {ListItemBuilder, SchemaType} from './ListItem'
+import {DocumentListBuilder} from './DocumentList'
 import {MenuItemBuilder} from './MenuItem'
 import {DEFAULT_ORDERING_OPTIONS, DEFAULT_SELECTED_ORDERING_OPTION} from './Sort'
 import {getPlusIcon, getSortIcon, getListIcon} from './parts/icon'
@@ -11,7 +11,7 @@ const PlusIcon = getPlusIcon()
 const SortIcon = getSortIcon()
 const ListIcon = getListIcon()
 
-export const getDocumentTypeListItems = (schema: Schema = defaultSchema): ListItem[] => {
+export const getDocumentTypeListItems = (schema: Schema = defaultSchema): ListItemBuilder[] => {
   const resolver = dataAspects(schema)
   const types = resolver.getInferredTypes()
 
@@ -22,16 +22,15 @@ export const getDocumentTypeListItems = (schema: Schema = defaultSchema): ListIt
   })
 }
 
-function getDocumentTypeListItem(name: string, title: string, type: SchemaType): ListItem {
+function getDocumentTypeListItem(name: string, title: string, type: SchemaType): ListItemBuilder {
   return new ListItemBuilder()
     .id(name)
     .title(title)
     .schemaType(type)
     .child(getDocumentList(name, title, type))
-    .serialize()
 }
 
-function getDocumentList(name: string, title: string, type: SchemaType): DocumentList {
+function getDocumentList(name: string, title: string, type: SchemaType): DocumentListBuilder {
   return new DocumentListBuilder()
     .id(name)
     .title(title)
@@ -53,7 +52,6 @@ function getDocumentList(name: string, title: string, type: SchemaType): Documen
         .id('editor')
         .type(name)
         .documentId(documentId)
-        .serialize()
     )
     .menuItems([
       // Create new (from action button)
@@ -88,7 +86,6 @@ function getDocumentList(name: string, title: string, type: SchemaType): Documen
         .icon(PlusIcon)
         .intent({type: 'create', params: {type: name}})
     ])
-    .serialize()
 }
 
 function getOrderingMenuItemsForSchemaType(type: SchemaType) {

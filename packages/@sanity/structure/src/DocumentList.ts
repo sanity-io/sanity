@@ -1,13 +1,14 @@
-import {StructureNode, EditorNode} from './StructureNodes'
+import {SerializeOptions, Collection} from './StructureNodes'
 import {GenericListBuilder, PartialGenericList, GenericList} from './GenericList'
-import {ChildResolver, ChildResolverOptions} from './ChildResolver'
+import {ChildResolver, ChildResolverOptions, ItemChild} from './ChildResolver'
 import {SortItem} from './Sort'
+import {SerializeError, HELP_URL} from './SerializeError'
 
 const resolveChildForItem: ChildResolver = (
   itemId: string,
-  parent: StructureNode,
+  parent: Collection,
   options: ChildResolverOptions
-): StructureNode | EditorNode | Promise<StructureNode | EditorNode> | undefined => {
+): ItemChild | Promise<ItemChild> | undefined => {
   const parentItem = parent as DocumentList
   return {
     id: 'editor',
@@ -59,17 +60,27 @@ export class DocumentListBuilder extends GenericListBuilder<PartialDocumentList>
     return this
   }
 
-  serialize(): DocumentList {
+  serialize(options: SerializeOptions): DocumentList {
     if (typeof this.spec.id !== 'string' || !this.spec.id) {
-      throw new Error('`id` is required for document lists')
+      throw new SerializeError(
+        '`id` is required for document lists',
+        options.path,
+        options.index,
+        this.spec.title
+      ).withHelpUrl(HELP_URL.ID_REQUIRED)
     }
 
     if (!this.spec.options || !this.spec.options.filter) {
-      throw new Error('`filter` is required for document lists')
+      throw new SerializeError(
+        '`filter` is required for document lists',
+        options.path,
+        this.spec.id,
+        this.spec.title
+      ).withHelpUrl(HELP_URL.FILTER_REQUIRED)
     }
 
     return {
-      ...super.serialize(),
+      ...super.serialize(options),
       type: 'documentList',
       resolveChildForItem: this.spec.resolveChildForItem || resolveChildForItem,
       options: this.spec.options

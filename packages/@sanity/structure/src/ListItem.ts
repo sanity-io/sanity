@@ -1,9 +1,11 @@
-import {StructureNode, EditorNode} from './StructureNodes'
+import {SerializeOptions, Serializable, Collection, CollectionBuilder} from './StructureNodes'
 import {ChildResolver} from './ChildResolver'
 import {Partial} from './Partial'
 import {DocumentListBuilder} from './DocumentList'
 import {ListBuilder} from './List'
 import {Ordering} from './Sort'
+import {EditorBuilder} from './Editor'
+import {SerializeError, HELP_URL} from './SerializeError'
 
 export interface SchemaType {
   name: string
@@ -11,18 +13,27 @@ export interface SchemaType {
   orderings?: Ordering[]
 }
 
-type ListItemChild = StructureNode | EditorNode | ChildResolver | DocumentListBuilder | ListBuilder
+type UnserializedListItemChild = Collection | CollectionBuilder | ChildResolver
+
+type ListItemChild = Collection | ChildResolver | undefined
 
 export interface ListItem {
   id: string
   title: string
-  child?: StructureNode | EditorNode | ChildResolver
+  child?: ListItemChild
   schemaType?: SchemaType
 }
 
-export type PartialListItem = Partial<ListItem>
+export interface UnserializedListItem {
+  id: string
+  title: string
+  child?: UnserializedListItemChild
+  schemaType?: SchemaType
+}
 
-export class ListItemBuilder {
+type PartialListItem = Partial<UnserializedListItem>
+
+export class ListItemBuilder implements Serializable {
   protected spec: PartialListItem
 
   constructor(spec?: PartialListItem) {
@@ -39,12 +50,8 @@ export class ListItemBuilder {
     return this
   }
 
-  child(child: ListItemChild): ListItemBuilder {
-    if (child instanceof DocumentListBuilder || child instanceof ListBuilder) {
-      this.spec.child = child.serialize()
-    } else {
-      this.spec.child = child
-    }
+  child(child: UnserializedListItemChild): ListItemBuilder {
+    this.spec.child = child
     return this
   }
 
@@ -53,16 +60,29 @@ export class ListItemBuilder {
     return this
   }
 
-  serialize(): ListItem {
-    const {id, title} = this.spec
+  serialize(options: SerializeOptions): ListItem {
+    const {id, title, child} = this.spec
     if (typeof id !== 'string' || !id) {
-      throw new Error('`id` is required for list items')
+      throw new SerializeError(
+        '`id` is required for list items',
+        options.path,
+        options.index
+      ).withHelpUrl(HELP_URL.ID_REQUIRED)
     }
 
     if (typeof title !== 'string' || !title) {
-      throw new Error('`title` is required for list items')
+      throw new SerializeError('`title` is required for list items', options.path, id).withHelpUrl(
+        HELP_URL.TITLE_REQUIRED
+      )
     }
 
-    return {...this.spec, id, title}
+    const listChild =
+      child instanceof DocumentListBuilder ||
+      child instanceof ListBuilder ||
+      child instanceof EditorBuilder
+        ? child.serialize({path: options.path.concat(id), hint: 'child'})
+        : child
+
+    return {...this.spec, child: listChild, id, title}
   }
 }
