@@ -2,12 +2,32 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import shallowEquals from 'shallow-equals'
 import {withRouterHOC} from 'part:@sanity/base/router'
-import structure from 'part:@sanity/desk-tool/structure'
 import resolvePanes from './utils/resolvePanes'
 import styles from './styles/DeskTool.css'
 import DeskToolPanes from './DeskToolPanes'
+import StructureError from './components/StructureError'
 
 const EMPTY_PANE_KEYS = []
+
+// We are lazy-requiring/resolving the structure inside of a function in order to catch errors
+// on the root-level of the module. Any loading errors will reject the promise
+const loadStructure = () =>
+  new Promise((resolve, reject) => {
+    const mod = require('part:@sanity/desk-tool/structure')
+    const structure = mod && mod.__esModule && mod.default ? mod.default : mod
+    if (typeof structure !== 'function') {
+      return reject(new Error(`Structure needs to export a function, got ${typeof structure}`))
+    }
+
+    if (typeof structure.serialize === 'function') {
+      return reject(new Error(`Structure needs to export a function, got builder`))
+    }
+
+    return resolve(structure())
+  })
+
+const maybeSerialize = structure =>
+  typeof structure.serialize === 'function' ? structure.serialize({path: []}) : structure
 
 export default withRouterHOC(
   // eslint-disable-next-line react/prefer-stateless-function
@@ -24,7 +44,7 @@ export default withRouterHOC(
       onPaneChange: PropTypes.func.isRequired
     }
 
-    state = {}
+    state = {isResolving: true}
 
     constructor(props) {
       super(props)
@@ -47,15 +67,19 @@ export default withRouterHOC(
       })
     }
 
-    derivePanes(props, addState = {}) {
+    derivePanes(props) {
+      this.setStateIfMounted({isResolving: true})
       const paneIds = props.router.state.panes || []
-      return resolvePanes(structure, paneIds || [])
+      return loadStructure()
+        .then(maybeSerialize)
+        .then(structure => resolvePanes(structure, paneIds || []))
         .then(this.maybeAddEditorPane)
-        .then(panes => this.setStateIfMounted({panes, ...addState}))
-        .catch(error => this.setStateIfMounted({error, ...addState}))
+        .then(panes => this.setStateIfMounted({panes, isResolving: false}))
+        .catch(error => this.setStateIfMounted({error, isResolving: false}))
     }
 
     shouldComponentUpdate(nextProps, nextState) {
+      // @todo move this ouit of sCU - cWRP is deprecated, gDSFP does not have previous props
       if (!shallowEquals(nextProps.router.state.panes, this.props.router.state.panes)) {
         this.derivePanes(nextProps)
       }
@@ -64,11 +88,7 @@ export default withRouterHOC(
         nextProps.onPaneChange(nextState.panes || [])
       }
 
-      if (nextState.panes !== this.state.panes || nextState.error !== this.state.error) {
-        return true
-      }
-
-      return false
+      return !shallowEquals(nextState, this.state)
     }
 
     componentDidMount() {
@@ -98,8 +118,7 @@ export default withRouterHOC(
     render() {
       const {panes, error} = this.state
       if (error) {
-        // @todo probably not?
-        return <pre>{error.stack}</pre>
+        return <StructureError error={error} />
       }
 
       return (

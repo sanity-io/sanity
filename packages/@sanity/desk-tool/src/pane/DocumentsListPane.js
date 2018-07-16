@@ -180,8 +180,8 @@ export default withRouterHOC(
       } = this.props
 
       const {filter, params, defaultOrdering} = options
-      const sortBy = this.state.sortBy || defaultOrdering
-      const sort = sortBy.length > 0 ? sortBy : [DEFAULT_ORDERING]
+      const sortBy = this.state.sortBy || defaultOrdering || []
+      const sort = sortBy.length > 0 ? sortBy : DEFAULT_ORDERING
       const layout = this.state.layout || defaultLayout || 'default'
       return (
         <DefaultPane
@@ -218,10 +218,8 @@ export default withRouterHOC(
                 return (
                   <div className={styles.empty}>
                     <div>
-                      <h3>
-                        There are no documents of type <strong>{type.title}</strong> yet.
-                      </h3>
-                      {/* @todo figure out a way to make the below work again */}
+                      <h3>No documents of this type found.</h3>
+                      {/* @todo figure out a way to make the below work again, also: configurable "no documents" message? */}
                       {/*get(this.props, 'router.state.action') !== 'edit' && (
                         <Button color="primary" icon={PlusIcon} onClick={this.handleGoToCreateNew}>
                           New {type.title}
