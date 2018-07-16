@@ -36,6 +36,7 @@ function getDocumentList(name: string, title: string, type: SchemaType): Documen
     .title(title)
     .filter('_type == $type')
     .params({type: name})
+    .schemaTypeName(name)
     .defaultOrdering(DEFAULT_SELECTED_ORDERING_OPTION.by)
     .canHandleIntent(
       (intentName, params): boolean =>

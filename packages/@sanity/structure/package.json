@@ -51,6 +51,7 @@
     ],
     "moduleNameMapper": {
       "^part:@sanity/base/schema$": "<rootDir>/test/mocks/schema.js",
+      "^part:@sanity/base/client$": "<rootDir>/test/mocks/client.js",
       "^part:@sanity/data-aspects/resolver$": "<rootDir>/test/mocks/dataAspects.js",
       "^part:@sanity/base/.*?-icon$": "<rootDir>/test/mocks/icon.js"
     },

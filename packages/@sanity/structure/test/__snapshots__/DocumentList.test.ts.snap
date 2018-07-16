@@ -20,6 +20,7 @@ Object {
     },
   },
   "resolveChildForItem": [Function],
+  "schemaTypeName": undefined,
   "title": "Books",
   "type": "documentList",
 }
@@ -45,6 +46,7 @@ Object {
     },
   },
   "resolveChildForItem": [Function],
+  "schemaTypeName": undefined,
   "title": "Books",
   "type": "documentList",
 }
@@ -70,6 +72,7 @@ Object {
     },
   },
   "resolveChildForItem": [Function],
+  "schemaTypeName": undefined,
   "title": "Books",
   "type": "documentList",
 }
@@ -86,6 +89,7 @@ Object {
     "filter": "_type == \\"book\\"",
   },
   "resolveChildForItem": [Function],
+  "schemaTypeName": undefined,
   "title": "Foo",
   "type": "documentList",
 }
