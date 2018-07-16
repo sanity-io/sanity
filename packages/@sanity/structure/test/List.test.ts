@@ -5,12 +5,8 @@ const noop = () => {
   /* intentional noop */
 }
 
-test('builds lists with only ID', () => {
-  expect(S.list({id: 'foo'}).serialize()).toMatchSnapshot()
-})
-
-test('builds lists with ID and title through constructor', () => {
-  expect(S.list({id: 'books', title: 'Books'}).serialize()).toMatchSnapshot()
+test('builds lists with only required props', () => {
+  expect(S.list({id: 'foo', title: 'Foo'}).serialize()).toMatchSnapshot()
 })
 
 test('throws if no id is set', () => {
@@ -48,7 +44,7 @@ test('builds lists with layout', () => {
   expect(
     S.list()
       .id('books')
-      .layout('card')
+      .defaultLayout('card')
       .serialize()
   ).toMatchSnapshot()
 })
@@ -103,7 +99,8 @@ test('can provide custom child resolver', () => {
 
 test('can set menu items', () => {
   expect(
-    S.list({id: 'yeah'})
+    S.list()
+      .id('yeah')
       .menuItems([{title: 'Print', action: noop}])
       .serialize()
   ).toMatchSnapshot()
@@ -111,7 +108,8 @@ test('can set menu items', () => {
 
 test('can set menu items with builder', () => {
   expect(
-    S.list({id: 'yeah'})
+    S.list()
+      .id('yeah')
       .menuItems([
         S.menuItem()
           .title('Purge')
@@ -123,7 +121,8 @@ test('can set menu items with builder', () => {
 
 test('can set menu item groups', () => {
   expect(
-    S.list({id: 'yeah'})
+    S.list()
+      .id('yeah')
       .menuItems([{title: 'Print', action: noop, group: 'old-school'}])
       .menuItemGroups([{title: 'Old-school', id: 'old-school'}])
       .serialize()
@@ -132,7 +131,8 @@ test('can set menu item groups', () => {
 
 test('can set menu items groups with builder', () => {
   expect(
-    S.list({id: 'yeah'})
+    S.list()
+      .id('yeah')
       .menuItems([
         S.menuItem()
           .title('Print')
@@ -151,7 +151,8 @@ test('can set menu items groups with builder', () => {
 test('can set intent handler check', () => {
   const handler = () => false
   expect(
-    S.list({id: 'yeah'})
+    S.list()
+      .id('yeah')
       .canHandleIntent(handler)
       .serialize()
   ).toMatchObject({canHandleIntent: handler})

@@ -21,10 +21,10 @@ export interface MenuItem {
 export type PartialMenuItem = Partial<MenuItem>
 
 export class MenuItemBuilder implements Serializable {
-  protected spec: PartialMenuItem = {}
+  protected spec: PartialMenuItem
 
-  constructor(spec: PartialMenuItem = {}) {
-    this.spec = spec
+  constructor(spec?: MenuItem) {
+    this.spec = spec ? spec : {}
   }
 
   action(action: string | Function): MenuItemBuilder {
@@ -62,7 +62,7 @@ export class MenuItemBuilder implements Serializable {
     return this
   }
 
-  serialize(options: SerializeOptions): MenuItem {
+  serialize(options: SerializeOptions = {path: []}): MenuItem {
     const {title, action, intent} = this.spec
     if (!title) {
       const hint = typeof action === 'string' ? `action: "${action}"` : undefined

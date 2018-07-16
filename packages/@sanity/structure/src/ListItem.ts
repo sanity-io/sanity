@@ -36,8 +36,8 @@ type PartialListItem = Partial<UnserializedListItem>
 export class ListItemBuilder implements Serializable {
   protected spec: PartialListItem
 
-  constructor(spec?: PartialListItem) {
-    this.spec = spec || {}
+  constructor(spec?: ListItem) {
+    this.spec = spec ? spec : {}
   }
 
   id(id: string): ListItemBuilder {
@@ -60,7 +60,7 @@ export class ListItemBuilder implements Serializable {
     return this
   }
 
-  serialize(options: SerializeOptions): ListItem {
+  serialize(options: SerializeOptions = {path: []}): ListItem {
     const {id, title, child} = this.spec
     if (typeof id !== 'string' || !id) {
       throw new SerializeError(

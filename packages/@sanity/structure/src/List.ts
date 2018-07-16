@@ -1,8 +1,13 @@
 import {SerializePath, SerializeOptions, Collection, CollectionBuilder} from './StructureNodes'
 import {ChildResolverOptions, ChildResolver, ItemChild} from './ChildResolver'
-import {ListItem, ListItemBuilder} from './ListItem'
-import {GenericListBuilder, PartialGenericList, GenericList} from './GenericList'
 import {SerializeError, HELP_URL} from './SerializeError'
+import {ListItem, ListItemBuilder} from './ListItem'
+import {
+  GenericListBuilder,
+  BuildableGenericList,
+  GenericList,
+  GenericListInput
+} from './GenericList'
 
 const resolveChildForItem: ChildResolver = (
   itemId: string,
@@ -41,13 +46,20 @@ export interface List extends GenericList {
   items: ListItem[]
 }
 
-export interface PartialList extends PartialGenericList {
+export interface ListInput extends GenericListInput {
   items?: (ListItem | ListItemBuilder)[]
 }
 
-export class ListBuilder extends GenericListBuilder<PartialList> {
-  constructor(spec: PartialList = {}) {
-    super(spec)
+export interface BuildableList extends BuildableGenericList {
+  items?: (ListItem | ListItemBuilder)[]
+}
+
+export class ListBuilder extends GenericListBuilder<BuildableList> {
+  protected spec: BuildableList
+
+  constructor(spec?: ListInput) {
+    super()
+    this.spec = spec ? spec : {}
   }
 
   items(items: (ListItemBuilder | ListItem)[]): ListBuilder {
@@ -55,7 +67,7 @@ export class ListBuilder extends GenericListBuilder<PartialList> {
     return this
   }
 
-  serialize(options: SerializeOptions): List {
+  serialize(options: SerializeOptions = {path: []}): List {
     const {id, items} = this.spec
     if (typeof id !== 'string' || !id) {
       throw new SerializeError(

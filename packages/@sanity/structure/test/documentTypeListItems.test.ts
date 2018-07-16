@@ -11,7 +11,7 @@ test('generates correct document type list items from given schema', () => {
 })
 
 test('generated canHandleIntent responds to edit/create on document type', () => {
-  const listItems = S.documentTypeListItems()
+  const listItems = S.documentTypeListItems().map(item => item.serialize())
   expect(listItems).toHaveLength(2)
   expect(listItems[0]).toMatchObject({id: 'author', title: 'Author'})
   expect(listItems[0]).toHaveProperty('child')
