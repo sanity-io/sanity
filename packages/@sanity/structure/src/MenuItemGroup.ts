@@ -25,7 +25,7 @@ export class MenuItemGroupBuilder implements Serializable {
     return this
   }
 
-  serialize(options: SerializeOptions): MenuItemGroup {
+  serialize(options: SerializeOptions = {path: []}): MenuItemGroup {
     const {_id, _title} = this
     if (!_id) {
       throw new SerializeError(

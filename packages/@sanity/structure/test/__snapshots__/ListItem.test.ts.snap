@@ -2,6 +2,7 @@
 
 exports[`builds list items with ID and title through setters 1`] = `
 Object {
+  "child": undefined,
   "id": "authors",
   "title": "Authors",
 }
@@ -29,6 +30,7 @@ Object {
 
 exports[`builds list items with only ID and title 1`] = `
 Object {
+  "child": undefined,
   "id": "foo",
   "title": "Foo",
 }
@@ -49,17 +51,6 @@ Object {
 }
 `;
 
-exports[`builds list items with specific child (structure node) 1`] = `
-Object {
-  "child": Object {
-    "id": "foo",
-    "type": "custom",
-  },
-  "id": "books",
-  "title": "Books",
-}
-`;
-
 exports[`builds list items with specific child resolver 1`] = `
 Object {
   "child": [Function],
@@ -70,6 +61,7 @@ Object {
 
 exports[`builds list items with specified schema type 1`] = `
 Object {
+  "child": undefined,
   "id": "foo",
   "schemaType": Object {
     "name": "book",

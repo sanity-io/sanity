@@ -1,13 +1,10 @@
 import {StructureBuilder as S} from '../src'
-import {Layout} from '../src/Layout'
 
-const noop = () => {
-  /* intentional noop */
-}
-
-test('builds document lists with only ID and filter', () => {
+test('builds document lists with only required properties', () => {
   expect(
-    S.documentList({id: 'foo', options: {filter: '_type == "book"'}}).serialize()
+    S.documentList({id: 'foo', title: 'Foo', options: {filter: '_type == "book"'}}).serialize({
+      path: []
+    })
   ).toMatchSnapshot()
 })
 
@@ -16,7 +13,11 @@ test('throws if no id is set', () => {
 })
 
 test('throws if no filter is set', () => {
-  expect(() => S.documentList({id: 'foo'}).serialize()).toThrowErrorMatchingSnapshot()
+  expect(() =>
+    S.documentList()
+      .id('foo')
+      .serialize()
+  ).toThrowErrorMatchingSnapshot()
 })
 
 test('builds document lists through setters', () => {
@@ -26,6 +27,7 @@ test('builds document lists through setters', () => {
       .title('Books')
       .filter('_type == $type')
       .params({type: 'book'})
+      .defaultLayout('card')
       .defaultOrdering([{field: 'title', direction: 'asc'}])
       .serialize()
   ).toMatchSnapshot()

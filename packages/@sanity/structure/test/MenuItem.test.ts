@@ -5,7 +5,11 @@ test('builds menu items with only title and action', () => {
 })
 
 test('throws if no title is set', () => {
-  expect(() => S.menuItem({action: 'foo'}).serialize()).toThrowErrorMatchingSnapshot()
+  expect(() =>
+    S.menuItem()
+      .action('foo')
+      .serialize()
+  ).toThrowErrorMatchingSnapshot()
 })
 
 test('throws if neither action nor intent is set', () => {

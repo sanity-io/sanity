@@ -1,5 +1,10 @@
 import {SerializeOptions, Collection} from './StructureNodes'
-import {GenericListBuilder, PartialGenericList, GenericList} from './GenericList'
+import {
+  GenericListBuilder,
+  BuildableGenericList,
+  GenericList,
+  GenericListInput
+} from './GenericList'
 import {ChildResolver, ChildResolverOptions, ItemChild} from './ChildResolver'
 import {SortItem} from './Sort'
 import {SerializeError, HELP_URL} from './SerializeError'
@@ -21,8 +26,12 @@ const resolveChildForItem: ChildResolver = (
   }
 }
 
-export interface PartialDocumentList extends PartialGenericList {
+interface PartialDocumentList extends BuildableGenericList {
   options?: DocumentListOptions
+}
+
+export interface DocumentListInput extends GenericListInput {
+  options: DocumentListOptions
 }
 
 export interface DocumentList extends GenericList {
@@ -37,8 +46,11 @@ interface DocumentListOptions {
 }
 
 export class DocumentListBuilder extends GenericListBuilder<PartialDocumentList> {
-  constructor(spec: PartialDocumentList = {}) {
-    super(spec)
+  protected spec: PartialDocumentList
+
+  constructor(spec?: DocumentListInput) {
+    super()
+    this.spec = spec ? spec : {}
   }
 
   filter(filter: string): DocumentListBuilder {
@@ -60,7 +72,7 @@ export class DocumentListBuilder extends GenericListBuilder<PartialDocumentList>
     return this
   }
 
-  serialize(options: SerializeOptions): DocumentList {
+  serialize(options: SerializeOptions = {path: []}): DocumentList {
     if (typeof this.spec.id !== 'string' || !this.spec.id) {
       throw new SerializeError(
         '`id` is required for document lists',

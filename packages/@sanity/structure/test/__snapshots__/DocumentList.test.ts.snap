@@ -53,7 +53,7 @@ Object {
 exports[`builds document lists through setters 1`] = `
 Object {
   "canHandleIntent": undefined,
-  "defaultLayout": undefined,
+  "defaultLayout": "card",
   "id": "books",
   "menuItemGroups": Array [],
   "menuItems": Array [],
@@ -75,7 +75,7 @@ Object {
 }
 `;
 
-exports[`builds document lists with only ID and filter 1`] = `
+exports[`builds document lists with only required properties 1`] = `
 Object {
   "canHandleIntent": undefined,
   "defaultLayout": undefined,
@@ -86,7 +86,7 @@ Object {
     "filter": "_type == \\"book\\"",
   },
   "resolveChildForItem": [Function],
-  "title": undefined,
+  "title": "Foo",
   "type": "documentList",
 }
 `;

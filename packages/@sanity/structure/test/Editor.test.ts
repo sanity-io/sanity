@@ -15,37 +15,31 @@ test('builds editor node through constructor', () => {
 
 test('throws on missing id', () => {
   expect(() =>
-    S.editor({
-      title: 'some title',
-      options: {
-        id: 'docId',
-        type: 'book'
-      }
-    }).serialize()
+    S.editor()
+      .title('title')
+      .documentId('docId')
+      .type('book')
+      .serialize()
   ).toThrowError(/`id` is required/)
 })
 
 test('throws on missing document ID', () => {
   expect(() =>
-    S.editor({
-      id: 'foo',
-      title: 'some title',
-      options: {
-        type: 'book'
-      }
-    }).serialize()
+    S.editor()
+      .id('id')
+      .title('title')
+      .type('book')
+      .serialize()
   ).toThrowError(/document id/)
 })
 
 test('throws on missing document type', () => {
   expect(() =>
-    S.editor({
-      id: 'foo',
-      title: 'some title',
-      options: {
-        id: 'wow'
-      }
-    }).serialize()
+    S.editor()
+      .id('id')
+      .title('title')
+      .documentId('docId')
+      .serialize()
   ).toThrowError(/document type/)
 })
 

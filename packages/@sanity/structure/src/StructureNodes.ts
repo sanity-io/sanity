@@ -8,7 +8,7 @@ import {MenuItemGroupBuilder} from './MenuItemGroup'
 export interface StructureNode {
   id: string
   title?: string
-  type: string
+  type?: string
 }
 
 export interface EditorNode extends StructureNode {
@@ -30,8 +30,8 @@ export interface Serializable {
   serialize(options: SerializeOptions): {}
 }
 
-export type Collection = DocumentList | EditorNode | List
+export type Collection = List | DocumentList | EditorNode
 
-export type CollectionBuilder = DocumentListBuilder | EditorBuilder | ListBuilder
+export type CollectionBuilder = ListBuilder | DocumentListBuilder | EditorBuilder
 
 export type Builder = CollectionBuilder | ListItemBuilder | MenuItemBuilder | MenuItemGroupBuilder

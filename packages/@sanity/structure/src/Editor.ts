@@ -13,8 +13,8 @@ export type PartialEditorNode = {
 export class EditorBuilder implements Serializable {
   protected spec: PartialEditorNode
 
-  constructor(spec?: PartialEditorNode) {
-    this.spec = spec || {}
+  constructor(spec?: EditorNode) {
+    this.spec = spec ? spec : {}
   }
 
   id(id: string): EditorBuilder {
@@ -45,7 +45,7 @@ export class EditorBuilder implements Serializable {
     return this
   }
 
-  serialize({path, index, hint}: SerializeOptions): EditorNode {
+  serialize({path, index, hint}: SerializeOptions = {path: []}): EditorNode {
     const {id, options} = this.spec
     if (typeof id !== 'string' || !id) {
       throw new SerializeError('`id` is required for editor nodes', path, index, hint).withHelpUrl(

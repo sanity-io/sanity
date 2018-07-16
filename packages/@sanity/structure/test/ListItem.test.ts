@@ -5,11 +5,19 @@ test('builds list items with only ID and title', () => {
 })
 
 test('throws if no id is set', () => {
-  expect(() => S.listItem({title: 'Foo'}).serialize()).toThrowErrorMatchingSnapshot()
+  expect(() =>
+    S.listItem()
+      .title('foo')
+      .serialize()
+  ).toThrowErrorMatchingSnapshot()
 })
 
 test('throws if no title is set', () => {
-  expect(() => S.listItem({id: 'foo'}).serialize()).toThrowErrorMatchingSnapshot()
+  expect(() =>
+    S.listItem()
+      .id('foo')
+      .serialize()
+  ).toThrowErrorMatchingSnapshot()
 })
 
 test('builds list items with ID and title through setters', () => {
@@ -17,14 +25,6 @@ test('builds list items with ID and title through setters', () => {
     S.listItem({id: 'books', title: 'Books'})
       .id('authors')
       .title('Authors')
-      .serialize()
-  ).toMatchSnapshot()
-})
-
-test('builds list items with specific child (structure node)', () => {
-  expect(
-    S.listItem({id: 'books', title: 'Books'})
-      .child({id: 'foo', type: 'custom'})
       .serialize()
   ).toMatchSnapshot()
 })
@@ -40,7 +40,9 @@ test('builds list items with specific child (editor node)', () => {
 test('builds list items with specific child resolver', () => {
   expect(
     S.listItem({id: 'wow', title: 'The Winds of Winter'})
-      .child(() => ({id: 'foo', type: 'custom'}))
+      .child(() =>
+        S.editor({id: 'editor', title: 'Editor', options: {id: 'docId', type: 'book'}}).serialize()
+      )
       .serialize()
   ).toMatchSnapshot()
 })

@@ -7,6 +7,7 @@ Object {
   "id": "books",
   "items": Array [
     Object {
+      "child": undefined,
       "id": "foo",
       "title": "Foo",
     },
@@ -15,20 +16,6 @@ Object {
   "menuItems": Array [],
   "resolveChildForItem": [Function],
   "title": undefined,
-  "type": "list",
-}
-`;
-
-exports[`builds lists with ID and title through constructor 1`] = `
-Object {
-  "canHandleIntent": undefined,
-  "defaultLayout": undefined,
-  "id": "books",
-  "items": Array [],
-  "menuItemGroups": Array [],
-  "menuItems": Array [],
-  "resolveChildForItem": [Function],
-  "title": "Books",
   "type": "list",
 }
 `;
@@ -61,7 +48,7 @@ Object {
 }
 `;
 
-exports[`builds lists with only ID 1`] = `
+exports[`builds lists with only required props 1`] = `
 Object {
   "canHandleIntent": undefined,
   "defaultLayout": undefined,
@@ -70,7 +57,7 @@ Object {
   "menuItemGroups": Array [],
   "menuItems": Array [],
   "resolveChildForItem": [Function],
-  "title": undefined,
+  "title": "Foo",
   "type": "list",
 }
 `;
