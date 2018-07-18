@@ -3,6 +3,11 @@
 exports[`can resolve asyncronous structures using mix of promises & observables 1`] = `
 Array [
   Array [
+    Symbol(LOADING),
+    Symbol(LOADING),
+    Symbol(LOADING),
+  ],
+  Array [
     Object {
       "id": "__root__",
       "options": Object {
