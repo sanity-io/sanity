@@ -1,30 +1,47 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import {throwError, from, of, interval} from 'rxjs'
+import {map, switchMap, distinctUntilChanged, debounce} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 import {withRouterHOC} from 'part:@sanity/base/router'
-import resolvePanes from './utils/resolvePanes'
+import {resolvePanes, LOADING} from './utils/resolvePanes'
 import styles from './styles/DeskTool.css'
 import DeskToolPanes from './DeskToolPanes'
 import StructureError from './components/StructureError'
+import isSubscribable from './utils/isSubscribable'
 
 const EMPTY_PANE_KEYS = []
 
+const hasLoading = panes => panes.some(item => item === LOADING)
+
 // We are lazy-requiring/resolving the structure inside of a function in order to catch errors
-// on the root-level of the module. Any loading errors will reject the promise
-const loadStructure = () =>
-  new Promise((resolve, reject) => {
+// on the root-level of the module. Any loading errors will be caught and emitted as errors
+const loadStructure = () => {
+  let getStructure
+  try {
     const mod = require('part:@sanity/desk-tool/structure')
-    const structure = mod && mod.__esModule && mod.default ? mod.default : mod
-    if (typeof structure !== 'function') {
-      return reject(new Error(`Structure needs to export a function, got ${typeof structure}`))
-    }
+    getStructure = mod && mod.__esModule && mod.default ? mod.default : mod
+  } catch (err) {
+    return throwError(err)
+  }
 
-    if (typeof structure.serialize === 'function') {
-      return reject(new Error(`Structure needs to export a function, got builder`))
-    }
+  if (typeof getStructure !== 'function') {
+    return throwError(new Error(`Structure needs to export a function, got ${typeof structure}`))
+  }
 
-    return resolve(structure())
-  })
+  if (typeof getStructure.serialize === 'function') {
+    return throwError(new Error(`Structure needs to export a function, got builder`))
+  }
+
+  let structure
+  try {
+    structure = getStructure()
+  } catch (err) {
+    return throwError(err)
+  }
+
+  return isSubscribable(structure) ? from(structure) : of(structure)
+}
 
 const maybeSerialize = structure =>
   typeof structure.serialize === 'function' ? structure.serialize({path: []}) : structure
@@ -49,8 +66,6 @@ export default withRouterHOC(
     constructor(props) {
       super(props)
 
-      // @todo probably switch to observables?
-      this.derivePanes(props)
       props.onPaneChange([])
     }
 
@@ -68,14 +83,24 @@ export default withRouterHOC(
     }
 
     derivePanes(props) {
-      this.setStateIfMounted({isResolving: true})
+      if (this.paneDeriver) {
+        this.paneDeriver.unsubscribe()
+      }
+
+      this.setState({isResolving: true})
       const paneIds = props.router.state.panes || []
-      return loadStructure()
-        .then(maybeSerialize)
-        .then(structure => resolvePanes(structure, paneIds || []))
-        .then(this.maybeAddEditorPane)
-        .then(panes => this.setStateIfMounted({panes, isResolving: false}))
-        .catch(error => this.setStateIfMounted({error, isResolving: false}))
+      this.paneDeriver = loadStructure()
+        .pipe(
+          distinctUntilChanged(),
+          map(maybeSerialize),
+          switchMap(structure => resolvePanes(structure, paneIds || [])),
+          debounce(panes => interval(hasLoading(panes) ? 50 : 0)),
+          map(this.maybeAddEditorPane)
+        )
+        .subscribe(
+          panes => this.setState({panes, isResolving: false}),
+          error => this.setState({error, isResolving: false})
+        )
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -92,8 +117,7 @@ export default withRouterHOC(
     }
 
     componentDidMount() {
-      this.currentlyMounted = true
-
+      this.derivePanes(this.props)
       this.props.onPaneChange(this.state.panes || [])
     }
 
@@ -104,15 +128,9 @@ export default withRouterHOC(
     }
 
     componentWillUnmount() {
-      this.currentlyMounted = false
-    }
-
-    setStateIfMounted = (state, ...args) => {
-      if (this.currentlyMounted) {
-        this.setState(state, ...args)
+      if (this.paneDeriver) {
+        this.paneDeriver.unsubscribe()
       }
-
-      return state
     }
 
     render() {

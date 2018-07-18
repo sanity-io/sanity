@@ -2,16 +2,21 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import SplitController from 'part:@sanity/components/panes/split-controller'
 import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
+import {LOADING} from './utils/resolvePanes'
 import styles from './styles/DeskTool.css'
+import LoadingPane from './pane/LoadingPane'
 import Pane from './pane/Pane'
 
 export default class DeskToolPanes extends React.Component {
   static propTypes = {
     keys: PropTypes.arrayOf(PropTypes.string).isRequired,
     panes: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string.isRequired
-      })
+      PropTypes.oneOfType([
+        PropTypes.shape({
+          id: PropTypes.string.isRequired
+        }),
+        PropTypes.symbol
+      ])
     ).isRequired
   }
 
@@ -50,6 +55,7 @@ export default class DeskToolPanes extends React.Component {
 
   renderPanes() {
     const {panes, keys} = this.props
+    const path = []
 
     // @todo improve message
     if (panes.length === 0) {
@@ -61,10 +67,13 @@ export default class DeskToolPanes extends React.Component {
     }
 
     return panes.map((pane, i) => {
-      // Same pane might appear multiple times, so use index as tiebreaker
-      const paneKey = `${i}-${keys[i - 1] || 'root'}`
-      const wrapperKey = `${i}-${pane.id}`
       const isCollapsed = this.state.collapsedPanes.includes(i)
+      const paneKey = `${i}-${keys[i - 1] || 'root'}`
+
+      // Same pane might appear multiple times, so use index as tiebreaker
+      const wrapperKey = pane === LOADING ? `loading-${i}` : `${i}-${pane.id}`
+      path.push(pane.id || `[${i}]`)
+
       return (
         <SplitPaneWrapper
           key={wrapperKey}
@@ -72,15 +81,27 @@ export default class DeskToolPanes extends React.Component {
           defaultWidth={300}
           isCollapsed={isCollapsed}
         >
-          <Pane
-            key={paneKey} // Use key to force rerendering pane on ID change
-            index={i}
-            onExpand={this.handlePaneExpand}
-            onCollapse={this.handlePaneCollapse}
-            isCollapsed={isCollapsed}
-            isSelected={i === panes.length - 1}
-            {...pane}
-          />
+          {pane === LOADING ? (
+            <LoadingPane
+              key={paneKey} // Use key to force rerendering pane on ID change
+              path={path}
+              index={i}
+              onExpand={this.handlePaneExpand}
+              onCollapse={this.handlePaneCollapse}
+              isCollapsed={isCollapsed}
+              isSelected={i === panes.length - 1}
+            />
+          ) : (
+            <Pane
+              key={paneKey} // Use key to force rerendering pane on ID change
+              index={i}
+              onExpand={this.handlePaneExpand}
+              onCollapse={this.handlePaneCollapse}
+              isCollapsed={isCollapsed}
+              isSelected={i === panes.length - 1}
+              {...pane}
+            />
+          )}
         </SplitPaneWrapper>
       )
     })
