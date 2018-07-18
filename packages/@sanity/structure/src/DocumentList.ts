@@ -19,6 +19,23 @@ const resolveTypeForDocument = (id: string): Promise<string | undefined> => {
   return client.fetch(query, {documentId, draftId}).then(types => types[0])
 }
 
+const validateFilter = (spec: PartialDocumentList, options: SerializeOptions) => {
+  const filter = spec.options!.filter.trim()
+
+  if (['*', '{'].includes(filter[0])) {
+    throw new SerializeError(
+      `\`filter\` cannot start with \`${
+        filter[0]
+      }\` - looks like you are providing a query, not a filter`,
+      options.path,
+      spec.id,
+      spec.title
+    ).withHelpUrl(HELP_URL.QUERY_PROVIDED_FOR_FILTER)
+  }
+
+  return filter
+}
+
 const resolveEditorChildForItem: ChildResolver = (
   itemId: string,
   parent: Collection,
@@ -112,7 +129,10 @@ export class DocumentListBuilder extends GenericListBuilder<PartialDocumentList>
       resolveChildForItem: getSerializedChildResolver(
         this.spec.resolveChildForItem || resolveEditorChildForItem
       ),
-      options: this.spec.options
+      options: {
+        ...this.spec.options,
+        filter: validateFilter(this.spec, options)
+      }
     }
   }
 }

@@ -198,8 +198,7 @@ export default withRouterHOC(
           onExpand={onExpand}
         >
           <QueryContainer
-            // @todo filter the filter! Only allow the actual filter, not a full query
-            query={`*[${filter}] | order(${toOrderClause(sort)}) [0...10000] {_id, _type}`}
+            query={`*[${filter}] | order(${toOrderClause(sort)}) [0...50000] {_id, _type}`}
             params={params}
           >
             {({result, loading, error, onRetry, type}) => {

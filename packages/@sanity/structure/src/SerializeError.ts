@@ -27,6 +27,7 @@ export enum HELP_URL {
   FILTER_REQUIRED = 'structure-filter-required',
   DOCUMENT_ID_REQUIRED = 'structure-document-id-required',
   DOCUMENT_TYPE_REQUIRED = 'structure-document-type-required',
+  QUERY_PROVIDED_FOR_FILTER = 'structure-query-provided-for-filter',
   ACTION_OR_INTENT_REQUIRED = 'structure-action-or-intent-required',
   ACTION_AND_INTENT_MUTUALLY_EXCLUSIVE = 'structure-action-and-intent-mutually-exclusive'
 }
