@@ -82,25 +82,33 @@ export default withRouterHOC(
       })
     }
 
+    setResolvedPanes = panes => {
+      const router = this.props.router
+      const paneIds = router.state.panes || []
+      this.setState({panes, isResolving: false})
+
+      if (panes.length < paneIds.length) {
+        router.navigate({...router.state, panes: paneIds.slice(0, panes.length)}, {replace: true})
+      }
+    }
+
+    setResolveError = error => this.setState({error, isResolving: false})
+
     derivePanes(props) {
       if (this.paneDeriver) {
         this.paneDeriver.unsubscribe()
       }
 
       this.setState({isResolving: true})
-      const paneIds = props.router.state.panes || []
       this.paneDeriver = loadStructure()
         .pipe(
           distinctUntilChanged(),
           map(maybeSerialize),
-          switchMap(structure => resolvePanes(structure, paneIds || [])),
+          switchMap(structure => resolvePanes(structure, props.router.state.panes || [])),
           debounce(panes => interval(hasLoading(panes) ? 50 : 0)),
           map(this.maybeAddEditorPane)
         )
-        .subscribe(
-          panes => this.setState({panes, isResolving: false}),
-          error => this.setState({error, isResolving: false})
-        )
+        .subscribe(this.setResolvedPanes, this.setResolveError)
     }
 
     shouldComponentUpdate(nextProps, nextState) {
