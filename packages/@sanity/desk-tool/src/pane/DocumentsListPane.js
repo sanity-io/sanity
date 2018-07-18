@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import {partition} from 'lodash'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import schema from 'part:@sanity/base/schema'
+import PlusIcon from 'part:@sanity/base/plus-icon'
+import Button from 'part:@sanity/components/buttons/default'
 import DefaultPane from 'part:@sanity/components/panes/default'
 import QueryContainer from 'part:@sanity/base/query-container'
 import Snackbar from 'part:@sanity/components/snackbar/default'
@@ -58,6 +60,18 @@ function getStatusIndicator(item) {
   return null
 }
 
+function getTypeNameFromSingleTypeFilter(filter, params = {}) {
+  const pattern = /\b_type\s*==\s*(['"].*?['"]|\$.*?(?:\s|$))|\B(['"].*?['"]|\$.*?(?:\s|$))\s*==\s*_type\b/
+  const matches = filter.match(pattern)
+  if (!matches) {
+    return null
+  }
+
+  const match = (matches[1] || matches[2]).trim().replace(/^["']|["']$/g, '')
+  const typeName = match[0] === '$' ? params[match.slice(1)] : match
+  return typeName || null
+}
+
 function toOrderClause(orderBy) {
   return orderBy
     .map(ordering =>
@@ -71,7 +85,6 @@ function toOrderClause(orderBy) {
 
 const DEFAULT_ORDERING = [{field: '_createdAt', direction: 'desc'}]
 
-// eslint-disable-next-line react/prefer-stateless-function
 export default withRouterHOC(
   class DocumentsListPane extends React.PureComponent {
     static propTypes = {
@@ -161,6 +174,13 @@ export default withRouterHOC(
       handler(item.params, this)
     }
 
+    handleCreateNew = () => {
+      const {options, router} = this.props
+      const {filter, params} = options
+      const typeName = getTypeNameFromSingleTypeFilter(filter, params)
+      router.navigateIntent('create', {type: typeName})
+    }
+
     handleScroll = scrollTop => {
       this.setState({scrollTop})
     }
@@ -183,6 +203,8 @@ export default withRouterHOC(
       const sortBy = this.state.sortBy || defaultOrdering || []
       const sort = sortBy.length > 0 ? sortBy : DEFAULT_ORDERING
       const layout = this.state.layout || defaultLayout || 'default'
+      const typeName = getTypeNameFromSingleTypeFilter(filter, params)
+      const hasItems = items => items && items.length > 0
       return (
         <DefaultPane
           title={title}
@@ -201,7 +223,7 @@ export default withRouterHOC(
             query={`*[${filter}] | order(${toOrderClause(sort)}) [0...50000] {_id, _type}`}
             params={params}
           >
-            {({result, loading, error, onRetry, type}) => {
+            {({result, loading, error, onRetry}) => {
               if (error) {
                 return (
                   <Snackbar kind="danger" action={{title: 'Retry'}} onAction={onRetry}>
@@ -213,17 +235,21 @@ export default withRouterHOC(
 
               const items = removePublishedWithDrafts(result ? result.documents : [])
 
-              if (!loading && (!items || items.length === 0)) {
+              if (!loading && !hasItems(items)) {
                 return (
                   <div className={styles.empty}>
                     <div>
-                      <h3>No documents of this type found.</h3>
-                      {/* @todo figure out a way to make the below work again, also: configurable "no documents" message? */}
-                      {/*get(this.props, 'router.state.action') !== 'edit' && (
-                        <Button color="primary" icon={PlusIcon} onClick={this.handleGoToCreateNew}>
-                          New {type.title}
+                      <h3>
+                        {typeName
+                          ? 'No documents of this type found.'
+                          : 'No documents matching this filter found.'}
+                      </h3>
+
+                      {typeName && (
+                        <Button color="primary" icon={PlusIcon} onClick={this.handleCreateNew}>
+                          New {schema.get(typeName).title}
                         </Button>
-                      )*/}
+                      )}
                     </div>
                   </div>
                 )
