@@ -45,6 +45,7 @@ test('can resolve singleton structure', () =>
 
 test('can resolve singleton structure asyncronously', () =>
   expect(collectUntilDone(resolvePanes(asyncSingletonStructure, ['b']))).resolves.toMatchObject([
+    [LOADING, LOADING],
     [asyncSingletonStructure, LOADING],
     [
       asyncSingletonStructure,
