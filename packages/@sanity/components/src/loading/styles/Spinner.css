@@ -80,6 +80,7 @@
     line-height: 1.2em;
     display: block;
     font-weight: 300;
+    white-space: pre-wrap;
   }
 }
 
