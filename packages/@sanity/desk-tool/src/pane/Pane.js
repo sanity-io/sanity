@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import {noop} from 'lodash'
 import contentStylesOverride from './styles/contentStylesOverride.css'
 import DocumentsListPane from './DocumentsListPane'
+import UserComponentPane from './UserComponentPane'
 import UnknownPaneType from './UnknownPaneType'
 import EditorPane from './EditorPane'
 import ListPane from './ListPane'
@@ -10,7 +11,8 @@ import ListPane from './ListPane'
 const paneMap = {
   list: ListPane,
   documentList: DocumentsListPane,
-  document: EditorPane
+  document: EditorPane,
+  component: UserComponentPane
 }
 
 // eslint-disable-next-line react/prefer-stateless-function
