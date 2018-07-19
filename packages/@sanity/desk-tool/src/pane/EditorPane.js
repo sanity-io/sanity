@@ -75,6 +75,7 @@ function isRecoverable(draft, published) {
 
 export default class EditorPane extends React.Component {
   static propTypes = {
+    index: PropTypes.number.isRequired,
     options: PropTypes.shape({
       id: PropTypes.string.isRequired,
       type: PropTypes.string.isRequired
@@ -158,6 +159,12 @@ export default class EditorPane extends React.Component {
 
   getPublishedId() {
     return getPublishedId(this.props.options.id)
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.options.id !== this.props.options.id) {
+      this.setup(this.props.options.id)
+    }
   }
 
   componentDidMount() {
@@ -412,7 +419,8 @@ export default class EditorPane extends React.Component {
   }
 
   render() {
-    const typeName = this.props.options.type
+    const {options, index} = this.props
+    const typeName = options.type
     const {
       draft,
       published,
@@ -432,6 +440,7 @@ export default class EditorPane extends React.Component {
 
     return (
       <Editor
+        paneIndex={index}
         patchChannel={this.patchChannel}
         type={schema.get(typeName)}
         published={published.snapshot}

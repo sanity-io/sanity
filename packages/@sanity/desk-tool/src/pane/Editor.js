@@ -159,8 +159,10 @@ const INITIAL_STATE = {
 }
 
 export default withRouterHOC(
+  // eslint-disable-next-line
   class Editor extends React.PureComponent {
     static propTypes = {
+      paneIndex: PropTypes.number.isRequired,
       paneStyles: PropTypes.object,
       patchChannel: PropTypes.object,
       draft: PropTypes.object,
@@ -250,6 +252,10 @@ export default withRouterHOC(
       if (this.filterFieldFnSubscription) {
         this.filterFieldFnSubscription.unsubscribe()
       }
+
+      if (this.duplicate$) {
+        this.duplicate$.unsubscribe()
+      }
     }
 
     // @todo move publishing notification out of this component
@@ -283,23 +289,27 @@ export default withRouterHOC(
     }
 
     handleCreateCopy = () => {
-      const {router, draft, published} = this.props
-      documentStore.create(newDraftFrom(copyDocument(draft || published))).subscribe(copied => {
-        router.navigate({
-          ...router.state,
-          action: 'edit',
-          selectedDocumentId: getPublishedId(copied._id)
+      const {router, draft, published, paneIndex} = this.props
+      const prevId = getPublishedId((draft || published)._id)
+      this.duplicate$ = documentStore
+        .create(newDraftFrom(copyDocument(draft || published)))
+        .subscribe(copied => {
+          const copyDocId = getPublishedId(copied._id)
+          const newPanes = router.state.panes.map(
+            (prev, i) => (i === paneIndex - 1 && prev === prevId ? copyDocId : prev)
+          )
+          router.navigate({
+            ...router.state,
+            panes: newPanes
+          })
         })
-      })
     }
 
     handleEditAsActualType = () => {
       const {router, draft, published} = this.props
-      const actualTypeName = draft._type || published._type
-      router.navigate({
-        ...router.state,
-        selectedType: actualTypeName,
-        action: 'edit'
+      router.navigateIntent('edit', {
+        id: getPublishedId((draft || published)._id),
+        type: draft._type || published._type
       })
     }
 
