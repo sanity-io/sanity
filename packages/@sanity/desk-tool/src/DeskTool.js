@@ -44,7 +44,9 @@ const loadStructure = () => {
 }
 
 const maybeSerialize = structure =>
-  typeof structure.serialize === 'function' ? structure.serialize({path: []}) : structure
+  structure && typeof structure.serialize === 'function'
+    ? structure.serialize({path: []})
+    : structure
 
 export default withRouterHOC(
   // eslint-disable-next-line react/prefer-stateless-function
@@ -61,7 +63,7 @@ export default withRouterHOC(
       onPaneChange: PropTypes.func.isRequired
     }
 
-    state = {isResolving: true}
+    state = {isResolving: true, panes: null}
 
     constructor(props) {
       super(props)
@@ -149,14 +151,11 @@ export default withRouterHOC(
 
       return (
         <div className={styles.deskTool}>
-          {panes ? (
+          {panes && (
             <DeskToolPanes
               panes={this.state.panes}
               keys={this.props.router.state.panes || EMPTY_PANE_KEYS}
             />
-          ) : (
-            // @todo proper loading
-            <div>Loading</div>
           )}
         </div>
       )
