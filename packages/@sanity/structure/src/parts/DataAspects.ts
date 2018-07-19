@@ -1,7 +1,7 @@
 import {Schema} from './schema'
 import getDefaultModule from './getDefaultModule'
 
-interface DataAspectsResolver {
+export interface DataAspectsResolver {
   getDisplayName(typeName: string): string
   getInferredTypes(): string[]
 }

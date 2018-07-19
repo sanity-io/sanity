@@ -1,5 +1,5 @@
 import {ListBuilder, ListInput} from './List'
-import {getDocumentTypeListItems} from './documentTypeListItems'
+import {getDocumentTypeListItems, getDocumentTypeListItem} from './documentTypeListItems'
 import {MenuItemBuilder, MenuItem} from './MenuItem'
 import {ListItemBuilder, ListItem} from './ListItem'
 import {MenuItemGroup, MenuItemGroupBuilder} from './MenuItemGroup'
@@ -15,6 +15,7 @@ const StructureBuilder = {
   menuItem: (spec?: MenuItem): MenuItemBuilder => new MenuItemBuilder(spec),
   menuItemGroup: (spec?: MenuItemGroup): MenuItemGroupBuilder => new MenuItemGroupBuilder(spec),
   documentList: (spec?: DocumentListInput): DocumentListBuilder => new DocumentListBuilder(spec),
+  documentTypeListItem: getDocumentTypeListItem,
   documentTypeListItems: getDocumentTypeListItems
 }
 
