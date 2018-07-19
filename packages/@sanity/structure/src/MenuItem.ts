@@ -1,8 +1,16 @@
 import {Intent} from './Intent'
 import {Partial} from './Partial'
 import {SortItem} from './Sort'
-import {SerializeOptions, Serializable} from './StructureNodes'
+import {SerializeOptions, Serializable, SerializePath} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
+
+export function maybeSerializeMenuItem(
+  item: MenuItem | MenuItemBuilder,
+  index: number,
+  path: SerializePath
+): MenuItem {
+  return item instanceof MenuItemBuilder ? item.serialize({path, index}) : item
+}
 
 type ShowAsAction = {
   whenCollapsed: boolean

@@ -4,6 +4,7 @@ exports[`builds list items with ID and title through setters 1`] = `
 Object {
   "child": undefined,
   "id": "authors",
+  "schemaType": undefined,
   "title": "Authors",
 }
 `;
@@ -25,6 +26,7 @@ Object {
     "type": "documentList",
   },
   "id": "asoiaf",
+  "schemaType": undefined,
   "title": "A Song of Ice and Fire",
 }
 `;
@@ -33,6 +35,7 @@ exports[`builds list items with only ID and title 1`] = `
 Object {
   "child": undefined,
   "id": "foo",
+  "schemaType": undefined,
   "title": "Foo",
 }
 `;
@@ -48,6 +51,7 @@ Object {
     "type": "editor",
   },
   "id": "wow",
+  "schemaType": undefined,
   "title": "The Winds of Winter",
 }
 `;
@@ -56,6 +60,7 @@ exports[`builds list items with specific child resolver 1`] = `
 Object {
   "child": [Function],
   "id": "wow",
+  "schemaType": undefined,
   "title": "The Winds of Winter",
 }
 `;

@@ -4,6 +4,8 @@ import {ListItemBuilder} from './ListItem'
 import {ListBuilder, List} from './List'
 import {MenuItemBuilder} from './MenuItem'
 import {MenuItemGroupBuilder} from './MenuItemGroup'
+import {Component, ComponentBuilder} from './Component'
+import {DocumentListItemBuilder} from './DocumentListItem'
 
 export interface StructureNode {
   id: string
@@ -30,8 +32,15 @@ export interface Serializable {
   serialize(options: SerializeOptions): {}
 }
 
-export type Collection = List | DocumentList | EditorNode
+export type Collection = List | DocumentList | EditorNode | Component
 
-export type CollectionBuilder = ListBuilder | DocumentListBuilder | EditorBuilder
+export type CollectionBuilder = ListBuilder | DocumentListBuilder | EditorBuilder | ComponentBuilder
 
-export type Builder = CollectionBuilder | ListItemBuilder | MenuItemBuilder | MenuItemGroupBuilder
+export type Builder =
+  | CollectionBuilder
+  | ComponentBuilder
+  | DocumentListBuilder
+  | DocumentListItemBuilder
+  | ListItemBuilder
+  | MenuItemBuilder
+  | MenuItemGroupBuilder

@@ -1,27 +1,11 @@
-import {StructureNode, SerializeOptions, SerializePath, Serializable} from './StructureNodes'
+import {StructureNode, SerializeOptions, Serializable} from './StructureNodes'
 import {ChildResolver} from './ChildResolver'
 import {Layout, layoutOptions} from './Layout'
-import {MenuItem, MenuItemBuilder} from './MenuItem'
-import {MenuItemGroup, MenuItemGroupBuilder} from './MenuItemGroup'
+import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
+import {MenuItemGroup, MenuItemGroupBuilder, maybeSerializeMenuItemGroup} from './MenuItemGroup'
 import {IntentChecker} from './Intent'
 import {SerializeError} from './SerializeError'
 import {getSerializedChildResolver} from './util/getSerializedChildResolver'
-
-function maybeSerializeMenuItemGroup(
-  item: MenuItemGroup | MenuItemGroupBuilder,
-  index: number,
-  path: SerializePath
-): MenuItemGroup {
-  return item instanceof MenuItemGroupBuilder ? item.serialize({path, index}) : item
-}
-
-function maybeSerializeMenuItem(
-  item: MenuItem | MenuItemBuilder,
-  index: number,
-  path: SerializePath
-): MenuItem {
-  return item instanceof MenuItemBuilder ? item.serialize({path, index}) : item
-}
 
 function noChildResolver() {
   return undefined

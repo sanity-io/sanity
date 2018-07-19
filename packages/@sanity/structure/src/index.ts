@@ -7,16 +7,25 @@ import {DocumentListBuilder, DocumentListInput} from './DocumentList'
 import {EditorBuilder} from './Editor'
 import {EditorNode} from './StructureNodes'
 import {SerializeError} from './SerializeError'
+import {ComponentInput, ComponentBuilder} from './Component'
+import {DocumentListItemBuilder, DocumentListItemInput} from './DocumentListItem'
 
 const StructureBuilder = {
-  list: (spec?: ListInput): ListBuilder => new ListBuilder(spec),
-  listItem: (spec?: ListItem): ListItemBuilder => new ListItemBuilder(spec),
-  editor: (spec?: EditorNode): EditorBuilder => new EditorBuilder(spec),
-  menuItem: (spec?: MenuItem): MenuItemBuilder => new MenuItemBuilder(spec),
-  menuItemGroup: (spec?: MenuItemGroup): MenuItemGroupBuilder => new MenuItemGroupBuilder(spec),
-  documentList: (spec?: DocumentListInput): DocumentListBuilder => new DocumentListBuilder(spec),
   documentTypeListItem: getDocumentTypeListItem,
-  documentTypeListItems: getDocumentTypeListItems
+  documentTypeListItems: getDocumentTypeListItems,
+  list: (spec?: ListInput) => new ListBuilder(spec),
+  listItem: (spec?: ListItem) => new ListItemBuilder(spec),
+  editor: (spec?: EditorNode) => new EditorBuilder(spec),
+  menuItem: (spec?: MenuItem) => new MenuItemBuilder(spec),
+  menuItemGroup: (spec?: MenuItemGroup) => new MenuItemGroupBuilder(spec),
+  documentList: (spec?: DocumentListInput) => new DocumentListBuilder(spec),
+  documentListItem: (spec?: DocumentListItemInput) => new DocumentListItemBuilder(spec),
+
+  component: (spec?: ComponentInput | Function) => {
+    return typeof spec === 'function'
+      ? new ComponentBuilder().component(spec)
+      : new ComponentBuilder(spec)
+  }
 }
 
 export {StructureBuilder, SerializeError}
