@@ -9,6 +9,7 @@ Object {
     Object {
       "child": undefined,
       "id": "foo",
+      "schemaType": undefined,
       "title": "Foo",
     },
   ],

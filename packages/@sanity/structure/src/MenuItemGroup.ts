@@ -1,5 +1,13 @@
-import {SerializeOptions, Serializable} from './StructureNodes'
+import {SerializeOptions, Serializable, SerializePath} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
+
+export function maybeSerializeMenuItemGroup(
+  item: MenuItemGroup | MenuItemGroupBuilder,
+  index: number,
+  path: SerializePath
+): MenuItemGroup {
+  return item instanceof MenuItemGroupBuilder ? item.serialize({path, index}) : item
+}
 
 export interface MenuItemGroup {
   id: string

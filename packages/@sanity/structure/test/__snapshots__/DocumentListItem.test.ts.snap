@@ -1,0 +1,438 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`builds list items with ID and schema type through setters 1`] = `
+Object {
+  "_id": "grrm",
+  "child": undefined,
+  "id": "grrm",
+  "schemaType": Object {
+    "fields": Array [
+      Object {
+        "name": "name",
+        "title": "Name",
+        "type": "string",
+      },
+      Object {
+        "name": "slug",
+        "options": Object {
+          "maxLength": 96,
+          "source": "name",
+        },
+        "title": "Slug",
+        "type": "slug",
+      },
+      Object {
+        "name": "image",
+        "options": Object {
+          "hotspot": true,
+        },
+        "title": "Image",
+        "type": "image",
+      },
+    ],
+    "name": "author",
+    "preview": Object {
+      "select": Object {
+        "media": "image",
+        "title": "name",
+      },
+    },
+    "title": "Author",
+    "type": "document",
+  },
+  "title": undefined,
+}
+`;
+
+exports[`builds list items with child defined through builder 1`] = `
+Object {
+  "_id": "asoiaf",
+  "child": Object {
+    "canHandleIntent": undefined,
+    "defaultLayout": undefined,
+    "id": "asoiaf-posts",
+    "menuItemGroups": Array [],
+    "menuItems": Array [],
+    "options": Object {
+      "filter": "author == \\"grrm\\"",
+    },
+    "resolveChildForItem": [Function],
+    "schemaTypeName": undefined,
+    "title": undefined,
+    "type": "documentList",
+  },
+  "id": "asoiaf",
+  "schemaType": Object {
+    "fields": Array [
+      Object {
+        "name": "title",
+        "title": "Title",
+        "type": "string",
+      },
+      Object {
+        "name": "slug",
+        "options": Object {
+          "maxLength": 96,
+          "source": "title",
+        },
+        "title": "Slug",
+        "type": "slug",
+      },
+      Object {
+        "name": "author",
+        "title": "Author",
+        "to": Object {
+          "type": "author",
+        },
+        "type": "reference",
+      },
+      Object {
+        "name": "mainImage",
+        "options": Object {
+          "hotspot": true,
+        },
+        "title": "Main image",
+        "type": "image",
+      },
+      Object {
+        "name": "publishedAt",
+        "title": "Published at",
+        "type": "datetime",
+      },
+      Object {
+        "name": "body",
+        "title": "Body",
+        "type": "text",
+      },
+    ],
+    "name": "post",
+    "orderings": Array [
+      Object {
+        "by": Array [
+          Object {
+            "direction": "asc",
+            "field": "title",
+          },
+          Object {
+            "direction": "asc",
+            "field": "publicationYear",
+          },
+        ],
+        "name": "title",
+        "title": "Title",
+      },
+      Object {
+        "by": Array [
+          Object {
+            "direction": "asc",
+            "field": "translations.se",
+          },
+          Object {
+            "direction": "asc",
+            "field": "title",
+          },
+        ],
+        "name": "swedishTitle",
+        "title": "Swedish title",
+      },
+    ],
+    "preview": Object {
+      "select": Object {
+        "author": "author.name",
+        "media": "mainImage",
+        "title": "title",
+      },
+    },
+    "title": "Post",
+    "type": "document",
+  },
+  "title": undefined,
+}
+`;
+
+exports[`builds list items with only ID and schema type 1`] = `
+Object {
+  "_id": "foo",
+  "child": undefined,
+  "id": "foo",
+  "schemaType": Object {
+    "fields": Array [
+      Object {
+        "name": "name",
+        "title": "Name",
+        "type": "string",
+      },
+      Object {
+        "name": "slug",
+        "options": Object {
+          "maxLength": 96,
+          "source": "name",
+        },
+        "title": "Slug",
+        "type": "slug",
+      },
+      Object {
+        "name": "image",
+        "options": Object {
+          "hotspot": true,
+        },
+        "title": "Image",
+        "type": "image",
+      },
+    ],
+    "name": "author",
+    "preview": Object {
+      "select": Object {
+        "media": "image",
+        "title": "name",
+      },
+    },
+    "title": "Author",
+    "type": "document",
+  },
+  "title": undefined,
+}
+`;
+
+exports[`builds list items with specific child (editor node) 1`] = `
+Object {
+  "_id": "wow",
+  "child": Object {
+    "id": "foo",
+    "options": Object {
+      "id": "wow",
+      "type": "post",
+    },
+    "type": "editor",
+  },
+  "id": "wow",
+  "schemaType": Object {
+    "fields": Array [
+      Object {
+        "name": "title",
+        "title": "Title",
+        "type": "string",
+      },
+      Object {
+        "name": "slug",
+        "options": Object {
+          "maxLength": 96,
+          "source": "title",
+        },
+        "title": "Slug",
+        "type": "slug",
+      },
+      Object {
+        "name": "author",
+        "title": "Author",
+        "to": Object {
+          "type": "author",
+        },
+        "type": "reference",
+      },
+      Object {
+        "name": "mainImage",
+        "options": Object {
+          "hotspot": true,
+        },
+        "title": "Main image",
+        "type": "image",
+      },
+      Object {
+        "name": "publishedAt",
+        "title": "Published at",
+        "type": "datetime",
+      },
+      Object {
+        "name": "body",
+        "title": "Body",
+        "type": "text",
+      },
+    ],
+    "name": "post",
+    "orderings": Array [
+      Object {
+        "by": Array [
+          Object {
+            "direction": "asc",
+            "field": "title",
+          },
+          Object {
+            "direction": "asc",
+            "field": "publicationYear",
+          },
+        ],
+        "name": "title",
+        "title": "Title",
+      },
+      Object {
+        "by": Array [
+          Object {
+            "direction": "asc",
+            "field": "translations.se",
+          },
+          Object {
+            "direction": "asc",
+            "field": "title",
+          },
+        ],
+        "name": "swedishTitle",
+        "title": "Swedish title",
+      },
+    ],
+    "preview": Object {
+      "select": Object {
+        "author": "author.name",
+        "media": "mainImage",
+        "title": "title",
+      },
+    },
+    "title": "Post",
+    "type": "document",
+  },
+  "title": undefined,
+}
+`;
+
+exports[`builds list items with specific child resolver 1`] = `
+Object {
+  "_id": "wow",
+  "child": [Function],
+  "id": "wow",
+  "schemaType": Object {
+    "fields": Array [
+      Object {
+        "name": "title",
+        "title": "Title",
+        "type": "string",
+      },
+      Object {
+        "name": "slug",
+        "options": Object {
+          "maxLength": 96,
+          "source": "title",
+        },
+        "title": "Slug",
+        "type": "slug",
+      },
+      Object {
+        "name": "author",
+        "title": "Author",
+        "to": Object {
+          "type": "author",
+        },
+        "type": "reference",
+      },
+      Object {
+        "name": "mainImage",
+        "options": Object {
+          "hotspot": true,
+        },
+        "title": "Main image",
+        "type": "image",
+      },
+      Object {
+        "name": "publishedAt",
+        "title": "Published at",
+        "type": "datetime",
+      },
+      Object {
+        "name": "body",
+        "title": "Body",
+        "type": "text",
+      },
+    ],
+    "name": "post",
+    "orderings": Array [
+      Object {
+        "by": Array [
+          Object {
+            "direction": "asc",
+            "field": "title",
+          },
+          Object {
+            "direction": "asc",
+            "field": "publicationYear",
+          },
+        ],
+        "name": "title",
+        "title": "Title",
+      },
+      Object {
+        "by": Array [
+          Object {
+            "direction": "asc",
+            "field": "translations.se",
+          },
+          Object {
+            "direction": "asc",
+            "field": "title",
+          },
+        ],
+        "name": "swedishTitle",
+        "title": "Swedish title",
+      },
+    ],
+    "preview": Object {
+      "select": Object {
+        "author": "author.name",
+        "media": "mainImage",
+        "title": "title",
+      },
+    },
+    "title": "Post",
+    "type": "document",
+  },
+  "title": undefined,
+}
+`;
+
+exports[`setting title has no effect 1`] = `
+Object {
+  "_id": "grrm",
+  "child": undefined,
+  "id": "grrm",
+  "schemaType": Object {
+    "fields": Array [
+      Object {
+        "name": "name",
+        "title": "Name",
+        "type": "string",
+      },
+      Object {
+        "name": "slug",
+        "options": Object {
+          "maxLength": 96,
+          "source": "name",
+        },
+        "title": "Slug",
+        "type": "slug",
+      },
+      Object {
+        "name": "image",
+        "options": Object {
+          "hotspot": true,
+        },
+        "title": "Image",
+        "type": "image",
+      },
+    ],
+    "name": "author",
+    "preview": Object {
+      "select": Object {
+        "media": "image",
+        "title": "name",
+      },
+    },
+    "title": "Author",
+    "type": "document",
+  },
+  "title": undefined,
+}
+`;
+
+exports[`throws if no id is set 1`] = `"\`id\` is required for list items"`;
+
+exports[`throws if no schema type is set 1`] = `"\`schemaType\` is required for document list items"`;
+
+exports[`throws if setting unknown schema type 1`] = `"Could not find type \\"ZING\\" in schema"`;

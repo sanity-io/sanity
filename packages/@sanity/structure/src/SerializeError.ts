@@ -26,6 +26,8 @@ export enum HELP_URL {
   TITLE_REQUIRED = 'structure-title-requried',
   FILTER_REQUIRED = 'structure-filter-required',
   DOCUMENT_ID_REQUIRED = 'structure-document-id-required',
+  SCHEMA_TYPE_REQUIRED = 'structure-schema-type-required',
+  SCHEMA_TYPE_NOT_FOUND = 'structure-schema-type-not-found',
   DOCUMENT_TYPE_REQUIRED = 'structure-document-type-required',
   QUERY_PROVIDED_FOR_FILTER = 'structure-query-provided-for-filter',
   ACTION_OR_INTENT_REQUIRED = 'structure-action-or-intent-required',

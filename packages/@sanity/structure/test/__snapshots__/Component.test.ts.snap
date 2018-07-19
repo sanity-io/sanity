@@ -1,0 +1,110 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`builds component node through alt. constructor 1`] = `
+Object {
+  "component": [Function],
+  "id": "foo",
+  "menuItemGroups": Array [],
+  "menuItems": Array [],
+  "title": undefined,
+  "type": "component",
+}
+`;
+
+exports[`builds component node through constructor 1`] = `
+Object {
+  "component": [Function],
+  "id": "foo",
+  "menuItemGroups": Array [],
+  "menuItems": Array [],
+  "title": "some title",
+  "type": "component",
+}
+`;
+
+exports[`can construct using builder 1`] = `
+Object {
+  "component": [Function],
+  "id": "yeah",
+  "menuItemGroups": Array [],
+  "menuItems": Array [],
+  "title": "Yeah",
+  "type": "component",
+}
+`;
+
+exports[`can set menu item groups 1`] = `
+Object {
+  "component": [Function],
+  "id": "yeah",
+  "menuItemGroups": Array [
+    Object {
+      "id": "old-school",
+      "title": "Old-school",
+    },
+  ],
+  "menuItems": Array [
+    Object {
+      "action": [Function],
+      "group": "old-school",
+      "title": "Print",
+    },
+  ],
+  "title": undefined,
+  "type": "component",
+}
+`;
+
+exports[`can set menu items 1`] = `
+Object {
+  "component": [Function],
+  "id": "yeah",
+  "menuItemGroups": Array [],
+  "menuItems": Array [
+    Object {
+      "action": [Function],
+      "title": "Print",
+    },
+  ],
+  "title": undefined,
+  "type": "component",
+}
+`;
+
+exports[`can set menu items groups with builder 1`] = `
+Object {
+  "component": [Function],
+  "id": "yeah",
+  "menuItemGroups": Array [
+    Object {
+      "id": "old-school",
+      "title": "Old-school",
+    },
+  ],
+  "menuItems": Array [
+    Object {
+      "action": [Function],
+      "group": "old-school",
+      "title": "Print",
+    },
+  ],
+  "title": undefined,
+  "type": "component",
+}
+`;
+
+exports[`can set menu items with builder 1`] = `
+Object {
+  "component": [Function],
+  "id": "yeah",
+  "menuItemGroups": Array [],
+  "menuItems": Array [
+    Object {
+      "action": [Function],
+      "title": "Purge",
+    },
+  ],
+  "title": undefined,
+  "type": "component",
+}
+`;
