@@ -36,7 +36,7 @@
     "hashlru": "^2.1.0",
     "lodash": "^4.17.4",
     "promise-latest": "^1.0.4",
-    "react-click-outside": "^2.3.1",
+    "react-click-outside": "^3.0.0",
     "react-ink": "^6.1.0",
     "react-json-inspector": "^7.1.1",
     "react-tiny-virtual-list": "^2.0.5",
