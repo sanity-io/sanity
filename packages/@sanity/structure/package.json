@@ -23,6 +23,10 @@
     "structure",
     "check"
   ],
+  "dependencies": {
+    "@types/memoize-one": "^3.1.1",
+    "memoize-one": "^3.1.1"
+  },
   "devDependencies": {
     "@types/jest": "^22.0.0",
     "jest": "^22.4.3",

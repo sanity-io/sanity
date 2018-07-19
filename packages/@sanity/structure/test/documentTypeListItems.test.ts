@@ -10,6 +10,11 @@ test('generates correct document type list items from given schema', () => {
   expect(S.documentTypeListItems(defaultSchema)).toMatchSnapshot()
 })
 
+test('generates correct document type list item for specific type', () => {
+  expect(S.documentTypeListItem('author')).toMatchSnapshot()
+  expect(S.documentTypeListItem('author', defaultSchema)).toMatchSnapshot()
+})
+
 test('generated canHandleIntent responds to edit/create on document type', () => {
   const listItems = S.documentTypeListItems().map(item => item.serialize())
   expect(listItems).toHaveLength(2)

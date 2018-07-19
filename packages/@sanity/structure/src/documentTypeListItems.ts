@@ -1,5 +1,6 @@
+import memoizeOne from 'memoize-one'
 import {Schema, defaultSchema} from './parts/Schema'
-import {dataAspects} from './parts/DataAspects'
+import {dataAspects, DataAspectsResolver} from './parts/DataAspects'
 import {ListItemBuilder, SchemaType} from './ListItem'
 import {DocumentListBuilder} from './DocumentList'
 import {MenuItemBuilder} from './MenuItem'
@@ -11,18 +12,21 @@ const PlusIcon = getPlusIcon()
 const SortIcon = getSortIcon()
 const ListIcon = getListIcon()
 
-export const getDocumentTypeListItems = (schema: Schema = defaultSchema): ListItemBuilder[] => {
-  const resolver = dataAspects(schema)
-  const types = resolver.getInferredTypes()
+const getDataAspectsForSchema: (schema: Schema) => DataAspectsResolver = memoizeOne(dataAspects)
 
-  return types.map(name => {
-    const title = resolver.getDisplayName(name)
-    const schemaType = schema.get(name)
-    return getDocumentTypeListItem(name, title, schemaType)
-  })
+export function getDocumentTypeListItems(schema: Schema = defaultSchema): ListItemBuilder[] {
+  const resolver = getDataAspectsForSchema(schema)
+  const types = resolver.getInferredTypes()
+  return types.map(name => getDocumentTypeListItem(name, schema))
 }
 
-function getDocumentTypeListItem(name: string, title: string, type: SchemaType): ListItemBuilder {
+export function getDocumentTypeListItem(
+  name: string,
+  schema: Schema = defaultSchema
+): ListItemBuilder {
+  const type = schema.get(name)
+  const resolver = getDataAspectsForSchema(schema)
+  const title = resolver.getDisplayName(name)
   return new ListItemBuilder()
     .id(name)
     .title(title)
