@@ -86,6 +86,7 @@ export default class DeskToolPanes extends React.Component {
             <Pane
               key={paneKey} // Use key to force rerendering pane on ID change
               index={i}
+              itemId={keys[i - 1]}
               onExpand={this.handlePaneExpand}
               onCollapse={this.handlePaneCollapse}
               isCollapsed={isCollapsed}

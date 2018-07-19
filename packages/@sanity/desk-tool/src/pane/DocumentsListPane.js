@@ -41,7 +41,7 @@ function getDocumentKey(document) {
 
 function noActionFn() {
   // eslint-disable-next-line no-console
-  console.warn('No action defined for function')
+  console.warn('No handler defined for action')
 }
 
 function isLiveEditEnabled(item) {
@@ -170,7 +170,11 @@ export default withRouterHOC(
     )
 
     handleAction = item => {
-      const handler = this.actionHandlers[item.action] || noActionFn
+      const handler =
+        typeof item.action === 'function'
+          ? item.action
+          : this.actionHandlers[item.action] || noActionFn
+
       handler(item.params, this)
     }
 
