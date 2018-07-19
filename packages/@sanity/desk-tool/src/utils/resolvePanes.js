@@ -1,6 +1,7 @@
 import shallowEquals from 'shallow-equals'
 import {Observable, from, of as observableOf} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
+import {SerializeError} from '@sanity/structure'
 import isSubscribable from './isSubscribable'
 
 export const LOADING = Symbol('LOADING')
@@ -11,6 +12,13 @@ export function resolvePanes(structure, ids) {
 
 function resolveForStructure(structure, ids) {
   return Observable.create(subscriber => {
+    if (!structure || !structure.id) {
+      subscriber.error(
+        new SerializeError('Structure did not contain required `id` property', [], 'root')
+      )
+      return unsubscribe
+    }
+
     const paneIds = [structure.id].concat(ids).filter(Boolean)
     let panes = new Array(paneIds.length).fill(LOADING)
     const subscriptions = []

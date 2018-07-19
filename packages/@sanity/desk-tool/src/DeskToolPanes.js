@@ -57,15 +57,6 @@ export default class DeskToolPanes extends React.Component {
     const {panes, keys} = this.props
     const path = []
 
-    // @todo improve message
-    if (panes.length === 0) {
-      return (
-        <SplitPaneWrapper>
-          <div>Configure some panes, first!</div>
-        </SplitPaneWrapper>
-      )
-    }
-
     return panes.map((pane, i) => {
       const isCollapsed = this.state.collapsedPanes.includes(i)
       const paneKey = `${i}-${keys[i - 1] || 'root'}`
