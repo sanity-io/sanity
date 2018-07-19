@@ -113,12 +113,11 @@ export default withRouterHOC(
         icon: dataAspects.getIcon(typeName)
       }))
 
-      const modalActions = TYPE_ITEMS.map(item => {
-        return {
-          title: item.title,
-          params: {type: item.name, icon: item.icon}
-        }
-      })
+      const modalActions = TYPE_ITEMS.map(item => ({
+        title: item.title,
+        icon: item.icon,
+        params: {type: item.name}
+      }))
 
       return (
         <div
