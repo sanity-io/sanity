@@ -1,25 +1,25 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import Ink from 'react-ink'
+import schema from 'part:@sanity/base/schema'
+import Button from 'part:@sanity/components/buttons/default'
+import PlusIcon from 'part:@sanity/base/plus-icon'
+import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
+import SanityStudioLogo from 'part:@sanity/base/sanity-studio-logo'
+import DataAspectsResolver from 'part:@sanity/data-aspects/resolver'
+import AppLoadingScreen from 'part:@sanity/base/app-loading-screen'
 import {RouteScope, withRouterHOC} from 'part:@sanity/base/router'
 import absolutes from 'all:part:@sanity/base/absolutes'
-import SanityStudioLogo from 'part:@sanity/base/sanity-studio-logo'
+import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
+import {HAS_SPACES} from '../util/spaces'
 import styles from './styles/DefaultLayout.css'
 import RenderTool from './RenderTool'
 import Navigation from './Navigation'
-import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
-import PlusIcon from 'part:@sanity/base/plus-icon'
 import ActionModal from './ActionModal'
-import schema from 'part:@sanity/base/schema'
-import DataAspectsResolver from 'part:@sanity/data-aspects/resolver'
 import Branding from './Branding'
-import Ink from 'react-ink'
-import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
-import Button from 'part:@sanity/components/buttons/default'
 import {SchemaErrorReporter} from './SchemaErrorReporter'
 import SpaceSwitcher from './SpaceSwitcher'
-import {HAS_SPACES} from '../util/spaces'
 import UpdateNotifier from './UpdateNotifier'
-import AppLoadingScreen from 'part:@sanity/base/app-loading-screen'
 
 const dataAspects = new DataAspectsResolver(schema)
 
@@ -27,14 +27,14 @@ export default withRouterHOC(
   class DefaultLayout extends React.Component {
     static propTypes = {
       router: PropTypes.shape({
-        state: PropTypes.object,
+        state: PropTypes.shape({tool: PropTypes.string}),
         navigate: PropTypes.func
-      }),
+      }).isRequired,
       tools: PropTypes.arrayOf(
         PropTypes.shape({
           name: PropTypes.string
         })
-      )
+      ).isRequired
     }
 
     state = {
@@ -75,9 +75,9 @@ export default withRouterHOC(
     }
 
     handleCreateButtonClick = () => {
-      this.setState({
-        createMenuIsOpen: !this.state.createMenuIsOpen
-      })
+      this.setState(prevState => ({
+        createMenuIsOpen: !prevState.createMenuIsOpen
+      }))
     }
 
     handleActionModalClose = () => {
@@ -87,9 +87,9 @@ export default withRouterHOC(
     }
 
     handleMobileMenuToggle = () => {
-      this.setState({
-        mobileMenuIsOpen: !this.state.mobileMenuIsOpen
-      })
+      this.setState(prevState => ({
+        mobileMenuIsOpen: !prevState.mobileMenuIsOpen
+      }))
     }
 
     handleSwitchTool = () => {
