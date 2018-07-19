@@ -62,6 +62,10 @@
     {
       "implements": "part:@sanity/form-builder/input/array/functions",
       "path": "src/components/SearchableArrayFunctions.js"
+    },
+    {
+      "implements": "part:@sanity/desk-tool/structure",
+      "path": "src/deskStructure.js"
     }
   ],
   "env": {
