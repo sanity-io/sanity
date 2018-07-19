@@ -37,6 +37,7 @@
     "prettify": "lerna run clean && prettier --write \"**/*.js\""
   },
   "devDependencies": {
+    "@rexxars/gulp-typescript": "^5.0.0-alpha.3",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.2.1",
@@ -78,7 +79,6 @@
     "gulp-newer": "^1.4.0",
     "gulp-plumber": "^1.2.0",
     "gulp-sourcemaps": "^2.6.4",
-    "gulp-typescript": "^5.0.0-alpha.3",
     "gulp-util": "^3.0.8",
     "gulp-watch": "^5.0.0",
     "hard-rejection": "^1.0.0",
