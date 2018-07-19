@@ -6,6 +6,7 @@ import {MenuItemGroup, MenuItemGroupBuilder} from './MenuItemGroup'
 import {DocumentListBuilder, DocumentListInput} from './DocumentList'
 import {EditorBuilder} from './Editor'
 import {EditorNode} from './StructureNodes'
+import {SerializeError} from './SerializeError'
 
 const StructureBuilder = {
   list: (spec?: ListInput): ListBuilder => new ListBuilder(spec),
@@ -17,4 +18,4 @@ const StructureBuilder = {
   documentTypeListItems: getDocumentTypeListItems
 }
 
-export {StructureBuilder}
+export {StructureBuilder, SerializeError}
