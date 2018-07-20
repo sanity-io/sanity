@@ -23,14 +23,6 @@
     {
       "name": "part:@sanity/desk-tool/filter-fields-fn",
       "description": "An observable that emits a function to filter fields in form builder"
-    },
-    {
-      "name": "part:@sanity/desk-tool/structure",
-      "description": "Definition of navigation structure"
-    },
-    {
-      "implements": "part:@sanity/desk-tool/structure",
-      "path": "defaultStructure.js"
     }
   ]
 }

@@ -9,6 +9,7 @@ import styles from './styles/DeskTool.css'
 import DeskToolPanes from './DeskToolPanes'
 import StructureError from './components/StructureError'
 import isSubscribable from './utils/isSubscribable'
+import defaultStructure from './defaultStructure'
 
 const EMPTY_PANE_KEYS = []
 
@@ -19,14 +20,14 @@ const hasLoading = panes => panes.some(item => item === LOADING)
 const loadStructure = () => {
   let getStructure
   try {
-    const mod = require('part:@sanity/desk-tool/structure')
-    getStructure = mod && mod.__esModule && mod.default ? mod.default : mod
+    const mod = require('part:@sanity/desk-tool/structure?') || defaultStructure
+    getStructure = mod && mod.__esModule ? mod.default : mod
   } catch (err) {
     return throwError(err)
   }
 
   if (typeof getStructure !== 'function') {
-    return throwError(new Error(`Structure needs to export a function, got ${typeof structure}`))
+    return throwError(new Error(`Structure needs to export a function, got ${typeof getStructure}`))
   }
 
   if (typeof getStructure.serialize === 'function') {

@@ -64,7 +64,7 @@
       "path": "src/components/SearchableArrayFunctions.js"
     },
     {
-      "implements": "part:@sanity/desk-tool/structure",
+      "name": "part:@sanity/desk-tool/structure",
       "path": "src/deskStructure.js"
     }
   ],
