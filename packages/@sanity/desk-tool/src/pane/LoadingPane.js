@@ -51,7 +51,7 @@ export default class LoadingPane extends React.PureComponent {
   state = {message: 'Loading…'}
 
   componentDidMount() {
-    this.subcription = getWaitMessages(this.props.path).subscribe(this.updateStatus)
+    this.subscription = getWaitMessages(this.props.path).subscribe(this.updateStatus)
   }
 
   componentWillUnmount() {
