@@ -15,5 +15,5 @@
   composes: link from './DocumentsListPane.css';
   margin: 0;
   line-height: 1rem;
-  padding: var(--medium-padding);
+  padding: var(--small-padding) var(--medium-padding);
 }

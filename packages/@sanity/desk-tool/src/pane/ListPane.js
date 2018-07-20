@@ -22,7 +22,6 @@ export default withRouterHOC(
       items: PropTypes.arrayOf(
         PropTypes.shape({
           id: PropTypes.string.isRequired,
-          title: PropTypes.string.isRequired,
           schemaType: PropTypes.shape({name: PropTypes.string})
         })
       ),
