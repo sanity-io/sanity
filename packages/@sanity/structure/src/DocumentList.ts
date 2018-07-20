@@ -1,4 +1,5 @@
 import {getSerializedChildResolver} from './util/getSerializedChildResolver'
+import {SchemaType} from './parts/Schema'
 import {client} from './parts/Client'
 import {SortItem} from './Sort'
 import {EditorBuilder} from './Editor'
@@ -84,8 +85,8 @@ export class DocumentListBuilder extends GenericListBuilder<PartialDocumentList>
     return this
   }
 
-  schemaTypeName(typeName: string): DocumentListBuilder {
-    this.spec.schemaTypeName = typeName
+  schemaType(type: SchemaType | string): DocumentListBuilder {
+    this.spec.schemaTypeName = typeof type === 'string' ? type : type.name
     return this
   }
 
