@@ -30,6 +30,12 @@ export default {
       validation: Rule => Rule.required()
     },
     {
+      name: 'bestFriend',
+      title: 'Best friend',
+      type: 'reference',
+      to: [{type: 'author'}]
+    },
+    {
       name: 'image',
       title: 'Image',
       type: 'image',
