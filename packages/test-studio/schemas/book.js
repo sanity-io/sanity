@@ -1,10 +1,14 @@
 import BookIcon from 'react-icons/lib/fa/book'
 
 function formatSubtitle(book) {
-  if (book.authorName && book.publicationYear) {
-    return `By ${book.authorName} (${book.publicationYear})`
-  }
-  return book.authorName ? `By ${book.authorName}` : String(book.publicationYear || '')
+  return [
+    'By',
+    book.authorName || '<unknown>',
+    book.authorBFF && `[BFF ${book.authorBFF} 🤞]`,
+    book.publicationYear && `(${book.publicationYear})`
+  ]
+    .filter(Boolean)
+    .join(' ')
 }
 
 export default {
@@ -61,6 +65,16 @@ export default {
       by: [{field: 'title', direction: 'asc'}, {field: 'publicationYear', direction: 'asc'}]
     },
     {
+      title: 'Author name',
+      name: 'authorName',
+      by: [{field: 'author.name', direction: 'asc'}]
+    },
+    {
+      title: 'Authors best friend',
+      name: 'authorBFF',
+      by: [{field: 'author.bestFriend.name', direction: 'asc'}]
+    },
+    {
       title: 'Swedish title',
       name: 'swedishTitle',
       by: [{field: 'translations.se', direction: 'asc'}, {field: 'title', direction: 'asc'}]
@@ -73,6 +87,7 @@ export default {
       createdAt: '_createdAt',
       date: '_updatedAt',
       authorName: 'author.name',
+      authorBFF: 'author.bestFriend.name',
       publicationYear: 'publicationYear',
       media: 'coverImage'
     },
