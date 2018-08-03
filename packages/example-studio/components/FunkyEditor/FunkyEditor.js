@@ -39,7 +39,7 @@ export default class FunkyEditor extends React.Component {
           renderBlockActions={BlockActions}
           renderCustomMarkers={CustomMarkers}
           markers={markers.concat([
-            {type: 'customMarkerTest', path: value[0] ? [{_key: value[0]._key}] : []}
+            {type: 'customMarkerTest', path: value && value[0] ? [{_key: value[0]._key}] : []}
           ])}
         />
         <p>
