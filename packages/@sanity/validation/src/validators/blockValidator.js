@@ -1,8 +1,5 @@
-const Rule = require('../Rule')
-const ValidationError = require('../ValidationError')
 const validateDocument = require('../validateDocument')
 const {validateItem} = validateDocument
-const baseRule = new Rule()
 const {flatten} = require('lodash')
 
 // eslint-disable-next-line import/prefer-default-export
