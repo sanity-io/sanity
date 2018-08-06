@@ -1,5 +1,6 @@
 import {EditorNode, SerializeOptions, Serializable} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
+import {SchemaType} from './parts/Schema'
 
 export type PartialEditorNode = {
   id?: string
@@ -36,10 +37,10 @@ export class EditorBuilder implements Serializable {
     return this
   }
 
-  type(documentType: string): EditorBuilder {
+  schemaType(documentType: SchemaType | string): EditorBuilder {
     this.spec.options = {
       ...(this.spec.options || {}),
-      type: documentType
+      type: typeof documentType === 'string' ? documentType : documentType.name
     }
 
     return this

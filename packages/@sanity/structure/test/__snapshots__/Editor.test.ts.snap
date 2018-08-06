@@ -35,3 +35,15 @@ Object {
   "type": "document",
 }
 `;
+
+exports[`can construct with schema type instead of schema type name 1`] = `
+Object {
+  "id": "yeah",
+  "options": Object {
+    "id": "wow",
+    "type": "post",
+  },
+  "title": "Yeah",
+  "type": "document",
+}
+`;

@@ -47,7 +47,7 @@ const resolveEditorChildForItem: ChildResolver = (
     new EditorBuilder()
       .id('editor')
       .documentId(itemId)
-      .type(type || '')
+      .schemaType(type || '')
   )
 }
 
