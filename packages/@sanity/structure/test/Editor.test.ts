@@ -1,4 +1,5 @@
 import {StructureBuilder as S} from '../src'
+import {defaultSchema} from '../src/parts/Schema'
 
 test('builds editor node through constructor', () => {
   expect(
@@ -18,7 +19,7 @@ test('throws on missing id', () => {
     S.editor()
       .title('title')
       .documentId('docId')
-      .type('book')
+      .schemaType('book')
       .serialize()
   ).toThrowError(/`id` is required/)
 })
@@ -28,7 +29,7 @@ test('throws on missing document ID', () => {
     S.editor()
       .id('id')
       .title('title')
-      .type('book')
+      .schemaType('book')
       .serialize()
   ).toThrowError(/document id/)
 })
@@ -43,13 +44,24 @@ test('throws on missing document type', () => {
   ).toThrowError(/document type/)
 })
 
+test('can construct with schema type instead of schema type name', () => {
+  expect(
+    S.editor()
+      .schemaType(defaultSchema.get('post'))
+      .id('yeah')
+      .title('Yeah')
+      .documentId('wow')
+      .serialize()
+  ).toMatchSnapshot()
+})
+
 test('can construct using builder', () => {
   expect(
     S.editor()
       .id('yeah')
       .title('Yeah')
       .documentId('wow')
-      .type('book')
+      .schemaType('book')
       .serialize()
   ).toMatchSnapshot()
 })
@@ -57,7 +69,7 @@ test('can construct using builder', () => {
 test('can construct using builder (alt)', () => {
   expect(
     S.editor()
-      .type('book')
+      .schemaType('book')
       .id('yeah')
       .title('Yeah')
       .documentId('wow')

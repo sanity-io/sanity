@@ -55,7 +55,7 @@ function getDocumentList(name: string, title: string, type: SchemaType): Documen
     .childResolver((documentId: string) =>
       new EditorBuilder()
         .id('editor')
-        .type(name)
+        .schemaType(name)
         .documentId(documentId)
     )
     .menuItems([
