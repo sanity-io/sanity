@@ -1,4 +1,4 @@
-import Structure from '../structure'
+import Structure from '../structure-builder'
 
 export default () =>
   Structure.list()
