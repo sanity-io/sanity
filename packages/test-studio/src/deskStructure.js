@@ -1,4 +1,4 @@
-import S from '@sanity/desk-tool/structure'
+import S from '@sanity/desk-tool/structure-builder'
 import RefreshIcon from 'part:@sanity/base/sync-icon'
 import JsonDocumentDump from './components/JsonDocumentDump'
 
