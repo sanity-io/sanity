@@ -1,15 +1,14 @@
 import memoizeOne from 'memoize-one'
 import {Schema, defaultSchema, SchemaType} from './parts/Schema'
 import {dataAspects, DataAspectsResolver} from './parts/DataAspects'
-import {ListItemBuilder} from './ListItem'
+import {getPlusIcon, getListIcon} from './parts/Icon'
+import {MenuItemBuilder, getOrderingMenuItemsForSchemaType} from './MenuItem'
+import {DEFAULT_SELECTED_ORDERING_OPTION} from './Sort'
 import {DocumentListBuilder} from './DocumentList'
-import {MenuItemBuilder} from './MenuItem'
-import {DEFAULT_ORDERING_OPTIONS, DEFAULT_SELECTED_ORDERING_OPTION} from './Sort'
-import {getPlusIcon, getSortIcon, getListIcon} from './parts/Icon'
+import {ListItemBuilder} from './ListItem'
 import {EditorBuilder} from './Editor'
 
 const PlusIcon = getPlusIcon()
-const SortIcon = getSortIcon()
 const ListIcon = getListIcon()
 
 const getDataAspectsForSchema: (schema: Schema) => DataAspectsResolver = memoizeOne(dataAspects)
@@ -91,18 +90,4 @@ function getDocumentList(name: string, title: string, type: SchemaType): Documen
         .icon(PlusIcon)
         .intent({type: 'create', params: {type: name}})
     ])
-}
-
-function getOrderingMenuItemsForSchemaType(type: SchemaType) {
-  return (type.orderings
-    ? type.orderings.concat(DEFAULT_ORDERING_OPTIONS)
-    : DEFAULT_ORDERING_OPTIONS
-  ).map(ordering =>
-    new MenuItemBuilder()
-      .group('sorting')
-      .title(`Sort by ${ordering.title}`)
-      .icon(SortIcon)
-      .action('setSortOrder')
-      .params({by: ordering.by})
-  )
 }

@@ -1,8 +1,12 @@
 import {Intent} from './Intent'
 import {Partial} from './Partial'
-import {SortItem} from './Sort'
+import {SortItem, Ordering, DEFAULT_ORDERING_OPTIONS} from './Sort'
 import {SerializeOptions, Serializable, SerializePath} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
+import {SchemaType, defaultSchema} from './parts/Schema'
+import {getSortIcon} from './parts/Icon'
+
+const SortIcon = getSortIcon()
 
 export function maybeSerializeMenuItem(
   item: MenuItem | MenuItemBuilder,
@@ -108,4 +112,21 @@ export interface SortMenuItem extends MenuItem {
   params: {
     by: SortItem[]
   }
+}
+
+export function getOrderingMenuItem(ordering: Ordering) {
+  return new MenuItemBuilder()
+    .group('sorting')
+    .title(`Sort by ${ordering.title}`)
+    .icon(SortIcon)
+    .action('setSortOrder')
+    .params({by: ordering.by})
+}
+
+export function getOrderingMenuItemsForSchemaType(typeName: SchemaType | string) {
+  const type = typeof typeName === 'string' ? defaultSchema.get(typeName) : typeName
+  return (type.orderings
+    ? type.orderings.concat(DEFAULT_ORDERING_OPTIONS)
+    : DEFAULT_ORDERING_OPTIONS
+  ).map(getOrderingMenuItem)
 }
