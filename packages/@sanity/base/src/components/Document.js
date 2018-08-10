@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import generateScriptLoader from '../util/generateScriptLoader'
 import AppLoadingScreen from './AppLoadingScreen'
+import NoJavascript from './NoJavascript'
 
 function assetUrl(staticPath, item) {
   const isAbsolute = item.path.match(/^https?:\/\//)
@@ -51,6 +52,7 @@ function Document(props) {
       <body>
         <div id="sanity">
           <AppLoadingScreen text={props.loading} />
+          <NoJavascript />
         </div>
 
         {/* eslint-disable react/no-danger */}
