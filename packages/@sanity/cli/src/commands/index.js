@@ -5,6 +5,8 @@ import initCommand from './init/initCommand'
 import installCommand from './install/installCommand'
 import loginCommand from './login/loginCommand'
 import logoutCommand from './logout/logoutCommand'
+import projectsGroup from './projects/projectsGroup'
+import listProjectsCommand from './projects/listProjectsCommand'
 import manageCommand from './manage/manageCommand'
 import upgradeCommand from './upgrade/upgradeCommand'
 import versionsCommand from './versions/versionsCommand'
@@ -19,5 +21,7 @@ export default [
   docsCommand,
   manageCommand,
   debugCommand,
-  helpCommand
+  helpCommand,
+  projectsGroup,
+  listProjectsCommand
 ]

@@ -57,7 +57,7 @@ const compiler = webpack({
         use: [{loader: 'babel-loader', options: babelRc}]
       },
       {
-        test: /node_modules[/\\]rc[/\\]/,
+        test: /node_modules[/\\](rc|tty-table)[/\\]/,
         use: [{loader: shebangLoader}]
       }
     ]
