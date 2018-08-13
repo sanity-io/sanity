@@ -3,18 +3,21 @@ import React from 'react'
 import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'
 import {map} from 'rxjs/operators'
 import type {Uploader} from '../../sanity/uploads/typedefs'
-import type {Type, Marker} from '../../typedefs'
+import type {Marker, Type} from '../../typedefs'
 import type {Path} from '../../typedefs/path'
 import type {Subscription} from '../../typedefs/observable'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import {FOCUS_TERMINATOR, startsWith} from '../../utils/pathUtils'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
-import {PatchEvent, insert, set, setIfMissing, unset} from '../../PatchEvent'
+import {insert, PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
 import styles from './styles/ArrayInput.css'
 import resolveListComponents from './resolveListComponents'
 import type {ArrayType, ItemValue} from './typedefs'
 import RenderItemValue from './ItemValue'
 import randomKey from './randomKey'
+import Button from 'part:@sanity/components/buttons/default'
+import Fieldset from 'part:@sanity/components/fieldsets/default'
+import Details from '../common/Details'
 
 function createProtoValue(type: Type): ItemValue {
   if (type.jsonType !== 'object') {
@@ -163,8 +166,8 @@ export default class ArrayInput extends React.Component<Props, State> {
     const {type, markers, readOnly, value, focusPath, onBlur, onFocus, level} = this.props
     const {isMoving} = this.state
     const options = type.options || {}
-
-    const isSortable = options.sortable !== false
+    const hasMissingKeys = value.some(item => !item._key)
+    const isSortable = options.sortable !== false && !hasMissingKeys
 
     const isGrid = options.layout === 'grid'
 
@@ -202,7 +205,7 @@ export default class ArrayInput extends React.Component<Props, State> {
                 onChange={this.handleItemChange}
                 focusPath={focusPath}
                 onFocus={onFocus}
-                readOnly={readOnly}
+                readOnly={readOnly || hasMissingKeys}
                 onBlur={onBlur}
               />
             </Item>
@@ -240,6 +243,12 @@ export default class ArrayInput extends React.Component<Props, State> {
       .filter(Boolean)
   }
 
+  handleFixMissingKeys = () => {
+    const {onChange, value} = this.props
+    const patches = value.map((val, i) => setIfMissing(randomKey(), [i, '_key']))
+    onChange(PatchEvent.from(...patches))
+  }
+
   handleUpload = ({file, type, uploader}) => {
     const {onChange} = this.props
     const item = createProtoValue(type)
@@ -259,7 +268,36 @@ export default class ArrayInput extends React.Component<Props, State> {
 
   render() {
     const {type, level, markers, readOnly, onChange, value} = this.props
-
+    const hasMissingKeys = (value || []).some(item => !item._key)
+    if (hasMissingKeys) {
+      return (
+        <Fieldset
+          legend={type.title}
+          description={type.description}
+          level={level}
+          tabIndex={0}
+          onFocus={this.handleFocus}
+          ref={this.setElement}
+          markers={markers}
+        >
+          <div className={styles.missingKeysWarning}>
+            Some items in this list are missing their keys. We need to fix this before the list can
+            be edited.
+            <div className={styles.fixMissingKeysButtonWrapper}>
+              <Button color="primary" onClick={this.handleFixMissingKeys}>
+                Fix missing keys
+              </Button>
+            </div>
+            <Details title={<b>Why is this happening?</b>}>
+              This usually happens when items are created through the API client from outside the
+              Content Studio and someone forgets to set the <code>_key</code>-property of list
+              items.
+            </Details>
+          </div>
+          {this.renderList()}
+        </Fieldset>
+      )
+    }
     return (
       <UploadTargetFieldset
         markers={markers}
