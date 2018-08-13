@@ -12,14 +12,15 @@ const CONTAINER_STYLE = {
   cursor: 'default',
   userSelect: 'none',
   WebkitUserSelect: 'none',
-  outline: 'none'
+  outline: 'none',
+  marginBottom: '0.5em'
 }
 
 export default class Details extends React.Component {
   static propTypes = {
     children: PropTypes.node,
     isOpen: PropTypes.bool,
-    title: PropTypes.string
+    title: PropTypes.node
   }
 
   static defaultProps = {

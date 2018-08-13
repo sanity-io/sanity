@@ -21,7 +21,7 @@ import Preview from '../../Preview'
 
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import type {Path} from '../../typedefs/path'
-import type {Type, Marker} from '../../typedefs'
+import type {Marker, Type} from '../../typedefs'
 import * as PathUtils from '../../utils/pathUtils'
 import ConfirmButton from './ConfirmButton'
 import styles from './styles/ItemValue.css'
@@ -74,6 +74,7 @@ function hasFocusInPath(path, value) {
 }
 
 const IGNORE_KEYS = ['_key', '_type', '_weak']
+
 function isEmpty(value) {
   return Object.keys(value).every(key => IGNORE_KEYS.includes(key))
 }
@@ -88,7 +89,7 @@ export default class RenderItemValue extends React.Component<Props> {
 
   componentDidMount() {
     const {focusPath, value} = this.props
-    if (hasFocusInPath(focusPath, value)) {
+    if (value._key && hasFocusInPath(focusPath, value)) {
       this.focus()
     }
   }
@@ -270,13 +271,19 @@ export default class RenderItemValue extends React.Component<Props> {
         item: marker.item.cloneWithMessage(`Contains ${level}`)
       })
     })
+    const classNames = [
+      errors.length > 0 ? styles.innerWithError : styles.inner,
+      !value._key && styles.warning
+    ]
+      .filter(Boolean)
+      .join(' ')
 
     return (
-      <div className={errors.length > 0 ? styles.innerWithError : styles.inner}>
+      <div className={classNames}>
         {!isGrid && isSortable && <DragHandle />}
         <div
           tabIndex={0}
-          onClick={this.handleEditStart}
+          onClick={value._key && this.handleEditStart}
           onKeyPress={this.handleKeyPress}
           className={styles.previewWrapper}
         >
@@ -286,6 +293,7 @@ export default class RenderItemValue extends React.Component<Props> {
             className={styles.previewWrapperHelper}
             onFocus={this.handleFocus}
           >
+            {!value._key && <div className={styles.missingKeyMessage}>Missing key</div>}
             <Preview layout={previewLayout} value={value} type={this.getMemberType()} />
           </div>
         </div>

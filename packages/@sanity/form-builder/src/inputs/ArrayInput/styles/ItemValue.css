@@ -37,6 +37,19 @@
   width: calc(100% + var(--medium-padding) * 2);
   margin-left: calc(var(--medium-padding) * -1);
 }
+.warning {
+  border: 1px dashed var(--state-warning-color);
+}
+
+.missingKeyMessage {
+  color: var(--state-warning-color);
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  z-index: 200;
+  padding: 0.2em 0.4em;
+  background-color: var(--input-bg);
+}
 
 .dragHandle {
   composes: default from 'part:@sanity/components/drag-handle-style';
