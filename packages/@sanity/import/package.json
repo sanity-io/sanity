@@ -1,6 +1,6 @@
 {
   "name": "@sanity/import",
-  "version": "0.132.5",
+  "version": "0.132.6",
   "description": "Import documents to a Sanity dataset",
   "main": "lib/import.js",
   "engines": {

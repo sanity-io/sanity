@@ -1,6 +1,6 @@
 {
   "name": "@sanity/plugin-loader",
-  "version": "0.132.5",
+  "version": "0.132.6",
   "description": "Monkey-patches node's require algorithm to allow requiring of Sanity parts",
   "main": "loader.js",
   "scripts": {
@@ -41,9 +41,9 @@
     "nyc": "^11.0.3"
   },
   "dependencies": {
-    "@sanity/resolver": "0.132.5",
-    "@sanity/util": "0.132.5",
-    "@sanity/webpack-integration": "0.132.5",
+    "@sanity/resolver": "0.132.6",
+    "@sanity/util": "0.132.6",
+    "@sanity/webpack-integration": "0.132.6",
     "css-modules-require-hook": "4.1.0",
     "interop-require": "^1.0.0"
   }
