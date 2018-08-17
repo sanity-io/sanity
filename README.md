@@ -38,7 +38,7 @@ Then check out the [schema documentation](https://www.sanity.io/docs/content-stu
 
 As they're merrily content managing you can start setting up a front-end to render your data based on one of the [demos](#sample-frontends) we have available.
 
-Feel totally free to [ping us on Gitter](https://gitter.im/sanity-io/sanity) for a chat should you have questions along the way!
+Feel totally free to ping us on [Slack](https://slack.sanity.io) or [Gitter](https://gitter.im/sanity-io/sanity) for a chat should you have questions along the way!
 
 ## Key Features
 
