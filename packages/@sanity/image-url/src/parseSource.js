@@ -43,12 +43,14 @@ export default function parseSource(source) {
     return null
   }
 
-  if (source && (source.crop || source.hotspot)) {
+  if (source.crop) {
     image.crop = source.crop
+  }
+  if (source.hotspot) {
     image.hotspot = source.hotspot
   }
 
-  return applyDefaultHotspot(image)
+  return applyDefaults(image)
 }
 
 function isUrl(url) {
@@ -61,7 +63,7 @@ function urlToId(url) {
 }
 
 // Mock crop and hotspot if image lacks it
-function applyDefaultHotspot(image) {
+function applyDefaults(image) {
   if (image.crop && image.hotspot) {
     return image
   }
