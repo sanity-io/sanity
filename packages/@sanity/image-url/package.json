@@ -25,7 +25,7 @@
     "babel-cli": "^6.26.0",
     "browserify": "^14.3.0",
     "envify": "^4.0.0",
-    "jest": "^22.4.3",
+    "jest": "^23.5.0",
     "rimraf": "^2.6.2",
     "uglify-js": "^3.1.10",
     "uglifyify": "^3.0.4"
