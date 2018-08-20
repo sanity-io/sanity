@@ -1,5 +1,5 @@
 import sanityImage from '../src/builder'
-import {imageWithNoCropSpecified, noHotspotImage, croppedImage} from './fixtures'
+import {croppedImage, imageWithNoCropSpecified, noHotspotImage} from './fixtures'
 
 const urlFor = sanityImage()
   .projectId('zp7mbokg')
@@ -11,13 +11,47 @@ function stripPath(url) {
 
 const cases = [
   {
+    name: 'handles hotspot but no crop',
+    url: urlFor
+      .image({
+        _type: 'image',
+        asset: {
+          _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg',
+          _type: 'reference'
+        },
+        hotspot: {
+          height: 0.3,
+          width: 0.3,
+          x: 0.3,
+          y: 0.3
+        }
+      })
+      .url()
+  },
+  {
+    name: 'handles crop but no hotspot',
+    url: urlFor
+      .image({
+        _type: 'image',
+        asset: {
+          _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg',
+          _type: 'reference'
+        },
+        crop: {
+          bottom: 0.1,
+          left: 0.1,
+          right: 0.1,
+          top: 0.1
+        }
+      })
+      .url()
+  },
+  {
     name: 'constrains aspect ratio',
     url: urlFor
       .image(croppedImage())
       .size(100, 80)
-      .url(),
-    expect:
-      'https://cdn.sanity.io/images/zp7mbokg/production/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg?rect=200,300,1600,1280&w=100&h=80'
+      .url()
   },
 
   {
@@ -26,9 +60,7 @@ const cases = [
       .image(croppedImage())
       .ignoreImageParams()
       .size(100, 80)
-      .url(),
-    expect:
-      'https://cdn.sanity.io/images/zp7mbokg/production/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg?w=100&h=80'
+      .url()
   },
 
   {
@@ -37,9 +69,7 @@ const cases = [
       .image(croppedImage())
       .ignoreImageParams()
       .size(100, 80)
-      .toString(),
-    expect:
-      'https://cdn.sanity.io/images/zp7mbokg/production/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg?w=100&h=80'
+      .toString()
   },
 
   {
@@ -48,9 +78,7 @@ const cases = [
       .image(croppedImage())
       .size(100, 80)
       .crop('center')
-      .url(),
-    expect:
-      'https://cdn.sanity.io/images/zp7mbokg/production/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg?w=100&h=80&crop=center'
+      .url()
   },
 
   {
@@ -59,9 +87,7 @@ const cases = [
       .image(croppedImage())
       .size(100, 80)
       .focalPoint(10, 20)
-      .url(),
-    expect:
-      'https://cdn.sanity.io/images/zp7mbokg/production/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg?fp-x=10&fp-x=20&w=100&h=80'
+      .url()
   },
 
   {
@@ -69,9 +95,7 @@ const cases = [
     url: urlFor
       .image(imageWithNoCropSpecified())
       .width(80)
-      .url(),
-    expect:
-      'https://cdn.sanity.io/images/zp7mbokg/production/vK7bXJPEjVpL_C950gH1N73Zv14r7pYsbUdXl-4288x2848.jpg?w=80'
+      .url()
   },
 
   {
@@ -80,9 +104,7 @@ const cases = [
       .image(imageWithNoCropSpecified())
       .width(80)
       .height(80)
-      .url(),
-    expect:
-      'https://cdn.sanity.io/images/zp7mbokg/production/vK7bXJPEjVpL_C950gH1N73Zv14r7pYsbUdXl-4288x2848.jpg?rect=720,0,2848,2848&w=80&h=80'
+      .url()
   },
 
   {
@@ -90,9 +112,7 @@ const cases = [
     url: urlFor
       .image(croppedImage())
       .withOptions({w: 320, h: 240})
-      .url(),
-    expect:
-      'https://cdn.sanity.io/images/zp7mbokg/production/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg?rect=200,300,1600,2400&w=320&h=240'
+      .url()
   },
 
   {
@@ -102,8 +122,7 @@ const cases = [
         .image(noHotspotImage())
         .flipHorizontal()
         .url()
-    ),
-    expect: 'flip=h'
+    )
   },
 
   {
@@ -113,8 +132,7 @@ const cases = [
         .image(noHotspotImage())
         .flipVertical()
         .url()
-    ),
-    expect: 'flip=v'
+    )
   },
 
   {
@@ -137,10 +155,8 @@ const cases = [
         .flipVertical()
         .fit('crop')
         .url()
-    ),
+    )
     // eslint-disable-next-line max-len
-    expect:
-      'rect=200,300,1600,2400&flip=hv&fm=png&dl=a.png&blur=50&sharp=7&invert=true&or=90&min-h=150&max-h=300&min-w=100&max-w=200&q=50&fit=crop'
   },
 
   {
@@ -165,17 +181,15 @@ const cases = [
         .fit('crop')
         .crop('center')
         .url()
-    ),
+    )
     // eslint-disable-next-line max-len
-    expect:
-      'rect=10,20,30,40&fp-x=10&fp-x=20&flip=hv&fm=png&dl=a.png&blur=50&invert=true&or=90&min-h=150&max-h=300&min-w=100&max-w=200&q=50&fit=crop&crop=center'
   }
 ]
 
 describe('builder', () => {
   cases.forEach(testCase => {
     test(testCase.name, () => {
-      expect(testCase.url).toBe(testCase.expect)
+      expect(testCase.url).toMatchSnapshot()
     })
   })
 

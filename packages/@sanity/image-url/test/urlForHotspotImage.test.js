@@ -1,5 +1,10 @@
 import urlForHotspotImage from '../src/urlForImage'
-import {uncroppedImage, croppedImage, noHotspotImage, materializedAssetWithCrop} from './fixtures'
+import {
+  uncroppedImage,
+  croppedImage,
+  noHotspotImage,
+  materializedAssetWithCrop
+} from './fixtures'
 
 describe('urlForHotspotImage', () => {
   test('does not crop when no crop is required', () => {
@@ -116,6 +121,19 @@ describe('urlForHotspotImage', () => {
   })
 
   test('gracefully handles a non-hotspot image', () => {
+    expect(
+      urlForHotspotImage({
+        source: noHotspotImage(),
+        projectId: 'zp7mbokg',
+        dataset: 'production',
+        height: 100
+      })
+    ).toBe(
+      'https://cdn.sanity.io/images/zp7mbokg/production/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg?h=100'
+    )
+  })
+
+  test('gracefully handles a non-crop image', () => {
     expect(
       urlForHotspotImage({
         source: noHotspotImage(),
