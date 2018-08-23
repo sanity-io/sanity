@@ -45,7 +45,8 @@ function noActionFn() {
 }
 
 function isLiveEditEnabled(item) {
-  return schema.get(item._type).liveEdit === true
+  const schemaType = schema.get(item._type)
+  return schemaType && schemaType.liveEdit === true
 }
 
 function getStatusIndicator(item) {
