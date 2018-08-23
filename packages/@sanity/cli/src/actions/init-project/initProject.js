@@ -1,5 +1,6 @@
 import os from 'os'
 import path from 'path'
+import fs from 'fs'
 import fse from 'fs-extra'
 import resolveFrom from 'resolve-from'
 import deburr from 'lodash/deburr'
@@ -269,10 +270,10 @@ export default async function initSanity(args, context) {
     if (opts.dataset) {
       debug('User has specified dataset through a flag (%s)', opts.dataset)
       const existing = datasets.find(ds => ds.name === opts.dataset)
-      const aclMode = await getAclMode()
 
       if (!existing) {
         debug('Specified dataset not found, creating it')
+        const aclMode = await getAclMode()
         await client.datasets.create(opts.dataset, {aclMode})
       }
 
@@ -329,31 +330,32 @@ export default async function initSanity(args, context) {
 
   function selectProjectTemplate() {
     const defaultTemplate = unattended || flags.template ? flags.template || 'clean' : null
-    return (
-      defaultTemplate ||
-      prompt.single({
-        message: 'Select project template',
-        type: 'list',
-        choices: [
-          {
-            value: 'moviedb',
-            name: 'Movie database (schema + sample data)'
-          },
-          {
-            value: 'ecommerce',
-            name: 'E-commerce (schema + sample data)'
-          },
-          {
-            value: 'blog',
-            name: 'Blog (schema)'
-          },
-          {
-            value: 'clean',
-            name: 'Clean project with no predefined schemas'
-          }
-        ]
-      })
-    )
+    if (defaultTemplate) {
+      return defaultTemplate
+    }
+
+    return prompt.single({
+      message: 'Select project template',
+      type: 'list',
+      choices: [
+        {
+          value: 'moviedb',
+          name: 'Movie database (schema + sample data)'
+        },
+        {
+          value: 'ecommerce',
+          name: 'E-commerce (schema + sample data)'
+        },
+        {
+          value: 'blog',
+          name: 'Blog (schema)'
+        },
+        {
+          value: 'clean',
+          name: 'Clean project with no predefined schemas'
+        }
+      ]
+    })
   }
 
   async function doDatasetImport() {
@@ -373,9 +375,11 @@ export default async function initSanity(args, context) {
   }
 
   async function getProjectInfo() {
+    const specifiedPath = flags['output-path'] && path.resolve(flags['output-path'])
+
     if (unattended) {
       return Object.assign({license: 'UNLICENSED'}, defaults, {
-        outputPath: path.resolve(flags['output-path'])
+        outputPath: specifiedPath
       })
     }
 
@@ -386,7 +390,7 @@ export default async function initSanity(args, context) {
       author: defaults.author,
       license: 'UNLICENSED',
 
-      outputPath: await prompt.single({
+      outputPath: specifiedPath || await prompt.single({
         type: 'input',
         message: 'Output path:',
         default: workDirIsEmpty ? workDir : path.join(workDir, sluggedName),
@@ -451,22 +455,24 @@ export default async function initSanity(args, context) {
   }
 }
 
-async function validateEmptyPath(dir) {
+function validateEmptyPath(dir) {
   const checkPath = absolutify(dir)
-  return (await pathIsEmpty(checkPath)) ? true : 'Given path is not empty'
+  return pathIsEmpty(checkPath) ? true : 'Given path is not empty'
 }
 
 function pathIsEmpty(dir) {
-  return fse
-    .readdir(dir)
-    .then(content => content.length === 0)
-    .catch(err => {
-      if (err.code === 'ENOENT') {
-        return true
-      }
+  // We are using fs instead of fs-extra because it silently, weirdly, crashes on windows
+  try {
+    // eslint-disable-next-line no-sync
+    const content = fs.readdirSync(dir)
+    return content.length === 0
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      return true
+    }
 
-      throw err
-    })
+    throw err
+  }
 }
 
 function expandHome(filePath) {
