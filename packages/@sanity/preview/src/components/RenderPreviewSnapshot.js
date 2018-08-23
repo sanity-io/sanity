@@ -19,17 +19,23 @@ function resolvePreview(type) {
 export default function RenderPreviewSnapshot(props) {
   const {snapshot, type, isLive, layout, ...rest} = props
   const PreviewComponent = resolvePreview(type)
+
+  // TODO: Bjoerge: Check for image type with "is()"
+  const renderAsBlockImage = layout === 'block' && type && type.name === 'image'
+
   const preview = (
     <PreviewComponent
       // Render media always until we have schema functionality for determing if there is media
       media={() => undefined}
       {...rest}
       value={snapshot}
-      type={type}
+      icon={type && type.icon}
       layout={layout}
       isPlaceholder={!snapshot}
+      _renderAsBlockImage={renderAsBlockImage}
     />
   )
+
   if (DEBUG) {
     return (
       <div>
