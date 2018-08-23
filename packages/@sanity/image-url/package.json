@@ -1,6 +1,6 @@
 {
   "name": "@sanity/image-url",
-  "version": "0.132.7",
+  "version": "0.132.8",
   "description": "Tools to generate image urls from Sanity content",
   "main": "index.js",
   "umd": "umd/sanityImageUrl.min.js",

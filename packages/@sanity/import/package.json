@@ -1,6 +1,6 @@
 {
   "name": "@sanity/import",
-  "version": "0.132.6",
+  "version": "0.132.8",
   "description": "Import documents to a Sanity dataset",
   "main": "lib/import.js",
   "engines": {
@@ -39,7 +39,7 @@
     "tar-fs": "^1.16.0"
   },
   "devDependencies": {
-    "@sanity/client": "0.132.5",
+    "@sanity/client": "0.132.8",
     "get-it": "^4.0.1",
     "jest": "^22.4.3",
     "rimraf": "^2.6.2"
