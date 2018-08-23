@@ -1,9 +1,16 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.deletedDocument {
+.deletedDocument,
+.unknownSchemaType {
   composes: flexCenter from 'part:@sanity/base/theme/layout/positioning-style';
 }
 
-.deletedDocumentInner {
+.deletedDocumentInner,
+.unknownSchemaTypeInner {
+  padding: var(--medium-padding);
+}
+
+.jsonDump {
+  white-space: pre-wrap;
   padding: var(--medium-padding);
 }

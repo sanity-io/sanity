@@ -418,9 +418,37 @@ export default class EditorPane extends React.Component {
     )
   }
 
+  renderUnknownSchemaType() {
+    const {options} = this.props
+    const {draft, published} = this.state
+    const typeName = options.type
+    const doc = draft.snapshot || published.snapshot
+    return (
+      <div className={styles.unknownSchemaType}>
+        <div className={styles.unknownSchemaTypeInner}>
+          <h3>Unknown schema type</h3>
+          <p>
+            This document has the schema type <code>{typeName}</code>, which is not defined as a
+            type in the local content studio schema.
+          </p>
+          {__DEV__ &&
+            doc && (
+              <div>
+                <h4>Here is the JSON representation of the document:</h4>
+                <pre className={styles.jsonDump}>
+                  <code>{JSON.stringify(doc, null, 2)}</code>
+                </pre>
+              </div>
+            )}
+        </div>
+      </div>
+    )
+  }
+
   render() {
     const {options, index} = this.props
     const typeName = options.type
+    const schemaType = schema.get(typeName)
     const {
       draft,
       published,
@@ -434,6 +462,10 @@ export default class EditorPane extends React.Component {
       isReconnecting
     } = this.state
 
+    if (!schemaType) {
+      return this.renderUnknownSchemaType()
+    }
+
     if (isRecoverable(draft, published)) {
       return this.renderDeleted()
     }
@@ -442,7 +474,7 @@ export default class EditorPane extends React.Component {
       <Editor
         paneIndex={index}
         patchChannel={this.patchChannel}
-        type={schema.get(typeName)}
+        type={schemaType}
         published={published.snapshot}
         draft={draft.snapshot}
         markers={markers}
