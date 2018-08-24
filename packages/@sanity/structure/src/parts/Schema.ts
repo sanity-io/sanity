@@ -7,9 +7,16 @@ interface Schema {
   getTypeNames(): string[]
 }
 
+interface SchemaField {
+  name: string
+  type: SchemaType
+}
+
 export interface SchemaType {
   name: string
   type?: SchemaType
+  to?: SchemaField[]
+  fields?: SchemaField[]
   orderings?: Ordering[]
 }
 

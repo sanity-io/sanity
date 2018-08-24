@@ -139,8 +139,8 @@ export default withRouterHOC(
       setLayout: ({layout}) => {
         this.setState({layout})
       },
-      setSortOrder: ({by}) => {
-        this.setState({sortBy: by})
+      setSortOrder: sort => {
+        this.setState({sort})
       }
     }
 
@@ -190,6 +190,29 @@ export default withRouterHOC(
       this.setState({scrollTop})
     }
 
+    buildListQuery() {
+      const {options} = this.props
+      const {filter, defaultOrdering} = options
+      const sortState = this.state.sort
+      const extendedProjection = sortState && sortState.extendedProjection
+      const projectionFields = ['_id', '_type']
+      const finalProjection = projectionFields.join(', ')
+      const sortBy = (sortState && sortState.by) || defaultOrdering || []
+      const sort = sortBy.length > 0 ? sortBy : DEFAULT_ORDERING
+
+      if (extendedProjection) {
+        const firstProjection = projectionFields.concat(extendedProjection).join(', ')
+        return [
+          `*[${filter}] [0...50000]`,
+          `{${firstProjection}}`,
+          `order(${toOrderClause(sort)})`,
+          `{${finalProjection}}`
+        ].join(' | ')
+      }
+
+      return `*[${filter}] | order(${toOrderClause(sort)}) [0...50000] {${finalProjection}}`
+    }
+
     render() {
       const {
         title,
@@ -204,12 +227,12 @@ export default withRouterHOC(
         menuItemGroups
       } = this.props
 
-      const {filter, params, defaultOrdering} = options
-      const sortBy = this.state.sortBy || defaultOrdering || []
-      const sort = sortBy.length > 0 ? sortBy : DEFAULT_ORDERING
+      const {filter, params} = options
       const layout = this.state.layout || defaultLayout || 'default'
       const typeName = getTypeNameFromSingleTypeFilter(filter, params)
       const hasItems = items => items && items.length > 0
+      const query = this.buildListQuery()
+
       return (
         <DefaultPane
           title={title}
@@ -224,10 +247,7 @@ export default withRouterHOC(
           onAction={this.handleAction}
           onExpand={onExpand}
         >
-          <QueryContainer
-            query={`*[${filter}] | order(${toOrderClause(sort)}) [0...50000] {_id, _type}`}
-            params={params}
-          >
+          <QueryContainer query={query} params={params}>
             {({result, loading, error, onRetry}) => {
               if (error) {
                 return (
