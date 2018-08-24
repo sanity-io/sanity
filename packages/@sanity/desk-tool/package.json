@@ -24,6 +24,7 @@
   "dependencies": {
     "@sanity/data-aspects": "0.132.8",
     "@sanity/form-builder": "0.132.8",
+    "@sanity/generate-help-url": "0.132.5",
     "@sanity/mutator": "0.132.5",
     "@sanity/react-tippy": "1.2.6",
     "@sanity/structure": "0.132.5",
