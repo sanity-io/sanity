@@ -4,6 +4,7 @@ import ArrayOfPrimitivesInput from '../../inputs/ArrayOfPrimitivesInput'
 import TagsArrayInput from '../../inputs/TagsArrayInput'
 import * as is from '../../utils/is'
 import {get} from 'lodash'
+import SanityArrayInput from '../inputs/SanityArrayInput'
 
 const PRIMITIVES = ['string', 'number', 'boolean']
 
@@ -46,5 +47,5 @@ export default function resolveArrayInput(type) {
   }
 
   // use default
-  return null
+  return SanityArrayInput
 }
