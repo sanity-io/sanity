@@ -12,7 +12,7 @@ import strings from './strings'
 import texts from './texts'
 import objects, {myObject} from './objects'
 import recursiveObjectTest, {recursiveObject} from './recursiveObject'
-import arrays from './arrays'
+import arrays, {topLevelArrayType, topLevelPrimitiveArrayType} from './arrays'
 import files from './files'
 import uploads from './uploads'
 import code from './code'
@@ -63,6 +63,8 @@ export default createSchema({
     date,
     richDateTest,
     validation,
+    topLevelArrayType,
+    topLevelPrimitiveArrayType,
     arrays,
     uploads,
     code,

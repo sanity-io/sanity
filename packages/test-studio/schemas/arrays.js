@@ -1,6 +1,33 @@
 import React from 'react'
 import icon from 'react-icons/lib/md/format-list-numbered'
 
+export const topLevelArrayType = {
+  name: 'topLevelArrayType',
+  type: 'array',
+  of: [
+    {
+      type: 'object',
+      title: 'Content',
+      fields: [{name: 'textContent', type: 'text'}, {name: 'imageContent', type: 'image'}],
+      preview: {select: {title: 'textContent'}}
+    }
+  ]
+}
+export const topLevelPrimitiveArrayType = {
+  name: 'topLevelPrimitiveArrayType',
+  type: 'array',
+  of: [
+    {
+      type: 'string',
+      title: 'A string'
+    },
+    {
+      type: 'number',
+      title: 'A number'
+    }
+  ]
+}
+
 export default {
   name: 'arraysTest',
   type: 'document',
@@ -177,6 +204,16 @@ export default {
           {value: 'publications', title: 'Publications'}
         ]
       }
+    },
+    {
+      name: 'fieldOfTopLevelArrayType',
+      title: 'Field of top level array type',
+      type: 'topLevelArrayType'
+    },
+    {
+      name: 'fieldOfTopLevelPrimitiveArrayType',
+      title: 'Field of top level primitive array type',
+      type: 'topLevelPrimitiveArrayType'
     },
     {
       name: 'imageArrayInGrid',
