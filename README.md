@@ -9,7 +9,6 @@
 </h4>
 
 <p>
-  <a href="https://gitter.im/sanity-io/sanity"><img src="https://badges.gitter.im/sanity-io/sanity.svg"></a>
   <a href="https://slack.sanity.io/"><img src="https://slack.sanity.io/badge.svg"></a>
 </p>
 
@@ -53,7 +52,7 @@ Feel totally free to ping us on [Slack](https://slack.sanity.io) or [Gitter](htt
 
 #### [Hosted Backend](https://www.sanity.io/hosted-backend) ☁️
 
-- Secure, scalable and compliant
+- Secure, scalable and GDPR compliant
 - Zero config Graph Oriented Query Language (GROQ)
 - Hard references for integrity
 - API & asset CDNs
@@ -79,8 +78,8 @@ Feel totally free to ping us on [Slack](https://slack.sanity.io) or [Gitter](htt
 
 ### Migration tools
 
-- [Tools for processing Sanity block content](https://www.npmjs.com/package/@sanity/block-tools) (`npm i @sanity/block-tools`)
-- [Convert Sanity block content into a genereic tree](https://www.npmjs.com/package/@sanity/block-content-to-tree) (`npm i @sanity/block-content-to-tree`)
+- [Tools for processing Sanity rich text](https://www.npmjs.com/package/@sanity/block-tools) (`npm i @sanity/block-tools`)
+- [Convert Sanity rich text into a generic tree](https://www.npmjs.com/package/@sanity/block-content-to-tree) (`npm i @sanity/block-content-to-tree`)
 - [Migrate from Contentful to Sanity](https://github.com/sanity-io/contentful-to-sanity) (`npm install -g contentful-to-sanity`)
 - [Migrate from podcast RSS feed to Sanity](https://github.com/sanity-io/podcast-to-sanity) (`npm install -g podcast-to-sanity`)
 
