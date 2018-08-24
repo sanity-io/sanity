@@ -1,10 +1,11 @@
+import {getExtendedProjection} from './util/getExtendedProjection'
+import {SchemaType, defaultSchema} from './parts/Schema'
+import {getSortIcon} from './parts/Icon'
 import {Intent} from './Intent'
 import {Partial} from './Partial'
 import {SortItem, Ordering, DEFAULT_ORDERING_OPTIONS} from './Sort'
 import {SerializeOptions, Serializable, SerializePath} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
-import {SchemaType, defaultSchema} from './parts/Schema'
-import {getSortIcon} from './parts/Icon'
 
 const SortIcon = getSortIcon()
 
@@ -114,19 +115,22 @@ export interface SortMenuItem extends MenuItem {
   }
 }
 
-export function getOrderingMenuItem(ordering: Ordering) {
+export function getOrderingMenuItem(ordering: Ordering, extendedProjection?: string) {
   return new MenuItemBuilder()
     .group('sorting')
     .title(`Sort by ${ordering.title}`)
     .icon(SortIcon)
     .action('setSortOrder')
-    .params({by: ordering.by})
+    .params({by: ordering.by, extendedProjection})
 }
 
 export function getOrderingMenuItemsForSchemaType(typeName: SchemaType | string) {
   const type = typeof typeName === 'string' ? defaultSchema.get(typeName) : typeName
+
   return (type.orderings
     ? type.orderings.concat(DEFAULT_ORDERING_OPTIONS)
     : DEFAULT_ORDERING_OPTIONS
-  ).map(getOrderingMenuItem)
+  ).map((ordering: Ordering) =>
+    getOrderingMenuItem(ordering, getExtendedProjection(type, ordering.by))
+  )
 }
