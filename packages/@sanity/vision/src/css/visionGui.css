@@ -110,6 +110,7 @@
   font-size: 2em;
   opacity: 0.2;
   z-index: 10;
+  pointer-events: none;
 }
 
 .inputLabelParams {
