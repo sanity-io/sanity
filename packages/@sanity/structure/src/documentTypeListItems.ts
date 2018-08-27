@@ -51,7 +51,7 @@ function getDocumentList(name: string, title: string, type: SchemaType): Documen
       {id: 'layout', title: 'Layout'},
       {id: 'actions', title: 'Actions'}
     ])
-    .childResolver((documentId: string) =>
+    .child((documentId: string) =>
       new EditorBuilder()
         .id('editor')
         .schemaType(name)

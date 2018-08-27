@@ -29,7 +29,7 @@ const resolveChildForItem: ChildResolver = (
       ? childBuilder.serialize({
           path: options.parentPath || [],
           index: options.index,
-          hint: 'childResolver'
+          hint: 'child'
         })
       : itemChild
   })

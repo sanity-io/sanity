@@ -100,6 +100,28 @@ Object {
         "type": "datetime",
       },
       Object {
+        "name": "publicationYear",
+        "title": "Publication year",
+        "type": "string",
+      },
+      Object {
+        "fields": Array [
+          Object {
+            "name": "se",
+            "title": "Swedish",
+            "type": "string",
+          },
+          Object {
+            "name": "no",
+            "title": "Norwegian",
+            "type": "string",
+          },
+        ],
+        "name": "translations",
+        "title": "Translations",
+        "type": "object",
+      },
+      Object {
         "name": "body",
         "title": "Body",
         "type": "text",
@@ -244,6 +266,28 @@ Object {
         "type": "datetime",
       },
       Object {
+        "name": "publicationYear",
+        "title": "Publication year",
+        "type": "string",
+      },
+      Object {
+        "fields": Array [
+          Object {
+            "name": "se",
+            "title": "Swedish",
+            "type": "string",
+          },
+          Object {
+            "name": "no",
+            "title": "Norwegian",
+            "type": "string",
+          },
+        ],
+        "name": "translations",
+        "title": "Translations",
+        "type": "object",
+      },
+      Object {
         "name": "body",
         "title": "Body",
         "type": "text",
@@ -335,6 +379,28 @@ Object {
         "name": "publishedAt",
         "title": "Published at",
         "type": "datetime",
+      },
+      Object {
+        "name": "publicationYear",
+        "title": "Publication year",
+        "type": "string",
+      },
+      Object {
+        "fields": Array [
+          Object {
+            "name": "se",
+            "title": "Swedish",
+            "type": "string",
+          },
+          Object {
+            "name": "no",
+            "title": "Norwegian",
+            "type": "string",
+          },
+        ],
+        "name": "translations",
+        "title": "Translations",
+        "type": "object",
       },
       Object {
         "name": "body",

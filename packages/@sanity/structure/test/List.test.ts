@@ -84,7 +84,7 @@ test('can provide custom child resolver', () => {
   const list = S.list()
     .id('books')
     .items([{id: 'today', title: 'Today'}])
-    .childResolver(() => ({
+    .child(() => ({
       id: 'editor',
       type: 'editor',
       options: {id: new Date().toISOString().slice(0, 10), type: 'gallery'}
@@ -101,7 +101,7 @@ test('can resolve undefined child', () => {
   const list = S.list()
     .id('books')
     .items([{id: 'today', title: 'Today'}])
-    .childResolver(() => undefined)
+    .child(() => undefined)
     .serialize()
 
   return expect(list.resolveChildForItem('today', list, {index: 0})).resolves.toBe(undefined)

@@ -70,7 +70,7 @@ export abstract class GenericListBuilder<L extends BuildableGenericList> impleme
     return this
   }
 
-  childResolver(resolver: ChildResolver) {
+  child(resolver: ChildResolver) {
     this.spec.resolveChildForItem = resolver
     return this
   }

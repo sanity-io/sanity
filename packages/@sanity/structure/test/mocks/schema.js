@@ -87,6 +87,28 @@ function post() {
         type: 'datetime'
       },
       {
+        name: 'publicationYear',
+        title: 'Publication year',
+        type: 'string'
+      },
+      {
+        name: 'translations',
+        title: 'Translations',
+        type: 'object',
+        fields: [
+          {
+            name: 'se',
+            title: 'Swedish',
+            type: 'string'
+          },
+          {
+            name: 'no',
+            title: 'Norwegian',
+            type: 'string'
+          }
+        ]
+      },
+      {
         name: 'body',
         title: 'Body',
         type: 'text'
