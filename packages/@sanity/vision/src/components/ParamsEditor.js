@@ -20,7 +20,7 @@ class ParamsEditor extends React.PureComponent {
   }
 
   handleKeyUp(evt) {
-    if (evt.ctrlKey && evt.which === ENTER_KEY) {
+    if ((evt.ctrlKey || evt.metaKey) && evt.which === ENTER_KEY) {
       this.props.onExecute()
     }
   }
