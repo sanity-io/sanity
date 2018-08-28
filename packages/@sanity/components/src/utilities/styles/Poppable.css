@@ -1,0 +1,8 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.portal {
+  position: fixed;
+  z-index: var(--zindex-portal);
+  top: 0;
+  left: 0;
+}

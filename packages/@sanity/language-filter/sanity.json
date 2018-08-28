@@ -1,0 +1,16 @@
+{
+  "paths": {
+    "source": "./src",
+    "compiled": "./lib"
+  },
+  "parts": [
+    {
+      "implements": "part:@sanity/desk-tool/filter-fields-fn",
+      "path": "filter-fields.js"
+    },
+    {
+      "implements": "part:@sanity/desk-tool/language-select-component",
+      "path": "SelectLanguageProvider.js"
+    }
+  ]
+}

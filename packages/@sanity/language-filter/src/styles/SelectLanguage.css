@@ -1,0 +1,44 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.target {
+  composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
+  color: var(--text-color);
+  opacity: 1;
+  min-width: 4rem;
+  font-size: var(--font-size-xsmall);
+}
+
+.arrow {
+  margin-left: 0.4em;
+}
+
+.root {
+  padding: 0.5em;
+  background-color: var(--component-bg);
+  color: var(--text-color);
+  composes: shadow-8dp from 'part:@sanity/base/theme/shadows-style';
+  user-select: none;
+  text-align: left;
+  overflow: auto;
+  overflow-x: hidden;
+}
+
+.list {
+  composes: resetList from 'part:@sanity/base/theme/layout/helpers';
+}
+.functions {
+  padding: 0.5em;
+  text-align: center;
+}
+.selectedNumNoFilter {
+}
+.selectedNumFilter {
+  color: var(--state-danger-color);
+  font-weight: bold;
+}
+.item {
+  padding: 0.5em;
+  composes: resetListItem from 'part:@sanity/base/theme/layout/helpers';
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
+  white-space: nowrap;
+}

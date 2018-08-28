@@ -17,6 +17,7 @@ export default class Field extends React.Component {
     onFocus: PropTypes.func.isRequired,
     onBlur: PropTypes.func.isRequired,
     focusPath: PropTypes.array,
+    filterField: PropTypes.func,
     readOnly: PropTypes.bool,
     markers: PropTypes.array,
     level: PropTypes.number
@@ -43,7 +44,17 @@ export default class Field extends React.Component {
   }
 
   render() {
-    const {value, readOnly, field, level, onFocus, onBlur, markers, focusPath} = this.props
+    const {
+      value,
+      readOnly,
+      field,
+      level,
+      onFocus,
+      onBlur,
+      markers,
+      focusPath,
+      filterField
+    } = this.props
 
     if (typeof value !== 'undefined') {
       const expectedType = field.type.name
@@ -81,6 +92,7 @@ export default class Field extends React.Component {
           onBlur={onBlur}
           readOnly={readOnly || field.type.readOnly}
           focusPath={focusPath}
+          filterField={filterField}
           markers={markers}
           level={level}
           ref={this.setInput}

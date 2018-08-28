@@ -62,6 +62,10 @@
       "description": "Image loader utility"
     },
     {
+      "name": "part:@sanity/components/utilities/poppable",
+      "description": "Poppable utility"
+    },
+    {
       "name": "part:@sanity/components/utilities/stacked-escapable",
       "description": "A stacked escapable utility"
     },
@@ -638,6 +642,10 @@
     {
       "implements": "part:@sanity/components/utilities/stacked-escapable",
       "path": "utilities/StackedEscapable.js"
+    },
+    {
+      "implements": "part:@sanity/components/utilities/poppable",
+      "path": "utilities/Poppable.js"
     },
     {
       "implements": "part:@sanity/components/utilities/escapable",

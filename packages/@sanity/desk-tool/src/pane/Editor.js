@@ -37,6 +37,8 @@ import {getPublishedId, newDraftFrom} from 'part:@sanity/base/util/draft-utils'
 import TimeAgo from '../components/TimeAgo'
 import styles from './styles/Editor.css'
 import DocTitle from '../components/DocTitle'
+import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
+import filterFieldFn$ from 'part:@sanity/desk-tool/filter-fields-fn?'
 
 function navigateUrl(url) {
   window.open(url)
@@ -157,7 +159,8 @@ const INITIAL_STATE = {
   showConfirmDelete: false,
   showConfirmUnpublish: false,
   showValidationTooltip: false,
-  focusPath: []
+  focusPath: [],
+  filterField: () => true
 }
 
 export default withRouterHOC(
@@ -238,11 +241,19 @@ export default withRouterHOC(
           }
         }
       })
+      if (filterFieldFn$) {
+        this.filterFieldFnSubscription = filterFieldFn$.subscribe(filterField =>
+          this.setState({filterField})
+        )
+      }
     }
 
     componentWillUnmount() {
       this.unlistenForKey()
       this.setSavingStatus.cancel()
+      if (this.filterFieldFnSubscription) {
+        this.filterFieldFnSubscription.unsubscribe()
+      }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -436,6 +447,7 @@ export default withRouterHOC(
 
       return (
         <div className={styles.paneFunctions}>
+          {LanguageFilter && <LanguageFilter />}
           {showSavingStatus && (
             <Tooltip
               className={styles.syncStatusSyncing}
@@ -579,7 +591,8 @@ export default withRouterHOC(
         showConfirmDelete,
         showConfirmDiscard,
         showConfirmUnpublish,
-        didPublish
+        didPublish,
+        filterField
       } = this.state
 
       const value = draft || published
@@ -651,6 +664,7 @@ export default withRouterHOC(
                 patchChannel={patchChannel}
                 value={draft || published || {_type: type.name}}
                 type={type}
+                filterField={filterField}
                 readOnly={isReconnecting}
                 onBlur={this.handleBlur}
                 onFocus={this.handleFocus}

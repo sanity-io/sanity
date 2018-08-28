@@ -471,6 +471,14 @@
       "path": "components/icons/AngleDownIcon.js"
     },
     {
+      "name": "part:@sanity/base/angle-up-icon",
+      "description": "Used selects and dropdowns"
+    },
+    {
+      "implements": "part:@sanity/base/angle-up-icon",
+      "path": "components/icons/AngleUpIcon.js"
+    },
+    {
       "name": "part:@sanity/base/spinner-icon",
       "description": "Used selects and dropdowns"
     },

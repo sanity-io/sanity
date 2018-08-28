@@ -170,7 +170,7 @@ export default class RenderItemValue extends React.Component<Props> {
   }
 
   renderEditItemForm(item: ItemValue): Node {
-    const {type, markers, focusPath, onFocus, onBlur, readOnly} = this.props
+    const {type, markers, focusPath, onFocus, onBlur, readOnly, filterField} = this.props
     const options = type.options || {}
 
     const memberType = this.getMemberType() || {}
@@ -188,6 +188,7 @@ export default class RenderItemValue extends React.Component<Props> {
         readOnly={readOnly || memberType.readOnly}
         markers={childMarkers}
         path={[{_key: item._key}]}
+        filterField={filterField}
       />
     )
 
