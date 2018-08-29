@@ -18,6 +18,16 @@ assign(Patch.prototype, {
 
   merge(props) {
     validateObject('merge', props)
+
+    const stack = new Error().stack
+      .toString()
+      .split('\n')
+      .filter(str => str.trim())
+      .slice(2)
+
+    console.warn(
+      `The "merge" patch has been deprecated and will be removed in the future\n${stack.join('\n')}`
+    )
     return this._assign('merge', deepAssign(this.operations.merge || {}, props))
   },
 
