@@ -29,7 +29,7 @@ export class DocumentListItemBuilder extends ListItemBuilder {
   }
 
   title(title: string): DocumentListItemBuilder {
-    this.spec.title = undefined
+    this.spec.title = title
     return this
   }
 
