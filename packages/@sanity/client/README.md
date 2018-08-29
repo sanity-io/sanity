@@ -155,9 +155,35 @@ client
   })
 ```
 
-`client.patch(docId).set(partialDoc).inc({key: value}).commit()`
-
 Modify a document. `patch` takes a document ID. `set` merges the partialDoc with the stored document. `inc` increments the given field with the given numeric value. `commit` executes the given `patch`. Returns the updated object.
+
+### Setting a field only if not already present
+
+```js
+client
+  .patch('bike-123')
+  .setIfMissing({title: 'Untitled bike'})
+  .commit()
+```
+
+### Removing/unsetting fields
+
+```js
+client
+  .patch('bike-123')
+  .unset(['title', 'price'])
+  .commit()
+```
+
+### Incrementing/decrementing numbers
+
+```js
+client
+  .patch('bike-123')
+  .inc({price: 88, numSales: 1}) // Increment `price` by 88, `numSales` by 1
+  .dec({inStock: 1}) // Decrement `inStock` by 1
+  .commit()
+```
 
 ### Patch a document only if revision matches
 
@@ -168,6 +194,42 @@ client
   .patch('bike-123')
   .ifRevisionId('previously-known-revision')
   .set({title: 'Little Red Tricycle'})
+  .commit()
+```
+
+### Adding elements to an array
+
+The patch opereration `insert` takes a location (`before`, `after` or `replace`), a path selector and an array of elements to insert.
+
+```js
+const nanoid = require('nanoid')
+
+client
+  .patch('bike-123')
+  // Ensure that the `reviews` arrays exists before attempting to add items to it
+  .setIfMissing({reviews: []})
+  // Add the items after the last item in the array (append)
+  .insert('after', 'reviews[-1]', [
+    // Add a `_key` unique within the array to ensure it can be addressed uniquely
+    // in a real-time collaboration context
+    {_key: nanoid(), title: 'Great bike!', stars: 5}
+  ])
+  .commit()
+```
+
+### Appending/prepending elements to an array
+
+The operations of appending and prepending to an array are so common that they have been given their own methods for better readability:
+
+```js
+const nanoid = require('nanoid')
+
+client
+  .patch('bike-123')
+  .setIfMissing({reviews: []})
+  .append('reviews', [
+    {_key: nanoid(), title: 'Great bike!', stars: 5}
+  ])
   .commit()
 ```
 
