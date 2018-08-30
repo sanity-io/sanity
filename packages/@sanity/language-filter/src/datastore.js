@@ -30,8 +30,13 @@ export const selectedLanguages$ = onSelect$.pipe(
   persistOn('@sanity/plugin/language-filter/selected-languages', SUPPORTED_LANG_IDS)
 )
 
+const defaultFilterField = (enclosingType, field, selectedLanguages) =>
+  !enclosingType.name.startsWith('locale') || selectedLanguages.includes(field.name)
+
+const filterField = config.filterField || defaultFilterField
+
 export const filterFn$ = selectedLanguages$.pipe(
   map(langs => {
-    return (type, field) => !type.name.startsWith('locale') || langs.includes(field.name)
+    return (enclosingType, field) => filterField(enclosingType, field, langs)
   })
 )
