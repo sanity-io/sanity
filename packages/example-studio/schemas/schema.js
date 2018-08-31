@@ -9,8 +9,9 @@ import localeString from './localeString'
 import localeSlug from './localeSlug'
 import proteinTest from './proteinTest'
 import customObject from './customObject'
-import richText from './richText'
 import protein from '../components/ProteinInput/schema'
+import localeBlockContent from './localeBlockContent'
+import {blockContent} from './blockContent'
 
 export default createSchema({
   name: 'example-blog',
@@ -20,10 +21,11 @@ export default createSchema({
     code,
     customObject,
     localeString,
+    localeBlockContent,
     localeSlug,
     videoEmbed,
     proteinTest,
     protein,
-    richText
+    blockContent
   ])
 })

@@ -58,6 +58,7 @@ export default class FormBuilderContext extends React.Component {
     schema: PropTypes.instanceOf(Schema).isRequired,
     value: PropTypes.any,
     children: PropTypes.any.isRequired,
+    filterField: PropTypes.func.isRequired,
     patchChannel: PropTypes.shape({
       onPatch: PropTypes.func
     }),
@@ -68,6 +69,7 @@ export default class FormBuilderContext extends React.Component {
   static childContextTypes = {
     getValuePath: PropTypes.func,
     onPatch: PropTypes.func,
+    filterField: PropTypes.func,
     formBuilder: PropTypes.shape({
       schema: PropTypes.instanceOf(Schema),
       resolveInputComponent: PropTypes.func,
@@ -90,8 +92,9 @@ export default class FormBuilderContext extends React.Component {
   })
 
   getChildContext = memoize(() => {
-    const {schema, patchChannel} = this.props
+    const {schema, filterField, patchChannel} = this.props
     return {
+      filterField: filterField,
       getValuePath: () => [],
       formBuilder: {
         onPatch: patchChannel

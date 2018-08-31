@@ -29,6 +29,7 @@
     "@sanity/default-login": "0.132.8",
     "@sanity/desk-tool": "0.132.9",
     "@sanity/form-builder": "0.132.9",
+    "@sanity/language-filter": "0.132.9",
     "@sanity/storybook": "0.132.8",
     "@sanity/vision": "0.132.9",
     "bio-pv": "^1.8.1",

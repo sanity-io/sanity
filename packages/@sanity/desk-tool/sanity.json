@@ -17,6 +17,14 @@
     {
       "name": "part:@sanity/desk-tool/after-editor-component",
       "description": "[DEPRECATED] Components to render directly after the editor form. Will be removed in future release."
+    },
+    {
+      "name": "part:@sanity/desk-tool/language-select-component",
+      "description": "A component that allows filtering languages"
+    },
+    {
+      "name": "part:@sanity/desk-tool/filter-fields-fn",
+      "description": "An observable that emits a function to filter fields in form builder"
     }
   ]
 }

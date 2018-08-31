@@ -44,6 +44,7 @@ type Props = {
   onBlur: () => void,
   focusPath: Path,
   readOnly: ?boolean,
+  filterField: (field: any) => boolean,
   resolveUploader?: (type: Type, file: File) => Uploader
 }
 
@@ -163,7 +164,17 @@ export default class ArrayInput extends React.Component<Props, State> {
   }
 
   renderList = () => {
-    const {type, markers, readOnly, value, focusPath, onBlur, onFocus, level} = this.props
+    const {
+      type,
+      markers,
+      readOnly,
+      value,
+      focusPath,
+      onBlur,
+      onFocus,
+      level,
+      filterField
+    } = this.props
     const {isMoving} = this.state
     const options = type.options || {}
     const hasMissingKeys = value.some(item => !item._key)
@@ -204,6 +215,7 @@ export default class ArrayInput extends React.Component<Props, State> {
                 onRemove={this.handleRemoveItem}
                 onChange={this.handleItemChange}
                 focusPath={focusPath}
+                filterField={filterField}
                 onFocus={onFocus}
                 readOnly={readOnly || hasMissingKeys}
                 onBlur={onBlur}

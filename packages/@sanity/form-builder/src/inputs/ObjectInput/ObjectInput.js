@@ -45,14 +45,16 @@ export default class ObjectInput extends React.PureComponent {
     onBlur: PropTypes.func.isRequired,
     level: PropTypes.number,
     readOnly: PropTypes.bool,
-    isRoot: PropTypes.bool
+    isRoot: PropTypes.bool,
+    filterField: PropTypes.func
   }
 
   static defaultProps = {
     onChange() {},
     level: 0,
     focusPath: [],
-    isRoot: false
+    isRoot: false,
+    filterField: () => true
   }
 
   handleBlur() {
@@ -89,11 +91,12 @@ export default class ObjectInput extends React.PureComponent {
   }
 
   renderField(field, level, index) {
-    if (field.type.hidden) {
+    const {type, value, markers, readOnly, focusPath, onFocus, onBlur, filterField} = this.props
+
+    if (!filterField(type, field) || field.type.hidden) {
       return null
     }
 
-    const {value, markers, readOnly, focusPath, onFocus, onBlur} = this.props
     const fieldValue = value && value[field.name]
     return (
       <Field
@@ -107,6 +110,7 @@ export default class ObjectInput extends React.PureComponent {
         focusPath={focusPath}
         level={level}
         readOnly={readOnly}
+        filterField={filterField}
         ref={index === 0 && this.setFirstField}
       />
     )

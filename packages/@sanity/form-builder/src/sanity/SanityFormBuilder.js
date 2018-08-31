@@ -18,6 +18,7 @@ type Props = {
   onFocus: Path => void,
   readOnly: boolean,
   onChange: () => {},
+  filterField: (field: any) => boolean,
   onBlur: () => void,
   autoFocus: boolean,
   focusPath: Path
@@ -48,11 +49,16 @@ export default class SanityFormBuilder extends React.Component<Props> {
       markers,
       onFocus,
       onBlur,
-      focusPath
+      focusPath,
+      filterField
     } = this.props
 
     return (
-      <SanityFormBuilderContext value={value} schema={schema} patchChannel={patchChannel}>
+      <SanityFormBuilderContext
+        value={value}
+        schema={schema}
+        patchChannel={patchChannel}
+      >
         <FormBuilderInput
           type={type}
           onChange={onChange}
@@ -64,6 +70,7 @@ export default class SanityFormBuilder extends React.Component<Props> {
           focusPath={focusPath}
           isRoot
           readOnly={readOnly}
+          filterField={filterField}
           ref={this.setInput}
         />
       </SanityFormBuilderContext>

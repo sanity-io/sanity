@@ -16,12 +16,17 @@
     "@sanity/code-input",
     "@sanity/desk-tool",
     "@sanity/storybook",
-    "@sanity/vision"
+    "@sanity/vision",
+    "@sanity/language-filter"
   ],
   "parts": [
     {
       "name": "part:@sanity/base/schema",
       "path": "./schemas/schema.js"
+    },
+    {
+      "name": "part:@sanity/language-filter/config",
+      "path": "./parts/languageFilterConfig.js"
     },
     {
       "implements": "part:@sanity/base/brand-logo",

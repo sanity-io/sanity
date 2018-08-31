@@ -1,0 +1,37 @@
+{
+  "name": "@sanity/language-filter",
+  "version": "0.132.9",
+  "description": "A Sanity plugin that supports filtering localized fields by language",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "language-filter"
+  ],
+  "dependencies": {
+    "rxjs": "^6.1.x"
+  },
+  "peerDependencies": {
+    "react": "^16.x",
+    "prop-types": "^16.x"
+  },
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
