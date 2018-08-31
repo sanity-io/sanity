@@ -31,8 +31,11 @@ export default async function initSanity(args, context) {
   const unattended = cliFlags.y || cliFlags.yes
   const print = unattended ? noop : output.print
 
-  print('This utility walks you through creating a Sanity installation.')
-  print('Press ^C at any time to quit.\n')
+  print(`You're setting up a new project!`)
+  print(`We'll make sure you have an account with Sanity.io. Then we'll`)
+  print('locally install an open-source JS content editor that connects to')
+  print('the real-time hosted API on Sanity.io. Hang on.')
+  print('Press ctrl + C at any time to quit.\n')
 
   // If the user isn't already authenticated, make it so
   const userConfig = getUserConfig()
@@ -127,11 +130,10 @@ export default async function initSanity(args, context) {
 
   if (shouldImport) {
     print('')
-    print(
-      `If you want to delete the imported data, use ${chalk.cyan(
-        `sanity dataset delete ${datasetName}`
-      )}`
-    )
+    print('If you want to delete the imported data, use')
+    print(`\t${chalk.cyan(`sanity dataset delete ${datasetName}`)}`)
+    print('and create a new clean dataset with')
+    print(`\t${chalk.cyan(`sanity dataset create <name>`)}\n`)
   }
 
   print(`\n${chalk.green('Success!')} Now what?\n`)
@@ -141,8 +143,9 @@ export default async function initSanity(args, context) {
     print(`▪ ${chalk.cyan(`cd ${outputPath}`)}, then:`)
   }
 
-  print(`▪ ${chalk.cyan('sanity docs')} for documentation`)
-  print(`▪ ${chalk.cyan('sanity manage')} to open the management tool`)
+  print(`▪ ${chalk.cyan('sanity docs')} to open the documentation in a browser`)
+  print(`▪ ${chalk.cyan('sanity manage')} to open the project settings in a browser`)
+  print(`▪ ${chalk.cyan('sanity help')} to explore the CLI manual`)
   print(`▪ ${chalk.green('sanity start')} to run your studio\n`)
 
   // See if the template has a success message handler and print it
@@ -155,8 +158,8 @@ export default async function initSanity(args, context) {
   }
 
   async function getOrCreateUser() {
-    print("We can't find any auth credentials in your Sanity config - looks like you")
-    print("haven't used Sanity on this system before?\n")
+    print(`We can't find any auth credentials in your Sanity config`)
+    print('- log in or create a new account\n')
 
     // Provide login options (`sanity login`)
     await login(args, context)
@@ -323,7 +326,7 @@ export default async function initSanity(args, context) {
   function promptForDatasetImport(message) {
     return prompt.single({
       type: 'confirm',
-      message: message || 'This template includes a sample dataset, would you like to import it?',
+      message: message || 'This template includes a sample dataset, would you like to use it?',
       default: true
     })
   }
@@ -340,7 +343,7 @@ export default async function initSanity(args, context) {
       choices: [
         {
           value: 'moviedb',
-          name: 'Movie database (schema + sample data)'
+          name: 'Movie project (schema + sample data)'
         },
         {
           value: 'ecommerce',
@@ -390,13 +393,15 @@ export default async function initSanity(args, context) {
       author: defaults.author,
       license: 'UNLICENSED',
 
-      outputPath: specifiedPath || await prompt.single({
-        type: 'input',
-        message: 'Output path:',
-        default: workDirIsEmpty ? workDir : path.join(workDir, sluggedName),
-        validate: validateEmptyPath,
-        filter: absolutify
-      })
+      outputPath:
+        specifiedPath ||
+        (await prompt.single({
+          type: 'input',
+          message: 'Output path:',
+          default: workDirIsEmpty ? workDir : path.join(workDir, sluggedName),
+          validate: validateEmptyPath,
+          filter: absolutify
+        }))
     }
   }
 
@@ -496,7 +501,7 @@ function absolutify(dir) {
 async function promptForAclMode(prompt, output) {
   const mode = await prompt.single({
     type: 'list',
-    message: 'Dataset visibility',
+    message: 'Choose dataset visibility – this can be changed later',
     choices: [
       {
         value: 'public',
@@ -504,7 +509,7 @@ async function promptForAclMode(prompt, output) {
       },
       {
         value: 'private',
-        name: 'Private (Authenticated user or token needed)'
+        name: 'Private (Authenticated user or token needed for API requests)'
       }
     ]
   })

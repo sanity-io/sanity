@@ -1,4 +1,4 @@
-export const importPrompt = 'Import a sampling of sci-fi movies to go with your movie schema?'
+export const importPrompt = 'Add a sampling of sci-fi movies to your dataset on the hosted backend?'
 export const datasetUrl = 'https://public.sanity.io/moviesdb-2018-03-06.tar.gz'
 
 export const dependencies = {
