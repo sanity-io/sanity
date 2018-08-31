@@ -31,8 +31,10 @@ export default async function initSanity(args, context) {
   const unattended = cliFlags.y || cliFlags.yes
   const print = unattended ? noop : output.print
 
-  print('This utility walks you through creating a Sanity installation.')
-  print('Press ^C at any time to quit.\n')
+  print(`This utility walks you through creating a Sanity project.
+    It installs a local instance of the Sanity studio,
+    which you can configure connects to the real-time hosted API.`)
+  print('Press ctrl + C at any time to quit.\n')
 
   // If the user isn't already authenticated, make it so
   const userConfig = getUserConfig()
@@ -128,9 +130,9 @@ export default async function initSanity(args, context) {
   if (shouldImport) {
     print('')
     print(
-      `If you want to delete the imported data, use ${chalk.cyan(
+      `If you want to delete the imported data, use \n\t${chalk.cyan(
         `sanity dataset delete ${datasetName}`
-      )}`
+      )}\n and create a new clean dataset with \n\t${chalk.cyan(`sanity dataset create <name>`)}`
     )
   }
 
@@ -141,8 +143,9 @@ export default async function initSanity(args, context) {
     print(`▪ ${chalk.cyan(`cd ${outputPath}`)}, then:`)
   }
 
-  print(`▪ ${chalk.cyan('sanity docs')} for documentation`)
-  print(`▪ ${chalk.cyan('sanity manage')} to open the management tool`)
+  print(`▪ ${chalk.cyan('sanity docs')} to open the documentation in a browser`)
+  print(`▪ ${chalk.cyan('sanity manage')} to open the project settings in a browser`)
+  print(`▪ ${chalk.cyan('sanity help')} to explore the CLI manual`)
   print(`▪ ${chalk.green('sanity start')} to run your studio\n`)
 
   // See if the template has a success message handler and print it
@@ -155,8 +158,8 @@ export default async function initSanity(args, context) {
   }
 
   async function getOrCreateUser() {
-    print("We can't find any auth credentials in your Sanity config - looks like you")
-    print("haven't used Sanity on this system before?\n")
+    print(`We can't find any auth credentials in your Sanity config
+    \n - log in or create a new account\n`)
 
     // Provide login options (`sanity login`)
     await login(args, context)
@@ -390,13 +393,15 @@ export default async function initSanity(args, context) {
       author: defaults.author,
       license: 'UNLICENSED',
 
-      outputPath: specifiedPath || await prompt.single({
-        type: 'input',
-        message: 'Output path:',
-        default: workDirIsEmpty ? workDir : path.join(workDir, sluggedName),
-        validate: validateEmptyPath,
-        filter: absolutify
-      })
+      outputPath:
+        specifiedPath ||
+        (await prompt.single({
+          type: 'input',
+          message: 'Output path:',
+          default: workDirIsEmpty ? workDir : path.join(workDir, sluggedName),
+          validate: validateEmptyPath,
+          filter: absolutify
+        }))
     }
   }
 
