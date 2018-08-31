@@ -54,24 +54,8 @@ export default async (opts, context) => {
     ? template.generateSanityManifest(baseSanityManifest, opts)
     : baseSanityManifest
 
-  // Generate a basic readme
-  const readme = [
-    `# ${opts.name}`,
-    '',
-    opts.description,
-    '',
-    '## Running',
-    '',
-    '```',
-    'npm install',
-    'npm start',
-    '```',
-    ''
-  ].join('\n')
-
   // Write non-template files to disc
   await Promise.all([
-    writeFileIfNotExists('README.md', readme),
     writeFileIfNotExists('sanity.json', `${JSON.stringify(sanityManifest, null, 2)}\n`),
     writeFileIfNotExists('package.json', packageManifest)
   ])
@@ -86,7 +70,7 @@ export default async (opts, context) => {
       await fse.writeFile(filePath, content, {flag: 'wx'})
     } catch (err) {
       if (err.code === 'EEXIST') {
-        output.print(`[WARN] File "${filePath}" already exists, skipping`)
+        output.print(`\n[WARN] File "${filePath}" already exists, skipping`)
       } else {
         throw err
       }
