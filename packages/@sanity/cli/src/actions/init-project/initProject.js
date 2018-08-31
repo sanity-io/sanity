@@ -31,9 +31,9 @@ export default async function initSanity(args, context) {
   const unattended = cliFlags.y || cliFlags.yes
   const print = unattended ? noop : output.print
 
-  print(`This utility walks you through creating a Sanity project.
-    It installs a local instance of the Sanity studio,
-    which you can configure connects to the real-time hosted API.`)
+  print('This utility walks you through creating a Sanity project.')
+  print('It installs a configurable local instance of the Sanity studio,')
+  print('which connects to your real-time hosted API.')
   print('Press ctrl + C at any time to quit.\n')
 
   // If the user isn't already authenticated, make it so
@@ -129,11 +129,10 @@ export default async function initSanity(args, context) {
 
   if (shouldImport) {
     print('')
-    print(
-      `If you want to delete the imported data, use \n\t${chalk.cyan(
-        `sanity dataset delete ${datasetName}`
-      )}\n and create a new clean dataset with \n\t${chalk.cyan(`sanity dataset create <name>`)}`
-    )
+    print('If you want to delete the imported data, use')
+    print(`\t${chalk.cyan(`sanity dataset delete ${datasetName}`)}`)
+    print('and create a new clean dataset with')
+    print(`\t${chalk.cyan(`sanity dataset create <name>`)}\n`)
   }
 
   print(`\n${chalk.green('Success!')} Now what?\n`)
@@ -158,8 +157,8 @@ export default async function initSanity(args, context) {
   }
 
   async function getOrCreateUser() {
-    print(`We can't find any auth credentials in your Sanity config
-    \n - log in or create a new account\n`)
+    print(`We can't find any auth credentials in your Sanity config`)
+    print('- log in or create a new account\n')
 
     // Provide login options (`sanity login`)
     await login(args, context)
@@ -326,7 +325,7 @@ export default async function initSanity(args, context) {
   function promptForDatasetImport(message) {
     return prompt.single({
       type: 'confirm',
-      message: message || 'This template includes a sample dataset, would you like to import it?',
+      message: message || 'This template includes a sample dataset, would you like to use it?',
       default: true
     })
   }
@@ -343,7 +342,7 @@ export default async function initSanity(args, context) {
       choices: [
         {
           value: 'moviedb',
-          name: 'Movie database (schema + sample data)'
+          name: 'Movie project (schema + sample data)'
         },
         {
           value: 'ecommerce',
@@ -501,7 +500,7 @@ function absolutify(dir) {
 async function promptForAclMode(prompt, output) {
   const mode = await prompt.single({
     type: 'list',
-    message: 'Dataset visibility',
+    message: 'Choose dataset visibility – this can be changed later',
     choices: [
       {
         value: 'public',
@@ -509,7 +508,7 @@ async function promptForAclMode(prompt, output) {
       },
       {
         value: 'private',
-        name: 'Private (Authenticated user or token needed)'
+        name: 'Private (Authenticated user or token needed for API requests)'
       }
     ]
   })
