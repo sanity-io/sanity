@@ -5,8 +5,8 @@ import Poppable from 'part:@sanity/components/utilities/poppable'
 import Checkbox from 'part:@sanity/components/toggles/checkbox'
 import Button from 'part:@sanity/components/buttons/default'
 import styles from './styles/SelectLanguage.css'
-import FaAngleDown from 'part:@sanity/base/angle-down-icon'
-import FaAngleUp from 'part:@sanity/base/angle-up-icon'
+import AngleDown from 'part:@sanity/base/angle-down-icon'
+import AngleUp from 'part:@sanity/base/angle-up-icon'
 
 const LanguagePropType = PropTypes.shape({id: PropTypes.string, title: PropTypes.string})
 export default class SelectLanguage extends React.Component {
@@ -67,7 +67,7 @@ export default class SelectLanguage extends React.Component {
             }
           >
             Filter languages{allIsSelected ? '…' : ` (${selected.length}/${languages.length})`}
-            <span className={styles.arrow}>{isOpen ? <FaAngleUp /> : <FaAngleDown />}</span>
+            <span className={styles.arrow}>{isOpen ? <AngleUp /> : <AngleDown />}</span>
           </span>
         }
         placement="bottom-end"
