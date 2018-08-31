@@ -5,11 +5,8 @@ import styles from 'part:@sanity/components/buttons/dropdown-style'
 import Button from 'part:@sanity/components/buttons/default'
 import ArrowIcon from 'part:@sanity/base/angle-down-icon'
 import Menu from 'part:@sanity/components/menus/default'
-import {omit} from 'lodash'
-import {Manager, Target, Popper} from 'react-popper'
-import {Portal} from '../utilities/Portal'
-import Stacked from '../utilities/Stacked'
-import Escapable from '../utilities/Escapable'
+import {omit, get} from 'lodash'
+import Poppable from 'part:@sanity/components/utilities/poppable'
 
 export default class DropDownButton extends React.PureComponent {
   static propTypes = {
@@ -29,27 +26,14 @@ export default class DropDownButton extends React.PureComponent {
     colored: PropTypes.bool,
     color: PropTypes.string,
     className: PropTypes.string,
-    origin: PropTypes.oneOf(['left', 'right'])
-  }
-
-  static defaultProps = {
-    origin: 'left'
   }
 
   state = {
-    menuOpened: false,
-    width: 100
+    menuOpened: false
   }
 
   handleClose = () => {
     this.setState({menuOpened: false})
-  }
-
-  setRootElement = element => {
-    this._rootElement = element
-    if (element) {
-      this.width = element.offsetWidth
-    }
   }
 
   setMenuElement = element => {
@@ -79,45 +63,52 @@ export default class DropDownButton extends React.PureComponent {
   }
 
   render() {
-    const {items, children, kind, className, origin, ...rest} = omit(this.props, 'onAction')
+    const {items, children, kind, className, ...rest} = omit(this.props, 'onAction')
     const {menuOpened, width} = this.state
 
+    const modifiers = {
+      preventOverflow: 'viewport',
+      customStyle: {
+        enabled: true,
+        fn: data => {
+          data.styles = {
+            ...data.styles,
+            minWidth: get(data, 'offsets.width' || 100)
+          }
+          return data
+        }
+      }
+    }
+
+    const target = (
+      <Button {...rest} onClick={this.handleOnClick} kind={kind}>
+        <span className={styles.title}>{children}</span>
+        <span className={styles.arrow}>
+          <ArrowIcon color="inherit" />
+        </span>
+      </Button>
+    )
+
     return (
-      <div ref={this.setRootElement} className={`${styles.root} ${className}`}>
-        <Manager>
-          <Target>
-            <Button {...rest} onClick={this.handleOnClick} kind={kind}>
-              <span className={styles.title}>{children}</span>
-              <span className={styles.arrow}>
-                <ArrowIcon color="inherit" />
-              </span>
-            </Button>
-          </Target>
+      <div className={`${styles.root} ${className}`}>
+        <Poppable
+          modifiers={modifiers}
+          target={target}
+          onEscape={this.handleClose}
+          onClickOutside={this.handleClose}
+        >
           {menuOpened && (
-            <Portal>
-              <Stacked>
-                {isActive => (
-                  <Popper className={styles.popper}>
-                    <div
-                      className={styles.wrapper}
-                      ref={this.setMenuElement}
-                      style={{minWidth: `${width}px`}}
-                    >
-                      <Escapable onEscape={isActive && this.handleClose} />
-                      <Menu
-                        items={items}
-                        isOpen
-                        className={styles.menu}
-                        onAction={this.handleAction}
-                        onClickOutside={isActive && this.handleClickOutside}
-                      />
-                    </div>
-                  </Popper>
-                )}
-              </Stacked>
-            </Portal>
+            <div className={styles.popper} style={{minWidth: `${width}px`}}>
+              <Menu
+                items={items}
+                isOpen
+                className={styles.menu}
+                onAction={this.handleAction}
+                onClickOutside={this.handleClickOutside}
+              />
+            </div>
           )}
-        </Manager>
+        </Poppable>
       </div>
     )
   }

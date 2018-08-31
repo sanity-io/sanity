@@ -48,19 +48,19 @@
   left: 0;
 }
 
+.popper {
+  composes: shadow-4dp from "part:@sanity/base/theme/shadows-style";
+  box-sizing: border-box;
+  background-color: var(--component-bg);
+  position: relative;
+  max-height: inherit;
+  overflow: auto;
+}
+
 .list {
   margin: 0;
   padding: 0;
   display: block;
-  position: absolute;
-  overflow: hidden;
-  composes: shadow-4dp from "part:@sanity/base/theme/shadows-style";
-  box-sizing: border-box;
-  transform: translateY(-1px);
-  background-color: var(--component-bg);
-  height: auto;
-  width: auto;
-  overflow-y: auto;
 }
 
 .text {

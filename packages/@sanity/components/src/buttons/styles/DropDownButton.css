@@ -27,4 +27,9 @@
 .popper {
   position: relative;
   z-index: var(--zindex-portal);
+  max-height: 80vh;
+  overflow: auto;
+  composes: shadow-8dp from 'part:@sanity/base/theme/shadows-style';
+  box-sizing: border-box;
+  background-color: var(--component-bg);
 }
