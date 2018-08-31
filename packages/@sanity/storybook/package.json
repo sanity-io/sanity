@@ -3,7 +3,9 @@
   "version": "0.132.8",
   "description": "Sanity plugin for running react-storybook in a Sanity studio",
   "main": "./lib/index.js",
-  "scripts": {},
+  "scripts": {
+    "clean": "rimraf lib"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git"

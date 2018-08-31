@@ -12,7 +12,8 @@
   },
   "license": "MIT",
   "scripts": {
-    "prepublish": "in-publish && ./src/bin.js || not-in-publish"
+    "prepublish": "in-publish && ./src/bin.js || not-in-publish",
+    "clean": "rimraf lib"
   },
   "keywords": [
     "sanity",
