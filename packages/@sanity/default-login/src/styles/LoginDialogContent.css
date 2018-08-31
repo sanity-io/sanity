@@ -3,11 +3,12 @@
 .root {
   display: block;
   text-align: center;
+  height: 100vh;
+  overflow: auto;
 }
 
 .title {
   text-align: center;
-  font-weight: 100;
   text-transform: uppercase;
 }
 
@@ -29,7 +30,6 @@
 
 .projectName {
   composes: heading1 from 'part:@sanity/base/theme/typography/text-blocks-style';
-  font-weight: 100;
 }
 
 .projectNameHidden {
@@ -39,6 +39,7 @@
 
 .brandLogoContainer {
   height: 3em;
+
   @nest & svg {
     height: 4em;
     width: auto;
@@ -82,6 +83,7 @@
 }
 
 .providerName {
+  padding-top: 0.5em;
   display: block;
 }
 
