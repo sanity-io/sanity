@@ -51,8 +51,29 @@ export default {
           type: 'book'
         },
         {
+          name: 'test',
+          type: 'string'
+        },
+        {
+          name: 'test2',
+          type: 'string'
+        },
+        {
+          name: 'test3',
+          type: 'string'
+        },
+        {
+          name: 'test4',
+          type: 'string'
+        },
+        {
+          name: 'test5',
+          type: 'string'
+        },
+        {
           type: 'object',
           name: 'color',
+          title: 'Color with a long title',
           fields: [
             {
               name: 'title',
