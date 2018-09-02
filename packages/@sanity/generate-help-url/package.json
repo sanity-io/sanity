@@ -4,7 +4,8 @@
   "description": "Generates URLs to specific sections of the Sanity documentation",
   "main": "index.js",
   "scripts": {
-    "test": "tape test/**/*.test.js"
+    "test": "tape test/**/*.test.js",
+    "clean": "rimraf lib"
   },
   "repository": {
     "type": "git",

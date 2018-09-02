@@ -3,7 +3,9 @@
   "version": "0.132.8",
   "description": "Tools and modules required for making partisan (the part system) work with webpack",
   "main": "src/v1/index.js",
-  "scripts": {},
+  "scripts": {
+    "clean": "rimraf lib"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git"

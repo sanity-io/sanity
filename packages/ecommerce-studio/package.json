@@ -8,7 +8,8 @@
   "license": "MIT",
   "scripts": {
     "start": "sanity start",
-    "test": "sanity check"
+    "test": "sanity check",
+    "clean": "rimraf lib"
   },
   "keywords": [
     "sanity",

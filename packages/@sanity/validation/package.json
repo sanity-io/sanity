@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "clean": "rimraf lib"
   },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
