@@ -55,7 +55,7 @@ export default class FormBuilderContext extends React.Component {
   }
 
   static propTypes = {
-    schema: PropTypes.instanceOf(Schema).isRequired,
+    schema: PropTypes.object.isRequired,
     value: PropTypes.any,
     children: PropTypes.any.isRequired,
     filterField: PropTypes.func.isRequired,
@@ -71,7 +71,7 @@ export default class FormBuilderContext extends React.Component {
     onPatch: PropTypes.func,
     filterField: PropTypes.func,
     formBuilder: PropTypes.shape({
-      schema: PropTypes.instanceOf(Schema),
+      schema: PropTypes.object,
       resolveInputComponent: PropTypes.func,
       document: PropTypes.any
     })
