@@ -38,7 +38,6 @@ export default class BooleanInput extends React.Component<Props> {
     const isCheckbox = type.options && type.options.layout === 'checkbox'
     return isCheckbox ? (
       <Checkbox
-        {...rest}
         readOnly={readOnly}
         onChange={this.handleChange}
         checked={value}
@@ -49,7 +48,6 @@ export default class BooleanInput extends React.Component<Props> {
       </Checkbox>
     ) : (
       <Switch
-        {...rest}
         readOnly={readOnly}
         onChange={this.handleChange}
         checked={value}

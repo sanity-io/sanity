@@ -40,7 +40,6 @@ export default class TextInput extends React.Component<Props> {
     return (
       <FormField markers={markers} level={level} label={type.title} description={type.description}>
         <TextArea
-          {...rest}
           customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
           value={value}
           readOnly={readOnly}

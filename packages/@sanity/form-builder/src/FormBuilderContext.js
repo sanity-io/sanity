@@ -58,7 +58,7 @@ export default class FormBuilderContext extends React.Component {
     schema: PropTypes.instanceOf(Schema).isRequired,
     value: PropTypes.any,
     children: PropTypes.any.isRequired,
-    filterField: PropTypes.func.isRequired,
+    filterField: PropTypes.func,
     patchChannel: PropTypes.shape({
       onPatch: PropTypes.func
     }),

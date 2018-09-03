@@ -40,7 +40,6 @@ export default class TagsArrayInput extends React.PureComponent<Props> {
     return (
       <FormField level={level} label={type.title} description={type.description}>
         <TagInput
-          {...rest}
           readOnly={readOnly}
           value={value}
           onChange={this.handleChange}

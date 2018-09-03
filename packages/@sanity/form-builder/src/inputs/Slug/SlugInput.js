@@ -159,7 +159,6 @@ export default withValuePath(
             <div className={styles.wrapper}>
               <div className={styles.input}>
                 <TextInput
-                  {...rest}
                   ref={this.setTextInput}
                   customValidity={errors.length > 0 ? errors[0].item.message : ''}
                   disabled={loading}
