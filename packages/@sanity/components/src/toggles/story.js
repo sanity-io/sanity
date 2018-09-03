@@ -16,6 +16,7 @@ storiesOf('Toggles')
         <Switch
           checked={boolean('undefined', false) ? undefined : boolean('checked (prop)', false)}
           label={text('label (prop)', 'This is the label')}
+          description={text('description (prop)', 'This is the description')}
           disabled={boolean('disabled (prop)', false)}
           onChange={action('change')}
           onFocus={action('onFocus')}

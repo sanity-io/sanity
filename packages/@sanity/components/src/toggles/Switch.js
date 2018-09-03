@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/toggles/switch-style'
@@ -70,22 +71,25 @@ export default class Switch extends React.Component {
         onBlur={this.handleBlur}
       >
         <div className={styles.inner}>
-          <div className={styles.track} />
-          <div className={thumbClass}>
-            <div className={styles.focusHelper} />
+          <div className={styles.switchWrapper}>
+            <div className={styles.track} />
+            <div className={thumbClass}>
+              <div className={styles.focusHelper} />
+            </div>
+            <input
+              {...rest}
+              className={styles.input}
+              type="checkbox"
+              disabled={disabled || readOnly}
+              checked={checked}
+              ref={this.setInput}
+              onFocus={this.handleFocus}
+            />
           </div>
-
-          <input
-            {...rest}
-            className={styles.input}
-            type="checkbox"
-            disabled={disabled || readOnly}
-            checked={checked}
-            ref={this.setInput}
-            onFocus={this.handleFocus}
-          />
-          <div className={styles.label}>{label}</div>
-          {description && <div className={styles.description}>{description}</div>}
+          <div>
+            <div className={styles.label}>{label}</div>
+            {description && <div className={styles.description}>{description}</div>}
+          </div>
         </div>
       </label>
     )
