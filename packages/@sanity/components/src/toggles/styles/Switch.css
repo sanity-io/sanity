@@ -1,25 +1,8 @@
 @import "part:@sanity/base/theme/variables-style";
 @import "part:@sanity/base/theme/animation-style";
 
-@keyframes fade-out {
-  0% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0;
-  }
-}
-
 :root {
   --switch-color: var(--brand-primary);
-  --shadow-ambient-shadow-opacity: 0.5;
-  --shadow-key-penumbra-opacity: 0.5;
-  --shadow-key-umbra-opacity: 0.5;
-
-  /* Label */
-  --switch-label-height: 1.25rem;
-  --switch-label-font-size: 1rem;
 
   /* Thumb */
   --switch-thumb-top: 0;
@@ -27,7 +10,8 @@
   --switch-thumb-color: var(--switch-color);
   --switch-off-thumb-color: var(--white);
   --switch-on-thumb-color: var(--switch-color);
-  --switch-disabled-thumb-color: var(--white);
+  --switch-disabled-off-thumb-color: var(--white);
+  --switch-disabled-on-thumb-color: var(--state-danger-color);
 
   /* Track */
   --switch-track-top: 0.35rem;
@@ -37,7 +21,6 @@
   --switch-track-color: var(--gray-light);
   --switch-off-track-color: var(--gray-light);
   --switch-on-track-color: var(--focus-color);
-  --switch-faded-color: rgba(0, 0, 0, 0.1);
 
   /* Helper */
   --switch-helper-size: 3rem;
@@ -47,13 +30,21 @@
 .root {
   composes: root from 'part:@sanity/components/formfields/default-style';
   display: inline-block !important;
-  width: auto !important;
   user-select: none;
   position: relative;
 }
 
+.inner {
+  display: flex;
+}
+
 .indeterminate {
   composes: root;
+}
+
+.switchWrapper {
+  position: relative;
+  min-width: 2.5em;
 }
 
 .switch {
@@ -65,15 +56,15 @@
   width: var(--switch-track-length);
   border-radius: var(--switch-track-height);
   cursor: default;
+}
 
-  @nest .checked & {
-    background: var(--switch-track-color);
-  }
+.isChecked .switch {
+  background: var(--switch-track-color);
+}
 
-  @nest .isDisabled & {
-    background: var(--switch-disabled-track-color);
-    cursor: auto;
-  }
+.isDisabled .switch {
+  background: var(--switch-disabled-track-color);
+  cursor: auto;
 }
 
 .enabled {
@@ -110,11 +101,11 @@
   composes: shadow-2dp from "part:@sanity/base/theme/shadows-style";
   composes: animation-default from "part:@sanity/base/theme/animation-style";
   transition-property: left;
+}
 
-  @nest .disabled & {
-    background: var(--switch-disabled-thumb-color);
-    cursor: auto;
-  }
+.isDisabled .thumb {
+  background: var(--switch-disabled-off-thumb-color);
+  cursor: auto;
 }
 
 .thumbChecked {
@@ -122,6 +113,10 @@
   composes: shadow-3dp from "part:@sanity/base/theme/shadows-style";
   background: var(--switch-thumb-color);
   left: calc(var(--switch-track-length) - var(--switch-thumb-size));
+}
+
+.isDisabled.isChecked .thumb {
+  background: var(--switch-disabled-on-thumb-color);
 }
 
 .thumbIndeterminate {
@@ -141,22 +136,19 @@
   background-color: transparent;
   transform: translate(-50%, -50%) scale(0.5);
   transition: background-color 0.1s  linear, transform 0.15s linear;
+}
 
-  @nest .hasFocus & {
-    /* box-shadow: 0 0 0px (($switch-ripple-size - $switch-helper-size) / 2) rgba(0, 0, 0, 0.1); */
-    background-color: var(--switch-helper-color);
-    transform: translate(-50%, -50%) scale(1);
-  }
+.hasFocus .focusHelper {
+  background-color: var(--switch-helper-color);
+  transform: translate(-50%, -50%) scale(1);
+}
 
-  @nest .root:active & {
-    background-color: var(--switch-helper-color);
-    transform: translate(-50%, -50%) scale(1);
-  }
+.root:active .focusHelper {
+  background-color: var(--switch-helper-color);
+  transform: translate(-50%, -50%) scale(1);
 }
 
 .input {
-  line-height: var(--switch-label-height);
-
   /* Hide input element, while still making it respond to focus. */
   position: absolute;
   width: 0;
@@ -172,23 +164,17 @@
   display: inline-block;
   position: relative;
   cursor: default;
-  font-size: var(--switch-label-font-size);
-  line-height: var(--switch-label-height);
   margin: 0;
-  left: calc(var(--switch-track-length) + 0.5rem);
+}
 
-  @nest .disabled & {
-    color: var(--switch-disabled-thumb-color);
-    cursor: auto;
-  }
+.isDisabled .label {
+  cursor: auto;
 }
 
 .description {
   composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
   position: relative;
   display: block;
-  left: calc(var(--switch-track-length) + 0.5rem);
-  width: calc(100% - var(--switch-track-length) - 0.5rem);
 }
 
 .track {
@@ -200,13 +186,14 @@
   width: var(--switch-track-length);
   border-radius: var(--switch-track-height);
   cursor: default;
+}
 
-  @nest .checked & {
-    background: var(--switch-on-track-color);
-  }
+.isChecked .track {
+  background: var(--switch-on-track-color);
+}
 
-  @nest .disabled & {
-    background: var(--switch-disabled-track-color);
-    cursor: default;
-  }
+.isDisabled .track {
+  background: var(--switch-disabled-track-color);
+  opacity: 0.5;
+  cursor: default;
 }
