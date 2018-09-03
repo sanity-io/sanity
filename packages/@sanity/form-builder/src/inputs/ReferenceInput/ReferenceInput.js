@@ -233,7 +233,6 @@ export default class ReferenceInput extends React.Component<Props, State> {
             </div>
           )}
           <SearchableSelect
-            {...rest}
             placeholder="Type to search…"
             title={
               isMissing && hasRef

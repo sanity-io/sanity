@@ -40,7 +40,6 @@ export default class StringInput extends React.Component<Props> {
     return (
       <FormField markers={markers} level={level} label={type.title} description={type.description}>
         <TextInput
-          {...rest}
           customValidity={errors.length > 0 ? errors[0].item.message : ''}
           type="text"
           value={value}

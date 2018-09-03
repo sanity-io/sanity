@@ -59,7 +59,6 @@ export default class StringSelect extends React.Component<Props> {
         {isRadio ? (
           // todo: make separate inputs
           <RadioSelect
-            {...rest}
             name={this.name}
             legend={type.title}
             items={items}
@@ -71,7 +70,6 @@ export default class StringSelect extends React.Component<Props> {
           />
         ) : (
           <Select
-            {...rest}
             label={type.title}
             value={currentItem}
             placeholder={type.placeholder}

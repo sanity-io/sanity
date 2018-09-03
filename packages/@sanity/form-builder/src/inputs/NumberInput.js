@@ -40,7 +40,6 @@ export default class NumberInput extends React.Component<Props> {
     return (
       <FormField markers={markers} level={level} label={type.title} description={type.description}>
         <TextInput
-          {...rest}
           customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
           type="number"
           value={value}
