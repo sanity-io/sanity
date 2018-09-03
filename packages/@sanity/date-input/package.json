@@ -1,6 +1,6 @@
 {
   "name": "@sanity/date-input",
-  "version": "0.132.8",
+  "version": "0.132.10",
   "description": "[DEPRECATED] Use @sanity/rich-date-input instead",
   "main": "index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -9,8 +9,8 @@
     "clean": "rimraf lib"
   },
   "dependencies": {
-    "@sanity/generate-help-url": "0.132.5",
-    "@sanity/rich-date-input": "0.132.8"
+    "@sanity/generate-help-url": "0.132.10",
+    "@sanity/rich-date-input": "0.132.10"
   },
   "repository": {
     "type": "git",
