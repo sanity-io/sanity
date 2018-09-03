@@ -82,6 +82,7 @@
 
   @media (--screen-medium) {
     position: relative;
+    width: 100%;
   }
 }
 
@@ -128,7 +129,11 @@
   @media (--screen-medium) {
     z-index: initial;
     position: relative;
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-items: space-between;
+    justify-content: flex-start;
     width: var(--tool-switcher-width);
     height: 100vh;
   }
@@ -153,6 +158,7 @@
 
   @media (--screen-medium) {
     display: block;
+    width: 100%;
     padding-bottom: var(--medium-padding);
   }
 }
@@ -215,31 +221,34 @@
   }
 }
 
-.mobileMenuIsOpen .toolSwitcher {
-  position: absolute;
-  height: calc(100vh - var(--header-height));
-  display: block;
-  z-index: 5000;
-  backdrop-filter: blur(20px);
-  background-color: color(var(--secondary-menu-background-color) a(90%));
-  transition: height 0.1s linear;
-  width: 100vw;
-}
-
 .toolSwitcher {
-  height: 1px;
-  width: 1px;
+  height: 0;
+  width: 0;
   position: absolute;
   transition: height 0.1s linear;
   top: var(--header-height);
   left: 0;
 
   @media (--screen-medium) {
+    box-sizing: border-box;
     position: relative;
     display: block;
-    width: auto;
+    width: 100%;
     top: initial;
-    height: initial;
+    height: 100%;
     left: initial;
+    margin-bottom: 4rem;
+    overflow: auto;
   }
+}
+
+.mobileMenuIsOpen .toolSwitcher {
+  position: absolute;
+  height: calc(100vh - var(--header-height));
+  display: block;
+  z-index: 5000;
+  background-color: color(var(--secondary-menu-background-color) a(98%));
+  transition: height 0.1s linear;
+  width: 100vw;
+  overflow: auto;
 }
