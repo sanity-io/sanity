@@ -21,6 +21,8 @@
     "core"
   ],
   "dependencies": {
+    "@babel/preset-env": "^7.0.0",
+    "@babel/register": "^7.0.0",
     "@sanity/check": "0.132.10",
     "@sanity/export": "0.132.10",
     "@sanity/generate-help-url": "0.132.10",
@@ -31,8 +33,6 @@
     "@sanity/server": "0.132.10",
     "@sanity/util": "0.132.10",
     "@sanity/uuid": "0.132.5",
-    "babel-preset-env": "^1.6.1",
-    "babel-register": "^6.26.0",
     "batch-stream-operation": "^1.0.2",
     "chokidar": "^2.0.3",
     "configstore": "^3.0.0",

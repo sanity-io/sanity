@@ -1,5 +1,3 @@
-// @flow
-
 import {get, flatten} from 'lodash'
 import randomKey from '../util/randomKey'
 
