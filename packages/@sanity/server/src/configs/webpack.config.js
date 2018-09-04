@@ -87,11 +87,10 @@ export default (config = {}) => {
           use: {
             loader: resolve('babel-loader'),
             options: babelConfig || {
-              presets: [resolve('babel-preset-react'), resolve('babel-preset-es2015')],
+              presets: [resolve('@babel/preset-react'), resolve('@babel/preset-env')],
               plugins: [
-                resolve('babel-plugin-syntax-class-properties'),
-                resolve('babel-plugin-transform-class-properties'),
-                !isProd && resolve('react-hot-loader/patch')
+                resolve('@babel/plugin-proposal-class-properties'),
+                !isProd && resolve('react-hot-loader/babel')
               ].filter(Boolean),
               cacheDirectory: true
             }

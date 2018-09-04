@@ -1,5 +1,3 @@
-// @flow
-
 import blockContentTypeToOptions from './util/blockContentTypeToOptions'
 import blocksToSlateState from './converters/blocksToSlateState'
 import HtmlDeserializer from './HtmlDeserializer'
