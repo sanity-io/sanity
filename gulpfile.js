@@ -52,6 +52,8 @@ const dest = 'packages'
 
 gulp.task('default', ['build'])
 
+const pkgPath = (cwd, sourcePath) => path.relative(path.join(cwd, 'packages'), sourcePath)
+
 gulp.task('build', () => {
   const assetFilter = filter(['**/*.js'], {restore: true})
 
@@ -62,7 +64,7 @@ gulp.task('build', () => {
     .pipe(assetFilter)
     .pipe(
       through.obj((file, enc, callback) => {
-        gutil.log('Compiling', `'${chalk.cyan(file.path)}'...`)
+        gutil.log('Compiling', `'${chalk.cyan(pkgPath(file.cwd, file.path))}'...`)
         callback(null, file)
       })
     )
@@ -92,7 +94,7 @@ gulp.task('watch-js', () => {
     .pipe(newer(dest))
     .pipe(
       through.obj((file, enc, callback) => {
-        gutil.log('Compiling', `'${chalk.cyan(file._path)}'...`)
+        gutil.log('Compiling', `'${chalk.cyan(pkgPath(file.cwd, file._path))}'...`)
         callback(null, file)
       })
     )
@@ -115,7 +117,7 @@ gulp.task('watch-assets', () => {
     .pipe(newer(dest))
     .pipe(
       through.obj((file, enc, callback) => {
-        gutil.log('Copying', `'${chalk.cyan(file._path)}'...`)
+        gutil.log('Copying  ', `'${chalk.green(pkgPath(file.cwd, file._path))}'...`)
         callback(null, file)
       })
     )

@@ -7,7 +7,7 @@
     "clean": "rimraf lib",
     "bloat": "browserify -t babelify --full-paths ./src/index.js | discify --open",
     "start": "remon --require babel-core/register ./example/app.js",
-    "test": "mocha --recursive --require babel-register test"
+    "test": "mocha --recursive --require @babel/register test"
   },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",

@@ -58,6 +58,8 @@
     "speakingurl": "^13.0.0"
   },
   "devDependencies": {
+    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-flow": "^7.0.0",
     "@sanity/base": "0.132.12",
     "@sanity/check": "0.132.10",
     "@sanity/cli": "0.132.10",
