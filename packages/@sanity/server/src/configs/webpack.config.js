@@ -87,7 +87,10 @@ export default (config = {}) => {
           use: {
             loader: resolve('babel-loader'),
             options: babelConfig || {
-              presets: [resolve('@babel/preset-react'), resolve('@babel/preset-env')],
+              presets: [
+                resolve('@babel/preset-react'),
+                [resolve('@babel/preset-env'), require('./babel-env-config')]
+              ],
               plugins: [
                 resolve('@babel/plugin-proposal-class-properties'),
                 !isProd && resolve('react-hot-loader/babel')
