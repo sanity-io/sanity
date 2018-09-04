@@ -9,7 +9,7 @@
   "scripts": {
     "build": "npm test && npm run package-yarn && npm run pack",
     "pack": "node scripts/pack.js",
-    "package-yarn": "node -r babel-register src/scripts/package-yarn.js",
+    "package-yarn": "node -r @babel/register src/scripts/package-yarn.js",
     "test": "mocha test/**/*.test.js",
     "clean": "rimraf lib",
     "prepublishOnly": "npm run build"

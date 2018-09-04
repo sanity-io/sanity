@@ -1,5 +1,3 @@
-// @flow
-
 import randomKey from '../util/randomKey'
 import resolveJsType from '../util/resolveJsType'
 
