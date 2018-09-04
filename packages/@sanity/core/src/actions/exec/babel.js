@@ -1,9 +1,9 @@
-import registerBabel from 'babel-register'
+import registerBabel from '@babel/register'
 
 registerBabel({
   presets: [
     [
-      'env',
+      '@babel/preset-env',
       {
         targets: {
           node: 'current'

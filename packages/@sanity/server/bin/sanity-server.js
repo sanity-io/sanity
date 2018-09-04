@@ -8,7 +8,7 @@ const port = process.env.PORT || 3333 // eslint-disable-line no-process-env
 
 if (serverDevMode) {
   // eslint-disable-next-line import/no-unassigned-import
-  require('babel-register')
+  require('@babel/register')
 }
 
 const target = appDevMode ? 'devServer' : 'prodServer'

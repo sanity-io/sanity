@@ -9,12 +9,12 @@
     "analyze": "NODE_ENV=production BROWSERIFY_ENV=build DEBUG='' browserify --full-paths -t envify -g uglifyify lib/sanityClient.js --standalone=SanityClient | discify --open",
     "browserify": "NODE_ENV=production BROWSERIFY_ENV=build DEBUG='' browserify -t envify -g uglifyify lib/sanityClient.js -o umd/sanityClient.js --standalone=SanityClient",
     "build": "npm run browserify && npm run minify && npm run size",
-    "size": "node -r babel-register src/scripts/print-bundle-size",
+    "size": "node -r @babel/register src/scripts/print-bundle-size",
     "clean": "rimraf lib coverage .nyc_output umd/*.js",
     "coverage": "DEBUG=sanity NODE_ENV=test nyc --reporter=html --reporter=lcov --reporter=text npm test",
     "minify": "uglifyjs -c -m -- umd/sanityClient.js > umd/sanityClient.min.js",
     "prepublishOnly": "npm run build",
-    "test": "NODE_ENV=test tape -r babel-register test/*.test.js"
+    "test": "NODE_ENV=test tape -r @babel/register test/*.test.js"
   },
   "browser": {
     "./src/http/nodeMiddleware.js": "./src/http/browserMiddleware.js",
@@ -72,7 +72,7 @@
       "src/**/*.js"
     ],
     "require": [
-      "babel-register"
+      "@babel/register"
     ],
     "sourceMap": false,
     "instrument": false
