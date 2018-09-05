@@ -20,7 +20,7 @@ export default function ListItemOnEnterKeyPlugin(options: Options = {}) {
         return undefined
       }
       const {value} = change
-      const {document, startKey, startBlock} = value
+      const {document, startBlock, selection} = value
 
       // Only do listItem nodes
       const isList = startBlock.data.get('listItem')
@@ -32,8 +32,7 @@ export default function ListItemOnEnterKeyPlugin(options: Options = {}) {
       if (startBlock.text !== '') {
         return undefined
       }
-
-      const previousBlock = document.getPreviousBlock(startKey)
+      const previousBlock = document.getPreviousBlock(selection.start.key)
       if (previousBlock && !previousBlock.data.get('listItem')) {
         return undefined
       }
@@ -63,9 +62,9 @@ export default function ListItemOnEnterKeyPlugin(options: Options = {}) {
       }
 
       // Jump to next node if next node is not a listItem or a void block
-      const nextBlock = document.getNextBlock(startKey)
+      const nextBlock = document.getNextBlock(selection.start.key)
       if (nextBlock && !nextBlock.data.get('listItem') && !nextBlock.isVoid) {
-        change.collapseToStartOf(nextBlock)
+        change.moveToStartOfNode(nextBlock)
       } else {
         change.insertBlock(blockToInsert).focus()
       }

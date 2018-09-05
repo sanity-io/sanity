@@ -51,7 +51,7 @@ export default class InsertMenu extends React.Component<Props> {
   handleOnAction = (item: BlockItem) => {
     const {editorValue, onChange, onFocus, type} = this.props
     const change = editorValue.change()
-    const focusKey = change.value.selection.focusKey
+    const focusKey = change.value.selection.focus.key
     const focusBlock = change.value.document.getClosestBlock(focusKey)
     let focusPath = [{_key: focusBlock.key}]
     if (item.isInline) {

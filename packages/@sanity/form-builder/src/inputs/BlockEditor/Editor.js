@@ -25,7 +25,7 @@ import onCopy from 'part:@sanity/form-builder/input/block-editor/on-copy?'
 
 import {VALUE_TO_JSON_OPTS} from './utils/changeToPatches'
 import {hasItemFocus} from '../../utils/pathUtils'
-import createNodeValidator from './utils/createNodeValidator'
+import buildEditorSchema from './utils/buildEditorSchema'
 import findInlineByAnnotationKey from './utils/findInlineByAnnotationKey'
 import PatchEvent, {insert} from '../../../PatchEvent'
 
@@ -108,7 +108,7 @@ export default class Editor extends React.Component<Props> {
         blockContentType: props.type
       })
     ]
-    this._validateNode = createNodeValidator(props.type, this.getValue)
+    this._editorSchema = buildEditorSchema(props.blockContentFeatures)
   }
 
   componentDidMount() {
@@ -174,7 +174,7 @@ export default class Editor extends React.Component<Props> {
     const element = findDOMNode(node)
     element.scrollIntoView({behavior: 'instant', block: 'center', inline: 'nearest'})
     if (!readOnly) {
-      change.collapseToEndOf(node)
+      change.moveToEndOfNode(node)
       onChange(change)
     }
   }
@@ -237,14 +237,14 @@ export default class Editor extends React.Component<Props> {
     if (onPaste) {
       const {editorValue} = this.props
       const change = editorValue.change()
-      const {focusBlock, focusKey, focusText, focusInline} = change.value
+      const {focusBlock, selection, focusText, focusInline} = change.value
       const path = []
       if (focusBlock) {
         path.push({_key: focusBlock.key})
       }
       if (focusInline || focusText) {
         path.push('children')
-        path.push({_key: focusKey})
+        path.push({_key: selection.focus.key})
       }
       const result = onPaste({event, value, path, type})
       if (result && result.insert) {
@@ -387,7 +387,7 @@ export default class Editor extends React.Component<Props> {
             editor={props.editor}
             editorValue={editorValue}
             hasFormBuilderFocus={hasFormBuilderFocus}
-            isSelected={props.isSelected}
+            isSelected={props.isFocused}
             markers={childMarkers}
             node={props.node}
             onChange={onChange}
@@ -455,11 +455,11 @@ export default class Editor extends React.Component<Props> {
           onCopy={this.handleCopy}
           onPaste={this.handlePaste}
           onKeyDown={this.handleOnKeyDown}
-          validateNode={this._validateNode}
           plugins={this._plugins}
           readOnly={readOnly}
           renderNode={this.renderNode}
           renderMark={this.renderMark}
+          schema={this._editorSchema}
         />
         <div
           className={styles.blockDragMarker}

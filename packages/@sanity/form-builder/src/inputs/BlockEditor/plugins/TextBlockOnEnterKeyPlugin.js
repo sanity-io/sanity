@@ -30,7 +30,7 @@ export default function TextBlockOnEnterKeyPlugin(options: Options = {}) {
         isListNode ||
         !isTextBlock ||
         value.selection.isExpanded ||
-        !value.selection.hasEndAtEndOf(startBlock)
+        !value.selection.end.isAtEndOfNode(startBlock)
       ) {
         return undefined
       }

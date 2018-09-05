@@ -57,7 +57,7 @@ export default function PastePlugin(options: Options = {}) {
           key: fragment.key,
           nodes: newNodesList
         })
-        return change.insertFragment(newDoc).collapseToEndOfBlock()
+        return change.insertFragment(newDoc).moveToEndOfBlock()
       }
       type = 'html'
     }
@@ -66,7 +66,7 @@ export default function PastePlugin(options: Options = {}) {
       const doc = Document.fromJSON(
         blockTools.blocksToEditorValue(blocks, blockContentType).document
       )
-      return change.insertFragment(doc).collapseToEndOfBlock()
+      return change.insertFragment(doc).moveToEndOfBlock()
     }
     return undefined
   }

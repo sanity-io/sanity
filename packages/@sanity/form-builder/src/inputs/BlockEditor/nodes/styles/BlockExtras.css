@@ -10,6 +10,8 @@
   justify-content: flex-start;
   align-content: center;
   user-select: none;
+  font-weight: normal;
+  font-size: 1rem;
 }
 
 .withSomething {
@@ -32,11 +34,9 @@
 
 .blockActions {
   margin-right: var(--extra-small-padding);
-  font-size: 1rem;
   color: var(--text-color);
 }
 
 .markers {
-  font-size: 1rem;
   color: var(--text-color);
 }

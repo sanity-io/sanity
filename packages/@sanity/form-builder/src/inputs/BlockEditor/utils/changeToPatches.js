@@ -35,7 +35,7 @@ function setNodePatchSimple(
         nodes: [
           change
             .applyOperations([operation])
-            .value.document.nodes.get(operation.path[0])
+            .value.document.nodes.get(operation.path.get(0))
             .toJSON(VALUE_TO_JSON_OPTS)
         ]
       }
@@ -69,15 +69,15 @@ function setNodePatch(change: Change, operation: Operation, blocks: Block[], blo
   if (blocks && blocks.length === 0) {
     return set(appliedBlocks, [])
   }
-  const changedBlock = appliedBlocks[operation.path[0]]
+  const changedBlock = appliedBlocks[operation.path.get(0)]
 
   // Don't do anything if nothing is changed
-  if (isEqual(changedBlock, blocks[operation.path[0]])) {
+  if (isEqual(changedBlock, blocks[operation.path.get(0)])) {
     return []
   }
 
-  setKey(changedBlock._key, changedBlock)
-  return set(normalizeBlock(changedBlock), [{_key: blocks[operation.path[0]]._key}])
+  setKey(blocks[operation.path.get(0)]._key, changedBlock)
+  return set(normalizeBlock(changedBlock), [{_key: changedBlock._key}])
 }
 
 function insertNodePatch(change: Change, operation: Operation, blocks: Block[], blockContentType) {
@@ -87,7 +87,7 @@ function insertNodePatch(change: Change, operation: Operation, blocks: Block[], 
     blockContentType
   )
 
-  if (operation.path.length === 1) {
+  if (operation.path.size === 1) {
     if (!blocks.length) {
       return set(
         appliedBlocks.map((block, index) => {
@@ -97,16 +97,16 @@ function insertNodePatch(change: Change, operation: Operation, blocks: Block[], 
     }
     let position = 'after'
     let afterKey
-    if (operation.path[0] === 0) {
+    if (operation.path.get(0) === 0) {
       afterKey = blocks[0]._key
       position = 'before'
     } else {
-      afterKey = blocks[operation.path[0] - 1]._key
+      afterKey = blocks[operation.path.get(0) - 1]._key
     }
-    const newBlock = appliedBlocks[operation.path[0]]
-    const newKey = change.value.document.nodes.get(operation.path[0]).key
+    const newBlock = appliedBlocks[operation.path.get(0)]
+    const newKey = change.value.document.nodes.get(operation.path.get(0)).key
     setKey(newKey, newBlock)
-    const oldData = change.value.document.nodes.get(operation.path[0]).data.toObject()
+    const oldData = change.value.document.nodes.get(operation.path.get(0)).data.toObject()
     if (oldData.value && oldData.value._key) {
       oldData.value._key = newKey
     }
@@ -114,8 +114,8 @@ function insertNodePatch(change: Change, operation: Operation, blocks: Block[], 
     patches.push(insert([newBlock], position, [{_key: afterKey}]))
   }
 
-  if (operation.path.length > 1) {
-    const block = appliedBlocks[operation.path[0]]
+  if (operation.path.size > 1) {
+    const block = appliedBlocks[operation.path.get(0)]
     setKey(block._key, block)
     if (block._type === 'block') {
       patches.push(set(normalizeBlock(block), [{_key: block._key}]))
@@ -130,23 +130,22 @@ function splitNodePatch(change: Change, operation: Operation, blocks: Block[], b
     change.applyOperations([operation]).value.toJSON(VALUE_TO_JSON_OPTS),
     blockContentType
   )
-  const splitBlock = appliedBlocks[operation.path[0]]
+  const splitBlock = appliedBlocks[operation.path.get(0)]
   setKey(splitBlock._key, splitBlock)
-
-  if (operation.path.length === 1) {
+  if (operation.path.size === 1) {
     patches.push(set(splitBlock, [{_key: splitBlock._key}]))
-    const newBlock = appliedBlocks[operation.path[0] + 1]
-    const newKey = change.value.document.nodes.get(operation.path[0] + 1).key
+    const newBlock = appliedBlocks[operation.path.get(0) + 1]
+    const newKey = change.value.document.nodes.get(operation.path.get(0) + 1).key
     setKey(newKey, newBlock)
     // Update the change value data with new key
-    const oldData = change.value.document.nodes.get(operation.path[0] + 1).data.toObject()
+    const oldData = change.value.document.nodes.get(operation.path.get(0) + 1).data.toObject()
     if (oldData.value && oldData.value._key) {
       oldData.value._key = newKey
     }
     change.setNodeByKey(newKey, {data: {...oldData, _key: newKey}}, {normalize: false})
     patches.push(insert([newBlock], 'after', [{_key: splitBlock._key}]))
   }
-  if (operation.path.length > 1) {
+  if (operation.path.size > 1) {
     patches.push(set(splitBlock, [{_key: splitBlock._key}]))
   }
   return patches
@@ -158,9 +157,9 @@ function mergeNodePatch(change: Change, operation: Operation, blocks: Block[], b
     change.applyOperations([operation]).value.toJSON(VALUE_TO_JSON_OPTS),
     blockContentType
   )
-  if (operation.path.length === 1) {
-    const mergedBlock = blocks[operation.path[0]]
-    const targetBlock = appliedBlocks[operation.path[0] - 1]
+  if (operation.path.size === 1) {
+    const mergedBlock = blocks[operation.path.get(0)]
+    const targetBlock = appliedBlocks[operation.path.get(0) - 1]
     patches.push(
       unset([
         {
@@ -168,10 +167,10 @@ function mergeNodePatch(change: Change, operation: Operation, blocks: Block[], b
         }
       ])
     )
-    patches.push(set(targetBlock, [{_key: blocks[operation.path[0] - 1]._key}]))
+    patches.push(set(targetBlock, [{_key: blocks[operation.path.get(0) - 1]._key}]))
   }
-  if (operation.path.length > 1) {
-    const targetBlock = appliedBlocks[operation.path[0]]
+  if (operation.path.size > 1) {
+    const targetBlock = appliedBlocks[operation.path.get(0)]
     setKey(targetBlock._key, targetBlock)
     patches.push(set(targetBlock, [{_key: targetBlock._key}]))
   }
@@ -181,11 +180,11 @@ function mergeNodePatch(change: Change, operation: Operation, blocks: Block[], b
 function moveNodePatch(change: Change, operation: Operation, blocks: Block[], blockContentType) {
   change.applyOperations([operation])
   const patches = []
-  if (operation.path.length === 1) {
-    if (operation.path[0] === operation.newPath[0]) {
+  if (operation.path.size === 1) {
+    if (operation.path.get(0) === operation.newPath.get(0)) {
       return []
     }
-    const block = blocks[operation.path[0]]
+    const block = blocks[operation.path.get(0)]
     patches.push(
       unset([
         {
@@ -195,11 +194,11 @@ function moveNodePatch(change: Change, operation: Operation, blocks: Block[], bl
     )
     let position = 'after'
     let posKey
-    if (operation.newPath[0] === 0) {
+    if (operation.newPath.get(0) === 0) {
       posKey = blocks[0]._key
       position = 'before'
     } else {
-      posKey = blocks[operation.newPath[0] - 1]._key
+      posKey = blocks[operation.newPath.get(0) - 1]._key
     }
     setKey(block._key, block)
     patches.push(insert([block], position, [{_key: posKey}]))
@@ -208,8 +207,8 @@ function moveNodePatch(change: Change, operation: Operation, blocks: Block[], bl
       change.value.toJSON(VALUE_TO_JSON_OPTS),
       blockContentType
     )
-    const changedBlockFrom = appliedBlocks[operation.path[0]]
-    const changedBlockTo = appliedBlocks[operation.newPath[0]]
+    const changedBlockFrom = appliedBlocks[operation.path.get(0)]
+    const changedBlockTo = appliedBlocks[operation.newPath.get(0)]
     setKey(changedBlockFrom._key, changedBlockFrom)
     setKey(changedBlockTo._key, changedBlockTo)
     patches.push(set(changedBlockFrom, [{_key: changedBlockFrom._key}]))
@@ -226,12 +225,12 @@ function removeNodePatch(
 ) {
   change.applyOperations([operation])
   const patches = []
-  const block = blocks[operation.path[0]]
-  if (operation.path.length === 1) {
+  const block = blocks[operation.path.get(0)]
+  if (operation.path.size === 1) {
     // Unset block
     patches.push(unset([{_key: block._key}]))
   }
-  if (operation.path.length > 1) {
+  if (operation.path.size > 1) {
     // Only relevant for 'block' type blocks
     if (block._type !== 'block') {
       return patches
@@ -240,7 +239,7 @@ function removeNodePatch(
       change.value.toJSON(VALUE_TO_JSON_OPTS),
       blockContentType
     )
-    const changedBlock = appliedBlocks[operation.path[0]]
+    const changedBlock = appliedBlocks[operation.path.get(0)]
     setKey(changedBlock._key, changedBlock)
     patches.push(set(changedBlock, [{_key: changedBlock._key}]))
   }
@@ -255,21 +254,6 @@ function removeNodePatch(
 function noOpPatch(change: SlateChange, operation: Operation) {
   change.applyOperations([operation])
   return []
-}
-
-function setValuePatch(
-  change: SlateChange,
-  operation: Operation,
-  blocks: Block[],
-  blockContentType: Type
-) {
-  change.applyOperations([operation])
-  const appliedBlocks = editorValueToBlocks(
-    change.value.toJSON(VALUE_TO_JSON_OPTS),
-    blockContentType
-  )
-  console.log('setValuePatch', appliedBlocks)
-  return [set(appliedBlocks, [])]
 }
 
 function applyPatchesOnValue(patches, value) {
