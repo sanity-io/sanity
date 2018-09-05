@@ -3,7 +3,7 @@ import lazyRequire from '@sanity/util/lib/lazyRequire'
 const helpText = `
 Options
   --source-maps Enable source maps for built bundles (increases size of bundle)
-  --no-minify Skip minifying built Javascript (speeds up build, increases size of bundle)
+  --no-minify Skip minifying built JavaScript (speeds up build, increases size of bundle)
   --no-build Don't build the studio prior to deploy, instead deploying the version currently in \`dist/\`
 
 Examples
