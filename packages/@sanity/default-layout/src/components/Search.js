@@ -51,12 +51,17 @@ function search(query) {
 
   const terms = query.split(/\s+/).filter(Boolean)
 
+  const params = terms.reduce((acc, term, i) => {
+    acc[`t${i}`] = `${term}*`
+    return acc
+  }, {})
+
   const uniqueFields = combineFields(candidateTypes.map(type => type.__unstable_searchFields))
-  const constraints = terms.map(term => uniqueFields.map(field => `${field} match '${term}*'`))
+  const constraints = terms.map((term, i) => uniqueFields.map(field => `${field} match $t${i}`))
   const constraintString = constraints
     .map(constraint => `(${constraint.join(' || ')})`)
     .join(' && ')
-  return client.observable.fetch(`*[${constraintString}][0...10]`)
+  return client.observable.fetch(`*[${constraintString}][0...10]`, params)
 }
 
 export default enhanceClickOutside(
