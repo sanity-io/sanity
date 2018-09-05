@@ -194,9 +194,9 @@ export default class BlockObject extends React.Component<Props, State> {
     }
 
     let nextChange = editorValue.change().removeNodeByKey(node.key)
-    nextChange = nextChange[target.isAtStart ? 'collapseToStartOf' : 'collapseToEndOf'](target.node)
+    nextChange = nextChange[target.isAtStart ? 'moveToStart' : 'moveToEndOfNode'](target.node)
       .insertBlock(node)
-      .collapseToEndOf(node)
+      .moveToEndOfNode(node)
       .focus()
 
     onChange(nextChange)
@@ -220,7 +220,7 @@ export default class BlockObject extends React.Component<Props, State> {
     const {node, onFocus, onChange, editorValue} = this.props
     const change = editorValue
       .change()
-      .collapseToEndOf(node)
+      .moveToEndOfNode(node)
       .focus()
       .blur()
     onChange(change, () => onFocus([{_key: node.key}, FOCUS_TERMINATOR]))
@@ -331,15 +331,13 @@ export default class BlockObject extends React.Component<Props, State> {
 
     const classname = classNames([
       styles.root,
-      editorValue.selection.hasFocusIn(node) && styles.focused,
+      editorValue.selection.focus.isInNode(node) && styles.focused,
       isSelected && styles.selected,
       errors.length > 0 && styles.hasErrors
     ])
-
     return (
-      <div>
+      <div {...attributes}>
         <div
-          {...attributes}
           onDragStart={this.handleDragStart}
           onDragEnd={this.handleDragEnd}
           onDragEnter={this.handleCancelEvent}

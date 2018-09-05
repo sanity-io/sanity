@@ -56,7 +56,7 @@ function shouldUpdateDropTarget(range, dropTarget) {
   if (!dropTarget) {
     return true
   }
-  return range.focusOffset !== dropTarget.range.focusOffset
+  return range.focus.offset !== dropTarget.range.focus.offset
 }
 
 export default class InlineObject extends React.Component<Props, State> {
@@ -124,11 +124,11 @@ export default class InlineObject extends React.Component<Props, State> {
     const {editorValue, onChange} = this.props
 
     const range = getEventRange(event, editorValue)
-    if (range === null || typeof range.focusOffset === undefined) {
+    if (range === null || typeof range.focus.offset === undefined) {
       return
     }
 
-    const targetNode = editorValue.document.getDescendant(range.focusKey)
+    const targetNode = editorValue.document.getDescendant(range.focus.key)
 
     // If we are dragging over another inline return
     if (editorValue.document.getClosestInline(targetNode.key)) {
@@ -136,7 +136,7 @@ export default class InlineObject extends React.Component<Props, State> {
     }
 
     // If we are dragging over a custom type block return
-    const block = editorValue.document.getClosestBlock(range.focusKey)
+    const block = editorValue.document.getClosestBlock(range.focus.key)
     if (block && block.type !== 'contentBlock') {
       return
     }
@@ -151,26 +151,28 @@ export default class InlineObject extends React.Component<Props, State> {
 
   moveCursor(range, node) {
     const {editorValue} = this.props
-    let theOffset = range.focusOffset
+    let theOffset = range.focus.offset
 
     // Check if it is acceptable to move the cursor here
-    const nextChars = editorValue.document.getCharactersAtRange(
+    const texts = editorValue.document.getTextsAtRange(
       Range.create({
-        anchorKey: node.key,
-        focusKey: node.key,
-        anchorOffset: theOffset - 1,
-        focusOffset: theOffset,
-        isFocused: true,
-        isBackward: false
+        anchor: {
+          key: node.key,
+          offset: theOffset - 1
+        },
+        focus: {
+          key: node.key,
+          offset: theOffset
+        }
       })
     )
-    if (!nextChars.size) {
+    if (!texts.size) {
       theOffset = 0
     }
     const change = editorValue
       .change()
-      .collapseToStartOf(node)
-      .move(theOffset)
+      .moveToStartOfNode(node)
+      .moveForward(theOffset)
       .focus()
     return change
   }
@@ -192,7 +194,7 @@ export default class InlineObject extends React.Component<Props, State> {
       .select(target.range)
       .removeNodeByKey(node.key)
       .insertInline(node)
-      .collapseToEndOf(node)
+      .moveToEndOfNode(node)
       .focus()
 
     onChange(change)
@@ -231,7 +233,7 @@ export default class InlineObject extends React.Component<Props, State> {
     const {focusBlock} = editorValue
     const change = editorValue
       .change()
-      .collapseToEndOf(node)
+      .moveToEndOfNode(node)
       .focus()
       .blur()
     onChange(change, () =>
@@ -363,7 +365,7 @@ export default class InlineObject extends React.Component<Props, State> {
 
     const classname = classNames([
       styles.root,
-      editorValue.selection.hasFocusIn(node) && styles.focused,
+      editorValue.selection.focus.isInNode(node) && styles.focused,
       isSelected && styles.selected,
       errors.length > 0 && styles.hasErrors
     ])
@@ -380,6 +382,8 @@ export default class InlineObject extends React.Component<Props, State> {
         ref={this.refFormBuilderBlock}
         className={classname}
         onClick={this.handleShowMenu}
+        suppressContentEditableWarning
+        contentEditable="false"
       >
         <span ref={this.refPreview} className={styles.previewContainer}>
           {this.renderPreview(value)}

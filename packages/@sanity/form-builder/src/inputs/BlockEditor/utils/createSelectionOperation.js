@@ -5,21 +5,26 @@ import type {SlateChange} from '../typeDefs'
 import {Operation} from 'slate'
 
 export default function createSelectionOperation(change: SlateChange) {
-  const focusPath = change.value.focusKey
-    ? change.value.document.getPath(change.value.focusKey)
-    : undefined
-  const anchorPath = change.value.anchorKey
-    ? change.value.document.getPath(change.value.anchorKey)
-    : undefined
-  return Operation.create({
+  const focusPath =
+    change.value.selection.focus && change.value.selection.focus.key
+      ? change.value.document.getPath(change.value.selection.focus.key)
+      : undefined
+  const anchorPath =
+    change.value.selection.anchor && change.value.selection.anchor.key
+      ? change.value.document.getPath(change.value.selection.anchor.key)
+      : undefined
+  const props = {
     type: 'set_selection',
     properties: {
-      anchorPath,
-      focusPath,
-      focusOffset: change.value.selection.focusOffset,
-      anchorOffset: change.value.selection.anchorOffset
-    },
-    value: change.value,
-    selection: change.selection
-  })
+      anchor: {
+        path: anchorPath ? anchorPath.toArray() : null,
+        offset: change.value.selection.anchor.offset
+      },
+      focus: {
+        path: focusPath ? focusPath.toArray() : null,
+        offset: change.value.selection.focus.offset
+      }
+    }
+  }
+  return Operation.create(props)
 }

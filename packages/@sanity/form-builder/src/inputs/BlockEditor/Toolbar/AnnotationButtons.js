@@ -60,14 +60,12 @@ export default class AnnotationButtons extends React.Component<Props> {
     const hasCharLeftOrRight =
       isCollapsed &&
       focusText &&
-      (
-        focusText.text.substring(selection.focusOffset - 1, selection.focusOffset).trim() === '' &&
-        focusText.text.substring(selection.focusOffset, selection.focusOffset + 1).trim() === ''
-      )
+      (focusText.text.substring(selection.focus.offset - 1, selection.focus.offset).trim() === '' &&
+        focusText.text.substring(selection.focus.offset, selection.focus.offset + 1).trim() === '')
 
     const disabled =
       inlines.some(inline => inline.type !== 'span') ||
-      (focusBlock ? focusBlock.isVoid || focusBlock.text === '' : false) ||
+      (focusBlock ? editorValue.schema.isVoid(focusBlock) || focusBlock.text === '' : false) ||
       hasCharLeftOrRight
     return blockContentFeatures.annotations.map((annotation: BlockContentFeature) => {
       return {
@@ -92,8 +90,8 @@ export default class AnnotationButtons extends React.Component<Props> {
     const key = randomKey(12)
     change.call(createFormBuilderSpan, item.value, key, originalSelection)
     change
-      .collapseToEndOf(change.value.inlines.first())
-      .extendToStartOf(change.value.inlines.first())
+      .moveToEndOfNode(change.value.inlines.first())
+      .moveFocusToStartOfNode(change.value.inlines.first())
       .blur()
     onChange(change, () =>
       setTimeout(() => onFocus([focusPath[0], 'markDefs', {_key: key}, FOCUS_TERMINATOR]), 200)
