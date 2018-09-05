@@ -1,17 +1,30 @@
 const stringFieldsSymbol = Symbol('__cachedStringFields')
 
-function reduceType(type, reducer, accumulator, path = [], maxDepth = 10) {
+function reduceType(type, reducer, accumulator, path = [], maxDepth) {
   if (maxDepth < 0) {
     return accumulator
   }
-  if (Array.isArray(type.fields)) {
-    return type.fields.reduce(
-      (acc, field, index) =>
-        reduceType(field.type, reducer, acc, path.concat(field.name), maxDepth - 1),
-      reducer(accumulator, type, path)
-    )
+  if (type.jsonType === 'array' && Array.isArray(type.of)) {
+    return reduceArray(type, reducer, accumulator, path, maxDepth)
+  }
+  if (type.jsonType === 'object' && Array.isArray(type.fields)) {
+    return reduceObject(type, reducer, accumulator, path, maxDepth)
   }
   return reducer(accumulator, type, path)
+}
+
+function reduceArray(arrayType, reducer, accumulator, path, maxDepth) {
+  return arrayType.of.reduce(
+    (acc, ofType) => reduceType(ofType, reducer, acc, path, maxDepth - 1),
+    accumulator
+  )
+}
+
+function reduceObject(objectType, reducer, accumulator, path, maxDepth) {
+  return objectType.fields.reduce((acc, field) => {
+    const segment = `${field.name}${field.type.jsonType === 'array' ? '[]' : ''}`
+    return reduceType(field.type, reducer, acc, path.concat(segment), maxDepth - 1)
+  }, accumulator)
 }
 
 function getCachedStringFieldPaths(type, maxDepth) {
