@@ -1,8 +1,0 @@
-.root {
-  margin-bottom: 0 !important;
-  background-color: transparent;
-
-  @nest & label {
-    display: none;
-  }
-}
