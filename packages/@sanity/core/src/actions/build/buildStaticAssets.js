@@ -129,7 +129,7 @@ export default async (args, context) => {
 
     // Now compress the JS bundles
     if (!compilationConfig.skipMinify) {
-      spin = output.spinner('Minifying Javascript bundles').start()
+      spin = output.spinner('Minifying JavaScript bundles').start()
       const compressStart = Date.now()
       await Promise.all(
         Object.keys(chunkMap)
@@ -138,7 +138,7 @@ export default async (args, context) => {
           .map(compressJavascript)
       )
 
-      spin.text = `Minifying Javascript bundles (${Date.now() - compressStart}ms)`
+      spin.text = `Minifying JavaScript bundles (${Date.now() - compressStart}ms)`
       spin.succeed()
     }
 
