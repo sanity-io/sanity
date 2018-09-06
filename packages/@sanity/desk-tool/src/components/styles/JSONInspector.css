@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity */
+
 /**
  * react-json-inspector unfortunately doesn't let us specify class names,
  * so there is no way to use CSS modules without forking the entire project.

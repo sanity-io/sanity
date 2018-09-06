@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity */
+
 @import 'part:@sanity/base/theme/variables-style';
 
 :global(.tippy-touch) {

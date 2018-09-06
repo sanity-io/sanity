@@ -22,7 +22,7 @@ ul.previews li {
   float: left;
   list-style: none;
   margin: 5px;
-  padding:0;
+  padding: 0;
 }
 
 ul.previews li pre {

@@ -22,6 +22,8 @@
 }
 
 .isDisabled {
+  opacity: 0.4;
+
   @nest &:hover {
     background-color: inherit;
   }
@@ -53,10 +55,6 @@
 
 .divider {
   border-top: 1px solid var(--gray-light);
-}
-
-.isDisabled {
-  opacity: 0.4;
 }
 
 .isOpen {

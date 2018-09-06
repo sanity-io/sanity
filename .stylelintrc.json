@@ -2,7 +2,10 @@
   "extends": [
     "stylelint-config-standard"
   ],
-  "ignoreFiles": "packages/@sanity/extract-text-webpack-plugin/**",
+  "ignoreFiles": [
+    "packages/@sanity/extract-text-webpack-plugin/**",
+    "**/*.js"
+  ],
   "rules": {
     "shorthand-property-no-redundant-values": null,
     "color-hex-length": null,

@@ -2,6 +2,7 @@
 
 .root {
   composes: root from "part:@sanity/components/formfields/default-style";
+  outline: none;
 
   & & {
     /* nested inside itself */
@@ -38,6 +39,17 @@
 
 .validationIconError {
   composes: validationIconError from 'part:@sanity/base/theme/forms/validation-style';
+}
+
+.description {
+  composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
+  margin: 0;
+  padding: 0;
+  display: none;
+
+  @nest &.isOpen {
+    display: block;
+  }
 }
 
 @media (--screen-medium) {
@@ -97,72 +109,41 @@
   }
 }
 
-.canFocus > .fieldset > .inner > .content {
-  padding: var(--small-padding);
-  border-radius: var(--border-radius-base);
-  box-shadow: var(--component-box-shadow);
-
-  @media (--screen-medium) {
-    padding: var(--medium-padding);
-  }
-}
-
-.level1 > .fieldset > .inner > .content {
-  background-color: var(--component-bg);
-  box-shadow: var(--component-box-shadow);
-  padding: var(--small-padding);
-  border-radius: var(--border-radius-base);
-
-  @media (--screen-medium) {
-    padding: var(--medium-padding);
-  }
-}
-
-.level2 > .fieldset > .inner > .content {
-  background-color: var(--component-bg);
-  box-shadow: var(--component-box-shadow);
-  padding: var(--small-padding);
-  border-radius: var(--border-radius-base);
-
-  @media (--screen-medium) {
-    padding: var(--medium-padding);
-  }
-}
-
-.root {
-  outline: none;
-}
-
-.root:not(.level1):focus > .fieldset > .inner > .content {
-  box-shadow: var(--component-box-shadow--focus);
-}
-
-.root:not(.level2):focus > .fieldset > .inner > .content {
-  box-shadow: var(--component-box-shadow--focus);
-}
-
-.level1:focus > .fieldset > .inner > .content {
-  box-shadow: var(--component-box-shadow--focus);
-}
-
-.level2:focus > .fieldset > .inner > .content {
-  box-shadow: var(--component-box-shadow--focus);
+.level1,
+.level2,
+.level3,
+.level4 {
+  display: block;
+  box-shadow: none;
 }
 
 .inner {
   display: block;
 }
 
-.legend + .description {
-  margin-top: calc(var(--small-padding) / 3);
-}
+.arrow {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  overflow: hidden;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  margin-right: 0.25em;
+  vertical-align: middle;
+  transition: transform 0.1s linear;
+  transform: rotate(-90deg);
+  margin-top: -0.1em;
 
-.legend + .content {
-  margin-top: var(--small-padding);
-}
+  @nest &.isOpen {
+    transform: rotate(0);
+  }
 
-.description + .content {
-  margin-top: var(--small-padding);
+  @nest & svg {
+    position: absolute;
+    transform: scale(1.2);
+  }
 }
 
 .legend {
@@ -195,48 +176,64 @@
   }
 }
 
-.level1,
-.level2,
-.level3,
-.level4 {
-  display: block;
-  box-shadow: none;
+.legend + .description {
+  margin-top: calc(var(--small-padding) / 3);
 }
 
-.arrow {
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-  overflow: hidden;
-  line-height: 1;
-  margin: 0;
-  padding: 0;
-  position: relative;
-  margin-right: 0.25em;
-  vertical-align: middle;
-  transition: transform 0.1s linear;
-  transform: rotate(-90deg);
-  margin-top: -0.1em;
+.legend + .content {
+  margin-top: var(--small-padding);
+}
 
-  @nest &.isOpen {
-    transform: rotate(0);
-  }
+.description + .content {
+  margin-top: var(--small-padding);
+}
 
-  @nest & svg {
-    position: absolute;
-    transform: scale(1.2);
+.canFocus > .fieldset > .inner > .content {
+  padding: var(--small-padding);
+  border-radius: var(--border-radius-base);
+  box-shadow: var(--component-box-shadow);
+
+  @media (--screen-medium) {
+    padding: var(--medium-padding);
   }
 }
 
-.description {
-  composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
-  margin: 0;
-  padding: 0;
-  display: none;
+.level1 > .fieldset > .inner > .content {
+  background-color: var(--component-bg);
+  box-shadow: var(--component-box-shadow);
+  padding: var(--small-padding);
+  border-radius: var(--border-radius-base);
 
-  @nest &.isOpen {
-    display: block;
+  @media (--screen-medium) {
+    padding: var(--medium-padding);
   }
+}
+
+.level2 > .fieldset > .inner > .content {
+  background-color: var(--component-bg);
+  box-shadow: var(--component-box-shadow);
+  padding: var(--small-padding);
+  border-radius: var(--border-radius-base);
+
+  @media (--screen-medium) {
+    padding: var(--medium-padding);
+  }
+}
+
+.level1:focus > .fieldset > .inner > .content {
+  box-shadow: var(--component-box-shadow--focus);
+}
+
+.level2:focus > .fieldset > .inner > .content {
+  box-shadow: var(--component-box-shadow--focus);
+}
+
+.root:not(.level1):focus > .fieldset > .inner > .content {
+  box-shadow: var(--component-box-shadow--focus);
+}
+
+.root:not(.level2):focus > .fieldset > .inner > .content {
+  box-shadow: var(--component-box-shadow--focus);
 }
 
 .debugNestingLevel {

@@ -215,17 +215,6 @@
   }
 }
 
-.mobileMenuIsOpen .toolSwitcher {
-  position: absolute;
-  height: calc(100vh - var(--header-height));
-  display: block;
-  z-index: 5000;
-  backdrop-filter: blur(20px);
-  background-color: color(var(--secondary-menu-background-color) a(90%));
-  transition: height 0.1s linear;
-  width: 100vw;
-}
-
 .toolSwitcher {
   height: 1px;
   width: 1px;
@@ -242,4 +231,15 @@
     height: initial;
     left: initial;
   }
+}
+
+.mobileMenuIsOpen .toolSwitcher {
+  position: absolute;
+  height: calc(100vh - var(--header-height));
+  display: block;
+  z-index: 5000;
+  backdrop-filter: blur(20px);
+  background-color: color(var(--secondary-menu-background-color) a(90%));
+  transition: height 0.1s linear;
+  width: 100vw;
 }

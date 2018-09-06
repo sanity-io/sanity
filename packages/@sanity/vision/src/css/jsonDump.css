@@ -17,6 +17,7 @@
 .block {
   padding: 1rem;
   margin: 0;
+
   @nest &:nth-child(odd) {
     border-top: 1px solid #eee;
     background-color: #f0f0f0;
