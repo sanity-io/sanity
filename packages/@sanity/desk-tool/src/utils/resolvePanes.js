@@ -50,11 +50,11 @@ function resolveForStructure(structure, ids) {
         return
       }
 
-      subscribeForUpdates(parent.child(id, context), index, context)
+      subscribeForUpdates(parent.child, index, context, [id, context])
     }
 
-    function subscribeForUpdates(pane, index, context) {
-      const source = serializeStructure(pane, context)
+    function subscribeForUpdates(pane, index, context, resolverArgs) {
+      const source = serializeStructure(pane, context, resolverArgs)
       subscriptions.push(
         source.subscribe(result => emit(result, index), error => subscriber.error(error))
       )

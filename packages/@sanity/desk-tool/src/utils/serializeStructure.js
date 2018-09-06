@@ -2,19 +2,21 @@ import {from as observableFrom, of as observableOf} from 'rxjs'
 import {mergeMap} from 'rxjs/operators'
 import isSubscribable from './isSubscribable'
 
-export default function serializeStructure(item, context) {
+export default function serializeStructure(item, context, resolverArgs = []) {
   // Lazy
   if (typeof item === 'function') {
-    return serializeStructure(item(), context)
+    return serializeStructure(item(...resolverArgs), context, resolverArgs)
   }
 
   // Promise/observable returning a function, builder or plain JSON structure
   if (isSubscribable(item)) {
-    return observableFrom(item).pipe(mergeMap(val => serializeStructure(val, context)))
+    return observableFrom(item).pipe(
+      mergeMap(val => serializeStructure(val, context, resolverArgs))
+    )
   }
 
   // Builder?
-  if (typeof item.serialize === 'function') {
+  if (item && typeof item.serialize === 'function') {
     return serializeStructure(item.serialize(context))
   }
 
