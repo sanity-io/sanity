@@ -17,6 +17,17 @@ export default {
       ]
     },
     {
+      name: 'name',
+      title: "Name field (can't be sorted)",
+      type: 'object',
+      fieldsets: [{name: 'other', title: 'Translations'}],
+      fields: [
+        {name: 'no', type: 'string', title: 'Norwegian (Bokmål)'},
+        {name: 'nn', type: 'string', title: 'Norwegian (Nynorsk)', fieldset: 'other'},
+        {name: 'se', type: 'string', title: 'Swedish', fieldset: 'other'}
+      ]
+    },
+    {
       name: 'externalId',
       title: 'External id',
       type: 'string'
