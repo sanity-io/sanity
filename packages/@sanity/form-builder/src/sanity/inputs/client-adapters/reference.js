@@ -23,8 +23,8 @@ function buildConstraintFromType(type, terms) {
     return typeConstraint
   }
 
-  const stringFieldConstraints = flatten(
-    stringFieldPaths.map(fieldPath => terms.map(term => `${fieldPath} match '${term}*'`))
+  const stringFieldConstraints = stringFieldPaths.map(fieldPath =>
+    terms.map(term => `${fieldPath} match '${term}*'`).join(' && ')
   )
 
   return `${typeConstraint} && (${stringFieldConstraints.join(' || ')})`
