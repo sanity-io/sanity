@@ -14,6 +14,10 @@
   opacity: 0.5;
 }
 
+.functions {
+  composes: functions from 'part:@sanity/components/fieldsets/default-style';
+}
+
 .list + .functions {
   padding-top: var(--medium-padding);
 }
@@ -67,6 +71,3 @@
   margin: 1em 0;
 }
 
-.functions {
-  composes: functions from 'part:@sanity/components/fieldsets/default-style';
-}

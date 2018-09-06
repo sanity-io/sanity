@@ -1,7 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-
+  display: block;
 }
 
 .heading {
