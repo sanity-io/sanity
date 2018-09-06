@@ -1,4 +1,5 @@
 import {StructureBuilder as S} from '../src'
+import serializeStructure from './util/serializeStructure'
 
 test('builds document lists with only required properties', () => {
   expect(
@@ -57,7 +58,7 @@ test('builds document lists through setters (alt order #2)', () => {
   ).toMatchSnapshot()
 })
 
-test('default child resolver resolves to editor', () => {
+test('default child resolver resolves to editor', done => {
   const list = S.documentList()
     .id('books')
     .title('Books')
@@ -65,12 +66,16 @@ test('default child resolver resolves to editor', () => {
     .params({type: 'book'})
     .serialize()
 
-  expect(list.resolveChildForItem('asoiaf-wow', list, {index: 1})).resolves.toEqual({
-    id: 'editor',
-    type: 'document',
-    options: {
-      id: 'asoiaf-wow',
-      type: 'book'
-    }
+  const context = {parent: list, index: 1}
+  serializeStructure(list.child, context, ['asoiaf-wow', context]).subscribe(child => {
+    expect(child).toEqual({
+      id: 'editor',
+      type: 'document',
+      options: {
+        id: 'asoiaf-wow',
+        type: 'book'
+      }
+    })
+    done()
   })
 })

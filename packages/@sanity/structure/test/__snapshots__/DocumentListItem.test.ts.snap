@@ -49,6 +49,7 @@ Object {
   "_id": "asoiaf",
   "child": Object {
     "canHandleIntent": undefined,
+    "child": [Function],
     "defaultLayout": undefined,
     "id": "asoiaf-posts",
     "menuItemGroups": Array [],
@@ -56,7 +57,6 @@ Object {
     "options": Object {
       "filter": "author == \\"grrm\\"",
     },
-    "resolveChildForItem": [Function],
     "schemaTypeName": undefined,
     "title": undefined,
     "type": "documentList",

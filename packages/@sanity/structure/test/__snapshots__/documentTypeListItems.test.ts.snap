@@ -6,6 +6,7 @@ ListItemBuilder {
     "child": DocumentListBuilder {
       "intentChecker": [Function],
       "spec": Object {
+        "child": [Function],
         "id": "author",
         "menuItemGroups": Array [
           Object {
@@ -119,7 +120,6 @@ ListItemBuilder {
             "type": "author",
           },
         },
-        "resolveChildForItem": [Function],
         "schemaTypeName": "author",
         "title": "Author",
       },
@@ -171,6 +171,7 @@ ListItemBuilder {
     "child": DocumentListBuilder {
       "intentChecker": [Function],
       "spec": Object {
+        "child": [Function],
         "id": "author",
         "menuItemGroups": Array [
           Object {
@@ -284,7 +285,6 @@ ListItemBuilder {
             "type": "author",
           },
         },
-        "resolveChildForItem": [Function],
         "schemaTypeName": "author",
         "title": "Author",
       },
@@ -337,6 +337,7 @@ Array [
       "child": DocumentListBuilder {
         "intentChecker": [Function],
         "spec": Object {
+          "child": [Function],
           "id": "author",
           "menuItemGroups": Array [
             Object {
@@ -450,7 +451,6 @@ Array [
               "type": "author",
             },
           },
-          "resolveChildForItem": [Function],
           "schemaTypeName": "author",
           "title": "Author",
         },
@@ -499,6 +499,7 @@ Array [
       "child": DocumentListBuilder {
         "intentChecker": [Function],
         "spec": Object {
+          "child": [Function],
           "id": "post",
           "menuItemGroups": Array [
             Object {
@@ -654,7 +655,6 @@ Array [
               "type": "post",
             },
           },
-          "resolveChildForItem": [Function],
           "schemaTypeName": "post",
           "title": "Post",
         },
@@ -779,6 +779,7 @@ Array [
       "child": DocumentListBuilder {
         "intentChecker": [Function],
         "spec": Object {
+          "child": [Function],
           "id": "author",
           "menuItemGroups": Array [
             Object {
@@ -892,7 +893,6 @@ Array [
               "type": "author",
             },
           },
-          "resolveChildForItem": [Function],
           "schemaTypeName": "author",
           "title": "Author",
         },
@@ -941,6 +941,7 @@ Array [
       "child": DocumentListBuilder {
         "intentChecker": [Function],
         "spec": Object {
+          "child": [Function],
           "id": "post",
           "menuItemGroups": Array [
             Object {
@@ -1096,7 +1097,6 @@ Array [
               "type": "post",
             },
           },
-          "resolveChildForItem": [Function],
           "schemaTypeName": "post",
           "title": "Post",
         },

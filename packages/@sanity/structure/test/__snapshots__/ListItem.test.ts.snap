@@ -13,6 +13,7 @@ exports[`builds list items with child defined through builder 1`] = `
 Object {
   "child": Object {
     "canHandleIntent": undefined,
+    "child": [Function],
     "defaultLayout": undefined,
     "id": "asoiaf-books",
     "menuItemGroups": Array [],
@@ -20,7 +21,6 @@ Object {
     "options": Object {
       "filter": "author == \\"grrm\\"",
     },
-    "resolveChildForItem": [Function],
     "schemaTypeName": undefined,
     "title": undefined,
     "type": "documentList",

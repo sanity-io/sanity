@@ -3,6 +3,7 @@
 exports[`builds document lists through setters (alt order #2) 1`] = `
 Object {
   "canHandleIntent": undefined,
+  "child": [Function],
   "defaultLayout": undefined,
   "id": "books",
   "menuItemGroups": Array [],
@@ -19,7 +20,6 @@ Object {
       "type": "book",
     },
   },
-  "resolveChildForItem": [Function],
   "schemaTypeName": undefined,
   "title": "Books",
   "type": "documentList",
@@ -29,6 +29,7 @@ Object {
 exports[`builds document lists through setters (alt order) 1`] = `
 Object {
   "canHandleIntent": undefined,
+  "child": [Function],
   "defaultLayout": undefined,
   "id": "books",
   "menuItemGroups": Array [],
@@ -45,7 +46,6 @@ Object {
       "type": "book",
     },
   },
-  "resolveChildForItem": [Function],
   "schemaTypeName": undefined,
   "title": "Books",
   "type": "documentList",
@@ -55,6 +55,7 @@ Object {
 exports[`builds document lists through setters 1`] = `
 Object {
   "canHandleIntent": undefined,
+  "child": [Function],
   "defaultLayout": "card",
   "id": "books",
   "menuItemGroups": Array [],
@@ -71,7 +72,6 @@ Object {
       "type": "book",
     },
   },
-  "resolveChildForItem": [Function],
   "schemaTypeName": undefined,
   "title": "Books",
   "type": "documentList",
@@ -81,6 +81,7 @@ Object {
 exports[`builds document lists with only required properties 1`] = `
 Object {
   "canHandleIntent": undefined,
+  "child": [Function],
   "defaultLayout": undefined,
   "id": "foo",
   "menuItemGroups": Array [],
@@ -88,7 +89,6 @@ Object {
   "options": Object {
     "filter": "_type == \\"book\\"",
   },
-  "resolveChildForItem": [Function],
   "schemaTypeName": undefined,
   "title": "Foo",
   "type": "documentList",

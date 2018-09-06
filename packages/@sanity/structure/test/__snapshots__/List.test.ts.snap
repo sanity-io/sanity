@@ -3,6 +3,7 @@
 exports[`builds lists where items are specified using builder 1`] = `
 Object {
   "canHandleIntent": undefined,
+  "child": [Function],
   "defaultLayout": undefined,
   "id": "books",
   "items": Array [
@@ -15,7 +16,6 @@ Object {
   ],
   "menuItemGroups": Array [],
   "menuItems": Array [],
-  "resolveChildForItem": [Function],
   "title": undefined,
   "type": "list",
 }
@@ -24,12 +24,12 @@ Object {
 exports[`builds lists with ID and title through setters 1`] = `
 Object {
   "canHandleIntent": undefined,
+  "child": [Function],
   "defaultLayout": undefined,
   "id": "authors",
   "items": Array [],
   "menuItemGroups": Array [],
   "menuItems": Array [],
-  "resolveChildForItem": [Function],
   "title": "Authors",
   "type": "list",
 }
@@ -38,12 +38,12 @@ Object {
 exports[`builds lists with layout 1`] = `
 Object {
   "canHandleIntent": undefined,
+  "child": [Function],
   "defaultLayout": "card",
   "id": "books",
   "items": Array [],
   "menuItemGroups": Array [],
   "menuItems": Array [],
-  "resolveChildForItem": [Function],
   "title": undefined,
   "type": "list",
 }
@@ -52,12 +52,12 @@ Object {
 exports[`builds lists with only required props 1`] = `
 Object {
   "canHandleIntent": undefined,
+  "child": [Function],
   "defaultLayout": undefined,
   "id": "foo",
   "items": Array [],
   "menuItemGroups": Array [],
   "menuItems": Array [],
-  "resolveChildForItem": [Function],
   "title": "Foo",
   "type": "list",
 }
@@ -66,6 +66,7 @@ Object {
 exports[`builds lists with specific items 1`] = `
 Object {
   "canHandleIntent": undefined,
+  "child": [Function],
   "defaultLayout": undefined,
   "id": "books",
   "items": Array [
@@ -76,7 +77,6 @@ Object {
   ],
   "menuItemGroups": Array [],
   "menuItems": Array [],
-  "resolveChildForItem": [Function],
   "title": undefined,
   "type": "list",
 }
@@ -85,6 +85,7 @@ Object {
 exports[`can set menu item groups 1`] = `
 Object {
   "canHandleIntent": undefined,
+  "child": [Function],
   "defaultLayout": undefined,
   "id": "yeah",
   "items": Array [],
@@ -101,7 +102,6 @@ Object {
       "title": "Print",
     },
   ],
-  "resolveChildForItem": [Function],
   "title": undefined,
   "type": "list",
 }
@@ -110,6 +110,7 @@ Object {
 exports[`can set menu items 1`] = `
 Object {
   "canHandleIntent": undefined,
+  "child": [Function],
   "defaultLayout": undefined,
   "id": "yeah",
   "items": Array [],
@@ -120,7 +121,6 @@ Object {
       "title": "Print",
     },
   ],
-  "resolveChildForItem": [Function],
   "title": undefined,
   "type": "list",
 }
@@ -129,6 +129,7 @@ Object {
 exports[`can set menu items groups with builder 1`] = `
 Object {
   "canHandleIntent": undefined,
+  "child": [Function],
   "defaultLayout": undefined,
   "id": "yeah",
   "items": Array [],
@@ -145,7 +146,6 @@ Object {
       "title": "Print",
     },
   ],
-  "resolveChildForItem": [Function],
   "title": undefined,
   "type": "list",
 }
@@ -154,6 +154,7 @@ Object {
 exports[`can set menu items with builder 1`] = `
 Object {
   "canHandleIntent": undefined,
+  "child": [Function],
   "defaultLayout": undefined,
   "id": "yeah",
   "items": Array [],
@@ -164,7 +165,6 @@ Object {
       "title": "Purge",
     },
   ],
-  "resolveChildForItem": [Function],
   "title": undefined,
   "type": "list",
 }

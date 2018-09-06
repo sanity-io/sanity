@@ -8,6 +8,7 @@ import {resolvePanes, LOADING} from './utils/resolvePanes'
 import styles from './styles/DeskTool.css'
 import DeskToolPanes from './DeskToolPanes'
 import StructureError from './components/StructureError'
+import serializeStructure from './utils/serializeStructure'
 import isSubscribable from './utils/isSubscribable'
 import defaultStructure from './defaultStructure'
 
@@ -15,33 +16,37 @@ const EMPTY_PANE_KEYS = []
 
 const hasLoading = panes => panes.some(item => item === LOADING)
 
+const isStructure = structure => {
+  return (
+    structure &&
+    (typeof structure === 'function' ||
+      typeof structure.serialize !== 'function' ||
+      typeof structure.then !== 'function' ||
+      typeof structure.subscribe !== 'function' ||
+      typeof structure.type !== 'string')
+  )
+}
+
 // We are lazy-requiring/resolving the structure inside of a function in order to catch errors
 // on the root-level of the module. Any loading errors will be caught and emitted as errors
 const loadStructure = () => {
-  let getStructure
-  try {
-    const mod = require('part:@sanity/desk-tool/structure?') || defaultStructure
-    getStructure = mod && mod.__esModule ? mod.default : mod
-  } catch (err) {
-    return throwError(err)
-  }
-
-  if (typeof getStructure !== 'function') {
-    return throwError(new Error(`Structure needs to export a function, got ${typeof getStructure}`))
-  }
-
-  if (typeof getStructure.serialize === 'function') {
-    return throwError(new Error(`Structure needs to export a function, got builder`))
-  }
-
   let structure
   try {
-    structure = getStructure()
+    const mod = require('part:@sanity/desk-tool/structure?') || defaultStructure
+    structure = mod && mod.__esModule ? mod.default : mod
   } catch (err) {
     return throwError(err)
   }
 
-  return isSubscribable(structure) ? from(structure) : of(structure)
+  if (!isStructure(structure)) {
+    return throwError(
+      new Error(
+        `Structure needs to export a function, an observable, a promise or a stucture builder, got ${typeof structure}`
+      )
+    )
+  }
+
+  return serializeStructure(structure)
 }
 
 const maybeSerialize = structure =>
@@ -115,7 +120,7 @@ export default withRouterHOC(
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-      // @todo move this ouit of sCU - cWRP is deprecated, gDSFP does not have previous props
+      // @todo move this out of sCU - cWRP is deprecated, gDSFP does not have previous props
       if (!shallowEquals(nextProps.router.state.panes, this.props.router.state.panes)) {
         this.derivePanes(nextProps)
       }

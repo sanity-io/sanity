@@ -3,6 +3,7 @@ import {Observable, from, of as observableOf} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
 import isSubscribable from './isSubscribable'
 import validateStructure from './validateStructure'
+import serializeStructure from './serializeStructure'
 
 export const LOADING = Symbol('LOADING')
 export function resolvePanes(structure, ids) {
@@ -23,7 +24,7 @@ function resolveForStructure(structure, ids) {
     let panes = new Array(paneIds.length).fill(LOADING)
     const subscriptions = []
 
-    // Start will all-loading state
+    // Start with all-loading state
     subscriber.next(panes)
 
     // Start resolving pane-by-pane
@@ -36,23 +37,24 @@ function resolveForStructure(structure, ids) {
         return
       }
 
+      const id = paneIds[index]
+      const parent = panes[index - 1]
+      const context = {parent, index}
       if (index === 0) {
-        subscribeForUpdates(structure, index)
+        subscribeForUpdates(structure, index, context)
         return
       }
 
-      const id = paneIds[index]
-      const parent = panes[index - 1]
-      if (!parent || typeof parent.resolveChildForItem !== 'function') {
+      if (!parent || typeof parent.child !== 'function') {
         subscriber.complete()
         return
       }
 
-      subscribeForUpdates(parent.resolveChildForItem(id, parent, {index}), index)
+      subscribeForUpdates(parent.child(id, context), index, context)
     }
 
-    function subscribeForUpdates(pane, index) {
-      const source = isSubscribable(pane) ? from(pane) : observableOf(pane)
+    function subscribeForUpdates(pane, index, context) {
+      const source = serializeStructure(pane, context)
       subscriptions.push(
         source.subscribe(result => emit(result, index), error => subscriber.error(error))
       )
