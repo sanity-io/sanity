@@ -260,7 +260,8 @@ export default class BlockObject extends React.Component<Props, State> {
   renderPreview(value) {
     const {type, readOnly} = this.props
     return (
-      <div>
+      <div className={styles.preview}>
+        <Preview type={type} value={value} layout="block" />
         <div className={styles.header}>
           <div className={styles.type}>{type.title || type.name || 'Unknown'}</div>
           <ButtonsCollection align="end" className={styles.functions}>
@@ -289,7 +290,6 @@ export default class BlockObject extends React.Component<Props, State> {
             )}
           </ButtonsCollection>
         </div>
-        <Preview type={type} value={value} layout="block" />
       </div>
     )
   }

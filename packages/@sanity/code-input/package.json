@@ -21,6 +21,7 @@
   ],
   "dependencies": {
     "lodash": "^4.17.4",
+    "react-devicon": "^0.1.9",
     "react-ace": "^5.0.1"
   },
   "devDependencies": {

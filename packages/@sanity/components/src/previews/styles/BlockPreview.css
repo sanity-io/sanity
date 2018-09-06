@@ -1,17 +1,15 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  display: flex;
-  padding: 0.5em;
   user-select: none;
-  overflow: hidden;
   position: relative;
-  min-height: 1rem;
-  max-width: 100%;
+  width: 100%;
 }
 
-.hasDescription {
-  composes: root;
+.header {
+  display: flex;
+  width: 100%;
+  padding: 0.5em;
 }
 
 .heading {
@@ -20,6 +18,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-content: center;
   min-height: 2.5rem;
 }
 
@@ -30,21 +29,17 @@
 }
 
 .title {
-  font-size: 1rem;
-  color: inherit;
-  font-weight: 500;
-  text-transform: none;
+  composes: title from './DefaultPreview.css';
+  line-height: 1.2em;
   margin: 0;
   padding: 0;
 }
 
 .subtitle {
-  font-size: var(--font-size-small);
-  color: inherit;
+  composes: subtitle from './DefaultPreview.css';
+  line-height: 1.2em;
   margin: 0;
   padding: 0;
-  font-weight: 400;
-  line-height: 1em;
 }
 
 .description {
@@ -58,6 +53,7 @@
   background-color: var(--gray);
   padding: 0.25em 0.5em;
   font-size: var(--font-size-small);
+  margin-left: auto;
 }
 
 .media {
@@ -75,8 +71,13 @@
     object-fit: cover;
   }
 
-  @nest .hasDescription & {
-    height: 5rem;
-    width: 5rem;
+  @nest & svg {
+    display: block;
+    height: 2.5rem !important;
+    width: 2.5rem !important;
   }
+}
+
+.media:empty {
+  display: none;
 }

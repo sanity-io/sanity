@@ -46,8 +46,13 @@
   }
 
   @nest .fullscreen & {
-    padding-left: var(--large-padding);
-    padding-right: var(--large-padding);
+    padding-left: var(--small-padding);
+    padding-right: var(--small-padding);
+
+    @media (--screen-medium) {
+      padding-left: var(--large-padding);
+      padding-right: var(--large-padding);
+    }
   }
 }
 
@@ -59,7 +64,9 @@
   }
 
   @nest .fullscreen & {
-    margin-top: var(--large-padding);
+    @media (--screen-medium) {
+      margin-top: var(--large-padding);
+    }
   }
 }
 
@@ -73,7 +80,9 @@
   }
 
   @nest .fullscreen & {
-    padding-bottom: var(--large-padding);
+    @media (--screen-medium) {
+      padding-bottom: var(--large-padding);
+    }
   }
 }
 
