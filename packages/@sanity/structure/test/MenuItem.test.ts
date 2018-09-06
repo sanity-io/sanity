@@ -68,3 +68,25 @@ test('throws if building menu item group without title', () => {
       .serialize()
   ).toThrowError(/`title` is required/)
 })
+
+test('builder is immutable', () => {
+  const original = S.menuItem()
+  expect(original.title('foo')).not.toEqual(original)
+  expect(original.params({foo: 'bar'})).not.toEqual(original)
+  expect(original.action('doSomething')).not.toEqual(original)
+  expect(original.intent({type: 'create'})).not.toEqual(original)
+  expect(original.group('create')).not.toEqual(original)
+  expect(original.icon(() => null)).not.toEqual(original)
+  expect(original.showAsAction(false)).not.toEqual(original)
+})
+
+test('getters work', () => {
+  const original = S.menuItem()
+  expect(original.title('foo').getTitle()).toEqual('foo')
+  expect(original.params({foo: 'bar'}).getParams()).toEqual({foo: 'bar'})
+  expect(original.action('doSomething').getAction()).toEqual('doSomething')
+  expect(original.intent({type: 'create'}).getIntent()).toEqual({type: 'create'})
+  expect(original.group('create').getGroup()).toEqual('create')
+  expect(original.icon(() => 'hei').getIcon()()).toEqual('hei')
+  expect(original.showAsAction(false).getShowAsAction()).toEqual(false)
+})

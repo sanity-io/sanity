@@ -81,3 +81,16 @@ test('builds list items with child defined through builder', () => {
       .serialize()
   ).toMatchSnapshot()
 })
+
+test('builder is immutable', () => {
+  const original = S.documentListItem()
+  expect(original.id('foo')).not.toEqual(original)
+  expect(original.title('foo')).not.toEqual(original)
+  expect(original.child(() => undefined)).not.toEqual(original)
+})
+
+test('getters work', () => {
+  const original = S.documentListItem()
+  expect(original.id('foo').getId()).toEqual('foo')
+  expect(original.title('bar').getTitle()).toEqual('bar')
+})

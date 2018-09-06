@@ -1,5 +1,5 @@
-import {SerializePath, SerializeOptions, Collection, CollectionBuilder} from './StructureNodes'
-import {ChildResolverOptions, ChildResolver, ItemChild} from './ChildResolver'
+import {SerializePath, SerializeOptions} from './StructureNodes'
+import {ChildResolverOptions, ChildResolver} from './ChildResolver'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {ListItem, ListItemBuilder} from './ListItem'
 import {
@@ -8,31 +8,15 @@ import {
   GenericList,
   GenericListInput
 } from './GenericList'
-import {getSerializedChildResolver} from './util/getSerializedChildResolver'
 
-const resolveChildForItem: ChildResolver = (
-  itemId: string,
-  parent: Collection,
-  options: ChildResolverOptions
-): ItemChild | Promise<ItemChild> | undefined => {
-  const parentItem = parent as List
+const resolveChildForItem: ChildResolver = (itemId: string, options: ChildResolverOptions) => {
+  const parentItem = options.parent as List
   const target = (parentItem.items.find(item => item.id === itemId) || {child: undefined}).child
   if (!target || typeof target !== 'function') {
     return target
   }
 
-  const child = typeof target === 'function' ? target(itemId, parentItem, options) : target
-
-  return Promise.resolve(child).then(itemChild => {
-    const childBuilder = itemChild as CollectionBuilder
-    return childBuilder && typeof childBuilder.serialize === 'function'
-      ? childBuilder.serialize({
-          path: options.parentPath || [],
-          index: options.index,
-          hint: 'child'
-        })
-      : itemChild
-  })
+  return typeof target === 'function' ? target(itemId, options) : target
 }
 
 function maybeSerializeListItem(
@@ -55,7 +39,7 @@ export interface BuildableList extends BuildableGenericList {
   items?: (ListItem | ListItemBuilder)[]
 }
 
-export class ListBuilder extends GenericListBuilder<BuildableList> {
+export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> {
   protected spec: BuildableList
 
   constructor(spec?: ListInput) {
@@ -64,8 +48,11 @@ export class ListBuilder extends GenericListBuilder<BuildableList> {
   }
 
   items(items: (ListItemBuilder | ListItem)[]): ListBuilder {
-    this.spec.items = items
-    return this
+    return this.clone({items})
+  }
+
+  getItems() {
+    return this.spec.items
   }
 
   serialize(options: SerializeOptions = {path: []}): List {
@@ -82,10 +69,14 @@ export class ListBuilder extends GenericListBuilder<BuildableList> {
     return {
       ...super.serialize(options),
       type: 'list',
-      resolveChildForItem: getSerializedChildResolver(
-        this.spec.resolveChildForItem || resolveChildForItem
-      ),
+      child: this.spec.child || resolveChildForItem,
       items: (items || []).map((item, index) => maybeSerializeListItem(item, index, path))
     }
+  }
+
+  clone(withSpec?: BuildableList) {
+    const builder = new ListBuilder()
+    builder.spec = {...this.spec, ...(withSpec || {})}
+    return builder
   }
 }

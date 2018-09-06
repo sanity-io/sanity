@@ -4,8 +4,8 @@ exports[`generates correct document type list item for specific type 1`] = `
 ListItemBuilder {
   "spec": Object {
     "child": DocumentListBuilder {
-      "intentChecker": [Function],
       "spec": Object {
+        "canHandleIntent": [Function],
         "child": [Function],
         "id": "author",
         "menuItemGroups": Array [
@@ -169,8 +169,8 @@ exports[`generates correct document type list item for specific type 2`] = `
 ListItemBuilder {
   "spec": Object {
     "child": DocumentListBuilder {
-      "intentChecker": [Function],
       "spec": Object {
+        "canHandleIntent": [Function],
         "child": [Function],
         "id": "author",
         "menuItemGroups": Array [
@@ -335,8 +335,8 @@ Array [
   ListItemBuilder {
     "spec": Object {
       "child": DocumentListBuilder {
-        "intentChecker": [Function],
         "spec": Object {
+          "canHandleIntent": [Function],
           "child": [Function],
           "id": "author",
           "menuItemGroups": Array [
@@ -497,8 +497,8 @@ Array [
   ListItemBuilder {
     "spec": Object {
       "child": DocumentListBuilder {
-        "intentChecker": [Function],
         "spec": Object {
+          "canHandleIntent": [Function],
           "child": [Function],
           "id": "post",
           "menuItemGroups": Array [
@@ -777,8 +777,8 @@ Array [
   ListItemBuilder {
     "spec": Object {
       "child": DocumentListBuilder {
-        "intentChecker": [Function],
         "spec": Object {
+          "canHandleIntent": [Function],
           "child": [Function],
           "id": "author",
           "menuItemGroups": Array [
@@ -939,8 +939,8 @@ Array [
   ListItemBuilder {
     "spec": Object {
       "child": DocumentListBuilder {
-        "intentChecker": [Function],
         "spec": Object {
+          "canHandleIntent": [Function],
           "child": [Function],
           "id": "post",
           "menuItemGroups": Array [

@@ -66,3 +66,18 @@ test('builds list items with specified schema type', () => {
       .serialize()
   ).toMatchSnapshot()
 })
+
+test('builder is immutable', () => {
+  const original = S.listItem()
+  expect(original.id('foo')).not.toEqual(original)
+  expect(original.title('foo')).not.toEqual(original)
+  expect(original.child(() => undefined)).not.toEqual(original)
+  expect(original.schemaType('foo')).not.toEqual(original)
+})
+
+test('getters work', () => {
+  const original = S.listItem()
+  expect(original.id('foo').getId()).toEqual('foo')
+  expect(original.title('bar').getTitle()).toEqual('bar')
+  expect(original.schemaType('baz').getSchemaType()).toEqual('baz')
+})

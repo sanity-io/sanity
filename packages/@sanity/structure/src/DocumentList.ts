@@ -1,10 +1,9 @@
-import {getSerializedChildResolver} from './util/getSerializedChildResolver'
 import {SchemaType} from './parts/Schema'
 import {client} from './parts/Client'
 import {SortItem} from './Sort'
 import {EditorBuilder} from './Editor'
 import {SerializeError, HELP_URL} from './SerializeError'
-import {SerializeOptions, Collection} from './StructureNodes'
+import {SerializeOptions, Child} from './StructureNodes'
 import {ChildResolver, ChildResolverOptions, ItemChild} from './ChildResolver'
 import {
   GenericListBuilder,
@@ -39,10 +38,9 @@ const validateFilter = (spec: PartialDocumentList, options: SerializeOptions) =>
 
 const resolveEditorChildForItem: ChildResolver = (
   itemId: string,
-  parent: Collection,
   options: ChildResolverOptions
 ): ItemChild | Promise<ItemChild> | undefined => {
-  const parentItem = parent as DocumentList
+  const parentItem = options.parent as DocumentList
   return Promise.resolve(parentItem.schemaTypeName || resolveTypeForDocument(itemId)).then(type =>
     new EditorBuilder()
       .id('editor')
@@ -62,7 +60,7 @@ export interface DocumentListInput extends GenericListInput {
 
 export interface DocumentList extends GenericList {
   options: DocumentListOptions
-  resolveChildForItem: ChildResolver
+  child: Child
   schemaTypeName?: string
 }
 
@@ -72,7 +70,10 @@ interface DocumentListOptions {
   defaultOrdering?: SortItem[]
 }
 
-export class DocumentListBuilder extends GenericListBuilder<PartialDocumentList> {
+export class DocumentListBuilder extends GenericListBuilder<
+  PartialDocumentList,
+  DocumentListBuilder
+> {
   protected spec: PartialDocumentList
 
   constructor(spec?: DocumentListInput) {
@@ -81,18 +82,27 @@ export class DocumentListBuilder extends GenericListBuilder<PartialDocumentList>
   }
 
   filter(filter: string): DocumentListBuilder {
-    this.spec.options = {...(this.spec.options || {}), filter}
-    return this
+    return this.clone({options: {...(this.spec.options || {}), filter}})
+  }
+
+  getFilter() {
+    return this.spec.options && this.spec.options.filter
   }
 
   schemaType(type: SchemaType | string): DocumentListBuilder {
-    this.spec.schemaTypeName = typeof type === 'string' ? type : type.name
-    return this
+    return this.clone({schemaTypeName: typeof type === 'string' ? type : type.name})
+  }
+
+  getSchemaType() {
+    return this.spec.schemaTypeName
   }
 
   params(params: {}): DocumentListBuilder {
-    this.spec.options = {...(this.spec.options || {filter: ''}), params}
-    return this
+    return this.clone({options: {...(this.spec.options || {filter: ''}), params}})
+  }
+
+  getParams() {
+    return this.spec.options && this.spec.options.params
   }
 
   defaultOrdering(ordering: SortItem[]): DocumentListBuilder {
@@ -100,8 +110,13 @@ export class DocumentListBuilder extends GenericListBuilder<PartialDocumentList>
       throw new Error('`defaultOrdering` must be an array of order clauses')
     }
 
-    this.spec.options = {...(this.spec.options || {filter: ''}), defaultOrdering: ordering}
-    return this
+    return this.clone({
+      options: {...(this.spec.options || {filter: ''}), defaultOrdering: ordering}
+    })
+  }
+
+  getDefaultOrdering() {
+    return this.spec.options && this.spec.options.defaultOrdering
   }
 
   serialize(options: SerializeOptions = {path: []}): DocumentList {
@@ -127,13 +142,17 @@ export class DocumentListBuilder extends GenericListBuilder<PartialDocumentList>
       ...super.serialize(options),
       type: 'documentList',
       schemaTypeName: this.spec.schemaTypeName,
-      resolveChildForItem: getSerializedChildResolver(
-        this.spec.resolveChildForItem || resolveEditorChildForItem
-      ),
+      child: this.spec.child || resolveEditorChildForItem,
       options: {
         ...this.spec.options,
         filter: validateFilter(this.spec, options)
       }
     }
+  }
+
+  clone(withSpec?: PartialDocumentList): DocumentListBuilder {
+    const builder = new DocumentListBuilder()
+    builder.spec = {...this.spec, ...(withSpec || {})}
+    return builder
   }
 }

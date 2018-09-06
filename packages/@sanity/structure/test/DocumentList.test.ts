@@ -79,3 +79,37 @@ test('default child resolver resolves to editor', done => {
     done()
   })
 })
+
+test('builder is immutable', () => {
+  const original = S.documentList()
+  expect(original.id('foo')).not.toEqual(original)
+  expect(original.title('foo')).not.toEqual(original)
+  expect(original.filter('foo == "bar"')).not.toEqual(original)
+  expect(original.params({foo: 'bar'})).not.toEqual(original)
+  expect(original.menuItems([])).not.toEqual(original)
+  expect(original.menuItemGroups([])).not.toEqual(original)
+  expect(original.defaultLayout('card')).not.toEqual(original)
+  expect(original.child(() => undefined)).not.toEqual(original)
+  expect(original.canHandleIntent(() => false)).not.toEqual(original)
+  expect(original.defaultOrdering([{field: 'title', direction: 'asc'}])).not.toEqual(original)
+})
+
+test('getters work', () => {
+  const original = S.documentList()
+  const child = () => undefined
+  const canHandleIntent = () => false
+  const field = 'title'
+  const direction = 'asc'
+  expect(original.id('foo').getId()).toEqual('foo')
+  expect(original.title('bar').getTitle()).toEqual('bar')
+  expect(original.filter('foo == "bar"').getFilter()).toEqual('foo == "bar"')
+  expect(original.params({foo: 'bar'}).getParams()).toEqual({foo: 'bar'})
+  expect(original.menuItems([]).getMenuItems()).toEqual([])
+  expect(original.menuItemGroups([]).getMenuItemGroups()).toEqual([])
+  expect(original.defaultLayout('card').getDefaultLayout()).toEqual('card')
+  expect(original.child(child).getChild()).toEqual(child)
+  expect(original.canHandleIntent(canHandleIntent).getCanHandleIntent()).toEqual(canHandleIntent)
+  expect(original.defaultOrdering([{field, direction}]).getDefaultOrdering()).toEqual([
+    {field, direction}
+  ])
+})

@@ -24,13 +24,19 @@ export class MenuItemGroupBuilder implements Serializable {
   }
 
   id(id: string): MenuItemGroupBuilder {
-    this._id = id
-    return this
+    return new MenuItemGroupBuilder({id: id, title: this._title})
+  }
+
+  getId() {
+    return this._id
   }
 
   title(title: string): MenuItemGroupBuilder {
-    this._title = title
-    return this
+    return new MenuItemGroupBuilder({id: this._id, title})
+  }
+
+  getTitle() {
+    return this._title
   }
 
   serialize(options: SerializeOptions = {path: []}): MenuItemGroup {

@@ -1,6 +1,8 @@
+export type SortDirection = 'asc' | 'desc'
+
 export interface SortItem {
   field: string
-  direction: 'asc' | 'desc'
+  direction: SortDirection
 }
 
 export interface Ordering {

@@ -47,23 +47,35 @@ export class ListItemBuilder implements Serializable {
   }
 
   id(id: string): ListItemBuilder {
-    this.spec.id = id
-    return this
+    return this.clone({id})
+  }
+
+  getId() {
+    return this.spec.id
   }
 
   title(title: string): ListItemBuilder {
-    this.spec.title = title
-    return this
+    return this.clone({title})
+  }
+
+  getTitle() {
+    return this.spec.title
   }
 
   child(child: UnserializedListItemChild): ListItemBuilder {
-    this.spec.child = child
-    return this
+    return this.clone({child})
   }
 
-  schemaType(type: SchemaType | string): ListItemBuilder {
-    this.spec.schemaType = type
-    return this
+  getChild() {
+    return this.spec.child
+  }
+
+  schemaType(schemaType: SchemaType | string): ListItemBuilder {
+    return this.clone({schemaType})
+  }
+
+  getSchemaType() {
+    return this.spec.schemaType
   }
 
   serialize(options: ListItemSerializeOptions = {path: []}): ListItem {
@@ -96,14 +108,30 @@ export class ListItemBuilder implements Serializable {
       schemaType = type
     }
 
-    const listChild =
+    const serializeOptions = {path: options.path.concat(id), hint: 'child'}
+    let listChild =
       child instanceof ComponentBuilder ||
       child instanceof DocumentListBuilder ||
       child instanceof ListBuilder ||
       child instanceof EditorBuilder
-        ? child.serialize({path: options.path.concat(id), hint: 'child'})
+        ? child.serialize(serializeOptions)
         : child
 
+    // In the case of a function, create a bound version that will pass the correct serialize
+    // context, so we may lazily resolve it at some point in the future without losing context
+    if (typeof listChild === 'function') {
+      const originalChild = listChild
+      listChild = (itemId, options) => {
+        return originalChild(itemId, {...options, serializeOptions})
+      }
+    }
+
     return {...this.spec, schemaType, child: listChild, id, title}
+  }
+
+  clone(withSpec?: PartialListItem): ListItemBuilder {
+    const builder = new ListItemBuilder()
+    builder.spec = {...this.spec, ...(withSpec || {})}
+    return builder
   }
 }

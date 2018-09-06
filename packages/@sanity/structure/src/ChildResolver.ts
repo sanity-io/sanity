@@ -1,15 +1,22 @@
-import {CollectionBuilder, Collection, SerializePath} from './StructureNodes'
+import {CollectionBuilder, Collection, SerializePath, SerializeOptions} from './StructureNodes'
 
 export interface ChildResolverOptions {
   index: number
+  parent: Collection
   parentPath?: SerializePath
+  serializeOptions?: SerializeOptions
 }
 
-export type ItemChild = CollectionBuilder | Collection | undefined
+export type ItemChild = CollectionBuilder | Collection | Function | undefined
+
+interface ChildObservable {
+  subscribe: (child: ItemChild | Promise<ItemChild>) => {}
+}
 
 export interface ChildResolver {
-  (itemId: string, parent: Collection, options: ChildResolverOptions):
+  (itemId: string, options: ChildResolverOptions):
     | ItemChild
     | Promise<ItemChild>
+    | ChildObservable
     | undefined
 }

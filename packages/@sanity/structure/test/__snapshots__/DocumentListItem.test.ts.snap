@@ -493,7 +493,7 @@ Object {
     "title": "Author",
     "type": "document",
   },
-  "title": undefined,
+  "title": "bar",
 }
 `;
 

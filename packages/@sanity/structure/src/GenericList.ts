@@ -1,11 +1,9 @@
-import {StructureNode, SerializeOptions, Serializable} from './StructureNodes'
-import {ChildResolver} from './ChildResolver'
+import {StructureNode, SerializeOptions, Serializable, Child} from './StructureNodes'
 import {Layout, layoutOptions} from './Layout'
 import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
 import {MenuItemGroup, MenuItemGroupBuilder, maybeSerializeMenuItemGroup} from './MenuItemGroup'
 import {IntentChecker} from './Intent'
 import {SerializeError} from './SerializeError'
-import {getSerializedChildResolver} from './util/getSerializedChildResolver'
 
 function noChildResolver() {
   return undefined
@@ -14,7 +12,7 @@ function noChildResolver() {
 export interface BaseGenericList extends StructureNode {
   defaultLayout?: Layout
   canHandleIntent?: IntentChecker
-  resolveChildForItem: ChildResolver
+  child: Child
 }
 
 // "POJO"/verbatim-version - end result
@@ -38,46 +36,67 @@ export interface GenericListInput extends StructureNode {
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
   defaultLayout?: Layout
   canHandleIntent?: IntentChecker
-  resolveChildForItem?: ChildResolver
+  child?: Child
 }
 
-export abstract class GenericListBuilder<L extends BuildableGenericList> implements Serializable {
-  protected intentChecker?: IntentChecker
+export abstract class GenericListBuilder<L extends BuildableGenericList, ConcreteImpl>
+  implements Serializable {
   protected spec: L = {} as L
 
   id(id: string) {
-    this.spec.id = id
-    return this
+    return this.clone({id})
+  }
+
+  getId() {
+    return this.spec.id
   }
 
   title(title: string) {
-    this.spec.title = title
-    return this
+    return this.clone({title})
   }
 
-  defaultLayout(layout: Layout) {
-    this.spec.defaultLayout = layout
-    return this
+  getTitle() {
+    return this.spec.title
   }
 
-  menuItems(items: (MenuItem | MenuItemBuilder)[]) {
-    this.spec.menuItems = items
-    return this
+  defaultLayout(defaultLayout: Layout) {
+    return this.clone({defaultLayout})
   }
 
-  menuItemGroups(groups: (MenuItemGroup | MenuItemGroupBuilder)[]) {
-    this.spec.menuItemGroups = groups
-    return this
+  getDefaultLayout() {
+    return this.spec.defaultLayout
   }
 
-  child(resolver: ChildResolver) {
-    this.spec.resolveChildForItem = resolver
-    return this
+  menuItems(menuItems: (MenuItem | MenuItemBuilder)[]) {
+    return this.clone({menuItems})
   }
 
-  canHandleIntent(checker: IntentChecker) {
-    this.intentChecker = checker
-    return this
+  getMenuItems() {
+    return this.spec.menuItems
+  }
+
+  menuItemGroups(menuItemGroups: (MenuItemGroup | MenuItemGroupBuilder)[]) {
+    return this.clone({menuItemGroups})
+  }
+
+  getMenuItemGroups() {
+    return this.spec.menuItemGroups
+  }
+
+  child(child: Child) {
+    return this.clone({child})
+  }
+
+  getChild() {
+    return this.spec.child
+  }
+
+  canHandleIntent(canHandleIntent: IntentChecker) {
+    return this.clone({canHandleIntent})
+  }
+
+  getCanHandleIntent() {
+    return this.spec.canHandleIntent
   }
 
   serialize(options: SerializeOptions = {path: []}): GenericList {
@@ -99,10 +118,8 @@ export abstract class GenericListBuilder<L extends BuildableGenericList> impleme
       title: this.spec.title,
       type: 'genericList',
       defaultLayout,
-      resolveChildForItem: getSerializedChildResolver(
-        this.spec.resolveChildForItem || noChildResolver
-      ),
-      canHandleIntent: this.intentChecker,
+      child: this.spec.child || noChildResolver,
+      canHandleIntent: this.spec.canHandleIntent,
       menuItems: (this.spec.menuItems || []).map((item, i) =>
         maybeSerializeMenuItem(item, i, path)
       ),
@@ -110,5 +127,10 @@ export abstract class GenericListBuilder<L extends BuildableGenericList> impleme
         maybeSerializeMenuItemGroup(item, i, path)
       )
     }
+  }
+
+  clone(withSpec?: object) {
+    const builder = new (this.constructor as {new (): ConcreteImpl})()
+    return builder
   }
 }

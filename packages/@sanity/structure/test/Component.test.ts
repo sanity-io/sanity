@@ -102,3 +102,21 @@ test('can set menu items groups with builder', () => {
       .serialize()
   ).toMatchSnapshot()
 })
+
+test('builder is immutable', () => {
+  const original = S.component()
+  expect(original.id('foo')).not.toEqual(original)
+  expect(original.title('foo')).not.toEqual(original)
+  expect(original.component(component)).not.toEqual(original)
+  expect(original.menuItems([])).not.toEqual(original)
+  expect(original.menuItemGroups([])).not.toEqual(original)
+})
+
+test('getters work', () => {
+  const original = S.component()
+  expect(original.id('foo').getId()).toEqual('foo')
+  expect(original.title('bar').getTitle()).toEqual('bar')
+  expect(original.component(component).getComponent()).toEqual(component)
+  expect(original.menuItems([]).getMenuItems()).toEqual([])
+  expect(original.menuItemGroups([]).getMenuItemGroups()).toEqual([])
+})

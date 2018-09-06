@@ -180,3 +180,25 @@ test('can set intent handler check', () => {
       .serialize()
   ).toMatchObject({canHandleIntent: handler})
 })
+
+test('builder is immutable', () => {
+  const original = S.list()
+  expect(original.id('foo')).not.toEqual(original)
+  expect(original.title('foo')).not.toEqual(original)
+  expect(original.items([])).not.toEqual(original)
+  expect(original.menuItems([])).not.toEqual(original)
+  expect(original.menuItemGroups([])).not.toEqual(original)
+  expect(original.defaultLayout('card')).not.toEqual(original)
+  expect(original.child(() => undefined)).not.toEqual(original)
+  expect(original.canHandleIntent(() => false)).not.toEqual(original)
+})
+
+test('getters work', () => {
+  const original = S.list()
+  expect(original.id('foo').getId()).toEqual('foo')
+  expect(original.title('foo').getTitle()).toEqual('foo')
+  expect(original.items([]).getItems()).toEqual([])
+  expect(original.menuItems([]).getMenuItems()).toEqual([])
+  expect(original.menuItemGroups([]).getMenuItemGroups()).toEqual([])
+  expect(original.defaultLayout('card').getDefaultLayout()).toEqual('card')
+})

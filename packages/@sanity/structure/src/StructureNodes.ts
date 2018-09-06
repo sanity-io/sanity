@@ -6,6 +6,7 @@ import {MenuItemBuilder} from './MenuItem'
 import {MenuItemGroupBuilder} from './MenuItemGroup'
 import {Component, ComponentBuilder} from './Component'
 import {DocumentListItemBuilder} from './DocumentListItem'
+import {ChildResolver} from './ChildResolver'
 
 export interface StructureNode {
   id: string
@@ -35,6 +36,8 @@ export interface Serializable {
 export type Collection = List | DocumentList | EditorNode | Component
 
 export type CollectionBuilder = ListBuilder | DocumentListBuilder | EditorBuilder | ComponentBuilder
+
+export type Child = Collection | CollectionBuilder | ChildResolver
 
 export type Builder =
   | CollectionBuilder

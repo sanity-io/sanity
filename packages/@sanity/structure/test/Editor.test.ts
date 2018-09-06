@@ -76,3 +76,19 @@ test('can construct using builder (alt)', () => {
       .serialize()
   ).toMatchSnapshot()
 })
+
+test('builder is immutable', () => {
+  const original = S.editor()
+  expect(original.id('foo')).not.toEqual(original)
+  expect(original.title('foo')).not.toEqual(original)
+  expect(original.documentId('moo')).not.toEqual(original)
+  expect(original.schemaType('author')).not.toEqual(original)
+})
+
+test('getters work', () => {
+  const original = S.editor()
+  expect(original.id('foo').getId()).toEqual('foo')
+  expect(original.title('bar').getTitle()).toEqual('bar')
+  expect(original.documentId('moo').getDocumentId()).toEqual('moo')
+  expect(original.schemaType('author').getSchemaType()).toEqual('author')
+})

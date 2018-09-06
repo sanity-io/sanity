@@ -15,42 +15,57 @@ export interface ComponentInput extends StructureNode {
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
 }
 
-export interface BuildableList extends Partial<StructureNode> {
+export interface BuildableComponent extends Partial<StructureNode> {
   component?: Function
   menuItems?: (MenuItem | MenuItemBuilder)[]
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
 }
 
 export class ComponentBuilder implements Serializable {
-  protected spec: BuildableList
+  protected spec: BuildableComponent
 
   constructor(spec?: ComponentInput) {
     this.spec = spec ? spec : {}
   }
 
   id(id: string) {
-    this.spec.id = id
-    return this
+    return this.clone({id})
+  }
+
+  getId() {
+    return this.spec.id
   }
 
   title(title: string) {
-    this.spec.title = title
-    return this
+    return this.clone({title})
+  }
+
+  getTitle() {
+    return this.spec.title
   }
 
   component(component: Function) {
-    this.spec.component = component
-    return this
+    return this.clone({component})
   }
 
-  menuItems(items: (MenuItem | MenuItemBuilder)[]) {
-    this.spec.menuItems = items
-    return this
+  getComponent() {
+    return this.spec.component
   }
 
-  menuItemGroups(groups: (MenuItemGroup | MenuItemGroupBuilder)[]) {
-    this.spec.menuItemGroups = groups
-    return this
+  menuItems(menuItems: (MenuItem | MenuItemBuilder)[]) {
+    return this.clone({menuItems})
+  }
+
+  getMenuItems() {
+    return this.spec.menuItems
+  }
+
+  menuItemGroups(menuItemGroups: (MenuItemGroup | MenuItemGroupBuilder)[]) {
+    return this.clone({menuItemGroups})
+  }
+
+  getMenuItemGroups() {
+    return this.spec.menuItemGroups
   }
 
   serialize(options: SerializeOptions = {path: []}): Component {
@@ -83,5 +98,11 @@ export class ComponentBuilder implements Serializable {
         maybeSerializeMenuItemGroup(item, i, options.path)
       )
     }
+  }
+
+  clone(withSpec?: BuildableComponent): ComponentBuilder {
+    const builder = new ComponentBuilder()
+    builder.spec = {...this.spec, ...(withSpec || {})}
+    return builder
   }
 }
