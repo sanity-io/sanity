@@ -132,6 +132,7 @@ export default class SanityDefaultPreview extends React.PureComponent {
         title={item.title}
         subtitle={item.subtitle}
         description={item.description}
+        extendedPreview={item.extendedPreview}
         media={media}
         progress={_upload && _upload.progress}
       />

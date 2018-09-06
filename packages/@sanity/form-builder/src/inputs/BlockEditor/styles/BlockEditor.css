@@ -54,12 +54,17 @@
 }
 
 .fullscreen .editorWrapper {
-  width: 90vw;
   max-width: 50em;
   min-height: 90vh;
-  margin: 5rem auto;
+  margin: 3rem auto;
   border: 1px solid var(--input-border-color);
   background-color: var(--input-bg);
+  width: 95vw;
+
+  @media (--screen-medium) {
+    width: 90vw;
+    margin: 5rem auto;
+  }
 }
 
 .root :not(.fullscreen) .editorWrapper {

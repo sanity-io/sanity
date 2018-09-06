@@ -2,17 +2,19 @@
 
 .root {
   composes: default from './Spacing.css';
+  width: 100%;
 }
 
 .previewContainer {
+  width: 100%;
   display: block;
   cursor: move;
   position: relative;
   border-radius: var(--form-builder-block-border-radius);
   border: 1px solid var(--form-builder-block-border-color);
   box-shadow: var(--form-builder-block-shadow);
-  min-height: 3.5rem;
   box-sizing: border-box;
+  overflow: hidden;
 
   @nest &:hover {
     background-color: var(--form-builder-block-background-hover);
