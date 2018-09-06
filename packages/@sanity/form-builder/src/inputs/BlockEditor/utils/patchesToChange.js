@@ -48,7 +48,7 @@ function setIfMissingPatch(patch: Patch, change: () => void, type: Type) {
   const doc = change.value.document
   const blockKey = patch.path[0]._key
   const block = doc.nodes.find(node => node.key === blockKey)
-  if (block.isVoid) {
+  if (change.value.schema.isVoid(block)) {
     const data = block.data.toObject()
     if (!data.value) {
       const newData = {...data, value: patch.value}
@@ -152,7 +152,7 @@ function patchBlockData(patch: Patch, change: () => void, type: Type, snapshot: 
   const blockKey = patch.path[0]._key
   const block = doc.nodes.find(node => node.key === blockKey)
   // Only act on formbuilder blocks
-  if (block.isVoid) {
+  if (change.value.schema.isVoid(block)) {
     const data = block.data.toObject()
     // A gradient patch because snapshot, set value from there
     if (snapshot) {
