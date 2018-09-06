@@ -1,8 +1,5 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.root {
-}
-
 .content {
   display: flex;
   flex-direction: column;
@@ -66,14 +63,14 @@
   margin-left: 1rem;
 }
 
+.functions {
+  composes: functions from 'part:@sanity/components/fieldsets/default-style';
+}
+
 .content + .functions {
   margin-top: 1rem;
 }
 
 .advancedEditFields {
   margin-bottom: var(--medium-padding);
-}
-
-.functions {
-  composes: functions from 'part:@sanity/components/fieldsets/default-style';
 }

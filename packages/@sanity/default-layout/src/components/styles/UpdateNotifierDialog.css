@@ -11,14 +11,14 @@
   margin-bottom: calc(var(--large-padding) * 2);
 }
 
-.versionsTable tr td {
-  border-top: 1px solid #ccc;
-}
-
 .versionsTable td,
 .versionsTable th {
   padding: var(--small-padding);
   text-align: left;
+}
+
+.versionsTable tr td {
+  border-top: 1px solid #ccc;
 }
 
 .upgradeText {

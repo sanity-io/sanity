@@ -35,6 +35,7 @@
 
 .brandLogoContainer {
   height: 3em;
+
   @nest & svg {
     height: 4em;
     width: auto;

@@ -42,7 +42,7 @@
   animation-name: placeHolderShimmer;
   animation-timing-function: linear;
   background: #f6f7f8;
-  background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+  background: linear-gradient(to right, #eee 8%, #ddd 18%, #eee 33%);
   background-size: 800px 104px;
   height: 100%;
   position: relative;

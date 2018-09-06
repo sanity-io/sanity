@@ -45,7 +45,7 @@
 }
 
 .root > * {
-  display: block;
+  display: table-row;
   margin: 0 0 1em 0;
   padding: 0;
 
@@ -53,10 +53,6 @@
     min-width: 2em;
     display: table-cell;
   }
-}
-
-.root > * {
-  display: table-row;
 }
 
 .bullet {

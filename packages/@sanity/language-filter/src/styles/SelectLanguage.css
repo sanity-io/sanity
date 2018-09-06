@@ -26,16 +26,17 @@
 .list {
   composes: resetList from 'part:@sanity/base/theme/layout/helpers';
 }
+
 .functions {
   padding: 0.5em;
   text-align: center;
 }
-.selectedNumNoFilter {
-}
+
 .selectedNumFilter {
   color: var(--state-danger-color);
   font-weight: bold;
 }
+
 .item {
   padding: 0.5em;
   composes: resetListItem from 'part:@sanity/base/theme/layout/helpers';

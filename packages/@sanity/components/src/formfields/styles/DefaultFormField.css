@@ -23,15 +23,17 @@
   display: block;
 }
 
-.label + .description {
-  margin-top: calc(var(--small-padding) / 3);
+.content {
+  display: block;
+
+  @nest .inline & {
+    flex-basis: 77%;
+    flex-grow: 10;
+    display: inline-block;
+  }
 }
 
 .label + .content {
-  margin-top: var(--small-padding);
-}
-
-.description + .content {
   margin-top: var(--small-padding);
 }
 
@@ -41,6 +43,14 @@
   @nest .inline & {
     font-size: var(--font-size-tiny);
   }
+}
+
+.label + .description {
+  margin-top: calc(var(--small-padding) / 3);
+}
+
+.description + .content {
+  margin-top: var(--small-padding);
 }
 
 .header {
@@ -87,16 +97,6 @@
   @nest .inline & {
     flex-basis: 33%;
     flex-grow: 1;
-  }
-}
-
-.content {
-  display: block;
-
-  @nest .inline & {
-    flex-basis: 77%;
-    flex-grow: 10;
-    display: inline-block;
   }
 }
 
