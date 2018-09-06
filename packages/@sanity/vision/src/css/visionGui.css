@@ -1,3 +1,4 @@
+/* stylelint-disable no-descending-specificity */
 @import "part:@sanity/base/theme/variables-style";
 
 @keyframes blink {
@@ -37,14 +38,6 @@
 .datasetLabel {
   text-transform: uppercase;
   margin-right: 0.5em;
-}
-
-.queryEditor {
-  height: 100%;
-}
-
-.paramsEditor {
-  height: 100%;
 }
 
 .queryTimingContainer {
@@ -126,10 +119,12 @@
   width: 100%;
   box-sizing: border-box;
   border-bottom: 1px solid #ccc;
+  height: 100%;
 }
 
 .paramsEditor {
   width: 100%;
+  height: 100%;
 }
 
 .paramsEditorInvalid {
@@ -191,6 +186,9 @@
   font-family: monospace;
   height: 100%;
   color: black;
+  position: relative;
+  overflow: hidden;
+  background: transparent;
 }
 
 .root :global(.CodeMirror-hscrollbar) {
@@ -200,11 +198,31 @@
 /* PADDING */
 
 .root :global(.CodeMirror-lines) {
+  cursor: text;
+  min-height: 1px; /* prevents collapsing before first draw */
   padding: 4px 0; /* Vertical padding around content */
 }
 
 .root :global(.CodeMirror pre) {
   padding: 0 4px; /* Horizontal padding of content */
+
+  /* Reset some styles that the rest of the page might have set */
+  border-radius: 0;
+  border-width: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  margin: 0;
+  white-space: pre;
+  word-wrap: normal;
+  line-height: inherit;
+  color: inherit;
+  z-index: 2;
+  position: relative;
+  overflow: visible;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-variant-ligatures: contextual;
+  font-variant-ligatures: contextual;
 }
 
 .root :global(.CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler) {
@@ -217,6 +235,11 @@
   border-right: 1px solid #ddd;
   background-color: #f7f7f7;
   white-space: nowrap;
+  position: absolute;
+  left: 0;
+  top: 0;
+  min-height: 100%;
+  z-index: 3;
 }
 
 .root :global(.CodeMirror-linenumber) {
@@ -236,6 +259,8 @@
   border-left: 1px solid black;
   border-right: none;
   width: 0;
+  position: absolute;
+  pointer-events: none;
 }
 
 /* Shown when moving in bi-directional text */
@@ -382,12 +407,6 @@
   border-color: transparent;
 }
 
-.root :global(.CodeMirror) {
-  position: relative;
-  overflow: hidden;
-  background: transparent;
-}
-
 .root :global(.CodeMirror-scroll) {
   box-sizing: border-box;
   overflow: auto !important;
@@ -409,14 +428,6 @@
 .root :global(.CodeMirror-gutter-filler) {
   left: 0;
   bottom: 0;
-}
-
-.root :global(.CodeMirror-gutters) {
-  position: absolute;
-  left: 0;
-  top: 0;
-  min-height: 100%;
-  z-index: 3;
 }
 
 .root :global(.CodeMirror-gutter) {
@@ -453,31 +464,6 @@
 
 .root :global(.CodeMirror-gutter-wrapper ::-moz-selection) {
   background-color: transparent;
-}
-
-.root :global(.CodeMirror-lines) {
-  cursor: text;
-  min-height: 1px; /* prevents collapsing before first draw */
-}
-
-.root :global(.CodeMirror pre) {
-  /* Reset some styles that the rest of the page might have set */
-  border-radius: 0;
-  border-width: 0;
-  background: transparent;
-  font-family: inherit;
-  font-size: inherit;
-  margin: 0;
-  white-space: pre;
-  word-wrap: normal;
-  line-height: inherit;
-  color: inherit;
-  z-index: 2;
-  position: relative;
-  overflow: visible;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-font-variant-ligatures: contextual;
-  font-variant-ligatures: contextual;
 }
 
 .root :global(.CodeMirror-wrap pre) {
@@ -519,10 +505,6 @@
   visibility: hidden;
 }
 
-.root :global(.CodeMirror-cursor) {
-  position: absolute;
-  pointer-events: none;
-}
 .root :global(.CodeMirror-measure pre) { position: static; }
 
 .root :global(div.CodeMirror-cursors) {

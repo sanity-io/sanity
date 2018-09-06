@@ -14,6 +14,10 @@
   }
 }
 
+.functions {
+  composes: functions from 'part:@sanity/components/fieldsets/default-style';
+}
+
 .fileName + .functions {
   margin-top: var(--medium-padding);
 }
@@ -45,10 +49,6 @@
 
 .fieldsWrapper {
   flex-basis: 30rem;
-}
-
-.functions {
-  composes: functions from 'part:@sanity/components/fieldsets/default-style';
 }
 
 .previewAsset {

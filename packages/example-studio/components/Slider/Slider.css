@@ -1,5 +1,6 @@
+/* stylelint-disable no-descending-specificity */
 .slider {
-  -webkit-appearance: none;
+  appearance: none;
   width: 100%;
   margin: 8.35px 0;
 }

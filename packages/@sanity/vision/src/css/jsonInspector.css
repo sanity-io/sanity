@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity */
+
 /**
  * react-json-inspector unfortunately doesn't let us specify class names,
  * so there is no way to use CSS modules without forking the entire project.
@@ -30,24 +32,21 @@
 :global .sanity-vision .json-inspector__line {
   display: block;
   position: relative;
-
   cursor: default;
 }
 
-:global .sanity-vision .json-inspector__line:after {
+:global .sanity-vision .json-inspector__line::after {
   content: '';
-
   position: absolute;
   top: 0;
   left: -200px;
   right: -50px;
   bottom: 0;
   z-index: -1;
-
   pointer-events: none;
 }
 
-:global .sanity-vision .json-inspector__line:hover:after {
+:global .sanity-vision .json-inspector__line:hover::after {
   background: rgba(0, 0, 0, 0.06);
 }
 
@@ -55,12 +54,12 @@
   cursor: pointer;
 }
 
-:global .sanity-vision .json-inspector__leaf_composite > .json-inspector__line:before {
+:global .sanity-vision .json-inspector__leaf_composite > .json-inspector__line::before {
   content: '▶ ';
   margin-left: -16px;
 }
 
-:global .sanity-vision .json-inspector__leaf_composite .json-inspector__leaf_expanded > .json-inspector__line:before {
+:global .sanity-vision .json-inspector__leaf_composite .json-inspector__leaf_expanded > .json-inspector__line::before {
   content: '▼ ';
 }
 
@@ -90,7 +89,7 @@
 }
 
 :global .sanity-vision .json-inspector__value_string {
-  color: #C41A16;
+  color: #c41a16;
 }
 
 :global .sanity-vision .json-inspector__value_boolean {
@@ -98,7 +97,7 @@
 }
 
 :global .sanity-vision .json-inspector__value_number {
-  color: #1C00CF;
+  color: #1c00cf;
 }
 
 :global .sanity-vision .json-inspector__hl {
@@ -110,7 +109,6 @@
 :global .sanity-vision .json-inspector__show-original {
   display: inline-block;
   padding: 0 6px;
-
   color: #666;
   cursor: pointer;
 }
@@ -119,10 +117,10 @@
   color: #111;
 }
 
-:global .sanity-vision .json-inspector__show-original:before {
+:global .sanity-vision .json-inspector__show-original::before {
   content: '⥂';
 }
 
-:global .sanity-vision .json-inspector__show-original:hover:after {
-  content: ' expand'
+:global .sanity-vision .json-inspector__show-original:hover::after {
+  content: ' expand';
 }
