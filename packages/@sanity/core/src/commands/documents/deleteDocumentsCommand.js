@@ -1,7 +1,17 @@
+const helpText = `
+Example
+  # Delete the document with the ID "myDocId"
+  sanity documents delete myDocId
+
+  # ID wrapped in double or single quote works equally well
+  sanity documents delete 'myDocId'
+`
+
 export default {
   name: 'delete',
   group: 'documents',
   signature: '[ID]',
+  helpText,
   description: 'Delete a document by ID',
   action: async (args, context) => {
     const {apiClient, output} = context
