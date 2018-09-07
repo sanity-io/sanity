@@ -125,10 +125,10 @@ export default withPatchSubscriber(
 
     handleEditorChange = (change: SlateChange, callback: void => void) => {
       const {value} = this.props
-      const oldEditorValue = this.state.editorValue
+      const beforeChangeEditorValue = this.state.editorValue
       this.setState({editorValue: change.value})
       this._changes.push({
-        oldEditorValue,
+        beforeChangeEditorValue,
         change,
         value
       })
@@ -157,10 +157,10 @@ export default withPatchSubscriber(
       const {type, onChange} = this.props
       const finalPatches = []
       if (this._changes[0]) {
-        this._beforeChangeEditorValue = this._changes[0].oldEditorValue
+        this._beforeChangeEditorValue = this._changes[0].beforeChangeEditorValue
       }
       this._changes.forEach((changeSet, index) => {
-        const {oldEditorValue, change, value} = changeSet
+        const {beforeChangeEditorValue, change, value} = changeSet
         const nextChangeSet = this._changes[index + 1]
 
         if (
@@ -173,7 +173,7 @@ export default withPatchSubscriber(
           return
         }
         this._select = createSelectionOperation(change)
-        const patches = changeToPatches(oldEditorValue, change, value, type)
+        const patches = changeToPatches(beforeChangeEditorValue, change, value, type)
         if (patches.length) {
           finalPatches.push(patches)
         }
