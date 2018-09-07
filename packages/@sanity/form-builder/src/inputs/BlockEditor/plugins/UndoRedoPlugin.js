@@ -10,17 +10,22 @@ type Options = {
     index: number
   },
   onChange: void => void,
-  blockContentType: Type
+  blockContentType: Type,
+  sendPatchesFromChange: void => void
 }
 
 // This plugin handles our own undo redo (disables Slate built in handling)
 
 export default function UndoRedoPlugin(options: Options = {}) {
-  const {stack, blockContentType, onChange} = options
+  const {stack, blockContentType, onChange, sendPatchesFromChange} = options
   return {
     // eslint-disable-next-line complexity
     onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change) {
       if (Hotkeys.isUndo(event) || Hotkeys.isRedo(event)) {
+        // Make sure we have sent every pending patch first
+        if (sendPatchesFromChange) {
+          sendPatchesFromChange()
+        }
         let item
         // Undo
         if (Hotkeys.isUndo(event) && (item = stack.undo.pop())) {

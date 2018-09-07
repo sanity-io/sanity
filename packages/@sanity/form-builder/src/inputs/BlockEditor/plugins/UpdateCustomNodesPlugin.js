@@ -7,6 +7,7 @@
 export default function UpdateCustomNodesPlugin() {
   return {
     shouldNodeComponentUpdate(previousProps, nextProps) {
+      console.log(nextProps)
       if (
         !previousProps.markers ||
         (previousProps.markers &&

@@ -33,6 +33,7 @@ type Props = {
   readOnly?: boolean,
   renderBlockActions?: (block: Block) => React.Node,
   renderCustomMarkers?: (Marker[]) => React.Node,
+  sendPatchesFromChange: void => void,
   type: BlockArrayType,
   undoRedoStack: {undo: [], redo: []},
   value: Block[]
@@ -102,6 +103,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
       readOnly,
       renderBlockActions,
       renderCustomMarkers,
+      sendPatchesFromChange,
       type,
       undoRedoStack,
       value
@@ -126,6 +128,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
         ref={this.refEditor}
         value={value}
         undoRedoStack={undoRedoStack}
+        sendPatchesFromChange={sendPatchesFromChange}
         type={type}
       />
     )
