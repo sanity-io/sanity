@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {throwError, from, of, interval} from 'rxjs'
+import {throwError, interval, defer} from 'rxjs'
 import {map, switchMap, distinctUntilChanged, debounce} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 import {withRouterHOC} from 'part:@sanity/base/router'
@@ -9,7 +9,6 @@ import styles from './styles/DeskTool.css'
 import DeskToolPanes from './DeskToolPanes'
 import StructureError from './components/StructureError'
 import serializeStructure from './utils/serializeStructure'
-import isSubscribable from './utils/isSubscribable'
 import defaultStructure from './defaultStructure'
 
 const EMPTY_PANE_KEYS = []
@@ -27,14 +26,35 @@ const isStructure = structure => {
   )
 }
 
+let prevStructureError = null
+if (module.hot && module.hot.data) {
+  prevStructureError = module.hot.data.prevError
+}
+
 // We are lazy-requiring/resolving the structure inside of a function in order to catch errors
 // on the root-level of the module. Any loading errors will be caught and emitted as errors
+// eslint-disable-next-line complexity
 const loadStructure = () => {
   let structure
   try {
     const mod = require('part:@sanity/desk-tool/structure?') || defaultStructure
     structure = mod && mod.__esModule ? mod.default : mod
+
+    // On invalid modules, when HMR kicks in, we sometimes get an empty object back when the
+    // source has changed without fixing the problem. In this case, keep showing the error
+    if (
+      __DEV__ &&
+      prevStructureError &&
+      structure &&
+      structure.constructor.name === 'Object' &&
+      Object.keys(structure).length === 0
+    ) {
+      return throwError(prevStructureError)
+    }
+
+    prevStructureError = null
   } catch (err) {
+    prevStructureError = err
     return throwError(err)
   }
 
@@ -46,7 +66,8 @@ const loadStructure = () => {
     )
   }
 
-  return serializeStructure(structure)
+  // Defer to catch immediately thrown errors on serialization
+  return defer(() => serializeStructure(structure))
 }
 
 const maybeSerialize = structure =>
@@ -100,7 +121,10 @@ export default withRouterHOC(
       }
     }
 
-    setResolveError = error => this.setState({error, isResolving: false})
+    setResolveError = error => {
+      prevStructureError = error
+      this.setState({error, isResolving: false})
+    }
 
     derivePanes(props) {
       if (this.paneDeriver) {
@@ -168,3 +192,9 @@ export default withRouterHOC(
     }
   }
 )
+
+if (module.hot) {
+  module.hot.dispose(data => {
+    data.prevError = prevStructureError
+  })
+}
