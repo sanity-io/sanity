@@ -5,6 +5,7 @@ import React from 'react'
 import {get, isEqual} from 'lodash'
 
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
+import DialogContent from 'part:@sanity/components/dialogs/content'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Popover from 'part:@sanity/components/dialogs/popover'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
@@ -118,7 +119,7 @@ export default class EditNode extends React.Component<Props> {
         showCloseButton
         onAction={this.handleDialogAction}
       >
-        {input}
+        <DialogContent size="medium">{input}</DialogContent>
       </DefaultDialog>
     )
   }
