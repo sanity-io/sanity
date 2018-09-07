@@ -5,12 +5,18 @@ export default {
   description: 'Delete a document by ID',
   action: async (args, context) => {
     const {apiClient, output} = context
+    const {dataset} = args.extOptions
     const [id] = args.argsWithoutOptions
-    const client = apiClient()
 
     if (!id) {
       throw new Error('Document ID must be specified')
     }
+
+    const client = dataset
+      ? apiClient()
+          .clone()
+          .config({dataset})
+      : apiClient()
 
     try {
       const {results} = await client.delete(id)

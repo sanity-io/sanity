@@ -41,10 +41,14 @@ export default {
   // eslint-disable-next-line complexity
   action: async (args, context) => {
     const {apiClient, output} = context
-    const {replace, missing, watch, id} = args.extOptions
+    const {replace, missing, watch, id, dataset} = args.extOptions
     const [file] = args.argsWithoutOptions
-    const client = apiClient()
     const useJson5 = args.extOptions.json5
+    const client = dataset
+      ? apiClient()
+          .clone()
+          .config({dataset})
+      : apiClient()
 
     if (replace && missing) {
       throw new Error('Cannot use both --replace and --missing')

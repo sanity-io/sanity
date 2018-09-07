@@ -17,13 +17,18 @@ export default {
   helpText: help,
   action: async (args, context) => {
     const {apiClient, output, chalk} = context
-    const {pretty} = args.extOptions
+    const {pretty, dataset} = args.extOptions
     const [query] = args.argsWithoutOptions
-    const client = apiClient()
 
     if (!query) {
       throw new Error('Query must be specified')
     }
+
+    const client = dataset
+      ? apiClient()
+          .clone()
+          .config({dataset})
+      : apiClient()
 
     try {
       const docs = await client.fetch(query)

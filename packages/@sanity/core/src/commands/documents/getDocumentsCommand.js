@@ -7,13 +7,18 @@ export default {
   description: 'Get and print a document',
   action: async (args, context) => {
     const {apiClient, output, chalk} = context
-    const {pretty} = args.extOptions
+    const {pretty, dataset} = args.extOptions
     const [docId] = args.argsWithoutOptions
-    const client = apiClient()
 
     if (!docId) {
       throw new Error('Document ID must be specified')
     }
+
+    const client = dataset
+      ? apiClient()
+          .clone()
+          .config({dataset})
+      : apiClient()
 
     try {
       const doc = await client.getDocument(docId)
