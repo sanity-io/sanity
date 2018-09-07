@@ -1,8 +1,6 @@
-// @flow
-
 import React from 'react'
 
-export default function renderCustomMarkers(markers: {type: string, path: []}[]) {
+export default function renderCustomMarkers(markers) {
   return (
     <div>
       {markers.map((marker, index) => {
