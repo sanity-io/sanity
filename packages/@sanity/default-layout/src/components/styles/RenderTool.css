@@ -36,9 +36,13 @@
   max-width: 800px;
 }
 
-.errorStackTrace,
+.errorStackTraceWrapper,
 .errorComponentStack {
   font-size: 0.9em;
+}
+
+.errorStackTrace {
+  white-space: pre-wrap;
 }
 
 .errorActionButton button {
