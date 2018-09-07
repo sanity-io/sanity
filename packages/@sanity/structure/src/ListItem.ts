@@ -19,13 +19,16 @@ interface ListItemSerializeOptions extends SerializeOptions {
 export interface ListItemInput {
   id: string
   title?: string
+  icon?: Function
   child?: ListItemChild
   schemaType?: SchemaType | string
 }
 
 export interface ListItem {
   id: string
+  type: string
   title?: string
+  icon?: Function
   child?: ListItemChild
   schemaType?: SchemaType
 }
@@ -33,6 +36,7 @@ export interface ListItem {
 export interface UnserializedListItem {
   id: string
   title: string
+  icon?: Function
   child?: UnserializedListItemChild
   schemaType?: SchemaType | string
 }
@@ -60,6 +64,14 @@ export class ListItemBuilder implements Serializable {
 
   getTitle() {
     return this.spec.title
+  }
+
+  icon(icon: Function): ListItemBuilder {
+    return this.clone({icon})
+  }
+
+  getIcon() {
+    return this.spec.icon
   }
 
   child(child: UnserializedListItemChild): ListItemBuilder {
@@ -126,7 +138,7 @@ export class ListItemBuilder implements Serializable {
       }
     }
 
-    return {...this.spec, schemaType, child: listChild, id, title}
+    return {type: 'listItem', ...this.spec, schemaType, child: listChild, id, title}
   }
 
   clone(withSpec?: PartialListItem): ListItemBuilder {

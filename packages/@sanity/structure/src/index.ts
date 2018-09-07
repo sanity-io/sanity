@@ -6,7 +6,7 @@ import {
   getOrderingMenuItemsForSchemaType,
   getOrderingMenuItem
 } from './MenuItem'
-import {ListItemBuilder, ListItem} from './ListItem'
+import {ListItemBuilder, ListItemInput} from './ListItem'
 import {MenuItemGroup, MenuItemGroupBuilder} from './MenuItemGroup'
 import {DocumentListBuilder, DocumentListInput} from './DocumentList'
 import {EditorBuilder} from './Editor'
@@ -21,7 +21,7 @@ const StructureBuilder = {
   documentTypeListItems: getDocumentTypeListItems,
 
   list: (spec?: ListInput) => new ListBuilder(spec),
-  listItem: (spec?: ListItem) => new ListItemBuilder(spec),
+  listItem: (spec?: ListItemInput) => new ListItemBuilder(spec),
 
   menuItem: (spec?: MenuItem) => new MenuItemBuilder(spec),
   menuItemGroup: (spec?: MenuItemGroup) => new MenuItemGroupBuilder(spec),
