@@ -108,7 +108,7 @@ function toSanityBlock(block, blockContentFeatures, options = {}) {
   }
 }
 
-export default function editorValueToBlocks(value: {}, type: any, options = {}) {
+export default function editorValueToBlocks(value, type, options = {}) {
   const blockContentFeatures = blockContentTypeToOptions(type)
   const nodes = get(value, 'document.nodes')
   if (!nodes || nodes.length === 0) {

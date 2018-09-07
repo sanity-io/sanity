@@ -27,7 +27,7 @@ const blockContentFunctions = {
    *      API compatible model as returned from DOMParser for using server side.
    * @returns {Array} Blocks
    */
-  htmlToBlocks(html: string, blockContentType: {}, options = {}) {
+  htmlToBlocks(html, blockContentType, options = {}) {
     const deserializer = new HtmlDeserializer(blockContentType, options)
     return deserializer.deserialize(html)
   },
