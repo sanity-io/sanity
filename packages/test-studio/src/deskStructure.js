@@ -1,3 +1,4 @@
+import React from 'react'
 import S from '@sanity/desk-tool/structure-builder'
 import RefreshIcon from 'part:@sanity/base/sync-icon'
 import JsonDocumentDump from './components/JsonDocumentDump'
@@ -13,6 +14,7 @@ export default () =>
       S.listItem()
         .id('docList')
         .title('Anything with a title')
+        .icon(() => <span style={{fontSize: '2em'}}>T</span>)
         .child(() =>
           delay(
             S.documentList({
