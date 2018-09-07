@@ -24,7 +24,21 @@ function maybeSerializeListItem(
   index: number,
   path: SerializePath
 ): ListItem {
-  return item instanceof ListItemBuilder ? item.serialize({path, index}) : item
+  if (item instanceof ListItemBuilder) {
+    return item.serialize({path, index})
+  }
+
+  const listItem = item as ListItem
+  if (!listItem || listItem.type !== 'listItem') {
+    const gotWhat = (listItem && listItem.type) || typeof listItem
+    throw new SerializeError(
+      `List items must be of type "listItem", got "${gotWhat}"`,
+      path,
+      index
+    ).withHelpUrl(HELP_URL.INVALID_LIST_ITEM)
+  }
+
+  return item
 }
 
 export interface List extends GenericList {

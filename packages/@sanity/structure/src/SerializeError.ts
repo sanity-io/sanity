@@ -25,6 +25,7 @@ export enum HELP_URL {
   ID_REQUIRED = 'structure-node-id-required',
   TITLE_REQUIRED = 'structure-title-requried',
   FILTER_REQUIRED = 'structure-filter-required',
+  INVALID_LIST_ITEM = 'structure-invalid-list-item',
   DOCUMENT_ID_REQUIRED = 'structure-document-id-required',
   SCHEMA_TYPE_REQUIRED = 'structure-schema-type-required',
   SCHEMA_TYPE_NOT_FOUND = 'structure-schema-type-not-found',
