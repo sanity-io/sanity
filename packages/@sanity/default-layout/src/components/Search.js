@@ -257,7 +257,7 @@ export default enhanceClickOutside(
               className={styles.input}
               type="search"
               value={isOpen ? inputValue : ''}
-              onInput={this.handleInputChange}
+              onChange={this.handleInputChange}
               onBlur={this.handleBlur}
               onClick={this.handleInputClick}
               onFocus={this.handleFocus}
