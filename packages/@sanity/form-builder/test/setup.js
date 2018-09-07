@@ -1,11 +1,11 @@
-import {setKeyGenerator} from 'slate'
+import {KeyUtils} from 'slate'
 
 let mockIndex = 0
 
 const mockKeyFn = () => `randomKey${mockIndex++}`
 
 beforeAll(() => {
-  setKeyGenerator(mockKeyFn)
+  KeyUtils.setGenerator(mockKeyFn)
   jest.mock('../src/inputs/BlockEditor/utils/randomKey', () => {
     return mockKeyFn
   })
