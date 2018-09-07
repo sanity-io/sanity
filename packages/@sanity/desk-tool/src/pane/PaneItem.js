@@ -16,10 +16,10 @@ const getUnknownTypeFallback = (id, typeName) => ({
 })
 
 export default function PaneItem(props) {
-  const {id, getLinkState, isSelected, schemaType, layout, status, value} = props
+  const {id, getLinkState, isSelected, schemaType, layout, status, icon, value} = props
   const useGrid = layout === 'card' || layout === 'media'
   const hasSchemaType = schemaType && schemaType.name && schema.get(schemaType.name)
-  const icon = hasSchemaType && schemaType.icon
+  const schemaIcon = hasSchemaType && schemaType.icon
 
   let content
   if (hasSchemaType && value && value._id) {
@@ -28,12 +28,20 @@ export default function PaneItem(props) {
     content = (
       <SanityDefaultPreview
         value={getUnknownTypeFallback(value._id, value._type)}
+        icon={icon || schemaIcon}
         layout={layout}
         status={status}
       />
     )
   } else {
-    content = <SanityDefaultPreview value={value} layout={layout} icon={icon} status={status} />
+    content = (
+      <SanityDefaultPreview
+        value={value}
+        layout={layout}
+        icon={icon || schemaIcon}
+        status={status}
+      />
+    )
   }
 
   const link = (
@@ -56,6 +64,7 @@ PaneItem.propTypes = {
   layout: PropTypes.string,
   isSelected: PropTypes.bool,
   status: PropTypes.func,
+  icon: PropTypes.func,
   value: PropTypes.shape({
     _id: PropTypes.string,
     _type: PropTypes.string,

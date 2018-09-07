@@ -99,6 +99,7 @@ export default withRouterHOC(
                 id={item.id}
                 index={index}
                 value={item}
+                icon={item.icon}
                 layout={defaultLayout}
                 isSelected={this.itemIsSelected(item)}
                 getLinkState={this.getLinkStateForItem}
