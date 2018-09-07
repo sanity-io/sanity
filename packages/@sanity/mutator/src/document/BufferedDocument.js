@@ -8,6 +8,8 @@ import Mutation from './Mutation'
 import SquashingBuffer from './SquashingBuffer'
 import debug from './debug'
 
+const ONE_MINUTE = 1000 * 60
+
 class Commit {
   mutations: mutations
   tries: number
@@ -158,9 +160,10 @@ export default class BufferedDocument {
           this.commits.unshift(commit)
         }
         docResponder.failure()
-        // Retry
-        // TODO: Be able to _not_ retry if failure is permanent
-        setTimeout(() => this._cycleCommitter(), 1000)
+        // Todo: Need better error handling (i.e. propagate to user and provide means of retrying)
+        if (commit.tries < 200) {
+          setTimeout(() => this._cycleCommitter(), Math.min(commit.tries * 1000, ONE_MINUTE))
+        }
       }
     }
     debug('Posting commit')
