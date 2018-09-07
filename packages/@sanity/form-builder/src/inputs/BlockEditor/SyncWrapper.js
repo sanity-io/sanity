@@ -4,7 +4,7 @@ import type {Block, BlockArrayType, SlateValue, Marker} from './typeDefs'
 
 import React from 'react'
 import generateHelpUrl from '@sanity/generate-help-url'
-import {uniq} from 'lodash'
+import {uniq, flatten, debounce} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {PatchEvent} from '../../PatchEvent'
@@ -53,6 +53,13 @@ function isInvalidBlockValue(value) {
     return false
   }
   return true
+}
+
+const OPTIMIZED_OPERATION_TYPES = ['insert_text', 'remove_text']
+const SEND_PATCHES_TOKEN_CHARS = [' ', '\n']
+
+function isInsertOrRemoveTextOperations(operations) {
+  return operations.map(op => op.type).every(opType => OPTIMIZED_OPERATION_TYPES.includes(opType))
 }
 
 type Props = {
@@ -106,32 +113,76 @@ export default withPatchSubscriber(
       this.state = {
         deprecatedSchema,
         deprecatedBlockValue,
-        invalidBlockValue,
         editorValue:
           deprecatedSchema || deprecatedBlockValue || invalidBlockValue
             ? deserialize([], type)
-            : deserialize(value, type)
+            : deserialize(value, type),
+        invalidBlockValue
       }
       this.unsubscribe = props.subscribe(this.handleDocumentPatches)
+      this._changes = []
     }
 
     handleEditorChange = (change: SlateChange, callback: void => void) => {
-      const {value, onChange, type} = this.props
-      this._beforeChangeEditorValue = this.state.editorValue
+      const {value} = this.props
+      const oldEditorValue = this.state.editorValue
       this.setState({editorValue: change.value})
-      const patches = changeToPatches(this._beforeChangeEditorValue, change, value, type)
-      this._select = createSelectionOperation(change)
-
-      // Do the change
-      if (patches.length) {
-        onChange(PatchEvent.from(patches))
+      this._changes.push({
+        oldEditorValue,
+        change,
+        value
+      })
+      const insertOrRemoveTextOnly = isInsertOrRemoveTextOperations(change.operations)
+      const isTokenChar =
+        insertOrRemoveTextOnly &&
+        change.operations.get(0) &&
+        SEND_PATCHES_TOKEN_CHARS.includes(change.operations.get(0).text)
+      if (!insertOrRemoveTextOnly || isTokenChar) {
+        this.sendPatchesFromChange()
+      } else {
+        this.debouncedSendPatchesFromChange()
       }
-
       if (callback) {
         callback(change)
         return change
       }
       return change
+    }
+
+    debouncedSendPatchesFromChange = debounce(() => {
+      this.sendPatchesFromChange()
+    }, 1000)
+
+    sendPatchesFromChange = () => {
+      const {type, onChange} = this.props
+      const finalPatches = []
+      if (this._changes[0]) {
+        this._beforeChangeEditorValue = this._changes[0].oldEditorValue
+      }
+      this._changes.forEach((changeSet, index) => {
+        const {oldEditorValue, change, value} = changeSet
+        const nextChangeSet = this._changes[index + 1]
+
+        if (
+          nextChangeSet &&
+          isInsertOrRemoveTextOperations(
+            nextChangeSet.change.operations.concat(changeSet.change.operations)
+          )
+        ) {
+          // This patch will be redundant so skip it.
+          return
+        }
+        this._select = createSelectionOperation(change)
+        const patches = changeToPatches(oldEditorValue, change, value, type)
+        if (patches.length) {
+          finalPatches.push(patches)
+        }
+      })
+      const patchesToSend = flatten(finalPatches)
+      if (patchesToSend.length) {
+        onChange(PatchEvent.from(patchesToSend))
+      }
+      this._changes = []
     }
 
     handleFormBuilderPatch = (event: PatchEvent) => {
@@ -176,7 +227,8 @@ export default withPatchSubscriber(
         // to know if this is undo/redo operation or not.
         const isUndoRedoPatch =
           lastPatch && lastPatch.path[0] && lastPatch.path[0]._key === 'undoRedoVoidPatch'
-        if (!isUndoRedoPatch) {
+        const isEditorContentPatches = localPatches.every(patch => patch.path.length < 2)
+        if (!isUndoRedoPatch && isEditorContentPatches) {
           this._undoRedoStack.undo.push({
             patches: localPatches,
             // Use the _beforeChangeEditorValue here, because at this point we could be
@@ -238,6 +290,7 @@ export default withPatchSubscriber(
                 onChange={this.handleEditorChange}
                 onPatch={this.handleFormBuilderPatch}
                 undoRedoStack={this._undoRedoStack}
+                sendPatchesFromChange={this.sendPatchesFromChange}
                 ref={this.refInput}
                 {...rest}
               />

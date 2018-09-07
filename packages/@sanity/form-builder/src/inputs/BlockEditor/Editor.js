@@ -69,6 +69,7 @@ type Props = {
   readOnly?: boolean,
   renderBlockActions?: (block: Block) => React.Node,
   renderCustomMarkers?: (Marker[]) => React.Node,
+  sendPatchesFromChange: void => void,
   setFocus: void => void,
   type: Type,
   undoRedoStack: {undo: [], redo: []},
@@ -99,13 +100,14 @@ export default class Editor extends React.Component<Props> {
       }),
       PastePlugin({blockContentType: props.type}),
       insertBlockOnEnter(EDITOR_DEFAULT_BLOCK_TYPE),
-      UpdateCustomNodesPlugin(),
+      // UpdateCustomNodesPlugin(),
       OnDropPlugin(),
       UndoRedoPlugin({
         stack: props.undoRedoStack,
         onChange: props.onChange,
         editorValue: props.editorValue,
-        blockContentType: props.type
+        blockContentType: props.type,
+        sendPatchesFromChange: props.sendPatchesFromChange
       })
     ]
     this._editorSchema = buildEditorSchema(props.blockContentFeatures)
