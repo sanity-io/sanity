@@ -172,7 +172,7 @@ function sanityBlocksArrayToRawNodes(blockArray, type, blockContentFeatures, opt
   return blockArray.map(item => sanityBlockItemToRawNode(item, type, blockContentFeatures, options))
 }
 
-export default function blocksToEditorValue(array: [], type: any, options = {}) {
+export default function blocksToEditorValue(array, type, options = {}) {
   const blockContentFeatures = blockContentTypeToOptions(type)
   return {
     object: 'value',
