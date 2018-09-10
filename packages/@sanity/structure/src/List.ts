@@ -9,6 +9,10 @@ import {
   GenericListInput
 } from './GenericList'
 
+const getArgType = (thing: ListItem) => {
+  return Array.isArray(thing) ? 'array' : typeof thing
+}
+
 const resolveChildForItem: ChildResolver = (itemId: string, options: ChildResolverOptions) => {
   const parentItem = options.parent as List
   const target = (parentItem.items.find(item => item.id === itemId) || {child: undefined}).child
@@ -30,9 +34,10 @@ function maybeSerializeListItem(
 
   const listItem = item as ListItem
   if (!listItem || listItem.type !== 'listItem') {
-    const gotWhat = (listItem && listItem.type) || typeof listItem
+    const gotWhat = (listItem && listItem.type) || getArgType(listItem)
+    const helpText = gotWhat === 'array' ? ' - did you forget to splat (...moreItems)?' : ''
     throw new SerializeError(
-      `List items must be of type "listItem", got "${gotWhat}"`,
+      `List items must be of type "listItem", got "${gotWhat}"${helpText}`,
       path,
       index
     ).withHelpUrl(HELP_URL.INVALID_LIST_ITEM)
