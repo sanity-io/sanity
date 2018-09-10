@@ -84,7 +84,7 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
       ).withHelpUrl(HELP_URL.ID_REQUIRED)
     }
 
-    const path = options.path.concat(id)
+    const path = (options.path || []).concat(id)
     return {
       ...super.serialize(options),
       type: 'list',
