@@ -39,7 +39,7 @@ function resolveForStructure(structure, ids) {
 
       const id = paneIds[index]
       const parent = panes[index - 1]
-      const context = {parent, index}
+      const context = {parent, index, path: paneIds.slice(0, index + 1)}
       if (index === 0) {
         subscribeForUpdates(structure, index, context)
         return
