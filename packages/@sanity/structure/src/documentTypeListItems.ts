@@ -30,21 +30,27 @@ export function getDocumentTypeListItem(
     .id(name)
     .title(title)
     .schemaType(type)
-    .child(getDocumentList(name, title, type))
+    .child(getDocumentTypeList(name, schema))
 }
 
-function getDocumentList(name: string, title: string, type: SchemaType): DocumentListBuilder {
+export function getDocumentTypeList(
+  typeName: string,
+  schema: Schema = defaultSchema
+): DocumentListBuilder {
+  const type = schema.get(typeName)
+  const resolver = getDataAspectsForSchema(schema)
+  const title = resolver.getDisplayName(typeName)
   return new DocumentListBuilder()
-    .id(name)
+    .id(typeName)
     .title(title)
     .filter('_type == $type')
-    .params({type: name})
-    .schemaType(name)
+    .params({type: typeName})
+    .schemaType(type)
     .defaultOrdering(DEFAULT_SELECTED_ORDERING_OPTION.by)
     .canHandleIntent(
       (intentName, params): boolean =>
         Boolean(intentName === 'edit' && params && params.id) ||
-        Boolean(intentName === 'create' && params && params.type === name)
+        Boolean(intentName === 'create' && params && params.type === typeName)
     )
     .menuItemGroups([
       {id: 'sorting', title: 'Sort'},
@@ -54,7 +60,7 @@ function getDocumentList(name: string, title: string, type: SchemaType): Documen
     .child((documentId: string) =>
       new EditorBuilder()
         .id('editor')
-        .schemaType(name)
+        .schemaType(type)
         .documentId(documentId)
     )
     .menuItems([
@@ -62,7 +68,7 @@ function getDocumentList(name: string, title: string, type: SchemaType): Documen
       new MenuItemBuilder()
         .title(`Create new ${title}`)
         .icon(PlusIcon)
-        .intent({type: 'create', params: {type: name}})
+        .intent({type: 'create', params: {type: typeName}})
         .showAsAction({whenCollapsed: true}),
 
       // Sort by <Y>
@@ -88,6 +94,6 @@ function getDocumentList(name: string, title: string, type: SchemaType): Documen
         .group('actions')
         .title('Create new…')
         .icon(PlusIcon)
-        .intent({type: 'create', params: {type: name}})
+        .intent({type: 'create', params: {type: typeName}})
     ])
 }

@@ -1,5 +1,9 @@
 import {ListBuilder, ListInput} from './List'
-import {getDocumentTypeListItems, getDocumentTypeListItem} from './documentTypeListItems'
+import {
+  getDocumentTypeListItems,
+  getDocumentTypeListItem,
+  getDocumentTypeList
+} from './documentTypeListItems'
 import {
   MenuItemBuilder,
   MenuItem,
@@ -17,6 +21,7 @@ import {DocumentListItemBuilder, DocumentListItemInput} from './DocumentListItem
 import {Ordering} from './Sort'
 
 const StructureBuilder = {
+  documentTypeList: getDocumentTypeList,
   documentTypeListItem: getDocumentTypeListItem,
   documentTypeListItems: getDocumentTypeListItems,
 
