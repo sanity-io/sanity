@@ -21,6 +21,7 @@ export type Type = {
   title: string,
   options?: Object,
   of?: [],
+  readOnly?: boolean,
   annotations?: {title: string, name: string}[]
 }
 
@@ -76,7 +77,8 @@ export type BlockContentFeature = {
   blockEditor?: {
     icon?: string | ComponentType<*>,
     render?: ComponentType<*>
-  }
+  },
+  type: Type
 }
 
 export type BlockContentFeatures = {
@@ -85,6 +87,7 @@ export type BlockContentFeatures = {
   annotations: BlockContentFeature[],
   lists: BlockContentFeature[],
   types: {
+    block: Type,
     span: Type,
     blockContent: Type,
     inlineObjects: Type[],
@@ -105,3 +108,18 @@ export type SlateComponentProps = {
 }
 
 export type Marker = _Marker
+
+export type UndoRedoStack = {
+  undo: {
+    patches: Patch[],
+    editorValue: SlateValue,
+    select: any
+  }[],
+  redo: {
+    patches: Patch[],
+    editorValue: SlateValue,
+    select: any
+  }[]
+}
+
+export type Path = Array<any>

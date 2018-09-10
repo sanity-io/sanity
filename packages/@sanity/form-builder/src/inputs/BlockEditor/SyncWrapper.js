@@ -1,6 +1,6 @@
 // @flow
 
-import type {Block, BlockArrayType, SlateValue, Marker} from './typeDefs'
+import type {Block, BlockArrayType, SlateValue, Marker, Type, Path} from './typeDefs'
 
 import React from 'react'
 import generateHelpUrl from '@sanity/generate-help-url'
@@ -69,12 +69,13 @@ type Props = {
   onChange: PatchEvent => void,
   onFocus: (nextPath: []) => void,
   onPaste?: (
-    event: SyntheticEvent,
-    path: [],
+    event: SyntheticEvent<>,
+    path: Path,
     type: Type,
     value: ?Value
   ) => {insert?: Value, path?: []},
   onPatch: (event: PatchEvent) => void,
+  level: number,
   readOnly?: boolean,
   renderBlockActions?: (block: Block) => React.Node,
   renderCustomMarkers?: (Marker[]) => React.Node,
@@ -95,6 +96,7 @@ export default withPatchSubscriber(
   class SyncWrapper extends React.PureComponent<Props, State> {
     _input = null
     _select = null
+    _changes: []
     _undoRedoStack = {undo: [], redo: []}
 
     static defaultProps = {
@@ -279,13 +281,14 @@ export default withPatchSubscriber(
     render() {
       const {editorValue, deprecatedSchema, deprecatedBlockValue, invalidBlockValue} = this.state
       const {onChange, ...rest} = this.props
-      const {type, value} = this.props
+      const {type, value, level} = this.props
       const isDeprecated = deprecatedSchema || deprecatedBlockValue
       return (
         <div className={styles.root}>
           {!isDeprecated &&
             !invalidBlockValue && (
               <Input
+                level={level}
                 editorValue={editorValue}
                 onChange={this.handleEditorChange}
                 onPatch={this.handleFormBuilderPatch}

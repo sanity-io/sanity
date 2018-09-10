@@ -1,5 +1,5 @@
 // @flow
-import type {Block, Marker} from './typeDefs'
+import type {Block, Marker, Path, Type} from './typeDefs'
 
 import React from 'react'
 import {get, isEqual} from 'lodash'
@@ -11,23 +11,27 @@ import Popover from 'part:@sanity/components/dialogs/popover'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
 
 import {FormBuilderInput} from '../../FormBuilderInput'
-import {set} from '../../PatchEvent'
+import {set, PatchEvent} from '../../PatchEvent'
 
 import styles from './styles/EditNode.css'
 
 type Props = {
-  focusPath: [],
+  focusPath: Path,
   markers: Marker[],
   nodeValue: Block,
-  onFocus: (nextPath: []) => void,
+  onFocus: Path => void,
   onPatch: (event: PatchEvent) => void,
-  path: [],
+  path: Path,
+  readOnly?: boolean,
   type: Type,
   value: Block[]
 }
 
 export default class EditNode extends React.Component<Props> {
-  handleChange = patchEvent => {
+  static defaultProps = {
+    readOnly: false
+  }
+  handleChange = (patchEvent: PatchEvent) => {
     const {onPatch, path, value, onFocus, focusPath} = this.props
     let _patchEvent = patchEvent
     path.reverse().forEach(segment => {

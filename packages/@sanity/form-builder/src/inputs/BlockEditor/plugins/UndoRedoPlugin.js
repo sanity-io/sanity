@@ -1,15 +1,13 @@
 // @flow
 
-import type {Type} from '../typeDefs'
+import type {Type, UndoRedoStack, SlateChange} from '../typeDefs'
+
 import Hotkeys from 'slate-hotkeys'
 import patchesToChange from '../utils/patchesToChange'
 
 type Options = {
-  stack: {
-    items: [],
-    index: number
-  },
-  onChange: void => void,
+  stack: UndoRedoStack,
+  onChange: SlateChange => SlateChange,
   blockContentType: Type,
   sendPatchesFromChange: void => void
 }
@@ -20,7 +18,7 @@ export default function UndoRedoPlugin(options: Options = {}) {
   const {stack, blockContentType, onChange, sendPatchesFromChange} = options
   return {
     // eslint-disable-next-line complexity
-    onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change) {
+    onKeyDown(event: SyntheticKeyboardEvent<*>, change: SlateChange) {
       if (Hotkeys.isUndo(event) || Hotkeys.isRedo(event)) {
         // Make sure we have sent every pending patch first
         if (sendPatchesFromChange) {
