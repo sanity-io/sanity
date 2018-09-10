@@ -123,6 +123,10 @@ export default withRouterHOC(
 
     setResolveError = error => {
       prevStructureError = error
+
+      // Log error for proper stacktraces
+      console.error(error) // eslint-disable-line no-console
+
       this.setState({error, isResolving: false})
     }
 
