@@ -35,7 +35,6 @@ import OnDropPlugin from './plugins/OnDropPlugin'
 import PastePlugin from './plugins/PastePlugin'
 import SetMarksOnKeyComboPlugin from './plugins/SetMarksOnKeyComboPlugin'
 import TextBlockOnEnterKeyPlugin from './plugins/TextBlockOnEnterKeyPlugin'
-import UpdateCustomNodesPlugin from './plugins/UpdateCustomNodesPlugin'
 import UndoRedoPlugin from './plugins/UndoRedoPlugin'
 
 import BlockObject from './nodes/BlockObject'
