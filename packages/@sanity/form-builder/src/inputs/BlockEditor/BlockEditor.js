@@ -3,6 +3,8 @@ import type {Element as ReactElement} from 'react'
 import React from 'react'
 import {isKeyHotkey} from 'is-hotkey'
 
+import {PatchEvent} from 'part:@sanity/form-builder/patch-event'
+
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import {Portal} from 'part:@sanity/components/utilities/portal'
 import Stacked from 'part:@sanity/components/utilities/stacked'
@@ -17,7 +19,15 @@ import Toolbar from './Toolbar/Toolbar'
 import styles from './styles/BlockEditor.css'
 import IS_MAC from './utils/isMac'
 
-import type {BlockContentFeatures, SlateChange, SlateValue, Marker, Type} from './typeDefs'
+import type {
+  BlockContentFeatures,
+  SlateChange,
+  SlateValue,
+  Marker,
+  Type,
+  Block,
+  Path
+} from './typeDefs'
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
@@ -25,12 +35,12 @@ type Props = {
   editorValue: SlateValue,
   fullscreen: boolean,
   isActive: boolean,
-  focusPath: [],
+  focusPath: Path,
   markers: Marker[],
   onPatch: (event: PatchEvent) => void,
   onChange: (change: SlateChange) => void,
-  onBlur: (nextPath: []) => void,
-  onFocus: (nextPath: []) => void,
+  onBlur: Path => void,
+  onFocus: Path => void,
   onToggleFullScreen: void => void,
   readOnly?: boolean,
   setFocus: void => void,
@@ -38,7 +48,7 @@ type Props = {
   value: Block[]
 }
 
-function findEditNode(focusPath, editorValue) {
+function findEditNode(focusPath: Path, editorValue) {
   const focusBlockKey = focusPath[0]._key
   const focusInlineKey =
     focusPath[1] && focusPath[1] === 'children' && focusPath[2] && focusPath[2]._key
@@ -64,11 +74,18 @@ function findEditNode(focusPath, editorValue) {
   return editorValue.document.getDescendant(key)
 }
 
-export default class BlockEditor extends React.PureComponent<Props> {
+export default class BlockEditor extends React.PureComponent<Props, State> {
   state = {
     preventScroll: false,
     toolbarStyle: {}
   }
+
+  static defaultProps = {
+    readOnly: false
+  }
+  _scrollContainer: ?HTMLDivElement
+  _rootElement: ?HTMLDivElement
+  _editorWrapper: ?HTMLDivElement
 
   componentDidMount() {
     this.checkScrollHeight()
@@ -91,8 +108,8 @@ export default class BlockEditor extends React.PureComponent<Props> {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps !== this.props) {
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps !== this.props) {
       this.checkScrollHeight()
     }
   }
@@ -127,7 +144,7 @@ export default class BlockEditor extends React.PureComponent<Props> {
     return this.renderEditNode(value, type, [{_key: value._key}])
   }
 
-  renderEditNode(nodeValue, type, path) {
+  renderEditNode(nodeValue: any, type: Type, path: Path) {
     const {focusPath, readOnly, onBlur, onFocus, onPatch, markers, value} = this.props
     return (
       <EditNode
@@ -145,15 +162,15 @@ export default class BlockEditor extends React.PureComponent<Props> {
     )
   }
 
-  setScrollContainer = element => {
+  setScrollContainer = (element: ?HTMLDivElement) => {
     this._scrollContainer = element
   }
 
-  setEditorWrapper = element => {
+  setEditorWrapper = (element: ?HTMLDivElement) => {
     this._editorWrapper = element
   }
 
-  setRootElement = element => {
+  setRootElement = (element: ?HTMLDivElement) => {
     this._rootElement = element
   }
 
@@ -165,14 +182,14 @@ export default class BlockEditor extends React.PureComponent<Props> {
     }
   }
 
-  handleScroll = event => {
+  handleScroll = (event: SyntheticEvent<HTMLDivElement>) => {
     if (!this.props.fullscreen) {
       this.setState({
         toolbarStyle: {}
       })
     }
     const threshold = 100
-    const scrollTop = event.target.scrollTop
+    const scrollTop = event.currentTarget.scrollTop
     let ratio = scrollTop / threshold
     if (ratio >= 1) {
       ratio = 1

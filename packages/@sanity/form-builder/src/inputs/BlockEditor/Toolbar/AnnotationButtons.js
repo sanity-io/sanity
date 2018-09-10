@@ -1,6 +1,6 @@
 // @flow
 
-import type {BlockContentFeature, BlockContentFeatures} from '../typeDefs'
+import type {BlockContentFeature, BlockContentFeatures, Path} from '../typeDefs'
 
 import React from 'react'
 import {Change, Value as SlateValue, Range} from 'slate'
@@ -25,9 +25,9 @@ type AnnotationItem = BlockContentFeature & {
 type Props = {
   blockContentFeatures: BlockContentFeatures,
   editorValue: SlateValue,
-  focusPath: [],
-  onChange: Change => void,
-  onFocus: (nextPath: []) => void
+  focusPath: Path,
+  onChange: (Change, ?(Change) => Change) => any,
+  onFocus: Path => void
 }
 
 function getIcon(type: string) {

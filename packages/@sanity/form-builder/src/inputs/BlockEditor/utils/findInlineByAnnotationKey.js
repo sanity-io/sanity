@@ -1,4 +1,7 @@
-export default function findInlineByAnnotationKey(key, document) {
+// @flow
+import {Document} from 'slate'
+
+export default function findInlineByAnnotationKey(key: string, document: Document) {
   return document
     .filterDescendants(desc => {
       if (desc.object !== 'inline') {

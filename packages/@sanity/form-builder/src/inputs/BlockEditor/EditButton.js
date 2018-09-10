@@ -1,14 +1,19 @@
-import React from 'react'
+// @flow
+
+import * as React from 'react'
 import Button from 'part:@sanity/components/buttons/default'
 import EditIcon from 'part:@sanity/base/edit-icon'
 
 type Props = {
-  onClick: void => void,
-  children: React.Element<*>
+  onClick: (SyntheticMouseEvent<>) => void,
+  children?: React.Node
 }
 
 export default class EditButton extends React.Component<Props> {
-  handleClick = event => {
+  static defaultProps = {
+    children: []
+  }
+  handleClick = (event: SyntheticMouseEvent<>) => {
     this.props.onClick(event)
   }
   render() {

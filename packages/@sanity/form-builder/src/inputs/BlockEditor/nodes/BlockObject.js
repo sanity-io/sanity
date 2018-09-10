@@ -3,7 +3,7 @@ import type {Node} from 'react'
 import ReactDOM from 'react-dom'
 import Base64 from 'slate-base64-serializer'
 
-import React from 'react'
+import * as React from 'react'
 import {Block} from 'slate'
 import {Editor, findDOMNode, findNode, setEventTransfer} from 'slate-react'
 import classNames from 'classnames'
@@ -13,7 +13,15 @@ import BlockExtras from 'part:@sanity/form-builder/input/block-editor/block-extr
 import LinkIcon from 'part:@sanity/base/link-icon'
 import ButtonsCollection from 'part:@sanity/components/buttons/button-collection'
 
-import type {BlockContentFeatures, SlateValue, Type, SlateChange, Marker} from '../typeDefs'
+import type {
+  BlockContentFeatures,
+  SlateValue,
+  Type,
+  SlateChange,
+  Marker,
+  Path,
+  SlateNode
+} from '../typeDefs'
 
 import {PatchEvent} from '../../../PatchEvent'
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
@@ -39,7 +47,7 @@ type Props = {
   markers: Marker[],
   node: Block,
   onChange: (change: SlateChange) => void,
-  onFocus: (nextPath: []) => void,
+  onFocus: Path => void,
   onHideBlockDragMarker: void => void,
   onPatch: (event: PatchEvent) => void,
   onShowBlockDragMarker: (pos: string, node: HTMLDivElement) => void,
@@ -56,7 +64,15 @@ type State = {
 }
 
 export default class BlockObject extends React.Component<Props, State> {
-  rootElement: ?HTMLDivElement = null
+  rootElement: ?HTMLDivElement
+  formBuilderBlock: ?HTMLDivElement
+  _dropTarget: ?{node: SlateNode, isAtStart: boolean, offset: number}
+  _editorNode: ?HTMLElement
+  previewContainer: ?HTMLDivElement
+
+  static defaultProps = {
+    blockActions: null
+  }
 
   state = {
     isDragging: false
@@ -85,7 +101,7 @@ export default class BlockObject extends React.Component<Props, State> {
     this._editorNode.removeEventListener('dragleave', this.handleDragLeave)
   }
 
-  handleDragStart = event => {
+  handleDragStart = (event: SyntheticDragEvent<>) => {
     const {node} = this.props
     this.setState({isDragging: true})
     this.addDragHandlers()
@@ -98,7 +114,7 @@ export default class BlockObject extends React.Component<Props, State> {
   }
 
   // Remove the drop target if we leave the editors nodes
-  handleDragLeave = event => {
+  handleDragLeave = (event: SyntheticDragEvent<>) => {
     event.dataTransfer.dropEffect = 'none'
     this.props.onHideBlockDragMarker()
     if (event.target === this._editorNode) {
@@ -112,7 +128,7 @@ export default class BlockObject extends React.Component<Props, State> {
   }
 
   // eslint-disable-next-line complexity
-  handleDragOverOtherNode = event => {
+  handleDragOverOtherNode = (event: SyntheticDragEvent<>) => {
     const {node} = this.props
     if (!this.state.isDragging) {
       return
@@ -179,7 +195,7 @@ export default class BlockObject extends React.Component<Props, State> {
     this._dropTarget = {node: block, isAtStart: rangeIsAtStart, offset: rangeOffset}
   }
 
-  handleDragEnd = event => {
+  handleDragEnd = (event: SyntheticDragEvent<>) => {
     event.preventDefault()
     this.setState({isDragging: false})
     this.removeDragHandlers()
@@ -204,18 +220,18 @@ export default class BlockObject extends React.Component<Props, State> {
     this.resetDropTarget()
   }
 
-  handleCancelEvent = event => {
+  handleCancelEvent = (event: SyntheticEvent<>) => {
     event.preventDefault()
     event.stopPropagation()
   }
 
-  handleFocus = event => {
+  handleFocus = (event: SyntheticMouseEvent<>) => {
     event.stopPropagation()
     const {node, onFocus} = this.props
     onFocus([{_key: node.key}, FOCUS_TERMINATOR])
   }
 
-  handleEditStart = event => {
+  handleEditStart = (event: SyntheticMouseEvent<>) => {
     event.stopPropagation()
     const {node, onFocus, onChange, editorValue} = this.props
     const change = editorValue
@@ -231,11 +247,11 @@ export default class BlockObject extends React.Component<Props, State> {
     onFocus([{_key: node.key}])
   }
 
-  refFormBuilderBlock = formBuilderBlock => {
+  refFormBuilderBlock = (formBuilderBlock: ?HTMLDivElement) => {
     this.formBuilderBlock = formBuilderBlock
   }
 
-  refPreview = previewContainer => {
+  refPreview = (previewContainer: ?HTMLDivElement) => {
     this.previewContainer = previewContainer
   }
 
