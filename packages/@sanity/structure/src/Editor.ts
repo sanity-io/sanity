@@ -77,15 +77,6 @@ export class EditorBuilder implements Serializable {
       ).withHelpUrl(HELP_URL.DOCUMENT_ID_REQUIRED)
     }
 
-    if (!options || !options.type) {
-      throw new SerializeError(
-        'document type (`type`) is required for editor nodes',
-        path,
-        id,
-        hint
-      ).withHelpUrl(HELP_URL.DOCUMENT_TYPE_REQUIRED)
-    }
-
     return {
       ...this.spec,
       id,

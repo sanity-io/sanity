@@ -34,16 +34,6 @@ test('throws on missing document ID', () => {
   ).toThrowError(/document id/)
 })
 
-test('throws on missing document type', () => {
-  expect(() =>
-    S.editor()
-      .id('id')
-      .title('title')
-      .documentId('docId')
-      .serialize()
-  ).toThrowError(/document type/)
-})
-
 test('can construct with schema type instead of schema type name', () => {
   expect(
     S.editor()
