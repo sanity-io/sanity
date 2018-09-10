@@ -13,7 +13,7 @@ function getWaitMessages(path) {
     const message = [
       'Check console for errors?',
       'Is your observable/promise resolving?',
-      path.length > 0 && `Structure path: ${path.join(' ➝ ')}`
+      path.length > 0 ? `Structure path: ${path.join(' ➝ ')}` : ''
     ]
 
     thresholds.push({
