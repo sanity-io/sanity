@@ -50,7 +50,7 @@ export class ListItemBuilder implements Serializable {
     this.spec = spec ? spec : {}
   }
 
-  id(id: string): ListItemBuilder {
+  id(id: string) {
     return this.clone({id})
   }
 
@@ -58,7 +58,7 @@ export class ListItemBuilder implements Serializable {
     return this.spec.id
   }
 
-  title(title: string): ListItemBuilder {
+  title(title: string) {
     return this.clone({title})
   }
 
@@ -138,7 +138,7 @@ export class ListItemBuilder implements Serializable {
       }
     }
 
-    return {type: 'listItem', ...this.spec, schemaType, child: listChild, id, title}
+    return {...this.spec, schemaType, child: listChild, id, title, type: 'listItem'}
   }
 
   clone(withSpec?: PartialListItem): ListItemBuilder {

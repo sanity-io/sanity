@@ -41,6 +41,7 @@ Object {
     "type": "document",
   },
   "title": undefined,
+  "type": "listItem",
 }
 `;
 
@@ -169,6 +170,7 @@ Object {
     "type": "document",
   },
   "title": undefined,
+  "type": "listItem",
 }
 `;
 
@@ -213,6 +215,7 @@ Object {
     "type": "document",
   },
   "title": undefined,
+  "type": "listItem",
 }
 `;
 
@@ -335,6 +338,7 @@ Object {
     "type": "document",
   },
   "title": undefined,
+  "type": "listItem",
 }
 `;
 
@@ -450,6 +454,7 @@ Object {
     "type": "document",
   },
   "title": undefined,
+  "type": "listItem",
 }
 `;
 
@@ -494,6 +499,7 @@ Object {
     "type": "document",
   },
   "title": "bar",
+  "type": "listItem",
 }
 `;
 

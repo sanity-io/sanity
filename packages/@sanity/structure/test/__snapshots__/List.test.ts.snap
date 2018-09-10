@@ -12,6 +12,7 @@ Object {
       "id": "foo",
       "schemaType": undefined,
       "title": "Foo",
+      "type": "listItem",
     },
   ],
   "menuItemGroups": Array [],
@@ -73,6 +74,7 @@ Object {
     Object {
       "id": "asoiaf-wow",
       "title": "The Winds of Winter",
+      "type": "listItem",
     },
   ],
   "menuItemGroups": Array [],

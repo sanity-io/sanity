@@ -6,6 +6,7 @@ Object {
   "id": "authors",
   "schemaType": undefined,
   "title": "Authors",
+  "type": "listItem",
 }
 `;
 
@@ -28,6 +29,7 @@ Object {
   "id": "asoiaf",
   "schemaType": undefined,
   "title": "A Song of Ice and Fire",
+  "type": "listItem",
 }
 `;
 
@@ -37,6 +39,7 @@ Object {
   "id": "foo",
   "schemaType": undefined,
   "title": "Foo",
+  "type": "listItem",
 }
 `;
 
@@ -53,6 +56,7 @@ Object {
   "id": "wow",
   "schemaType": undefined,
   "title": "The Winds of Winter",
+  "type": "listItem",
 }
 `;
 
@@ -62,6 +66,7 @@ Object {
   "id": "wow",
   "schemaType": undefined,
   "title": "The Winds of Winter",
+  "type": "listItem",
 }
 `;
 
@@ -76,6 +81,7 @@ Object {
     },
   },
   "title": "Foo",
+  "type": "listItem",
 }
 `;
 

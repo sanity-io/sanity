@@ -26,7 +26,7 @@ test('builds lists with specific items', () => {
   expect(
     S.list()
       .id('books')
-      .items([{id: 'asoiaf-wow', title: 'The Winds of Winter'}])
+      .items([{id: 'asoiaf-wow', title: 'The Winds of Winter', type: 'listItem'}])
       .serialize()
   ).toMatchSnapshot()
 })
@@ -53,7 +53,8 @@ test('default child resolver can resolve directly to node', done => {
   const item = {
     id: 'asoiaf-wow',
     title: 'The Winds of Winter',
-    child: {id: 'editor', type: 'document', options: {id: 'wow', type: 'book'}}
+    child: {id: 'editor', type: 'document', options: {id: 'wow', type: 'book'}},
+    type: 'listItem'
   }
 
   const list = S.list()
@@ -73,7 +74,8 @@ test('default child resolver can resolve through promise', done => {
   const item = {
     id: 'asoiaf-wow',
     title: 'The Winds of Winter',
-    child: () => Promise.resolve(child)
+    child: () => Promise.resolve(child),
+    type: 'listItem'
   }
 
   const list = S.list()
@@ -91,7 +93,7 @@ test('default child resolver can resolve through promise', done => {
 test('can provide custom child resolver', done => {
   const list = S.list()
     .id('books')
-    .items([{id: 'today', title: 'Today'}])
+    .items([{id: 'today', title: 'Today', type: 'listItem'}])
     .child(() => ({
       id: 'editor',
       type: 'editor',
@@ -109,7 +111,7 @@ test('can provide custom child resolver', done => {
 test('can resolve undefined child', done => {
   const list = S.list()
     .id('books')
-    .items([{id: 'today', title: 'Today'}])
+    .items([{id: 'today', title: 'Today', type: 'listItem'}])
     .child(() => undefined)
     .serialize()
 

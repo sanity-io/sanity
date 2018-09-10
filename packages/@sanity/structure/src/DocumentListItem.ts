@@ -23,22 +23,6 @@ export class DocumentListItemBuilder extends ListItemBuilder {
     this.spec = spec ? spec : {}
   }
 
-  id(id: string): DocumentListItemBuilder {
-    return this.clone({id})
-  }
-
-  getId() {
-    return this.spec.id
-  }
-
-  title(title: string): DocumentListItemBuilder {
-    return this.clone({title})
-  }
-
-  getTitle() {
-    return this.spec.title
-  }
-
   serialize(options: SerializeOptions = {path: []}): DocumentListItem {
     const spec = super.serialize({...options, titleIsOptional: true})
 
