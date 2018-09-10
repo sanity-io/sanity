@@ -73,6 +73,10 @@ function getTypeNameFromSingleTypeFilter(filter, params = {}) {
   return typeName || null
 }
 
+function isSimpleTypeFilter(filter) {
+  return /^_type\s*==\s*['"$]\w+['"]?\s*$/.test(filter.trim())
+}
+
 function toOrderClause(orderBy) {
   return orderBy
     .map(ordering =>
@@ -230,6 +234,7 @@ export default withRouterHOC(
       const {filter, params} = options
       const layout = this.state.layout || defaultLayout || 'default'
       const typeName = getTypeNameFromSingleTypeFilter(filter, params)
+      const filterIsSimpleTypeContraint = isSimpleTypeFilter(filter)
       const hasItems = items => items && items.length > 0
       const query = this.buildListQuery()
 
@@ -265,7 +270,7 @@ export default withRouterHOC(
                   <div className={styles.empty}>
                     <div>
                       <h3>
-                        {typeName
+                        {filterIsSimpleTypeContraint
                           ? 'No documents of this type found.'
                           : 'No documents matching this filter found.'}
                       </h3>
