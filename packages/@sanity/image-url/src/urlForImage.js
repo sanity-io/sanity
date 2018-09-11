@@ -20,7 +20,7 @@ const SPEC_NAME_TO_URL_NAME_MAPPINGS = [
 ]
 
 export default function urlForImage(options) {
-  let spec = Object.assign({}, options || {})
+  let spec = {...(options || {})}
   const source = spec.source
   delete spec.source
 
@@ -57,7 +57,7 @@ export default function urlForImage(options) {
   // If irrelevant, or if we are requested to: don't perform crop/fit based on
   // the crop/hotspot.
   if (!(spec.rect || spec.focalPoint || spec.ignoreImageParams || spec.crop)) {
-    spec = Object.assign(spec, fit({crop, hotspot}, spec))
+    spec = {...spec, ...fit({crop, hotspot}, spec)}
   }
 
   return specToImageUrl(spec)
