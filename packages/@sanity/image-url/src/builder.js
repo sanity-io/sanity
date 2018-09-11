@@ -6,7 +6,7 @@ const validCrops = ['top', 'bottom', 'left', 'right', 'center', 'focalpoint', 'e
 class ImageUrlBuilder {
   constructor(parent, options) {
     if (parent) {
-      this.options = Object.assign({}, parent.options, options || {})
+      this.options = {...(parent.options || {}), ...(options || {})}
     } else {
       this.options = options || {}
     }

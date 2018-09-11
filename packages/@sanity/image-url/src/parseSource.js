@@ -68,21 +68,19 @@ function applyDefaults(image) {
     return image
   }
 
-  return Object.assign(
-    {
-      crop: {
-        left: 0,
-        top: 0,
-        bottom: 0,
-        right: 0
-      },
-      hotspot: {
-        x: 0.5,
-        y: 0.5,
-        height: 1.0,
-        width: 1.0
-      }
+  return {
+    crop: {
+      left: 0,
+      top: 0,
+      bottom: 0,
+      right: 0
     },
-    image
-  )
+    hotspot: {
+      x: 0.5,
+      y: 0.5,
+      height: 1.0,
+      width: 1.0
+    },
+    ...image
+  }
 }
