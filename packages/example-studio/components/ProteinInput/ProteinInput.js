@@ -150,7 +150,7 @@ export default class ProteinInput extends React.Component {
     this.props.onChange(PatchEvent.from([unset(['camera'])]))
   }
 
-  setPdb(pdbId: string) {
+  setPdb(pdbId) {
     const {onChange, type} = this.props
     onChange(PatchEvent.from([set({_type: type.name, pdb: pdbId})]))
   }
