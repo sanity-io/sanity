@@ -3,14 +3,15 @@ import React from 'react'
 import FormField from 'part:@sanity/components/formfields/default'
 import TagInput from 'part:@sanity/components/tags/textfield'
 import PatchEvent, {set, unset} from '../../PatchEvent'
-import type {Type} from '../../typedefs'
+import type {Type} from '../typedefs'
 
 type Props = {
   type: Type,
   value: Array<string>,
   level: number,
   readOnly: ?boolean,
-  onChange: PatchEvent => void
+  onChange: PatchEvent => void,
+  onFocus: () => void
 }
 
 export default class TagsArrayInput extends React.PureComponent<Props> {
@@ -36,13 +37,14 @@ export default class TagsArrayInput extends React.PureComponent<Props> {
   }
 
   render() {
-    const {type, value, readOnly, level, ...rest} = this.props
+    const {type, value, readOnly, level, onFocus} = this.props
     return (
       <FormField level={level} label={type.title} description={type.description}>
         <TagInput
           readOnly={readOnly}
           value={value}
           onChange={this.handleChange}
+          onFocus={onFocus}
           ref={this.setInput}
         />
       </FormField>

@@ -19,6 +19,7 @@ type Props = {
   value: ?string,
   readOnly: ?boolean,
   onChange: PatchEvent => void,
+  onFocus: () => void,
   markers: Array<Marker>
 }
 
@@ -47,7 +48,7 @@ export default class StringSelect extends React.Component<Props> {
   }
 
   render() {
-    const {value, readOnly, markers, type, level, ...rest} = this.props
+    const {value, readOnly, markers, type, level, onFocus} = this.props
     const items = toSelectItems(type.options.list || [])
 
     const currentItem = items.find(item => item.value === value)
@@ -63,6 +64,7 @@ export default class StringSelect extends React.Component<Props> {
             legend={type.title}
             items={items}
             onChange={this.handleChange}
+            onFocus={onFocus}
             value={currentItem}
             direction={type.options.direction || 'vertical'}
             ref={this.setInput}
@@ -74,6 +76,7 @@ export default class StringSelect extends React.Component<Props> {
             value={currentItem}
             placeholder={type.placeholder}
             onChange={this.handleChange}
+            onFocus={onFocus}
             items={[EMPTY_ITEM].concat(items)}
             ref={this.setInput}
             readOnly={readOnly}

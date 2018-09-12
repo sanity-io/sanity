@@ -9,8 +9,7 @@ type Props = {
   type: Type,
   value: ?boolean,
   readOnly: ?boolean,
-  level: number,
-  description: ?string,
+  onFocus: () => void,
   onChange: PatchEvent => void
 }
 
@@ -33,7 +32,7 @@ export default class BooleanInput extends React.Component<Props> {
   }
 
   render() {
-    const {value, type, readOnly, level, description, ...rest} = this.props
+    const {value, type, readOnly, onFocus} = this.props
 
     const isCheckbox = type.options && type.options.layout === 'checkbox'
     return isCheckbox ? (
@@ -49,10 +48,11 @@ export default class BooleanInput extends React.Component<Props> {
     ) : (
       <Switch
         readOnly={readOnly}
-        onChange={this.handleChange}
         checked={value}
         label={type.title}
         description={type.description}
+        onChange={this.handleChange}
+        onFocus={onFocus}
         ref={this.setInput}
       />
     )
