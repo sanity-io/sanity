@@ -139,7 +139,7 @@ export default withValuePath(
       }
 
       render() {
-        const {value, type, level, markers, onFocus, document, getValuePath, ...rest} = this.props
+        const {value, type, level, markers} = this.props
         const {loading, inputText} = this.state
 
         const hasSourceField = type.options && type.options.source
