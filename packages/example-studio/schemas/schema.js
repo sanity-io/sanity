@@ -12,6 +12,7 @@ import customObject from './customObject'
 import protein from '../components/ProteinInput/schema'
 import localeBlockContent from './localeBlockContent'
 import {blockContent} from './blockContent'
+import conditionalFields from './conditionalFields'
 
 export default createSchema({
   name: 'example-blog',
@@ -20,6 +21,7 @@ export default createSchema({
     author,
     code,
     customObject,
+    conditionalFields,
     localeString,
     localeBlockContent,
     localeSlug,

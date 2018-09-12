@@ -1,5 +1,6 @@
 import AuthorPreview from '../parts/AuthorPreview'
 import icon from 'react-icons/lib/md/person'
+import Conditional from '../components/ConditionalField'
 
 export default {
   name: 'author',
