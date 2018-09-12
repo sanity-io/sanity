@@ -11,6 +11,7 @@ type Props = {
   value: ?string,
   readOnly: ?boolean,
   onChange: PatchEvent => void,
+  onFocus: () => void,
   markers: Array<Marker>
 }
 
@@ -33,7 +34,7 @@ export default class StringInput extends React.Component<Props> {
   }
 
   render() {
-    const {value, readOnly, type, markers, level, ...rest} = this.props
+    const {value, readOnly, type, markers, level, onFocus} = this.props
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
 
@@ -46,6 +47,7 @@ export default class StringInput extends React.Component<Props> {
           readOnly={readOnly}
           placeholder={type.placeholder}
           onChange={this.handleChange}
+          onFocus={onFocus}
           ref={this.setInput}
         />
       </FormField>
