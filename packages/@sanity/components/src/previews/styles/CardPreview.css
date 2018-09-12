@@ -89,6 +89,15 @@
   left: 0;
   height: 100%;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @nest & :global(.sanity-studio__preview-fallback-icon) {
+    width: 4em;
+    height: 4em;
+    opacity: 0.5;
+  }
 }
 
 .mediaContentRelative {

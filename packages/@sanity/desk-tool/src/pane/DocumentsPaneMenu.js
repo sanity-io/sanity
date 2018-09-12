@@ -8,7 +8,7 @@ import IconThumbnails from 'part:@sanity/base/th-large-icon'
 // import IconSettings from 'part:@sanity/base/cog-icon'
 import IconNew from 'part:@sanity/base/plus-circle-icon'
 
-const TEST_CARDS_AND_THUMBNAILS = false
+const TEST_CARDS_AND_THUMBNAILS = true
 
 const LIST_VIEW_ITEMS = [
   {
