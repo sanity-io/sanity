@@ -15,6 +15,8 @@ export default function createSelectionOperation(change: SlateChange) {
       : undefined
   const props = {
     type: 'set_selection',
+    value: change.value,
+    selection: change.value.selection,
     properties: {
       anchor: {
         path: anchorPath ? anchorPath.toArray() : null,

@@ -12,8 +12,9 @@ import InvalidValueInput from '../InvalidValueInput'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import Input from './Input'
 
-import createSelectionOperation from './utils/createSelectionOperation'
+import restoreSelection from './utils/restoreSelection'
 import changeToPatches from './utils/changeToPatches'
+import createSelectionOperation from './utils/createSelectionOperation'
 import deserialize from './utils/deserialize'
 import patchesToChange from './utils/patchesToChange'
 
@@ -278,7 +279,7 @@ export default withPatchSubscriber(
         if (this._select) {
           // eslint-disable-next-line max-depth
           try {
-            change.applyOperations([this._select])
+            restoreSelection(change, this._select, patches)
           } catch (err) {
             // eslint-disable-next-line max-depth
             if (!err.message.match('Could not find a descendant')) {
