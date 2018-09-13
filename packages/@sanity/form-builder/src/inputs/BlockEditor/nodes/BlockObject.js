@@ -210,7 +210,7 @@ export default class BlockObject extends React.Component<Props, State> {
     }
 
     let nextChange = editorValue.change().removeNodeByKey(node.key)
-    nextChange = nextChange[target.isAtStart ? 'moveToStart' : 'moveToEndOfNode'](target.node)
+    nextChange = nextChange[target.isAtStart ? 'moveToStartOfNode' : 'moveToEndOfNode'](target.node)
       .insertBlock(node)
       .moveToEndOfNode(node)
       .focus()
