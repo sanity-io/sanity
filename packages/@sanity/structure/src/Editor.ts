@@ -1,3 +1,4 @@
+import {camelCase} from 'lodash'
 import {EditorNode, SerializeOptions, Serializable} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {SchemaType} from './parts/Schema'
@@ -26,8 +27,8 @@ export class EditorBuilder implements Serializable {
     return this.spec.id
   }
 
-  title(title: string): EditorBuilder {
-    return this.clone({title})
+  title(title: string) {
+    return this.clone({title, id: this.spec.id || camelCase(title)})
   }
 
   getTitle() {

@@ -24,7 +24,7 @@ export class MenuItemGroupBuilder implements Serializable {
   }
 
   id(id: string): MenuItemGroupBuilder {
-    return new MenuItemGroupBuilder({id: id, title: this._title})
+    return new MenuItemGroupBuilder({id, title: this._title})
   }
 
   getId() {

@@ -1,3 +1,4 @@
+import {camelCase} from 'lodash'
 import {SerializeOptions, Serializable, Collection, CollectionBuilder} from './StructureNodes'
 import {defaultSchema, SchemaType} from './parts/Schema'
 import {ChildResolver} from './ChildResolver'
@@ -59,7 +60,7 @@ export class ListItemBuilder implements Serializable {
   }
 
   title(title: string) {
-    return this.clone({title})
+    return this.clone({title, id: this.spec.id || camelCase(title)})
   }
 
   getTitle() {

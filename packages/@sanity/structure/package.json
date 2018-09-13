@@ -27,7 +27,9 @@
     "access": "public"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.116",
     "@types/memoize-one": "^3.1.1",
+    "lodash": "^4.17.4",
     "memoize-one": "^3.1.1"
   },
   "devDependencies": {

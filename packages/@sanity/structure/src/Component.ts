@@ -1,3 +1,4 @@
+import {camelCase} from 'lodash'
 import {SerializeOptions, StructureNode, Serializable} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
@@ -21,6 +22,14 @@ export interface BuildableComponent extends Partial<StructureNode> {
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
 }
 
+interface ReactComponent extends Function {
+  displayName?: string
+}
+
+function getFunctionName(fn: ReactComponent) {
+  return typeof fn.displayName === 'string' ? fn.displayName : fn.name
+}
+
 export class ComponentBuilder implements Serializable {
   protected spec: BuildableComponent
 
@@ -37,7 +46,7 @@ export class ComponentBuilder implements Serializable {
   }
 
   title(title: string) {
-    return this.clone({title})
+    return this.clone({title, id: this.spec.id || camelCase(title)})
   }
 
   getTitle() {
@@ -45,7 +54,7 @@ export class ComponentBuilder implements Serializable {
   }
 
   component(component: Function) {
-    return this.clone({component})
+    return this.clone({component, id: this.spec.id || getFunctionName(component)})
   }
 
   getComponent() {
@@ -70,7 +79,7 @@ export class ComponentBuilder implements Serializable {
 
   serialize(options: SerializeOptions = {path: []}): Component {
     const {id, title, component} = this.spec
-    if (typeof id !== 'string' || !id) {
+    if (!id) {
       throw new SerializeError(
         '`id` is required for `component` structure item',
         options.path,

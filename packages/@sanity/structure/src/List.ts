@@ -1,3 +1,4 @@
+import {find} from 'lodash'
 import {SerializePath, SerializeOptions} from './StructureNodes'
 import {ChildResolverOptions, ChildResolver} from './ChildResolver'
 import {SerializeError, HELP_URL} from './SerializeError'
@@ -94,11 +95,24 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
     }
 
     const path = (options.path || []).concat(id)
+    const serializedItems = items.map((item, index) => maybeSerializeListItem(item, index, path))
+    const dupes = serializedItems.filter((val, i) => find(serializedItems, {id: val.id}, i + 1))
+
+    if (dupes.length > 0) {
+      const dupeIds = dupes.map(item => item.id).slice(0, 5)
+      const dupeDesc = dupes.length > 5 ? `${dupeIds.join(', ')}...` : dupeIds.join(', ')
+      throw new SerializeError(
+        `List items with same ID found (${dupeDesc})`,
+        options.path,
+        options.index
+      ).withHelpUrl(HELP_URL.LIST_ITEM_IDS_MUST_BE_UNIQUE)
+    }
+
     return {
       ...super.serialize(options),
       type: 'list',
       child: this.spec.child || resolveChildForItem,
-      items: items.map((item, index) => maybeSerializeListItem(item, index, path))
+      items: serializedItems
     }
   }
 

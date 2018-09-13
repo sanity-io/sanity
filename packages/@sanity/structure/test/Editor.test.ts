@@ -17,11 +17,30 @@ test('builds editor node through constructor', () => {
 test('throws on missing id', () => {
   expect(() =>
     S.editor()
-      .title('title')
       .documentId('docId')
       .schemaType('book')
       .serialize()
   ).toThrowError(/`id` is required/)
+})
+
+test('infers ID from title if not specified', () => {
+  expect(
+    S.editor()
+      .title('Hei der')
+      .getId()
+  ).toEqual('heiDer')
+  expect(
+    S.editor()
+      .id('zing')
+      .title('Hei der')
+      .getId()
+  ).toEqual('zing')
+  expect(
+    S.editor()
+      .title('Hei der')
+      .id('blah')
+      .getId()
+  ).toEqual('blah')
 })
 
 test('throws on missing document ID', () => {

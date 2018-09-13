@@ -1,5 +1,5 @@
 import memoizeOne from 'memoize-one'
-import {Schema, defaultSchema, SchemaType} from './parts/Schema'
+import {Schema, defaultSchema} from './parts/Schema'
 import {dataAspects, DataAspectsResolver} from './parts/DataAspects'
 import {getPlusIcon, getListIcon} from './parts/Icon'
 import {MenuItemBuilder, getOrderingMenuItemsForSchemaType} from './MenuItem'

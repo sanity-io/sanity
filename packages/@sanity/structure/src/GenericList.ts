@@ -1,3 +1,4 @@
+import {camelCase} from 'lodash'
 import {StructureNode, SerializeOptions, Serializable, Child} from './StructureNodes'
 import {Layout, layoutOptions} from './Layout'
 import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
@@ -52,7 +53,7 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
   }
 
   title(title: string) {
-    return this.clone({title})
+    return this.clone({title, id: this.spec.id || camelCase(title)})
   }
 
   getTitle() {

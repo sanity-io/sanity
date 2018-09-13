@@ -22,11 +22,48 @@ test('builds component node through alt. constructor', () => {
 })
 
 test('throws on missing id', () => {
-  expect(() =>
+  expect(() => S.component().serialize()).toThrowError(/`id` is required/)
+})
+
+test('infers ID from title if not specified', () => {
+  expect(
     S.component()
-      .title('title')
-      .serialize()
-  ).toThrowError(/`id` is required/)
+      .title('Hei der')
+      .getId()
+  ).toEqual('heiDer')
+  expect(
+    S.component()
+      .id('zing')
+      .title('Hei der')
+      .getId()
+  ).toEqual('zing')
+  expect(
+    S.component()
+      .title('Hei der')
+      .id('blah')
+      .getId()
+  ).toEqual('blah')
+})
+
+test('infers ID from function name if not specified', () => {
+  const FooBar = () => null
+  expect(
+    S.component()
+      .component(FooBar)
+      .getId()
+  ).toEqual('FooBar')
+  expect(
+    S.component()
+      .id('zing')
+      .component(FooBar)
+      .getId()
+  ).toEqual('zing')
+  expect(
+    S.component()
+      .component(FooBar)
+      .id('blah')
+      .getId()
+  ).toEqual('blah')
 })
 
 test('throws on missing component', () => {

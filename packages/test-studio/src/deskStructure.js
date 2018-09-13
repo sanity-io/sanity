@@ -16,7 +16,6 @@ export default () =>
         .schemaType('author'),
 
       S.listItem()
-        .id('docList')
         .title('Anything with a title')
         .icon(() => <span style={{fontSize: '2em'}}>T</span>)
         .child(() =>
@@ -32,7 +31,6 @@ export default () =>
         ),
 
       S.listItem()
-        .id('circular')
         .title('Singleton?')
         .child(delay(S.editor({id: 'editor', options: {id: 'circular', type: 'referenceTest'}}))),
 
@@ -41,7 +39,6 @@ export default () =>
         .schemaType('author')
         .child(
           S.component()
-            .id('dump')
             .component(JsonDocumentDump)
             .menuItems([
               S.menuItem()

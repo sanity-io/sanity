@@ -13,6 +13,26 @@ test('throws if no id is set', () => {
   expect(() => S.documentList().serialize()).toThrowErrorMatchingSnapshot()
 })
 
+test('infers ID from title if not specified', () => {
+  expect(
+    S.documentList()
+      .title('Hei der')
+      .getId()
+  ).toEqual('heiDer')
+  expect(
+    S.documentList()
+      .id('zing')
+      .title('Hei der')
+      .getId()
+  ).toEqual('zing')
+  expect(
+    S.documentList()
+      .title('Hei der')
+      .id('blah')
+      .getId()
+  ).toEqual('blah')
+})
+
 test('throws if no filter is set', () => {
   expect(() =>
     S.documentList()

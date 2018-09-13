@@ -172,4 +172,8 @@ Object {
 }
 `;
 
+exports[`enforces unique IDs (more than one dupe, caps max items) 1`] = `"List items with same ID found (zing0, zing1, zing2, zing3, zing4...)"`;
+
+exports[`enforces unique IDs 1`] = `"List items with same ID found (foo)"`;
+
 exports[`throws if no id is set 1`] = `"\`id\` is required for lists"`;

@@ -5,11 +5,27 @@ test('builds list items with only ID and title', () => {
 })
 
 test('throws if no id is set', () => {
-  expect(() =>
+  expect(() => S.listItem().serialize()).toThrowErrorMatchingSnapshot()
+})
+
+test('infers ID from title if not specified', () => {
+  expect(
     S.listItem()
-      .title('foo')
-      .serialize()
-  ).toThrowErrorMatchingSnapshot()
+      .title('Hei der')
+      .getId()
+  ).toEqual('heiDer')
+  expect(
+    S.listItem()
+      .id('zing')
+      .title('Hei der')
+      .getId()
+  ).toEqual('zing')
+  expect(
+    S.listItem()
+      .title('Hei der')
+      .id('blah')
+      .getId()
+  ).toEqual('blah')
 })
 
 test('throws if no title is set', () => {

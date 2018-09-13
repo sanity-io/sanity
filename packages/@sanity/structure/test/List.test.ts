@@ -1,3 +1,4 @@
+import {flatten} from 'lodash'
 import {StructureBuilder as S} from '../src'
 import serializeStructure from './util/serializeStructure'
 
@@ -38,6 +39,31 @@ test('builds lists where items are specified using builder', () => {
       .items([S.listItem({id: 'foo', title: 'Foo'})])
       .serialize()
   ).toMatchSnapshot()
+})
+
+test('enforces unique IDs', () => {
+  expect(() =>
+    S.list()
+      .id('books')
+      .items([S.listItem({id: 'foo', title: 'Foo'}), S.listItem().title('Foo')])
+      .serialize()
+  ).toThrowErrorMatchingSnapshot()
+})
+
+test('enforces unique IDs (more than one dupe, caps max items)', () => {
+  expect(() =>
+    S.list()
+      .id('books')
+      .items(
+        flatten(
+          [0, 1, 2, 3, 4, 5, 6, 7].map(i => [
+            S.listItem().title(`Zing ${i}`),
+            S.listItem().title(`Zing ${i}`)
+          ])
+        )
+      )
+      .serialize()
+  ).toThrowErrorMatchingSnapshot()
 })
 
 test('builds lists with layout', () => {

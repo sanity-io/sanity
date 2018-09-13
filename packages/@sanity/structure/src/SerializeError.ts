@@ -30,7 +30,9 @@ export enum HELP_URL {
   SCHEMA_TYPE_REQUIRED = 'structure-schema-type-required',
   SCHEMA_TYPE_NOT_FOUND = 'structure-schema-type-not-found',
   DOCUMENT_TYPE_REQUIRED = 'structure-document-type-required',
+  LIST_ITEMS_MUST_BE_ARRAY = 'structure-list-items-must-be-array',
   QUERY_PROVIDED_FOR_FILTER = 'structure-query-provided-for-filter',
   ACTION_OR_INTENT_REQUIRED = 'structure-action-or-intent-required',
+  LIST_ITEM_IDS_MUST_BE_UNIQUE = 'structure-list-item-ids-must-be-unique',
   ACTION_AND_INTENT_MUTUALLY_EXCLUSIVE = 'structure-action-and-intent-mutually-exclusive'
 }
