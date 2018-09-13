@@ -69,7 +69,7 @@ function joinReferences(schemaType, path) {
     const refTypes = schemaField.type.to
     return `${head}->{${refTypes.map(refType => joinReferences(refType, tail)).join(',')}}`
   }
-  return head
+  return tail.length > 0 ? `${head}{${joinReferences(schemaField.type, tail)}}` : head
 }
 
 function selectWithJoins(schemaType, orderBy) {
