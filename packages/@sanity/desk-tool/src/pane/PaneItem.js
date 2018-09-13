@@ -5,7 +5,7 @@ import schema from 'part:@sanity/base/schema'
 import {StateLink} from 'part:@sanity/base/router'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import {Item as GridListItem} from 'part:@sanity/components/lists/grid'
-import DocumentPreview, {SanityDefaultPreview} from 'part:@sanity/base/preview'
+import {PreviewSubscriber, SanityDefaultPreview} from 'part:@sanity/base/preview'
 import listStyles from './styles/ListView.css'
 import styles from './styles/PaneItem.css'
 
@@ -23,7 +23,22 @@ export default function PaneItem(props) {
 
   let content
   if (hasSchemaType && value && value._id) {
-    content = <DocumentPreview value={value} layout={layout} type={schemaType} status={status} />
+    content = (
+      <PreviewSubscriber type={schemaType} value={value}>
+        {({snapshot}) =>
+          snapshot ? (
+            <SanityDefaultPreview
+              icon={icon || schemaIcon}
+              status={status}
+              layout={layout}
+              value={snapshot}
+            />
+          ) : (
+            `Not found: ${value._id}`
+          )
+        }
+      </PreviewSubscriber>
+    )
   } else if (value._id && !hasSchemaType) {
     content = (
       <SanityDefaultPreview
