@@ -11,6 +11,10 @@ export default () =>
     .id('root')
     .title('Content')
     .items([
+      S.documentListItem()
+        .id('foo-bar')
+        .schemaType('author'),
+
       S.listItem()
         .id('docList')
         .title('Anything with a title')
