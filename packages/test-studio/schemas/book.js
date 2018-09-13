@@ -75,6 +75,11 @@ export default {
       by: [{field: 'author.bestFriend.name', direction: 'asc'}]
     },
     {
+      title: 'Size of coverImage',
+      name: 'coverImageSize',
+      by: [{field: 'coverImage.asset.size', direction: 'asc'}]
+    },
+    {
       title: 'Swedish title',
       name: 'swedishTitle',
       by: [{field: 'translations.se', direction: 'asc'}, {field: 'title', direction: 'asc'}]
