@@ -178,6 +178,7 @@ export default withPatchSubscriber(
     handleEditorChange = (change: SlateChange, callback: void => void) => {
       const {value} = this.props
       const beforeChangeEditorValue = this.state.editorValue
+      this._select = createSelectionOperation(change)
       this.setState({editorValue: change.value})
       this._changes.push({
         beforeChangeEditorValue,
@@ -222,7 +223,6 @@ export default withPatchSubscriber(
           // This patch will be redundant so skip it.
           return
         }
-        this._select = createSelectionOperation(change)
         const patches = changeToPatches(beforeChangeEditorValue, change, value, type)
         if (patches.length) {
           finalPatches.push(patches)
@@ -305,6 +305,18 @@ export default withPatchSubscriber(
             if (!err.message.match('Could not find a descendant')) {
               console.error(err) // eslint-disable-line no-console
             }
+          }
+        }
+        // Make sure to add any pending local operations (which is not sent as patches yet),
+        //  to the new editorValue if this is incoming remote patches
+        if (this._changes.length && patches.every(patch => patch.origin === 'remote')) {
+          // eslint-disable-next-line max-depth
+          try {
+            this._changes.forEach(changeSet => {
+              change.applyOperations(changeSet.change.operations)
+            })
+          } catch (err) {
+            console.log('Could not apply pending local operations', err)
           }
         }
         // Keep the editor focused as we insert the new value
