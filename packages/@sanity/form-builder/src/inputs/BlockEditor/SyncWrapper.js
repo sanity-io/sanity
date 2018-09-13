@@ -4,7 +4,7 @@ import type {Block, BlockArrayType, SlateValue, Marker, Type, Path} from './type
 
 import React from 'react'
 import generateHelpUrl from '@sanity/generate-help-url'
-import {uniq, flatten, debounce} from 'lodash'
+import {uniq, flatten, debounce, unionBy} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {PatchEvent} from '../../PatchEvent'
@@ -90,7 +90,9 @@ type State = {
   deprecatedSchema: boolean,
   deprecatedBlockValue: boolean,
   invalidBlockValue: boolean,
-  editorValue: SlateValue
+  editorValue: SlateValue,
+  decorations: {anchor: {key: string, offset: number}}[],
+  decorationHash: string
 }
 
 export default withPatchSubscriber(
@@ -107,29 +109,45 @@ export default withPatchSubscriber(
     // Keep track of what the editor value is (as seen in the editor) before it is changed by something.
     _beforeChangeEditorValue = null
 
-    static getDerivedStateFromProps(nextProps, nextState) {
+    static getDerivedStateFromProps(nextProps, state) {
       // Make sure changes to markers are reflected in the editor value.
-      // We use decorators in Slate to force the relevant editor nodes to re-render
-      // when markers change
+      // Slate heavily optimizes when nodes should re-render,
+      // so we use decorators in Slate to force the relevant editor nodes to re-render
+      // when markers change.
+      const newDecorationHash = nextProps.markers.map(mrkr => JSON.stringify(mrkr.path)).join('')
       if (
         nextProps.markers &&
-        nextProps.markers.length > 0 &&
-        nextState.editorValue &&
-        nextState.editorValue.decorations.size !== nextProps.markers.length
+        nextProps.markers.length &&
+        newDecorationHash !== state.decorationHash
       ) {
-        const decorations = nextProps.markers.map(mrkr => {
-          return {
-            anchor: {key: mrkr.path[0]._key, offset: 0},
-            focus: {key: mrkr.path[0]._key, offset: 0},
-            mark: {type: '__marker'} // non-visible mark (we just want the block to re-render)
-          }
-        })
-        const {editorValue} = nextState
+        const {editorValue} = state
+        const decorations = unionBy(
+          flatten(
+            nextProps.markers.map(mrkr => {
+              return mrkr.path.slice(0, 3).map(part => {
+                const key = part._key
+                if (!key) {
+                  return null
+                }
+                return {
+                  anchor: {key, offset: 0},
+                  focus: {key, offset: 0},
+                  mark: {type: '__marker'} // non-visible mark (we just want the block to re-render)
+                }
+              })
+            })
+          ).filter(Boolean),
+          state.decorations,
+          'focus.key'
+        )
         const change = editorValue
           .change()
           .setOperationFlag('save', false)
           .setValue({decorations})
+          .setOperationFlag('save', true)
         return {
+          decorations,
+          decorationHash: newDecorationHash,
           editorValue: change.value
         }
       }
@@ -149,7 +167,9 @@ export default withPatchSubscriber(
           deprecatedSchema || deprecatedBlockValue || invalidBlockValue
             ? deserialize([], type)
             : deserialize(value, type),
-        invalidBlockValue
+        invalidBlockValue,
+        decorations: [],
+        decorationHash: ''
       }
       this.unsubscribe = props.subscribe(this.handleDocumentPatches)
       this._changes = []
