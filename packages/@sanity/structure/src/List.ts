@@ -75,7 +75,7 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
   }
 
   serialize(options: SerializeOptions = {path: []}): List {
-    const {id, items} = this.spec
+    const id = this.spec.id
     if (typeof id !== 'string' || !id) {
       throw new SerializeError(
         '`id` is required for lists',
@@ -84,12 +84,21 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
       ).withHelpUrl(HELP_URL.ID_REQUIRED)
     }
 
+    const items = typeof this.spec.items === 'undefined' ? [] : this.spec.items
+    if (!Array.isArray(items)) {
+      throw new SerializeError(
+        '`items` must be an array of items',
+        options.path,
+        options.index
+      ).withHelpUrl(HELP_URL.LIST_ITEMS_MUST_BE_ARRAY)
+    }
+
     const path = (options.path || []).concat(id)
     return {
       ...super.serialize(options),
       type: 'list',
       child: this.spec.child || resolveChildForItem,
-      items: (items || []).map((item, index) => maybeSerializeListItem(item, index, path))
+      items: items.map((item, index) => maybeSerializeListItem(item, index, path))
     }
   }
 
