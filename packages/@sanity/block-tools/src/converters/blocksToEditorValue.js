@@ -6,6 +6,17 @@ import resolveJsType from '../util/resolveJsType'
 import blockContentTypeToOptions from '../util/blockContentTypeToOptions'
 import normalizeBlock from '../util/normalizeBlock'
 
+const EMPTY_TEXT_NODE = {
+  object: 'text',
+  leaves: [
+    {
+      object: 'leaf',
+      text: '',
+      marks: []
+    }
+  ]
+}
+
 function resolveTypeName(value) {
   const jsType = resolveJsType(value)
   return (jsType === 'object' && '_type' in value && value._type) || jsType
@@ -38,18 +49,7 @@ function sanitySpanToRawSlateBlockNode(span, sanityBlock, blockContentFeatures, 
       key: spanKey,
       type: span._type,
       data: {value: span, _key: spanKey},
-      nodes: [
-        {
-          object: 'text',
-          leaves: [
-            {
-              object: 'leaf',
-              text: '',
-              marks: []
-            }
-          ]
-        }
-      ]
+      nodes: [EMPTY_TEXT_NODE]
     }
   }
 
@@ -124,9 +124,12 @@ function sanityBlockToRawNode(sanityBlock, blockContentFeatures, options = {}) {
     isVoid: false,
     type: 'contentBlock',
     ...restData,
-    nodes: children.map(child =>
-      sanitySpanToRawSlateBlockNode(child, sanityBlock, blockContentFeatures, childIndex)
-    )
+    nodes:
+      children.length > 0
+        ? children.map(child =>
+            sanitySpanToRawSlateBlockNode(child, sanityBlock, blockContentFeatures, childIndex)
+          )
+        : [EMPTY_TEXT_NODE]
   }
   if (options.normalize) {
     return normalizeBlock(block)
@@ -145,18 +148,7 @@ function sanityBlockItemToRaw(blockItem) {
     type: blockItem._type,
     isVoid: true,
     data: {value: blockItem, _key: blockItem._key},
-    nodes: [
-      {
-        object: 'text',
-        leaves: [
-          {
-            object: 'leaf',
-            text: '',
-            marks: []
-          }
-        ]
-      }
-    ]
+    nodes: [EMPTY_TEXT_NODE]
   }
 }
 
