@@ -1,5 +1,6 @@
-import preprocessDefault from './default'
+import preprocessHTML from './html'
 import preprocessWord from './word'
+import preprocessGDocs from './gdocs'
 
 // We need this here if run server side
 export const _XPathResult = {
@@ -15,4 +16,4 @@ export const _XPathResult = {
   FIRST_ORDERED_NODE_TYPE: 9
 }
 
-export default [preprocessDefault, preprocessWord]
+export default [preprocessWord, preprocessGDocs, preprocessHTML]
