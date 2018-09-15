@@ -92,7 +92,9 @@ type State = {
   invalidBlockValue: boolean,
   editorValue: SlateValue,
   decorations: {anchor: {key: string, offset: number}}[],
-  decorationHash: string
+  decorationHash: string,
+  isLoading: boolean,
+  loading: any
 }
 
 export default withPatchSubscriber(
@@ -101,13 +103,11 @@ export default withPatchSubscriber(
     _select = null
     _changes: []
     _undoRedoStack = {undo: [], redo: []}
+    _beforeChangeEditorValue = null // Keep track of what the editor value is (as seen in the editor) before it is changed by something.
 
     static defaultProps = {
       markers: []
     }
-
-    // Keep track of what the editor value is (as seen in the editor) before it is changed by something.
-    _beforeChangeEditorValue = null
 
     static getDerivedStateFromProps(nextProps, state) {
       // Make sure changes to markers are reflected in the editor value.
@@ -169,10 +169,15 @@ export default withPatchSubscriber(
             : deserialize(value, type),
         invalidBlockValue,
         decorations: [],
-        decorationHash: ''
+        decorationHash: '',
+        isLoading: false
       }
       this.unsubscribe = props.subscribe(this.handleDocumentPatches)
       this._changes = []
+    }
+
+    componentWillUnmount() {
+      this.unsubscribe()
     }
 
     handleEditorChange = (change: SlateChange, callback: void => void) => {
@@ -202,7 +207,7 @@ export default withPatchSubscriber(
 
     sendPatchesFromChangeDebounced = debounce(() => {
       this.sendPatchesFromChange()
-    }, 1000)
+    }, 500)
 
     sendPatchesFromChange = () => {
       const {type, onChange} = this.props
@@ -210,9 +215,10 @@ export default withPatchSubscriber(
       if (this._changes[0]) {
         this._beforeChangeEditorValue = this._changes[0].beforeChangeEditorValue
       }
-      this._changes.forEach((changeSet, index) => {
+      while (this._changes.length > 0) {
+        const changeSet = this._changes.shift()
         const {beforeChangeEditorValue, change, value} = changeSet
-        const nextChangeSet = this._changes[index + 1]
+        const nextChangeSet = this._changes[1]
 
         if (
           nextChangeSet &&
@@ -221,18 +227,17 @@ export default withPatchSubscriber(
           )
         ) {
           // This patch will be redundant so skip it.
-          return
+          continue
         }
         const patches = changeToPatches(beforeChangeEditorValue, change, value, type)
         if (patches.length) {
           finalPatches.push(patches)
         }
-      })
+      }
       const patchesToSend = flatten(finalPatches)
       if (patchesToSend.length) {
         onChange(PatchEvent.from(patchesToSend))
       }
-      this._changes = []
     }
 
     handleFormBuilderPatch = (event: PatchEvent) => {
@@ -308,7 +313,7 @@ export default withPatchSubscriber(
           }
         }
         // Make sure to add any pending local operations (which is not sent as patches yet),
-        //  to the new editorValue if this is incoming remote patches
+        // to the new editorValue if this is incoming remote patches
         if (this._changes.length && patches.every(patch => patch.origin === 'remote')) {
           // eslint-disable-next-line max-depth
           try {
@@ -316,7 +321,8 @@ export default withPatchSubscriber(
               change.applyOperations(changeSet.change.operations)
             })
           } catch (err) {
-            console.log('Could not apply pending local operations', err)
+            // eslint-disable-next-line no-console
+            console.log('Could not apply pending local operations')
           }
         }
         // Keep the editor focused as we insert the new value
