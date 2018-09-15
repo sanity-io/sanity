@@ -1,5 +1,14 @@
-import {DEFAULT_SPAN, DEFAULT_BLOCK, HTML_BLOCK_TAGS, HTML_HEADER_TAGS} from '../../constants'
+import {
+  BLOCK_DEFAULT_STYLE,
+  DEFAULT_BLOCK,
+  DEFAULT_SPAN,
+  HTML_BLOCK_TAGS,
+  HTML_HEADER_TAGS,
+  HTML_LIST_CONTAINER_TAGS
+} from '../../constants'
 import {tagName} from '../helpers'
+
+const LIST_CONTAINER_TAGS = Object.keys(HTML_LIST_CONTAINER_TAGS)
 
 // font-style:italic seems like the most important rule for italic / emphasis in their html
 function isEmphasis(el) {
@@ -13,13 +22,13 @@ function isStrong(el) {
   return !!style.match(/font-weight:700/)
 }
 
-// Attribute given by the preprosessorprocessor
+// Check for attribute given by the gdocs preprocessor
 function isGoogleDocs(el) {
   return el.getAttribute('data-is-google-docs')
 }
 
 function getListItemStyle(el) {
-  if (!['ul', 'ol'].includes(tagName(el.parentNode))) {
+  if (!LIST_CONTAINER_TAGS.includes(tagName(el.parentNode))) {
     return undefined
   }
   return tagName(el.parentNode) === 'ul' ? 'bullet' : 'number'
@@ -31,7 +40,7 @@ function getListItemLevel(el) {
     let parentNode = el.parentNode
     while (parentNode) {
       // eslint-disable-next-line max-depth
-      if (['ul', 'ol'].includes(tagName(parentNode))) {
+      if (LIST_CONTAINER_TAGS.includes(tagName(parentNode))) {
         level++
       }
       parentNode = parentNode.parentNode
@@ -47,10 +56,10 @@ const blocks = {...HTML_BLOCK_TAGS, ...HTML_HEADER_TAGS}
 function getBlockStyle(el, enabledBlockStyles) {
   const block = blocks[tagName(el.firstChild)]
   if (!block) {
-    return 'normal'
+    return BLOCK_DEFAULT_STYLE
   }
   if (!enabledBlockStyles.includes(block.style)) {
-    return 'normal'
+    return BLOCK_DEFAULT_STYLE
   }
   return block.style
 }
