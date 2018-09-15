@@ -23,6 +23,7 @@ type Props = {
   onBlur: (nextPath: []) => void,
   onChange: (change: SlateChange) => void,
   onFocus: (nextPath: []) => void,
+  onLoading: (props: {}) => void,
   onPatch: (event: PatchEvent) => void,
   onPaste?: (
     event: SyntheticEvent,
@@ -30,6 +31,7 @@ type Props = {
     type: Type,
     value: ?Value
   ) => {insert?: Value, path?: []},
+  isLoading: boolean,
   readOnly?: boolean,
   renderBlockActions?: (block: Block) => React.Node,
   renderCustomMarkers?: (Marker[]) => React.Node,
@@ -98,8 +100,10 @@ export default class BlockEditorInput extends React.Component<Props, State> {
       onBlur,
       onFocus,
       onChange,
+      onLoading,
       onPatch,
       onPaste,
+      isLoading,
       readOnly,
       renderBlockActions,
       renderCustomMarkers,
@@ -112,24 +116,26 @@ export default class BlockEditorInput extends React.Component<Props, State> {
       <Editor
         blockContentFeatures={this.blockContentFeatures}
         editorValue={editorValue}
-        fullscreen={fullscreen}
         focusPath={focusPath}
+        fullscreen={fullscreen}
+        isLoading={isLoading}
         markers={markers}
-        onFocus={onFocus}
-        setFocus={this.focus}
         onBlur={onBlur}
         onChange={onChange}
-        onPatch={onPatch}
+        onFocus={onFocus}
+        onLoading={onLoading}
         onPaste={onPaste}
+        onPatch={onPatch}
         onToggleFullScreen={this.handleToggleFullScreen}
         readOnly={readOnly}
+        ref={this.refEditor}
         renderBlockActions={renderBlockActions}
         renderCustomMarkers={renderCustomMarkers}
-        ref={this.refEditor}
-        value={value}
-        undoRedoStack={undoRedoStack}
         sendPatchesFromChange={sendPatchesFromChange}
+        setFocus={this.focus}
         type={type}
+        undoRedoStack={undoRedoStack}
+        value={value}
       />
     )
   }
@@ -138,11 +144,13 @@ export default class BlockEditorInput extends React.Component<Props, State> {
     const {
       editorValue,
       focusPath,
+      isLoading,
       level,
       markers,
       onChange,
       onBlur,
       onFocus,
+      onLoading,
       onPatch,
       readOnly,
       type,
@@ -181,6 +189,8 @@ export default class BlockEditorInput extends React.Component<Props, State> {
           markers={markers}
           onBlur={onBlur}
           onChange={onChange}
+          onLoading={onLoading}
+          isLoading={isLoading}
           onFocus={onFocus}
           onPatch={onPatch}
           onToggleFullScreen={this.handleToggleFullScreen}
