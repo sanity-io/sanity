@@ -29,20 +29,41 @@ function processNode(node) {
     type: node.get('type')
   })
 }
+const NOOP = () => {}
+
+function handleHTML(html, change, editor, blockContentType, onProgress) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      onProgress({status: 'html'})
+      const blocks = blockTools.htmlToBlocks(html, blockContentType)
+      onProgress({status: 'blocks'})
+      const doc = Document.fromJSON(
+        blockTools.blocksToEditorValue(blocks, blockContentType).document
+      )
+      change.insertFragment(doc).moveToEndOfBlock()
+      editor.onChange(change)
+      resolve(change)
+      onProgress({status: null})
+    }, 0)
+  })
+}
 
 export default function PastePlugin(options: Options = {}) {
   const {blockContentType} = options
+  const onProgress = options.onProgress || NOOP
   if (!blockContentType) {
     throw new Error("Missing required option 'blockContentType'")
   }
 
   function onPaste(event, change, editor) {
     event.preventDefault()
+    onProgress({status: 'start'})
     const {shiftKey} = event
     const transfer = getEventTransfer(event)
     const {fragment, html} = transfer
     let type = transfer.type
     if (type === 'fragment') {
+      onProgress({status: 'fragment'})
       // Check if we have all block types in the schema,
       // otherwise, use html version
       const allSchemaBlockTypes = blockContentType.of
@@ -57,17 +78,17 @@ export default function PastePlugin(options: Options = {}) {
           key: fragment.key,
           nodes: newNodesList
         })
-        return change.insertFragment(newDoc).moveToEndOfBlock()
+        change.insertFragment(newDoc).moveToEndOfBlock()
+        onProgress({status: null})
+        return change
       }
       type = 'html'
     }
     if (type === 'html' && !shiftKey) {
-      const blocks = blockTools.htmlToBlocks(html, blockContentType)
-      const doc = Document.fromJSON(
-        blockTools.blocksToEditorValue(blocks, blockContentType).document
-      )
-      return change.insertFragment(doc).moveToEndOfBlock()
+      onProgress({status: 'parsing'})
+      return handleHTML(html, change, editor, blockContentType, onProgress)
     }
+    onProgress({status: null})
     return undefined
   }
 
