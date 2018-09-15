@@ -46,7 +46,7 @@ export const HTML_HEADER_TAGS = {
 }
 
 export const HTML_MISC_TAGS = {
-  br: {...DEFAULT_BLOCK, style: 'normal'}
+  br: {...DEFAULT_BLOCK, style: BLOCK_DEFAULT_STYLE}
 }
 export const HTML_DECORATOR_TAGS = {
   b: 'strong',
@@ -66,7 +66,7 @@ export const HTML_DECORATOR_TAGS = {
 export const HTML_LIST_ITEM_TAGS = {
   li: {
     ...DEFAULT_BLOCK,
-    style: 'normal',
+    style: BLOCK_DEFAULT_STYLE,
     level: 1,
     listItem: 'bullet'
   }

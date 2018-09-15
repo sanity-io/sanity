@@ -1,4 +1,4 @@
-import {DEFAULT_BLOCK} from '../../constants'
+import {DEFAULT_BLOCK, BLOCK_DEFAULT_STYLE} from '../../constants'
 import {tagName} from '../helpers'
 
 function getListItemStyle(el) {
@@ -45,7 +45,7 @@ export default function createWordRules(blockContentType, options = {}) {
             ...DEFAULT_BLOCK,
             listItem: getListItemStyle(el),
             level: getListItemLevel(el),
-            style: 'normal',
+            style: BLOCK_DEFAULT_STYLE,
             children: next(el.childNodes)
           }
         }
