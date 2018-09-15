@@ -10,6 +10,9 @@ type Props = {
   markers: marker[]
 }
 
+// This is the fallback marker renderer if the block editor didn't get the 'renderCustomMarkers' prop
+// You will probably only see this when you first start to play with custom markers as a developer
+
 export default class Markers extends React.Component<Props> {
   static defaultProps = {
     markers: []
