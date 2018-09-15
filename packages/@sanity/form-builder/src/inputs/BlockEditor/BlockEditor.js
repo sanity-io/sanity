@@ -11,6 +11,7 @@ import Stacked from 'part:@sanity/components/utilities/stacked'
 import Escapable from 'part:@sanity/components/utilities/escapable'
 
 import Button from 'part:@sanity/components/buttons/default'
+import Spinner from 'part:@sanity/components/loading/spinner'
 
 import EditNode from './EditNode'
 import Editor from './Editor'
@@ -38,6 +39,7 @@ type Props = {
   focusPath: Path,
   markers: Marker[],
   onPatch: (event: PatchEvent) => void,
+  isLoading: boolean,
   onChange: (change: SlateChange) => void,
   onBlur: Path => void,
   onFocus: Path => void,
@@ -223,11 +225,13 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
       onChange,
       onFocus,
       onToggleFullScreen,
+      isLoading,
       readOnly,
       setFocus,
       type,
       markers
     } = this.props
+
     if (readOnly) {
       return <div>{editor}</div>
     }
@@ -247,6 +251,12 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
             type={type}
           />
         </div>
+        {isLoading && (
+          <div className={styles.loading}>
+            <Spinner center />
+          </div>
+        )}
+
         <ActivateOnFocus
           isActive={!this.state.preventScroll || fullscreen || isActive}
           html={

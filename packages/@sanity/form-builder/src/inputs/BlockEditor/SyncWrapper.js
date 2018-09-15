@@ -327,19 +327,34 @@ export default withPatchSubscriber(
       }
     }
 
-    componentWillUnmount() {
-      this.unsubscribe()
+    handleOnLoading = (props = {}) => {
+      const {loading} = this.state
+      const _loading = {...loading, ...props}
+      const isLoading = Object.keys(_loading).some(key => _loading[key])
+      if (!isLoading) {
+        setTimeout(() => {
+          this.setState({isLoading, loading: _loading})
+        }, 100)
+        return
+      }
+      this.setState({isLoading, loading: _loading})
     }
+
+    handleInvalidValue = () => {}
 
     refInput = (input: Input) => {
       this._input = input
     }
 
-    handleInvalidValue = () => {}
-
     // eslint-disable-next-line complexity
     render() {
-      const {editorValue, deprecatedSchema, deprecatedBlockValue, invalidBlockValue} = this.state
+      const {
+        editorValue,
+        deprecatedSchema,
+        deprecatedBlockValue,
+        invalidBlockValue,
+        isLoading
+      } = this.state
       const {onChange, ...rest} = this.props
       const {type, value, level} = this.props
       const isDeprecated = deprecatedSchema || deprecatedBlockValue
@@ -351,6 +366,8 @@ export default withPatchSubscriber(
                 level={level}
                 editorValue={editorValue}
                 onChange={this.handleEditorChange}
+                isLoading={isLoading}
+                onLoading={this.handleOnLoading}
                 onPatch={this.handleFormBuilderPatch}
                 undoRedoStack={this._undoRedoStack}
                 sendPatchesFromChange={this.sendPatchesFromChange}
@@ -358,7 +375,6 @@ export default withPatchSubscriber(
                 {...rest}
               />
             )}
-
           {invalidBlockValue && (
             <InvalidValueInput
               validTypes={type.of.map(mType => mType.name)}
@@ -367,7 +383,6 @@ export default withPatchSubscriber(
               onChange={this.handleInvalidValue}
             />
           )}
-
           {isDeprecated && (
             <FormField label={type.title}>
               <div className={styles.disabledEditor}>

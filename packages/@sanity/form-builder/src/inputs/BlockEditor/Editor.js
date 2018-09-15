@@ -52,9 +52,11 @@ type Props = {
   markers: Marker[],
   onBlur: (nextPath: []) => void,
   onChange: (change: SlateChange) => void,
+  onLoading: (props: {}) => void,
   onEditorBlur: void => void,
   onEditorFocus: void => void,
   onFocus: (nextPath: []) => void,
+  onLoading: (props: {}) => void,
   onFormBuilderInputBlur: (nextPath: []) => void,
   onFormBuilderInputFocus: (nextPath: []) => void,
   onPaste?: (
@@ -97,7 +99,7 @@ export default class Editor extends React.Component<Props> {
         onlyIn: [EDITOR_DEFAULT_BLOCK_TYPE.type],
         shift: true
       }),
-      PastePlugin({blockContentType: props.type}),
+      PastePlugin({blockContentType: props.type, onProgress: this.handlePasteProgress}),
       insertBlockOnEnter(EDITOR_DEFAULT_BLOCK_TYPE),
       // UpdateCustomNodesPlugin(),
       OnDropPlugin(),
@@ -211,6 +213,11 @@ export default class Editor extends React.Component<Props> {
     this._editor = editor
   }
 
+  handlePasteProgress = ({status}) => {
+    const {onLoading} = this.props
+    onLoading({paste: status})
+  }
+
   handleShowBlockDragMarker = (pos: string, node: HTMLDivElement) => {
     const editorDOMNode = ReactDOM.findDOMNode(this._editor)
     if (editorDOMNode instanceof HTMLElement) {
@@ -233,7 +240,8 @@ export default class Editor extends React.Component<Props> {
   }
 
   handlePaste = event => {
-    const {focusPath, onPatch, value, type} = this.props
+    const {focusPath, onPatch, onLoading, value, type} = this.props
+    onLoading({paste: 'start'})
     const onPaste = this.props.onPaste || onPasteFromPart
     if (onPaste) {
       const {editorValue} = this.props
@@ -250,6 +258,7 @@ export default class Editor extends React.Component<Props> {
       const result = onPaste({event, value, path, type})
       if (result && result.insert) {
         onPatch(PatchEvent.from([insert([result.insert], 'after', result.path || focusPath)]))
+        onLoading({paste: null})
         return result.insert
       }
     }
