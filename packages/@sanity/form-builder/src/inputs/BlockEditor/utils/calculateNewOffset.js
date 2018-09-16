@@ -4,7 +4,11 @@ import DiffMatchPatch from 'diff-match-patch'
 
 const dmp = new DiffMatchPatch()
 
-export default function calculateNewOffset(text: string, textToDiff: string, currentOffset) {
+export default function calculateNewOffset(
+  text: string,
+  textToDiff: string,
+  currentOffset: number
+) {
   let offset = 0
   if (!text) {
     return 0

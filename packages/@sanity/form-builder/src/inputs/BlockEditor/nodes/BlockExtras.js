@@ -1,6 +1,7 @@
 // @flow
 import type {Marker, SlateChange, SlateValue, Path} from '../typeDefs'
-import * as React from 'react'
+import type {Node} from 'react'
+import React from 'react'
 import classNames from 'classnames'
 
 import Markers from 'part:@sanity/form-builder/input/block-editor/block-markers'
@@ -12,14 +13,15 @@ type Props = {
   markers: Marker[],
   onChange: (change: SlateChange) => void,
   onFocus: Path => void,
-  blockActions?: React.Node,
-  renderCustomMarkers?: (Marker[]) => React.Node
+  blockActions?: Node,
+  renderCustomMarkers?: (Marker[]) => Node
 }
 
 export default class BlockExtras extends React.PureComponent<Props> {
   static defaultProps = {
     markers: [],
-    blockActions: null
+    blockActions: null,
+    renderCustomMarkers: null
   }
 
   getValidationMarkers() {

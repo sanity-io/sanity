@@ -1,38 +1,39 @@
 // @flow
-import type {Marker, SlateChange, SlateValue} from './typeDefs'
+import type {Node} from 'react'
 import React from 'react'
 
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import CustomMarkers from 'part:@sanity/form-builder/input/block-editor/block-markers-custom-default'
 
-import styles from './styles/Markers.css'
+import type {Marker, SlateChange, SlateValue, Path} from '../typeDefs'
 
-type marker = {}
+import styles from './styles/Markers.css'
 
 type Props = {
   editorValue: SlateValue,
-  markers: marker[],
-  onFocus: void => void,
-  onChange: (change: SlateChange) => void,
-  renderCustomMarkers?: (Marker[]) => React.Node
+  markers: Marker[],
+  onFocus: Path => void,
+  onChange: (change: SlateChange, callback?: (SlateChange) => void) => void,
+  renderCustomMarkers?: (Marker[]) => Node
 }
 
 export default class Markers extends React.Component<Props> {
   static defaultProps = {
-    markers: []
+    markers: [],
+    renderCustomMarkers: null
   }
 
   handleValidationMarkerClick = (event: SyntheticMouseEvent<*>) => {
     event.preventDefault()
     event.stopPropagation()
     const {onFocus, onChange, editorValue, markers} = this.props
-    const validationMarkers = markers.filter(mrkr => mrkr.type === 'validation')
+    const validationMarkers = markers.filter((mrkr: Marker) => mrkr.type === 'validation')
     const change = editorValue.change()
     change.blur()
-    onChange(change, onFocus(validationMarkers[0].path))
+    onChange(change, () => onFocus(validationMarkers[0].path))
   }
 
-  handleCancelEvent = event => {
+  handleCancelEvent = (event: SyntheticMouseEvent<*>) => {
     event.preventDefault()
     event.stopPropagation()
   }

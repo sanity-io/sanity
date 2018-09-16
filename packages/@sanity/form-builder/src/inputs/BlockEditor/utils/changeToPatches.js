@@ -1,10 +1,17 @@
 // @flow
-import type {Block, Type} from '../typeDefs'
+import type {
+  Block,
+  FormBuilderValue,
+  SlateChange,
+  SlateOperation,
+  SlateValue,
+  Type
+} from '../typeDefs'
 import {Change, Operation} from 'slate'
 import {flatten, isEqual} from 'lodash'
 import {editorValueToBlocks, normalizeBlock} from '@sanity/block-tools'
-import {unset, set, insert, setIfMissing} from '../../../PatchEvent'
 import {applyAll} from '../../../simplePatch'
+import {unset, set, insert, setIfMissing} from '../../../PatchEvent'
 
 export const VALUE_TO_JSON_OPTS = {
   preserveData: true,
@@ -13,20 +20,24 @@ export const VALUE_TO_JSON_OPTS = {
   preserveHistory: false
 }
 
-function setKey(key: string, block: Block) {
-  block._key = key
-  if (block._type === 'block') {
-    block.children.forEach((child, index) => {
-      child._key = `${block._key}${index}`
+function setKey(key: string, value: FormBuilderValue | Block) {
+  value._key = key
+  if (
+    value._type === 'block' &&
+    typeof value.children === 'object' &&
+    Array.isArray(value.children)
+  ) {
+    value.children.forEach((child, index) => {
+      child._key = `${value._key}${index}`
     })
   }
-  return block
+  return value
 }
 
 function setNodePatchSimple(
-  change: Change,
+  change: SlateChange,
   operation: Operation,
-  blocks: Block[],
+  value: FormBuilderValue[],
   blockContentType
 ) {
   const appliedBlocks = editorValueToBlocks(
@@ -44,11 +55,11 @@ function setNodePatchSimple(
   )
 
   // Value is undefined
-  if (!blocks && appliedBlocks) {
+  if (!value && appliedBlocks) {
     return setIfMissing(appliedBlocks)
   }
   // Value is empty
-  if (blocks && blocks.length === 0) {
+  if (value && value.length === 0) {
     return set(appliedBlocks, [])
   }
   const changedBlock = appliedBlocks[0]
@@ -56,31 +67,41 @@ function setNodePatchSimple(
   return set(changedBlock, [{_key: changedBlock._key}])
 }
 
-function setNodePatch(change: Change, operation: Operation, blocks: Block[], blockContentType) {
+function setNodePatch(
+  change: SlateChange,
+  operation: SlateOperation,
+  value: FormBuilderValue[],
+  blockContentType
+) {
   const appliedBlocks = editorValueToBlocks(
     change.applyOperations([operation]).value.toJSON(VALUE_TO_JSON_OPTS),
     blockContentType
   )
   // Value is undefined
-  if (!blocks && appliedBlocks) {
+  if (!value && appliedBlocks) {
     return setIfMissing(appliedBlocks)
   }
   // Value is empty
-  if (blocks && blocks.length === 0) {
+  if (value && value.length === 0) {
     return set(appliedBlocks, [])
   }
   const changedBlock = appliedBlocks[operation.path.get(0)]
 
   // Don't do anything if nothing is changed
-  if (isEqual(changedBlock, blocks[operation.path.get(0)])) {
+  if (isEqual(changedBlock, value[operation.path.get(0)])) {
     return []
   }
 
-  setKey(blocks[operation.path.get(0)]._key, changedBlock)
+  setKey(value[operation.path.get(0)]._key, changedBlock)
   return set(normalizeBlock(changedBlock), [{_key: changedBlock._key}])
 }
 
-function insertNodePatch(change: Change, operation: Operation, blocks: Block[], blockContentType) {
+function insertNodePatch(
+  change: Change,
+  operation: Operation,
+  value: FormBuilderValue[],
+  blockContentType
+) {
   const patches = []
   const appliedBlocks = editorValueToBlocks(
     change.applyOperations([operation]).value.toJSON(VALUE_TO_JSON_OPTS),
@@ -88,7 +109,7 @@ function insertNodePatch(change: Change, operation: Operation, blocks: Block[], 
   )
 
   if (operation.path.size === 1) {
-    if (!blocks.length) {
+    if (!value.length) {
       return set(
         appliedBlocks.map((block, index) => {
           return setKey(change.value.document.nodes.get(index).key, block)
@@ -98,10 +119,10 @@ function insertNodePatch(change: Change, operation: Operation, blocks: Block[], 
     let position = 'after'
     let afterKey
     if (operation.path.get(0) === 0) {
-      afterKey = blocks[0]._key
+      afterKey = value[0]._key
       position = 'before'
     } else {
-      afterKey = blocks[operation.path.get(0) - 1]._key
+      afterKey = value[operation.path.get(0) - 1]._key
     }
     const newBlock = appliedBlocks[operation.path.get(0)]
     const newKey = change.value.document.nodes.get(operation.path.get(0)).key
@@ -124,7 +145,7 @@ function insertNodePatch(change: Change, operation: Operation, blocks: Block[], 
   return patches
 }
 
-function splitNodePatch(change: Change, operation: Operation, blocks: Block[], blockContentType) {
+function splitNodePatch(change: SlateChange, operation: Operation, blockContentType) {
   const patches = []
   const appliedBlocks = editorValueToBlocks(
     change.applyOperations([operation]).value.toJSON(VALUE_TO_JSON_OPTS),
@@ -151,14 +172,19 @@ function splitNodePatch(change: Change, operation: Operation, blocks: Block[], b
   return patches
 }
 
-function mergeNodePatch(change: Change, operation: Operation, blocks: Block[], blockContentType) {
+function mergeNodePatch(
+  change: SlateChange,
+  operation: Operation,
+  value: FormBuilderValue[],
+  blockContentType
+) {
   const patches = []
   const appliedBlocks = editorValueToBlocks(
     change.applyOperations([operation]).value.toJSON(VALUE_TO_JSON_OPTS),
     blockContentType
   )
   if (operation.path.size === 1) {
-    const mergedBlock = blocks[operation.path.get(0)]
+    const mergedBlock = value[operation.path.get(0)]
     const targetBlock = appliedBlocks[operation.path.get(0) - 1]
     patches.push(
       unset([
@@ -167,7 +193,7 @@ function mergeNodePatch(change: Change, operation: Operation, blocks: Block[], b
         }
       ])
     )
-    patches.push(set(targetBlock, [{_key: blocks[operation.path.get(0) - 1]._key}]))
+    patches.push(set(targetBlock, [{_key: value[operation.path.get(0) - 1]._key}]))
   }
   if (operation.path.size > 1) {
     const targetBlock = appliedBlocks[operation.path.get(0)]
@@ -177,14 +203,19 @@ function mergeNodePatch(change: Change, operation: Operation, blocks: Block[], b
   return patches
 }
 
-function moveNodePatch(change: Change, operation: Operation, blocks: Block[], blockContentType) {
+function moveNodePatch(
+  change: SlateChange,
+  operation: Operation,
+  value: FormBuilderValue[],
+  blockContentType
+) {
   change.applyOperations([operation])
   const patches = []
   if (operation.path.size === 1) {
     if (operation.path.get(0) === operation.newPath.get(0)) {
       return []
     }
-    const block = blocks[operation.path.get(0)]
+    const block = value[operation.path.get(0)]
     patches.push(
       unset([
         {
@@ -195,10 +226,10 @@ function moveNodePatch(change: Change, operation: Operation, blocks: Block[], bl
     let position = 'after'
     let posKey
     if (operation.newPath.get(0) === 0) {
-      posKey = blocks[0]._key
+      posKey = value[0]._key
       position = 'before'
     } else {
-      posKey = blocks[operation.newPath.get(0) - 1]._key
+      posKey = value[operation.newPath.get(0) - 1]._key
     }
     setKey(block._key, block)
     patches.push(insert([block], position, [{_key: posKey}]))
@@ -220,12 +251,12 @@ function moveNodePatch(change: Change, operation: Operation, blocks: Block[], bl
 function removeNodePatch(
   change: SlateChange,
   operation: Operation,
-  blocks: Block[],
+  value: FormBuilderValue[],
   blockContentType: Type
 ) {
   change.applyOperations([operation])
   const patches = []
-  const block = blocks[operation.path.get(0)]
+  const block = value[operation.path.get(0)]
   if (operation.path.size === 1) {
     // Unset block
     patches.push(unset([{_key: block._key}]))
@@ -268,13 +299,13 @@ function applyPatchesOnValue(patches, value) {
 }
 
 export default function changeToPatches(
-  unchangedEditorValue: Value,
-  change: Change,
-  value: Block[],
+  unchangedEditorValue: SlateValue,
+  change: SlateChange,
+  value: ?(FormBuilderValue[]),
   blockContentType: Type
 ) {
   const {operations} = change
-  let blocks = value ? [...value] : []
+  let _value = value ? [...value] : []
   const _change = unchangedEditorValue.change()
   const patches = flatten(
     operations
@@ -283,42 +314,42 @@ export default function changeToPatches(
         let _patches
         switch (operation.type) {
           case 'insert_text':
-            _patches = setNodePatchSimple(_change, operation, blocks, blockContentType)
+            _patches = setNodePatchSimple(_change, operation, _value, blockContentType)
             break
           case 'remove_text':
-            _patches = setNodePatchSimple(_change, operation, blocks, blockContentType)
+            _patches = setNodePatchSimple(_change, operation, _value, blockContentType)
             break
           case 'add_mark':
-            _patches = setNodePatchSimple(_change, operation, blocks, blockContentType)
+            _patches = setNodePatchSimple(_change, operation, _value, blockContentType)
             break
           case 'remove_mark':
-            _patches = setNodePatchSimple(_change, operation, blocks, blockContentType)
+            _patches = setNodePatchSimple(_change, operation, _value, blockContentType)
             break
           case 'set_node':
-            _patches = setNodePatch(_change, operation, blocks, blockContentType)
+            _patches = setNodePatch(_change, operation, _value, blockContentType)
             break
           case 'insert_node':
-            _patches = insertNodePatch(_change, operation, blocks, blockContentType)
+            _patches = insertNodePatch(_change, operation, _value, blockContentType)
             break
           case 'remove_node':
-            _patches = removeNodePatch(_change, operation, blocks, blockContentType)
+            _patches = removeNodePatch(_change, operation, _value, blockContentType)
             break
           case 'split_node':
-            _patches = splitNodePatch(_change, operation, blocks, blockContentType)
+            _patches = splitNodePatch(_change, operation, blockContentType)
             break
           case 'merge_node':
-            _patches = mergeNodePatch(_change, operation, blocks, blockContentType)
+            _patches = mergeNodePatch(_change, operation, _value, blockContentType)
             break
           case 'move_node':
-            _patches = moveNodePatch(_change, operation, blocks, blockContentType)
+            _patches = moveNodePatch(_change, operation, _value, blockContentType)
             break
           default:
             _patches = noOpPatch(_change, operation)
         }
         // console.log('BLOCKS BEFORE:', JSON.stringify(blocks, null, 2))
         // console.log('PATCHES:', JSON.stringify(_patches, null, 2))
-        blocks = applyPatchesOnValue(_patches, blocks)
-        // console.log('BLOCKS AFTER:', JSON.stringify(blocks, null, 2))
+        _value = applyPatchesOnValue(_patches, _value)
+        // console.log('BLOCKS AFTER:', JSON.stringify(_value, null, 2))
         return _patches
       })
       .toArray()

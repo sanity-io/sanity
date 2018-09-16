@@ -1,6 +1,15 @@
 // @flow
-import type {BlockContentFeatures, SlateValue, Type, SlateChange, Marker} from '../typeDefs'
-import type {Node} from 'react'
+import type {
+  BlockContentFeatures,
+  FormBuilderValue,
+  Marker,
+  Path,
+  SlateChange,
+  SlateNode,
+  SlateSelection,
+  SlateValue,
+  Type
+} from '../typeDefs'
 import ReactDOM from 'react-dom'
 import Base64 from 'slate-base64-serializer'
 
@@ -28,19 +37,17 @@ import styles from './styles/InlineObject.css'
 import ViewButton from '../ViewButton'
 
 type Props = {
-  attributes: {},
+  attributes: any,
   blockContentFeatures: BlockContentFeatures,
-  children: Node,
   editor: Editor,
-  editorIsFocused: boolean,
   editorValue: SlateValue,
   hasFormBuilderFocus: boolean,
-  isSelected: boolean,
+  isSelected?: boolean,
   markers: Marker[],
   node: Block,
-  onChange: (change: SlateChange) => void,
-  onFocus: (nextPath: []) => void,
-  onPatch: (event: PatchEvent) => void,
+  onChange: (change: SlateChange, callback?: (SlateChange) => void) => void,
+  onFocus: Path => void,
+  onPatch: (event: PatchEvent, value?: FormBuilderValue[]) => void,
   readOnly?: boolean,
   type: ?Type
 }
@@ -56,11 +63,18 @@ function shouldUpdateDropTarget(range, dropTarget) {
   if (!dropTarget) {
     return true
   }
-  return range.focus.offset !== dropTarget.range.focus.offset
+  return range.focus.offset !== dropTarget.selection.focus.offset
 }
 
 export default class InlineObject extends React.Component<Props, State> {
-  rootElement: ?HTMLDivElement = null
+  static defaultProps = {
+    isSelected: false,
+    readOnly: false
+  }
+
+  _dropTarget: ?{node: HTMLElement, selection: SlateSelection} = null
+  _editorNode: ?HTMLElement = null
+  _previewContainer: ?HTMLElement = null
 
   state = {
     isDragging: false,
@@ -69,7 +83,10 @@ export default class InlineObject extends React.Component<Props, State> {
 
   componentDidMount() {
     const {editor} = this.props
-    this._editorNode = ReactDOM.findDOMNode(editor)
+    const elm = ReactDOM.findDOMNode(editor) // eslint-disable-line react/no-find-dom-node
+    if (elm instanceof HTMLElement) {
+      this._editorNode = elm
+    }
   }
 
   componentWillUnmount() {
@@ -77,29 +94,39 @@ export default class InlineObject extends React.Component<Props, State> {
   }
 
   addDragHandlers() {
-    this._editorNode.addEventListener('dragover', this.handleDragOverOtherNode)
-    this._editorNode.addEventListener('dragleave', this.handleDragLeave)
+    if (this._editorNode) {
+      this._editorNode.addEventListener('dragover', this.handleDragOverOtherNode)
+    }
+    if (this._editorNode) {
+      this._editorNode.addEventListener('dragleave', this.handleDragLeave)
+    }
   }
 
   removeDragHandlers() {
-    this._editorNode.removeEventListener('dragover', this.handleDragOverOtherNode)
-    this._editorNode.removeEventListener('dragleave', this.handleDragLeave)
+    if (this._editorNode) {
+      this._editorNode.removeEventListener('dragover', this.handleDragOverOtherNode)
+    }
+    if (this._editorNode) {
+      this._editorNode.removeEventListener('dragleave', this.handleDragLeave)
+    }
   }
 
-  handleDragStart = event => {
+  handleDragStart = (event: SyntheticDragEvent<>) => {
     const {node} = this.props
     this.setState({isDragging: true})
     this.addDragHandlers()
-    const element = ReactDOM.findDOMNode(this.previewContainer)
-    const encoded = Base64.serializeNode(node, {preserveKeys: true})
-    setEventTransfer(event, 'node', encoded)
-    event.dataTransfer.effectAllowed = 'move'
-    event.dataTransfer.setDragImage(element, element.clientWidth / 2, -10)
+    const element = ReactDOM.findDOMNode(this._previewContainer) // eslint-disable-line react/no-find-dom-node
+    if (element && element instanceof HTMLElement) {
+      const encoded = Base64.serializeNode(node, {preserveKeys: true})
+      setEventTransfer(event, 'node', encoded)
+      event.dataTransfer.effectAllowed = 'move'
+      event.dataTransfer.setDragImage(element, element.clientWidth / 2, -10)
+    }
   }
 
   // Remove the drop target if we leave the editors nodes
-  handleDragLeave = event => {
-    if (event.target === this._editorNode) {
+  handleDragLeave = (event: DragEvent) => {
+    if (event.currentTarget === this._editorNode) {
       this.resetDropTarget()
     }
   }
@@ -108,12 +135,12 @@ export default class InlineObject extends React.Component<Props, State> {
     this._dropTarget = null
   }
 
-  handleDragOverOtherNode = event => {
+  handleDragOverOtherNode = (event: DragEvent) => {
     if (!this.state.isDragging) {
       return
     }
 
-    const targetDOMNode = event.target
+    const targetDOMNode = event.currentTarget
 
     // As the event is registered on the editor parent node
     // ignore the event if it is coming from from the editor node itself
@@ -142,14 +169,14 @@ export default class InlineObject extends React.Component<Props, State> {
     }
 
     const moveCursorChange = this.moveCursor(range, targetNode)
-    const finalRange = moveCursorChange.value.selection
-    if (shouldUpdateDropTarget(finalRange, this._dropTarget)) {
-      this._dropTarget = {node: targetNode, range: finalRange}
+    const selection = moveCursorChange.value.selection
+    if (shouldUpdateDropTarget(selection, this._dropTarget)) {
+      this._dropTarget = {node: targetNode, selection}
       onChange(moveCursorChange)
     }
   }
 
-  moveCursor(range, node) {
+  moveCursor(range: Range, node: SlateNode) {
     const {editorValue} = this.props
     let theOffset = range.focus.offset
 
@@ -177,7 +204,7 @@ export default class InlineObject extends React.Component<Props, State> {
     return change
   }
 
-  handleDragEnd = event => {
+  handleDragEnd = (event: SyntheticDragEvent<>) => {
     this.setState({isDragging: false})
 
     const {onChange, node, editorValue} = this.props
@@ -191,7 +218,7 @@ export default class InlineObject extends React.Component<Props, State> {
     }
     const change = editorValue
       .change()
-      .select(target.range)
+      .select(target.selection)
       .removeNodeByKey(node.key)
       .insertInline(node)
       .moveToEndOfNode(node)
@@ -214,7 +241,7 @@ export default class InlineObject extends React.Component<Props, State> {
     onPatch(_event, value)
   }
 
-  handleRemoveValue = event => {
+  handleRemoveValue = (event: SyntheticMouseEvent<>) => {
     event.preventDefault()
     event.stopPropagation()
     const {editorValue, node, onChange} = this.props
@@ -222,12 +249,12 @@ export default class InlineObject extends React.Component<Props, State> {
     onChange(change.removeNodeByKey(node.key).focus())
   }
 
-  handleCancelEvent = event => {
+  handleCancelEvent = (event: SyntheticEvent<>) => {
     event.stopPropagation()
     event.preventDefault()
   }
 
-  handleEditStart = event => {
+  handleEditStart = (event: SyntheticMouseEvent<>) => {
     event.stopPropagation()
     const {node, onFocus, onChange, editorValue} = this.props
     const {focusBlock} = editorValue
@@ -241,7 +268,7 @@ export default class InlineObject extends React.Component<Props, State> {
     )
   }
 
-  handleView = event => {
+  handleView = (event: SyntheticMouseEvent<>) => {
     event.stopPropagation()
     const {node, onFocus, editorValue} = this.props
     const {focusBlock} = editorValue
@@ -252,12 +279,8 @@ export default class InlineObject extends React.Component<Props, State> {
     this.setState({menuOpen: false})
   }
 
-  refFormBuilderBlock = formBuilderBlock => {
-    this.formBuilderBlock = formBuilderBlock
-  }
-
-  refPreview = previewContainer => {
-    this.previewContainer = previewContainer
+  refPreviewContainer = (elm: ?HTMLSpanElement) => {
+    this._previewContainer = elm
   }
 
   handleShowMenu = () => {
@@ -268,7 +291,7 @@ export default class InlineObject extends React.Component<Props, State> {
     return this.props.node.data.get('value')
   }
 
-  renderMenu(value) {
+  renderMenu(value: FormBuilderValue) {
     const {readOnly} = this.props
     return (
       <Stacked>
@@ -308,7 +331,7 @@ export default class InlineObject extends React.Component<Props, State> {
     )
   }
 
-  renderPreview(value) {
+  renderPreview(value: FormBuilderValue) {
     const {type} = this.props
     const {menuOpen} = this.state
     const valueKeys = value ? Object.keys(value) : []
@@ -379,13 +402,12 @@ export default class InlineObject extends React.Component<Props, State> {
         onDragLeave={this.handleCancelEvent}
         onDrop={this.handleCancelEvent}
         draggable={!readOnly}
-        ref={this.refFormBuilderBlock}
         className={classname}
         onClick={this.handleShowMenu}
         suppressContentEditableWarning
         contentEditable="false"
       >
-        <span ref={this.refPreview} className={styles.previewContainer}>
+        <span ref={this.refPreviewContainer} className={styles.previewContainer}>
           {this.renderPreview(value)}
         </span>
       </span>

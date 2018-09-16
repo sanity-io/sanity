@@ -1,27 +1,34 @@
 // @flow
-import type {Block, SlateComponentProps, SlateChange, SlateValue} from '../typeDefs'
-
+import type {Node} from 'react'
 import React from 'react'
 
 import BlockExtras from 'part:@sanity/form-builder/input/block-editor/block-extras'
+import type {
+  Block,
+  BlockContentFeatures,
+  FormBuilderValue,
+  Marker,
+  Path,
+  SlateComponentProps,
+  SlateChange,
+  SlateValue
+} from '../typeDefs'
 import ListItem from './ListItem'
 import Text from './Text'
 
-type ExtraProps = {
+type Props = {
+  block: ?(Block | FormBuilderValue),
+  blockActions?: Node,
   blockContentFeatures: BlockContentFeatures,
   editorValue: SlateValue,
-  hasFormBuilderFocus: boolean,
   markers: Marker[],
-  onFocus: void => void,
-  onChange: (change: SlateChange) => void,
-  block: Block,
-  readOnly: ?boolean,
-  blockActions?: React.Node,
-  renderCustomMarkers?: (Marker[]) => React.Node
+  onChange: (change: SlateChange, callback?: (SlateChange) => void) => void,
+  onFocus: Path => void,
+  renderCustomMarkers?: (Marker[]) => Node
 }
 
 // eslint-disable-next-line complexity
-export default function ContentBlock(props: SlateComponentProps & ExtraProps) {
+export default function ContentBlock(props: Props & SlateComponentProps) {
   const {
     attributes,
     block,

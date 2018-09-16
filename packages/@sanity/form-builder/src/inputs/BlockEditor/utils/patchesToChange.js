@@ -1,23 +1,25 @@
 // @flow
-import type {Type, Block} from '../typeDefs'
 import {blocksToEditorValue} from '@sanity/block-tools'
 import {Value, Operation} from 'slate'
+import type {Type, Path} from '../typeDefs'
+import type {
+  Patch,
+  SetPatch,
+  InsertPatch,
+  UnsetPatch,
+  SetIfMissingPatch
+} from '../../../typedefs/patch'
+
 import {applyAll} from '../../../simplePatch'
 import findInlineByAnnotationKey from './findInlineByAnnotationKey'
 
+type JSONValue = number | string | boolean | {[string]: JSONValue} | JSONValue[]
 // const VALUE_TO_JSON_OPTS = {
 //   preserveData: true,
 //   preserveKeys: true,
 //   preserveSelection: false,
 //   preserveHistory: false
 // }
-
-type Path = string | {_key: string}
-
-type Patch = {
-  type: string,
-  path: Path[]
-}
 
 function findLastKey(path: Path[]) {
   let key = null
@@ -29,7 +31,7 @@ function findLastKey(path: Path[]) {
   return key
 }
 
-function setPatch(patch: Patch, change: () => void, type: Type) {
+function setPatch(patch: SetPatch, change: () => void, type: Type) {
   if (Array.isArray(patch.value)) {
     if (patch.path.length === 0) {
       return replaceValue(patch.value, change, type)
@@ -41,7 +43,7 @@ function setPatch(patch: Patch, change: () => void, type: Type) {
   return change.replaceNodeByKey(key, editorBlock)
 }
 
-function setIfMissingPatch(patch: Patch, change: () => void, type: Type) {
+function setIfMissingPatch(patch: SetIfMissingPatch, change: () => void, type: Type) {
   if (patch.path.length === 0) {
     return replaceValue(patch.value, change, type)
   }
@@ -60,7 +62,7 @@ function setIfMissingPatch(patch: Patch, change: () => void, type: Type) {
   return change
 }
 
-function insertPatch(patch: Patch, change: () => void, type: Type) {
+function insertPatch(patch: InsertPatch, change: () => void, type: Type) {
   const {items, position} = patch
   const fragment = blocksToEditorValue(items, type)
   const posKey = findLastKey(patch.path)
@@ -84,13 +86,13 @@ function insertPatch(patch: Patch, change: () => void, type: Type) {
   return change
 }
 
-function unsetPatch(patch: Patch, change: () => void) {
+function unsetPatch(patch: UnsetPatch, change: () => void) {
   const lastKey = findLastKey(patch.path)
   change.removeNodeByKey(lastKey)
   return change
 }
 
-function replaceValue(snapshot: ?(Blocks[]), change: () => void, type: Type) {
+function replaceValue(snapshot: ?JSONValue, change: () => void, type: Type) {
   if (snapshot) {
     const fragment = blocksToEditorValue(snapshot, type)
     if (change.value.document.nodes.size) {
@@ -110,7 +112,8 @@ function replaceValue(snapshot: ?(Blocks[]), change: () => void, type: Type) {
   throw new Error('No snapshot given!')
 }
 
-function patchAnnotationData(patch: Patch, change: () => void, type: Type, snapshot: Block[]) {
+// eslint-disable-next-line complexity
+function patchAnnotationData(patch: Patch, change: () => void, type: Type, snapshot: ?JSONValue) {
   const doc = change.value.document
   const blockKey = patch.path[0]._key
   const markDefKey = patch.path[2]._key
@@ -134,10 +137,13 @@ function patchAnnotationData(patch: Patch, change: () => void, type: Type, snaps
     return change.setNodeByKey(node.key, {data})
   }
   // Annotation is changed, update it's data
-  if (snapshot) {
-    data.annotations[annotationKey] = snapshot
-      .find(blk => blk._key === blockKey)
-      .markDefs.find(def => def._key === markDefKey)
+  if (snapshot && Array.isArray(snapshot)) {
+    const block = snapshot.find(blk => blk._key && blk._key === blockKey)
+    if (block && typeof block.markDefs === 'object' && Array.isArray(block.markDefs)) {
+      data.annotations[annotationKey] = block.markDefs.find(
+        def => def._key && def._key === markDefKey
+      )
+    }
   } else {
     const _patch = {...patch}
     _patch.path = patch.path.slice(2)
@@ -147,7 +153,7 @@ function patchAnnotationData(patch: Patch, change: () => void, type: Type, snaps
   return change.setNodeByKey(node.key, {data})
 }
 
-function patchBlockData(patch: Patch, change: () => void, type: Type, snapshot: Block[]) {
+function patchBlockData(patch: Patch, change: () => void, type: Type, snapshot: ?JSONValue) {
   const doc = change.value.document
   const blockKey = patch.path[0]._key
   const block = doc.nodes.find(node => node.key === blockKey)
@@ -155,8 +161,8 @@ function patchBlockData(patch: Patch, change: () => void, type: Type, snapshot: 
   if (change.value.schema.isVoid(block)) {
     const data = block.data.toObject()
     // A gradient patch because snapshot, set value from there
-    if (snapshot) {
-      data.value = snapshot.find(blk => blk._key === blockKey)
+    if (snapshot && Array.isArray(snapshot)) {
+      data.value = snapshot.find(blk => blk._key && blk._key === blockKey)
     } else {
       // Do a simple formbuilderPatch
       const _patch = {...patch}
@@ -169,7 +175,7 @@ function patchBlockData(patch: Patch, change: () => void, type: Type, snapshot: 
   return change
 }
 
-function patchInlineData(patch: Patch, change: () => void, type: Type, snapshot: Block[]) {
+function patchInlineData(patch: Patch, change: () => void, type: Type, snapshot: ?JSONValue) {
   const doc = change.value.document
   const blockKey = patch.path[0]._key
   const inlineKey = patch.path[2]._key
@@ -179,10 +185,17 @@ function patchInlineData(patch: Patch, change: () => void, type: Type, snapshot:
   )
   const data = inline.data.toObject()
   // A gradient patch because snapshot, set value from there
-  if (snapshot) {
-    data.value = snapshot
-      .find(blk => blk._key === blockKey)
-      .children.find(child => child._key === inlineKey)
+  if (snapshot && Array.isArray(snapshot)) {
+    const inlineBlock = snapshot.find(blk => blk._key && blk._key === blockKey)
+    if (
+      inlineBlock &&
+      inlineBlock._type === 'block' &&
+      inlineBlock.children &&
+      typeof inlineBlock.children === 'object' &&
+      Array.isArray(inlineBlock.children)
+    ) {
+      data.value = inlineBlock.children.find(child => child._key && child._key === inlineKey)
+    }
   } else {
     // Do a simple formbuilderPatch
     const _patch = {...patch}
@@ -197,7 +210,7 @@ function patchInlineData(patch: Patch, change: () => void, type: Type, snapshot:
 export default function patchesToChange(
   patches: Patch[],
   editorValue: Value,
-  snapshot: ?(Block[]),
+  snapshot: ?JSONValue,
   type: Type
 ) {
   const change = editorValue.change({normalize: false})

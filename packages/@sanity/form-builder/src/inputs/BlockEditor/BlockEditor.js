@@ -22,12 +22,12 @@ import IS_MAC from './utils/isMac'
 
 import type {
   BlockContentFeatures,
+  FormBuilderValue,
+  Marker,
+  Path,
   SlateChange,
   SlateValue,
-  Marker,
-  Type,
-  Block,
-  Path
+  Type
 } from './typeDefs'
 
 type Props = {
@@ -40,14 +40,19 @@ type Props = {
   markers: Marker[],
   onPatch: (event: PatchEvent) => void,
   isLoading: boolean,
-  onChange: (change: SlateChange) => void,
+  onChange: (change: SlateChange, callback?: (SlateChange) => void) => void,
   onBlur: Path => void,
   onFocus: Path => void,
   onToggleFullScreen: void => void,
   readOnly?: boolean,
   setFocus: void => void,
   type: Type,
-  value: Block[]
+  value: ?(FormBuilderValue[])
+}
+
+type State = {
+  preventScroll: boolean,
+  toolbarStyle: any
 }
 
 function findEditNode(focusPath: Path, editorValue) {
@@ -85,9 +90,9 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
   static defaultProps = {
     readOnly: false
   }
-  _scrollContainer: ?HTMLDivElement
-  _rootElement: ?HTMLDivElement
-  _editorWrapper: ?HTMLDivElement
+  _scrollContainer: ?HTMLElement = null
+  _rootElement: ?HTMLElement = null
+  _editorWrapper: ?HTMLElement = null
 
   componentDidMount() {
     this.checkScrollHeight()
@@ -133,17 +138,24 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
         return null
       }
       value = annotations[focusedAnnotationName]
-      type = blockContentFeatures.annotations.find(an => an.value === focusedAnnotationName).type
-      return this.renderEditNode(value, type, [focusPath[0], 'markDefs', {_key: value._key}])
+      type = blockContentFeatures.annotations.find(an => an.value === focusedAnnotationName)
+      if (type) {
+        return this.renderEditNode(value, type.type, [focusPath[0], 'markDefs', {_key: value._key}])
+      }
     }
     value = slateNode.data.get('value')
     const findType = obj => obj.name === value._type
     if (slateNode.object === 'inline') {
       type = blockContentFeatures.types.inlineObjects.find(findType)
-      return this.renderEditNode(value, type, [focusPath[0], 'children', {_key: value._key}])
+      if (type) {
+        return this.renderEditNode(value, type, [focusPath[0], 'children', {_key: value._key}])
+      }
     }
     type = blockContentFeatures.types.blockObjects.find(findType)
-    return this.renderEditNode(value, type, [{_key: value._key}])
+    if (type) {
+      return this.renderEditNode(value, type, [{_key: value._key}])
+    }
+    return null
   }
 
   renderEditNode(nodeValue: any, type: Type, path: Path) {
@@ -184,27 +196,29 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
     }
   }
 
-  handleScroll = (event: SyntheticEvent<HTMLDivElement>) => {
+  handleScroll = (event: Event) => {
     if (!this.props.fullscreen) {
       this.setState({
         toolbarStyle: {}
       })
     }
-    const threshold = 100
-    const scrollTop = event.currentTarget.scrollTop
-    let ratio = scrollTop / threshold
-    if (ratio >= 1) {
-      ratio = 1
-    }
-    this.setState({
-      toolbarStyle: {
-        backgroundColor: `rgba(255, 255, 255, ${ratio * 0.95})`,
-        boxShadow: `0 2px ${5 * ratio}px rgba(0, 0, 0, ${ratio * 0.3})`
+    if (event.currentTarget instanceof HTMLDivElement) {
+      const threshold = 100
+      const scrollTop = event.currentTarget.scrollTop
+      let ratio = scrollTop / threshold
+      if (ratio >= 1) {
+        ratio = 1
       }
-    })
+      this.setState({
+        toolbarStyle: {
+          backgroundColor: `rgba(255, 255, 255, ${ratio * 0.95})`,
+          boxShadow: `0 2px ${5 * ratio}px rgba(0, 0, 0, ${ratio * 0.3})`
+        }
+      })
+    }
   }
 
-  handleKeyDown = (event: SyntheticKeyboardEvent<*>) => {
+  handleKeyDown = (event: KeyboardEvent) => {
     const isFullscreenKey = isKeyHotkey('mod+enter')
     const {onToggleFullScreen} = this.props
     if (isFullscreenKey(event)) {

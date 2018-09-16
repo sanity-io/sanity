@@ -1,8 +1,19 @@
 // @flow
 
-import type {Block, BlockArrayType, SlateValue, Marker, Type, Path} from './typeDefs'
+import type {
+  Block,
+  BlockArrayType,
+  FormBuilderValue,
+  SlateChange,
+  SlateValue,
+  Marker,
+  Path,
+  Type,
+  FormBuilderSchema
+} from './typeDefs'
 
 import React from 'react'
+import type {Node} from 'react'
 import generateHelpUrl from '@sanity/generate-help-url'
 import {uniq, flatten, debounce, unionBy} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
@@ -68,40 +79,45 @@ type Props = {
   markers: Marker[],
   onBlur: (nextPath: []) => void,
   onChange: PatchEvent => void,
-  onFocus: (nextPath: []) => void,
-  onPaste?: (
+  onFocus: Path => void,
+  onPaste?: ({
     event: SyntheticEvent<>,
-    path: Path,
+    path: [],
     type: Type,
-    value: ?Value
-  ) => {insert?: Value, path?: []},
+    value: ?(FormBuilderValue[])
+  }) => {insert?: FormBuilderValue[], path?: []},
   onPatch: (event: PatchEvent) => void,
   level: number,
   readOnly?: boolean,
-  renderBlockActions?: (block: Block) => React.Node,
-  renderCustomMarkers?: (Marker[]) => React.Node,
-  schema: Schema,
+  renderBlockActions?: (block: Block | FormBuilderValue) => Node,
+  renderCustomMarkers?: (Marker[]) => Node,
+  schema: FormBuilderSchema,
   subscribe: (() => void) => void,
   type: BlockArrayType,
-  value: Block[]
+  value: ?(FormBuilderValue[])
 }
 
 type State = {
-  deprecatedSchema: boolean,
-  deprecatedBlockValue: boolean,
-  invalidBlockValue: boolean,
-  editorValue: SlateValue,
-  decorations: {anchor: {key: string, offset: number}}[],
   decorationHash: string,
+  decorations: {anchor: {key: string, offset: number}}[],
+  deprecatedBlockValue: boolean,
+  deprecatedSchema: boolean | string,
+  editorValue: SlateValue,
+  invalidBlockValue: boolean,
   isLoading: boolean,
   loading: any
 }
 
 export default withPatchSubscriber(
   class SyncWrapper extends React.Component<Props, State> {
-    _input = null
+    _unsubscribe: void => void
+    _input: ?Input = null
     _select = null
-    _changes: []
+    _changes: {
+      beforeChangeEditorValue: SlateValue,
+      change: SlateChange,
+      value: ?(FormBuilderValue[])
+    }[] = []
     _undoRedoStack = {undo: [], redo: []}
     _beforeChangeEditorValue = null // Keep track of what the editor value is (as seen in the editor) before it is changed by something.
 
@@ -161,6 +177,8 @@ export default withPatchSubscriber(
       const deprecatedBlockValue = isDeprecatedBlockValue(value)
       const invalidBlockValue = isInvalidBlockValue(value)
       this.state = {
+        decorationHash: '',
+        decorations: [],
         deprecatedSchema,
         deprecatedBlockValue,
         editorValue:
@@ -168,19 +186,18 @@ export default withPatchSubscriber(
             ? deserialize([], type)
             : deserialize(value, type),
         invalidBlockValue,
-        decorations: [],
-        decorationHash: '',
-        isLoading: false
+        isLoading: false,
+        loading: {}
       }
-      this.unsubscribe = props.subscribe(this.handleDocumentPatches)
+      this._unsubscribe = props.subscribe(this.handleDocumentPatches)
       this._changes = []
     }
 
     componentWillUnmount() {
-      this.unsubscribe()
+      this._unsubscribe()
     }
 
-    handleEditorChange = (change: SlateChange, callback: void => void) => {
+    handleEditorChange = (change: SlateChange, callback?: void => void) => {
       const {value} = this.props
       const beforeChangeEditorValue = this.state.editorValue
       this._select = createSelectionOperation(change)
@@ -348,7 +365,7 @@ export default withPatchSubscriber(
 
     handleInvalidValue = () => {}
 
-    refInput = (input: Input) => {
+    refInput = (input: ?Input) => {
       this._input = input
     }
 
@@ -361,8 +378,18 @@ export default withPatchSubscriber(
         invalidBlockValue,
         isLoading
       } = this.state
-      const {onChange, ...rest} = this.props
-      const {type, value, level} = this.props
+      const {
+        focusPath,
+        level,
+        markers,
+        onBlur,
+        onFocus,
+        onPaste,
+        renderCustomMarkers,
+        renderBlockActions,
+        type,
+        value
+      } = this.props
       const isDeprecated = deprecatedSchema || deprecatedBlockValue
       return (
         <div className={styles.root}>
@@ -371,19 +398,27 @@ export default withPatchSubscriber(
               <Input
                 level={level}
                 editorValue={editorValue}
+                focusPath={focusPath}
                 onChange={this.handleEditorChange}
                 isLoading={isLoading}
+                markers={markers}
+                onBlur={onBlur}
+                onFocus={onFocus}
                 onLoading={this.handleOnLoading}
+                onPaste={onPaste}
                 onPatch={this.handleFormBuilderPatch}
                 undoRedoStack={this._undoRedoStack}
                 sendPatchesFromChange={this.sendPatchesFromChange}
+                type={type}
+                value={value}
+                renderBlockActions={renderBlockActions}
+                renderCustomMarkers={renderCustomMarkers}
                 ref={this.refInput}
-                {...rest}
               />
             )}
           {invalidBlockValue && (
             <InvalidValueInput
-              validTypes={type.of.map(mType => mType.name)}
+              validTypes={type.of ? type.of.map(mType => mType.name) : []}
               actualType={resolveTypeName(value)}
               value={value}
               onChange={this.handleInvalidValue}

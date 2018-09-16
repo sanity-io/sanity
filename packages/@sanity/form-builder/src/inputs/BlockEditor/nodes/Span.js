@@ -1,5 +1,5 @@
 // @flow
-import type {BlockContentFeatures, SlateValue, Type, SlateChange, Marker} from '../typeDefs'
+import type {BlockContentFeatures, SlateValue, Type, SlateChange, Marker, Path} from '../typeDefs'
 import type {Node} from 'react'
 
 import React from 'react'
@@ -10,27 +10,27 @@ import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 import styles from './styles/Span.css'
 
 type Props = {
-  attributes: {},
+  attributes: any,
   blockContentFeatures: BlockContentFeatures,
   children: Node,
   editorValue: SlateValue,
   node: Inline,
   markers: Marker[],
   onChange: (change: SlateChange) => void,
-  onFocus: (nextPath: []) => void,
-  onFormBuilderInputBlur: (nextPath: []) => void,
-  onFormBuilderInputFocus: (nextPath: []) => void,
+  onFocus: Path => void,
   readOnly?: boolean,
   type: ?Type
 }
 
 type State = {
-  focusedAnnotationName: ?string,
-  isEditing: boolean,
-  rootElement: ?HTMLSpanElement
+  focusedAnnotationName: ?string
 }
 
 export default class Span extends React.Component<Props, State> {
+  static defaultProps = {
+    readOnly: false
+  }
+
   _clickCounter = 0
   _isMarkingText = false
 
@@ -140,7 +140,6 @@ export default class Span extends React.Component<Props, State> {
         onMouseUp={this.handleMouseUp}
         onClick={this.handleClick}
         className={errors.length ? styles.error : styles.valid}
-        ref={this.refSpan}
       >
         {children}
       </span>

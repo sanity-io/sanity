@@ -1,6 +1,17 @@
 // @flow
-import type {Element as ReactElement} from 'react'
-import type {Block, BlockArrayType, SlateChange, SlateValue, Marker} from './typeDefs'
+import type {Element as ReactElement, Node} from 'react'
+import type {
+  Block,
+  BlockArrayType,
+  FormBuilderValue,
+  BlockContentFeatures,
+  Marker,
+  Path,
+  SlateChange,
+  SlateValue,
+  Type,
+  UndoRedoStack
+} from './typeDefs'
 
 import {uniqueId} from 'lodash'
 
@@ -21,24 +32,24 @@ type Props = {
   level: number,
   markers: Marker[],
   onBlur: (nextPath: []) => void,
-  onChange: (change: SlateChange) => void,
-  onFocus: (nextPath: []) => void,
+  onChange: (change: SlateChange, callback?: (SlateChange) => void) => void,
+  onFocus: Path => void,
   onLoading: (props: {}) => void,
   onPatch: (event: PatchEvent) => void,
-  onPaste?: (
-    event: SyntheticEvent,
+  onPaste?: ({
+    event: SyntheticEvent<>,
     path: [],
     type: Type,
-    value: ?Value
-  ) => {insert?: Value, path?: []},
+    value: ?(FormBuilderValue[])
+  }) => {insert?: FormBuilderValue[], path?: []},
   isLoading: boolean,
   readOnly?: boolean,
-  renderBlockActions?: (block: Block) => React.Node,
-  renderCustomMarkers?: (Marker[]) => React.Node,
+  renderBlockActions?: (block: Block | FormBuilderValue) => Node,
+  renderCustomMarkers?: (Marker[]) => Node,
   sendPatchesFromChange: void => void,
   type: BlockArrayType,
-  undoRedoStack: {undo: [], redo: []},
-  value: Block[]
+  undoRedoStack: UndoRedoStack,
+  value: ?(FormBuilderValue[])
 }
 
 type State = {
@@ -46,6 +57,10 @@ type State = {
 }
 
 export default class BlockEditorInput extends React.Component<Props, State> {
+  static defaultProps = {
+    renderBlockActions: null,
+    renderCustomMarkers: null
+  }
   _inputId = uniqueId('BlockEditor')
 
   _editor = null
@@ -54,16 +69,11 @@ export default class BlockEditorInput extends React.Component<Props, State> {
     fullscreen: false
   }
 
-  blockContentFeatures = {
-    decorators: [],
-    styles: [],
-    annotations: [],
-    blockObjectTypes: []
-  }
+  _blockContentFeatures: BlockContentFeatures
 
   constructor(props: Props) {
     super(props)
-    this.blockContentFeatures = blockTools.getBlockContentFeatures(props.type)
+    this._blockContentFeatures = blockTools.getBlockContentFeatures(props.type)
   }
 
   handleToggleFullScreen = () => {
@@ -114,7 +124,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
     } = this.props
     return (
       <Editor
-        blockContentFeatures={this.blockContentFeatures}
+        blockContentFeatures={this._blockContentFeatures}
         editorValue={editorValue}
         focusPath={focusPath}
         fullscreen={fullscreen}
@@ -164,42 +174,44 @@ export default class BlockEditorInput extends React.Component<Props, State> {
     const isActive = readOnly || (Array.isArray(focusPath) && focusPath.length >= 1)
 
     return (
-      <FormField
-        label={type.title}
-        labelFor={this._inputId}
-        markers={markers}
-        description={type.description}
-        level={level}
-      >
-        <button
-          type="button"
-          tabIndex={0}
-          className={styles.focusSkipper}
-          onClick={this.handleFocusSkipper}
-        >
-          Jump to editor
-        </button>
-        <BlockEditor
-          blockContentFeatures={this.blockContentFeatures}
-          editor={editor}
-          editorValue={editorValue}
-          focusPath={focusPath}
-          fullscreen={fullscreen}
-          isActive={isActive}
+      <div>
+        <FormField
+          label={type.title}
+          labelFor={this._inputId}
           markers={markers}
-          onBlur={onBlur}
-          onChange={onChange}
-          onLoading={onLoading}
-          isLoading={isLoading}
-          onFocus={onFocus}
-          onPatch={onPatch}
-          onToggleFullScreen={this.handleToggleFullScreen}
-          readOnly={readOnly}
-          setFocus={this.focus}
-          type={type}
-          value={value}
-        />
-      </FormField>
+          description={type.description}
+          level={level}
+        >
+          <button
+            type="button"
+            tabIndex={0}
+            className={styles.focusSkipper}
+            onClick={this.handleFocusSkipper}
+          >
+            Jump to editor
+          </button>
+          <BlockEditor
+            blockContentFeatures={this._blockContentFeatures}
+            editor={editor}
+            editorValue={editorValue}
+            focusPath={focusPath}
+            fullscreen={fullscreen}
+            isActive={isActive}
+            markers={markers}
+            onBlur={onBlur}
+            onChange={onChange}
+            onLoading={onLoading}
+            isLoading={isLoading}
+            onFocus={onFocus}
+            onPatch={onPatch}
+            onToggleFullScreen={this.handleToggleFullScreen}
+            readOnly={readOnly}
+            setFocus={this.focus}
+            type={type}
+            value={value}
+          />
+        </FormField>
+      </div>
     )
   }
 }

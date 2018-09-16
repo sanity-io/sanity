@@ -1,8 +1,7 @@
 // @flow
 
-import type {SlateChange} from '../typeDefs'
-
 import {Operation} from 'slate'
+import type {SlateChange} from '../typeDefs'
 
 export default function createSelectionOperation(change: SlateChange) {
   const focusPath =

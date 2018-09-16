@@ -1,14 +1,12 @@
 // @flow
-
-import type {BlockContentFeature, BlockContentFeatures, SlateChange, SlateValue} from '../typeDefs'
-
 import React from 'react'
-import {Block} from 'slate'
 
+import StyleSelect from 'part:@sanity/components/selects/style'
 import {setBlockStyle} from '../utils/changes'
 
-import ContentBlock from '../nodes/ContentBlock'
-import StyleSelect from 'part:@sanity/components/selects/style'
+import Text from '../nodes/Text'
+
+import type {BlockContentFeature, BlockContentFeatures, SlateChange, SlateValue} from '../typeDefs'
 
 export type BlockStyleItem = {
   key: string,
@@ -21,7 +19,7 @@ export type BlockStyleItem = {
 type Props = {
   blockContentFeatures: BlockContentFeatures,
   editorValue: SlateValue,
-  onChange: (change: SlateChange) => void
+  onChange: (change: SlateChange, callback?: (SlateChange) => void) => void
 }
 
 export default class BlockStyleSelect extends React.Component<Props> {
@@ -33,14 +31,11 @@ export default class BlockStyleSelect extends React.Component<Props> {
   getItemsAndValue() {
     const {blockContentFeatures} = this.props
     const items = blockContentFeatures.styles.map((style: BlockContentFeature) => {
-      const block = Block.create({
-        type: 'contentBlock',
-        data: {style: style.value}
-      })
+      const styleComponent = style && style.blockEditor && style.blockEditor.render
       const preview = (
-        <ContentBlock node={block} blockContentFeatures={blockContentFeatures}>
+        <Text attributes={{}} style={style.value} styleComponent={styleComponent}>
           {style.title}
-        </ContentBlock>
+        </Text>
       )
       return {
         key: `style-${style.value}`,
