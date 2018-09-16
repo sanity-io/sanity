@@ -1,5 +1,3 @@
-// @flow
-
 import {uniq} from 'lodash'
 import randomKey from '../util/randomKey'
 import resolveJsType from '../util/resolveJsType'
