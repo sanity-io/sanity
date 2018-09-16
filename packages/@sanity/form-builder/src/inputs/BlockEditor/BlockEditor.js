@@ -115,10 +115,8 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
     }
   }
 
-  componentDidUpdate(prevProps: Props) {
-    if (prevProps !== this.props) {
-      this.checkScrollHeight()
-    }
+  componentDidUpdate() {
+    this.checkScrollHeight()
   }
 
   renderNodeEditor() {
@@ -190,9 +188,12 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
 
   checkScrollHeight = () => {
     if (this._scrollContainer && this._editorWrapper) {
-      this.setState({
-        preventScroll: this._scrollContainer.offsetHeight < this._editorWrapper.offsetHeight
-      })
+      const preventScroll = this._scrollContainer.offsetHeight < this._editorWrapper.offsetHeight
+      if (this.state.preventScroll !== preventScroll) {
+        this.setState({
+          preventScroll
+        })
+      }
     }
   }
 
