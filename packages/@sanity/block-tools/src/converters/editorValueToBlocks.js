@@ -1,5 +1,3 @@
-// @flow
-
 import {get, flatten, uniq, uniqBy} from 'lodash'
 import randomKey from '../util/randomKey'
 import normalizeBlock from '../util/normalizeBlock'
