@@ -3,7 +3,7 @@ import type {Node} from 'react'
 import ReactDOM from 'react-dom'
 import Base64 from 'slate-base64-serializer'
 
-import * as React from 'react'
+import React from 'react'
 import {Block} from 'slate'
 import {Editor, findDOMNode, findNode, setEventTransfer} from 'slate-react'
 import classNames from 'classnames'
@@ -16,6 +16,7 @@ import ButtonsCollection from 'part:@sanity/components/buttons/button-collection
 import type {
   BlockContentFeatures,
   SlateValue,
+  FormBuilderValue,
   Type,
   SlateChange,
   Marker,
@@ -37,41 +38,39 @@ import ViewButton from '../ViewButton'
 import styles from './styles/BlockObject.css'
 
 type Props = {
-  attributes: {},
+  attributes: any,
   blockContentFeatures: BlockContentFeatures,
-  children: Node,
   editor: Editor,
   editorValue: SlateValue,
   hasFormBuilderFocus: boolean,
-  isSelected: boolean,
+  isSelected?: boolean,
   markers: Marker[],
   node: Block,
-  onChange: (change: SlateChange) => void,
+  onChange: (change: SlateChange, callback?: (SlateChange) => void) => void,
   onFocus: Path => void,
   onHideBlockDragMarker: void => void,
-  onPatch: (event: PatchEvent) => void,
+  onPatch: (event: PatchEvent, value?: FormBuilderValue[]) => void,
   onShowBlockDragMarker: (pos: string, node: HTMLDivElement) => void,
   readOnly: ?boolean,
-  blockActions?: React.Node,
-  renderCustomMarkers?: (Marker[]) => React.Node,
+  blockActions?: Node,
+  renderCustomMarkers?: (Marker[]) => Node,
   type: ?Type
 }
 
 type State = {
-  isDragging: boolean,
-  isEditing: boolean,
-  isSelected: boolean
+  isDragging: boolean
 }
 
 export default class BlockObject extends React.Component<Props, State> {
-  rootElement: ?HTMLDivElement
   formBuilderBlock: ?HTMLDivElement
   _dropTarget: ?{node: SlateNode, isAtStart: boolean, offset: number}
-  _editorNode: ?HTMLElement
+  _editorNode: ?HTMLElement = null
   previewContainer: ?HTMLDivElement
 
   static defaultProps = {
-    blockActions: null
+    blockActions: null,
+    renderCustomMarkers: null,
+    isSelected: false
   }
 
   state = {
@@ -80,7 +79,10 @@ export default class BlockObject extends React.Component<Props, State> {
 
   componentDidMount() {
     const {editor} = this.props
-    this._editorNode = ReactDOM.findDOMNode(editor)
+    const elm = ReactDOM.findDOMNode(editor) // eslint-disable-line react/no-find-dom-node
+    if (elm instanceof HTMLElement) {
+      this._editorNode = elm
+    }
   }
 
   componentWillUnmount() {
@@ -92,13 +94,21 @@ export default class BlockObject extends React.Component<Props, State> {
     if (readOnly) {
       return
     }
-    this._editorNode.addEventListener('dragover', this.handleDragOverOtherNode)
-    this._editorNode.addEventListener('dragleave', this.handleDragLeave)
+    if (this._editorNode) {
+      this._editorNode.addEventListener('dragover', this.handleDragOverOtherNode)
+    }
+    if (this._editorNode) {
+      this._editorNode.addEventListener('dragleave', this.handleDragLeave)
+    }
   }
 
   removeDragHandlers() {
-    this._editorNode.removeEventListener('dragover', this.handleDragOverOtherNode)
-    this._editorNode.removeEventListener('dragleave', this.handleDragLeave)
+    if (this._editorNode) {
+      this._editorNode.removeEventListener('dragover', this.handleDragOverOtherNode)
+    }
+    if (this._editorNode) {
+      this._editorNode.removeEventListener('dragleave', this.handleDragLeave)
+    }
   }
 
   handleDragStart = (event: SyntheticDragEvent<>) => {
@@ -114,8 +124,10 @@ export default class BlockObject extends React.Component<Props, State> {
   }
 
   // Remove the drop target if we leave the editors nodes
-  handleDragLeave = (event: SyntheticDragEvent<>) => {
-    event.dataTransfer.dropEffect = 'none'
+  handleDragLeave = (event: DragEvent) => {
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'none'
+    }
     this.props.onHideBlockDragMarker()
     if (event.target === this._editorNode) {
       this.resetDropTarget()
@@ -128,7 +140,7 @@ export default class BlockObject extends React.Component<Props, State> {
   }
 
   // eslint-disable-next-line complexity
-  handleDragOverOtherNode = (event: SyntheticDragEvent<>) => {
+  handleDragOverOtherNode = (event: DragEvent) => {
     const {node} = this.props
     if (!this.state.isDragging) {
       return
@@ -156,7 +168,9 @@ export default class BlockObject extends React.Component<Props, State> {
 
     // If no or same block reset and return
     if (!block || block.key === node.key) {
-      event.dataTransfer.dropEffect = 'none'
+      if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = 'none'
+      }
       this.resetDropTarget()
       return
     }
@@ -179,7 +193,9 @@ export default class BlockObject extends React.Component<Props, State> {
       nearestNeighbour = previousBlock && previousBlock.key === block.key
     }
     if (nearestNeighbour) {
-      event.dataTransfer.dropEffect = 'none'
+      if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = 'none'
+      }
       this.resetDropTarget()
       return
     }
@@ -191,7 +207,9 @@ export default class BlockObject extends React.Component<Props, State> {
     } else {
       this.props.onShowBlockDragMarker('after', domNode)
     }
-    event.dataTransfer.dropEffect = 'move'
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move'
+    }
     this._dropTarget = {node: block, isAtStart: rangeIsAtStart, offset: rangeOffset}
   }
 
@@ -265,7 +283,7 @@ export default class BlockObject extends React.Component<Props, State> {
     onPatch(event.prefixAll({_key: value._key}), value)
   }
 
-  handleRemoveValue = event => {
+  handleRemoveValue = (event: SyntheticMouseEvent<>) => {
     event.preventDefault()
     event.stopPropagation()
     const {editorValue, node, onChange} = this.props
@@ -273,13 +291,13 @@ export default class BlockObject extends React.Component<Props, State> {
     onChange(change.removeNodeByKey(node.key).focus())
   }
 
-  renderPreview(value) {
+  renderPreview(value: FormBuilderValue) {
     const {type, readOnly} = this.props
     return (
       <div className={styles.preview}>
         <Preview type={type} value={value} layout="block" />
         <div className={styles.header}>
-          <div className={styles.type}>{type.title || type.name || 'Unknown'}</div>
+          <div className={styles.type}>{type ? type.title || type.name : 'Unknown'}</div>
           <ButtonsCollection align="end" className={styles.functions}>
             {value._ref && (
               <IntentLink

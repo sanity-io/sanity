@@ -3,11 +3,10 @@ import React from 'react'
 
 import {Tooltip} from '@sanity/react-tippy'
 import CommentIcon from 'part:@sanity/base/comment-icon'
-
-type marker = {}
+import type {Marker} from '../typeDefs'
 
 type Props = {
-  markers: marker[]
+  markers: Marker[]
 }
 
 // This is the fallback marker renderer if the block editor didn't get the 'renderCustomMarkers' prop
@@ -18,7 +17,7 @@ export default class Markers extends React.Component<Props> {
     markers: []
   }
 
-  handleCustomMarkerClick = event => {
+  handleCustomMarkerClick = (event: SyntheticMouseEvent<>) => {
     event.preventDefault()
     event.stopPropagation()
     const {markers} = this.props

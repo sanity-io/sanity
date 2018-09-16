@@ -1,6 +1,6 @@
 // @flow
 
-import type {Type, SlateChange, SlateValue} from '../typeDefs'
+import type {Type, SlateChange, SlateValue, Path} from '../typeDefs'
 
 import React from 'react'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
@@ -12,14 +12,16 @@ type Props = {
   blockTypes: Type[],
   editorValue: SlateValue,
   inlineTypes: Type[],
-  onChange: (change: SlateChange) => void,
-  onFocus: (nextPath: []) => void,
+  onChange: (change: SlateChange, callback?: (SlateChange) => void) => void,
+  onFocus: Path => void,
   type: Type
 }
 
 type BlockItem = {
   title: string,
-  value: Type
+  value: Type,
+  isInline: boolean,
+  isDisabled: boolean
 }
 
 export default class InsertMenu extends React.Component<Props> {
@@ -66,7 +68,9 @@ export default class InsertMenu extends React.Component<Props> {
       change.call(insertBlockObject, item.value).focus()
       focusPath = [{_key: change.value.focusBlock.key}, FOCUS_TERMINATOR]
     }
-    onChange(change, () => setTimeout(() => onFocus(focusPath), 200))
+    onChange(change, () => {
+      setTimeout(() => onFocus(focusPath), 200)
+    })
   }
 
   render() {

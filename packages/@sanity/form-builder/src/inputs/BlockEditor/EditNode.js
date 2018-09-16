@@ -1,5 +1,4 @@
 // @flow
-import type {Block, Marker, Path, Type} from './typeDefs'
 
 import React from 'react'
 import {get, isEqual} from 'lodash'
@@ -13,6 +12,8 @@ import EditItemFold from 'part:@sanity/components/edititem/fold'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import {set, PatchEvent} from '../../PatchEvent'
 
+import type {Block, Marker, Path, Type, FormBuilderValue} from './typeDefs'
+
 import styles from './styles/EditNode.css'
 
 type Props = {
@@ -24,7 +25,7 @@ type Props = {
   path: Path,
   readOnly?: boolean,
   type: Type,
-  value: Block[]
+  value: ?(FormBuilderValue[])
 }
 
 export default class EditNode extends React.Component<Props> {
@@ -42,7 +43,7 @@ export default class EditNode extends React.Component<Props> {
     // so insert patches that rewrite that block without the mark
     _patchEvent.patches.forEach((patch, index) => {
       if (patch.path.length === 3 && patch.path[1] === 'markDefs' && patch.type === 'unset') {
-        const block = value.find(blk => blk._key === patch.path[0]._key)
+        const block = value && value.find(blk => blk._key === patch.path[0]._key)
         const _block = {...block}
         const markKey = patch.path[2]._key
         _block.children.forEach(child => {
@@ -63,6 +64,10 @@ export default class EditNode extends React.Component<Props> {
   handleClose = () => {
     const {focusPath, onFocus} = this.props
     onFocus(focusPath.slice(0, 1))
+  }
+
+  handleDialogAction = () => {
+    // NOOP
   }
 
   render() {

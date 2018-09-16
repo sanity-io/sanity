@@ -1,8 +1,6 @@
 // @flow
-
-import type {Type, UndoRedoStack, SlateChange} from '../typeDefs'
-
 import Hotkeys from 'slate-hotkeys'
+import type {Type, UndoRedoStack, SlateChange} from '../typeDefs'
 import patchesToChange from '../utils/patchesToChange'
 
 type Options = {
@@ -14,7 +12,7 @@ type Options = {
 
 // This plugin handles our own undo redo (disables Slate built in handling)
 
-export default function UndoRedoPlugin(options: Options = {}) {
+export default function UndoRedoPlugin(options: Options) {
   const {stack, blockContentType, onChange, sendPatchesFromChange} = options
   return {
     // eslint-disable-next-line complexity

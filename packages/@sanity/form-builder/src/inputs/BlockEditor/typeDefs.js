@@ -1,17 +1,19 @@
 // @flow
-import type {Map, List} from 'immutable'
 import type {Node, ComponentType} from 'react'
-import type {Patch as _Patch} from '../../utils/patches'
-import type {Marker as _Marker} from '../../typedefs'
-import {
+import type {
   Change,
   Block as SlateBlock,
   Mark,
   Inline,
   Text,
   Value as _SlateValue,
-  Operation as _SlateOperation
+  Operation as _SlateOperation,
+  Schema as _SlateSchema,
+  Selection as _SlateSelection
 } from 'slate'
+import type {Patch as _Patch} from '../../typedefs/patch'
+import {Path as _Path} from '../../typedefs/path'
+import {Marker as _Marker} from '../../typedefs'
 
 export type Patch = _Patch
 
@@ -43,10 +45,13 @@ export type Span = {
   text: string
 }
 
+export type MarkDef = {_key: string, _type: string}
+
 export type Block = {
   _type: string,
   _key: string,
-  children?: Span[]
+  children: Span[],
+  markDefs: MarkDef[]
 }
 
 export type SlateNode = SlateBlock | Inline | Text | Mark
@@ -99,6 +104,7 @@ export type SlateComponentProps = {
   attributes?: {},
   children: Node[],
   editor?: Node,
+  isFocused?: boolean,
   isSelected?: boolean,
   key?: string,
   node: SlateNode,
@@ -122,4 +128,19 @@ export type UndoRedoStack = {
   }[]
 }
 
-export type Path = Array<any>
+export type Path = _Path
+
+export type SlateSchema = _SlateSchema
+
+export type SlateSelection = _SlateSelection
+
+export type FormBuilderValue = {
+  _type?: string,
+  _key: string,
+  _ref?: string
+}
+
+export type FormBuilderSchema = {
+  name: string,
+  types: Array<Type>
+}
