@@ -15,6 +15,17 @@ const getUnknownTypeFallback = (id, typeName) => ({
   media: WarningIcon
 })
 
+const getMissingDocumentFallback = value => ({
+  title: <span style={{fontStyle: 'italic'}}>{value.title || 'Missing document'}</span>,
+  subtitle: (
+    <span style={{fontStyle: 'italic'}}>
+      {value.title ? `Missing document ID: ${value._id}` : `Document ID: ${value._id}`}
+    </span>
+  ),
+  media: WarningIcon
+})
+
+// eslint-disable-next-line complexity
 export default function PaneItem(props) {
   const {id, getLinkState, isSelected, schemaType, layout, status, icon, value} = props
   const useGrid = layout === 'card' || layout === 'media'
@@ -24,19 +35,22 @@ export default function PaneItem(props) {
   let content
   if (hasSchemaType && value && value._id) {
     content = (
-      <PreviewSubscriber type={schemaType} value={value}>
-        {({snapshot}) =>
-          snapshot ? (
+      <PreviewSubscriber type={schemaType} value={value} key={value._id}>
+        {res => {
+          const {snapshot, isLoading} = res
+          const missing = !(isLoading || snapshot)
+
+          return (
             <SanityDefaultPreview
+              key={value._id}
               icon={icon || schemaIcon}
+              isPlaceholder={isLoading}
               status={status}
               layout={layout}
-              value={snapshot}
+              value={missing ? getMissingDocumentFallback(value) : snapshot}
             />
-          ) : (
-            `Not found: ${value._id}`
           )
-        }
+        }}
       </PreviewSubscriber>
     )
   } else if (value._id && !hasSchemaType) {
