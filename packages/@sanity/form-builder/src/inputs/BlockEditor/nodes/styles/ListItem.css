@@ -59,9 +59,9 @@
   }
 }
 
-/* Allow for cursor to show if item is empty */
 .root > .item > * {
-  padding-left: 0.01em;
+  padding-left: 0.01em; /* Allow for cursor to show if item is empty */
+  word-break: break-all; /* Break long words to fit sheet */
 }
 
 .bullet {
@@ -105,6 +105,12 @@
     @nest &:before {
       content: '\25A0 '; /* BIG BLACK SQUARE */
     }
+  }
+}
+
+.bullet > .item {
+  @nest &:before {
+    min-width: 1.5em; /* Make sure space between bullet and text never shrinks */
   }
 }
 
@@ -221,7 +227,7 @@
 
 .number > .item {
   @nest &:before {
-    min-width: 1.6em;
+    min-width: 1.6em;  /* Make sure space between number and text never shrinks */
     content: counter(listItemNumber) ". ";
   }
 }
