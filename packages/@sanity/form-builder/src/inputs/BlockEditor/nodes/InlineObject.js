@@ -126,7 +126,8 @@ export default class InlineObject extends React.Component<Props, State> {
 
   // Remove the drop target if we leave the editors nodes
   handleDragLeave = (event: DragEvent) => {
-    if (event.currentTarget === this._editorNode) {
+    // must not be .currentTarget!
+    if (event.target === this._editorNode) {
       this.resetDropTarget()
     }
   }
@@ -140,7 +141,7 @@ export default class InlineObject extends React.Component<Props, State> {
       return
     }
 
-    const targetDOMNode = event.currentTarget
+    const targetDOMNode = event.target // Must not be .currentTarget!
 
     // As the event is registered on the editor parent node
     // ignore the event if it is coming from from the editor node itself
