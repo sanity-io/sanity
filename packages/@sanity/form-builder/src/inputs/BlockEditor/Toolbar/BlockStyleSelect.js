@@ -23,6 +23,18 @@ type Props = {
 }
 
 export default class BlockStyleSelect extends React.Component<Props> {
+  shouldComponentUpdate(nextProps: Props) {
+    const nextFocusBlock = nextProps.editorValue.focusBlock
+    const currentFocusBlock = this.props.editorValue.focusBlock
+    if (nextProps.editorValue.blocks.size > 1) {
+      return true
+    }
+    if ((nextFocusBlock && nextFocusBlock.key) !== (currentFocusBlock && currentFocusBlock.key)) {
+      return true
+    }
+    return false
+  }
+
   hasStyle(styleName: string) {
     const {editorValue} = this.props
     return editorValue.blocks.some(block => block.data.get('style') === styleName)
@@ -68,6 +80,7 @@ export default class BlockStyleSelect extends React.Component<Props> {
     change.call(setBlockStyle, item.style)
     change.focus()
     onChange(change)
+    this.forceUpdate()
   }
 
   renderItem = (item: BlockStyleItem) => {

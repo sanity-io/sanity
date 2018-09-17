@@ -37,6 +37,18 @@ function getIcon(type: string) {
 const NOOP = () => {}
 
 export default class ListItemButtons extends React.Component<Props> {
+  shouldComponentUpdate(nextProps: Props) {
+    const nextFocusBlock = nextProps.editorValue.focusBlock
+    const currentFocusBlock = this.props.editorValue.focusBlock
+    if (nextProps.editorValue.blocks.size > 1) {
+      return true
+    }
+    if ((nextFocusBlock && nextFocusBlock.key) !== (currentFocusBlock && currentFocusBlock.key)) {
+      return true
+    }
+    return false
+  }
+
   hasListItem(listItemName: string) {
     const {editorValue} = this.props
     return editorValue.blocks.some(block => {
@@ -62,6 +74,7 @@ export default class ListItemButtons extends React.Component<Props> {
     const change = editorValue.change()
     change.call(toggleListItem, item.value)
     onChange(change)
+    this.forceUpdate()
   }
 
   renderListItemButton = (item: ListItem) => {

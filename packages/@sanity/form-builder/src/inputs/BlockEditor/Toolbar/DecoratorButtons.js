@@ -1,13 +1,7 @@
 // @flow
 
-import type {BlockContentFeature, BlockContentFeatures, SlateChange, SlateValue} from '../typeDefs'
-
 import React from 'react'
-
-import {keyMaps} from '../plugins/SetMarksOnKeyComboPlugin'
-import {toggleMark} from '../utils/changes'
-
-import CustomIcon from './CustomIcon'
+import {isEqual} from 'lodash'
 import FormatBoldIcon from 'part:@sanity/base/format-bold-icon'
 import FormatItalicIcon from 'part:@sanity/base/format-italic-icon'
 import FormatStrikethroughIcon from 'part:@sanity/base/format-strikethrough-icon'
@@ -15,6 +9,10 @@ import FormatUnderlinedIcon from 'part:@sanity/base/format-underlined-icon'
 import FormatCodeIcon from 'part:@sanity/base/format-code-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import ToggleButton from 'part:@sanity/components/toggles/button'
+import {toggleMark} from '../utils/changes'
+import type {BlockContentFeature, BlockContentFeatures, SlateChange, SlateValue} from '../typeDefs'
+
+import {keyMaps} from '../plugins/SetMarksOnKeyComboPlugin'
 import ToolbarClickAction from './ToolbarClickAction'
 
 import styles from './styles/DecoratorButtons.css'
@@ -47,6 +45,14 @@ function getIcon(type: string) {
 const NOOP = () => {}
 
 export default class DecoratorButtons extends React.Component<Props> {
+  shouldComponentUpdate(nextProps: Props) {
+    const nextMarks = nextProps.editorValue.marks.map(mrk => mrk.type)
+    const currentMarks = this.props.editorValue.marks.map(mrk => mrk.type)
+    if (isEqual(nextMarks, currentMarks)) {
+      return false
+    }
+    return true
+  }
   hasDecorator(decoratorName: string) {
     const {editorValue} = this.props
     return editorValue.marks.some(mark => mark.type === decoratorName)
