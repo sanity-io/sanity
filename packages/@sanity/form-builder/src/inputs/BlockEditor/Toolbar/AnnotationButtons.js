@@ -27,7 +27,8 @@ type Props = {
   editorValue: SlateValue,
   focusPath: Path,
   onChange: (Change, ?(Change) => Change) => any,
-  onFocus: Path => void
+  onFocus: Path => void,
+  userIsWritingText: boolean
 }
 
 function getIcon(type: string) {
@@ -41,7 +42,34 @@ function getIcon(type: string) {
 
 const NOOP = () => {}
 
+function isNonTextSelection(editorValue: SlateValue) {
+  const {focusText, selection} = editorValue
+  const {isCollapsed} = selection
+  return (
+    !focusText ||
+    (focusText &&
+      isCollapsed &&
+      focusText.text.substring(selection.focus.offset - 1, selection.focus.offset).trim() === '' &&
+      focusText.text.substring(selection.focus.offset, selection.focus.offset + 1).trim() === '')
+  )
+}
+
 export default class AnnotationButtons extends React.Component<Props> {
+  shouldComponentUpdate(nextProps: Props) {
+    if (nextProps.userIsWritingText) {
+      return false
+    }
+    if (
+      nextProps.userIsWritingText !== this.props.userIsWritingText ||
+      nextProps.editorValue.inlines.size !== this.props.editorValue.inlines.size ||
+      isNonTextSelection(this.props.editorValue) ||
+      isNonTextSelection(nextProps.editorValue)
+    ) {
+      return true
+    }
+    return false
+  }
+
   hasAnnotation(annotationName: string) {
     const {editorValue} = this.props
     const spans = editorValue.inlines.filter(inline => inline.type === 'span')
@@ -54,19 +82,14 @@ export default class AnnotationButtons extends React.Component<Props> {
   }
 
   getItems() {
-    const {blockContentFeatures, editorValue} = this.props
-    const {inlines, focusBlock, focusText, selection} = editorValue
-    const {isCollapsed} = selection
-    const hasCharLeftOrRight =
-      isCollapsed &&
-      focusText &&
-      (focusText.text.substring(selection.focus.offset - 1, selection.focus.offset).trim() === '' &&
-        focusText.text.substring(selection.focus.offset, selection.focus.offset + 1).trim() === '')
+    const {blockContentFeatures, editorValue, userIsWritingText} = this.props
+    const {inlines, focusBlock} = editorValue
 
     const disabled =
+      userIsWritingText ||
       inlines.some(inline => inline.type !== 'span') ||
       (focusBlock ? editorValue.schema.isVoid(focusBlock) || focusBlock.text === '' : false) ||
-      hasCharLeftOrRight
+      isNonTextSelection(editorValue)
     return blockContentFeatures.annotations.map((annotation: BlockContentFeature) => {
       return {
         ...annotation,
@@ -78,6 +101,9 @@ export default class AnnotationButtons extends React.Component<Props> {
 
   handleClick = (item: AnnotationItem, originalSelection: Range) => {
     const {editorValue, onChange, onFocus, focusPath} = this.props
+    if (item.disabled) {
+      return
+    }
     const change = editorValue.change()
     if (item.active) {
       const spans = editorValue.inlines.filter(inline => inline.type === 'span')

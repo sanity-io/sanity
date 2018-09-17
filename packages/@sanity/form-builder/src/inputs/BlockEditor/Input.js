@@ -49,7 +49,8 @@ type Props = {
   sendPatchesFromChange: void => void,
   type: BlockArrayType,
   undoRedoStack: UndoRedoStack,
-  value: ?(FormBuilderValue[])
+  value: ?(FormBuilderValue[]),
+  userIsWritingText: boolean
 }
 
 type State = {
@@ -164,7 +165,8 @@ export default class BlockEditorInput extends React.Component<Props, State> {
       onPatch,
       readOnly,
       type,
-      value
+      value,
+      userIsWritingText
     } = this.props
 
     const {fullscreen} = this.state
@@ -209,6 +211,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
             setFocus={this.focus}
             type={type}
             value={value}
+            userIsWritingText={userIsWritingText}
           />
         </FormField>
       </div>

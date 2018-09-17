@@ -6,6 +6,7 @@ import type {
   FormBuilderValue,
   SlateChange,
   SlateValue,
+  SlateOperation,
   Marker,
   Path,
   Type,
@@ -14,6 +15,7 @@ import type {
 
 import React from 'react'
 import type {Node} from 'react'
+import type {List} from 'immutable'
 import generateHelpUrl from '@sanity/generate-help-url'
 import {uniq, flatten, debounce, unionBy} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
@@ -31,22 +33,27 @@ import patchesToChange from './utils/patchesToChange'
 
 import styles from './styles/SyncWrapper.css'
 
-function findBlockType(type) {
-  return type.of.find(ofType => ofType.name === 'block')
+const IS_WRITING_TEXT_OPERATION_TYPES = ['insert_text', 'remove_text']
+const SEND_PATCHES_TOKEN_CHARS = [' ', '\n']
+
+function findBlockType(type: Type) {
+  return type.of && type.of.find(ofType => ofType.name === 'block')
 }
 
-function isDeprecatedBlockSchema(type) {
+function isDeprecatedBlockSchema(type: Type) {
   const blockType = findBlockType(type)
-  if (blockType.span !== undefined) {
-    return 'deprecatedSpan'
-  }
-  if (type.of.find(memberType => memberType.options && memberType.options.inline)) {
-    return 'deprecatedInline'
+  if (blockType) {
+    if (blockType.span !== undefined) {
+      return 'deprecatedSpan'
+    }
+    if (type.of && type.of.find(memberType => memberType.options && memberType.options.inline)) {
+      return 'deprecatedInline'
+    }
   }
   return false
 }
 
-function isDeprecatedBlockValue(value) {
+function isDeprecatedBlockValue(value: ?(FormBuilderValue[])) {
   if (!value || !Array.isArray(value)) {
     return false
   }
@@ -57,7 +64,7 @@ function isDeprecatedBlockValue(value) {
   return false
 }
 
-function isInvalidBlockValue(value) {
+function isInvalidBlockValue(value: ?(FormBuilderValue[])) {
   if (Array.isArray(value)) {
     return false
   }
@@ -67,11 +74,16 @@ function isInvalidBlockValue(value) {
   return true
 }
 
-const OPTIMIZED_OPERATION_TYPES = ['insert_text', 'remove_text']
-const SEND_PATCHES_TOKEN_CHARS = [' ', '\n']
+function isWritingTextOperationsOnly(operations: List<SlateOperation>) {
+  return (
+    operations.size > 0 &&
+    operations.map(op => op.type).every(opType => IS_WRITING_TEXT_OPERATION_TYPES.includes(opType))
+  )
+}
 
-function isInsertOrRemoveTextOperations(operations) {
-  return operations.map(op => op.type).every(opType => OPTIMIZED_OPERATION_TYPES.includes(opType))
+function isTokenChar(change: SlateChange) {
+  const text = change.operations.get(0) && change.operations.get(0).text
+  return text && SEND_PATCHES_TOKEN_CHARS.includes(text)
 }
 
 type Props = {
@@ -105,7 +117,8 @@ type State = {
   editorValue: SlateValue,
   invalidBlockValue: boolean,
   isLoading: boolean,
-  loading: any
+  loading: any,
+  userIsWritingText: boolean
 }
 
 export default withPatchSubscriber(
@@ -128,7 +141,7 @@ export default withPatchSubscriber(
     static getDerivedStateFromProps(nextProps, state) {
       // Make sure changes to markers are reflected in the editor value.
       // Slate heavily optimizes when nodes should re-render,
-      // so we use decorators in Slate to force the relevant editor nodes to re-render
+      // so we use non-visual decorators in Slate to force the relevant editor nodes to re-render
       // when markers change.
       const newDecorationHash = nextProps.markers.map(mrkr => JSON.stringify(mrkr.path)).join('')
       if (
@@ -187,7 +200,8 @@ export default withPatchSubscriber(
             : deserialize(value, type),
         invalidBlockValue,
         isLoading: false,
-        loading: {}
+        loading: {},
+        userIsWritingText: false
       }
       this._unsubscribe = props.subscribe(this.handleDocumentPatches)
       this._changes = []
@@ -207,13 +221,16 @@ export default withPatchSubscriber(
         change,
         value
       })
-      const insertOrRemoveTextOnly = isInsertOrRemoveTextOperations(change.operations)
-      const text = change.operations.get(0) && change.operations.get(0).text
-      const isTokenChar = insertOrRemoveTextOnly && text && SEND_PATCHES_TOKEN_CHARS.includes(text)
-      if (!insertOrRemoveTextOnly || isTokenChar) {
-        this.sendPatchesFromChange()
-      } else {
+      const _isWritingTextChange = isWritingTextOperationsOnly(change.operations) // insert or remove text
+      const _isTokenChar = isTokenChar(change) // user inserts space or return char
+      if (_isWritingTextChange && !_isTokenChar) {
         this.sendPatchesFromChangeDebounced()
+      } else {
+        this.sendPatchesFromChange()
+      }
+      if (_isWritingTextChange) {
+        this.setState({userIsWritingText: true})
+        this.unsetuserIsWritingTextStatus()
       }
       if (callback) {
         callback(change)
@@ -239,7 +256,7 @@ export default withPatchSubscriber(
 
         if (
           nextChangeSet &&
-          isInsertOrRemoveTextOperations(
+          isWritingTextOperationsOnly(
             nextChangeSet.change.operations.concat(changeSet.change.operations)
           )
         ) {
@@ -256,6 +273,10 @@ export default withPatchSubscriber(
         onChange(PatchEvent.from(patchesToSend))
       }
     }
+
+    unsetuserIsWritingTextStatus = debounce(() => {
+      this.setState({userIsWritingText: false})
+    }, 1000)
 
     handleFormBuilderPatch = (event: PatchEvent) => {
       const {onChange, type} = this.props
@@ -354,12 +375,6 @@ export default withPatchSubscriber(
       const {loading} = this.state
       const _loading = {...loading, ...props}
       const isLoading = Object.keys(_loading).some(key => _loading[key])
-      if (!isLoading) {
-        setTimeout(() => {
-          this.setState({isLoading, loading: _loading})
-        }, 100)
-        return
-      }
       this.setState({isLoading, loading: _loading})
     }
 
@@ -376,7 +391,8 @@ export default withPatchSubscriber(
         deprecatedSchema,
         deprecatedBlockValue,
         invalidBlockValue,
-        isLoading
+        isLoading,
+        userIsWritingText
       } = this.state
       const {
         focusPath,
@@ -414,6 +430,7 @@ export default withPatchSubscriber(
                 renderBlockActions={renderBlockActions}
                 renderCustomMarkers={renderCustomMarkers}
                 ref={this.refInput}
+                userIsWritingText={userIsWritingText}
               />
             )}
           {invalidBlockValue && (

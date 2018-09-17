@@ -47,7 +47,8 @@ type Props = {
   readOnly?: boolean,
   setFocus: void => void,
   type: Type,
-  value: ?(FormBuilderValue[])
+  value: ?(FormBuilderValue[]),
+  userIsWritingText: boolean
 }
 
 type State = {
@@ -231,20 +232,21 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
 
   renderEditor() {
     const {
-      isActive,
       blockContentFeatures,
-      editorValue,
       editor,
+      editorValue,
       focusPath,
       fullscreen,
+      isActive,
+      isLoading,
+      markers,
       onChange,
       onFocus,
       onToggleFullScreen,
-      isLoading,
       readOnly,
       setFocus,
       type,
-      markers
+      userIsWritingText
     } = this.props
 
     if (readOnly) {
@@ -256,14 +258,15 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
           <Toolbar
             blockContentFeatures={blockContentFeatures}
             editorValue={editorValue}
-            fullscreen={fullscreen}
             focusPath={focusPath}
+            fullscreen={fullscreen}
+            markers={markers}
             onChange={onChange}
             onFocus={onFocus}
             onToggleFullScreen={onToggleFullScreen}
             style={fullscreen ? this.state.toolbarStyle : {}}
-            markers={markers}
             type={type}
+            userIsWritingText={userIsWritingText}
           />
         </div>
         {isLoading && (

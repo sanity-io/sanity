@@ -38,7 +38,8 @@ type Props = {
   onToggleFullScreen: void => void,
   markers: [],
   style: {},
-  type: Type
+  type: Type,
+  userIsWritingText: boolean
 }
 
 type State = {
@@ -100,7 +101,8 @@ class Toolbar extends React.PureComponent<Props, State> {
       onFocus,
       onToggleFullScreen,
       style,
-      type
+      type,
+      userIsWritingText
     } = this.props
 
     const {expanded, showValidationTooltip} = this.state
@@ -165,6 +167,7 @@ class Toolbar extends React.PureComponent<Props, State> {
                       focusPath={focusPath}
                       onChange={onChange}
                       onFocus={onFocus}
+                      userIsWritingText={userIsWritingText}
                     />
                   </div>
                 )}
