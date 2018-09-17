@@ -84,7 +84,8 @@ export default withRouterHOC(
         state: PropTypes.shape({
           panes: PropTypes.arrayOf(PropTypes.string),
           editDocumentId: PropTypes.string,
-          type: PropTypes.string
+          type: PropTypes.string,
+          action: PropTypes.string
         })
       }).isRequired,
       onPaneChange: PropTypes.func.isRequired
@@ -160,7 +161,16 @@ export default withRouterHOC(
       return !shallowEquals(nextState, this.state)
     }
 
+    maybeHandleOldUrl() {
+      const {navigate} = this.props.router
+      const {panes, action, editDocumentId} = this.props.router.state
+      if (action === 'edit' && editDocumentId) {
+        navigate({panes: panes.concat([editDocumentId])}, {replace: true})
+      }
+    }
+
     componentDidMount() {
+      this.maybeHandleOldUrl()
       this.derivePanes(this.props)
       this.props.onPaneChange(this.state.panes || [])
     }

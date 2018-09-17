@@ -25,9 +25,15 @@ function DeskToolPaneStateSyncer(props) {
 export default {
   router: route('/', [
     route('/edit/:type/:editDocumentId'),
-    route('/:panes', {transform: {panes: {toState, toPath}}})
+    route({
+      path: '/:panes',
+      children: [route('/:action', route('/:editDocumentId'))],
+      transform: {
+        panes: {toState, toPath}
+      }
+    })
   ]),
-  canHandleIntent(intentName, params, currentState) {
+  canHandleIntent(intentName, params) {
     return (intentName === 'edit' && params.id) || (intentName === 'create' && params.type)
   },
   getIntentState(intentName, params, currentState) {
