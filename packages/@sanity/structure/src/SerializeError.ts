@@ -23,13 +23,12 @@ export class SerializeError extends Error {
 
 export enum HELP_URL {
   ID_REQUIRED = 'structure-node-id-required',
-  TITLE_REQUIRED = 'structure-title-requried',
+  TITLE_REQUIRED = 'structure-title-required',
   FILTER_REQUIRED = 'structure-filter-required',
   INVALID_LIST_ITEM = 'structure-invalid-list-item',
   DOCUMENT_ID_REQUIRED = 'structure-document-id-required',
   SCHEMA_TYPE_REQUIRED = 'structure-schema-type-required',
   SCHEMA_TYPE_NOT_FOUND = 'structure-schema-type-not-found',
-  DOCUMENT_TYPE_REQUIRED = 'structure-document-type-required',
   LIST_ITEMS_MUST_BE_ARRAY = 'structure-list-items-must-be-array',
   QUERY_PROVIDED_FOR_FILTER = 'structure-query-provided-for-filter',
   ACTION_OR_INTENT_REQUIRED = 'structure-action-or-intent-required',

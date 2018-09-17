@@ -36,7 +36,7 @@ function maybeSerializeListItem(
   const listItem = item as ListItem
   if (!listItem || listItem.type !== 'listItem') {
     const gotWhat = (listItem && listItem.type) || getArgType(listItem)
-    const helpText = gotWhat === 'array' ? ' - did you forget to splat (...moreItems)?' : ''
+    const helpText = gotWhat === 'array' ? ' - did you forget to spread (...moreItems)?' : ''
     throw new SerializeError(
       `List items must be of type "listItem", got "${gotWhat}"${helpText}`,
       path,
