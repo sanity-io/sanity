@@ -47,7 +47,9 @@ export default class EditNode extends React.Component<Props> {
         const _block = {...block}
         const markKey = patch.path[2]._key
         _block.children.forEach(child => {
-          child.marks = child.marks.filter(mark => mark !== markKey)
+          if (child.marks) {
+            child.marks = child.marks.filter(mark => mark !== markKey)
+          }
         })
         const blockPath = [{_key: _block._key}]
         _block.markDefs = _block.markDefs.filter(def => def._key !== markKey)
