@@ -4,7 +4,6 @@ import type {Node} from 'react'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import SoftBreakPlugin from 'slate-soft-break'
-import {findDOMNode, Editor as SlateEditor} from 'slate-react'
 import {isEqual} from 'lodash'
 import {isKeyHotkey} from 'is-hotkey'
 import {EDITOR_DEFAULT_BLOCK_TYPE, editorValueToBlocks} from '@sanity/block-tools'
@@ -48,6 +47,7 @@ import InlineObject from './nodes/InlineObject'
 import Span from './nodes/Span'
 
 import styles from './styles/Editor.css'
+import {findDOMNode, Editor as SlateEditor, getEventTransfer} from 'slate-react'
 
 type PasteProgressResult = {status: string | null}
 
@@ -284,6 +284,19 @@ export default class Editor extends React.Component<Props> {
     return undefined
   }
 
+  // We do our own handling of dropping blocks and inline nodes,
+  // so break the slate plugin stack if transferring those node objects.
+  handleDrag = (event: SyntheticDragEvent<>) => {
+    const transfer = getEventTransfer(event)
+    const {node} = transfer
+    if (node && (node.object === 'block' || node.object === 'inline')) {
+      event.dataTransfer.dropEffect = 'move'
+      event.preventDefault()
+      return true
+    }
+    return undefined
+  }
+
   handleOnKeyDown = (event: SyntheticEvent<>) => {
     const isFullscreenKey = isKeyHotkey('mod+enter')
     const {onToggleFullScreen} = this.props
@@ -479,6 +492,8 @@ export default class Editor extends React.Component<Props> {
           onCopy={this.handleCopy}
           onPaste={this.handlePaste}
           onKeyDown={this.handleOnKeyDown}
+          onDragOver={this.handleDrag}
+          onDrop={this.handleDrag}
           plugins={this._plugins}
           readOnly={readOnly}
           renderNode={this.renderNode}
