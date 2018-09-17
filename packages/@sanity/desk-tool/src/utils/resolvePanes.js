@@ -1,6 +1,7 @@
 import shallowEquals from 'shallow-equals'
 import {Observable, from, of as observableOf} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
+import generateHelpUrl from '@sanity/generate-help-url'
 import isSubscribable from './isSubscribable'
 import validateStructure from './validateStructure'
 import serializeStructure from './serializeStructure'
@@ -61,6 +62,15 @@ function resolveForStructure(structure, ids) {
     }
 
     function emit(pane, index) {
+      if (typeof pane === 'undefined') {
+        // eslint-disable-next-line no-console
+        console.warn(
+          'Pane at index %d returned no child - see %s',
+          index,
+          generateHelpUrl('structure-item-returned-no-child')
+        )
+      }
+
       if (replacePane(pane, index)) {
         subscriber.next(panes) // eslint-disable-line callback-return
       }
