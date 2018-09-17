@@ -1,7 +1,7 @@
-import {Block, Data, Document} from 'slate'
-import {getEventTransfer} from 'slate-react'
 import blockTools from '@sanity/block-tools'
 import randomKey from '../utils/randomKey'
+import {Block, Data, Document} from 'slate'
+import {getEventTransfer} from 'slate-react'
 
 function processNode(node) {
   if (!node.get('nodes')) {
@@ -30,21 +30,18 @@ function processNode(node) {
   })
 }
 const NOOP = () => {}
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 function handleHTML(html, change, editor, blockContentType, onProgress) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      onProgress({status: 'html'})
-      const blocks = blockTools.htmlToBlocks(html, blockContentType)
-      onProgress({status: 'blocks'})
-      const doc = Document.fromJSON(
-        blockTools.blocksToEditorValue(blocks, blockContentType).document
-      )
-      change.insertFragment(doc).moveToEndOfBlock()
-      editor.onChange(change)
-      resolve(change)
-      onProgress({status: null})
-    }, 0)
+  return wait(0).then(() => {
+    onProgress({status: 'html'})
+    const blocks = blockTools.htmlToBlocks(html, blockContentType)
+    onProgress({status: 'blocks'})
+    const doc = Document.fromJSON(blockTools.blocksToEditorValue(blocks, blockContentType).document)
+    change.insertFragment(doc).moveToEndOfBlock()
+    editor.onChange(change)
+    onProgress({status: null})
+    return change
   })
 }
 
