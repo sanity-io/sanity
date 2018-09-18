@@ -30,7 +30,9 @@ function joinReferences(schemaType: SchemaType, path: string[]): string {
     return `${head}->{${refTypes.map(refType => joinReferences(refType, tail)).join(',')}}`
   }
 
-  return head
+  const tailFields = tail.length > 0 && joinReferences(schemaField.type, tail)
+  const tailWrapper = tailFields ? `{${tailFields}}` : ''
+  return tail.length > 0 ? `${head}${tailWrapper}` : head
 }
 
 export function getExtendedProjection(schemaType: SchemaType, orderBy: SortItem[]): string {

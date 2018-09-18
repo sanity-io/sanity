@@ -35,7 +35,7 @@ const StructureBuilder = {
   documentListItem: (spec?: DocumentListItemInput) => new DocumentListItemBuilder(spec),
 
   orderingMenuItem: (ordering: Ordering) => getOrderingMenuItem(ordering),
-  orderingsMenuItemsForType: (type: string) => getOrderingMenuItemsForSchemaType(type),
+  orderingMenuItemsForType: (type: string) => getOrderingMenuItemsForSchemaType(type),
 
   editor: (spec?: EditorNode) => new EditorBuilder(spec),
   component: (spec?: ComponentInput | Function) => {

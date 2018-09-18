@@ -3,7 +3,7 @@
 exports[`builds list items with ID and schema type through setters 1`] = `
 Object {
   "_id": "grrm",
-  "child": undefined,
+  "child": [Function],
   "id": "grrm",
   "schemaType": Object {
     "fields": Array [
@@ -177,7 +177,7 @@ Object {
 exports[`builds list items with only ID and schema type 1`] = `
 Object {
   "_id": "foo",
-  "child": undefined,
+  "child": [Function],
   "id": "foo",
   "schemaType": Object {
     "fields": Array [
@@ -461,7 +461,7 @@ Object {
 exports[`setting title has no effect 1`] = `
 Object {
   "_id": "grrm",
-  "child": undefined,
+  "child": [Function],
   "id": "grrm",
   "schemaType": Object {
     "fields": Array [
