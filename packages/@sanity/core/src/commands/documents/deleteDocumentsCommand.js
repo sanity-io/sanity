@@ -1,4 +1,9 @@
 const helpText = `
+Delete a document from the projects configured dataset
+
+Options
+  --dataset NAME to override dataset
+
 Example
   # Delete the document with the ID "myDocId"
   sanity documents delete myDocId

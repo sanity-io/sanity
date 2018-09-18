@@ -1,6 +1,12 @@
 const colorizeJson = require('../../util/colorizeJson')
 
 const helpText = `
+Get and print a document from the projects configured dataset
+
+Options
+  --pretty colorized JSON output
+  --dataset NAME to override dataset
+
 Examples
   # Get the document with the ID "myDocId"
   sanity documents get myDocId
