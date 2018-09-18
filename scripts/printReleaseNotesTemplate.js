@@ -3,13 +3,13 @@ const CHANGELOG_COMMAND =
 
 const execa = require('execa')
 const TEMPLATE = `
-Upgrade with:
-
-    sanity upgrade
-
-And install the latest Command Line Interface (CLI) with:
+Upgrade the Command Line Interface (CLI) with
 
     npm install --global @sanity/cli
+
+Upgrade the Content Studio with:
+
+    sanity upgrade
 
 # ✨ Highlights
 ## Awesome feature X
