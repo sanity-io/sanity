@@ -4,7 +4,6 @@
   text-decoration: none;
   display: inline;
   position: relative;
-  cursor: pointer;
   border-bottom: 2px dotted color(var(--text-color) a(100%));
 }
 
