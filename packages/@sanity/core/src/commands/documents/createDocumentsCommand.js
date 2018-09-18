@@ -14,6 +14,7 @@ Options
   --watch   Write the documents whenever the target file or buffer changes
   --json5   Use JSON5 file type to allow a "simplified" version of JSON
   --id <id> Specify a document ID to use. Will fetch remote document ID and populate editor.
+  --dataset NAME to override dataset
 
 Examples
   # Create the document specified in "myDocument.json".
@@ -41,10 +42,14 @@ export default {
   // eslint-disable-next-line complexity
   action: async (args, context) => {
     const {apiClient, output} = context
-    const {replace, missing, watch, id} = args.extOptions
+    const {replace, missing, watch, id, dataset} = args.extOptions
     const [file] = args.argsWithoutOptions
-    const client = apiClient()
     const useJson5 = args.extOptions.json5
+    const client = dataset
+      ? apiClient()
+          .clone()
+          .config({dataset})
+      : apiClient()
 
     if (replace && missing) {
       throw new Error('Cannot use both --replace and --missing')
