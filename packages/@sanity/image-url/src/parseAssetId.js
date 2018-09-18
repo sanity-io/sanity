@@ -12,7 +12,7 @@ export default function parseAssetId(ref) {
   const width = +imgWidthStr
   const height = +imgHeightStr
 
-  const isValidAssetId = Number.isFinite(width) && Number.isFinite(height)
+  const isValidAssetId = isFinite(width) && isFinite(height)
   if (!isValidAssetId) {
     throw new Error(`Malformed asset _ref '${ref}'. Expected an id like "${example}".`)
   }
