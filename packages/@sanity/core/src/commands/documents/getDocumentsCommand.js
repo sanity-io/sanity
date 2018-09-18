@@ -1,19 +1,40 @@
 const colorizeJson = require('../../util/colorizeJson')
 
+const helpText = `
+Get and print a document from the projects configured dataset
+
+Options
+  --pretty colorized JSON output
+  --dataset NAME to override dataset
+
+Examples
+  # Get the document with the ID "myDocId"
+  sanity documents get myDocId
+
+  # ID wrapped in double or single quote works equally well
+  sanity documents get 'myDocId'
+`
+
 export default {
   name: 'get',
   group: 'documents',
   signature: '[DOCUMENT_ID]',
-  description: 'Get and print a document',
+  helpText,
+  description: 'Get and print a document by ID',
   action: async (args, context) => {
     const {apiClient, output, chalk} = context
-    const {pretty} = args.extOptions
+    const {pretty, dataset} = args.extOptions
     const [docId] = args.argsWithoutOptions
-    const client = apiClient()
 
     if (!docId) {
       throw new Error('Document ID must be specified')
     }
+
+    const client = dataset
+      ? apiClient()
+          .clone()
+          .config({dataset})
+      : apiClient()
 
     try {
       const doc = await client.getDocument(docId)
