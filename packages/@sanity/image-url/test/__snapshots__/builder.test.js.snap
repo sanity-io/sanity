@@ -26,4 +26,6 @@ exports[`builder skips hotspot/crop if crop mode specified 1`] = `"https://cdn.s
 
 exports[`builder skips hotspot/crop if focal point specified 1`] = `"https://cdn.sanity.io/images/zp7mbokg/production/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg?fp-x=10&fp-x=20&w=100&h=80"`;
 
+exports[`builder sub zero top/left 1`] = `"w=1000&h=805"`;
+
 exports[`builder toString() aliases url() 1`] = `"https://cdn.sanity.io/images/zp7mbokg/production/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg?w=100&h=80"`;
