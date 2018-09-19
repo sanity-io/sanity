@@ -164,8 +164,8 @@ function fit(source, spec) {
     top = crop.top + crop.height - height
   }
   result.rect = {
-    left: Math.floor(left),
-    top: Math.floor(top),
+    left: Math.max(0, Math.floor(left)),
+    top: Math.max(0, Math.floor(top)),
     width: Math.round(width),
     height: Math.round(height)
   }

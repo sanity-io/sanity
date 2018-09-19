@@ -136,6 +136,17 @@ const cases = [
   },
 
   {
+    name: 'sub zero top/left',
+    url: stripPath(
+      urlFor
+        .image('image-928ac96d53b0c9049836c86ff25fd3c009039a16-1200x966-jpg')
+        .width(1000)
+        .height(805)
+        .url()
+    )
+  },
+
+  {
     name: 'all hotspot/crop-compatible params',
     url: stripPath(
       urlFor
