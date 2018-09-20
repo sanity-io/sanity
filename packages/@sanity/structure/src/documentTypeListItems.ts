@@ -1,7 +1,7 @@
 import memoizeOne from 'memoize-one'
 import {Schema, defaultSchema} from './parts/Schema'
 import {dataAspects, DataAspectsResolver} from './parts/DataAspects'
-import {getPlusIcon, getListIcon} from './parts/Icon'
+import {getPlusIcon, getListIcon, getDetailsIcon} from './parts/Icon'
 import {MenuItemBuilder, getOrderingMenuItemsForSchemaType} from './MenuItem'
 import {DEFAULT_SELECTED_ORDERING_OPTION} from './Sort'
 import {DocumentListBuilder} from './DocumentList'
@@ -10,6 +10,7 @@ import {EditorBuilder} from './Editor'
 
 const PlusIcon = getPlusIcon()
 const ListIcon = getListIcon()
+const DetailsIcon = getDetailsIcon()
 
 const getDataAspectsForSchema: (schema: Schema) => DataAspectsResolver = memoizeOne(dataAspects)
 
@@ -85,7 +86,7 @@ export function getDocumentTypeList(
       new MenuItemBuilder()
         .group('layout')
         .title('Details')
-        .icon(ListIcon)
+        .icon(DetailsIcon)
         .action('setLayout')
         .params({layout: 'detail'}),
 

@@ -4,3 +4,5 @@ import getDefaultModule from './getDefaultModule'
 export const getPlusIcon = (): Function => getDefaultModule(require('part:@sanity/base/plus-icon'))
 export const getSortIcon = (): Function => getDefaultModule(require('part:@sanity/base/sort-icon'))
 export const getListIcon = (): Function => getDefaultModule(require('part:@sanity/base/bars-icon'))
+export const getDetailsIcon = (): Function =>
+  getDefaultModule(require('part:@sanity/base/th-list-icon'))
