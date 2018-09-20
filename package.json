@@ -80,7 +80,7 @@
     "gulp-watch": "^5.0.1",
     "hard-rejection": "^1.0.0",
     "husky": "^0.14.3",
-    "lerna": "^2.10.2",
+    "lerna": "^3.4.0",
     "merge-stream": "^1.0.1",
     "minimist": "^1.2.0",
     "path-exists-cli": "^1.0.0",
