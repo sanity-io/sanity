@@ -39,7 +39,7 @@ class LoginStatus extends React.PureComponent {
   }
 
   handleUserMenuItemClick = item => {
-    if (item.index === 'signOut') {
+    if (item.action === 'signOut') {
       userStore.actions.logout()
     }
   }
@@ -67,10 +67,9 @@ class LoginStatus extends React.PureComponent {
                 {
                   title: `Log out ${user.name}`,
                   icon: IconSignOut,
-                  index: 'signOut'
+                  action: 'signOut'
                 }
               ]}
-              opened
               origin="top-right"
               onClickOutside={this.handleUserMenuClose}
             />

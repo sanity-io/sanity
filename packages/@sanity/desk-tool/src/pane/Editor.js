@@ -2,21 +2,22 @@
 import PropTypes from 'prop-types'
 // Connects the FormBuilder with various sanity roles
 import React from 'react'
+import {debounce} from 'lodash'
+import {Tooltip} from '@sanity/react-tippy'
+import {withRouterHOC} from 'part:@sanity/base/router'
+import {PreviewFields} from 'part:@sanity/base/preview'
+import {getPublishedId, newDraftFrom} from 'part:@sanity/base/util/draft-utils'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import Button from 'part:@sanity/components/buttons/default'
 import FormBuilder from 'part:@sanity/form-builder'
-import {withRouterHOC} from 'part:@sanity/base/router'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import UndoIcon from 'part:@sanity/base/undo-icon'
 import PublicIcon from 'part:@sanity/base/public-icon'
 import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
 import BinaryIcon from 'part:@sanity/base/binary-icon'
-import Menu from 'part:@sanity/components/menus/default'
 import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 import documentStore from 'part:@sanity/base/datastore/document'
 import schema from 'part:@sanity/base/schema'
-import {debounce} from 'lodash'
-import {PreviewFields} from 'part:@sanity/base/preview'
 import Pane from 'part:@sanity/components/panes/default'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
 import SyncIcon from 'part:@sanity/base/sync-icon'
@@ -25,20 +26,18 @@ import CheckCircleIcon from 'part:@sanity/base/circle-check-icon'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import resolveProductionPreviewUrl from 'part:@sanity/transitional/production-preview/resolve-production-url?'
 import ValidationList from 'part:@sanity/components/validation/list'
-import {Tooltip} from '@sanity/react-tippy'
 import ChevronDown from 'part:@sanity/base/chevron-down-icon'
 import WarningIcon from 'part:@sanity/base/warning-icon'
-import ConfirmDiscard from '../components/ConfirmDiscard'
-import ConfirmDelete from '../components/ConfirmDelete'
-import ConfirmUnpublish from '../components/ConfirmUnpublish'
-import InspectView from '../components/InspectView'
-import copyDocument from '../utils/copyDocument'
-import {getPublishedId, newDraftFrom} from 'part:@sanity/base/util/draft-utils'
-import TimeAgo from '../components/TimeAgo'
-import styles from './styles/Editor.css'
-import DocTitle from '../components/DocTitle'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import filterFieldFn$ from 'part:@sanity/desk-tool/filter-fields-fn?'
+import copyDocument from '../utils/copyDocument'
+import ConfirmUnpublish from '../components/ConfirmUnpublish'
+import ConfirmDiscard from '../components/ConfirmDiscard'
+import ConfirmDelete from '../components/ConfirmDelete'
+import InspectView from '../components/InspectView'
+import DocTitle from '../components/DocTitle'
+import TimeAgo from '../components/TimeAgo'
+import styles from './styles/Editor.css'
 
 function navigateUrl(url) {
   window.open(url)
@@ -58,7 +57,6 @@ const getDuplicateItem = (draft, published) => ({
   action: 'duplicate',
   title: 'Duplicate',
   icon: ContentCopyIcon,
-  divider: true,
   isDisabled: !draft && !published
 })
 
@@ -69,7 +67,6 @@ const getDiscardItem = (draft, published, isLiveEditEnabled) =>
         action: 'discard',
         title: 'Discard changes…',
         icon: UndoIcon,
-        divider: true,
         isDisabled: !draft || !published
       }
 
@@ -80,15 +77,14 @@ const getUnpublishItem = (draft, published, isLiveEditEnabled) =>
         action: 'unpublish',
         title: 'Unpublish…',
         icon: VisibilityOffIcon,
-        divider: true,
         isDisabled: !published
       }
 
 const getDeleteItem = (draft, published) => ({
+  group: 'danger',
   action: 'delete',
   title: 'Delete…',
   icon: TrashIcon,
-  divider: true,
   danger: true,
   isDisabled: !draft && !published
 })
@@ -101,7 +97,6 @@ const getInspectItem = (draft, published) => ({
     </span>
   ),
   icon: BinaryIcon,
-  divider: true,
   isDisabled: !(draft || published)
 })
 
@@ -142,8 +137,8 @@ const getMenuItems = (draft, published, isLiveEditEnabled) =>
     getDiscardItem,
     getUnpublishItem,
     getDuplicateItem,
-    getDeleteItem,
-    getInspectItem
+    getInspectItem,
+    getDeleteItem
   ]
     .map(fn => fn(draft, published, isLiveEditEnabled))
     .filter(Boolean)
@@ -164,8 +159,11 @@ const INITIAL_STATE = {
 }
 
 export default withRouterHOC(
+  // eslint-disable-next-line
   class Editor extends React.PureComponent {
     static propTypes = {
+      paneIndex: PropTypes.number.isRequired,
+      paneStyles: PropTypes.object,
       patchChannel: PropTypes.object,
       draft: PropTypes.object,
       published: PropTypes.object,
@@ -254,8 +252,13 @@ export default withRouterHOC(
       if (this.filterFieldFnSubscription) {
         this.filterFieldFnSubscription.unsubscribe()
       }
+
+      if (this.duplicate$) {
+        this.duplicate$.unsubscribe()
+      }
     }
 
+    // @todo move publishing notification out of this component
     componentWillReceiveProps(nextProps) {
       this.setState({didPublish: this.props.isPublishing && !nextProps.isPublishing})
 
@@ -286,23 +289,27 @@ export default withRouterHOC(
     }
 
     handleCreateCopy = () => {
-      const {router, draft, published} = this.props
-      documentStore.create(newDraftFrom(copyDocument(draft || published))).subscribe(copied => {
-        router.navigate({
-          ...router.state,
-          action: 'edit',
-          selectedDocumentId: getPublishedId(copied._id)
+      const {router, draft, published, paneIndex} = this.props
+      const prevId = getPublishedId((draft || published)._id)
+      this.duplicate$ = documentStore
+        .create(newDraftFrom(copyDocument(draft || published)))
+        .subscribe(copied => {
+          const copyDocId = getPublishedId(copied._id)
+          const newPanes = router.state.panes.map(
+            (prev, i) => (i === paneIndex - 1 && prev === prevId ? copyDocId : prev)
+          )
+          router.navigate({
+            ...router.state,
+            panes: newPanes
+          })
         })
-      })
     }
 
     handleEditAsActualType = () => {
       const {router, draft, published} = this.props
-      const actualTypeName = draft._type || published._type
-      router.navigate({
-        ...router.state,
-        selectedType: actualTypeName,
-        action: 'edit'
+      router.navigateIntent('edit', {
+        id: getPublishedId((draft || published)._id),
+        type: draft._type || published._type
       })
     }
 
@@ -322,7 +329,6 @@ export default withRouterHOC(
     }
 
     handleMenuClose = evt => {
-      evt.stopPropagation()
       this.setState({isMenuOpen: false})
     }
 
@@ -382,7 +388,7 @@ export default withRouterHOC(
       this.setState({inspect: false})
     }
 
-    handleMenuClick = item => {
+    handleMenuAction = item => {
       if (item.action === 'production-preview') {
         navigateUrl(item.url)
       }
@@ -435,7 +441,7 @@ export default withRouterHOC(
       )
     }
 
-    renderFunctions = () => {
+    renderActions = () => {
       const {draft, published, markers, type, isReconnecting} = this.props
       const {showSavingStatus, showValidationTooltip} = this.state
 
@@ -555,20 +561,6 @@ export default withRouterHOC(
       )
     }
 
-    renderMenu = () => {
-      const {draft, published} = this.props
-      return (
-        <Menu
-          onAction={this.handleMenuClick}
-          isOpen={this.state.isMenuOpen}
-          onClose={this.handleMenuClose}
-          onClickOutside={this.handleMenuClose}
-          items={getMenuItems(draft, published, this.isLiveEditEnabled())}
-          origin="top-right"
-        />
-      )
-    }
-
     render() {
       const {
         draft,
@@ -620,9 +612,11 @@ export default withRouterHOC(
 
       return (
         <Pane
+          styles={this.props.paneStyles}
           title={this.getTitle(value)}
-          renderMenu={this.renderMenu}
-          renderFunctions={this.renderFunctions}
+          onAction={this.handleMenuAction}
+          menuItems={getMenuItems(draft, published, this.isLiveEditEnabled())}
+          renderActions={this.renderActions}
           onMenuToggle={this.handleMenuToggle}
           isSelected // last pane is always selected for now
         >

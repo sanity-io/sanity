@@ -23,16 +23,18 @@ export default enhanceWithAvailHeight(
 
     state = {
       triggerUpdate: 0,
-      itemHeight: 56,
       itemSize: undefined
     }
 
-    componentWillReceiveProps(prevProps) {
+    // @todo replace this with a something proper. This is hacky.
+    // eslint-disable-next-line camelcase
+    UNSAFE_componentWillReceiveProps(prevProps) {
       if (prevProps.items !== this.props.items) {
-        /* This is needed to break equality checks
-       in VirtualList's sCU in cases where itemCount has not changed,
-       but an elements has been removed or added
-       */
+        /**
+         * This is needed to break equality checks
+         * in VirtualList's sCU in cases where itemCount has not changed,
+         * but an elements has been removed or added
+         */
         this.setState({triggerUpdate: Math.random()})
       }
 
@@ -41,10 +43,6 @@ export default enhanceWithAvailHeight(
           itemSize: undefined
         })
       }
-    }
-
-    getItemHeight = item => {
-      return 56
     }
 
     setMeasureElement = element => {
@@ -79,15 +77,15 @@ export default enhanceWithAvailHeight(
 
       return (
         <VirtualList
+          key={layout} // forcefully re-render the whole list when layout changes
+          data-trigger-update-hack={triggerUpdate} // see componentWillReceiveProps above
           onScroll={this.props.onScroll}
-          key={layout /* forcefully re-render the whole list when layout changes */}
           className={className || ''}
           height={height}
           itemCount={items.length}
           itemSize={itemSize}
           renderItem={this.renderItem}
           overscanCount={50}
-          data-trigger-update-hack={triggerUpdate} /* see componentWillReceiveProps above */
         />
       )
     }

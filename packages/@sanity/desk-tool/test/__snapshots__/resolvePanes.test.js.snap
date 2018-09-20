@@ -1,0 +1,167 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`can resolve asyncronous structures using mix of promises & observables 1`] = `
+Array [
+  Array [
+    Symbol(LOADING),
+    Symbol(LOADING),
+    Symbol(LOADING),
+  ],
+  Array [
+    Object {
+      "id": "__root__",
+      "options": Object {
+        "items": Array [
+          Object {
+            "child": Object {
+              "options": Object {
+                "filter": "_type == $type",
+                "params": Object {
+                  "type": "book",
+                },
+              },
+              "resolveChildForItem": [Function],
+              "type": "documentList",
+            },
+            "id": "book",
+            "title": "Book",
+          },
+          Object {
+            "child": Object {
+              "options": Object {
+                "filter": "_type == $type",
+                "params": Object {
+                  "type": "author",
+                },
+              },
+              "resolveChildForItem": [Function],
+              "type": "documentList",
+            },
+            "id": "author",
+            "title": "Author",
+          },
+        ],
+      },
+      "resolveChildForItem": [Function],
+      "title": "Content",
+      "type": "list",
+    },
+    Symbol(LOADING),
+    Symbol(LOADING),
+  ],
+  Array [
+    Object {
+      "id": "__root__",
+      "options": Object {
+        "items": Array [
+          Object {
+            "child": Object {
+              "options": Object {
+                "filter": "_type == $type",
+                "params": Object {
+                  "type": "book",
+                },
+              },
+              "resolveChildForItem": [Function],
+              "type": "documentList",
+            },
+            "id": "book",
+            "title": "Book",
+          },
+          Object {
+            "child": Object {
+              "options": Object {
+                "filter": "_type == $type",
+                "params": Object {
+                  "type": "author",
+                },
+              },
+              "resolveChildForItem": [Function],
+              "type": "documentList",
+            },
+            "id": "author",
+            "title": "Author",
+          },
+        ],
+      },
+      "resolveChildForItem": [Function],
+      "title": "Content",
+      "type": "list",
+    },
+    Object {
+      "options": Object {
+        "filter": "_type == $type",
+        "params": Object {
+          "type": "book",
+        },
+      },
+      "resolveChildForItem": [Function],
+      "type": "documentList",
+    },
+    Symbol(LOADING),
+  ],
+  Array [
+    Object {
+      "id": "__root__",
+      "options": Object {
+        "items": Array [
+          Object {
+            "child": Object {
+              "options": Object {
+                "filter": "_type == $type",
+                "params": Object {
+                  "type": "book",
+                },
+              },
+              "resolveChildForItem": [Function],
+              "type": "documentList",
+            },
+            "id": "book",
+            "title": "Book",
+          },
+          Object {
+            "child": Object {
+              "options": Object {
+                "filter": "_type == $type",
+                "params": Object {
+                  "type": "author",
+                },
+              },
+              "resolveChildForItem": [Function],
+              "type": "documentList",
+            },
+            "id": "author",
+            "title": "Author",
+          },
+        ],
+      },
+      "resolveChildForItem": [Function],
+      "title": "Content",
+      "type": "list",
+    },
+    Object {
+      "options": Object {
+        "filter": "_type == $type",
+        "params": Object {
+          "type": "book",
+        },
+      },
+      "resolveChildForItem": [Function],
+      "type": "documentList",
+    },
+    Object {
+      "options": Object {
+        "id": "got",
+        "type": "book",
+      },
+      "type": "document",
+    },
+  ],
+]
+`;
+
+exports[`emits error on observable failure 1`] = `[Error: Failed to load at 2]`;
+
+exports[`emits error on promise failure 1`] = `[Error: Failed to load at 1]`;
+
+exports[`emits error on root-level failure 1`] = `[Error: Well that certainly failed.]`;

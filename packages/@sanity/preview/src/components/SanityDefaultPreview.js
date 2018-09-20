@@ -32,11 +32,10 @@ function extractUploadState(value) {
 
 export default class SanityDefaultPreview extends React.PureComponent {
   static propTypes = {
+    _renderAsBlockImage: PropTypes.bool,
     layout: PropTypes.oneOf(Object.keys(previewComponentMap)),
     value: PropTypes.object,
-    type: PropTypes.shape({
-      title: PropTypes.string
-    }).isRequired
+    icon: PropTypes.func
   }
 
   renderMedia = options => {
@@ -73,8 +72,8 @@ export default class SanityDefaultPreview extends React.PureComponent {
   }
 
   renderIcon = options => {
-    const {type} = this.props
-    const Icon = type.icon
+    const {icon} = this.props
+    const Icon = icon
     return Icon && <Icon className="sanity-studio__preview-fallback-icon" />
   }
 
@@ -101,14 +100,13 @@ export default class SanityDefaultPreview extends React.PureComponent {
   }
 
   render() {
-    const {layout, ...rest} = this.props
+    const {layout, _renderAsBlockImage, ...rest} = this.props
 
     let PreviewComponent = previewComponentMap.hasOwnProperty(layout)
       ? previewComponentMap[layout]
       : previewComponentMap.default
 
-    // TODO: Bjoerge: Check for image type with "is()"
-    if (layout === 'block' && this.props.type && this.props.type.name === 'image') {
+    if (_renderAsBlockImage) {
       PreviewComponent = PreviewComponentBlockImage
     }
 

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import {get} from 'lodash'
 import shallowEquals from 'shallow-equals'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import observeForPreview from '../observeForPreview'
@@ -11,6 +12,12 @@ const INVALID_PREVIEW_FALLBACK = {
   media: WarningIcon
 }
 
+const INITIAL_STATE = {
+  error: null,
+  isLoading: false,
+  result: {snapshot: null, type: null}
+}
+
 export default class PreviewSubscriber extends React.Component {
   static propTypes = {
     type: PropTypes.object.isRequired,
@@ -20,10 +27,7 @@ export default class PreviewSubscriber extends React.Component {
     children: PropTypes.func
   }
 
-  state = {
-    error: null,
-    result: {snapshot: null, type: null}
-  }
+  state = INITIAL_STATE
 
   componentDidMount() {
     this.subscribe(this.props.value, this.props.type, this.props.fields)
@@ -41,6 +45,10 @@ export default class PreviewSubscriber extends React.Component {
   }
 
   componentWillUpdate(nextProps) {
+    if (get(nextProps, 'value._id') !== get(this.props, 'value._id')) {
+      this.setState(INITIAL_STATE)
+    }
+
     if (!shallowEquals(nextProps.value, this.props.value)) {
       this.subscribe(nextProps.value, nextProps.type)
     }
@@ -51,17 +59,18 @@ export default class PreviewSubscriber extends React.Component {
 
     const viewOptions = this.props.ordering ? {ordering: this.props.ordering} : {}
 
+    this.setState({isLoading: true})
     this.subscription = observeForPreview(value, type, fields, viewOptions).subscribe(result => {
-      this.setState({result})
+      this.setState({isLoading: false, result})
     })
   }
 
   render() {
-    const {result, error} = this.state
+    const {result, error, isLoading} = this.state
     const {children} = this.props
     const snapshot =
       result.snapshot === INVALID_PREVIEW_CONFIG ? INVALID_PREVIEW_FALLBACK : result.snapshot
 
-    return children({result: {...result, snapshot}, error: error})
+    return children({result: {...result, snapshot}, error, isLoading})
   }
 }

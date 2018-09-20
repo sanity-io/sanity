@@ -11,6 +11,27 @@ function getErrorWithStack(err) {
   return stack.indexOf(message) === -1 ? `${message}\n\n${stack}` : stack
 }
 
+function limitStackLength(stack) {
+  return stack
+    .split('\n')
+    .slice(0, 15)
+    .join('\n')
+}
+
+function formatStack(stack) {
+  return (
+    stack
+      // Prettify builder functions
+      .replace(/\(\.\.\.\)\./g, '(...)\n  .')
+      // Remove webpack cruft from function names
+      .replace(/__WEBPACK_IMPORTED_MODULE_\d+_+/g, '')
+      // Remove default export postfix from function names
+      .replace(/___default\./g, '.')
+      // Replace full host path, leave only path to JS-file
+      .replace(new RegExp(` \\(https?:\\/\\/${window.location.host}`, 'g'), ' (')
+  )
+}
+
 export default class RenderTool extends Component {
   static propTypes = {
     tool: PropTypes.string
@@ -57,9 +78,11 @@ export default class RenderTool extends Component {
 
         {showErrorDetails && (
           <div className={styles.errorDetails}>
-            <div className={styles.errorStackTrace}>
+            <div className={styles.errorStackTraceWrapper}>
               <h3>Stack trace:</h3>
-              <pre>{getErrorWithStack(error)}</pre>
+              <pre className={styles.errorStackTrace}>
+                {formatStack(limitStackLength(getErrorWithStack(error)))}
+              </pre>
             </div>
 
             <div className={styles.errorComponentStack}>

@@ -1,0 +1,1215 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generates correct document type list item for specific type 1`] = `
+ListItemBuilder {
+  "spec": Object {
+    "child": DocumentListBuilder {
+      "spec": Object {
+        "canHandleIntent": [Function],
+        "child": [Function],
+        "id": "author",
+        "menuItemGroups": Array [
+          Object {
+            "id": "sorting",
+            "title": "Sort",
+          },
+          Object {
+            "id": "layout",
+            "title": "Layout",
+          },
+          Object {
+            "id": "actions",
+            "title": "Actions",
+          },
+        ],
+        "menuItems": Array [
+          MenuItemBuilder {
+            "spec": Object {
+              "icon": [Function],
+              "intent": Object {
+                "params": Object {
+                  "type": "author",
+                },
+                "type": "create",
+              },
+              "showAsAction": Object {
+                "whenCollapsed": true,
+              },
+              "title": "Create new Author",
+            },
+          },
+          MenuItemBuilder {
+            "spec": Object {
+              "action": "setSortOrder",
+              "group": "sorting",
+              "icon": [Function],
+              "params": Object {
+                "by": Array [
+                  Object {
+                    "direction": "desc",
+                    "field": "_updatedAt",
+                  },
+                ],
+                "extendedProjection": "",
+              },
+              "title": "Sort by Last edited",
+            },
+          },
+          MenuItemBuilder {
+            "spec": Object {
+              "action": "setSortOrder",
+              "group": "sorting",
+              "icon": [Function],
+              "params": Object {
+                "by": Array [
+                  Object {
+                    "direction": "desc",
+                    "field": "_createdAt",
+                  },
+                ],
+                "extendedProjection": "",
+              },
+              "title": "Sort by Created",
+            },
+          },
+          MenuItemBuilder {
+            "spec": Object {
+              "action": "setLayout",
+              "group": "layout",
+              "icon": [Function],
+              "params": Object {
+                "layout": "default",
+              },
+              "title": "List",
+            },
+          },
+          MenuItemBuilder {
+            "spec": Object {
+              "action": "setLayout",
+              "group": "layout",
+              "icon": [Function],
+              "params": Object {
+                "layout": "detail",
+              },
+              "title": "Details",
+            },
+          },
+          MenuItemBuilder {
+            "spec": Object {
+              "group": "actions",
+              "icon": [Function],
+              "intent": Object {
+                "params": Object {
+                  "type": "author",
+                },
+                "type": "create",
+              },
+              "title": "Create new…",
+            },
+          },
+        ],
+        "options": Object {
+          "defaultOrdering": Array [
+            Object {
+              "direction": "desc",
+              "field": "_updatedAt",
+            },
+          ],
+          "filter": "_type == $type",
+          "params": Object {
+            "type": "author",
+          },
+        },
+        "schemaTypeName": "author",
+        "title": "Author",
+      },
+    },
+    "id": "author",
+    "schemaType": Object {
+      "fields": Array [
+        Object {
+          "name": "name",
+          "title": "Name",
+          "type": "string",
+        },
+        Object {
+          "name": "slug",
+          "options": Object {
+            "maxLength": 96,
+            "source": "name",
+          },
+          "title": "Slug",
+          "type": "slug",
+        },
+        Object {
+          "name": "image",
+          "options": Object {
+            "hotspot": true,
+          },
+          "title": "Image",
+          "type": "image",
+        },
+      ],
+      "name": "author",
+      "preview": Object {
+        "select": Object {
+          "media": "image",
+          "title": "name",
+        },
+      },
+      "title": "Author",
+      "type": "document",
+    },
+    "title": "Author",
+  },
+}
+`;
+
+exports[`generates correct document type list item for specific type 2`] = `
+ListItemBuilder {
+  "spec": Object {
+    "child": DocumentListBuilder {
+      "spec": Object {
+        "canHandleIntent": [Function],
+        "child": [Function],
+        "id": "author",
+        "menuItemGroups": Array [
+          Object {
+            "id": "sorting",
+            "title": "Sort",
+          },
+          Object {
+            "id": "layout",
+            "title": "Layout",
+          },
+          Object {
+            "id": "actions",
+            "title": "Actions",
+          },
+        ],
+        "menuItems": Array [
+          MenuItemBuilder {
+            "spec": Object {
+              "icon": [Function],
+              "intent": Object {
+                "params": Object {
+                  "type": "author",
+                },
+                "type": "create",
+              },
+              "showAsAction": Object {
+                "whenCollapsed": true,
+              },
+              "title": "Create new Author",
+            },
+          },
+          MenuItemBuilder {
+            "spec": Object {
+              "action": "setSortOrder",
+              "group": "sorting",
+              "icon": [Function],
+              "params": Object {
+                "by": Array [
+                  Object {
+                    "direction": "desc",
+                    "field": "_updatedAt",
+                  },
+                ],
+                "extendedProjection": "",
+              },
+              "title": "Sort by Last edited",
+            },
+          },
+          MenuItemBuilder {
+            "spec": Object {
+              "action": "setSortOrder",
+              "group": "sorting",
+              "icon": [Function],
+              "params": Object {
+                "by": Array [
+                  Object {
+                    "direction": "desc",
+                    "field": "_createdAt",
+                  },
+                ],
+                "extendedProjection": "",
+              },
+              "title": "Sort by Created",
+            },
+          },
+          MenuItemBuilder {
+            "spec": Object {
+              "action": "setLayout",
+              "group": "layout",
+              "icon": [Function],
+              "params": Object {
+                "layout": "default",
+              },
+              "title": "List",
+            },
+          },
+          MenuItemBuilder {
+            "spec": Object {
+              "action": "setLayout",
+              "group": "layout",
+              "icon": [Function],
+              "params": Object {
+                "layout": "detail",
+              },
+              "title": "Details",
+            },
+          },
+          MenuItemBuilder {
+            "spec": Object {
+              "group": "actions",
+              "icon": [Function],
+              "intent": Object {
+                "params": Object {
+                  "type": "author",
+                },
+                "type": "create",
+              },
+              "title": "Create new…",
+            },
+          },
+        ],
+        "options": Object {
+          "defaultOrdering": Array [
+            Object {
+              "direction": "desc",
+              "field": "_updatedAt",
+            },
+          ],
+          "filter": "_type == $type",
+          "params": Object {
+            "type": "author",
+          },
+        },
+        "schemaTypeName": "author",
+        "title": "Author",
+      },
+    },
+    "id": "author",
+    "schemaType": Object {
+      "fields": Array [
+        Object {
+          "name": "name",
+          "title": "Name",
+          "type": "string",
+        },
+        Object {
+          "name": "slug",
+          "options": Object {
+            "maxLength": 96,
+            "source": "name",
+          },
+          "title": "Slug",
+          "type": "slug",
+        },
+        Object {
+          "name": "image",
+          "options": Object {
+            "hotspot": true,
+          },
+          "title": "Image",
+          "type": "image",
+        },
+      ],
+      "name": "author",
+      "preview": Object {
+        "select": Object {
+          "media": "image",
+          "title": "name",
+        },
+      },
+      "title": "Author",
+      "type": "document",
+    },
+    "title": "Author",
+  },
+}
+`;
+
+exports[`generates correct document type list items from given schema 1`] = `
+Array [
+  ListItemBuilder {
+    "spec": Object {
+      "child": DocumentListBuilder {
+        "spec": Object {
+          "canHandleIntent": [Function],
+          "child": [Function],
+          "id": "author",
+          "menuItemGroups": Array [
+            Object {
+              "id": "sorting",
+              "title": "Sort",
+            },
+            Object {
+              "id": "layout",
+              "title": "Layout",
+            },
+            Object {
+              "id": "actions",
+              "title": "Actions",
+            },
+          ],
+          "menuItems": Array [
+            MenuItemBuilder {
+              "spec": Object {
+                "icon": [Function],
+                "intent": Object {
+                  "params": Object {
+                    "type": "author",
+                  },
+                  "type": "create",
+                },
+                "showAsAction": Object {
+                  "whenCollapsed": true,
+                },
+                "title": "Create new Author",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "action": "setSortOrder",
+                "group": "sorting",
+                "icon": [Function],
+                "params": Object {
+                  "by": Array [
+                    Object {
+                      "direction": "desc",
+                      "field": "_updatedAt",
+                    },
+                  ],
+                  "extendedProjection": "",
+                },
+                "title": "Sort by Last edited",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "action": "setSortOrder",
+                "group": "sorting",
+                "icon": [Function],
+                "params": Object {
+                  "by": Array [
+                    Object {
+                      "direction": "desc",
+                      "field": "_createdAt",
+                    },
+                  ],
+                  "extendedProjection": "",
+                },
+                "title": "Sort by Created",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "action": "setLayout",
+                "group": "layout",
+                "icon": [Function],
+                "params": Object {
+                  "layout": "default",
+                },
+                "title": "List",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "action": "setLayout",
+                "group": "layout",
+                "icon": [Function],
+                "params": Object {
+                  "layout": "detail",
+                },
+                "title": "Details",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "group": "actions",
+                "icon": [Function],
+                "intent": Object {
+                  "params": Object {
+                    "type": "author",
+                  },
+                  "type": "create",
+                },
+                "title": "Create new…",
+              },
+            },
+          ],
+          "options": Object {
+            "defaultOrdering": Array [
+              Object {
+                "direction": "desc",
+                "field": "_updatedAt",
+              },
+            ],
+            "filter": "_type == $type",
+            "params": Object {
+              "type": "author",
+            },
+          },
+          "schemaTypeName": "author",
+          "title": "Author",
+        },
+      },
+      "id": "author",
+      "schemaType": Object {
+        "fields": Array [
+          Object {
+            "name": "name",
+            "title": "Name",
+            "type": "string",
+          },
+          Object {
+            "name": "slug",
+            "options": Object {
+              "maxLength": 96,
+              "source": "name",
+            },
+            "title": "Slug",
+            "type": "slug",
+          },
+          Object {
+            "name": "image",
+            "options": Object {
+              "hotspot": true,
+            },
+            "title": "Image",
+            "type": "image",
+          },
+        ],
+        "name": "author",
+        "preview": Object {
+          "select": Object {
+            "media": "image",
+            "title": "name",
+          },
+        },
+        "title": "Author",
+        "type": "document",
+      },
+      "title": "Author",
+    },
+  },
+  ListItemBuilder {
+    "spec": Object {
+      "child": DocumentListBuilder {
+        "spec": Object {
+          "canHandleIntent": [Function],
+          "child": [Function],
+          "id": "post",
+          "menuItemGroups": Array [
+            Object {
+              "id": "sorting",
+              "title": "Sort",
+            },
+            Object {
+              "id": "layout",
+              "title": "Layout",
+            },
+            Object {
+              "id": "actions",
+              "title": "Actions",
+            },
+          ],
+          "menuItems": Array [
+            MenuItemBuilder {
+              "spec": Object {
+                "icon": [Function],
+                "intent": Object {
+                  "params": Object {
+                    "type": "post",
+                  },
+                  "type": "create",
+                },
+                "showAsAction": Object {
+                  "whenCollapsed": true,
+                },
+                "title": "Create new Post",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "action": "setSortOrder",
+                "group": "sorting",
+                "icon": [Function],
+                "params": Object {
+                  "by": Array [
+                    Object {
+                      "direction": "asc",
+                      "field": "title",
+                    },
+                    Object {
+                      "direction": "asc",
+                      "field": "publicationYear",
+                    },
+                  ],
+                  "extendedProjection": "title, publicationYear",
+                },
+                "title": "Sort by Title",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "action": "setSortOrder",
+                "group": "sorting",
+                "icon": [Function],
+                "params": Object {
+                  "by": Array [
+                    Object {
+                      "direction": "asc",
+                      "field": "translations.se",
+                    },
+                    Object {
+                      "direction": "asc",
+                      "field": "title",
+                    },
+                  ],
+                  "extendedProjection": "translations, title",
+                },
+                "title": "Sort by Swedish title",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "action": "setSortOrder",
+                "group": "sorting",
+                "icon": [Function],
+                "params": Object {
+                  "by": Array [
+                    Object {
+                      "direction": "desc",
+                      "field": "_updatedAt",
+                    },
+                  ],
+                  "extendedProjection": "",
+                },
+                "title": "Sort by Last edited",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "action": "setSortOrder",
+                "group": "sorting",
+                "icon": [Function],
+                "params": Object {
+                  "by": Array [
+                    Object {
+                      "direction": "desc",
+                      "field": "_createdAt",
+                    },
+                  ],
+                  "extendedProjection": "",
+                },
+                "title": "Sort by Created",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "action": "setLayout",
+                "group": "layout",
+                "icon": [Function],
+                "params": Object {
+                  "layout": "default",
+                },
+                "title": "List",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "action": "setLayout",
+                "group": "layout",
+                "icon": [Function],
+                "params": Object {
+                  "layout": "detail",
+                },
+                "title": "Details",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "group": "actions",
+                "icon": [Function],
+                "intent": Object {
+                  "params": Object {
+                    "type": "post",
+                  },
+                  "type": "create",
+                },
+                "title": "Create new…",
+              },
+            },
+          ],
+          "options": Object {
+            "defaultOrdering": Array [
+              Object {
+                "direction": "desc",
+                "field": "_updatedAt",
+              },
+            ],
+            "filter": "_type == $type",
+            "params": Object {
+              "type": "post",
+            },
+          },
+          "schemaTypeName": "post",
+          "title": "Post",
+        },
+      },
+      "id": "post",
+      "schemaType": Object {
+        "fields": Array [
+          Object {
+            "name": "title",
+            "title": "Title",
+            "type": "string",
+          },
+          Object {
+            "name": "slug",
+            "options": Object {
+              "maxLength": 96,
+              "source": "title",
+            },
+            "title": "Slug",
+            "type": "slug",
+          },
+          Object {
+            "name": "author",
+            "title": "Author",
+            "to": Object {
+              "type": "author",
+            },
+            "type": "reference",
+          },
+          Object {
+            "name": "mainImage",
+            "options": Object {
+              "hotspot": true,
+            },
+            "title": "Main image",
+            "type": "image",
+          },
+          Object {
+            "name": "publishedAt",
+            "title": "Published at",
+            "type": "datetime",
+          },
+          Object {
+            "name": "publicationYear",
+            "title": "Publication year",
+            "type": "string",
+          },
+          Object {
+            "fields": Array [
+              Object {
+                "name": "se",
+                "title": "Swedish",
+                "type": "string",
+              },
+              Object {
+                "name": "no",
+                "title": "Norwegian",
+                "type": "string",
+              },
+            ],
+            "name": "translations",
+            "title": "Translations",
+            "type": "object",
+          },
+          Object {
+            "name": "body",
+            "title": "Body",
+            "type": "text",
+          },
+        ],
+        "name": "post",
+        "orderings": Array [
+          Object {
+            "by": Array [
+              Object {
+                "direction": "asc",
+                "field": "title",
+              },
+              Object {
+                "direction": "asc",
+                "field": "publicationYear",
+              },
+            ],
+            "name": "title",
+            "title": "Title",
+          },
+          Object {
+            "by": Array [
+              Object {
+                "direction": "asc",
+                "field": "translations.se",
+              },
+              Object {
+                "direction": "asc",
+                "field": "title",
+              },
+            ],
+            "name": "swedishTitle",
+            "title": "Swedish title",
+          },
+        ],
+        "preview": Object {
+          "select": Object {
+            "author": "author.name",
+            "media": "mainImage",
+            "title": "title",
+          },
+        },
+        "title": "Post",
+        "type": "document",
+      },
+      "title": "Post",
+    },
+  },
+]
+`;
+
+exports[`generates correct document type list items from global schema 1`] = `
+Array [
+  ListItemBuilder {
+    "spec": Object {
+      "child": DocumentListBuilder {
+        "spec": Object {
+          "canHandleIntent": [Function],
+          "child": [Function],
+          "id": "author",
+          "menuItemGroups": Array [
+            Object {
+              "id": "sorting",
+              "title": "Sort",
+            },
+            Object {
+              "id": "layout",
+              "title": "Layout",
+            },
+            Object {
+              "id": "actions",
+              "title": "Actions",
+            },
+          ],
+          "menuItems": Array [
+            MenuItemBuilder {
+              "spec": Object {
+                "icon": [Function],
+                "intent": Object {
+                  "params": Object {
+                    "type": "author",
+                  },
+                  "type": "create",
+                },
+                "showAsAction": Object {
+                  "whenCollapsed": true,
+                },
+                "title": "Create new Author",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "action": "setSortOrder",
+                "group": "sorting",
+                "icon": [Function],
+                "params": Object {
+                  "by": Array [
+                    Object {
+                      "direction": "desc",
+                      "field": "_updatedAt",
+                    },
+                  ],
+                  "extendedProjection": "",
+                },
+                "title": "Sort by Last edited",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "action": "setSortOrder",
+                "group": "sorting",
+                "icon": [Function],
+                "params": Object {
+                  "by": Array [
+                    Object {
+                      "direction": "desc",
+                      "field": "_createdAt",
+                    },
+                  ],
+                  "extendedProjection": "",
+                },
+                "title": "Sort by Created",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "action": "setLayout",
+                "group": "layout",
+                "icon": [Function],
+                "params": Object {
+                  "layout": "default",
+                },
+                "title": "List",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "action": "setLayout",
+                "group": "layout",
+                "icon": [Function],
+                "params": Object {
+                  "layout": "detail",
+                },
+                "title": "Details",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "group": "actions",
+                "icon": [Function],
+                "intent": Object {
+                  "params": Object {
+                    "type": "author",
+                  },
+                  "type": "create",
+                },
+                "title": "Create new…",
+              },
+            },
+          ],
+          "options": Object {
+            "defaultOrdering": Array [
+              Object {
+                "direction": "desc",
+                "field": "_updatedAt",
+              },
+            ],
+            "filter": "_type == $type",
+            "params": Object {
+              "type": "author",
+            },
+          },
+          "schemaTypeName": "author",
+          "title": "Author",
+        },
+      },
+      "id": "author",
+      "schemaType": Object {
+        "fields": Array [
+          Object {
+            "name": "name",
+            "title": "Name",
+            "type": "string",
+          },
+          Object {
+            "name": "slug",
+            "options": Object {
+              "maxLength": 96,
+              "source": "name",
+            },
+            "title": "Slug",
+            "type": "slug",
+          },
+          Object {
+            "name": "image",
+            "options": Object {
+              "hotspot": true,
+            },
+            "title": "Image",
+            "type": "image",
+          },
+        ],
+        "name": "author",
+        "preview": Object {
+          "select": Object {
+            "media": "image",
+            "title": "name",
+          },
+        },
+        "title": "Author",
+        "type": "document",
+      },
+      "title": "Author",
+    },
+  },
+  ListItemBuilder {
+    "spec": Object {
+      "child": DocumentListBuilder {
+        "spec": Object {
+          "canHandleIntent": [Function],
+          "child": [Function],
+          "id": "post",
+          "menuItemGroups": Array [
+            Object {
+              "id": "sorting",
+              "title": "Sort",
+            },
+            Object {
+              "id": "layout",
+              "title": "Layout",
+            },
+            Object {
+              "id": "actions",
+              "title": "Actions",
+            },
+          ],
+          "menuItems": Array [
+            MenuItemBuilder {
+              "spec": Object {
+                "icon": [Function],
+                "intent": Object {
+                  "params": Object {
+                    "type": "post",
+                  },
+                  "type": "create",
+                },
+                "showAsAction": Object {
+                  "whenCollapsed": true,
+                },
+                "title": "Create new Post",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "action": "setSortOrder",
+                "group": "sorting",
+                "icon": [Function],
+                "params": Object {
+                  "by": Array [
+                    Object {
+                      "direction": "asc",
+                      "field": "title",
+                    },
+                    Object {
+                      "direction": "asc",
+                      "field": "publicationYear",
+                    },
+                  ],
+                  "extendedProjection": "title, publicationYear",
+                },
+                "title": "Sort by Title",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "action": "setSortOrder",
+                "group": "sorting",
+                "icon": [Function],
+                "params": Object {
+                  "by": Array [
+                    Object {
+                      "direction": "asc",
+                      "field": "translations.se",
+                    },
+                    Object {
+                      "direction": "asc",
+                      "field": "title",
+                    },
+                  ],
+                  "extendedProjection": "translations, title",
+                },
+                "title": "Sort by Swedish title",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "action": "setSortOrder",
+                "group": "sorting",
+                "icon": [Function],
+                "params": Object {
+                  "by": Array [
+                    Object {
+                      "direction": "desc",
+                      "field": "_updatedAt",
+                    },
+                  ],
+                  "extendedProjection": "",
+                },
+                "title": "Sort by Last edited",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "action": "setSortOrder",
+                "group": "sorting",
+                "icon": [Function],
+                "params": Object {
+                  "by": Array [
+                    Object {
+                      "direction": "desc",
+                      "field": "_createdAt",
+                    },
+                  ],
+                  "extendedProjection": "",
+                },
+                "title": "Sort by Created",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "action": "setLayout",
+                "group": "layout",
+                "icon": [Function],
+                "params": Object {
+                  "layout": "default",
+                },
+                "title": "List",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "action": "setLayout",
+                "group": "layout",
+                "icon": [Function],
+                "params": Object {
+                  "layout": "detail",
+                },
+                "title": "Details",
+              },
+            },
+            MenuItemBuilder {
+              "spec": Object {
+                "group": "actions",
+                "icon": [Function],
+                "intent": Object {
+                  "params": Object {
+                    "type": "post",
+                  },
+                  "type": "create",
+                },
+                "title": "Create new…",
+              },
+            },
+          ],
+          "options": Object {
+            "defaultOrdering": Array [
+              Object {
+                "direction": "desc",
+                "field": "_updatedAt",
+              },
+            ],
+            "filter": "_type == $type",
+            "params": Object {
+              "type": "post",
+            },
+          },
+          "schemaTypeName": "post",
+          "title": "Post",
+        },
+      },
+      "id": "post",
+      "schemaType": Object {
+        "fields": Array [
+          Object {
+            "name": "title",
+            "title": "Title",
+            "type": "string",
+          },
+          Object {
+            "name": "slug",
+            "options": Object {
+              "maxLength": 96,
+              "source": "title",
+            },
+            "title": "Slug",
+            "type": "slug",
+          },
+          Object {
+            "name": "author",
+            "title": "Author",
+            "to": Object {
+              "type": "author",
+            },
+            "type": "reference",
+          },
+          Object {
+            "name": "mainImage",
+            "options": Object {
+              "hotspot": true,
+            },
+            "title": "Main image",
+            "type": "image",
+          },
+          Object {
+            "name": "publishedAt",
+            "title": "Published at",
+            "type": "datetime",
+          },
+          Object {
+            "name": "publicationYear",
+            "title": "Publication year",
+            "type": "string",
+          },
+          Object {
+            "fields": Array [
+              Object {
+                "name": "se",
+                "title": "Swedish",
+                "type": "string",
+              },
+              Object {
+                "name": "no",
+                "title": "Norwegian",
+                "type": "string",
+              },
+            ],
+            "name": "translations",
+            "title": "Translations",
+            "type": "object",
+          },
+          Object {
+            "name": "body",
+            "title": "Body",
+            "type": "text",
+          },
+        ],
+        "name": "post",
+        "orderings": Array [
+          Object {
+            "by": Array [
+              Object {
+                "direction": "asc",
+                "field": "title",
+              },
+              Object {
+                "direction": "asc",
+                "field": "publicationYear",
+              },
+            ],
+            "name": "title",
+            "title": "Title",
+          },
+          Object {
+            "by": Array [
+              Object {
+                "direction": "asc",
+                "field": "translations.se",
+              },
+              Object {
+                "direction": "asc",
+                "field": "title",
+              },
+            ],
+            "name": "swedishTitle",
+            "title": "Swedish title",
+          },
+        ],
+        "preview": Object {
+          "select": Object {
+            "author": "author.name",
+            "media": "mainImage",
+            "title": "title",
+          },
+        },
+        "title": "Post",
+        "type": "document",
+      },
+      "title": "Post",
+    },
+  },
+]
+`;

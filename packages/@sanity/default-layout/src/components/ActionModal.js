@@ -2,8 +2,8 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {IntentLink} from 'part:@sanity/base/router'
 import Dialog from 'part:@sanity/components/dialogs/default'
-import styles from './styles/ActionModal.css'
 import FileIcon from 'part:@sanity/base/file-icon'
+import styles from './styles/ActionModal.css'
 
 function ActionModal(props) {
   return (
@@ -12,7 +12,7 @@ function ActionModal(props) {
         <h1>Create new</h1>
         <ul className={styles.list}>
           {props.actions.map(action => {
-            const Icon = action.params && action.params.icon
+            const Icon = action.icon
             return (
               <li className={styles.listItem} key={action.title}>
                 <IntentLink

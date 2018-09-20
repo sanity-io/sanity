@@ -1,0 +1,5 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  padding-left: var(--medium-padding);
+}

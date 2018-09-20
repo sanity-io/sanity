@@ -1,0 +1,19 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.item {
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+.selected {
+  composes: item;
+  background-color: var(--selected-item-color);
+}
+
+.link {
+  composes: link from './DocumentsListPane.css';
+  margin: 0;
+  line-height: 1rem;
+  padding: var(--small-padding) var(--medium-padding);
+}

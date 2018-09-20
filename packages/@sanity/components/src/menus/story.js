@@ -1,12 +1,12 @@
 import React from 'react'
 import Menu from 'part:@sanity/components/menus/default'
-//import StateMenu from 'part:@sanity/components/menus/state'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import SanityIcon from 'part:@sanity/base/sanity-logo-icon'
 import {withKnobs, number, boolean, select} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import {range} from 'lodash'
 import Chance from 'chance'
+
 const chance = new Chance()
 
 storiesOf('Menus')
@@ -46,7 +46,6 @@ storiesOf('Menus')
               onClickOutside={action('prop:onClickOutside')}
               items={items}
               origin={select('origin (prop)', origins)}
-              isOpen={boolean('isOpen (prop)', true)}
             />
           </div>
         </div>

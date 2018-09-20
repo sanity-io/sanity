@@ -9,8 +9,7 @@
     "clean": "rimraf lib",
     "example-testbed": "cd examples/testbed && sanity start",
     "start": "npm run example-testbed",
-    "test": "sanity-check",
-    "prepublish": "in-publish && sanity-check || not-in-publish"
+    "test": "jest"
   },
   "keywords": [
     "sanity",
@@ -25,8 +24,10 @@
   "dependencies": {
     "@sanity/data-aspects": "0.133.2",
     "@sanity/form-builder": "0.133.2",
+    "@sanity/generate-help-url": "0.133.2",
     "@sanity/mutator": "0.133.2",
     "@sanity/react-tippy": "1.2.6",
+    "@sanity/structure": "0.133.2",
     "@sanity/uuid": "0.133.2",
     "@sanity/validation": "0.133.2",
     "classnames": "^2.2.5",
@@ -34,10 +35,9 @@
     "diff": "^3.2.0",
     "element-resize-detector": "^1.1.14",
     "hashlru": "^2.1.0",
-    "in-publish": "^2.0.0",
     "lodash": "^4.17.4",
     "promise-latest": "^1.0.4",
-    "react-click-outside": "^2.3.1",
+    "react-click-outside": "^3.0.0",
     "react-ink": "^6.1.0",
     "react-json-inspector": "^7.1.1",
     "react-tiny-virtual-list": "^2.0.5",
@@ -51,6 +51,7 @@
     "@sanity/components": "0.133.2",
     "@sanity/core": "0.133.2",
     "history": "^4.6.3",
+    "jest": "^22.4.3",
     "postcss-cssnext": "^3.0.2",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
