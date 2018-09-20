@@ -27,8 +27,10 @@ const isStructure = structure => {
 }
 
 let prevStructureError = null
-if (module.hot && module.hot.data) {
-  prevStructureError = module.hot.data.prevError
+if (__DEV__) {
+  if (module.hot && module.hot.data) {
+    prevStructureError = module.hot.data.prevError
+  }
 }
 
 // We are lazy-requiring/resolving the structure inside of a function in order to catch errors
@@ -207,8 +209,10 @@ export default withRouterHOC(
   }
 )
 
-if (module.hot) {
-  module.hot.dispose(data => {
-    data.prevError = prevStructureError
-  })
+if (__DEV__) {
+  if (module.hot) {
+    module.hot.dispose(data => {
+      data.prevError = prevStructureError
+    })
+  }
 }
