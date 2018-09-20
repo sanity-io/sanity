@@ -16,8 +16,6 @@ import {
   getDraftId
 } from 'part:@sanity/base/util/draft-utils'
 
-import NotPublishedStatus from '../components/NotPublishedStatus'
-import DraftStatus from '../components/DraftStatus'
 import styles from './styles/DocumentsListPane.css'
 import listStyles from './styles/ListView.css'
 import InfiniteList from './InfiniteList'
@@ -42,23 +40,6 @@ function getDocumentKey(document) {
 function noActionFn() {
   // eslint-disable-next-line no-console
   console.warn('No handler defined for action')
-}
-
-function isLiveEditEnabled(item) {
-  const schemaType = schema.get(item._type)
-  return schemaType && schemaType.liveEdit === true
-}
-
-function getStatusIndicator(item) {
-  if (!item.hasPublished) {
-    return NotPublishedStatus
-  }
-
-  if (!isLiveEditEnabled(item) && item.hasDraft && item.hasPublished) {
-    return DraftStatus
-  }
-
-  return null
 }
 
 function getTypeNameFromSingleTypeFilter(filter, params = {}) {
@@ -168,7 +149,6 @@ export default withRouterHOC(
         getLinkState={this.getLinkStateForItem}
         layout={this.state.layout || this.props.defaultLayout || 'default'}
         value={item}
-        status={getStatusIndicator(item)}
         schemaType={schema.get(item._type)}
         isSelected={this.itemIsSelected(item._id)}
       />

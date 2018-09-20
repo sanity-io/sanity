@@ -13,6 +13,7 @@ export default () =>
     .items([
       S.documentListItem()
         .id('foo-bar')
+        .title('Singleton author')
         .schemaType('author'),
 
       S.listItem()
