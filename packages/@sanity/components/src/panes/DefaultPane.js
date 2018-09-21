@@ -227,7 +227,7 @@ class Pane extends React.Component {
         icon={act.icon}
         color="primary"
         kind="simple"
-        onClick={this.handleMenuAction}
+        onClick={this.handleMenuAction.bind(this, act)}
       />
     )
   }
