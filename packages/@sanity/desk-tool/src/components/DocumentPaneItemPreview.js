@@ -1,11 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {combineLatest, concat, of} from 'rxjs'
+import {assignWith} from 'lodash'
 import {map} from 'rxjs/operators'
+import WarningIcon from 'part:@sanity/base/warning-icon'
 import {observeForPreview, SanityDefaultPreview} from 'part:@sanity/base/preview'
 import NotPublishedStatus from './NotPublishedStatus'
 import DraftStatus from './DraftStatus'
-import WarningIcon from 'part:@sanity/base/warning-icon'
 
 const isLiveEditEnabled = schemaType => schemaType.liveEdit === true
 
@@ -26,15 +27,15 @@ const getMissingDocumentFallback = item => ({
   media: WarningIcon
 })
 
-const getValueWithFallback = ({isLoading, value, schemaType, draft, published}) => {
+const getValueWithFallback = ({value, draft, published}) => {
   const snapshot = draft || published
   if (!snapshot) {
     return getMissingDocumentFallback(value)
   }
-  return {
-    ...snapshot,
-    ...value
-  }
+
+  return assignWith({}, snapshot, value, (objValue, srcValue) => {
+    return typeof srcValue === 'undefined' ? objValue : srcValue
+  })
 }
 
 export default class DocumentPaneItemPreview extends React.Component {
