@@ -4,11 +4,20 @@ const polyfilledEventSource = require('@sanity/eventsource')
 const pick = require('../util/pick')
 const defaults = require('../util/defaults')
 const encodeQueryString = require('./encodeQueryString')
+const generateHelpUrl = require('@sanity/generate-help-url')
+const once = require('../util/once')
 
-const EventSource =
-  typeof window !== 'undefined' && window.EventSource
-    ? window.EventSource // Native browser EventSource
-    : polyfilledEventSource // Node.js, IE etc
+const tokenWarning = [
+  'Using token with listeners is not supported in browsers. ',
+  `For more info, see ${generateHelpUrl('js-client-listener-tokens-browser')}.`
+]
+// eslint-disable-next-line no-console
+const printTokenWarning = once(() => console.warn(tokenWarning.join(' ')))
+
+const isWindowEventSource = Boolean(typeof window !== 'undefined' && window.EventSource)
+const EventSource = isWindowEventSource
+  ? window.EventSource // Native browser EventSource
+  : polyfilledEventSource // Node.js, IE etc
 
 const possibleOptions = ['includePreviousRevision', 'includeResult']
 const defaultOptions = {
@@ -24,6 +33,10 @@ module.exports = function listen(query, params, opts = {}) {
   const uri = `${url}${this.getDataUrl('listen', qs)}`
   const listenFor = options.events ? options.events : ['mutation']
   const shouldEmitReconnect = listenFor.indexOf('reconnect') !== -1
+
+  if (token && isWindowEventSource) {
+    printTokenWarning()
+  }
 
   const esOptions = {}
   if (token || withCredentials) {
