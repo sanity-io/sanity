@@ -1,8 +1,6 @@
 {
-  "lerna": "2.10.2",
   "hoist": true,
   "concurrency": 8,
-  "ci": true,
   "packages": [
     "packages/@sanity/*",
     "packages/example-studio",
