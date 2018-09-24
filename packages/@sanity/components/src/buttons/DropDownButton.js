@@ -4,9 +4,11 @@ import React from 'react'
 import styles from 'part:@sanity/components/buttons/dropdown-style'
 import Button from 'part:@sanity/components/buttons/default'
 import ArrowIcon from 'part:@sanity/base/angle-down-icon'
-import Menu from 'part:@sanity/components/menus/default'
+import {List, Item} from 'part:@sanity/components/lists/default'
 import {omit, get} from 'lodash'
 import Poppable from 'part:@sanity/components/utilities/poppable'
+// import ArrowKeyNavigation from 'part:@sanity/components/utilities/arrow-key-navigation'
+import ArrowKeyNavigation from 'boundless-arrow-key-navigation/build'
 
 export default class DropDownButton extends React.PureComponent {
   static propTypes = {
@@ -25,12 +27,24 @@ export default class DropDownButton extends React.PureComponent {
     ripple: PropTypes.bool,
     colored: PropTypes.bool,
     color: PropTypes.string,
-    className: PropTypes.string
+    className: PropTypes.string,
+    renderItem: PropTypes.func
   }
+
+  static defaultProps = {
+    renderItem(item) {
+      return <div>{item.title}</div>
+    }
+  }
+
+  firstItemElement = React.createRef()
+  buttonElement = React.createRef()
 
   state = {
     menuOpened: false
   }
+  menuHasKeybaordFocus = false
+  keyboardNavigation = false
 
   handleClose = () => {
     this.setState({menuOpened: false})
@@ -45,6 +59,14 @@ export default class DropDownButton extends React.PureComponent {
       menuOpened: true,
       width: event.target.offsetWidth
     })
+    // Checks if the onClick comes from pressing the keyboard
+    this.keyboardNavigation = event.detail == 0
+  }
+
+  handleButtonBlur = event => {
+    if (this.state.menuOpened && !this.menuHasKeybaordFocus && this.keyboardNavigation) {
+      this.handleClose()
+    }
   }
 
   handleClickOutside = event => {
@@ -55,15 +77,41 @@ export default class DropDownButton extends React.PureComponent {
     } else {
       this.handleClose()
     }
+    this.buttonElement.current.focus()
+  }
+
+  handleItemClick = item => {
+    this.handleAction(item)
+  }
+
+  handleItemKeyPress = (event, item) => {
+    if (event.key === 'Enter') {
+      this.handleAction(item)
+    }
   }
 
   handleAction = item => {
     this.props.onAction(item)
     this.handleClose()
+    this.keyboardNavigation = false
+  }
+
+  handleMenuBlur = event => {
+    this.menuHasKeybaordFocus = false
+    this.buttonElement.current.focus()
+    this.handleClose()
+  }
+
+  handleButtonKeyDown = event => {
+    if (event.key == 'ArrowDown' && this.state.menuOpened) {
+      this.menuHasKeybaordFocus = true
+      this.keyboardNavigation = true
+      this.firstItemElement.current.focus()
+    }
   }
 
   render() {
-    const {items, children, kind, className, ...rest} = omit(this.props, 'onAction')
+    const {items, renderItem, children, kind, className, ...rest} = omit(this.props, 'onAction')
     const {menuOpened, width} = this.state
 
     const modifiers = {
@@ -81,7 +129,14 @@ export default class DropDownButton extends React.PureComponent {
     }
 
     const target = (
-      <Button {...rest} onClick={this.handleOnClick} kind={kind}>
+      <Button
+        {...rest}
+        onClick={this.handleOnClick}
+        kind={kind}
+        onKeyDown={this.handleButtonKeyDown}
+        onBlur={this.handleButtonBlur}
+        ref={this.buttonElement}
+      >
         <span className={styles.title}>{children}</span>
         <span className={styles.arrow}>
           <ArrowIcon color="inherit" />
@@ -99,13 +154,27 @@ export default class DropDownButton extends React.PureComponent {
         >
           {menuOpened && (
             <div className={styles.popper} style={{minWidth: `${width}px`}}>
-              <Menu
-                isOpen
-                items={items}
-                className={styles.menu}
-                onAction={this.handleAction}
-                onClickOutside={this.handleClickOutside}
-              />
+              {/* component list causes error here */}
+              <List className={styles.list}>
+                <ArrowKeyNavigation>
+                  {items.map((item, i) => {
+                    return (
+                      <Item
+                        key={i}
+                        className={styles.listItem}
+                        onClick={() => this.handleItemClick(item)} //eslint-disable-line react/jsx-no-bind
+                        onKeyPress={event => this.handleItemKeyPress(event, item)} //eslint-disable-line react/jsx-no-bind
+                        item={item}
+                        tabIndex={0}
+                        ref={i === 0 && this.firstItemElement}
+                      >
+                        {renderItem(item)}
+                      </Item>
+                    )
+                  })}
+                </ArrowKeyNavigation>
+              </List>
+              <div tabIndex={0} onFocus={this.handleMenuBlur} />
             </div>
           )}
         </Poppable>
