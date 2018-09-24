@@ -27,7 +27,8 @@ export default {
     route('/edit/:type/:editDocumentId'),
     route({
       path: '/:panes',
-      children: [route('/:action', route('/:editDocumentId'))],
+      // Legacy URLs, used to handle redirects
+      children: [route('/:action', route('/:legacyEditDocumentId'))],
       transform: {
         panes: {toState, toPath}
       }
@@ -49,7 +50,7 @@ export default {
       }
     }
 
-    return {editDocumentId, type: params.type}
+    return {editDocumentId, type: params.type || '*'}
   },
   title: 'Desk',
   name: 'desk',

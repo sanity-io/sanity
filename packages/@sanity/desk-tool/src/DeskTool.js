@@ -1,8 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {throwError, interval, defer} from 'rxjs'
-import {map, switchMap, distinctUntilChanged, debounce} from 'rxjs/operators'
+import {throwError, interval, defer, of as observableOf} from 'rxjs'
+import {map, concat, switchMap, distinctUntilChanged, debounce} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
+import client from 'part:@sanity/base/client'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import {resolvePanes, LOADING} from './utils/resolvePanes'
 import styles from './styles/DeskTool.css'
@@ -86,6 +87,7 @@ export default withRouterHOC(
         state: PropTypes.shape({
           panes: PropTypes.arrayOf(PropTypes.string),
           editDocumentId: PropTypes.string,
+          legacyEditDocumentId: PropTypes.string,
           type: PropTypes.string,
           action: PropTypes.string
         })
@@ -101,17 +103,34 @@ export default withRouterHOC(
       props.onPaneChange([])
     }
 
-    maybeAddEditorPane = panes => {
-      const {editDocumentId, type} = this.props.router.state
+    maybeAddEditorPane = (panes, props) => {
+      const router = props.router
+      const {editDocumentId, type} = router.state
+
       if (!editDocumentId) {
-        return panes
+        return observableOf(panes)
       }
 
-      return panes.concat({
+      const editor = {
         id: 'editor',
         type: 'document',
         options: {id: editDocumentId, type}
-      })
+      }
+
+      if (type !== '*') {
+        return observableOf(panes.concat(editor))
+      }
+
+      return observableOf(panes.concat(LOADING)).pipe(
+        concat(
+          client.observable.fetch('*[_id == $id][0]._type', {id: editDocumentId}).pipe(
+            map(typeName => {
+              router.navigate({...router.state, type: typeName}, {replace: true})
+              return panes.concat({...editor, options: {...editor.options, type: typeName}})
+            })
+          )
+        )
+      )
     }
 
     setResolvedPanes = panes => {
@@ -144,8 +163,8 @@ export default withRouterHOC(
           distinctUntilChanged(),
           map(maybeSerialize),
           switchMap(structure => resolvePanes(structure, props.router.state.panes || [])),
-          debounce(panes => interval(hasLoading(panes) ? 50 : 0)),
-          map(this.maybeAddEditorPane)
+          switchMap(panes => this.maybeAddEditorPane(panes, props)),
+          debounce(panes => interval(hasLoading(panes) ? 50 : 0))
         )
         .subscribe(this.setResolvedPanes, this.setResolveError)
     }
@@ -165,9 +184,9 @@ export default withRouterHOC(
 
     maybeHandleOldUrl() {
       const {navigate} = this.props.router
-      const {panes, action, editDocumentId} = this.props.router.state
-      if (action === 'edit' && editDocumentId) {
-        navigate({panes: panes.concat([editDocumentId])}, {replace: true})
+      const {panes, action, legacyEditDocumentId} = this.props.router.state
+      if (action === 'edit' && legacyEditDocumentId) {
+        navigate({panes: panes.concat([legacyEditDocumentId])}, {replace: true})
       }
     }
 
