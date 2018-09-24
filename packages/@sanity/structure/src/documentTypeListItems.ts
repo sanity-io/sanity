@@ -50,7 +50,7 @@ export function getDocumentTypeList(
     .defaultOrdering(DEFAULT_SELECTED_ORDERING_OPTION.by)
     .canHandleIntent(
       (intentName, params): boolean =>
-        Boolean(intentName === 'edit' && params && params.id) ||
+        Boolean(intentName === 'edit' && params && params.id && params.type === typeName) ||
         Boolean(intentName === 'create' && params && params.type === typeName)
     )
     .menuItemGroups([
