@@ -43,7 +43,7 @@ export default class DropDownButton extends React.PureComponent {
   state = {
     menuOpened: false
   }
-  menuHasKeybaordFocus = false
+  menuHasKeyboardFocus = false
   keyboardNavigation = false
 
   handleClose = () => {
@@ -64,7 +64,7 @@ export default class DropDownButton extends React.PureComponent {
   }
 
   handleButtonBlur = event => {
-    if (this.state.menuOpened && !this.menuHasKeybaordFocus && this.keyboardNavigation) {
+    if (this.state.menuOpened && !this.menuHasKeyboardFocus && this.keyboardNavigation) {
       this.handleClose()
     }
   }
@@ -97,14 +97,14 @@ export default class DropDownButton extends React.PureComponent {
   }
 
   handleMenuBlur = event => {
-    this.menuHasKeybaordFocus = false
+    this.menuHasKeyboardFocus = false
     this.buttonElement.current.focus()
     this.handleClose()
   }
 
   handleButtonKeyDown = event => {
     if (event.key == 'ArrowDown' && this.state.menuOpened) {
-      this.menuHasKeybaordFocus = true
+      this.menuHasKeyboardFocus = true
       this.keyboardNavigation = true
       this.firstItemElement.current.focus()
     }
