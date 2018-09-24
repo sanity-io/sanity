@@ -15,11 +15,17 @@ import {
   isPublishedId,
   getDraftId
 } from 'part:@sanity/base/util/draft-utils'
-
+import {combineLatest} from 'rxjs'
+import {map, tap} from 'rxjs/operators'
 import styles from './styles/DocumentsListPane.css'
 import listStyles from './styles/ListView.css'
 import InfiniteList from './InfiniteList'
 import PaneItem from './PaneItem'
+import settingsStore from 'part:@sanity/base/settings'
+
+const settings = settingsStore.forNamespace('desk-tool')
+
+const DEFAULT_ORDERING = [{field: '_createdAt', direction: 'desc'}]
 
 function removePublishedWithDrafts(documents) {
   const [draftIds, publishedIds] = partition(documents.map(doc => doc._id), isDraftId)
@@ -68,8 +74,6 @@ function toOrderClause(orderBy) {
     )
     .join(', ')
 }
-
-const DEFAULT_ORDERING = [{field: '_createdAt', direction: 'desc'}]
 
 export default withRouterHOC(
   class DocumentsListPane extends React.PureComponent {
@@ -122,14 +126,49 @@ export default withRouterHOC(
 
     actionHandlers = {
       setLayout: ({layout}) => {
-        this.setState({layout})
+        this.layoutSetting.set(layout)
       },
       setSortOrder: sort => {
-        this.setState({sort})
+        this.sortOrderSetting.set(sort)
       }
     }
 
-    state = {scrollTop: 0}
+    state = {scrollTop: 0, sortOrder: null, layout: null}
+
+    constructor(props) {
+      super()
+      const {filter, params} = props.options
+      const typeName = getTypeNameFromSingleTypeFilter(filter, params)
+      const settingsNamespace = settings.forNamespace(typeName)
+      this.sortOrderSetting = settingsNamespace.forKey('sortOrder')
+      this.layoutSetting = settingsNamespace.forKey('layout')
+
+      let sync = true
+      this.settingsSubscription = combineLatest(
+        this.sortOrderSetting.listen(DEFAULT_ORDERING),
+        this.layoutSetting.listen()
+      )
+        .pipe(
+          map(([sortOrder, layout]) => ({
+            sortOrder,
+            layout
+          })),
+          tap(nextState => {
+            if (sync) {
+              this.state = nextState
+            } else {
+              this.setState(nextState)
+            }
+          })
+        )
+        .subscribe()
+
+      sync = false
+    }
+
+    componentWillUnmount() {
+      this.settingsSubscription.unsubscribe()
+    }
 
     itemIsSelected(item) {
       const {router, index} = this.props
@@ -177,7 +216,7 @@ export default withRouterHOC(
     buildListQuery() {
       const {options} = this.props
       const {filter, defaultOrdering} = options
-      const sortState = this.state.sort
+      const sortState = this.state.sortOrder
       const extendedProjection = sortState && sortState.extendedProjection
       const projectionFields = ['_id', '_type']
       const finalProjection = projectionFields.join(', ')

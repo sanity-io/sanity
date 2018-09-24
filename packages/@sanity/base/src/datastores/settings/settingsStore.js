@@ -1,80 +1,52 @@
-const noop = () => {
-  /* intentional noop */
+import {merge, Subject} from 'rxjs'
+import {filter, map, switchMap} from 'rxjs/operators'
+import {resolveBackend} from './backends/resolve'
+
+const storageBackend = resolveBackend()
+
+const set$ = new Subject()
+
+const prefixNamespace = (ns, key) => `${ns}::${key}`
+
+const updates$ = set$.pipe(
+  switchMap(event =>
+    storageBackend.set(event.key, event.value).pipe(
+      map(nextValue => ({
+        key: event.key,
+        value: nextValue
+      }))
+    )
+  )
+)
+
+const listen = (key, defValue) => {
+  return merge(
+    storageBackend.get(key, defValue),
+    updates$.pipe(
+      filter(update => update.key === key),
+      map(update => update.value)
+    )
+  )
 }
 
-let isSupported = null
-const supportsLocalStorage = () => {
-  if (isSupported !== null) {
-    return isSupported
-  }
-
-  const testKey = '__test__'
-  try {
-    localStorage.setItem(testKey, testKey)
-    localStorage.removeItem(testKey)
-    isSupported = true
-  } catch (evt) {
-    isSupported = false
-  }
-
-  return isSupported
-}
-
-const tryParse = (val, defValue) => {
-  try {
-    return JSON.parse(val)
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.warn(`Failed to parse settings: ${err.message}`)
-    return defValue
-  }
-}
-
-const del = (ns, key) => {
-  localStorage.removeItem(`${ns}::${key}`)
-}
-
-const get = (ns, key, defValue) => {
-  const val = localStorage.getItem(`${ns}::${key}`)
-  return val === null ? defValue : tryParse(val, defValue)
-}
-
-const set = (ns, key, val) => {
-  // Can't stringify undefined, and nulls are what
-  // `getItem` returns when key does not exist
-  if (typeof val === 'undefined' || val === null) {
-    del(ns, key)
-  } else {
-    localStorage.setItem(`${ns}::${key}`, JSON.stringify(val))
-  }
-}
-
-const clear = ns => {
-  const prefix = `${ns}::`
-  for (const key in localStorage) {
-    if (localStorage.hasOwnProperty(key) && key.startsWith(prefix)) {
-      localStorage.removeItem(key)
-    }
-  }
+const set = (key, value) => {
+  set$.next({key, value})
 }
 
 const forNamespace = ns => {
-  const forSubNamespace = sub => forNamespace(`${ns}::sub`)
-  return supportsLocalStorage()
-    ? {
-        set: set.bind(null, ns),
-        get: get.bind(null, ns),
-        clear: clear.bind(null, ns),
-        delete: del.bind(null, ns),
-        forNamespace: forSubNamespace
+  return {
+    forKey: key => {
+      const namespacedKey = prefixNamespace(ns, key)
+      return {
+        listen: defaultValue => listen(namespacedKey, defaultValue),
+        set: value => set(namespacedKey, value),
+        del: () => set(namespacedKey, undefined)
       }
-    : {
-        set: noop,
-        get: noop,
-        clear: noop,
-        delete: noop,
-        forNamespace: forSubNamespace
-      }
+    },
+    listen: (key, defaultValue) => listen(prefixNamespace(ns, key), defaultValue),
+    set: (key, value) => set(prefixNamespace(ns, key), value),
+    del: key => set(prefixNamespace(ns, key), undefined),
+    forNamespace: sub => forNamespace(prefixNamespace(ns, sub))
+  }
 }
-
 export default {forNamespace}
