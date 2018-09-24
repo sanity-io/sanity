@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import {combineLatest, concat, of} from 'rxjs'
 import {assignWith} from 'lodash'
 import {map} from 'rxjs/operators'
+import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import {observeForPreview, SanityDefaultPreview} from 'part:@sanity/base/preview'
 import NotPublishedStatus from './NotPublishedStatus'
@@ -50,8 +51,8 @@ export default class DocumentPaneItemPreview extends React.Component {
       combineLatest([
         isLiveEditEnabled(schemaType)
           ? of({snapshot: null})
-          : observeForPreview({...value, _id: `drafts.${value._id}`}, schemaType),
-        observeForPreview(value, schemaType)
+          : observeForPreview({...value, _id: getDraftId(value._id)}, schemaType),
+        observeForPreview({...value, _id: getPublishedId(value._id)}, schemaType)
       ]).pipe(
         map(([draft, published]) => ({
           draft: draft.snapshot,
