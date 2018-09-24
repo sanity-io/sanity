@@ -17,7 +17,7 @@
 .withSomething {
   composes: root;
   border-left: 2px solid var(--brand-primary);
-  padding-left: var(--extra-small-padding);
+  padding-left: var(--small-padding);
   margin-bottom: var(--extra-small-padding);
   margin-top: var(--extra-small-padding);
 }
@@ -33,7 +33,6 @@
 }
 
 .blockActions {
-  margin-right: var(--extra-small-padding);
   color: var(--text-color);
 }
 

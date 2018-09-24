@@ -54,7 +54,6 @@ export default class BlockExtras extends React.PureComponent<Props> {
         suppressContentEditableWarning
         contentEditable="false"
       >
-        {blockActions && <div className={styles.blockActions}>{blockActions}</div>}
         {markers.length > 0 && (
           <div className={styles.markers}>
             <Markers
@@ -68,6 +67,7 @@ export default class BlockExtras extends React.PureComponent<Props> {
             />
           </div>
         )}
+        {blockActions && <div className={styles.blockActions}>{blockActions}</div>}
       </div>
     )
   }
