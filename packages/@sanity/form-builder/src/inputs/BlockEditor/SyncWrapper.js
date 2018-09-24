@@ -169,11 +169,10 @@ export default withPatchSubscriber(
           state.decorations,
           'focus.key'
         )
-        const change = editorValue
-          .change()
-          .setOperationFlag('save', false)
-          .setValue({decorations})
-          .setOperationFlag('save', true)
+        const change = editorValue.change()
+        change.withoutSaving(() => {
+          change.setValue({decorations})
+        })
         return {
           decorations,
           decorationHash: newDecorationHash,

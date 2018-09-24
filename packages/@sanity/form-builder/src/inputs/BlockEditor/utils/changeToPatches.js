@@ -131,7 +131,9 @@ function insertNodePatch(
     if (oldData.value && oldData.value._key) {
       oldData.value._key = newKey
     }
-    change.setNodeByKey(newKey, {data: {...oldData, _key: newKey}}, {normalize: false})
+    change.withoutNormalizing(() => {
+      change.setNodeByKey(newKey, {data: {...oldData, _key: newKey}})
+    })
     patches.push(insert([newBlock], position, [{_key: afterKey}]))
   }
 
@@ -163,7 +165,9 @@ function splitNodePatch(change: SlateChange, operation: Operation, blockContentT
     if (oldData.value && oldData.value._key) {
       oldData.value._key = newKey
     }
-    change.setNodeByKey(newKey, {data: {...oldData, _key: newKey}}, {normalize: false})
+    change.withoutNormalizing(() => {
+      change.setNodeByKey(newKey, {data: {...oldData, _key: newKey}})
+    })
     patches.push(insert([newBlock], 'after', [{_key: splitBlock._key}]))
   }
   if (operation.path.size > 1) {
