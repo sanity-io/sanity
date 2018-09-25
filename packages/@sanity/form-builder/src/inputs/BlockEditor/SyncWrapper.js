@@ -336,19 +336,9 @@ export default withPatchSubscriber(
       // Set a new editorValue from the snapshot,
       // and restore the user's selection
       if (snapshot && shouldSetNewState) {
+        const currentEditorValue = this.state.editorValue
         const editorValue = deserialize(snapshot, type)
         const change = editorValue.change()
-        if (this._select) {
-          // eslint-disable-next-line max-depth
-          try {
-            restoreSelection(change, this._select, patches)
-          } catch (err) {
-            // eslint-disable-next-line max-depth
-            if (!err.message.match('Could not find a descendant')) {
-              console.error(err) // eslint-disable-line no-console
-            }
-          }
-        }
         // Make sure to add any pending local operations (which is not sent as patches yet),
         // to the new editorValue if this is incoming remote patches
         if (this._changes.length && patches.every(patch => patch.origin === 'remote')) {
@@ -360,6 +350,18 @@ export default withPatchSubscriber(
           } catch (err) {
             // eslint-disable-next-line no-console
             console.log('Could not apply pending local operations')
+          }
+        }
+        // Try to restore the previously saved selection
+        if (this._select) {
+          // eslint-disable-next-line max-depth
+          try {
+            restoreSelection(change, this._select, patches, snapshot, currentEditorValue)
+          } catch (err) {
+            // eslint-disable-next-line max-depth
+            if (!err.message.match('Could not find a descendant')) {
+              console.error(err) // eslint-disable-line no-console
+            }
           }
         }
         // Keep the editor focused as we insert the new value
