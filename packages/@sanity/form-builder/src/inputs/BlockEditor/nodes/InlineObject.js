@@ -347,7 +347,7 @@ export default class InlineObject extends React.Component<Props, State> {
         interactive
         useContext
         duration={100}
-        style={{padding: 0, display: 'inline-block', minWidth: '1em'}}
+        style={{padding: 0, display: 'inline-block', minWidth: '0.5em'}}
         unmountHTMLWhenHide
         onRequestClose={menuOpen && this.handleCloseMenu}
         html={this.renderMenu(value)}
