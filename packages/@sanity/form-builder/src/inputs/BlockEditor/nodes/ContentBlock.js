@@ -78,8 +78,10 @@ export default function ContentBlock(props: Props & SlateComponentProps) {
     )
   }
   return (
-    <Text style={style} styleComponent={styleComponent} attributes={attributes}>
-      {children}
+    <div>
+      <Text style={style} styleComponent={styleComponent} attributes={attributes}>
+        {children}
+      </Text>
       {((markers && markers.length > 0) || blockActions) && (
         <BlockExtras
           markers={markers}
@@ -91,6 +93,6 @@ export default function ContentBlock(props: Props & SlateComponentProps) {
           renderCustomMarkers={renderCustomMarkers}
         />
       )}
-    </Text>
+    </div>
   )
 }
