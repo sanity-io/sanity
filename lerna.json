@@ -3,13 +3,13 @@
   "concurrency": 8,
   "packages": [
     "packages/@sanity/*",
-    "packages/example-studio",
-    "packages/eslint-config-sanity",
-    "packages/test-studio",
-    "packages/movies-studio",
-    "packages/ecommerce-studio",
     "packages/blog-studio",
-    "packages/storybook"
+    "packages/ecommerce-studio",
+    "packages/eslint-config-sanity",
+    "packages/example-studio",
+    "packages/movies-studio",
+    "packages/storybook",
+    "packages/test-studio"
   ],
-  "version": "0.133.2"
+  "version": "0.134.0"
 }
