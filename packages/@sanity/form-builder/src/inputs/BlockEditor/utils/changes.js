@@ -201,6 +201,17 @@ export function insertBlockObject(change, type) {
       value: {_type: type.name, _key: key}
     }
   })
+  const {focusBlock} = change.value
+  // If the focusBlock is not void and empty, replace it with the block to insert
+  if (
+    focusBlock &&
+    !change.value.schema.isVoid(focusBlock) &&
+    focusBlock.nodes.size === 1 &&
+    focusBlock.text === ''
+  ) {
+    change.replaceNodeByKey(focusBlock.key, block).moveTo(block.key, 0)
+    return change
+  }
   change.insertBlock(block).moveToEndOfBlock()
   return change
 }
