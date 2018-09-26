@@ -15,7 +15,7 @@ function patch(sb, patch) {
 }
 
 function assertNoStashedOperations(tap, sb) {
-  tap.assertNot(sb.out, 'There should not be any stashed changes yet')
+  tap.assert(sb.out.length === 0, 'There should not be any stashed changes yet')
 }
 
 test('basic optimization of assignments to same, explicit key', tap => {

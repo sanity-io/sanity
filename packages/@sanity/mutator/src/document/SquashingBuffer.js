@@ -15,7 +15,7 @@ export default class SquashingBuffer {
   // The document forming the basis of this squash
   BASIS: Object
   // The operations in the out-Mutation are not able to be optimized any further
-  out: Mutation
+  out: Array<*> = []
   // The document after the out-Mutation has been applied, but before the staged operations are committed.
   PRESTAGE: Object
   // setOperations contain the latest set operation by path. If the set-operations are updating strings to new
@@ -42,7 +42,7 @@ export default class SquashingBuffer {
   }
 
   hasChanges() {
-    return this.out || Object.keys(this.setOperations).length > 0
+    return this.out.length > 0 || Object.keys(this.setOperations).length > 0
   }
 
   // Extracts the mutations in this buffer. After this is done, the buffer lifecycle is over and the client should
@@ -50,15 +50,15 @@ export default class SquashingBuffer {
   purge(txnId: string): Mutation {
     this.stashStagedOperations()
     let result = null
-    if (this.out) {
+    if (this.out.length > 0) {
       debug('Purged mutation buffer')
       result = new Mutation({
-        mutations: this.out.mutations,
+        mutations: this.out,
         resultRev: txnId,
         transactionId: txnId
       })
     }
-    this.out = null
+    this.out = []
     return result
   }
 
@@ -160,21 +160,19 @@ export default class SquashingBuffer {
   stashStagedOperations() {
     // console.log('stashStagedOperations')
     // Short circuit if there are no staged operations
-    let ops = []
-    if (this.out) {
-      ops = this.out.mutations
-    }
+    const nextOps = []
+
     // Extract the existing outgoing operations if any
     Object.keys(this.setOperations).forEach(key => {
-      ops.push(this.setOperations[key])
+      nextOps.push(this.setOperations[key])
     })
-    ops.push(...this.staged)
-    if (ops.length > 0) {
-      this.out = new Mutation({mutations: ops})
-      this.PRESTAGE = this.out.apply(this.BASIS)
+    nextOps.push(...this.staged)
+    if (nextOps.length > 0) {
+      this.PRESTAGE = new Mutation({mutations: nextOps}).apply(this.PRESTAGE)
       this.staged = []
       this.setOperations = {}
     }
+    this.out.push(...nextOps)
   }
 
   // Rebases given the new base-document. Returns the new "edge" document with the buffered changes
@@ -183,12 +181,12 @@ export default class SquashingBuffer {
     this.stashStagedOperations()
     if (newBasis === null) {
       // If document was just deleted, we must throw out local changes
-      this.out = null
+      this.out = []
       this.PRESTAGE = this.BASIS = newBasis
     } else {
       this.BASIS = newBasis
       if (this.out) {
-        this.PRESTAGE = this.out.apply(this.BASIS)
+        this.PRESTAGE = new Mutation({mutations: this.out}).apply(this.BASIS)
       } else {
         this.PRESTAGE = this.BASIS
       }
