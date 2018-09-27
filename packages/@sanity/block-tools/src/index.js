@@ -63,6 +63,10 @@ const blockContentFunctions = {
    */
   getBlockContentFeatures(blockContentType) {
     return blockContentTypeToOptions(blockContentType)
+  },
+
+  randomKey(length) {
+    return _randomKey(length)
   }
 }
 
