@@ -45,7 +45,12 @@
 .description {
   padding: 0;
   margin: 0;
-  font-size: var(--font-size-small);
+  font-size: var(--font-size-xsmall);
+  padding-right: var(--medium-padding);
+  padding-top: var(--small-padding);
+  max-height: 5em;
+  position: relative;
+  mask-image: linear-gradient(to bottom, white, transparent);
 }
 
 .status {
@@ -59,14 +64,14 @@
 .media {
   height: 2.5rem;
   width: 2.5rem;
+  min-width: 2.5rem;
   margin-right: 0.5em;
   position: relative;
   overflow: hidden;
 
   @nest & img {
     width: 100%;
-    height: auto;
-    max-height: 100%;
+    height: 100%;
     display: block;
     object-fit: cover;
   }
