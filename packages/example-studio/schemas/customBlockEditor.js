@@ -166,10 +166,35 @@ export default {
               name: 'caption',
               type: 'string',
               title: 'Caption',
+              description: 'Is required',
               options: {isHighlighted: true},
               validation: Rule => Rule.required()
+            },
+            {
+              name: 'subtitle',
+              title: 'Subtitle',
+              type: 'string',
+              options: {
+                isHighlighted: true
+              }
+            },
+            {
+              title: 'Description',
+              name: 'description',
+              type: 'text',
+              options: {
+                isHighlighted: true
+              }
             }
-          ]
+          ],
+          preview: {
+            select: {
+              title: 'caption',
+              subtitle: 'subtitle',
+              description: 'description',
+              media: 'asset'
+            }
+          }
         }
       ]
     }
