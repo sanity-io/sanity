@@ -15,6 +15,7 @@
   box-shadow: var(--form-builder-block-shadow);
   box-sizing: border-box;
   overflow: hidden;
+  min-height: 3.5rem;
 
   @nest &:hover {
     background-color: var(--form-builder-block-background-hover);
