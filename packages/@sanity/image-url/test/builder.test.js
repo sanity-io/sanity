@@ -167,7 +167,6 @@ const cases = [
         .fit('crop')
         .url()
     )
-    // eslint-disable-next-line max-len
   },
 
   {
@@ -181,6 +180,7 @@ const cases = [
         .maxHeight(300)
         .minHeight(150)
         .blur(50)
+        .bg('bf1942')
         .rect(10, 20, 30, 40)
         .format('png')
         .invert(true)
@@ -193,7 +193,6 @@ const cases = [
         .crop('center')
         .url()
     )
-    // eslint-disable-next-line max-len
   }
 ]
 

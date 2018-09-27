@@ -83,6 +83,10 @@ function specToImageUrl(spec) {
     }
   }
 
+  if (spec.bg) {
+    params.push(`bg=${spec.bg}`)
+  }
+
   if (spec.focalPoint) {
     params.push(`fp-x=${spec.focalPoint.x}`)
     params.push(`fp-x=${spec.focalPoint.y}`)

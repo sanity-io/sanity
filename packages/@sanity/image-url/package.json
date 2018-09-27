@@ -49,5 +49,8 @@
     "realtime",
     "content",
     "image-url"
-  ]
+  ],
+  "jest": {
+    "testURL": "http://localhost"
+  }
 }
