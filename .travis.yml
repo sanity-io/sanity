@@ -8,6 +8,9 @@ cache:
   directories:
   - "$HOME/.npm"
 
+install:
+  - npm ci
+
 before_script:
   - travis_wait npm run bootstrap
   - npm run build
