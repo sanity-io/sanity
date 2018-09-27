@@ -9,7 +9,8 @@ cache:
   - "$HOME/.npm"
 
 install:
-  - npm ci
+  # todo: remove the `|| npm install` part below when we no run CI with node 6
+  - npm ci || npm install
 
 before_script:
   - travis_wait npm run bootstrap
