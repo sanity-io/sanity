@@ -42,11 +42,23 @@ function resolveEnabledListItems(blockType) {
   return listItems
 }
 
+function findBlockType(type) {
+  if (type.name === 'block') {
+    return type
+  }
+
+  if (type.type) {
+    return findBlockType(type.type)
+  }
+
+  return null
+}
+
 export default function blockContentTypeToOptions(blockContentType) {
   if (!blockContentType) {
     throw new Error("Parameter 'blockContentType' required")
   }
-  const blockType = blockContentType.of.find(field => field.name === 'block')
+  const blockType = blockContentType.of.find(findBlockType)
   if (!blockType) {
     throw new Error("'block' type is not defined in this schema (required).")
   }
