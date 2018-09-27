@@ -1,6 +1,8 @@
-import assert from 'assert'
 import fs from 'fs'
 import path from 'path'
+import assert from 'assert'
+import {use, assert as assertChai} from 'chai'
+import chaiExclude from 'chai-exclude'
 import {Value, Operation} from 'slate'
 import {List} from 'immutable'
 import {blocksToEditorValue, editorValueToBlocks} from '@sanity/block-tools'
@@ -8,6 +10,8 @@ import blocksSchema from '../../../../fixtures/blocksSchema'
 import changeToPatches from '../../../../../src/inputs/BlockEditor/utils/changeToPatches'
 import patchesToChange from '../../../../../src/inputs/BlockEditor/utils/patchesToChange'
 import {applyAll} from '../../../../../src/simplePatch'
+
+use(chaiExclude)
 
 jest.mock('part:@sanity/base/client', () => null, {virtual: true})
 
@@ -63,7 +67,11 @@ describe('changesToPatches', () => {
       const receivedValue = applyAll(input, patches)
 
       // console.log(JSON.stringify(receivedValue, null, 2))
-      assert.deepEqual(receivedValue, expectedValue)
+      try {
+        assertChai.deepEqualExcludingEvery(receivedValue, expectedValue, '_key')
+      } catch (err) {
+        assert.deepEqual(receivedValue, expectedValue)
+      }
 
       const otherClientPatchedChange = patchesToChange(
         patches,
@@ -71,11 +79,17 @@ describe('changesToPatches', () => {
         input,
         blockContentType
       )
+      // console.log('foo')
+      // console.log(JSON.stringify(otherClientPatchedChange.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
       const otherClientPatchedValue = editorValueToBlocks(
         otherClientPatchedChange.value.toJSON(VALUE_TO_JSON_OPTS),
         blockContentType
       )
-      assert.deepEqual(otherClientPatchedValue, expectedValue)
+      try {
+        assertChai.deepEqualExcludingEvery(otherClientPatchedValue, expectedValue, '_key')
+      } catch (err) {
+        assert.deepEqual(otherClientPatchedValue, expectedValue)
+      }
     })
   })
 })
