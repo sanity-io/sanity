@@ -47,7 +47,7 @@ export default class Markers extends React.Component<Props> {
     const validationMarkers = markers.filter(mrkr => mrkr.type === 'validation')
 
     return (
-      <div onClick={this.handleCancelEvent}>
+      <div onClick={this.handleCancelEvent} className={styles.root}>
         {validationMarkers.length > 0 && (
           <div className={styles.markerGroup} onClick={this.handleValidationMarkerClick}>
             <ValidationStatus markers={validationMarkers} />
