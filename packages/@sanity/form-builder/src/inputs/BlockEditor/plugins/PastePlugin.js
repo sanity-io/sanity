@@ -1,5 +1,4 @@
 import blockTools from '@sanity/block-tools'
-import randomKey from '../utils/randomKey'
 import {Block, Data, Document} from 'slate'
 import {getEventTransfer} from 'slate-react'
 
@@ -8,7 +7,7 @@ function processNode(node) {
     return node
   }
 
-  const newKey = randomKey(12)
+  const newKey = blockTools.randomKey(12)
 
   const SlateType = node.constructor
   const newData = node.get('data') ? node.get('data').toObject() : {}
@@ -18,7 +17,7 @@ function processNode(node) {
   }
   if (newData.annotations) {
     Object.keys(newData.annotations).forEach(key => {
-      newData.annotations[key]._key = randomKey(12)
+      newData.annotations[key]._key = blockTools.randomKey(12)
     })
   }
   return new SlateType({

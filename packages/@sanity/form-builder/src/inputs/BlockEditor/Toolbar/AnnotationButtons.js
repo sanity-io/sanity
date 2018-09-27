@@ -7,7 +7,7 @@ import {Change, Value as SlateValue, Range} from 'slate'
 
 import {createFormBuilderSpan, removeAnnotationFromSpan} from '../utils/changes'
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
-import randomKey from '../utils/randomKey'
+import {randomKey} from '@sanity/block-tools'
 
 import CustomIcon from './CustomIcon'
 import LinkIcon from 'part:@sanity/base/link-icon'
