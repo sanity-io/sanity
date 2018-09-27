@@ -4,8 +4,7 @@
   "description": "A Sanity plugin that supports filtering localized fields by language",
   "main": "index.js",
   "scripts": {
-    "clean": "rimraf lib",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "rimraf lib"
   },
   "keywords": [
     "sanity",

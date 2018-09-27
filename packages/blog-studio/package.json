@@ -7,8 +7,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
-    "start": "cd ../.. && npm run blog-studio",
-    "test": "sanity check"
+    "start": "cd ../.. && npm run blog-studio"
   },
   "keywords": [
     "sanity",

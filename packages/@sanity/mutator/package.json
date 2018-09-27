@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "clean": "rimraf lib",
-    "test": "tap test/*.test.js --node-arg --require --node-arg ./.babel-init.js",
+    "test": "tap test/*.test.js --node-arg --require --node-arg @babel/register",
     "perf": "node --require ./.babel-init.js ./perf/run.js",
     "typecheck": "flow check"
   },
