@@ -49,7 +49,7 @@ import Span from './nodes/Span'
 import styles from './styles/Editor.css'
 import {findDOMNode, Editor as SlateEditor, getEventTransfer} from 'slate-react'
 
-type PasteProgressResult = {status: string | null}
+type PasteProgressResult = {status: string | null, error?: Error}
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
@@ -233,9 +233,11 @@ export default class Editor extends React.Component<Props> {
     if (editorDOMNode instanceof HTMLElement) {
       const editorRect = editorDOMNode.getBoundingClientRect()
       const elemRect = node.getBoundingClientRect()
-      const topPos = elemRect.top - editorRect.top
-      const bottomPos = topPos + (elemRect.bottom - elemRect.top)
-      const top = pos === 'after' ? `${parseInt(bottomPos, 10)}px` : `${parseInt(topPos, 10)}px`
+      const topPos = Number((elemRect.top - editorRect.top).toFixed(1)).toFixed(2)
+      const bottomPos = Number(
+        parseInt(topPos + (elemRect.bottom - elemRect.top), 10).toFixed(1)
+      ).toFixed(2)
+      const top = pos === 'after' ? `${bottomPos}px` : `${topPos}px`
       if (this._blockDragMarker) {
         this._blockDragMarker.style.display = 'block'
         this._blockDragMarker.style.top = top
