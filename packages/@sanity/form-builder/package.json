@@ -83,6 +83,8 @@
     "@sanity/plugin-loader": "0.136.0",
     "@sanity/server": "0.136.0",
     "assert": "^1.4.1",
+    "chai": "^4.2.0",
+    "chai-exclude": "^1.0.9",
     "flow-typed": "^2.2.3",
     "in-publish": "^2.0.0",
     "jest": "^22.4.2",
