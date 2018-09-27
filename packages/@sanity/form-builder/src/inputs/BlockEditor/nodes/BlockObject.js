@@ -136,15 +136,15 @@ export default class BlockObject extends React.Component<Props> {
       }
 
       const {node} = this.props
-
-      const targetDOMNode = event.target // Must not be currentTarget!
+      let targetDOMNode
+      if (event.target instanceof HTMLElement) {
+        const keyNodes = event.target.querySelectorAll('[data-key]')
+        targetDOMNode = keyNodes.item(0)
+      }
 
       // As the event is registered on the editor parent node
       // ignore the event if it is coming from from the editor node itself
-      if (
-        targetDOMNode === this._editorNode ||
-        (targetDOMNode instanceof HTMLElement && !targetDOMNode.getAttribute('data-key'))
-      ) {
+      if (!targetDOMNode || targetDOMNode === this._editorNode) {
         this.resetDropTarget()
         return
       }
@@ -174,7 +174,7 @@ export default class BlockObject extends React.Component<Props> {
 
       const blockDOMNode = findDOMNode(block)
       const rect = blockDOMNode.getBoundingClientRect()
-      const position = event.clientY < rect.top + blockDOMNode.clientHeight / 2 ? 'before' : 'after'
+      const position = event.clientY < rect.top + blockDOMNode.scrollHeight / 2 ? 'before' : 'after'
 
       // If the block in the nearest vincinity (same position target), reset and return
       let nearestNeighbour = false
