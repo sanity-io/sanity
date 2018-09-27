@@ -213,7 +213,7 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
       }
       this.setState({
         toolbarStyle: {
-          backgroundColor: `rgba(255, 255, 255, ${ratio * 0.95})`,
+          backgroundColor: `rgba(255, 255, 255, ${ratio * 1})`,
           boxShadow: `0 2px ${5 * ratio}px rgba(0, 0, 0, ${ratio * 0.3})`
         }
       })
