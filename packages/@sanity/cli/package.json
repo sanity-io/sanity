@@ -49,7 +49,7 @@
     "decompress": "^4.2.0",
     "deep-sort-object": "^1.0.1",
     "es6-promisify": "^6.0.0",
-    "eventsource": "^1.0.5",
+    "eventsource": "^1.0.6",
     "execa": "^0.10.0",
     "fs-extra": "^6.0.1",
     "gauge": "^2.7.4",
