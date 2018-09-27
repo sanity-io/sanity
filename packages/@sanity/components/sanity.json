@@ -6,6 +6,10 @@
 
   "parts": [
     {
+      "name": "part:@sanity/components/utilities/arrow-key-navigation",
+      "description": "Arrow key navigation"
+    },
+    {
       "name": "part:@sanity/components/autocomplete/default",
       "description": "Default autocomplete"
     },
@@ -410,7 +414,10 @@
       "name": "part:@sanity/components/previews/media-style",
       "description": "Media preview styling"
     },
-
+    {
+      "implements": "part:@sanity/components/utilities/arrow-key-navigation",
+      "path": "utilities/ArrowKeyNavigation.js"
+    },
     {
       "implements": "part:@sanity/components/autocomplete/default",
       "path": "autocomplete/DefaultAutocomplete.js"
