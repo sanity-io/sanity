@@ -4,6 +4,7 @@ import _editorValueToBlocks from './converters/editorValueToBlocks'
 import HtmlDeserializer from './HtmlDeserializer'
 import {SLATE_DEFAULT_BLOCK} from './constants'
 import _normalizeBlock from './util/normalizeBlock'
+import _randomKey from './util/randomKey'
 
 /**
  * BlockTools - various tools for Sanity block content
@@ -73,3 +74,4 @@ export const editorValueToBlocks = blockContentFunctions.editorValueToBlocks
 export const blocksToEditorValue = blockContentFunctions.blocksToEditorValue
 export const getBlockContentFeatures = blockContentFunctions.getBlockContentFeatures
 export const normalizeBlock = _normalizeBlock
+export const randomKey = _randomKey
