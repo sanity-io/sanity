@@ -34,6 +34,7 @@
 
 .root.focused > .previewContainer {
   border: 1px solid var(--form-builder-block-border-color-focus);
+  background-color: var(--selectable-item-color-active);
   box-shadow: var(--form-builder-block-shadow--focus);
 }
 
@@ -52,7 +53,12 @@
 
 .root.focused.hasErrors > .previewContainer {
   box-shadow: var(--form-builder-block-shadow--error-focus);
+  background-color: color(var(--state-danger-color) a(25%));
   border: 1px solid var(--state-danger-color);
+}
+
+.root.focused.hasErrors > .previewContainer:hover {
+  background-color: color(var(--state-danger-color) a(45%));
 }
 
 .header {
@@ -65,10 +71,11 @@
   position: absolute;
   padding: var(--small-padding);
   border-radius: var(--border-radius-base);
-  background-color: color(var(--component-bg) a(70%));
+  background-color: color(var(--component-bg) a(90%));
   top: var(--small-padding);
   right: var(--small-padding);
   font-size: var(--font-size-small);
+  border: 1px solid var(--form-builder-block-border-color);
 }
 
 .type {
