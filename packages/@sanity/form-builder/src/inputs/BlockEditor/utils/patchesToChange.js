@@ -1,6 +1,6 @@
 // @flow
 import {blocksToEditorValue} from '@sanity/block-tools'
-import {Value, Operation} from 'slate'
+import {Value, Document} from 'slate'
 import type {Type, Path} from '../typeDefs'
 import type {
   Patch,
@@ -40,7 +40,8 @@ function setPatch(patch: SetPatch, change: () => void, type: Type) {
   }
   const editorBlock = blocksToEditorValue([patch.value], type).document.nodes[0]
   const key = findLastKey(patch.path)
-  return change.replaceNodeByKey(key, editorBlock)
+  change.replaceNodeByKey(key, editorBlock)
+  return change
 }
 
 function setIfMissingPatch(patch: SetIfMissingPatch, change: () => void, type: Type) {
@@ -64,26 +65,18 @@ function setIfMissingPatch(patch: SetIfMissingPatch, change: () => void, type: T
 
 function insertPatch(patch: InsertPatch, change: () => void, type: Type) {
   const {items, position} = patch
-  const fragment = blocksToEditorValue(items, type)
+  const fragment = Document.fromJSON(blocksToEditorValue(items, type).document)
   const posKey = findLastKey(patch.path)
-  let path = change.value.document.nodes.findIndex(node => {
+  let index = change.value.document.nodes.findIndex(node => {
     return node.key === posKey
   })
   if (position === 'before') {
-    path = path > 0 ? path-- : path
+    index = index > 0 ? index-- : index
   }
   if (position === 'after') {
-    path++
+    index++
   }
-  const operations = fragment.document.nodes.map(block => {
-    return Operation.create({
-      type: 'insert_node',
-      path: [path],
-      node: block
-    })
-  })
-  change.applyOperations(operations)
-  return change
+  return change.insertFragmentByPath([], index, fragment)
 }
 
 function unsetPatch(patch: UnsetPatch, change: () => void) {
@@ -95,18 +88,21 @@ function unsetPatch(patch: UnsetPatch, change: () => void) {
 function replaceValue(snapshot: ?JSONValue, change: () => void, type: Type) {
   if (snapshot) {
     const fragment = blocksToEditorValue(snapshot, type)
-    if (change.value.document.nodes.size) {
-      change.selectAll().delete()
-    }
-    change.applyOperations(
-      fragment.document.nodes.reverse().map(node => {
-        return {
-          type: 'insert_node',
-          path: [0],
-          node: node
-        }
-      })
-    )
+    // Don't save these changes (we don't want reversed undo/redo steps for them)
+    change.withoutSaving(() => {
+      if (change.value.document.nodes.size) {
+        change.moveToRangeOfDocument().delete()
+      }
+      change.applyOperations(
+        fragment.document.nodes.reverse().map(node => {
+          return {
+            type: 'insert_node',
+            path: [0],
+            node: node
+          }
+        })
+      )
+    })
     return change
   }
   throw new Error('No snapshot given!')
@@ -213,37 +209,46 @@ export default function patchesToChange(
   snapshot: ?JSONValue,
   type: Type
 ) {
-  const change = editorValue.change({normalize: false})
-  // console.log('EDITORVALUE', JSON.stringify(editorValue.document.toJSON(VALUE_TO_JSON_OPTS), null, 2))
-  // console.log('BLOCKS', JSON.stringify(blocks, null, 2))
-  patches.forEach((patch: Patch) => {
-    // console.log('INCOMING PATCH', JSON.stringify(patch, null, 2))
-    if (patch.path.length > 1) {
-      if (patch.path[1] === 'markDefs') {
-        patchAnnotationData(patch, change, type, snapshot)
-      } else if (patch.path[1] === 'children' && patch.path.length > 3) {
-        patchInlineData(patch, change, type, snapshot)
+  const change = editorValue.change()
+  let result
+  change.withoutNormalizing(_change => {
+    // console.log('EDITORVALUE', JSON.stringify(editorValue.document.toJSON(VALUE_TO_JSON_OPTS), null, 2))
+    // console.log('BLOCKS', JSON.stringify(snapshot, null, 2))
+    // console.log('INITIAL CHANGE VALUE:', JSON.stringify(_change.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
+    patches.forEach((patch: Patch) => {
+      // console.log('INCOMING PATCH', JSON.stringify(patch, null, 2))
+      // console.log('BEFORE VALUE:', JSON.stringify(_change.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
+      if (patch.path.length > 1) {
+        if (patch.path[1] === 'markDefs') {
+          patchAnnotationData(patch, _change, type, snapshot)
+        } else if (patch.path[1] === 'children' && patch.path.length > 3) {
+          patchInlineData(patch, _change, type, snapshot)
+        } else {
+          patchBlockData(patch, _change, type, snapshot)
+        }
       } else {
-        patchBlockData(patch, change, type, snapshot)
+        switch (patch.type) {
+          case 'set':
+            setPatch(patch, _change, type)
+            break
+          case 'setIfMissing':
+            setIfMissingPatch(patch, _change, type)
+            break
+          case 'insert':
+            insertPatch(patch, _change, type)
+            break
+          case 'unset':
+            unsetPatch(patch, _change)
+            break
+          default:
+            replaceValue(snapshot, _change, type)
+        }
       }
-    } else {
-      switch (patch.type) {
-        case 'set':
-          setPatch(patch, change, type)
-          break
-        case 'setIfMissing':
-          setIfMissingPatch(patch, change, type)
-          break
-        case 'insert':
-          insertPatch(patch, change, type)
-          break
-        case 'unset':
-          unsetPatch(patch, change)
-          break
-        default:
-          replaceValue(snapshot, change, type)
-      }
-    }
+      // console.log('AFTER VALUE:', JSON.stringify(_change.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
+      result = _change
+    })
   })
-  return change
+  // console.log(result.value.document.nodes.get(1))
+  // console.log('RESULT VALUE:', JSON.stringify(result.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
+  return result
 }
