@@ -38,7 +38,15 @@ function handleHTML(html, change, editor, blockContentType, onProgress) {
     onProgress({status: 'blocks'})
     const doc = Document.fromJSON(blockTools.blocksToEditorValue(blocks, blockContentType).document)
     change.insertFragment(doc).moveToEndOfBlock()
-    editor.onChange(change)
+    try {
+      editor.onChange(change)
+    } catch (err) {
+      change.withoutSaving(() => {
+        change.undo()
+      })
+      editor.onChange(change)
+      throw err
+    }
     onProgress({status: null})
     return change
   })
@@ -82,7 +90,10 @@ export default function PastePlugin(options: Options = {}) {
     }
     if (type === 'html' && !shiftKey) {
       onProgress({status: 'parsing'})
-      return handleHTML(html, change, editor, blockContentType, onProgress)
+      return handleHTML(html, change, editor, blockContentType, onProgress).catch(err => {
+        onProgress({status: null, error: err})
+        throw err
+      })
     }
     onProgress({status: null})
     return undefined
