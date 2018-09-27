@@ -6,12 +6,12 @@
   "scripts": {
     "clean": "rimraf lib",
     "typecheck": "flow check",
-    "tap": "tap --node-arg -r --node-arg ./test/.init.js",
-    "test": "npm run tap ./test/*.test.js ./test/**/*.test.js",
     "start": "npm run example-testbed",
     "example-testbed": "cd examples/schema-testbed && sanity start",
     "example-undo": "cd examples/undo && sanity start",
-    "example-quickstart": "cd examples/quickstart && sanity start"
+    "example-quickstart": "cd examples/quickstart && sanity start",
+    "tap": "tap --node-arg -r --node-arg ./test/.init.js",
+    "test": "npm run tap ./test/*.test.js ./test/**/*.test.js"
   },
   "keywords": [
     "sanity",
@@ -71,8 +71,6 @@
     "in-publish": "^2.0.0",
     "jsdom": "^11.3.0",
     "json-markup": "^1.1.0",
-    "path-to-regexp": "^1.7.0",
-    "postcss-cssnext": "^3.0.2",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",

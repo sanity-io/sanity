@@ -5,7 +5,7 @@
   "main": "minimal.js",
   "scripts": {
     "clean": "rimraf lib",
-    "test": "tap --node-arg=--require --node-arg=babel-register --node-arg=--require --node-arg=symbol-observable test/*.test.js test/**/*.test.js"
+    "test": "tap --node-arg=--require --node-arg=@babel/register --node-arg=--require --node-arg=symbol-observable test/*.test.js test/**/*.test.js"
   },
   "keywords": [
     "sanity",

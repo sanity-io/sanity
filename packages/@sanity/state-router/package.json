@@ -4,8 +4,8 @@
   "description": "A path pattern => state object bidirectional mapper",
   "main": "lib/index.js",
   "scripts": {
-    "start": "remon --require ./.babel-init.js demo-server/app.js",
-    "test": "tap test/*.test.js --node-arg --require --node-arg ./.babel-init.js",
+    "start": "remon --require @babel/register demo-server/app.js",
+    "test": "tap test/*.test.js --node-arg --require --node-arg @babel/register",
     "test:lib:compile": "babel . -q --ignore node_modules,demo-server,perf --out-dir test-compiled",
     "test:lib": "npm run test:lib:compile && cd test-compiled && tap test/**.test.js && cd - && npm run test:lib:clean",
     "test:lib:clean": "rimraf test-compiled",

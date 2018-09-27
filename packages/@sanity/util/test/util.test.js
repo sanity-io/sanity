@@ -2,8 +2,6 @@
 import fs from 'fs'
 import os from 'os'
 import path from 'path'
-import {describe, it} from 'mocha'
-import {expect} from 'chai'
 import {reduceConfig, getSanityVersions, pathTools} from '../src'
 
 describe('util', () => {
@@ -26,11 +24,11 @@ describe('util', () => {
         'production'
       )
 
-      expect(reduced.foo).to.equal('baz')
-      expect(reduced.nested.structure).to.equal(false)
-      expect(reduced.nested.onlyInOriginal).to.equal('yes')
-      expect(reduced.nested.otherProp).to.equal('yup')
-      expect(reduced.env).to.be.an('undefined')
+      expect(reduced.foo).toEqual('baz')
+      expect(reduced.nested.structure).toEqual(false)
+      expect(reduced.nested.onlyInOriginal).toEqual('yes')
+      expect(reduced.nested.otherProp).toEqual('yup')
+      expect(reduced.env).toBeUndefined()
     })
 
     it('does not crash if there is no env config specified', () => {
@@ -42,9 +40,9 @@ describe('util', () => {
         'production'
       )
 
-      expect(reduced.foo).to.equal('bar')
-      expect(reduced.nested.structure).to.equal(true)
-      expect(reduced.nested.onlyInOriginal).to.equal('yes')
+      expect(reduced.foo).toEqual('bar')
+      expect(reduced.nested.structure).toEqual(true)
+      expect(reduced.nested.onlyInOriginal).toEqual('yes')
     })
 
     it('concats arrays', () => {
@@ -57,15 +55,15 @@ describe('util', () => {
         'development'
       )
 
-      expect(reduced.root, true)
-      expect(reduced.plugins).to.deep.equal(['@sanity/base', '@sanity/components', 'vision'])
+      expect(reduced.root).toBe(true)
+      expect(reduced.plugins).toEqual(['@sanity/base', '@sanity/components', 'vision'])
     })
   })
 
   describe('getSanityVersions', () => {
     it('extracts correct versions', () => {
       const versions = getSanityVersions(path.join(__dirname, 'versionsFixture'))
-      expect(versions).to.deep.equal({
+      expect(versions).toEqual({
         '@sanity/base': '0.999.99',
         '@sanity/components': '0.777.77'
       })
@@ -76,7 +74,7 @@ describe('util', () => {
     it('returns whether or not a path is empty (false)', async () => {
       const {pathIsEmpty} = pathTools
       const isEmpty = await pathIsEmpty(__dirname)
-      expect(isEmpty).to.equal(false)
+      expect(isEmpty).toEqual(false)
     })
 
     it('returns whether or not a path is empty (true)', async () => {
@@ -85,27 +83,27 @@ describe('util', () => {
       fs.mkdirSync(emptyPath)
       const isEmpty = await pathIsEmpty(emptyPath)
       fs.rmdirSync(emptyPath)
-      expect(isEmpty).to.equal(true)
+      expect(isEmpty).toEqual(true)
     })
 
     it('can expand home dirs', () => {
       const {expandHome} = pathTools
-      expect(expandHome('~/tmp')).to.equal(path.join(os.homedir(), 'tmp'))
+      expect(expandHome('~/tmp')).toEqual(path.join(os.homedir(), 'tmp'))
     })
 
     it('can absolutify relative paths', () => {
       const {absolutify} = pathTools
-      expect(absolutify('./util.test.js')).to.equal(path.join(process.cwd(), 'util.test.js'))
+      expect(absolutify('./util.test.js')).toEqual(path.join(process.cwd(), 'util.test.js'))
     })
 
     it('can absolutify homedir paths', () => {
       const {absolutify} = pathTools
-      expect(absolutify('~/tmp')).to.equal(path.join(os.homedir(), 'tmp'))
+      expect(absolutify('~/tmp')).toEqual(path.join(os.homedir(), 'tmp'))
     })
 
     it('can absolutify (noop) absolute paths', () => {
       const {absolutify} = pathTools
-      expect(absolutify('/tmp/foo')).to.equal('/tmp/foo')
+      expect(absolutify('/tmp/foo')).toEqual('/tmp/foo')
     })
   })
 })
