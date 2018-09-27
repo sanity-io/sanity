@@ -2,7 +2,6 @@
 
 .root {
   width: auto;
-  composes: xsmallToxSmall from './Spacing.css';
   margin-left: var(--large-padding);
 
   /* Important 'transform' in order to force refresh the ::before and ::after rules

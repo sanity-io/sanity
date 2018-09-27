@@ -15,6 +15,7 @@ import type {
 } from '../typeDefs'
 import ListItem from './ListItem'
 import Text from './Text'
+import styles from './styles/ContentBlock.css'
 
 type Props = {
   block: ?(Block | FormBuilderValue),
@@ -59,10 +60,12 @@ export default function ContentBlock(props: Props & SlateComponentProps) {
 
   if (listItem) {
     return (
-      <ListItem listStyle={listItem} level={level}>
-        <Text style={style} attributes={attributes} styleComponent={styleComponent}>
-          {children}
-        </Text>
+      <div className={styles.listItem}>
+        <ListItem listStyle={listItem} level={level}>
+          <Text style={style} attributes={attributes} styleComponent={styleComponent}>
+            {children}
+          </Text>
+        </ListItem>
         {((markers && markers.length > 0) || blockActions) && (
           <BlockExtras
             markers={markers}
@@ -74,11 +77,11 @@ export default function ContentBlock(props: Props & SlateComponentProps) {
             renderCustomMarkers={renderCustomMarkers}
           />
         )}
-      </ListItem>
+      </div>
     )
   }
   return (
-    <div>
+    <div className={styles.textBlock}>
       <Text style={style} styleComponent={styleComponent} attributes={attributes}>
         {children}
       </Text>
