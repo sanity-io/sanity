@@ -1,4 +1,9 @@
 {
   "extends": "../../../.babelrc.js",
-  "presets": ["@babel/preset-react", "@babel/preset-flow"]
+  "presets": ["@babel/preset-react", "@babel/preset-flow"],
+  "env": {
+    "test": {
+      "plugins": ["transform-es2015-modules-commonjs"]
+    }
+  }
 }
