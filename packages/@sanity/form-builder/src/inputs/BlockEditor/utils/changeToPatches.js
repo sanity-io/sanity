@@ -131,9 +131,7 @@ function insertNodePatch(
     if (oldData.value && oldData.value._key) {
       oldData.value._key = newKey
     }
-    change.withoutNormalizing(() => {
-      change.setNodeByKey(newKey, {data: {...oldData, _key: newKey}})
-    })
+    change.setNodeByKey(newKey, {data: {...oldData, _key: newKey}})
     patches.push(insert([newBlock], position, [{_key: afterKey}]))
   }
 
@@ -165,9 +163,7 @@ function splitNodePatch(change: SlateChange, operation: Operation, blockContentT
     if (oldData.value && oldData.value._key) {
       oldData.value._key = newKey
     }
-    change.withoutNormalizing(() => {
-      change.setNodeByKey(newKey, {data: {...oldData, _key: newKey}})
-    })
+    change.setNodeByKey(newKey, {data: {...oldData, _key: newKey}})
     patches.push(insert([newBlock], 'after', [{_key: splitBlock._key}]))
   }
   if (operation.path.size > 1) {
@@ -310,56 +306,63 @@ export default function changeToPatches(
 ) {
   const {operations} = change
   let _value = value ? [...value] : []
-  const _change = unchangedEditorValue.change()
-  const patches = flatten(
-    operations
-      .map((operation: Operation, index: number) => {
-        // console.log('OPERATION:', JSON.stringify(operation, null, 2))
-        let _patches
-        switch (operation.type) {
-          case 'insert_text':
-            _patches = setNodePatchSimple(_change, operation, _value, blockContentType)
-            break
-          case 'remove_text':
-            _patches = setNodePatchSimple(_change, operation, _value, blockContentType)
-            break
-          case 'add_mark':
-            _patches = setNodePatchSimple(_change, operation, _value, blockContentType)
-            break
-          case 'remove_mark':
-            _patches = setNodePatchSimple(_change, operation, _value, blockContentType)
-            break
-          case 'set_node':
-            _patches = setNodePatch(_change, operation, _value, blockContentType)
-            break
-          case 'insert_node':
-            _patches = insertNodePatch(_change, operation, _value, blockContentType)
-            break
-          case 'remove_node':
-            _patches = removeNodePatch(_change, operation, _value, blockContentType)
-            break
-          case 'split_node':
-            _patches = splitNodePatch(_change, operation, blockContentType)
-            break
-          case 'merge_node':
-            _patches = mergeNodePatch(_change, operation, _value, blockContentType)
-            break
-          case 'move_node':
-            _patches = moveNodePatch(_change, operation, _value, blockContentType)
-            break
-          default:
-            _patches = noOpPatch(_change, operation)
-        }
-        // console.log('BLOCKS BEFORE:', JSON.stringify(blocks, null, 2))
-        // console.log('PATCHES:', JSON.stringify(_patches, null, 2))
-        _value = applyPatchesOnValue(_patches, _value)
-        // console.log('BLOCKS AFTER:', JSON.stringify(_value, null, 2))
-        return _patches
-      })
-      .toArray()
-  ).filter(Boolean)
+  const unchanged = unchangedEditorValue.change()
+  const patches = []
+  unchanged.withoutNormalizing(_change => {
+    // eslint-disable-next-line complexity
+    operations.forEach((operation: Operation, index: number) => {
+      // console.log('OPERATION:', JSON.stringify(operation, null, 2))
+      switch (operation.type) {
+        case 'insert_text':
+          patches.push(setNodePatchSimple(_change, operation, _value, blockContentType))
+          break
+        case 'remove_text':
+          patches.push(setNodePatchSimple(_change, operation, _value, blockContentType))
+          break
+        case 'add_mark':
+          patches.push(setNodePatchSimple(_change, operation, _value, blockContentType))
+          break
+        case 'remove_mark':
+          patches.push(setNodePatchSimple(_change, operation, _value, blockContentType))
+          break
+        case 'set_node':
+          patches.push(setNodePatch(_change, operation, _value, blockContentType))
+          break
+        case 'insert_node':
+          patches.push(insertNodePatch(_change, operation, _value, blockContentType))
+          break
+        case 'remove_node':
+          patches.push(removeNodePatch(_change, operation, _value, blockContentType))
+          break
+        case 'split_node':
+          patches.push(splitNodePatch(_change, operation, blockContentType))
+          break
+        case 'merge_node':
+          patches.push(mergeNodePatch(_change, operation, _value, blockContentType))
+          break
+        case 'move_node':
+          patches.push(moveNodePatch(_change, operation, _value, blockContentType))
+          break
+        default:
+          patches.push(noOpPatch(_change, operation))
+      }
+      // console.log('BLOCKS BEFORE:', JSON.stringify(_value, null, 2))
+      // console.log('PATCHES:', JSON.stringify(_patches, null, 2))
+      // console.log(
+      //   'CHANGE VALUE:',
+      //   JSON.stringify(_change.value.toJSON(VALUE_TO_JSON_OPTS), null, 2)
+      // )
+      const lastPatchSet = patches.slice(-1)
+      if (lastPatchSet) {
+        _value = applyPatchesOnValue(flatten(lastPatchSet), _value)
+      }
+      // console.log('BLOCKS AFTER:', JSON.stringify(_value, null, 2))
+    })
+  })
+
+  const result = flatten(patches).filter(Boolean)
   if (change.__isUndoRedo) {
-    patches.push(set({}, [{_key: 'undoRedoVoidPatch'}]))
+    result.push(set({}, [{_key: 'undoRedoVoidPatch'}]))
   }
-  return patches
+  return result
 }
