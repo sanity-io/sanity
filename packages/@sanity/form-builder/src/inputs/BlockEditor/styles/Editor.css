@@ -53,6 +53,11 @@
       padding-left: var(--large-padding);
       padding-right: var(--large-padding);
     }
+
+    @media (--screen-large) {
+      padding-left: 4rem;
+      padding-right: 4rem;
+    }
   }
 }
 
@@ -66,6 +71,10 @@
   @nest .fullscreen & {
     @media (--screen-medium) {
       margin-top: var(--large-padding);
+    }
+
+    @media (--screen-large) {
+      margin-top: 4rem;
     }
   }
 }
