@@ -1,4 +1,4 @@
-import {Schema} from './schema'
+import {Schema} from './Schema'
 import getDefaultModule from './getDefaultModule'
 
 export interface DataAspectsResolver {

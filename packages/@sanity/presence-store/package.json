@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "rimraf lib",
     "compile": "babel src --copy-files --out-dir lib",
-    "test": "NODE_ENV=test tape -r babel-register test/*.test.js"
+    "test": "NODE_ENV=test tape -r @babel/register test/*.test.js"
   },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",

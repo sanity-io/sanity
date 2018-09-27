@@ -1,4 +1,4 @@
-import {SchemaType} from './schema'
+import {SchemaType} from './Schema'
 
 export interface DocumentActionUtils {
   isActionEnabled(schema: SchemaType, action: string[]): boolean
