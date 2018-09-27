@@ -16,7 +16,7 @@
     "language-filter"
   ],
   "dependencies": {
-    "rxjs": "^6.1.x"
+    "rxjs": "^6.1.0"
   },
   "peerDependencies": {
     "prop-types": "^16.x",
