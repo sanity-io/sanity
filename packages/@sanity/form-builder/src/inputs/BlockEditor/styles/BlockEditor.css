@@ -46,7 +46,7 @@
 
 .editorWrapper {
   /* make it fill its parent */
-  composes: shadow-2dp from 'part:@sanity/base/theme/shadows-style';
+  composes: shadow-4dp from 'part:@sanity/base/theme/shadows-style';
   position: relative;
   box-sizing: border-box;
   min-height: 100%;
@@ -57,9 +57,9 @@
   max-width: 50em;
   min-height: 90vh;
   margin: 3rem auto;
-  border: 1px solid var(--input-border-color);
   background-color: var(--input-bg);
   width: 95vw;
+  box-sizing: border-box;
 
   @media (--screen-medium) {
     width: 90vw;
