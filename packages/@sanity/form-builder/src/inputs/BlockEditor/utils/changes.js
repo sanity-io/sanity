@@ -1,6 +1,5 @@
 import {Block} from 'slate'
-import {editorValueToBlocks, blocksToEditorValue} from '@sanity/block-tools'
-import randomKey from './randomKey'
+import {randomKey, editorValueToBlocks, blocksToEditorValue} from '@sanity/block-tools'
 import {VALUE_TO_JSON_OPTS} from './changeToPatches'
 
 // eslint-disable-next-line complexity

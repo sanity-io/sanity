@@ -1,8 +1,9 @@
 // @flow
 
+import {randomKey} from '@sanity/block-tools'
+
 import type {BlockContentFeatures, SlateChange} from '../typeDefs'
 
-import randomKey from './randomKey'
 import deserialize from './deserialize'
 
 export default function buildEditorSchema(blockContentFeatures: BlockContentFeatures) {

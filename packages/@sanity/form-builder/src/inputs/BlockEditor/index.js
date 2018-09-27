@@ -1,5 +1,5 @@
 import {KeyUtils} from 'slate'
-import randomKey from './utils/randomKey'
+import {randomKey} from '@sanity/block-tools'
 
 // Set our own key generator for Slate (as early as possible)
 const keyGenerator = () => randomKey(12)
