@@ -9,7 +9,8 @@ const LIST_ITEM_TYPES = ['bullet', 'number', 'roman']
 type Props = {
   listStyle: string,
   level: number,
-  children: Node
+  children: Node,
+  blockExtras: Node
 }
 
 export default function ListItem(props: Props) {
@@ -24,6 +25,7 @@ export default function ListItem(props: Props) {
   return (
     <div className={className}>
       <div className={styles.item}>{props.children}</div>
+      {props.blockExtras}
     </div>
   )
 }

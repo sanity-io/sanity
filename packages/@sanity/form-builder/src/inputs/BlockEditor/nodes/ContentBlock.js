@@ -59,25 +59,26 @@ export default function ContentBlock(props: Props & SlateComponentProps) {
   }
 
   if (listItem) {
+    let blockExtras = null
+    if ((markers && markers.length > 0) || blockActions) {
+      blockExtras = (
+        <BlockExtras
+          markers={markers}
+          onFocus={onFocus}
+          onChange={onChange}
+          block={block}
+          editorValue={editorValue}
+          blockActions={blockActions}
+          renderCustomMarkers={renderCustomMarkers}
+        />
+      )
+    }
     return (
-      <div className={styles.listItem}>
-        <ListItem listStyle={listItem} level={level}>
-          <Text style={style} attributes={attributes} styleComponent={styleComponent}>
-            {children}
-          </Text>
-        </ListItem>
-        {((markers && markers.length > 0) || blockActions) && (
-          <BlockExtras
-            markers={markers}
-            onFocus={onFocus}
-            onChange={onChange}
-            block={block}
-            editorValue={editorValue}
-            blockActions={blockActions}
-            renderCustomMarkers={renderCustomMarkers}
-          />
-        )}
-      </div>
+      <ListItem listStyle={listItem} level={level} blockExtras={blockExtras}>
+        <Text style={style} attributes={attributes} styleComponent={styleComponent}>
+          {children}
+        </Text>
+      </ListItem>
     )
   }
   return (

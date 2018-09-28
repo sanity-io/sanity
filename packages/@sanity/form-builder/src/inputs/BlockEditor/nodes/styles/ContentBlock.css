@@ -1,9 +1,5 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.listItem {
-  composes: xsmallToxSmall from './Spacing.css';
-}
-
 .textBlock {
   composes: default from './Spacing.css';
 }
