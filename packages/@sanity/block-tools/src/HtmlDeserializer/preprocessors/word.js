@@ -10,7 +10,11 @@ export default (html, doc) => {
   }
 
   // xPaths for elements that will be removed from the document
-  const unwantedPaths = ["//*[name() = 'o:p']"]
+  const unwantedPaths = [
+    '//o:p',
+    "//span[@style='mso-list:Ignore']",
+    "//span[@style='mso-list: Ignore']"
+  ]
 
   // xPaths for elements that needs to be remapped into other tags
   const mappedPaths = [

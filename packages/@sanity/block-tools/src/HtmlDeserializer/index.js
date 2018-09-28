@@ -1,4 +1,3 @@
-import Schema from '@sanity/schema'
 import {
   createRuleOptions,
   defaultParseHtml,
