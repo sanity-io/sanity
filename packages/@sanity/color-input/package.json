@@ -1,6 +1,6 @@
 {
   "name": "@sanity/color-input",
-  "version": "0.134.0",
+  "version": "0.134.1",
   "description": "Color input",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
