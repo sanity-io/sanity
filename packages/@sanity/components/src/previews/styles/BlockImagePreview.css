@@ -2,6 +2,7 @@
 
 .root {
   display: block;
+  pointer-events: none;
 }
 
 .preview {
@@ -39,6 +40,7 @@
     display: block;
     max-width: 100%;
     height: auto;
+    pointer-events: none;
     /* object-fit: scale-down; */
   }
 }
