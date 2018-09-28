@@ -40,10 +40,16 @@ export default class ListItemButtons extends React.Component<Props> {
   shouldComponentUpdate(nextProps: Props) {
     const nextFocusBlock = nextProps.editorValue.focusBlock
     const currentFocusBlock = this.props.editorValue.focusBlock
+    // Always update if we have selected more than one block
     if (nextProps.editorValue.blocks.size > 1) {
       return true
     }
-    if ((nextFocusBlock && nextFocusBlock.key) !== (currentFocusBlock && currentFocusBlock.key)) {
+    // Update if we have navigated to another block, or the block's data litItem prop is changed
+    if (
+      (nextFocusBlock && nextFocusBlock.key) !== (currentFocusBlock && currentFocusBlock.key) ||
+      (nextFocusBlock && nextFocusBlock.data.get('listItem')) !==
+        (currentFocusBlock && currentFocusBlock.data.get('listItem'))
+    ) {
       return true
     }
     return false

@@ -40,6 +40,13 @@ export default function ListItemOnEnterKeyPlugin(options: Options = {}) {
       // If on top of document
       // and no text insert a node before
       if (!previousBlock) {
+        // If block is empty, remove the list prop
+        if (startBlock.text === '') {
+          const newData = startBlock.data.toObject()
+          delete newData.listItem
+          change.setNodeByKey(startBlock.key, {data: newData})
+          return change
+        }
         change.insertBlock(defaultBlock).focus()
         return change
       }
