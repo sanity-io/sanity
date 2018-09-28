@@ -171,7 +171,15 @@ export default withRouterHOC(
 
     shouldComponentUpdate(nextProps, nextState) {
       // @todo move this out of sCU - cWRP is deprecated, gDSFP does not have previous props
-      if (!shallowEquals(nextProps.router.state.panes, this.props.router.state.panes)) {
+      const nextRouterState = nextProps.router.state
+      const prevRouterState = this.props.router.state
+      if (
+        !shallowEquals(nextRouterState.panes, prevRouterState.panes) ||
+        nextRouterState.editDocumentId !== prevRouterState.editDocumentId ||
+        nextRouterState.legacyEditDocumentId !== prevRouterState.legacyEditDocumentId ||
+        nextRouterState.type !== prevRouterState.type ||
+        nextRouterState.action !== prevRouterState.action
+      ) {
         this.derivePanes(nextProps)
       }
 
@@ -208,20 +216,24 @@ export default withRouterHOC(
       }
     }
 
+    getFallbackKeys() {
+      const routerState = this.props.router.state
+      return routerState.type && routerState.editDocumentId
+        ? [`${routerState.type}-${routerState.editDocumentId}`]
+        : EMPTY_PANE_KEYS
+    }
+
     render() {
       const {panes, error} = this.state
       if (error) {
         return <StructureError error={error} />
       }
 
+      const keys = this.props.router.state.panes || this.getFallbackKeys()
+
       return (
         <div className={styles.deskTool}>
-          {panes && (
-            <DeskToolPanes
-              panes={this.state.panes}
-              keys={this.props.router.state.panes || EMPTY_PANE_KEYS}
-            />
-          )}
+          {panes && <DeskToolPanes panes={this.state.panes} keys={keys} />}
         </div>
       )
     }
