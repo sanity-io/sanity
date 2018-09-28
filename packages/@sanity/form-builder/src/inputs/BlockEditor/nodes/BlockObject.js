@@ -5,7 +5,6 @@ import Base64 from 'slate-base64-serializer'
 
 import React from 'react'
 import {Block} from 'slate'
-import {throttle} from 'lodash'
 import {Editor, findDOMNode, findNode, setEventTransfer} from 'slate-react'
 import classNames from 'classnames'
 
@@ -57,17 +56,24 @@ type Props = {
   type: ?Type
 }
 
-export default class BlockObject extends React.Component<Props> {
-  formBuilderBlock: ?HTMLDivElement
+type State = {
+  isDragging: boolean
+}
+
+export default class BlockObject extends React.Component<Props, State> {
   _dropTarget: ?{node: SlateNode, position: string}
   _editorNode: ?HTMLElement = null
-  _isDragging: boolean = false
+  _dragGhost: ?HTMLElement = null
   previewContainer: ?HTMLDivElement
 
   static defaultProps = {
     blockActions: null,
     renderCustomMarkers: null,
     isSelected: false
+  }
+
+  state = {
+    isDragging: false
   }
 
   componentDidMount() {
@@ -106,14 +112,34 @@ export default class BlockObject extends React.Component<Props> {
 
   handleDragStart = (event: SyntheticDragEvent<HTMLElement>) => {
     const {node} = this.props
-    this._isDragging = true
+    this.setState({isDragging: true})
     this.addDragHandlers()
-    // const element = ReactDOM.findDOMNode(this.previewContainer)
-    const encoded = Base64.serializeNode(node, {preserveKeys: true})
+    const encoded = Base64.serializeNode(node, {preserveKeys: true, preserveData: true})
     setEventTransfer(event, 'node', encoded)
     event.dataTransfer.effectAllowed = 'move'
-    // const element = event.currentTarget
-    // event.dataTransfer.setDragImage(element, element.clientWidth / 2, element.clientHeight / 2)
+    // Specify dragImage so that single elements in the preview will not be the drag image,
+    // but always the whole block thing itself.
+    // Also clone it so that it will not be visually clipped by scroll-containers etc.
+    const element = event.currentTarget
+    if (element) {
+      this._dragGhost = element.cloneNode(true)
+      this._dragGhost.style.width = `${element.clientWidth}px`
+      this._dragGhost.style.height = `${element.clientHeight}px`
+      this._dragGhost.style.position = 'absolute'
+      this._dragGhost.style.top = '-99999px'
+      this._dragGhost.style.left = '-99999px'
+      if (document.body) {
+        document.body.appendChild(this._dragGhost)
+        // eslint-disable-next-line max-depth
+        if (this._dragGhost) {
+          event.dataTransfer.setDragImage(
+            this._dragGhost,
+            this._dragGhost.clientWidth / 2,
+            this._dragGhost.clientHeight / 2
+          )
+        }
+      }
+    }
   }
 
   // Remove the drop target if we leave the editors nodes
@@ -130,10 +156,12 @@ export default class BlockObject extends React.Component<Props> {
   handleDragOverOtherNode =
     // eslint-disable-next-line complexity
     (event: DragEvent) => {
-      event.preventDefault()
-      if (!this._isDragging) {
+      if (!this.state.isDragging) {
         return
       }
+
+      event.preventDefault()
+      event.stopPropagation()
 
       const {node} = this.props
       let targetDOMNode
@@ -171,7 +199,6 @@ export default class BlockObject extends React.Component<Props> {
         this.resetDropTarget()
         return
       }
-
       const blockDOMNode = findDOMNode(block)
       const rect = blockDOMNode.getBoundingClientRect()
       const position = event.clientY < rect.top + blockDOMNode.scrollHeight / 2 ? 'before' : 'after'
@@ -198,12 +225,15 @@ export default class BlockObject extends React.Component<Props> {
   handleDragEnd = (event: SyntheticDragEvent<>) => {
     event.preventDefault()
     event.dataTransfer.dropEffect = 'move'
-    this._isDragging = false
+    this.setState({isDragging: false})
 
     const target = this._dropTarget
     this.removeDragHandlers()
     this.resetDropTarget()
-
+    // Remove the ghost
+    if (this._dragGhost && this._dragGhost.parentNode) {
+      this._dragGhost.parentNode.removeChild(this._dragGhost)
+    }
     const {onChange, node, editorValue} = this.props
 
     // Return if this is our node
@@ -245,10 +275,6 @@ export default class BlockObject extends React.Component<Props> {
   handleClose = () => {
     const {node, onFocus} = this.props
     onFocus([{_key: node.key}])
-  }
-
-  refFormBuilderBlock = (formBuilderBlock: ?HTMLDivElement) => {
-    this.formBuilderBlock = formBuilderBlock
   }
 
   refPreview = (previewContainer: ?HTMLDivElement) => {
@@ -324,6 +350,7 @@ export default class BlockObject extends React.Component<Props> {
       blockActions,
       renderCustomMarkers
     } = this.props
+    const {isDragging} = this.state
     const value = this.getValue()
     const valueType = resolveTypeName(value)
     const validTypes = blockContentFeatures.types.blockObjects
@@ -349,7 +376,8 @@ export default class BlockObject extends React.Component<Props> {
       styles.root,
       editorValue.selection.focus.isInNode(node) && styles.focused,
       isSelected && styles.selected,
-      errors.length > 0 && styles.hasErrors
+      errors.length > 0 && styles.hasErrors,
+      isDragging && styles.isDragging
     ])
     return (
       <div {...attributes}>
@@ -361,7 +389,6 @@ export default class BlockObject extends React.Component<Props> {
           onDrop={this.handleCancelEvent}
           onDoubleClick={this.handleEditStart}
           draggable={!readOnly}
-          ref={this.refFormBuilderBlock}
           className={classname}
         >
           <div ref={this.refPreview} className={styles.previewContainer}>

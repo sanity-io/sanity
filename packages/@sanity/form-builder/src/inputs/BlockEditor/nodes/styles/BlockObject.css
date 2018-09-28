@@ -120,3 +120,7 @@
     color: var(--text-color);
   }
 }
+
+.isDragging {
+  opacity: 0.15;
+}

@@ -311,6 +311,11 @@ export default class Editor extends React.Component<Props> {
     return undefined
   }
 
+  handleCancelEvent = (event: SyntheticEvent<>) => {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
   refBlockDragMarker = (blockDragMarker: ?HTMLDivElement) => {
     this._blockDragMarker = blockDragMarker
   }
@@ -506,6 +511,7 @@ export default class Editor extends React.Component<Props> {
           className={styles.blockDragMarker}
           ref={this.refBlockDragMarker}
           style={{display: 'none'}}
+          onDragOver={this.handleCancelEvent}
         />
       </div>
     )
