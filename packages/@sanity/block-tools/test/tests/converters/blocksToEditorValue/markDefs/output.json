@@ -1,11 +1,13 @@
 {
-  "kind": "state",
+  "object": "value",
+  "data": {},
   "document": {
-    "kind": "document",
+    "object": "document",
+    "key": "randomKey0",
     "data": {},
     "nodes": [
       {
-        "kind": "block",
+        "object": "block",
         "isVoid": false,
         "key": "37369d86a5ce",
         "type": "contentBlock",
@@ -16,16 +18,17 @@
         },
         "nodes": [
           {
-            "kind": "text",
+            "object": "text",
             "key": "37369d86a5ce0",
-            "leaves": [{ "kind": "leaf", "text": "", "marks": [] }]
+            "leaves": [{ "object": "leaf", "text": "", "marks": [] }]
           },
           {
-            "kind": "inline",
+            "object": "inline",
             "isVoid": false,
             "key": "37369d86a5ce1",
             "type": "span",
             "data": {
+              "_key": "37369d86a5ce1",
               "annotations": {
                 "link": {
                   "_key": "4713633924e9",
@@ -36,16 +39,20 @@
             },
             "nodes": [
               {
-                "key": "37369d86a5ce10",
-                "kind": "text",
-                "leaves": [{ "kind": "leaf", "text": "Link", "marks": [] }]
+                "object": "text",
+                "leaves": [{ "object": "leaf", "text": "Link", "marks": [
+                  {
+                    "object": "mark",
+                    "type": "4713633924e9"
+                  }
+                ] }]
               }
             ]
           },
           {
-            "kind": "text",
+            "object": "text",
             "key": "37369d86a5ce2",
-            "leaves": [{ "kind": "leaf", "text": "", "marks": [] }]
+            "leaves": [{ "object": "leaf", "text": "", "marks": [] }]
           }
         ]
       }

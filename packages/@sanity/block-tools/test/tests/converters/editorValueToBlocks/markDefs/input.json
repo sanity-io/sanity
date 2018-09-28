@@ -1,11 +1,11 @@
 {
-  "kind": "state",
+  "object": "value",
   "document": {
-    "kind": "document",
+    "object": "document",
     "data": {},
     "nodes": [
       {
-        "kind": "block",
+        "object": "block",
         "isVoid": false,
         "type": "contentBlock",
         "data": {
@@ -14,11 +14,11 @@
         },
         "nodes": [
           {
-            "kind": "text",
-            "leaves": [{ "kind": "leaf", "text": "", "marks": [] }]
+            "object": "text",
+            "leaves": [{ "object": "leaf", "text": "", "marks": [] }]
           },
           {
-            "kind": "inline",
+            "object": "inline",
             "isVoid": false,
             "type": "span",
             "data": {
@@ -32,14 +32,14 @@
             },
             "nodes": [
               {
-                "kind": "text",
-                "leaves": [{ "kind": "leaf", "text": "Link", "marks": [] }]
+                "object": "text",
+                "leaves": [{ "object": "leaf", "text": "Link", "marks": [] }]
               }
             ]
           },
           {
-            "kind": "text",
-            "leaves": [{ "kind": "leaf", "text": "", "marks": [] }]
+            "object": "text",
+            "leaves": [{ "object": "leaf", "text": "", "marks": [] }]
           }
         ]
       }

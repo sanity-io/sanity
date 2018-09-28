@@ -1,11 +1,13 @@
 {
-  "kind": "state",
+  "data": {},
+  "object": "value",
   "document": {
     "data": {},
-    "kind": "document",
+    "object": "document",
+    "key": "randomKey0",
     "nodes": [
       {
-        "kind": "block",
+        "object": "block",
         "isVoid": false,
         "key": "37369d86a5ce",
         "type": "contentBlock",
@@ -16,26 +18,26 @@
         },
         "nodes": [
           {
-            "key": "randomKey0",
-            "kind": "text",
+            "key": "37369d86a5ce0",
+            "object": "text",
             "leaves": [
               {
-                "kind": "leaf",
+                "object": "leaf",
                 "text": "Bold ",
-                "marks": [{ "kind": "mark", "type": "strong" }]
+                "marks": [{ "object": "mark", "type": "strong" }]
               }
             ]
           },
           {
-            "key": "randomKey1",
-            "kind": "text",
+            "key": "37369d86a5ce1",
+            "object": "text",
             "leaves": [
               {
-                "kind": "leaf",
+                "object": "leaf",
                 "text": "italic",
                 "marks": [
-                  { "kind": "mark", "type": "strong" },
-                  { "kind": "mark", "type": "em" }
+                  { "object": "mark", "type": "strong" },
+                  { "object": "mark", "type": "em" }
                 ]
               }
             ]
@@ -43,7 +45,7 @@
         ]
       },
       {
-        "kind": "block",
+        "object": "block",
         "key": "745d6428661b",
         "isVoid": false,
         "type": "contentBlock",
@@ -54,20 +56,20 @@
         },
         "nodes": [
           {
-            "key": "randomKey2",
-            "kind": "text",
+            "key": "745d6428661b0",
+            "object": "text",
             "leaves": [
               {
-                "kind": "leaf",
+                "object": "leaf",
                 "text": "Italic",
-                "marks": [{ "kind": "mark", "type": "em" }]
+                "marks": [{ "object": "mark", "type": "em" }]
               }
             ]
           }
         ]
       },
       {
-        "kind": "block",
+        "object": "block",
         "isVoid": false,
         "key": "5c7d58f13d18",
         "type": "contentBlock",
@@ -78,13 +80,13 @@
         },
         "nodes": [
           {
-            "key": "randomKey3",
-            "kind": "text",
+            "key": "5c7d58f13d180",
+            "object": "text",
             "leaves": [
               {
-                "kind": "leaf",
+                "object": "leaf",
                 "text": "Code",
-                "marks": [{ "kind": "mark", "type": "code" }]
+                "marks": [{ "object": "mark", "type": "code" }]
               }
             ]
           }

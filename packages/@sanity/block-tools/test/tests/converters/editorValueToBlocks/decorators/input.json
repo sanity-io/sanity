@@ -1,10 +1,10 @@
 {
-  "kind": "state",
+  "object": "value",
   "document": {
-    "kind": "document",
+    "object": "document",
     "nodes": [
       {
-        "kind": "block",
+        "object": "block",
         "isVoid": false,
         "type": "contentBlock",
         "data": {
@@ -15,24 +15,24 @@
         },
         "nodes": [
           {
-            "kind": "text",
+            "object": "text",
             "leaves": [
               {
-                "kind": "leaf",
+                "object": "leaf",
                 "text": "Bold ",
-                "marks": [{ "kind": "mark", "type": "strong" }]
+                "marks": [{ "object": "mark", "type": "strong" }]
               }
             ]
           },
           {
-            "kind": "text",
+            "object": "text",
             "leaves": [
               {
-                "kind": "leaf",
+                "object": "leaf",
                 "text": "italic",
                 "marks": [
-                  { "kind": "mark", "type": "strong" },
-                  { "kind": "mark", "type": "em" }
+                  { "object": "mark", "type": "strong" },
+                  { "object": "mark", "type": "em" }
                 ]
               }
             ]
@@ -40,7 +40,7 @@
         ]
       },
       {
-        "kind": "block",
+        "object": "block",
         "isVoid": false,
         "type": "contentBlock",
         "data": {
@@ -51,19 +51,19 @@
         },
         "nodes": [
           {
-            "kind": "text",
+            "object": "text",
             "leaves": [
               {
-                "kind": "leaf",
+                "object": "leaf",
                 "text": "Italic",
-                "marks": [{ "kind": "mark", "type": "em" }]
+                "marks": [{ "object": "mark", "type": "em" }]
               }
             ]
           }
         ]
       },
       {
-        "kind": "block",
+        "object": "block",
         "isVoid": false,
         "type": "contentBlock",
         "data": {
@@ -74,12 +74,12 @@
         },
         "nodes": [
           {
-            "kind": "text",
+            "object": "text",
             "leaves": [
               {
-                "kind": "leaf",
+                "object": "leaf",
                 "text": "Code",
-                "marks": [{ "kind": "mark", "type": "code" }]
+                "marks": [{ "object": "mark", "type": "code" }]
               }
             ]
           }

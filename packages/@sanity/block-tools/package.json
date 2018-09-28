@@ -13,13 +13,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "jest": {
-    "testEnvironment": "node",
-    "setupTestFrameworkScriptFile": "./test/setup.js",
-    "collectCoverageFrom": [
-      "src/**.js"
-    ]
-  },
   "keywords": [
     "sanity",
     "cms",

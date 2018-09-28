@@ -1,8 +1,15 @@
+import randomKey from '../src/util/randomKey'
+
+let mockTestKey = 0
+
+
+jest.mock('.././src/util/randomKey', () => {
+  return jest.fn().mockImplementation(() => {
+    return `randomKey${mockTestKey++}`
+  })
+})
+
 beforeEach(() => {
   // eslint-disable-line import/unambiguous
-  let testKey = 0
-  const randomKey = require('../src/util/randomKey')
-  randomKey.default = jest.fn(() => {
-    return `randomKey${testKey++}`
-  })
+  mockTestKey = 0
 })
