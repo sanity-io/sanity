@@ -33,6 +33,11 @@ class ImageUrlBuilder {
     return this.withOptions({projectId})
   }
 
+  // Specify background color
+  bg(bg) {
+    return this.withOptions({bg})
+  }
+
   // Specify the width of the image in pixels
   width(width) {
     return this.withOptions({width})
