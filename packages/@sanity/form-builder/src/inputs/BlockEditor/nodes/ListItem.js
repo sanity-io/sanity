@@ -10,10 +10,12 @@ type Props = {
   listStyle: string,
   level: number,
   children: Node,
-  blockExtras: Node
+  blockExtras: Node,
+  attributes?: {}
 }
 
 export default function ListItem(props: Props) {
+  const attributes = props.attributes || {}
   const {listStyle, level} = props
   if (!LIST_ITEM_TYPES.includes(listStyle)) {
     throw new Error(
@@ -23,7 +25,7 @@ export default function ListItem(props: Props) {
   }
   const className = `${styles[listStyle]} ${styles[`level-${level}`]}`
   return (
-    <div className={className}>
+    <div className={className} {...attributes}>
       <div className={styles.item}>{props.children}</div>
       {props.blockExtras}
     </div>

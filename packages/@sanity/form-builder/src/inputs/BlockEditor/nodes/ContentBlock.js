@@ -74,16 +74,21 @@ export default function ContentBlock(props: Props & SlateComponentProps) {
       )
     }
     return (
-      <ListItem listStyle={listItem} level={level} blockExtras={blockExtras}>
-        <Text style={style} attributes={attributes} styleComponent={styleComponent}>
+      <ListItem
+        listStyle={listItem}
+        level={level}
+        blockExtras={blockExtras}
+        attributes={attributes}
+      >
+        <Text style={style} styleComponent={styleComponent}>
           {children}
         </Text>
       </ListItem>
     )
   }
   return (
-    <div className={styles.textBlock}>
-      <Text style={style} styleComponent={styleComponent} attributes={attributes}>
+    <div className={styles.textBlock} {...attributes}>
+      <Text style={style} styleComponent={styleComponent}>
         {children}
       </Text>
       {((markers && markers.length > 0) || blockActions) && (
