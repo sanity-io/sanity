@@ -210,7 +210,7 @@ export default function patchesToChange(
   type: Type
 ) {
   const change = editorValue.change()
-  let result
+  let result = change
   change.withoutNormalizing(_change => {
     // console.log('EDITORVALUE', JSON.stringify(editorValue.document.toJSON(VALUE_TO_JSON_OPTS), null, 2))
     // console.log('BLOCKS', JSON.stringify(snapshot, null, 2))
@@ -250,5 +250,5 @@ export default function patchesToChange(
   })
   // console.log(result.value.document.nodes.get(1))
   // console.log('RESULT VALUE:', JSON.stringify(result.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
-  return result
+  return result.normalize()
 }
