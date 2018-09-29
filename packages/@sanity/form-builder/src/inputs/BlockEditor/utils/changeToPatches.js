@@ -9,7 +9,7 @@ import type {
 } from '../typeDefs'
 import {Change, Operation} from 'slate'
 import {flatten, isEqual} from 'lodash'
-import {editorValueToBlocks, normalizeBlock} from '@sanity/block-tools'
+import {editorValueToBlocks} from '@sanity/block-tools'
 import {applyAll} from '../../../simplePatch'
 import {unset, set, insert, setIfMissing} from '../../../PatchEvent'
 
@@ -63,7 +63,7 @@ function setNodePatchSimple(
     return set(appliedBlocks, [])
   }
   const changedBlock = appliedBlocks[0]
-  setKey(changedBlock._key, normalizeBlock(changedBlock))
+  setKey(changedBlock._key, changedBlock)
   return set(changedBlock, [{_key: changedBlock._key}])
 }
 
@@ -93,7 +93,7 @@ function setNodePatch(
   }
 
   setKey(value[operation.path.get(0)]._key, changedBlock)
-  return set(normalizeBlock(changedBlock), [{_key: changedBlock._key}])
+  return set(changedBlock, [{_key: changedBlock._key}])
 }
 
 function insertNodePatch(
@@ -139,7 +139,7 @@ function insertNodePatch(
     const block = appliedBlocks[operation.path.get(0)]
     setKey(block._key, block)
     if (block._type === 'block') {
-      patches.push(set(normalizeBlock(block), [{_key: block._key}]))
+      patches.push(set(block, [{_key: block._key}]))
     }
   }
   return patches
@@ -197,7 +197,7 @@ function mergeNodePatch(
   }
   if (operation.path.size > 1) {
     const targetBlock = appliedBlocks[operation.path.get(0)]
-    setKey(targetBlock._key, targetBlock)
+    setKey(value[operation.path.get(0)]._key, targetBlock)
     patches.push(set(targetBlock, [{_key: targetBlock._key}]))
   }
   return patches
@@ -311,58 +311,76 @@ export default function changeToPatches(
   unchanged.withoutNormalizing(_change => {
     // eslint-disable-next-line complexity
     operations.forEach((operation: Operation, index: number) => {
+      const _patches = []
       // console.log('OPERATION:', JSON.stringify(operation, null, 2))
       switch (operation.type) {
         case 'insert_text':
-          patches.push(setNodePatchSimple(_change, operation, _value, blockContentType))
+          _patches.push(setNodePatchSimple(_change, operation, _value, blockContentType))
           break
         case 'remove_text':
-          patches.push(setNodePatchSimple(_change, operation, _value, blockContentType))
+          _patches.push(setNodePatchSimple(_change, operation, _value, blockContentType))
           break
         case 'add_mark':
-          patches.push(setNodePatchSimple(_change, operation, _value, blockContentType))
+          _patches.push(setNodePatchSimple(_change, operation, _value, blockContentType))
           break
         case 'remove_mark':
-          patches.push(setNodePatchSimple(_change, operation, _value, blockContentType))
+          _patches.push(setNodePatchSimple(_change, operation, _value, blockContentType))
           break
         case 'set_node':
-          patches.push(setNodePatch(_change, operation, _value, blockContentType))
+          _patches.push(setNodePatch(_change, operation, _value, blockContentType))
           break
         case 'insert_node':
-          patches.push(insertNodePatch(_change, operation, _value, blockContentType))
+          _patches.push(insertNodePatch(_change, operation, _value, blockContentType))
           break
         case 'remove_node':
-          patches.push(removeNodePatch(_change, operation, _value, blockContentType))
+          _patches.push(removeNodePatch(_change, operation, _value, blockContentType))
           break
         case 'split_node':
-          patches.push(splitNodePatch(_change, operation, blockContentType))
+          _patches.push(splitNodePatch(_change, operation, blockContentType))
           break
         case 'merge_node':
-          patches.push(mergeNodePatch(_change, operation, _value, blockContentType))
+          _patches.push(mergeNodePatch(_change, operation, _value, blockContentType))
           break
         case 'move_node':
-          patches.push(moveNodePatch(_change, operation, _value, blockContentType))
+          _patches.push(moveNodePatch(_change, operation, _value, blockContentType))
           break
         default:
-          patches.push(noOpPatch(_change, operation))
+          _patches.push(noOpPatch(_change, operation))
       }
       // console.log('BLOCKS BEFORE:', JSON.stringify(_value, null, 2))
-      // console.log('PATCHES:', JSON.stringify(_patches, null, 2))
       // console.log(
       //   'CHANGE VALUE:',
       //   JSON.stringify(_change.value.toJSON(VALUE_TO_JSON_OPTS), null, 2)
       // )
-      const lastPatchSet = patches.slice(-1)
+      const lastPatchSet = flatten(_patches)
       if (lastPatchSet) {
-        _value = applyPatchesOnValue(flatten(lastPatchSet), _value)
+        _value = applyPatchesOnValue(lastPatchSet, _value)
       }
+      // console.log('PATCH-SET:', JSON.stringify(lastPatchSet, null, 2))
       // console.log('BLOCKS AFTER:', JSON.stringify(_value, null, 2))
+      patches.push(lastPatchSet)
     })
   })
 
-  const result = flatten(patches).filter(Boolean)
+  let result = flatten(patches)
+  result = result.filter((patch, index) => {
+    if (!patch) {
+      return false
+    }
+    const nextPatch = result[index + 1]
+    if (
+      nextPatch &&
+      nextPatch.type === 'set' &&
+      patch.type === 'set' &&
+      isEqual(patch.path, nextPatch.path)
+    ) {
+      return false
+    }
+    return true
+  })
   if (change.__isUndoRedo) {
     result.push(set({}, [{_key: 'undoRedoVoidPatch'}]))
   }
+  // console.log('PATCHES:', JSON.stringify(result, null, 2))
   return result
 }

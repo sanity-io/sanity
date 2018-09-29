@@ -229,7 +229,7 @@ export default withPatchSubscriber(
       }
       if (_isWritingTextChange) {
         this.setState({userIsWritingText: true})
-        this.unsetuserIsWritingTextStatus()
+        this.unsetUserIsWritingTextState()
       }
       if (callback) {
         callback(change)
@@ -273,7 +273,7 @@ export default withPatchSubscriber(
       }
     }
 
-    unsetuserIsWritingTextStatus = debounce(() => {
+    unsetUserIsWritingTextState = debounce(() => {
       this.setState({userIsWritingText: false})
     }, 1000)
 

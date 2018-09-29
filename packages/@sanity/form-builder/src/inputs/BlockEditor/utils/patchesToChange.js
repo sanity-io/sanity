@@ -89,20 +89,18 @@ function replaceValue(snapshot: ?JSONValue, change: () => void, type: Type) {
   if (snapshot) {
     const fragment = blocksToEditorValue(snapshot, type)
     // Don't save these changes (we don't want reversed undo/redo steps for them)
-    change.withoutSaving(() => {
-      if (change.value.document.nodes.size) {
-        change.moveToRangeOfDocument().delete()
-      }
-      change.applyOperations(
-        fragment.document.nodes.reverse().map(node => {
-          return {
-            type: 'insert_node',
-            path: [0],
-            node: node
-          }
-        })
-      )
-    })
+    if (change.value.document.nodes.size) {
+      change.moveToRangeOfDocument().delete()
+    }
+    change.applyOperations(
+      fragment.document.nodes.reverse().map(node => {
+        return {
+          type: 'insert_node',
+          path: [0],
+          node: node
+        }
+      })
+    )
     return change
   }
   throw new Error('No snapshot given!')
