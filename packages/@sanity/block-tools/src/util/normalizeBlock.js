@@ -19,12 +19,7 @@ export default function normalizeBlock(block) {
         previousChild._type === 'span' &&
         isEqual(previousChild.marks, child.marks)
       ) {
-        if (
-          lastChild &&
-          lastChild._key === child._key &&
-          child.text === '' &&
-          block.children.length > 1
-        ) {
+        if (lastChild && lastChild === child && child.text === '' && block.children.length > 1) {
           return false
         }
         previousChild.text += child.text
@@ -33,7 +28,9 @@ export default function normalizeBlock(block) {
       return child
     })
     .map(child => {
-      child._key = `${block._key}${newIndex++}`
+      if (block._key) {
+        child._key = `${block._key}${newIndex++}`
+      }
       return child
     })
   return block

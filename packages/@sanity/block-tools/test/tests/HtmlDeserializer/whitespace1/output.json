@@ -1,0 +1,54 @@
+[
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "Jeg har "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong"],
+        "text": "strong"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " og "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong"],
+        "text": "bold"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " og "
+      },
+      {
+        "_type": "span",
+        "marks": ["em"],
+        "text": "italic"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " og "
+      },
+      {
+        "_type": "span",
+        "marks": ["em"],
+        "text": "emphasis"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " og greier og greier."
+      }
+    ]
+  }
+]

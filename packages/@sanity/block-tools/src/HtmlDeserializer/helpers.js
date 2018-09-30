@@ -2,6 +2,7 @@ import {DEFAULT_BLOCK} from '../constants'
 import blockContentTypeToOptions from '../util/blockContentTypeToOptions'
 import preprocessors from './preprocessors'
 import resolveJsType from '../util/resolveJsType'
+import {isEqual} from 'lodash'
 
 /**
  * A utility function to create the options needed for the various rule sets,
@@ -98,22 +99,27 @@ export function flattenNestedBlocks(blocks) {
   return flattened
 }
 
+function nextSpan(block, child, index) {
+  const next = block.children[index + 1]
+  return next && next._type === 'span' ? next : null
+}
+function prevSpan(block, child, index) {
+  const prev = block.children[index - 1]
+  return prev && prev._type === 'span' ? prev : null
+}
+
+function isWhiteSpaceChar(text) {
+  return ['\xa0', ' '].includes(text)
+}
+
 export function trimWhitespace(blocks) {
   blocks.forEach(block => {
-    const nextSpan = (child, index) => {
-      const next = block.children[index + 1]
-      return next && next._type === 'span' ? next : null
-    }
-    const prevSpan = (child, index) => {
-      const prev = block.children[index - 1]
-      return prev && prev._type === 'span' ? prev : null
-    }
     block.children.forEach((child, index) => {
       if (child._type !== 'span') {
         return
       }
-      const nextChild = nextSpan(child, index)
-      const prevChild = prevSpan(child, index)
+      const nextChild = nextSpan(block, child, index)
+      const prevChild = prevSpan(block, child, index)
       if (index === 0) {
         child.text = child.text.replace(/^[^\S\n]+/g, '')
       }
@@ -135,6 +141,17 @@ export function trimWhitespace(blocks) {
         child.text = child.text.replace(/^[^\S\n]+/g, '')
       }
       if (!child.text) {
+        block.children.splice(index, 1)
+      }
+      if (prevChild && isEqual(prevChild.marks, child.marks) && isWhiteSpaceChar(child.text)) {
+        prevChild.text += ' '
+        block.children.splice(index, 1)
+      } else if (
+        nextChild &&
+        isEqual(nextChild.marks, child.marks) &&
+        isWhiteSpaceChar(child.text)
+      ) {
+        nextChild.text = ` ${nextChild.text}`
         block.children.splice(index, 1)
       }
     })
