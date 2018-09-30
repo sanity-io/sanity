@@ -12,6 +12,7 @@ export default {
       type: 'string',
       title: 'Identifier'
     },
+    {name: 'someArray', type: 'array', of: [{type: 'customObject'}]},
     {
       name: 'metadata',
       type: 'object',
