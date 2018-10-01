@@ -9,8 +9,7 @@ import type {
   SlateOperation,
   Marker,
   Path,
-  Type,
-  FormBuilderSchema
+  Type
 } from './typeDefs'
 
 import React from 'react'
@@ -98,12 +97,10 @@ type Props = {
     type: Type,
     value: ?(FormBuilderValue[])
   }) => {insert?: FormBuilderValue[], path?: []},
-  onPatch: (event: PatchEvent) => void,
   level: number,
   readOnly?: boolean,
   renderBlockActions?: (block: Block | FormBuilderValue) => Node,
   renderCustomMarkers?: (Marker[]) => Node,
-  schema: FormBuilderSchema,
   subscribe: (() => void) => void,
   type: BlockArrayType,
   value: ?(FormBuilderValue[])
@@ -402,6 +399,7 @@ export default withPatchSubscriber(
         onBlur,
         onFocus,
         onPaste,
+        readOnly,
         renderCustomMarkers,
         renderBlockActions,
         type,
@@ -428,6 +426,7 @@ export default withPatchSubscriber(
                 sendPatchesFromChange={this.sendPatchesFromChange}
                 type={type}
                 value={value}
+                readOnly={readOnly}
                 renderBlockActions={renderBlockActions}
                 renderCustomMarkers={renderCustomMarkers}
                 ref={this.refInput}
