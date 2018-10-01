@@ -61,7 +61,7 @@
 
 .root > .item > * {
   padding-left: 0.01em; /* Allow for cursor to show if item is empty */
-  word-break: break-all; /* Break long words to fit sheet */
+  word-break: break-word; /* Break long words to fit sheet */
 }
 
 .bullet {
