@@ -36,6 +36,7 @@
 
 .result {
   composes: shadow-10dp from "part:@sanity/base/theme/shadows-style";
+  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
   position: absolute;
   min-height: 8rem;
   z-index: var(--zindex-dropdown);
@@ -50,8 +51,8 @@
     padding-bottom: 0;
     width: 40rem;
     max-width: 100%;
-    max-height: 100vh;
-    min-height: initial;
+    max-height: 70vh;
+    min-height: 4rem;
   }
 }
 

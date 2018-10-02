@@ -61,7 +61,7 @@ function search(query) {
   const constraintString = constraints
     .map(constraint => `(${constraint.join(' || ')})`)
     .join(' && ')
-  return client.observable.fetch(`*[${constraintString}][0...10]`, params)
+  return client.observable.fetch(`*[${constraintString}][0...100]`, params)
 }
 
 export default enhanceClickOutside(
