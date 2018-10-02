@@ -146,7 +146,7 @@ export default class Document {
         nextMut = this.incoming.find(mut => mut.appliesToMissingDocument())
       }
       mustRebase = mustRebase || this.applyIncoming(nextMut)
-      if (protect++ > 100) {
+      if (protect++ > 10000) {
         throw new Error(
           'Mutator stuck flushing incoming mutations. Probably stuck here:',
           JSON.stringify(nextMut)
