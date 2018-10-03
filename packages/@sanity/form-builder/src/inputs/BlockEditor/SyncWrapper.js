@@ -16,7 +16,7 @@ import React from 'react'
 import type {Node} from 'react'
 import type {List} from 'immutable'
 import generateHelpUrl from '@sanity/generate-help-url'
-import {uniq, flatten, debounce, unionBy} from 'lodash'
+import {debounce} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {PatchEvent} from '../../PatchEvent'
@@ -24,11 +24,11 @@ import InvalidValueInput from '../InvalidValueInput'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import Input from './Input'
 
-import restoreSelection from './utils/restoreSelection'
 import changeToPatches from './utils/changeToPatches'
 import createSelectionOperation from './utils/createSelectionOperation'
 import deserialize from './utils/deserialize'
 import patchesToChange from './utils/patchesToChange'
+import {localChanges$, remoteChanges$, changes$} from './utils/changeObservers'
 
 import styles from './styles/SyncWrapper.css'
 
@@ -120,64 +120,60 @@ type State = {
 
 export default withPatchSubscriber(
   class SyncWrapper extends React.Component<Props, State> {
-    _unsubscribe: void => void
+    _beforeChangeEditorValue: ?SlateValue
+    _unsubscribePatches: void => void
+    _changeSubscription: void => void
     _input: ?Input = null
     _select = null
-    _changes: {
-      beforeChangeEditorValue: SlateValue,
-      change: SlateChange,
-      value: ?(FormBuilderValue[])
-    }[] = []
     _undoRedoStack = {undo: [], redo: []}
-    _beforeChangeEditorValue = null // Keep track of what the editor value is (as seen in the editor) before it is changed by something.
 
     static defaultProps = {
       markers: []
     }
 
-    static getDerivedStateFromProps(nextProps, state) {
-      // Make sure changes to markers are reflected in the editor value.
-      // Slate heavily optimizes when nodes should re-render,
-      // so we use non-visual decorators in Slate to force the relevant editor nodes to re-render
-      // when markers change.
-      const newDecorationHash = nextProps.markers.map(mrkr => JSON.stringify(mrkr.path)).join('')
-      if (
-        nextProps.markers &&
-        nextProps.markers.length &&
-        newDecorationHash !== state.decorationHash
-      ) {
-        const {editorValue} = state
-        const decorations = unionBy(
-          flatten(
-            nextProps.markers.map(mrkr => {
-              return mrkr.path.slice(0, 3).map(part => {
-                const key = part._key
-                if (!key) {
-                  return null
-                }
-                return {
-                  anchor: {key, offset: 0},
-                  focus: {key, offset: 0},
-                  mark: {type: '__marker'} // non-visible mark (we just want the block to re-render)
-                }
-              })
-            })
-          ).filter(Boolean),
-          state.decorations,
-          'focus.key'
-        )
-        const change = editorValue.change()
-        change.withoutSaving(() => {
-          change.setValue({decorations})
-        })
-        return {
-          decorations,
-          decorationHash: newDecorationHash,
-          editorValue: change.value
-        }
-      }
-      return null
-    }
+    // static getDerivedStateFromProps(nextProps, state) {
+    //   // Make sure changes to markers are reflected in the editor value.
+    //   // Slate heavily optimizes when nodes should re-render,
+    //   // so we use non-visual decorators in Slate to force the relevant editor nodes to re-render
+    //   // when markers change.
+    //   const newDecorationHash = nextProps.markers.map(mrkr => JSON.stringify(mrkr.path)).join('')
+    //   if (
+    //     nextProps.markers &&
+    //     nextProps.markers.length &&
+    //     newDecorationHash !== state.decorationHash
+    //   ) {
+    //     const {editorValue} = state
+    //     const decorations = unionBy(
+    //       flatten(
+    //         nextProps.markers.map(mrkr => {
+    //           return mrkr.path.slice(0, 3).map(part => {
+    //             const key = part._key
+    //             if (!key) {
+    //               return null
+    //             }
+    //             return {
+    //               anchor: {key, offset: 0},
+    //               focus: {key, offset: 0},
+    //               mark: {type: '__marker'} // non-visible mark (we just want the block to re-render)
+    //             }
+    //           })
+    //         })
+    //       ).filter(Boolean),
+    //       state.decorations,
+    //       'focus.key'
+    //     )
+    //     const change = editorValue.change()
+    //     change.withoutSaving(() => {
+    //       change.setValue({decorations})
+    //     })
+    //     return {
+    //       decorations,
+    //       decorationHash: newDecorationHash,
+    //       editorValue: change.value
+    //     }
+    //   }
+    //   return null
+    // }
 
     constructor(props) {
       super(props)
@@ -199,32 +195,25 @@ export default withPatchSubscriber(
         loading: {},
         userIsWritingText: false
       }
-      this._unsubscribe = props.subscribe(this.handleDocumentPatches)
-      this._changes = []
+      this._unsubscribePatches = props.subscribe(this.handleDocumentPatches)
+      this._changeSubscription = changes$.subscribe(this.handleChangeSet)
+      this._beforeChangeEditorValue = this.state.editorValue
     }
 
     componentWillUnmount() {
-      this._unsubscribe()
+      this._unsubscribePatches()
+      this._changeSubscription.unsubscribe()
     }
 
     handleEditorChange = (change: SlateChange, callback?: void => void) => {
-      const {value} = this.props
-      const beforeChangeEditorValue = this.state.editorValue
+      this._beforeChangeEditorValue = this.state.editorValue
       this._select = createSelectionOperation(change)
-      this.setState({editorValue: change.value})
-      this._changes.push({
-        beforeChangeEditorValue,
+      localChanges$.next({
         change,
-        value
+        isRemote: false
       })
-      const _isWritingTextChange = isWritingTextOperationsOnly(change.operations) // insert or remove text
-      const _isTokenChar = isTokenChar(change) // user inserts space or return char
-      if (_isWritingTextChange && !_isTokenChar) {
-        this.sendPatchesFromChangeDebounced()
-      } else {
-        this.sendPatchesFromChange()
-      }
-      if (_isWritingTextChange) {
+      const isWritingTextChange = isWritingTextOperationsOnly(change.operations) // insert or remove text
+      if (isWritingTextChange) {
         this.setState({userIsWritingText: true})
         this.unsetUserIsWritingTextState()
       }
@@ -235,39 +224,18 @@ export default withPatchSubscriber(
       return change
     }
 
-    sendPatchesFromChangeDebounced = debounce(() => {
-      this.sendPatchesFromChange()
-    }, 500)
-
-    sendPatchesFromChange = () => {
-      const {type, onChange} = this.props
-      const finalPatches = []
-      if (this._changes[0]) {
-        this._beforeChangeEditorValue = this._changes[0].beforeChangeEditorValue
-      }
-      while (this._changes.length > 0) {
-        const changeSet = this._changes.shift()
-        const {beforeChangeEditorValue, change, value} = changeSet
-        const nextChangeSet = this._changes[1]
-
-        if (
-          nextChangeSet &&
-          isWritingTextOperationsOnly(
-            nextChangeSet.change.operations.concat(changeSet.change.operations)
-          )
-        ) {
-          // This patch will be redundant so skip it.
-          continue
-        }
-        const patches = changeToPatches(beforeChangeEditorValue, change, value, type)
+    handleChangeSet = changeSet => {
+      const {value, type, onChange} = this.props
+      const {editorValue} = this.state
+      const {change, isRemote} = changeSet
+      // Generate patches and send them to the server if this is a local change
+      if (!isRemote) {
+        const patches = changeToPatches(editorValue, change, value, type)
         if (patches.length) {
-          finalPatches.push(patches)
+          onChange(PatchEvent.from(patches))
         }
       }
-      const patchesToSend = flatten(finalPatches)
-      if (patchesToSend.length) {
-        onChange(PatchEvent.from(patchesToSend))
-      }
+      this.setState({editorValue: editorValue.change().applyOperations(change.operations).value})
     }
 
     unsetUserIsWritingTextState = debounce(() => {
@@ -288,27 +256,25 @@ export default withPatchSubscriber(
       }
     }
 
-    // eslint-disable-next-line complexity
     handleDocumentPatches = ({patches, shouldReset, snapshot}) => {
-      const {type, focusPath} = this.props
-      const hasRemotePatches = patches.some(patch => patch.origin === 'remote')
-      const hasInsertUnsetPatches = patches.some(patch => ['insert', 'unset'].includes(patch.type))
-      const hasMultipleDestinations =
-        uniq(patches.map(patch => patch.path[0] && patch.path[0]._key).filter(Boolean)).length > 1
-      const hasComplexity = patches.length > 3
-      // Some heuristics for when we should set a new state or just trust that the editor
-      // state is in sync with the formbuilder value. As setting a new state may be a performance
-      // hog, we don't want to do it for the most basic changes (like entering a new character).
-      // TODO: force sync the state every now and then just to be 100% sure we are in sync.
-      const shouldSetNewState =
-        hasRemotePatches ||
-        hasInsertUnsetPatches ||
-        hasMultipleDestinations ||
-        hasComplexity ||
-        shouldReset
-      const localPatches = patches.filter(patch => patch.origin === 'local')
+      const {type} = this.props
+      const {editorValue} = this.state
+
+      const remotePatches = patches.filter(
+        patch =>
+          patch.origin === 'remote' &&
+          !(patch.path[0] && patch.path[0]._key === 'undoRedoVoidPatch')
+      )
+      if (remotePatches.length > 0) {
+        const change = patchesToChange(remotePatches, editorValue, snapshot, type)
+        remoteChanges$.next({
+          change,
+          isRemote: true
+        })
+      }
 
       // Handle undo/redo
+      const localPatches = patches.filter(patch => patch.origin === 'local')
       if (localPatches.length) {
         const lastPatch = localPatches.slice(-1)[0]
         // Until the FormBuilder can support some kind of patch tagging,
@@ -328,44 +294,6 @@ export default withPatchSubscriber(
           // Redo stack must be reset here
           this._undoRedoStack.redo = []
         }
-      }
-
-      // Set a new editorValue from the snapshot,
-      // and restore the user's selection
-      if (snapshot && shouldSetNewState) {
-        const currentEditorValue = this.state.editorValue
-        const editorValue = deserialize(snapshot, type)
-        const change = editorValue.change()
-        // Make sure to add any pending local operations (which is not sent as patches yet),
-        // to the new editorValue if this is incoming remote patches
-        if (this._changes.length && patches.every(patch => patch.origin === 'remote')) {
-          // eslint-disable-next-line max-depth
-          try {
-            this._changes.forEach(changeSet => {
-              change.applyOperations(changeSet.change.operations)
-            })
-          } catch (err) {
-            // eslint-disable-next-line no-console
-            console.log('Could not apply pending local operations')
-          }
-        }
-        // Try to restore the previously saved selection
-        if (this._select) {
-          // eslint-disable-next-line max-depth
-          try {
-            restoreSelection(change, this._select, patches, snapshot, currentEditorValue)
-          } catch (err) {
-            // eslint-disable-next-line max-depth
-            if (!err.message.match('Could not find a descendant')) {
-              console.error(err) // eslint-disable-line no-console
-            }
-          }
-        }
-        // Keep the editor focused as we insert the new value
-        if ((focusPath || []).length === 1) {
-          change.focus()
-        }
-        this.setState({editorValue: change.value})
       }
     }
 
@@ -423,7 +351,6 @@ export default withPatchSubscriber(
                 onPaste={onPaste}
                 onPatch={this.handleFormBuilderPatch}
                 undoRedoStack={this._undoRedoStack}
-                sendPatchesFromChange={this.sendPatchesFromChange}
                 type={type}
                 value={value}
                 readOnly={readOnly}

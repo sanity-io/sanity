@@ -14,12 +14,12 @@ import {applyAll} from '../../../simplePatch'
 import findInlineByAnnotationKey from './findInlineByAnnotationKey'
 
 type JSONValue = number | string | boolean | {[string]: JSONValue} | JSONValue[]
-// const VALUE_TO_JSON_OPTS = {
-//   preserveData: true,
-//   preserveKeys: true,
-//   preserveSelection: false,
-//   preserveHistory: false
-// }
+const VALUE_TO_JSON_OPTS = {
+  preserveData: true,
+  preserveKeys: true,
+  preserveSelection: false,
+  preserveHistory: false
+}
 
 function findLastKey(path: Path[]) {
   let key = null
@@ -246,7 +246,6 @@ export default function patchesToChange(
       result = _change
     })
   })
-  // console.log(result.value.document.nodes.get(1))
   // console.log('RESULT VALUE:', JSON.stringify(result.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
   return result.normalize()
 }

@@ -73,7 +73,6 @@ type Props = {
   readOnly?: boolean,
   renderBlockActions?: (block: Block | FormBuilderValue) => Node,
   renderCustomMarkers?: (Marker[]) => Node,
-  sendPatchesFromChange: void => void,
   setFocus: void => void,
   type: Type,
   undoRedoStack: UndoRedoStack,
@@ -117,8 +116,7 @@ export default class Editor extends React.Component<Props> {
         stack: props.undoRedoStack,
         onChange: props.onChange,
         editorValue: props.editorValue,
-        blockContentType: props.type,
-        sendPatchesFromChange: props.sendPatchesFromChange
+        blockContentType: props.type
       })
     ]
     this._editorSchema = buildEditorSchema(props.blockContentFeatures)

@@ -35,8 +35,10 @@ function handleHTML(html, change, editor, blockContentType, onProgress) {
   return wait(0).then(() => {
     onProgress({status: 'html'})
     const blocks = blockTools.htmlToBlocks(html, blockContentType)
+    // console.log(JSON.stringify(blocks, null, 2))
     onProgress({status: 'blocks'})
     const doc = Document.fromJSON(blockTools.blocksToEditorValue(blocks, blockContentType).document)
+    // console.log(JSON.stringify(doc.toJSON({preserveKeys: true, preserveData: true}), null, 2))
     change.insertFragment(doc).moveToEndOfBlock()
     try {
       editor.onChange(change)
