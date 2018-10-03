@@ -1,4 +1,4 @@
-import {of as observableOf} from 'rxjs'
+import {defer, of as observableOf} from 'rxjs'
 
 import createDocumentStore from '@sanity/document-store'
 import client from 'part:@sanity/base/client'
@@ -42,16 +42,16 @@ const serverConnection = {
   },
 
   query(query, params) {
-    return client.observable
-      .listen(query, params || {}, {
+    return defer(() =>
+      client.observable.listen(query, params || {}, {
         includeResult: false,
         events: ['welcome', 'mutation', 'reconnect']
       })
-      .pipe(
-        concatMap(event => {
-          return event.type === 'welcome' ? fetchQuerySnapshot(query, params) : observableOf(event)
-        })
-      )
+    ).pipe(
+      concatMap(event => {
+        return event.type === 'welcome' ? fetchQuerySnapshot(query, params) : observableOf(event)
+      })
+    )
   },
 
   mutate(mutations) {
