@@ -1,3 +1,4 @@
+const webpack = require('webpack')
 const sanityServer = require('@sanity/server')
 const wpIntegration = require('@sanity/webpack-integration/v3')
 const genDefaultConfig = require('@storybook/react/dist/server/config/defaults/webpack.config.js')
@@ -26,8 +27,9 @@ function getWebpackConfig(baseConfig, env) {
   const wpConfig = Object.assign({}, sanityContext, {commonChunkPlugin: false})
   const sanityWpConfig = sanityServer.getWebpackDevConfig(wpConfig)
   const config = Object.assign({}, genDefaultConfig(baseConfig, env))
-  config.plugins = config.plugins.concat(wpIntegration.getPlugins(sanityContext))
-  config.module.rules = (config.module.rules || []).concat(wpIntegration.getLoaders(sanityContext))
+  const context = Object.assign({}, sanityContext, {webpack})
+  config.plugins = config.plugins.concat(wpIntegration.getPlugins(context))
+  config.module.rules = (config.module.rules || []).concat(wpIntegration.getLoaders(context))
   config.module.rules = config.module.rules.filter(skipCssLoader)
   config.module.rules.unshift(sanityWpConfig.module.rules.find(isCssLoader))
 
