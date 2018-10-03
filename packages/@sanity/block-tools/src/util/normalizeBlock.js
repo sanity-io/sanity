@@ -1,8 +1,12 @@
 import {isEqual} from 'lodash'
+import randomKey from './randomKey'
 
 // For a block with _type 'block' (text), join spans where possible
 export default function normalizeBlock(block) {
   let newIndex = 0
+  if (!block._key) {
+    block._key = randomKey(12)
+  }
   if (block._type !== 'block') {
     return block
   }
@@ -28,9 +32,7 @@ export default function normalizeBlock(block) {
       return child
     })
     .map(child => {
-      if (block._key) {
-        child._key = `${block._key}${newIndex++}`
-      }
+      child._key = `${block._key}${newIndex++}`
       return child
     })
   return block
