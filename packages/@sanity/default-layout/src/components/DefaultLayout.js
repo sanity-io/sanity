@@ -12,6 +12,7 @@ import {RouteScope, withRouterHOC} from 'part:@sanity/base/router'
 import absolutes from 'all:part:@sanity/base/absolutes'
 import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
 import {HAS_SPACES} from '../util/spaces'
+import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
 import styles from './styles/DefaultLayout.css'
 import RenderTool from './RenderTool'
 import Navigation from './Navigation'
@@ -106,12 +107,15 @@ export default withRouterHOC(
       const {tools, router} = this.props
       const {createMenuIsOpen, mobileMenuIsOpen} = this.state
 
-      const TYPE_ITEMS = dataAspects.getInferredTypes().map(typeName => ({
-        key: typeName,
-        name: typeName,
-        title: dataAspects.getDisplayName(typeName),
-        icon: dataAspects.getIcon(typeName)
-      }))
+      const TYPE_ITEMS = dataAspects
+        .getInferredTypes()
+        .filter(typeName => isActionEnabled(schema.get(typeName), 'create'))
+        .map(typeName => ({
+          key: typeName,
+          name: typeName,
+          title: dataAspects.getDisplayName(typeName),
+          icon: dataAspects.getIcon(typeName)
+        }))
 
       const modalActions = TYPE_ITEMS.map(item => ({
         title: item.title,
@@ -198,7 +202,9 @@ export default withRouterHOC(
             <SanityStudioLogo />
           </a>
 
-          {absolutes.map((Abs, i) => <Abs key={i} />)}
+          {absolutes.map((Abs, i) => (
+            <Abs key={i} />
+          ))}
         </div>
       )
     }
