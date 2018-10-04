@@ -7,7 +7,7 @@ import {DEFAULT_SELECTED_ORDERING_OPTION} from './Sort'
 import {DocumentListBuilder} from './DocumentList'
 import {ListItemBuilder} from './ListItem'
 import {EditorBuilder} from './Editor'
-import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
+import {isActionEnabled} from './parts/documentActionUtils'
 
 const PlusIcon = getPlusIcon()
 const ListIcon = getListIcon()
