@@ -43,6 +43,7 @@ import previewMediaTest from './previewMediaTest'
 import species from './species'
 import date from './date'
 import invalidPreviews from './invalidPreviews'
+import actions from './actions'
 
 export default createSchema({
   name: 'test-examples',
@@ -63,6 +64,7 @@ export default createSchema({
     date,
     richDateTest,
     validation,
+    actions,
     topLevelArrayType,
     topLevelPrimitiveArrayType,
     arrays,

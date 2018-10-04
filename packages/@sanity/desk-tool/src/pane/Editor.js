@@ -7,6 +7,7 @@ import {Tooltip} from '@sanity/react-tippy'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import {PreviewFields} from 'part:@sanity/base/preview'
 import {getPublishedId, newDraftFrom} from 'part:@sanity/base/util/draft-utils'
+import {resolveEnabledActions, isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import Button from 'part:@sanity/components/buttons/default'
 import FormBuilder from 'part:@sanity/form-builder'
@@ -131,15 +132,16 @@ const getProductionPreviewItem = (draft, published) => {
   )
 }
 
-const getMenuItems = (draft, published, isLiveEditEnabled) =>
+const getMenuItems = (enabledActions, draft, published, isLiveEditEnabled) =>
   [
     getProductionPreviewItem,
-    getDiscardItem,
-    getUnpublishItem,
-    getDuplicateItem,
+    enabledActions.includes('delete') && getDiscardItem,
+    enabledActions.includes('delete') && getUnpublishItem,
+    enabledActions.includes('create') && getDuplicateItem,
     getInspectItem,
-    getDeleteItem
+    enabledActions.includes('delete') && getDeleteItem
   ]
+    .filter(Boolean)
     .map(fn => fn(draft, published, isLiveEditEnabled))
     .filter(Boolean)
 
@@ -537,26 +539,27 @@ export default withRouterHOC(
               </Button>
             </Tooltip>
           )}
-          {!this.isLiveEditEnabled() && (
-            <Tooltip
-              arrow
-              theme="light"
-              className={styles.publishButton}
-              title={
-                errors.length > 0
-                  ? 'Fix errors before publishing'
-                  : `${published ? 'Publish changes' : 'Publish'} (Ctrl+Alt+P)`
-              }
-            >
-              <Button
-                disabled={isReconnecting || !draft || errors.length > 0}
-                onClick={this.handlePublishRequested}
-                color="primary"
+          {isActionEnabled(type, 'publish') &&
+            !this.isLiveEditEnabled() && (
+              <Tooltip
+                arrow
+                theme="light"
+                className={styles.publishButton}
+                title={
+                  errors.length > 0
+                    ? 'Fix errors before publishing'
+                    : `${published ? 'Publish changes' : 'Publish'} (Ctrl+Alt+P)`
+                }
               >
-                Publish
-              </Button>
-            </Tooltip>
-          )}
+                <Button
+                  disabled={isReconnecting || !draft || errors.length > 0}
+                  onClick={this.handlePublishRequested}
+                  color="primary"
+                >
+                  Publish
+                </Button>
+              </Tooltip>
+            )}
         </div>
       )
     }
@@ -610,12 +613,13 @@ export default withRouterHOC(
         )
       }
 
+      const enabledActions = resolveEnabledActions(type)
       return (
         <Pane
           styles={this.props.paneStyles}
           title={this.getTitle(value)}
           onAction={this.handleMenuAction}
-          menuItems={getMenuItems(draft, published, this.isLiveEditEnabled())}
+          menuItems={getMenuItems(enabledActions, draft, published, this.isLiveEditEnabled())}
           renderActions={this.renderActions}
           onMenuToggle={this.handleMenuToggle}
           isSelected // last pane is always selected for now
@@ -659,7 +663,7 @@ export default withRouterHOC(
                 value={draft || published || {_type: type.name}}
                 type={type}
                 filterField={filterField}
-                readOnly={isReconnecting}
+                readOnly={isReconnecting || !isActionEnabled(type, 'update')}
                 onBlur={this.handleBlur}
                 onFocus={this.handleFocus}
                 focusPath={focusPath}

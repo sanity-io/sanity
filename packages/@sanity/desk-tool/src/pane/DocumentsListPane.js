@@ -15,6 +15,8 @@ import {
   isPublishedId,
   getDraftId
 } from 'part:@sanity/base/util/draft-utils'
+import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
+
 import {combineLatest} from 'rxjs'
 import {map, tap} from 'rxjs/operators'
 import styles from './styles/DocumentsListPane.css'
@@ -285,6 +287,7 @@ export default withRouterHOC(
               const items = removePublishedWithDrafts(result ? result.documents : [])
 
               if (!loading && !hasItems(items)) {
+                const schemaType = schema.get(typeName)
                 return (
                   <div className={styles.empty}>
                     <div>
@@ -294,11 +297,12 @@ export default withRouterHOC(
                           : 'No documents matching this filter found.'}
                       </h3>
 
-                      {typeName && (
-                        <Button color="primary" icon={PlusIcon} onClick={this.handleCreateNew}>
-                          New {schema.get(typeName).title}
-                        </Button>
-                      )}
+                      {typeName &&
+                        isActionEnabled(schemaType, 'create') && (
+                          <Button color="primary" icon={PlusIcon} onClick={this.handleCreateNew}>
+                            New {schemaType.title}
+                          </Button>
+                        )}
                     </div>
                   </div>
                 )

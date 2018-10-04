@@ -7,6 +7,7 @@ import {DEFAULT_SELECTED_ORDERING_OPTION} from './Sort'
 import {DocumentListBuilder} from './DocumentList'
 import {ListItemBuilder} from './ListItem'
 import {EditorBuilder} from './Editor'
+import {isActionEnabled} from './parts/documentActionUtils'
 
 const PlusIcon = getPlusIcon()
 const ListIcon = getListIcon()
@@ -41,6 +42,9 @@ export function getDocumentTypeList(
   const type = schema.get(typeName)
   const resolver = getDataAspectsForSchema(schema)
   const title = resolver.getDisplayName(typeName)
+
+  const canCreate = isActionEnabled(type, 'create')
+
   return new DocumentListBuilder()
     .id(typeName)
     .title(title)
@@ -66,11 +70,15 @@ export function getDocumentTypeList(
     )
     .menuItems([
       // Create new (from action button)
-      new MenuItemBuilder()
-        .title(`Create new ${title}`)
-        .icon(PlusIcon)
-        .intent({type: 'create', params: {type: typeName}})
-        .showAsAction({whenCollapsed: true}),
+      ...(canCreate
+        ? [
+            new MenuItemBuilder()
+              .title(`Create new ${title}`)
+              .icon(PlusIcon)
+              .intent({type: 'create', params: {type: typeName}})
+              .showAsAction({whenCollapsed: true})
+          ]
+        : []),
 
       // Sort by <Y>
       ...getOrderingMenuItemsForSchemaType(type),
@@ -91,10 +99,14 @@ export function getDocumentTypeList(
         .params({layout: 'detail'}),
 
       // Create new (from menu)
-      new MenuItemBuilder()
-        .group('actions')
-        .title('Create new…')
-        .icon(PlusIcon)
-        .intent({type: 'create', params: {type: typeName}})
+      ...(canCreate
+        ? [
+            new MenuItemBuilder()
+              .group('actions')
+              .title('Create new…')
+              .icon(PlusIcon)
+              .intent({type: 'create', params: {type: typeName}})
+          ]
+        : [])
     ])
 }
