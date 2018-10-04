@@ -657,7 +657,6 @@ export default withRouterHOC(
               onSubmit={preventDefault}
               id="Sanity_Default_DeskTool_Editor_ScrollContainer"
             >
-              {isActionEnabled(type, 'update') ? 'can be updated' : 'cannot be updated'}
               <FormBuilder
                 schema={schema}
                 patchChannel={patchChannel}
