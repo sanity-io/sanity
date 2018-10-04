@@ -3,7 +3,7 @@ export default {
   type: 'document',
   title: 'Experimental actions test',
   // toggle these to test various combinations of ['create', 'update', 'delete', 'publish']
-  __experimental_actions: ['create', 'update', 'delete', 'publish'],
+  __experimental_actions: [],
   fields: [
     {
       name: 'title',
