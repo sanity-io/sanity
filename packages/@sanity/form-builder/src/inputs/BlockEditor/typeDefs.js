@@ -115,19 +115,6 @@ export type SlateComponentProps = {
 
 export type Marker = _Marker
 
-export type UndoRedoStack = {
-  undo: {
-    patches: Patch[],
-    editorValue: SlateValue,
-    select: any
-  }[],
-  redo: {
-    patches: Patch[],
-    editorValue: SlateValue,
-    select: any
-  }[]
-}
-
 export type Path = _Path
 
 export type SlateSchema = _SlateSchema
@@ -144,3 +131,13 @@ export type FormBuilderSchema = {
   name: string,
   types: Array<Type>
 }
+
+export type UndoRedoSnapshot = {
+  editorValue: SlateValue,
+  change: SlateChange,
+  timestamp: Date
+}
+
+export type UndoRedoStackItem = UndoRedoSnapshot & {patches: Patch[], inversedPatches: Patch[]}
+
+export type UndoRedoStack = {undo: UndoRedoStackItem[], redo: UndoRedoStackItem[]}

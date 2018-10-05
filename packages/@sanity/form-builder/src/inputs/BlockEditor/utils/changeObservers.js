@@ -43,15 +43,14 @@ export const localChanges$ = new Subject().pipe(
     if (insertOperations.size > 0) {
       const newNodes = []
       insertOperations.forEach(op => {
-        let insertedBlock = change.value.document.nodes
-          .get(op.path.get(0))
+        let insertedBlock = change.value.document.nodes.get(op.path.get(0))
         // Sometimes we cant't find the inserted block when doing
         // undo and redo operations. Just return the original change then.
         if (!insertedBlock) {
           // console.log('Could not find block')
           // console.log('Path:', op.path.get(0))
           // console.log('Document:', change.value.document.toJSON({preserveKeys: true, perserveData: true}))
-          return val
+          return
         }
         insertedBlock = insertedBlock.toJSON({preserveKeys: true, perserveData: true})
         insertedBlock.data._key = insertedBlock.key

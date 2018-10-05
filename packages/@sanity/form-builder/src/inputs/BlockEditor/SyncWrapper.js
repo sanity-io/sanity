@@ -8,15 +8,18 @@ import type {
   SlateValue,
   SlateOperation,
   Marker,
+  Patch,
   Path,
-  Type
+  Type,
+  UndoRedoSnapshot,
+  UndoRedoStack
 } from './typeDefs'
 
 import React from 'react'
 import type {Node} from 'react'
 import type {List} from 'immutable'
 import generateHelpUrl from '@sanity/generate-help-url'
-import {debounce} from 'lodash'
+import {debounce, uniq, isEqual, unionBy, flatten, intersectionBy} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {PatchEvent} from '../../PatchEvent'
@@ -25,7 +28,6 @@ import {resolveTypeName} from '../../utils/resolveTypeName'
 import Input from './Input'
 
 import changeToPatches from './utils/changeToPatches'
-import createSelectionOperation from './utils/createSelectionOperation'
 import deserialize from './utils/deserialize'
 import patchesToChange from './utils/patchesToChange'
 import {localChanges$, remoteChanges$, changes$} from './utils/changeObservers'
@@ -85,6 +87,8 @@ function isTokenChar(change: SlateChange) {
   return text && SEND_PATCHES_TOKEN_CHARS.includes(text)
 }
 
+type ChangeSet = {change: SlateChange, isRemote: boolean, callback?: SlateChange => void}
+
 type Props = {
   focusPath: [],
   markers: Marker[],
@@ -120,60 +124,59 @@ type State = {
 
 export default withPatchSubscriber(
   class SyncWrapper extends React.Component<Props, State> {
-    _beforeChangeEditorValue: ?SlateValue
+    _undoRedoSnapShot: ?UndoRedoSnapshot
     _unsubscribePatches: void => void
     _changeSubscription: void => void
     _input: ?Input = null
-    _select = null
-    _undoRedoStack = {undo: [], redo: []}
+    _undoRedoStack: UndoRedoStack = {undo: [], redo: []}
 
     static defaultProps = {
       markers: []
     }
 
-    // static getDerivedStateFromProps(nextProps, state) {
-    //   // Make sure changes to markers are reflected in the editor value.
-    //   // Slate heavily optimizes when nodes should re-render,
-    //   // so we use non-visual decorators in Slate to force the relevant editor nodes to re-render
-    //   // when markers change.
-    //   const newDecorationHash = nextProps.markers.map(mrkr => JSON.stringify(mrkr.path)).join('')
-    //   if (
-    //     nextProps.markers &&
-    //     nextProps.markers.length &&
-    //     newDecorationHash !== state.decorationHash
-    //   ) {
-    //     const {editorValue} = state
-    //     const decorations = unionBy(
-    //       flatten(
-    //         nextProps.markers.map(mrkr => {
-    //           return mrkr.path.slice(0, 3).map(part => {
-    //             const key = part._key
-    //             if (!key) {
-    //               return null
-    //             }
-    //             return {
-    //               anchor: {key, offset: 0},
-    //               focus: {key, offset: 0},
-    //               mark: {type: '__marker'} // non-visible mark (we just want the block to re-render)
-    //             }
-    //           })
-    //         })
-    //       ).filter(Boolean),
-    //       state.decorations,
-    //       'focus.key'
-    //     )
-    //     const change = editorValue.change()
-    //     change.withoutSaving(() => {
-    //       change.setValue({decorations})
-    //     })
-    //     return {
-    //       decorations,
-    //       decorationHash: newDecorationHash,
-    //       editorValue: change.value
-    //     }
-    //   }
-    //   return null
-    // }
+    static getDerivedStateFromProps(nextProps, state) {
+      // Make sure changes to markers are reflected in the editor value.
+      // Slate heavily optimizes when nodes should re-render,
+      // so we use non-visual decorators in Slate to force the relevant editor nodes to re-render
+      // when markers change.
+      const newDecorationHash = nextProps.markers.map(mrkr => JSON.stringify(mrkr.path)).join('')
+      if (
+        nextProps.markers &&
+        nextProps.markers.length &&
+        newDecorationHash !== state.decorationHash
+      ) {
+        const decorations = unionBy(
+          flatten(
+            nextProps.markers.map(mrkr => {
+              return mrkr.path.slice(0, 3).map(part => {
+                const key = part._key
+                if (!key) {
+                  return null
+                }
+                return {
+                  anchor: {key, offset: 0},
+                  focus: {key, offset: 0},
+                  mark: {type: '__marker'} // non-visible mark (we just want the block to re-render)
+                }
+              })
+            })
+          ).filter(Boolean),
+          state.decorations,
+          'focus.key'
+        )
+        const {editorValue} = state
+        const change = editorValue.change()
+        change.withoutSaving(() => {
+          change.setValue({decorations})
+        })
+        return {
+          decorations,
+          decorationHash: newDecorationHash,
+          editorValue: change.value
+        }
+      }
+      return null
+    }
 
     constructor(props) {
       super(props)
@@ -197,7 +200,6 @@ export default withPatchSubscriber(
       }
       this._unsubscribePatches = props.subscribe(this.handleDocumentPatches)
       this._changeSubscription = changes$.subscribe(this.handleChangeSet)
-      this._beforeChangeEditorValue = this.state.editorValue
     }
 
     componentWillUnmount() {
@@ -206,39 +208,52 @@ export default withPatchSubscriber(
     }
 
     handleEditorChange = (change: SlateChange, callback?: void => void) => {
-      this._beforeChangeEditorValue = this.state.editorValue
-      this._select = createSelectionOperation(change)
       localChanges$.next({
         change,
-        isRemote: false
+        isRemote: false,
+        callback
       })
-      const isWritingTextChange = isWritingTextOperationsOnly(change.operations) // insert or remove text
-      if (isWritingTextChange) {
+      const userIsWritingText = isWritingTextOperationsOnly(change.operations)
+      if (userIsWritingText) {
         this.setState({userIsWritingText: true})
-        this.unsetUserIsWritingTextState()
-      }
-      if (callback) {
-        callback(change)
-        return change
+        this.unsetUserIsWritingTextDebounced()
       }
       return change
     }
 
-    handleChangeSet = changeSet => {
+    handleChangeSet = (changeSet: ChangeSet) => {
       const {value, type, onChange} = this.props
       const {editorValue} = this.state
-      const {change, isRemote} = changeSet
-      // Generate patches and send them to the server if this is a local change
+      const {change, isRemote, callback} = changeSet
       if (!isRemote) {
+        // Create a snapshot to be used in the undo/redo steps
+        this._undoRedoSnapShot = {
+          editorValue: editorValue,
+          change: change,
+          timestamp: new Date()
+        }
+        // Generate patches and send them to the server
         const patches = changeToPatches(editorValue, change, value, type)
         if (patches.length) {
           onChange(PatchEvent.from(patches))
         }
       }
-      this.setState({editorValue: editorValue.change().applyOperations(change.operations).value})
+      // Update the editorValue state
+      this.setState(
+        {
+          editorValue: editorValue.change().applyOperations(change.operations).value
+        },
+        () => {
+          if (callback) {
+            callback(change)
+            return change
+          }
+          return change
+        }
+      )
     }
 
-    unsetUserIsWritingTextState = debounce(() => {
+    unsetUserIsWritingTextDebounced = debounce(() => {
       this.setState({userIsWritingText: false})
     }, 1000)
 
@@ -246,7 +261,10 @@ export default withPatchSubscriber(
       const {onChange, type} = this.props
       const {editorValue} = this.state
       const change = patchesToChange(event.patches, editorValue, null, type)
-      this.setState({editorValue: change.value})
+      localChanges$.next({
+        change,
+        isRemote: false
+      })
       return onChange(event)
     }
 
@@ -271,30 +289,95 @@ export default withPatchSubscriber(
           change,
           isRemote: true
         })
+        this.normalizeUndoSteps(remotePatches)
       }
 
       // Handle undo/redo
       const localPatches = patches.filter(patch => patch.origin === 'local')
       if (localPatches.length) {
-        const lastPatch = localPatches.slice(-1)[0]
-        // Until the FormBuilder can support some kind of patch tagging,
-        // we create a void patch with key 'undoRedoVoidPatch' in changesToPatches
-        // to know if this is undo/redo operation or not.
-        const isUndoRedoPatch =
-          lastPatch && lastPatch.path[0] && lastPatch.path[0]._key === 'undoRedoVoidPatch'
-        const isEditorContentPatches = localPatches.every(patch => patch.path.length < 2)
-        if (!isUndoRedoPatch && isEditorContentPatches) {
-          this._undoRedoStack.undo.push({
-            patches: localPatches,
-            // Use the _beforeChangeEditorValue here, because at this point we could be
-            // in the middle of changes, and the state.editorValue may be in a flux state
-            editorValue: this._beforeChangeEditorValue,
-            select: this._select
-          })
-          // Redo stack must be reset here
-          this._undoRedoStack.redo = []
-        }
+        this.createUndoStep(localPatches, snapshot)
       }
+    }
+
+    createUndoStep(localPatches: Patch[] = [], snapshot: FormBuilderValue[]) {
+      const {editorValue} = this.state
+      const {type} = this.props
+      // Until the FormBuilder can support some kind of patch tagging,
+      // we create a void patch with key 'undoRedoVoidPatch' in changesToPatches
+      // to know if these pacthes are undo/redo patches or not.
+      const lastPatch = localPatches.slice(-1)[0]
+      const isUndoRedoPatch =
+        lastPatch && lastPatch.path[0] && lastPatch.path[0]._key === 'undoRedoVoidPatch'
+
+      if (!isUndoRedoPatch && this._undoRedoSnapShot) {
+        const {change, timestamp} = this._undoRedoSnapShot
+        const undoChange = editorValue.change()
+        undoChange.applyOperations(change.operations)
+        undoChange.applyOperations(change.operations.reverse().map(op => op.invert()))
+        undoChange.operations = undoChange.operations
+          .slice(change.operations.size, undoChange.operations.size)
+          .filter(op => op.type !== 'set_selection')
+        undoChange.normalize()
+        const inversedPatches = changeToPatches(change.value, undoChange, snapshot, type)
+        this._undoRedoStack.undo.push({
+          change,
+          patches: localPatches,
+          inversedPatches,
+          editorValue,
+          timestamp
+        })
+        // Redo stack must be reset here
+        this._undoRedoStack.redo = []
+        this.normalizeUndoSteps()
+      }
+    }
+
+    normalizeUndoSteps(remotePatches: Patch[] = []) {
+      const unsetPatchesPaths = flatten(
+        remotePatches.filter(patch => patch.type === 'unset').map(patch => patch.path)
+      )
+      const newStack = []
+      // eslint-disable-next-line complexity
+      this._undoRedoStack.undo.forEach((item, index) => {
+
+        // If someone removed the block this item is relevant for,
+        // remove it from the stack
+        const intersectsWithRemoteUnset =
+          unsetPatchesPaths.length > 0 &&
+          intersectionBy(unsetPatchesPaths, flatten(item.patches.map(patch => patch.path)), '_key')
+            .length > 0
+        if (intersectsWithRemoteUnset) {
+          return
+        }
+        const nextItem = this._undoRedoStack.undo[index + 1]
+        // Always include first and last item
+        if (index === 0 || !nextItem) {
+          newStack.push(item)
+          return
+        }
+        // If the change was a token char (space or enter), include the item
+        if (isTokenChar(item.change)) {
+          newStack.push(item)
+          return
+        }
+        // If there was over a second since the last change, include the item
+        const isTimedOut = nextItem.timestamp - item.timestamp > 1000
+        if (isTimedOut) {
+          newStack.push(item)
+          return
+        }
+        // If the next change is just writing or removing text on the same block, skip it!
+        const nextPaths = uniq(nextItem.patches.map(patch => patch.path))
+        const thisPaths = uniq(item.patches.map(patch => patch.path))
+        const nextWriteTextOnly = isWritingTextOperationsOnly(nextItem.change.operations)
+        const itemWriteTextOnly = isWritingTextOperationsOnly(item.change.operations)
+        const itemIsRedundant =
+          isEqual(nextPaths, thisPaths) && nextWriteTextOnly && itemWriteTextOnly
+        if (!itemIsRedundant) {
+          newStack.push(item)
+        }
+      })
+      this._undoRedoStack.undo = newStack
     }
 
     handleOnLoading = (props = {}) => {

@@ -363,6 +363,7 @@ export default function changeToPatches(
   })
 
   let result = flatten(patches)
+  // Optimize patches (remove sequential set patches that targets the same block)
   result = result.filter((patch, index) => {
     if (!patch) {
       return false

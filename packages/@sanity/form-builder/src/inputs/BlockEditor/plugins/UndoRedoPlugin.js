@@ -2,6 +2,7 @@
 import Hotkeys from 'slate-hotkeys'
 import type {Type, UndoRedoStack, SlateChange} from '../typeDefs'
 import patchesToChange from '../utils/patchesToChange'
+import createSelectionOperation from '../utils/createSelectionOperation'
 
 type Options = {
   stack: UndoRedoStack,
@@ -20,16 +21,11 @@ export default function UndoRedoPlugin(options: Options) {
         let item
         // Undo
         if (Hotkeys.isUndo(event) && (item = stack.undo.pop())) {
-          const {patches, editorValue} = item
+          const {inversedPatches, editorValue} = item
+          // onPatch(PatchEvent.from(inversedPatches.concat(set({}, [{_key: 'undoRedoVoidPatch'}]))))
           // Create Slate change for these patches
-          const patchChange = patchesToChange(patches, editorValue, null, blockContentType)
-          // Keep track of the original operations, and create a reversed change
-          const originalOperationIndex = patchChange.operations.size
-          patchChange.undo()
-          // Remove the original non-undo operations
-          patchChange.operations = patchChange.operations.splice(0, originalOperationIndex)
-          // Restore the selection
-          patchChange.select(editorValue.selection).focus()
+          const patchChange = patchesToChange(inversedPatches, change.value, null, blockContentType)
+          patchChange.applyOperations([createSelectionOperation(editorValue.change())]).focus()
           // Tag the change, so that changeToPatches know's it's a undoRedo change.
           patchChange.__isUndoRedo = 'undo'
           stack.redo.push(item)
@@ -37,10 +33,10 @@ export default function UndoRedoPlugin(options: Options) {
         }
         // Redo (pretty much as undo, just that we don't need to reverse any operations)
         if (Hotkeys.isRedo(event) && (item = stack.redo.pop())) {
-          const {patches, editorValue, select} = item
-          const patchChange = patchesToChange(patches, editorValue, null, blockContentType)
+          const {patches} = item
+          const patchChange = patchesToChange(patches, change.value, null, blockContentType)
           // Restore the selection
-          patchChange.applyOperations([select]).focus()
+          patchChange.applyOperations([createSelectionOperation(item.change)]).focus()
           patchChange.__isUndoRedo = 'redo'
           stack.undo.push(item)
           onChange(patchChange)

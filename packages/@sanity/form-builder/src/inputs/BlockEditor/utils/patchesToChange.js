@@ -88,10 +88,15 @@ function unsetPatch(patch: UnsetPatch, change: () => void) {
 function replaceValue(snapshot: ?JSONValue, change: () => void, type: Type) {
   if (snapshot) {
     const fragment = blocksToEditorValue(snapshot, type)
-    // Don't save these changes (we don't want reversed undo/redo steps for them)
-    if (change.value.document.nodes.size) {
-      change.moveToRangeOfDocument().delete()
-    }
+    change.applyOperations(
+      change.value.document.nodes.map(node => {
+        return {
+          type: 'remove_node',
+          path: [0],
+          node: node
+        }
+      })
+    )
     change.applyOperations(
       fragment.document.nodes.reverse().map(node => {
         return {
