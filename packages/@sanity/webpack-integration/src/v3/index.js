@@ -1,5 +1,4 @@
 const lost = require('lost')
-const webpack = require('webpack')
 const postcssImport = require('postcss-import')
 const postcssCssnext = require('postcss-cssnext')
 const PartResolverPlugin = require('@sanity/webpack-loader')
@@ -16,7 +15,7 @@ function getEnvPlugin(options) {
   const bundleEnv = options.bundleEnv || process.env.BUNDLE_ENV || 'development'
   const env = options.env || 'development'
   const isProd = env === 'production'
-
+  const webpack = options.webpack || require('webpack')
   return new webpack.DefinePlugin({__DEV__: !isProd && bundleEnv === 'development'})
 }
 
