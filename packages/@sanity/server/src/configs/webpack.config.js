@@ -13,7 +13,7 @@ const resolve = mod => require.resolve(mod)
 export default (config = {}) => {
   const staticPath = getStaticBasePath(config)
   const env = config.env || 'development'
-  const wpIntegrationOptions = {basePath: config.basePath, env: config.env}
+  const wpIntegrationOptions = {basePath: config.basePath, env: config.env, webpack}
   const basePath = config.basePath || process.cwd()
   const skipMinify = config.skipMinify || false
 
