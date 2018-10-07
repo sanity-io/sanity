@@ -14,31 +14,39 @@
   background-color: var(--input-bg);
   border-radius: var(--input-border-radius);
 
-  @nest &:not(:disabled) {
-    @nest &:hover {
-      box-shadow: var(--input-box-shadow--hover);
-    }
-
-    @nest &:focus, &:active {
-      box-shadow: var(--input-box-shadow--focus);
-    }
-
-    @nest &:invalid {
-      border-color: var(--input-border-color-invalid);
-      background-color: var(--input-bg-error);
-      box-shadow: var(--input-box-shadow--error);
-
-      @nest &:focus, &:focus-within {
-        box-shadow: var(--input-box-shadow--error-focus);
-      }
-    }
-  }
-
   @nest &:disabled {
     background-color: var(--input-bg-disabled);
   }
 
   @nest &:read-only {
     opacity: 0.5;
+  }
+
+  @nest &:read-only {
+    opacity: 0.5;
+  }
+
+  @nest &:not(:disabled) {
+    @nest &:not(:read-only) {
+      @nest &:hover {
+        box-shadow: var(--input-box-shadow--hover);
+        border-color: var(--input-border-color-hover);
+      }
+
+      @nest &:focus, &:focus-within {
+        box-shadow: var(--input-box-shadow--focus);
+        border-color: var(--input-border-color-focus);
+      }
+
+      @nest &:active {
+        border-color: var(--input-border-color-active);
+      }
+
+      @nest &:invalid {
+        border-color: var(--input-border-color-invalid);
+        background-color: var(--input-bg-error);
+        box-shadow: var(--input-box-shadow--error);
+      }
+    }
   }
 }
