@@ -62,17 +62,36 @@ function getAssetRefMap(assets) {
   }, new Map())
 }
 
-function ensureAssetWithRetries(...args) {
-  return retryOnFailure(() => ensureAsset(...args))
-}
-
-async function ensureAsset(options, progress, assetKey, i) {
-  const {client, assetMap = {}} = options
+async function ensureAssetWithRetries(options, progress, assetKey, i) {
   const [type, url] = assetKey.split('#', 2)
 
+  const {buffer, sha1hash} = await retryOnFailure(() => downloadAsset(url, i)).catch(err => {
+    err.message = err.message.includes(url)
+      ? err.message
+      : `Failed to download ${type} @ ${url}:\n${err.message}`
+
+    throw err
+  })
+
+  const asset = {buffer, sha1hash, type, url}
+  return retryOnFailure(() => ensureAsset(asset, options, progress, i)).catch(err => {
+    err.message = err.message.includes(url)
+      ? err.message
+      : `Failed to upload ${type} @ ${url}:\n${err.message}`
+
+    throw err
+  })
+}
+
+function downloadAsset(url, i) {
   // Download the asset in order for us to create a hash
   debug('[Asset #%d] Downloading %s', i, url)
-  const {buffer, sha1hash} = await getHashedBufferForUri(url)
+  return getHashedBufferForUri(url)
+}
+
+async function ensureAsset(asset, options, progress, i) {
+  const {buffer, sha1hash, type, url} = asset
+  const {client, assetMap = {}} = options
 
   // See if the item exists on the server
   debug('[Asset #%d] Checking for asset with hash %s', i, sha1hash)
@@ -92,15 +111,15 @@ async function ensureAsset(options, progress, assetKey, i) {
 
   // If it doesn't exist, we want to upload it
   debug('[Asset #%d] Uploading %s with URL %s', i, type, url)
-  const asset = await client.assets.upload(type, buffer, {filename})
+  const assetDoc = await client.assets.upload(type, buffer, {filename})
   progress()
 
   // If we have more metadata to provide, update the asset document
   if (hasNonFilenameMeta) {
-    await client.patch(asset._id).set(assetMeta)
+    await client.patch(assetDoc._id).set(assetMeta)
   }
 
-  return asset._id
+  return assetDoc._id
 }
 
 async function getAssetDocumentIdForHash(client, type, sha1hash, attemptNum = 0) {

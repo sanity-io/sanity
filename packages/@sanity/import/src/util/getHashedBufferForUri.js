@@ -5,31 +5,29 @@ const retryOnFailure = require('./retryOnFailure')
 
 module.exports = uri => retryOnFailure(() => getHashedBufferForUri(uri))
 
-function getHashedBufferForUri(uri) {
-  return getStream(uri).then(
-    stream =>
-      new Promise((resolve, reject) => {
-        const hash = crypto.createHash('sha1')
-        const chunks = []
+async function getHashedBufferForUri(uri) {
+  const stream = await getStream(uri)
+  return new Promise((resolve, reject) => {
+    const hash = crypto.createHash('sha1')
+    const chunks = []
 
-        stream.on('data', chunk => {
-          chunks.push(chunk)
-          hash.update(chunk)
-        })
+    stream.on('data', chunk => {
+      chunks.push(chunk)
+      hash.update(chunk)
+    })
 
-        miss.finished(stream, err => {
-          if (err) {
-            reject(err)
-            return
-          }
+    miss.finished(stream, err => {
+      if (err) {
+        reject(err)
+        return
+      }
 
-          resolve({
-            buffer: Buffer.concat(chunks),
-            sha1hash: hash.digest('hex')
-          })
-        })
+      resolve({
+        buffer: Buffer.concat(chunks),
+        sha1hash: hash.digest('hex')
       })
-  )
+    })
+  })
 }
 
 function getStream(uri) {
