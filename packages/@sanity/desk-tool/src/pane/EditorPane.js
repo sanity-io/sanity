@@ -77,11 +77,16 @@ function isRecoverable(draft, published) {
 export default withDocumentType(
   class EditorPane extends React.Component {
     static propTypes = {
+      title: PropTypes.string,
       index: PropTypes.number.isRequired,
       options: PropTypes.shape({
         id: PropTypes.string.isRequired,
         type: PropTypes.string.isRequired
       }).isRequired
+    }
+
+    static defaultProps = {
+      title: null
     }
 
     state = INITIAL_STATE
@@ -448,7 +453,7 @@ export default withDocumentType(
     }
 
     render() {
-      const {options, index} = this.props
+      const {options, index, title} = this.props
       const typeName = options.type
       const schemaType = schema.get(typeName)
       const {
@@ -474,6 +479,7 @@ export default withDocumentType(
 
       return (
         <Editor
+          title={title}
           paneIndex={index}
           patchChannel={this.patchChannel}
           type={schemaType}
