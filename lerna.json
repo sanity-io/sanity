@@ -1,6 +1,7 @@
 {
   "hoist": true,
   "concurrency": 8,
+  "ci": false,
   "packages": [
     "packages/@sanity/*",
     "packages/blog-studio",
