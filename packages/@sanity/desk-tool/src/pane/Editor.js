@@ -164,6 +164,7 @@ export default withRouterHOC(
   // eslint-disable-next-line
   class Editor extends React.PureComponent {
     static propTypes = {
+      title: PropTypes.string,
       paneIndex: PropTypes.number.isRequired,
       paneStyles: PropTypes.object,
       patchChannel: PropTypes.object,
@@ -199,6 +200,7 @@ export default withRouterHOC(
     }
 
     static defaultProps = {
+      title: null,
       markers: [],
       isLoading: false,
       isSaving: false,
@@ -432,7 +434,10 @@ export default withRouterHOC(
     }
 
     getTitle(value) {
-      const {type} = this.props
+      const {title: paneTitle, type} = this.props
+      if (paneTitle) {
+        return <span>{paneTitle}</span>
+      }
       if (!value) {
         return `Creating new ${type.title || type.name}`
       }
