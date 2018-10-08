@@ -2,7 +2,7 @@
 
 // Takes a observable-returning function and returns a new function that limits on the number of
 // concurrent observables.
-
+import {first, mergeMap} from 'rxjs/operators'
 import {Subject, Subscription, Observable, from as observableFrom} from 'rxjs'
 
 const DEFAULT_CONCURRENCY = 4
@@ -34,7 +34,7 @@ export function createThrottler(concurrency: number = DEFAULT_CONCURRENCY) {
     return new Observable(observer => {
       if (currentSubscriptions.length >= concurrency) {
         return scheduleAndWait(observable)
-          .mergeMap(request)
+          .pipe(mergeMap(request))
           .subscribe(observer)
       }
       const subscription = observable.subscribe(observer)
@@ -50,7 +50,7 @@ export function createThrottler(concurrency: number = DEFAULT_CONCURRENCY) {
 
   function scheduleAndWait(observable) {
     pendingObservables.push(observable)
-    return ready$.asObservable().first(obs => obs === observable)
+    return ready$.asObservable().pipe(first(obs => obs === observable))
   }
 
   function check() {
