@@ -103,6 +103,10 @@ getStream()
     console.log('Done! Imported %d documents to dataset "%s"', imported, dataset)
   })
   .catch(err => {
+    if (currentProgress) {
+      currentProgress.fail()
+    }
+
     error(err.message)
   })
 
