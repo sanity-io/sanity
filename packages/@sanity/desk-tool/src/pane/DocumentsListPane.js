@@ -272,6 +272,7 @@ export default withRouterHOC(
           onCollapse={onCollapse}
           onAction={this.handleAction}
           onExpand={onExpand}
+          isScrollable={false}
         >
           <QueryContainer query={query} params={params}>
             {({result, loading, error, onRetry}) => {
