@@ -93,14 +93,14 @@ test('accepts an array as source', async () => {
   const docs = getFixtureArray('employees')
   const client = getSanityClient(getMockMutationHandler())
   const res = await importer(docs, {client})
-  expect(res).toBe(2)
+  expect(res).toMatchObject({numDocs: 2, warnings: []})
 })
 
 test('accepts a stream as source', async () => {
   expect.assertions(2)
   const client = getSanityClient(getMockMutationHandler())
   const res = await importer(getFixtureStream('employees'), {client})
-  expect(res).toBe(2)
+  expect(res).toMatchObject({numDocs: 2, warnings: []})
 })
 
 test('generates uuids for documents without id', async () => {
@@ -113,7 +113,7 @@ test('generates uuids for documents without id', async () => {
 
   const client = getSanityClient(getMockMutationHandler(match))
   const res = await importer(getFixtureStream('valid-but-missing-ids'), {client})
-  expect(res).toBe(3)
+  expect(res).toMatchObject({numDocs: 3, warnings: []})
 })
 
 function getMockMutationHandler(match = 'employee creation') {
