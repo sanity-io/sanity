@@ -20,6 +20,7 @@ storiesOf('Text areas')
           rows={number('rows (prop)', 2)}
           value={text('value (prop)')}
           disabled={boolean('disabled (prop)', false)}
+          readOnly={boolean('readOnly (prop)', false)}
         />
       </Sanity>
     )

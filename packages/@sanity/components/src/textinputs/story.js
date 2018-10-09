@@ -60,6 +60,7 @@ storiesOf('Text inputs')
           type={select('type (prop)', ['text', 'number', 'email', 'tel'], 'text')}
           isSelected={boolean('isSelected (prop)', false)}
           disabled={boolean('disabled (prop)', false)}
+          readOnly={boolean('readOnly (prop)', false)}
           onChange={action('onChange')}
           onFocus={action('onFocus')}
           onKeyPress={action('onKeyPress')}
