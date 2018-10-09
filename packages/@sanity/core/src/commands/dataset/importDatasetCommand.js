@@ -7,10 +7,13 @@ import prettyMs from 'pretty-ms'
 import chooseDatasetPrompt from '../../actions/dataset/chooseDatasetPrompt'
 import debug from '../../debug'
 
+const yellow = str => `\u001b[33m${str}\u001b[39m`
+
 const helpText = `
 Options
   --missing On duplicate document IDs, skip importing document in question
   --replace On duplicate document IDs, replace existing document with imported document
+  --allow-failing-assets Skip assets that cannot be fetched/uploaded
 
 Examples
   # Import "moviedb.ndjson" from the current directory to the dataset called "moviedb"
@@ -38,6 +41,7 @@ export default {
   action: async (args, context) => {
     const {apiClient, output, chalk, fromInitCommand} = context
 
+    const allowFailingAssets = args.extOptions['allow-failing-assets']
     const operation = getMutationOperation(args.extOptions)
     const client = apiClient()
 
@@ -139,15 +143,17 @@ export default {
 
     // Start the import!
     try {
-      const imported = await sanityImport(inputStream, {
+      const {numDocs, warnings} = await sanityImport(inputStream, {
         client: importClient,
         operation,
-        onProgress
+        onProgress,
+        allowFailingAssets
       })
 
       endTask({success: true})
 
-      output.print('Done! Imported %d documents to dataset "%s"', imported, targetDataset)
+      output.print('Done! Imported %d documents to dataset "%s"\n', numDocs, targetDataset)
+      printWarnings(warnings, output)
     } catch (err) {
       endTask({success: false})
 
@@ -173,7 +179,7 @@ async function determineTargetDataset(target, context) {
   const {apiClient, output, prompt} = context
   const client = apiClient()
 
-  debug('[  0%] Fetching available datasets')
+  debug('Fetching available datasets')
   const spinner = output.spinner('Fetching available datasets').start()
   const datasets = await client.datasets.list()
   spinner.succeed('[100%] Fetching available datasets')
@@ -231,5 +237,21 @@ function getPercentage(opts) {
 function getUrlStream(url) {
   return new Promise((resolve, reject) => {
     simpleGet(url, (err, res) => (err ? reject(err) : resolve(res)))
+  })
+}
+
+function printWarnings(warnings, output) {
+  const assetFails = warnings.filter(warn => warn.type === 'asset')
+
+  if (!assetFails.length) {
+    return
+  }
+
+  const warn = (output.warn || output.print).bind(output)
+
+  warn(yellow('⚠ Failed to import the following %s:'), assetFails.length > 1 ? 'assets' : 'asset')
+
+  warnings.forEach(warning => {
+    warn(`  ${warning.url}`)
   })
 }
