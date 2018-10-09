@@ -24,6 +24,10 @@ async function uploadAssets(assets, options) {
     }
   })
 
+  if (assetRefMap.size === 0) {
+    return Promise.resolve(0)
+  }
+
   // Create a function we can call for every completed upload to report progress
   const progress = progressStepper(options.onProgress, {
     step: 'Importing assets (files/images)',
@@ -136,6 +140,10 @@ function setAssetReferences(assetRefMap, assetIds, options) {
   const batches = []
   for (let i = 0; i < patchTasks.length; i += ASSET_PATCH_BATCH_SIZE) {
     batches.push(patchTasks.slice(i, i + ASSET_PATCH_BATCH_SIZE))
+  }
+
+  if (batches.length === 0) {
+    return Promise.resolve([0])
   }
 
   // Since separate progress step for batches of reference sets

@@ -60,6 +60,10 @@ function strengthenReferences(strongRefs, options) {
     batches.push(strongRefs.slice(i, i + STRENGTHEN_BATCH_SIZE))
   }
 
+  if (batches.length === 0) {
+    return Promise.resolve([0])
+  }
+
   const progress = progressStepper(options.onProgress, {
     step: 'Strengthening references',
     total: batches.length
