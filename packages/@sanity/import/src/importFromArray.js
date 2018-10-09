@@ -56,14 +56,14 @@ async function importDocuments(documents, options, importers) {
 
   // Documents are imported, now proceed with post-import operations
   debug('Uploading assets')
-  await uploadAssets(assetRefs, options)
+  const {failures: assetWarnings} = await uploadAssets(assetRefs, options)
 
   // Strengthen references
   debug('Strengthening references')
   await strengthenReferences(strongRefs, options)
 
   // Return number of documents imported
-  return docsImported
+  return {numDocs: docsImported, warnings: assetWarnings}
 }
 
 module.exports = importDocuments
