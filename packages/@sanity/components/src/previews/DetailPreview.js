@@ -51,7 +51,7 @@ export default class DetailPreview extends React.PureComponent {
     if (isPlaceholder) {
       return (
         <div className={styles.placeholder}>
-          <div className={styles.media} />
+          {media !== false && <div className={styles.media} />}
           <div className={styles.content}>
             <h2 className={styles.title}>Loading</h2>
             <h3 className={styles.subtitle}>Loading</h3>
@@ -63,11 +63,13 @@ export default class DetailPreview extends React.PureComponent {
 
     return (
       <div className={styles.root}>
-        <div className={styles.media}>
-          {typeof media === 'function' && media({dimensions: mediaDimensions, layout: 'default'})}
-          {typeof media === 'string' && <div className={styles.mediaString}>{media}</div>}
-          {React.isValidElement(media) && media}
-        </div>
+        {media !== false && (
+          <div className={styles.media}>
+            {typeof media === 'function' && media({dimensions: mediaDimensions, layout: 'default'})}
+            {typeof media === 'string' && <div className={styles.mediaString}>{media}</div>}
+            {React.isValidElement(media) && media}
+          </div>
+        )}
         <div className={styles.content}>
           <div className={styles.top}>
             <div className={styles.heading}>

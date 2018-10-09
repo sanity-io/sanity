@@ -48,7 +48,7 @@ class DefaultPreview extends React.PureComponent {
     if (isPlaceholder) {
       return (
         <div className={styles.placeholder}>
-          <div className={styles.media} />
+          {media !== false && <div className={styles.media} />}
           <div className={styles.heading}>
             <h2 className={styles.title}>Loading…</h2>
             <h3 className={styles.subtitle}>Loading…</h3>
@@ -65,11 +65,13 @@ class DefaultPreview extends React.PureComponent {
           ${media ? styles.hasMedia : ''}
         `}
       >
-        <div className={styles.media}>
-          {typeof media === 'function' && media({dimensions: mediaDimensions, layout: 'default'})}
-          {typeof media === 'string' && <div className={styles.mediaString}>{media}</div>}
-          {React.isValidElement(media) && media}
-        </div>
+        {media !== false && (
+          <div className={styles.media}>
+            {typeof media === 'function' && media({dimensions: mediaDimensions, layout: 'default'})}
+            {typeof media === 'string' && <div className={styles.mediaString}>{media}</div>}
+            {React.isValidElement(media) && media}
+          </div>
+        )}
 
         <div className={styles.heading}>
           <h2 className={styles.title}>
