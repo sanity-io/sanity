@@ -35,7 +35,7 @@ export default class SanityDefaultPreview extends React.PureComponent {
     _renderAsBlockImage: PropTypes.bool,
     layout: PropTypes.oneOf(Object.keys(previewComponentMap)),
     value: PropTypes.object,
-    icon: PropTypes.func
+    icon: PropTypes.oneOfType([PropTypes.func, PropTypes.bool])
   }
 
   renderMedia = options => {
@@ -78,8 +78,13 @@ export default class SanityDefaultPreview extends React.PureComponent {
   }
 
   resolveMedia = () => {
-    const {value} = this.props
+    const {value, icon} = this.props
     const {media} = value
+
+    if (icon === false) {
+      // Explicitly disabled
+      return false
+    }
 
     if (typeof media === 'function' || React.isValidElement(media)) {
       return media
