@@ -5,6 +5,7 @@ Object {
   "canHandleIntent": undefined,
   "child": [Function],
   "defaultLayout": undefined,
+  "displayOptions": undefined,
   "id": "books",
   "items": Array [
     Object {
@@ -27,6 +28,7 @@ Object {
   "canHandleIntent": undefined,
   "child": [Function],
   "defaultLayout": undefined,
+  "displayOptions": undefined,
   "id": "authors",
   "items": Array [],
   "menuItemGroups": Array [],
@@ -41,6 +43,7 @@ Object {
   "canHandleIntent": undefined,
   "child": [Function],
   "defaultLayout": "card",
+  "displayOptions": undefined,
   "id": "books",
   "items": Array [],
   "menuItemGroups": Array [],
@@ -55,6 +58,7 @@ Object {
   "canHandleIntent": undefined,
   "child": [Function],
   "defaultLayout": undefined,
+  "displayOptions": undefined,
   "id": "foo",
   "items": Array [],
   "menuItemGroups": Array [],
@@ -69,6 +73,7 @@ Object {
   "canHandleIntent": undefined,
   "child": [Function],
   "defaultLayout": undefined,
+  "displayOptions": undefined,
   "id": "books",
   "items": Array [
     Object {
@@ -89,6 +94,7 @@ Object {
   "canHandleIntent": undefined,
   "child": [Function],
   "defaultLayout": undefined,
+  "displayOptions": undefined,
   "id": "yeah",
   "items": Array [],
   "menuItemGroups": Array [
@@ -114,6 +120,7 @@ Object {
   "canHandleIntent": undefined,
   "child": [Function],
   "defaultLayout": undefined,
+  "displayOptions": undefined,
   "id": "yeah",
   "items": Array [],
   "menuItemGroups": Array [],
@@ -133,6 +140,7 @@ Object {
   "canHandleIntent": undefined,
   "child": [Function],
   "defaultLayout": undefined,
+  "displayOptions": undefined,
   "id": "yeah",
   "items": Array [],
   "menuItemGroups": Array [
@@ -158,6 +166,7 @@ Object {
   "canHandleIntent": undefined,
   "child": [Function],
   "defaultLayout": undefined,
+  "displayOptions": undefined,
   "id": "yeah",
   "items": Array [],
   "menuItemGroups": Array [],

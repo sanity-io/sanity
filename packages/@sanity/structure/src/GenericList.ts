@@ -10,9 +10,14 @@ function noChildResolver() {
   return undefined
 }
 
+export interface ListDisplayOptions {
+  showIcons?: boolean
+}
+
 export interface BaseGenericList extends StructureNode {
   defaultLayout?: Layout
   canHandleIntent?: IntentChecker
+  displayOptions?: ListDisplayOptions
   child: Child
 }
 
@@ -100,6 +105,16 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
     return this.spec.canHandleIntent
   }
 
+  showIcons(enabled: boolean) {
+    return this.clone({
+      displayOptions: {...(this.spec.displayOptions || {}), showIcons: enabled}
+    })
+  }
+
+  getShowIcons() {
+    return this.spec.displayOptions ? this.spec.displayOptions.showIcons : undefined
+  }
+
   serialize(options: SerializeOptions = {path: []}): GenericList {
     const id = this.spec.id || ''
     const path = options.path
@@ -121,6 +136,7 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
       defaultLayout,
       child: this.spec.child || noChildResolver,
       canHandleIntent: this.spec.canHandleIntent,
+      displayOptions: this.spec.displayOptions,
       menuItems: (this.spec.menuItems || []).map((item, i) =>
         maybeSerializeMenuItem(item, i, path)
       ),

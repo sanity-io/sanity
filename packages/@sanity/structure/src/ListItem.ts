@@ -20,7 +20,7 @@ interface ListItemSerializeOptions extends SerializeOptions {
 export interface ListItemInput {
   id: string
   title?: string
-  icon?: Function
+  icon?: Function | false
   child?: ListItemChild
   schemaType?: SchemaType | string
 }
@@ -29,7 +29,7 @@ export interface ListItem {
   id: string
   type: string
   title?: string
-  icon?: Function
+  icon?: Function | false
   child?: ListItemChild
   schemaType?: SchemaType
 }
@@ -37,7 +37,7 @@ export interface ListItem {
 export interface UnserializedListItem {
   id: string
   title: string
-  icon?: Function
+  icon?: Function | false
   child?: UnserializedListItemChild
   schemaType?: SchemaType | string
 }
@@ -67,7 +67,7 @@ export class ListItemBuilder implements Serializable {
     return this.spec.title
   }
 
-  icon(icon: Function): ListItemBuilder {
+  icon(icon: Function | false): ListItemBuilder {
     return this.clone({icon})
   }
 

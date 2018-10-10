@@ -107,6 +107,7 @@ test('builder is immutable', () => {
   expect(original.filter('foo == "bar"')).not.toEqual(original)
   expect(original.params({foo: 'bar'})).not.toEqual(original)
   expect(original.menuItems([])).not.toEqual(original)
+  expect(original.showIcons(false)).not.toEqual(original)
   expect(original.menuItemGroups([])).not.toEqual(original)
   expect(original.defaultLayout('card')).not.toEqual(original)
   expect(original.child(() => undefined)).not.toEqual(original)
@@ -128,8 +129,23 @@ test('getters work', () => {
   expect(original.menuItemGroups([]).getMenuItemGroups()).toEqual([])
   expect(original.defaultLayout('card').getDefaultLayout()).toEqual('card')
   expect(original.child(child).getChild()).toEqual(child)
+  expect(original.showIcons(false).getShowIcons()).toEqual(false)
   expect(original.canHandleIntent(canHandleIntent).getCanHandleIntent()).toEqual(canHandleIntent)
   expect(original.defaultOrdering([{field, direction}]).getDefaultOrdering()).toEqual([
     {field, direction}
   ])
+})
+
+test('can disable icons from being displayed', () => {
+  const list = S.documentList()
+    .title('Blåmuggost')
+    .filter('_type == "bluecheese"')
+    .showIcons(false)
+
+  expect(list.serialize()).toMatchObject({
+    id: 'blamuggost',
+    displayOptions: {showIcons: false}
+  })
+
+  expect(list.getShowIcons()).toBe(false)
 })

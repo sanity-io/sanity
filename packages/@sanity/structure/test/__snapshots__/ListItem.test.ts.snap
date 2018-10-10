@@ -16,6 +16,7 @@ Object {
     "canHandleIntent": undefined,
     "child": [Function],
     "defaultLayout": undefined,
+    "displayOptions": undefined,
     "id": "asoiaf-books",
     "menuItemGroups": Array [],
     "menuItems": Array [],
