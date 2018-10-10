@@ -1,6 +1,6 @@
 {
   "name": "@sanity/language-filter",
-  "version": "0.135.0-next.0",
+  "version": "0.135.0-next.1",
   "description": "A Sanity plugin that supports filtering localized fields by language",
   "main": "index.js",
   "scripts": {
