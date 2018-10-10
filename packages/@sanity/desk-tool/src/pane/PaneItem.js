@@ -3,6 +3,7 @@ import React from 'react'
 import schema from 'part:@sanity/base/schema'
 import {SanityDefaultPreview} from 'part:@sanity/base/preview'
 import DocumentPaneItemPreview from '../components/DocumentPaneItemPreview'
+import getIconWithTypeFallback from '../utils/getIconWithTypeFallback'
 import MissingSchemaType from '../components/MissingSchemaType'
 import PaneItemWrapper from './PaneItemWrapper'
 
@@ -15,14 +16,19 @@ export default function PaneItem(props) {
   let preview
   if (value && value._id) {
     preview = hasSchemaType ? (
-      <DocumentPaneItemPreview icon={icon} layout={layout} schemaType={schemaType} value={value} />
+      <DocumentPaneItemPreview
+        icon={getIconWithTypeFallback(icon, schemaType)}
+        layout={layout}
+        schemaType={schemaType}
+        value={value}
+      />
     ) : (
       <MissingSchemaType value={value} />
     )
   } else {
     preview = (
       <SanityDefaultPreview
-        icon={icon || (schemaType && schemaType.icon)}
+        icon={getIconWithTypeFallback(icon, schemaType)}
         layout={layout}
         value={value}
       />
@@ -46,7 +52,7 @@ PaneItem.propTypes = {
   getLinkState: PropTypes.func.isRequired,
   layout: PropTypes.string,
   isSelected: PropTypes.bool,
-  icon: PropTypes.func,
+  icon: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
   value: PropTypes.shape({
     _id: PropTypes.string,
     _type: PropTypes.string,
@@ -62,6 +68,7 @@ PaneItem.propTypes = {
 
 PaneItem.defaultProps = {
   layout: 'default',
+  icon: undefined,
   value: null,
   isSelected: false,
   schemaType: null
