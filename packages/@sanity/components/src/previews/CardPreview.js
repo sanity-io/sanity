@@ -106,17 +106,19 @@ export default class CardPreview extends React.PureComponent {
       return (
         <div className={styles.placeholder}>
           <div className={styles.svg} style={svgStyles}>
-            <div className={styles.media}>
-              {aspect && (
-                <div
-                  className={styles.mediaPadding}
-                  style={{
-                    paddingTop: `${100 / aspect}%`
-                  }}
-                />
-              )}
-              <div className={styles.mediaContent} />
-            </div>
+            {media && (
+              <div className={styles.media}>
+                {aspect && (
+                  <div
+                    className={styles.mediaPadding}
+                    style={{
+                      paddingTop: `${100 / aspect}%`
+                    }}
+                  />
+                )}
+                <div className={styles.mediaContent} />
+              </div>
+            )}
             <div className={styles.meta}>
               <div className={styles.heading}>
                 <div className={styles.title}>&nbsp;</div>
