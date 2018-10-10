@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import schema from 'part:@sanity/base/schema'
+import {SanityDefaultPreview} from 'part:@sanity/base/preview'
 import DocumentPaneItemPreview from '../components/DocumentPaneItemPreview'
-import SimplePaneItemPreview from '../components/SimplePaneItemPreview'
 import MissingSchemaType from '../components/MissingSchemaType'
 import PaneItemWrapper from './PaneItemWrapper'
 
@@ -21,7 +21,7 @@ export default function PaneItem(props) {
     )
   } else {
     preview = (
-      <SimplePaneItemPreview
+      <SanityDefaultPreview
         icon={icon || (schemaType && schemaType.icon)}
         layout={layout}
         value={value}
