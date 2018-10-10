@@ -58,6 +58,16 @@ function documentEventToState(event) {
     case 'reconnect': {
       return {}
     }
+    case 'committed': {
+      // note: we *could* use this in conjunction with <document>.commit()
+      // by setting this.state.isSaving=true before calling <document>.commit and setting to false
+      // again when we get the 'committed' event back.
+      // However, calling <document>.commit() doesn't necessarily result in a commit actually being done,
+      // and thus we are not guaranteed to get a 'committed' event back after a call to
+      // <document>.commit(), which means we could easily get into a situation where the
+      // `isSaving` state stays around forever.
+      return {}
+    }
     default: {
       // eslint-disable-next-line no-console
       console.log('Unhandled document event type "%s"', event.type, event)
