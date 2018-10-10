@@ -83,6 +83,7 @@
     display: block;
     width: 5em;
     height: 5em;
+    object-fit: contain;
   }
 
   @nest & svg {
