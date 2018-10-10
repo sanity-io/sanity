@@ -182,15 +182,41 @@
   @media (--screen-medium) {
     composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
     position: absolute;
-    top: -3rem;
-    padding-top: 3rem;
+    top: 0;
     left: 0;
     right: 0;
-    height: calc(100% + 3rem);
+    height: 100%;
   }
 
   @media (--max-screen-medium) {
     /* Override default scrollcontainer  */
+    transform: initial;
+    position: initial;
+    top: initial;
+    left: initial;
+    height: initial;
+    width: initial;
+    overflow: initial;
+  }
+
+  @nest .isCollapsed & {
+    display: none;
+  }
+}
+
+.notScrollable {
+  display: block;
+  box-sizing: border-box;
+
+  @media (--screen-medium) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+  }
+
+  @media (--max-screen-medium) {
     transform: initial;
     position: initial;
     top: initial;
