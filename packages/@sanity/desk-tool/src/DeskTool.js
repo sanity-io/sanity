@@ -169,25 +169,50 @@ export default withRouterHOC(
         .subscribe(this.setResolvedPanes, this.setResolveError)
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-      // @todo move this out of sCU - cWRP is deprecated, gDSFP does not have previous props
+    shouldDerivePanes = nextProps => {
       const nextRouterState = nextProps.router.state
       const prevRouterState = this.props.router.state
-      if (
+      return (
         !shallowEquals(nextRouterState.panes, prevRouterState.panes) ||
         nextRouterState.editDocumentId !== prevRouterState.editDocumentId ||
         nextRouterState.legacyEditDocumentId !== prevRouterState.legacyEditDocumentId ||
         nextRouterState.type !== prevRouterState.type ||
         nextRouterState.action !== prevRouterState.action
-      ) {
+      )
+    }
+
+    // @todo move this out of cWRP - it's deprecated
+    // eslint-disable-next-line camelcase
+    UNSAFE_componentWillReceiveProps(nextProps) {
+      if (this.shouldDerivePanes(nextProps)) {
         this.derivePanes(nextProps)
       }
+    }
 
-      if (nextProps.onPaneChange !== this.props.onPaneChange) {
-        nextProps.onPaneChange(nextState.panes || [])
+    componentDidUpdate(prevProps, prevState) {
+      if (
+        prevProps.onPaneChange !== this.props.onPaneChange ||
+        prevState.panes !== this.state.panes
+      ) {
+        this.props.onPaneChange(this.state.panes || [])
+      }
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+      if (this.shouldDerivePanes(nextProps)) {
+        return false
       }
 
-      return !shallowEquals(nextState, this.state)
+      const {router: oldRouter, ...oldProps} = this.props
+      const {router: newRouter, ...newProps} = nextProps
+      const {panes: oldPanes, ...oldState} = this.state
+      const {panes: newPanes, ...newState} = nextState
+
+      return (
+        !shallowEquals(oldProps, newProps) ||
+        !shallowEquals(oldPanes, newPanes) ||
+        !shallowEquals(oldState, newState)
+      )
     }
 
     maybeHandleOldUrl() {
@@ -202,12 +227,6 @@ export default withRouterHOC(
       this.maybeHandleOldUrl()
       this.derivePanes(this.props)
       this.props.onPaneChange(this.state.panes || [])
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-      if (prevState.panes !== this.state.panes) {
-        this.props.onPaneChange(this.state.panes)
-      }
     }
 
     componentWillUnmount() {
