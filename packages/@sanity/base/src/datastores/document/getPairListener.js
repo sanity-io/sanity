@@ -1,5 +1,5 @@
 import client from 'part:@sanity/base/client'
-import {of as observableOf} from 'rxjs'
+import {defer, of as observableOf} from 'rxjs'
 import {concatMap} from 'rxjs/operators'
 
 const DOCS_QUERY = `{
@@ -24,8 +24,8 @@ function createSnapshotEvent(documentId, document) {
 
 export function getPairListener(idPair) {
   const {publishedId, draftId} = idPair
-  return client.observable
-    .listen(
+  return defer(() =>
+    client.observable.listen(
       `*[_id == $publishedId || _id == $draftId]`,
       {
         publishedId,
@@ -33,17 +33,17 @@ export function getPairListener(idPair) {
       },
       {includeResult: false, events: ['welcome', 'mutation', 'reconnect']}
     )
-    .pipe(
-      concatMap(
-        event =>
-          event.type === 'welcome'
-            ? fetchDocumentSnapshots({publishedId, draftId}).pipe(
-                concatMap(snapshots => [
-                  createSnapshotEvent(draftId, snapshots.draft),
-                  createSnapshotEvent(publishedId, snapshots.published)
-                ])
-              )
-            : observableOf(event)
-      )
+  ).pipe(
+    concatMap(
+      event =>
+        event.type === 'welcome'
+          ? fetchDocumentSnapshots({publishedId, draftId}).pipe(
+              concatMap(snapshots => [
+                createSnapshotEvent(draftId, snapshots.draft),
+                createSnapshotEvent(publishedId, snapshots.published)
+              ])
+            )
+          : observableOf(event)
     )
+  )
 }
