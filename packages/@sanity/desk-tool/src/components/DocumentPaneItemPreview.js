@@ -46,18 +46,19 @@ export default class DocumentPaneItemPreview extends React.Component {
   constructor(props) {
     super()
     const {value, schemaType} = props
+    const {title} = value
     let sync = true
     this.subscription = concat(
       of({isLoading: true}),
       combineLatest([
         isLiveEditEnabled(schemaType)
           ? of({snapshot: null})
-          : observeForPreview({...value, _id: getDraftId(value._id)}, schemaType),
-        observeForPreview({...value, _id: getPublishedId(value._id)}, schemaType)
+          : observeForPreview({_id: getDraftId(value._id)}, schemaType),
+        observeForPreview({_id: getPublishedId(value._id)}, schemaType)
       ]).pipe(
         map(([draft, published]) => ({
-          draft: draft.snapshot,
-          published: published.snapshot,
+          draft: draft.snapshot ? {title, ...draft.snapshot} : null,
+          published: published.snapshot ? {title, ...published.snapshot} : null,
           isLoading: false
         }))
       )
