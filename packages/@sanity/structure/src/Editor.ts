@@ -86,9 +86,10 @@ export class EditorBuilder implements Serializable {
     }
   }
 
-  clone(withSpec?: PartialEditorNode) {
+  clone(withSpec: PartialEditorNode = {}) {
     const builder = new EditorBuilder()
-    builder.spec = {...this.spec, ...(withSpec || {})}
+    const options = {...(this.spec.options || {}), ...(withSpec.options || {})}
+    builder.spec = {...this.spec, ...withSpec, options}
     return builder
   }
 }
