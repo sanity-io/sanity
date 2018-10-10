@@ -74,6 +74,7 @@ class Pane extends React.Component {
     onCollapse: PropTypes.func,
     children: PropTypes.node,
     isSelected: PropTypes.bool,
+    isScrollable: PropTypes.bool,
     scrollTop: PropTypes.number,
     onAction: PropTypes.func,
     renderActions: PropTypes.func,
@@ -99,6 +100,7 @@ class Pane extends React.Component {
     isCollapsed: false,
     isSelected: false,
     scrollTop: undefined,
+    isScrollable: true,
     renderActions: undefined,
     styles: {},
     children: <div />,
@@ -271,7 +273,16 @@ class Pane extends React.Component {
   }
 
   render() {
-    const {title, children, isSelected, isCollapsed, menuItems, styles, renderActions} = this.props
+    const {
+      title,
+      children,
+      isSelected,
+      isCollapsed,
+      isScrollable,
+      menuItems,
+      styles,
+      renderActions
+    } = this.props
     const headerStyle = isCollapsed ? {} : this.state.headerStyle
     const actions = menuItems.filter(
       act => act.showAsAction && (!isCollapsed || act.showAsAction.whenCollapsed)
@@ -296,9 +307,13 @@ class Pane extends React.Component {
           <div className={styles.headerBackground} style={{opacity: headerStyle.opacity}} />
         </div>
         <div className={styles.main}>
-          <ScrollContainer className={styles.scrollContainer} onScroll={this.handleContentScroll}>
-            {children}
-          </ScrollContainer>
+          {isScrollable ? (
+            <ScrollContainer className={styles.scrollContainer} onScroll={this.handleContentScroll}>
+              {children}
+            </ScrollContainer>
+          ) : (
+            <div className={styles.notScrollable}>{children}</div>
+          )}
         </div>
       </div>
     )
