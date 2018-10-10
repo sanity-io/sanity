@@ -6,6 +6,7 @@ import DocumentPaneItemPreview from '../components/DocumentPaneItemPreview'
 import getIconWithTypeFallback from '../utils/getIconWithTypeFallback'
 import MissingSchemaType from '../components/MissingSchemaType'
 import PaneItemWrapper from './PaneItemWrapper'
+import folderIcon from 'part:@sanity/base/folder-icon'
 
 export default function PaneItem(props) {
   const {id, getLinkState, isSelected, schemaType, layout, icon, value} = props
