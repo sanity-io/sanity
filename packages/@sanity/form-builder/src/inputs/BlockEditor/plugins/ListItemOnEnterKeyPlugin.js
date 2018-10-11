@@ -23,7 +23,7 @@ export default function ListItemOnEnterKeyPlugin(options: Options = {}) {
       const {document, startBlock, selection} = value
 
       // Only do listItem nodes
-      const isList = startBlock.data.get('listItem')
+      const isList = startBlock && startBlock.data && startBlock.data.get('listItem')
       if (!isList) {
         return undefined
       }
