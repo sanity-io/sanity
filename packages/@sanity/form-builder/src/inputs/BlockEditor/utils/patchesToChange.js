@@ -1,6 +1,6 @@
 // @flow
 import {blocksToEditorValue} from '@sanity/block-tools'
-import {Value, Document} from 'slate'
+import {Value} from 'slate'
 import type {Type, Path} from '../typeDefs'
 import type {
   Patch,
@@ -14,12 +14,12 @@ import {applyAll} from '../../../simplePatch'
 import findInlineByAnnotationKey from './findInlineByAnnotationKey'
 
 type JSONValue = number | string | boolean | {[string]: JSONValue} | JSONValue[]
-const VALUE_TO_JSON_OPTS = {
-  preserveData: true,
-  preserveKeys: true,
-  preserveSelection: false,
-  preserveHistory: false
-}
+// const VALUE_TO_JSON_OPTS = {
+//   preserveData: true,
+//   preserveKeys: true,
+//   preserveSelection: false,
+//   preserveHistory: false
+// }
 
 function findLastKey(path: Path[]) {
   let key = null
@@ -65,7 +65,7 @@ function setIfMissingPatch(patch: SetIfMissingPatch, change: () => void, type: T
 
 function insertPatch(patch: InsertPatch, change: () => void, type: Type) {
   const {items, position} = patch
-  const fragment = Document.fromJSON(blocksToEditorValue(items, type).document)
+  const fragment = blocksToEditorValue(items, type)
   const posKey = findLastKey(patch.path)
   let index = change.value.document.nodes.findIndex(node => {
     return node.key === posKey
@@ -76,7 +76,16 @@ function insertPatch(patch: InsertPatch, change: () => void, type: Type) {
   if (position === 'after') {
     index++
   }
-  return change.insertFragmentByPath([], index, fragment)
+  change.applyOperations(
+    fragment.document.nodes.map(block => {
+      return {
+        type: 'insert_node',
+        path: [index++],
+        node: block
+      }
+    })
+  )
+  return change
 }
 
 function unsetPatch(patch: UnsetPatch, change: () => void) {
@@ -209,7 +218,7 @@ function patchInlineData(patch: Patch, change: () => void, type: Type, snapshot:
 export default function patchesToChange(
   patches: Patch[],
   editorValue: Value,
-  snapshot: ?JSONValue,
+  snapshot: ?any,
   type: Type
 ) {
   const change = editorValue.change()
@@ -252,5 +261,5 @@ export default function patchesToChange(
     })
   })
   // console.log('RESULT VALUE:', JSON.stringify(result.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
-  return result.normalize()
+  return result
 }
