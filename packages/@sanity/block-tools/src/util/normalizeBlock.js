@@ -13,6 +13,9 @@ export default function normalizeBlock(block) {
   if (!block.children) {
     block.children = []
   }
+  if (!block.markDefs) {
+    block.markDefs = []
+  }
   const lastChild = block.children.slice(-1)[0]
   block.children = block.children
     .filter((child, index) => {
@@ -33,6 +36,9 @@ export default function normalizeBlock(block) {
     })
     .map(child => {
       child._key = `${block._key}${newIndex++}`
+      if (!child.marks) {
+        child.marks = []
+      }
       return child
     })
   return block
