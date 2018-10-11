@@ -37,9 +37,25 @@ function handleHTML(html, change, editor, blockContentType, onProgress) {
     const blocks = blockTools.htmlToBlocks(html, blockContentType)
     // console.log(JSON.stringify(blocks, null, 2))
     onProgress({status: 'blocks'})
-    const doc = Document.fromJSON(blockTools.blocksToEditorValue(blocks, blockContentType).document)
+    const value = blockTools.blocksToEditorValue(blocks, blockContentType)
     // console.log(JSON.stringify(doc.toJSON({preserveKeys: true, preserveData: true}), null, 2))
-    change.insertFragment(doc).moveToEndOfBlock()
+    const {focusBlock} = change.value
+    value.document.nodes.forEach((block, index) => {
+      if (
+        index === 0 &&
+        focusBlock &&
+        !change.value.schema.isVoid(focusBlock) &&
+        focusBlock.nodes.size === 1 &&
+        focusBlock.text === ''
+      ) {
+        change
+          .insertBlock(block)
+          .moveToEndOfBlock()
+          .removeNodeByKey(focusBlock.key)
+      } else {
+        change.insertBlock(block).moveToEndOfBlock()
+      }
+    })
     try {
       editor.onChange(change)
     } catch (err) {
@@ -79,12 +95,29 @@ export default function PastePlugin(options: Options = {}) {
         .map(node => node.type)
         .every(nodeType => allSchemaBlockTypes.includes(nodeType))
       if (allBlocksHasSchemaDef) {
+        const {focusBlock} = change.value
         const newNodesList = Block.createList(fragment.nodes.map(processNode))
         const newDoc = new Document({
           key: fragment.key,
           nodes: newNodesList
         })
-        change.insertFragment(newDoc).moveToEndOfBlock()
+        newDoc.nodes.forEach((block, index) => {
+          if (
+            index === 0 &&
+            focusBlock &&
+            !change.value.schema.isVoid(focusBlock) &&
+            focusBlock.nodes.size === 1 &&
+            focusBlock.text === ''
+          ) {
+            change
+              .insertBlock(block)
+              .moveToEndOfBlock()
+              .removeNodeByKey(focusBlock.key)
+          } else {
+            change.insertBlock(block).moveToEndOfBlock()
+          }
+        })
+        // change.insertFragment(newDoc).moveToEndOfBlock()
         onProgress({status: null})
         return change
       }
