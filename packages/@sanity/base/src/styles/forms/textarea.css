@@ -4,4 +4,7 @@
   composes: textInput from './text-input.css';
   resize: vertical;
   padding: 0.5em;
+  min-height: 6em;
+  line-height: 1.5em;
+  transition: none;
 }
