@@ -405,8 +405,7 @@ export default class InlineObject extends React.Component<Props, State> {
         draggable={!readOnly}
         className={classname}
         onClick={this.handleShowMenu}
-        suppressContentEditableWarning
-        contentEditable="false"
+        contentEditable={false}
       >
         <span ref={this.refPreviewContainer} className={styles.previewContainer}>
           {this.renderPreview(value)}

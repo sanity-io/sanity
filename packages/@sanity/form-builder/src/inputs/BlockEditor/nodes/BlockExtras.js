@@ -51,8 +51,7 @@ export default class BlockExtras extends React.PureComponent<Props> {
           errors.length > 0 && styles.withError,
           warnings.length > 0 && !errors.length && styles.withWarning
         ])}
-        suppressContentEditableWarning
-        contentEditable="false"
+        contentEditable={false}
       >
         {markers.length > 0 && (
           <div className={styles.markers}>
