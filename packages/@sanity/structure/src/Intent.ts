@@ -5,4 +5,5 @@ export interface Intent {
 
 export interface IntentChecker {
   (intentName: string, params?: {[key: string]: any}): boolean
+  identity?: Symbol
 }
