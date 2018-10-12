@@ -16,12 +16,13 @@
 
 .block {
   composes: root;
-  display: block;
+  display: flex;
   text-align: center;
+  justify-content: center;
+  align-items: center;
 
-  @nest & svg {
-    height: 1em;
-    width: 1em;
+  @nest & .inner {
+    display: block;
   }
 
   @nest & .message {
@@ -33,15 +34,45 @@
   composes: root;
   display: inline-block;
 
-  @nest & svg {
-    margin-top: -0.2em;
+  @nest & .inner {
+    display: inline-flex;
+  }
+
+  @nest & .icon {
     height: 1em;
     width: 1em;
+    display: block;
+    align-self: center;
   }
 
   @nest & .message {
     margin-left: 0.5em;
-    display: inline;
+    display: block;
+  }
+}
+
+.inline.center .message {
+  margin-left: 1em;
+}
+
+.icon {
+  display: inline-block;
+  animation-name: spin;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  transform-origin: center center;
+  shape-rendering: geometricPrecision;
+  height: 1em;
+  width: 1em;
+
+  @nest & svg {
+    display: block;
+    padding: 0;
+    margin: 0;
+    height: inherit;
+    width: inherit;
+    shape-rendering: geometricPrecision;
   }
 }
 
@@ -52,6 +83,7 @@
   width: 100%;
   top: 0;
   left: 0;
+  box-sizing: border-box;
 
   @media (--screen-medium) {
     background-color: color(var(--body-bg) a(10%));
@@ -64,23 +96,17 @@
     transform: translateX(-50%) translateY(-50%);
   }
 
-  @nest & svg {
-    display: inline-block;
-    text-align: center;
-    height: 3em;
-    width: 3em;
-  }
-
-  @nest & circle {
-    stroke: var(--text-color);
+  @nest & .icon {
+    height: 2em;
+    width: 2em;
   }
 
   @nest & .message {
     text-align: center;
-    line-height: 1.2em;
     display: block;
     font-weight: 300;
     white-space: pre-wrap;
+    align-self: center;
   }
 }
 
@@ -88,15 +114,5 @@
   composes: center;
   background-color: color(var(--body-bg) a(90%));
   position: fixed;
-  width: 100vw;
-  height: 100vw;
-}
-
-.root svg {
-  transform-origin: center center;
-  animation-name: spin;
-  animation-duration: 2s;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  fill: var(--text-color);
+  z-index: var(--zindex-portal);
 }
