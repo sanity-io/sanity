@@ -28,9 +28,12 @@ export const ImageType = {
   extend(subTypeDef, extendMember) {
     const options = {...(subTypeDef.options || DEFAULT_OPTIONS)}
 
-    const fields = (subTypeDef.fields || [])
-      .concat([options.hotspot && HOTSPOT_FIELD, options.hotspot && CROP_FIELD, ASSET_FIELD])
-      .filter(Boolean)
+    let hotspotFields = [HOTSPOT_FIELD, CROP_FIELD]
+    if (!options.hotspot) {
+      hotspotFields = hotspotFields.map(field => ({...field, hidden: true}))
+    }
+
+    const fields = (subTypeDef.fields || []).concat(hotspotFields).concat(ASSET_FIELD)
 
     const parsed = Object.assign(pick(IMAGE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: IMAGE_CORE,
