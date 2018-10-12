@@ -14,7 +14,6 @@ import onCopy from 'part:@sanity/form-builder/input/block-editor/on-copy?'
 import {hasItemFocus} from '../../utils/pathUtils'
 import PatchEvent, {insert} from '../../../PatchEvent'
 import type {
-  Block,
   BlockContentFeatures,
   FormBuilderValue,
   Marker,
@@ -31,6 +30,7 @@ import type {
 import {VALUE_TO_JSON_OPTS} from './utils/changeToPatches'
 import buildEditorSchema from './utils/buildEditorSchema'
 import findInlineByAnnotationKey from './utils/findInlineByAnnotationKey'
+import createBlockActionPatchFn from './utils/createBlockActionPatchFn'
 
 import ListItemOnEnterKeyPlugin from './plugins/ListItemOnEnterKeyPlugin'
 import ListItemOnTabKeyPlugin from './plugins/ListItemOnTabKeyPlugin'
@@ -71,7 +71,13 @@ type Props = {
   onPatch: (event: PatchEvent) => void,
   onToggleFullScreen: void => void,
   readOnly?: boolean,
-  renderBlockActions?: (block: Block | FormBuilderValue) => Node,
+  renderBlockActions?: ({
+    block: FormBuilderValue,
+    value: FormBuilderValue[],
+    set: FormBuilderValue => void,
+    unset: FormBuilderValue => void,
+    insert: FormBuilderValue => void
+  }) => Node,
   renderCustomMarkers?: (Marker[]) => Node,
   setFocus: void => void,
   type: Type,
@@ -108,7 +114,11 @@ export default class Editor extends React.Component<Props> {
         onlyIn: [EDITOR_DEFAULT_BLOCK_TYPE.type],
         shift: true
       }),
-      PastePlugin({blockContentType: props.type, onProgress: this.handlePasteProgress}),
+      PastePlugin({
+        blockContentType: props.type,
+        onChange: props.onChange,
+        onProgress: this.handlePasteProgress
+      }),
       insertBlockOnEnter(EDITOR_DEFAULT_BLOCK_TYPE),
       // UpdateCustomNodesPlugin(),
       OnDropPlugin(),
@@ -462,7 +472,15 @@ export default class Editor extends React.Component<Props> {
   }
 
   render() {
-    const {editorValue, fullscreen, readOnly, markers, renderBlockActions, value} = this.props
+    const {
+      editorValue,
+      fullscreen,
+      readOnly,
+      markers,
+      renderBlockActions,
+      value,
+      onPatch
+    } = this.props
 
     const hasMarkers = markers.filter(marker => marker.path.length > 0).length > 0
 
@@ -470,8 +488,17 @@ export default class Editor extends React.Component<Props> {
     let hasBlockActions = false
     if (renderBlockActions && value) {
       this._blockActionsMap = {}
+      const RenderComponent = renderBlockActions
       value.forEach(block => {
-        const actions = renderBlockActions(block)
+        const actions = (
+          <RenderComponent
+            block={block}
+            value={value}
+            set={createBlockActionPatchFn('set', block, onPatch)}
+            unset={createBlockActionPatchFn('unset', block, onPatch)}
+            insert={createBlockActionPatchFn('insert', block, onPatch)}
+          />
+        )
         if (actions) {
           this._blockActionsMap[block._key] = actions
         }
