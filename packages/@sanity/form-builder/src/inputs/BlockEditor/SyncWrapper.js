@@ -282,19 +282,19 @@ export default withPatchSubscriber(
       const {type} = this.props
       const {editorValue} = this.state
 
-      // Handle remote patches
-      const remotePatches = patches.filter(
+      // Handle remote (and internal) patches
+      const remoteAndInternalPatches = patches.filter(
         patch =>
-          patch.origin === 'remote' &&
-          !(patch.path[0] && patch.path[0]._key === 'undoRedoVoidPatch')
+          ['remote', 'internal'].includes(patch.origin) &&
+          !(patch.path[0] && patch.path[0]._key === 'undoRedoVoidPatch') // See comment below
       )
-      if (remotePatches.length > 0) {
-        const change = patchesToChange(remotePatches, editorValue, snapshot, type)
+      if (remoteAndInternalPatches.length > 0) {
+        const change = patchesToChange(remoteAndInternalPatches, editorValue, snapshot, type)
         remoteChanges$.next({
           change,
           isRemote: true
         })
-        this.normalizeUndoSteps(remotePatches)
+        this.normalizeUndoSteps(remoteAndInternalPatches)
       }
 
       // Handle localpatches (create undo step)
