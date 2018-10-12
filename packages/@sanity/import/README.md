@@ -26,12 +26,15 @@ const client = sanityClient({
 const input = fs.createReadStream('my-documents.ndjson')
 sanityImport(input, {
   client: client,
-  operation: 'create', // `create`, `createOrReplace` or `createIfNotExists`
-}).then(numDocs => {
-  console.log('Imported %d documents', numDocs)
-}).catch(err => {
-  console.error('Import failed: %s', err.message)
+  operation: 'create' // `create`, `createOrReplace` or `createIfNotExists`
 })
+  .then(({numDocs, warnings}) => {
+    console.log('Imported %d documents', numDocs)
+    // Note: There might be warnings! Check `warnings`
+  })
+  .catch(err => {
+    console.error('Import failed: %s', err.message)
+  })
 ```
 
 ## CLI-tool

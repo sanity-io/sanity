@@ -9,6 +9,10 @@ export default {
     console.log(...args)
   },
 
+  warn(...args) {
+    console.warn(...args)
+  },
+
   error(...args) {
     if (args[0] instanceof Error) {
       console.error(chalk.red(args[0].stack))
