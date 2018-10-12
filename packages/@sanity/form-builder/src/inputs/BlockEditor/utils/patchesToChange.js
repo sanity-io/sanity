@@ -12,6 +12,7 @@ import type {
 
 import {applyAll} from '../../../simplePatch'
 import findInlineByAnnotationKey from './findInlineByAnnotationKey'
+import createSelectionOperation from './createSelectionOperation'
 
 type JSONValue = number | string | boolean | {[string]: JSONValue} | JSONValue[]
 // const VALUE_TO_JSON_OPTS = {
@@ -97,6 +98,8 @@ function unsetPatch(patch: UnsetPatch, change: () => void) {
 function replaceValue(snapshot: ?JSONValue, change: () => void, type: Type) {
   if (snapshot) {
     const fragment = blocksToEditorValue(snapshot, type)
+    // Store the old selection
+    const select = createSelectionOperation(change)
     change.applyOperations(
       change.value.document.nodes.map(node => {
         return {
@@ -115,6 +118,8 @@ function replaceValue(snapshot: ?JSONValue, change: () => void, type: Type) {
         }
       })
     )
+    // Restore the old selection
+    change.applyOperations([select]).focus()
     return change
   }
   throw new Error('No snapshot given!')
