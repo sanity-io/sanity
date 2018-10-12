@@ -4,7 +4,7 @@ import type {Path} from './path'
 
 type JSONValue = number | string | boolean | {[string]: JSONValue} | JSONValue[]
 
-export type Origin = 'remote' | 'local'
+export type Origin = 'remote' | 'local' | 'internal'
 
 export type SetPatch = {
   path: Path,
