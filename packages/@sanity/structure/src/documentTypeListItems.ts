@@ -8,6 +8,7 @@ import {DocumentListBuilder} from './DocumentList'
 import {ListItemBuilder} from './ListItem'
 import {EditorBuilder} from './Editor'
 import {isActionEnabled} from './parts/documentActionUtils'
+import {DocumentTypeListBuilder} from './DocumentTypeList'
 
 const PlusIcon = getPlusIcon()
 const ListIcon = getListIcon()
@@ -45,18 +46,13 @@ export function getDocumentTypeList(
 
   const canCreate = isActionEnabled(type, 'create')
 
-  return new DocumentListBuilder()
+  return new DocumentTypeListBuilder()
     .id(typeName)
     .title(title)
     .filter('_type == $type')
     .params({type: typeName})
     .schemaType(type)
     .defaultOrdering(DEFAULT_SELECTED_ORDERING_OPTION.by)
-    .canHandleIntent(
-      (intentName, params): boolean =>
-        Boolean(intentName === 'edit' && params && params.id && params.type === typeName) ||
-        Boolean(intentName === 'create' && params && params.type === typeName)
-    )
     .menuItemGroups([
       {id: 'sorting', title: 'Sort'},
       {id: 'layout', title: 'Layout'},
@@ -67,6 +63,11 @@ export function getDocumentTypeList(
         .id('editor')
         .schemaType(type)
         .documentId(documentId)
+    )
+    .canHandleIntent(
+      (intentName, params): boolean =>
+        Boolean(intentName === 'edit' && params && params.id && params.type === typeName) ||
+        Boolean(intentName === 'create' && params && params.type === typeName)
     )
     .menuItems([
       // Create new (from action button)
