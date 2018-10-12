@@ -121,11 +121,13 @@ export type SlateSchema = _SlateSchema
 
 export type SlateSelection = _SlateSelection
 
-export type FormBuilderValue = {
-  _type?: string,
-  _key: string,
-  _ref?: string
-}
+export type FormBuilderValue =
+  | {
+      _type?: string,
+      _key: string,
+      _ref?: string
+    }
+  | Block
 
 export type FormBuilderSchema = {
   name: string,
@@ -138,6 +140,10 @@ export type UndoRedoSnapshot = {
   timestamp: Date
 }
 
-export type UndoRedoStackItem = UndoRedoSnapshot & {patches: Patch[], inversedPatches: Patch[]}
+export type UndoRedoStackItem = UndoRedoSnapshot & {
+  patches: Patch[],
+  inversedPatches: Patch[],
+  snapshot: FormBuilderValue[]
+}
 
 export type UndoRedoStack = {undo: UndoRedoStackItem[], redo: UndoRedoStackItem[]}
