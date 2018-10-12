@@ -70,13 +70,11 @@
 
 .media {
   position: relative;
-  background-color: var(--gray-lighter);
   flex-basis: 2.5rem;
   min-width: 2.5rem;
   margin-right: var(--small-padding);
   font-size: 0.5em;
   overflow: hidden;
-  border: 1px solid color(var(--gray-lighter) lightness(-3%));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -96,7 +94,7 @@
 
   @nest & svg {
     font-size: 1.5rem;
-    color: var(--gray);
+    color: inherit;
   }
 }
 

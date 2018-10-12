@@ -73,8 +73,6 @@
   position: relative;
   margin-right: var(--small-padding);
   box-sizing: border-box;
-  background-color: var(--gray-lighter);
-  border: 1px solid color(var(--gray-lighter) lightness(-3%));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -88,7 +86,7 @@
 
   @nest & svg {
     font-size: 3rem;
-    color: var(--gray);
+    color: inherit;
   }
 }
 

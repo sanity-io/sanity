@@ -827,6 +827,10 @@
       "path": "components/icons/ChevronDown.js"
     },
     {
+      "implements": "part:@sanity/base/folder-icon",
+      "path": "components/icons/Folder.js"
+    },
+    {
       "implements": "part:@sanity/base/sanity-logo",
       "path": "components/logos/SanityLogo.js"
     },
