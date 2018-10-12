@@ -6,7 +6,6 @@ import {map} from 'rxjs/operators'
 import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import {observeForPreview, SanityDefaultPreview} from 'part:@sanity/base/preview'
-import getIconWithTypeFallback from '../utils/getIconWithTypeFallback'
 import NotPublishedStatus from './NotPublishedStatus'
 import DraftStatus from './DraftStatus'
 
@@ -86,7 +85,7 @@ export default class DocumentPaneItemPreview extends React.Component {
       <SanityDefaultPreview
         value={getValueWithFallback({isLoading, value, schemaType, draft, published})}
         isPlaceholder={isLoading}
-        icon={getIconWithTypeFallback(icon, schemaType)}
+        icon={icon}
         layout={layout}
         type={schemaType}
         status={isLoading ? null : getStatusIndicator(draft, published)}
