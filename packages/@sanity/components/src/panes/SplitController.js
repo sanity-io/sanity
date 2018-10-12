@@ -56,10 +56,14 @@ export default class PanesSplitController extends React.Component {
   }
 
   handleSplitPaneChange = debounce((size, pane) => {
+    const index = React.Children.toArray(this.props.children).findIndex(
+      curr => curr.key === pane.key
+    )
+
     if (size <= pane.props.minWidth) {
-      this.props.onShouldCollapse(pane)
+      this.props.onShouldCollapse(index)
     } else {
-      this.props.onShouldExpand(pane)
+      this.props.onShouldExpand(index)
     }
 
     this.lastPaneSize = size
