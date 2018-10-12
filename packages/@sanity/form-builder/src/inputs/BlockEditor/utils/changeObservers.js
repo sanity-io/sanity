@@ -35,45 +35,45 @@ export const localChanges$ = new Subject().pipe(
       return {...val, change: newChange}
     }
 
-    // The insert operation is special because it will not contain
-    // keys for the block child nodes, so we need to set them explicitly
-    const insertOperations = change.operations.filter(
-      op => op.type === 'insert_node' && op.path.size === 1
-    )
-    if (insertOperations.size > 0) {
-      const newNodes = []
-      insertOperations.forEach(op => {
-        let insertedBlock = change.value.document.nodes.get(op.path.get(0))
-        // Sometimes we cant't find the inserted block when doing
-        // undo and redo operations. Just return the original change then.
-        if (!insertedBlock) {
-          // console.log('Could not find block')
-          // console.log('Path:', op.path.get(0))
-          // console.log('Document:', change.value.document.toJSON({preserveKeys: true, perserveData: true}))
-          return
-        }
-        insertedBlock = insertedBlock.toJSON({preserveKeys: true, perserveData: true})
-        insertedBlock.data._key = insertedBlock.key
-        insertedBlock.nodes.forEach((node, index) => {
-          const newKey = `${insertedBlock.key}${index}`
-          node.key = newKey
-          const {data} = node
-          if (data && data.value) {
-            node.data.value._key = newKey
-          }
-          if (data && data._key) {
-            node.data._key = newKey
-          }
-        })
-        newNodes.push(insertedBlock)
-      })
-      change.withoutNormalizing(() => {
-        newNodes.forEach(insertedBlock => {
-          change.setNodeByKey(insertedBlock.key, insertedBlock)
-        })
-      })
-      return {...val, change: change}
-    }
+    // // The insert operation is special because it will not contain
+    // // keys for the block child nodes, so we need to set them explicitly
+    // const insertOperations = change.operations.filter(
+    //   op => op.type === 'insert_node' && op.path.size === 1
+    // )
+    // if (insertOperations.size > 0) {
+    //   const newNodes = []
+    //   insertOperations.forEach(op => {
+    //     let insertedBlock = change.value.document.nodes.get(op.path.get(0))
+    //     // Sometimes we cant't find the inserted block when doing
+    //     // undo and redo operations. Just return the original change then.
+    //     if (!insertedBlock) {
+    //       console.log('Could not find block')
+    //       console.log('Path:', op.path.get(0))
+    //       console.log('Document:', change.value.document.toJSON({preserveKeys: true, perserveData: true}))
+    //       return
+    //     }
+    //     insertedBlock = insertedBlock.toJSON({preserveKeys: true, perserveData: true})
+    //     insertedBlock.data._key = insertedBlock.key
+    //     insertedBlock.nodes.forEach((node, index) => {
+    //       const newKey = `${insertedBlock.key}${index}`
+    //       node.key = newKey
+    //       const {data} = node
+    //       if (data && data.value) {
+    //         node.data.value._key = newKey
+    //       }
+    //       if (data && data._key) {
+    //         node.data._key = newKey
+    //       }
+    //     })
+    //     newNodes.push(insertedBlock)
+    //   })
+    //   change.withoutNormalizing(() => {
+    //     newNodes.forEach(insertedBlock => {
+    //       change.setNodeByKey(insertedBlock.key, insertedBlock)
+    //     })
+    //   })
+    //   return {...val, change: change}
+    // }
     return val
   })
 )
