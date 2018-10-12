@@ -9,8 +9,9 @@ const prettyMs = require('pretty-ms')
 const sanityClient = require('@sanity/client')
 const sanityImport = require('@sanity/import')
 
-const red = str => `\u001b[31mERROR: ${str}\u001b[39m`
-const error = str => console.error(red(str))
+const red = str => `\u001b[31m${str}\u001b[39m`
+const yellow = str => `\u001b[33m${str}\u001b[39m`
+const printError = str => console.error(red(`ERROR: ${str}`))
 
 const cli = meow(
   `
@@ -23,6 +24,7 @@ const cli = meow(
     -t, --token <token> Token to authenticate with
     --replace Replace documents with the same IDs
     --missing Skip documents that already exist
+    --allow-failing-assets Skip assets that cannot be fetched/uploaded
     --help Show this help
 
   Examples
@@ -36,7 +38,7 @@ const cli = meow(
     --token = SANITY_IMPORT_TOKEN
 `,
   {
-    boolean: ['replace', 'missing'],
+    boolean: ['replace', 'missing', 'allow-failing-assets'],
     alias: {
       p: 'project',
       d: 'dataset',
@@ -46,35 +48,35 @@ const cli = meow(
 )
 
 const {flags, input, showHelp} = cli
+const {dataset, allowFailingAssets} = flags
 const token = flags.token || process.env.SANITY_IMPORT_TOKEN
 const projectId = flags.project
-const dataset = flags.dataset
 const source = input[0]
 
 if (!projectId) {
-  error('Flag `--project` is required')
+  printError('Flag `--project` is required')
   showHelp()
 }
 
 if (!dataset) {
-  error('Flag `--dataset` is required')
+  printError('Flag `--dataset` is required')
   showHelp()
 }
 
 if (!token) {
-  error('Flag `--token` is required (or set SANITY_IMPORT_TOKEN)')
+  printError('Flag `--token` is required (or set SANITY_IMPORT_TOKEN)')
   showHelp()
 }
 
 if (!source) {
-  error('Source file is required, use `-` to read from stdin')
+  printError('Source file is required, use `-` to read from stdin')
   showHelp()
 }
 
 let operation = 'create'
 if (flags.replace || flags.missing) {
   if (flags.replace && flags.missing) {
-    error('Cannot use both `--replace` and `--missing`')
+    printError('Cannot use both `--replace` and `--missing`')
     showHelp()
   }
 
@@ -94,17 +96,39 @@ const client = sanityClient({
 })
 
 getStream()
-  .then(stream => sanityImport(stream, {client, operation, onProgress}))
-  .then(imported => {
+  .then(stream => sanityImport(stream, {client, operation, onProgress, allowFailingAssets}))
+  .then(({numDocs, warnings}) => {
     const timeSpent = prettyMs(Date.now() - stepStart, {secDecimalDigits: 2})
     currentProgress.text = `[100%] ${currentStep} (${timeSpent})`
     currentProgress.succeed()
 
-    console.log('Done! Imported %d documents to dataset "%s"', imported, dataset)
+    console.log('Done! Imported %d documents to dataset "%s"\n', numDocs, dataset)
+    printWarnings(warnings)
   })
   .catch(err => {
-    error(err.message)
+    if (currentProgress) {
+      currentProgress.fail()
+    }
+
+    printError(err.stack)
   })
+
+function printWarnings(warnings) {
+  const assetFails = warnings.filter(warn => warn.type === 'asset')
+
+  if (!assetFails.length) {
+    return
+  }
+
+  console.warn(
+    yellow('⚠ Failed to import the following %s:'),
+    assetFails.length > 1 ? 'assets' : 'asset'
+  )
+
+  warnings.forEach(warning => {
+    console.warn(`  ${warning.url}`)
+  })
+}
 
 function getStream() {
   if (/^https:\/\//i.test(source)) {
@@ -116,7 +140,7 @@ function getStream() {
 
 function getUriStream(uri) {
   return new Promise((resolve, reject) => {
-    get(source, (err, res) => {
+    get(uri, (err, res) => {
       if (err) {
         reject(new Error(`Error fetching source:\n${err.message}`))
         return

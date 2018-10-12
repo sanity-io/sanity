@@ -25,7 +25,10 @@ async function uploadAssets(assets, options) {
   })
 
   if (assetRefMap.size === 0) {
-    return Promise.resolve(0)
+    return {
+      batches: [0],
+      failures: []
+    }
   }
 
   // Create a function we can call for every completed upload to report progress
@@ -34,17 +37,26 @@ async function uploadAssets(assets, options) {
     total: assetRefMap.size
   })
 
+  // If we should allow failures, we need to use a custom catch handler in order
+  // to not set the asset references for the broken assets
+  const ensureAssetExists = ensureAssetWithRetries.bind(null, options, progress)
+  const ensureMethod = options.allowFailingAssets
+    ? (...args) => ensureAssetExists(...args).catch(err => err)
+    : ensureAssetExists
+
   // Loop over all unique URLs and ensure they exist, and if not, upload them
   const mapOptions = {concurrency: ASSET_UPLOAD_CONCURRENCY}
-  const assetIds = await pMap(
-    assetRefMap.keys(),
-    ensureAssetWithRetries.bind(null, options, progress),
-    mapOptions
-  )
+  const assetIds = await pMap(assetRefMap.keys(), ensureMethod, mapOptions)
+
+  // Extract a list of all failures so we may report them and possibly retry them later
+  const assetFailures = getUploadFailures(assetRefMap, assetIds)
 
   // Loop over all documents that need asset references to be set
   const batches = await setAssetReferences(assetRefMap, assetIds, options)
-  return batches.reduce((prev, add) => prev + add, 0)
+  return {
+    batches: batches.reduce((prev, add) => prev + add, 0),
+    failures: assetFailures
+  }
 }
 
 function getAssetRefMap(assets) {
@@ -62,17 +74,44 @@ function getAssetRefMap(assets) {
   }, new Map())
 }
 
-function ensureAssetWithRetries(...args) {
-  return retryOnFailure(() => ensureAsset(...args))
-}
-
-async function ensureAsset(options, progress, assetKey, i) {
-  const {client, assetMap = {}} = options
+async function ensureAssetWithRetries(options, progress, assetKey, i) {
   const [type, url] = assetKey.split('#', 2)
 
+  const {buffer, sha1hash} = await retryOnFailure(() => downloadAsset(url, i)).catch(err => {
+    progress()
+    err.type = type
+    err.url = url
+    err.message = err.message.includes(url)
+      ? err.message
+      : `Failed to download ${type} @ ${url}:\n${err.message}`
+
+    throw err
+  })
+
+  const asset = {buffer, sha1hash, type, url}
+  return retryOnFailure(() => ensureAsset(asset, options, i))
+    .then(progress)
+    .catch(err => {
+      progress()
+      err.type = type
+      err.url = url
+      err.message = err.message.includes(url)
+        ? err.message
+        : `Failed to upload ${type} @ ${url}:\n${err.message}`
+
+      throw err
+    })
+}
+
+function downloadAsset(url, i) {
   // Download the asset in order for us to create a hash
   debug('[Asset #%d] Downloading %s', i, url)
-  const {buffer, sha1hash} = await getHashedBufferForUri(url)
+  return getHashedBufferForUri(url)
+}
+
+async function ensureAsset(asset, options, i) {
+  const {buffer, sha1hash, type, url} = asset
+  const {client, assetMap = {}} = options
 
   // See if the item exists on the server
   debug('[Asset #%d] Checking for asset with hash %s', i, sha1hash)
@@ -80,7 +119,6 @@ async function ensureAsset(options, progress, assetKey, i) {
   if (assetDocId) {
     // Same hash means we want to reuse the asset
     debug('[Asset #%d] Found %s for hash %s', i, type, sha1hash)
-    progress()
     return assetDocId
   }
 
@@ -92,15 +130,14 @@ async function ensureAsset(options, progress, assetKey, i) {
 
   // If it doesn't exist, we want to upload it
   debug('[Asset #%d] Uploading %s with URL %s', i, type, url)
-  const asset = await client.assets.upload(type, buffer, {filename})
-  progress()
+  const assetDoc = await client.assets.upload(type, buffer, {filename})
 
   // If we have more metadata to provide, update the asset document
   if (hasNonFilenameMeta) {
-    await client.patch(asset._id).set(assetMeta)
+    await client.patch(assetDoc._id).set(assetMeta)
   }
 
-  return asset._id
+  return assetDoc._id
 }
 
 async function getAssetDocumentIdForHash(client, type, sha1hash, attemptNum = 0) {
@@ -120,11 +157,35 @@ async function getAssetDocumentIdForHash(client, type, sha1hash, attemptNum = 0)
   }
 }
 
+function getUploadFailures(assetRefMap, assetIds) {
+  const lookup = assetRefMap.values()
+
+  return assetIds.reduce((failures, assetId) => {
+    const documents = lookup.next().value
+    if (typeof assetId === 'string') {
+      return failures
+    }
+
+    return failures.concat({
+      type: 'asset',
+      url: assetId.url,
+      documents: documents.map(({documentId, path}) => ({
+        documentId,
+        path
+      }))
+    })
+  }, [])
+}
+
 function setAssetReferences(assetRefMap, assetIds, options) {
   const {client} = options
   const lookup = assetRefMap.values()
   const patchTasks = assetIds.reduce((tasks, assetId) => {
     const documents = lookup.next().value
+    if (typeof assetId !== 'string') {
+      return tasks
+    }
+
     return tasks.concat(
       documents.map(({documentId, path}) => ({
         documentId,
@@ -154,7 +215,8 @@ function setAssetReferences(assetRefMap, assetIds, options) {
 
   // Now perform the batch operations in parallel with a given concurrency
   const mapOptions = {concurrency: ASSET_PATCH_CONCURRENCY}
-  return pMap(batches, setAssetReferenceBatch.bind(null, client, progress), mapOptions)
+  const setAssetRefs = setAssetReferenceBatch.bind(null, client, progress)
+  return pMap(batches, setAssetRefs, mapOptions)
 }
 
 function setAssetReferenceBatch(client, progress, batch) {
@@ -174,7 +236,7 @@ function getAssetType(assetId) {
 
 function reducePatch(trx, task) {
   return trx.patch(task.documentId, patch =>
-    patch.set({
+    patch.setIfMissing({[task.path]: {}}).set({
       [`${task.path}._type`]: getAssetType(task.assetId),
       [`${task.path}.asset`]: {
         _type: 'reference',

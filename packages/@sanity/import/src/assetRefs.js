@@ -9,7 +9,16 @@ const assetMatcher = /^(file|image)@([a-z]+:\/\/.*)/
 // Note: mutates in-place
 function unsetAssetRefs(doc) {
   findAssetRefs(doc).forEach(path => {
-    unset(doc, path)
+    const parentPath = path.slice(0, -1)
+    const parent = get(doc, parentPath)
+
+    // If the only key in the object is `_sanityAsset`, unset the whole thing,
+    // as we will be using a `setIfMissing({[path]: {}})` patch to enforce it.
+    // Prevents empty objects from appearing while import is running
+    const isOnlyKey = parent && Object.keys(parent).length === 1 && parent[assetKey]
+    const unsetPath = isOnlyKey ? parentPath : path
+
+    unset(doc, unsetPath)
   })
 
   return doc

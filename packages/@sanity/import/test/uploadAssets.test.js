@@ -55,7 +55,10 @@ test('will reuse an existing asset if it exists', () => {
     return {statusCode: 400, body: {error: `"${uri}" should not be called`}}
   })
 
-  return expect(uploadAssets([fileAsset], {client, onProgress: noop})).resolves.toBe(1)
+  return expect(uploadAssets([fileAsset], {client, onProgress: noop})).resolves.toMatchObject({
+    batches: 1,
+    failures: []
+  })
 })
 
 test('will upload asset that do not already exist', () => {
@@ -83,7 +86,10 @@ test('will upload asset that do not already exist', () => {
     return {statusCode: 400, body: {error: `"${uri}" should not be called`}}
   })
 
-  return expect(uploadAssets([fileAsset], {client, onProgress: noop})).resolves.toBe(1)
+  return expect(uploadAssets([fileAsset], {client, onProgress: noop})).resolves.toMatchObject({
+    batches: 1,
+    failures: []
+  })
 })
 
 test('will upload once but batch patches', () => {
@@ -113,5 +119,8 @@ test('will upload once but batch patches', () => {
     client,
     onProgress: noop
   })
-  return expect(upload).resolves.toBe(60)
+  return expect(upload).resolves.toMatchObject({
+    batches: 60,
+    failures: []
+  })
 })

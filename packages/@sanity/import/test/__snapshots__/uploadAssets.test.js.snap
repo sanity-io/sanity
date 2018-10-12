@@ -6,7 +6,8 @@ connect ECONNREFUSED 127.0.0.1:49999]
 `;
 
 exports[`fails if asset lookup fails 1`] = `
-[Error: Error while attempt to query Sanity API:
+[Error: Failed to upload image @ file:///Users/espenh/webdev/sanity-voof/packages/@sanity/import/test/fixtures/img.gif:
+Error while attempt to query Sanity API:
 Some network err]
 `;
 
@@ -22,6 +23,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "metadata.poster": Object {},
         },
       },
     },
@@ -42,6 +46,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "metadata.poster": Object {},
+        },
       },
     },
   ],
@@ -61,6 +68,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -72,6 +82,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -85,6 +98,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -96,6 +112,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -109,6 +128,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -120,6 +142,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -133,6 +158,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -144,6 +172,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -157,6 +188,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -168,6 +202,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -181,6 +218,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -192,6 +232,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -205,6 +248,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -216,6 +262,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -229,6 +278,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -240,6 +292,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -253,6 +308,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -264,6 +322,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -277,6 +338,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -288,6 +352,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -301,6 +368,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -312,6 +382,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -325,6 +398,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -336,6 +412,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -349,6 +428,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -360,6 +442,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -373,6 +458,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -384,6 +472,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -397,6 +488,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -408,6 +502,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -421,6 +518,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -432,6 +532,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -445,6 +548,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -456,6 +562,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -469,6 +578,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -480,6 +592,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -493,6 +608,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -504,6 +622,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -517,6 +638,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -528,6 +652,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -541,6 +668,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -552,6 +682,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -565,6 +698,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -576,6 +712,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -589,6 +728,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -600,6 +742,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -613,6 +758,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -624,6 +772,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -637,6 +788,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -648,6 +802,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -668,6 +825,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -679,6 +839,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -692,6 +855,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -703,6 +869,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -716,6 +885,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -727,6 +899,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -740,6 +915,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -751,6 +929,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
@@ -764,6 +945,9 @@ Object {
             "_type": "reference",
           },
         },
+        "setIfMissing": Object {
+          "some.path": Object {},
+        },
       },
     },
     Object {
@@ -775,6 +959,9 @@ Object {
             "_ref": "someAssetId",
             "_type": "reference",
           },
+        },
+        "setIfMissing": Object {
+          "some.path": Object {},
         },
       },
     },
