@@ -72,7 +72,8 @@ function maybeHandleIntent(prevEvent, currentEvent) {
   if (currentEvent && currentEvent.state && currentEvent.state.intent) {
     const redirectState = resolveIntentState(prevEvent ? prevEvent.state : {}, currentEvent.state)
     if (redirectState) {
-      navigate(rootRouter.encode(redirectState), {replace: true})
+      const newUrl = rootRouter.encode(redirectState)
+      setTimeout(() => navigate(newUrl, {replace: true}), 0)
       return null
     }
   }
