@@ -35,6 +35,9 @@ export default withRouterHOC(
           id: PropTypes.string.isRequired
         })
       ),
+      displayOptions: PropTypes.shape({
+        showIcons: PropTypes.bool
+      }),
       isSelected: PropTypes.bool.isRequired,
       isCollapsed: PropTypes.bool.isRequired,
       onExpand: PropTypes.func,
@@ -46,6 +49,7 @@ export default withRouterHOC(
       items: [],
       menuItems: [],
       menuItemGroups: [],
+      displayOptions: {},
       styles: undefined,
       onExpand: undefined,
       onCollapse: undefined,
@@ -74,6 +78,7 @@ export default withRouterHOC(
         index,
         menuItems,
         menuItemGroups,
+        displayOptions,
         isSelected,
         isCollapsed,
         onCollapse,
@@ -99,7 +104,7 @@ export default withRouterHOC(
                 id={item.id}
                 index={index}
                 value={item}
-                icon={item.icon}
+                icon={displayOptions.showIcons === false ? false : item.icon}
                 layout={defaultLayout}
                 isSelected={this.itemIsSelected(item)}
                 getLinkState={this.getLinkStateForItem}

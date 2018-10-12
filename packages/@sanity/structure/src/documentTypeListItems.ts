@@ -1,5 +1,5 @@
 import memoizeOne from 'memoize-one'
-import {Schema, defaultSchema} from './parts/Schema'
+import {Schema, defaultSchema, SchemaType} from './parts/Schema'
 import {dataAspects, DataAspectsResolver} from './parts/DataAspects'
 import {getPlusIcon, getListIcon, getDetailsIcon} from './parts/Icon'
 import {MenuItemBuilder, getOrderingMenuItemsForSchemaType} from './MenuItem'
@@ -17,7 +17,14 @@ const DetailsIcon = getDetailsIcon()
 
 const getDataAspectsForSchema: (schema: Schema) => DataAspectsResolver = memoizeOne(dataAspects)
 
+<<<<<<< HEAD
 export const DEFAULT_INTENT_HANDLER = Symbol('Document type list canHandleIntent')
+=======
+function shouldShowIcon(schemaType: SchemaType): boolean {
+  const preview = schemaType.preview
+  return Boolean(preview && (preview.prepare || (preview.select && preview.select.media)))
+}
+>>>>>>> [structure] Allow disabling icon for document lists. Infer defaults.
 
 export function getDocumentTypeListItems(schema: Schema = defaultSchema): ListItemBuilder[] {
   const resolver = getDataAspectsForSchema(schema)
@@ -46,6 +53,11 @@ export function getDocumentTypeList(
   const type = schema.get(typeName)
   const resolver = getDataAspectsForSchema(schema)
   const title = resolver.getDisplayName(typeName)
+<<<<<<< HEAD
+=======
+  const showIcons = shouldShowIcon(type)
+
+>>>>>>> [structure] Allow disabling icon for document lists. Infer defaults.
   const canCreate = isActionEnabled(type, 'create')
 
   const intentChecker: IntentChecker = (intentName, params): boolean =>
@@ -60,6 +72,7 @@ export function getDocumentTypeList(
     .filter('_type == $type')
     .params({type: typeName})
     .schemaType(type)
+    .showIcons(showIcons)
     .defaultOrdering(DEFAULT_SELECTED_ORDERING_OPTION.by)
     .menuItemGroups([
       {id: 'sorting', title: 'Sort'},
