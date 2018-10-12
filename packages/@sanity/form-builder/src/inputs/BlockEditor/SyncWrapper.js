@@ -17,9 +17,9 @@ import type {
 
 import React from 'react'
 import type {Node} from 'react'
-import type {List} from 'immutable'
+import {List} from 'immutable'
 import generateHelpUrl from '@sanity/generate-help-url'
-import {debounce, uniq, isEqual, unionBy, flatten, intersectionBy} from 'lodash'
+import {debounce, uniq, isEqual, unionBy, flatten, intersection} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {PatchEvent} from '../../PatchEvent'
@@ -208,11 +208,18 @@ export default withPatchSubscriber(
     }
 
     handleEditorChange = (change: SlateChange, callback?: void => void) => {
+      const {value, type, onChange} = this.props
+      const {editorValue} = this.state
       localChanges$.next({
         change,
         isRemote: false,
         callback
       })
+      // Generate patches and send them to the server
+      const patches = changeToPatches(editorValue, change, value, type)
+      if (patches.length) {
+        onChange(PatchEvent.from(patches))
+      }
       const userIsWritingText = isWritingTextOperationsOnly(change.operations)
       if (userIsWritingText) {
         this.setState({userIsWritingText: true})
@@ -222,7 +229,6 @@ export default withPatchSubscriber(
     }
 
     handleChangeSet = (changeSet: ChangeSet) => {
-      const {value, type, onChange} = this.props
       const {editorValue} = this.state
       const {change, isRemote, callback} = changeSet
       if (!isRemote) {
@@ -231,11 +237,6 @@ export default withPatchSubscriber(
           editorValue: editorValue,
           change: change,
           timestamp: new Date()
-        }
-        // Generate patches and send them to the server
-        const patches = changeToPatches(editorValue, change, value, type)
-        if (patches.length) {
-          onChange(PatchEvent.from(patches))
         }
       }
       // Update the editorValue state
@@ -275,9 +276,13 @@ export default withPatchSubscriber(
     }
 
     handleDocumentPatches = ({patches, shouldReset, snapshot}) => {
+      if (patches.length === 0) {
+        return
+      }
       const {type} = this.props
       const {editorValue} = this.state
 
+      // Handle remote patches
       const remotePatches = patches.filter(
         patch =>
           patch.origin === 'remote' &&
@@ -292,62 +297,96 @@ export default withPatchSubscriber(
         this.normalizeUndoSteps(remotePatches)
       }
 
-      // Handle undo/redo
+      // Handle localpatches (create undo step)
       const localPatches = patches.filter(patch => patch.origin === 'local')
-      if (localPatches.length) {
-        this.createUndoStep(localPatches, snapshot)
+      if (localPatches.length > 0) {
+        // Until the FormBuilder can support some kind of patch tagging,
+        // we create a void patch with key 'undoRedoVoidPatch' in changesToPatches
+        // to know if these pacthes are undo/redo patches or not.
+        const lastPatch = localPatches.slice(-1)[0]
+        const isUndoRedoPatch =
+          lastPatch && lastPatch.path[0] && lastPatch.path[0]._key === 'undoRedoVoidPatch'
+        if (!isUndoRedoPatch && this._undoRedoSnapShot) {
+          this.createUndoStep(
+            localPatches,
+            snapshot,
+            this.state.editorValue,
+            this._undoRedoSnapShot
+          )
+          // Redo stack must be reset here
+          this._undoRedoStack.redo = []
+        }
+        this.normalizeUndoSteps()
       }
     }
 
-    createUndoStep(localPatches: Patch[] = [], snapshot: FormBuilderValue[]) {
-      const {editorValue} = this.state
+    createUndoStep(
+      localPatches: Patch[] = [],
+      snapshot: FormBuilderValue[],
+      editorValue: SlateValue,
+      undoRedoSnapshot: UndoRedoSnapshot
+    ) {
       const {type} = this.props
-      // Until the FormBuilder can support some kind of patch tagging,
-      // we create a void patch with key 'undoRedoVoidPatch' in changesToPatches
-      // to know if these pacthes are undo/redo patches or not.
-      const lastPatch = localPatches.slice(-1)[0]
-      const isUndoRedoPatch =
-        lastPatch && lastPatch.path[0] && lastPatch.path[0]._key === 'undoRedoVoidPatch'
-
-      if (!isUndoRedoPatch && this._undoRedoSnapShot) {
-        const {change, timestamp} = this._undoRedoSnapShot
+      if (this._undoRedoSnapShot) {
+        const {change, timestamp} = undoRedoSnapshot
         const undoChange = editorValue.change()
         undoChange.applyOperations(change.operations)
         undoChange.applyOperations(change.operations.reverse().map(op => op.invert()))
         undoChange.operations = undoChange.operations
           .slice(change.operations.size, undoChange.operations.size)
           .filter(op => op.type !== 'set_selection')
-        undoChange.normalize()
         const inversedPatches = changeToPatches(change.value, undoChange, snapshot, type)
         this._undoRedoStack.undo.push({
           change,
           patches: localPatches,
           inversedPatches,
           editorValue,
-          timestamp
+          timestamp,
+          snapshot
         })
-        // Redo stack must be reset here
-        this._undoRedoStack.redo = []
-        this.normalizeUndoSteps()
       }
     }
 
     normalizeUndoSteps(remotePatches: Patch[] = []) {
-      const unsetPatchesPaths = flatten(
-        remotePatches.filter(patch => patch.type === 'unset').map(patch => patch.path)
-      )
+      let remoteInvalidationPatchesKeys = []
+      remotePatches.forEach(patch => {
+        if (patch.type === 'insert') {
+          remoteInvalidationPatchesKeys.push(
+            patch.items.map(
+              insertItem =>
+                insertItem && typeof insertItem._key === 'string' ? insertItem._key : null
+            )
+          )
+        } else if (patch.type === 'unset' && patch.path[0] && patch.path[0]._key) {
+          remoteInvalidationPatchesKeys.push(patch.path[0]._key)
+        }
+      })
+      remoteInvalidationPatchesKeys = uniq(flatten(remoteInvalidationPatchesKeys))
       const newStack = []
       // eslint-disable-next-line complexity
       this._undoRedoStack.undo.forEach((item, index) => {
-
-        // If someone removed the block this item is relevant for,
-        // remove it from the stack
-        const intersectsWithRemoteUnset =
-          unsetPatchesPaths.length > 0 &&
-          intersectionBy(unsetPatchesPaths, flatten(item.patches.map(patch => patch.path)), '_key')
-            .length > 0
-        if (intersectsWithRemoteUnset) {
-          return
+        // If this item intersects with any remote patches remove it,
+        // as it will no longer is valid and can cause overwriting other's edits.
+        if (remoteInvalidationPatchesKeys.length > 0) {
+          const itemInvalidationPatchesPaths = uniq(
+            flatten(
+              item.patches.map(patch => {
+                if (patch.type === 'insert') {
+                  return patch.items.map(
+                    insertItem =>
+                      insertItem && typeof insertItem._key === 'string' ? insertItem._key : null
+                  )
+                }
+                return patch.path[0] && patch.path[0]._key ? patch.path[0]._key : []
+              })
+            )
+          )
+          if (
+            intersection(remoteInvalidationPatchesKeys, itemInvalidationPatchesPaths).length > 0
+          ) {
+            this._undoRedoStack.redo = []
+            return
+          }
         }
         const nextItem = this._undoRedoStack.undo[index + 1]
         // Always include first and last item
