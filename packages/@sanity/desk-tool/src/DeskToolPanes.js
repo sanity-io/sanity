@@ -38,8 +38,12 @@ export default class DeskToolPanes extends React.Component {
     }
   }
 
-  handleControllerCollapse = pane => {}
-  handleControllerUnCollapse = pane => {}
+  handleControllerCollapse = index => {
+    this.handlePaneCollapse(index)
+  }
+  handleControllerUnCollapse = index => {
+    this.handlePaneExpand(index)
+  }
 
   handlePaneExpand = index => {
     this.setState(prevState => ({
