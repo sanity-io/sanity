@@ -5,32 +5,61 @@ const setAndUnset = require('./fixtures/set-and-unset')
 
 describe('set/unset', () => {
   test('simple root-level changes', () => {
-    expect(diffPatch(simple.a, simple.b)).toEqual({
-      set: {
-        title: 'Die Hard with a Vengeance',
-        rating: 4
-      }
-    })
+    expect(diffPatch(simple.a, simple.b)).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "set": Object {
+        "rating": 4,
+        "title": "Die Hard with a Vengeance",
+      },
+    },
+  },
+]
+`)
   })
 
   test('basic nested changes', () => {
-    expect(diffPatch(nested.a, nested.b)).toEqual({
-      set: {
-        'slug.current': 'die-hard-with-a-vengeance'
-      }
-    })
+    expect(diffPatch(nested.a, nested.b)).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "set": Object {
+        "slug.current": "die-hard-with-a-vengeance",
+      },
+    },
+  },
+]
+`)
   })
 
   test('set + unset, nested changes', () => {
-    expect(diffPatch(setAndUnset.a, setAndUnset.b)).toEqual({
-      set: {
-        'slug.current': 'die-hard-with-a-vengeance'
+    expect(diffPatch(setAndUnset.a, setAndUnset.b)).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "set": Object {
+        "slug.current": "die-hard-with-a-vengeance",
       },
-      unset: ['year', 'slug.auto']
-    })
+    },
+  },
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "unset": Array [
+        "year",
+        "slug.auto",
+      ],
+    },
+  },
+]
+`)
   })
 
   test('no diff', () => {
-    expect(diffPatch(nested.a, nested.a)).toEqual(null)
+    expect(diffPatch(nested.a, nested.a)).toEqual([])
   })
 })

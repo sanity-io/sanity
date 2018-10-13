@@ -1,14 +1,24 @@
 /* eslint-disable import/no-commonjs */
 const ignoredKeys = ['_id', '_type', '_createdAt', '_updatedAt', '_rev']
 
-function diffPatch(itemA, itemB, basePath = []) {
+function diffPatch(itemA, itemB, options = {}) {
+  const id = options.id || (itemA._id === itemB._id && itemA._id)
+  const ifRevisionID = options.ifRevisionID || options.ifRevisionId
+  if (!id) {
+    throw new Error(
+      '_id on itemA and itemB not present or differs, specify document id the mutations should be applied to'
+    )
+  }
+
+  const basePath = options.basePath || []
   const operations = diffItem(itemA, itemB, basePath, [])
   const optimized = optimizePatches(operations, itemA, itemB)
-  return serializePatches(optimized)
+  const serializeOptions = ifRevisionID ? {id, ifRevisionID} : {id}
+  return serializePatches(optimized, serializeOptions)
 }
 
 // eslint-disable-next-line complexity
-function diffItem(itemA, itemB, basePath, patches) {
+function diffItem(itemA, itemB, path, patches) {
   if (itemA === itemB) {
     return patches
   }
@@ -20,33 +30,33 @@ function diffItem(itemA, itemB, basePath, patches) {
   const bIsUndefined = bType === 'undefined'
 
   if (aIsUndefined && !bIsUndefined) {
-    patches.push({op: 'set', path: basePath, value: itemB})
+    patches.push({op: 'set', path, value: itemB})
     return patches
   }
 
   if (!aIsUndefined && bIsUndefined) {
-    patches.push({op: 'unset', path: basePath})
+    patches.push({op: 'unset', path})
     return patches
   }
 
   const dataType = aIsUndefined ? bType : aType
   const isContainer = dataType === 'object' || dataType === 'array'
   if (!isContainer) {
-    return diffPrimitive(itemA, itemB, basePath, patches)
+    return diffPrimitive(itemA, itemB, path, patches)
   }
 
   if (aType !== bType) {
     // Array => Object / Object => Array
-    patches.push({op: 'set', path: basePath, value: itemB})
+    patches.push({op: 'set', path, value: itemB})
     return patches
   }
 
   return dataType === 'array'
-    ? diffArray(itemA, itemB, basePath, patches)
-    : diffObject(itemA, itemB, basePath, patches)
+    ? diffArray(itemA, itemB, path, patches)
+    : diffObject(itemA, itemB, path, patches)
 }
 
-function diffObject(itemA, itemB, basePath, patches) {
+function diffObject(itemA, itemB, path, patches) {
   const aKeys = Object.keys(itemA).filter(withoutReadOnly)
   const aKeysLength = aKeys.length
   const bKeys = Object.keys(itemB).filter(withoutReadOnly)
@@ -56,81 +66,80 @@ function diffObject(itemA, itemB, basePath, patches) {
   for (let i = 0; i < aKeysLength; i++) {
     const key = aKeys[i]
     if (!(key in itemB)) {
-      patches.push({op: 'unset', path: basePath.concat(key)})
+      patches.push({op: 'unset', path: path.concat(key)})
     }
   }
 
   // Check for changed items
   for (let i = 0; i < bKeysLength; i++) {
     const key = bKeys[i]
-    diffItem(itemA[key], itemB[key], basePath.concat([key]), patches)
+    diffItem(itemA[key], itemB[key], path.concat([key]), patches)
   }
 
   return patches
 }
 
-function diffArray(itemA, itemB, basePath, patches) {
+function diffArray(itemA, itemB, path, patches) {
   // Check for new items
   if (itemB.length > itemA.length) {
     patches.push({
       op: 'insert',
-      after: basePath.concat([-1]),
+      after: path.concat([-1]),
       items: itemB.slice(itemA.length)
     })
   }
 
   // Check for deleted items
   if (itemB.length < itemA.length) {
+    const isSingle = itemA.length - itemB.length === 1
     patches.push({
       op: 'unset',
-      path: basePath.concat([[itemB.length, '']])
+      path: path.concat([isSingle ? itemB.length : [itemB.length, '']])
     })
   }
 
-  const isKeyed = isUniquelyKeyed(itemA) && isUniquelyKeyed(itemB)
+  const overlapping = Math.min(itemA.length, itemB.length)
+  const segmentA = itemA.slice(0, overlapping)
+  const segmentB = itemB.slice(0, overlapping)
+  const isKeyed = isUniquelyKeyed(segmentA) && isUniquelyKeyed(segmentB)
   return isKeyed
-    ? diffArrayByKey(itemA, itemB, basePath, patches)
-    : diffArrayByIndex(itemA, itemB, basePath, patches)
+    ? diffArrayByKey(segmentA, segmentB, path, patches)
+    : diffArrayByIndex(segmentA, segmentB, path, patches)
 }
 
-function diffArrayByIndex(itemA, itemB, basePath, patches) {
+function diffArrayByIndex(itemA, itemB, path, patches) {
   // Check for changed items
-  // @todo This currently also sets new items, which should instead be handled with an `insert`-
-  // operation, but we can't currently represent multiple insert operations in the same patch,
-  // so for now this is the best we can do. Change to simply iterate up to itemA's length.
-  for (let i = 0; i < itemB.length; i++) {
-    diffItem(itemA[i], itemB[i], basePath.concat(i), patches)
+  for (let i = 0; i < itemA.length; i++) {
+    diffItem(itemA[i], itemB[i], path.concat(i), patches)
   }
 
   return patches
 }
 
-function diffArrayByKey(itemA, itemB, basePath, patches) {
+function diffArrayByKey(itemA, itemB, path, patches) {
   const keyedA = indexByKey(itemA)
   const keyedB = indexByKey(itemB)
 
   // There's a bunch of hard/semi-hard problems related to using keys
   // Unless we have the exact same order, just use indexes for now
   if (!arrayIsEqual(keyedA.keys, keyedB.keys)) {
-    return diffArrayByIndex(itemA, itemB, basePath, patches)
+    return diffArrayByIndex(itemA, itemB, path, patches)
   }
 
   for (let i = 0; i < keyedB.keys.length; i++) {
     const key = keyedB.keys[i]
-    diffItem(keyedA.index[key], keyedB.index[key], basePath.concat({_key: key}), patches)
+    diffItem(keyedA.index[key], keyedB.index[key], path.concat({_key: key}), patches)
   }
 
   return patches
 }
 
-function diffPrimitive(itemA, itemB, basePath, patches) {
-  if (itemA !== itemB) {
-    patches.push({
-      op: 'set',
-      path: basePath,
-      value: itemB
-    })
-  }
+function diffPrimitive(itemA, itemB, path, patches) {
+  patches.push({
+    op: 'set',
+    path,
+    value: itemB
+  })
 
   return patches
 }
@@ -143,28 +152,43 @@ function optimizePatches(patches, itemA, itemB) {
   return patches
 }
 
-function serializePatches(patches) {
+function serializePatches(patches, options) {
   if (patches.length === 0) {
-    return null
+    return []
   }
 
-  return patches.reduce((patch, item) => {
-    const path = pathToString(item.path || item.after)
+  const set = patches.filter(patch => patch.op === 'set')
+  const unset = patches.filter(patch => patch.op === 'unset')
+  const insert = patches.filter(patch => patch.op === 'insert')
 
-    if (item.op === 'set') {
-      patch.set = patch.set || {}
-      patch.set[path] = item.value
-    } else if (item.op === 'unset') {
-      patch.unset = patch.unset || []
-      patch.unset.push(path)
-    } else if (item.op === 'insert') {
-      // Intentional noop, see `diffArray()` for explanation
-    } else {
-      throw new Error(`Unknown patch operation "${item.op}"`)
-    }
+  const withSet =
+    set.length > 0 &&
+    set.reduce(
+      (patch, item) => {
+        const path = pathToString(item.path)
+        patch.set[path] = item.value
+        return patch
+      },
+      {...options, set: {}}
+    )
 
-    return patch
-  }, {})
+  const withUnset =
+    unset.length > 0 &&
+    unset.reduce(
+      (patch, item) => {
+        const path = pathToString(item.path)
+        patch.unset.push(path)
+        return patch
+      },
+      {...options, unset: []}
+    )
+
+  const withInsert = insert.reduce((acc, item) => {
+    const after = pathToString(item.after)
+    return acc.concat({...options, insert: {after, items: item.items}})
+  }, [])
+
+  return [withSet, withUnset, ...withInsert].filter(Boolean).map(patch => ({patch}))
 }
 
 function isUniquelyKeyed(arr) {

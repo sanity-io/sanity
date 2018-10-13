@@ -4,40 +4,92 @@ const primitiveArrayRemove = require('./fixtures/primitive-array-remove')
 
 describe('primitive arrays', () => {
   test('add to end (single)', () => {
-    expect(diffPatch(primitiveArrayAdd.a, primitiveArrayAdd.b)).toEqual({
-      set: {
-        'characters[1]': 'Simon Gruber'
-      }
-    })
+    expect(diffPatch(primitiveArrayAdd.a, primitiveArrayAdd.b)).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "insert": Object {
+        "after": "characters[-1]",
+        "items": Array [
+          "Simon Gruber",
+        ],
+      },
+    },
+  },
+]
+`)
   })
 
-  test.only('add to end (multiple)', () => {
-    expect(diffPatch(primitiveArrayAdd.a, primitiveArrayAdd.c)).toEqual({
-      insert: {
-        after: 'characters[-1]',
-        items: ['Simon Gruber', 'Zeus Carver']
-      }
-    })
+  test('add to end (multiple)', () => {
+    expect(diffPatch(primitiveArrayAdd.a, primitiveArrayAdd.c)).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "insert": Object {
+        "after": "characters[-1]",
+        "items": Array [
+          "Simon Gruber",
+          "Zeus Carver",
+        ],
+      },
+    },
+  },
+]
+`)
   })
 
   test('remove from end (single)', () => {
-    expect(diffPatch(primitiveArrayRemove.a, primitiveArrayRemove.b)).toEqual({
-      unset: ['characters[2:]']
-    })
+    expect(diffPatch(primitiveArrayRemove.a, primitiveArrayRemove.b)).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "unset": Array [
+        "characters[2]",
+      ],
+    },
+  },
+]
+`)
   })
 
   test('remove from end (multiple)', () => {
-    expect(diffPatch(primitiveArrayRemove.a, primitiveArrayRemove.c)).toEqual({
-      unset: ['characters[1:]']
-    })
+    expect(diffPatch(primitiveArrayRemove.a, primitiveArrayRemove.c)).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "unset": Array [
+        "characters[1:]",
+      ],
+    },
+  },
+]
+`)
   })
 
   test('remove from middle (single)', () => {
-    expect(diffPatch(primitiveArrayRemove.a, primitiveArrayRemove.d)).toEqual({
-      set: {
-        'characters[1]': 'Zeus Carver'
+    expect(diffPatch(primitiveArrayRemove.a, primitiveArrayRemove.d)).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "set": Object {
+        "characters[1]": "Zeus Carver",
       },
-      unset: ['characters[2:]']
-    })
+    },
+  },
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "unset": Array [
+        "characters[2]",
+      ],
+    },
+  },
+]
+`)
   })
 })

@@ -12,7 +12,13 @@ Generates a patch of operations needed to change an item from shape to another.
 import diffPatch from '@sanity/diff-patch'
 
 const patch = diffPatch(itemA, itemB)
-// { set: {...}, unset: [...]}
+/*
+[
+  {patch: {id: 'docId', set: {...}}},
+  {patch: {id: 'docId', unset: [...]}},
+  {patch: {id: 'docId', insert: {...}}}
+]
+*/
 ```
 
 ## Example usage
@@ -39,7 +45,7 @@ const itemA = {
 }
 
 const itemB = {
-  _id: 'die-hard-iii',
+  _id: 'drafts.die-hard-iii',
   _type: 'movie',
   name: 'Die Hard with a Vengeance',
   characters: [
@@ -54,26 +60,31 @@ const itemB = {
   ]
 }
 
-const patch = diffPatch(itemA, itemB)
-await sanityClient.patch(itemA._id, patch).commit()
+// Specify id if the two documents do not match
+const operations = diffPatch(itemA, itemB, {id: itemA._id})
+await sanityClient.transaction(operations).commit()
 
-// Patch generated:
-const generatedPatch = {
-  set: {
-    'name': 'Die Hard with a Vengeance',
-    'characters[_key=="l13ma92"].name': 'Simon Grüber'
+// Patches generated:
+const generatedPatches = [
+  {
+    patch: {
+      id: 'die-hard-iii',
+      set: {
+        'name': 'Die Hard with a Vengeance',
+        'characters[_key=="l13ma92"].name': 'Simon Grüber'
+      },
+    }
   },
-  unset: ['year']
+  {
+    patch: {
+      id: 'die-hard-iii',
+      unset: ['year']
+    }
+  }
 }
 ```
 
-## Needs checking/improvement
+## Needs improvement
 
-* Using keys are a bit tricky:
-  * How do we detect a move, and which patch operation should we use?
-  * If new items are added, there are no efficient ways that I can think of in which we
-    can insert at correct locations. For one, we don't support multiple insert patches,
-    secondly there are no way to reference paths provided by the same patch:
-    If an array currently has [a, z] and we want to insert two new items, [b, c] after `a`,
-    the b-item can use a "insert after a"-patch, but the second (c) can't use a
-    "insert after b"-patch, as far as I can tell.
+- Improve patch on array item move
+- Improve patch on array item delete
