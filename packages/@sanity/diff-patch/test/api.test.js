@@ -17,7 +17,6 @@ Array [
   Object {
     "patch": Object {
       "id": "die-hard-iii",
-      "ifRevisionID": "foo",
       "unset": Array [
         "year",
         "slug.auto",
@@ -43,7 +42,6 @@ Array [
   Object {
     "patch": Object {
       "id": "die-hard-iii",
-      "ifRevisionID": "foo",
       "unset": Array [
         "year",
         "slug.auto",

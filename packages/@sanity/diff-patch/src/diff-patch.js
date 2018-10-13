@@ -13,8 +13,7 @@ function diffPatch(itemA, itemB, options = {}) {
   const basePath = options.basePath || []
   const operations = diffItem(itemA, itemB, basePath, [])
   const optimized = optimizePatches(operations, itemA, itemB)
-  const serializeOptions = ifRevisionID ? {id, ifRevisionID} : {id}
-  return serializePatches(optimized, serializeOptions)
+  return serializePatches(optimized, {id, ifRevisionID})
 }
 
 // eslint-disable-next-line complexity
@@ -157,6 +156,7 @@ function serializePatches(patches, options) {
     return []
   }
 
+  const {id, ifRevisionID} = options
   const set = patches.filter(patch => patch.op === 'set')
   const unset = patches.filter(patch => patch.op === 'unset')
   const insert = patches.filter(patch => patch.op === 'insert')
@@ -169,7 +169,7 @@ function serializePatches(patches, options) {
         patch.set[path] = item.value
         return patch
       },
-      {...options, set: {}}
+      {id, set: {}}
     )
 
   const withUnset =
@@ -180,15 +180,17 @@ function serializePatches(patches, options) {
         patch.unset.push(path)
         return patch
       },
-      {...options, unset: []}
+      {id, unset: []}
     )
 
   const withInsert = insert.reduce((acc, item) => {
     const after = pathToString(item.after)
-    return acc.concat({...options, insert: {after, items: item.items}})
+    return acc.concat({id, insert: {after, items: item.items}})
   }, [])
 
-  return [withSet, withUnset, ...withInsert].filter(Boolean).map(patch => ({patch}))
+  return [withSet, withUnset, ...withInsert]
+    .filter(Boolean)
+    .map((patch, i) => ({patch: ifRevisionID && i === 0 ? {...patch, ifRevisionID} : patch}))
 }
 
 function isUniquelyKeyed(arr) {
