@@ -2,8 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import ReactCodeMirror from 'react-codemirror2'
 import CodeMirror from 'codemirror'
+
 require('codemirror/mode/javascript/javascript')
 require('codemirror/addon/hint/show-hint')
+require('codemirror/addon/edit/closebrackets')
 
 class QueryEditor extends React.PureComponent {
   constructor(props) {
@@ -55,7 +57,8 @@ class QueryEditor extends React.PureComponent {
       extraKeys: {
         'Ctrl-Space': 'autocomplete',
         'Ctrl-Enter': this.props.onExecute
-      }
+      },
+      autoCloseBrackets: true
     }
     return (
       <ReactCodeMirror
