@@ -10,6 +10,7 @@ import type {
   Marker,
   Path,
   SlateComponentProps,
+  SlateController,
   SlateChange,
   SlateValue
 } from '../typeDefs'
@@ -21,6 +22,7 @@ type Props = {
   block: ?(Block | FormBuilderValue),
   blockActions?: Node,
   blockContentFeatures: BlockContentFeatures,
+  controller: SlateController,
   editorValue: SlateValue,
   markers: Marker[],
   onChange: (change: SlateChange, callback?: (SlateChange) => void) => void,
@@ -34,11 +36,11 @@ export default function ContentBlock(props: Props & SlateComponentProps) {
     attributes,
     block,
     blockContentFeatures,
+    controller,
     children,
     editorValue,
     markers,
     node,
-    onChange,
     onFocus,
     blockActions,
     renderCustomMarkers
@@ -63,22 +65,22 @@ export default function ContentBlock(props: Props & SlateComponentProps) {
     if ((markers && markers.length > 0) || blockActions) {
       blockExtras = (
         <BlockExtras
+          block={block}
+          blockActions={blockActions}
+          controller={controller}
+          editorValue={editorValue}
           markers={markers}
           onFocus={onFocus}
-          onChange={onChange}
-          block={block}
-          editorValue={editorValue}
-          blockActions={blockActions}
           renderCustomMarkers={renderCustomMarkers}
         />
       )
     }
     return (
       <ListItem
-        listStyle={listItem}
-        level={level}
-        blockExtras={blockExtras}
         attributes={attributes}
+        blockExtras={blockExtras}
+        level={level}
+        listStyle={listItem}
       >
         <Text style={style} styleComponent={styleComponent}>
           {children}
@@ -93,12 +95,12 @@ export default function ContentBlock(props: Props & SlateComponentProps) {
       </Text>
       {((markers && markers.length > 0) || blockActions) && (
         <BlockExtras
+          block={block}
+          blockActions={blockActions}
+          controller={controller}
+          editorValue={editorValue}
           markers={markers}
           onFocus={onFocus}
-          onChange={onChange}
-          block={block}
-          editorValue={editorValue}
-          blockActions={blockActions}
           renderCustomMarkers={renderCustomMarkers}
         />
       )}

@@ -15,9 +15,9 @@ export default function ListItemOnEnterKeyPlugin(options: Options = {}) {
   }
   return {
     // eslint-disable-next-line complexity
-    onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change) {
+    onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change, next: void => void) {
       if (event.key !== 'Enter') {
-        return undefined
+        return next()
       }
       const {value} = change
       const {document, startBlock, selection} = value
@@ -25,16 +25,16 @@ export default function ListItemOnEnterKeyPlugin(options: Options = {}) {
       // Only do listItem nodes
       const isList = startBlock && startBlock.data && startBlock.data.get('listItem')
       if (!isList) {
-        return undefined
+        return next()
       }
 
       // Return if current listItem is not empty
       if (startBlock.text !== '') {
-        return undefined
+        return next()
       }
       const previousBlock = document.getPreviousBlock(selection.start.key)
       if (previousBlock && !previousBlock.data.get('listItem')) {
-        return undefined
+        return next()
       }
 
       // If on top of document

@@ -26,7 +26,7 @@ export const keyMaps = {
 export default function SetMarksOnKeyComboPlugin(options: Options = {}) {
   const decorators = options.decorators || []
   return {
-    onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change) {
+    onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change, next: void => void) {
       let mark
       if (isStrongHotkey(event)) {
         mark = 'strong'
@@ -37,11 +37,11 @@ export default function SetMarksOnKeyComboPlugin(options: Options = {}) {
       } else if (isCodeHotKey(event)) {
         mark = 'code'
       } else {
-        return undefined
+        return next()
       }
       // Return if not supported by schema
       if (!decorators.includes(mark)) {
-        return undefined
+        return next()
       }
       event.preventDefault()
       return change.toggleMark(mark)

@@ -1,9 +1,18 @@
 // @flow
-import type {BlockContentFeatures, SlateValue, Type, SlateChange, Marker, Path} from '../typeDefs'
+
 import type {Node} from 'react'
 
 import React from 'react'
 import {Inline} from 'slate'
+
+import type {
+  BlockContentFeatures,
+  SlateValue,
+  Type,
+  Marker,
+  Path,
+  SlateController
+} from '../typeDefs'
 
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 
@@ -12,11 +21,11 @@ import styles from './styles/Span.css'
 type Props = {
   attributes: any,
   blockContentFeatures: BlockContentFeatures,
+  controller: SlateController,
   children: Node,
   editorValue: SlateValue,
   node: Inline,
   markers: Marker[],
-  onChange: (change: SlateChange) => void,
   onFocus: Path => void,
   readOnly?: boolean,
   type: ?Type
@@ -47,7 +56,7 @@ export default class Span extends React.Component<Props, State> {
   }
 
   focusAnnotation(annotationName: string) {
-    const {editorValue, node, onChange} = this.props
+    const {node, controller} = this.props
     this.setState({focusedAnnotationName: annotationName})
     if (node.data.get('focusedAnnotationName') === annotationName) {
       return
@@ -56,9 +65,9 @@ export default class Span extends React.Component<Props, State> {
       ...node.data.toObject(),
       focusedAnnotationName: annotationName
     }
-    const change = editorValue.change()
-    change.setNodeByKey(node.key, {data})
-    onChange(change)
+    controller.change(change => {
+      change.setNodeByKey(node.key, {data})
+    })
   }
 
   // Open dialog when user clicks the node,

@@ -1,11 +1,12 @@
 // @flow
-import type {Node, ComponentType} from 'react'
+import type {Node, ComponentType, Element as ReactElement} from 'react'
 import type {
   Change,
   Block as SlateBlock,
   Mark,
   Inline,
   Text,
+  Editor as SlateEditor,
   Value as _SlateValue,
   Operation as _SlateOperation,
   Schema as _SlateSchema,
@@ -73,6 +74,8 @@ export type SlateValue = _SlateValue
 export type SlateOperation = _SlateOperation
 
 export type SlateChange = Change
+
+export type SlateController = Node & SlateEditor
 
 export type Annotation = any
 
@@ -147,3 +150,13 @@ export type UndoRedoStackItem = UndoRedoSnapshot & {
 }
 
 export type UndoRedoStack = {undo: UndoRedoStackItem[], redo: UndoRedoStackItem[]}
+
+export type RenderBlockActions = ({
+  block: FormBuilderValue,
+  value: FormBuilderValue[],
+  set: FormBuilderValue => void,
+  unset: FormBuilderValue => void,
+  insert: FormBuilderValue => void
+}) => Node | ReactElement<*>
+
+export type RenderCustomMarkers = (Marker[]) => Node | ReactElement<*>

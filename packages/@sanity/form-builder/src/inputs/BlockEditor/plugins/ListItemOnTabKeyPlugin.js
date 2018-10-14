@@ -8,18 +8,18 @@ type Options = {}
 export default function ListItemOnTabKeyPlugin(options: Options = {}) {
   return {
     // eslint-disable-next-line complexity
-    onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change) {
+    onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change, next: void => void) {
       const {key, shiftKey, altKey} = event
       if (key !== 'Tab') {
-        return undefined
+        return next()
       }
       if (altKey) {
-        return undefined
+        return next()
       }
       const {value} = change
       const listBlocks = value.blocks.filter(block => block.data.get('listItem'))
       if (listBlocks.size === 0) {
-        return undefined
+        return next()
       }
       event.preventDefault()
       listBlocks.forEach(listNode => {

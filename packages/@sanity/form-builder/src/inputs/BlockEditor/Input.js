@@ -1,12 +1,12 @@
 // @flow
-import type {Element as ReactElement, Node} from 'react'
 import type {
-  Block,
   BlockArrayType,
   FormBuilderValue,
   BlockContentFeatures,
   Marker,
   Path,
+  RenderBlockActions,
+  RenderCustomMarkers,
   SlateChange,
   SlateValue,
   Type,
@@ -14,19 +14,20 @@ import type {
 } from './typeDefs'
 
 import {uniqueId} from 'lodash'
+import {Editor as SlateController} from 'slate'
 
 import React from 'react'
-import blockTools from '@sanity/block-tools'
 
 import FormField from 'part:@sanity/components/formfields/default'
 
 import {PatchEvent} from '../../PatchEvent'
 import BlockEditor from './BlockEditor'
-import Editor from './Editor'
 
 import styles from './styles/Input.css'
 
 type Props = {
+  blockContentFeatures: BlockContentFeatures,
+  controller: SlateController,
   editorValue: SlateValue,
   focusPath: [],
   level: number,
@@ -44,8 +45,8 @@ type Props = {
   }) => {insert?: FormBuilderValue[], path?: []},
   isLoading: boolean,
   readOnly?: boolean,
-  renderBlockActions?: (block: Block | FormBuilderValue) => Node,
-  renderCustomMarkers?: (Marker[]) => Node,
+  renderBlockActions?: RenderBlockActions,
+  renderCustomMarkers?: RenderCustomMarkers,
   type: BlockArrayType,
   undoRedoStack: UndoRedoStack,
   value: ?(FormBuilderValue[]),
@@ -63,17 +64,8 @@ export default class BlockEditorInput extends React.Component<Props, State> {
   }
   _inputId = uniqueId('BlockEditor')
 
-  _editor = null
-
   state = {
     fullscreen: false
-  }
-
-  _blockContentFeatures: BlockContentFeatures
-
-  constructor(props: Props) {
-    super(props)
-    this._blockContentFeatures = blockTools.getBlockContentFeatures(props.type)
   }
 
   handleToggleFullScreen = () => {
@@ -81,75 +73,33 @@ export default class BlockEditorInput extends React.Component<Props, State> {
     this.focus()
   }
 
-  refEditor = (editor: ?Editor) => {
-    this._editor = editor
-  }
-
   focus = () => {
-    const {onFocus, onChange, editorValue, value} = this.props
-    const change = editorValue.change().focus()
-    const {focusBlock} = change.value
-    if (focusBlock) {
-      return onChange(change, () => onFocus([{_key: focusBlock.key}]))
-    } else if (Array.isArray(value) && value.length) {
-      return onChange(change, () => onFocus([{_key: value[0]._key}]))
-    }
-    return change
+    const {controller, onFocus, onChange, value} = this.props
+    controller.change(change => {
+      change.focus()
+      const {focusBlock} = change.value
+      if (focusBlock) {
+        return onChange(change, () => onFocus([{_key: focusBlock.key}]))
+      } else if (Array.isArray(value) && value.length) {
+        return onChange(change, () => onFocus([{_key: value[0]._key}]))
+      }
+      return change
+    })
   }
 
   handleFocusSkipper = () => {
     this.focus()
   }
 
-  renderEditor(): ReactElement<typeof Editor> {
-    const {fullscreen} = this.state
-    const {
-      editorValue,
-      focusPath,
-      markers,
-      onBlur,
-      onFocus,
-      onChange,
-      onLoading,
-      onPatch,
-      onPaste,
-      isLoading,
-      readOnly,
-      renderBlockActions,
-      renderCustomMarkers,
-      type,
-      undoRedoStack,
-      value
-    } = this.props
-    return (
-      <Editor
-        blockContentFeatures={this._blockContentFeatures}
-        editorValue={editorValue}
-        focusPath={focusPath}
-        fullscreen={fullscreen}
-        isLoading={isLoading}
-        markers={markers}
-        onBlur={onBlur}
-        onChange={onChange}
-        onFocus={onFocus}
-        onLoading={onLoading}
-        onPaste={onPaste}
-        onPatch={onPatch}
-        onToggleFullScreen={this.handleToggleFullScreen}
-        readOnly={readOnly}
-        ref={this.refEditor}
-        renderBlockActions={renderBlockActions}
-        renderCustomMarkers={renderCustomMarkers}
-        setFocus={this.focus}
-        type={type}
-        undoRedoStack={undoRedoStack}
-        value={value}
-      />
-    )
+  handleTestClick = () => {
+    const {onFocus} = this.props
+    onFocus([{_key: '444790925455'}, 'markDefs', {_key: '282a11cadbb0'}, 'href'])
   }
 
   render() {
     const {
+      blockContentFeatures,
+      controller,
       editorValue,
       focusPath,
       isLoading,
@@ -159,16 +109,18 @@ export default class BlockEditorInput extends React.Component<Props, State> {
       onBlur,
       onFocus,
       onLoading,
+      onPaste,
       onPatch,
       readOnly,
+      renderBlockActions,
+      renderCustomMarkers,
       type,
       value,
+      undoRedoStack,
       userIsWritingText
     } = this.props
 
     const {fullscreen} = this.state
-
-    const editor = this.renderEditor()
 
     const isActive = readOnly || (Array.isArray(focusPath) && focusPath.length >= 1)
 
@@ -189,9 +141,11 @@ export default class BlockEditorInput extends React.Component<Props, State> {
           >
             Jump to editor
           </button>
+          {JSON.stringify(focusPath)}
+          <button onClick={this.handleTestClick}>Test</button>
           <BlockEditor
-            blockContentFeatures={this._blockContentFeatures}
-            editor={editor}
+            blockContentFeatures={blockContentFeatures}
+            controller={controller}
             editorValue={editorValue}
             focusPath={focusPath}
             fullscreen={fullscreen}
@@ -203,11 +157,15 @@ export default class BlockEditorInput extends React.Component<Props, State> {
             isLoading={isLoading}
             onFocus={onFocus}
             onPatch={onPatch}
+            onPaste={onPaste}
             onToggleFullScreen={this.handleToggleFullScreen}
             readOnly={readOnly}
+            renderCustomMarkers={renderCustomMarkers}
+            renderBlockActions={renderBlockActions}
             setFocus={this.focus}
             type={type}
             value={value}
+            undoRedoStack={undoRedoStack}
             userIsWritingText={userIsWritingText}
           />
         </FormField>

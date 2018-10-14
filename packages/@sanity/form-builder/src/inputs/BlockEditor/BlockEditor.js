@@ -1,7 +1,9 @@
 // @flow
-import type {Element as ReactElement} from 'react'
+import type {Element as ReactElement, ElementRef} from 'react'
 import React from 'react'
 import {isKeyHotkey} from 'is-hotkey'
+import {Editor as SlateController} from 'slate'
+import {Editor as SlateEditor} from 'slate-react'
 
 import {PatchEvent} from 'part:@sanity/form-builder/patch-event'
 
@@ -25,14 +27,17 @@ import type {
   FormBuilderValue,
   Marker,
   Path,
+  RenderBlockActions,
+  RenderCustomMarkers,
   SlateChange,
   SlateValue,
-  Type
+  Type,
+  UndoRedoStack
 } from './typeDefs'
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
-  editor: ReactElement<typeof Editor>,
+  controller: SlateController,
   editorValue: SlateValue,
   fullscreen: boolean,
   isActive: boolean,
@@ -43,11 +48,22 @@ type Props = {
   onChange: (change: SlateChange, callback?: (SlateChange) => void) => void,
   onBlur: Path => void,
   onFocus: Path => void,
+  onLoading: (props: {}) => void,
+  onPaste?: ({
+    event: SyntheticEvent<>,
+    path: [],
+    type: Type,
+    value: ?(FormBuilderValue[])
+  }) => {insert?: FormBuilderValue[], path?: []},
+  onPatch: (event: PatchEvent) => void,
   onToggleFullScreen: void => void,
   readOnly?: boolean,
+  renderBlockActions?: RenderBlockActions,
+  renderCustomMarkers?: RenderCustomMarkers,
   setFocus: void => void,
   type: Type,
   value: ?(FormBuilderValue[]),
+  undoRedoStack: UndoRedoStack,
   userIsWritingText: boolean
 }
 
@@ -94,6 +110,7 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
   _scrollContainer: ?HTMLElement = null
   _rootElement: ?HTMLElement = null
   _editorWrapper: ?HTMLElement = null
+  _editor: ElementRef<any> = React.createRef()
 
   componentDidMount() {
     this.checkScrollHeight()
@@ -220,6 +237,13 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
     }
   }
 
+  getController() {
+    if (this._editor && this._editor.current) {
+      return this._editor.current.getController()
+    }
+    return null
+  }
+
   handleKeyDown = (event: KeyboardEvent) => {
     const isFullscreenKey = isKeyHotkey('mod+enter')
     const {onToggleFullScreen} = this.props
@@ -230,12 +254,61 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
     }
   }
 
-  renderEditor() {
+  renderEditor(): ReactElement<typeof Editor> {
     const {
       blockContentFeatures,
-      editor,
       editorValue,
       focusPath,
+      fullscreen,
+      markers,
+      onBlur,
+      onFocus,
+      onChange,
+      onLoading,
+      onPatch,
+      onPaste,
+      onToggleFullScreen,
+      isLoading,
+      readOnly,
+      renderBlockActions,
+      renderCustomMarkers,
+      setFocus,
+      type,
+      undoRedoStack,
+      value
+    } = this.props
+    return (
+      <Editor
+        blockContentFeatures={blockContentFeatures}
+        editorValue={editorValue}
+        focusPath={focusPath}
+        fullscreen={fullscreen}
+        isLoading={isLoading}
+        markers={markers}
+        onBlur={onBlur}
+        onChange={onChange}
+        onFocus={onFocus}
+        onLoading={onLoading}
+        onPaste={onPaste}
+        onPatch={onPatch}
+        onToggleFullScreen={onToggleFullScreen}
+        readOnly={readOnly}
+        ref={this._editor}
+        renderBlockActions={renderBlockActions}
+        renderCustomMarkers={renderCustomMarkers}
+        setFocus={setFocus}
+        type={type}
+        undoRedoStack={undoRedoStack}
+        value={value}
+      />
+    )
+  }
+
+  // eslint-disable-next-line complexity
+  renderBlockEditor() {
+    const {
+      blockContentFeatures,
+      editorValue,
       fullscreen,
       isActive,
       isLoading,
@@ -250,15 +323,15 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
     } = this.props
 
     if (readOnly) {
-      return <div>{editor}</div>
+      return this.renderEditor()
     }
     return (
       <div>
         <div className={styles.toolbar}>
           <Toolbar
             blockContentFeatures={blockContentFeatures}
+            controller={this.getController()}
             editorValue={editorValue}
-            focusPath={focusPath}
             fullscreen={fullscreen}
             markers={markers}
             onChange={onChange}
@@ -288,8 +361,11 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
               </div>
               <p className={styles.keyboardShortcut}>
                 Tip: <br />
-                <strong>{IS_MAC ? '⌘' : 'ctrl'}&nbsp;+&nbsp;enter</strong> while editing to go in
-                fullscreen
+                <strong>
+                  {IS_MAC ? '⌘' : 'ctrl'}
+                  &nbsp;+&nbsp;enter
+                </strong>{' '}
+                while editing to go in fullscreen
               </p>
             </div>
           }
@@ -301,7 +377,7 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
             onScroll={this.handleScroll}
           >
             <div className={styles.editorWrapper} ref={this.setEditorWrapper}>
-              {editor}
+              {this.renderEditor()}
             </div>
           </div>
         </ActivateOnFocus>
@@ -321,13 +397,15 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
               return (
                 <Portal>
                   {isActive && <Escapable onEscape={onToggleFullScreen} />}
-                  <div className={styles.fullscreen}>{this.renderEditor()}</div>
+                  <div className={styles.fullscreen}>{this.renderBlockEditor()}</div>
                 </Portal>
               )
             }}
           </Stacked>
         )}
-        {!fullscreen && <div className={isFocused ? styles.focus : ''}>{this.renderEditor()}</div>}
+        {!fullscreen && (
+          <div className={isFocused ? styles.focus : ''}>{this.renderBlockEditor()}</div>
+        )}
         {isEditingNode && this.renderNodeEditor()}
       </div>
     )

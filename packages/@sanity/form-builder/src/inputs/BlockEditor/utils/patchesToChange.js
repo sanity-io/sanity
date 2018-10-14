@@ -1,6 +1,6 @@
 // @flow
 import {blocksToEditorValue} from '@sanity/block-tools'
-import {Value} from 'slate'
+import {Value, Editor as SlateEditor} from 'slate'
 import type {Type, Path} from '../typeDefs'
 import type {
   Patch,
@@ -21,6 +21,8 @@ type JSONValue = number | string | boolean | {[string]: JSONValue} | JSONValue[]
 //   preserveSelection: false,
 //   preserveHistory: false
 // }
+
+const controller = new SlateEditor()
 
 function findLastKey(path: Path[]) {
   let key = null
@@ -226,43 +228,46 @@ export default function patchesToChange(
   snapshot: ?any,
   type: Type
 ) {
-  const change = editorValue.change()
-  let result = change
-  change.withoutNormalizing(_change => {
-    // console.log('EDITORVALUE', JSON.stringify(editorValue.document.toJSON(VALUE_TO_JSON_OPTS), null, 2))
-    // console.log('BLOCKS', JSON.stringify(snapshot, null, 2))
-    // console.log('INITIAL CHANGE VALUE:', JSON.stringify(_change.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
-    patches.forEach((patch: Patch) => {
-      // console.log('INCOMING PATCH', JSON.stringify(patch, null, 2))
-      // console.log('BEFORE VALUE:', JSON.stringify(_change.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
-      if (patch.path.length > 1) {
-        if (patch.path[1] === 'markDefs') {
-          patchAnnotationData(patch, _change, type, snapshot)
-        } else if (patch.path[1] === 'children' && patch.path.length > 3) {
-          patchInlineData(patch, _change, type, snapshot)
+  let result
+  controller.value = editorValue
+  controller.change(change => {
+    result = change
+    change.withoutNormalizing(_change => {
+      // console.log('EDITORVALUE', JSON.stringify(editorValue.document.toJSON(VALUE_TO_JSON_OPTS), null, 2))
+      // console.log('BLOCKS', JSON.stringify(snapshot, null, 2))
+      // console.log('INITIAL CHANGE VALUE:', JSON.stringify(_change.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
+      patches.forEach((patch: Patch) => {
+        // console.log('INCOMING PATCH', JSON.stringify(patch, null, 2))
+        // console.log('BEFORE VALUE:', JSON.stringify(_change.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
+        if (patch.path.length > 1) {
+          if (patch.path[1] === 'markDefs') {
+            patchAnnotationData(patch, _change, type, snapshot)
+          } else if (patch.path[1] === 'children' && patch.path.length > 3) {
+            patchInlineData(patch, _change, type, snapshot)
+          } else {
+            patchBlockData(patch, _change, type, snapshot)
+          }
         } else {
-          patchBlockData(patch, _change, type, snapshot)
+          switch (patch.type) {
+            case 'set':
+              setPatch(patch, _change, type)
+              break
+            case 'setIfMissing':
+              setIfMissingPatch(patch, _change, type)
+              break
+            case 'insert':
+              insertPatch(patch, _change, type)
+              break
+            case 'unset':
+              unsetPatch(patch, _change)
+              break
+            default:
+              replaceValue(snapshot, _change, type)
+          }
         }
-      } else {
-        switch (patch.type) {
-          case 'set':
-            setPatch(patch, _change, type)
-            break
-          case 'setIfMissing':
-            setIfMissingPatch(patch, _change, type)
-            break
-          case 'insert':
-            insertPatch(patch, _change, type)
-            break
-          case 'unset':
-            unsetPatch(patch, _change)
-            break
-          default:
-            replaceValue(snapshot, _change, type)
-        }
-      }
-      // console.log('AFTER VALUE:', JSON.stringify(_change.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
-      result = _change
+        // console.log('AFTER VALUE:', JSON.stringify(_change.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
+        result = _change
+      })
     })
   })
   // console.log('RESULT VALUE:', JSON.stringify(result.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))

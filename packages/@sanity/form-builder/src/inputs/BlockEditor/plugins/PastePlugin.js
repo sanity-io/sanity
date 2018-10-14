@@ -2,7 +2,7 @@ import blockTools from '@sanity/block-tools'
 import {Block, Data, Document} from 'slate'
 import {getEventTransfer} from 'slate-react'
 
-function processNode(node) {
+function processNode(node, change) {
   if (!node.get('nodes')) {
     return node
   }
@@ -22,17 +22,18 @@ function processNode(node) {
   }
   return new SlateType({
     data: Data.create(newData),
-    isVoid: node.get('isVoid'),
+    isVoid: change.editor.query('isVoid', node),
     key: newKey,
-    nodes: node.get('nodes').map(processNode),
+    nodes: node.get('nodes').map(childNode => processNode(childNode, change)),
     type: node.get('type')
   })
 }
 const NOOP = () => {}
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
 
-function handleHTML(html, change, editor, blockContentType, onProgress) {
+function handleHTML(html, change, blockContentType, onProgress) {
   return wait(0).then(() => {
+    const {editor} = change
     onProgress({status: 'html'})
     const blocks = blockTools.htmlToBlocks(html, blockContentType)
     // console.log(JSON.stringify(blocks, null, 2))
@@ -44,7 +45,7 @@ function handleHTML(html, change, editor, blockContentType, onProgress) {
       if (
         index === 0 &&
         focusBlock &&
-        !change.value.schema.isVoid(focusBlock) &&
+        !change.editor.query('isVoid', focusBlock) &&
         focusBlock.nodes.size === 1 &&
         focusBlock.text === ''
       ) {
@@ -77,7 +78,7 @@ export default function PastePlugin(options: Options = {}) {
     throw new Error("Missing required option 'blockContentType'")
   }
 
-  function onPaste(event, change, editor) {
+  function onPaste(event, change, next: void => void) {
     event.preventDefault()
     onProgress({status: 'start'})
     const {shiftKey} = event
@@ -96,7 +97,7 @@ export default function PastePlugin(options: Options = {}) {
         .every(nodeType => allSchemaBlockTypes.includes(nodeType))
       if (allBlocksHasSchemaDef) {
         const {focusBlock} = change.value
-        const newNodesList = Block.createList(fragment.nodes.map(processNode))
+        const newNodesList = Block.createList(fragment.nodes.map(node => processNode(node, change)))
         const newDoc = new Document({
           key: fragment.key,
           nodes: newNodesList
@@ -105,7 +106,7 @@ export default function PastePlugin(options: Options = {}) {
           if (
             index === 0 &&
             focusBlock &&
-            !change.value.schema.isVoid(focusBlock) &&
+            !change.editor.query('isVoid', focusBlock) &&
             focusBlock.nodes.size === 1 &&
             focusBlock.text === ''
           ) {
@@ -117,7 +118,6 @@ export default function PastePlugin(options: Options = {}) {
             change.insertBlock(block).moveToEndOfBlock()
           }
         })
-        // change.insertFragment(newDoc).moveToEndOfBlock()
         onProgress({status: null})
         return change
       }
@@ -125,13 +125,14 @@ export default function PastePlugin(options: Options = {}) {
     }
     if (type === 'html' && !shiftKey) {
       onProgress({status: 'parsing'})
-      return handleHTML(html, change, editor, blockContentType, onProgress).catch(err => {
+      handleHTML(html, change, blockContentType, onProgress).catch(err => {
         onProgress({status: null, error: err})
         throw err
       })
+      return change
     }
     onProgress({status: null})
-    return undefined
+    return next()
   }
 
   return {

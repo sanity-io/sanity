@@ -2,6 +2,7 @@
 
 import type {
   Block,
+  BlockContentFeatures,
   BlockArrayType,
   FormBuilderValue,
   SlateChange,
@@ -10,14 +11,18 @@ import type {
   Marker,
   Patch,
   Path,
+  RenderBlockActions,
+  RenderCustomMarkers,
   Type,
   UndoRedoSnapshot,
   UndoRedoStack
 } from './typeDefs'
 
 import React from 'react'
-import type {Node} from 'react'
+import type {Node, Element as ReactElement} from 'react'
+import {getBlockContentFeatures} from '@sanity/block-tools'
 import {List} from 'immutable'
+import {Editor as SlateController} from 'slate'
 import generateHelpUrl from '@sanity/generate-help-url'
 import {debounce, uniq, isEqual, unionBy, flatten, intersection} from 'lodash'
 import FormField from 'part:@sanity/components/formfields/default'
@@ -25,6 +30,7 @@ import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {PatchEvent} from '../../PatchEvent'
 import InvalidValueInput from '../InvalidValueInput'
 import {resolveTypeName} from '../../utils/resolveTypeName'
+import createEditorController from './utils/createEditorController'
 import Input from './Input'
 
 import changeToPatches from './utils/changeToPatches'
@@ -103,8 +109,8 @@ type Props = {
   }) => {insert?: FormBuilderValue[], path?: []},
   level: number,
   readOnly?: boolean,
-  renderBlockActions?: (block: Block | FormBuilderValue) => Node,
-  renderCustomMarkers?: (Marker[]) => Node,
+  renderBlockActions?: RenderCustomMarkers,
+  renderCustomMarkers?: RenderBlockActions,
   subscribe: (() => void) => void,
   type: BlockArrayType,
   value: ?(FormBuilderValue[])
@@ -129,54 +135,56 @@ export default withPatchSubscriber(
     _changeSubscription: void => void
     _input: ?Input = null
     _undoRedoStack: UndoRedoStack = {undo: [], redo: []}
+    _controller: SlateController
+    _blockContentFeatures: BlockContentFeatures
 
     static defaultProps = {
       markers: []
     }
 
-    static getDerivedStateFromProps(nextProps, state) {
-      // Make sure changes to markers are reflected in the editor value.
-      // Slate heavily optimizes when nodes should re-render,
-      // so we use non-visual decorators in Slate to force the relevant editor nodes to re-render
-      // when markers change.
-      const newDecorationHash = nextProps.markers.map(mrkr => JSON.stringify(mrkr.path)).join('')
-      if (
-        nextProps.markers &&
-        nextProps.markers.length &&
-        newDecorationHash !== state.decorationHash
-      ) {
-        const decorations = unionBy(
-          flatten(
-            nextProps.markers.map(mrkr => {
-              return mrkr.path.slice(0, 3).map(part => {
-                const key = part._key
-                if (!key) {
-                  return null
-                }
-                return {
-                  anchor: {key, offset: 0},
-                  focus: {key, offset: 0},
-                  mark: {type: '__marker'} // non-visible mark (we just want the block to re-render)
-                }
-              })
-            })
-          ).filter(Boolean),
-          state.decorations,
-          'focus.key'
-        )
-        const {editorValue} = state
-        const change = editorValue.change()
-        change.withoutSaving(() => {
-          change.setValue({decorations})
-        })
-        return {
-          decorations,
-          decorationHash: newDecorationHash,
-          editorValue: change.value
-        }
-      }
-      return null
-    }
+    // static getDerivedStateFromProps(nextProps, state) {
+    //   // Make sure changes to markers are reflected in the editor value.
+    //   // Slate heavily optimizes when nodes should re-render,
+    //   // so we use non-visual decorators in Slate to force the relevant editor nodes to re-render
+    //   // when markers change.
+    //   const newDecorationHash = nextProps.markers.map(mrkr => JSON.stringify(mrkr.path)).join('')
+    //   if (
+    //     nextProps.markers &&
+    //     nextProps.markers.length &&
+    //     newDecorationHash !== state.decorationHash
+    //   ) {
+    //     const decorations = unionBy(
+    //       flatten(
+    //         nextProps.markers.map(mrkr => {
+    //           return mrkr.path.slice(0, 3).map(part => {
+    //             const key = part._key
+    //             if (!key) {
+    //               return null
+    //             }
+    //             return {
+    //               anchor: {key, offset: 0},
+    //               focus: {key, offset: 0},
+    //               mark: {type: '__marker'} // non-visible mark (we just want the block to re-render)
+    //             }
+    //           })
+    //         })
+    //       ).filter(Boolean),
+    //       state.decorations,
+    //       'focus.key'
+    //     )
+    //     const change = this.getEditor().change(() => {
+    //       change.withoutSaving(() => {
+    //         change.setValue({decorations})
+    //       })
+    //     })
+    //     return {
+    //       decorations,
+    //       decorationHash: newDecorationHash,
+    //       editorValue: change.value
+    //     }
+    //   }
+    //   return null
+    // }
 
     constructor(props) {
       super(props)
@@ -189,17 +197,21 @@ export default withPatchSubscriber(
         decorations: [],
         deprecatedSchema,
         deprecatedBlockValue,
-        editorValue:
-          deprecatedSchema || deprecatedBlockValue || invalidBlockValue
-            ? deserialize([], type)
-            : deserialize(value, type),
         invalidBlockValue,
+        editorValue: null,
         isLoading: false,
         loading: {},
         userIsWritingText: false
       }
+      const unNormalizedEditorValue =
+        deprecatedSchema || deprecatedBlockValue || invalidBlockValue
+          ? deserialize([], type)
+          : deserialize(value, type)
       this._unsubscribePatches = props.subscribe(this.handleDocumentPatches)
       this._changeSubscription = changes$.subscribe(this.handleChangeSet)
+      this._blockContentFeatures = getBlockContentFeatures(type)
+      this._controller = createEditorController({value: unNormalizedEditorValue})
+      this.state.editorValue = this._controller.value // Normalized value by editor schema
     }
 
     componentWillUnmount() {
@@ -239,19 +251,21 @@ export default withPatchSubscriber(
           timestamp: new Date()
         }
       }
-      // Update the editorValue state
-      this.setState(
-        {
-          editorValue: editorValue.change().applyOperations(change.operations).value
-        },
-        () => {
-          if (callback) {
-            callback(change)
+      this._controller.change(controllerChange => {
+        // Update the editorValue state
+        this.setState(
+          {
+            editorValue: controllerChange.applyOperations(change.operations).value
+          },
+          () => {
+            if (callback) {
+              callback(change)
+              return change
+            }
             return change
           }
-          return change
-        }
-      )
+        )
+      })
     }
 
     unsetUserIsWritingTextDebounced = debounce(() => {
@@ -297,27 +311,27 @@ export default withPatchSubscriber(
         this.normalizeUndoSteps(remoteAndInternalPatches)
       }
 
-      // Handle localpatches (create undo step)
-      const localPatches = patches.filter(patch => patch.origin === 'local')
-      if (localPatches.length > 0) {
-        // Until the FormBuilder can support some kind of patch tagging,
-        // we create a void patch with key 'undoRedoVoidPatch' in changesToPatches
-        // to know if these pacthes are undo/redo patches or not.
-        const lastPatch = localPatches.slice(-1)[0]
-        const isUndoRedoPatch =
-          lastPatch && lastPatch.path[0] && lastPatch.path[0]._key === 'undoRedoVoidPatch'
-        if (!isUndoRedoPatch && this._undoRedoSnapShot) {
-          this.createUndoStep(
-            localPatches,
-            snapshot,
-            this.state.editorValue,
-            this._undoRedoSnapShot
-          )
-          // Redo stack must be reset here
-          this._undoRedoStack.redo = []
-        }
-        this.normalizeUndoSteps()
-      }
+      // // Handle localpatches (create undo step)
+      // const localPatches = patches.filter(patch => patch.origin === 'local')
+      // if (localPatches.length > 0) {
+      //   // Until the FormBuilder can support some kind of patch tagging,
+      //   // we create a void patch with key 'undoRedoVoidPatch' in changesToPatches
+      //   // to know if these pacthes are undo/redo patches or not.
+      //   const lastPatch = localPatches.slice(-1)[0]
+      //   const isUndoRedoPatch =
+      //     lastPatch && lastPatch.path[0] && lastPatch.path[0]._key === 'undoRedoVoidPatch'
+      //   if (!isUndoRedoPatch && this._undoRedoSnapShot) {
+      //     this.createUndoStep(
+      //       localPatches,
+      //       snapshot,
+      //       this.state.editorValue,
+      //       this._undoRedoSnapShot
+      //     )
+      //     // Redo stack must be reset here
+      //     this._undoRedoStack.redo = []
+      //   }
+      //   this.normalizeUndoSteps()
+      // }
     }
 
     createUndoStep(
@@ -461,25 +475,27 @@ export default withPatchSubscriber(
           {!isDeprecated &&
             !invalidBlockValue && (
               <Input
-                level={level}
+                blockContentFeatures={this._blockContentFeatures}
+                controller={this._controller}
                 editorValue={editorValue}
                 focusPath={focusPath}
-                onChange={this.handleEditorChange}
                 isLoading={isLoading}
+                level={level}
                 markers={markers}
                 onBlur={onBlur}
+                onChange={this.handleEditorChange}
                 onFocus={onFocus}
                 onLoading={this.handleOnLoading}
                 onPaste={onPaste}
                 onPatch={this.handleFormBuilderPatch}
-                undoRedoStack={this._undoRedoStack}
-                type={type}
-                value={value}
                 readOnly={readOnly}
+                ref={this.refInput}
                 renderBlockActions={renderBlockActions}
                 renderCustomMarkers={renderCustomMarkers}
-                ref={this.refInput}
+                type={type}
+                undoRedoStack={this._undoRedoStack}
                 userIsWritingText={userIsWritingText}
+                value={value}
               />
             )}
           {invalidBlockValue && (

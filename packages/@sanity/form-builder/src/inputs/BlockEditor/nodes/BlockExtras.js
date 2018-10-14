@@ -1,20 +1,20 @@
 // @flow
-import type {Marker, SlateChange, SlateValue, Path} from '../typeDefs'
 import type {Node} from 'react'
 import React from 'react'
 import classNames from 'classnames'
 
 import Markers from 'part:@sanity/form-builder/input/block-editor/block-markers'
 
+import type {Marker, SlateController, SlateValue, Path, RenderCustomMarkers} from '../typeDefs'
 import styles from './styles/BlockExtras.css'
 
 type Props = {
+  controller: SlateController,
   editorValue: SlateValue,
   markers: Marker[],
-  onChange: (change: SlateChange) => void,
   onFocus: Path => void,
   blockActions?: Node,
-  renderCustomMarkers?: (Marker[]) => Node
+  renderCustomMarkers?: RenderCustomMarkers
 }
 
 export default class BlockExtras extends React.PureComponent<Props> {
@@ -39,7 +39,14 @@ export default class BlockExtras extends React.PureComponent<Props> {
   }
 
   render() {
-    const {markers, onFocus, onChange, editorValue, blockActions, renderCustomMarkers} = this.props
+    const {
+      blockActions,
+      controller,
+      editorValue,
+      markers,
+      onFocus,
+      renderCustomMarkers
+    } = this.props
     const scopedValidation = this.getValidationMarkers()
     const errors = scopedValidation.filter(mrkr => mrkr.level === 'error')
     const warnings = scopedValidation.filter(mrkr => mrkr.level === 'warning')
@@ -57,10 +64,10 @@ export default class BlockExtras extends React.PureComponent<Props> {
           <div className={styles.markers}>
             <Markers
               className={styles.markers}
+              controller={controller}
               markers={markers}
               scopedValidation={scopedValidation}
               onFocus={onFocus}
-              onChange={onChange}
               editorValue={editorValue}
               renderCustomMarkers={renderCustomMarkers}
             />

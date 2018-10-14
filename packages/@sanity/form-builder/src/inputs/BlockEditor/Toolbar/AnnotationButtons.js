@@ -1,18 +1,13 @@
 // @flow
 
-import type {BlockContentFeature, BlockContentFeatures, Path} from '../typeDefs'
-
 import React from 'react'
 import {Change, Value as SlateValue, Range} from 'slate'
 
-import {createFormBuilderSpan, removeAnnotationFromSpan} from '../utils/changes'
-import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
-import {randomKey} from '@sanity/block-tools'
-
-import CustomIcon from './CustomIcon'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import ToggleButton from 'part:@sanity/components/toggles/button'
+import type {BlockContentFeature, BlockContentFeatures, Path, SlateController} from '../typeDefs'
+import CustomIcon from './CustomIcon'
 import ToolbarClickAction from './ToolbarClickAction'
 
 import styles from './styles/AnnotationButtons.css'
@@ -24,10 +19,8 @@ type AnnotationItem = BlockContentFeature & {
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
+  controller: SlateController,
   editorValue: SlateValue,
-  focusPath: Path,
-  onChange: (Change, ?(Change) => Change) => any,
-  onFocus: Path => void,
   userIsWritingText: boolean
 }
 
@@ -82,13 +75,13 @@ export default class AnnotationButtons extends React.Component<Props> {
   }
 
   getItems() {
-    const {blockContentFeatures, editorValue, userIsWritingText} = this.props
+    const {controller, blockContentFeatures, editorValue, userIsWritingText} = this.props
     const {inlines, focusBlock} = editorValue
 
     const disabled =
       userIsWritingText ||
       inlines.some(inline => inline.type !== 'span') ||
-      (focusBlock ? editorValue.schema.isVoid(focusBlock) || focusBlock.text === '' : false) ||
+      (focusBlock ? controller.query('isVoid', focusBlock) || focusBlock.text === '' : false) ||
       isNonTextSelection(editorValue)
     return blockContentFeatures.annotations.map((annotation: BlockContentFeature) => {
       return {
@@ -100,28 +93,11 @@ export default class AnnotationButtons extends React.Component<Props> {
   }
 
   handleClick = (item: AnnotationItem, originalSelection: Range) => {
-    const {editorValue, onChange, onFocus, focusPath} = this.props
+    const {controller} = this.props
     if (item.disabled) {
       return
     }
-    const change = editorValue.change()
-    if (item.active) {
-      const spans = editorValue.inlines.filter(inline => inline.type === 'span')
-      spans.forEach(span => {
-        change.call(removeAnnotationFromSpan, span, item.value)
-      })
-      onChange(change)
-      return
-    }
-    const key = randomKey(12)
-    change.call(createFormBuilderSpan, item.value, key, originalSelection)
-    change
-      .moveToEndOfNode(change.value.inlines.first())
-      .moveFocusToStartOfNode(change.value.inlines.first())
-      .blur()
-    onChange(change, () =>
-      setTimeout(() => onFocus([focusPath[0], 'markDefs', {_key: key}, FOCUS_TERMINATOR]), 200)
-    )
+    controller.command('toggleAnnotation', item.value)
   }
 
   renderAnnotationButton = (item: AnnotationItem) => {

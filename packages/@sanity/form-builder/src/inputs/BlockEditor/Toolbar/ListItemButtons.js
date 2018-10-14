@@ -1,16 +1,19 @@
 // @flow
 
-import type {BlockContentFeature, BlockContentFeatures, SlateChange, SlateValue} from '../typeDefs'
-
 import React from 'react'
 
-import {toggleListItem} from '../utils/changes'
-
-import CustomIcon from './CustomIcon'
 import FormatListBulletedIcon from 'part:@sanity/base/format-list-bulleted-icon'
 import FormatListNumberedIcon from 'part:@sanity/base/format-list-numbered-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import ToggleButton from 'part:@sanity/components/toggles/button'
+
+import type {
+  BlockContentFeature,
+  BlockContentFeatures,
+  SlateController,
+  SlateValue
+} from '../typeDefs'
+import CustomIcon from './CustomIcon'
 import ToolbarClickAction from './ToolbarClickAction'
 
 import styles from './styles/ListItemButtons.css'
@@ -19,8 +22,8 @@ type ListItem = BlockContentFeature & {active: boolean, disabled: boolean}
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
-  editorValue: SlateValue,
-  onChange: (change: SlateChange) => void
+  controller: SlateController,
+  editorValue: SlateValue
 }
 
 function getIcon(type: string) {
@@ -63,23 +66,21 @@ export default class ListItemButtons extends React.Component<Props> {
   }
 
   getItems() {
-    const {blockContentFeatures, editorValue} = this.props
+    const {controller, blockContentFeatures, editorValue} = this.props
     const {focusBlock} = editorValue
-    const disabled = focusBlock ? focusBlock.isVoid : false
+    const disabled = focusBlock ? controller.query('isVoid', focusBlock) : false
     return blockContentFeatures.lists.map((listItem: BlockContentFeature) => {
       return {
         ...listItem,
-        active: this.hasListItem(listItem.value),
+        active: controller.query('hasListItem', listItem.value),
         disabled
       }
     })
   }
 
   handleClick = (item: ListItem) => {
-    const {onChange, editorValue} = this.props
-    const change = editorValue.change()
-    change.call(toggleListItem, item.value)
-    onChange(change)
+    const {controller} = this.props
+    controller.command('toggleListItem', item.value)
     this.forceUpdate()
   }
 

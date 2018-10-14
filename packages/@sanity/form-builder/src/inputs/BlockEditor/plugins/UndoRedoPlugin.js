@@ -16,7 +16,7 @@ export default function UndoRedoPlugin(options: Options) {
   const {stack, blockContentType, onChange} = options
   return {
     // eslint-disable-next-line complexity
-    onKeyDown(event: SyntheticKeyboardEvent<*>, change: SlateChange) {
+    onKeyDown(event: SyntheticKeyboardEvent<*>, change: SlateChange, next: void => void) {
       if (Hotkeys.isUndo(event) || Hotkeys.isRedo(event)) {
         let item
         // Undo
@@ -62,7 +62,7 @@ export default function UndoRedoPlugin(options: Options) {
         }
         return change
       }
-      return undefined
+      return next()
     }
   }
 }

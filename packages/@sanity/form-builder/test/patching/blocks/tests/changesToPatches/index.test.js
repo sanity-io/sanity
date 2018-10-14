@@ -10,6 +10,7 @@ import blocksSchema from '../../../../fixtures/blocksSchema'
 import changeToPatches from '../../../../../src/inputs/BlockEditor/utils/changeToPatches'
 import patchesToChange from '../../../../../src/inputs/BlockEditor/utils/patchesToChange'
 import {applyAll} from '../../../../../src/simplePatch'
+import createEditorController from '../../../../../src/inputs/BlockEditor/utils/createEditorController'
 
 use(chaiExclude)
 
@@ -44,7 +45,6 @@ describe('changesToPatches', () => {
         output = JSON.parse(fs.readFileSync(outputPath))
       }
       const editorValue = deserialize(input)
-      const otherClientEditorValue = editorValue
 
       const operations = new List(
         JSON.parse(fs.readFileSync(path.resolve(dir, 'operations.json'))).map(operation =>
@@ -52,19 +52,24 @@ describe('changesToPatches', () => {
         )
       )
 
-      const change = editorValue.change()
-      change.applyOperations(operations)
-      const patches = changeToPatches(editorValue, change, input, blockContentType)
-      // Some tests creates new keys, so use hardcoded expectations for those
+      const editorA = createEditorController({value: editorValue})
+      const editorB = createEditorController({value: editorValue})
+
       let expectedValue = output
-      if (!expectedValue) {
+      let receivedValue = output
+      let patches
+
+      editorA.change(change => {
+        change.applyOperations(operations)
+        patches = changeToPatches(editorA.value, change, input, blockContentType)
+        // Some tests creates new keys, so use hardcoded expectations for those
         expectedValue = editorValueToBlocks(
           change.value.toJSON(VALUE_TO_JSON_OPTS),
           blockContentType
         )
-      }
-      // console.log(JSON.stringify(patches, null, 2))
-      const receivedValue = applyAll(input, patches)
+        // console.log(JSON.stringify(patches, null, 2))
+        receivedValue = applyAll(input, patches)
+      })
 
       // console.log(JSON.stringify(receivedValue, null, 2))
       try {
@@ -75,7 +80,7 @@ describe('changesToPatches', () => {
 
       const otherClientPatchedChange = patchesToChange(
         patches,
-        otherClientEditorValue,
+        editorB.value,
         input,
         blockContentType
       )

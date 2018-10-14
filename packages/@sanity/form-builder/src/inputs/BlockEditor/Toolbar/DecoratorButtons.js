@@ -9,8 +9,12 @@ import FormatUnderlinedIcon from 'part:@sanity/base/format-underlined-icon'
 import FormatCodeIcon from 'part:@sanity/base/format-code-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import ToggleButton from 'part:@sanity/components/toggles/button'
-import {toggleMark} from '../utils/changes'
-import type {BlockContentFeature, BlockContentFeatures, SlateChange, SlateValue} from '../typeDefs'
+import type {
+  BlockContentFeature,
+  BlockContentFeatures,
+  SlateValue,
+  SlateController
+} from '../typeDefs'
 
 import {keyMaps} from '../plugins/SetMarksOnKeyComboPlugin'
 import ToolbarClickAction from './ToolbarClickAction'
@@ -21,8 +25,8 @@ type DecoratorItem = BlockContentFeature & {active: boolean, disabled: boolean}
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
-  editorValue: SlateValue,
-  onChange: (change: SlateChange) => void
+  controller: SlateController,
+  editorValue: SlateValue
 }
 
 function getIcon(type: string) {
@@ -53,29 +57,23 @@ export default class DecoratorButtons extends React.Component<Props> {
     }
     return true
   }
-  hasDecorator(decoratorName: string) {
-    const {editorValue} = this.props
-    return editorValue.marks.some(mark => mark.type === decoratorName)
-  }
 
   getItems() {
-    const {blockContentFeatures, editorValue} = this.props
+    const {controller, blockContentFeatures, editorValue} = this.props
     const {focusBlock} = editorValue
-    const disabled = focusBlock ? focusBlock.isVoid : false
+    const disabled = focusBlock ? controller.query('isVoid', focusBlock) : false
     return blockContentFeatures.decorators.map((decorator: BlockContentFeature) => {
       return {
         ...decorator,
-        active: this.hasDecorator(decorator.value),
+        active: controller.query('hasMark', decorator.value),
         disabled
       }
     })
   }
 
   handleClick = (item: DecoratorItem) => {
-    const {onChange, editorValue} = this.props
-    const change = editorValue.change()
-    change.call(toggleMark, item.value)
-    onChange(change)
+    const {controller} = this.props
+    controller.command('toggleMark', item.value)
   }
 
   renderDecoratorButton = (item: DecoratorItem) => {

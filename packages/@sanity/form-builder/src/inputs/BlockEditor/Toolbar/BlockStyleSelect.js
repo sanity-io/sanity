@@ -2,11 +2,15 @@
 import React from 'react'
 
 import StyleSelect from 'part:@sanity/components/selects/style'
-import {setBlockStyle} from '../utils/changes'
 
 import Text from '../nodes/Text'
 
-import type {BlockContentFeature, BlockContentFeatures, SlateChange, SlateValue} from '../typeDefs'
+import type {
+  BlockContentFeature,
+  BlockContentFeatures,
+  SlateValue,
+  SlateController
+} from '../typeDefs'
 
 export type BlockStyleItem = {
   key: string,
@@ -18,8 +22,8 @@ export type BlockStyleItem = {
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
-  editorValue: SlateValue,
-  onChange: (change: SlateChange, callback?: (SlateChange) => void) => void
+  controller: SlateController,
+  editorValue: SlateValue
 }
 
 export default class BlockStyleSelect extends React.Component<Props> {
@@ -32,16 +36,11 @@ export default class BlockStyleSelect extends React.Component<Props> {
     if ((nextFocusBlock && nextFocusBlock.key) !== (currentFocusBlock && currentFocusBlock.key)) {
       return true
     }
-    return false
-  }
-
-  hasStyle(styleName: string) {
-    const {editorValue} = this.props
-    return editorValue.blocks.some(block => block.data.get('style') === styleName)
+    return nextFocusBlock.data.get('style') !== currentFocusBlock.data.get('style')
   }
 
   getItemsAndValue() {
-    const {blockContentFeatures} = this.props
+    const {blockContentFeatures, controller} = this.props
     const items = blockContentFeatures.styles.map((style: BlockContentFeature) => {
       const styleComponent = style && style.blockEditor && style.blockEditor.render
       const preview = (
@@ -54,7 +53,7 @@ export default class BlockStyleSelect extends React.Component<Props> {
         style: style.value,
         preview: preview,
         title: ` ${style.title}`,
-        active: this.hasStyle(style.value)
+        active: controller.query('hasStyle', style.value)
       }
     })
     let value = items.filter(item => item.active)
@@ -75,11 +74,8 @@ export default class BlockStyleSelect extends React.Component<Props> {
   }
 
   handleChange = (item: BlockStyleItem) => {
-    const {onChange, editorValue} = this.props
-    const change = editorValue.change()
-    change.call(setBlockStyle, item.style)
-    change.focus()
-    onChange(change)
+    const {controller} = this.props
+    controller.command('setBlockStyle', item.style)
     this.forceUpdate()
   }
 

@@ -1,12 +1,11 @@
 // @flow
 /* eslint-disable complexity */
-
 import type {BlockContentFeatures, SlateValue, SlateChange, Type} from '../typeDefs'
 
 import React from 'react'
 import classnames from 'classnames'
 import enhanceWithClickOutside from 'react-click-outside'
-
+import {Editor as SlateController} from 'slate'
 import {ContainerQuery} from 'react-container-query'
 import {Tooltip} from '@sanity/react-tippy'
 
@@ -30,6 +29,7 @@ import styles from './styles/Toolbar.css'
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
+  controller: SlateController,
   editorValue: SlateValue,
   focusPath: [],
   fullscreen: boolean,
@@ -93,8 +93,8 @@ class Toolbar extends React.PureComponent<Props, State> {
   render() {
     const {
       blockContentFeatures,
+      controller,
       editorValue,
-      focusPath,
       fullscreen,
       markers,
       onChange,
@@ -104,6 +104,10 @@ class Toolbar extends React.PureComponent<Props, State> {
       type,
       userIsWritingText
     } = this.props
+
+    if (!controller) {
+      return null
+    }
 
     const {expanded, showValidationTooltip} = this.state
 
@@ -129,9 +133,9 @@ class Toolbar extends React.PureComponent<Props, State> {
             <div className={styles.primary}>
               <div className={styles.blockFormatContainer} onClick={this.handleContract}>
                 <BlockStyleSelect
+                  controller={controller}
                   blockContentFeatures={blockContentFeatures}
                   editorValue={editorValue}
-                  onChange={onChange}
                 />
               </div>
               <Button className={styles.expandButton} onClick={this.handleExpand} kind="simple">
@@ -145,8 +149,8 @@ class Toolbar extends React.PureComponent<Props, State> {
                   <div className={styles.decoratorButtonsContainer}>
                     <DecoratorButtons
                       blockContentFeatures={blockContentFeatures}
+                      controller={controller}
                       editorValue={editorValue}
-                      onChange={onChange}
                     />
                   </div>
                 )}
@@ -154,8 +158,8 @@ class Toolbar extends React.PureComponent<Props, State> {
                   <div className={styles.decoratorButtonsContainer}>
                     <ListItemButtons
                       blockContentFeatures={blockContentFeatures}
+                      controller={controller}
                       editorValue={editorValue}
-                      onChange={onChange}
                     />
                   </div>
                 )}
@@ -163,10 +167,8 @@ class Toolbar extends React.PureComponent<Props, State> {
                   <div className={styles.annotationButtonsContainer}>
                     <AnnotationButtons
                       blockContentFeatures={blockContentFeatures}
+                      controller={controller}
                       editorValue={editorValue}
-                      focusPath={focusPath}
-                      onChange={onChange}
-                      onFocus={onFocus}
                       userIsWritingText={userIsWritingText}
                     />
                   </div>

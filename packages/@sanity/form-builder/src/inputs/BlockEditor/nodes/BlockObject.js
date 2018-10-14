@@ -15,13 +15,14 @@ import ButtonsCollection from 'part:@sanity/components/buttons/button-collection
 
 import type {
   BlockContentFeatures,
-  SlateValue,
   FormBuilderValue,
-  Type,
-  SlateChange,
   Marker,
   Path,
-  SlateNode
+  RenderCustomMarkers,
+  SlateController,
+  SlateNode,
+  SlateValue,
+  Type
 } from '../typeDefs'
 
 import {PatchEvent} from '../../../PatchEvent'
@@ -39,20 +40,20 @@ import styles from './styles/BlockObject.css'
 type Props = {
   attributes: any,
   blockContentFeatures: BlockContentFeatures,
+  controller: SlateController,
   editor: Editor,
   editorValue: SlateValue,
   hasFormBuilderFocus: boolean,
   isSelected?: boolean,
   markers: Marker[],
   node: Block,
-  onChange: (change: SlateChange, callback?: (SlateChange) => void) => void,
   onFocus: Path => void,
   onHideBlockDragMarker: void => void,
   onPatch: (event: PatchEvent, value?: FormBuilderValue[]) => void,
   onShowBlockDragMarker: (pos: string, node: HTMLDivElement) => void,
   readOnly: ?boolean,
   blockActions?: Node,
-  renderCustomMarkers?: (Marker[]) => Node,
+  renderCustomMarkers?: RenderCustomMarkers,
   type: ?Type
 }
 
@@ -234,20 +235,20 @@ export default class BlockObject extends React.Component<Props, State> {
     if (this._dragGhost && this._dragGhost.parentNode) {
       this._dragGhost.parentNode.removeChild(this._dragGhost)
     }
-    const {onChange, node, editorValue} = this.props
+    const {node, controller} = this.props
 
     // Return if this is our node
     if (!target || target.node.key === node.key) {
       return
     }
-    let nextChange = editorValue.change().removeNodeByKey(node.key)
-    nextChange = nextChange[target.position === 'before' ? 'moveToStartOfNode' : 'moveToEndOfNode'](
-      target.node
-    )
-      .insertBlock(node)
-      .moveToEndOfNode(node)
-      .focus()
-    onChange(nextChange)
+    controller.change(change => {
+      change
+        .removeNodeByKey(node.key)
+        [target.position === 'before' ? 'moveToStartOfNode' : 'moveToEndOfNode'](target.node)
+        .insertBlock(node)
+        .moveToEndOfNode(node)
+        .focus()
+    })
   }
 
   handleCancelEvent = (event: SyntheticEvent<>) => {
@@ -263,13 +264,15 @@ export default class BlockObject extends React.Component<Props, State> {
 
   handleEditStart = (event: SyntheticMouseEvent<>) => {
     event.stopPropagation()
-    const {node, onFocus, onChange, editorValue} = this.props
-    const change = editorValue
-      .change()
-      .moveToEndOfNode(node)
-      .focus()
-      .blur()
-    onChange(change, () => onFocus([{_key: node.key}, FOCUS_TERMINATOR]))
+    const {node, onFocus, controller} = this.props
+    controller.change(change => {
+      change
+        .moveToEndOfNode(node)
+        .focus()
+        .blur()
+    })
+    alert('fixme!')
+    // onChange(change, () => onFocus([{_key: node.key}, FOCUS_TERMINATOR]))
   }
 
   handleClose = () => {
@@ -294,9 +297,10 @@ export default class BlockObject extends React.Component<Props, State> {
   handleRemoveValue = (event: SyntheticMouseEvent<>) => {
     event.preventDefault()
     event.stopPropagation()
-    const {editorValue, node, onChange} = this.props
-    const change = editorValue.change()
-    onChange(change.removeNodeByKey(node.key).focus())
+    const {node, controller} = this.props
+    controller.change(change => {
+      change.removeNodeByKey(node.key).focus()
+    })
   }
 
   renderPreview(value: FormBuilderValue) {
@@ -340,11 +344,11 @@ export default class BlockObject extends React.Component<Props, State> {
     const {
       attributes,
       blockContentFeatures,
+      controller,
       editorValue,
       isSelected,
       markers,
       node,
-      onChange,
       onFocus,
       readOnly,
       blockActions,
@@ -397,12 +401,12 @@ export default class BlockObject extends React.Component<Props, State> {
         </div>
         {(markers.length > 0 || blockActions) && (
           <BlockExtras
-            markers={markers}
-            onFocus={onFocus}
-            onChange={onChange}
-            editorValue={editorValue}
             block={value}
             blockActions={blockActions}
+            controller={controller}
+            editorValue={editorValue}
+            markers={markers}
+            onFocus={onFocus}
             renderCustomMarkers={renderCustomMarkers}
           />
         )}

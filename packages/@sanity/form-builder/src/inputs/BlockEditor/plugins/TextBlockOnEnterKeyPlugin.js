@@ -16,9 +16,9 @@ export default function TextBlockOnEnterKeyPlugin(options: Options = {}) {
     throw new Error("Missing required option 'defaultBlock'")
   }
   return {
-    onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change) {
+    onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change, next: void => void) {
       if (event.key !== 'Enter') {
-        return undefined
+        return next()
       }
       const {value} = change
       const isTextBlock = value.blocks.some((block: Block) => block.data.get('style'))
@@ -30,7 +30,7 @@ export default function TextBlockOnEnterKeyPlugin(options: Options = {}) {
         value.selection.isExpanded ||
         !value.selection.end.isAtEndOfNode(startBlock)
       ) {
-        return undefined
+        return next()
       }
       const key = randomKey(12)
       event.preventDefault()
