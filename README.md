@@ -107,7 +107,7 @@ Feel totally free to ping us on [Slack](https://slack.sanity.io) or [Gitter](htt
 
 We are grateful for all who dedicate their time making stuff for the Sanity.io community ❤️. These are to the best of our knowledge ready for use. If you encounter any problems with these packages, please file an issue in their respective GitHub repositories, and remember to be nice and constructive.
 
-- [C# /.NET client](https://github.com/onybo/sanity-client) (Thanks [@onybo](https://github.com/onybo)!)
+- [C# /.NET client](https://github.com/oslofjord/sanity-linq) (Thanks [@rvanoord](https://github.com/rvanoord) and [@oslofjord](https://github.com/oslofjord) Convention Center!)
 - [Laravel (PHP) client](https://github.com/eastslopestudio/laravel-sanity) (Thanks [@eastslopestudio](https://github.com/eastslopestudio)!)
 - [Sanity as a Gatsby source](https://github.com/hcavalieri/gatsby-source-sanity) (Thanks [@hcavalieri!](https://github.com/hcavalieri))
 - [Block content to Vue](https://github.com/rdunk/sanity-blocks-vue-component) (Thanks [@rdunk](https://github.com/rdunk)!)
