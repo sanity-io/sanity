@@ -3,7 +3,7 @@
 exports[`generates correct document type list item for specific type 1`] = `
 ListItemBuilder {
   "spec": Object {
-    "child": DocumentListBuilder {
+    "child": DocumentTypeListBuilder {
       "spec": Object {
         "canHandleIntent": [Function],
         "child": [Function],
@@ -168,7 +168,7 @@ ListItemBuilder {
 exports[`generates correct document type list item for specific type 2`] = `
 ListItemBuilder {
   "spec": Object {
-    "child": DocumentListBuilder {
+    "child": DocumentTypeListBuilder {
       "spec": Object {
         "canHandleIntent": [Function],
         "child": [Function],
@@ -334,7 +334,7 @@ exports[`generates correct document type list items from given schema 1`] = `
 Array [
   ListItemBuilder {
     "spec": Object {
-      "child": DocumentListBuilder {
+      "child": DocumentTypeListBuilder {
         "spec": Object {
           "canHandleIntent": [Function],
           "child": [Function],
@@ -496,7 +496,7 @@ Array [
   },
   ListItemBuilder {
     "spec": Object {
-      "child": DocumentListBuilder {
+      "child": DocumentTypeListBuilder {
         "spec": Object {
           "canHandleIntent": [Function],
           "child": [Function],
@@ -776,7 +776,7 @@ exports[`generates correct document type list items from global schema 1`] = `
 Array [
   ListItemBuilder {
     "spec": Object {
-      "child": DocumentListBuilder {
+      "child": DocumentTypeListBuilder {
         "spec": Object {
           "canHandleIntent": [Function],
           "child": [Function],
@@ -938,7 +938,7 @@ Array [
   },
   ListItemBuilder {
     "spec": Object {
-      "child": DocumentListBuilder {
+      "child": DocumentTypeListBuilder {
         "spec": Object {
           "canHandleIntent": [Function],
           "child": [Function],

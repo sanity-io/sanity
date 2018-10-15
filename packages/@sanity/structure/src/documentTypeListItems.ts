@@ -8,12 +8,16 @@ import {DocumentListBuilder} from './DocumentList'
 import {ListItemBuilder} from './ListItem'
 import {EditorBuilder} from './Editor'
 import {isActionEnabled} from './parts/documentActionUtils'
+import {DocumentTypeListBuilder} from './DocumentTypeList'
+import {IntentChecker} from './Intent'
 
 const PlusIcon = getPlusIcon()
 const ListIcon = getListIcon()
 const DetailsIcon = getDetailsIcon()
 
 const getDataAspectsForSchema: (schema: Schema) => DataAspectsResolver = memoizeOne(dataAspects)
+
+export const DEFAULT_INTENT_HANDLER = Symbol('Document type list canHandleIntent')
 
 export function getDocumentTypeListItems(schema: Schema = defaultSchema): ListItemBuilder[] {
   const resolver = getDataAspectsForSchema(schema)
@@ -42,21 +46,21 @@ export function getDocumentTypeList(
   const type = schema.get(typeName)
   const resolver = getDataAspectsForSchema(schema)
   const title = resolver.getDisplayName(typeName)
-
   const canCreate = isActionEnabled(type, 'create')
 
-  return new DocumentListBuilder()
+  const intentChecker: IntentChecker = (intentName, params): boolean =>
+    Boolean(intentName === 'edit' && params && params.id && params.type === typeName) ||
+    Boolean(intentName === 'create' && params && params.type === typeName)
+
+  intentChecker.identity = DEFAULT_INTENT_HANDLER
+
+  return new DocumentTypeListBuilder()
     .id(typeName)
     .title(title)
     .filter('_type == $type')
     .params({type: typeName})
     .schemaType(type)
     .defaultOrdering(DEFAULT_SELECTED_ORDERING_OPTION.by)
-    .canHandleIntent(
-      (intentName, params): boolean =>
-        Boolean(intentName === 'edit' && params && params.id && params.type === typeName) ||
-        Boolean(intentName === 'create' && params && params.type === typeName)
-    )
     .menuItemGroups([
       {id: 'sorting', title: 'Sort'},
       {id: 'layout', title: 'Layout'},
@@ -68,6 +72,7 @@ export function getDocumentTypeList(
         .schemaType(type)
         .documentId(documentId)
     )
+    .canHandleIntent(intentChecker)
     .menuItems([
       // Create new (from action button)
       ...(canCreate

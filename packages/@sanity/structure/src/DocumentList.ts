@@ -49,7 +49,7 @@ const resolveEditorChildForItem: ChildResolver = (
   )
 }
 
-interface PartialDocumentList extends BuildableGenericList {
+export interface PartialDocumentList extends BuildableGenericList {
   options?: DocumentListOptions
   schemaTypeName?: string
 }
