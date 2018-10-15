@@ -34,6 +34,32 @@ Object {
 }
 `;
 
+exports[`builds list items with display options (dont show icon) 1`] = `
+Object {
+  "child": undefined,
+  "displayOptions": Object {
+    "showIcon": false,
+  },
+  "id": "foo",
+  "schemaType": undefined,
+  "title": "Foo",
+  "type": "listItem",
+}
+`;
+
+exports[`builds list items with display options (show icon) 1`] = `
+Object {
+  "child": undefined,
+  "displayOptions": Object {
+    "showIcon": true,
+  },
+  "id": "foo",
+  "schemaType": undefined,
+  "title": "Foo",
+  "type": "listItem",
+}
+`;
+
 exports[`builds list items with only ID and title 1`] = `
 Object {
   "child": undefined,

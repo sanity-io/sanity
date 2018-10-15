@@ -68,6 +68,19 @@ export default withRouterHOC(
       return {panes}
     }
 
+    shouldShowIconForItem = item => {
+      const paneShowIcons = this.props.displayOptions.showIcons
+      const itemShowIcon = item.displayOptions && item.displayOptions.showIcon
+
+      // Specific true/false on item should have presedence over list setting
+      if (typeof itemShowIcon !== 'undefined') {
+        return itemShowIcon === false ? false : item.icon
+      }
+
+      // If no item setting is defined, defer to the pane settings
+      return paneShowIcons === false ? false : item.icon
+    }
+
     render() {
       const {
         title,
@@ -78,7 +91,6 @@ export default withRouterHOC(
         index,
         menuItems,
         menuItemGroups,
-        displayOptions,
         isSelected,
         isCollapsed,
         onCollapse,
@@ -104,7 +116,7 @@ export default withRouterHOC(
                 id={item.id}
                 index={index}
                 value={item}
-                icon={displayOptions.showIcons === false ? false : item.icon}
+                icon={this.shouldShowIconForItem(item)}
                 layout={defaultLayout}
                 isSelected={this.itemIsSelected(item)}
                 getLinkState={this.getLinkStateForItem}

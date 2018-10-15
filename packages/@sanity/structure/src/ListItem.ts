@@ -17,11 +17,16 @@ interface ListItemSerializeOptions extends SerializeOptions {
   titleIsOptional?: boolean
 }
 
+interface ListItemDisplayOptions {
+  showIcon?: boolean
+}
+
 export interface ListItemInput {
   id: string
   title?: string
-  icon?: Function | false
+  icon?: Function
   child?: ListItemChild
+  displayOptions?: ListItemDisplayOptions
   schemaType?: SchemaType | string
 }
 
@@ -29,16 +34,18 @@ export interface ListItem {
   id: string
   type: string
   title?: string
-  icon?: Function | false
+  icon?: Function
   child?: ListItemChild
+  displayOptions?: ListItemDisplayOptions
   schemaType?: SchemaType
 }
 
 export interface UnserializedListItem {
   id: string
   title: string
-  icon?: Function | false
+  icon?: Function
   child?: UnserializedListItemChild
+  displayOptions?: ListItemDisplayOptions
   schemaType?: SchemaType | string
 }
 
@@ -67,8 +74,18 @@ export class ListItemBuilder implements Serializable {
     return this.spec.title
   }
 
-  icon(icon: Function | false): ListItemBuilder {
+  icon(icon: Function): ListItemBuilder {
     return this.clone({icon})
+  }
+
+  showIcon(enabled: boolean) {
+    return this.clone({
+      displayOptions: {...(this.spec.displayOptions || {}), showIcon: enabled}
+    })
+  }
+
+  getShowIcon() {
+    return this.spec.displayOptions ? this.spec.displayOptions.showIcon : undefined
   }
 
   getIcon() {

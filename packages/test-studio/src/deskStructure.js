@@ -34,7 +34,7 @@ export default () =>
       S.listItem()
         .title('Singleton?')
         .child(delay(S.editor({id: 'editor', options: {id: 'circular', type: 'referenceTest'}})))
-        .icon(false),
+        .showIcon(false),
 
       S.documentListItem()
         .id('grrm')

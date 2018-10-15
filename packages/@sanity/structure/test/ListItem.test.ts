@@ -83,12 +83,29 @@ test('builds list items with specified schema type', () => {
   ).toMatchSnapshot()
 })
 
+test('builds list items with display options (dont show icon)', () => {
+  expect(
+    S.listItem({id: 'foo', title: 'Foo'})
+      .showIcon(false)
+      .serialize()
+  ).toMatchSnapshot()
+})
+
+test('builds list items with display options (show icon)', () => {
+  expect(
+    S.listItem({id: 'foo', title: 'Foo'})
+      .showIcon(true)
+      .serialize()
+  ).toMatchSnapshot()
+})
+
 test('builder is immutable', () => {
   const original = S.listItem()
   expect(original.id('foo')).not.toEqual(original)
   expect(original.title('foo')).not.toEqual(original)
   expect(original.child(() => undefined)).not.toEqual(original)
   expect(original.schemaType('foo')).not.toEqual(original)
+  expect(original.showIcon(true)).not.toEqual(original)
 })
 
 test('getters work', () => {
@@ -96,4 +113,5 @@ test('getters work', () => {
   expect(original.id('foo').getId()).toEqual('foo')
   expect(original.title('bar').getTitle()).toEqual('bar')
   expect(original.schemaType('baz').getSchemaType()).toEqual('baz')
+  expect(original.showIcon(true).getShowIcon()).toEqual(true)
 })
