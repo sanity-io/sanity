@@ -49,3 +49,27 @@ test('generated document panes responds with correct editor child', done => {
     done()
   })
 })
+
+test('manually assigned canHandleIntent should not be overriden', () => {
+  const alwaysFalse = () => false
+  const list = S.documentTypeList('author')
+  const modified = list.canHandleIntent(alwaysFalse)
+
+  // Test default handler
+  const defHandler = list.getCanHandleIntent()
+  expect(defHandler('create', {type: 'author'})).toBe(true)
+
+  // Test modified handler
+  const modHandler = modified.getCanHandleIntent()
+  expect(modHandler('create', {type: 'author'})).toBe(false)
+
+  // Modifying child for default list _SHOULD_ reset canHandleIntent
+  const diffChild = list.child(() => null)
+  const diffHandler = diffChild.getCanHandleIntent()
+  expect(diffHandler).toBeUndefined()
+
+  // Modifying child for list with custom intent handler should _NOT_ reset canHandleIntent
+  const customChild = modified.child(() => null)
+  const customHandler = customChild.getCanHandleIntent()
+  expect(customHandler).toEqual(alwaysFalse)
+})
