@@ -209,6 +209,19 @@ test('can set intent handler check', () => {
   ).toMatchObject({canHandleIntent: handler})
 })
 
+test('can disable icons from being displayed', () => {
+  const list = S.list()
+    .title('Blåmuggost')
+    .showIcons(false)
+
+  expect(list.serialize()).toMatchObject({
+    id: 'blamuggost',
+    displayOptions: {showIcons: false}
+  })
+
+  expect(list.getShowIcons()).toBe(false)
+})
+
 test('builder is immutable', () => {
   const original = S.list()
   expect(original.id('foo')).not.toEqual(original)

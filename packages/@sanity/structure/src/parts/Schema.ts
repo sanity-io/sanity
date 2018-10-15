@@ -12,12 +12,24 @@ interface SchemaField {
   type: SchemaType
 }
 
+interface PreviewFields {
+  media?: string
+}
+
+interface PreviewPreparer {
+  (selection: {}): PreviewFields
+}
+
 export interface SchemaType {
   name: string
   type?: SchemaType
   to?: SchemaField[]
   fields?: SchemaField[]
   orderings?: Ordering[]
+  preview?: {
+    select?: PreviewFields
+    prepare?: PreviewPreparer
+  }
 }
 
 // We are lazy-loading the part to work around typescript trying to resolve it
