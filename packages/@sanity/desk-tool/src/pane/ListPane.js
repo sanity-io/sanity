@@ -35,6 +35,9 @@ export default withRouterHOC(
           id: PropTypes.string.isRequired
         })
       ),
+      displayOptions: PropTypes.shape({
+        showIcons: PropTypes.bool
+      }),
       isSelected: PropTypes.bool.isRequired,
       isCollapsed: PropTypes.bool.isRequired,
       onExpand: PropTypes.func,
@@ -46,6 +49,7 @@ export default withRouterHOC(
       items: [],
       menuItems: [],
       menuItemGroups: [],
+      displayOptions: {},
       styles: undefined,
       onExpand: undefined,
       onCollapse: undefined,
@@ -62,6 +66,19 @@ export default withRouterHOC(
       const {router, index} = this.props
       const panes = (router.state.panes || []).slice(0, index).concat(name)
       return {panes}
+    }
+
+    shouldShowIconForItem = item => {
+      const paneShowIcons = this.props.displayOptions.showIcons
+      const itemShowIcon = item.displayOptions && item.displayOptions.showIcon
+
+      // Specific true/false on item should have presedence over list setting
+      if (typeof itemShowIcon !== 'undefined') {
+        return itemShowIcon === false ? false : item.icon
+      }
+
+      // If no item setting is defined, defer to the pane settings
+      return paneShowIcons === false ? false : item.icon
     }
 
     render() {
@@ -99,7 +116,7 @@ export default withRouterHOC(
                 id={item.id}
                 index={index}
                 value={item}
-                icon={item.icon}
+                icon={this.shouldShowIconForItem(item)}
                 layout={defaultLayout}
                 isSelected={this.itemIsSelected(item)}
                 getLinkState={this.getLinkStateForItem}

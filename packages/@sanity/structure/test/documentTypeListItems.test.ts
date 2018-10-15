@@ -26,7 +26,7 @@ test('generated canHandleIntent responds to edit/create on document type', () =>
   const child = listItems[0].child as DocumentList
   expect(child.canHandleIntent('create', {type: 'book'})).toBe(false)
   expect(child.canHandleIntent('create', {type: 'author'})).toBe(true)
-  expect(child.canHandleIntent('edit', {id: 'wow'})).toBe(true)
+  expect(child.canHandleIntent('edit', {id: 'wow'})).toBe(false)
 })
 
 test('generated document panes responds with correct editor child', done => {

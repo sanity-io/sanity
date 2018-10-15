@@ -110,6 +110,9 @@ export default withRouterHOC(
           id: PropTypes.string.isRequired
         })
       ),
+      displayOptions: PropTypes.shape({
+        showIcons: PropTypes.bool
+      }),
       isSelected: PropTypes.bool.isRequired,
       isCollapsed: PropTypes.bool.isRequired,
       onExpand: PropTypes.func,
@@ -121,6 +124,7 @@ export default withRouterHOC(
       styles: {},
       menuItems: [],
       menuItemGroups: [],
+      displayOptions: {},
       onExpand: undefined,
       onCollapse: undefined,
       defaultLayout: undefined
@@ -190,6 +194,7 @@ export default withRouterHOC(
         getLinkState={this.getLinkStateForItem}
         layout={this.state.layout || this.props.defaultLayout || 'default'}
         value={item}
+        icon={this.props.displayOptions.showIcons === false ? false : undefined}
         schemaType={schema.get(item._type)}
         isSelected={this.itemIsSelected(item._id)}
       />

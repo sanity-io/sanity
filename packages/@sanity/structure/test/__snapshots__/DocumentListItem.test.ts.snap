@@ -52,6 +52,7 @@ Object {
     "canHandleIntent": undefined,
     "child": [Function],
     "defaultLayout": undefined,
+    "displayOptions": undefined,
     "id": "asoiaf-posts",
     "menuItemGroups": Array [],
     "menuItems": Array [],

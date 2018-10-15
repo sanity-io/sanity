@@ -7,6 +7,9 @@ ListItemBuilder {
       "spec": Object {
         "canHandleIntent": [Function],
         "child": [Function],
+        "displayOptions": Object {
+          "showIcons": true,
+        },
         "id": "author",
         "menuItemGroups": Array [
           Object {
@@ -172,6 +175,9 @@ ListItemBuilder {
       "spec": Object {
         "canHandleIntent": [Function],
         "child": [Function],
+        "displayOptions": Object {
+          "showIcons": true,
+        },
         "id": "author",
         "menuItemGroups": Array [
           Object {
@@ -338,6 +344,9 @@ Array [
         "spec": Object {
           "canHandleIntent": [Function],
           "child": [Function],
+          "displayOptions": Object {
+            "showIcons": true,
+          },
           "id": "author",
           "menuItemGroups": Array [
             Object {
@@ -500,6 +509,9 @@ Array [
         "spec": Object {
           "canHandleIntent": [Function],
           "child": [Function],
+          "displayOptions": Object {
+            "showIcons": true,
+          },
           "id": "post",
           "menuItemGroups": Array [
             Object {
@@ -780,6 +792,9 @@ Array [
         "spec": Object {
           "canHandleIntent": [Function],
           "child": [Function],
+          "displayOptions": Object {
+            "showIcons": true,
+          },
           "id": "author",
           "menuItemGroups": Array [
             Object {
@@ -942,6 +957,9 @@ Array [
         "spec": Object {
           "canHandleIntent": [Function],
           "child": [Function],
+          "displayOptions": Object {
+            "showIcons": true,
+          },
           "id": "post",
           "menuItemGroups": Array [
             Object {

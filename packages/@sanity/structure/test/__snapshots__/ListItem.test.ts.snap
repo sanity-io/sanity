@@ -16,6 +16,7 @@ Object {
     "canHandleIntent": undefined,
     "child": [Function],
     "defaultLayout": undefined,
+    "displayOptions": undefined,
     "id": "asoiaf-books",
     "menuItemGroups": Array [],
     "menuItems": Array [],
@@ -29,6 +30,32 @@ Object {
   "id": "asoiaf",
   "schemaType": undefined,
   "title": "A Song of Ice and Fire",
+  "type": "listItem",
+}
+`;
+
+exports[`builds list items with display options (dont show icon) 1`] = `
+Object {
+  "child": undefined,
+  "displayOptions": Object {
+    "showIcon": false,
+  },
+  "id": "foo",
+  "schemaType": undefined,
+  "title": "Foo",
+  "type": "listItem",
+}
+`;
+
+exports[`builds list items with display options (show icon) 1`] = `
+Object {
+  "child": undefined,
+  "displayOptions": Object {
+    "showIcon": true,
+  },
+  "id": "foo",
+  "schemaType": undefined,
+  "title": "Foo",
   "type": "listItem",
 }
 `;
