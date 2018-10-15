@@ -7,6 +7,7 @@ import tryParseParams from '../util/tryParseParams'
 
 require('codemirror/mode/javascript/javascript')
 require('codemirror/addon/hint/show-hint')
+require('codemirror/addon/edit/closebrackets')
 
 const ENTER_KEY = 13
 
@@ -36,7 +37,8 @@ class ParamsEditor extends React.PureComponent {
     const options = {
       lineNumbers: true,
       tabSize: 2,
-      mode: {name: 'javascript', json: true}
+      mode: {name: 'javascript', json: true},
+      autoCloseBrackets: true
     }
     return (
       <ReactCodeMirror
