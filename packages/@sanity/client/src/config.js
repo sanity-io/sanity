@@ -18,9 +18,9 @@ const cdnWarning = [
 ]
 
 const cdnTokenWarning = [
-  'You have set the `useCdn` setting to `true` while also specifying a token. This is usually not',
-  'what you want. The CDN cannot be used with an authorization token, since private data cannot',
-  `be cached. See ${generateHelpUrl('js-client-usecdn-token')} for more information.`
+  'You have set `useCdn` to `true` while also specifying a token. This is usually not what you',
+  'want. The CDN cannot be used with an authorization token, since private data cannot be cached.',
+  `See ${generateHelpUrl('js-client-usecdn-token')} for more information.`
 ]
 
 const hasWarned = {}
@@ -56,7 +56,12 @@ exports.initConfig = (config, prevConfig) => {
 
   if (typeof newConfig.useCdn === 'undefined' && !newConfig.token) {
     printWarning('cdn', cdnWarning.join(' '))
-  } else if (newConfig.useCdn && newConfig.token) {
+  } else if (
+    newConfig.useCdn &&
+    newConfig.token &&
+    (typeof window === 'undefined' ||
+      ['localhost', '127.0.0.1', '0.0.0.0'].indexOf(window.location.hostname) !== -1)
+  ) {
     printWarning('cdn-token', cdnTokenWarning.join(' '))
   }
 
