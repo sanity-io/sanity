@@ -17,18 +17,22 @@ const cdnWarning = [
   'the client.'
 ]
 
-const printCdnWarning = (() => {
-  let hasWarned = false
-  return () => {
-    if (hasWarned) {
-      return
-    }
+const cdnTokenWarning = [
+  'You have set `useCdn` to `true` while also specifying a token. This is usually not what you',
+  'want. The CDN cannot be used with an authorization token, since private data cannot be cached.',
+  `See ${generateHelpUrl('js-client-usecdn-token')} for more information.`
+]
 
-    // eslint-disable-next-line no-console
-    console.warn(cdnWarning.join(' '))
-    hasWarned = true
+const hasWarned = {}
+const printWarning = (id, msg) => {
+  if (hasWarned[id]) {
+    return
   }
-})()
+
+  // eslint-disable-next-line no-console
+  console.warn(msg)
+  hasWarned[id] = true
+}
 
 exports.defaultConfig = defaultConfig
 
@@ -50,8 +54,15 @@ exports.initConfig = (config, prevConfig) => {
     throw new Error('Configuration must contain `projectId`')
   }
 
-  if (typeof newConfig.useCdn === 'undefined') {
-    printCdnWarning()
+  if (typeof newConfig.useCdn === 'undefined' && !newConfig.token) {
+    printWarning('cdn', cdnWarning.join(' '))
+  } else if (
+    newConfig.useCdn &&
+    newConfig.token &&
+    (typeof window === 'undefined' ||
+      ['localhost', '127.0.0.1', '0.0.0.0'].indexOf(window.location.hostname) !== -1)
+  ) {
+    printWarning('cdn-token', cdnTokenWarning.join(' '))
   }
 
   if (projectBased) {
