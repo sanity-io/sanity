@@ -42,7 +42,9 @@ export default class LoginWrapper extends React.PureComponent {
 
   state = {isLoading: true, user: null, error: null}
 
-  componentWillMount() {
+  userSubscription = null
+
+  componentDidMount() {
     const sid = getSid()
 
     if (sid) {

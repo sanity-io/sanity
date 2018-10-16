@@ -25,13 +25,21 @@ export default class LoginDialog extends React.Component {
 
   state = {
     providers: [],
+    isLoaded: false,
+    shouldRedirect: false,
     error: null
   }
 
   componentDidMount() {
     this.getProviders = cancelWrap(authenticationFetcher.getProviders())
     this.getProviders.promise
-      .then(providers => this.setState({providers: providers}))
+      .then(providers =>
+        this.setState({
+          providers: providers,
+          isLoaded: true,
+          shouldRedirect: providers.length === 1 && pluginConfig.providers.redirectOnSingle
+        })
+      )
       .catch(err => this.setState({error: err}))
   }
 
@@ -39,12 +47,9 @@ export default class LoginDialog extends React.Component {
     this.getProviders.cancel()
   }
 
-  componentWillUpdate(_, nextState) {
-    const {providers} = nextState
-    if (
-      providers.length === 1 &&
-      (pluginConfig.providers && pluginConfig.providers.redirectOnSingle)
-    ) {
+  componentDidUpdate() {
+    const {providers, isLoaded, shouldRedirect} = this.state
+    if (isLoaded && shouldRedirect) {
       this.redirectToProvider(providers[0])
     }
   }
@@ -84,7 +89,7 @@ export default class LoginDialog extends React.Component {
   }
 
   render() {
-    const {error, providers} = this.state
+    const {error, providers, isLoaded, shouldRedirect} = this.state
     const {title, description, SanityLogo} = this.props
 
     if (error) {
@@ -108,18 +113,21 @@ export default class LoginDialog extends React.Component {
       )
     }
 
-    if (providers.length < 1) {
+    if (isLoaded && providers.length === 0) {
       return <div>No providers configured</div>
     }
 
-    return (
-      <LoginDialogContent
-        title={title}
-        description={description}
-        providers={providers}
-        SanityLogo={SanityLogo}
-        onLoginButtonClick={this.handleLoginButtonClicked}
-      />
-    )
+    if (isLoaded && !shouldRedirect) {
+      return (
+        <LoginDialogContent
+          title={title}
+          description={description}
+          providers={providers}
+          SanityLogo={SanityLogo}
+          onLoginButtonClick={this.handleLoginButtonClicked}
+        />
+      )
+    }
+    return null
   }
 }
