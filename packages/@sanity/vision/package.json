@@ -21,12 +21,11 @@
   ],
   "dependencies": {
     "classnames": "^2.2.5",
-    "json-lexer": "^1.1.1",
     "moment": "^2.19.1",
     "query-string": "^4.3.2",
     "react-codemirror2": "^1.0.0",
     "react-icon-base": "^2.1.2",
-    "react-json-inspector": "^7.1.1",
+    "react-json-view": "^1.19.1",
     "react-spinner": "^0.2.6",
     "react-split-pane": "^0.1.63"
   },
