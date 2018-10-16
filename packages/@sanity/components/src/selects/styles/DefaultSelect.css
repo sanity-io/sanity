@@ -30,6 +30,7 @@
   appearance: none;
   position: relative;
   overflow: hidden;
+  height: 2.5em;
 
   @nest &:not(:disabled) {
     @nest &:hover {
