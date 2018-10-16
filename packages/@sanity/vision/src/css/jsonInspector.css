@@ -59,7 +59,11 @@
   margin-left: -16px;
 }
 
-:global .sanity-vision .json-inspector__leaf_composite .json-inspector__leaf_expanded > .json-inspector__line::before {
+:global
+  .sanity-vision
+  .json-inspector__leaf_composite
+  .json-inspector__leaf_expanded
+  > .json-inspector__line::before {
   content: '▼ ';
 }
 
@@ -123,4 +127,8 @@
 
 :global .sanity-vision .json-inspector__show-original:hover::after {
   content: ' expand';
+}
+
+:global .sanity-vision .copy-icon svg {
+  font-size: 14px !important;
 }
