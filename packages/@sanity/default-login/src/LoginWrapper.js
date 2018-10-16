@@ -13,6 +13,15 @@ import UnauthorizedUser from './UnauthorizedUser'
 const isProjectLogin = client.config().useProjectHostname
 const projectId = isProjectLogin && client.config().projectId ? client.config().projectId : null
 
+const getSid = () => {
+  if (!window.location.hash.includes('sid=')) {
+    return false
+  }
+
+  const sid = window.location.hash.replace(/.*?sid=([^&]+)/, '$1')
+  return sid || false
+}
+
 export default class LoginWrapper extends React.PureComponent {
   static propTypes = {
     children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
@@ -34,17 +43,55 @@ export default class LoginWrapper extends React.PureComponent {
   state = {isLoading: true, user: null, error: null}
 
   componentWillMount() {
+    const sid = getSid()
+
+    if (sid) {
+      this.exchangeToken(sid)
+      const url = window.location.href.replace(`sid=${sid}`, '')
+      history.replaceState({}, document.title, url)
+    } else {
+      this.getUser()
+    }
+  }
+
+  getUser = () => {
     this.userSubscription = userStore.currentUser.subscribe({
       next: evt => this.setState({user: evt.user, error: evt.error, isLoading: false}),
       error: error => this.setState({error, isLoading: false})
     })
   }
 
+  handleLoginError = err => {
+    this.setState({error: err, isLoading: false})
+    this.clearSid()
+  }
+
+  exchangeToken = sid => {
+    this.tokenExchange = client.observable
+      .request({
+        uri: '/auth/exchange',
+        withCredentials: true,
+        query: {sid}
+      })
+      .subscribe({
+        next: this.getUser,
+        error: this.handleLoginError
+      })
+  }
+
   componentWillUnmount() {
+    if (this.tokenExchange) {
+      this.tokenExchange.unsubscribe()
+    }
+
     this.userSubscription.unsubscribe()
   }
 
   handleRetry = () => {
+    if (!this.userSubscription) {
+      this.getUser()
+    }
+
     this.setState({error: null, isLoading: true})
     userStore.actions.retry()
   }
