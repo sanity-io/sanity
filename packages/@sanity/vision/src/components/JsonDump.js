@@ -3,7 +3,7 @@ import React, {Fragment} from 'react'
 import PropTypes from 'prop-types'
 import ReactJson from 'react-json-view'
 
-class JsonBlock extends React.PureComponent {
+class JsonBlock extends React.Component {
   render() {
     const styles = this.context.styles.jsonDump
     return (
