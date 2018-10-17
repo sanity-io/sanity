@@ -5,8 +5,6 @@
 }
 
 .root {
-  composes: root from 'part:@sanity/base/theme/forms/control-style';
-
   /* forces bigger dialog when in dialog */
   composes: largeContent from 'part:@sanity/components/dialogs/default-style';
   composes: largeContent from 'part:@sanity/components/dialogs/popover-style';

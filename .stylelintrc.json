@@ -21,25 +21,12 @@
     "property-no-unknown": [ true, {
       "ignoreProperties": [
         "composes",
-        "compose-with",
-        "lost-align",
-        "lost-center",
-        "lost-column",
-        "lost-flex-container",
-        "lost-masonry-column",
-        "lost-masonry-wrap",
-        "lost-move",
-        "lost-offset",
-        "lost-row",
-        "lost-unit",
-        "lost-utility",
-        "lost-waffle"
+        "compose-with"
       ]
     }],
     "at-rule-no-unknown": [ true, {
       "ignoreAtRules": [
-        "value",
-        "lost"
+        "value"
       ]
     }]
   }

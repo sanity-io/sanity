@@ -1,4 +1,3 @@
-const lost = require('lost')
 const postcssImport = require('postcss-import')
 const postcssCssnext = require('postcss-cssnext')
 const PartResolverPlugin = require('@sanity/webpack-loader')
@@ -47,8 +46,7 @@ function getPostcssImportPlugin(options) {
 function getPostcssPlugins(options) {
   const importer = getPostcssImportPlugin(options)
   const nextOpts = options.cssnext
-  const lostOpts = options.lost
-  return [importer, postcssCssnext(nextOpts), lost(lostOpts)]
+  return [importer, postcssCssnext(nextOpts)]
 }
 
 function getConfig(options) {

@@ -32,7 +32,6 @@
     "@sanity/resolver": "0.135.0",
     "@sanity/webpack-loader": "0.135.0",
     "fs.realpath": "^1.0.0",
-    "lost": "^8.0.0",
     "p-async-cache": "^1.0.2",
     "postcss-cssnext": "^3.0.2",
     "postcss-import": "^11.0.0",
