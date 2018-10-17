@@ -21,10 +21,22 @@
   }
 }
 
+.loading {
+  min-height: 100%;
+}
+
+.menuItem {
+  display: inline-flex;
+  justify-content: space-between;
+  width: stretch;
+}
+
 .hotkey {
-  color: #888;
+  color: inherit;
   font-size: 0.8em;
   margin-left: 0.6em;
+  padding-right: 1em;
+  opacity: 0.5;
 }
 
 .top {
