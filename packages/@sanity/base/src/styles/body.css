@@ -19,3 +19,7 @@
 :global(::selection) {
   background: var(--text-selection-color);
 }
+
+:global(a:hover) {
+  color: var(--link-hover-color);
+}

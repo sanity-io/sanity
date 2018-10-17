@@ -11,8 +11,7 @@
     ],
     "property-no-unknown": [true, {
       "ignoreProperties": [
-        "composes",
-        /lost-.+/
+        "composes"
       ]
     }]
   }

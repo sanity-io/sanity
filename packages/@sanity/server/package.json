@@ -51,7 +51,6 @@
     "in-publish": "^2.0.0",
     "json-loader": "^0.5.4",
     "lodash": "^4.17.4",
-    "lost": "^8.0.0",
     "normalize.css": "^5.0.0",
     "postcss-loader": "^2.0.6",
     "react-hot-loader": "4.3.8",

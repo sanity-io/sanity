@@ -1,9 +1,0 @@
-@import 'part:@sanity/base/theme/variables/globals-style';
-
-.root {
-  box-sizing: border-box;
-}
-
-.inner {
-  position: relative;
-}
