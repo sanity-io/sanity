@@ -159,6 +159,9 @@ export default withDocumentType(
     }
 
     receiveDraftEvent = event => {
+      if (event.type !== 'mutation') {
+        return
+      }
       // Broadcast incoming patches to input components that applies patches on their own
       // Note: This is *experimental*
       this.patchChannel.receivePatches({
