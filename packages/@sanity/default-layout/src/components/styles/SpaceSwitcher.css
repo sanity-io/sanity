@@ -3,15 +3,18 @@
 .root {
   display: flex;
   align-items: center;
-  height: 100%;
   text-align: center;
   position: relative;
   cursor: default;
   user-select: none;
+  border: 1px solid var(--white);
+  padding: var(--small-padding);
+  margin: var(--small-padding);
+  box-sizing: border-box;
+  opacity: 0.5;
 
-  @media (--screen-medium) {
-    height: 2rem;
-    width: 100%;
+  @nest &:hover {
+    opacity: 1;
   }
 }
 
@@ -19,16 +22,10 @@
   white-space: nowrap;
   color: #fff;
   vertical-align: middle;
-
-  @media (--screen-medium) {
-    width: 100%;
-  }
 }
 
 .arrow {
-  line-height: 0.5em;
-  font-size: 2em;
-  vertical-align: text-top;
+  font-size: 1em;
 }
 
 .menu {

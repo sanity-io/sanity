@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {noop} from 'lodash'
-import contentStylesOverride from './styles/contentStylesOverride.css'
 import DocumentsListPane from './DocumentsListPane'
 import UserComponentPane from './UserComponentPane'
 import UnknownPaneType from './UnknownPaneType'
@@ -36,12 +35,10 @@ export default class Pane extends React.PureComponent {
   handlePaneExpand = () => this.props.onExpand(this.props.index)
 
   render() {
-    const {index, type} = this.props
-    const styles = index === 0 ? contentStylesOverride : {}
+    const {type} = this.props
     const ActualPane = paneMap[type] || UnknownPaneType
     return (
       <ActualPane
-        styles={styles}
         {...this.props}
         onExpand={this.handlePaneExpand}
         onCollapse={this.handlePaneCollapse}

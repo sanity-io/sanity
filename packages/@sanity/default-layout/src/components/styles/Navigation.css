@@ -4,7 +4,6 @@
   display: flex;
   position: relative;
   width: 100%;
-  background-color: var(--component-bg);
 
   @media (--screen-medium) {
     height: 3rem;
