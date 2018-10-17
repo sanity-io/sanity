@@ -1,6 +1,5 @@
 import React from 'react'
 import styles from 'part:@sanity/default-layout/branding-style'
-import SanityLogo from 'part:@sanity/base/sanity-logo'
 import BrandLogo from 'part:@sanity/base/brand-logo?'
 import {StateLink} from 'part:@sanity/base/router'
 import config from 'config:sanity'
@@ -17,9 +16,6 @@ function Branding() {
         )}
         {!BrandLogo && (
           <div>
-            <div className={styles.brandLogoContainer}>
-              <SanityLogo projectName={projectName} />
-            </div>
             <h1 className={styles.projectName}>{projectName}</h1>
           </div>
         )}
