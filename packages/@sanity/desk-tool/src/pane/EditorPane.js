@@ -127,6 +127,7 @@ export default withDocumentType(
         this.setState(prevState => {
           const version = event.version // either 'draft' or 'published'
           return {
+            isReconnecting: event.type === 'reconnect',
             validationPending: true,
             [version]: {
               ...(prevState[version] || {}),
@@ -158,10 +159,6 @@ export default withDocumentType(
     }
 
     receiveDraftEvent = event => {
-      this.setState({isReconnecting: event.type === 'reconnect'})
-      if (event.type !== 'mutation') {
-        return
-      }
       // Broadcast incoming patches to input components that applies patches on their own
       // Note: This is *experimental*
       this.patchChannel.receivePatches({
