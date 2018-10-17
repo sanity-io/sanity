@@ -90,7 +90,6 @@
     "semver": "^5.5.0",
     "stylelint": "^8.4.0",
     "stylelint-config-css-modules": "^1.1.0",
-    "stylelint-config-lost": "0.0.3",
     "stylelint-config-standard": "^18.0.0",
     "through2": "^2.0.3",
     "typescript": "^2.9.2",

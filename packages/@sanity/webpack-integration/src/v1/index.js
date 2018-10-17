@@ -1,5 +1,4 @@
 const path = require('path')
-const lost = require('lost')
 const webpack = require('webpack')
 const postcssUrl = require('postcss-url')
 const postcssImport = require('postcss-import')
@@ -65,7 +64,7 @@ function getPostcssUrlPlugin(options) {
 function getPostcssPlugins(options) {
   const importer = getPostcssImportPlugin(options)
   const urlPlugin = getPostcssUrlPlugin(options)
-  return [importer, postcssCssnext, urlPlugin, lost]
+  return [importer, postcssCssnext, urlPlugin]
 }
 
 function getConfig(options) {
