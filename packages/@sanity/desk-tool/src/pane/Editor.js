@@ -31,6 +31,7 @@ import ChevronDown from 'part:@sanity/base/chevron-down-icon'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import filterFieldFn$ from 'part:@sanity/desk-tool/filter-fields-fn?'
+import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 import copyDocument from '../utils/copyDocument'
 import ConfirmUnpublish from '../components/ConfirmUnpublish'
 import ConfirmDiscard from '../components/ConfirmDiscard'
@@ -93,8 +94,11 @@ const getDeleteItem = (draft, published) => ({
 const getInspectItem = (draft, published) => ({
   action: 'inspect',
   title: (
-    <span>
-      Inspect <code className={styles.hotkey}>Ctrl+Alt+I</code>
+    <span className={styles.menuItem}>
+      Inspect{' '}
+      <span className={styles.hotkey}>
+        <Hotkeys keys={['Ctrl', 'Alt', 'I']} />
+      </span>
     </span>
   ),
   icon: BinaryIcon,
@@ -122,8 +126,11 @@ const getProductionPreviewItem = (draft, published) => {
     previewUrl && {
       action: 'production-preview',
       title: (
-        <span>
-          Open preview <code className={styles.hotkey}>Ctrl+Alt+O</code>
+        <span className={styles.menuItem}>
+          Open preview
+          <span className={styles.hotkey}>
+            <Hotkeys keys={['Ctrl', 'Alt', 'O']} />
+          </span>
         </span>
       ),
       icon: PublicIcon,
@@ -551,9 +558,16 @@ export default withRouterHOC(
                 theme="light"
                 className={styles.publishButton}
                 title={
-                  errors.length > 0
-                    ? 'Fix errors before publishing'
-                    : `${published ? 'Publish changes' : 'Publish'} (Ctrl+Alt+P)`
+                  errors.length > 0 ? (
+                    'Fix errors before publishing'
+                  ) : (
+                    <span className={styles.menuItem}>
+                      {published ? 'Publish changes' : 'Publish'}
+                      <span className={styles.hotkey}>
+                        <Hotkeys keys={['Ctrl', 'Alt', 'P']} />
+                      </span>
+                    </span>
+                  )
                 }
               >
                 <Button
@@ -599,7 +613,7 @@ export default withRouterHOC(
 
       if (isLoading) {
         return (
-          <div className={styles.root}>
+          <div className={styles.loading}>
             <Spinner center message={`Loading ${type.title}…`} />
           </div>
         )

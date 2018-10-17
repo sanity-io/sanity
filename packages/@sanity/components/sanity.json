@@ -415,6 +415,10 @@
       "description": "Media preview styling"
     },
     {
+      "name": "part:@sanity/components/typography/hotkeys",
+      "description": "Display hotlkeys. Takes an array of strings."
+    },
+    {
       "implements": "part:@sanity/components/utilities/arrow-key-navigation",
       "path": "utilities/ArrowKeyNavigation.js"
     },
@@ -859,6 +863,10 @@
     {
       "implements": "part:@sanity/components/utilities/scroll-container",
       "path": "utilities/ScrollContainer.js"
+    },
+    {
+      "implements": "part:@sanity/components/typography/hotkeys",
+      "path": "typography/Hotkeys.js"
     },
     {
       "implements": "part:@sanity/base/component",
