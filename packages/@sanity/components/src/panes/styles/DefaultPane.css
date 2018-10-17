@@ -1,5 +1,15 @@
 @import "part:@sanity/base/theme/variables-style";
 
+@keyframes appear {
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
 .root {
   display: flex;
   flex-direction: column;
@@ -27,6 +37,16 @@
 
 .isActive {
   display: flex;
+
+  /* composes: shadow-24dp from "part:@sanity/base/theme/shadows-style";
+  animation-name: appear;
+  animation-play-state: running;
+  animation-duration: 0.3s;
+  animation-delay: 0;
+  animation-direction: normal;
+  animation-fill-mode: forwards;
+  animation-iteration-count: 1;
+  transform: translateX(100%); */
 }
 
 .isCollapsed {
@@ -112,8 +132,6 @@
 
 .menuButton {
   display: block;
-  width: 3rem;
-  height: 3rem;
   text-align: center;
 }
 
