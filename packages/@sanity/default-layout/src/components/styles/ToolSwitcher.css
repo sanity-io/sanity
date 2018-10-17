@@ -1,90 +1,102 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.toolSwitcher {
+.root {
   position: relative;
 }
 
+.mini {
+  display: none;
+
+  @media (--screen-medium) {
+    display: flex;
+    align-self: stretch;
+    align-items: stretch;
+  }
+}
+
+.default {
+  display: block;
+}
+
 .toolList {
-  display: flex;
   flex-wrap: wrap;
   margin: 0;
   padding: 0;
-  width: 100%;
-  align-content: flex-start;
 
-  @media (--screen-medium) {
-    flex-direction: column;
+  @nest .mini & {
+    align-content: flex-start;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    justify-items: stretch;
   }
 }
 
 .item {
-  display: block;
-  position: relative;
-  text-align: center;
   box-sizing: border-box;
   color: color(var(--white) a(40%));
-  width: 50vw; /* mobile size */
-  height: 50vw;
-  overflow: hidden;
+  display: flex;
+  align-items: stretch;
 
-  @media (--screen-medium) {
-    display: block;
-    width: 100%;
-    height: auto;
+  @nest .mini & {
+    position: relative;
+    text-align: center;
+  }
+
+  @nest .default & {
+    flex-direction: row;
   }
 }
 
 .activeItem {
   composes: item;
-  color: color(var(--white) a(100%));
-  background-color: color(var(--white) a(10%));
 }
 
 .iconContainer {
   display: block;
-  font-size: 2.5em;
-  line-height: 1em;
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-
-  @media (--screen-medium) {
-    position: static;
-    transform: none;
-  }
+  font-size: 1rem;
 }
 
 .toolName {
   display: block;
-  margin-top: 60%;
 
-  @media (--screen-medium) {
-    margin-top: 0.5em;
+  @nest .mini & {
+    display: none;
+  }
+
+  @nest .default & {
+    padding-left: var(--small-padding);
   }
 }
 
 .toolLink {
+  position: relative;
   color: inherit;
   text-decoration: none;
-  display: block;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+
+  @nest .mini & {
+    padding: 1em;
+  }
+
+  @nest .default & {
+    padding: 1em;
+    width: 100%;
+  }
 
   @nest &:hover {
     color: color(var(--white) a(80%));
-    background-color: color(var(--white) a(2%));
+    background-color: color(var(--white) a(10%));
   }
 
   @nest &:active {
     color: color(var(--white) a(100%));
   }
 
-  @media (--screen-medium) {
-    position: static;
-    padding: var(--medium-padding) 0;
-    font-size: 1em;
+  @nest .default & {
+    flex-direction: row;
+    align-items: center;
   }
 }

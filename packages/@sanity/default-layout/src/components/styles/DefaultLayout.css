@@ -32,12 +32,7 @@
   padding: 2px 4px;
 }
 
-:root {
-  --tool-switcher-width: 6rem;
-  --secondary-menu-background-color: var(--main-navigation-background-color);
-}
-
-.defaultLayout {
+.root {
   display: flex;
   padding: 0;
   max-width: 100%;
@@ -47,11 +42,73 @@
   min-height: calc(100vh - var(--header-height));
 
   @media (--screen-medium) {
-    flex-direction: row;
+    flex-direction: column;
     height: 100vh;
     overflow: hidden;
     min-height: 100vh;
   }
+}
+
+.top {
+  position: fixed;
+  width: 100%;
+  z-index: 10;
+  display: grid;
+  color: #fff;
+  grid-gap: 0 var(--small-padding);
+  background-color: var(--main-navigation-background-color);
+  grid-template-columns: 3rem auto auto 3rem 3rem;
+  grid-template-rows: 3rem 3rem;
+  box-sizing: border-box;
+  align-items: stretch;
+  grid-template-areas:
+    "hamburger  branding  extras  createButton   loginStatus"
+    "search     search    search  search         search";
+
+  @media (--screen-medium) {
+    position: relative;
+    grid-template-rows: 3rem;
+    grid-template-columns: 3rem     max-content 3rem         max-content  max-content auto    3rem;
+    grid-template-areas: "hamburger branding    createButton toolSwitcher extras      search  loginStatus";
+  }
+}
+
+.branding {
+  grid-area: branding;
+  display: flex;
+  align-items: stretch;
+}
+
+.hamburger {
+  grid-area: hamburger;
+  display: flex;
+  align-items: stretch;
+}
+
+.toolSwitcher {
+  display: none;
+
+  @media (--screen-medium) {
+    grid-area: toolSwitcher;
+    display: flex;
+  }
+}
+
+.loginStatus {
+  grid-area: loginStatus;
+  display: flex;
+  align-items: stretch;
+}
+
+.extras {
+  grid-area: extras;
+}
+
+.search {
+  grid-area: search;
+  display: flex;
+  align-items: stretch;
+  justify-self: stretch;
 }
 
 .loadingScreen {
@@ -75,16 +132,6 @@
   border-bottom: 1px solid var(--component-border-color);
 }
 
-.branding {
-  position: absolute;
-  left: 0;
-  top: 0;
-
-  @media (--screen-medium) {
-    position: relative;
-  }
-}
-
 .toolContainer {
   box-sizing: border-box;
   position: relative;
@@ -99,49 +146,75 @@
   }
 }
 
+.menu {
+  composes: shadow-10dp from 'part:@sanity/base/theme/shadows-style';
+  z-index: 10;
+  display: flex;
+  overflow: hidden;
+  background-color: var(--main-navigation-background-color);
+  transition: 0.15s all ease-in-out;
+  position: fixed;
+  top: 6rem;
+  left: 0;
+  width: auto;
+  height: 100%;
+  flex-direction: column;
+
+  @media (--screen-medium) {
+    box-shadow: none;
+    position: relative;
+    top: initial;
+    left: initial;
+    width: initial;
+    height: initial;
+  }
+}
+
+.menuIsOpen {
+  composes: menu;
+  transform: translate(0);
+
+  @media (--screen-medium) {
+    min-width: 200px;
+    max-width: 400px;
+    width: auto;
+  }
+}
+
+.menuIsClosed {
+  composes: menu;
+  transform: translate(-100%);
+
+  @media (--screen-medium) {
+    max-width: 0;
+    transform: translate(0);
+  }
+}
+
+.menuBottom {
+  margin-top: auto;
+}
+
 .mainArea {
   flex-grow: 1;
   display: flex;
   overflow: hidden;
-  flex-direction: column;
-  padding-top: var(--header-height);
+  flex-direction: row;
+  padding-top: 6rem;
 
   @media (--screen-medium) {
     padding-top: 0;
   }
 }
 
-.secondaryNavigation {
-  display: flex;
-  box-sizing: border-box;
-  align-items: center;
-  justify-items: stretch;
-  justify-content: flex-end;
-  flex-direction: row;
-  position: fixed;
-  width: 100vw;
-  font-size: var(--font-size-xsmall);
-  background-color: var(--secondary-menu-background-color);
-  height: var(--header-height);
-  z-index: var(--zindex-navbar);
-
-  @media (--screen-medium) {
-    z-index: initial;
-    position: relative;
-    display: block;
-    width: var(--tool-switcher-width);
-    height: 100vh;
-  }
-}
-
 .createButton {
-  display: none;
+  display: flex;
+  grid-area: createButton;
   text-align: center;
-  color: var(--brand-primary);
   user-select: none;
   cursor: default;
   position: relative;
-  padding: 0 1rem;
+  align-items: center;
 
   @nest &:hover {
     background-color: color(var(--white) a(10%));
@@ -152,17 +225,15 @@
   }
 
   @media (--screen-medium) {
-    display: block;
-    padding-bottom: var(--medium-padding);
+    padding: 1em;
   }
 }
 
 .createButtonIcon {
   display: inline-block;
-  font-size: 2em;
+  font-size: 1em;
 
   @media (--screen-medium) {
-    font-size: 3em;
     display: block;
   }
 }
@@ -172,19 +243,14 @@
   font-size: 1em;
 
   @media (--screen-medium) {
-    display: block;
+    display: none;
   }
 }
 
 .sanityStudioLogoContainer {
-  display: none;
-  position: fixed;
-  width: 5em;
-  bottom: 0.5rem;
-  left: 0.5rem;
-  z-index: var(--zindex-navbar);
   opacity: 0.5;
   color: #fff;
+  padding: var(--small-padding);
 
   @nest &:hover {
     opacity: 1;
@@ -193,53 +259,4 @@
   @nest & svg {
     height: 0.6rem;
   }
-
-  @media (--screen-medium) {
-    display: inline-block;
-  }
-}
-
-.mobileCreateButton {
-  color: var(--brand-primary);
-
-  @media (--screen-medium) {
-    display: none !important;
-  }
-}
-
-.mobileMenuButton {
-  color: var(--white);
-
-  @media (--screen-medium) {
-    display: none !important;
-  }
-}
-
-.toolSwitcher {
-  height: 1px;
-  width: 1px;
-  position: absolute;
-  transition: height 0.1s linear;
-  top: var(--header-height);
-  left: 0;
-
-  @media (--screen-medium) {
-    position: relative;
-    display: block;
-    width: auto;
-    top: initial;
-    height: initial;
-    left: initial;
-  }
-}
-
-.mobileMenuIsOpen .toolSwitcher {
-  position: absolute;
-  height: calc(100vh - var(--header-height));
-  display: block;
-  z-index: 5000;
-  backdrop-filter: blur(20px);
-  background-color: color(var(--secondary-menu-background-color) a(90%));
-  transition: height 0.1s linear;
-  width: 100vw;
 }

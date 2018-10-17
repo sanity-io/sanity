@@ -252,7 +252,6 @@ class Pane extends React.Component {
             kind="simple"
             icon={IconMoreVert}
             onClick={this.handleMenuToggle}
-            className={styles.menuButton}
           />
         </div>
         <div className={styles.menuContainer}>

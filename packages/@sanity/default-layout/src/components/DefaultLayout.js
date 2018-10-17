@@ -11,11 +11,12 @@ import AppLoadingScreen from 'part:@sanity/base/app-loading-screen'
 import {RouteScope, withRouterHOC} from 'part:@sanity/base/router'
 import absolutes from 'all:part:@sanity/base/absolutes'
 import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
-import {HAS_SPACES} from '../util/spaces'
 import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
+import {HAS_SPACES} from '../util/spaces'
 import styles from './styles/DefaultLayout.css'
 import RenderTool from './RenderTool'
-import Navigation from './Navigation'
+import LoginStatus from './LoginStatus'
+import Search from './Search'
 import ActionModal from './ActionModal'
 import Branding from './Branding'
 import {SchemaErrorReporter} from './SchemaErrorReporter'
@@ -40,7 +41,7 @@ export default withRouterHOC(
 
     state = {
       createMenuIsOpen: false,
-      mobileMenuIsOpen: false,
+      menuIsOpen: false,
       showLoadingScreen: true,
       loaded: false
     }
@@ -87,16 +88,18 @@ export default withRouterHOC(
       })
     }
 
-    handleMobileMenuToggle = () => {
+    handleToggleMenu = () => {
       this.setState(prevState => ({
-        mobileMenuIsOpen: !prevState.mobileMenuIsOpen
+        menuIsOpen: !prevState.menuIsOpen
       }))
     }
 
     handleSwitchTool = () => {
-      this.setState({
-        mobileMenuIsOpen: false
-      })
+      if (window && !window.matchMedia('all and (min-width: 32em)').matches) {
+        this.setState({
+          menuIsOpen: false
+        })
+      }
     }
 
     setLoadingScreenElement = element => {
@@ -105,7 +108,7 @@ export default withRouterHOC(
 
     renderContent = () => {
       const {tools, router} = this.props
-      const {createMenuIsOpen, mobileMenuIsOpen} = this.state
+      const {createMenuIsOpen, menuIsOpen} = this.state
 
       const TYPE_ITEMS = dataAspects
         .getInferredTypes()
@@ -124,9 +127,7 @@ export default withRouterHOC(
       }))
 
       return (
-        <div
-          className={`${styles.defaultLayout} ${mobileMenuIsOpen ? styles.mobileMenuIsOpen : ''}`}
-        >
+        <div className={styles.root}>
           {this.state.showLoadingScreen && (
             <div
               className={
@@ -139,15 +140,19 @@ export default withRouterHOC(
               <AppLoadingScreen text="Restoring Sanity" />
             </div>
           )}
-          <div className={styles.secondaryNavigation}>
+
+          <div className={styles.top}>
+            <div className={styles.hamburger}>
+              <Button
+                kind="simple"
+                onClick={this.handleToggleMenu}
+                title="Menu"
+                icon={HamburgerIcon}
+              />
+            </div>
             <div className={styles.branding}>
               <Branding />
             </div>
-            {HAS_SPACES && (
-              <div className={styles.spaceSwitcher}>
-                <SpaceSwitcher />
-              </div>
-            )}
             <a className={styles.createButton} onClick={this.handleCreateButtonClick}>
               <span className={styles.createButtonIcon}>
                 <PlusIcon />
@@ -155,35 +160,42 @@ export default withRouterHOC(
               <span className={styles.createButtonText}>New</span>
               <Ink duration={200} opacity={0.1} radius={200} />
             </a>
-            <div className={styles.mobileCreateButton}>
-              <Button
-                kind="simple"
-                onClick={this.handleCreateButtonClick}
-                title="Create new item"
-                icon={PlusIcon}
-              >
-                New
-              </Button>
-            </div>
-
-            <div className={styles.mobileMenuButton}>
-              <Button
-                kind="simple"
-                onClick={this.handleMobileMenuToggle}
-                title="Menu"
-                icon={HamburgerIcon}
+            <div className={styles.toolSwitcher}>
+              <ToolSwitcher
+                layout="mini"
+                tools={this.props.tools}
+                activeToolName={router.state.tool}
+                onSwitchTool={this.handleSwitchTool}
               />
             </div>
-            <ToolSwitcher
-              tools={this.props.tools}
-              activeToolName={router.state.tool}
-              onSwitchTool={this.handleSwitchTool}
-              className={styles.toolSwitcher}
-            />
+            <div className={styles.search}>
+              <Search />
+            </div>
+            <div className={styles.extras}>{/* Insert plugins here */}</div>
+            <div className={styles.loginStatus}>
+              <LoginStatus />
+            </div>
           </div>
+
           <div className={styles.mainArea}>
-            <div className={styles.navigation}>
-              <Navigation tools={tools} />
+            <div className={menuIsOpen ? styles.menuIsOpen : styles.menuIsClosed}>
+              {HAS_SPACES && (
+                <div className={styles.spaceSwitcher}>
+                  <SpaceSwitcher />
+                </div>
+              )}
+              <ToolSwitcher
+                layout="default"
+                tools={this.props.tools}
+                activeToolName={router.state.tool}
+                onSwitchTool={this.handleSwitchTool}
+              />
+              <div className={styles.menuBottom}>
+                <UpdateNotifier />
+                <a className={styles.sanityStudioLogoContainer} href="http://sanity.io">
+                  <SanityStudioLogo />
+                </a>
+              </div>
             </div>
             <div className={styles.toolContainer}>
               <RouteScope scope={router.state.tool}>
@@ -195,16 +207,7 @@ export default withRouterHOC(
           {createMenuIsOpen && (
             <ActionModal onClose={this.handleActionModalClose} actions={modalActions} />
           )}
-
-          <UpdateNotifier />
-
-          <a className={styles.sanityStudioLogoContainer} href="http://sanity.io">
-            <SanityStudioLogo />
-          </a>
-
-          {absolutes.map((Abs, i) => (
-            <Abs key={i} />
-          ))}
+          {absolutes.map((Abs, i) => <Abs key={i} />)}
         </div>
       )
     }
