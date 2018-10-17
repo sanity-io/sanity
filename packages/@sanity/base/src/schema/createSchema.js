@@ -3,8 +3,11 @@ import legacyRichDate from 'part:@sanity/form-builder/input/legacy-date/schema?'
 import validateSchema from '@sanity/schema/lib/sanity/validateSchema'
 import groupProblems from '@sanity/schema/lib/sanity/groupProblems'
 import {inferFromSchema as inferValidation} from '@sanity/validation'
+import link from './types/link'
 import slug from './types/slug'
 import geopoint from './types/geopoint'
+import imageCrop from './types/imageCrop'
+import imageHotspot from './types/imageHotspot'
 import imageAsset from './types/imageAsset'
 import imagePalette from './types/imagePalette'
 import imagePaletteSwatch from './types/imagePaletteSwatch'
@@ -24,11 +27,14 @@ module.exports = schemaDef => {
   if (!hasErrors) {
     types = [
       ...schemaDef.types,
+      link,
       slug,
       geopoint,
       legacyRichDate,
       imageAsset,
       fileAsset,
+      imageCrop,
+      imageHotspot,
       imageMetadata,
       imageDimensions,
       imagePalette,

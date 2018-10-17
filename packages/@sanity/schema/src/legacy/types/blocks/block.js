@@ -7,8 +7,6 @@ import {
   DEFAULT_BLOCK_STYLES,
   DEFAULT_LINK_ANNOTATION,
   DEFAULT_LIST_TYPES,
-  DEFAULT_MARKS_FIELD,
-  DEFAULT_TEXT_FIELD,
   DEFAULT_DECORATORS
 } from './defaults'
 
@@ -19,6 +17,7 @@ const INHERITED_FIELDS = [
   'jsonType',
   'description',
   'options',
+  'marks',
   'fieldsets'
 ]
 
@@ -42,12 +41,16 @@ export const BlockType = {
     const spansField = createSpansField(marks)
     const stylesField = createStylesField(styles)
     const listsField = createListsField(lists)
+    const markDefsField = createMarkDefsField(marks)
 
-    const fields = [spansField, stylesField, listsField].concat(subTypeDef.fields || [])
+    const fields = [spansField, stylesField, listsField, markDefsField]
+      .filter(Boolean)
+      .concat(subTypeDef.fields || [])
 
     const parsed = Object.assign(pick(BLOCK_CORE, INHERITED_FIELDS), rest, {
       type: BLOCK_CORE,
-      options: options
+      options: options,
+      isCustomized: Boolean((marks && marks.annotations) || of)
     })
 
     lazyGetter(parsed, 'fields', () => {
@@ -132,10 +135,21 @@ function createSpansField(marks) {
     of: [
       {
         type: 'span',
-        fields: [DEFAULT_TEXT_FIELD, DEFAULT_MARKS_FIELD],
         annotations: marks && marks.annotations ? marks.annotations : DEFAULT_ANNOTATIONS,
         decorators: marks && marks.decorators ? marks.decorators : DEFAULT_DECORATORS
       }
     ]
   }
+}
+
+function createMarkDefsField(marks) {
+  const annotations = (marks && marks.annotations) || DEFAULT_ANNOTATIONS
+  return (
+    annotations.length > 0 && {
+      name: 'markDefs',
+      title: 'Mark definitions',
+      type: 'array',
+      of: annotations
+    }
+  )
 }

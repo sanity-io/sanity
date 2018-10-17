@@ -1,13 +1,5 @@
 export const DEFAULT_LINK_ANNOTATION = {
-  type: 'object',
-  name: 'link',
-  fields: [
-    {
-      name: 'href',
-      type: 'url',
-      title: 'Url'
-    }
-  ]
+  type: 'link'
 }
 
 export const DEFAULT_TEXT_FIELD = {
