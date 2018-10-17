@@ -204,10 +204,6 @@
       "description": "Styling for <input>"
     },
     {
-      "name": "part:@sanity/base/theme/forms/control-style",
-      "description": "Wrapper for control elements like <input>"
-    },
-    {
       "name": "part:@sanity/base/theme/forms/textarea-style",
       "description": "Styling for <textarea>"
     },
@@ -429,10 +425,6 @@
     {
       "implements": "part:@sanity/base/theme/forms/text-input-style",
       "path": "styles/forms/text-input.css"
-    },
-    {
-      "implements": "part:@sanity/base/theme/forms/control-style",
-      "path": "styles/forms/control.css"
     },
     {
       "implements": "part:@sanity/base/theme/forms/textarea-style",
@@ -845,6 +837,10 @@
     {
       "implements": "part:@sanity/base/sanity-studio-logo",
       "path": "components/logos/SanityStudioLogo.js"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "styles/variables/story.js"
     }
   ]
 }
