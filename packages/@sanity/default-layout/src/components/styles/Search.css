@@ -5,6 +5,7 @@
   color: inherit;
   position: relative;
   align-items: stretch;
+  width: 100%;
 }
 
 .inner {
