@@ -59,6 +59,7 @@
   background-color: var(--main-navigation-background-color);
   grid-template-columns: 3rem auto auto 3rem 3rem;
   grid-template-rows: 3rem 3rem;
+  padding: 0 var(--medium-padding);
   box-sizing: border-box;
   align-items: stretch;
   grid-template-areas:
@@ -68,8 +69,8 @@
   @media (--screen-medium) {
     position: relative;
     grid-template-rows: 3rem;
-    grid-template-columns: 3rem     max-content 3rem         max-content  max-content auto    3rem;
-    grid-template-areas: "hamburger branding    createButton toolSwitcher extras      search  loginStatus";
+    grid-template-areas: " branding    createButton toolSwitcher extras      search  loginStatus";
+    grid-template-columns: max-content 3rem         max-content  max-content auto    1.5rem;
   }
 }
 
@@ -83,6 +84,10 @@
   grid-area: hamburger;
   display: flex;
   align-items: stretch;
+
+  @media (--screen-medium) {
+    display: none;
+  }
 }
 
 .toolSwitcher {

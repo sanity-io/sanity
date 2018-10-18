@@ -6,7 +6,7 @@ import Ink from 'react-ink'
 import styles from './styles/ToolSwitcher.css'
 
 function ToolSwitcher(props) {
-  const {tools, router, activeToolName, onSwitchTool, layout,} = props
+  const {tools, router, activeToolName, onSwitchTool, layout} = props
   return (
     <div className={styles[layout]}>
       <ul className={styles.toolList}>
@@ -15,7 +15,7 @@ function ToolSwitcher(props) {
 
           const ToolIcon = tool.icon || PluginIcon
 
-          const state = Object.assign({}, router.state, {tool: tool.name})
+          const state = router && Object.assign({}, router.state, {tool: tool.name})
           return (
             <li key={tool.name} className={itemClass}>
               <StateLink className={styles.toolLink} state={state} onClick={onSwitchTool}>
@@ -34,7 +34,8 @@ function ToolSwitcher(props) {
 }
 
 ToolSwitcher.defaultProps = {
-  layout: 'default'
+  layout: 'default',
+  tools: []
 }
 
 ToolSwitcher.propTypes = {
