@@ -4,7 +4,7 @@ import styles from 'part:@sanity/components/dialogs/popover-style'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonCollection from 'part:@sanity/components/buttons/button-collection'
 import CloseIcon from 'part:@sanity/base/close-icon'
-import {Manager, Target, Popper, Arrow} from 'react-popper'
+import {Manager, Reference, Popper} from 'react-popper'
 import {partition} from 'lodash'
 import {Portal} from '../utilities/Portal'
 import Stacked from '../utilities/Stacked'
@@ -65,7 +65,9 @@ export default class PopOver extends React.PureComponent {
     )
   }
 
-  renderPopper(isActive) {
+  render() {
+    const {useOverlay} = this.props
+    const [primary, secondary] = partition(actions, action => action.primary)
     const {
       title,
       color,
@@ -78,59 +80,64 @@ export default class PopOver extends React.PureComponent {
       padding
     } = this.props
 
-    const [primary, secondary] = partition(actions, action => action.primary)
-    return (
-      <Popper
-        className={`${styles.popper} ${styles[`color_${color}`]}`}
-        placement="auto"
-        modifiers={modifiers}
-      >
-        <Arrow className={title ? styles.filledArrow : styles.arrow} />
-        <Escapable onEscape={event => (isActive || event.shiftKey) && onEscape && onEscape()} />
-        <CaptureOutsideClicks onClickOutside={isActive ? onClickOutside : undefined}>
-          <div className={styles.popover}>
-            {onClose && (
-              <button
-                className={title ? styles.closeInverted : styles.close}
-                type="button"
-                onClick={onClose}
-              >
-                <CloseIcon />
-              </button>
-            )}
-            {title && <h3 className={styles.title}>{title}</h3>}
-            <div
-              className={`
-              ${actions.length > 0 ? styles.contentWithActions : styles.content}
-              ${styles[`padding_${padding}`]}
-            `}
-            >
-              {children}
-            </div>
-            {actions.length > 0 && (
-              <div className={styles.footer}>
-                <ButtonCollection align="end" secondary={primary.map(this.createActionButton)}>
-                  {secondary.map(this.createActionButton)}
-                </ButtonCollection>
-              </div>
-            )}
-          </div>
-        </CaptureOutsideClicks>
-      </Popper>
-    )
-  }
-
-  render() {
-    const {useOverlay} = this.props
     return (
       <Manager>
-        <Target className={styles.target} />
+        <Reference className={styles.target}>{({ref}) => <div ref={ref} />}</Reference>
         <Portal>
           <Stacked>
             {isActive => (
               <div>
                 {useOverlay && <div className={styles.overlay} />}
-                {this.renderPopper(isActive)}
+                <Popper
+                  className={`${styles.popper} ${styles[`color_${color}`]}`}
+                  placement="auto"
+                  modifiers={modifiers}
+                >
+                  {({ref, style, placement, arrowProps}) => (
+                    <div ref={ref} style={style} data-placement={placement}>
+                      <div
+                        className={title ? styles.filledArrow : styles.arrow}
+                        ref={arrowProps.ref}
+                        style={arrowProps.style}
+                      />
+                      <Escapable
+                        onEscape={event => (isActive || event.shiftKey) && onEscape && onEscape()}
+                      />
+                      <CaptureOutsideClicks onClickOutside={isActive ? onClickOutside : undefined}>
+                        <div className={styles.popover}>
+                          {onClose && (
+                            <button
+                              className={title ? styles.closeInverted : styles.close}
+                              type="button"
+                              onClick={onClose}
+                            >
+                              <CloseIcon />
+                            </button>
+                          )}
+                          {title && <h3 className={styles.title}>{title}</h3>}
+                          <div
+                            className={`
+                            ${actions.length > 0 ? styles.contentWithActions : styles.content}
+                            ${styles[`padding_${padding}`]}
+                          `}
+                          >
+                            {children}
+                          </div>
+                          {actions.length > 0 && (
+                            <div className={styles.footer}>
+                              <ButtonCollection
+                                align="end"
+                                secondary={primary.map(this.createActionButton)}
+                              >
+                                {secondary.map(this.createActionButton)}
+                              </ButtonCollection>
+                            </div>
+                          )}
+                        </div>
+                      </CaptureOutsideClicks>
+                    </div>
+                  )}
+                </Popper>
               </div>
             )}
           </Stacked>
