@@ -44,10 +44,6 @@
       "path": "./schemas/schema.js"
     },
     {
-      "implements": "part:@sanity/base/brand-logo",
-      "path": "src/components/BrandLogo.js"
-    },
-    {
       "implements": "part:@sanity/base/schema-type",
       "path": "src/components/PertEstimateSchema.js"
     },
