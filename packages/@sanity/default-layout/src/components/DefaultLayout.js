@@ -22,6 +22,8 @@ import Branding from './Branding'
 import {SchemaErrorReporter} from './SchemaErrorReporter'
 import SpaceSwitcher from './SpaceSwitcher'
 import UpdateNotifier from './UpdateNotifier'
+import config from 'config:sanity'
+import userStore from 'part:@sanity/base/user'
 
 const dataAspects = new DataAspectsResolver(schema)
 
@@ -46,6 +48,12 @@ export default withRouterHOC(
       loaded: false
     }
 
+    componentWillMount() {
+      this.userSubscription = userStore.currentUser.subscribe(event =>
+        this.setState({user: event.user})
+      )
+    }
+
     componentDidMount() {
       if (this._loadingScreenElement && this.state.showLoadingScreen) {
         this._loadingScreenElement.addEventListener('animationend', this.handleAnimationEnd, false)
@@ -53,6 +61,7 @@ export default withRouterHOC(
     }
 
     componentWillUnmount() {
+      this.userSubscription.unsubscribe()
       if (this._loadingScreenElement) {
         this._loadingScreenElement.removeEventListener(
           'animationend',
@@ -151,7 +160,7 @@ export default withRouterHOC(
               />
             </div>
             <div className={styles.branding}>
-              <Branding />
+              <Branding projectName={config && config.projectName} />
             </div>
             <a className={styles.createButton} onClick={this.handleCreateButtonClick}>
               <span className={styles.createButtonIcon}>
@@ -173,7 +182,10 @@ export default withRouterHOC(
             </div>
             <div className={styles.extras}>{/* Insert plugins here */}</div>
             <div className={styles.loginStatus}>
-              <LoginStatus />
+              <LoginStatus
+                onLogout={userStore.actions.logout}
+                user={this.state.user}
+              />
             </div>
           </div>
 

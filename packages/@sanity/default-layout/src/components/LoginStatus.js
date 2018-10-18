@@ -1,14 +1,18 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import enhanceClickOutside from 'react-click-outside'
-import userStore from 'part:@sanity/base/user'
 import Menu from 'part:@sanity/components/menus/default'
 import IconSignOut from 'part:@sanity/base/sign-out-icon'
 import styles from './styles/LoginStatus.css'
 
 class LoginStatus extends React.PureComponent {
   static propTypes = {
-    className: PropTypes.string
+    className: PropTypes.string,
+    onLogout: PropTypes.func,
+    user: PropTypes.shape({
+      name: PropTypes.string,
+      profileImage: PropTypes.string
+    })
   }
 
   constructor(...args) {
@@ -16,16 +20,6 @@ class LoginStatus extends React.PureComponent {
     this.state = {
       userMenuOpened: false
     }
-  }
-
-  componentWillMount() {
-    this.userSubscription = userStore.currentUser.subscribe(event =>
-      this.setState({user: event.user})
-    )
-  }
-
-  componentWillUnmount() {
-    this.userSubscription.unsubscribe()
   }
 
   handleClickOutside = () => {
@@ -39,14 +33,15 @@ class LoginStatus extends React.PureComponent {
   }
 
   handleUserMenuItemClick = item => {
+    const {onLogout} = this.props.onLogout
     if (item.action === 'signOut') {
-      userStore.actions.logout()
+      onLogout()
     }
   }
 
   render() {
-    const {className} = this.props
-    const {user, userMenuOpened} = this.state
+    const {className, user} = this.props
+    const {userMenuOpened} = this.state
     if (!user) {
       return null
     }
