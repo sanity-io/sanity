@@ -49,71 +49,16 @@
   }
 }
 
-.top {
+.navBar {
   position: fixed;
   width: 100%;
   z-index: 10;
-  display: grid;
-  color: #fff;
-  grid-gap: 0 var(--small-padding);
+  color: var(--white);
   background-color: var(--main-navigation-background-color);
-  grid-template-columns: 3rem auto auto 3rem 3rem;
-  grid-template-rows: 3rem 3rem;
-  padding: 0 var(--medium-padding);
-  box-sizing: border-box;
-  align-items: stretch;
-  grid-template-areas:
-    "hamburger  branding  extras  createButton   loginStatus"
-    "search     search    search  search         search";
 
   @media (--screen-medium) {
     position: relative;
-    grid-template-rows: 3rem;
-    grid-template-areas: " branding    createButton toolSwitcher extras      search  loginStatus";
-    grid-template-columns: max-content 3rem         max-content  max-content auto    1.5rem;
   }
-}
-
-.branding {
-  grid-area: branding;
-  display: flex;
-  align-items: stretch;
-}
-
-.hamburger {
-  grid-area: hamburger;
-  display: flex;
-  align-items: stretch;
-
-  @media (--screen-medium) {
-    display: none;
-  }
-}
-
-.toolSwitcher {
-  display: none;
-
-  @media (--screen-medium) {
-    grid-area: toolSwitcher;
-    display: flex;
-  }
-}
-
-.loginStatus {
-  grid-area: loginStatus;
-  display: flex;
-  align-items: stretch;
-}
-
-.extras {
-  grid-area: extras;
-}
-
-.search {
-  grid-area: search;
-  display: flex;
-  align-items: stretch;
-  justify-self: stretch;
 }
 
 .loadingScreen {
@@ -209,59 +154,5 @@
 
   @media (--screen-medium) {
     padding-top: 0;
-  }
-}
-
-.createButton {
-  display: flex;
-  grid-area: createButton;
-  text-align: center;
-  user-select: none;
-  cursor: default;
-  position: relative;
-  align-items: center;
-
-  @nest &:hover {
-    background-color: color(var(--white) a(10%));
-  }
-
-  @nest &:active {
-    background-color: color(var(--brand-primary) a(20%));
-  }
-
-  @media (--screen-medium) {
-    padding: 1em;
-  }
-}
-
-.createButtonIcon {
-  display: inline-block;
-  font-size: 1em;
-
-  @media (--screen-medium) {
-    display: block;
-  }
-}
-
-.createButtonText {
-  display: inline-block;
-  font-size: 1em;
-
-  @media (--screen-medium) {
-    display: none;
-  }
-}
-
-.sanityStudioLogoContainer {
-  opacity: 0.5;
-  color: #fff;
-  padding: var(--small-padding);
-
-  @nest &:hover {
-    opacity: 1;
-  }
-
-  @nest & svg {
-    height: 0.6rem;
   }
 }
