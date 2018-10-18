@@ -1,6 +1,7 @@
 const generateHelpUrl = require('@sanity/generate-help-url')
 const assign = require('object-assign')
 const validate = require('./validators')
+const once = require('./util/once')
 
 const defaultCdnHost = 'apicdn.sanity.io'
 const defaultConfig = {
@@ -10,29 +11,31 @@ const defaultConfig = {
   isPromiseAPI: true
 }
 
-const cdnWarning = [
+const LOCALHOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+const isLocal = host => LOCALHOSTS.indexOf(host) !== -1
+
+// eslint-disable-next-line no-console
+const createWarningPrinter = message => once(() => console.warn(message.join(' ')))
+
+const printCdnWarning = createWarningPrinter([
   'You are not using the Sanity CDN. That means your data is always fresh, but the CDN is faster and',
   `cheaper. Think about it! For more info, see ${generateHelpUrl('js-client-cdn-configuration')}.`,
   'To hide this warning, please set the `useCdn` option to either `true` or `false` when creating',
   'the client.'
-]
+])
 
-const cdnTokenWarning = [
+const printBrowserTokenWarning = createWarningPrinter([
+  'You have configured Sanity client to use a token in the browser. This may cause unintentional security issues.',
+  `See ${generateHelpUrl(
+    'js-client-browser-token'
+  )} for more information and how to hide this warning.`
+])
+
+const printCdnTokenWarning = createWarningPrinter([
   'You have set `useCdn` to `true` while also specifying a token. This is usually not what you',
   'want. The CDN cannot be used with an authorization token, since private data cannot be cached.',
   `See ${generateHelpUrl('js-client-usecdn-token')} for more information.`
-]
-
-const hasWarned = {}
-const printWarning = (id, msg) => {
-  if (hasWarned[id]) {
-    return
-  }
-
-  // eslint-disable-next-line no-console
-  console.warn(msg)
-  hasWarned[id] = true
-}
+])
 
 exports.defaultConfig = defaultConfig
 
@@ -54,15 +57,15 @@ exports.initConfig = (config, prevConfig) => {
     throw new Error('Configuration must contain `projectId`')
   }
 
-  if (typeof newConfig.useCdn === 'undefined' && !newConfig.token) {
-    printWarning('cdn', cdnWarning.join(' '))
-  } else if (
-    newConfig.useCdn &&
-    newConfig.token &&
-    (typeof window === 'undefined' ||
-      ['localhost', '127.0.0.1', '0.0.0.0'].indexOf(window.location.hostname) !== -1)
-  ) {
-    printWarning('cdn-token', cdnTokenWarning.join(' '))
+  const isBrowser = typeof window !== 'undefined'
+  const isLocalhost = isBrowser && isLocal(window.location.hostname)
+
+  if (isBrowser && isLocalhost && newConfig.token && newConfig.ignoreBrowserTokenWarning !== true) {
+    printBrowserTokenWarning()
+  } else if ((!isBrowser || isLocalhost) && newConfig.useCdn && newConfig.token) {
+    printCdnTokenWarning()
+  } else if (typeof newConfig.useCdn === 'undefined') {
+    printCdnWarning()
   }
 
   if (projectBased) {
