@@ -5,10 +5,14 @@ import {use, assert as assertChai} from 'chai'
 import chaiExclude from 'chai-exclude'
 import {Value, Operation} from 'slate'
 import {List} from 'immutable'
-import {blocksToEditorValue, editorValueToBlocks} from '@sanity/block-tools'
+import {
+  blocksToEditorValue,
+  editorValueToBlocks,
+  getBlockContentFeatures
+} from '@sanity/block-tools'
 import blocksSchema from '../../../../fixtures/blocksSchema'
-import changeToPatches from '../../../../../src/inputs/BlockEditor/utils/changeToPatches'
-import patchesToChange from '../../../../../src/inputs/BlockEditor/utils/patchesToChange'
+import createChangeToPatches from '../../../../../src/inputs/BlockEditor/utils/createChangeToPatches'
+import createPatchesToChange from '../../../../../src/inputs/BlockEditor/utils/createPatchesToChange'
 import {applyAll} from '../../../../../src/simplePatch'
 import createEditorController from '../../../../../src/inputs/BlockEditor/utils/createEditorController'
 
@@ -52,6 +56,16 @@ describe('changesToPatches', () => {
         )
       )
 
+      const changeToPatches = createChangeToPatches(
+        getBlockContentFeatures(blockContentType),
+        blockContentType
+      )
+
+      const patchesToChange = createPatchesToChange(
+        getBlockContentFeatures(blockContentType),
+        blockContentType
+      )
+
       const editorA = createEditorController({value: editorValue})
       const editorB = createEditorController({value: editorValue})
 
@@ -78,12 +92,7 @@ describe('changesToPatches', () => {
         assert.deepEqual(receivedValue, expectedValue)
       }
 
-      const otherClientPatchedChange = patchesToChange(
-        patches,
-        editorB.value,
-        input,
-        blockContentType
-      )
+      const otherClientPatchedChange = patchesToChange(patches, editorB.value, input)
       // console.log('foo')
       // console.log(JSON.stringify(otherClientPatchedChange.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
       const otherClientPatchedValue = editorValueToBlocks(

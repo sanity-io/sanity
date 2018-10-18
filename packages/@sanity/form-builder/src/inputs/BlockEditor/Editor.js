@@ -19,6 +19,7 @@ import type {
   FormBuilderValue,
   Marker,
   Path,
+  Patch,
   RenderBlockActions,
   RenderCustomMarkers,
   SlateChange,
@@ -31,24 +32,26 @@ import type {
   UndoRedoStack
 } from './typeDefs'
 
-import {VALUE_TO_JSON_OPTS} from './utils/changeToPatches'
+import {VALUE_TO_JSON_OPTS} from './utils/createChangeToPatches'
 import buildEditorSchema from './utils/buildEditorSchema'
 import findInlineByAnnotationKey from './utils/findInlineByAnnotationKey'
 import createBlockActionPatchFn from './utils/createBlockActionPatchFn'
 
 import ExpandToWordPlugin from './plugins/ExpandToWordPlugin'
+import InsertBlockObjectPlugin from './plugins/InsertBlockObjectPlugin'
+import InsertInlineObjectPlugin from './plugins/InsertInlineObjectPlugin'
 import ListItemOnEnterKeyPlugin from './plugins/ListItemOnEnterKeyPlugin'
 import ListItemOnTabKeyPlugin from './plugins/ListItemOnTabKeyPlugin'
 import OnDropPlugin from './plugins/OnDropPlugin'
 import PastePlugin from './plugins/PastePlugin'
+import QueryPlugin from './plugins/QueryPlugin'
+import SetBlockStylePlugin from './plugins/SetBlockStylePlugin'
 import SetMarksOnKeyComboPlugin from './plugins/SetMarksOnKeyComboPlugin'
 import SplitNodePlugin from './plugins/SplitNodePlugin'
-import SetBlockStylePlugin from './plugins/SetBlockStylePlugin'
 import TextBlockOnEnterKeyPlugin from './plugins/TextBlockOnEnterKeyPlugin'
 import ToggleAnnotationPlugin from './plugins/ToggleAnnotationPlugin'
 import ToggleListItemPlugin from './plugins/ToggleListItemPlugin'
 import UndoRedoPlugin from './plugins/UndoRedoPlugin'
-import QueryPlugin from './plugins/QueryPlugin'
 import WrapSpanPlugin from './plugins/WrapSpanPlugin'
 
 import BlockObject from './nodes/BlockObject'
@@ -63,6 +66,11 @@ type PasteProgressResult = {status: string | null, error?: Error}
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
+  changeToPatches: (
+    unchangedEditorValue: SlateValue,
+    change: SlateChange,
+    value: ?(FormBuilderValue[])
+  ) => Patch[],
   editorValue: SlateValue,
   fullscreen: boolean,
   focusPath: Path,
@@ -80,6 +88,7 @@ type Props = {
   }) => {insert?: FormBuilderValue[], path?: []},
   onPatch: (event: PatchEvent) => void,
   onToggleFullScreen: void => void,
+  patchesToChange: (patches: Patch[], editorValue: SlateValue, snapshot: ?any) => SlateChange,
   readOnly?: boolean,
   renderBlockActions?: RenderBlockActions,
   renderCustomMarkers?: RenderCustomMarkers,
@@ -107,6 +116,7 @@ export default class Editor extends React.Component<Props> {
 
   constructor(props: Props) {
     super(props)
+    this._editorSchema = buildEditorSchema(props.blockContentFeatures)
     this._plugins = [
       SplitNodePlugin(),
       ListItemOnEnterKeyPlugin({defaultBlock: EDITOR_DEFAULT_BLOCK_TYPE}),
@@ -129,18 +139,23 @@ export default class Editor extends React.Component<Props> {
       OnDropPlugin(),
       QueryPlugin(),
       SetBlockStylePlugin(),
-      ToggleAnnotationPlugin(props.onFocus),
+      ToggleAnnotationPlugin(),
       ToggleListItemPlugin(),
       ExpandToWordPlugin(),
-      WrapSpanPlugin()
-      // UndoRedoPlugin({
-      //   stack: props.undoRedoStack,
-      //   onChange: props.onChange,
-      //   editorValue: props.editorValue,
-      //   blockContentType: props.type
-      // })
+      WrapSpanPlugin(),
+      InsertInlineObjectPlugin(props.type),
+      InsertBlockObjectPlugin(),
+      UndoRedoPlugin({
+        stack: props.undoRedoStack,
+        onChange: props.onChange,
+        onPatch: props.onPatch,
+        editorValue: props.editorValue,
+        patchesToChange: props.patchesToChange,
+        changeToPatches: props.changeToPatches,
+        editorSchema: this._editorSchema,
+        blockContentType: props.type
+      })
     ]
-    this._editorSchema = buildEditorSchema(props.blockContentFeatures)
   }
 
   componentDidMount() {
@@ -187,6 +202,12 @@ export default class Editor extends React.Component<Props> {
         if (focusPath[1] && focusPath[1] === 'children' && focusPath[2]) {
           // Inline object
           inline = editorValue.document.getDescendant(focusPath[2]._key)
+          // eslint-disable-next-line max-depth
+          if (!inline) {
+            throw new Error(
+              `Could not find a inline with key ${focusPath[2]._key}, something is amiss.`
+            )
+          }
           this.scrollIntoView(change, inline)
         } else if (
           // Annotation
@@ -202,6 +223,12 @@ export default class Editor extends React.Component<Props> {
         }
       } else if (!readOnly) {
         // Must be here to set focus after editing interfaces are closed
+        inline = editorValue.focusInline
+        if (inline) {
+          // There are some issues where you can't move the cursor
+          // if the focus is collapsed on an inline-node, move forward to next text.
+          change.moveForward()
+        }
         change.focus()
       }
     })
@@ -347,7 +374,6 @@ export default class Editor extends React.Component<Props> {
       editorValue,
       focusPath,
       markers,
-      onChange,
       onFocus,
       onPatch,
       readOnly,
@@ -401,8 +427,6 @@ export default class Editor extends React.Component<Props> {
       hasFormBuilderFocus = focusPath ? hasItemFocus(focusPath, {_key: node.key}) : false
     }
 
-    const controller = this.getController()
-
     switch (node.type) {
       case 'contentBlock':
         return (
@@ -418,7 +442,7 @@ export default class Editor extends React.Component<Props> {
             }
             blockActions={this._blockActionsMap[node.key]}
             blockContentFeatures={blockContentFeatures}
-            controller={controller}
+            controller={props.editor}
             editorValue={editorValue}
             hasFormBuilderFocus={hasFormBuilderFocus}
             markers={childMarkers}
@@ -435,7 +459,7 @@ export default class Editor extends React.Component<Props> {
           <Span
             attributes={props.attributes}
             blockContentFeatures={blockContentFeatures}
-            controller={this.getController()}
+            controller={props.editor}
             editorValue={editorValue}
             markers={childMarkers}
             node={props.node}
@@ -452,8 +476,7 @@ export default class Editor extends React.Component<Props> {
           <ObjectClass
             attributes={props.attributes}
             blockContentFeatures={blockContentFeatures}
-            controller={controller}
-            editor={props.editor}
+            controller={props.editor}
             editorValue={editorValue}
             hasFormBuilderFocus={hasFormBuilderFocus}
             isSelected={props.isFocused}

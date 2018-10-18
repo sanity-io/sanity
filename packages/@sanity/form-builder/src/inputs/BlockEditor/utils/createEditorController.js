@@ -5,7 +5,7 @@ import type {SlateValue, SlateChange} from '../typeDefs'
 
 type Opts = {
   value: SlateValue,
-  plugins?: ((void) => void)[],
+  plugins?: any[],
   onChange?: SlateChange => void
 }
 

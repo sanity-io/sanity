@@ -169,6 +169,7 @@ class Toolbar extends React.PureComponent<Props, State> {
                       blockContentFeatures={blockContentFeatures}
                       controller={controller}
                       editorValue={editorValue}
+                      onFocus={onFocus}
                       userIsWritingText={userIsWritingText}
                     />
                   </div>
@@ -177,9 +178,9 @@ class Toolbar extends React.PureComponent<Props, State> {
                   <div className={styles.insertContainer}>
                     <InsertMenu
                       blockTypes={blockContentFeatures.types.blockObjects}
+                      controller={controller}
                       editorValue={editorValue}
                       inlineTypes={blockContentFeatures.types.inlineObjects}
-                      onChange={onChange}
                       onFocus={onFocus}
                       type={type}
                     />

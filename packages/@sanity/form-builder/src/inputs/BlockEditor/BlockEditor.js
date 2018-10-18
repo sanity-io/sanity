@@ -2,8 +2,6 @@
 import type {Element as ReactElement, ElementRef} from 'react'
 import React from 'react'
 import {isKeyHotkey} from 'is-hotkey'
-import {Editor as SlateController} from 'slate'
-import {Editor as SlateEditor} from 'slate-react'
 
 import {PatchEvent} from 'part:@sanity/form-builder/patch-event'
 
@@ -27,6 +25,7 @@ import type {
   FormBuilderValue,
   Marker,
   Path,
+  Patch,
   RenderBlockActions,
   RenderCustomMarkers,
   SlateChange,
@@ -37,7 +36,11 @@ import type {
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
-  controller: SlateController,
+  changeToPatches: (
+    unchangedEditorValue: SlateValue,
+    change: SlateChange,
+    value: ?(FormBuilderValue[])
+  ) => Patch[],
   editorValue: SlateValue,
   fullscreen: boolean,
   isActive: boolean,
@@ -57,6 +60,7 @@ type Props = {
   }) => {insert?: FormBuilderValue[], path?: []},
   onPatch: (event: PatchEvent) => void,
   onToggleFullScreen: void => void,
+  patchesToChange: (patches: Patch[], editorValue: SlateValue, snapshot: ?any) => SlateChange,
   readOnly?: boolean,
   renderBlockActions?: RenderBlockActions,
   renderCustomMarkers?: RenderCustomMarkers,
@@ -257,6 +261,7 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
   renderEditor(): ReactElement<typeof Editor> {
     const {
       blockContentFeatures,
+      changeToPatches,
       editorValue,
       focusPath,
       fullscreen,
@@ -268,6 +273,7 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
       onPatch,
       onPaste,
       onToggleFullScreen,
+      patchesToChange,
       isLoading,
       readOnly,
       renderBlockActions,
@@ -280,6 +286,7 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
     return (
       <Editor
         blockContentFeatures={blockContentFeatures}
+        changeToPatches={changeToPatches}
         editorValue={editorValue}
         focusPath={focusPath}
         fullscreen={fullscreen}
@@ -292,6 +299,7 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
         onPaste={onPaste}
         onPatch={onPatch}
         onToggleFullScreen={onToggleFullScreen}
+        patchesToChange={patchesToChange}
         readOnly={readOnly}
         ref={this._editor}
         renderBlockActions={renderBlockActions}

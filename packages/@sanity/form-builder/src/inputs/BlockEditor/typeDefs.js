@@ -137,16 +137,11 @@ export type FormBuilderSchema = {
   types: Array<Type>
 }
 
-export type UndoRedoSnapshot = {
-  editorValue: SlateValue,
+export type UndoRedoStackItem = {
+  remoteChanges: {patches: Patch[], timestamp: Date}[],
+  timestamp: Date,
   change: SlateChange,
-  timestamp: Date
-}
-
-export type UndoRedoStackItem = UndoRedoSnapshot & {
-  patches: Patch[],
-  inversedPatches: Patch[],
-  snapshot: FormBuilderValue[]
+  beforeChangeEditorValue: SlateValue
 }
 
 export type UndoRedoStack = {undo: UndoRedoStackItem[], redo: UndoRedoStackItem[]}

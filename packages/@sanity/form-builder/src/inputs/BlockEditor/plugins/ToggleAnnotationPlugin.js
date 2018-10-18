@@ -1,12 +1,10 @@
 // @flow
 import {Change} from 'slate'
 import {randomKey} from '@sanity/block-tools'
-import type {Path} from '../typeDefs'
-import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 
 // This plugin toggles an annotation on the selected content
 
-export default function ToggleAnnotationPlugin(onFocus?: Path => void) {
+export default function ToggleAnnotationPlugin() {
   return {
     // eslint-disable-next-line complexity
     onCommand(command: any, change: Change, next: void => void) {
@@ -15,26 +13,13 @@ export default function ToggleAnnotationPlugin(onFocus?: Path => void) {
       }
       const {value} = change
       const spans = value.inlines.filter(inline => inline.type === 'span')
-      const annotationName = command.args[0]
+      const options = command.args[0] || {}
+      const {annotationName} = options
+      const key = options.key || randomKey(12)
 
       // Add annotation
       if (spans.size === 0) {
-        const key = randomKey(12)
         change.editor.command('wrapSpan', {key, annotationName})
-        // Make the block editor focus the annotation input
-        if (onFocus) {
-          const focusPath = [
-            {_key: change.value.focusBlock.key},
-            'markDefs',
-            {_key: key},
-            FOCUS_TERMINATOR
-          ]
-          setTimeout(() => {
-            if (onFocus) {
-              onFocus(focusPath)
-            }
-          }, 200)
-        }
         return change
       }
 

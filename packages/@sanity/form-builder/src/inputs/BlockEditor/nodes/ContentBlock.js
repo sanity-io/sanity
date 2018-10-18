@@ -11,7 +11,6 @@ import type {
   Path,
   SlateComponentProps,
   SlateController,
-  SlateChange,
   SlateValue
 } from '../typeDefs'
 import ListItem from './ListItem'
@@ -25,7 +24,6 @@ type Props = {
   controller: SlateController,
   editorValue: SlateValue,
   markers: Marker[],
-  onChange: (change: SlateChange, callback?: (SlateChange) => void) => void,
   onFocus: Path => void,
   renderCustomMarkers?: (Marker[]) => Node
 }

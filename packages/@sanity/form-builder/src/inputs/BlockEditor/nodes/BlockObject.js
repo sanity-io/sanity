@@ -5,7 +5,7 @@ import Base64 from 'slate-base64-serializer'
 
 import React from 'react'
 import {Block} from 'slate'
-import {Editor, findDOMNode, findNode, setEventTransfer} from 'slate-react'
+import {findDOMNode, findNode, setEventTransfer} from 'slate-react'
 import classNames from 'classnames'
 
 import {IntentLink} from 'part:@sanity/base/router'
@@ -41,7 +41,6 @@ type Props = {
   attributes: any,
   blockContentFeatures: BlockContentFeatures,
   controller: SlateController,
-  editor: Editor,
   editorValue: SlateValue,
   hasFormBuilderFocus: boolean,
   isSelected?: boolean,
@@ -78,8 +77,8 @@ export default class BlockObject extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    const {editor} = this.props
-    const elm = ReactDOM.findDOMNode(editor) // eslint-disable-line react/no-find-dom-node
+    const {controller} = this.props
+    const elm = ReactDOM.findDOMNode(controller) // eslint-disable-line react/no-find-dom-node
     if (elm instanceof HTMLElement) {
       this._editorNode = elm
     }
@@ -182,9 +181,9 @@ export default class BlockObject extends React.Component<Props, State> {
         event.dataTransfer.dropEffect = 'move'
       }
 
-      const {editorValue} = this.props
+      const {editorValue, controller} = this.props
 
-      const targetNode = findNode(targetDOMNode, editorValue)
+      const targetNode = findNode(targetDOMNode, controller)
       if (!targetNode) {
         this.resetDropTarget()
         return
@@ -271,8 +270,9 @@ export default class BlockObject extends React.Component<Props, State> {
         .focus()
         .blur()
     })
-    alert('fixme!')
-    // onChange(change, () => onFocus([{_key: node.key}, FOCUS_TERMINATOR]))
+    setTimeout(() => {
+      onFocus([{_key: node.key}, FOCUS_TERMINATOR])
+    }, 200)
   }
 
   handleClose = () => {

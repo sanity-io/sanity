@@ -41,21 +41,23 @@ function handleHTML(html, change, blockContentType, onProgress) {
     const value = blockTools.blocksToEditorValue(blocks, blockContentType)
     // console.log(JSON.stringify(doc.toJSON({preserveKeys: true, preserveData: true}), null, 2))
     const {focusBlock} = change.value
-    value.document.nodes.forEach((block, index) => {
-      if (
-        index === 0 &&
-        focusBlock &&
-        !change.editor.query('isVoid', focusBlock) &&
-        focusBlock.nodes.size === 1 &&
-        focusBlock.text === ''
-      ) {
-        change
-          .insertBlock(block)
-          .moveToEndOfBlock()
-          .removeNodeByKey(focusBlock.key)
-      } else {
-        change.insertBlock(block).moveToEndOfBlock()
-      }
+    change.withoutSaving(() => {
+      value.document.nodes.forEach((block, index) => {
+        if (
+          index === 0 &&
+          focusBlock &&
+          !change.editor.query('isVoid', focusBlock) &&
+          focusBlock.nodes.size === 1 &&
+          focusBlock.text === ''
+        ) {
+          change
+            .insertBlock(block)
+            .moveToEndOfBlock()
+            .removeNodeByKey(focusBlock.key)
+        } else {
+          change.insertBlock(block).moveToEndOfBlock()
+        }
+      })
     })
     try {
       editor.onChange(change)

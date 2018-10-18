@@ -1,12 +1,19 @@
 // @flow
 
 import React from 'react'
-import {Change, Value as SlateValue, Range} from 'slate'
-
+import {Value as SlateValue, Range} from 'slate'
+import {randomKey} from '@sanity/block-tools'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import ToggleButton from 'part:@sanity/components/toggles/button'
-import type {BlockContentFeature, BlockContentFeatures, Path, SlateController} from '../typeDefs'
+import type {
+  BlockContentFeature,
+  BlockContentFeatures,
+  Path,
+  SlateChange,
+  SlateController
+} from '../typeDefs'
+import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 import CustomIcon from './CustomIcon'
 import ToolbarClickAction from './ToolbarClickAction'
 
@@ -21,6 +28,7 @@ type Props = {
   blockContentFeatures: BlockContentFeatures,
   controller: SlateController,
   editorValue: SlateValue,
+  onFocus: Path => void,
   userIsWritingText: boolean
 }
 
@@ -35,69 +43,59 @@ function getIcon(type: string) {
 
 const NOOP = () => {}
 
-function isNonTextSelection(editorValue: SlateValue) {
-  const {focusText, selection} = editorValue
-  const {isCollapsed} = selection
-  return (
-    !focusText ||
-    (focusText &&
-      isCollapsed &&
-      focusText.text.substring(selection.focus.offset - 1, selection.focus.offset).trim() === '' &&
-      focusText.text.substring(selection.focus.offset, selection.focus.offset + 1).trim() === '')
-  )
-}
-
 export default class AnnotationButtons extends React.Component<Props> {
   shouldComponentUpdate(nextProps: Props) {
+    const {controller} = this.props
     if (nextProps.userIsWritingText) {
       return false
     }
     if (
       nextProps.userIsWritingText !== this.props.userIsWritingText ||
       nextProps.editorValue.inlines.size !== this.props.editorValue.inlines.size ||
-      isNonTextSelection(this.props.editorValue) ||
-      isNonTextSelection(nextProps.editorValue)
+      controller.query('hasSelectionWithText', this.props.editorValue) === false ||
+      controller.query('hasSelectionWithText', nextProps.editorValue) === false
     ) {
       return true
     }
     return false
   }
 
-  hasAnnotation(annotationName: string) {
-    const {editorValue} = this.props
-    const spans = editorValue.inlines.filter(inline => inline.type === 'span')
-    return spans.some(span => {
-      const annotations = span.data.get('annotations') || {}
-      return Object.keys(annotations).find(
-        key => annotations[key] && annotations[key]._type === annotationName
-      )
-    })
-  }
-
   getItems() {
     const {controller, blockContentFeatures, editorValue, userIsWritingText} = this.props
-    const {inlines, focusBlock} = editorValue
+    const {inlines} = editorValue
 
     const disabled =
       userIsWritingText ||
-      inlines.some(inline => inline.type !== 'span') ||
-      (focusBlock ? controller.query('isVoid', focusBlock) || focusBlock.text === '' : false) ||
-      isNonTextSelection(editorValue)
+      controller.query('hasSelectionWithText') === false ||
+      inlines.some(inline => inline.type !== 'span')
     return blockContentFeatures.annotations.map((annotation: BlockContentFeature) => {
       return {
         ...annotation,
-        active: this.hasAnnotation(annotation.value),
+        active: controller.query('hasAnnotation', annotation.value),
         disabled
       }
     })
   }
 
   handleClick = (item: AnnotationItem, originalSelection: Range) => {
-    const {controller} = this.props
+    const {controller, onFocus} = this.props
     if (item.disabled) {
       return
     }
-    controller.command('toggleAnnotation', item.value)
+    controller.change((change: SlateChange) => {
+      const key = randomKey(12)
+      controller.command('toggleAnnotation', {annotationName: item.value, key})
+      // Make the block editor focus the annotation input
+      const focusPath = [
+        {_key: change.value.focusBlock.key},
+        'markDefs',
+        {_key: key},
+        FOCUS_TERMINATOR
+      ]
+      setTimeout(() => {
+        onFocus(focusPath)
+      }, 200)
+    })
   }
 
   renderAnnotationButton = (item: AnnotationItem) => {

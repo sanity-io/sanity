@@ -1,18 +1,17 @@
 // @flow
 
-import type {Type, SlateChange, SlateValue, Path} from '../typeDefs'
-
 import React from 'react'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 
+import type {Type, SlateValue, SlateController, Path} from '../typeDefs'
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 import {insertBlockObject, insertInlineObject} from '../utils/changes'
 
 type Props = {
   blockTypes: Type[],
+  controller: SlateController,
   editorValue: SlateValue,
   inlineTypes: Type[],
-  onChange: (change: SlateChange, callback?: (SlateChange) => void) => void,
   onFocus: Path => void,
   type: Type
 }
@@ -34,7 +33,8 @@ export default class InsertMenu extends React.Component<Props> {
   }
 
   getItems() {
-    const {editorValue} = this.props
+    const {editorValue, controller} = this.props
+    const {focusBlock} = editorValue
     const blockItems = this.props.blockTypes.map(type => ({
       title: `${type.title} ¶`,
       value: type,
@@ -45,30 +45,30 @@ export default class InsertMenu extends React.Component<Props> {
       title: type.title,
       value: type,
       isInline: true,
-      isDisabled: editorValue.focusBlock ? editorValue.focusBlock.isVoid : true
+      isDisabled: focusBlock ? controller.query('isVoid', focusBlock) : true
     }))
     return blockItems.concat(inlineItems)
   }
 
   handleOnAction = (item: BlockItem) => {
-    const {editorValue, onChange, onFocus, type} = this.props
-    const change = editorValue.change()
-    const focusKey = change.value.selection.focus.key
-    const focusBlock = change.value.document.getClosestBlock(focusKey)
+    const {onFocus, controller, editorValue} = this.props
+    const focusKey = editorValue.selection.focus.key
+    const focusBlock = editorValue.document.getClosestBlock(focusKey)
     let focusPath = [{_key: focusBlock.key}]
-    if (item.isInline) {
-      change.call(insertInlineObject, item.value, type)
-      focusPath = [
-        {_key: focusBlock.key},
-        'children',
-        {_key: change.value.focusInline.key},
-        FOCUS_TERMINATOR
-      ]
-    } else {
-      change.call(insertBlockObject, item.value).focus()
-      focusPath = [{_key: change.value.focusBlock.key}, FOCUS_TERMINATOR]
-    }
-    onChange(change, () => {
+    controller.change(change => {
+      if (item.isInline) {
+        controller.command('insertInlineObject', {objectType: item.value})
+        focusPath = [
+          {_key: focusBlock.key},
+          'children',
+          {_key: change.value.focusInline.key},
+          FOCUS_TERMINATOR
+        ]
+      } else {
+        controller.command('insertBlockObject', {objectType: item.value})
+        change.focus()
+        focusPath = [{_key: change.value.focusBlock.key}, FOCUS_TERMINATOR]
+      }
       setTimeout(() => onFocus(focusPath), 200)
     })
   }

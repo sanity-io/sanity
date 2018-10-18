@@ -1,32 +1,40 @@
 // @flow
-import type {
-  BlockArrayType,
-  FormBuilderValue,
-  BlockContentFeatures,
-  Marker,
-  Path,
-  RenderBlockActions,
-  RenderCustomMarkers,
-  SlateChange,
-  SlateValue,
-  Type,
-  UndoRedoStack
-} from './typeDefs'
 
 import {uniqueId} from 'lodash'
-import {Editor as SlateController} from 'slate'
 
 import React from 'react'
 
 import FormField from 'part:@sanity/components/formfields/default'
 
 import {PatchEvent} from '../../PatchEvent'
+
+import type {
+  BlockArrayType,
+  BlockContentFeatures,
+  FormBuilderValue,
+  Marker,
+  Path,
+  Patch,
+  RenderBlockActions,
+  RenderCustomMarkers,
+  SlateChange,
+  SlateController,
+  SlateValue,
+  Type,
+  UndoRedoStack
+} from './typeDefs'
+
 import BlockEditor from './BlockEditor'
 
 import styles from './styles/Input.css'
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
+  changeToPatches: (
+    unchangedEditorValue: SlateValue,
+    change: SlateChange,
+    value: ?(FormBuilderValue[])
+  ) => Patch[],
   controller: SlateController,
   editorValue: SlateValue,
   focusPath: [],
@@ -43,6 +51,7 @@ type Props = {
     type: Type,
     value: ?(FormBuilderValue[])
   }) => {insert?: FormBuilderValue[], path?: []},
+  patchesToChange: (patches: Patch[], editorValue: SlateValue, snapshot: ?any) => SlateChange,
   isLoading: boolean,
   readOnly?: boolean,
   renderBlockActions?: RenderBlockActions,
@@ -91,14 +100,10 @@ export default class BlockEditorInput extends React.Component<Props, State> {
     this.focus()
   }
 
-  handleTestClick = () => {
-    const {onFocus} = this.props
-    onFocus([{_key: '444790925455'}, 'markDefs', {_key: '282a11cadbb0'}, 'href'])
-  }
-
   render() {
     const {
       blockContentFeatures,
+      changeToPatches,
       controller,
       editorValue,
       focusPath,
@@ -111,6 +116,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
       onLoading,
       onPaste,
       onPatch,
+      patchesToChange,
       readOnly,
       renderBlockActions,
       renderCustomMarkers,
@@ -141,10 +147,9 @@ export default class BlockEditorInput extends React.Component<Props, State> {
           >
             Jump to editor
           </button>
-          {JSON.stringify(focusPath)}
-          <button onClick={this.handleTestClick}>Test</button>
           <BlockEditor
             blockContentFeatures={blockContentFeatures}
+            changeToPatches={changeToPatches}
             controller={controller}
             editorValue={editorValue}
             focusPath={focusPath}
@@ -159,6 +164,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
             onPatch={onPatch}
             onPaste={onPaste}
             onToggleFullScreen={this.handleToggleFullScreen}
+            patchesToChange={patchesToChange}
             readOnly={readOnly}
             renderCustomMarkers={renderCustomMarkers}
             renderBlockActions={renderBlockActions}

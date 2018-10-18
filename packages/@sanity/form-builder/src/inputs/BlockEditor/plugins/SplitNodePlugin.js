@@ -22,7 +22,7 @@ export default function SplitNodePlugin() {
           const path = List.of(op.path.get(0) + 1)
           let node = change.value.document.nodes.get(path.get(0))
           if (!node) {
-            // Probably an undo operation, let it be handled by default
+            // New block not ready yet
             return false
           }
           node = node.toJSON(VALUE_TO_JSON_OPTS)

@@ -1,28 +1,31 @@
 // @flow
-import type {
-  BlockContentFeatures,
-  FormBuilderValue,
-  Marker,
-  Path,
-  SlateChange,
-  SlateNode,
-  SlateSelection,
-  SlateValue,
-  Type
-} from '../typeDefs'
+
 import ReactDOM from 'react-dom'
 import Base64 from 'slate-base64-serializer'
 
 import React from 'react'
-import {Block, Range} from 'slate'
+import {Block, Range, Inline} from 'slate'
 import {isEqual} from 'lodash'
-import {Editor, setEventTransfer, getEventRange} from 'slate-react'
+import {setEventTransfer, getEventRange} from 'slate-react'
 import {IntentLink} from 'part:@sanity/base/router'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import Stacked from 'part:@sanity/components/utilities/stacked'
 import Escapable from 'part:@sanity/components/utilities/escapable'
 import {Tooltip} from '@sanity/react-tippy'
 import classNames from 'classnames'
+
+import type {
+  BlockContentFeatures,
+  FormBuilderValue,
+  Marker,
+  Path,
+  SlateController,
+  SlateChange,
+  SlateNode,
+  SlateSelection,
+  SlateValue,
+  Type
+} from '../typeDefs'
 
 import {resolveTypeName} from '../../../utils/resolveTypeName'
 import {PatchEvent} from '../../../PatchEvent'
@@ -32,20 +35,19 @@ import DeleteButton from '../DeleteButton'
 import EditButton from '../EditButton'
 import InvalidValue from '../../InvalidValueInput'
 import Preview from '../../../Preview'
+import ViewButton from '../ViewButton'
 
 import styles from './styles/InlineObject.css'
-import ViewButton from '../ViewButton'
 
 type Props = {
   attributes: any,
   blockContentFeatures: BlockContentFeatures,
-  editor: Editor,
+  controller: SlateController,
   editorValue: SlateValue,
   hasFormBuilderFocus: boolean,
   isSelected?: boolean,
   markers: Marker[],
   node: Block,
-  onChange: (change: SlateChange, callback?: (SlateChange) => void) => void,
   onFocus: Path => void,
   onPatch: (event: PatchEvent, value?: FormBuilderValue[]) => void,
   readOnly?: boolean,
@@ -59,20 +61,13 @@ type State = {
 
 const NOOP = () => {}
 
-function shouldUpdateDropTarget(range, dropTarget) {
-  if (!dropTarget) {
-    return true
-  }
-  return range.focus.offset !== dropTarget.selection.focus.offset
-}
-
 export default class InlineObject extends React.Component<Props, State> {
   static defaultProps = {
     isSelected: false,
     readOnly: false
   }
 
-  _dropTarget: ?{node: HTMLElement, selection: SlateSelection} = null
+  _dropTarget: ?{node: SlateNode, selection: SlateSelection} = null
   _editorNode: ?HTMLElement = null
   _previewContainer: ?HTMLElement = null
 
@@ -82,8 +77,8 @@ export default class InlineObject extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    const {editor} = this.props
-    const elm = ReactDOM.findDOMNode(editor) // eslint-disable-line react/no-find-dom-node
+    const {controller} = this.props
+    const elm = ReactDOM.findDOMNode(controller) // eslint-disable-line react/no-find-dom-node
     if (elm instanceof HTMLElement) {
       this._editorNode = elm
     }
@@ -122,6 +117,9 @@ export default class InlineObject extends React.Component<Props, State> {
       event.dataTransfer.effectAllowed = 'move'
       event.dataTransfer.setDragImage(element, element.clientWidth / 2, -10)
     }
+    this.props.controller.change((change: SlateChange) => {
+      change.moveToEndOfNode(this.props.node).focus()
+    })
   }
 
   // Remove the drop target if we leave the editors nodes
@@ -136,6 +134,14 @@ export default class InlineObject extends React.Component<Props, State> {
     this._dropTarget = null
   }
 
+  restoreSelection() {
+    this.props.controller.change((change: SlateChange) => {
+      change.withoutSaving(() => {
+        change.moveToEndOfNode(this.props.node).focus()
+      })
+    })
+  }
+
   handleDragOverOtherNode = (event: DragEvent) => {
     if (!this.state.isDragging) {
       return
@@ -146,13 +152,15 @@ export default class InlineObject extends React.Component<Props, State> {
     // As the event is registered on the editor parent node
     // ignore the event if it is coming from from the editor node itself
     if (targetDOMNode === this._editorNode) {
+      this.restoreSelection()
       return
     }
 
-    const {editorValue, onChange} = this.props
+    const {controller, editorValue} = this.props
 
-    const range = getEventRange(event, editorValue)
+    const range = getEventRange(event, controller)
     if (range === null || typeof range.focus.offset === undefined) {
+      this.restoreSelection()
       return
     }
 
@@ -160,6 +168,7 @@ export default class InlineObject extends React.Component<Props, State> {
 
     // If we are dragging over another inline return
     if (editorValue.document.getClosestInline(targetNode.key)) {
+      this.restoreSelection()
       return
     }
 
@@ -168,17 +177,11 @@ export default class InlineObject extends React.Component<Props, State> {
     if (block && block.type !== 'contentBlock') {
       return
     }
-
-    const moveCursorChange = this.moveCursor(range, targetNode)
-    const selection = moveCursorChange.value.selection
-    if (shouldUpdateDropTarget(selection, this._dropTarget)) {
-      this._dropTarget = {node: targetNode, selection}
-      onChange(moveCursorChange)
-    }
+    this.moveCursor(range, targetNode)
   }
 
   moveCursor(range: Range, node: SlateNode) {
-    const {editorValue} = this.props
+    const {editorValue, controller} = this.props
     let theOffset = range.focus.offset
 
     // Check if it is acceptable to move the cursor here
@@ -197,18 +200,25 @@ export default class InlineObject extends React.Component<Props, State> {
     if (!texts.size) {
       theOffset = 0
     }
-    const change = editorValue
-      .change()
-      .moveToStartOfNode(node)
-      .moveForward(theOffset)
-      .focus()
-    return change
+    return controller.change((change: SlateChange) => {
+      change.withoutSaving(() => {
+        change
+          .moveToStartOfNode(node)
+          .moveForward(theOffset)
+          .focus()
+      })
+      const selection = change.value.selection
+      if (!this._dropTarget || range.focus.offset !== this._dropTarget.selection.focus.offset) {
+        this._dropTarget = {node: node, selection}
+      }
+      return change
+    })
   }
 
   handleDragEnd = (event: SyntheticDragEvent<>) => {
     this.setState({isDragging: false})
 
-    const {onChange, node, editorValue} = this.props
+    const {node, controller} = this.props
 
     const target = this._dropTarget
 
@@ -217,16 +227,18 @@ export default class InlineObject extends React.Component<Props, State> {
       this.resetDropTarget()
       return
     }
-    const change = editorValue
-      .change()
-      .select(target.selection)
-      .removeNodeByKey(node.key)
-      .insertInline(node)
-      .moveToEndOfNode(node)
-      .focus()
-
-    onChange(change)
-
+    controller.change(change => {
+      change.select(target.selection).removeNodeByKey(node.key)
+      const {focusBlock, focusText} = change.value
+      // Create a new key for the "new" object
+      let newNode = node.toJSON({preserveKeys: true, perserveData: true})
+      const newKey = `${focusBlock.key}${focusBlock.nodes.indexOf(focusText) + 1}`
+      newNode.data.value._key = newKey
+      newNode.data._key = newKey
+      newNode.key = newKey
+      newNode = Inline.create(newNode)
+      change.insertInline(newNode)
+    })
     this.resetDropTarget()
   }
 
@@ -245,9 +257,10 @@ export default class InlineObject extends React.Component<Props, State> {
   handleRemoveValue = (event: SyntheticMouseEvent<>) => {
     event.preventDefault()
     event.stopPropagation()
-    const {editorValue, node, onChange} = this.props
-    const change = editorValue.change()
-    onChange(change.removeNodeByKey(node.key).focus())
+    const {node, controller} = this.props
+    controller.change(change => {
+      change.removeNodeByKey(node.key).focus()
+    })
   }
 
   handleCancelEvent = (event: SyntheticEvent<>) => {
@@ -257,16 +270,17 @@ export default class InlineObject extends React.Component<Props, State> {
 
   handleEditStart = (event: SyntheticMouseEvent<>) => {
     event.stopPropagation()
-    const {node, onFocus, onChange, editorValue} = this.props
+    const {node, onFocus, editorValue, controller} = this.props
     const {focusBlock} = editorValue
-    const change = editorValue
-      .change()
-      .moveToEndOfNode(node)
-      .focus()
-      .blur()
-    onChange(change, () =>
+    controller.change(change => {
+      change
+        .moveToEndOfNode(node)
+        .focus()
+        .blur()
+    })
+    setTimeout(() => {
       onFocus([{_key: focusBlock.key}, 'children', {_key: node.key}, FOCUS_TERMINATOR])
-    )
+    }, 200)
   }
 
   handleView = (event: SyntheticMouseEvent<>) => {
@@ -292,7 +306,7 @@ export default class InlineObject extends React.Component<Props, State> {
     return this.props.node.data.get('value')
   }
 
-  renderMenu(value: FormBuilderValue) {
+  renderMenu(value: any) {
     const {readOnly} = this.props
     return (
       <Stacked>
@@ -300,15 +314,16 @@ export default class InlineObject extends React.Component<Props, State> {
           return (
             <Escapable onEscape={isActive ? this.handleCloseMenu : NOOP}>
               <div className={styles.functions}>
-                {value._ref && (
-                  <IntentLink
-                    className={styles.linkToReference}
-                    intent="edit"
-                    params={{id: value._ref}}
-                  >
-                    <LinkIcon />
-                  </IntentLink>
-                )}
+                {value &&
+                  value._ref && (
+                    <IntentLink
+                      className={styles.linkToReference}
+                      intent="edit"
+                      params={{id: value._ref}}
+                    >
+                      <LinkIcon />
+                    </IntentLink>
+                  )}
                 {readOnly && (
                   <ViewButton title="View this object" onClick={this.handleView}>
                     View
