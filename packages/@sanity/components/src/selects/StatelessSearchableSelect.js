@@ -11,7 +11,7 @@ import Stacked from '../utilities/Stacked'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Escapable from '../utilities/Escapable'
 import {Portal} from '../utilities/Portal'
-import {Manager, Target, Popper} from 'react-popper'
+import {Manager, Reference, Popper} from 'react-popper'
 import {get} from 'lodash'
 
 const noop = () => {}
@@ -146,41 +146,48 @@ export default class StatelessSearchableSelect extends React.PureComponent {
 
     return (
       <Manager>
-        <Target className={disabled ? styles.selectContainerDisabled : styles.selectContainer}>
-          <DefaultTextInput
-            {...rest}
-            className={styles.select}
-            placeholder={placeholder}
-            onChange={this.handleInputChange}
-            onKeyDown={this.handleKeyDown}
-            onKeyUp={this.handleKeyUp}
-            value={inputValue || ''}
-            selected={isInputSelected}
-            disabled={disabled}
-            ref={this.setInput}
-          />
-          <div className={styles.functions}>
-            {openItemElement &&
-              value && <span className={styles.openItem}>{openItemElement(value)}</span>}
-            {onClear &&
-              value && (
-                <button type="button" className={styles.clearButton} onClick={onClear}>
-                  <CloseIcon color="inherit" />
-                </button>
-              )}
-            {!isLoading && (
-              <div
-                className={styles.arrow}
-                onClick={disabled ? null : this.handleArrowClick}
-                tabIndex={0}
-                onKeyPress={disabled ? null : this.handleArrowKeyPress}
-              >
-                <FaAngleDown color="inherit" />
+        <Reference>
+          {({ref}) => (
+            <div
+              ref={ref}
+              className={disabled ? styles.selectContainerDisabled : styles.selectContainer}
+            >
+              <DefaultTextInput
+                {...rest}
+                className={styles.select}
+                placeholder={placeholder}
+                onChange={this.handleInputChange}
+                onKeyDown={this.handleKeyDown}
+                onKeyUp={this.handleKeyUp}
+                value={inputValue || ''}
+                selected={isInputSelected}
+                disabled={disabled}
+                ref={this.setInput}
+              />
+              <div className={styles.functions}>
+                {openItemElement &&
+                  value && <span className={styles.openItem}>{openItemElement(value)}</span>}
+                {onClear &&
+                  value && (
+                    <button type="button" className={styles.clearButton} onClick={onClear}>
+                      <CloseIcon color="inherit" />
+                    </button>
+                  )}
+                {!isLoading && (
+                  <div
+                    className={styles.arrow}
+                    onClick={disabled ? null : this.handleArrowClick}
+                    tabIndex={0}
+                    onKeyPress={disabled ? null : this.handleArrowKeyPress}
+                  >
+                    <FaAngleDown color="inherit" />
+                  </div>
+                )}
+                {isLoading && <Spinner />}
               </div>
-            )}
-            {isLoading && <Spinner />}
-          </div>
-        </Target>
+            </div>
+          )}
+        </Reference>
         {isOpen && (
           <Stacked>
             {isActive => (
@@ -205,34 +212,36 @@ export default class StatelessSearchableSelect extends React.PureComponent {
                     }
                   }}
                 >
-                  <div>
-                    <CaptureOutsideClicks
-                      onClickOutside={isActive && isOpen ? this.handleClose : undefined}
-                    >
-                      <div className={styles.listContainer}>
-                        <Escapable
-                          onEscape={event => (isActive || event.shiftKey) && this.handleClose()}
-                        />
-                        {items.length === 0 &&
-                          !isLoading && <p className={styles.noResultText}>No results</p>}
-                        {items.length === 0 &&
-                          isLoading && (
-                            <div className={styles.listSpinner}>
-                              <Spinner message="Loading items…" />
-                            </div>
-                          )}
-                        {items.length > 0 && (
-                          <SelectMenu
-                            items={items}
-                            value={value}
-                            onSelect={this.handleSelect}
-                            renderItem={renderItem}
-                            highlightIndex={highlightIndex}
+                  {({ref, style, placement, arrowProps}) => (
+                    <div ref={ref} data-placement={placement} style={style}>
+                      <CaptureOutsideClicks
+                        onClickOutside={isActive && isOpen ? this.handleClose : undefined}
+                      >
+                        <div className={styles.listContainer}>
+                          <Escapable
+                            onEscape={event => (isActive || event.shiftKey) && this.handleClose()}
                           />
-                        )}
-                      </div>
-                    </CaptureOutsideClicks>
-                  </div>
+                          {items.length === 0 &&
+                            !isLoading && <p className={styles.noResultText}>No results</p>}
+                          {items.length === 0 &&
+                            isLoading && (
+                              <div className={styles.listSpinner}>
+                                <Spinner message="Loading items…" />
+                              </div>
+                            )}
+                          {items.length > 0 && (
+                            <SelectMenu
+                              items={items}
+                              value={value}
+                              onSelect={this.handleSelect}
+                              renderItem={renderItem}
+                              highlightIndex={highlightIndex}
+                            />
+                          )}
+                        </div>
+                      </CaptureOutsideClicks>
+                    </div>
+                  )}
                 </Popper>
               </Portal>
             )}

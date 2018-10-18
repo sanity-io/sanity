@@ -1,5 +1,6 @@
 import React from 'react'
-import {Manager, Target, Popper} from 'react-popper'
+import PropTypes from 'prop-types'
+import {Manager, Reference, Popper} from 'react-popper'
 import styles from './styles/Poppable.css'
 import Stacked from './Stacked'
 import Escapable from './Escapable'
@@ -8,7 +9,15 @@ import CaptureOutsideClicks from './CaptureOutsideClicks'
 import {Portal} from './Portal'
 
 export default class Poppable extends React.Component {
-  targetRef = React.createRef()
+  static propTypes = {
+    onEscape: PropTypes.func,
+    onClickOutside: PropTypes.func,
+    target: PropTypes.node,
+    children: PropTypes.node,
+    referenceClassName: PropTypes.string,
+    ...Popper.propTypes
+  }
+
   static defaultProps = {
     placement: 'bottom-start',
     modifiers: {
@@ -21,28 +30,36 @@ export default class Poppable extends React.Component {
     }
   }
   render() {
-    const {onEscape, placement, modifiers, onClickOutside, target, children} = this.props
+    const {onEscape, onClickOutside, target, children, referenceClassName} = this.props
 
     return (
       <Manager>
-        <Target>
-          <div ref={this.targetRef}>{target}</div>
-        </Target>
+        <Reference>
+          {({ref}) => (
+            <div ref={ref} className={referenceClassName}>
+              {target}
+            </div>
+          )}
+        </Reference>
         {children && (
           <Portal>
             <Stacked>
               {isActive => (
                 <div className={styles.portal}>
-                  <Popper placement={placement} modifiers={modifiers}>
-                    <Escapable onEscape={isActive ? onEscape : undefined} />
-                    {onClickOutside ? (
-                      <CaptureOutsideClicks
-                        onClickOutside={isActive ? this.handleClickOutside : undefined}
-                      >
-                        {children}
-                      </CaptureOutsideClicks>
-                    ) : (
-                      children
+                  <Popper {...this.props}>
+                    {({ref, placement, style, arrowProps}) => (
+                      <div ref={ref} style={style} data-placement={placement}>
+                        <Escapable onEscape={isActive ? onEscape : undefined} />
+                        {onClickOutside ? (
+                          <CaptureOutsideClicks
+                            onClickOutside={isActive ? this.handleClickOutside : undefined}
+                          >
+                            {children}
+                          </CaptureOutsideClicks>
+                        ) : (
+                          children
+                        )}
+                      </div>
                     )}
                   </Popper>
                 </div>
