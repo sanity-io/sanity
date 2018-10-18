@@ -37,6 +37,10 @@
     {
       "implements": "part:@sanity/default-layout/branding-style",
       "path":       "components/styles/Branding.css"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "story.js"
     }
   ]
 }
