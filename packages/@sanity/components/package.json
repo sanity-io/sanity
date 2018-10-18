@@ -49,7 +49,7 @@
     "react-dropzone": "^3.9.2",
     "react-element-query": "^3.0.2",
     "react-ink": "^6.1.0",
-    "react-popper": "^0.10.4",
+    "react-popper": "^1.0.2",
     "react-sortable-hoc": "^0.6.3",
     "react-split-pane": "^0.1.63",
     "rxjs": "^6.1.0",
