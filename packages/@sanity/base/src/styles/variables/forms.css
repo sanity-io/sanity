@@ -2,11 +2,11 @@
 @import 'part:@sanity/base/theme/variables/globals-style';
 
 :root {
-  --default-button-color: var(--gray-lighter);
-  --default-button-color--text: var(--black);
-  --default-button-color--hover: var(--gray-light);
-  --default-button-color--active: var(--gray);
-  --button-border-radius: var(--border-radius-base);
+  --default-button-color: color(var(--gray-base) a(15%));
+  --default-button-color--text: var(--text-color);
+  --default-button-color--hover: color(var(--gray-base) a(20%));
+  --default-button-color--active: color(var(--gray-base) a(25%));
+  --button-border-radius: var(--border-radius-small);
   --input-bg: var(--component-bg);
   --input-bg-error: var(--component-bg);
   --input-bg-disabled: var(--gray-lighter);
@@ -39,10 +39,7 @@
   --input-box-shadow-base: var(--gray-base);
   --input-box-shadow: none;
   --input-box-shadow--hover: none;
-  --input-box-shadow--focus:
-    0 0 2px 0 color(var(--input-border-color-focus) a(42%)),
-    0 2px 5px 0 color(var(--input-border-color-focus) a(45%)),
-    0 0 1px 1px color(var(--input-border-color-focus) a(80%));
+  --input-box-shadow--focus: 0 0 0 3px color(var(--input-border-color-focus) a(42%));
   --input-box-shadow--error: none;
   --input-box-shadow--error-focus:
     0 0 2px 0 color(var(--state-danger-color) a(42%)),

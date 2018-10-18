@@ -136,17 +136,18 @@
 
 .default {
   composes: root;
-  composes: shadow;
+
+  /* composes: shadow; */
   background-color: var(--default-button-color);
   color: var(--default-button-color--text);
 
   @nest &:not(.disabled) {
     @nest &:hover {
-      background-color: color(var(--default-button-color) lightness(- 5%));
+      background-color: var(--default-button-color--hover);
     }
 
     @nest &:active {
-      background-color: color(var(--default-button-color) lightness(+ 10%));
+      background-color: var(--default-button-color--active);
       outline: 0;
     }
   }
@@ -180,7 +181,7 @@
   composes: default;
 
   @nest &:not(.disabled):hover {
-    background-color: color(var(--default-button-color) a(30%));
+    background-color: color(var(--default-button-color) a(5%));
   }
 
   @nest &.root:focus {
