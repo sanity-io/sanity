@@ -1,23 +1,20 @@
 :root {
   /* Colors */
-  --body-bg: var(--gray-lightest);
+  --body-bg: var(--white);
   --body-text: #111;
   --component-bg: #fff;
   --preview-placeholder-color: var(--gray-lighter);
   --component-border-color: color(var(--gray) lightness(+ 30%));
   --component-box-shadow-base: var(--gray-base);
-  --component-box-shadow:
-    0 0 2px 0 color(var(--component-box-shadow-base) a(12%)),
-    0 2px 5px 0 color(var(--component-box-shadow-base) a(15%)),
-    0 1px 1px 1px color(var(--component-box-shadow-base) a(10%));
+  --component-box-shadow: 0 0 2px 0 color(var(--component-box-shadow-base) a(35%));
   --component-box-shadow--hover:
     0 1px 2px 0 color(var(--component-box-shadow-base) a(15%)),
     0 2px 5px 0 color(var(--component-box-shadow-base) a(17%)),
     0 1px 1px 1px color(var(--component-box-shadow-base) a(15%));
   --component-box-shadow--focus:
     0 0 2px 0 color(var(--input-border-color-focus) a(42%)),
-    0 0 5px 0 color(var(--input-border-color-focus) a(65%)),
-    0 0 1px 1px color(var(--input-border-color-focus) a(80%));
+    0 0 3px 0 color(var(--input-border-color-focus) a(45%)),
+    0 0 1px 1px color(var(--input-border-color-focus) a(50%));
   --component-box-shadow--error:
     0 0 2px 0 color(var(--state-danger-color) a(42%)),
     0 2px 5px 0 color(var(--state-danger-color) a(45%)),
