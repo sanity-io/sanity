@@ -1,4 +1,5 @@
-import React from 'react'
+/* eslint-disable complexity */
+import React, {Fragment} from 'react'
 import schema from 'part:@sanity/base/schema?'
 import client from 'part:@sanity/base/client?'
 import {joinPath} from 'part:@sanity/base/util/search-utils'
@@ -6,7 +7,7 @@ import Preview from 'part:@sanity/base/preview?'
 import {getPublishedId, isDraftId, getDraftId} from 'part:@sanity/base/util/draft-utils'
 import {Subject} from 'rxjs'
 import {IntentLink} from 'part:@sanity/base/router'
-import {flow, compact, flatten, union} from 'lodash'
+import {flow, compact, flatten, union, get} from 'lodash'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import enhanceClickOutside from 'react-click-outside'
@@ -270,57 +271,79 @@ export default enhanceClickOutside(
       const {isSearching, hits, isOpen, inputValue} = this.state
       return (
         <div className={styles.root} ref={this.setRootElement}>
-          <div className={styles.inner}>
-            <label className={styles.label}>
-              <SearchIcon />
-            </label>
-            <input
-              className={styles.input}
-              type="search"
-              value={isOpen ? inputValue : ''}
-              onChange={this.handleInputChange}
-              onBlur={this.handleBlur}
-              onClick={this.handleInputClick}
-              onFocus={this.handleFocus}
-              onKeyDown={this.handleKeyDown}
-              placeholder="Search…"
-              ref={this.setInput}
-            />
-            <div className={styles.hotkeys}>
-              <Hotkeys keys={['Ctrl', 'Alt', 'T']} />
-            </div>
-          </div>
-          {isOpen &&
-            (inputValue || isSearching || hits > 0) && (
-              <div className={styles.result}>
-                <div className={styles.spinner}>{isSearching && <Spinner />}</div>
-                {inputValue &&
-                  !isSearching &&
-                  (!hits || hits.length === 0) && (
-                    <div className={styles.noHits}>
-                      Could not find <strong>&ldquo;{inputValue}&rdquo;</strong>
-                    </div>
-                  )}
-                {!isSearching &&
-                  hits &&
-                  hits.length > 0 && (
-                    <div className={styles.listContainer}>
-                      <ul
-                        className={styles.hits}
-                        onKeyDown={this.handleKeyDown}
-                        onKeyPress={this.handleKeyPress}
-                        ref={this.setListElement}
-                      >
-                        {hits.map((hit, index) => (
-                          <li key={hit._id} className={styles.hit}>
-                            {this.renderItem(hit, index)}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-              </div>
-            )}
+          <Poppable
+            referenceClassName={styles.inner}
+            modifiers={{
+              preventOverflow: {
+                boundariesElement: 'viewport'
+              },
+              customStyle: {
+                enabled: true,
+                fn: data => {
+                  const width = get(data, 'instance.reference.clientWidth') || 500
+                  data.styles = {
+                    ...data.styles,
+                    width: width
+                  }
+                  return data
+                }
+              }
+            }}
+            target={
+              <Fragment>
+                <label className={styles.label}>
+                  <SearchIcon />
+                </label>
+                <input
+                  className={styles.input}
+                  type="search"
+                  value={isOpen ? inputValue : ''}
+                  onChange={this.handleInputChange}
+                  onBlur={this.handleBlur}
+                  onClick={this.handleInputClick}
+                  onFocus={this.handleFocus}
+                  onKeyDown={this.handleKeyDown}
+                  placeholder="Search…"
+                  ref={this.setInput}
+                />
+                <div className={styles.hotkeys}>
+                  <Hotkeys keys={['Ctrl', 'Alt', 'T']} />
+                </div>
+              </Fragment>
+            }
+          >
+            {isOpen &&
+              (inputValue || isSearching || hits > 0) && (
+                <div className={styles.result}>
+                  <div className={styles.spinner}>{isSearching && <Spinner />}</div>
+                  {inputValue &&
+                    !isSearching &&
+                    (!hits || hits.length === 0) && (
+                      <div className={styles.noHits}>
+                        Could not find <strong>&ldquo;{inputValue}&rdquo;</strong>
+                      </div>
+                    )}
+                  {!isSearching &&
+                    hits &&
+                    hits.length > 0 && (
+                      <div className={styles.listContainer}>
+                        <ul
+                          className={styles.hits}
+                          onKeyDown={this.handleKeyDown}
+                          onKeyPress={this.handleKeyPress}
+                          ref={this.setListElement}
+                        >
+                          {hits.map((hit, index) => (
+                            <li key={hit._id} className={styles.hit}>
+                              {this.renderItem(hit, index)}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                </div>
+              )}
+          </Poppable>
         </div>
       )
     }
