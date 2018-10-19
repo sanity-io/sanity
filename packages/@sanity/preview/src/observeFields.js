@@ -1,20 +1,27 @@
 // @flow
 import client from 'part:@sanity/base/client'
-import {Observable, merge, combineLatest, from as observableFrom, of as observableOf} from 'rxjs'
 import {
-  map,
+  combineLatest,
+  concat,
+  from as observableFrom,
+  merge,
+  Observable,
+  of as observableOf
+} from 'rxjs'
+import {
+  distinctUntilChanged,
   filter,
-  share,
+  map,
+  mergeMap,
   publishReplay,
   refCount,
+  share,
   switchMap,
-  mergeMap,
-  tap,
-  distinctUntilChanged
+  tap
 } from 'rxjs/operators'
 import debounceCollect from './utils/debounceCollect'
 import {combineSelections, reassemble, toGradientQuery} from './utils/optimizeQuery'
-import {flatten, difference} from 'lodash'
+import {difference, flatten} from 'lodash'
 import type {FieldName, Id} from './types'
 import {INCLUDE_FIELDS} from './constants'
 import hasEqualFields from './utils/hasEqualFields'
@@ -75,11 +82,15 @@ function listenFields(id: Id, fields: FieldName[]) {
       if (event.type === 'welcome') {
         return fetchDocumentPathsFast(id, fields).pipe(
           mergeMap(result => {
-            return result === undefined
-              ? // hack: if we get undefined as result here it is most likely because the document has
-                // just been created and is not yet indexed. We therefore need to wait a bit and then re-fetch.
-                fetchDocumentPathsSlow(id, fields)
-              : observableOf(result)
+            return concat(
+              observableOf(result),
+              result === undefined
+                ? // hack: if we get undefined as result here it can be because the document has
+                  // just been created and is not yet indexed. We therefore need to wait a bit
+                  // and then re-fetch.
+                  fetchDocumentPathsSlow(id, fields)
+                : []
+            )
           })
         )
       }
