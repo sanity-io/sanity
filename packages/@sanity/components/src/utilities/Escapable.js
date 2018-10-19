@@ -29,8 +29,13 @@ const onKeypress = createListener('keydown')
 
 export default class Escapable extends React.Component {
   static propTypes = {
-    onEscape: PropTypes.func.isRequired,
+    onEscape: PropTypes.func,
     children: PropTypes.node
+  }
+
+  static defaultProps = {
+    onEscape: () => {},
+    children: undefined
   }
 
   componentWillMount() {
