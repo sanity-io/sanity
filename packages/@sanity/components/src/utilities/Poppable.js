@@ -18,14 +18,22 @@ export default class Poppable extends React.Component {
     ...Popper.propTypes
   }
 
+  popperNode = undefined
+
   static defaultProps = {
     placement: 'bottom-start',
-    modifiers: {
-      preventOverflow: 'viewport'
-    }
+    modifiers: {preventOverflow: 'viewport'}
   }
+
+  setPopperNode = node => {
+    this.popperNode = node
+  }
+
   handleClickOutside = ev => {
-    if (!this.targetRef.current.contains(ev.target)) {
+    if (!this.popperNode || !ev.target) {
+      return
+    }
+    if (!this.popperNode.contains(ev.target)) {
       this.props.onClickOutside(ev)
     }
   }
@@ -46,7 +54,7 @@ export default class Poppable extends React.Component {
             <Stacked>
               {isActive => (
                 <div className={styles.portal}>
-                  <Popper {...this.props}>
+                  <Popper {...this.props} innerRef={this.setPopperNode}>
                     {({ref, placement, style, arrowProps}) => (
                       <div ref={ref} style={style} data-placement={placement}>
                         <Escapable onEscape={isActive ? onEscape : undefined} />
