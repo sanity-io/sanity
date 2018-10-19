@@ -8,7 +8,7 @@ import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
 import Button from 'part:@sanity/components/buttons/default'
 import Branding from './Branding'
 import LoginStatus from './LoginStatus'
-import Search from './Search'
+import SearchController from './SearchController'
 import styles from './styles/NavBar.css'
 
 function NavBar(props) {
@@ -38,7 +38,7 @@ function NavBar(props) {
         />
       </div>
       <div className={styles.search}>
-        <Search />
+        <SearchController />
       </div>
       <div className={styles.extras}>{/* Insert plugins here */}</div>
       <div className={styles.loginStatus}>
