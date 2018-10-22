@@ -49,7 +49,7 @@ function Document(props) {
         {subresources}
         {favicons}
       </head>
-      <body>
+      <body id="sanityBody">
         <div id="sanity">
           <AppLoadingScreen text={props.loading} />
           <NoJavascript />
