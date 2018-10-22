@@ -47,7 +47,7 @@
 
   @nest &::placeholder {
     color: inherit;
-    opacity: 0.5;
+    opacity: 0.6;
   }
 
   @media (--screen-medium) {
@@ -138,7 +138,7 @@
 
   @nest & > svg {
     font-size: calc(25 / 16 * 1em);
-    opacity: 0.5;
+    opacity: 0.6;
   }
 
   @media (--screen-medium) {
@@ -157,7 +157,7 @@
   font-size: 0.7em;
   align-items: center;
   padding-right: var(--small-padding);
-  opacity: 0.5;
+  opacity: 0.6;
 
   @media (--screen-medium) {
     display: flex;
