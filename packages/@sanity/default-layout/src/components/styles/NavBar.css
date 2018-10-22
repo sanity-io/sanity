@@ -56,6 +56,30 @@ a.branding {
   }
 }
 
+.hamburgerButton {
+  -webkit-font-smoothing: antialiased;
+  -webkit-apperance: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0.75em;
+  margin: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+
+  @nest & > svg {
+    font-size: calc(25 / 16 * 1em);
+  }
+
+  @nest &:hover {
+    background-color: color(var(--white) a(10%));
+  }
+
+  @nest &:active {
+    background-color: color(var(--brand-primary) a(20%));
+  }
+}
+
 .toolSwitcher {
   display: none;
 
