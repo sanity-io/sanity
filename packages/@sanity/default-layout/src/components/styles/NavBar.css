@@ -7,8 +7,7 @@
 .root {
   -webkit-font-smoothing: antialiased;
   display: grid;
-  grid-gap: 0 var(--small-padding);
-  grid-template-columns: var(--nav-bar-box) auto auto var(--nav-bar-box) var(--nav-bar-box);
+  grid-template-columns: var(--nav-bar-box) var(--nav-bar-box) auto var(--nav-bar-box) var(--nav-bar-box);
   grid-template-rows: var(--nav-bar-box) var(--nav-bar-box);
   box-sizing: border-box;
   align-items: stretch;
@@ -18,8 +17,9 @@
 
   @media (--screen-medium) {
     grid-template-rows: var(--nav-bar-box);
-    grid-template-areas: " branding    createButton       search toolSwitcher extras      loginStatus";
-    grid-template-columns: max-content var(--nav-bar-box) auto   max-content  max-content 3.0625em;
+    grid-template-areas: " branding    createButton       search               toolSwitcher extras      loginStatus";
+    grid-template-columns: max-content var(--nav-bar-box) minmax(150px, 400px) auto         max-content var(--nav-bar-box);
+    padding-right: 0.5em;
   }
 
   @nest & a {
@@ -104,6 +104,10 @@ a.branding {
   display: flex;
   align-items: stretch;
   justify-self: stretch;
+
+  @media (--screen-medium) {
+    padding: 0 var(--small-padding);
+  }
 }
 
 .createButton {
@@ -114,6 +118,7 @@ a.branding {
   cursor: default;
   position: relative;
   align-items: center;
+  padding: 0.75em;
 
   @nest &:hover {
     background-color: color(var(--white) a(10%));
@@ -121,10 +126,6 @@ a.branding {
 
   @nest &:active {
     background-color: color(var(--brand-primary) a(20%));
-  }
-
-  @media (--screen-medium) {
-    padding: 0.75em;
   }
 }
 
@@ -143,12 +144,8 @@ a.branding {
 }
 
 .createButtonText {
-  display: inline-block;
+  display: none;
   font-size: 1em;
-
-  @media (--screen-medium) {
-    display: none;
-  }
 }
 
 .sanityStudioLogoContainer {

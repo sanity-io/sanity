@@ -7,6 +7,7 @@
   color: color(var(--white) a(50%));
   text-decoration: none;
   padding: 0.75em;
+  white-space: nowrap;
 
   @nest .default & {
     padding: 1em;
@@ -45,4 +46,11 @@
 
 .toolName {
   display: none;
+  font-size: calc(14 / 16 * 1em);
+  line-height: calc(17 / 14);
+  padding-left: 0.25em;
+
+  @media (--screen-medium) {
+    display: block;
+  }
 }

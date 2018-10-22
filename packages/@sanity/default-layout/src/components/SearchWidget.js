@@ -171,7 +171,7 @@ class SearchWidget extends React.PureComponent {
                 onClick={this.handleInputClick}
                 onFocus={this.handleFocus}
                 onKeyDown={this.handleKeyDown}
-                placeholder="Search…"
+                placeholder="Search"
                 ref={this.setInput}
               />
               <div className={styles.hotkeys}>
