@@ -22,7 +22,7 @@
   "dependencies": {
     "@sanity/date-input": "0.135.0",
     "@sanity/imagetool": "0.135.0",
-    "@sanity/react-tippy": "1.2.6",
+    "react-tippy": "^1.2.3",
     "attr-accept": "^1.1.0",
     "boundless-arrow-key-navigation": "^1.1.0",
     "canvas-to-blob": "^0.0.0",
