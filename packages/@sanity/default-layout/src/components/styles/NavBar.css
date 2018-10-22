@@ -14,8 +14,13 @@
 
   @media (--screen-medium) {
     grid-template-rows: 3rem;
-    grid-template-areas: " branding    createButton toolSwitcher extras      search  loginStatus";
-    grid-template-columns: max-content 3rem         max-content  max-content auto    1.5rem;
+    grid-template-areas: " branding    search createButton toolSwitcher extras      loginStatus";
+    grid-template-columns: max-content auto   3rem         max-content  max-content 1.5rem;
+  }
+
+  @nest & a {
+    text-decoration: none;
+    color: inherit;
   }
 }
 

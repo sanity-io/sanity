@@ -1,0 +1,42 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  position: relative;
+
+  @nest & a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  @media (--screen-medium) {
+    display: flex;
+    align-self: stretch;
+    align-items: stretch;
+  }
+}
+
+.toolList {
+  margin: 0;
+  padding: 0;
+  align-content: flex-start;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  justify-items: stretch;
+}
+
+.item {
+  box-sizing: border-box;
+  display: flex;
+  align-items: stretch;
+  position: relative;
+  text-align: center;
+}
+
+.link {
+  composes: item;
+}
+
+.activeItem {
+  composes: item;
+}

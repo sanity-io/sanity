@@ -1,31 +1,66 @@
 import React from 'react'
 import {storiesOf} from 'part:@sanity/storybook'
-import {withKnobs, text, boolean, object} from 'part:@sanity/storybook/addons/knobs'
+import {withKnobs, text, boolean, object, select, color} from 'part:@sanity/storybook/addons/knobs'
 import ViewColumnIcon from 'part:@sanity/base/view-column-icon'
 import Branding from './components/Branding'
-import ToolSwitcher from './components/ToolSwitcher'
+import ToolSwitcherWidget from './components/ToolSwitcherWidget'
 import NotFound from './components/NotFound'
 import LoginStatus from './components/LoginStatus'
 import Search from './components/SearchWidget'
+import ToolSwitcherItem from './components/ToolSwitcherItem'
+import NavBarStyles from './components/styles/NavBar.css'
+import DefaultLayoutStyles from './components/styles/DefaultLayout.css'
 
 storiesOf('Default layout')
   .addDecorator(withKnobs)
   .add('Branding', () => {
-    return <Branding />
+    return (
+      <div className={DefaultLayoutStyles.navBar}>
+        <div className={NavBarStyles.root}>
+          <div className={NavBarStyles.toolSwitcher}>
+            <Branding />
+          </div>
+        </div>
+      </div>
+    )
   })
   .add('Toolswitcher', () => {
     return (
-      <ToolSwitcher
-        onSwitchTool={event => {
-          console.log('onSwitchTool()', event)
-        }}
-        tools={[
-          {
-            name: 'Desk tool',
-            icon: ViewColumnIcon
-          }
-        ]}
-      />
+      <div className={DefaultLayoutStyles.navBar}>
+        <div className={NavBarStyles.root}>
+          <div className={NavBarStyles.toolSwitcher}>
+            <ToolSwitcherWidget
+              onSwitchTool={event => console.log('onSwitchTool()', event)}
+              tools={[
+                {
+                  name: 'Desk tool',
+                  icon: ViewColumnIcon
+                },
+                {
+                  name: 'Desk tool 2',
+                  icon: ViewColumnIcon
+                },
+                {
+                  name: 'Desk tool 3',
+                  icon: ViewColumnIcon
+                }
+              ]}
+              renderItem={tool => <ToolSwitcherItem title={tool.name} icon={tool.icon} />}
+            />
+          </div>
+        </div>
+      </div>
+    )
+  })
+  .add('ToolSwitcherItem', () => {
+    return (
+      <div className={DefaultLayoutStyles.navBar}>
+        <div className={NavBarStyles.root}>
+          <div className={NavBarStyles.toolSwitcher}>
+            <ToolSwitcherItem title={text('title (prop)', 'Desk tool')} icon={ViewColumnIcon} />
+          </div>
+        </div>
+      </div>
     )
   })
   .add('Not Found', () => {
@@ -33,23 +68,33 @@ storiesOf('Default layout')
   })
   .add('Search', () => {
     return (
-      <div style={{backgroundColor: '#000', color: '#fff'}}>
-        <Search
-          inputValue={text('inputValue (prop)')}
-          onInputChange={event => console.log('onInputChange', event)}
-          isOpen={boolean('isOpen (prop)', false)}
-          isSearching={boolean('isSearching (prop)')}
-          renderItem={(i, index) => <div>Item</div>}
-          hits={object('hits', [{index: 0, _id: 'id0', name: 'Test'}])}
-        />
+      <div className={DefaultLayoutStyles.navBar}>
+        <div className={NavBarStyles.root}>
+          <div className={NavBarStyles.search}>
+            <Search
+              inputValue={text('inputValue', '', 'props')}
+              onInputChange={event => console.log('onInputChange', event)}
+              isOpen={boolean('isOpen', false, 'props')}
+              isSearching={boolean('isSearching', false, 'props')}
+              renderItem={(i, index) => <div>Item</div>}
+              hits={object('hits', [{index: 0, _id: 'id0', name: 'Test'}], undefined, 'props')}
+            />
+          </div>
+        </div>
       </div>
     )
   })
   .add('Login Status', () => {
     return (
-      <LoginStatus
-        user={{name: 'John Doe', profileImage: 'https://randomuser.me/api/portraits/men/12.jpg'}}
-        onLogout={() => alert('logout')}
-      />
+      <div className={DefaultLayoutStyles.navBar}>
+        <div className={NavBarStyles.root}>
+          <div className={NavBarStyles.loginStatus}>
+            <LoginStatus
+              user={{name: 'John Doe', profileImage: 'https://randomuser.me/api/portraits/men/12.jpg'}}
+              onLogout={() => alert('logout')}
+            />
+          </div>
+        </div>
+      </div>
     )
   })

@@ -1,0 +1,43 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  position: relative;
+  display: flex;
+  align-items: center;
+  color: color(var(--white) a(50%));
+  text-decoration: none;
+  padding: 1em;
+
+  @nest .default & {
+    padding: 1em;
+    width: 100%;
+  }
+
+  @nest &:hover {
+    color: color(var(--white) a(80%));
+    background-color: color(var(--white) a(10%));
+  }
+
+  @nest &:active {
+    color: var(--white);
+  }
+
+  @nest .default & {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.rootActive {
+  composes: root;
+  color: var(--white);
+}
+
+.iconContainer {
+  display: block;
+  font-size: 1rem;
+}
+
+.toolName {
+  display: none;
+}
