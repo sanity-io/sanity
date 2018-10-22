@@ -13,13 +13,13 @@
   box-sizing: border-box;
   align-items: stretch;
   grid-template-areas:
-    "hamburger  branding  extras  createButton   loginStatus"
-    "search     search    search  search         search";
+    "hamburger  createButton branding  extras  loginStatus"
+    "search     search       search    search  search";
 
   @media (--screen-medium) {
     grid-template-rows: var(--nav-bar-box);
-    grid-template-areas: " branding    search createButton       toolSwitcher extras      loginStatus";
-    grid-template-columns: max-content auto   var(--nav-bar-box) max-content  max-content 1.5rem;
+    grid-template-areas: " branding    createButton       search toolSwitcher extras      loginStatus";
+    grid-template-columns: max-content var(--nav-bar-box) auto   max-content  max-content 1.5rem;
   }
 
   @nest & a {
