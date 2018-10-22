@@ -14,13 +14,15 @@
   font-size: inherit;
   margin: 0;
   padding: 0;
-  font-weight: 300;
+  line-height: calc(17 / 16);
+  font-weight: 600;
 }
 
-.link {
+/* .link {
   composes: noLink from "part:@sanity/base/theme/layout/helpers";
   display: block;
-}
+  padding: 1em;
+} */
 
 .brandLogoContainer {
   display: block;
