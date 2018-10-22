@@ -3,30 +3,32 @@ import React from 'react'
 import styles from './styles/ToolSwitcherWidget.css'
 
 function ToolSwitcherWidget(props) {
-  const {tools, activeToolName, renderItem} = props
+  const {tools, direction, activeToolName, renderItem} = props
+  const showIcon = true
+  const showLabel = direction === 'vertical'
   return (
-    <div className={styles.root}>
-      <ul className={styles.toolList}>
-        {tools.map(tool => {
-          const itemClass = activeToolName === tool.name ? styles.activeItem : styles.item
-          return (
-            <li key={tool.name} className={itemClass}>
-              {renderItem(tool)}
-            </li>
-          )
-        })}
-      </ul>
-    </div>
+    <ul className={direction === 'horizontal' ? styles.rootHorizontal : styles.rootVertical}>
+      {tools.map(tool => {
+        const itemClass = activeToolName === tool.name ? styles.activeItem : styles.item
+        return (
+          <li key={tool.name} className={itemClass}>
+            {renderItem(tool, showIcon, showLabel)}
+          </li>
+        )
+      })}
+    </ul>
   )
 }
 
 ToolSwitcherWidget.defaultProps = {
-  tools: []
+  tools: [],
+  direction: 'horizontal'
 }
 
 ToolSwitcherWidget.propTypes = {
   activeToolName: PropTypes.string,
   renderItem: PropTypes.func,
+  direction: PropTypes.oneOf(['vertical', 'horizontal']),
   tools: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
