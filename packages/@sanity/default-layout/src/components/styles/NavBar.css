@@ -35,6 +35,17 @@
   padding: 1em;
 }
 
+a.branding {
+  @nest &:hover {
+    color: color(var(--white) a(80%));
+    background-color: color(var(--white) a(10%));
+  }
+
+  @nest &:active {
+    color: var(--white);
+  }
+}
+
 .hamburger {
   grid-area: hamburger;
   display: flex;
