@@ -10,17 +10,6 @@
   }
 }
 
-:global(body) {
-  overflow-x: hidden;
-  width: 100%;
-  max-width: 100%;
-
-  @media (--screen-medium) {
-    max-height: 100%;
-    overflow: hidden;
-  }
-}
-
 :global([data-env='development'] .undefined)::before {
   position: absolute;
   background-color: color(red a(50%));
