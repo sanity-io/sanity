@@ -38,7 +38,7 @@ function NavBar(props) {
       </a>
       <div className={styles.toolSwitcher}>
         <ToolSwitcher
-          layout="mini"
+          direction="horizontal"
           tools={tools}
           activeToolName={router.state.tool}
           onSwitchTool={onSwitchTool}

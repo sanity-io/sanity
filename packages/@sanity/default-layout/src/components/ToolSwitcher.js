@@ -6,8 +6,8 @@ import ToolSwitcherItem from './ToolSwitcherItem'
 import ToolSwitcherWidgetStyles from './styles/ToolSwitcherWidget.css'
 
 class ToolSwitcher extends React.PureComponent {
-  renderItem = tool => {
-    const {activeToolName, onSwitchTool} = this.props
+  renderItem = (tool, showIcon, showLabel) => {
+    const {activeToolName, onSwitchTool, direction} = this.props
     return (
       <StateLink
         state={tool.state}
@@ -15,7 +15,10 @@ class ToolSwitcher extends React.PureComponent {
         className={ToolSwitcherWidgetStyles.link}
       >
         <ToolSwitcherItem
+          direction={direction}
           icon={tool.icon}
+          showIcon={showIcon}
+          showLabel={showLabel}
           title={tool.title || tool.name}
           label={tool.title || tool.name}
           isActive={activeToolName === tool.name}
@@ -42,14 +45,14 @@ class ToolSwitcher extends React.PureComponent {
 }
 
 ToolSwitcher.defaultProps = {
-  layout: 'default',
+  direction: 'horizontal',
   tools: []
 }
 
 ToolSwitcher.propTypes = {
   activeToolName: PropTypes.string,
   onSwitchTool: PropTypes.func,
-  layout: PropTypes.oneOf(['mini', 'default']),
+  direction: PropTypes.oneOf(['horizontal', 'vertical']),
   router: PropTypes.shape({state: PropTypes.object}),
   tools: PropTypes.arrayOf(
     PropTypes.shape({

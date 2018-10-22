@@ -3,9 +3,11 @@
 .root {
   display: flex;
   align-items: center;
+  justify-content: center;
   text-decoration: none;
   color: inherit;
-  font-weight: 300;
+  font-weight: 400;
+  width: 100%;
 }
 
 .projectName {

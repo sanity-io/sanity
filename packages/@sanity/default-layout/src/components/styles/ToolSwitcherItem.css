@@ -3,15 +3,10 @@
 .root {
   position: relative;
   display: flex;
-  align-items: center;
   color: color(var(--white) a(50%));
   text-decoration: none;
   padding: 0.75em;
-
-  @nest .default & {
-    padding: 1em;
-    width: 100%;
-  }
+  white-space: nowrap;
 
   @nest &:hover {
     color: color(var(--white) a(80%));
@@ -26,6 +21,16 @@
     flex-direction: row;
     align-items: center;
   }
+}
+
+.horizontal {
+  align-items: center;
+}
+
+.vertical {
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
 }
 
 .rootActive {
@@ -45,4 +50,15 @@
 
 .toolName {
   display: none;
+  font-size: calc(14 / 16 * 1em);
+  line-height: calc(17 / 14);
+  padding-left: 0.25em;
+
+  @media (--screen-medium) {
+    display: block;
+  }
+
+  @nest .vertical & {
+    padding-left: 0.5em;
+  }
 }

@@ -19,15 +19,15 @@
     background-color: color(var(--white) a(20%));
   }
 
-  @nest &:focus-within {
-    color: var(--text-color);
-    background-color: var(--component-bg);
-  }
-
   @media (--screen-medium) {
     margin: 0.5em 0;
     border-radius: 3px;
     max-width: 24em;
+
+    @nest &:focus-within {
+      color: var(--text-color);
+      background-color: var(--component-bg);
+    }
 
     @nest .root[data-is-result-showing='true'] & {
       border-bottom-left-radius: 0;
@@ -47,7 +47,7 @@
 
   @nest &::placeholder {
     color: inherit;
-    opacity: 0.5;
+    opacity: 0.6;
   }
 
   @media (--screen-medium) {
@@ -64,6 +64,12 @@
   box-sizing: border-box;
   left: 0;
   padding: 0;
+
+  @media (--max-screen-medium) {
+    position: relative;
+    box-shadow: none;
+    height: calc(100vh - 6rem);
+  }
 
   @media (--screen-medium) {
     padding-bottom: 0;
@@ -99,7 +105,7 @@
   composes: resetListItem from "part:@sanity/base/theme/layout/helpers";
   background-color: transparent;
   cursor: default;
-  border-bottom: 1px solid #ddd;
+  /* border-bottom: 1px solid #ddd; */
   position: relative;
 }
 
@@ -138,7 +144,7 @@
 
   @nest & > svg {
     font-size: calc(25 / 16 * 1em);
-    opacity: 0.5;
+    opacity: 0.6;
   }
 
   @media (--screen-medium) {
@@ -150,12 +156,27 @@
   }
 }
 
-.hotkeys {
-  margin-left: auto;
+.clearButton {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  align-self: stretch;
+  justify-content: center;
   display: flex;
+  align-items: center;
+  flex-basis: 3.5em;
+}
+
+.hotkeys {
+  display: none;
+  margin-left: auto;
   box-sizing: border-box;
   font-size: 0.7em;
   align-items: center;
   padding-right: var(--small-padding);
-  opacity: 0.5;
+  opacity: 0.6;
+
+  @media (--screen-medium) {
+    display: flex;
+  }
 }

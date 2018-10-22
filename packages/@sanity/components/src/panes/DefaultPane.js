@@ -206,9 +206,8 @@ class Pane extends React.Component {
   renderIntentAction = (action, i) => {
     const {styles} = this.props
     return (
-      <div className={styles.buttonWrapper}>
+      <div className={styles.buttonWrapper} key={getActionKey(action, i)}>
         <IntentButton
-          key={getActionKey(action, i)}
           title={action.title}
           icon={action.icon}
           color="primary"
@@ -227,9 +226,8 @@ class Pane extends React.Component {
     }
 
     return (
-      <div className={styles.buttonWrapper}>
+      <div className={styles.buttonWrapper} key={getActionKey(act, i)}>
         <Button
-          key={getActionKey(act, i)}
           title={act.title}
           icon={act.icon}
           color="primary"

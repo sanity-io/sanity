@@ -145,3 +145,15 @@
     padding-top: 0;
   }
 }
+
+.sanityStudioLogoContainer {
+  color: inherit;
+  opacity: 0.5;
+  padding: var(--small-padding);
+
+  @nest & svg {
+    height: 0.8rem;
+    width: auto;
+    color: #fff;
+  }
+}
