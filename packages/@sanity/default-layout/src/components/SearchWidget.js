@@ -130,8 +130,13 @@ class SearchWidget extends React.PureComponent {
 
   render() {
     const {isSearching, hits, isOpen, inputValue, renderItem, activeIndex} = this.props
+    const isResultShowing = Boolean(isOpen && (inputValue || isSearching || hits > 0))
     return (
-      <div className={styles.root} ref={this.setRootElement}>
+      <div
+        className={styles.root}
+        ref={this.setRootElement}
+        data-is-result-showing={isResultShowing}
+      >
         <Poppable
           referenceClassName={styles.inner}
           onEscape={this.handleEscape}
@@ -170,37 +175,37 @@ class SearchWidget extends React.PureComponent {
                 ref={this.setInput}
               />
               <div className={styles.hotkeys}>
-                <Hotkeys keys={['Ctrl', 'Alt', 'T']} />
+                {/* <Hotkeys keys={['Ctrl', 'Alt', 'T']} /> */}
+                <Hotkeys keys={['F']} />
               </div>
             </Fragment>
           }
         >
-          {isOpen &&
-            (inputValue || isSearching || hits > 0) && (
-              <div className={styles.result}>
-                <div className={styles.spinner}>{isSearching && <Spinner />}</div>
-                {inputValue &&
-                  !isSearching &&
-                  (!hits || hits.length === 0) && (
-                    <div className={styles.noHits}>
-                      Could not find <strong>&ldquo;{inputValue}&rdquo;</strong>
-                    </div>
-                  )}
-                {!isSearching &&
-                  hits &&
-                  hits.length > 0 && (
-                    <div className={styles.listContainer}>
-                      <ul className={styles.hits} ref={this.setListElement}>
-                        {hits.map((hit, index) => (
-                          <li key={hit._id} className={styles.hit}>
-                            {renderItem(hit, index, activeIndex)}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-              </div>
-            )}
+          {isResultShowing && (
+            <div className={styles.result}>
+              <div className={styles.spinner}>{isSearching && <Spinner />}</div>
+              {inputValue &&
+                !isSearching &&
+                (!hits || hits.length === 0) && (
+                  <div className={styles.noHits}>
+                    Could not find <strong>&ldquo;{inputValue}&rdquo;</strong>
+                  </div>
+                )}
+              {!isSearching &&
+                hits &&
+                hits.length > 0 && (
+                  <div className={styles.listContainer}>
+                    <ul className={styles.hits} ref={this.setListElement}>
+                      {hits.map((hit, index) => (
+                        <li key={hit._id} className={styles.hit}>
+                          {renderItem(hit, index, activeIndex)}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+            </div>
+          )}
         </Poppable>
       </div>
     )
