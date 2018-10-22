@@ -5,7 +5,7 @@ import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import DocTitle from './DocTitle'
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
 
-const CANCEL_ACTION = {name: 'cancel', title: 'Cancel', kind: 'secondary'}
+const CANCEL_ACTION = {name: 'cancel', title: 'Cancel', kind: 'simple'}
 
 export default class ConfirmDiscard extends React.PureComponent {
   static propTypes = {

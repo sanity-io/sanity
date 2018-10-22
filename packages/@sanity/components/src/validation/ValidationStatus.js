@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import styles from './styles/ValidationStatus.css'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import CheckIcon from 'part:@sanity/base/check-icon'
-import {Tooltip} from '@sanity/react-tippy'
+import {Tooltip} from 'react-tippy'
 
 export default class ValidationStatus extends React.PureComponent {
   static propTypes = {

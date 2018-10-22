@@ -1,6 +1,6 @@
 import React from 'react'
 import EditIcon from 'part:@sanity/base/edit-icon'
-import {Tooltip} from '@sanity/react-tippy'
+import {Tooltip} from 'react-tippy'
 import styles from './styles/ItemStatus.css'
 
 const DraftStatus = () => (
