@@ -163,6 +163,7 @@ export default class StatelessSearchableSelect extends React.PureComponent {
                 selected={isInputSelected}
                 disabled={disabled}
                 ref={this.setInput}
+                spellcheck="false"
               />
               <div className={styles.functions}>
                 {openItemElement &&
@@ -194,7 +195,6 @@ export default class StatelessSearchableSelect extends React.PureComponent {
               <Portal>
                 <Popper
                   placement="bottom"
-                  className={styles.popper}
                   modifiers={{
                     preventOverflow: {
                       boundariesElement: 'viewport'
@@ -213,7 +213,7 @@ export default class StatelessSearchableSelect extends React.PureComponent {
                   }}
                 >
                   {({ref, style, placement, arrowProps}) => (
-                    <div ref={ref} data-placement={placement} style={style}>
+                    <div ref={ref} data-placement={placement} style={style} className={styles.popper}>
                       <CaptureOutsideClicks
                         onClickOutside={isActive && isOpen ? this.handleClose : undefined}
                       >
