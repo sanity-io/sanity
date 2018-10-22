@@ -58,7 +58,8 @@
   margin: 0;
   padding: 0;
   position: relative;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   outline: none;
   border: none;
   color: inherit;
@@ -94,7 +95,7 @@
 
 .onlyIcon {
   @nest & .inner {
-    padding: 0.7em 0.8em !important;
+    padding: 0.7em 0.7em !important;
   }
 
   @nest & .content {
@@ -141,6 +142,10 @@
   background-color: var(--default-button-color);
   color: var(--default-button-color--text);
 
+  @nest & .spinner {
+    background-color: var(--gray-lighter);
+  }
+
   @nest &:not(.disabled) {
     @nest &:hover {
       background-color: var(--default-button-color--hover);
@@ -156,6 +161,10 @@
 .simple {
   composes: root;
   background-color: transparent;
+
+  @nest & .spinner {
+    background-color: var(--white);
+  }
 
   @nest &:not(.disabled):hover {
     background-color: color(var(--default-button-color) a(90%));
@@ -180,6 +189,10 @@
   box-shadow: none;
   composes: default;
 
+  @nest & .spinner {
+    background-color: var(--white);
+  }
+
   @nest &:not(.disabled):hover {
     background-color: color(var(--default-button-color) a(5%));
   }
@@ -203,10 +216,18 @@
     border-color: var(--brand-primary);
   }
 
+  @nest & .spinner {
+    background-color: var(--brand-primary);
+  }
+
   @nest &.inverted {
     border-color: var(--brand-primary);
     background-color: transparent;
     color: var(--brand-primary);
+
+    @nest & .spinner {
+      background-color: var(--white);
+    }
 
     @nest &:not(.disabled):hover {
       background-color: color(var(--brand-primary) a(10%));
@@ -231,6 +252,11 @@
   background-color: var(--state-danger-color);
   color: var(--state-danger-color--text);
 
+  @nest & .spinner {
+    background-color: var(--state-danger-color);
+    color: var(--state-danger-color--text);
+  }
+
   @nest &.root:focus {
     box-shadow: var(--focus-shadow--danger);
     border-color: var(--state-danger-color);
@@ -244,6 +270,11 @@
     border-color: var(--state-danger-color);
     background-color: transparent;
     color: var(--state-danger-color);
+
+    @nest & .spinner {
+      background-color: var(--white);
+      color: var(--state-danger-color);
+    }
 
     @nest &:not(.disabled) {
       @nest &:hover {
@@ -270,6 +301,11 @@
   background-color: var(--state-success-color);
   color: var(--state-success-color--text);
 
+  @nest & .spinner {
+    background-color: var(--state-success-color);
+    color: var(--state-success-color--text);
+  }
+
   @nest &.root:focus {
     box-shadow: var(--focus-shadow--success);
     border-color: var(--state-success-color);
@@ -283,6 +319,11 @@
     border-color: var(--state-success-color);
     background-color: transparent;
     color: var(--state-success-color);
+
+    @nest & .spinner {
+      background-color: var(--white);
+      color: var(--state-success-color);
+    }
 
     @nest &:not(.disabled):hover {
       background-color: color(var(--state-success-color) a(10%));
@@ -307,6 +348,10 @@
     box-shadow: var(--focus-shadow-white);
   }
 
+  @nest & .spinner {
+    background-color: var(--white);
+  }
+
   @nest &:not(.disabled):hover {
     background-color: color(var(--white) lightness(- 5%));
   }
@@ -315,6 +360,11 @@
     border-color: var(--white);
     background-color: transparent;
     color: var(--white);
+
+    @nest & .spinner {
+      background-color: var(--white);
+      color: var(--text-color);
+    }
 
     @nest &:not(.disabled) {
       @nest &:focus {
@@ -334,6 +384,11 @@
     background-color: transparent;
     color: var(--white);
 
+    @nest & .spinner {
+      background-color: var(--white);
+      color: var(--text-color);
+    }
+
     @nest &:not(.disabled):hover {
       background-color: color(var(--white) a(40%));
       color: var(--white);
@@ -346,7 +401,16 @@
 }
 
 .spinner {
-  margin-right: 0.5em;
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  top: 0;
+  left: 0;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.9;
 }
 
 .hasIcon {
