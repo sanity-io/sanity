@@ -17,7 +17,7 @@ storiesOf('Default layout')
     return (
       <div className={DefaultLayoutStyles.navBar}>
         <div className={NavBarStyles.root}>
-          <div className={NavBarStyles.toolSwitcher}>
+          <div className={NavBarStyles.branding}>
             <Branding />
           </div>
         </div>
