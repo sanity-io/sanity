@@ -7,6 +7,7 @@
 .inner {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .innerWithError {
@@ -106,6 +107,8 @@
 
 .previewWrapperHelper {
   outline: none;
+  padding: var(--small-padding) 0;
+  box-sizing: border-box;
 }
 
 .previewWrapperHelper:focus {
