@@ -1,15 +1,15 @@
 @import "part:@sanity/base/theme/variables-style";
 
 :root {
-  --nav-bar-box: 3.0625rem; /* 49px */
+  --nav-bar-box: 3.0625em; /* 49px */
 }
 
 .root {
+  -webkit-font-smoothing: antialiased;
   display: grid;
   grid-gap: 0 var(--small-padding);
   grid-template-columns: var(--nav-bar-box) auto auto var(--nav-bar-box) var(--nav-bar-box);
   grid-template-rows: var(--nav-bar-box) var(--nav-bar-box);
-  padding: 0 var(--medium-padding);
   box-sizing: border-box;
   align-items: stretch;
   grid-template-areas:
@@ -19,7 +19,7 @@
   @media (--screen-medium) {
     grid-template-rows: var(--nav-bar-box);
     grid-template-areas: " branding    createButton       search toolSwitcher extras      loginStatus";
-    grid-template-columns: max-content var(--nav-bar-box) auto   max-content  max-content 1.5rem;
+    grid-template-columns: max-content var(--nav-bar-box) auto   max-content  max-content 3.0625em;
   }
 
   @nest & a {
@@ -32,6 +32,7 @@
   grid-area: branding;
   display: flex;
   align-items: stretch;
+  padding: 1em;
 }
 
 .hamburger {

@@ -4,12 +4,16 @@
   display: flex;
   text-align: center;
   align-items: center;
+
+  @nest & > div:first-child {
+    padding: 0.5em;
+  }
 }
 
 .userImage {
   display: block;
-  height: 1.5rem;
-  width: 1.5rem;
+  height: 2.0625em;
+  width: 2.0625em;
   border-radius: 50%;
 }
 
@@ -19,7 +23,7 @@
 
 .userMenu {
   position: absolute;
-  top: 3em;
+  top: 100%;
   right: 0;
   z-index: 10;
 }
