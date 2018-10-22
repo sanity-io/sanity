@@ -123,10 +123,6 @@
   @media (--screen-medium) {
     font-size: 1em;
   }
-
-  @nest & > *:not(:last-child) {
-    margin-right: var(--small-padding);
-  }
 }
 
 .syncSpinnerContainer {
