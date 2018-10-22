@@ -204,33 +204,39 @@ class Pane extends React.Component {
   }
 
   renderIntentAction = (action, i) => {
+    const {styles} = this.props
     return (
-      <IntentButton
-        key={getActionKey(action, i)}
-        title={action.title}
-        icon={action.icon}
-        color="primary"
-        kind="simple"
-        intent={action.intent.type}
-        params={action.intent.params}
-      />
+      <div className={styles.buttonWrapper}>
+        <IntentButton
+          key={getActionKey(action, i)}
+          title={action.title}
+          icon={action.icon}
+          color="primary"
+          kind="simple"
+          intent={action.intent.type}
+          params={action.intent.params}
+        />
+      </div>
     )
   }
 
   renderAction = (act, i) => {
+    const {styles} = this.props
     if (act.intent) {
       return this.renderIntentAction(act, i)
     }
 
     return (
-      <Button
-        key={getActionKey(act, i)}
-        title={act.title}
-        icon={act.icon}
-        color="primary"
-        kind="simple"
-        onClick={this.handleMenuAction.bind(this, act)}
-      />
+      <div className={styles.buttonWrapper}>
+        <Button
+          key={getActionKey(act, i)}
+          title={act.title}
+          icon={act.icon}
+          color="primary"
+          kind="simple"
+          onClick={this.handleMenuAction.bind(this, act)}
+        />
+      </div>
     )
   }
 
@@ -245,15 +251,13 @@ class Pane extends React.Component {
 
     return (
       <div className={styles.menuWrapper}>
-        <div className={styles.menuButtonContainer}>
-          <Button
-            // Makes menu component ignore clicks on button (prevents double-toggling)
-            data-menu-button-id={this.paneMenuId}
-            kind="simple"
-            icon={IconMoreVert}
-            onClick={this.handleMenuToggle}
-          />
-        </div>
+        <Button
+          // Makes menu component ignore clicks on button (prevents double-toggling)
+          data-menu-button-id={this.paneMenuId}
+          kind="simple"
+          icon={IconMoreVert}
+          onClick={this.handleMenuToggle}
+        />
         <div className={styles.menuContainer}>
           {menuIsOpen && (
             <Menu
@@ -300,9 +304,11 @@ class Pane extends React.Component {
             <h2 className={styles.title} onClick={this.handleToggleCollapsed}>
               {title}
             </h2>
-            {renderActions ? renderActions(actions) : actions.map(this.renderAction)}
+            <div className={styles.actions}>
+              {renderActions ? renderActions(actions) : actions.map(this.renderAction)}
+            </div>
+            {this.renderMenu()}
           </div>
-          {this.renderMenu()}
           <div className={styles.headerBackground} style={{opacity: headerStyle.opacity}} />
         </div>
         <div className={styles.main}>
