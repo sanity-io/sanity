@@ -70,7 +70,7 @@ storiesOf('Buttons', module)
           {text('prop: children', 'Touch Me!')}
         </Button>
         <p>
-          Click to focus:<br/>
+          Click to focus:<br />
           <button onClick={testFocus}>Focus</button>
         </p>
       </Sanity>
@@ -96,6 +96,7 @@ storiesOf('Buttons', module)
   })
   .add('Examples', () => {
     const disabled = boolean('Disabled', false)
+    const loading = boolean('Loading', false)
     return (
       <RouterProvider
         router={router}
@@ -104,10 +105,21 @@ storiesOf('Buttons', module)
       >
         <form style={{padding: '2rem'}}>
           <h2>Default</h2>
-          <Button onClick={action('clicked')} icon={SanityLogoIcon} disabled={disabled}>
+          <Button
+            onClick={action('clicked')}
+            icon={SanityLogoIcon}
+            disabled={disabled}
+            loading={loading}
+          >
             Default
           </Button>
-          <Button onClick={action('clicked')} icon={SanityLogoIcon} inverted disabled={disabled}>
+          <Button
+            onClick={action('clicked')}
+            icon={SanityLogoIcon}
+            inverted
+            disabled={disabled}
+            loading={loading}
+          >
             Inverted
           </Button>
           <Button
@@ -115,57 +127,104 @@ storiesOf('Buttons', module)
             icon={SanityLogoIcon}
             kind="simple"
             disabled={disabled}
+            loading={loading}
           >
             Simple
           </Button>
 
           <h2>Colors</h2>
-          <Button onClick={action('clicked')} disabled={disabled}>
+          <Button onClick={action('clicked')} disabled={disabled} loading={loading}>
             Undefined
           </Button>
-          <Button onClick={action('clicked')} color="primary" disabled={disabled}>
+          <Button onClick={action('clicked')} color="primary" disabled={disabled} loading={loading}>
             Primary
           </Button>
-          <Button onClick={action('clicked')} color="danger" disabled={disabled}>
+          <Button onClick={action('clicked')} color="danger" disabled={disabled} loading={loading}>
             Danger
           </Button>
-          <Button onClick={action('clicked')} color="success" disabled={disabled}>
+          <Button onClick={action('clicked')} color="success" disabled={disabled} loading={loading}>
             Success
           </Button>
 
           <h2>Colors (inverted)</h2>
-          <Button onClick={action('clicked')} inverted disabled={disabled}>
+          <Button onClick={action('clicked')} inverted disabled={disabled} loading={loading}>
             Undefined
           </Button>
-          <Button onClick={action('clicked')} color="primary" inverted disabled={disabled}>
+          <Button
+            onClick={action('clicked')}
+            color="primary"
+            inverted
+            disabled={disabled}
+            loading={loading}
+          >
             Primary
           </Button>
-          <Button onClick={action('clicked')} color="danger" inverted disabled={disabled}>
+          <Button
+            onClick={action('clicked')}
+            color="danger"
+            inverted
+            disabled={disabled}
+            loading={loading}
+          >
             Danger
           </Button>
-          <Button onClick={action('clicked')} color="success" inverted disabled={disabled}>
+          <Button
+            onClick={action('clicked')}
+            color="success"
+            inverted
+            disabled={disabled}
+            loading={loading}
+          >
             Success
           </Button>
-          <DropDownButton items={items} onAction={action('Clicked item')} disabled={disabled}>
+          <DropDownButton
+            items={items}
+            onAction={action('Clicked item')}
+            disabled={disabled}
+            loading={loading}
+          >
             Dropdown
           </DropDownButton>
 
           <h2>Colors (simple)</h2>
-          <Button onClick={action('clicked')} kind="simple" disabled={disabled}>
+          <Button onClick={action('clicked')} kind="simple" disabled={disabled} loading={loading}>
             Undefined
           </Button>
-          <Button onClick={action('clicked')} kind="simple" color="primary" disabled={disabled}>
+          <Button
+            onClick={action('clicked')}
+            kind="simple"
+            color="primary"
+            disabled={disabled}
+            loading={loading}
+          >
             Primary
           </Button>
-          <Button onClick={action('clicked')} kind="simple" color="danger" disabled={disabled}>
+          <Button
+            onClick={action('clicked')}
+            kind="simple"
+            color="danger"
+            disabled={disabled}
+            loading={loading}
+          >
             Danger
           </Button>
-          <Button onClick={action('clicked')} kind="simple" color="success" disabled={disabled}>
+          <Button
+            onClick={action('clicked')}
+            kind="simple"
+            color="success"
+            disabled={disabled}
+            loading={loading}
+          >
             Success
           </Button>
 
           <h2>With icons</h2>
-          <Button onClick={action('clicked')} icon={SanityLogoIcon} disabled={disabled}>
+          <Button
+            onClick={action('clicked')}
+            icon={SanityLogoIcon}
+            disabled={disabled}
+            loading={loading}
+          >
             With icon
           </Button>
           <Button
@@ -173,6 +232,7 @@ storiesOf('Buttons', module)
             color="danger"
             icon={SanityLogoIcon}
             disabled={disabled}
+            loading={loading}
           >
             Colored with icon
           </Button>
@@ -182,6 +242,7 @@ storiesOf('Buttons', module)
             icon={SanityLogoIcon}
             inverted
             disabled={disabled}
+            loading={loading}
           >
             Danger, inverted & icon
           </Button>
@@ -192,6 +253,7 @@ storiesOf('Buttons', module)
             items={items}
             onAction={action('Clicked item')}
             disabled={disabled}
+            loading={loading}
           >
             Dropdown
           </DropDownButton>
@@ -202,6 +264,7 @@ storiesOf('Buttons', module)
             icon={SanityLogoIcon}
             title="Default"
             disabled={disabled}
+            loading={loading}
           />
           <Button
             onClick={action('clicked')}
@@ -209,6 +272,7 @@ storiesOf('Buttons', module)
             color="danger"
             title="Danger"
             disabled={disabled}
+            loading={loading}
           />
           <Button
             onClick={action('clicked')}
@@ -216,6 +280,7 @@ storiesOf('Buttons', module)
             inverted
             title="Inverted"
             disabled={disabled}
+            loading={loading}
           />
           <Button
             onClick={action('clicked')}
@@ -224,6 +289,7 @@ storiesOf('Buttons', module)
             color="danger"
             title="Inverted danger"
             disabled={disabled}
+            loading={loading}
           />
           <Button
             onClick={action('clicked')}
@@ -231,6 +297,7 @@ storiesOf('Buttons', module)
             kind="simple"
             title="Simple"
             disabled={disabled}
+            loading={loading}
           />
           <Button
             onClick={action('clicked')}
@@ -239,6 +306,7 @@ storiesOf('Buttons', module)
             color="danger"
             title="Simple danger"
             disabled={disabled}
+            loading={loading}
           />
           <Button
             onClick={action('clicked')}
@@ -247,6 +315,7 @@ storiesOf('Buttons', module)
             color="primary"
             title="Simple primary"
             disabled={disabled}
+            loading={loading}
           />
 
           <h2>Intent buttons with only icons</h2>
@@ -257,6 +326,7 @@ storiesOf('Buttons', module)
             icon={PlusIcon}
             title="Default"
             disabled={disabled}
+            loading={loading}
           />
           <IntentButton
             intent="create"
@@ -275,6 +345,7 @@ storiesOf('Buttons', module)
             inverted
             title="Inverted"
             disabled={disabled}
+            loading={loading}
           />
           <IntentButton
             intent="create"
@@ -285,6 +356,7 @@ storiesOf('Buttons', module)
             color="danger"
             title="Inverted danger"
             disabled={disabled}
+            loading={loading}
           />
           <IntentButton
             intent="create"
@@ -294,6 +366,7 @@ storiesOf('Buttons', module)
             kind="simple"
             title="Simple"
             disabled={disabled}
+            loading={loading}
           />
           <IntentButton
             intent="create"
@@ -304,6 +377,7 @@ storiesOf('Buttons', module)
             color="danger"
             title="Simple danger"
             disabled={disabled}
+            loading={loading}
           />
           <IntentButton
             intent="create"
@@ -314,20 +388,33 @@ storiesOf('Buttons', module)
             color="primary"
             title="Simple primary"
             disabled={disabled}
+            loading={loading}
           />
 
           <h2>On color areas</h2>
           <div style={{backgroundColor: 'red', padding: '1rem'}}>
-            <Button onClick={action('clicked')} color="white" disabled={disabled}>
+            <Button onClick={action('clicked')} color="white" disabled={disabled} loading={loading}>
               White
             </Button>
-            <Button onClick={action('clicked')} kind="simple" color="white" disabled={disabled}>
+            <Button
+              onClick={action('clicked')}
+              kind="simple"
+              color="white"
+              disabled={disabled}
+              loading={loading}
+            >
               White simple
             </Button>
-            <Button onClick={action('clicked')} inverted disabled={disabled}>
+            <Button onClick={action('clicked')} inverted disabled={disabled} loading={loading}>
               Inverted
             </Button>
-            <Button onClick={action('clicked')} inverted color="white" disabled={disabled}>
+            <Button
+              onClick={action('clicked')}
+              inverted
+              color="white"
+              disabled={disabled}
+              loading={loading}
+            >
               White inverted
             </Button>
           </div>
