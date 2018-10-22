@@ -163,7 +163,7 @@ export default class StatelessSearchableSelect extends React.PureComponent {
                 selected={isInputSelected}
                 disabled={disabled}
                 ref={this.setInput}
-                spellcheck="false"
+                spellCheck="false"
               />
               <div className={styles.functions}>
                 {openItemElement &&
