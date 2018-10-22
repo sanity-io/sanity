@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 // Connects the FormBuilder with various sanity roles
 import React from 'react'
 import {debounce} from 'lodash'
-import {Tooltip} from '@sanity/react-tippy'
+import {Tooltip} from 'react-tippy'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import {PreviewFields} from 'part:@sanity/base/preview'
 import {getPublishedId, newDraftFrom} from 'part:@sanity/base/util/draft-utils'
@@ -557,17 +557,15 @@ export default withRouterHOC(
                 arrow
                 theme="light"
                 className={styles.publishButton}
-                title={
-                  errors.length > 0 ? (
-                    'Fix errors before publishing'
-                  ) : (
-                    <span className={styles.menuItem}>
-                      {published ? 'Publish changes' : 'Publish'}
-                      <span className={styles.hotkey}>
-                        <Hotkeys keys={['Ctrl', 'Alt', 'P']} />
-                      </span>
+                title={errors.length > 0 ? 'Fix errors before publishing' : 'Publish (Ctrl+Alt+P)'}
+                html={
+                  <span className={styles.menuItem}>
+                    {errors.length > 0 && 'Fix errors before publishing'}
+                    {published && errors.length <= 0 ? 'Publish changes' : 'Publish'}
+                    <span className={styles.hotkey}>
+                      <Hotkeys keys={['Ctrl', 'Alt', 'P']} />
                     </span>
-                  )
+                  </span>
                 }
               >
                 <Button
