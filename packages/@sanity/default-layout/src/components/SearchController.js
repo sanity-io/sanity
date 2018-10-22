@@ -141,6 +141,12 @@ class SearchController extends React.Component {
     })
   }
 
+  handleClear = event => {
+    this.setState({
+      inputValue: ''
+    })
+  }
+
   handleKeyDown = event => {
     const {isOpen, hits, activeIndex} = this.state
     const isArrowKey = ['ArrowUp', 'ArrowDown'].includes(event.key)
