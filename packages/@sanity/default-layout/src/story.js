@@ -5,7 +5,6 @@ import React from 'react'
 import Ink from 'react-ink'
 import {storiesOf} from 'part:@sanity/storybook'
 import {withKnobs, text, boolean, object} from 'part:@sanity/storybook/addons/knobs'
-import Button from 'part:@sanity/components/buttons/default'
 import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
 import PlusIcon from 'part:@sanity/base/plus-icon'
 import PluginIcon from 'part:@sanity/base/plugin-icon'
@@ -26,12 +25,14 @@ storiesOf('Default layout')
       <div className={DefaultLayoutStyles.navBar}>
         <div className={NavBarStyles.root}>
           <div className={NavBarStyles.hamburger}>
-            <Button
-              kind="simple"
-              onClick={() => console.log('onClick()')}
+            <button
+              className={NavBarStyles.hamburgerButton}
+              type="button"
               title="Menu"
-              icon={HamburgerIcon}
-            />
+              onClick={() => console.log('onClick()')}
+            >
+              <HamburgerIcon />
+            </button>
           </div>
           <a className={NavBarStyles.branding} href="#" onClick={evt => evt.preventDefault()}>
             <Branding />

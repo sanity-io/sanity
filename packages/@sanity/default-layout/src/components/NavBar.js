@@ -5,7 +5,6 @@ import config from 'config:sanity'
 import PlusIcon from 'part:@sanity/base/plus-icon'
 import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
 import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
-import Button from 'part:@sanity/components/buttons/default'
 import Branding from './Branding'
 import LoginStatus from './LoginStatus'
 import SearchController from './SearchController'
@@ -18,7 +17,14 @@ function NavBar(props) {
   return (
     <div className={styles.root}>
       <div className={styles.hamburger}>
-        <Button kind="simple" onClick={onToggleMenu} title="Menu" icon={HamburgerIcon} />
+        <button
+          className={styles.hamburgerButton}
+          type="button"
+          title="Menu"
+          onClick={onToggleMenu}
+        >
+          <HamburgerIcon />
+        </button>
       </div>
       <StateLink toIndex className={styles.branding}>
         <Branding projectName={config && config.projectName} />
