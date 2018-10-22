@@ -6,7 +6,7 @@
   align-items: center;
   color: color(var(--white) a(50%));
   text-decoration: none;
-  padding: 1em;
+  padding: 0.75em;
 
   @nest .default & {
     padding: 1em;
@@ -35,7 +35,12 @@
 
 .iconContainer {
   display: block;
-  font-size: 1rem;
+  font-size: calc(25 / 16 * 1em);
+  line-height: 1;
+
+  @nest & > svg {
+    display: block;
+  }
 }
 
 .toolName {
