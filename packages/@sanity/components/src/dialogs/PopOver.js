@@ -67,7 +67,6 @@ export default class PopOver extends React.PureComponent {
 
   render() {
     const {useOverlay} = this.props
-    const [primary, secondary] = partition(actions, action => action.primary)
     const {
       title,
       color,
@@ -79,6 +78,7 @@ export default class PopOver extends React.PureComponent {
       modifiers,
       padding
     } = this.props
+    const [primary, secondary] = partition(actions, action => action.primary)
 
     return (
       <Manager>
@@ -88,13 +88,14 @@ export default class PopOver extends React.PureComponent {
             {isActive => (
               <div>
                 {useOverlay && <div className={styles.overlay} />}
-                <Popper
-                  className={`${styles.popper} ${styles[`color_${color}`]}`}
-                  placement="auto"
-                  modifiers={modifiers}
-                >
+                <Popper placement="auto" modifiers={modifiers}>
                   {({ref, style, placement, arrowProps}) => (
-                    <div ref={ref} style={style} data-placement={placement}>
+                    <div
+                      ref={ref}
+                      style={style}
+                      data-placement={placement}
+                      className={`${styles.popper} ${styles[`color_${color}`]}`}
+                    >
                       <div
                         className={title ? styles.filledArrow : styles.arrow}
                         ref={arrowProps.ref}
