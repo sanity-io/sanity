@@ -455,6 +455,22 @@ export default withRouterHOC(
       )
     }
 
+    renderPublishButtonTooltip = (errors, published) => {
+      if (errors.length > 0) {
+        return <span>Fix errors before publishing</span>
+      }
+      return (
+        <span className={styles.menuItem}>
+          {published ? 'Publish changes' : 'Publish'}
+          {errors.length < 1 && (
+            <span className={styles.hotkey}>
+              <Hotkeys keys={['Ctrl', 'Alt', 'P']} />
+            </span>
+          )}
+        </span>
+      )
+    }
+
     renderActions = () => {
       const {draft, published, markers, type, isReconnecting} = this.props
       const {showSavingStatus, showValidationTooltip} = this.state
@@ -557,16 +573,8 @@ export default withRouterHOC(
                 arrow
                 theme="light"
                 className={styles.publishButton}
-                title={errors.length > 0 ? 'Fix errors before publishing' : 'Publish (Ctrl+Alt+P)'}
-                html={
-                  <span className={styles.menuItem}>
-                    {errors.length > 0 && 'Fix errors before publishing'}
-                    {published && errors.length <= 0 ? 'Publish changes' : 'Publish'}
-                    <span className={styles.hotkey}>
-                      <Hotkeys keys={['Ctrl', 'Alt', 'P']} />
-                    </span>
-                  </span>
-                }
+                //title={errors.length > 0 ? 'Fix errors before publishing' : 'Publish (Ctrl+Alt+P)'}
+                html={this.renderPublishButtonTooltip(errors, published)}
               >
                 <Button
                   disabled={isReconnecting || !draft || errors.length > 0}
