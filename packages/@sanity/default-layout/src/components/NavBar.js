@@ -10,6 +10,7 @@ import Branding from './Branding'
 import LoginStatus from './LoginStatus'
 import SearchController from './SearchController'
 import styles from './styles/NavBar.css'
+import {StateLink} from 'part:@sanity/base/router'
 
 function NavBar(props) {
   const {onCreateButtonClick, onToggleMenu, onSwitchTool, onUserLogout, router, tools, user} = props
@@ -19,9 +20,9 @@ function NavBar(props) {
       <div className={styles.hamburger}>
         <Button kind="simple" onClick={onToggleMenu} title="Menu" icon={HamburgerIcon} />
       </div>
-      <div className={styles.branding}>
+      <StateLink toIndex className={styles.branding}>
         <Branding projectName={config && config.projectName} />
-      </div>
+      </StateLink>
       <a className={styles.createButton} onClick={onCreateButtonClick}>
         <span className={styles.createButtonIcon}>
           <PlusIcon />

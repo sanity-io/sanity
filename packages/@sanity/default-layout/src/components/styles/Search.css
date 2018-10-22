@@ -123,6 +123,10 @@
   align-items: center;
   align-self: stretch;
   padding: 0 var(--small-padding);
+
+  @nest & > svg {
+    font-size: calc(25 / 16 * 1em);
+  }
 }
 
 .icon {

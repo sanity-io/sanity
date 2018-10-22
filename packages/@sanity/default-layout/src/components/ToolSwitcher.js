@@ -1,36 +1,44 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import {StateLink, withRouterHOC} from 'part:@sanity/base/router'
-import PluginIcon from 'part:@sanity/base/plugin-icon'
-import Ink from 'react-ink'
-import styles from './styles/ToolSwitcher.css'
+import ToolSwitcherWidget from './ToolSwitcherWidget'
+import ToolSwitcherItem from './ToolSwitcherItem'
+import ToolSwitcherWidgetStyles from './styles/ToolSwitcherWidget.css'
 
-function ToolSwitcher(props) {
-  const {tools, router, activeToolName, onSwitchTool, layout} = props
-  return (
-    <div className={styles[layout]}>
-      <ul className={styles.toolList}>
-        {tools.map(tool => {
-          const itemClass = activeToolName === tool.name ? styles.activeItem : styles.item
+class ToolSwitcher extends React.PureComponent {
+  renderItem = tool => {
+    const {activeToolName, onSwitchTool} = this.props
+    return (
+      <StateLink
+        state={tool.state}
+        onClick={onSwitchTool}
+        className={ToolSwitcherWidgetStyles.link}
+      >
+        <ToolSwitcherItem
+          icon={tool.icon}
+          title={tool.title || tool.name}
+          label={tool.title || tool.name}
+          isActive={activeToolName === tool.name}
+        />
+      </StateLink>
+    )
+  }
 
-          const ToolIcon = tool.icon || PluginIcon
-
-          const state = router && Object.assign({}, router.state, {tool: tool.name})
-          return (
-            <li key={tool.name} className={itemClass}>
-              <StateLink className={styles.toolLink} state={state} onClick={onSwitchTool}>
-                <div className={styles.iconContainer}>
-                  <ToolIcon />
-                </div>
-                <div className={styles.toolName}>{tool.title || tool.name}</div>
-                <Ink duration={1000} opacity={0.1} radius={200} />
-              </StateLink>
-            </li>
-          )
+  render() {
+    const {router, tools} = this.props
+    return (
+      <ToolSwitcherWidget
+        {...this.props}
+        renderItem={this.renderItem}
+        tools={tools.map(tool => {
+          return {
+            state: router && Object.assign({}, router.state, {tool: tool.name}),
+            ...tool
+          }
         })}
-      </ul>
-    </div>
-  )
+      />
+    )
+  }
 }
 
 ToolSwitcher.defaultProps = {
