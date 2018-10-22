@@ -2,16 +2,6 @@
 @import "part:@sanity/base/theme/variables/fonts-style";
 @import './layout/tippy.css';
 
-:global(body) {
-  font-family: var(--font-family-sans-serif);
-  line-height: var(--line-height-base);
-  color: var(--text-color);
-  background-color: var(--body-bg);
-  margin: 0;
-  padding: 0;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-}
-
 :global(a) {
   color: var(--link-color);
 }
@@ -22,4 +12,14 @@
 
 :global(a:hover) {
   color: var(--link-hover-color);
+}
+
+:global(body#sanityBody) {
+  font-family: var(--font-family-sans-serif);
+  line-height: var(--line-height-base);
+  color: var(--text-color);
+  background-color: var(--body-bg);
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
