@@ -11,9 +11,9 @@ const ViewColumnIcon = () => (
     width="1em"
     height="1em"
   >
-    <rect x="0.5" y="4.5" width="24" height="16" stroke="currentColor" style={strokeStyle} />
-    <line x1="8.5" y1="5" x2="8.5" y2="20" stroke="currentColor" style={strokeStyle} />
-    <line x1="16.5" y1="5" x2="16.5" y2="20" stroke="currentColor" style={strokeStyle} />
+    <rect x="3.5" y="4.5" width="18" height="16" stroke="currentColor" style={strokeStyle} />
+    <line x1="9.5" y1="5" x2="9.5" y2="20" stroke="currentColor" style={strokeStyle} />
+    <line x1="15.5" y1="5" x2="15.5" y2="20" stroke="currentColor" style={strokeStyle} />
   </svg>
 )
 
