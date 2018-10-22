@@ -26,6 +26,7 @@ import * as PathUtils from '../../utils/pathUtils'
 import ConfirmButton from './ConfirmButton'
 import styles from './styles/ItemValue.css'
 import type {ArrayType, ItemValue} from './typedefs'
+import Ink from 'react-ink'
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
@@ -296,6 +297,7 @@ export default class RenderItemValue extends React.Component<Props> {
           >
             {!value._key && <div className={styles.missingKeyMessage}>Missing key</div>}
             <Preview layout={previewLayout} value={value} type={this.getMemberType()} />
+            <Ink duration={1000} opacity={0.1} radius={200} />
           </div>
         </div>
 
