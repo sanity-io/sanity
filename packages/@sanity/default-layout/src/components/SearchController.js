@@ -132,6 +132,13 @@ class SearchController extends React.Component {
 
   handleHitClick = event => {
     this.handleClose()
+    this.handleClear()
+  }
+
+  handleClear = event => {
+    this.setState({
+      inputValue: ''
+    })
   }
 
   handleKeyDown = event => {
@@ -203,6 +210,7 @@ class SearchController extends React.Component {
         onKeyPress={this.handleKeyPress}
         onBlur={this.handleClose}
         onFocus={this.handleOpen}
+        onClear={this.handleClear}
         activeIndex={activeIndex}
       />
     )

@@ -2,7 +2,9 @@
 import React, {Fragment} from 'react'
 import PropTypes from 'prop-types'
 import {get} from 'lodash'
+import Ink from 'react-ink'
 import SearchIcon from 'part:@sanity/base/search-icon'
+import CloseIcon from 'part:@sanity/base/close-icon'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import {isKeyHotkey} from 'is-hotkey'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
@@ -38,6 +40,7 @@ class SearchWidget extends React.PureComponent {
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
     onKeyDown: PropTypes.func,
+    onClear: PropTypes.func,
     activeIndex: PropTypes.number
   }
 
@@ -50,12 +53,23 @@ class SearchWidget extends React.PureComponent {
     onFocus: () => {},
     onBlur: () => {},
     onKeyDown: () => {},
+    onClear: () => {},
     activeIndex: undefined
+  }
+
+  state = {
+    isMobile: false
   }
 
   componentDidMount() {
     if (window) {
       window.addEventListener('keydown', this.handleWindowKeyDown)
+      // TODO: Better check for mobile
+      if (window && !window.matchMedia('all and (min-width: 32em)').matches) {
+        this.setState({
+          isMobile: true
+        })
+      }
     }
   }
 
@@ -128,9 +142,78 @@ class SearchWidget extends React.PureComponent {
     this.props.onKeyDown(event)
   }
 
+  renderInput = (isOpen, inputValue) => {
+    return (
+      <Fragment>
+        <label className={styles.label}>
+          <SearchIcon />
+        </label>
+        <input
+          className={styles.input}
+          type="search"
+          value={isOpen ? inputValue : ''}
+          onChange={this.handleInputChange}
+          onBlur={this.handleBlur}
+          onClick={this.handleInputClick}
+          onFocus={this.handleFocus}
+          onKeyDown={this.handleKeyDown}
+          placeholder="Search"
+          ref={this.setInput}
+        />
+        {inputValue && (
+          <div className={styles.clearButton} onClick={this.props.onClear} title="Clear search">
+            <CloseIcon />
+            <Ink duration={1000} opacity={0.1} radius={200} />
+          </div>
+        )}
+        <div className={styles.hotkeys}>
+          {/* <Hotkeys keys={['Ctrl', 'Alt', 'T']} /> */}
+          <Hotkeys keys={['F']} />
+        </div>
+      </Fragment>
+    )
+  }
+
+  renderResult = () => {
+    const {isSearching, inputValue, hits, renderItem, activeIndex} = this.props
+    const {isMobile} = this.state
+    return (
+      <div className={styles.result}>
+        {isSearching && (
+          <div className={styles.spinner}>
+            <Spinner center={isMobile} message={isMobile && 'Searching…'} />
+          </div>
+        )}
+        {inputValue &&
+          !isSearching &&
+          (!hits || hits.length === 0) && (
+            <div className={styles.noHits}>
+              Could not find <strong>&ldquo;{inputValue}&rdquo;</strong>
+            </div>
+          )}
+        {!isSearching &&
+          hits &&
+          hits.length > 0 && (
+            <div className={styles.listContainer}>
+              <ul className={styles.hits} ref={this.setListElement}>
+                {hits.map((hit, index) => (
+                  <li key={hit._id} className={styles.hit}>
+                    {renderItem(hit, index, activeIndex)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+      </div>
+    )
+  }
+
   render() {
-    const {isSearching, hits, isOpen, inputValue, renderItem, activeIndex} = this.props
+    const {isSearching, hits, isOpen, inputValue} = this.props
+    const {isMobile} = this.state
+
     const isResultShowing = Boolean(isOpen && (inputValue || isSearching || hits > 0))
+
     return (
       <div
         className={styles.root}
@@ -149,63 +232,25 @@ class SearchWidget extends React.PureComponent {
               enabled: true,
               fn: data => {
                 const width = get(data, 'instance.reference.clientWidth') || 500
-                data.styles = {
-                  ...data.styles,
-                  width: width
+                if (isMobile) {
+                  data.styles = {
+                    transform: 'none',
+                    top: '6rem'
+                  }
+                } else {
+                  data.styles = {
+                    ...data.styles,
+                    width: width
+                  }
                 }
+
                 return data
               }
             }
           }}
-          target={
-            <Fragment>
-              <label className={styles.label}>
-                <SearchIcon />
-              </label>
-              <input
-                className={styles.input}
-                type="search"
-                value={isOpen ? inputValue : ''}
-                onChange={this.handleInputChange}
-                onBlur={this.handleBlur}
-                onClick={this.handleInputClick}
-                onFocus={this.handleFocus}
-                onKeyDown={this.handleKeyDown}
-                placeholder="Search"
-                ref={this.setInput}
-              />
-              <div className={styles.hotkeys}>
-                {/* <Hotkeys keys={['Ctrl', 'Alt', 'T']} /> */}
-                <Hotkeys keys={['F']} />
-              </div>
-            </Fragment>
-          }
+          target={this.renderInput(isOpen, inputValue)}
         >
-          {isResultShowing && (
-            <div className={styles.result}>
-              <div className={styles.spinner}>{isSearching && <Spinner />}</div>
-              {inputValue &&
-                !isSearching &&
-                (!hits || hits.length === 0) && (
-                  <div className={styles.noHits}>
-                    Could not find <strong>&ldquo;{inputValue}&rdquo;</strong>
-                  </div>
-                )}
-              {!isSearching &&
-                hits &&
-                hits.length > 0 && (
-                  <div className={styles.listContainer}>
-                    <ul className={styles.hits} ref={this.setListElement}>
-                      {hits.map((hit, index) => (
-                        <li key={hit._id} className={styles.hit}>
-                          {renderItem(hit, index, activeIndex)}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-            </div>
-          )}
+          {isResultShowing && this.renderResult()}
         </Poppable>
       </div>
     )
