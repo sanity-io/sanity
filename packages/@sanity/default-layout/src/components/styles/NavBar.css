@@ -17,8 +17,8 @@
 
   @media (--screen-medium) {
     grid-template-rows: var(--nav-bar-box);
-    grid-template-areas: " branding    createButton       search               toolSwitcher extras      loginStatus";
-    grid-template-columns: max-content var(--nav-bar-box) minmax(150px, 400px) auto         max-content var(--nav-bar-box);
+    grid-template-areas: " hamburger   branding    createButton       search               toolSwitcher extras      loginStatus";
+    grid-template-columns: max-content max-content var(--nav-bar-box) minmax(150px, 400px) auto         max-content var(--nav-bar-box);
     padding-right: 0.5em;
   }
 
@@ -50,10 +50,6 @@ a.branding {
   grid-area: hamburger;
   display: flex;
   align-items: stretch;
-
-  @media (--screen-medium) {
-    display: none;
-  }
 }
 
 .hamburgerButton {

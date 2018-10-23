@@ -3,16 +3,10 @@
 .root {
   position: relative;
   display: flex;
-  align-items: center;
   color: color(var(--white) a(50%));
   text-decoration: none;
   padding: 0.75em;
   white-space: nowrap;
-
-  @nest .default & {
-    padding: 1em;
-    width: 100%;
-  }
 
   @nest &:hover {
     color: color(var(--white) a(80%));
@@ -27,6 +21,16 @@
     flex-direction: row;
     align-items: center;
   }
+}
+
+.horizontal {
+  align-items: center;
+}
+
+.vertical {
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
 }
 
 .rootActive {
@@ -52,5 +56,9 @@
 
   @media (--screen-medium) {
     display: block;
+  }
+
+  @nest .vertical & {
+    padding-left: 0.5em;
   }
 }
