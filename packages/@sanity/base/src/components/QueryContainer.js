@@ -3,6 +3,7 @@ import React from 'react'
 import {throttle, union} from 'lodash'
 import {filter} from 'rxjs/operators'
 import store from 'part:@sanity/base/datastore/document'
+import deepEquals from 'react-fast-compare'
 import shallowEquals from 'shallow-equals'
 
 function deprecatedCheck(props, propName, componentName, ...rest) {
@@ -77,7 +78,7 @@ export default class QueryContainer extends React.Component {
   next = event => {
     switch (event.type) {
       case 'snapshot': {
-        this.setState({error: null, loading: false, result: {documents: event.documents}})
+        this.setState({error: false, loading: false, result: {documents: event.documents}})
         break
       }
       case 'mutation': {
@@ -153,7 +154,7 @@ export default class QueryContainer extends React.Component {
 
   componentWillUpdate(nextProps) {
     const sameQuery = nextProps.query === this.props.query
-    const sameParams = shallowEquals(nextProps.params, this.props.params)
+    const sameParams = deepEquals(nextProps.params, this.props.params)
 
     if (!sameQuery || !sameParams) {
       this.setState(createInitialState())
@@ -165,10 +166,12 @@ export default class QueryContainer extends React.Component {
     if (!shallowEquals(this.state, nextState)) {
       return true
     }
-    if (
-      nextProps.query !== this.props.query ||
-      !shallowEquals(nextProps.params, this.props.params)
-    ) {
+
+    if (nextProps.query !== this.props.query) {
+      return true
+    }
+
+    if (!deepEquals(nextProps.params, this.props.params)) {
       return true
     }
 
