@@ -164,7 +164,7 @@ export default withRouterHOC(
                 </div>
               )}
               <ToolSwitcher
-                layout="default"
+                direction="vertical"
                 tools={this.props.tools}
                 activeToolName={router.state.tool}
                 onSwitchTool={this.handleSwitchTool}

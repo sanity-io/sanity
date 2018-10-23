@@ -2,33 +2,51 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import PluginIcon from 'part:@sanity/base/plugin-icon'
 import Ink from 'react-ink'
+import {Tooltip} from 'react-tippy'
 import styles from './styles/ToolSwitcherItem.css'
 
 function ToolSwitcherItem(props) {
-  const {isActive, title, icon} = props
+  const {isActive, title, icon, showIcon, showLabel, direction} = props
   const Icon = icon || PluginIcon
   return (
-    <div className={isActive ? styles.rootActive : styles.root}>
-      <div className={styles.iconContainer}>
-        <Icon />
-      </div>
-      <div className={styles.toolName}>{title}</div>
+    <Tooltip
+      className={`${isActive ? styles.rootActive : styles.root} ${
+        direction === 'vertical' ? styles.vertical : styles.horizontal
+      }`}
+      title={title}
+      arrow
+      theme="dark"
+      distance="20"
+      sticky
+      size="small"
+      style={{display: 'flex'}}
+      disabled={showLabel}
+    >
+      {showIcon && (
+        <div className={styles.iconContainer}>
+          <Icon />
+        </div>
+      )}
+      {showLabel && <div className={styles.toolName}>{title}</div>}
       <Ink duration={1000} opacity={0.1} radius={200} />
-    </div>
+    </Tooltip>
   )
 }
 
 ToolSwitcherItem.defaultProps = {
-  // layout: 'default',
-  tool: {},
-  isActive: false
+  isActive: false,
+  showIcon: true,
+  showLabel: true,
+  direction: 'horizontal'
 }
 
 ToolSwitcherItem.propTypes = {
+  direction: PropTypes.oneOf(['horizontal', 'vertical']),
   isActive: PropTypes.bool,
-  // layout: PropTypes.oneOf(['mini', 'default']),
   title: PropTypes.string.isRequired,
-  icon: PropTypes.func
+  icon: PropTypes.func,
+  showIcon: PropTypes.bool,
+  showLabel: PropTypes.bool
 }
 
 export default ToolSwitcherItem

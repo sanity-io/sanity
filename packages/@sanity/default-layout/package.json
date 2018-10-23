@@ -51,6 +51,7 @@
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
+    "react-tippy": "^1.2.3",
     "rimraf": "^2.6.2"
   },
   "peerDependencies": {
