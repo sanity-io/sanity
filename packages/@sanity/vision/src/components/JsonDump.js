@@ -3,8 +3,8 @@ import React, {Fragment} from 'react'
 import PropTypes from 'prop-types'
 import ReactJson from 'react-json-view'
 
-function typeCheck(data) {
-  return typeof data !== 'object' || data === null
+function isJSONValue(data) {
+  return data !== null && typeof data === 'object'
 }
 
 class JsonBlock extends React.PureComponent {
@@ -14,10 +14,10 @@ class JsonBlock extends React.PureComponent {
 
     return (
       <pre className={styles.block}>
-        {typeCheck(data) ? (
-          <span className={styles.string}>{data || 'null'}</span>
-        ) : (
+        {isJSONValue(data) ? (
           <ReactJson displayDataTypes={false} src={data} />
+        ) : (
+          <span className={styles.primitive}>{data || 'null'}</span>
         )}
       </pre>
     )
