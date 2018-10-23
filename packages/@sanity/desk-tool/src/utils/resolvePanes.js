@@ -7,12 +7,24 @@ import validateStructure from './validateStructure'
 import serializeStructure from './serializeStructure'
 
 export const LOADING = Symbol('LOADING')
-export function resolvePanes(structure, ids) {
+export function resolvePanes(structure, ids, prevStructure, fromIndex) {
   const waitStructure = isSubscribable(structure) ? from(structure) : observableOf(structure)
-  return waitStructure.pipe(switchMap(struct => resolveForStructure(struct, ids)))
+  return waitStructure.pipe(
+    switchMap(struct => resolveForStructure(struct, ids, prevStructure, fromIndex))
+  )
 }
 
-function resolveForStructure(structure, ids) {
+function getInitialPanes(prevStructure, numPanes, fromIndex) {
+  const allLoading = new Array(numPanes).fill(LOADING)
+  if (!prevStructure) {
+    return allLoading
+  }
+
+  const remains = prevStructure.slice(0, fromIndex)
+  return remains.concat(allLoading.slice(fromIndex))
+}
+
+function resolveForStructure(structure, ids, prevStructure, fromIndex) {
   return Observable.create(subscriber => {
     try {
       validateStructure(structure)
@@ -22,14 +34,14 @@ function resolveForStructure(structure, ids) {
     }
 
     const paneIds = [structure.id].concat(ids).filter(Boolean)
-    let panes = new Array(paneIds.length).fill(LOADING)
+    let panes = getInitialPanes(prevStructure, paneIds.length, fromIndex + 1)
     const subscriptions = []
 
-    // Start with all-loading state
+    // Start with all-loading (or previous structure) state
     subscriber.next(panes)
 
     // Start resolving pane-by-pane
-    resolve(0)
+    resolve(Math.max(0, panes.indexOf(LOADING)))
 
     return unsubscribe
 

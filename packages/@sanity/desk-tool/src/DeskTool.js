@@ -152,7 +152,7 @@ export default withRouterHOC(
       this.setState({error, isResolving: false})
     }
 
-    derivePanes(props) {
+    derivePanes(props, fromIndex = 0) {
       if (this.paneDeriver) {
         this.paneDeriver.unsubscribe()
       }
@@ -162,7 +162,9 @@ export default withRouterHOC(
         .pipe(
           distinctUntilChanged(),
           map(maybeSerialize),
-          switchMap(structure => resolvePanes(structure, props.router.state.panes || [])),
+          switchMap(structure =>
+            resolvePanes(structure, props.router.state.panes || [], this.state.panes, fromIndex)
+          ),
           switchMap(panes => this.maybeAddEditorPane(panes, props)),
           debounce(panes => interval(hasLoading(panes) ? 50 : 0))
         )
@@ -185,7 +187,10 @@ export default withRouterHOC(
     // eslint-disable-next-line camelcase
     UNSAFE_componentWillReceiveProps(nextProps) {
       if (this.shouldDerivePanes(nextProps)) {
-        this.derivePanes(nextProps)
+        const prevPanes = this.props.router.state.panes || []
+        const nextPanes = nextProps.router.state.panes || []
+        const diffAt = nextPanes.findIndex((id, index) => prevPanes[index] !== id)
+        this.derivePanes(nextProps, diffAt === -1 ? 0 : diffAt)
       }
     }
 
