@@ -15,8 +15,9 @@ function ToolSwitcherItem(props) {
       }`}
       title={title}
       arrow
+      inertia
       theme="dark"
-      distance="20"
+      distance="8"
       sticky
       size="small"
       style={{display: 'flex'}}
