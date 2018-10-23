@@ -105,7 +105,7 @@
   composes: resetListItem from "part:@sanity/base/theme/layout/helpers";
   background-color: transparent;
   cursor: default;
-  border-bottom: 1px solid #ddd;
+  /* border-bottom: 1px solid #ddd; */
   position: relative;
 }
 
