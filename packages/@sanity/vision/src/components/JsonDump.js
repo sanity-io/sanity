@@ -3,12 +3,22 @@ import React, {Fragment} from 'react'
 import PropTypes from 'prop-types'
 import ReactJson from 'react-json-view'
 
-class JsonBlock extends React.Component {
+function isJSONValue(data) {
+  return data !== null && typeof data === 'object'
+}
+
+class JsonBlock extends React.PureComponent {
   render() {
+    const {data} = this.props
     const styles = this.context.styles.jsonDump
+
     return (
       <pre className={styles.block}>
-        <ReactJson displayDataTypes={false} src={this.props.data} />
+        {isJSONValue(data) ? (
+          <ReactJson displayDataTypes={false} src={data} />
+        ) : (
+          <span className={styles.primitive}>{data || 'null'}</span>
+        )}
       </pre>
     )
   }
