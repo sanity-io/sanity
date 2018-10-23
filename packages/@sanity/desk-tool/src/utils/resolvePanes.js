@@ -41,7 +41,7 @@ function resolveForStructure(structure, ids, prevStructure, fromIndex) {
     subscriber.next(panes)
 
     // Start resolving pane-by-pane
-    resolve(fromIndex)
+    resolve(Math.max(0, panes.indexOf(LOADING)))
 
     return unsubscribe
 
