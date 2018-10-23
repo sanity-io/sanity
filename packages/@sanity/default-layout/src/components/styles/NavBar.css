@@ -55,6 +55,7 @@ a.branding {
 .hamburgerButton {
   -webkit-font-smoothing: antialiased;
   -webkit-apperance: none;
+  outline: none;
   border: 0;
   border-radius: 0;
   padding: 0.75em;

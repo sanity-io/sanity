@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import Ink from 'react-ink'
+import {Tooltip} from 'react-tippy'
 import config from 'config:sanity'
 import PlusIcon from 'part:@sanity/base/plus-icon'
 import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
@@ -30,11 +31,18 @@ function NavBar(props) {
         <Branding projectName={config && config.projectName} />
       </StateLink>
       <a className={styles.createButton} onClick={onCreateButtonClick}>
-        <span className={styles.createButtonIcon}>
+        <Tooltip
+          title="Create new document"
+          className={styles.createButtonIcon}
+          theme="dark"
+          size="small"
+          distance="18"
+          arrow
+        >
           <PlusIcon />
-        </span>
-        <span className={styles.createButtonText}>New</span>
-        <Ink duration={200} opacity={0.1} radius={200} />
+          <span className={styles.createButtonText}>New</span>
+          <Ink duration={200} opacity={0.1} radius={200} />
+        </Tooltip>
       </a>
       <div className={styles.toolSwitcher}>
         <ToolSwitcher
