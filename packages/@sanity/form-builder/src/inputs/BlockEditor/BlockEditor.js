@@ -321,7 +321,6 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
       isActive,
       isLoading,
       markers,
-      onChange,
       onFocus,
       onToggleFullScreen,
       readOnly,
@@ -342,7 +341,6 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
             editorValue={editorValue}
             fullscreen={fullscreen}
             markers={markers}
-            onChange={onChange}
             onFocus={onFocus}
             onToggleFullScreen={onToggleFullScreen}
             style={fullscreen ? this.state.toolbarStyle : {}}
