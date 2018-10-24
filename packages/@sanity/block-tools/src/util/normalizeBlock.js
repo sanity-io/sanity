@@ -17,6 +17,18 @@ export default function normalizeBlock(block) {
     block.markDefs = []
   }
   const lastChild = block.children.slice(-1)[0]
+  if (!lastChild) {
+    // A block must at least have an empty span type child
+    block.children = [
+      {
+        _type: 'span',
+        _key: `${block._key}${0}`,
+        text: '',
+        marks: []
+      }
+    ]
+    return block
+  }
   block.children = block.children
     .filter((child, index) => {
       const previousChild = block.children[index - 1]
@@ -36,7 +48,7 @@ export default function normalizeBlock(block) {
     })
     .map(child => {
       child._key = `${block._key}${newIndex++}`
-      if (!child.marks) {
+      if (child._type === 'span' && !child.marks) {
         child.marks = []
       }
       return child
