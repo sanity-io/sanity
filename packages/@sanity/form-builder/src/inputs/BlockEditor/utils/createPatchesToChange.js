@@ -233,46 +233,43 @@ export default function createPatchesToChange(
 
   return function patchesToChange(patches: Patch[], editorValue: SlateValue, snapshot: ?any) {
     let result
-    controller.value = editorValue
+    controller.setValue(editorValue)
     controller.change(change => {
-      result = change
-      change.withoutNormalizing(_change => {
-        // console.log('EDITORVALUE', JSON.stringify(editorValue.document.toJSON(VALUE_TO_JSON_OPTS), null, 2))
-        // console.log('BLOCKS', JSON.stringify(snapshot, null, 2))
-        // console.log('INITIAL CHANGE VALUE:', JSON.stringify(_change.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
-        patches.forEach((patch: Patch) => {
-          // console.log('INCOMING PATCH', JSON.stringify(patch, null, 2))
-          // console.log('BEFORE VALUE:', JSON.stringify(_change.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
-          if (patch.path.length > 1) {
-            if (patch.path[1] === 'markDefs') {
-              patchAnnotationData(patch, _change, blockContentType, snapshot)
-            } else if (patch.path[1] === 'children' && patch.path.length > 3) {
-              patchInlineData(patch, _change, blockContentType, snapshot)
-            } else {
-              patchBlockData(patch, _change, blockContentType, snapshot)
-            }
+      // console.log('EDITORVALUE', JSON.stringify(editorValue.document.toJSON(VALUE_TO_JSON_OPTS), null, 2))
+      // console.log('BLOCKS', JSON.stringify(snapshot, null, 2))
+      // console.log('INITIAL CHANGE VALUE:', JSON.stringify(change.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
+      patches.forEach((patch: Patch) => {
+        // console.log('INCOMING PATCH', JSON.stringify(patch, null, 2))
+        // console.log('BEFORE VALUE:', JSON.stringify(change.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
+        if (patch.path.length > 1) {
+          if (patch.path[1] === 'markDefs') {
+            patchAnnotationData(patch, change, blockContentType, snapshot)
+          } else if (patch.path[1] === 'children' && patch.path.length > 3) {
+            patchInlineData(patch, change, blockContentType, snapshot)
           } else {
-            switch (patch.type) {
-              case 'set':
-                setPatch(patch, _change, blockContentType)
-                break
-              case 'setIfMissing':
-                setIfMissingPatch(patch, _change, blockContentType)
-                break
-              case 'insert':
-                insertPatch(patch, _change, blockContentType)
-                break
-              case 'unset':
-                unsetPatch(patch, _change)
-                break
-              default:
-                replaceValue(snapshot, _change, blockContentType)
-            }
+            patchBlockData(patch, change, blockContentType, snapshot)
           }
-          // console.log('AFTER VALUE:', JSON.stringify(_change.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
-          result = _change
-        })
+        } else {
+          switch (patch.type) {
+            case 'set':
+              setPatch(patch, change, blockContentType)
+              break
+            case 'setIfMissing':
+              setIfMissingPatch(patch, change, blockContentType)
+              break
+            case 'insert':
+              insertPatch(patch, change, blockContentType)
+              break
+            case 'unset':
+              unsetPatch(patch, change)
+              break
+            default:
+              replaceValue(snapshot, change, blockContentType)
+          }
+        }
+        // console.log('AFTER VALUE:', JSON.stringify(change.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
       })
+      result = change
     })
     // console.log('RESULT VALUE:', JSON.stringify(result.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
     return result
