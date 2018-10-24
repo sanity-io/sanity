@@ -141,7 +141,8 @@ export type UndoRedoStackItem = {
   remoteChanges: {patches: Patch[], timestamp: Date}[],
   timestamp: Date,
   change: SlateChange,
-  beforeChangeEditorValue: SlateValue
+  beforeChangeEditorValue: SlateValue,
+  snapshot: FormBuilderValue[]
 }
 
 export type UndoRedoStack = {undo: UndoRedoStackItem[], redo: UndoRedoStackItem[]}

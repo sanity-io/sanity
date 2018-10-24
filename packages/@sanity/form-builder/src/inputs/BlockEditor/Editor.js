@@ -48,6 +48,8 @@ import QueryPlugin from './plugins/QueryPlugin'
 import SetBlockStylePlugin from './plugins/SetBlockStylePlugin'
 import SetMarksOnKeyComboPlugin from './plugins/SetMarksOnKeyComboPlugin'
 import SplitNodePlugin from './plugins/SplitNodePlugin'
+import MoveNodePlugin from './plugins/MoveNodePlugin'
+import InsertNodePlugin from './plugins/InsertNodePlugin'
 import TextBlockOnEnterKeyPlugin from './plugins/TextBlockOnEnterKeyPlugin'
 import ToggleAnnotationPlugin from './plugins/ToggleAnnotationPlugin'
 import ToggleListItemPlugin from './plugins/ToggleListItemPlugin'
@@ -119,6 +121,8 @@ export default class Editor extends React.Component<Props> {
     this._editorSchema = buildEditorSchema(props.blockContentFeatures)
     this._plugins = [
       SplitNodePlugin(),
+      InsertNodePlugin(),
+      MoveNodePlugin(),
       ListItemOnEnterKeyPlugin({defaultBlock: EDITOR_DEFAULT_BLOCK_TYPE}),
       ListItemOnTabKeyPlugin(),
       TextBlockOnEnterKeyPlugin({defaultBlock: EDITOR_DEFAULT_BLOCK_TYPE}),

@@ -1,13 +1,21 @@
 // @flow
 
+import React from 'react'
+import {getBlockContentFeatures} from '@sanity/block-tools'
+import {Editor as SlateController} from 'slate'
+import generateHelpUrl from '@sanity/generate-help-url'
+import {debounce, unionBy, flatten, isEqual} from 'lodash'
+import FormField from 'part:@sanity/components/formfields/default'
+import withPatchSubscriber from '../../utils/withPatchSubscriber'
+import {PatchEvent} from '../../PatchEvent'
+import InvalidValueInput from '../InvalidValueInput'
+import {resolveTypeName} from '../../utils/resolveTypeName'
 import type {
-  Block,
   BlockContentFeatures,
   BlockArrayType,
   FormBuilderValue,
   SlateChange,
   SlateValue,
-  SlateOperation,
   Marker,
   Patch,
   Path,
@@ -16,31 +24,19 @@ import type {
   Type,
   UndoRedoStack
 } from './typeDefs'
-
-import React from 'react'
-import {getBlockContentFeatures} from '@sanity/block-tools'
-import {List} from 'immutable'
-import {Editor as SlateController} from 'slate'
-import generateHelpUrl from '@sanity/generate-help-url'
-import {debounce, uniq, isEqual, unionBy, flatten} from 'lodash'
-import FormField from 'part:@sanity/components/formfields/default'
-import withPatchSubscriber from '../../utils/withPatchSubscriber'
-import {PatchEvent} from '../../PatchEvent'
-import InvalidValueInput from '../InvalidValueInput'
-import {resolveTypeName} from '../../utils/resolveTypeName'
 import createEditorController from './utils/createEditorController'
 import Input from './Input'
 import SplitNodePlugin from './plugins/SplitNodePlugin'
+import InsertNodePlugin from './plugins/InsertNodePlugin'
+import MoveNodePlugin from './plugins/MoveNodePlugin'
 import buildEditorSchema from './utils/buildEditorSchema'
 import createChangeToPatches from './utils/createChangeToPatches'
 import deserialize from './utils/deserialize'
 import createPatchesToChange from './utils/createPatchesToChange'
+import isWritingTextOperationsOnly from './utils/isWritingTextOperation'
 import {localChanges$, remoteChanges$, changes$} from './utils/changeObservers'
 
 import styles from './styles/SyncWrapper.css'
-
-const IS_WRITING_TEXT_OPERATION_TYPES = ['insert_text', 'remove_text']
-const SEND_PATCHES_TOKEN_CHARS = [' ', '\n']
 
 function findBlockType(type: Type) {
   return type.of && type.of.find(ofType => ofType.name === 'block')
@@ -78,18 +74,6 @@ function isInvalidBlockValue(value: ?(FormBuilderValue[])) {
     return false
   }
   return true
-}
-
-function isWritingTextOperationsOnly(operations: List<SlateOperation>) {
-  return (
-    operations.size > 0 &&
-    operations.map(op => op.type).every(opType => IS_WRITING_TEXT_OPERATION_TYPES.includes(opType))
-  )
-}
-
-function isTokenChar(change: SlateChange) {
-  const text = change.operations.get(0) && change.operations.get(0).text
-  return text && SEND_PATCHES_TOKEN_CHARS.includes(text)
 }
 
 type ChangeSet = {
@@ -225,7 +209,9 @@ export default withPatchSubscriber(
           {
             schema: editorSchema
           },
-          SplitNodePlugin()
+          SplitNodePlugin(),
+          InsertNodePlugin(),
+          MoveNodePlugin()
         ]
       }
       this._controller = createEditorController(controllerOpts)
@@ -260,18 +246,15 @@ export default withPatchSubscriber(
       const {value, onChange} = this.props
       const {editorValue} = this.state
       const patches = this._changeToPatches(editorValue, change, value)
+      if (patches.length) {
+        onChange(PatchEvent.from(patches))
+      }
       localChanges$.next({
         change,
         editorValue,
-        patches,
         isRemote: false,
         timestamp: new Date(),
         callback: () => {
-          setTimeout(() => {
-            if (patches.length) {
-              onChange(PatchEvent.from(patches))
-            }
-          }, 0)
           if (callback) {
             return callback()
           }
@@ -293,7 +276,10 @@ export default withPatchSubscriber(
         !isRemote &&
         !change.__isUndoRedo &&
         !change.operations.every(op => op.type === 'set_selection') &&
-        !change.operations.every(op => op.type === 'set_value')
+        !(
+          change.operations.every(op => op.type === 'set_value') &&
+          isEqual(Object.keys(change.operations.first().properties), ['decorations'])
+        )
       ) {
         this._undoRedoStack.undo.push({
           change,
@@ -301,7 +287,7 @@ export default withPatchSubscriber(
           beforeChangeEditorValue: editorValue,
           timestamp,
           patches,
-          snapshot: this.props.value
+          snapshot: this.props.value || []
         })
         this._undoRedoStack.redo = []
       }
@@ -341,12 +327,14 @@ export default withPatchSubscriber(
     }, 1000)
 
     updateDecorations() {
-      const {decorations} = this.state
+      const {decorations, editorValue} = this.state
       this._controller.change(controllerChange => {
         controllerChange.withoutSaving(() => {
           localChanges$.next({
             change: controllerChange.setValue({decorations}),
-            isRemote: false
+            isRemote: false,
+            editorValue,
+            timestamp: new Date()
           })
         })
       })
@@ -358,7 +346,9 @@ export default withPatchSubscriber(
       const change = this._patchesToChange(event.patches, editorValue, null)
       localChanges$.next({
         change,
-        isRemote: false
+        editorValue,
+        isRemote: false,
+        timestamp: new Date()
       })
       return onChange(event)
     }
@@ -388,42 +378,6 @@ export default withPatchSubscriber(
           patches: remoteAndInternalPatches
         })
       }
-    }
-
-    normalizeUndoSteps(remotePatches: Patch[] = []) {
-      const newStack = []
-      // eslint-disable-next-line complexity
-
-      this._undoRedoStack.undo.forEach((item, index) => {
-        const nextItem = this._undoRedoStack.undo[index + 1]
-        // Always include first and last item
-        if (index === 0 || !nextItem) {
-          newStack.push(item)
-          return
-        }
-        // If the change was a token char (space or enter), include the item
-        if (isTokenChar(item.change)) {
-          newStack.push(item)
-          return
-        }
-        // If there was over a second since the last change, include the item
-        const isTimedOut = nextItem.timestamp - item.timestamp > 1000
-        if (isTimedOut) {
-          newStack.push(item)
-          return
-        }
-        // If the next change is just writing or removing text on the same block, skip it!
-        const nextPaths = uniq(nextItem.change.operations.map(op => op.path.get(0)))
-        const thisPaths = uniq(item.change.operations.map(op => op.path.get(0)))
-        const nextWriteTextOnly = isWritingTextOperationsOnly(nextItem.change.operations)
-        const itemWriteTextOnly = isWritingTextOperationsOnly(item.change.operations)
-        const itemIsRedundant =
-          isEqual(nextPaths, thisPaths) && nextWriteTextOnly && itemWriteTextOnly
-        if (!itemIsRedundant) {
-          newStack.push(item)
-        }
-      })
-      this._undoRedoStack.undo = newStack
     }
 
     handleOnLoading = (props = {}) => {
