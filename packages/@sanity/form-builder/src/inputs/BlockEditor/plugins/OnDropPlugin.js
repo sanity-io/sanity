@@ -9,8 +9,7 @@ export default function OnDropPlugin() {
   return {
     onDrop(event: SyntheticMouseEvent<*>, change: SlateChange, next: void => void) {
       const {target} = event
-      const {value} = change
-      const node = findNode(target, value)
+      const node = findNode(target, change.editor)
       if (change.editor.query('isVoid', node)) {
         return change
       }
