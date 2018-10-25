@@ -1,3 +1,5 @@
+@import "part:@sanity/base/theme/variables-style";
+
 .punctuator {
   color: gray;
 }
@@ -20,7 +22,7 @@
 
   @nest &:nth-child(odd) {
     border-top: 1px solid #eee;
-    background-color: #f0f0f0;
+    background-color: var(--gray-lighter--transparent);
     border-bottom: 1px solid #eee;
   }
 }
