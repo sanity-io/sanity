@@ -7,14 +7,12 @@ import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import {range} from 'lodash'
 import StyleSelect from 'part:@sanity/components/selects/style'
 import RadioSelect from 'part:@sanity/components/selects/radio'
-
+import {withKnobs, boolean, text, number, select} from 'part:@sanity/storybook/addons/knobs'
+import Sanity from 'part:@sanity/storybook/addons/sanity'
 import Fuse from 'fuse.js'
 
 import Chance from 'chance'
 const chance = new Chance()
-
-import {withKnobs, boolean, text, number, select} from 'part:@sanity/storybook/addons/knobs'
-import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 const items = range(20).map((item, i) => {
   return {
@@ -56,6 +54,18 @@ const styleItems = [
     key: 'style-heading5'
   }
 ]
+
+const centerStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100%',
+  width: '100%',
+  position: 'absolute',
+  top: 0,
+  left: 0
+}
+
 
 const renderStyleItem = function(item) {
   switch (item.key) {
@@ -163,34 +173,38 @@ storiesOf('Selects')
     }
     const valueIndex = number('Selected item', -1, options)
     return (
-      <Sanity part="part:@sanity/components/selects/default" propTables={[DefaultSelect]}>
-        <DefaultSelect
-          label={text('label (prop)', 'This is the label')}
-          placeholder={text('placeholder (prop)', 'This is the placeholder')}
-          onChange={action('onChange')}
-          onFocus={action('onFocus')}
-          onBlur={action('onBlur')}
-          items={items}
-          value={items[valueIndex]}
-          disabled={boolean('disabled (default prop)', false)}
-        />
-      </Sanity>
+      <div style={centerStyle}>
+        <Sanity part="part:@sanity/components/selects/default" propTables={[DefaultSelect]}>
+          <DefaultSelect
+            label={text('label (prop)', 'This is the label')}
+            placeholder={text('placeholder (prop)', 'This is the placeholder')}
+            onChange={action('onChange')}
+            onFocus={action('onFocus')}
+            onBlur={action('onBlur')}
+            items={items}
+            value={items[valueIndex]}
+            disabled={boolean('disabled (default prop)', false)}
+          />
+        </Sanity>
+      </div>
     )
   })
   .add('Default with value', () => {
     return (
-      <Sanity part="part:@sanity/components/selects/default" propTables={[DefaultSelect]}>
-        <DefaultSelect
-          label={text('label (prop)', 'This is the label')}
-          placeholder={text('placeholder (prop)', 'This is the placeholder')}
-          onChange={action('onChange')}
-          onFocus={action('onFocus')}
-          onBlur={action('onBlur')}
-          value={items[10]}
-          items={items}
-          disabled={boolean('disabled (default prop)', false)}
-        />
-      </Sanity>
+      <div style={centerStyle}>
+        <Sanity part="part:@sanity/components/selects/default" propTables={[DefaultSelect]}>
+          <DefaultSelect
+            label={text('label (prop)', 'This is the label')}
+            placeholder={text('placeholder (prop)', 'This is the placeholder')}
+            onChange={action('onChange')}
+            onFocus={action('onFocus')}
+            onBlur={action('onBlur')}
+            value={items[10]}
+            items={items}
+            disabled={boolean('disabled (default prop)', false)}
+          />
+        </Sanity>
+      </div>
     )
   })
 
@@ -212,30 +226,32 @@ storiesOf('Selects')
       })
       const selectedItem = items[selected]
       return (
-        <Sanity part="part:@sanity/components/selects/searchable" propTables={[SearchableSelect]}>
-          <SearchableSelect
-            label={text('label (prop)', 'This is the label')}
-            placeholder={text('placeholder (prop)', 'This is the placeholder')}
-            onChange={action('onChange')}
-            onFocus={action('onFocus')}
-            onBlur={action('onBlur')}
-            onOpen={action('onOpen')}
-            value={selectedItem}
-            inputValue={text('Inputvalue (prop)', selectedItem && selectedItem.title)}
-            renderItem={renderItem}
-            items={items}
-            isLoading={boolean('isLoading (prop)', false)}
-            disabled={boolean('disabled (prop)', false)}
-            onClear={hasOnclear ? action('onClear') : undefined}
-          />
-        </Sanity>
+        <div style={{minWidth: '320px', ...centerStyle}}>
+          <Sanity part="part:@sanity/components/selects/searchable" propTables={[SearchableSelect]}>
+            <SearchableSelect
+              label={text('label (prop)', 'This is the label')}
+              placeholder={text('placeholder (prop)', 'This is the placeholder')}
+              onChange={action('onChange')}
+              onFocus={action('onFocus')}
+              onBlur={action('onBlur')}
+              onOpen={action('onOpen')}
+              value={selectedItem}
+              inputValue={text('Inputvalue (prop)', selectedItem && selectedItem.title)}
+              renderItem={renderItem}
+              items={items}
+              isLoading={boolean('isLoading (prop)', false)}
+              disabled={boolean('disabled (prop)', false)}
+              onClear={hasOnclear ? action('onClear') : undefined}
+            />
+          </Sanity>
+        </div>
       )
     }
   )
   .add('Style select', () => {
     return (
       <Sanity part="part:@sanity/components/selects/style" propTables={[StyleSelect]}>
-        <div style={{padding: '2em', backgroundColor: '#eee'}}>
+        <div style={centerStyle}>
           <StyleSelect
             label={text('label (prop)', 'This is the label')}
             placeholder={text('placeholder (prop)', 'This is the placeholder')}
