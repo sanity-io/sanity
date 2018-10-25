@@ -5,24 +5,40 @@ import Button from 'part:@sanity/components/buttons/default'
 import AnchorButton from 'part:@sanity/components/buttons/anchor'
 import IntentButton from 'part:@sanity/components/buttons/intent'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
-import DefaultFormField from 'part:@sanity/components/formfields/default'
-import InInputButton from 'part:@sanity/components/buttons/in-input'
-import InInputStyles from 'part:@sanity/components/buttons/in-input-style'
+// import DefaultFormField from 'part:@sanity/components/formfields/default'
+// import DefaultTextInput from 'part:@sanity/components/textinputs/default'
+// import InInputButton from 'part:@sanity/components/buttons/in-input'
+// import InInputStyles from 'part:@sanity/components/buttons/in-input-style'
 import {storiesOf} from 'part:@sanity/storybook'
-import {withKnobs, text, select, boolean, object} from 'part:@sanity/storybook/addons/knobs'
+import Chance from 'chance'
+import {range} from 'lodash'
+
+import {
+  withKnobs,
+  text,
+  select,
+  boolean,
+  object,
+  number,
+  button,
+  color
+} from 'part:@sanity/storybook/addons/knobs'
 import PlusIcon from 'part:@sanity/base/plus-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
-import DefaultTextInput from 'part:@sanity/components/textinputs/default'
+
 import Sanity from 'part:@sanity/storybook/addons/sanity'
+import ButtonCollection from 'part:@sanity/components/buttons/button-collection'
+
+const chance = new Chance()
 
 const handleNavigate = () => {
   /* intentional noop */
 }
 const router = route('/', [route('/bikes/:bikeId'), route.intents('/intents')])
 const preventDefault = evt => evt.preventDefault()
-const getButtonKinds = () => select('kind (prop)', ['default', 'simple', 'secondary'], 'default')
+const getButtonKinds = () => select('kind', ['default', 'simple', 'secondary'], 'default', 'props')
 const getColorKinds = () =>
-  select('color (prop)', [false, 'primary', 'success', 'danger', 'white'], false)
+  select('color', [false, 'primary', 'success', 'danger', 'white'], false, 'props')
 
 const items = [
   {index: '1', title: 'Test'},
@@ -34,118 +50,219 @@ const items = [
   {index: '7', title: 'Test 7'}
 ]
 
-let testElement = null
-
-function testFocus() {
-  testElement.focus()
-}
-
-function setConfirmButton(element) {
-  testElement = element
-}
-
 function action(something) {
   return () => console.log('action', something)
+}
+
+const centerStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100%',
+  width: '100%',
+  position: 'absolute',
+  top: 0,
+  left: 0
 }
 
 storiesOf('Buttons', module)
   .addDecorator(withKnobs)
   .add('Default', () => {
+    let testElement = null
+
+    function testFocus() {
+      testElement.focus()
+    }
+
+    function setConfirmButton(element) {
+      testElement = element
+    }
+    const backgroundColor = color('View color', '#fff', 'test')
+    button('Test focus', () => testFocus(), 'test')
     return (
-      <Sanity part="part:@sanity/components/buttons/default" propTables={[Button]}>
-        <Button
-          id="testButton"
-          kind={getButtonKinds()}
-          onClick={action('clicked')}
-          disabled={boolean('disabled (prop)', false)}
-          inverted={boolean('inverted (prop)', false)}
-          onFocus={action('onFocus')}
-          onBlur={action('onBlur')}
-          type={text('type (prop)', undefined)}
-          color={getColorKinds()}
-          loading={boolean('Loading (prop)', false)}
-          icon={boolean('Show test icon', false) ? SanityLogoIcon : false}
-          ref={setConfirmButton}
-        >
-          {text('prop: children', 'Touch Me!')}
-        </Button>
-        <p>
-          Click to focus:<br />
-          <button onClick={testFocus}>Focus</button>
-        </p>
-      </Sanity>
+      <div style={{backgroundColor, ...centerStyle}}>
+        <Sanity part="part:@sanity/components/buttons/default" propTables={[Button]}>
+          <Button
+            kind={getButtonKinds()}
+            onClick={action('clicked')}
+            disabled={boolean('disabled', false, 'props')}
+            inverted={boolean('inverted', false, 'props')}
+            onFocus={action('onFocus')}
+            onBlur={action('onBlur')}
+            color={getColorKinds()}
+            loading={boolean('loading', false, 'props')}
+            icon={boolean('icon', false, 'props') ? SanityLogoIcon : false}
+            ref={setConfirmButton}
+          >
+            {text('children', 'Touch Me!', 'props')}
+          </Button>
+        </Sanity>
+      </div>
     )
   })
   .add('Anchor <a>', () => {
+    const backgroundColor = color('View color', '#fff', 'test')
     return (
-      <Sanity part="part:@sanity/components/buttons/anchor" propTables={[Button]}>
-        <AnchorButton
-          kind={getButtonKinds()}
-          onClick={action('clicked')}
-          disabled={boolean('prop: disabled', false)}
-          inverted={boolean('prop: inverted', false)}
-          color={getColorKinds()}
-          loading={boolean('prop: loading', false)}
-          icon={boolean('show test icon', false) ? SanityLogoIcon : false}
-          href={text('prop: href', 'http://example.org')}
-        >
-          {text('prop: children', 'Touch Me!')}
-        </AnchorButton>
-      </Sanity>
+      <div style={{backgroundColor, ...centerStyle}}>
+        <Sanity part="part:@sanity/components/buttons/anchor" propTables={[Button]}>
+          <AnchorButton
+            kind={getButtonKinds()}
+            onClick={action('clicked')}
+            disabled={boolean('disabled', false, 'props')}
+            inverted={boolean('inverted', false, 'props')}
+            onFocus={action('onFocus')}
+            onBlur={action('onBlur')}
+            color={getColorKinds()}
+            loading={boolean('loading', false, 'props')}
+            icon={boolean('icon', false, 'props') ? SanityLogoIcon : false}
+            href={text('href', 'http://example.org', 'props')}
+          >
+            {text('children', 'Touch Me!', 'props')}
+          </AnchorButton>
+        </Sanity>
+      </div>
+    )
+  })
+  .add('DropDownButton', () => {
+    const backgroundColor = color('View color', '#fff', 'test')
+    return (
+      <div style={{backgroundColor, ...centerStyle}}>
+        <Sanity part="part:@sanity/components/buttons/dropdown" propTables={[DropDownButton]}>
+          <RouterProvider
+            router={router}
+            onNavigate={handleNavigate}
+            state={router.decode(location.pathname)}
+          >
+            <DropDownButton
+              items={object('items', items, 'props')}
+              onAction={action('Clicked item')}
+              color={getColorKinds()}
+              kind={getButtonKinds()}
+              onClick={action('clicked')}
+              disabled={boolean('disabled', false, 'props')}
+              inverted={boolean('inverted', false, 'props')}
+              onFocus={action('onFocus')}
+              onBlur={action('onBlur')}
+              loading={boolean('loading', false, 'props')}
+              icon={boolean('icon', false, 'props') ? SanityLogoIcon : false}
+            >
+              {text('prop: children', 'This is a dropdown')}
+            </DropDownButton>
+          </RouterProvider>
+        </Sanity>
+      </div>
+    )
+  })
+  .add('Button', () => {
+    return (
+      <div style={centerStyle}>
+        <Sanity part="part:@sanity/components/fileinput/button" propTables={[FileInputButton]}>
+          <FileInputButton onSelect={action('onSelect')}>Upload file…</FileInputButton>
+        </Sanity>
+      </div>
+    )
+  })
+
+  .add('Button collection', () => {
+    const backgroundColor = color('View color', '#fff', 'test')
+    return (
+      <div style={{padding: '2rem', backgroundColor}}>
+        <ButtonCollection>
+          <Button onClick={action('clicked')}>Undefined</Button>
+          <Button onClick={action('clicked')} color="primary">
+            Primary
+          </Button>
+          <Button onClick={action('clicked')} color="danger">
+            Danger
+          </Button>
+          <Button onClick={action('clicked')} color="success">
+            Success
+          </Button>
+          <Button onClick={action('clicked')} icon={SanityLogoIcon} color="danger" title="Danger" />
+          <Button onClick={action('clicked')} icon={SanityLogoIcon} inverted title="Inverted" />
+          <Button
+            onClick={action('clicked')}
+            icon={SanityLogoIcon}
+            inverted
+            color="danger"
+            title="Inverted danger"
+          />
+          <Button onClick={action('clicked')} icon={SanityLogoIcon} kind="simple" title="Simple" />
+        </ButtonCollection>
+      </div>
     )
   })
   .add('Examples', () => {
     const disabled = boolean('Disabled', false)
     const loading = boolean('Loading', false)
+    const fontSize = number('FontSize (rem)', 1, {range: true, min: 0.5, max: 3, step: 0.25})
+    const backgroundColor = color('View color', '#fff', 'test')
     return (
       <RouterProvider
         router={router}
         onNavigate={handleNavigate}
         state={router.decode(location.pathname)}
       >
-        <form style={{padding: '2rem'}}>
+        <form style={{padding: '2rem', fontSize: `${fontSize}rem`, backgroundColor}}>
           <h2>Default</h2>
-          <Button
-            onClick={action('clicked')}
-            icon={SanityLogoIcon}
-            disabled={disabled}
-            loading={loading}
-          >
-            Default
-          </Button>
-          <Button
-            onClick={action('clicked')}
-            icon={SanityLogoIcon}
-            inverted
-            disabled={disabled}
-            loading={loading}
-          >
-            Inverted
-          </Button>
-          <Button
-            onClick={action('clicked')}
-            icon={SanityLogoIcon}
-            kind="simple"
-            disabled={disabled}
-            loading={loading}
-          >
-            Simple
-          </Button>
-
+          <ButtonCollection>
+            <Button
+              onClick={action('clicked')}
+              icon={SanityLogoIcon}
+              disabled={disabled}
+              loading={loading}
+            >
+              Default
+            </Button>
+            <Button
+              onClick={action('clicked')}
+              icon={SanityLogoIcon}
+              inverted
+              disabled={disabled}
+              loading={loading}
+            >
+              Inverted
+            </Button>
+            <Button
+              onClick={action('clicked')}
+              icon={SanityLogoIcon}
+              kind="simple"
+              disabled={disabled}
+              loading={loading}
+            >
+              Simple
+            </Button>
+          </ButtonCollection>
           <h2>Colors</h2>
-          <Button onClick={action('clicked')} disabled={disabled} loading={loading}>
-            Undefined
-          </Button>
-          <Button onClick={action('clicked')} color="primary" disabled={disabled} loading={loading}>
-            Primary
-          </Button>
-          <Button onClick={action('clicked')} color="danger" disabled={disabled} loading={loading}>
-            Danger
-          </Button>
-          <Button onClick={action('clicked')} color="success" disabled={disabled} loading={loading}>
-            Success
-          </Button>
-
+          <ButtonCollection>
+            <Button onClick={action('clicked')} disabled={disabled} loading={loading}>
+              Undefined
+            </Button>
+            <Button
+              onClick={action('clicked')}
+              color="primary"
+              disabled={disabled}
+              loading={loading}
+            >
+              Primary
+            </Button>
+            <Button
+              onClick={action('clicked')}
+              color="danger"
+              disabled={disabled}
+              loading={loading}
+            >
+              Danger
+            </Button>
+            <Button
+              onClick={action('clicked')}
+              color="success"
+              disabled={disabled}
+              loading={loading}
+            >
+              Success
+            </Button>
+          </ButtonCollection>
           <h2>Colors (inverted)</h2>
           <Button onClick={action('clicked')} inverted disabled={disabled} loading={loading}>
             Undefined
@@ -422,46 +539,33 @@ storiesOf('Buttons', module)
       </RouterProvider>
     )
   })
-  .add('DropDownButton', () => {
+
+storiesOf('Button collection', module)
+  .addDecorator(withKnobs)
+  .add('Default', () => {
+    const backgroundColor = color('View color', '#fff', 'test')
+
     return (
-      <Sanity part="part:@sanity/components/buttons/dropdown" propTables={[DropDownButton]}>
-        <RouterProvider
-          router={router}
-          onNavigate={handleNavigate}
-          state={router.decode(location.pathname)}
+      <div style={{backgroundColor, margin: '2rem'}}>
+        <Sanity
+          part="part:@sanity/components/buttons/button-collection"
+          propTables={[ButtonCollection]}
         >
-          <div>
-            <DropDownButton
-              items={object('prop: items', items)}
-              onAction={action('Clicked item')}
-              color={getColorKinds()}
-              kind={getButtonKinds()}
-            >
-              {text('prop: children', 'This is a dropdown')}
-            </DropDownButton>
-            <div>This text should be under the menu</div>
-          </div>
-        </RouterProvider>
-      </Sanity>
-    )
-  })
-  .add('InInput', () => {
-    return (
-      <Sanity part="part:@sanity/components/buttons/in-input" propTables={[InInputButton]}>
-        <DefaultFormField label="Default">
-          <div className={InInputStyles.wrapper}>
-            <DefaultTextInput />
-            <div className={InInputStyles.container}>
-              <InInputButton
-                onAction={action('Clicked item')}
-                color={getColorKinds()}
-                kind={getButtonKinds()}
-              >
-                browse
-              </InInputButton>
-            </div>
-          </div>
-        </DefaultFormField>
-      </Sanity>
+          <ButtonCollection
+            align={select('align', ['start', 'end'], 'props')}
+            secondary={range(0, number('# secondary', 1)).map(i => {
+              return (
+                <Button inverted key={i}>
+                  {i % 2 ? chance.word() : chance.name()}
+                </Button>
+              )
+            })}
+          >
+            {range(0, number('# buttons', 2)).map(i => {
+              return <Button key={i}>{i % 2 ? chance.word() : chance.name()}</Button>
+            })}
+          </ButtonCollection>
+        </Sanity>
+      </div>
     )
   })
