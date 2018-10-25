@@ -8,12 +8,24 @@
 
 .selected {
   composes: item;
-  background-color: var(--selected-item-color);
+}
+
+.linkWrapper {
+  display: block;
+  text-decoration: inherit;
+  outline: none;
+  height: 100%;
+  margin: 0;
+  padding: var(--small-padding) var(--medium-padding);
 }
 
 .link {
-  composes: link from './DocumentsListPane.css';
-  margin: 0;
-  line-height: 1rem;
-  padding: var(--small-padding) var(--medium-padding);
+  color: inherit;
+  composes: linkWrapper;
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
+}
+
+.linkIsSelected {
+  composes: linkWrapper;
+  composes: selected from 'part:@sanity/base/theme/layout/selectable-style';
 }
