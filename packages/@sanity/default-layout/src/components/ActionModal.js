@@ -7,7 +7,7 @@ import styles from './styles/ActionModal.css'
 
 function ActionModal(props) {
   return (
-    <Dialog className={styles.modal} title={props.title} onClose={props.onClose} isOpen>
+    <Dialog className={styles.modal} onClose={props.onClose} isOpen>
       <div className={styles.content}>
         <h1>Create new</h1>
         <ul className={styles.list}>
