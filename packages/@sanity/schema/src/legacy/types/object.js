@@ -2,7 +2,7 @@ import {pick, keyBy, startCase} from 'lodash'
 import {lazyGetter} from './utils'
 import createPreviewGetter from '../preview/createPreviewGetter'
 import guessOrderingConfig from '../ordering/guessOrderingConfig'
-import resolveSearchFields from '../resolveSearchFields'
+import resolveSearchFieldPaths from '../resolveSearchFieldPaths'
 
 const OVERRIDABLE_FIELDS = [
   'jsonType',
@@ -58,7 +58,7 @@ export const ObjectType = {
 
     lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))
 
-    lazyGetter(parsed, '__unstable_searchFields', () => resolveSearchFields(parsed), {
+    lazyGetter(parsed, '__unstable_searchFields', () => resolveSearchFieldPaths(parsed), {
       enumerable: false
     })
 

@@ -22,7 +22,7 @@ function reduceArray(arrayType, reducer, accumulator, path, maxDepth) {
 
 function reduceObject(objectType, reducer, accumulator, path, maxDepth) {
   return objectType.fields.reduce((acc, field) => {
-    const segment = `${field.name}${field.type.jsonType === 'array' ? '[]' : ''}`
+    const segment = [field.name].concat(field.type.jsonType === 'array' ? [[]] : [])
     return reduceType(field.type, reducer, acc, path.concat(segment), maxDepth - 1)
   }, accumulator)
 }
@@ -41,6 +41,6 @@ function getStringFieldPaths(type, maxDepth) {
   return reduceType(type, reducer, [], [], maxDepth)
 }
 
-export default function resolveSearchFields(type) {
-  return getCachedStringFieldPaths(type, 4).map(path => path.join('.'))
+export default function resolveSearchFieldPaths(type) {
+  return getCachedStringFieldPaths(type, 4)
 }
