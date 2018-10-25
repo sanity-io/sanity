@@ -22,17 +22,18 @@
   align-items: center;
 
   @nest & .inner {
-    display: block;
+    display: flex;
   }
 
   @nest & .message {
+    margin-left: 0.5em;
     display: block;
   }
 }
 
 .inline {
   composes: root;
-  display: inline-block;
+  display: inline-flex;
 
   @nest & .inner {
     display: inline-flex;
@@ -51,12 +52,16 @@
   }
 }
 
+.message:empty {
+  display: none;
+}
+
 .inline.center .message {
   margin-left: 1em;
 }
 
 .icon {
-  display: inline-block;
+  display: block;
   animation-name: spin;
   animation-duration: 2s;
   animation-iteration-count: infinite;
@@ -94,6 +99,9 @@
     top: 50%;
     left: 50%;
     transform: translateX(-50%) translateY(-50%);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
   }
 
   @nest & .icon {
@@ -106,6 +114,7 @@
     display: block;
     font-weight: 300;
     white-space: pre-wrap;
+    padding-top: 0.5em;
     align-self: center;
   }
 }

@@ -16,10 +16,10 @@ storiesOf('Loading')
     return (
       <Sanity part="part:@sanity/components/loading/spinner" propTables={[Spinner]}>
         <Spinner
-          inline={boolean('inline (prop)', false)}
-          message={text('Message (prop)', 'This is the message')}
-          fullscreen={boolean('fullscreen (prop)', false)}
-          center={boolean('center (prop)', false)}
+          inline={boolean('inline', false, 'props')}
+          message={text('Message', 'This is the message', 'props')}
+          fullscreen={boolean('fullscreen', false, 'props')}
+          center={boolean('center', false, 'props')}
         />
       </Sanity>
     )
@@ -27,15 +27,15 @@ storiesOf('Loading')
 
   .add(
     'App loading screen',
-    // `
     //   Used when app is loading. No use of CSSModules.
-    // `,
-
     () => {
       const logo = CompanyLogo || SanityLogo
       return (
         <Sanity part="part:@sanity/base/app-loading-screen" propTables={[AppLoadingScreen]}>
-          <AppLoadingScreen logo={boolean('logo') && logo} text={text('text') || undefined} />
+          <AppLoadingScreen
+            logo={boolean('logo', false, 'props') && logo}
+            text={text('text', undefined, 'props')}
+          />
         </Sanity>
       )
     }
