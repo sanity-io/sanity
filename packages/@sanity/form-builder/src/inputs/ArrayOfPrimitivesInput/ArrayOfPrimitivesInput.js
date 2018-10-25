@@ -198,7 +198,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
         markers={markers}
       >
         <div className={styles.root}>
-          <div className={styles.list}>{value && value.length > 0 && this.renderList(value)}</div>
+          {value && value.length > 0 && <div className={styles.list}>{this.renderList(value)}</div>}
           <div className={styles.functions}>
             <ArrayFunctions
               type={type}
