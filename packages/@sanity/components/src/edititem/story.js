@@ -4,7 +4,7 @@ import {storiesOf, action} from 'part:@sanity/storybook'
 import EditItemFold from 'part:@sanity/components/edititem/fold'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import Chance from 'chance'
-import {withKnobs, boolean, text, number} from 'part:@sanity/storybook/addons/knobs'
+import {withKnobs, text, number} from 'part:@sanity/storybook/addons/knobs'
 const chance = new Chance()
 
 storiesOf('Edit item')
@@ -18,7 +18,7 @@ storiesOf('Edit item')
       maxHeight: '70vh',
       paddingTop: '5rem',
       position: 'relative',
-      overflow: boolean('scroll', true) ? 'scroll' : 'visible'
+      overflow: 'scroll'
     }
     return (
       <div style={wrapperStyles}>
