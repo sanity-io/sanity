@@ -44,6 +44,7 @@ import species from './species'
 import date from './date'
 import invalidPreviews from './invalidPreviews'
 import actions from './actions'
+import reservedFieldNames from './reservedFieldNames'
 
 export default createSchema({
   name: 'test-examples',
@@ -90,6 +91,7 @@ export default createSchema({
     codeInputType,
     notitle,
     typeWithNoToplevelStrings,
+    reservedFieldNames,
     previewImageUrlTest,
     previewMediaTest,
     invalidPreviews,
