@@ -2,8 +2,8 @@
 
 .root {
   display: block;
-  clear: both;
   position: relative;
+  min-height: 100vh;
 }
 
 .imageList {
