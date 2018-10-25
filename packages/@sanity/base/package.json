@@ -7,7 +7,7 @@
     "clean": "rimraf lib",
     "coverage": "nyc --report=lcov --report=text _mocha -- test/**/*.test.js",
     "prepublish": "in-publish && sanity-check || not-in-publish",
-    "test": "mocha test/**/*.test.js"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -53,12 +53,9 @@
   "devDependencies": {
     "@sanity/check": "0.135.0",
     "@sanity/plugin-loader": "0.135.0",
-    "chai": "^4.1.2",
-    "chai-as-promised": "^7.1.1",
-    "mocha": "^5.0.1",
-    "nyc": "^11.0.3",
+    "babel-jest": "^23.6.0",
+    "jest": "^23.6.0",
     "prop-types": "^15.6.0",
-    "proxyquire": "^1.7.10",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "rimraf": "^2.6.2"
