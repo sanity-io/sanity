@@ -6,13 +6,14 @@ import FaAngleDown from 'part:@sanity/base/angle-down-icon'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import CloseIcon from 'part:@sanity/base/close-icon'
-import SelectMenu from './SelectMenu'
 import Stacked from '../utilities/Stacked'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Escapable from '../utilities/Escapable'
 import {Portal} from '../utilities/Portal'
 import {Manager, Reference, Popper} from 'react-popper'
+import Ink from 'react-ink'
 import {get} from 'lodash'
+import SelectMenu from './SelectMenu'
 
 const noop = () => {}
 
@@ -174,17 +175,24 @@ export default class StatelessSearchableSelect extends React.PureComponent {
                       <CloseIcon color="inherit" />
                     </button>
                   )}
-                {!isLoading && (
-                  <div
-                    className={styles.arrow}
-                    onClick={disabled ? null : this.handleArrowClick}
-                    tabIndex={0}
-                    onKeyPress={disabled ? null : this.handleArrowKeyPress}
-                  >
-                    <FaAngleDown color="inherit" />
-                  </div>
-                )}
-                {isLoading && <Spinner />}
+                <div className={styles.arrowAndSpinnerContainer}>
+                  {!isLoading && (
+                    <div
+                      className={styles.arrow}
+                      onClick={disabled ? null : this.handleArrowClick}
+                      tabIndex={0}
+                      onKeyPress={disabled ? null : this.handleArrowKeyPress}
+                    >
+                      <FaAngleDown color="inherit" />
+                      <Ink duration={200} opacity={0.1} radius={200} />
+                    </div>
+                  )}
+                  {isLoading && (
+                    <div className={styles.spinner}>
+                      <Spinner />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
@@ -213,7 +221,12 @@ export default class StatelessSearchableSelect extends React.PureComponent {
                   }}
                 >
                   {({ref, style, placement, arrowProps}) => (
-                    <div ref={ref} data-placement={placement} style={style} className={styles.popper}>
+                    <div
+                      ref={ref}
+                      data-placement={placement}
+                      style={style}
+                      className={styles.popper}
+                    >
                       <CaptureOutsideClicks
                         onClickOutside={isActive && isOpen ? this.handleClose : undefined}
                       >
