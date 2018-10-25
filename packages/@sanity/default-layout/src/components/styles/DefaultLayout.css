@@ -32,9 +32,8 @@
 
   @media (--screen-medium) {
     flex-direction: column;
-    height: 100vh;
     overflow: hidden;
-    min-height: 100vh;
+    height: 100vh;
   }
 }
 
@@ -42,7 +41,7 @@
   position: fixed;
   width: 100%;
   z-index: 10;
-  color: var(--white);
+  color: var(--main-navigation-text-color);
   background-color: var(--main-navigation-background-color);
 
   @media (--screen-medium) {

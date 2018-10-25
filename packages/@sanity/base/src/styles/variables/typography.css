@@ -2,9 +2,9 @@
 @import "part:@sanity/base/theme/variables/gray-colors-style";
 
 :root {
-  --text-color: var(--gray-darkest);
-  --text-color-secondary: var(--gray-dark);
-  --text-muted: var(--gray-light);
+  --text-color: var(--body-text);
+  --text-color-secondary: color(var(--text-color) a(80%));
+  --text-muted: color(var(--text-color) a(50%));
   --link-color: var(--brand-primary);
   --link-hover-color: var(--brand-primary);
   --font-family-sans-serif: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;

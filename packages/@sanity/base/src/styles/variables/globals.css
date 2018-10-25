@@ -1,11 +1,12 @@
 :root {
   /* Colors */
-  --body-bg: var(--white);
-  --body-text: #111;
-  --component-bg: #fff;
-  --preview-placeholder-color: var(--gray-lighter);
-  --component-border-color: color(var(--gray) lightness(+ 30%));
-  --component-box-shadow-base: var(--gray-base);
+  --body-bg: #fff;
+  --body-text: color(var(--body-bg) contrast(80%));
+  --component-bg: var(--body-bg);
+  --component-text-color: color(var(--component-bg) contrast(80%));
+  --preview-placeholder-color: color(var(--component-bg) contrast(80%) alpha(10%));
+  --component-border-color: color(var(--component-bg) contrast(80%) a(20%));
+  --component-box-shadow-base: var(--component-text-color);
   --component-box-shadow: 0 0 2px 0 color(var(--component-box-shadow-base) a(35%));
   --component-box-shadow--hover:
     0 1px 2px 0 color(var(--component-box-shadow-base) a(15%)),
@@ -21,7 +22,15 @@
     0 0 1px 1px color(var(--state-danger-color) a(80%));
   --backdrop-background-color: color(var(--gray-base) a(40%));
   --main-navigation-background-color: color(var(--brand-primary) shade(70%) saturation(20%));
+  --main-navigation-text-color: color(var(--main-navigation-background-color) contrast(80%));
   --header-height: 3rem;
+  --checkerboard-color: color(var(--component-text-color) a(5%));
+
+  /* Shadows */
+  --shadow-base: var(--component-text-color);
+  --shadow-color-umbra: color(var(--shadow-base) a(2%));
+  --shadow-color-penumbra: color(var(--shadow-base) a(14%));
+  --shadow-color-ambient: color(var(--shadow-base) a(12%));
 
   /* Border radius */
   --border-radius-base: 3px;

@@ -1,5 +1,9 @@
 @import "part:@sanity/base/theme/variables-style";
 
+:root {
+  --search-background-base-color: var(--main-navigation-text-color);
+}
+
 .root {
   display: flex;
   color: inherit;
@@ -13,10 +17,10 @@
   align-items: center;
   width: 100%;
   box-sizing: border-box;
-  background-color: color(var(--white) a(10%));
+  background-color: color(var(--search-background-base-color) a(10%));
 
   @nest &:hover {
-    background-color: color(var(--white) a(20%));
+    background-color: color(var(--search-background-base-color) a(20%));
   }
 
   @media (--screen-medium) {
@@ -25,8 +29,8 @@
     max-width: 24em;
 
     @nest &:focus-within {
-      color: var(--text-color);
-      background-color: var(--component-bg);
+      color: inherit;
+      background-color: color(var(--search-background-base-color) a(20%));
     }
 
     @nest .root[data-is-result-showing='true'] & {
@@ -105,7 +109,6 @@
   composes: resetListItem from "part:@sanity/base/theme/layout/helpers";
   background-color: transparent;
   cursor: default;
-  /* border-bottom: 1px solid #ddd; */
   position: relative;
 }
 
@@ -128,7 +131,7 @@
 .itemType {
   position: absolute;
   top: 50%;
-  color: var(--gray);
+  color: color(var(--text-color) a(50%));
   right: var(--small-padding);
   text-transform: uppercase;
   font-size: var(--font-size-tiny);

@@ -10,7 +10,8 @@
   transition: all 0.1s linear;
   padding: 0;
   margin: 0;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
 
   &:hover,
   &:focus {
@@ -20,6 +21,10 @@
 
   &:active {
     transform: scale(2);
+  }
+
+  @nest & svg {
+    display: block;
   }
 }
 

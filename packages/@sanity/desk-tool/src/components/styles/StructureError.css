@@ -5,7 +5,7 @@
   height: 100vh;
   width: 100vw;
   overflow-y: auto;
-  color: var(--body-text);
+  color: var(--text-color);
 }
 
 .body {
@@ -79,7 +79,7 @@
   clear: both;
   margin: 1em 0;
   display: inline-block;
-  color: var(--body-text);
+  color: var(--text-color);
 
   @nest &:hover {
     color: var(--brand-primary);

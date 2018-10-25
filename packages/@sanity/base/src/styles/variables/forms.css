@@ -24,13 +24,12 @@
   --input-border-color-active: var(--brand-primary);
   --input-border-color-invalid: var(--state-danger-color);
   --focus-color: color(var(--brand-primary) alpha(40%));
-  --input-color-placeholder: var(--gray-lighter);
-  --form-group-margin-bottom: 1em;
-  --legend-color: var(--gray-dark);
+  --input-color-placeholder: var(--text-color-secondary);
+  --legend-color: var(--text-color);
   --input-group-addon-bg: var(--gray-lighter);
   --input-group-addon-border-color: var(--input-border);
   --cursor-disabled: not-allowed;
-  --clear-cross-color: var(--gray-light);
+  --clear-cross-color: var(--input-color);
   --clear-cross-color-hover: var(--state-danger-color);
   --form-builder-block-border-color: color(var(--gray-light) alpha(80%));
   --form-builder-block-border-color-focus: var(--brand-primary);
