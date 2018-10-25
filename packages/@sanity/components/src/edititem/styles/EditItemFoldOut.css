@@ -3,7 +3,7 @@
 :root {
   --edit-item-fold-border-color: var(--brand-primary);
   --edit-item-fold-dark-color: color(var(--edit-item-fold-border-color) lightness(- 20%));
-  --edit-item-fold-padding: var(--small-padding);
+  --edit-item-fold-padding: var(--medium-padding);
 }
 
 :export {
@@ -24,7 +24,7 @@
   position: relative;
   display: block;
   width: 100%;
-  z-index: 10;
+  z-index: var(--zindex-portal);
 }
 
 .wrapper {

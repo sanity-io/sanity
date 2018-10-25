@@ -17,7 +17,6 @@ export default class FullScreenDialog extends React.PureComponent {
     children: PropTypes.node,
     onClose: PropTypes.func,
     isOpen: PropTypes.bool,
-    centered: PropTypes.bool,
     onAction: PropTypes.func,
     actions: PropTypes.arrayOf(
       PropTypes.shape({
@@ -31,10 +30,8 @@ export default class FullScreenDialog extends React.PureComponent {
 
   static defaultProps = {
     color: 'default',
-    isOpen: false,
-    showHeader: false,
+    isOpen: true,
     onAction() {},
-    onOpen() {},
     onClose() {},
     actions: []
   }
@@ -51,9 +48,8 @@ export default class FullScreenDialog extends React.PureComponent {
         key={i}
         onClick={this.handleActionClick}
         data-action-index={i}
-        color={color === 'default' ? action.color : 'white'}
         disabled={action.disabled}
-        inverted={color !== 'default'} // invert buttons for colored dialogs
+        inverted={color && (color !== 'default')} // invert buttons for colored dialogs
         kind={action.kind}
         autoFocus={action.autoFocus}
       >
@@ -63,18 +59,17 @@ export default class FullScreenDialog extends React.PureComponent {
   }
 
   render() {
-    const {color, title, className, onClose, centered, isOpen, actions} = this.props
+    const {color, title, className, onClose, isOpen, actions} = this.props
 
     const classNames = [
       styles[color] || styles.default,
       isOpen ? styles.isOpen : styles.isClosed,
-      className,
-      centered && styles.centered
+      className
     ]
       .filter(Boolean)
       .join(' ')
 
-    const [primary, secondary] = partition(actions, action => action.primary)
+    const [primary, secondary] = partition(actions, action => !action.secondary || action.primary)
 
     return (
       <StackedEscapable onEscape={onClose}>
@@ -92,7 +87,7 @@ export default class FullScreenDialog extends React.PureComponent {
                 <div className={styles.actionsWrapper}>
                   {actions.length > 0 && (
                     <ButtonCollection
-                      align="start"
+                      align="end"
                       secondary={secondary.map(this.createActionButton)}
                     >
                       {primary.map(this.createActionButton)}

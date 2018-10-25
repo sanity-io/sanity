@@ -20,7 +20,6 @@ export default class DefaultDialog extends React.Component {
     onOpen: PropTypes.func,
     onClose: PropTypes.func.isRequired,
     onAction: PropTypes.func,
-    showHeader: PropTypes.bool,
     showCloseButton: PropTypes.bool,
     actions: PropTypes.arrayOf(
       PropTypes.shape({
@@ -33,7 +32,6 @@ export default class DefaultDialog extends React.Component {
   }
 
   static defaultProps = {
-    showHeader: false,
     showCloseButton: true,
     onAction() {},
     onOpen() {},
@@ -75,7 +73,7 @@ export default class DefaultDialog extends React.Component {
       return null
     }
 
-    const [primary, secondary] = partition(actions, action => action.primary)
+    const [primary, secondary] = partition(actions, action => !action.secondary || action.primary)
 
     return (
       <ButtonCollection align="end" secondary={secondary.map(this.createButtonFromAction)}>
@@ -85,11 +83,10 @@ export default class DefaultDialog extends React.Component {
   }
 
   render() {
-    const {title, actions, showHeader, color, onClose, className, showCloseButton} = this.props
+    const {title, actions, color, onClose, className, showCloseButton} = this.props
     const classNames = `
+      ${styles.root}
       ${styles[color]}
-      ${styles.isOpen}
-      ${showHeader ? styles.hasHeader : ''}
       ${actions && actions.length > 0 ? styles.hasFunctions : ''}
       ${className}
     `
@@ -103,7 +100,7 @@ export default class DefaultDialog extends React.Component {
                 <Escapable onEscape={event => (isActive || event.shiftKey) && onClose()} />
                 <CaptureOutsideClicks onClickOutside={isActive ? onClose : undefined}>
                   <div className={styles.inner}>
-                    {!showHeader &&
+                    {!title &&
                       onClose &&
                       showCloseButton && (
                         <button
@@ -114,16 +111,16 @@ export default class DefaultDialog extends React.Component {
                           <CloseIcon color="inherit" />
                         </button>
                       )}
-                    {showHeader &&
-                      onClose &&
-                      title && (
-                        <div className={styles.header}>
-                          <h1 className={styles.title}>{title}</h1>
+                    {title && (
+                      <div className={styles.header}>
+                        <h1 className={styles.title}>{title}</h1>
+                        {onClose && (
                           <button className={styles.closeButton} onClick={onClose} type="button">
                             <CloseIcon color="inherit" />
                           </button>
-                        </div>
-                      )}
+                        )}
+                      </div>
+                    )}
                     <div className={styles.content}>{this.props.children}</div>
                     {actions &&
                       actions.length > 0 && (
