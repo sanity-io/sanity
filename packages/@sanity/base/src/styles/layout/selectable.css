@@ -4,10 +4,10 @@
   background-color: var(--selectable-item-color);
   color: var(--selectable-item-text-color);
   cursor: default;
-  transition: background-color 0.3s ease-out;
+  transition: background-color 0.3s ease-out, color 0.1s ease-out 0.1s;
 
   @nest &:hover {
-    transition: background-color 0.1s linear;
+    transition: background-color 0.1s ease-out, color 0.05s ease-out 0.05s;
 
     @media (--screen-medium) {
       background-color: var(--selectable-item-color-hover);
@@ -26,12 +26,30 @@
 
   @nest &:active {
     background-color: var(--selectable-item-color-active);
+    color: var(--selectable-item-color-active--inverted);
   }
 }
 
 .selected {
+  composes: item;
   background-color: var(--selected-item-color);
   color: var(--selected-item-color--inverted);
+
+  @nest &:hover {
+    @media (--screen-medium) {
+      background-color: var(--selected-item-color-hover);
+      color: var(--selected-item-color-hover--inverted);
+    }
+  }
+
+  @nest &:focus {
+    outline: none;
+
+    @media (--screen-medium) {
+      background-color: var(--selected-item-color);
+      color: var(--selected-item-color--inverted);
+    }
+  }
 }
 
 .highlighted {

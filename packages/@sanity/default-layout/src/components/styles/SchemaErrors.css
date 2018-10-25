@@ -5,7 +5,7 @@
   height: 100vh;
   width: 100vw;
   overflow-y: auto;
-  color: var(--body-text);
+  color: var(--text-color);
 }
 
 .title {
@@ -45,7 +45,7 @@
   display: flex;
   margin: 0;
   padding: 0;
-  color: var(--body-text);
+  color: var(--text-color);
   font-size: var(--font-size-xsmall);
   margin-bottom: var(--medium-padding);
 }
@@ -74,7 +74,7 @@
   clear: both;
   margin: 1em 0;
   display: inline-block;
-  color: var(--body-text);
+  color: var(--text-color);
 
   @nest &:hover {
     color: var(--brand-primary);
