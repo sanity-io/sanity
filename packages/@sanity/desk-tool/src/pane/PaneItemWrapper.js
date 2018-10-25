@@ -9,7 +9,7 @@ import {Item as GridListItem} from 'part:@sanity/components/lists/grid'
 export default function PaneItemWrapper(props) {
   const {useGrid, linkState, layout, isSelected} = props
   const link = (
-    <StateLink state={linkState} className={styles.link}>
+    <StateLink state={linkState} className={isSelected ? styles.linkIsSelected : styles.link}>
       {props.children}
       <Ink duration={1000} opacity={0.1} radius={200} />
     </StateLink>
