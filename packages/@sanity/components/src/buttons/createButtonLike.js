@@ -124,7 +124,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
                 </span>
               )}
               {Icon && <Icon className={styles.icon} />}
-              {children && <span className={styles.content}>{children}</span>}
+              {children}
               {ripple && !disabled && <Ink duration={1000} opacity={0.1} radius={200} />}
             </span>
           </span>

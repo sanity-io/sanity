@@ -33,45 +33,48 @@
     0 0 10px 5px color(var(--white) a(10%));
 }
 
-.content {
-  display: inline;
-}
-
-.inner {
-  display: flex;
-  align-items: center;
-  outline: none;
-  height: 1em;
-  overflow: hidden;
-}
-
 .spacing {
   display: inline-block;
 }
 
 .spacing + .spacing {
-  margin-left: var(--small-padding);
+  /* margin-left: var(--small-padding); */
 }
 
 .root {
-  composes: spacing;
-  margin: 0;
-  padding: 0;
-  position: relative;
+  /* composes: spacing; */
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  margin: 0;
+  position: relative;
   outline: none;
   border: none;
   color: inherit;
   font-size: 1em;
   font-family: inherit;
-  line-height: 1em;
   cursor: default;
   user-select: none;
   transition: background-color 0.15s, color 0.15s, opacity 0.15s;
   border-radius: var(--button-border-radius);
   text-transform: uppercase;
   text-decoration: none;
+  padding: 0;
+}
+
+.content {
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  line-height: 1.25em;
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  box-sizing: border-box;
 }
 
 .root:focus {
@@ -94,12 +97,8 @@
 }
 
 .onlyIcon {
-  @nest & .inner {
-    padding: 0.7em 0.7em !important;
-  }
-
   @nest & .content {
-    display: block;
+    margin: 0.7em 0.7em !important;
   }
 
   @nest & .icon {
@@ -108,24 +107,24 @@
 }
 
 .padding_default {
-  @nest & .inner {
+  @nest & .content {
     @nest :not(.onlyIcon) & {
-      padding: 0.7em;
+      margin: 0.5em;
 
       @media (--screen-medium) {
-        padding: 0.7em 1.2em;
+        margin: 0.5em 1rem;
       }
     }
   }
 }
 
 .padding_small {
-  @nest & .inner {
+  @nest & .content {
     @nest :not(.onlyIcon) & {
-      padding: 0.7em;
+      margin: 0.7em;
 
       @media (--screen-medium) {
-        padding: 0.7em 0.6em;
+        margin: 0.7em 0.6em;
       }
     }
   }
@@ -217,6 +216,7 @@
   }
 
   @nest & .spinner {
+    color: var(--brand-primary--text);
     background-color: var(--brand-primary);
   }
 
@@ -226,7 +226,8 @@
     color: var(--brand-primary);
 
     @nest & .spinner {
-      background-color: var(--white);
+      background-color: var(--brand-primary--text);
+      color: var(--brand-primary);
     }
 
     @nest &:not(.disabled):hover {

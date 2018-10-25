@@ -15,8 +15,12 @@
 }
 
 .arrow {
+  display: flex;
+  align-items: center;
+
   @nest & svg {
-    transform: scale(1.5);
+    display: block;
+    transform: scale(1.7);
   }
 }
 
