@@ -31,6 +31,7 @@
   position: relative;
   overflow: hidden;
   height: 2.5em;
+  margin-right: 2.5em;
 
   @nest &:not(:disabled) {
     @nest &:hover {
@@ -94,10 +95,10 @@
 
 .functions {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   position: absolute;
   top: 0;
-  right: 0.5em;
+  right: 0;
   height: 100%;
   color: var(--text-color);
   cursor: default;
@@ -110,6 +111,11 @@
 
   @nest & .arrow {
     pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5em;
+    color: inherit;
   }
 
   @nest & > *:not(:first-child) {
