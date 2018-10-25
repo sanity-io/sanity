@@ -1,7 +1,6 @@
 import client from 'part:@sanity/base/client'
+import {joinPath} from 'part:@sanity/base/util/search-utils'
 import {map} from 'rxjs/operators'
-import {flatten} from 'lodash'
-
 import {observeForPreview} from 'part:@sanity/base/preview'
 
 export function getPreviewSnapshot(value, referenceType) {
@@ -15,28 +14,34 @@ function wrapIn(chars = '') {
 
 const wrapInParens = wrapIn('()')
 
-function buildConstraintFromType(type, terms) {
+function buildConstraintFromType(type, termParams) {
   const typeConstraint = `_type == '${type.name}'`
 
+  const termParamNames = Object.keys(termParams)
+
   const stringFieldPaths = type.__unstable_searchFields || []
-  if (terms.length === 0 || stringFieldPaths.length === 0) {
+  if (termParamNames.length === 0 || stringFieldPaths.length === 0) {
     return typeConstraint
   }
 
-  const stringFieldConstraints = stringFieldPaths.map(fieldPath =>
-    terms.map(term => `${fieldPath} match '${term}*'`).join(' && ')
+  const stringFieldConstraints = stringFieldPaths.map((fieldPath /*array*/) =>
+    termParamNames.map(paramName => `${joinPath(fieldPath)} match $${paramName}`).join(' && ')
   )
 
   return `${typeConstraint} && (${stringFieldConstraints.join(' || ')})`
 }
-
 export function search(textTerm, referenceType) {
   const terms = textTerm.split(/\s+/).filter(Boolean)
-  const typeConstraints = referenceType.to.map(type => buildConstraintFromType(type, terms))
+  const termParams = terms.reduce((acc, term, i) => {
+    acc[`t${i}`] = `${term}*`
+    return acc
+  }, {})
+
+  const typeConstraints = referenceType.to.map(type => buildConstraintFromType(type, termParams))
 
   const query = `*[!(_id in path('drafts.**')) && (${typeConstraints
     .map(wrapInParens)
     .join('||')})]`
 
-  return client.observable.fetch(query, {term: `${textTerm}*`})
+  return client.observable.fetch(query, termParams)
 }
