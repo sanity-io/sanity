@@ -201,9 +201,9 @@
     border: none;
     border-radius: 0;
     box-shadow:
-      0 3px 5px -1px rgba(0, 0, 0, var(--shadow-key-umbra-opacity)),
-      0 5px 8px 0 rgba(0, 0, 0, var(--shadow-key-penumbra-opacity)),
-      0 1px 14px 0 rgba(0, 0, 0, var(--shadow-ambient-shadow-opacity));
+      0 3px 5px -1px var(--shadow-color-umbra),
+      0 5px 8px 0 var(--shadow-color-penumbra),
+      0 1px 14px 0 var(--shadow-color-ambient);
   }
 
   @nest & :global(.react-datepicker__year-dropdown) {
@@ -211,9 +211,9 @@
     border: none;
     border-radius: 0;
     box-shadow:
-      0 3px 5px -1px rgba(0, 0, 0, var(--shadow-key-umbra-opacity)),
-      0 5px 8px 0 rgba(0, 0, 0, var(--shadow-key-penumbra-opacity)),
-      0 1px 14px 0 rgba(0, 0, 0, var(--shadow-ambient-shadow-opacity));
+      0 3px 5px -1px var(--shadow-color-umbra),
+      0 5px 8px 0 var(--shadow-color-penumbra),
+      0 1px 14px 0 var(--shadow-color-ambient);
   }
 
   @nest & :global(.react-datepicker__month-option) {

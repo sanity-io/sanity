@@ -2,11 +2,11 @@
 
 :root {
   --state-success-color: #19b366;
-  --state-success-color--text: #fff;
+  --state-success-color--text: color(var(--state-success-color) contrast(80%));
   --state-info-color: #2097ac;
-  --state-info-color--text: #fff;
+  --state-info-color--text: color(var(--state-info-color) contrast(80%));
   --state-warning-color: #ffba00;
-  --state-warning-color--text: var(--black);
+  --state-warning-color--text: color(var(--state-warning-color) contrast(80%));
   --state-danger-color: #e66666;
-  --state-danger-color--text: var(--white);
+  --state-danger-color--text: color(var(--state-danger-color) contrast(80%));
 }
