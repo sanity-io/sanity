@@ -1,34 +1,25 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-
-import CloseIcon from 'part:@sanity/base/close-icon'
-import CheckIcon from 'part:@sanity/base/circle-check-icon'
+import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import styles from './styles/ConfirmDialog.css'
 import Button from 'part:@sanity/components/buttons/default'
-import {Portal} from '../utilities/Portal'
-import StackedEscapable from '../utilities/StackedEscapable'
 
-export default class DefaultDialog extends React.PureComponent {
+export default class ConfirmDialog extends React.PureComponent {
   static propTypes = {
+    title: PropTypes.string,
     color: PropTypes.oneOf(['warning', 'success', 'danger', 'info']),
-    confirmColor: PropTypes.oneOf(['warning', 'success', 'danger', 'info']),
-    className: PropTypes.string,
+    cancelColor: PropTypes.oneOf(['primary', 'success', 'danger', 'white']),
+    confirmColor: PropTypes.oneOf(['primary', 'success', 'danger', 'white']),
     children: PropTypes.node,
-    onClose: PropTypes.func,
-    onConfirm: PropTypes.func,
+    onConfirm: PropTypes.func.isRequired,
     onCancel: PropTypes.func,
     confirmButtonText: PropTypes.string,
     cancelButtonText: PropTypes.string
   }
 
   static defaultProps = {
-    isOpen: false,
-    showHeader: false,
-    onAction() {},
-    onOpen() {},
-    actions: [],
-    kind: 'default',
-    confirmColor: 'success',
+    confirmColor: 'danger',
+    cancelColor: 'default',
     confirmButtonText: 'OK',
     cancelButtonText: 'Cancel'
   }
@@ -43,39 +34,36 @@ export default class DefaultDialog extends React.PureComponent {
   render() {
     const {
       color,
-      className,
       confirmColor,
+      cancelColor,
       confirmButtonText,
       cancelButtonText,
       onConfirm,
-      onCancel
+      onCancel,
+      title
     } = this.props
 
-    return (
-      <StackedEscapable onEscape={onCancel}>
-        <Portal>
-          <div
-            className={`${styles.root} ${styles[color]} ${className}`}
-            ref={this.setDialogElement}
-            onClick={onCancel}
-          >
-            <div className={styles.dialog} onClick={this.handleDialogClick}>
-              <div className={styles.inner}>
-                <div className={styles.content}>{this.props.children}</div>
+    const actions = [
+      {
+        index: 1,
+        title: confirmButtonText,
+        color: confirmColor,
+        action: onConfirm
+      },
+      {
+        index: 2,
+        title: cancelButtonText,
+        color: cancelColor,
+        action: onCancel,
+        kind: 'simple',
+        secondary: true
+      }
+    ]
 
-                <div className={styles.footer}>
-                  <Button onClick={onCancel} icon={CloseIcon} kind="simple">
-                    {cancelButtonText}
-                  </Button>
-                  <Button onClick={onConfirm} color={confirmColor} icon={CheckIcon} autoFocus>
-                    {confirmButtonText}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Portal>
-      </StackedEscapable>
+    return (
+      <DefaultDialog color={color} actions={actions} title={title}>
+        <div className={styles.content}>{this.props.children}</div>
+      </DefaultDialog>
     )
   }
 }

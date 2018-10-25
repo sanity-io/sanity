@@ -62,8 +62,7 @@
   height: 1em;
   width: 1em;
   transform: translate(-50%, -50%) rotate(45deg);
-  box-shadow: 0 0 40px var(--component-box-shadow-base);
-  z-index: 0;
+  z-index: 1;
 
   @nest &::before {
     content: "";
@@ -90,7 +89,7 @@
 
   @nest .popper[data-placement^="right"] & {
     left: 0;
-    transform: translate(-50%, 0) rotate(45deg);
+    transform: translate(-50%, 0) rotate(-45deg);
   }
 
   @nest .popper[data-placement^="left"] & {

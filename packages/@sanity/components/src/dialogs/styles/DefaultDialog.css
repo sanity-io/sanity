@@ -3,6 +3,7 @@
 @keyframes reveal {
   0% {
     opacity: 0;
+    backdrop-filter: blur(0);
   }
 
   5% {
@@ -13,6 +14,7 @@
   100% {
     opacity: 1;
     transform: scale(1);
+    backdrop-filter: blur(2px);
   }
 }
 
@@ -27,7 +29,8 @@
 }
 
 :root {
-  --dialog-padding: var(--small-padding);
+  --dialog-padding: var(--medium-padding);
+  --dialog-border-radius: var(--border-radius-large);
   --dialog-header-height: 3rem;
   --dialog-functions-height: calc(2em + (var(--medium-padding) * 2));
   --dialog-max-height: calc(100vh - 200px);
@@ -35,6 +38,7 @@
 
 .root {
   position: fixed;
+  display: flex;
   z-index: var(--zindex-portal);
   top: 0;
   left: 0;
@@ -42,10 +46,11 @@
   height: 100%;
   background-color: var(--backdrop-background-color);
   animation-name: fadeIn;
-  animation-duration: 0.1s;
+  animation-duration: 0.2s;
   animation-timing-function: cubic-bezier(0, 0, 0, 1);
   animation-iteration-count: once;
   composes: flexCenter from 'part:@sanity/base/theme/layout/positioning-style';
+  composes: frosted from "part:@sanity/base/theme/layout/backgrounds-style";
 }
 
 .default {
@@ -91,7 +96,7 @@
 .dialog {
   composes: shadow-24dp from "part:@sanity/base/theme/shadows-style";
   border: 0;
-  border-radius: var(--border-radius-large);
+  border-radius: var(--dialog-border-radius);
   padding: 0;
   animation-name: reveal;
   animation-duration: 0.2s;
@@ -141,8 +146,9 @@
 .header {
   height: var(--dialog-header-height);
   line-height: var(--dialog-header-height);
-  color: inherit;
-  border-bottom: 1px solid var(--gray-light);
+  background-color: var(--dialog-header-background-color);
+  color: var(--dialog-header-text-color);
+  border-radius: var(--dialog-border-radius) var(--dialog-border-radius) 0 0;
 
   @nest .danger & {
     border-bottom: 1px solid var(--state-danger-color--text);
@@ -161,16 +167,16 @@
   max-width: 100vw;
 
   @nest .hasFunctions & {
-    max-height: calc(100vh - 6rem);
+    max-height: calc(100vh - 10rem);
   }
 }
 
 .title {
   line-height: inherit;
   padding: 0 var(--dialog-padding);
-  font-size: var(--font-size-h4);
-  font-weight: 300;
   margin: 0;
+  font-size: 1em;
+  font-weight: 400;
 
   @media (--screen-medium) {
     margin-right: 2rem;
@@ -228,11 +234,7 @@
   font-size: var(--font-size-small);
   box-sizing: border-box;
   padding: var(--medium-padding);
-  background-color: color(var(--body-bg) a(50%));
-  border-radius: 0 0 var(--border-radius-large) var(--border-radius-large);
+  background-color: color(var(--body-bg) a(10%));
+  border-radius: 0 0 var(--dialog-border-radius) var(--dialog-border-radius);
   display: flex;
-
-  @nest .default & {
-    border-top: 1px solid var(--component-border-color);
-  }
 }
