@@ -26,7 +26,8 @@ function createQuery(start = 0, end = PER_PAGE) {
 export default class SelectAsset extends React.Component<Props, State> {
   state = {
     assets: [],
-    isLastPage: false
+    isLastPage: false,
+    isLoading: false
   }
 
   pageNo: number
@@ -35,10 +36,12 @@ export default class SelectAsset extends React.Component<Props, State> {
   fetchPage(pageNo: number) {
     const start = pageNo * PER_PAGE
     const end = start + PER_PAGE
+    this.setState({isLoading: true})
     return client.fetch(createQuery(start, end)).then(result => {
       this.setState(prevState => ({
         isLastPage: result.length === 0,
-        assets: prevState.assets.concat(result)
+        assets: prevState.assets.concat(result),
+        isLoading: false
       }))
     })
   }
@@ -70,7 +73,7 @@ export default class SelectAsset extends React.Component<Props, State> {
   }
 
   render() {
-    const {assets, isLastPage} = this.state
+    const {assets, isLastPage, isLoading} = this.state
     return (
       <div className={styles.root}>
         <div className={styles.imageList}>
@@ -101,10 +104,10 @@ export default class SelectAsset extends React.Component<Props, State> {
           })}
         </div>
         <div className={styles.loadMore}>
-          {isLastPage ? (
-            <span>Nothing more to load…</span>
-          ) : (
-            <Button onClick={this.handleFetchNextPage}>Load more…</Button>
+          {!isLastPage && (
+            <Button onClick={this.handleFetchNextPage} loading={isLoading}>
+              Load more
+            </Button>
           )}
         </div>
       </div>
