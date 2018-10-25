@@ -13,6 +13,7 @@ import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import styles from './styles/ImageInput.css'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import {ObservableI} from '../../typedefs/observable'
+import ButtonCollection from 'part:@sanity/components/buttons/button-collection'
 
 import type {Reference, Type} from '../../typedefs'
 import type {Uploader, UploaderResolver} from '../../sanity/uploads/typedefs'
@@ -377,36 +378,39 @@ export default class ImageInput extends React.PureComponent<Props, State> {
           )}
         </div>
         <div className={styles.functions}>
-          {!readOnly && (
-            <FileInputButton
-              icon={UploadIcon}
-              onSelect={this.handleSelectFile}
-              accept={'' /* todo build from this.props.resolveUploaders */}
-            >
-              Upload
-            </FileInputButton>
-          )}
-          {!readOnly && (
-            <Button onClick={this.handleOpenSelectAsset} kind="simple">
-              Select from library
-            </Button>
-          )}
-          {showAdvancedEditButton && (
-            <Button
-              icon={readOnly ? VisibilityIcon : EditIcon}
-              kind="simple"
-              title={readOnly ? 'View details' : 'Edit details'}
-              onClick={this.handleStartAdvancedEdit}
-            >
-              {readOnly ? 'View details' : 'Edit'}
-            </Button>
-          )}
-          {hasAsset &&
-            !readOnly && (
-              <Button color="danger" kind="simple" onClick={this.handleRemoveButtonClick}>
-                Remove
+          <ButtonCollection>
+            {!readOnly && (
+              <FileInputButton
+                icon={UploadIcon}
+                color="primary"
+                onSelect={this.handleSelectFile}
+                accept={'' /* todo build from this.props.resolveUploaders */}
+              >
+                Upload
+              </FileInputButton>
+            )}
+            {!readOnly && (
+              <Button onClick={this.handleOpenSelectAsset} inverted>
+                Browse
               </Button>
             )}
+            {showAdvancedEditButton && (
+              <Button
+                icon={readOnly ? VisibilityIcon : EditIcon}
+                inverted
+                title={readOnly ? 'View details' : 'Edit details'}
+                onClick={this.handleStartAdvancedEdit}
+              >
+                {readOnly ? 'View details' : 'Edit'}
+              </Button>
+            )}
+            {hasAsset &&
+              !readOnly && (
+                <Button color="danger" inverted onClick={this.handleRemoveButtonClick}>
+                  Remove
+                </Button>
+              )}
+          </ButtonCollection>
         </div>
         {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
         {isSelectAssetOpen && (
