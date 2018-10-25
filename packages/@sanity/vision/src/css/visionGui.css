@@ -18,9 +18,12 @@
 }
 
 .header {
-  border-bottom: 1px solid #ccc;
-  padding: 1rem;
+  border-bottom: 1px solid var(--component-border-color);
+  padding: var(--small-padding);
   display: flex;
+  align-items: center;
+  background-color: color(var(--main-navigation-background-color) a(90%));
+  color: var(--main-navigation-text-color);
 }
 
 .splitContainer {
@@ -41,12 +44,17 @@
 }
 
 .queryTimingContainer {
-  flex-grow: 1;
-  text-align: right;
+  font-size: var(--font-size-xsmall);
+  padding: 0 var(--medium-padding);
 }
 
 .headerFunctions {
+  margin-left: auto;
   align-self: flex-end;
+
+  @nest & > * {
+    margin-left: 0.5em;
+  }
 }
 
 .grid {
@@ -67,6 +75,7 @@
   height: 100%;
   width: 100%;
   overflow: scroll;
+  background-color: var(--white);
 }
 
 .edit {
@@ -146,37 +155,45 @@
 .queryTiming {
   margin: 0;
   padding: 0;
-  line-height: 3rem;
-  font-size: 0.8em;
-  color: #666;
+
+  @nest & span {
+    opacity: 0.6;
+  }
 }
 
 .queryTimingLong {
   composes: queryTiming;
   color: var(--state-danger-color);
   font-weight: bold;
+  font-size: var(--font-size-xsmall);
 }
 
 .queryUrlContainer {
   flex-grow: 1;
-  text-align: right;
+  font-size: var(--font-size-xsmall);
+  margin: 0 var(--medium-padding);
 }
 
-.queryUrlContainer > span {
-  font-size: 0.8em;
+.queryUrlLine {
+  display: flex;
 }
 
 .queryUrl {
   composes: queryTiming;
-  margin-left: 5px;
+  color: inherit;
+  opacity: 0.6;
   font-size: 1em;
-  max-width: 50%;
-  max-height: 48px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   border: 0;
   background-color: transparent;
+  width: stretch;
+}
+
+.queryUrlCopy {
+  cursor: pointer;
+  margin-right: auto;
 }
 
 /* BASICS */
@@ -185,7 +202,7 @@
   /* Set height, width, borders, and global font properties here */
   font-family: monospace;
   height: 100%;
-  color: black;
+  color: var(--text-color);
   position: relative;
   overflow: hidden;
   background: transparent;
@@ -233,7 +250,7 @@
 
 .root :global(.CodeMirror-gutters) {
   border-right: 1px solid #ddd;
-  background-color: #f7f7f7;
+  background-color: var(--component-bg);
   white-space: nowrap;
   position: absolute;
   left: 0;
@@ -246,7 +263,7 @@
   padding: 0 3px 0 5px;
   min-width: 20px;
   text-align: right;
-  color: #999;
+  color: var(--text-color);
   white-space: nowrap;
 }
 

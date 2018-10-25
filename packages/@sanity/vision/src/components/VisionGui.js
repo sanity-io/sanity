@@ -279,15 +279,19 @@ class VisionGui extends React.PureComponent {
               />
             </label>
           </div>
-          <div className={styles.queryUrlContainer}>
-            {typeof url === 'string' && (
-              <span>
-                Query URL:
+          {typeof url === 'string' && (
+            <div className={styles.queryUrlContainer}>
+              <div>
+                Query URL&nbsp;
+                <a onClick={handleCopyUrl} className={styles.queryUrlCopy}>
+                  copy
+                </a>
+              </div>
+              <div className={styles.queryUrlLine}>
                 <input className={styles.queryUrl} readOnly id="vision-query-url" value={url} />
-                <button onClick={handleCopyUrl}>Copy</button>
-              </span>
-            )}
-          </div>
+              </div>
+            </div>
+          )}
           <div className={styles.queryTimingContainer}>
             {typeof queryTime === 'number' && (
               <p
@@ -297,12 +301,13 @@ class VisionGui extends React.PureComponent {
                     : styles.queryTimingLong || 'queryTiming'
                 }
               >
-                Query time: {queryTime}ms (end-to-end: {e2eTime}ms)
+                Query time<br/>
+                <span>{queryTime}ms (end-to-end: {e2eTime}ms)</span>
               </p>
             )}
           </div>
           <div className={styles.headerFunctions}>
-            <Button onClick={this.handleListenExecution} loading={listenInProgress}>
+            <Button onClick={this.handleListenExecution} loading={listenInProgress} color="white" inverted>
               Listen
             </Button>
 
