@@ -19,6 +19,10 @@
   @nest &:disabled {
     opacity: 0.5;
   }
+
+  @nest &::placeholder {
+    color: var(--input-color-placeholder);
+  }
 }
 
 .textInput {

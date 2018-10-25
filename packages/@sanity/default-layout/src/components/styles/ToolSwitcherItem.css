@@ -3,18 +3,18 @@
 .root {
   position: relative;
   display: flex;
-  color: color(var(--white) a(50%));
+  color: color(var(--main-navigation-text-color) a(50%));
   text-decoration: none;
   padding: 0.75em;
   white-space: nowrap;
 
   @nest &:hover {
-    color: color(var(--white) a(80%));
-    background-color: color(var(--white) a(10%));
+    color: color(var(--main-navigation-text-color) a(80%));
+    background-color: color(var(--main-navigation-text-color) a(10%));
   }
 
   @nest &:active {
-    color: var(--white);
+    color: var(--main-navigation-text-color);
   }
 
   @nest .default & {
@@ -35,7 +35,7 @@
 
 .rootActive {
   composes: root;
-  color: var(--white);
+  color: var(--main-navigation-text-color);
 }
 
 .iconContainer {

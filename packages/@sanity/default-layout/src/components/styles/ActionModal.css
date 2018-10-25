@@ -6,7 +6,7 @@
 
 .content {
   background-color: var(--main-navigation-background-color);
-  color: #fff;
+  color: var(--main-navigation-text-color);
   padding: var(--large-padding);
   padding-bottom: calc(var(--large-padding) * 4);
   min-width: 80vw;

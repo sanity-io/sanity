@@ -73,7 +73,7 @@
   border: calc(var(--checkbox-button-size) * 0.1) solid var(--checkbox-off-color);
   border-radius: 10%;
   z-index: 2;
-  background-color: var(--white);
+  background-color: var(--component-bg);
 
   @nest .isChecked & {
     border: 2px solid var(--checkbox-color);
