@@ -45,11 +45,7 @@
   composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
   margin: 0;
   padding: 0;
-  display: none;
-
-  @nest &.isOpen {
-    display: block;
-  }
+  display: block;
 }
 
 @media (--screen-medium) {
@@ -86,12 +82,8 @@
 
 .content {
   position: relative;
-  display: none;
+  display: block;
   background-color: transparent;
-
-  @nest &.isOpen {
-    display: block;
-  }
 
   @nest .transparent & {
     background-color: transparent;
