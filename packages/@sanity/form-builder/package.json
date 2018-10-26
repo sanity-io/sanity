@@ -54,7 +54,7 @@
     "humanize-list": "^1.0.1",
     "immutable": "^3.8.1",
     "is-equal": "^1.5.5",
-    "is-hotkey": "^0.1.2",
+    "is-hotkey": "^0.1.4",
     "lodash": "^4.17.4",
     "moment": "^2.19.1",
     "nano-pubsub": "^1.0.2",
