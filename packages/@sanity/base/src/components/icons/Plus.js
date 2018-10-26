@@ -11,8 +11,7 @@ const PlusIcon = () => (
     width="1em"
     height="1em"
   >
-    <line x1="12.5" y1="4" x2="12.5" y2="21" stroke="currentColor" style={strokeStyle} />
-    <line x1="4" y1="12.5" x2="21" y2="12.5" stroke="currentColor" style={strokeStyle} />
+    <path d="M12.5 4V21M4 12.5H21" stroke="currentColor" style={strokeStyle} />
   </svg>
 )
 
