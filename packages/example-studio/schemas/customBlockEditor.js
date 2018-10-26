@@ -80,6 +80,9 @@ export default {
                 title: 'Author',
                 type: 'reference',
                 to: {type: 'author'},
+                options: {
+                  editModal: 'popover'
+                },
                 blockEditor: {
                   icon: AuthorIcon,
                   render: AuthorAnnotation
@@ -124,6 +127,9 @@ export default {
               name: 'test',
               title: 'Test',
               type: 'object',
+              options: {
+                editModal: 'fold'
+              },
               fields: [
                 {
                   type: 'string',
