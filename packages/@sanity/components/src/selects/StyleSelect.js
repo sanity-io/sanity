@@ -1,109 +1,216 @@
-@import 'part:@sanity/base/theme/variables-style';
+/* eslint-disable complexity */
+import PropTypes from 'prop-types'
+import React from 'react'
+import ArrowKeyNavigation from 'boundless-arrow-key-navigation/build'
+import styles from 'part:@sanity/components/selects/style-style'
+import ArrowIcon from 'part:@sanity/base/angle-down-icon'
+import CircleThinIcon from 'part:@sanity/base/circle-thin-icon'
+import CircleCheckIcon from 'part:@sanity/base/circle-check-icon'
+import {List} from 'part:@sanity/components/lists/default'
+import Poppable from 'part:@sanity/components/utilities/poppable'
 
-.root {
-  display: block;
-  outline: none;
-  position: relative;
-
-  @nest &:focus {
-    box-shadow:
-      0 0 2px 1px color(var(--input-border-color-focus)),
-      0 0 4px 0 color(var(--input-border-color-focus) a(60%)),
-      0 0 10px 5px color(var(--input-border-color-focus) a(10%));
-  }
-}
-
-.inner {
-  composes: root from 'part:@sanity/base/theme/forms/text-input-style';
-  cursor: default;
-
-  @nest .transparent & {
-    transition: all 0.05s linear;
-    background-color: transparent;
-    border: 1px solid color(var(--gray-base) a(8%));
-
-    @nest &:hover {
-      background-color: var(--white);
-      border-color: var(--gray-light);
+const modifiers = {
+  preventOverflow: {
+    padding: 0,
+    boundariesElement: 'viewport'
+  },
+  offset: {
+    offset: '0, 0'
+  },
+  flip: {
+    enabled: false
+  },
+  customStyle: {
+    enabled: true,
+    fn: data => {
+      data.styles = {
+        ...data.styles,
+        maxHeight: window ? window.innerHeight - data.popper.top - 10 : 300
+      }
+      return data
     }
   }
 }
 
-.title {
-  padding-right: 1em;
-  color: var(--text-color);
-}
+class StyleSelect extends React.PureComponent {
+  static propTypes = {
+    placeholder: PropTypes.string,
+    onChange: PropTypes.func,
+    onOpen: PropTypes.func,
+    onClose: PropTypes.func,
+    value: PropTypes.array,
+    renderItem: PropTypes.func,
+    className: PropTypes.string,
+    items: PropTypes.arrayOf(
+      PropTypes.shape({
+        title: PropTypes.string,
+        active: PropTypes.bool
+      })
+    ),
+    transparent: PropTypes.bool
+  }
 
-.transparent:not(:hover) .inner {
-  box-shadow: none;
-}
+  static defaultProps = {
+    className: '',
+    onChange() {},
+    onOpen() {},
+    onClose() {},
+    items: [],
+    transparent: false
+  }
 
-.selectContainer {
-  composes: selectContainer from 'part:@sanity/components/selects/default-style';
-  display: flex;
-}
+  state = {
+    showList: false
+  }
 
-.arrow {
-  display: flex;
-  align-items: center;
-  padding-left: 0.5em;
-  margin-left: auto;
-}
+  buttonElement = React.createRef()
+  firstItemElement = React.createRef()
+  keyboardNavigation = false
+  menuHasKeyboardFocus = false
 
-.popper {
-  composes: shadow-6dp from "part:@sanity/base/theme/shadows-style";
-  box-sizing: border-box;
-  background-color: var(--component-bg);
-  position: relative;
-  max-height: inherit;
-  overflow: auto;
-}
+  handleSelect = event => {
+    event.preventDefault()
+    event.stopPropagation()
+    const index = event.currentTarget.dataset.index
+    if (!index) {
+      return
+    }
+    const item = this.props.items[index]
+    if (!item) {
+      return
+    }
+    this.props.onChange(item)
+    this.handleCloseList()
+    this.keyboardNavigation = false
+  }
 
-.list {
-  margin: 0;
-  padding: 0;
-  display: block;
-}
+  handleOpenList = () => {
+    this.setState(
+      {
+        showList: true
+      },
+      () => {
+        this.menuHasKeyboardFocus = true
+        this.keyboardNavigation = true
+        this.firstItemElement.current.focus()
+        this.props.onOpen()
+      }
+    )
+  }
 
-.item {
-  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
-  position: relative;
-  border-bottom: 1px solid var(--gray-light);
-  white-space: nowrap;
-  overflow: hidden;
-  min-height: 2em;
-  cursor: default;
-  padding-right: 1em;
-  color: inherit;
+  handleCloseList = () => {
+    this.buttonElement.current.focus()
+    this.setState(
+      {
+        showList: false
+      },
+      () => {
+        this.props.onClose()
+      }
+    )
+  }
 
-  &:last-child {
-    border: 0;
+  handleButtonClick = event => {
+    if (this.state.showList) {
+      this.handleCloseList()
+    } else {
+      this.handleOpenList()
+    }
+    this.keyboardNavigation = event.detail == 0
+  }
+
+  handleButtonKeyDown = event => {
+    if (event.key == 'Enter') {
+      this.handleOpenList()
+    }
+  }
+
+  handleButtonBlur = event => {
+    if (this.state.showList && !this.menuHasKeyboardFocus && this.keyboardNavigation) {
+      this.handleCloseList()
+    }
+  }
+
+  handleMenuBlur = event => {
+    this.menuHasKeyboardFocus = false
+    this.buttonElement.current.focus()
+    this.handleCloseList()
+  }
+
+  handleItemKeyPress = event => {
+    if (event.key === 'Enter') {
+      this.handleSelect(event)
+    }
+  }
+
+  render() {
+    const {value, items, className, placeholder, renderItem, transparent} = this.props
+    const {showList} = this.state
+
+    return (
+      <div
+        tabIndex={0}
+        onClick={this.handleButtonClick}
+        onBlur={this.handleButtonBlur}
+        onKeyPress={this.handleButtonKeyDown}
+        className={`${styles.root} ${className || ''} ${transparent ? styles.transparent : ''}`}
+      >
+        <div className={styles.inner} ref={this.buttonElement}>
+          <div className={styles.selectContainer}>
+            <span className={styles.title}>
+              {value && value.length > 1 && 'Multiple'}
+              {value && value.length == 1 && value[0].title}
+              {!value && placeholder}
+            </span>
+            <span className={styles.arrow}>
+              <ArrowIcon color="inherit" />
+            </span>
+          </div>
+        </div>
+        <Poppable
+          onEscape={this.handleCloseList}
+          modifiers={modifiers}
+          onClickOutside={this.handleCloseList}
+          popperClassName={styles.popper}
+        >
+          {showList && (
+            <React.Fragment>
+              <List className={styles.list}>
+                <ArrowKeyNavigation>
+                  {items.map((item, index) => {
+                    const isSemiSelected = value && value.length > 1 && value.includes(item)
+                    const isSelected = value && value.length === 1 && value[0].key == item.key
+                    const classNames = `
+                        ${isSelected ? styles.itemSelected : styles.item}
+                        ${isSemiSelected ? styles.itemSemiSelected : ''}
+                      `
+                    return (
+                      <div
+                        key={`${item.key}${index}`}
+                        title={item.title}
+                        data-index={index}
+                        onClick={this.handleSelect}
+                        className={classNames}
+                        onKeyPress={this.handleItemKeyPress} //eslint-disable-line react/jsx-no-bind
+                        ref={index === 0 && this.firstItemElement}
+                      >
+                        <div className={styles.itemIcon}>
+                          {isSelected && <CircleCheckIcon />}
+                          {isSemiSelected && <CircleThinIcon />}
+                        </div>
+                        <div className={styles.itemContent}>{renderItem(item)}</div>
+                      </div>
+                    )
+                  })}
+                </ArrowKeyNavigation>
+              </List>
+              <div tabIndex={0} onFocus={this.handleMenuBlur} />
+            </React.Fragment>
+          )}
+        </Poppable>
+      </div>
+    )
   }
 }
 
-.itemContent {
-  margin-left: 2em;
-  padding: 0.5em 0;
-}
-
-.itemSelected {
-  composes: item;
-  background-color: var(--selected-item-color);
-  color: var(--selected-item-color--inverted);
-
-  @nest &:hover {
-    background-color: var(--selected-item-color);
-    color: var(--selected-item-color--inverted);
-  }
-}
-
-.itemIcon {
-  display: block;
-  position: absolute;
-  transform: translateY(-50%);
-  top: 50%;
-  left: 0.5em;
-  font-size: 1em;
-  width: 2em;
-  overflow: hidden;
-}
+export default StyleSelect
