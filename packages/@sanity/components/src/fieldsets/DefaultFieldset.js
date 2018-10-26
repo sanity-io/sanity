@@ -6,6 +6,7 @@ import React from 'react'
 import ArrowDropDown from 'part:@sanity/base/arrow-drop-down'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import ValidationList from 'part:@sanity/components/validation/list'
+import AnimateHeight from 'react-animate-height'
 
 export default class Fieldset extends React.Component {
   static propTypes = {
@@ -41,12 +42,16 @@ export default class Fieldset extends React.Component {
     super()
     this.state = {
       isCollapsed: props.isCollapsed,
+      hasBeenToggled: false,
       showValidationList: false
     }
   }
 
   handleToggle = () => {
-    this.setState(prevState => ({isCollapsed: !prevState.isCollapsed}))
+    this.setState(prevState => ({
+      isCollapsed: !prevState.isCollapsed,
+      hasBeenToggled: true
+    }))
   }
 
   handleFocus = event => {
@@ -87,7 +92,7 @@ export default class Fieldset extends React.Component {
       ...rest
     } = this.props
 
-    const {isCollapsed, showValidationList} = this.state
+    const {isCollapsed, showValidationList, hasBeenToggled} = this.state
 
     const styles = {
       ...defaultStyles,
@@ -147,9 +152,18 @@ export default class Fieldset extends React.Component {
                 <ValidationList markers={markers} />
               </div>
             )}
-            <div className={`${styles.content} ${isCollapsed ? '' : styles.isOpen}`}>
-              <div className={styles.fieldWrapper}>{!isCollapsed && children}</div>
-            </div>
+            {isCollapsible && (
+              <AnimateHeight duration={400} height={isCollapsed && children ? 0 : 'auto'}>
+                <div className={styles.content}>
+                  <div className={styles.fieldWrapper}>{hasBeenToggled && children}</div>
+                </div>
+              </AnimateHeight>
+            )}
+            {!isCollapsible && (
+              <div className={styles.content}>
+                <div className={styles.fieldWrapper}>{!isCollapsed && children}</div>
+              </div>
+            )}
           </div>
         </fieldset>
       </div>
