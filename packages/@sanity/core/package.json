@@ -60,7 +60,7 @@
     "uglify-es": "3.3.9"
   },
   "devDependencies": {
-    "chai": "^4.1.2",
+    "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "mocha": "^5.0.1"
   },

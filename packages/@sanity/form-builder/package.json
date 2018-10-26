@@ -69,7 +69,7 @@
     "@sanity/server": "0.135.0",
     "flow-typed": "^2.2.3",
     "in-publish": "^2.0.0",
-    "jsdom": "^11.3.0",
+    "jsdom": "^12.0.0",
     "json-markup": "^1.1.0",
     "path-to-regexp": "^1.7.0",
     "postcss-cssnext": "^3.0.2",
