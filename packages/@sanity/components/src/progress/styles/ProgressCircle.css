@@ -1,5 +1,11 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+:root {
+  --pi: 3.14159265359;
+  --circumference: calc(var(--pi) * 100);
+  --stroke-width: 1px;
+}
+
 @keyframes finish {
   0% {
     stroke-width: 1em;
@@ -17,6 +23,43 @@
     transform: scale(2);
     opacity: 0;
     stroke-width: 1px;
+  }
+}
+
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes strokeWidth {
+  0% {
+    stroke-width: 0;
+  }
+
+  50% {
+    stroke-width: var(--stroke-width);
+  }
+
+  100% {
+    stroke-width: 0;
+  }
+}
+
+@keyframes strokeDash {
+  0% {
+    stroke-dasharray: 0, var(--circumference);
+    stroke-dashoffset: 0;
+  }
+
+  50% {
+    stroke-dasharray: var(--circumference), 0;
+    stroke-dashoffset: 0;
+  }
+
+  100% {
+    stroke-dasharray: var(--circumference), var(--circumference);
+    stroke-dashoffset: calc(var(--circumference) * -1);
   }
 }
 
@@ -55,7 +98,7 @@
   stroke: var(--black);
   fill: none;
   stroke-width: 0.5em;
-  transition: stroke 0.2s linear;
+  transition: stroke 0.2s linear, opacity 0.3s linear;
 
   @nest .completed & {
     stroke: var(--state-success-color);
@@ -68,6 +111,22 @@
 
   @nest .hundredPercent & {
     stroke: var(--state-success-color);
+  }
+}
+
+.activeCircle {
+  transform-origin: center center;
+  stroke: var(--black);
+  fill: none;
+  stroke-width: var(--stroke-width);
+  stroke-dasharray: 0, var(--circumference);
+  animation:
+    strokeDash  6s ease-out infinite,
+    strokeWidth 3s ease-out infinite,
+    rotate     18s linear  infinite;
+
+  @nest .completed & {
+    opacity: 0;
   }
 }
 

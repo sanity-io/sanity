@@ -7,20 +7,17 @@ export default class ProgressBar extends React.Component {
     className: PropTypes.string,
     percent: PropTypes.number,
     animation: PropTypes.bool,
-    completed: PropTypes.bool,
+    isComplete: PropTypes.bool,
     text: PropTypes.string,
     showPercent: PropTypes.bool
   }
 
-  static defaultProps = {
-    completion: 0
-  }
-
   render() {
-    const {percent, completed, text, showPercent} = this.props
+    const {percent, isComplete, text, showPercent, isInProgress} = this.props
     const rootClasses = `
-      ${completed ? styles.completed : styles.uncompleted}
+      ${isComplete ? styles.completed : styles.uncompleted}
       ${percent >= 100 && styles.hundredPercent}
+      ${isInProgress ? styles.isInProgress : styles.isNotInProgress}
     `
     const barStyle = {
       width: `${percent}%`

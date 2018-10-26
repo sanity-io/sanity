@@ -11,7 +11,8 @@ export default class ProgressCircle extends React.PureComponent {
     percent: PropTypes.number,
     text: PropTypes.string,
     style: PropTypes.object,
-    showPercent: PropTypes.bool
+    showPercent: PropTypes.bool,
+    isComplete: PropTypes.bool
   }
 
   static defaultProps = {
@@ -22,36 +23,46 @@ export default class ProgressCircle extends React.PureComponent {
   }
 
   render() {
-    const {percent, text, style, showPercent} = this.props
+    const {percent, text, style, showPercent, isComplete} = this.props
 
     const radius = 50
     const strokeWidth = 10
     const width = radius * 2
     const height = radius * 2
-    const viewBox = `-10 -10 ${width * widthFactor} ${height * heightFactor}`
+    const viewBox = `0 0 ${width} ${height}`
 
     const dashArray = radius * Math.PI * 2
     const dashOffset = dashArray - (dashArray * percent) / 100
 
     return (
-      <div className={percent >= 100 ? styles.completed : styles.unCompleted} style={style}>
+      <div className={isComplete ? styles.completed : styles.unCompleted} style={style}>
         <svg className={styles.svg} width={width} height={height} viewBox={viewBox}>
           <circle
             className={styles.background}
             cx={radius}
             cy={radius}
-            r={radius}
+            r={radius - strokeWidth}
             strokeWidth={`${strokeWidth}px`}
           />
           <circle
             className={styles.foreground}
             cx={radius}
             cy={radius}
-            r={radius}
+            r={radius - strokeWidth}
             strokeWidth={`${strokeWidth}px`}
             style={{
               strokeDasharray: dashArray,
               strokeDashoffset: dashOffset
+            }}
+          />
+          <circle
+            className={styles.activeCircle}
+            cx={radius}
+            cy={radius}
+            r={radius - 1}
+            style={{
+              strokeDasharray: Math.PI,
+              strokeDashoffset: Math.PI
             }}
           />
           {showPercent && (
