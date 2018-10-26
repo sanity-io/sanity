@@ -7,11 +7,6 @@ import React from 'react'
 import {Block, Range, Inline} from 'slate'
 import {isEqual} from 'lodash'
 import {setEventTransfer, getEventRange} from 'slate-react'
-import {IntentLink} from 'part:@sanity/base/router'
-import LinkIcon from 'part:@sanity/base/link-icon'
-import Stacked from 'part:@sanity/components/utilities/stacked'
-import Escapable from 'part:@sanity/components/utilities/escapable'
-import {Tooltip} from '@sanity/react-tippy'
 import classNames from 'classnames'
 
 import type {
@@ -31,11 +26,8 @@ import {resolveTypeName} from '../../../utils/resolveTypeName'
 import {PatchEvent} from '../../../PatchEvent'
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 
-import DeleteButton from '../DeleteButton'
-import EditButton from '../EditButton'
 import InvalidValue from '../../InvalidValueInput'
 import Preview from '../../../Preview'
-import ViewButton from '../ViewButton'
 
 import styles from './styles/InlineObject.css'
 
@@ -59,8 +51,6 @@ type State = {
   menuOpen: boolean
 }
 
-const NOOP = () => {}
-
 export default class InlineObject extends React.Component<Props, State> {
   static defaultProps = {
     isSelected: false,
@@ -72,8 +62,7 @@ export default class InlineObject extends React.Component<Props, State> {
   _previewContainer: ?HTMLElement = null
 
   state = {
-    isDragging: false,
-    menuOpen: false
+    isDragging: false
   }
 
   componentDidMount() {
@@ -270,8 +259,11 @@ export default class InlineObject extends React.Component<Props, State> {
 
   handleEditStart = (event: SyntheticMouseEvent<>) => {
     event.stopPropagation()
-    const {node, onFocus, editorValue, controller} = this.props
-    const {focusBlock} = editorValue
+    const {node, controller, readOnly} = this.props
+    if (readOnly) {
+      this.handleView(event)
+      return
+    }
     controller.change(change => {
       change
         .moveToEndOfNode(node)
@@ -279,109 +271,40 @@ export default class InlineObject extends React.Component<Props, State> {
         .blur()
     })
     setTimeout(() => {
-      onFocus([{_key: focusBlock.key}, 'children', {_key: node.key}, FOCUS_TERMINATOR])
+      this.setFocus()
     }, 200)
+  }
+
+  setFocus = () => {
+    const {node, onFocus, editorValue} = this.props
+    const block = editorValue.document.getClosestBlock(node.key)
+    onFocus([{_key: block.key}, 'children', {_key: node.key}, FOCUS_TERMINATOR])
   }
 
   handleView = (event: SyntheticMouseEvent<>) => {
     event.stopPropagation()
-    const {node, onFocus, editorValue} = this.props
-    const {focusBlock} = editorValue
-    onFocus([{_key: focusBlock.key}, 'children', {_key: node.key}, FOCUS_TERMINATOR])
-  }
-
-  handleCloseMenu = () => {
-    this.setState({menuOpen: false})
+    this.setFocus()
   }
 
   refPreviewContainer = (elm: ?HTMLSpanElement) => {
     this._previewContainer = elm
   }
 
-  handleShowMenu = () => {
-    this.setState({menuOpen: true})
-  }
-
   getValue() {
     return this.props.node.data.get('value')
   }
 
-  renderMenu(value: any) {
-    const {readOnly} = this.props
-    return (
-      <Stacked>
-        {isActive => {
-          return (
-            <Escapable onEscape={isActive ? this.handleCloseMenu : NOOP}>
-              <div className={styles.functions}>
-                {value &&
-                  value._ref && (
-                    <IntentLink
-                      className={styles.linkToReference}
-                      intent="edit"
-                      params={{id: value._ref}}
-                    >
-                      <LinkIcon />
-                    </IntentLink>
-                  )}
-                {readOnly && (
-                  <ViewButton title="View this object" onClick={this.handleView}>
-                    View
-                  </ViewButton>
-                )}
-                {!readOnly && (
-                  <EditButton title="Edit this object" onClick={this.handleEditStart}>
-                    Edit
-                  </EditButton>
-                )}
-                {!readOnly && (
-                  <DeleteButton title="Remove this object" onClick={this.handleRemoveValue}>
-                    Delete
-                  </DeleteButton>
-                )}
-              </div>
-            </Escapable>
-          )
-        }}
-      </Stacked>
-    )
-  }
-
-  renderPreview(value: FormBuilderValue) {
-    const {type} = this.props
-    const {menuOpen} = this.state
-    const valueKeys = value ? Object.keys(value) : []
-    const isEmpty = !value || isEqual(valueKeys.sort(), ['_key', '_type'].sort())
-    return (
-      <Tooltip
-        arrow
-        theme="light"
-        trigger="manual"
-        open={menuOpen}
-        position="bottom"
-        interactive
-        useContext
-        duration={100}
-        style={{padding: 0, display: 'inline-block', minWidth: '0.5em'}}
-        unmountHTMLWhenHide
-        onRequestClose={menuOpen && this.handleCloseMenu}
-        html={this.renderMenu(value)}
-      >
-        {!isEmpty && <Preview type={type} value={value} layout="inline" />}
-        {isEmpty && <span>Click to edit</span>}
-      </Tooltip>
-    )
-  }
-
+  // eslint-disable-next-line complexity
   render() {
     const {
       attributes,
-      node,
+      blockContentFeatures,
       editorValue,
       isSelected,
-      readOnly,
       markers,
-      blockContentFeatures
+      node,
+      readOnly,
+      type
     } = this.props
     const value = this.getValue()
     const valueType = resolveTypeName(value)
@@ -409,6 +332,9 @@ export default class InlineObject extends React.Component<Props, State> {
       errors.length > 0 && styles.hasErrors
     ])
 
+    const valueKeys = value ? Object.keys(value) : []
+    const isEmpty = !value || isEqual(valueKeys.sort(), ['_key', '_type'].sort())
+
     return (
       <span
         {...attributes}
@@ -419,11 +345,15 @@ export default class InlineObject extends React.Component<Props, State> {
         onDrop={this.handleCancelEvent}
         draggable={!readOnly}
         className={classname}
-        onClick={this.handleShowMenu}
         contentEditable={false}
       >
-        <span ref={this.refPreviewContainer} className={styles.previewContainer}>
-          {this.renderPreview(value)}
+        <span
+          onClick={this.handleEditStart}
+          ref={this.refPreviewContainer}
+          className={styles.previewContainer}
+        >
+          {!isEmpty && <Preview type={type} value={value} layout="inline" />}
+          {isEmpty && !readOnly && <span>Click to edit</span>}
         </span>
       </span>
     )

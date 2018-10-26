@@ -10,8 +10,8 @@ import classNames from 'classnames'
 
 import {IntentLink} from 'part:@sanity/base/router'
 import BlockExtras from 'part:@sanity/form-builder/input/block-editor/block-extras'
-import LinkIcon from 'part:@sanity/base/link-icon'
 import ButtonsCollection from 'part:@sanity/components/buttons/button-collection'
+import LinkIcon from 'part:@sanity/base/link-icon'
 
 import type {
   BlockContentFeatures,

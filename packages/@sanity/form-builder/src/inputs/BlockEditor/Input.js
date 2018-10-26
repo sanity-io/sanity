@@ -77,7 +77,7 @@ export default class BlockEditorInput extends React.Component<Props, State> {
     fullscreen: false
   }
 
-  handleToggleFullScreen = () => {
+  handleToggleFullScreen = (event?: SyntheticEvent<*>) => {
     this.setState((prevState: State) => ({fullscreen: !prevState.fullscreen}))
     this.focus()
   }

@@ -2,7 +2,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  display: inline;
+  display: inline-block;
   position: relative;
   margin: 0 1px; /* Allow cursor to show in nearby text */
 }

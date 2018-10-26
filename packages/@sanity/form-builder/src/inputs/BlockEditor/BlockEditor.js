@@ -1,14 +1,12 @@
 // @flow
 import type {Element as ReactElement, ElementRef} from 'react'
 import React from 'react'
-import {isKeyHotkey} from 'is-hotkey'
 
 import {PatchEvent} from 'part:@sanity/form-builder/patch-event'
 
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import {Portal} from 'part:@sanity/components/utilities/portal'
 import Stacked from 'part:@sanity/components/utilities/stacked'
-import Escapable from 'part:@sanity/components/utilities/escapable'
 
 import Button from 'part:@sanity/components/buttons/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
@@ -29,6 +27,7 @@ import type {
   RenderBlockActions,
   RenderCustomMarkers,
   SlateChange,
+  SlateNode,
   SlateValue,
   Type,
   UndoRedoStack
@@ -59,7 +58,7 @@ type Props = {
     value: ?(FormBuilderValue[])
   }) => {insert?: FormBuilderValue[], path?: []},
   onPatch: (event: PatchEvent) => void,
-  onToggleFullScreen: void => void,
+  onToggleFullScreen: (event: SyntheticEvent<*>) => void,
   patchesToChange: (patches: Patch[], editorValue: SlateValue, snapshot: ?any) => SlateChange,
   readOnly?: boolean,
   renderBlockActions?: RenderBlockActions,
@@ -118,20 +117,12 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
 
   componentDidMount() {
     this.checkScrollHeight()
-
-    if (this._rootElement) {
-      this._rootElement.addEventListener('keydown', this.handleKeyDown, false)
-    }
-
     if (this._scrollContainer) {
       this._scrollContainer.addEventListener('scroll', this.handleScroll, {passive: true})
     }
   }
 
   componentWillUnmount() {
-    if (this._rootElement) {
-      this._rootElement.removeEventListener('keydown', this.handleKeyDown, false)
-    }
     if (this._scrollContainer) {
       this._scrollContainer.removeEventListener('scroll', this.handleScroll, {passive: true})
     }
@@ -160,7 +151,12 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
       value = annotations[focusedAnnotationName]
       type = blockContentFeatures.annotations.find(an => an.value === focusedAnnotationName)
       if (type) {
-        return this.renderEditNode(value, type.type, [focusPath[0], 'markDefs', {_key: value._key}])
+        return this.renderEditNode(
+          value,
+          type.type,
+          [focusPath[0], 'markDefs', {_key: value._key}],
+          slateNode
+        )
       }
     }
     value = slateNode.data.get('value')
@@ -168,29 +164,36 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
     if (slateNode.object === 'inline') {
       type = blockContentFeatures.types.inlineObjects.find(findType)
       if (type) {
-        return this.renderEditNode(value, type, [focusPath[0], 'children', {_key: value._key}])
+        return this.renderEditNode(
+          value,
+          type,
+          [focusPath[0], 'children', {_key: value._key}],
+          slateNode
+        )
       }
     }
     type = blockContentFeatures.types.blockObjects.find(findType)
     if (type) {
-      return this.renderEditNode(value, type, [{_key: value._key}])
+      return this.renderEditNode(value, type, [{_key: value._key}], slateNode)
     }
     return null
   }
 
-  renderEditNode(nodeValue: any, type: Type, path: Path) {
-    const {focusPath, readOnly, onBlur, onFocus, onPatch, markers, value} = this.props
+  renderEditNode(nodeValue: any, type: Type, path: Path, slateNode: SlateNode) {
+    const {focusPath, readOnly, onBlur, onFocus, onPatch, markers, value, fullscreen} = this.props
     return (
       <EditNode
         focusPath={focusPath}
+        fullscreen={fullscreen}
         markers={markers}
-        onBlur={onBlur}
-        onPatch={onPatch}
-        onFocus={onFocus}
-        path={path}
-        type={type}
-        readOnly={readOnly}
         nodeValue={nodeValue}
+        node={slateNode}
+        onBlur={onBlur}
+        onFocus={onFocus}
+        onPatch={onPatch}
+        path={path}
+        readOnly={readOnly}
+        type={type}
         value={value}
       />
     )
@@ -248,16 +251,6 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
     return null
   }
 
-  handleKeyDown = (event: KeyboardEvent) => {
-    const isFullscreenKey = isKeyHotkey('mod+enter')
-    const {onToggleFullScreen} = this.props
-    if (isFullscreenKey(event)) {
-      event.preventDefault()
-      event.stopPropagation()
-      onToggleFullScreen()
-    }
-  }
-
   renderEditor(): ReactElement<typeof Editor> {
     const {
       blockContentFeatures,
@@ -272,7 +265,6 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
       onLoading,
       onPatch,
       onPaste,
-      onToggleFullScreen,
       patchesToChange,
       isLoading,
       readOnly,
@@ -298,7 +290,7 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
         onLoading={onLoading}
         onPaste={onPaste}
         onPatch={onPatch}
-        onToggleFullScreen={onToggleFullScreen}
+        onToggleFullScreen={this.handleToggleFullscreen}
         patchesToChange={patchesToChange}
         readOnly={readOnly}
         ref={this._editor}
@@ -318,17 +310,17 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
       blockContentFeatures,
       editorValue,
       fullscreen,
+      focusPath,
       isActive,
       isLoading,
       markers,
       onFocus,
-      onToggleFullScreen,
       readOnly,
       setFocus,
       type,
       userIsWritingText
     } = this.props
-
+    const isEditingNode = (focusPath || []).length > 1
     if (readOnly) {
       return this.renderEditor()
     }
@@ -342,7 +334,7 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
             fullscreen={fullscreen}
             markers={markers}
             onFocus={onFocus}
-            onToggleFullScreen={onToggleFullScreen}
+            onToggleFullScreen={this.handleToggleFullscreen}
             style={fullscreen ? this.state.toolbarStyle : {}}
             type={type}
             userIsWritingText={userIsWritingText}
@@ -361,7 +353,7 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
               <h3>Click to edit</h3>
               <div>or</div>
               <div>
-                <Button onClick={onToggleFullScreen} color="primary">
+                <Button onClick={this.handleToggleFullscreen} color="primary">
                   Open in fullscreen
                 </Button>
               </div>
@@ -384,16 +376,22 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
           >
             <div className={styles.editorWrapper} ref={this.setEditorWrapper}>
               {this.renderEditor()}
+              {isEditingNode && fullscreen && this.renderNodeEditor()}
             </div>
           </div>
         </ActivateOnFocus>
+        {isEditingNode && !fullscreen && this.renderNodeEditor()}
       </div>
     )
   }
 
+  handleToggleFullscreen = (event: SyntheticEvent<*>) => {
+    const {onToggleFullScreen} = this.props
+    onToggleFullScreen(event)
+  }
+
   render() {
-    const {focusPath, fullscreen, onToggleFullScreen} = this.props
-    const isEditingNode = (focusPath || []).length > 1
+    const {focusPath, fullscreen} = this.props
     const isFocused = (focusPath || []).length
     return (
       <div className={styles.root} ref={this.setRootElement}>
@@ -402,7 +400,6 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
             {isActive => {
               return (
                 <Portal>
-                  {isActive && <Escapable onEscape={onToggleFullScreen} />}
                   <div className={styles.fullscreen}>{this.renderBlockEditor()}</div>
                 </Portal>
               )
@@ -412,7 +409,6 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
         {!fullscreen && (
           <div className={isFocused ? styles.focus : ''}>{this.renderBlockEditor()}</div>
         )}
-        {isEditingNode && this.renderNodeEditor()}
       </div>
     )
   }

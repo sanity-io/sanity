@@ -89,7 +89,7 @@ type Props = {
     value: ?(FormBuilderValue[])
   }) => {insert?: FormBuilderValue[], path?: []},
   onPatch: (event: PatchEvent) => void,
-  onToggleFullScreen: void => void,
+  onToggleFullScreen: (event: SyntheticEvent<*>) => void,
   patchesToChange: (patches: Patch[], editorValue: SlateValue, snapshot: ?any) => SlateChange,
   readOnly?: boolean,
   renderBlockActions?: RenderBlockActions,
@@ -352,13 +352,15 @@ export default class Editor extends React.Component<Props> {
     return next()
   }
 
-  handleOnKeyDown = (event: SyntheticEvent<>, change: SlateChange, next: void => void) => {
+  handleToggleFullscreen = (event: SyntheticEvent<>, change: SlateChange, next: void => void) => {
     const isFullscreenKey = isKeyHotkey('mod+enter')
+    const isEsc = isKeyHotkey('esc')
     const {onToggleFullScreen} = this.props
-    if (isFullscreenKey(event)) {
+    if (isFullscreenKey(event) || isEsc(event)) {
       event.preventDefault()
       event.stopPropagation()
-      onToggleFullScreen()
+      onToggleFullScreen(event)
+      return change
     }
     return next()
   }
@@ -565,7 +567,7 @@ export default class Editor extends React.Component<Props> {
           onFocus={this.handleEditorFocus}
           onCopy={this.handleCopy}
           onPaste={this.handlePaste}
-          onKeyDown={this.handleOnKeyDown}
+          onKeyDown={this.handleToggleFullscreen}
           onDragOver={this.handleDrag}
           onDrop={this.handleDrag}
           plugins={this._plugins}
