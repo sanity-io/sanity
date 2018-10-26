@@ -1,7 +1,6 @@
 import {pick} from 'lodash'
 import {lazyGetter} from '../utils'
 import createPreviewGetter from '../../preview/createPreviewGetter'
-import {DEFAULT_MARKS_FIELD, DEFAULT_TEXT_FIELD} from './defaults'
 
 const INHERITED_FIELDS = [
   'type',
@@ -19,7 +18,6 @@ const SPAN_CORE = {
   jsonType: 'object'
 }
 
-const DEFAULT_FIELDS = [DEFAULT_TEXT_FIELD, DEFAULT_MARKS_FIELD]
 const DEFAULT_OPTIONS = {}
 
 export const SpanType = {
@@ -29,7 +27,7 @@ export const SpanType = {
   extend(subTypeDef, extendMember) {
     const options = {...(subTypeDef.options || DEFAULT_OPTIONS)}
 
-    const {annotations = [], marks = []} = subTypeDef
+    const {fields = [], annotations = [], marks = []} = subTypeDef
 
     const parsed = Object.assign(pick(SPAN_CORE, INHERITED_FIELDS), subTypeDef, {
       type: SPAN_CORE,
@@ -37,7 +35,7 @@ export const SpanType = {
     })
 
     lazyGetter(parsed, 'fields', () => {
-      return DEFAULT_FIELDS.map(fieldDef => {
+      return fields.map(fieldDef => {
         const {name, ...type} = fieldDef
         return {
           name: name,
