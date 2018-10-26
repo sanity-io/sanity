@@ -7,12 +7,14 @@ class ActivateOnFocus extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
     message: PropTypes.string,
-    isActive: PropTypes.bool
+    isActive: PropTypes.bool,
+    onClick: PropTypes.func
   }
 
   static defaultProps = {
     message: 'Click to activate…',
-    isActive: false
+    isActive: false,
+    onClick: () => {}
   }
 
   state = {
@@ -25,6 +27,7 @@ class ActivateOnFocus extends React.Component {
         hasFocus: true
       })
     }
+    this.props.onClick(event)
   }
 
   handleClickOutside = () => {

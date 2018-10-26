@@ -59,6 +59,7 @@ export default class BlockEditor extends React.Component {
     this.customBlocks = preparation.customBlocks
     this.operations = createBlockEditorOperations(this)
     this.slatePlugins = initializeSlatePlugins(this)
+    this.blockEditorRef = React.createRef()
   }
 
   componentDidMount() {
@@ -263,20 +264,23 @@ export default class BlockEditor extends React.Component {
   }
 
   handleEditorContainerClick = () => {
-    this.editor.focus()
+    this.handleEditorFocus()
   }
 
   handleEditorFocus = event => {
     this.props.onFocus()
+    this.editor.focus()
     this.setState({
       editorHasFocus: true
     })
   }
 
   handleEditorBlur = event => {
-    this.setState({
-      editorHasFocus: false
-    })
+    if (!this.blockEditorRef.current.contains(event.relatedTarget)) {
+      this.setState({
+        editorHasFocus: false
+      })
+    }
   }
 
   handleInputScroll = event => {
@@ -321,9 +325,10 @@ export default class BlockEditor extends React.Component {
     const {fullscreen, toolbarStyle, preventScroll, editorHasFocus} = this.state
 
     return (
-      <div className={`${styles.root} ${fullscreen ? styles.fullscreen : ''}`}>
+      <div className={`${styles.root} ${fullscreen ? styles.fullscreen : ''}`} ref={this.blockEditorRef}>
         <ActivateOnFocus
           isActive={editorHasFocus || fullscreen || !preventScroll}
+          onClick={this.handleEditorFocus}
           message="Click to edit"
         >
           {!readOnly && (
