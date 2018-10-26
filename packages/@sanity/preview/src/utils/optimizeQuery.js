@@ -2,6 +2,7 @@
 import {identity, sortBy, values} from 'lodash'
 import type {FieldName, Id, Selection} from '../types'
 import {INCLUDE_FIELDS_QUERY} from '../constants'
+import {escapeField, fieldNeedsEscape} from 'part:@sanity/base/util/search-utils'
 
 type CombinedSelection = {
   ids: Id[],
@@ -34,9 +35,14 @@ function stringifyId(id: string) {
   return JSON.stringify(id)
 }
 
+const maybeEscape = fieldName =>
+  fieldNeedsEscape(fieldName) ? `"${fieldName}": @${escapeField(fieldName)}` : fieldName
+
 function toSubQuery({ids, fields}) {
   const allFields = [...INCLUDE_FIELDS_QUERY, ...fields]
-  return `*[_id in [${ids.map(stringifyId).join(',')}]][0...${ids.length}]{${allFields.join(',')}}`
+  return `*[_id in [${ids.map(stringifyId).join(',')}]][0...${ids.length}]{${allFields
+    .map(maybeEscape)
+    .join(',')}}`
 }
 
 export function toGradientQuery(combinedSelections: CombinedSelection[]) {

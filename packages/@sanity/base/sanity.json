@@ -261,6 +261,10 @@
       "path": "util/draftUtils.js"
     },
     {
+      "implements": "part:@sanity/base/util/search-utils",
+      "path": "util/searchUtils.js"
+    },
+    {
       "implements": "part:@sanity/base/util/document-action-utils",
       "path": "util/documentActionUtils.js"
     },
