@@ -5,15 +5,13 @@ import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 
 import type {Type, SlateValue, SlateController, Path} from '../typeDefs'
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
-import {insertBlockObject, insertInlineObject} from '../utils/changes'
 
 type Props = {
   blockTypes: Type[],
   controller: SlateController,
   editorValue: SlateValue,
   inlineTypes: Type[],
-  onFocus: Path => void,
-  type: Type
+  onFocus: Path => void
 }
 
 type BlockItem = {
