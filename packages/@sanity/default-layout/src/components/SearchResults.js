@@ -57,7 +57,7 @@ class SearchResults extends React.PureComponent {
           if (activeIndex === index) className += ` ${styles.activeItem}`
           return (
             <li key={item._id} className={className}>
-              {renderItem(item, index)}
+              {renderItem(item, index, styles.link)}
             </li>
           )
         })}
