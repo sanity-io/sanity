@@ -16,9 +16,8 @@
   position: relative;
   z-index: 1;
   vertical-align: middle;
-  display: inline-block;
+  display: block;
   box-sizing: border-box;
-  width: 100%;
   height: var(--radio-label-height);
   margin: 0;
   padding: 0;
