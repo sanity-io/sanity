@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React from 'react'
 import formatDate from 'date-fns/format'
@@ -153,22 +154,22 @@ export default class CardPreview extends React.PureComponent {
             </div>
           )}
           <div className={styles.meta}>
+            {date && (
+              <div
+                ref={this.setDateElement}
+                className={styles.date}
+                title={formatDate(date, 'ddd, MMM Do, YYYY hh:mm A')}
+              >
+                {emWidth <= 10 && formatDate(date, 'DD.MM.YY')}
+                {emWidth > 10 && emWidth <= 15 && formatDate(date, 'DD.MM.YY hh:mm A')}
+                {emWidth > 15 && formatDate(date, 'ddd, MMM Do, YYYY hh:mm A')}
+              </div>
+            )}
             <div className={styles.heading}>
               <h2 className={styles.title}>{title}</h2>
               {status && (
                 <div className={styles.status}>
                   {(typeof status === 'function' && status({layout: 'default'})) || status}
-                </div>
-              )}
-              {date && (
-                <div
-                  ref={this.setDateElement}
-                  className={styles.date}
-                  title={formatDate(date, 'ddd, MMM Do, YYYY hh:mm A')}
-                >
-                  {emWidth <= 10 && formatDate(date, 'DD.MM.YY')}
-                  {emWidth > 10 && emWidth <= 15 && formatDate(date, 'DD.MM.YY hh:mm A')}
-                  {emWidth > 15 && formatDate(date, 'ddd, MMM Do, YYYY hh:mm A')}
                 </div>
               )}
             </div>
