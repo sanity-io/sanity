@@ -4,7 +4,7 @@ const inferFromSchemaType = require('./inferFromSchemaType')
 function inferFromSchema(schema) {
   const typeNames = schema.getTypeNames()
   typeNames.forEach(typeName => {
-    inferFromSchemaType(schema.get(typeName))
+    inferFromSchemaType(schema.get(typeName), schema)
   })
   return schema
 }

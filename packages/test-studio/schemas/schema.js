@@ -17,6 +17,7 @@ import files from './files'
 import uploads from './uploads'
 import code from './code'
 import customNumber from './customNumber'
+import localeString from './localeString'
 import color from './color'
 import liveEdit from './liveEdit'
 import recursive from './recursive'
@@ -82,6 +83,7 @@ export default createSchema({
     slugs,
     customInputs,
     myImage,
+    localeString,
     recursive,
     recursiveArray,
     recursivePopover,
