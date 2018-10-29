@@ -18,6 +18,19 @@ const VALID_TYPES = [
   'week'
 ]
 
+const centerStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100%',
+  width: '100%',
+  position: 'absolute',
+  boxSizing: 'border-box',
+  padding: '2rem',
+  top: 0,
+  left: 0
+}
+
 class DefaultTextInputTest extends React.PureComponent {
   constructor(...args) {
     super(...args)
@@ -53,57 +66,63 @@ storiesOf('Text inputs')
   .addDecorator(withKnobs)
   .add('Default', () => {
     return (
-      <Sanity part="part:@sanity/components/textinputs/default" propTables={[DefaultTextInput]}>
-        <DefaultTextInput
-          placeholder={text('placeholder (prop)', 'This is the placeholder')}
-          value={text('value (prop)', '')}
-          type={select('type (prop)', ['text', 'number', 'email', 'tel'], 'text')}
-          isSelected={boolean('isSelected (prop)', false)}
-          disabled={boolean('disabled (prop)', false)}
-          readOnly={boolean('readOnly (prop)', false)}
-          onChange={action('onChange')}
-          onFocus={action('onFocus')}
-          onKeyPress={action('onKeyPress')}
-          onBlur={action('onBlur')}
-          id="ThisIsAnUniqueId"
-        />
-      </Sanity>
+      <div style={centerStyle}>
+        <Sanity part="part:@sanity/components/textinputs/default" propTables={[DefaultTextInput]}>
+          <DefaultTextInput
+            placeholder={text('placeholder', 'This is the placeholder', 'props')}
+            value={text('value', '', 'props')}
+            type={select('type', ['text', 'number', 'email', 'tel'], 'text', 'props')}
+            isSelected={boolean('isSelected', false, 'props')}
+            disabled={boolean('disabled', false, 'props')}
+            readOnly={boolean('readOnly', false, 'props')}
+            onChange={action('onChange')}
+            onFocus={action('onFocus')}
+            onKeyPress={action('onKeyPress')}
+            onBlur={action('onBlur')}
+            id="ThisIsAnUniqueId"
+          />
+        </Sanity>
+      </div>
     )
   })
   .add('Custom style', () => {
     return (
-      <Sanity part="part:@sanity/components/textinputs/default" propTables={[DefaultTextInput]}>
-        <DefaultTextInput
-          placeholder={text('placeholder (prop)', 'This is the placeholder')}
-          value={text('value (prop)', false)}
-          type={select('type (prop)', ['text', 'number', 'email', 'tel'], 'text')}
-          selected={boolean('selected (prop)', false)}
-          onChange={action('onChange')}
-          onFocus={action('onFocus')}
-          onKeyPress={action('onKeyPress')}
-          onBlur={action('onBlur')}
-          styles={object('styles (prop)', CustomStyles)}
-          id="ThisIsAnUniqueId"
-        />
-      </Sanity>
+      <div style={centerStyle}>
+        <Sanity part="part:@sanity/components/textinputs/default" propTables={[DefaultTextInput]}>
+          <DefaultTextInput
+            placeholder={text('placeholder', 'This is the placeholder', 'props')}
+            value={text('value', false, 'props')}
+            type={select('type', ['text', 'number', 'email', 'tel'], 'text', 'props')}
+            selected={boolean('selected', false, 'props')}
+            onChange={action('onChange')}
+            onFocus={action('onFocus')}
+            onKeyPress={action('onKeyPress')}
+            onBlur={action('onBlur')}
+            styles={object('styles', CustomStyles, 'props')}
+            id="ThisIsAnUniqueId"
+          />
+        </Sanity>
+      </div>
     )
   })
 
   .add('Default (test)', () => {
     return (
-      <DefaultTextInputTest
-        placeholder={text('placeholder (prop)', 'This is the placeholder')}
-        value={text('value (prop)', '')}
-        type={select('type (prop)', VALID_TYPES, 'text')}
-        hasError={boolean('hasError (prop)', false)}
-        isClearable={boolean('isClearable (prop)', false)}
-        isSelected={boolean('isSelected (prop)', false)}
-        onChange={action('onChange')}
-        onFocus={action('onFocus')}
-        onKeyPress={action('onKeyPress')}
-        onBlur={action('onBlur')}
-        onClear={action('onClear')}
-        id="ThisIsAnUniqueId"
-      />
+      <div style={centerStyle}>
+        <DefaultTextInputTest
+          placeholder={text('placeholder', 'This is the placeholder', 'props')}
+          value={text('value', '', 'props')}
+          type={select('type', VALID_TYPES, 'text', 'props')}
+          hasError={boolean('hasError', false, 'props')}
+          isClearable={boolean('isClearable', false, 'props')}
+          isSelected={boolean('isSelected', false, 'props')}
+          onChange={action('onChange')}
+          onFocus={action('onFocus')}
+          onKeyPress={action('onKeyPress')}
+          onBlur={action('onBlur')}
+          onClear={action('onClear')}
+          id="ThisIsAnUniqueId"
+        />
+      </div>
     )
   })
