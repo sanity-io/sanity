@@ -150,8 +150,12 @@
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px;
-    max-height: 500px;
+    max-height: 380px;
     overflow: auto;
+
+    @media (max-height: 429px) {
+      max-height: calc(100vh - 33px - 16px);
+    }
   }
 
   @nest .root.isOpen & {
