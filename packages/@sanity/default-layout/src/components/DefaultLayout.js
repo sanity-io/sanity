@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import schema from 'part:@sanity/base/schema'
+import CloseIcon from 'part:@sanity/base/close-icon'
 import SanityStudioLogo from 'part:@sanity/base/sanity-studio-logo'
 import DataAspectsResolver from 'part:@sanity/data-aspects/resolver'
 import AppLoadingScreen from 'part:@sanity/base/app-loading-screen'
@@ -38,6 +39,7 @@ export default withRouterHOC(
       createMenuIsOpen: false,
       menuIsOpen: false,
       showLoadingScreen: true,
+      searchIsOpen: false,
       loaded: false
     }
 
@@ -104,13 +106,21 @@ export default withRouterHOC(
       }
     }
 
+    handleSearchOpen = () => {
+      this.setState({searchIsOpen: true})
+    }
+
+    handleSearchClose = () => {
+      this.setState({searchIsOpen: false})
+    }
+
     setLoadingScreenElement = element => {
       this._loadingScreenElement = element
     }
 
     renderContent = () => {
       const {tools, router} = this.props
-      const {createMenuIsOpen, menuIsOpen} = this.state
+      const {createMenuIsOpen, menuIsOpen, searchIsOpen} = this.state
 
       const TYPE_ITEMS = dataAspects
         .getInferredTypes()
@@ -128,8 +138,12 @@ export default withRouterHOC(
         params: {type: item.name}
       }))
 
+      const isOverlayVisible = menuIsOpen || searchIsOpen
+      let className = styles.root
+      if (isOverlayVisible) className += ` ${styles.isOverlayVisible}`
+
       return (
-        <div className={styles.root}>
+        <div className={className}>
           {this.state.showLoadingScreen && (
             <div
               className={
@@ -151,29 +165,52 @@ export default withRouterHOC(
               onSwitchTool={this.handleSwitchTool}
               router={router}
               user={this.state.user}
+              searchIsOpen={searchIsOpen}
               /* eslint-disable-next-line react/jsx-handler-names */
               onUserLogout={userStore.actions.logout}
+              onSearchOpen={this.handleSearchOpen}
+              onSearchClose={this.handleSearchClose}
             />
           </div>
 
           <div className={styles.mainArea}>
             <div className={menuIsOpen ? styles.menuIsOpen : styles.menuIsClosed}>
-              {HAS_SPACES && (
-                <div className={styles.spaceSwitcher}>
-                  <SpaceSwitcher />
+              <div>
+                <button
+                  className={styles.menuCloseButton}
+                  type="button"
+                  onClick={this.handleToggleMenu}
+                  title="Close menu"
+                >
+                  <CloseIcon />
+                </button>
+
+                <div className={styles.userProfile}>
+                  <div className={styles.userProfileImage}>
+                    <img src={this.state.user.profileImage} />
+                  </div>
+                  <div className={styles.userProfileText}>{this.state.user.name}</div>
                 </div>
-              )}
-              <ToolSwitcher
-                direction="vertical"
-                tools={this.props.tools}
-                activeToolName={router.state.tool}
-                onSwitchTool={this.handleSwitchTool}
-              />
-              <div className={styles.menuBottom}>
-                <UpdateNotifier />
-                <a className={styles.sanityStudioLogoContainer} href="http://sanity.io">
-                  <SanityStudioLogo />
-                </a>
+
+                {HAS_SPACES && (
+                  <div className={styles.spaceSwitcher}>
+                    <SpaceSwitcher />
+                  </div>
+                )}
+                <ToolSwitcher
+                  direction="vertical"
+                  tools={this.props.tools}
+                  activeToolName={router.state.tool}
+                  onSwitchTool={this.handleSwitchTool}
+                />
+                <div className={styles.menuBottom}>
+                  <UpdateNotifier />
+                  <a className={styles.sanityStudioLogoContainer} href="http://sanity.io">
+                    <SanityStudioLogo />
+                  </a>
+                </div>
+
+                {/* TODO: add user sign out action */}
               </div>
             </div>
             <div className={styles.toolContainer}>

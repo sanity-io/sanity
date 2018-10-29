@@ -8,12 +8,10 @@
   -webkit-font-smoothing: antialiased;
   display: grid;
   grid-template-columns: var(--nav-bar-box) var(--nav-bar-box) auto var(--nav-bar-box) var(--nav-bar-box);
-  grid-template-rows: var(--nav-bar-box) var(--nav-bar-box);
+  grid-template-rows: var(--nav-bar-box);
   box-sizing: border-box;
   align-items: stretch;
-  grid-template-areas:
-    "hamburger  createButton branding  extras  loginStatus"
-    "search     search       search    search  search";
+  grid-template-areas: "hamburger createButton branding extras searchButton";
 
   @media (--screen-medium) {
     grid-template-rows: var(--nav-bar-box);
@@ -88,8 +86,12 @@ a.branding {
 
 .loginStatus {
   grid-area: loginStatus;
-  display: flex;
+  display: none;
   align-items: stretch;
+
+  @media (--screen-medium) {
+    display: flex;
+  }
 }
 
 .extras {
@@ -98,12 +100,28 @@ a.branding {
 
 .search {
   grid-area: search;
-  display: flex;
-  align-items: stretch;
-  justify-self: stretch;
+
+  @media (--max-screen-medium) {
+    position: absolute;
+    z-index: 15;
+    width: 100%;
+
+    @nest & > div {
+      display: none;
+      background: #fff;
+      color: #444;
+    }
+
+    @nest &.searchIsOpen > div {
+      display: block;
+    }
+  }
 
   @media (--screen-medium) {
-    padding: 0 var(--small-padding);
+    position: relative;
+    z-index: 15;
+    justify-self: stretch;
+    padding: var(--small-padding);
   }
 }
 
@@ -157,4 +175,49 @@ a.branding {
   @nest & svg {
     height: 0.6rem;
   }
+}
+
+.searchButton {
+  display: flex;
+  grid-area: searchButton;
+  text-align: center;
+  user-select: none;
+  cursor: default;
+  position: relative;
+  align-items: center;
+  padding: 0.75em;
+
+  @nest &:hover {
+    background-color: color(var(--white) a(10%));
+  }
+
+  @nest &:active {
+    background-color: color(var(--brand-primary) a(20%));
+  }
+
+  @media (--screen-medium) {
+    display: none;
+  }
+
+  @nest .root[data-search-open='true'] & {
+    display: none;
+  }
+}
+
+.searchButtonIcon {
+  display: inline-block;
+  font-size: calc(25 / 16 * 1em);
+  line-height: 1;
+
+  @nest & > svg {
+    display: block;
+  }
+
+  @media (--screen-medium) {
+    display: block;
+  }
+}
+
+.searchButtonText {
+  display: none;
 }
