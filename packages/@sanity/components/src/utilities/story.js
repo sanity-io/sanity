@@ -22,8 +22,8 @@ storiesOf('Utilities')
           <ActivateOnFocus
             onFocus={action('onFocus')}
             onBlur={action('onBlur')}
-            message={text('message (prop)')}
-            enableBlur={boolean('enableBlur (prop)', false)}
+            message={text('message', '', 'props')}
+            enableBlur={boolean('enableBlur', false, 'props')}
           >
             <textarea rows="30">This should not be selected on first click</textarea>
           </ActivateOnFocus>
