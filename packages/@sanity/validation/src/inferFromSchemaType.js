@@ -74,13 +74,13 @@ function inferForFields(typeDef, schema, visited) {
 
   typeDef.fields.forEach(field => {
     field.type.validation = fieldRules.fields[field.name] || field.type.validation
-    inferFromSchemaType(field.type, schema, field, visited)
+    inferFromSchemaType(field.type, schema, visited)
   })
 }
 
 function inferForMemberTypes(typeDef, schema, visited) {
   if (typeDef.of && typeDef.jsonType === 'array') {
-    typeDef.of.forEach(candidate => inferFromSchemaType(candidate, schema, typeDef, visited))
+    typeDef.of.forEach(candidate => inferFromSchemaType(candidate, schema, visited))
   }
 }
 
