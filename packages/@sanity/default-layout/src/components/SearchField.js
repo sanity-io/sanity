@@ -83,15 +83,15 @@ class SearchField extends React.PureComponent {
             placeholder={placeholder}
             ref={this.setInputElement}
           />
-          <div className={styles.clearButton} onClick={onClear} title="Clear search">
-            <CloseIcon />
-            <Ink duration={1000} opacity={0.1} radius={200} />
-          </div>
           {hotkeys && (
             <div className={styles.hotkeys}>
               <Hotkeys keys={hotkeys} />
             </div>
           )}
+          <div className={styles.clearButton} onClick={onClear} title="Clear search">
+            <CloseIcon />
+            <Ink duration={1000} opacity={0.1} radius={200} />
+          </div>
         </div>
         <div className={styles.results}>{results}</div>
       </div>
