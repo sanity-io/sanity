@@ -374,9 +374,6 @@ export default class ImageInput extends React.PureComponent<Props, State> {
               <UploadPlaceholder hasFocus={hasFocus} />
             )}
           </div>
-          {highlightedFields.length > 0 && (
-            <div className={styles.fieldsWrapper}>{this.renderFields(highlightedFields)}</div>
-          )}
         </div>
         <div className={styles.functions}>
           <ButtonCollection>
@@ -413,6 +410,9 @@ export default class ImageInput extends React.PureComponent<Props, State> {
               )}
           </ButtonCollection>
         </div>
+        {highlightedFields.length > 0 && (
+          <div className={styles.fieldsWrapper}>{this.renderFields(highlightedFields)}</div>
+        )}
         {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
         {isSelectAssetOpen && (
           <Dialog title="Select image" onClose={this.handleCloseSelectAsset} isOpen>
