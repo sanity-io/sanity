@@ -3,19 +3,9 @@
 .root {
   position: relative;
   display: flex;
-  color: color(var(--main-navigation-text-color) a(50%));
   text-decoration: none;
   padding: 0.75em;
   white-space: nowrap;
-
-  @nest &:hover {
-    color: color(var(--main-navigation-text-color) a(80%));
-    background-color: color(var(--main-navigation-text-color) a(10%));
-  }
-
-  @nest &:active {
-    color: var(--main-navigation-text-color);
-  }
 
   @nest .default & {
     flex-direction: row;
@@ -35,7 +25,6 @@
 
 .rootActive {
   composes: root;
-  color: var(--main-navigation-text-color);
 }
 
 .iconContainer {
@@ -49,14 +38,9 @@
 }
 
 .toolName {
-  display: none;
   font-size: calc(14 / 16 * 1em);
   line-height: calc(17 / 14);
   padding-left: 0.25em;
-
-  @media (--screen-medium) {
-    display: block;
-  }
 
   @nest .vertical & {
     padding-left: 0.5em;
