@@ -4,6 +4,7 @@
   display: block;
   position: relative;
   outline: none;
+  color: inherit;
 }
 
 .root:hover .arrow {
@@ -50,8 +51,8 @@
 
     @nest &:invalid {
       border-color: var(--input-border-color-invalid);
-      background-color: var(--input-bg-error);
-      box-shadow: var(--input-box-shadow--error);
+      background-color: var(--input-bg-invalid);
+      box-shadow: var(--input-box-shadow--invalid);
     }
   }
 }
@@ -73,7 +74,6 @@
   composes: selectContainer;
   opacity: 0.5;
   color: var(--input-color);
-  color: var(--text-color);
 
   @nest &:hover {
     color: inherit;
@@ -100,10 +100,10 @@
   top: 0;
   right: 0;
   height: 100%;
-  color: var(--text-color);
   cursor: default;
   z-index: 1;
   pointer-events: none;
+  color: var(--input-color);
 
   @nest & > * {
     pointer-events: initial;
