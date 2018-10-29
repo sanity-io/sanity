@@ -7,7 +7,7 @@
   position: relative;
   cursor: default;
   user-select: none;
-  border: 1px solid var(--white);
+  border: 1px solid currentColor;
   padding: var(--small-padding);
   margin: var(--small-padding);
   box-sizing: border-box;
@@ -20,7 +20,6 @@
 
 .currentSpace {
   white-space: nowrap;
-  color: #fff;
   vertical-align: middle;
 }
 
