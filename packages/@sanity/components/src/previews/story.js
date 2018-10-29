@@ -1,4 +1,4 @@
-/* eslint-disable react/no-multi-comp */
+/* eslint-disable react/no-multi-comp, complexity */
 import React from 'react'
 import {storiesOf} from 'part:@sanity/storybook'
 import DefaultPreview from 'part:@sanity/components/previews/default'
@@ -145,9 +145,14 @@ storiesOf('Previews')
             description={renderDescription}
             status={renderStatus}
             media={renderMedia}
-            isPlaceholder={boolean('placeholder (prop)', false)}
+            isPlaceholder={boolean('placeholder', false, 'props')}
             date={new Date()}
-            progress={number('progress (prop)', undefined)}
+            progress={number(
+              'progress',
+              undefined,
+              {range: true, min: 0, max: 100, step: 1},
+              'props'
+            )}
           >
             {boolean('Custom children', false) && renderCustomChildren()}
           </DefaultPreview>
@@ -174,8 +179,8 @@ storiesOf('Previews')
                 This is the long the descriptions that should no be to long, beacuse we will cap it
               </span>
             }
-            isPlaceholder={boolean('placeholder (prop)', false)}
-            media={boolean('Show image', true) ? renderMedia : undefined}
+            isPlaceholder={boolean('placeholder', false, 'props')}
+            media={boolean('Show image', true, 'test') ? renderMedia : undefined}
             status={
               <div>
                 <LinkIcon />
@@ -183,9 +188,14 @@ storiesOf('Previews')
               </div>
             }
             date={new Date()}
-            progress={number('progress (prop)')}
+            progress={number(
+              'progress',
+              undefined,
+              {range: true, min: 0, max: 100, step: 1},
+              'props'
+            )}
           >
-            {boolean('Custom children', false) && renderCustomChildren()}
+            {boolean('Custom children', false, 'test') && renderCustomChildren()}
           </DefaultPreview>
         </Sanity>
       )
@@ -195,25 +205,33 @@ storiesOf('Previews')
       <Sanity part="part:@sanity/components/previews/default" propTables={[DefaultPreview]}>
         <DefaultPreview
           title={text(
-            'title (prop)',
-            'This is the title an it is very long, so long that it should be ellipsed'
+            'title',
+            'This is the title an it is very long, so long that it should be ellipsed',
+            'props'
           )}
           subtitle={text(
             'subtitle',
             `This is the title an it is very long, so long that it should be ellipsed.
-               This is the title an it is very long, so long that it should be ellipsed`
+               This is the title an it is very long, so long that it should be ellipsed`,
+            'props'
           )}
           description={text(
-            'description (prop)',
-            'This is the long the descriptions that should no be to long, beacuse we will cap it'
+            'description',
+            'This is the long the descriptions that should no be to long, beacuse we will cap it',
+            'props'
           )}
-          status={text('status', 'status')}
-          media={boolean('Show image', true) ? renderMedia : undefined}
-          isPlaceholder={boolean('placeholder (prop)', false)}
+          status={text('status', '🔔 🐣 👻', 'props')}
+          media={boolean('Show image', true, 'props') ? renderMedia : undefined}
+          isPlaceholder={boolean('placeholder', false, 'props')}
           date={new Date()}
-          progress={number('progress (prop)', undefined)}
+          progress={number(
+            'progress',
+            undefined,
+            {range: true, min: 0, max: 100, step: 1},
+            'props'
+          )}
         >
-          {boolean('Custom children', false) && renderCustomChildren()}
+          {boolean('Custom children', false, 'test') && renderCustomChildren()}
         </DefaultPreview>
       </Sanity>
     )
@@ -229,13 +247,18 @@ storiesOf('Previews')
             title={renderTitle}
             subtitle={renderSubtitle}
             description={renderDescription}
-            date={boolean('date', true) ? new Date() : false}
+            date={boolean('date', true, 'test') ? new Date() : false}
             status={renderStatus}
             media={renderMedia}
-            isPlaceholder={boolean('placeholder (prop)', true)}
-            mediaAspect={number('mediaAspect (prop)', 4 / 3)}
+            isPlaceholder={boolean('placeholder', true, 'props')}
+            mediaDimensions={{
+              width: 300,
+              height: 225,
+              aspect: number('mediaDimensions.aspect', 4 / 3, 'props'),
+              fit: 'crop'
+            }}
           >
-            {boolean('Custom children', false) && renderCustomChildren()}
+            {boolean('Custom children', false, 'test') && renderCustomChildren()}
           </CardPreview>
         </Sanity>
       )
@@ -260,7 +283,7 @@ storiesOf('Previews')
                 This is the long the descriptions that should no be to long, beacuse we will cap it
               </span>
             }
-            isPlaceholder={boolean('placeholder (prop)', false)}
+            isPlaceholder={boolean('placeholder', false, 'props')}
             media={boolean('Show image', false) ? renderMedia : undefined}
             status={
               <div>
@@ -269,9 +292,14 @@ storiesOf('Previews')
               </div>
             }
             date={boolean('date', true) ? new Date() : false}
-            mediaAspect={number('mediaAspect (prop)', 4 / 3)}
+            mediaDimensions={{
+              width: 300,
+              height: 225,
+              aspect: number('mediaDimensions.aspect', 4 / 3, 'props'),
+              fit: 'crop'
+            }}
           >
-            {boolean('Custom children', false) && renderCustomChildren()}
+            {boolean('Custom children', false, 'test') && renderCustomChildren()}
           </CardPreview>
         </Sanity>
       )
@@ -280,17 +308,23 @@ storiesOf('Previews')
     return (
       <Sanity part="part:@sanity/components/previews/card" propTables={[CardPreview]}>
         <CardPreview
-          title={text('title (prop)', 'This is the title')}
-          subtitle={text('subtitle (prop)', 'This is the subtitle')}
+          title={text('title', 'This is the title', 'props')}
+          subtitle={text('subtitle', 'This is the subtitle', 'props')}
           description={text(
-            'description (prop)',
-            'This is the long the descriptions that should no be to long, beacuse we will cap it'
+            'description',
+            'This is the long the descriptions that should no be to long, beacuse we will cap it',
+            'props'
           )}
-          date={boolean('date', true) ? new Date() : false}
-          status={text('status', 'status')}
-          media={boolean('Show image', true) ? renderMedia : undefined}
-          isPlaceholder={boolean('placeholder (prop)', true)}
-          mediaAspect={number('mediaAspect (prop)', 4 / 3)}
+          date={boolean('date', true, 'test') ? new Date() : false}
+          status={text('status', '🔔 🐣 👻', 'props')}
+          media={boolean('Show image', true, 'test') ? renderMedia : undefined}
+          isPlaceholder={boolean('isPlaceholder', false, 'props')}
+          mediaDimensions={{
+            width: 300,
+            height: 225,
+            aspect: number('mediaDimensions.aspect', 4 / 3, 'props'),
+            fit: 'crop'
+          }}
         >
           {boolean('Custom children', false) && renderCustomChildren()}
         </CardPreview>
@@ -311,9 +345,9 @@ storiesOf('Previews')
             status={renderStatus}
             date={new Date()}
             media={renderMedia}
-            isPlaceholder={boolean('isplaceholder (prop)', false)}
+            isPlaceholder={boolean('isplaceholder', false, 'props')}
           >
-            {boolean('Custom children', false) && renderCustomChildren()}
+            {boolean('Custom children', false, 'test') && renderCustomChildren()}
           </DetailPreview>
         </Sanity>
       )
@@ -344,11 +378,11 @@ storiesOf('Previews')
                 <WarningIcon />
               </div>
             }
-            isPlaceholder={boolean('placeholder (prop)', false)}
-            media={boolean('Show image', false) ? renderMedia : undefined}
-            date={boolean('date', true) ? new Date() : false}
+            isPlaceholder={boolean('placeholder', false, 'props')}
+            media={boolean('Show image', false, 'test') ? renderMedia : undefined}
+            date={boolean('date', true, 'test') ? new Date() : false}
           >
-            {boolean('Custom children', false) && renderCustomChildren()}
+            {boolean('Custom children', false, 'test') && renderCustomChildren()}
           </DetailPreview>
         </Sanity>
       )
@@ -357,24 +391,19 @@ storiesOf('Previews')
     return (
       <Sanity part="part:@sanity/components/previews/detail" propTables={[DetailPreview]}>
         <DetailPreview
-          title={text('title (prop)', 'This is the title')}
-          subtitle={text('subtitle (prop)', 'This is the subtitle')}
-          description={
-            <span>
-              This is the long the <strong style={{color: 'magenta'}}>description</strong>
-              &nbsp; that should no be to long, beacuse we will cap it. But this is an element, and
-              that is why it is har to cap. This is the long the{' '}
-              <strong style={{color: 'magenta'}}>description</strong>
-              &nbsp; that should no be to long, beacuse we will cap it. But this is an element, and
-              that is why it is har to cap.
-            </span>
-          }
-          status={text('status', 'status')}
+          title={text('title (prop)', 'This is the title', 'props')}
+          subtitle={text('subtitle', 'This is the subtitle', 'props')}
+          description={text(
+            'description',
+            'This is the long the descriptions that should no be to long, beacuse we will cap it',
+            'props'
+          )}
+          status={text('status', '🔔 🐣 👻', 'props')}
           date={new Date()}
           media={renderMedia}
-          isPlaceholder={boolean('isplaceholder (prop)', false)}
+          isPlaceholder={boolean('isplaceholder', false, 'props')}
         >
-          {boolean('Custom children', false) && renderCustomChildren()}
+          {boolean('Custom children', false, 'test') && renderCustomChildren()}
         </DetailPreview>
       </Sanity>
     )
@@ -384,17 +413,18 @@ storiesOf('Previews')
     return (
       <Sanity part="part:@sanity/components/previews/media" propTables={[MediaPreview]}>
         <MediaPreview
-          title={text('title (prop)', 'This is the title')}
-          subtitle={text('subtitle (prop)', 'This is the subtitle')}
+          title={text('title (prop)', 'This is the title', 'props')}
+          subtitle={text('subtitle (prop)', 'This is the subtitle', 'props')}
           description={text(
-            'description (prop)',
-            'This is the long the descriptions that should no be to long, beacuse we will cap it'
+            'description',
+            'This is the long the descriptions that should no be to long, beacuse we will cap it',
+            'props'
           )}
-          date={boolean('date', true) ? new Date() : false}
+          date={boolean('date', true, 'test') ? new Date() : false}
           media={renderMedia}
-          isPlaceholder={boolean('isplaceholder (prop)', false)}
+          isPlaceholder={boolean('isplaceholder', false, 'props')}
         >
-          {boolean('Custom children', false) && renderCustomChildren()}
+          {boolean('Custom children', false, 'test') && renderCustomChildren()}
         </MediaPreview>
       </Sanity>
     )
@@ -410,9 +440,9 @@ storiesOf('Previews')
             <InlinePreview
               title={renderTitle}
               media={renderMedia}
-              isPlaceholder={boolean('isPlaceholder (prop)', false)}
+              isPlaceholder={boolean('isPlaceholder', false, 'props')}
             >
-              {boolean('Custom children', false) && <span>This is custom children</span>}
+              {boolean('Custom children', false, 'test') && <span>This is custom children</span>}
             </InlinePreview>
             this word.
           </p>
@@ -427,9 +457,9 @@ storiesOf('Previews')
             <InlinePreview
               title={<span>title</span>}
               media={renderMedia}
-              isPlaceholder={boolean('isPlaceholder (prop)', false)}
+              isPlaceholder={boolean('isPlaceholder', false, 'props')}
             >
-              {boolean('Custom children', false) && <span>This is custom children</span>}
+              {boolean('Custom children', false, 'test') && <span>This is custom children</span>}
             </InlinePreview>
             this word.
           </p>
@@ -441,12 +471,12 @@ storiesOf('Previews')
         <p>
           This is a text, and suddenly a inline preview appearst before
           <InlinePreview
-            title={text('title (prop)', 'This is the title')}
+            title={text('title', 'This is the title', 'props')}
             media={renderMedia}
-            date={boolean('date', true) ? new Date() : false}
-            isPlaceholder={boolean('isPlaceholder (prop)', false)}
+            date={boolean('date', true, 'test') ? new Date() : false}
+            isPlaceholder={boolean('isPlaceholder', false, 'props')}
           >
-            {boolean('Custom children', false) && <span>This is custom children</span>}
+            {boolean('Custom children', false, 'test') && <span>This is custom children</span>}
           </InlinePreview>
           this word.
         </p>
@@ -467,9 +497,9 @@ storiesOf('Previews')
             status={renderStatus}
             date={new Date()}
             media={renderMedia}
-            isPlaceholder={boolean('isplaceholder (prop)', false)}
+            isPlaceholder={boolean('isplaceholder', false, 'props')}
           >
-            {boolean('Custom children', false) && renderCustomChildren()}
+            {boolean('Custom children', false, 'test') && renderCustomChildren()}
           </BlockPreview>
         </Sanity>
       )
@@ -500,11 +530,11 @@ storiesOf('Previews')
                 <WarningIcon />
               </div>
             }
-            isPlaceholder={boolean('placeholder (prop)', false)}
-            media={boolean('Show image', false) ? renderMedia : undefined}
-            date={boolean('date', true) ? new Date() : false}
+            isPlaceholder={boolean('placeholder', false, 'props')}
+            media={boolean('Show image', false, 'test') ? renderMedia : undefined}
+            date={boolean('date', true, 'test') ? new Date() : false}
           >
-            {boolean('Custom children', false) && renderCustomChildren()}
+            {boolean('Custom children', false, 'test') && renderCustomChildren()}
           </BlockPreview>
         </Sanity>
       )
@@ -513,15 +543,15 @@ storiesOf('Previews')
     return (
       <Sanity part="part:@sanity/components/previews/detail" propTables={[DetailPreview]}>
         <BlockPreview
-          title={text('title (prop)', 'This is the title')}
-          subtitle={text('subtitle (prop)', 'This is the subtitle')}
-          description={text('description (prop)', 'This is the description')}
-          status={text('status', 'status')}
+          title={text('title', 'This is the title', 'props')}
+          subtitle={text('subtitle', 'This is the subtitle', 'props')}
+          description={text('description', 'This is the description', 'props')}
+          status={text('status', 'status', 'props')}
           date={new Date()}
           media={renderMedia}
-          isPlaceholder={boolean('isplaceholder (prop)', false)}
+          isPlaceholder={boolean('isplaceholder', false, 'props')}
         >
-          {boolean('Custom children', false) && renderCustomChildren()}
+          {boolean('Custom children', false, 'test') && renderCustomChildren()}
         </BlockPreview>
       </Sanity>
     )
@@ -535,11 +565,11 @@ storiesOf('Previews')
           <BlockImagePreview
             title={renderTitle}
             subtitle={renderSubtitle}
-            description={boolean('description (prop)', false) ? renderDescription : ''}
+            description={boolean('description', false, 'props') ? renderDescription : ''}
             status={renderStatus}
             date={new Date()}
             media={renderMedia}
-            isPlaceholder={boolean('isplaceholder (prop)', false)}
+            isPlaceholder={boolean('isplaceholder', false, 'props')}
           >
             {boolean('Custom children', false) && renderCustomChildren()}
           </BlockImagePreview>
@@ -577,11 +607,11 @@ storiesOf('Previews')
                 <WarningIcon />
               </div>
             }
-            isPlaceholder={boolean('placeholder (prop)', false)}
-            media={boolean('Show image', false) ? renderMedia : undefined}
-            date={boolean('date', true) ? new Date() : false}
+            isPlaceholder={boolean('placeholder', false, 'props')}
+            media={boolean('Show image', false, 'test') ? renderMedia : undefined}
+            date={boolean('date', true, 'test') ? new Date() : false}
           >
-            {boolean('Custom children', false) && renderCustomChildren()}
+            {boolean('Custom children', false, 'props') && renderCustomChildren()}
           </BlockImagePreview>
         </Sanity>
       )
@@ -590,13 +620,13 @@ storiesOf('Previews')
     return (
       <Sanity part="part:@sanity/components/previews/detail" propTables={[DetailPreview]}>
         <BlockImagePreview
-          title={text('title (prop)', 'This is the title')}
-          subtitle={text('subtitle (prop)', 'This is the subtitle')}
-          description={text('description (prop)', 'This is the description')}
-          status={text('status', 'status')}
-          date={new Date()}
+          title={text('title', 'This is the title', 'props')}
+          subtitle={text('subtitle', 'This is the subtitle', 'props')}
+          description={text('description', 'This is the description', 'props')}
+          status={text('status', '🔔 🐣 👻', 'props')}
+          date={boolean('date', true) ? new Date() : false}
           media={renderMedia}
-          isPlaceholder={boolean('isplaceholder (prop)', false)}
+          isPlaceholder={boolean('isplaceholder', false, 'props')}
         >
           {boolean('Custom children', false) && renderCustomChildren()}
         </BlockImagePreview>
