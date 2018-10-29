@@ -4,6 +4,10 @@
 
 .vertical {
   composes: root;
+
+  @nest & .item + .item {
+    margin-top: 0.5em;
+  }
 }
 
 .horizontal {
