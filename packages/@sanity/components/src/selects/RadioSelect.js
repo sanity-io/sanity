@@ -62,7 +62,6 @@ export default class RadioSelect extends React.Component {
                 <RadioButton
                   disabled={readOnly}
                   name={name}
-                  key={i}
                   label={item.title}
                   item={item}
                   onChange={this.handleRadioChange}
