@@ -15,7 +15,8 @@ const OVERRIDABLE_FIELDS = [
   'description',
   '__unstable_searchFields',
   'options',
-  'inputComponent'
+  'inputComponent',
+  'validation'
 ]
 
 export const ObjectType = {
