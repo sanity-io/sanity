@@ -2,7 +2,13 @@ const Rule = require('./Rule')
 const {slugValidator} = require('./validators/slugValidator')
 
 // eslint-disable-next-line complexity
-function inferFromSchemaType(typeDef) {
+function inferFromSchemaType(typeDef, schema, visited = new Set()) {
+  if (visited.has(typeDef)) {
+    return typeDef
+  }
+
+  visited.add(typeDef)
+
   if (typeDef.validation === false) {
     typeDef.validation = []
     return typeDef
@@ -13,6 +19,8 @@ function inferFromSchemaType(typeDef) {
     typeDef.validation.every(item => typeof item.validate === 'function')
 
   if (isInitialized) {
+    inferForFields(typeDef, schema, visited)
+    inferForMemberTypes(typeDef, schema, visited)
     return typeDef
   }
 
@@ -45,16 +53,35 @@ function inferFromSchemaType(typeDef) {
   }
 
   typeDef.validation = inferValidation(typeDef, base)
-
-  if (typeDef.fields) {
-    typeDef.fields.forEach(field => inferFromSchemaType(field.type))
-  }
-
-  if (typeDef.of && typeDef.jsonType === 'array') {
-    typeDef.of.forEach(candidate => inferFromSchemaType(candidate))
-  }
+  inferForFields(typeDef, schema, visited)
+  inferForMemberTypes(typeDef, schema, visited)
 
   return typeDef
+}
+
+function inferForFields(typeDef, schema, visited) {
+  if (!typeDef.fields) {
+    return
+  }
+
+  const fieldRules = typeDef.validation
+    .map(rule => rule._fieldRules)
+    .filter(Boolean)
+    .reduce((acc, current) => ({fields: {...acc.fields, ...current}, hasRules: true}), {
+      fields: {},
+      hasRules: false
+    })
+
+  typeDef.fields.forEach(field => {
+    field.type.validation = fieldRules.fields[field.name] || field.type.validation
+    inferFromSchemaType(field.type, schema, field, visited)
+  })
+}
+
+function inferForMemberTypes(typeDef, schema, visited) {
+  if (typeDef.of && typeDef.jsonType === 'array') {
+    typeDef.of.forEach(candidate => inferFromSchemaType(candidate, schema, typeDef, visited))
+  }
 }
 
 function extractValueFromListOption(option) {

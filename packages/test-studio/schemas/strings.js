@@ -101,6 +101,16 @@ export default {
           }
         ]
       }
+    },
+    {
+      name: 'localeTitle',
+      title: 'Localized title',
+      type: 'localeString',
+      description: 'English required by localeString, swedish from field',
+      validation: Rule =>
+        Rule.fields({
+          se: fieldRule => fieldRule.required().max(80)
+        })
     }
   ]
 }

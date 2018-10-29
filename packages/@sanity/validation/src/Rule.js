@@ -56,6 +56,7 @@ class Rule {
     this._message = null
     this._required = undefined
     this._level = 'error'
+    this._fieldRules = undefined
     return this
   }
 
@@ -70,6 +71,7 @@ class Rule {
     rule._required = this._required
     rule._rules = cloneDeep(this._rules)
     rule._level = this._level
+    rule._fieldRules = this._fieldRules
     return rule
   }
 
@@ -245,6 +247,16 @@ class Rule {
   // Objects only
   reference() {
     return this.cloneWithRules([{flag: 'reference'}])
+  }
+
+  fields(rules) {
+    if (this._type !== 'Object') {
+      throw new Error('fields() can only be called on an object type')
+    }
+
+    const rule = this.cloneWithRules([])
+    rule._fieldRules = rules
+    return rule
   }
 }
 
