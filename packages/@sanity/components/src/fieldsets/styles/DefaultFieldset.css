@@ -83,7 +83,9 @@
 .content {
   position: relative;
   display: block;
-  background-color: transparent;
+  background-color: var(--fieldset-bg);
+  border: var(--fieldset-border);
+  transition: all 0.1s linear;
 
   @nest .transparent & {
     background-color: transparent;
@@ -97,7 +99,7 @@
   }
 
   @nest .hasErrors:focus-within & {
-    box-shadow: var(--component-box-shadow--error) !important;
+    box-shadow: var(--fieldset-box-shadow--invalid) !important;
   }
 }
 
@@ -183,7 +185,7 @@
 .canFocus > .fieldset > .inner > .content {
   padding: var(--small-padding);
   border-radius: var(--border-radius-base);
-  box-shadow: var(--component-box-shadow);
+  box-shadow: var(--fieldset-box-shadow);
 
   @media (--screen-medium) {
     padding: var(--medium-padding);
@@ -191,8 +193,8 @@
 }
 
 .level1 > .fieldset > .inner > .content {
-  background-color: var(--component-bg);
-  box-shadow: var(--component-box-shadow);
+  background-color: var(--fieldset-bg);
+  box-shadow: var(--fieldset-box-shadow);
   padding: var(--small-padding);
   border-radius: var(--border-radius-base);
 
@@ -202,8 +204,8 @@
 }
 
 .level2 > .fieldset > .inner > .content {
-  background-color: var(--component-bg);
-  box-shadow: var(--component-box-shadow);
+  background-color: var(--fieldset-bg);
+  box-shadow: var(--fieldset-box-shadow);
   padding: var(--small-padding);
   border-radius: var(--border-radius-base);
 
@@ -213,19 +215,19 @@
 }
 
 .level1:focus > .fieldset > .inner > .content {
-  box-shadow: var(--component-box-shadow--focus);
+  box-shadow: var(--fieldset-box-shadow--focus);
 }
 
 .level2:focus > .fieldset > .inner > .content {
-  box-shadow: var(--component-box-shadow--focus);
+  box-shadow: var(--fieldset-box-shadow--focus);
 }
 
 .root:not(.level1):focus > .fieldset > .inner > .content {
-  box-shadow: var(--component-box-shadow--focus);
+  box-shadow: var(--fieldset-box-shadow--focus);
 }
 
 .root:not(.level2):focus > .fieldset > .inner > .content {
-  box-shadow: var(--component-box-shadow--focus);
+  box-shadow: var(--fieldset-box-shadow--focus);
 }
 
 .debugNestingLevel {

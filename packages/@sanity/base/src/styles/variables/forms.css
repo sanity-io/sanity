@@ -8,7 +8,7 @@
   --default-button-color--active: color(var(--gray-base) a(25%));
   --button-border-radius: var(--border-radius-small);
   --input-bg: var(--component-bg);
-  --input-bg-error: var(--component-bg);
+  --input-bg-invalid: var(--component-bg);
   --input-bg-disabled: var(--gray-lighter);
   --input-color: var(--text-color);
   --input-border-color: color(var(--component-border-color));
@@ -39,9 +39,15 @@
   --input-box-shadow: none;
   --input-box-shadow--hover: none;
   --input-box-shadow--focus: 0 0 0 3px color(var(--input-border-color-focus) a(42%));
-  --input-box-shadow--error: none;
-  --input-box-shadow--error-focus:
-    0 0 2px 0 color(var(--state-danger-color) a(42%)),
-    0 2px 5px 0 color(var(--state-danger-color) a(45%)),
-    0 0 1px 1px color(var(--state-danger-color) a(80%));
+  --input-box-shadow--invalid: none;
+  --input-box-shadow--invalid-focus: 0 0 0 3px color(var(--input-border-color-invalid) a(42%));
+
+  /* fieldset */
+  --fieldset-border: var(--input-border-size) solid var(--input-border-color);
+  --fieldset-box-shadow: none;
+  --fieldset-box-shadow--hover: none;
+  --fieldset-box-shadow--invalid: none;
+  --fieldset-box-shadow--focus: var(--input-box-shadow--focus);
+  --fieldset-box-shadow--invalid-focus: var(--input-box-shadow--invalid-focus);
+  --fieldset-bg: transparent;
 }
