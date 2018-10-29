@@ -109,6 +109,10 @@
     font-size: 1.5625em;
   }
 
+  @nest .root:not(.isBleeding):not(.hasValue) & {
+    display: none;
+  }
+
   @nest .root:not(.isBleeding) & > svg {
     font-size: 20px;
   }
@@ -125,6 +129,10 @@
   font-size: 0.7em;
   align-items: center;
   opacity: 0.6;
+
+  @nest .root:not(.isBleeding):not(.hasValue) & {
+    padding-right: 0.75em;
+  }
 
   @media (--screen-medium) {
     @nest .isFocused & {
