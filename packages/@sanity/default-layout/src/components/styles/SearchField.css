@@ -124,11 +124,12 @@
   box-sizing: border-box;
   font-size: 0.7em;
   align-items: center;
-  padding-right: var(--small-padding);
   opacity: 0.6;
 
   @media (--screen-medium) {
-    display: flex;
+    @nest .isFocused & {
+      display: flex;
+    }
   }
 }
 
