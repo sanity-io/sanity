@@ -65,6 +65,7 @@ class SearchField extends React.PureComponent {
     if (isBleeding) className += ` ${styles.isBleeding}`
     if (isFocused) className += ` ${styles.isFocused}`
     if (isOpen) className += ` ${styles.isOpen}`
+    if (value.length) className += ` ${styles.hasValue}`
 
     return (
       <div className={className} onMouseDown={onMouseDown}>
