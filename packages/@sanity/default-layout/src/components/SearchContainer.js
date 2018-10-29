@@ -247,10 +247,11 @@ class SearchContainer extends React.PureComponent {
     this.resultsInstance = ref
   }
 
-  renderItem = (item, index) => {
+  renderItem = (item, index, linkClassName) => {
     const type = schema.get(item._type)
     return (
       <IntentLink
+        className={linkClassName}
         intent="edit"
         params={{id: item._id, type: type.name}}
         data-hit-index={index}
