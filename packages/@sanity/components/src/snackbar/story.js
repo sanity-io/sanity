@@ -10,7 +10,7 @@ storiesOf('Snackbar')
   .addDecorator(withKnobs)
   .add('Snackbar', () => (
     <Sanity part="part:@sanity/components/snackbar/default" propTables={[Snackbar]}>
-      <Snackbar kind={getKinds()} timeout={number('timeout after (sec)', 500)}>
+      <Snackbar kind={getKinds()} timeout={number('timeout after (sec)', 500, 'props')}>
         {text('content', 'This is the content')}
       </Snackbar>
     </Sanity>
@@ -24,9 +24,9 @@ storiesOf('Snackbar')
             title: text('action title', 'OK, got it')
           }}
           onAction={action('onAction')}
-          timeout={number('timeout (prop) im ms', 500)}
+          timeout={number('timeout im ms', 500, 'props')}
         >
-          {text('children (prop)', 'This is the content')}
+          {text('children', 'This is the content', 'props')}
         </Snackbar>
       </Sanity>
     )

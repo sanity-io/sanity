@@ -93,11 +93,11 @@ storiesOf('Panes')
           state={router.decode(location.pathname)}
         >
           <DefaultPane
-            title={text('title (prop)', 'This is the default pane title')}
-            isCollapsed={boolean('isCollapsed (prop)', false)}
+            title={text('title', 'This is the default pane title', 'props')}
+            isCollapsed={boolean('isCollapsed', false, 'props')}
             onExpand={action('onExpand')}
             onCollapse={action('onCollapse')}
-            minWidth={number('minWidth (prop)', 300)}
+            minWidth={number('minWidth', 300, 'props')}
             onAction={handleMenuAction}
             menuItems={menuItems}
             renderActions={renderActions}

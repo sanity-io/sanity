@@ -9,6 +9,17 @@ import Chance from 'chance'
 import styles from './styles/story.css'
 const chance = new Chance()
 
+const centerStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100%',
+  width: '100%',
+  position: 'absolute',
+  top: 0,
+  left: 0
+}
+
 storiesOf('Typography')
   .add(
     'Basic',
@@ -47,7 +58,7 @@ storiesOf('Typography')
   )
   .add('Hotkeys', () => {
     return (
-      <div>
+      <div style={centerStyle}>
         <Hotkeys keys={['Ctrl', 'Alt', 'T']} />
       </div>
     )
