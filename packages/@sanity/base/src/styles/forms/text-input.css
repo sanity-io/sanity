@@ -41,7 +41,10 @@
 
       @nest &:focus, &:focus-within {
         box-shadow: var(--input-box-shadow--focus);
-        border-color: var(--input-border-color-focus);
+
+        @nest &:invalid {
+          box-shadow: var(--input-box-shadow--invalid-focus);
+        }
       }
 
       @nest &:active {
@@ -50,8 +53,8 @@
 
       @nest &:invalid {
         border-color: var(--input-border-color-invalid);
-        background-color: var(--input-bg-error);
-        box-shadow: var(--input-box-shadow--error);
+        background-color: var(--input-bg-invalid);
+        box-shadow: var(--input-box-shadow--invalid);
       }
     }
   }
