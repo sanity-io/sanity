@@ -19,9 +19,19 @@
 }
 
 .item {
+  composes: resetListItem from "part:@sanity/base/theme/layout/helpers";
+  cursor: default;
   position: relative;
+}
+
+.link {
+  composes: resetLink from "part:@sanity/base/theme/layout/helpers";
+  composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
+  display: block;
+  padding: var(--small-padding);
 }
 
 .activeItem {
   background-color: var(--selected-item-color-hover);
+  color: var(--brand-lightest);
 }
