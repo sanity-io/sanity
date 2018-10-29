@@ -1,0 +1,160 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  position: relative;
+
+  @nest &:not(.isBleeding) {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    height: 33px;
+  }
+
+  @nest &.isFocused:not(.isBleeding) {
+    background: #fff;
+    color: #444;
+  }
+
+  @nest &.isOpen:not(.isBleeding) {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}
+
+.inputField {
+  display: flex;
+
+  @nest .isBleeding & {
+    background: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 160;
+  }
+
+  @nest .root.isBleeding.isOpen &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  @nest .root:not(.isBleeding) & {
+    height: 100%;
+  }
+}
+
+.label {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 33px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @nest & > svg {
+    font-size: calc(20 / 16 * 1em);
+    opacity: 0.6;
+  }
+
+  @nest .isBleeding & {
+    display: none;
+  }
+}
+
+.input {
+  -webkit-appearance: none;
+  -webkit-font-smoothing: inherit;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  color: inherit;
+  width: 100%;
+  margin: 0;
+  background-color: transparent;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 17px;
+  padding-left: 33px;
+  box-sizing: border-box;
+
+  @nest &::placeholder {
+    color: inherit;
+    opacity: 0.6;
+  }
+
+  @nest .isBleeding & {
+    font-size: 16px;
+    line-height: 18px;
+    padding: 1em 1em calc(1em - 1px);
+  }
+}
+
+.clearButton {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 33px;
+  opacity: 0.6;
+
+  & > svg {
+    font-size: 1.5625em;
+  }
+
+  @nest .root:not(.isBleeding) & > svg {
+    font-size: 20px;
+  }
+
+  @nest .isBleeding & {
+    min-width: 49px;
+  }
+}
+
+.hotkeys {
+  display: none;
+  margin-left: auto;
+  box-sizing: border-box;
+  font-size: 0.7em;
+  align-items: center;
+  padding-right: var(--small-padding);
+  opacity: 0.6;
+
+  @media (--screen-medium) {
+    display: flex;
+  }
+}
+
+.results {
+  display: none;
+  position: absolute;
+  background: #fff;
+  color: #444;
+  top: 33px;
+  left: 0;
+  width: 100%;
+  z-index: 150;
+
+  @nest .isBleeding & {
+    top: 49px;
+  }
+
+  @nest .root:not(.isBleeding) & {
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    max-height: 500px;
+    overflow: auto;
+  }
+
+  @nest .root.isOpen & {
+    display: block;
+  }
+}

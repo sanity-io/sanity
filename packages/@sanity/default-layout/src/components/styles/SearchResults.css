@@ -1,0 +1,27 @@
+@import "part:@sanity/base/theme/variables-style";
+
+.root {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.root.isLoading {
+  height: 8em;
+}
+
+.root.noResults {
+  height: 8em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.item {
+  position: relative;
+}
+
+.activeItem {
+  background-color: var(--selected-item-color-hover);
+}
