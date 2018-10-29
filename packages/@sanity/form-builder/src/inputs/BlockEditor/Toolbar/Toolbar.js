@@ -1,11 +1,10 @@
 // @flow
+
 /* eslint-disable complexity */
-import type {BlockContentFeatures, SlateValue, SlateChange, Type} from '../typeDefs'
 
 import React from 'react'
 import classnames from 'classnames'
 import enhanceWithClickOutside from 'react-click-outside'
-import {Editor as SlateController} from 'slate'
 import {ContainerQuery} from 'react-container-query'
 import {Tooltip} from '@sanity/react-tippy'
 
@@ -17,19 +16,21 @@ import FullscreenIcon from 'part:@sanity/base/fullscreen-icon'
 import ValidationList from 'part:@sanity/components/validation/list'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 
+import IS_MAC from '../utils/isMac'
+
+import type {BlockContentFeatures, SlateValue, SlateEditor, Type} from '../typeDefs'
+
 import AnnotationButtons from './AnnotationButtons'
 import BlockStyleSelect from './BlockStyleSelect'
 import DecoratorButtons from './DecoratorButtons'
 import InsertMenu from './InsertMenu'
 import ListItemButtons from './ListItemButtons'
 
-import IS_MAC from '../utils/isMac'
-
 import styles from './styles/Toolbar.css'
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
-  controller: SlateController,
+  editor: SlateEditor,
   editorValue: SlateValue,
   fullscreen: boolean,
   onFocus: (nextPath: []) => void,
@@ -91,7 +92,7 @@ class Toolbar extends React.PureComponent<Props, State> {
   render() {
     const {
       blockContentFeatures,
-      controller,
+      editor,
       editorValue,
       fullscreen,
       markers,
@@ -102,7 +103,7 @@ class Toolbar extends React.PureComponent<Props, State> {
       userIsWritingText
     } = this.props
 
-    if (!controller) {
+    if (!editor) {
       return null
     }
 
@@ -130,7 +131,7 @@ class Toolbar extends React.PureComponent<Props, State> {
             <div className={styles.primary}>
               <div className={styles.blockFormatContainer} onClick={this.handleContract}>
                 <BlockStyleSelect
-                  controller={controller}
+                  editor={editor}
                   blockContentFeatures={blockContentFeatures}
                   editorValue={editorValue}
                 />
@@ -146,7 +147,7 @@ class Toolbar extends React.PureComponent<Props, State> {
                   <div className={styles.decoratorButtonsContainer}>
                     <DecoratorButtons
                       blockContentFeatures={blockContentFeatures}
-                      controller={controller}
+                      editor={editor}
                       editorValue={editorValue}
                     />
                   </div>
@@ -155,7 +156,7 @@ class Toolbar extends React.PureComponent<Props, State> {
                   <div className={styles.decoratorButtonsContainer}>
                     <ListItemButtons
                       blockContentFeatures={blockContentFeatures}
-                      controller={controller}
+                      editor={editor}
                       editorValue={editorValue}
                     />
                   </div>
@@ -164,7 +165,7 @@ class Toolbar extends React.PureComponent<Props, State> {
                   <div className={styles.annotationButtonsContainer}>
                     <AnnotationButtons
                       blockContentFeatures={blockContentFeatures}
-                      controller={controller}
+                      editor={editor}
                       editorValue={editorValue}
                       onFocus={onFocus}
                       userIsWritingText={userIsWritingText}
@@ -175,7 +176,7 @@ class Toolbar extends React.PureComponent<Props, State> {
                   <div className={styles.insertContainer}>
                     <InsertMenu
                       blockTypes={blockContentFeatures.types.blockObjects}
-                      controller={controller}
+                      editor={editor}
                       editorValue={editorValue}
                       inlineTypes={blockContentFeatures.types.inlineObjects}
                       onFocus={onFocus}

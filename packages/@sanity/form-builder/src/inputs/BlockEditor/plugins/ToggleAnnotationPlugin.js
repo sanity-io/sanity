@@ -1,26 +1,25 @@
 // @flow
-import {Change} from 'slate'
+
 import {randomKey} from '@sanity/block-tools'
+import type {SlateEditor} from '../typeDefs'
 
 // This plugin toggles an annotation on the selected content
 
 export default function ToggleAnnotationPlugin() {
   return {
     // eslint-disable-next-line complexity
-    onCommand(command: any, change: Change, next: void => void) {
+    onCommand(command: any, editor: SlateEditor, next: void => void) {
       if (command.type !== 'toggleAnnotation') {
         return next()
       }
-      const {value} = change
-      const spans = value.inlines.filter(inline => inline.type === 'span')
+      const spans = editor.value.inlines.filter(inline => inline.type === 'span')
       const options = command.args[0] || {}
       const {annotationName} = options
       const key = options.key || randomKey(12)
 
       // Add annotation
       if (spans.size === 0) {
-        change.editor.command('wrapSpan', {key, annotationName})
-        return change
+        return editor.command('wrapSpan', {key, annotationName})
       }
 
       // Remove annotation
@@ -31,7 +30,7 @@ export default function ToggleAnnotationPlugin() {
         }
         // Remove the whole span if this annotation is the only one left
         if (Object.keys(annotations).length === 1 && annotations[annotationName]) {
-          change.unwrapInlineByKey(span.key)
+          editor.unwrapInlineByKey(span.key)
           return
         }
         // If several annotations, remove only this one and leave the span node intact
@@ -45,10 +44,10 @@ export default function ToggleAnnotationPlugin() {
           focusedAnnotationName: undefined,
           annotations: annotations
         }
-        change.setNodeByKey(span.key, {data})
+        editor.setNodeByKey(span.key, {data})
       })
 
-      return change
+      return editor
     }
   }
 }

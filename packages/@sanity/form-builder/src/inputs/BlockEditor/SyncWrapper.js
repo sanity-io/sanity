@@ -2,37 +2,36 @@
 
 import React from 'react'
 import {getBlockContentFeatures} from '@sanity/block-tools'
-import {Editor as SlateController} from 'slate'
 import generateHelpUrl from '@sanity/generate-help-url'
 import {debounce, unionBy, flatten, isEqual} from 'lodash'
+import {List} from 'immutable'
 import FormField from 'part:@sanity/components/formfields/default'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {PatchEvent} from '../../PatchEvent'
 import InvalidValueInput from '../InvalidValueInput'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import type {
-  BlockContentFeatures,
   BlockArrayType,
+  BlockContentFeatures,
+  ChangeSet,
   FormBuilderValue,
-  SlateChange,
-  SlateValue,
   Marker,
   Patch,
   Path,
   RenderBlockActions,
   RenderCustomMarkers,
+  SlateEditor,
+  SlateOperation,
+  SlateValue,
   Type,
   UndoRedoStack
 } from './typeDefs'
 import createEditorController from './utils/createEditorController'
 import Input from './Input'
-import SplitNodePlugin from './plugins/SplitNodePlugin'
-import InsertNodePlugin from './plugins/InsertNodePlugin'
-import MoveNodePlugin from './plugins/MoveNodePlugin'
 import buildEditorSchema from './utils/buildEditorSchema'
-import createChangeToPatches from './utils/createChangeToPatches'
+import createOperationToPatches from './utils/createOperationToPatches'
+import createPatchToOperations from './utils/createPatchToOperations'
 import deserialize from './utils/deserialize'
-import createPatchesToChange from './utils/createPatchesToChange'
 import isWritingTextOperationsOnly from './utils/isWritingTextOperation'
 import {localChanges$, remoteChanges$, changes$} from './utils/changeObservers'
 
@@ -76,15 +75,6 @@ function isInvalidBlockValue(value: ?(FormBuilderValue[])) {
   return true
 }
 
-type ChangeSet = {
-  callback?: SlateChange => void,
-  change: SlateChange,
-  editorValue: SlateValue,
-  isRemote: boolean,
-  patches: Patch[],
-  timestamp: Date
-}
-
 type Props = {
   focusPath: [],
   markers: Marker[],
@@ -120,21 +110,24 @@ type State = {
 
 export default withPatchSubscriber(
   class SyncWrapper extends React.Component<Props, State> {
+    static defaultProps = {
+      markers: []
+    }
+
     _unsubscribePatches: void => void
     _changeSubscription: void => void
     _input: ?Input = null
     _undoRedoStack: UndoRedoStack = {undo: [], redo: []}
-    _controller: SlateController
+    _controller: SlateEditor
     _blockContentFeatures: BlockContentFeatures
-    _patchesToChange: (patches: Patch[], editorValue: SlateValue, snapshot: ?any) => SlateChange
-    _changeToPatches: (
-      unchangedEditorValue: SlateValue,
-      change: SlateChange,
-      value: ?(FormBuilderValue[])
+    _pendingLocalPatches: [Patch[]][] = []
+
+    operationToPatches: (
+      editorValue: SlateValue,
+      operation: SlateOperation,
+      value: FormBuilderValue[]
     ) => Patch[]
-    static defaultProps = {
-      markers: []
-    }
+    patchToOperations: (patch: Patch, editorValue: SlateValue) => SlateOperation[]
 
     static getDerivedStateFromProps(nextProps, state) {
       // Make sure changes to markers are reflected in the editor value.
@@ -208,15 +201,12 @@ export default withPatchSubscriber(
         plugins: [
           {
             schema: editorSchema
-          },
-          SplitNodePlugin(),
-          InsertNodePlugin(),
-          MoveNodePlugin()
+          }
         ]
       }
       this._controller = createEditorController(controllerOpts)
-      this._patchesToChange = createPatchesToChange(this._blockContentFeatures, type)
-      this._changeToPatches = createChangeToPatches(this._blockContentFeatures, type)
+      this.operationToPatches = createOperationToPatches(this._blockContentFeatures, type)
+      this.patchToOperations = createPatchToOperations(this._blockContentFeatures, type)
 
       this.state.editorValue = this._controller.value // Normalized value by editor schema
     }
@@ -242,85 +232,109 @@ export default withPatchSubscriber(
       }
     }
 
-    handleEditorChange = (change: SlateChange, callback?: void => void) => {
-      const {value, onChange} = this.props
-      const {editorValue} = this.state
-      const patches = this._changeToPatches(editorValue, change, value)
-      if (patches.length) {
-        onChange(PatchEvent.from(patches))
-      }
+    handleEditorChange = (editor: SlateEditor) => {
+      const {operations, value} = editor
+      const {selection} = value
       localChanges$.next({
-        change,
-        editorValue,
+        operations,
         isRemote: false,
-        timestamp: new Date(),
-        callback: () => {
-          if (callback) {
-            return callback()
-          }
-          return null
-        }
+        selection
       })
-      const userIsWritingText = isWritingTextOperationsOnly(change.operations)
+      const userIsWritingText = isWritingTextOperationsOnly(operations)
       if (userIsWritingText) {
         this.setState({userIsWritingText: true})
         this.unsetUserIsWritingTextDebounced()
       }
-      return change
     }
 
     handleChangeSet = (changeSet: ChangeSet) => {
-      const {change, isRemote, callback, timestamp, patches, editorValue} = changeSet
+      const {operations, isRemote, selection} = changeSet
       // Add undo step for local changes
       if (
         !isRemote &&
-        !change.__isUndoRedo &&
-        !change.operations.every(op => op.type === 'set_selection') &&
+        !operations.some(op => op.__isUndoRedo) &&
+        !operations.every(op => op.type === 'set_selection') &&
         !(
-          change.operations.every(op => op.type === 'set_value') &&
-          isEqual(Object.keys(change.operations.first().properties), ['decorations'])
+          operations.every(op => op.type === 'set_value') &&
+          isEqual(Object.keys(operations.first().properties), ['decorations'])
         )
       ) {
         this._undoRedoStack.undo.push({
-          change,
-          remoteChanges: [],
-          beforeChangeEditorValue: editorValue,
-          timestamp,
-          patches,
-          snapshot: this.props.value || []
+          operations,
+          beforeSelection: this.state.editorValue.selection,
+          afterSelection: selection,
+          remoteOperations: List([])
         })
         this._undoRedoStack.redo = []
       }
 
-      // Add remote change to undo/redo steps
-      if (isRemote) {
-        const newItem = {patches, change: change, timestamp}
+      // Add all remote operations to undo/redo stack items
+      // But not rebase changes (isRemote is then 'internal')
+      if (isRemote === 'remote') {
         this._undoRedoStack.undo.forEach(item => {
-          item.remoteChanges.push(newItem)
+          item.remoteOperations = item.remoteOperations.concat(operations)
         })
         this._undoRedoStack.redo.forEach(item => {
-          item.remoteChanges.push(newItem)
+          item.remoteOperations = item.remoteOperations.concat(operations)
         })
       }
 
-      // Set the new state
-      this._controller.change(controllerChange => {
-        controllerChange.applyOperations(change.operations)
-        // Update the editorValue state
-        this.setState(
-          {
-            editorValue: controllerChange.value
-          },
-          () => {
-            if (callback) {
-              callback(change)
-              return change
-            }
-            return change
-          }
-        )
+      // Run through and apply the incoming operations
+      const localPatches = []
+      operations.forEach(op => {
+        // Create patches from local operations
+        if (isRemote) {
+          this._controller.flush() // Must flush here or we might end up trying to patch something that isn't there anymore
+          this._controller.applyOperation(op)
+        } else {
+          const beforeValue = this._controller.value
+          this._controller.applyOperation(op)
+          localPatches.push(
+            this.operationToPatches(op, beforeValue, this._controller.value, this.props.value)
+          )
+        }
       })
+      // Set the new state
+      this.setState(
+        {
+          editorValue: this._controller.value
+        },
+        () => {
+          const resultingPatches = flatten(localPatches).filter(Boolean)
+          if (resultingPatches.length) {
+            this._pendingLocalPatches.push(resultingPatches)
+            this.sendLocalPatchesDebounced()
+          }
+        }
+      )
     }
+
+    sendLocalPatchesDebounced = debounce(() => {
+      const {onChange} = this.props
+      const cutLength = this._pendingLocalPatches.length
+      let finalPatches = flatten(this._pendingLocalPatches)
+      finalPatches = finalPatches.filter((patch, index) => {
+        if (!patch) {
+          return false
+        }
+        const nextPatch = finalPatches[index + 1]
+        if (
+          nextPatch &&
+          nextPatch.type === 'set' &&
+          patch.type === 'set' &&
+          isEqual(patch.path, nextPatch.path)
+        ) {
+          return false
+        }
+        return true
+      })
+      if (finalPatches.length) {
+        // Remove the processed patches
+        this._pendingLocalPatches.splice(0, cutLength)
+        // Send the final patches
+        onChange(PatchEvent.from(finalPatches))
+      }
+    }, 100)
 
     unsetUserIsWritingTextDebounced = debounce(() => {
       this.setState({userIsWritingText: false})
@@ -328,14 +342,12 @@ export default withPatchSubscriber(
 
     updateDecorations() {
       const {decorations, editorValue} = this.state
-      this._controller.change(controllerChange => {
-        controllerChange.withoutSaving(() => {
-          localChanges$.next({
-            change: controllerChange.setValue({decorations}),
-            isRemote: false,
-            editorValue,
-            timestamp: new Date()
-          })
+      this._controller.withoutSaving(() => {
+        localChanges$.next({
+          operations: this._controller.setDecorations(decorations).operations,
+          isRemote: false,
+          editorValue,
+          timestamp: new Date()
         })
       })
     }
@@ -343,12 +355,14 @@ export default withPatchSubscriber(
     handleFormBuilderPatch = (event: PatchEvent) => {
       const {onChange} = this.props
       const {editorValue} = this.state
-      const change = this._patchesToChange(event.patches, editorValue, null)
-      localChanges$.next({
-        change,
-        editorValue,
-        isRemote: false,
-        timestamp: new Date()
+      event.patches.forEach(patch => {
+        const operations = this.patchToOperations(patch, editorValue)
+        localChanges$.next({
+          operations,
+          editorValue: editorValue,
+          isRemote: true,
+          timestamp: new Date()
+        })
       })
       return onChange(event)
     }
@@ -370,12 +384,18 @@ export default withPatchSubscriber(
         ['remote', 'internal'].includes(patch.origin)
       )
       if (remoteAndInternalPatches.length > 0) {
-        const change = this._patchesToChange(remoteAndInternalPatches, editorValue, snapshot)
-        remoteChanges$.next({
-          change,
-          isRemote: true,
-          timestamp: new Date(),
-          patches: remoteAndInternalPatches
+        remoteAndInternalPatches.forEach(patch => {
+          if (patch.origin === 'internal') {
+            patch.type = '__rebase'
+          }
+          const operations = this.patchToOperations(patch, this._controller.value)
+          remoteChanges$.next({
+            operations,
+            editorValue,
+            isRemote: patch.origin,
+            timestamp: new Date(),
+            patches: remoteAndInternalPatches
+          })
         })
       }
     }
@@ -423,7 +443,6 @@ export default withPatchSubscriber(
             !invalidBlockValue && (
               <Input
                 blockContentFeatures={this._blockContentFeatures}
-                changeToPatches={this._changeToPatches}
                 controller={this._controller}
                 editorValue={editorValue}
                 focusPath={focusPath}
@@ -436,7 +455,6 @@ export default withPatchSubscriber(
                 onLoading={this.handleOnLoading}
                 onPaste={onPaste}
                 onPatch={this.handleFormBuilderPatch}
-                patchesToChange={this._patchesToChange}
                 readOnly={readOnly}
                 ref={this.refInput}
                 renderBlockActions={renderBlockActions}

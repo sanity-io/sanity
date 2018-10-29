@@ -9,12 +9,7 @@ import FormatUnderlinedIcon from 'part:@sanity/base/format-underlined-icon'
 import FormatCodeIcon from 'part:@sanity/base/format-code-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import ToggleButton from 'part:@sanity/components/toggles/button'
-import type {
-  BlockContentFeature,
-  BlockContentFeatures,
-  SlateValue,
-  SlateController
-} from '../typeDefs'
+import type {BlockContentFeature, BlockContentFeatures, SlateValue, SlateEditor} from '../typeDefs'
 
 import {keyMaps} from '../plugins/SetMarksOnKeyComboPlugin'
 import ToolbarClickAction from './ToolbarClickAction'
@@ -25,7 +20,7 @@ type DecoratorItem = BlockContentFeature & {active: boolean, disabled: boolean}
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
-  controller: SlateController,
+  editor: SlateEditor,
   editorValue: SlateValue
 }
 
@@ -59,25 +54,25 @@ export default class DecoratorButtons extends React.Component<Props> {
   }
 
   getItems() {
-    const {controller, blockContentFeatures, editorValue} = this.props
-    const {focusBlock} = editorValue
-    const disabled = focusBlock ? controller.query('isVoid', focusBlock) : false
+    const {editor, blockContentFeatures} = this.props
+    const {focusBlock} = editor.value
+    const disabled = focusBlock ? editor.query('isVoid', focusBlock) : false
     return blockContentFeatures.decorators.map((decorator: BlockContentFeature) => {
       return {
         ...decorator,
-        active: controller.query('hasMark', decorator.value),
+        active: editor.query('hasMark', decorator.value),
         disabled
       }
     })
   }
 
   handleClick = (item: DecoratorItem) => {
-    const {controller} = this.props
-    controller.command('toggleMark', item.value)
+    const {editor} = this.props
+    editor.toggleMark(item.value)
   }
 
   renderDecoratorButton = (item: DecoratorItem) => {
-    const {editorValue} = this.props
+    const {editor} = this.props
     const icon = item.blockEditor ? item.blockEditor.icon : null
     const Icon = icon || getIcon(item.value)
     // We must not do a click-event here, because that messes with the editor focus!
@@ -90,7 +85,7 @@ export default class DecoratorButtons extends React.Component<Props> {
       <span className={styles.buttonWrapper} key={item.value}>
         <ToolbarClickAction
           onAction={onAction}
-          editorValue={editorValue}
+          editor={editor}
           key={`decoratorButton${item.value}`}
         >
           <ToggleButton

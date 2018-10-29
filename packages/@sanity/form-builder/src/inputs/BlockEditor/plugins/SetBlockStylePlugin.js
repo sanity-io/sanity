@@ -1,16 +1,16 @@
 // @flow
-import {Change} from 'slate'
+import type {SlateEditor} from '../typeDefs'
 
 // This plugin sets the style on a block
 
 export default function SetBlockStylePlugin() {
   return {
     // eslint-disable-next-line complexity
-    onCommand(command: any, change: Change, next: void => void) {
+    onCommand(command: any, editor: SlateEditor, next: void => void) {
       if (command.type !== 'setBlockStyle') {
         return next()
       }
-      const {selection, startBlock, endBlock} = change.value
+      const {selection, startBlock, endBlock} = editor.value
       const styleName = command.args[0]
       // If a single block is selected partially, split block conditionally
       // (selection in start, middle or end of text)
@@ -26,21 +26,21 @@ export default function SetBlockStylePlugin() {
           : selection.anchor.offset - selection.focus.offset
 
         if (hasTextAfter && !hasTextBefore) {
-          change
+          editor
             .moveToStart()
             .moveForward(move)
             .moveToEnd()
             .splitBlock()
             .moveToStartOfPreviousText()
         } else if (hasTextBefore && !hasTextAfter) {
-          change
+          editor
             .moveToEnd()
             .moveBackward(move)
             .moveToEnd()
             .splitBlock()
             .moveToEnd()
         } else {
-          change[selection.isForward ? 'moveToAnchor' : 'moveToFocus']()
+          editor[selection.isForward ? 'moveToAnchor' : 'moveToFocus']()
             .splitBlock()
             .moveForward(move)
             .splitBlock()
@@ -48,14 +48,14 @@ export default function SetBlockStylePlugin() {
         }
       }
       // Do the actual style transform, only acting on type contentBlock
-      change.value.blocks.forEach(blk => {
+      editor.value.blocks.forEach(blk => {
         const newData = {...blk.data.toObject(), style: styleName}
         if (blk.type === 'contentBlock') {
-          change.setNodeByKey(blk.key, {data: newData})
+          editor.setNodeByKey(blk.key, {data: newData})
         }
       })
-      change.focus()
-      return change
+      editor.focus()
+      return editor
     }
   }
 }

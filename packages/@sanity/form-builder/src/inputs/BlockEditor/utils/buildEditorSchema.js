@@ -2,11 +2,14 @@
 
 import {randomKey, normalizeBlock} from '@sanity/block-tools'
 
-import type {BlockContentFeatures, SlateChange, SlateNode} from '../typeDefs'
+import type {BlockContentFeatures, SlateEditor, SlateNode} from '../typeDefs'
 
 import deserialize from './deserialize'
 
-export default function buildEditorSchema(blockContentFeatures: BlockContentFeatures) {
+export default function buildEditorSchema(
+  blockContentFeatures: BlockContentFeatures,
+  options: {withNormalization: boolean} = {withNormalization: true}
+) {
   const blocks = {}
   blockContentFeatures.types.blockObjects.forEach(type => {
     blocks[type.name] = {isVoid: true}
@@ -41,28 +44,28 @@ export default function buildEditorSchema(blockContentFeatures: BlockContentFeat
   return {
     blocks,
     inlines,
-    document: {
-      nodes: [
-        {
-          match: {object: 'block'},
-          min: 1
-        }
-      ],
-      normalize: (
-        change: SlateChange,
-        {code, node, child}: {code: string, node: SlateNode, child: SlateNode}
-      ) => {
-        if (code === 'child_required') {
-          const block = createEmptyBlock()
-          change.applyOperations([
+    document: options.withNormalization
+      ? {
+          nodes: [
             {
-              type: 'insert_node',
-              path: [0],
-              node: block.toJSON({preserveKeys: true, preserveData: true})
+              match: {object: 'block'},
+              min: 1
             }
-          ])
+          ],
+          normalize: (
+            editor: SlateEditor,
+            {code, node, child}: {code: string, node: SlateNode, child: SlateNode}
+          ) => {
+            if (code === 'child_required') {
+              const block = createEmptyBlock()
+              editor.applyOperation({
+                type: 'insert_node',
+                path: [0],
+                node: block.toJSON({preserveKeys: true, preserveData: true})
+              })
+            }
+          }
         }
-      }
-    }
+      : {}
   }
 }

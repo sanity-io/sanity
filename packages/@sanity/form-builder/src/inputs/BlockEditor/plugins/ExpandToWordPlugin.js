@@ -1,19 +1,18 @@
 // @flow
-import {Change} from 'slate'
+
+import type {SlateEditor} from '../typeDefs'
 
 // This plugin expands the selection to the focused word
 
 export default function ExpandToWordPlugin() {
   return {
     // eslint-disable-next-line complexity
-    onCommand(command: any, change: Change, next: void => void) {
+    onCommand(command: any, editor: SlateEditor, next: void => void) {
       if (command.type !== 'expandToWord') {
         return next()
       }
-      const {value} = change
-      const {selection} = value
+      const {focusText, selection} = editor.value
       if (!selection.isExpanded) {
-        const {focusText} = change.value
         const {focus} = selection
         const focusOffset = focus.offset
         const charsBefore = focusText.text.slice(0, focusOffset)
@@ -37,7 +36,7 @@ export default function ExpandToWordPlugin() {
           return next()
         }
         // Select and highlight current word
-        return change
+        return editor
           .moveAnchorTo(newStartOffset)
           .moveFocusTo(newEndOffset)
           .focus()

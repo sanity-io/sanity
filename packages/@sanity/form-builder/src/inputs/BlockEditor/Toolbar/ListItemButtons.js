@@ -7,12 +7,7 @@ import FormatListNumberedIcon from 'part:@sanity/base/format-list-numbered-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import ToggleButton from 'part:@sanity/components/toggles/button'
 
-import type {
-  BlockContentFeature,
-  BlockContentFeatures,
-  SlateController,
-  SlateValue
-} from '../typeDefs'
+import type {BlockContentFeature, BlockContentFeatures, SlateEditor, SlateValue} from '../typeDefs'
 import CustomIcon from './CustomIcon'
 import ToolbarClickAction from './ToolbarClickAction'
 
@@ -22,7 +17,7 @@ type ListItem = BlockContentFeature & {active: boolean, disabled: boolean}
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
-  controller: SlateController,
+  editor: SlateEditor,
   editorValue: SlateValue
 }
 
@@ -59,33 +54,33 @@ export default class ListItemButtons extends React.Component<Props> {
   }
 
   hasListItem(listItemName: string) {
-    const {editorValue} = this.props
-    return editorValue.blocks.some(block => {
+    const {editor} = this.props
+    return editor.value.blocks.some(block => {
       return block.data.get('listItem') === listItemName
     })
   }
 
   getItems() {
-    const {controller, blockContentFeatures, editorValue} = this.props
-    const {focusBlock} = editorValue
-    const disabled = focusBlock ? controller.query('isVoid', focusBlock) : false
+    const {editor, blockContentFeatures} = this.props
+    const {focusBlock} = editor.value
+    const disabled = focusBlock ? editor.query('isVoid', focusBlock) : false
     return blockContentFeatures.lists.map((listItem: BlockContentFeature) => {
       return {
         ...listItem,
-        active: controller.query('hasListItem', listItem.value),
+        active: editor.query('hasListItem', listItem.value),
         disabled
       }
     })
   }
 
   handleClick = (item: ListItem) => {
-    const {controller} = this.props
-    controller.command('toggleListItem', item.value)
+    const {editor} = this.props
+    editor.command('toggleListItem', item.value)
     this.forceUpdate()
   }
 
   renderListItemButton = (item: ListItem) => {
-    const {editorValue} = this.props
+    const {editor} = this.props
     let Icon
     const icon = item.blockEditor ? item.blockEditor.icon : null
     if (icon) {
@@ -98,11 +93,7 @@ export default class ListItemButtons extends React.Component<Props> {
     Icon = Icon || getIcon(item.value)
     const onAction = () => this.handleClick(item)
     return (
-      <ToolbarClickAction
-        onAction={onAction}
-        editorValue={editorValue}
-        key={`listItemButton${item.value}`}
-      >
+      <ToolbarClickAction onAction={onAction} editor={editor} key={`listItemButton${item.value}`}>
         <ToggleButton
           selected={item.active}
           disabled={item.disabled}

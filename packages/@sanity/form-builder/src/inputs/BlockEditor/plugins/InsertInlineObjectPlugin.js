@@ -1,13 +1,13 @@
 // @flow
 
-import {Block} from 'slate'
 import {randomKey, editorValueToBlocks, blocksToEditorValue} from '@sanity/block-tools'
-import type {SlateChange, Type} from '../typeDefs'
-import {VALUE_TO_JSON_OPTS} from '../utils/createChangeToPatches'
+import type {SlateEditor, Type} from '../typeDefs'
+import {VALUE_TO_JSON_OPTS} from '../utils/createOperationToPatches'
+import {Block} from 'slate'
 
 export default function InsertInlineObjectPlugin(blockContentType: Type) {
   return {
-    onCommand(command: any, change: SlateChange, next: void => void) {
+    onCommand(command: any, editor: SlateEditor, next: void => void) {
       if (command.type !== 'insertInlineObject') {
         return next()
       }
@@ -23,8 +23,8 @@ export default function InsertInlineObjectPlugin(blockContentType: Type) {
           value: {_type: objectType.name, _key: key, _oldKey: key}
         }
       }
-      change.insertInline(inline)
-      const {value} = change
+      editor.insertInline(inline)
+      const {value} = editor
       const {focusBlock} = value
       const appliedBlocks = editorValueToBlocks(
         {document: {nodes: [focusBlock.toJSON(VALUE_TO_JSON_OPTS)]}},
@@ -38,10 +38,10 @@ export default function InsertInlineObjectPlugin(blockContentType: Type) {
       )
       const newData = inlineObject.data.toObject()
       delete newData.value._oldKey
-      change.replaceNodeByKey(focusBlock.key, newBlock.toJSON(VALUE_TO_JSON_OPTS))
-      change.setNodeByKey(inlineObject.key, {data: newData})
-      change.moveToEndOfNode(inlineObject)
-      return change
+      editor.replaceNodeByKey(focusBlock.key, newBlock.toJSON(VALUE_TO_JSON_OPTS))
+      editor.setNodeByKey(inlineObject.key, {data: newData})
+      editor.moveToEndOfNode(inlineObject)
+      return editor
     }
   }
 }

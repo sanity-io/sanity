@@ -1,5 +1,7 @@
 // @flow
-import {Change, Block} from 'slate'
+
+import type {SlateEditor} from '../typeDefs'
+import {Block} from 'slate'
 
 type Options = {
   defaultBlock?: Block
@@ -15,11 +17,11 @@ export default function ListItemOnEnterKeyPlugin(options: Options = {}) {
   }
   return {
     // eslint-disable-next-line complexity
-    onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change, next: void => void) {
+    onKeyDown(event: SyntheticKeyboardEvent<*>, editor: SlateEditor, next: void => void) {
       if (event.key !== 'Enter') {
         return next()
       }
-      const {value} = change
+      const {value} = editor
       const {document, startBlock, selection} = value
 
       // Only do listItem nodes
@@ -44,16 +46,16 @@ export default function ListItemOnEnterKeyPlugin(options: Options = {}) {
         if (startBlock.text === '') {
           const newData = startBlock.data.toObject()
           delete newData.listItem
-          change.setNodeByKey(startBlock.key, {data: newData})
-          return change
+          editor.setNodeByKey(startBlock.key, {data: newData})
+          return editor
         }
-        change.insertBlock(defaultBlock).focus()
-        return change
+        editor.insertBlock(defaultBlock).focus()
+        return editor
       }
 
       // Delete previous listItem if previous list item is empty
       if (previousBlock && previousBlock.data.get('listItem')) {
-        change.deleteBackward(1)
+        editor.deleteBackward(1)
       }
 
       let blockToInsert = defaultBlock
@@ -71,11 +73,11 @@ export default function ListItemOnEnterKeyPlugin(options: Options = {}) {
       // Jump to next node if next node is not a listItem or a void block
       const nextBlock = document.getNextBlock(selection.start.key)
       if (nextBlock && !nextBlock.data.get('listItem') && !nextBlock.isVoid) {
-        change.moveToStartOfNode(nextBlock)
+        editor.moveToStartOfNode(nextBlock)
       } else {
-        change.insertBlock(blockToInsert).focus()
+        editor.insertBlock(blockToInsert).focus()
       }
-      return change
+      return editor
     }
   }
 }

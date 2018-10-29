@@ -1,5 +1,5 @@
 // @flow
-import type {SlateChange, SlateValue} from '../typeDefs'
+import type {SlateEditor, SlateValue} from '../typeDefs'
 
 // Various custom queries
 
@@ -17,8 +17,8 @@ function isNonTextSelection(editorValue: SlateValue) {
 
 export default function QueryPlugin() {
   return {
-    onQuery(query: any, change: SlateChange, next: void => void) {
-      const {value} = change
+    onQuery(query: any, editor: SlateEditor, next: void => void) {
+      const {value} = editor
       switch (query.type) {
         case 'activeMarks':
           return value.marks.map(mrk => mrk.type).sort()

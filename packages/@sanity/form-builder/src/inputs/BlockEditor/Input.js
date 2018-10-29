@@ -14,11 +14,10 @@ import type {
   FormBuilderValue,
   Marker,
   Path,
-  Patch,
   RenderBlockActions,
   RenderCustomMarkers,
   SlateChange,
-  SlateController,
+  SlateEditor,
   SlateValue,
   Type,
   UndoRedoStack
@@ -30,12 +29,7 @@ import styles from './styles/Input.css'
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
-  changeToPatches: (
-    unchangedEditorValue: SlateValue,
-    change: SlateChange,
-    value: ?(FormBuilderValue[])
-  ) => Patch[],
-  controller: SlateController,
+  controller: SlateEditor,
   editorValue: SlateValue,
   focusPath: [],
   level: number,
@@ -51,7 +45,6 @@ type Props = {
     type: Type,
     value: ?(FormBuilderValue[])
   }) => {insert?: FormBuilderValue[], path?: []},
-  patchesToChange: (patches: Patch[], editorValue: SlateValue, snapshot: ?any) => SlateChange,
   isLoading: boolean,
   readOnly?: boolean,
   renderBlockActions?: RenderBlockActions,
@@ -69,7 +62,8 @@ type State = {
 export default class BlockEditorInput extends React.Component<Props, State> {
   static defaultProps = {
     renderBlockActions: null,
-    renderCustomMarkers: null
+    renderCustomMarkers: null,
+    readOnly: false
   }
   _inputId = uniqueId('BlockEditor')
 
@@ -83,17 +77,14 @@ export default class BlockEditorInput extends React.Component<Props, State> {
   }
 
   focus = () => {
-    const {controller, onFocus, onChange, value} = this.props
-    controller.change(change => {
-      change.focus()
-      const {focusBlock} = change.value
-      if (focusBlock) {
-        return onChange(change, () => onFocus([{_key: focusBlock.key}]))
-      } else if (Array.isArray(value) && value.length) {
-        return onChange(change, () => onFocus([{_key: value[0]._key}]))
-      }
-      return change
-    })
+    const {controller, onFocus, value} = this.props
+    controller.focus()
+    const {focusBlock} = controller.value
+    if (focusBlock) {
+      onFocus([{_key: focusBlock.key}])
+    } else if (Array.isArray(value) && value.length) {
+      onFocus([{_key: value[0]._key}])
+    }
   }
 
   handleFocusSkipper = () => {
@@ -103,7 +94,6 @@ export default class BlockEditorInput extends React.Component<Props, State> {
   render() {
     const {
       blockContentFeatures,
-      changeToPatches,
       controller,
       editorValue,
       focusPath,
@@ -116,7 +106,6 @@ export default class BlockEditorInput extends React.Component<Props, State> {
       onLoading,
       onPaste,
       onPatch,
-      patchesToChange,
       readOnly,
       renderBlockActions,
       renderCustomMarkers,
@@ -147,34 +136,32 @@ export default class BlockEditorInput extends React.Component<Props, State> {
           >
             Jump to editor
           </button>
-          <BlockEditor
-            blockContentFeatures={blockContentFeatures}
-            changeToPatches={changeToPatches}
-            controller={controller}
-            editorValue={editorValue}
-            focusPath={focusPath}
-            fullscreen={fullscreen}
-            isActive={isActive}
-            markers={markers}
-            onBlur={onBlur}
-            onChange={onChange}
-            onLoading={onLoading}
-            isLoading={isLoading}
-            onFocus={onFocus}
-            onPatch={onPatch}
-            onPaste={onPaste}
-            onToggleFullScreen={this.handleToggleFullScreen}
-            patchesToChange={patchesToChange}
-            readOnly={readOnly}
-            renderCustomMarkers={renderCustomMarkers}
-            renderBlockActions={renderBlockActions}
-            setFocus={this.focus}
-            type={type}
-            value={value}
-            undoRedoStack={undoRedoStack}
-            userIsWritingText={userIsWritingText}
-          />
         </FormField>
+        <BlockEditor
+          blockContentFeatures={blockContentFeatures}
+          controller={controller}
+          editorValue={editorValue}
+          focusPath={focusPath}
+          fullscreen={fullscreen}
+          isActive={isActive}
+          markers={markers}
+          onBlur={onBlur}
+          onChange={onChange}
+          onLoading={onLoading}
+          isLoading={isLoading}
+          onFocus={onFocus}
+          onPatch={onPatch}
+          onPaste={onPaste}
+          onToggleFullScreen={this.handleToggleFullScreen}
+          readOnly={readOnly}
+          renderCustomMarkers={renderCustomMarkers}
+          renderBlockActions={renderBlockActions}
+          setFocus={this.focus}
+          type={type}
+          value={value}
+          undoRedoStack={undoRedoStack}
+          userIsWritingText={userIsWritingText}
+        />
       </div>
     )
   }

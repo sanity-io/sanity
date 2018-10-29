@@ -1,12 +1,12 @@
 // @flow
 
-import type {SlateValue} from '../typeDefs'
+import type {SlateEditor} from '../typeDefs'
 import type {Node} from 'react'
 import React from 'react'
 
 type Props = {
   children: Node,
-  editorValue: SlateValue,
+  editor: SlateEditor,
   onAction: void => void
 }
 
@@ -15,7 +15,7 @@ type Props = {
 // bold etc difficult. We want to keep the cursor blinking in the editor...
 
 export default function ToolBarClickAction(props: Props) {
-  const originalSelection = props.editorValue.selection
+  const originalSelection = props.editor.value.selection
   let executed = false
   const onMouseDown = (event: SyntheticMouseEvent<*>) => {
     // Only for left button

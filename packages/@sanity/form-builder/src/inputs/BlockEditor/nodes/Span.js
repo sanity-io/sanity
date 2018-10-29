@@ -1,29 +1,17 @@
 // @flow
 
 import type {Node} from 'react'
-
 import React from 'react'
-import {Inline} from 'slate'
-
-import type {
-  BlockContentFeatures,
-  SlateValue,
-  Type,
-  Marker,
-  Path,
-  SlateController
-} from '../typeDefs'
-
+import type {BlockContentFeatures, Type, Marker, Path, SlateEditor} from '../typeDefs'
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
-
 import styles from './styles/Span.css'
+import {Inline} from 'slate'
 
 type Props = {
   attributes: any,
   blockContentFeatures: BlockContentFeatures,
-  controller: SlateController,
+  editor: SlateEditor,
   children: Node,
-  editorValue: SlateValue,
   node: Inline,
   markers: Marker[],
   onFocus: Path => void,
@@ -56,7 +44,7 @@ export default class Span extends React.Component<Props, State> {
   }
 
   focusAnnotation(annotationName: string) {
-    const {node, controller} = this.props
+    const {node, editor} = this.props
     this.setState({focusedAnnotationName: annotationName})
     if (node.data.get('focusedAnnotationName') === annotationName) {
       return
@@ -65,9 +53,7 @@ export default class Span extends React.Component<Props, State> {
       ...node.data.toObject(),
       focusedAnnotationName: annotationName
     }
-    controller.change(change => {
-      change.setNodeByKey(node.key, {data})
-    })
+    editor.setNodeByKey(node.key, {data})
   }
 
   // Open dialog when user clicks the node,
@@ -84,15 +70,18 @@ export default class Span extends React.Component<Props, State> {
   }
 
   startEditing() {
-    const {editorValue, node, onFocus} = this.props
-    const block = editorValue.document.getClosestBlock(node.key)
+    const {editor, node, onFocus} = this.props
+    const block = editor.value.document.getClosestBlock(node.key)
     const focusPath = [
       {_key: block.key},
       'markDefs',
       {_key: node.data.get('annotations')[this.state.focusedAnnotationName]._key},
       FOCUS_TERMINATOR
     ]
-    onFocus(focusPath)
+    editor.blur()
+    setTimeout(() => {
+      onFocus(focusPath)
+    }, 200)
   }
 
   handleMouseUp = () => {

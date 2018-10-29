@@ -4,8 +4,6 @@ import ReactDOM from 'react-dom'
 import Base64 from 'slate-base64-serializer'
 
 import React from 'react'
-import {Block} from 'slate'
-import {findDOMNode, findNode, setEventTransfer} from 'slate-react'
 import classNames from 'classnames'
 
 import {IntentLink} from 'part:@sanity/base/router'
@@ -19,9 +17,8 @@ import type {
   Marker,
   Path,
   RenderCustomMarkers,
-  SlateController,
+  SlateEditor,
   SlateNode,
-  SlateValue,
   Type
 } from '../typeDefs'
 
@@ -37,11 +34,13 @@ import ViewButton from '../ViewButton'
 
 import styles from './styles/BlockObject.css'
 
+import {findDOMNode, findNode, setEventTransfer} from 'slate-react'
+import {Block} from 'slate'
+
 type Props = {
   attributes: any,
   blockContentFeatures: BlockContentFeatures,
-  controller: SlateController,
-  editorValue: SlateValue,
+  editor: SlateEditor,
   hasFormBuilderFocus: boolean,
   isSelected?: boolean,
   markers: Marker[],
@@ -77,8 +76,8 @@ export default class BlockObject extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    const {controller} = this.props
-    const elm = ReactDOM.findDOMNode(controller) // eslint-disable-line react/no-find-dom-node
+    const {editor} = this.props
+    const elm = ReactDOM.findDOMNode(editor) // eslint-disable-line react/no-find-dom-node
     if (elm instanceof HTMLElement) {
       this._editorNode = elm
     }
@@ -181,9 +180,9 @@ export default class BlockObject extends React.Component<Props, State> {
         event.dataTransfer.dropEffect = 'move'
       }
 
-      const {editorValue, controller} = this.props
+      const {editor} = this.props
 
-      const targetNode = findNode(targetDOMNode, controller)
+      const targetNode = findNode(targetDOMNode, editor)
       if (!targetNode) {
         this.resetDropTarget()
         return
@@ -192,7 +191,7 @@ export default class BlockObject extends React.Component<Props, State> {
       const block =
         targetNode.object === 'block'
           ? targetNode
-          : editorValue.document.getClosestBlock(targetNode.key)
+          : editor.value.document.getClosestBlock(targetNode.key)
 
       // If no or same block reset and return
       if (!block || block.key === node.key) {
@@ -206,10 +205,10 @@ export default class BlockObject extends React.Component<Props, State> {
       // If the block in the nearest vincinity (same position target), reset and return
       let nearestNeighbour = false
       if (position === 'before') {
-        const nextBlock = editorValue.document.getNextBlock(node.key)
+        const nextBlock = editor.value.document.getNextBlock(node.key)
         nearestNeighbour = nextBlock && nextBlock.key === block.key
       } else {
-        const previousBlock = editorValue.document.getPreviousBlock(node.key)
+        const previousBlock = editor.value.document.getPreviousBlock(node.key)
         nearestNeighbour = previousBlock && previousBlock.key === block.key
       }
       if (nearestNeighbour) {
@@ -234,20 +233,18 @@ export default class BlockObject extends React.Component<Props, State> {
     if (this._dragGhost && this._dragGhost.parentNode) {
       this._dragGhost.parentNode.removeChild(this._dragGhost)
     }
-    const {node, controller} = this.props
+    const {node, editor} = this.props
 
     // Return if this is our node
     if (!target || target.node.key === node.key) {
       return
     }
-    controller.change(change => {
-      change
-        .removeNodeByKey(node.key)
-        [target.position === 'before' ? 'moveToStartOfNode' : 'moveToEndOfNode'](target.node)
-        .insertBlock(node)
-        .moveToEndOfNode(node)
-        .focus()
-    })
+    editor
+      .removeNodeByKey(node.key)
+      [target.position === 'before' ? 'moveToStartOfNode' : 'moveToEndOfNode'](target.node)
+      .insertBlock(node)
+      .moveToEndOfNode(node)
+      .focus()
   }
 
   handleCancelEvent = (event: SyntheticEvent<>) => {
@@ -263,13 +260,11 @@ export default class BlockObject extends React.Component<Props, State> {
 
   handleEditStart = (event: SyntheticMouseEvent<>) => {
     event.stopPropagation()
-    const {node, onFocus, controller} = this.props
-    controller.change(change => {
-      change
-        .moveToEndOfNode(node)
-        .focus()
-        .blur()
-    })
+    const {node, onFocus, editor} = this.props
+    editor
+      .moveToEndOfNode(node)
+      .focus()
+      .blur()
     setTimeout(() => {
       onFocus([{_key: node.key}, FOCUS_TERMINATOR])
     }, 200)
@@ -297,10 +292,8 @@ export default class BlockObject extends React.Component<Props, State> {
   handleRemoveValue = (event: SyntheticMouseEvent<>) => {
     event.preventDefault()
     event.stopPropagation()
-    const {node, controller} = this.props
-    controller.change(change => {
-      change.removeNodeByKey(node.key).focus()
-    })
+    const {node, editor} = this.props
+    editor.removeNodeByKey(node.key).focus()
   }
 
   renderPreview(value: FormBuilderValue) {
@@ -344,8 +337,7 @@ export default class BlockObject extends React.Component<Props, State> {
     const {
       attributes,
       blockContentFeatures,
-      controller,
-      editorValue,
+      editor,
       isSelected,
       markers,
       node,
@@ -378,7 +370,7 @@ export default class BlockObject extends React.Component<Props, State> {
 
     const classname = classNames([
       styles.root,
-      editorValue.selection.focus.isInNode(node) && styles.focused,
+      editor.value.selection.focus.isInNode(node) && styles.focused,
       isSelected && styles.selected,
       errors.length > 0 && styles.hasErrors,
       isDragging && styles.isDragging
@@ -403,8 +395,7 @@ export default class BlockObject extends React.Component<Props, State> {
           <BlockExtras
             block={value}
             blockActions={blockActions}
-            controller={controller}
-            editorValue={editorValue}
+            editor={editor}
             markers={markers}
             onFocus={onFocus}
             renderCustomMarkers={renderCustomMarkers}

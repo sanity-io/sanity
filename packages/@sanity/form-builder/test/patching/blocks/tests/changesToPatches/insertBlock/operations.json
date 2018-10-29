@@ -32,10 +32,7 @@
   {
     "object": "operation",
     "type": "insert_text",
-    "path": [
-      3,
-      0
-    ],
+    "path": [3, 0],
     "offset": 2,
     "text": "3",
     "marks": []

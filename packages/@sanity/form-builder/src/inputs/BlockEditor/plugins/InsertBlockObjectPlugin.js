@@ -2,11 +2,11 @@
 
 import {Block} from 'slate'
 import {randomKey} from '@sanity/block-tools'
-import type {SlateChange} from '../typeDefs'
+import type {SlateEditor} from '../typeDefs'
 
 export default function InsertBlockObjectPlugin() {
   return {
-    onCommand(command: any, change: SlateChange, next: void => void) {
+    onCommand(command: any, editor: SlateEditor, next: void => void) {
       if (command.type !== 'insertBlockObject') {
         return next()
       }
@@ -22,19 +22,19 @@ export default function InsertBlockObjectPlugin() {
           value: {_type: objectType.name, _key: key}
         }
       })
-      const {focusBlock} = change.value
-      // If the focusBlock is not void or empty, replace it with the block to insert
+      const {focusBlock} = editor.value
+      // If the focusBlock is not void and empty, replace it with the block to insert
       if (
         focusBlock &&
-        !change.editor.query('isVoid', focusBlock) &&
+        !editor.query('isVoid', focusBlock) &&
         focusBlock.nodes.size === 1 &&
         focusBlock.text === ''
       ) {
-        change.replaceNodeByKey(focusBlock.key, block).moveTo(block.key, 0)
-        return change
+        editor.replaceNodeByKey(focusBlock.key, block).moveTo(block.key, 0)
+        return editor
       }
-      change.insertBlock(block).moveToEndOfBlock()
-      return change
+      editor.insertBlock(block).moveToEndOfBlock()
+      return editor
     }
   }
 }

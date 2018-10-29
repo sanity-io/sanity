@@ -4,7 +4,7 @@ import type {ElementRef} from 'react'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import SoftBreakPlugin from 'slate-soft-break'
-import {findDOMNode, Editor as SlateEditor, getEventTransfer} from 'slate-react'
+import {findDOMNode, Editor as SlateReactEditor, getEventTransfer} from 'slate-react'
 import {isEqual} from 'lodash'
 import {isKeyHotkey} from 'is-hotkey'
 import {EDITOR_DEFAULT_BLOCK_TYPE, editorValueToBlocks} from '@sanity/block-tools'
@@ -19,11 +19,10 @@ import type {
   FormBuilderValue,
   Marker,
   Path,
-  Patch,
   RenderBlockActions,
   RenderCustomMarkers,
-  SlateChange,
   SlateComponentProps,
+  SlateEditor,
   SlateMarkProps,
   SlateNode,
   SlateSchema,
@@ -32,7 +31,7 @@ import type {
   UndoRedoStack
 } from './typeDefs'
 
-import {VALUE_TO_JSON_OPTS} from './utils/createChangeToPatches'
+import {VALUE_TO_JSON_OPTS} from './utils/createOperationToPatches'
 import buildEditorSchema from './utils/buildEditorSchema'
 import findInlineByAnnotationKey from './utils/findInlineByAnnotationKey'
 import createBlockActionPatchFn from './utils/createBlockActionPatchFn'
@@ -47,9 +46,6 @@ import PastePlugin from './plugins/PastePlugin'
 import QueryPlugin from './plugins/QueryPlugin'
 import SetBlockStylePlugin from './plugins/SetBlockStylePlugin'
 import SetMarksOnKeyComboPlugin from './plugins/SetMarksOnKeyComboPlugin'
-import SplitNodePlugin from './plugins/SplitNodePlugin'
-import MoveNodePlugin from './plugins/MoveNodePlugin'
-import InsertNodePlugin from './plugins/InsertNodePlugin'
 import TextBlockOnEnterKeyPlugin from './plugins/TextBlockOnEnterKeyPlugin'
 import ToggleAnnotationPlugin from './plugins/ToggleAnnotationPlugin'
 import ToggleListItemPlugin from './plugins/ToggleListItemPlugin'
@@ -68,17 +64,12 @@ type PasteProgressResult = {status: string | null, error?: Error}
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
-  changeToPatches: (
-    unchangedEditorValue: SlateValue,
-    change: SlateChange,
-    value: ?(FormBuilderValue[])
-  ) => Patch[],
   editorValue: SlateValue,
   fullscreen: boolean,
   focusPath: Path,
   markers: Marker[],
   onBlur: (nextPath: []) => void,
-  onChange: (change: SlateChange, callback?: (SlateChange) => void) => void,
+  onChange: (editor: SlateEditor, callback?: (SlateEditor) => void) => void,
   onLoading: (props: {}) => void,
   onFocus: Path => void,
   onLoading: (props: {}) => void,
@@ -90,7 +81,6 @@ type Props = {
   }) => {insert?: FormBuilderValue[], path?: []},
   onPatch: (event: PatchEvent) => void,
   onToggleFullScreen: (event: SyntheticEvent<*>) => void,
-  patchesToChange: (patches: Patch[], editorValue: SlateValue, snapshot: ?any) => SlateChange,
   readOnly?: boolean,
   renderBlockActions?: RenderBlockActions,
   renderCustomMarkers?: RenderCustomMarkers,
@@ -112,7 +102,7 @@ export default class Editor extends React.Component<Props> {
 
   _blockActionsMap = {}
 
-  _controller: ElementRef<any> = React.createRef()
+  _editor: ElementRef<any> = React.createRef()
 
   _plugins = []
 
@@ -120,11 +110,9 @@ export default class Editor extends React.Component<Props> {
     super(props)
     this._editorSchema = buildEditorSchema(props.blockContentFeatures)
     this._plugins = [
-      SplitNodePlugin(),
-      InsertNodePlugin(),
-      MoveNodePlugin(),
       ListItemOnEnterKeyPlugin({defaultBlock: EDITOR_DEFAULT_BLOCK_TYPE}),
       ListItemOnTabKeyPlugin(),
+      ToggleListItemPlugin(),
       TextBlockOnEnterKeyPlugin({defaultBlock: EDITOR_DEFAULT_BLOCK_TYPE}),
       SetMarksOnKeyComboPlugin({
         decorators: props.blockContentFeatures.decorators.map(item => item.value)
@@ -133,32 +121,22 @@ export default class Editor extends React.Component<Props> {
         onlyIn: [EDITOR_DEFAULT_BLOCK_TYPE.type],
         shift: true
       }),
-      PastePlugin({
-        controller: this._controller,
-        blockContentType: props.type,
-        onChange: props.onChange,
-        onProgress: this.handlePasteProgress
-      }),
+      // PastePlugin({
+      //   controller: this._controller,
+      //   blockContentType: props.type,
+      //   onChange: props.onChange,
+      //   onProgress: this.handlePasteProgress
+      // }),
       insertBlockOnEnter(EDITOR_DEFAULT_BLOCK_TYPE),
       OnDropPlugin(),
       QueryPlugin(),
       SetBlockStylePlugin(),
       ToggleAnnotationPlugin(),
-      ToggleListItemPlugin(),
       ExpandToWordPlugin(),
       WrapSpanPlugin(),
       InsertInlineObjectPlugin(props.type),
       InsertBlockObjectPlugin(),
-      UndoRedoPlugin({
-        stack: props.undoRedoStack,
-        onChange: props.onChange,
-        onPatch: props.onPatch,
-        editorValue: props.editorValue,
-        patchesToChange: props.patchesToChange,
-        changeToPatches: props.changeToPatches,
-        editorSchema: this._editorSchema,
-        blockContentType: props.type
-      })
+      UndoRedoPlugin({stack: props.undoRedoStack})
     ]
   }
 
@@ -183,9 +161,10 @@ export default class Editor extends React.Component<Props> {
 
   // When focusPath has changed, but the editorValue has another focusBlock,
   // select the block according to the focusPath and scroll there
+  // eslint-disable-next-line complexity
   componentDidUpdate(prevProps: Props) {
-    const controller = this.getController()
-    if (!controller) {
+    const editor = this.getEditor()
+    if (!editor) {
       return
     }
     const {focusPath, editorValue, readOnly} = this.props
@@ -198,67 +177,64 @@ export default class Editor extends React.Component<Props> {
     if (!focusPathChanged) {
       return
     }
-    // eslint-disable-next-line complexity
-    controller.change(change => {
-      const block = editorValue.document.getDescendant(focusPath[0]._key)
-      let inline
-      if (!focusPathIsSingleBlock) {
-        if (focusPath[1] && focusPath[1] === 'children' && focusPath[2]) {
-          // Inline object
-          inline = editorValue.document.getDescendant(focusPath[2]._key)
-          // eslint-disable-next-line max-depth
-          if (!inline) {
-            throw new Error(
-              `Could not find a inline with key ${focusPath[2]._key}, something is amiss.`
-            )
-          }
-          this.scrollIntoView(change, inline)
-        } else if (
-          // Annotation
-          focusPath[1] &&
-          focusPath[1] === 'markDefs' &&
-          focusPath[2] &&
-          (inline = findInlineByAnnotationKey(focusPath[2]._key, block))
-        ) {
-          this.scrollIntoView(change, inline)
-        } else if (block) {
-          // Regular block
-          this.scrollIntoView(change, block)
+    const block = editorValue.document.getDescendant(focusPath[0]._key)
+    let inline
+    if (!focusPathIsSingleBlock) {
+      if (focusPath[1] && focusPath[1] === 'children' && focusPath[2]) {
+        // Inline object
+        inline = editorValue.document.getDescendant(focusPath[2]._key)
+        // eslint-disable-next-line max-depth
+        if (!inline) {
+          throw new Error(
+            `Could not find a inline with key ${focusPath[2]._key}, something is amiss.`
+          )
         }
-      } else if (!readOnly) {
-        // Must be here to set focus after editing interfaces are closed
-        inline = editorValue.focusInline
-        if (inline) {
-          // There are some issues where you can't move the cursor
-          // if the focus is collapsed on an inline-node, move forward to next text.
-          change.moveForward()
-        }
-        change.focus()
+        this.scrollIntoView(editor, inline)
+      } else if (
+        // Annotation
+        focusPath[1] &&
+        focusPath[1] === 'markDefs' &&
+        focusPath[2] &&
+        (inline = findInlineByAnnotationKey(focusPath[2]._key, block))
+      ) {
+        this.scrollIntoView(editor, inline)
+      } else if (block) {
+        // Regular block
+        this.scrollIntoView(editor, block)
       }
-    })
+    } else if (!readOnly) {
+      // Must be here to set focus after editing interfaces are closed
+      inline = editorValue.focusInline
+      if (inline) {
+        // There are some issues where you can't move the cursor
+        // if the focus is collapsed on an inline-node, move forward to next text.
+        editor.moveForward()
+      }
+      editor.focus()
+    }
   }
 
-  scrollIntoView(change: SlateChange, node: SlateNode) {
+  scrollIntoView(editor: SlateEditor, node: SlateNode) {
     const {readOnly} = this.props
     const element = findDOMNode(node) // eslint-disable-line react/no-find-dom-node
     element.scrollIntoView({behavior: 'instant', block: 'center', inline: 'nearest'})
     if (!readOnly) {
-      change.moveToEndOfNode(node)
+      editor.moveToEndOfNode(node)
     }
   }
 
   // When user changes the selection in the editor, update focusPath accordingly.
-  handleChange = (change: SlateChange) => {
+  handleChange = (editor: SlateEditor) => {
     const {onChange, onFocus, focusPath} = this.props
-    const {focusBlock} = change.value
+    const {focusBlock} = editor.value
     const path = []
     if (focusBlock) {
       path.push({_key: focusBlock.key})
     }
     if (path.length && focusPath && focusPath.length === 1) {
-      return onChange(change, () => onFocus(path))
+      return onChange(editor, () => onFocus(path))
     }
-    return onChange(change)
+    return onChange(editor)
   }
 
   handleEditorFocus = () => {
@@ -270,9 +246,9 @@ export default class Editor extends React.Component<Props> {
     return this.props.value
   }
 
-  getController = () => {
-    if (this._controller && this._controller.current) {
-      return this._controller.current
+  getEditor = () => {
+    if (this._editor && this._editor.current) {
+      return this._editor.current
     }
     return null
   }
@@ -284,9 +260,9 @@ export default class Editor extends React.Component<Props> {
 
   handleShowBlockDragMarker = (pos: string, node: HTMLDivElement) => {
     // eslint-disable-next-line react/no-find-dom-node
-    const controllerDOMNode = ReactDOM.findDOMNode(this.getController())
-    if (controllerDOMNode instanceof HTMLElement) {
-      const controllerRect = controllerDOMNode.getBoundingClientRect()
+    const editorDOMNode = ReactDOM.findDOMNode(this.getEditor())
+    if (editorDOMNode instanceof HTMLElement) {
+      const controllerRect = editorDOMNode.getBoundingClientRect()
       const elemRect = node.getBoundingClientRect()
       const topPos = Number((elemRect.top - controllerRect.top).toFixed(1)).toFixed(2)
       const bottomPos = Number(
@@ -306,14 +282,14 @@ export default class Editor extends React.Component<Props> {
     }
   }
 
-  handlePaste = (event: SyntheticEvent<>, change: SlateChange, next: void => void) => {
+  handlePaste = (event: SyntheticEvent<>, editor: SlateEditor, next: void => void) => {
     const onPaste = this.props.onPaste || onPasteFromPart
     if (!onPaste) {
       return next()
     }
     const {focusPath, onPatch, onLoading, value, type} = this.props
     onLoading({paste: 'start'})
-    const {focusBlock, selection, focusText, focusInline} = change.value
+    const {focusBlock, selection, focusText, focusInline} = editor.value
     const path = []
     if (focusBlock) {
       path.push({_key: focusBlock.key})
@@ -332,7 +308,7 @@ export default class Editor extends React.Component<Props> {
     return next()
   }
 
-  handleCopy = (event: SyntheticEvent<>, change: SlateChange, next: void => void) => {
+  handleCopy = (event: SyntheticEvent<>, editor: SlateEditor, next: void => void) => {
     if (onCopy) {
       return onCopy({event})
     }
@@ -341,7 +317,7 @@ export default class Editor extends React.Component<Props> {
 
   // We do our own handling of dropping blocks and inline nodes,
   // so break the slate plugin stack if transferring those node objects.
-  handleDrag = (event: SyntheticDragEvent<>, change: SlateChange, next: void => void) => {
+  handleDrag = (event: SyntheticDragEvent<>, editor: SlateEditor, next: void => void) => {
     const transfer = getEventTransfer(event)
     const {node} = transfer
     if (node && (node.object === 'block' || node.object === 'inline')) {
@@ -352,7 +328,7 @@ export default class Editor extends React.Component<Props> {
     return next()
   }
 
-  handleToggleFullscreen = (event: SyntheticEvent<>, change: SlateChange, next: void => void) => {
+  handleToggleFullscreen = (event: SyntheticEvent<>, editor: SlateEditor, next: void => void) => {
     const isFullscreenKey = isKeyHotkey('mod+enter')
     const isEsc = isKeyHotkey('esc')
     const {onToggleFullScreen} = this.props
@@ -360,7 +336,7 @@ export default class Editor extends React.Component<Props> {
       event.preventDefault()
       event.stopPropagation()
       onToggleFullScreen(event)
-      return change
+      return true
     }
     return next()
   }
@@ -448,7 +424,7 @@ export default class Editor extends React.Component<Props> {
             }
             blockActions={this._blockActionsMap[node.key]}
             blockContentFeatures={blockContentFeatures}
-            controller={props.editor}
+            editor={props.editor}
             editorValue={editorValue}
             hasFormBuilderFocus={hasFormBuilderFocus}
             markers={childMarkers}
@@ -465,7 +441,7 @@ export default class Editor extends React.Component<Props> {
           <Span
             attributes={props.attributes}
             blockContentFeatures={blockContentFeatures}
-            controller={props.editor}
+            editor={props.editor}
             editorValue={editorValue}
             markers={childMarkers}
             node={props.node}
@@ -482,7 +458,7 @@ export default class Editor extends React.Component<Props> {
           <ObjectClass
             attributes={props.attributes}
             blockContentFeatures={blockContentFeatures}
-            controller={props.editor}
+            editor={props.editor}
             editorValue={editorValue}
             hasFormBuilderFocus={hasFormBuilderFocus}
             isSelected={props.isFocused}
@@ -558,10 +534,10 @@ export default class Editor extends React.Component<Props> {
 
     return (
       <div className={classNames.join(' ')}>
-        <SlateEditor
+        <SlateReactEditor
           spellCheck={false}
           className={styles.editor}
-          ref={this._controller}
+          ref={this._editor}
           value={editorValue}
           onChange={this.handleChange}
           onFocus={this.handleEditorFocus}

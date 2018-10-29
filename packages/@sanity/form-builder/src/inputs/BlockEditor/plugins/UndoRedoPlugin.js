@@ -1,38 +1,13 @@
 // @flow
 import Hotkeys from 'slate-hotkeys'
 import {List} from 'immutable'
-import {flatten, isEqual, uniq} from 'lodash'
-import {editorValueToBlocks} from '@sanity/block-tools'
-import type {
-  FormBuilderValue,
-  Patch,
-  SlateChange,
-  SlateValue,
-  SlateOperation,
-  Type,
-  UndoRedoStack,
-  UndoRedoStackItem
-} from '../typeDefs'
+import {uniq} from 'lodash'
+import type {SlateEditor, SlateOperation, UndoRedoStack, UndoRedoStackItem} from '../typeDefs'
 import isWritingTextOperationsOnly from '../utils/isWritingTextOperation'
+import {PathUtils, Operation} from 'slate'
 
 type Options = {
-  stack: UndoRedoStack,
-  blockContentType: Type,
-  editorSchema: any,
-  onChange: SlateChange => SlateChange,
-  patchesToChange: (patches: Patch[], editorValue: SlateValue, snapshot: ?any) => SlateChange,
-  changeToPatches: (
-    unchangedEditorValue: SlateValue,
-    change: SlateChange,
-    value: ?(FormBuilderValue[])
-  ) => Patch[]
-}
-
-const VALUE_TO_JSON_OPTS = {
-  preserveData: true,
-  preserveKeys: true,
-  preserveSelection: false,
-  preserveHistory: false
+  stack: UndoRedoStack
 }
 
 const SEND_PATCHES_TOKEN_CHARS = [' ', '\n']
@@ -55,243 +30,154 @@ function shouldSquashOperations(operations: List<SlateOperation>) {
   return isWritingTextOperationsOnly(operations) && !isTokenChar(operations.last())
 }
 
-function moveCursorUndo(change: SlateChange, item: UndoRedoStackItem) {
-  if (item.beforeChangeEditorValue.selection) {
-    change.select(item.beforeChangeEditorValue.selection).focus()
-    return change
-  }
-  const lastOperationWithPath = change.operations.findLastEntry(op => op.path !== undefined)
-  if (lastOperationWithPath) {
-    const path = lastOperationWithPath[1].path
-    if (path.size === 1) {
-      change.moveToEndOfBlock()
-    } else {
-      change.moveTo(lastOperationWithPath[1].path).moveToEndOfText()
+function recalculateOperations(item: UndoRedoStackItem) {
+  const recalculatedOperations = []
+  // Run through all the remote operations and check for remove_node, insert_node, move_node
+  item.operations.forEach(itemOp => {
+    let checkedOp = itemOp
+    const pIndex = 0
+    // console.log('Checking', checkedOp.toJSON())
+    item.remoteOperations.forEach(remoteOp => {
+      if (!checkedOp || !checkedOp.path) {
+        return
+      }
+      const pAbove = remoteOp.path.get(0) < checkedOp.path.get(0)
+      const pEqual = remoteOp.path.get(0) == checkedOp.path.get(0)
+      switch (remoteOp.type) {
+        case 'insert_node':
+          // if the insert node is above this operations path, we need to increment the path
+          if (pAbove || pEqual) {
+            const newPath = PathUtils.increment(checkedOp.path, 1, pIndex)
+            checkedOp = Operation.create({...checkedOp.toJS(), path: newPath})
+          }
+          break
+        case 'remove_node':
+          // if the remove node is above this operations path, we need to decrement the path
+          if (pAbove) {
+            const newPath = PathUtils.decrement(checkedOp.path, 1, pIndex)
+            checkedOp = Operation.create({...checkedOp.toJS(), path: newPath})
+          }
+          // if the remove node is the same, remove the operation
+          if (pEqual) {
+            checkedOp = null
+          }
+          break
+        default:
+        // Nothing
+      }
+    })
+    if (checkedOp) {
+      recalculatedOperations.push(checkedOp)
     }
-  }
-  return change
+  })
+  return List(recalculatedOperations)
 }
 
-function moveCursorRedo(change: SlateChange, item: UndoRedoStackItem) {
-  if (item.beforeChangeEditorValue.selection) {
-    change.select(item.change.value.selection).focus()
-    return change
+function moveCursorUndo(editor: SlateEditor, item: UndoRedoStackItem) {
+  if (item.beforeSelection) {
+    editor.select(item.beforeSelection).focus()
+    return editor
   }
-  const lastOperationWithPath = change.operations.findLastEntry(op => op.path !== undefined)
+  const lastOperationWithPath = editor.operations.findLastEntry(op => op.path !== undefined)
   if (lastOperationWithPath) {
     const path = lastOperationWithPath[1].path
     if (path.size === 1) {
-      change.moveToEndOfBlock()
+      editor.moveToEndOfBlock()
     } else {
-      change.moveTo(lastOperationWithPath[1].path).moveToEndOfText()
+      editor.moveTo(lastOperationWithPath[1].path).moveToEndOfText()
     }
   }
-  return change
+  return editor
+}
+
+function moveCursorRedo(editor: SlateEditor, item: UndoRedoStackItem) {
+  if (item.afterSelection) {
+    editor.select(item.afterSelection).focus()
+    return editor
+  }
+  const lastOperationWithPath = editor.operations.findLastEntry(op => op.path !== undefined)
+  if (lastOperationWithPath) {
+    const path = lastOperationWithPath[1].path
+    if (path.size === 1) {
+      editor.moveToEndOfBlock()
+    } else {
+      editor.moveTo(lastOperationWithPath[1].path).moveToEndOfText()
+    }
+  }
+  return editor
 }
 
 // This plugin handles our own undo redo (disables Slate built in handling)
 
 export default function UndoRedoPlugin(options: Options) {
-  const {blockContentType, changeToPatches, patchesToChange, stack} = options
+  const {stack} = options
 
-  function handleUndoWithRemoteChanges(
-    change: SlateChange,
-    item: UndoRedoStackItem,
-    currentSnapshot: FormBuilderValue[]
-  ) {
-    const operations = List([])
-    let inversedItemPatches = []
-    const undoSnapshot = editorValueToBlocks(
-      item.change.value.toJSON(VALUE_TO_JSON_OPTS),
-      blockContentType
-    )
-    const undoRedoChange = patchesToChange([], item.change.value, item.snapshot)
-    const invertedOperations = item.change.operations.reverse().map(op => op.invert())
-    try {
-      undoRedoChange.applyOperations(invertedOperations)
-      inversedItemPatches = changeToPatches(item.change.value, undoRedoChange, undoSnapshot)
-    } catch (err) {
-      // console.log('Could not create inversed undo patches', err)
-    }
-    // If we got any remote patches setting the same block
-    // then skip those inverted patches
-    const toRemoveIndexes = []
-    const remotePatches = flatten(item.remoteChanges.map(remoteChange => remoteChange.patches))
-    inversedItemPatches = inversedItemPatches.map(patch => {
-      const remotePatch = remotePatches
-        .slice()
-        .reverse()
-        .find(
-          rPatch =>
-            rPatch.type === 'set' && patch.type === 'set' && isEqual(rPatch.path, patch.path)
-        )
-      if (remotePatch) {
-        // We must remove any reversed patches unsetting this block
-        const unsetPatchIndex = inversedItemPatches.findIndex(iPatch => {
-          return iPatch.type === 'unset' && isEqual(iPatch.path, remotePatch.path)
-        })
-        if (unsetPatchIndex !== -1) {
-          // console.log('Got unset patches')
-          toRemoveIndexes.push(unsetPatchIndex)
-        }
-        return remotePatch
-      }
-      return patch
-    })
-    toRemoveIndexes.forEach(index => {
-      inversedItemPatches.splice(index, 1)
-    })
-    try {
-      const undoChange = patchesToChange(inversedItemPatches, change.value, currentSnapshot)
-      if (isEqual(undoChange.value.document.toJSON(), change.value.document.toJSON())) {
-        // console.log('isEqual')
-        return operations
-      }
-      return undoChange.operations
-    } catch (err) {
-      // console.log('Could not apply undostep', err)
-    }
-    return operations
-  }
-
-  function handleRedoWithRemoteChanges(change: SlateChange, item: UndoRedoStackItem) {
-    let itemPatches = []
-    const operations = List([])
-    const redoSnapshot = editorValueToBlocks(
-      item.change.value.toJSON(VALUE_TO_JSON_OPTS),
-      blockContentType
-    )
-    const undoRedoChange = patchesToChange([], item.beforeChangeEditorValue, item.snapshot)
-    try {
-      undoRedoChange.applyOperations(item.change.operations)
-      itemPatches = changeToPatches(item.beforeChangeEditorValue, undoRedoChange, redoSnapshot)
-    } catch (err) {
-      // console.log('Could not create redo patches', err)
-    }
-
-    // If we got any remote patches setting the same block
-    // then skip those inverted patches
-    const toRemoveIndexes = []
-    const remotePatches = flatten(item.remoteChanges.map(remoteChange => remoteChange.patches))
-    itemPatches = itemPatches.map(patch => {
-      const remotePatch = remotePatches
-        .slice()
-        .reverse()
-        .find(
-          rPatch =>
-            rPatch.type === 'set' && patch.type === 'set' && isEqual(rPatch.path, patch.path)
-        )
-      if (remotePatch) {
-        // We must remove any reversed patches inserting this block
-        const insertPatchIndex = itemPatches.findIndex(iPatch => {
-          return (
-            iPatch.type === 'insert' &&
-            remotePatches.find(
-              rPatch =>
-                rPatch.type === 'set' &&
-                iPatch.items.map(pItem => pItem._key).includes(rPatch.path[0]._key) // eslint-disable-line max-nested-callbacks
-            )
-          )
-        })
-        if (insertPatchIndex !== -1) {
-          // console.log('Got insert patches')
-          toRemoveIndexes.push(insertPatchIndex)
-        }
-        return remotePatch
-      }
-      return patch
-    })
-    toRemoveIndexes.forEach(index => {
-      itemPatches.splice(index, 1)
-    })
-
-    try {
-      const redoChange = patchesToChange(
-        itemPatches,
-        change.value,
-        editorValueToBlocks(change.value, blockContentType)
-      )
-      if (isEqual(redoChange.value.document.toJSON(), change.value.document.toJSON())) {
-        // console.log('isEqual')
-        return operations
-      }
-      return redoChange.operations
-    } catch (err) {
-      // console.log('Could not apply redostep', err)
-    }
-    return operations
-  }
-
-  function handleUndoItem(change, item, currentSnapshot, _operations) {
+  function handleUndoItem(editor: SlateEditor, item, _operations) {
     if (!item) {
-      return change.focus()
+      return editor.focus()
     }
     let operations = List(_operations || [])
-    if (item.remoteChanges.length === 0) {
-      operations = operations.concat(item.change.operations.reverse().map(op => op.invert()))
-    } else {
-      operations = operations.concat(handleUndoWithRemoteChanges(change, item, currentSnapshot))
-    }
+    const undoOperations =
+      item.remoteOperations.size === 0 ? item.operations : recalculateOperations(item)
+    operations = operations.concat(undoOperations.reverse().map(op => op.invert()))
     if (operations.size > 0) {
       const nextItem = stack.undo.slice(-1)[0]
       // Check if we should squash this undo step into the next
-      if (nextItem && shouldSquashOperations(operations.concat(nextItem.change.operations))) {
+      if (nextItem && shouldSquashOperations(operations.concat(nextItem.operations))) {
         stack.redo.push(item)
-        return handleUndoItem(change, stack.undo.pop(), currentSnapshot, operations)
+        return handleUndoItem(editor, stack.undo.pop(), operations)
       }
-      change.applyOperations(operations)
-      moveCursorUndo(change, item)
+      operations.forEach(op => {
+        op.__isUndoRedo = 'undo'
+        editor.applyOperation(op)
+      })
+      moveCursorUndo(editor, item)
       stack.redo.push(item)
-      change.__isUndoRedo = 'undo'
-      return change
+      return editor
     }
     // If the undo step was invalidated do next step
-    return handleUndoItem(change, stack.undo.pop(), currentSnapshot)
+    return handleUndoItem(editor, stack.undo.pop())
   }
 
-  function handleRedoItem(change, item, _operations) {
+  function handleRedoItem(editor: SlateEditor, item, _operations) {
     if (!item) {
-      return change.focus()
+      return editor.focus()
     }
     let operations = List(_operations || [])
-    if (item.remoteChanges.length === 0) {
-      operations = operations.concat(item.change.operations)
-    } else {
-      operations = operations.concat(handleRedoWithRemoteChanges(change, item))
-    }
+    const redoOperations =
+      item.remoteOperations.size === 0 ? item.operations : recalculateOperations(item)
+    operations = operations.concat(redoOperations)
     if (operations.size > 0) {
       const nextItem = stack.redo.slice(-1)[0]
       // Check if we should squash this redo step into the next
-      if (nextItem && shouldSquashOperations(operations.concat(nextItem.change.operations))) {
+      if (nextItem && shouldSquashOperations(operations.concat(nextItem.operations))) {
         stack.undo.push(item)
-        return handleRedoItem(change, stack.redo.pop(), operations)
+        return handleRedoItem(editor, stack.redo.pop(), operations)
       }
-      change.applyOperations(operations)
-      moveCursorRedo(change, item)
+      operations.forEach(op => {
+        op.__isUndoRedo = 'redo'
+        editor.applyOperation(op)
+      })
+      moveCursorRedo(editor, item)
       stack.undo.push(item)
-      change.__isUndoRedo = 'redo'
-      return change
+      return editor
     }
     // If the redo step was invalidated do next step
-    return handleRedoItem(change, stack.redo.pop())
+    return handleRedoItem(editor, stack.redo.pop())
   }
 
   return {
-    onKeyDown(event: SyntheticKeyboardEvent<*>, change: SlateChange, next: void => void) {
+    onKeyDown(event: SyntheticKeyboardEvent<*>, editor: SlateEditor, next: void => void) {
       if (!(Hotkeys.isUndo(event) || Hotkeys.isRedo(event))) {
         return next()
       }
       if (Hotkeys.isUndo(event)) {
-        const currentSnapshot = editorValueToBlocks(
-          change.value.toJSON(VALUE_TO_JSON_OPTS),
-          blockContentType
-        )
-        return handleUndoItem(change, stack.undo.pop(), currentSnapshot)
+        return handleUndoItem(editor, stack.undo.pop())
       }
       if (Hotkeys.isRedo(event)) {
-        return handleRedoItem(change, stack.redo.pop())
+        return handleRedoItem(editor, stack.redo.pop())
       }
-      return change
+      return editor
     }
   }
 }

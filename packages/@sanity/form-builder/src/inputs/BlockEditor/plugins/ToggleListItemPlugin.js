@@ -1,16 +1,16 @@
 // @flow
-import type {SlateChange} from '../typeDefs'
+import type {SlateEditor} from '../typeDefs'
 
 // This plugin toggles a list item on and off
 
 export default function ToggleListItemPlugin() {
   return {
-    onCommand(command: any, change: SlateChange, next: void => void) {
+    onCommand(command: any, editor: SlateEditor, next: void => void) {
       if (command.type !== 'toggleListItem') {
         return next()
       }
       const listItemName = command.args[0]
-      const {blocks} = change.value
+      const {blocks} = editor.value
       if (blocks.length === 0) {
         return next()
       }
@@ -23,10 +23,10 @@ export default function ToggleListItemPlugin() {
           data.listItem = listItemName
           data.level = data.level || 1
         }
-        change.setNodeByKey(block.key, {data: data})
+        editor.setNodeByKey(block.key, {data: data})
       })
-      change.focus()
-      return change
+      editor.focus()
+      return editor
     }
   }
 }

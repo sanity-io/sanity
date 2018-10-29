@@ -3,12 +3,12 @@
 import React from 'react'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 
-import type {Type, SlateValue, SlateController, Path} from '../typeDefs'
+import type {Type, SlateValue, SlateEditor, Path} from '../typeDefs'
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 
 type Props = {
   blockTypes: Type[],
-  controller: SlateController,
+  editor: SlateEditor,
   editorValue: SlateValue,
   inlineTypes: Type[],
   onFocus: Path => void
@@ -31,8 +31,8 @@ export default class InsertMenu extends React.Component<Props> {
   }
 
   getItems() {
-    const {editorValue, controller} = this.props
-    const {focusBlock} = editorValue
+    const {editor} = this.props
+    const {focusBlock} = editor.value
     const blockItems = this.props.blockTypes.map(type => ({
       title: `${type.title} ¶`,
       value: type,
@@ -43,32 +43,28 @@ export default class InsertMenu extends React.Component<Props> {
       title: type.title,
       value: type,
       isInline: true,
-      isDisabled: focusBlock ? controller.query('isVoid', focusBlock) : true
+      isDisabled: focusBlock ? editor.query('isVoid', focusBlock) : true
     }))
     return blockItems.concat(inlineItems)
   }
 
   handleOnAction = (item: BlockItem) => {
-    const {onFocus, controller, editorValue} = this.props
-    const focusKey = editorValue.selection.focus.key
-    const focusBlock = editorValue.document.getClosestBlock(focusKey)
-    let focusPath = [{_key: focusBlock.key}]
-    controller.change(change => {
-      if (item.isInline) {
-        controller.command('insertInlineObject', {objectType: item.value})
-        focusPath = [
-          {_key: focusBlock.key},
-          'children',
-          {_key: change.value.focusInline.key},
-          FOCUS_TERMINATOR
-        ]
-      } else {
-        controller.command('insertBlockObject', {objectType: item.value})
-        change.focus()
-        focusPath = [{_key: change.value.focusBlock.key}, FOCUS_TERMINATOR]
-      }
-      setTimeout(() => onFocus(focusPath), 200)
-    })
+    const {onFocus, editor} = this.props
+    let focusPath
+    editor.controller.flush()
+    if (item.isInline) {
+      editor.command('insertInlineObject', {objectType: item.value})
+      focusPath = [
+        {_key: editor.value.focusBlock.key},
+        'children',
+        {_key: editor.value.focusInline.key},
+        FOCUS_TERMINATOR
+      ]
+    } else {
+      editor.command('insertBlockObject', {objectType: item.value})
+      focusPath = [{_key: editor.value.focusBlock.key}, FOCUS_TERMINATOR]
+    }
+    setTimeout(() => onFocus(focusPath), 200)
   }
 
   render() {

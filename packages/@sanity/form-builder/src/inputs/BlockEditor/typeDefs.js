@@ -1,4 +1,5 @@
 // @flow
+import type {List} from 'immutable'
 import type {Node, ComponentType, Element as ReactElement} from 'react'
 import type {
   Change,
@@ -6,7 +7,7 @@ import type {
   Mark,
   Inline,
   Text,
-  Editor as SlateEditor,
+  Editor as _SlateEditor,
   Value as _SlateValue,
   Operation as _SlateOperation,
   Schema as _SlateSchema,
@@ -75,7 +76,7 @@ export type SlateOperation = _SlateOperation
 
 export type SlateChange = Change
 
-export type SlateController = Node & SlateEditor
+export type SlateEditor = _SlateEditor
 
 export type Annotation = any
 
@@ -138,11 +139,10 @@ export type FormBuilderSchema = {
 }
 
 export type UndoRedoStackItem = {
-  remoteChanges: {patches: Patch[], timestamp: Date}[],
-  timestamp: Date,
-  change: SlateChange,
-  beforeChangeEditorValue: SlateValue,
-  snapshot: FormBuilderValue[]
+  operations: List<SlateOperation>,
+  remoteOperations: List<SlateOperation>,
+  beforeSelection: SlateSelection,
+  afterSelection: SlateSelection
 }
 
 export type UndoRedoStack = {undo: UndoRedoStackItem[], redo: UndoRedoStackItem[]}
@@ -156,3 +156,11 @@ export type RenderBlockActions = ({
 }) => Node | ReactElement<*>
 
 export type RenderCustomMarkers = (Marker[]) => Node | ReactElement<*>
+
+export type ChangeSet = {
+  editorValue: SlateValue,
+  isRemote: boolean,
+  operations: List<SlateOperation>,
+  patches: Patch[],
+  selection: SlateSelection
+}

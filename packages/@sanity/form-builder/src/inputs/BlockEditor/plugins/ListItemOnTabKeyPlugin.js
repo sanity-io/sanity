@@ -1,5 +1,6 @@
 // @flow
-import {Change} from 'slate'
+
+import type {SlateEditor} from '../typeDefs'
 
 type Options = {}
 
@@ -8,7 +9,7 @@ type Options = {}
 export default function ListItemOnTabKeyPlugin(options: Options = {}) {
   return {
     // eslint-disable-next-line complexity
-    onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change, next: void => void) {
+    onKeyDown(event: SyntheticKeyboardEvent<*>, editor: SlateEditor, next: void => void) {
       const {key, shiftKey, altKey} = event
       if (key !== 'Tab') {
         return next()
@@ -16,7 +17,7 @@ export default function ListItemOnTabKeyPlugin(options: Options = {}) {
       if (altKey) {
         return next()
       }
-      const {value} = change
+      const {value} = editor
       const listBlocks = value.blocks.filter(block => block.data.get('listItem'))
       if (listBlocks.size === 0) {
         return next()
@@ -32,9 +33,9 @@ export default function ListItemOnTabKeyPlugin(options: Options = {}) {
           listItemData.level++
           listItemData.level = listItemData.level < 11 ? listItemData.level : 10 // Max level 10
         }
-        change.setNodeByKey(listNode.key, {data: listItemData})
+        editor.setNodeByKey(listNode.key, {data: listItemData})
       })
-      return change
+      return editor
     }
   }
 }

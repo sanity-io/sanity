@@ -1,25 +1,25 @@
 // @flow
-import {Change} from 'slate'
+
 import {randomKey} from '@sanity/block-tools'
+import type {SlateEditor} from '../typeDefs'
 
 // This plugin creates a span node
 
 export default function WrapSpanPlugin() {
   return {
     // eslint-disable-next-line complexity
-    onCommand(command: any, change: Change, next: void => void) {
+    onCommand(command: any, editor: SlateEditor, next: void => void) {
       if (command.type !== 'wrapSpan') {
         return next()
       }
       const options = command.args[0] || {}
       const key = options.key || randomKey(12)
       const annotationName = options.annotationName || null
-      const {value} = change
-      const {selection} = value
+      const {selection} = editor.value
       if (!selection.isExpanded) {
-        change.editor.command('expandToWord')
+        editor.command('expandToWord')
       }
-      const originalSelection = change.value.selection
+      const originalSelection = editor.value.selection
       const span = {
         isVoid: false,
         type: 'span',
@@ -31,9 +31,9 @@ export default function WrapSpanPlugin() {
         },
         key
       }
-      change.unwrapInline('span').wrapInline(span)
+      editor.unwrapInline('span').wrapInline(span)
 
-      const currentSpan = value.inlines.filter(inline => inline.key === key).first()
+      const currentSpan = editor.value.inlines.filter(inline => inline.key === key).first()
       const data = {
         annotations: currentSpan ? currentSpan.data.get('annotations') || {} : {},
         focusedAnnotationName: annotationName
@@ -43,9 +43,9 @@ export default function WrapSpanPlugin() {
           _type: annotationName,
           _key: key
         }
-        change.setInlines({data: data})
+        editor.setInlines({data: data})
       }
-      return change
+      return editor
     }
   }
 }

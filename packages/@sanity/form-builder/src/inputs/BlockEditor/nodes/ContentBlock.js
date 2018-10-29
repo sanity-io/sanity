@@ -10,7 +10,7 @@ import type {
   Marker,
   Path,
   SlateComponentProps,
-  SlateController,
+  SlateEditor,
   SlateValue
 } from '../typeDefs'
 import ListItem from './ListItem'
@@ -21,8 +21,7 @@ type Props = {
   block: ?(Block | FormBuilderValue),
   blockActions?: Node,
   blockContentFeatures: BlockContentFeatures,
-  controller: SlateController,
-  editorValue: SlateValue,
+  editor: SlateEditor,
   markers: Marker[],
   onFocus: Path => void,
   renderCustomMarkers?: (Marker[]) => Node
@@ -34,9 +33,8 @@ export default function ContentBlock(props: Props & SlateComponentProps) {
     attributes,
     block,
     blockContentFeatures,
-    controller,
+    editor,
     children,
-    editorValue,
     markers,
     node,
     onFocus,
@@ -65,8 +63,7 @@ export default function ContentBlock(props: Props & SlateComponentProps) {
         <BlockExtras
           block={block}
           blockActions={blockActions}
-          controller={controller}
-          editorValue={editorValue}
+          editor={editor}
           markers={markers}
           onFocus={onFocus}
           renderCustomMarkers={renderCustomMarkers}
@@ -95,8 +92,7 @@ export default function ContentBlock(props: Props & SlateComponentProps) {
         <BlockExtras
           block={block}
           blockActions={blockActions}
-          controller={controller}
-          editorValue={editorValue}
+          editor={editor}
           markers={markers}
           onFocus={onFocus}
           renderCustomMarkers={renderCustomMarkers}

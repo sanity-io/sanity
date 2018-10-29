@@ -1,9 +1,8 @@
+/* eslint-disable max-nested-callbacks */
+
 import fs from 'fs'
 import path from 'path'
 import assert from 'assert'
-import {use, assert as assertChai} from 'chai'
-import chaiExclude from 'chai-exclude'
-import {Value, Operation} from 'slate'
 import {List} from 'immutable'
 import {
   blocksToEditorValue,
@@ -11,14 +10,12 @@ import {
   getBlockContentFeatures
 } from '@sanity/block-tools'
 import blocksSchema from '../../../../fixtures/blocksSchema'
-import createChangeToPatches from '../../../../../src/inputs/BlockEditor/utils/createChangeToPatches'
-import createPatchesToChange from '../../../../../src/inputs/BlockEditor/utils/createPatchesToChange'
+import buildEditorSchema from '../../../../../src/inputs/BlockEditor/utils/buildEditorSchema'
+import createOperationToPatches from '../../../../../src/inputs/BlockEditor/utils/createOperationToPatches'
+import createPatchToOperations from '../../../../../src/inputs/BlockEditor/utils/createPatchToOperations'
 import {applyAll} from '../../../../../src/simplePatch'
 import createEditorController from '../../../../../src/inputs/BlockEditor/utils/createEditorController'
-
-use(chaiExclude)
-
-jest.mock('part:@sanity/base/client', () => null, {virtual: true})
+import {Value, Operation} from 'slate'
 
 const blockContentType = blocksSchema.get('blogPost').fields.find(field => field.name === 'body')
   .type
@@ -34,6 +31,17 @@ function deserialize(value) {
   return Value.fromJSON(blocksToEditorValue(value, blockContentType))
 }
 
+const blockContentFeatures = getBlockContentFeatures(blockContentType)
+const editorSchema = buildEditorSchema(blockContentFeatures)
+
+const controllerOpts = {
+  plugins: [
+    {
+      schema: editorSchema
+    }
+  ]
+}
+
 describe('changesToPatches', () => {
   const tests = fs.readdirSync(__dirname)
   tests.forEach(test => {
@@ -43,67 +51,58 @@ describe('changesToPatches', () => {
     it(test, () => {
       const dir = path.resolve(__dirname, test)
       const input = JSON.parse(fs.readFileSync(path.resolve(dir, 'input.json')))
-      const outputPath = path.resolve(dir, 'output.json')
-      let output
-      if (fs.existsSync(outputPath)) {
-        output = JSON.parse(fs.readFileSync(outputPath))
-      }
       const editorValue = deserialize(input)
+      const operationToPatches = createOperationToPatches(
+        getBlockContentFeatures(blockContentType),
+        blockContentType
+      )
 
+      const patchToOperations = createPatchToOperations(
+        getBlockContentFeatures(blockContentType),
+        blockContentType
+      )
       const operations = new List(
         JSON.parse(fs.readFileSync(path.resolve(dir, 'operations.json'))).map(operation =>
           Operation.fromJSON(operation)
         )
       )
 
-      const changeToPatches = createChangeToPatches(
-        getBlockContentFeatures(blockContentType),
-        blockContentType
-      )
+      const editorA = createEditorController({...controllerOpts, value: editorValue})
+      const editorB = createEditorController({...controllerOpts, value: editorValue})
+      const allPatches = []
 
-      const patchesToChange = createPatchesToChange(
-        getBlockContentFeatures(blockContentType),
-        blockContentType
-      )
-
-      const editorA = createEditorController({value: editorValue})
-      const editorB = createEditorController({value: editorValue})
-
-      let expectedValue = output
-      let receivedValue = output
       let patches
+      let document = input
 
-      editorA.change(change => {
-        change.applyOperations(operations)
-        patches = changeToPatches(editorA.value, change, input, blockContentType)
-        // Some tests creates new keys, so use hardcoded expectations for those
-        expectedValue = editorValueToBlocks(
-          change.value.toJSON(VALUE_TO_JSON_OPTS),
-          blockContentType
-        )
-        // console.log(JSON.stringify(patches, null, 2))
-        receivedValue = applyAll(input, patches)
+      operations.forEach(op => {
+        const beforeValue = editorA.value
+        editorA.applyOperation(op)
+        patches = operationToPatches(op, beforeValue, editorA.value, document)
+        allPatches.push(patches)
+        document = applyAll(document, patches)
       })
 
-      // console.log(JSON.stringify(receivedValue, null, 2))
-      try {
-        assertChai.deepEqualExcludingEvery(receivedValue, expectedValue, '_key')
-      } catch (err) {
-        assert.deepEqual(receivedValue, expectedValue)
-      }
-
-      const otherClientPatchedChange = patchesToChange(patches, editorB.value, input)
-      // console.log('foo')
-      // console.log(JSON.stringify(otherClientPatchedChange.value.toJSON(VALUE_TO_JSON_OPTS), null, 2))
-      const otherClientPatchedValue = editorValueToBlocks(
-        otherClientPatchedChange.value.toJSON(VALUE_TO_JSON_OPTS),
+      const editorASerialized = editorValueToBlocks(
+        editorA.value.toJSON(VALUE_TO_JSON_OPTS),
         blockContentType
       )
-      try {
-        assertChai.deepEqualExcludingEvery(otherClientPatchedValue, expectedValue, '_key')
-      } catch (err) {
-        assert.deepEqual(otherClientPatchedValue, expectedValue)
-      }
+
+      // Test that the serialized editorA value is the same as the patched document
+      assert.deepEqual(document, editorASerialized)
+
+      // Play all the patches back to editorB
+      allPatches.forEach(patchGroup => {
+        patchGroup.forEach(patch => {
+          patchToOperations(patch, editorB.value).forEach(op => {
+            editorB.applyOperation(op)
+          })
+        })
+      })
+      const editorBSerialized = editorValueToBlocks(
+        editorB.value.toJSON(VALUE_TO_JSON_OPTS),
+        blockContentType
+      )
+      assert.deepEqual(editorBSerialized, editorASerialized)
     })
   })
 })

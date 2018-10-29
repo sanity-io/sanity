@@ -4,9 +4,7 @@ import ReactDOM from 'react-dom'
 import Base64 from 'slate-base64-serializer'
 
 import React from 'react'
-import {Block, Range, Inline} from 'slate'
-import {isEqual} from 'lodash'
-import {setEventTransfer, getEventRange} from 'slate-react'
+import {isEqual, throttle} from 'lodash'
 import classNames from 'classnames'
 
 import type {
@@ -14,11 +12,9 @@ import type {
   FormBuilderValue,
   Marker,
   Path,
-  SlateController,
-  SlateChange,
+  SlateEditor,
   SlateNode,
   SlateSelection,
-  SlateValue,
   Type
 } from '../typeDefs'
 
@@ -31,11 +27,13 @@ import Preview from '../../../Preview'
 
 import styles from './styles/InlineObject.css'
 
+import {Block, Range, Inline} from 'slate'
+import {setEventTransfer, getEventRange} from 'slate-react'
+
 type Props = {
   attributes: any,
   blockContentFeatures: BlockContentFeatures,
-  controller: SlateController,
-  editorValue: SlateValue,
+  editor: SlateEditor,
   hasFormBuilderFocus: boolean,
   isSelected?: boolean,
   markers: Marker[],
@@ -47,8 +45,7 @@ type Props = {
 }
 
 type State = {
-  isDragging: boolean,
-  menuOpen: boolean
+  isDragging: boolean
 }
 
 export default class InlineObject extends React.Component<Props, State> {
@@ -66,8 +63,8 @@ export default class InlineObject extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    const {controller} = this.props
-    const elm = ReactDOM.findDOMNode(controller) // eslint-disable-line react/no-find-dom-node
+    const {editor} = this.props
+    const elm = ReactDOM.findDOMNode(editor) // eslint-disable-line react/no-find-dom-node
     if (elm instanceof HTMLElement) {
       this._editorNode = elm
     }
@@ -106,9 +103,7 @@ export default class InlineObject extends React.Component<Props, State> {
       event.dataTransfer.effectAllowed = 'move'
       event.dataTransfer.setDragImage(element, element.clientWidth / 2, -10)
     }
-    this.props.controller.change((change: SlateChange) => {
-      change.moveToEndOfNode(this.props.node).focus()
-    })
+    this.props.editor.moveToEndOfNode(this.props.node).focus()
   }
 
   // Remove the drop target if we leave the editors nodes
@@ -124,10 +119,9 @@ export default class InlineObject extends React.Component<Props, State> {
   }
 
   restoreSelection() {
-    this.props.controller.change((change: SlateChange) => {
-      change.withoutSaving(() => {
-        change.moveToEndOfNode(this.props.node).focus()
-      })
+    const {editor} = this.props
+    editor.withoutSaving(() => {
+      editor.moveToEndOfNode(this.props.node).focus()
     })
   }
 
@@ -145,36 +139,36 @@ export default class InlineObject extends React.Component<Props, State> {
       return
     }
 
-    const {controller, editorValue} = this.props
+    const {editor} = this.props
 
-    const range = getEventRange(event, controller)
+    const range = getEventRange(event, editor)
     if (range === null || typeof range.focus.offset === undefined) {
       this.restoreSelection()
       return
     }
 
-    const targetNode = editorValue.document.getDescendant(range.focus.key)
+    const targetNode = editor.value.document.getDescendant(range.focus.key)
 
     // If we are dragging over another inline return
-    if (editorValue.document.getClosestInline(targetNode.key)) {
+    if (editor.value.document.getClosestInline(targetNode.key)) {
       this.restoreSelection()
       return
     }
 
     // If we are dragging over a custom type block return
-    const block = editorValue.document.getClosestBlock(range.focus.key)
+    const block = editor.value.document.getClosestBlock(range.focus.key)
     if (block && block.type !== 'contentBlock') {
       return
     }
     this.moveCursor(range, targetNode)
   }
 
-  moveCursor(range: Range, node: SlateNode) {
-    const {editorValue, controller} = this.props
+  moveCursor = throttle((range: Range, node: SlateNode) => {
+    const {editor} = this.props
     let theOffset = range.focus.offset
 
     // Check if it is acceptable to move the cursor here
-    const texts = editorValue.document.getTextsAtRange(
+    const texts = editor.value.document.getTextsAtRange(
       Range.create({
         anchor: {
           key: node.key,
@@ -189,25 +183,23 @@ export default class InlineObject extends React.Component<Props, State> {
     if (!texts.size) {
       theOffset = 0
     }
-    return controller.change((change: SlateChange) => {
-      change.withoutSaving(() => {
-        change
-          .moveToStartOfNode(node)
-          .moveForward(theOffset)
-          .focus()
-      })
-      const selection = change.value.selection
+    return editor.withoutSaving(() => {
+      editor
+        .moveToStartOfNode(node)
+        .moveForward(theOffset)
+        .focus()
+      const selection = editor.value.selection
       if (!this._dropTarget || range.focus.offset !== this._dropTarget.selection.focus.offset) {
         this._dropTarget = {node: node, selection}
       }
-      return change
+      return editor
     })
-  }
+  }, 60)
 
   handleDragEnd = (event: SyntheticDragEvent<>) => {
     this.setState({isDragging: false})
 
-    const {node, controller} = this.props
+    const {node, editor} = this.props
 
     const target = this._dropTarget
 
@@ -216,25 +208,23 @@ export default class InlineObject extends React.Component<Props, State> {
       this.resetDropTarget()
       return
     }
-    controller.change(change => {
-      change.select(target.selection).removeNodeByKey(node.key)
-      const {focusBlock, focusText} = change.value
-      // Create a new key for the "new" object
-      let newNode = node.toJSON({preserveKeys: true, perserveData: true})
-      const newKey = `${focusBlock.key}${focusBlock.nodes.indexOf(focusText) + 1}`
-      newNode.data.value._key = newKey
-      newNode.data._key = newKey
-      newNode.key = newKey
-      newNode = Inline.create(newNode)
-      change.insertInline(newNode)
-    })
+    editor.select(target.selection).removeNodeByKey(node.key)
+    const {focusBlock, focusText} = editor.value
+    // Create a new key for the "new" object
+    let newNode = node.toJSON({preserveKeys: true, perserveData: true})
+    const newKey = `${focusBlock.key}${focusBlock.nodes.indexOf(focusText) + 1}`
+    newNode.data.value._key = newKey
+    newNode.data._key = newKey
+    newNode.key = newKey
+    newNode = Inline.create(newNode)
+    editor.insertInline(newNode)
     this.resetDropTarget()
   }
 
   handleInvalidValue = (event: PatchEvent) => {
     let _event = event
-    const {editorValue, onPatch} = this.props
-    const {focusBlock} = editorValue
+    const {editor, onPatch} = this.props
+    const {focusBlock} = editor.value
     const value = this.getValue()
     const path = [{_key: focusBlock.key}, 'children', {_key: value._key}]
     path.reverse().forEach(part => {
@@ -246,10 +236,8 @@ export default class InlineObject extends React.Component<Props, State> {
   handleRemoveValue = (event: SyntheticMouseEvent<>) => {
     event.preventDefault()
     event.stopPropagation()
-    const {node, controller} = this.props
-    controller.change(change => {
-      change.removeNodeByKey(node.key).focus()
-    })
+    const {node, editor} = this.props
+    editor.removeNodeByKey(node.key).focus()
   }
 
   handleCancelEvent = (event: SyntheticEvent<>) => {
@@ -259,25 +247,23 @@ export default class InlineObject extends React.Component<Props, State> {
 
   handleEditStart = (event: SyntheticMouseEvent<>) => {
     event.stopPropagation()
-    const {node, controller, readOnly} = this.props
+    const {node, editor, readOnly} = this.props
     if (readOnly) {
       this.handleView(event)
       return
     }
-    controller.change(change => {
-      change
-        .moveToEndOfNode(node)
-        .focus()
-        .blur()
-    })
+    editor
+      .moveToEndOfNode(node)
+      .focus()
+      .blur()
     setTimeout(() => {
       this.setFocus()
     }, 200)
   }
 
   setFocus = () => {
-    const {node, onFocus, editorValue} = this.props
-    const block = editorValue.document.getClosestBlock(node.key)
+    const {editor, node, onFocus} = this.props
+    const block = editor.value.document.getClosestBlock(node.key)
     onFocus([{_key: block.key}, 'children', {_key: node.key}, FOCUS_TERMINATOR])
   }
 
@@ -299,7 +285,7 @@ export default class InlineObject extends React.Component<Props, State> {
     const {
       attributes,
       blockContentFeatures,
-      editorValue,
+      editor,
       isSelected,
       markers,
       node,
@@ -327,7 +313,7 @@ export default class InlineObject extends React.Component<Props, State> {
 
     const classname = classNames([
       styles.root,
-      editorValue.selection.focus.isInNode(node) && styles.focused,
+      editor.value.selection.focus.isInNode(node) && styles.focused,
       isSelected && styles.selected,
       errors.length > 0 && styles.hasErrors
     ])

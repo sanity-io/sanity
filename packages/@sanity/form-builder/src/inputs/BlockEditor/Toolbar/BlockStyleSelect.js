@@ -5,12 +5,7 @@ import StyleSelect from 'part:@sanity/components/selects/style'
 
 import Text from '../nodes/Text'
 
-import type {
-  BlockContentFeature,
-  BlockContentFeatures,
-  SlateValue,
-  SlateController
-} from '../typeDefs'
+import type {BlockContentFeature, BlockContentFeatures, SlateValue, SlateEditor} from '../typeDefs'
 
 export type BlockStyleItem = {
   key: string,
@@ -22,7 +17,7 @@ export type BlockStyleItem = {
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
-  controller: SlateController,
+  editor: SlateEditor,
   editorValue: SlateValue
 }
 
@@ -36,11 +31,14 @@ export default class BlockStyleSelect extends React.Component<Props> {
     if ((nextFocusBlock && nextFocusBlock.key) !== (currentFocusBlock && currentFocusBlock.key)) {
       return true
     }
-    return nextFocusBlock.data.get('style') !== currentFocusBlock.data.get('style')
+    return (
+      (nextFocusBlock && nextFocusBlock.data.get('style')) !==
+      (currentFocusBlock && currentFocusBlock.data.get('style'))
+    )
   }
 
   getItemsAndValue() {
-    const {blockContentFeatures, controller} = this.props
+    const {blockContentFeatures, editor} = this.props
     const items = blockContentFeatures.styles.map((style: BlockContentFeature) => {
       const styleComponent = style && style.blockEditor && style.blockEditor.render
       const preview = (
@@ -53,7 +51,7 @@ export default class BlockStyleSelect extends React.Component<Props> {
         style: style.value,
         preview: preview,
         title: ` ${style.title}`,
-        active: controller.query('hasStyle', style.value)
+        active: editor.query('hasStyle', style.value)
       }
     })
     let value = items.filter(item => item.active)
@@ -74,8 +72,8 @@ export default class BlockStyleSelect extends React.Component<Props> {
   }
 
   handleChange = (item: BlockStyleItem) => {
-    const {controller} = this.props
-    controller.command('setBlockStyle', item.style)
+    const {editor} = this.props
+    editor.command('setBlockStyle', item.style)
     this.forceUpdate()
   }
 

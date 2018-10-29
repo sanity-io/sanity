@@ -11,7 +11,7 @@ import type {
   BlockContentFeatures,
   Path,
   SlateChange,
-  SlateController
+  SlateEditor
 } from '../typeDefs'
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 import CustomIcon from './CustomIcon'
@@ -26,7 +26,7 @@ type AnnotationItem = BlockContentFeature & {
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
-  controller: SlateController,
+  editor: SlateEditor,
   editorValue: SlateValue,
   onFocus: Path => void,
   userIsWritingText: boolean
@@ -45,15 +45,15 @@ const NOOP = () => {}
 
 export default class AnnotationButtons extends React.Component<Props> {
   shouldComponentUpdate(nextProps: Props) {
-    const {controller} = this.props
+    const {editor} = this.props
     if (nextProps.userIsWritingText) {
       return false
     }
     if (
       nextProps.userIsWritingText !== this.props.userIsWritingText ||
       nextProps.editorValue.inlines.size !== this.props.editorValue.inlines.size ||
-      controller.query('hasSelectionWithText', this.props.editorValue) === false ||
-      controller.query('hasSelectionWithText', nextProps.editorValue) === false
+      editor.query('hasSelectionWithText', this.props.editorValue) === false ||
+      editor.query('hasSelectionWithText', nextProps.editorValue) === false
     ) {
       return true
     }
@@ -61,30 +61,30 @@ export default class AnnotationButtons extends React.Component<Props> {
   }
 
   getItems() {
-    const {controller, blockContentFeatures, editorValue, userIsWritingText} = this.props
+    const {editor, blockContentFeatures, editorValue, userIsWritingText} = this.props
     const {inlines} = editorValue
 
     const disabled =
       userIsWritingText ||
-      controller.query('hasSelectionWithText') === false ||
+      editor.query('hasSelectionWithText') === false ||
       inlines.some(inline => inline.type !== 'span')
     return blockContentFeatures.annotations.map((annotation: BlockContentFeature) => {
       return {
         ...annotation,
-        active: controller.query('hasAnnotation', annotation.value),
+        active: editor.query('hasAnnotation', annotation.value),
         disabled
       }
     })
   }
 
   handleClick = (item: AnnotationItem, originalSelection: Range) => {
-    const {controller, onFocus} = this.props
+    const {editor, onFocus} = this.props
     if (item.disabled) {
       return
     }
-    controller.change((change: SlateChange) => {
+    editor.change((change: SlateChange) => {
       const key = randomKey(12)
-      controller.command('toggleAnnotation', {annotationName: item.value, key})
+      editor.command('toggleAnnotation', {annotationName: item.value, key})
       // Make the block editor focus the annotation input
       const focusPath = [
         {_key: change.value.focusBlock.key},
@@ -99,7 +99,7 @@ export default class AnnotationButtons extends React.Component<Props> {
   }
 
   renderAnnotationButton = (item: AnnotationItem) => {
-    const {editorValue} = this.props
+    const {editor} = this.props
     let Icon
     const icon = item.blockEditor ? item.blockEditor.icon : null
     if (icon) {
@@ -117,7 +117,7 @@ export default class AnnotationButtons extends React.Component<Props> {
     return (
       <ToolbarClickAction
         onAction={onAction}
-        editorValue={editorValue}
+        editor={editor}
         key={`annotationButton${item.value}`}
       >
         <ToggleButton

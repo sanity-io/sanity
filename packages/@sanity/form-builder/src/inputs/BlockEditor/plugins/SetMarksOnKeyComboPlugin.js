@@ -1,7 +1,7 @@
 // @flow
 
 import isKeyHotkey, {toKeyName} from 'is-hotkey'
-import {Change} from 'slate'
+import type {SlateEditor} from '../typeDefs'
 
 type Options = {
   decorators?: string[]
@@ -26,7 +26,7 @@ export const keyMaps = {
 export default function SetMarksOnKeyComboPlugin(options: Options = {}) {
   const decorators = options.decorators || []
   return {
-    onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change, next: void => void) {
+    onKeyDown(event: SyntheticKeyboardEvent<*>, editor: SlateEditor, next: void => void) {
       let mark
       if (isStrongHotkey(event)) {
         mark = 'strong'
@@ -44,7 +44,7 @@ export default function SetMarksOnKeyComboPlugin(options: Options = {}) {
         return next()
       }
       event.preventDefault()
-      return change.toggleMark(mark)
+      return editor.toggleMark(mark)
     }
   }
 }

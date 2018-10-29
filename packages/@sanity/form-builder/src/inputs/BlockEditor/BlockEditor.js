@@ -23,7 +23,6 @@ import type {
   FormBuilderValue,
   Marker,
   Path,
-  Patch,
   RenderBlockActions,
   RenderCustomMarkers,
   SlateChange,
@@ -35,11 +34,6 @@ import type {
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
-  changeToPatches: (
-    unchangedEditorValue: SlateValue,
-    change: SlateChange,
-    value: ?(FormBuilderValue[])
-  ) => Patch[],
   editorValue: SlateValue,
   fullscreen: boolean,
   isActive: boolean,
@@ -59,7 +53,6 @@ type Props = {
   }) => {insert?: FormBuilderValue[], path?: []},
   onPatch: (event: PatchEvent) => void,
   onToggleFullScreen: (event: SyntheticEvent<*>) => void,
-  patchesToChange: (patches: Patch[], editorValue: SlateValue, snapshot: ?any) => SlateChange,
   readOnly?: boolean,
   renderBlockActions?: RenderBlockActions,
   renderCustomMarkers?: RenderCustomMarkers,
@@ -244,9 +237,9 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
     }
   }
 
-  getController() {
+  getEditor() {
     if (this._editor && this._editor.current) {
-      return this._editor.current.getController()
+      return this._editor.current.getEditor()
     }
     return null
   }
@@ -254,7 +247,6 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
   renderEditor(): ReactElement<typeof Editor> {
     const {
       blockContentFeatures,
-      changeToPatches,
       editorValue,
       focusPath,
       fullscreen,
@@ -265,7 +257,6 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
       onLoading,
       onPatch,
       onPaste,
-      patchesToChange,
       isLoading,
       readOnly,
       renderBlockActions,
@@ -278,7 +269,6 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
     return (
       <Editor
         blockContentFeatures={blockContentFeatures}
-        changeToPatches={changeToPatches}
         editorValue={editorValue}
         focusPath={focusPath}
         fullscreen={fullscreen}
@@ -291,7 +281,6 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
         onPaste={onPaste}
         onPatch={onPatch}
         onToggleFullScreen={this.handleToggleFullscreen}
-        patchesToChange={patchesToChange}
         readOnly={readOnly}
         ref={this._editor}
         renderBlockActions={renderBlockActions}
@@ -329,7 +318,7 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
         <div className={styles.toolbar}>
           <Toolbar
             blockContentFeatures={blockContentFeatures}
-            controller={this.getController()}
+            editor={this.getEditor()}
             editorValue={editorValue}
             fullscreen={fullscreen}
             markers={markers}

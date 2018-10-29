@@ -10,7 +10,7 @@ function createCustomBlockFromData(block) {
     throw new Error(`Data got no value: ${JSON.stringify(block.data)}`)
   }
   const finalBlock = {...value}
-  finalBlock._key = block.data._key || randomKey(12)
+  finalBlock._key = block.key || randomKey(12)
   if (!finalBlock._type) {
     throw new Error(`The block must have a _type: ${JSON.stringify(value)}`)
   }
@@ -81,9 +81,9 @@ function toSanityBlock(block, blockContentFeatures, options = {}) {
     const spanIndex = () => {
       return index++
     }
-    if (!sanityBlock._key) {
-      sanityBlock._key = sanityBlock.key || randomKey(12)
-    }
+
+    sanityBlock._key = block.key || randomKey(12)
+
     if (!sanityBlock.style) {
       sanityBlock.style = BLOCK_DEFAULT_STYLE
     }
@@ -93,17 +93,13 @@ function toSanityBlock(block, blockContentFeatures, options = {}) {
       )
     )
     sanityBlock.markDefs = uniqBy(sanityBlock.markDefs, def => def._key)
-    return options.normalize ? normalizeBlock(sanityBlock) : sanityBlock
+    return sanityBlock
   }
   if (blockContentFeatures.types.blockObjects.map(bObj => bObj.name).includes(block.type)) {
     return createCustomBlockFromData(block)
   }
-  // A block that is not in the schema, so we don't know what to do with it,
-  // Return an empty block with just key and type
-  return {
-    _type: block.type,
-    _key: randomKey(12)
-  }
+  // A block that is not in the schema, so we don't know what to do with it
+  throw new Error(`Uknown block type: '${block.type}'`)
 }
 
 export default function editorValueToBlocks(value, type, options = {}) {
@@ -112,5 +108,8 @@ export default function editorValueToBlocks(value, type, options = {}) {
   if (!nodes || nodes.length === 0) {
     return []
   }
-  return nodes.map(node => toSanityBlock(node, blockContentFeatures, options)).filter(Boolean)
+  return nodes
+    .map(node => toSanityBlock(node, blockContentFeatures, options))
+    .filter(Boolean)
+    .map(normalizeBlock)
 }
