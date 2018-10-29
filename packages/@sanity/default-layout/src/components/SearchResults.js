@@ -23,6 +23,23 @@ class SearchResults extends React.PureComponent {
     this.element = ref
   }
 
+  componentDidUpdate(prevProps) {
+    // Scroll active element into view (when user uses arrow keys)
+    if (this.element && prevProps.activeIndex !== this.props.activeIndex) {
+      const activeItemElement = this.element.childNodes[this.props.activeIndex]
+
+      if (activeItemElement) {
+        // Use try/catch to avoid crashing unsupported browsers
+        // eslint-disable-next-line max-depth
+        try {
+          activeItemElement.scrollIntoView({block: 'nearest'})
+        } catch (__) {
+          // ignore
+        }
+      }
+    }
+  }
+
   render() {
     const {activeIndex, isLoading, items, query, renderItem} = this.props
     const noResults = !isLoading && query.length > 0 && items.length === 0
