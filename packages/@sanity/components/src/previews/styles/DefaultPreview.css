@@ -148,8 +148,8 @@
   vertical-align: middle;
   line-height: 2.5rem;
   margin-left: auto;
-  color: var(--gray-darker-transparent);
   white-space: nowrap;
+  opacity: 0.6;
 }
 
 .progress {
