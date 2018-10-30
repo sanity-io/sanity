@@ -1,5 +1,9 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+:root {
+  --nav-bar-box: 3.0625em; /* 49px */
+}
+
 .root {
   position: relative;
 
@@ -118,7 +122,7 @@
   }
 
   @nest .isBleeding & {
-    min-width: 49px;
+    min-width: var(--nav-bar-box);
   }
 }
 
@@ -142,6 +146,7 @@
 }
 
 .results {
+  composes: shadow-10dp from "part:@sanity/base/theme/shadows-style";
   display: none;
   position: absolute;
   background: #fff;
@@ -151,12 +156,11 @@
   width: 100%;
   z-index: 150;
 
-  @nest .isBleeding & {
-    top: 49px;
+  @nest .root.isBleeding & {
+    top: var(--nav-bar-box);
   }
 
   @nest .root:not(.isBleeding) & {
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px;
     max-height: 380px;
