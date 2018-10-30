@@ -39,7 +39,8 @@ export const FileType = {
 
     const parsed = Object.assign(pick(FILE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: FILE_CORE,
-      options: options
+      options: options,
+      isCustomized: Boolean(subTypeDef.fields)
     })
 
     lazyGetter(parsed, 'fields', () => {
