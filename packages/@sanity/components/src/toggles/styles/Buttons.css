@@ -5,8 +5,8 @@
 }
 
 .label {
-  display: inline-block;
-  margin-right: 0.5em;
+  composes: label from 'part:@sanity/base/theme/typography/forms-style';
+  margin-bottom: 1em;
 }
 
 .button {

@@ -162,36 +162,6 @@ storiesOf('Buttons', module)
       </div>
     )
   })
-
-  .add('Button collection', () => {
-    const backgroundColor = color('View color', '#fff', 'test')
-    return (
-      <div style={{padding: '2rem', backgroundColor}}>
-        <ButtonCollection>
-          <Button onClick={action('clicked')}>Undefined</Button>
-          <Button onClick={action('clicked')} color="primary">
-            Primary
-          </Button>
-          <Button onClick={action('clicked')} color="danger">
-            Danger
-          </Button>
-          <Button onClick={action('clicked')} color="success">
-            Success
-          </Button>
-          <Button onClick={action('clicked')} icon={SanityLogoIcon} color="danger" title="Danger" />
-          <Button onClick={action('clicked')} icon={SanityLogoIcon} inverted title="Inverted" />
-          <Button
-            onClick={action('clicked')}
-            icon={SanityLogoIcon}
-            inverted
-            color="danger"
-            title="Inverted danger"
-          />
-          <Button onClick={action('clicked')} icon={SanityLogoIcon} kind="simple" title="Simple" />
-        </ButtonCollection>
-      </div>
-    )
-  })
   .add('Examples', () => {
     const disabled = boolean('Disabled', false)
     const loading = boolean('Loading', false)
@@ -205,34 +175,37 @@ storiesOf('Buttons', module)
       >
         <form style={{padding: '2rem', fontSize: `${fontSize}rem`, backgroundColor}}>
           <h2>Default</h2>
-          <ButtonCollection>
-            <Button
-              onClick={action('clicked')}
-              icon={SanityLogoIcon}
-              disabled={disabled}
-              loading={loading}
-            >
-              Default
-            </Button>
-            <Button
-              onClick={action('clicked')}
-              icon={SanityLogoIcon}
-              inverted
-              disabled={disabled}
-              loading={loading}
-            >
-              Inverted
-            </Button>
-            <Button
-              onClick={action('clicked')}
-              icon={SanityLogoIcon}
-              kind="simple"
-              disabled={disabled}
-              loading={loading}
-            >
-              Simple
-            </Button>
-          </ButtonCollection>
+          Some text
+          <Button onClick={action('clicked')} disabled={disabled} loading={loading}>
+            Default
+          </Button>
+          between
+          <Button
+            onClick={action('clicked')}
+            icon={SanityLogoIcon}
+            disabled={disabled}
+            loading={loading}
+          >
+            Default with icon
+          </Button>
+          <Button
+            onClick={action('clicked')}
+            icon={SanityLogoIcon}
+            inverted
+            disabled={disabled}
+            loading={loading}
+          >
+            Inverted
+          </Button>
+          <Button
+            onClick={action('clicked')}
+            icon={SanityLogoIcon}
+            kind="simple"
+            disabled={disabled}
+            loading={loading}
+          >
+            Simple
+          </Button>
           <h2>Colors</h2>
           <ButtonCollection>
             <Button onClick={action('clicked')} disabled={disabled} loading={loading}>
@@ -544,7 +517,7 @@ storiesOf('Button collection', module)
   .addDecorator(withKnobs)
   .add('Default', () => {
     const backgroundColor = color('View color', '#fff', 'test')
-
+    const qtyButtons = number('# buttons', 2, 'test')
     return (
       <div style={{backgroundColor, margin: '2rem'}}>
         <Sanity
@@ -552,7 +525,7 @@ storiesOf('Button collection', module)
           propTables={[ButtonCollection]}
         >
           <ButtonCollection
-            align={select('align', ['start', 'end'], 'props')}
+            align={select('align', ['start', 'end'], 'start', 'props')}
             secondary={range(0, number('# secondary', 1)).map(i => {
               return (
                 <Button inverted key={i}>
@@ -561,7 +534,7 @@ storiesOf('Button collection', module)
               )
             })}
           >
-            {range(0, number('# buttons', 2)).map(i => {
+            {range(0, qtyButtons).map(i => {
               return <Button key={i}>{i % 2 ? chance.word() : chance.name()}</Button>
             })}
           </ButtonCollection>

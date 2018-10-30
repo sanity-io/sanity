@@ -1,27 +1,22 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.root {
-  position: relative;
+.outer {
   display: inline-block;
-  composes: spacing from 'part:@sanity/components/buttons/default-style';
+  composes: spacing from './DefaultButton.css';
 }
 
 .button {
   position: relative;
 }
 
-.title {
-  padding-right: 1em;
+.inner {
+  display: flex;
+  align-items: center;
+  outline: noene;
 }
 
 .arrow {
-  display: flex;
-  align-items: center;
-
-  @nest & svg {
-    display: block;
-    transform: scale(1.7);
-  }
+  margin-left: 0.5em;
 }
 
 .list {

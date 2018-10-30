@@ -542,7 +542,7 @@ export default withRouterHOC(
               duration={100}
               open={showValidationTooltip}
               onRequestClose={this.handleCloseValidationResults}
-              style={{padding: 0}}
+              style={{marginRight: '0.5em'}}
               html={
                 <ValidationList
                   markers={validation}
@@ -561,7 +561,7 @@ export default withRouterHOC(
                 onClick={this.handleToggleValidationResults}
               >
                 {errors.length}
-                <span style={{paddingLeft: '0.5em'}}>
+                <span style={{paddingLeft: '0.5em', display: 'flex'}}>
                   <ChevronDown />
                 </span>
               </Button>

@@ -168,18 +168,16 @@ export default withValuePath(
                   value={typeof inputText === 'string' ? inputText : value.current}
                 />
               </div>
-
-              <div className={styles.button}>
-                {hasSourceField && (
-                  <Button
-                    disabled={loading || !hasSource}
-                    loading={loading}
-                    onClick={this.handleGenerateSlug}
-                  >
-                    Generate slug
-                  </Button>
-                )}
-              </div>
+              {hasSourceField && (
+                <Button
+                  className={styles.button}
+                  disabled={loading || !hasSource}
+                  loading={loading}
+                  onClick={this.handleGenerateSlug}
+                >
+                  Generate slug
+                </Button>
+              )}
             </div>
           </FormField>
         )
