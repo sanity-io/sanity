@@ -9,7 +9,7 @@
   --backdrop-background-color: color(var(--gray-base) a(40%));
   --main-navigation-background-color: color(var(--brand-primary) shade(70%) saturation(20%));
   --main-navigation-text-color: color(var(--main-navigation-background-color) contrast(80%));
-  --dialog-header-background-color: var(--main-navigation-background-color);
+  --dialog-header-background-color: color(var(--brand-primary) shade(20%) saturation(30%));
   --dialog-header-text-color: var(--main-navigation-text-color);
   --header-height: 3rem;
   --checkerboard-color: color(var(--component-text-color) a(5%));
