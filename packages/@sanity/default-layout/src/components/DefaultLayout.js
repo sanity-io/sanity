@@ -110,11 +110,9 @@ export default withRouterHOC(
     }
 
     handleSwitchTool = () => {
-      if (window && !window.matchMedia('all and (min-width: 32em)').matches) {
-        this.setState({
-          menuIsOpen: false
-        })
-      }
+      this.setState({
+        menuIsOpen: false
+      })
     }
 
     handleSearchOpen = () => {
