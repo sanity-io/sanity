@@ -89,7 +89,11 @@ class SearchField extends React.PureComponent {
               <Hotkeys keys={hotkeys} />
             </div>
           )}
-          <div className={styles.clearButton} onClick={onClear} title="Clear search">
+          <div
+            className={value ? styles.clearButtonWithValue : styles.clearButton}
+            onClick={onClear}
+            title="Clear search"
+          >
             <CloseIcon />
             <Ink duration={1000} opacity={0.1} radius={200} />
           </div>
