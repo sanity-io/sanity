@@ -1,35 +1,11 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  position: relative;
-  cursor: default;
-  user-select: none;
-  border: 1px solid currentColor;
   padding: var(--small-padding);
-  margin: var(--small-padding);
   box-sizing: border-box;
   opacity: 0.5;
 
   @nest &:hover {
     opacity: 1;
   }
-}
-
-.currentSpace {
-  white-space: nowrap;
-  vertical-align: middle;
-}
-
-.arrow {
-  font-size: 1em;
-}
-
-.menu {
-  position: absolute;
-  top: var(--medium-padding);
-  left: 0;
-  z-index: 10;
 }
