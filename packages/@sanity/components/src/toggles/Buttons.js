@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/toggles/buttons-style'
-import Button from 'part:@sanity/components/buttons/default'
+import ToggleButton from 'part:@sanity/components/toggles/button'
 
 const ITEM_SHAPE = {
   icon: PropTypes.node,
@@ -27,19 +27,18 @@ export default class ToggleButtons extends React.Component {
     return (
       <div className={styles.root}>
         <div className={styles.label}>{label}</div>
-
         {items.map((item, i) => {
           return (
-            <Button
-              className={item == value ? styles.selectedButton : styles.button}
+            <ToggleButton
               kind="simple"
               key={i}
               icon={item.icon}
               onClick={this.handleClick}
+              selected={value === items[i]}
               data-index={i}
             >
               {item.title}
-            </Button>
+            </ToggleButton>
           )
         })}
       </div>
