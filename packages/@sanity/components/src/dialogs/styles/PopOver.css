@@ -107,7 +107,7 @@
 
   @nest .popper[data-placement^="bottom"] & {
     @nest &::before {
-      background-color: var(--brand-primary);
+      background-color: var(--dialog-header-background-color);
     }
   }
 }
@@ -239,8 +239,8 @@
 
 .title {
   margin: 0;
-  background-color: var(--array--add-item-color);
-  color: var(--component-bg);
+  background-color: var(--dialog-header-background-color);
+  color: var(--dialog-header-text-color);
   padding: var(--small-padding);
   font-size: 1rem;
   font-weight: 400;
