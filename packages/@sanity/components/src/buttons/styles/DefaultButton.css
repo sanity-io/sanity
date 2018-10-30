@@ -1,5 +1,14 @@
 @import "part:@sanity/base/theme/variables-style";
 
+:root {
+  --button-focus-shadow:
+    0 0 0 3px color(var(--input-border-color-focus) a(50%));
+  --button-focus-shadow--danger:
+    0 0 0 3px color(var(--state-danger-color) a(50%));
+  --button-focus-shadow--success:
+    0 0 0 3px color(var(--state-success-color) a(50%));
+}
+
 @keyframes focused {
   0% {
     transform: scale(1);
@@ -14,38 +23,19 @@
   }
 }
 
-:root {
-  --focus-shadow:
-    0 0 2px 1px color(var(--input-border-color-focus)),
-    0 0 4px 0 color(var(--input-border-color-focus) a(60%)),
-    0 0 10px 5px color(var(--input-border-color-focus) a(10%));
-  --focus-shadow--danger:
-    0 0 2px 1px color(var(--state-danger-color)),
-    0 0 4px 0 color(var(--state-danger-color) a(60%)),
-    0 0 10px 5px color(var(--state-danger-color) a(10%));
-  --focus-shadow--success:
-    0 0 2px 1px color(var(--state-success-color)),
-    0 0 4px 0 color(var(--state-success-color) a(60%)),
-    0 0 10px 5px color(var(--state-success-color) a(10%));
-  --focus-shadow-white:
-    0 0 2px 1px color(var(--white)),
-    0 0 4px 0 color(var(--white) a(60%)),
-    0 0 10px 5px color(var(--white) a(10%));
-}
-
 .spacing {
-  display: inline-block;
+  display: inline-flex;
 }
 
 .spacing + .spacing {
-  /* margin-left: var(--small-padding); */
+  margin-left: var(--small-padding);
 }
 
 .root {
-  /* composes: spacing; */
+  composes: spacing;
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  vertical-align: middle;
+  justify-content: stretch;
   margin: 0;
   position: relative;
   outline: none;
@@ -55,29 +45,38 @@
   font-family: inherit;
   cursor: default;
   user-select: none;
-  transition: background-color 0.15s, color 0.15s, opacity 0.15s;
+  transition: background-color 0.15s, color 0.15s, opacity 0.15s, box-shadow 0.1s;
   border-radius: var(--button-border-radius);
   text-decoration: none;
   padding: 0;
 }
 
-.content {
+span.inner {
+  outline: none;
   display: flex;
-  box-sizing: border-box;
-  align-items: center;
-  line-height: 1.25em;
+  justify-self: stretch;
+  justify-content: stretch;
+  align-items: stretch;
+  width: stretch;
 }
 
-.inner {
+span.content {
   display: flex;
   align-items: center;
   justify-content: center;
-  outline: none;
-  box-sizing: border-box;
+  width: stretch;
+}
+
+.icon {
+  display: flex;
+  font-size: 1em;
+  margin-right: var(--small-padding);
+
+  @nest & > svg { display: block; }
 }
 
 .root:focus {
-  box-shadow: var(--focus-shadow);
+  box-shadow: var(--button-focus-shadow);
 
   @nest & .content {
     animation-name: focused;
@@ -87,7 +86,7 @@
 
 /* Handles fileupload buttons with focus-within */
 .root:not(:focus):focus-within .inner:not(:focus) {
-  box-shadow: var(--focus-shadow);
+  box-shadow: var(--button-focus-shadow);
 }
 
 .root:not(:focus):focus-within .inner:not(:focus) .content {
@@ -123,22 +122,22 @@
       margin: 0.7em;
 
       @media (--screen-medium) {
-        margin: 0.7em 0.6em;
+        margin: 0.5em 0.6em;
       }
     }
   }
 }
 
 .shadow {
-  composes: shadow-1dp from "part:@sanity/base/theme/shadows-style";
+  /* composes: shadow-1dp from "part:@sanity/base/theme/shadows-style"; */
 }
 
 .default {
   composes: root;
-
-  /* composes: shadow; */
+  composes: shadow;
   background-color: var(--default-button-color);
   color: var(--default-button-color--text);
+  border: 1px solid var(--default-button-color);
 
   @nest & .spinner {
     background-color: var(--gray-lighter);
@@ -197,6 +196,7 @@
 
   @nest &.root:focus {
     border-color: var(--input-border-color-focus);
+    box-shadow: var(--button-focus-shadow);
   }
 }
 
@@ -258,8 +258,9 @@
   }
 
   @nest &.root:focus {
-    box-shadow: var(--focus-shadow--danger);
+    /* outline-color: var(--state-danger-color); */
     border-color: var(--state-danger-color);
+    box-shadow: var(--button-focus-shadow--danger);
   }
 
   @nest &:not(.disabled):hover {
@@ -307,8 +308,9 @@
   }
 
   @nest &.root:focus {
-    box-shadow: var(--focus-shadow--success);
+    /* outline-color: var(--state-success-color); */
     border-color: var(--state-success-color);
+    box-shadow: var(--button-focus-shadow--success);
   }
 
   @nest &:not(.disabled):hover {
@@ -345,7 +347,7 @@
   background-color: var(--white);
 
   @nest &.root:focus {
-    box-shadow: var(--focus-shadow-white);
+    outline-color: var(--white);
   }
 
   @nest & .spinner {
@@ -368,7 +370,7 @@
 
     @nest &:not(.disabled) {
       @nest &:focus {
-        box-shadow: var(--focus-shadow-white);
+        outline-color: var(--white);
         border-color: var(--white);
       }
 
@@ -419,11 +421,6 @@
 
 .iconContainer {
   /* empty */
-}
-
-.icon {
-  /* transform: scale(1.2); */
-  margin-right: var(--small-padding);
 }
 
 .disabled {

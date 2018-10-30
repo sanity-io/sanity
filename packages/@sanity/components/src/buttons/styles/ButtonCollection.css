@@ -22,7 +22,14 @@
   font-size: var(--font-size-small);
 }
 
+.noSpacing {
+  @nest & > * {
+    margin: 0 !important;
+  }
+}
+
 .grid {
+  composes: noSpacing;
   display: grid;
   grid-gap: var(--small-padding);
   grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
@@ -41,6 +48,7 @@
 
 .primary,
 .secondary {
+  composes: noSpacing;
   display: grid;
   grid-gap: var(--small-padding);
   /* grid-template-columns: repeat(auto-fit, minmax(3rem, 1fr)); */

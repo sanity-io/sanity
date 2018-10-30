@@ -123,7 +123,11 @@ export default function createButtonLike(Component, {displayName, defaultProps =
                   <Spinner inline />
                 </span>
               )}
-              {Icon && <Icon className={styles.icon} />}
+              {Icon && (
+                <div className={styles.icon}>
+                  <Icon />
+                </div>
+              )}
               {children}
               {ripple && !disabled && <Ink duration={1000} opacity={0.1} radius={200} />}
             </span>

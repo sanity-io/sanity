@@ -137,48 +137,47 @@ export default class DropDownButton extends React.PureComponent {
         onBlur={this.handleButtonBlur}
         ref={this.buttonElement}
       >
-        <span className={styles.title}>{children}</span>
-        <span className={styles.arrow}>
-          <ArrowIcon color="inherit" />
-        </span>
+        <div className={styles.inner}>
+          {children}
+          <ArrowIcon color="inherit" className={styles.arrow} />
+        </div>
       </Button>
     )
 
     return (
-      <div className={`${styles.root} ${className}`}>
-        <Poppable
-          modifiers={modifiers}
-          target={target}
-          onEscape={this.handleClose}
-          onClickOutside={this.handleClose}
-        >
-          {menuOpened && (
-            <div className={styles.popper} style={{minWidth: `${width}px`}}>
-              {/* component list causes error here */}
-              <List className={styles.list}>
-                <ArrowKeyNavigation>
-                  {items.map((item, i) => {
-                    return (
-                      <Item
-                        key={i}
-                        className={styles.listItem}
-                        onClick={() => this.handleItemClick(item)} //eslint-disable-line react/jsx-no-bind
-                        onKeyPress={event => this.handleItemKeyPress(event, item)} //eslint-disable-line react/jsx-no-bind
-                        item={item}
-                        tabIndex={0}
-                        ref={i === 0 && this.firstItemElement}
-                      >
-                        {renderItem(item)}
-                      </Item>
-                    )
-                  })}
-                </ArrowKeyNavigation>
-              </List>
-              <div tabIndex={0} onFocus={this.handleMenuBlur} />
-            </div>
-          )}
-        </Poppable>
-      </div>
+      <Poppable
+        modifiers={modifiers}
+        target={target}
+        onEscape={this.handleClose}
+        onClickOutside={this.handleClose}
+        referenceClassName={styles.outer}
+      >
+        {menuOpened && (
+          <div className={styles.popper} style={{minWidth: `${width}px`}}>
+            {/* component list causes error here */}
+            <List className={styles.list}>
+              <ArrowKeyNavigation>
+                {items.map((item, i) => {
+                  return (
+                    <Item
+                      key={i}
+                      className={styles.listItem}
+                      onClick={() => this.handleItemClick(item)} //eslint-disable-line react/jsx-no-bind
+                      onKeyPress={event => this.handleItemKeyPress(event, item)} //eslint-disable-line react/jsx-no-bind
+                      item={item}
+                      tabIndex={0}
+                      ref={i === 0 && this.firstItemElement}
+                    >
+                      {renderItem(item)}
+                    </Item>
+                  )
+                })}
+              </ArrowKeyNavigation>
+            </List>
+            <div tabIndex={0} onFocus={this.handleMenuBlur} />
+          </div>
+        )}
+      </Poppable>
     )
   }
 }
