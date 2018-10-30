@@ -10,6 +10,7 @@ import castMember from './castMember'
 import movie from './movie'
 import person from './person'
 import screening from './screening'
+import plotSummary from './plotSummary'
 import plotSummaries from './plotSummaries'
 
 // Then we give our schema to the builder and provide the result to Sanity
@@ -27,6 +28,7 @@ export default createSchema({
     // When added to this list, object types can be used as
     // { type: 'typename' } in other document schemas
     blockContent,
+    plotSummary,
     plotSummaries,
     castMember,
     crewMember
