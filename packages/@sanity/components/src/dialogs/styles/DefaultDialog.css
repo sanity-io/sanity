@@ -59,38 +59,18 @@
 
 .danger {
   composes: root;
-  background-color: color(var(--body-bg) a(90%));
-
-  @nest & a {
-    color: inherit;
-  }
 }
 
 .success {
   composes: root;
-  background-color: color(var(--body-bg) a(90%));
-
-  @nest & a {
-    color: inherit;
-  }
 }
 
 .info {
   composes: root;
-  background-color: color(var(--body-bg) a(90%));
-
-  @nest & a {
-    color: inherit;
-  }
 }
 
 .warning {
   composes: root;
-  background-color: color(var(--body-bg) a(90%));
-
-  @nest & a {
-    color: inherit;
-  }
 }
 
 .dialog {
@@ -106,28 +86,7 @@
   height: auto;
   width: calc(100vw - var(--medium-padding) * 2);
   box-sizing: border-box;
-  background-color: var(--body-bg);
   transition: all 0.3s linear;
-
-  @nest .danger & {
-    background-color: var(--state-danger-color);
-    color: var(--state-danger-color--text);
-  }
-
-  @nest .success & {
-    background-color: var(--state-success-color);
-    color: var(--state-success-color--text);
-  }
-
-  @nest .warning & {
-    background-color: var(--state-warning-color);
-    color: var(--state-warning-color--text);
-  }
-
-  @nest .warning & {
-    background-color: var(--state-warning-color);
-    color: var(--state-warning-color--text);
-  }
 
   @media (--screen-medium) {
     width: auto;
@@ -149,9 +108,28 @@
   background-color: var(--dialog-header-background-color);
   color: var(--dialog-header-text-color);
   border-radius: var(--dialog-border-radius) var(--dialog-border-radius) 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
   @nest .danger & {
-    border-bottom: 1px solid var(--state-danger-color--text);
+    background-color: var(--state-danger-color);
+    color: var(--state-danger-color--text);
+  }
+
+  @nest .success & {
+    background-color: var(--state-success-color);
+    color: var(--state-success-color--text);
+  }
+
+  @nest .warning & {
+    background-color: var(--state-warning-color);
+    color: var(--state-warning-color--text);
+  }
+
+  @nest .warning & {
+    background-color: var(--state-warning-color);
+    color: var(--state-warning-color--text);
   }
 }
 
@@ -162,13 +140,25 @@
 
 .content {
   composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
+  border-radius: var(--dialog-border-radius) var(--dialog-border-radius) 0 0;
   box-sizing: border-box;
   max-height: calc(100vh - 50px);
   max-width: 100vw;
+  background-color: var(--body-bg);
 
   @nest .hasFunctions & {
     max-height: calc(100vh - 10rem);
   }
+}
+
+.contentWithoutFooter {
+  composes: content;
+  border-radius: var(--dialog-border-radius);
+}
+
+.header + .content {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
 }
 
 .title {
@@ -187,28 +177,37 @@
 }
 
 .closeButton {
-  position: absolute;
-  color: inherit;
-  top: 0.5rem;
-  right: 0.5rem;
-  background-color: transparent;
-  border: none;
-  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  justify-content: center;
   outline: none;
-  cursor: default;
-  transition: transform 0.1s linear;
+  background-color: transparent;
+  color: inherit;
+  border: none;
+  position: relative;
+  width: 3em;
 
-  &:hover {
+  @nest & .closeButtonIcon {
+    transition: transform 0.1s linear;
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+    justify-content: center;
+  }
+
+  @nest &:hover .closeButtonIcon {
     transform: scale(1.2);
   }
 
-  &:active {
+  @nest &:active .closeButtonIcon {
     transform: scale(0.8);
   }
 }
 
 .closeButtonOutside {
-  composes: closeButton;
+  position: absolute;
+  outline: none;
   composes: shadow-5dp from 'part:@sanity/base/theme/shadows-style';
   color: var(--black);
   border-radius: 50%;
@@ -219,8 +218,21 @@
   z-index: 1;
   height: 2rem;
   width: 2rem;
+  transition: transform 0.1s linear;
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  justify-content: center;
 
-  & svg {
+  @nest &:hover .closeButtonIcon {
+    transform: scale(1.2);
+  }
+
+  @nest &:active .closeButtonIcon {
+    transform: scale(0.8);
+  }
+
+  @nest & svg {
     height: 1rem;
     width: 1rem;
     position: absolute;
@@ -234,7 +246,7 @@
   font-size: var(--font-size-small);
   box-sizing: border-box;
   padding: var(--medium-padding);
-  background-color: color(var(--body-bg) a(10%));
+  background-color: var(--body-bg);
   border-radius: 0 0 var(--dialog-border-radius) var(--dialog-border-radius);
   display: flex;
 }
