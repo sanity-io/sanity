@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import assetUrlBuilder from 'part:@sanity/base/asset-url-builder'
 import imageUrlBuilder from '@sanity/image-url'
+import assetUrlBuilder from 'part:@sanity/base/asset-url-builder'
 import PreviewComponentCard from 'part:@sanity/components/previews/card'
 import PreviewComponentDefault from 'part:@sanity/components/previews/default'
 import PreviewComponentDetail from 'part:@sanity/components/previews/detail'
@@ -11,8 +11,6 @@ import PreviewComponentBlock from 'part:@sanity/components/previews/block'
 import PreviewComponentBlockImage from 'part:@sanity/components/previews/block-image'
 import sanityClient from 'part:@sanity/base/client'
 import fileIcon from 'part:@sanity/base/file-icon'
-
-const imageBuilder = imageUrlBuilder(sanityClient)
 
 const previewComponentMap = {
   default: PreviewComponentDefault,
@@ -40,6 +38,8 @@ export default class SanityDefaultPreview extends React.PureComponent {
   }
 
   renderMedia = options => {
+    const imageBuilder = imageUrlBuilder(sanityClient)
+
     // This functions exists because the previews provides options
     // for the rendering of the media (dimensions)
     const {dimensions} = options
