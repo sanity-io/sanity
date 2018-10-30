@@ -1,6 +1,7 @@
 // @flow
 import React from 'react'
 
+import type {Type} from '../../typedefs'
 import PatchEvent, {set} from '../../PatchEvent'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 
@@ -34,7 +35,8 @@ type Props = {
   value?: Value,
   onChange: PatchEvent => void,
   readOnly: ?boolean,
-  level: number
+  level: number,
+  type: Type
 }
 
 type State = {
@@ -57,11 +59,25 @@ export default class ImageToolInput extends React.Component<Props, State> {
   }
 
   handleChangeEnd = () => {
-    const {onChange, readOnly} = this.props
+    const {onChange, readOnly, type} = this.props
     const {value} = this.state
+
+    // For backwards compatibility, where hotspot/crop might not have a named type yet
+    const cropField = type.fields.find(
+      field => field.name === 'crop' && field.type.name !== 'object'
+    )
+    const hotspotField = type.fields.find(
+      field => field.name === 'hotspot' && field.type.name !== 'object'
+    )
+
     if (!readOnly) {
-      onChange(PatchEvent.from([set(value.crop, ['crop']), set(value.hotspot, ['hotspot'])]))
+      const crop = cropField ? {_type: cropField.type.name, ...value.crop} : value.crop
+      const hotspot = hotspotField
+        ? {_type: hotspotField.type.name, ...value.hotspot}
+        : value.hotspot
+      onChange(PatchEvent.from([set(crop, ['crop']), set(hotspot, ['hotspot'])]))
     }
+
     this.setState({value: this.props.value})
   }
 
