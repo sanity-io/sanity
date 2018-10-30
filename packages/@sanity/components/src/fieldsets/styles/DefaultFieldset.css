@@ -99,7 +99,7 @@
   }
 
   @nest .hasErrors:focus-within & {
-    box-shadow: var(--fieldset-box-shadow--invalid) !important;
+    box-shadow: var(--fieldset-box-shadow--invalid-focus) !important;
   }
 }
 
