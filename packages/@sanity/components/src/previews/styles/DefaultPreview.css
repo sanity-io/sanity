@@ -149,7 +149,8 @@
   line-height: 2.5rem;
   margin-left: auto;
   white-space: nowrap;
-  opacity: 0.6;
+  opacity: 0.7;
+  color: currentColor;
 }
 
 .progress {
