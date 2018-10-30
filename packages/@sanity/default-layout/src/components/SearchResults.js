@@ -70,11 +70,9 @@ class SearchResults extends React.PureComponent {
     return (
       <ul className={styles.root} ref={this.setElement}>
         {items.map((item, index) => {
-          let className = styles.item
-          if (activeIndex === index) className += ` ${styles.activeItem}`
           return (
-            <li key={item._id} className={className}>
-              {renderItem(item, index, styles.link)}
+            <li key={item._id} className={styles.listItem}>
+              {renderItem(item, index, activeIndex === index ? styles.activeItem : styles.item)}
             </li>
           )
         })}
