@@ -33,12 +33,13 @@ export const ImageType = {
       hotspotFields = hotspotFields.map(field => ({...field, hidden: true}))
     }
 
-    const fields = (subTypeDef.fields || []).concat(hotspotFields).concat(ASSET_FIELD)
+    const fields = (subTypeDef.fields || []).concat(ASSET_FIELD).concat(hotspotFields)
 
     const parsed = Object.assign(pick(IMAGE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: IMAGE_CORE,
       title: subTypeDef.title || startCase(subTypeDef.name || subTypeDef.type || ''),
-      options: options
+      options: options,
+      isCustomized: Boolean(subTypeDef.fields)
     })
 
     lazyGetter(parsed, 'fields', () => {

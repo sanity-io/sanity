@@ -6,14 +6,17 @@ export default {
     {
       name: 'lat',
       type: 'number',
-      title: 'Latitude',
-      required: true
+      title: 'Latitude'
     },
     {
       name: 'lng',
       type: 'number',
-      title: 'Longitude',
-      required: true
+      title: 'Longitude'
+    },
+    {
+      name: 'alt',
+      type: 'number',
+      title: 'Altitude'
     }
   ]
 }

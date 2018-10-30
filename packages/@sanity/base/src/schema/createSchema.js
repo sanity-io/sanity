@@ -1,11 +1,18 @@
-import geopoint from './types/geopoint'
-import imageAsset from './types/imageAsset'
-import fileAsset from './types/fileAsset'
 import Schema from '@sanity/schema'
 import legacyRichDate from 'part:@sanity/form-builder/input/legacy-date/schema?'
 import validateSchema from '@sanity/schema/lib/sanity/validateSchema'
 import groupProblems from '@sanity/schema/lib/sanity/groupProblems'
 import {inferFromSchema as inferValidation} from '@sanity/validation'
+import slug from './types/slug'
+import geopoint from './types/geopoint'
+import imageCrop from './types/imageCrop'
+import imageHotspot from './types/imageHotspot'
+import imageAsset from './types/imageAsset'
+import imagePalette from './types/imagePalette'
+import imagePaletteSwatch from './types/imagePaletteSwatch'
+import imageDimensions from './types/imageDimensions'
+import imageMetadata from './types/imageMetadata'
+import fileAsset from './types/fileAsset'
 
 const isError = problem => problem.severity === 'error'
 
@@ -17,7 +24,20 @@ module.exports = schemaDef => {
 
   let types = []
   if (!hasErrors) {
-    types = [...schemaDef.types, geopoint, legacyRichDate, imageAsset, fileAsset].filter(Boolean)
+    types = [
+      ...schemaDef.types,
+      slug,
+      geopoint,
+      legacyRichDate,
+      imageAsset,
+      fileAsset,
+      imageCrop,
+      imageHotspot,
+      imageMetadata,
+      imageDimensions,
+      imagePalette,
+      imagePaletteSwatch
+    ].filter(Boolean)
   }
 
   const compiled = Schema.compile({

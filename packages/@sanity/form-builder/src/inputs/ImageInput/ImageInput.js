@@ -238,7 +238,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
   }
 
   renderAdvancedEdit(fields: Array<FieldT>) {
-    const {value, level, onChange, readOnly, materialize} = this.props
+    const {value, level, type, onChange, readOnly, materialize} = this.props
 
     return (
       <Dialog title="Edit details" onClose={this.handleStopAdvancedEdit} isOpen>
@@ -248,6 +248,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
             <WithMaterializedReference materialize={materialize} reference={value.asset}>
               {imageAsset => (
                 <ImageToolInput
+                  type={type}
                   level={level}
                   readOnly={readOnly}
                   imageUrl={imageAsset.url}
