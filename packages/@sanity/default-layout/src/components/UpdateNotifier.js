@@ -41,21 +41,22 @@ class UpdateNotifier extends Component {
     const Dialog = isUpToDate ? CurrentVersionsDialog : UpdateNotifierDialog
 
     return (
-      <div className={styles.container}>
+      <div className={styles.root}>
         {showUpdateNotifier && (
           <Dialog severity={severity} outdated={outdated} onClose={this.handleHideUpdateNotifier} />
         )}
 
-        <button type="button" onClick={this.handleShowUpdateNotifier} className={className}>
+        <a onClick={this.handleShowUpdateNotifier} className={className}>
+          <strong>Sanity Studio</strong>{' '}
           {!isUpToDate && (
             <div className={styles.warningIcon}>
               <WarningIcon />
             </div>
           )}
-          <div className={isUpToDate ? styles.upToDateText : styles.upgradeText}>
+          <span className={isUpToDate ? styles.upToDateText : styles.upgradeText}>
             {isUpToDate ? 'Up to date' : 'Upgrade'}
-          </div>
-        </button>
+          </span>
+        </a>
       </div>
     )
   }

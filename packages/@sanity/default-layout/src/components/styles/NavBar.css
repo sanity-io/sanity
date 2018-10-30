@@ -119,9 +119,12 @@ a.branding {
 
   @media (--screen-medium) {
     position: relative;
-    z-index: 15;
     justify-self: stretch;
     padding: var(--small-padding);
+
+    @nest &.searchIsOpen {
+      z-index: 15;
+    }
   }
 }
 
