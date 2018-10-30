@@ -1,13 +1,12 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import enhanceClickOutside from 'react-click-outside'
-import Menu from 'part:@sanity/components/menus/default'
-import styles from './styles/SpaceSwitcher.css'
-import {CONFIGURED_SPACES} from '../util/spaces'
-import {state as urlState} from '../datastores/urlState'
 import {withRouterHOC} from 'part:@sanity/base/router'
-import ArrowDropDown from 'part:@sanity/base/arrow-drop-down'
 import {map} from 'rxjs/operators'
+import DefaultSelect from 'part:@sanity/components/selects/default'
+import {state as urlState} from '../datastores/urlState'
+import {CONFIGURED_SPACES} from '../util/spaces'
+import styles from './styles/SpaceSwitcher.css'
 
 const currentSpace$ = urlState.pipe(
   map(event => event.state && event.state.space),
@@ -44,32 +43,20 @@ class SpaceSwitcher extends React.PureComponent {
     this.setState(prev => ({menuOpen: !prev.menuOpen}))
   }
 
-  handleMenuItemClick = item => {
+  handleChange = item => {
     this.props.router.navigate({space: item.name})
     this.setState({menuOpen: false})
   }
 
   render() {
-    const {menuOpen, currentSpace} = this.state
-    const title = currentSpace && currentSpace.title
+    const {currentSpace} = this.state
     return (
       <div className={styles.root}>
-        <div title={title} onClick={this.handleMenuToggle} className={styles.currentSpace}>
-          {title && `${title}`}
-          <span className={styles.arrow}>
-            <ArrowDropDown />
-          </span>
-        </div>
-        {menuOpen && (
-          <div className={styles.menu}>
-            <Menu
-              onAction={this.handleMenuItemClick}
-              items={CONFIGURED_SPACES}
-              origin="bottom-right"
-              onClickOutside={this.handleMenuClose}
-            />
-          </div>
-        )}
+        <DefaultSelect
+          onChange={this.handleChange}
+          items={CONFIGURED_SPACES}
+          value={currentSpace}
+        />
       </div>
     )
   }

@@ -20,7 +20,7 @@
     padding-right: 0.5em;
   }
 
-  @nest & a {
+  @nest & > a {
     text-decoration: none;
     color: inherit;
   }

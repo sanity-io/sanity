@@ -18,20 +18,25 @@
   text-align: center;
 }
 
-.item {
+.listItem {
   composes: resetListItem from "part:@sanity/base/theme/layout/helpers";
-  cursor: default;
-  position: relative;
 }
 
-.link {
-  composes: resetLink from "part:@sanity/base/theme/layout/helpers";
-  composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
+.sharedItem {
   display: block;
+  outline: none;
+  position: relative;
   padding: var(--small-padding);
 }
 
+.item {
+  composes: sharedItem;
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
+  composes: resetLink from "part:@sanity/base/theme/layout/helpers";
+}
+
 .activeItem {
-  background-color: var(--selected-item-color-hover);
-  color: var(--brand-lightest);
+  composes: sharedItem;
+  composes: selected from 'part:@sanity/base/theme/layout/selectable-style';
+  composes: resetLink from "part:@sanity/base/theme/layout/helpers";
 }

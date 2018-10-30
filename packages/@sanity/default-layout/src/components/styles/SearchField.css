@@ -103,7 +103,7 @@
 .clearButton {
   position: relative;
   z-index: 1;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   min-width: 33px;
@@ -123,6 +123,15 @@
 
   @nest .isBleeding & {
     min-width: var(--nav-bar-box);
+  }
+}
+
+.clearButtonWithValue {
+  composes: clearButton;
+  display: flex;
+
+  @media (--screen-medium) {
+    display: flex;
   }
 }
 
