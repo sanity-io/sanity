@@ -32,7 +32,7 @@
   width: 100vw;
   flex-direction: column;
   box-sizing: border-box;
-  min-height: calc(100vh - var(--header-height));
+  min-height: calc(100vh - var(--nav-bar-box));
 
   @nest &::before {
     content: '';
@@ -119,5 +119,10 @@
 
   @media (--screen-medium) {
     padding-top: 0;
+  }
+
+  @nest .root.isOverlayVisible & {
+    overflow: hidden;
+    height: calc(100vh - var(--nav-bar-box));
   }
 }
