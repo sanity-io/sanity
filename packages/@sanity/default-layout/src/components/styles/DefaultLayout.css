@@ -43,20 +43,18 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(200, 200, 200, 0.6);
+    background: #c8c8c8;
     pointer-events: none;
     opacity: 0;
     transition: 150ms opacity ease-in-out;
   }
 
   @nest &.isOverlayVisible::before {
-    opacity: 1;
+    opacity: 0.5;
     pointer-events: all;
-  }
 
-  @media (--screen-medium) {
-    @nest &.isOverlayVisible::before {
-      opacity: 0.5;
+    @media (--screen-medium) {
+      opacity: 0.25;
     }
   }
 
