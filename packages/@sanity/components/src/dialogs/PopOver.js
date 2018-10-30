@@ -20,6 +20,7 @@ export default class PopOver extends React.PureComponent {
     onEscape: PropTypes.func,
     onAction: PropTypes.func,
     modifiers: PropTypes.object,
+    placement: PropTypes.string,
     useOverlay: PropTypes.bool,
     color: PropTypes.oneOf(['default', 'danger']),
     padding: PropTypes.oneOf(['none', 'small', 'medium', 'large']),
@@ -38,6 +39,7 @@ export default class PopOver extends React.PureComponent {
     actions: [],
     color: 'default',
     padding: 'medium',
+    placement: 'top',
     modifiers: {
       flip: {
         boundariesElement: 'viewport'
@@ -76,6 +78,7 @@ export default class PopOver extends React.PureComponent {
       onClickOutside,
       onEscape,
       modifiers,
+      placement,
       padding
     } = this.props
     const [primary, secondary] = partition(actions, action => action.primary)
@@ -88,7 +91,7 @@ export default class PopOver extends React.PureComponent {
             {isActive => (
               <div>
                 {useOverlay && <div className={styles.overlay} />}
-                <Popper placement="auto" modifiers={modifiers}>
+                <Popper placement={placement} modifiers={modifiers}>
                   {({ref, style, placement, arrowProps}) => (
                     <div
                       ref={ref}

@@ -160,12 +160,46 @@ storiesOf('Dialogs')
       step: 0.1
     }
 
-    const left = number('left', 50, percentRange, 'test')
-    const top = number('top', 50, percentRange, 'test')
+    const sizeRange = {
+      range: true,
+      min: 0,
+      max: 1000,
+      step: 1
+    }
+
+    const left = number('Reference left', 50, percentRange, 'test')
+    const top = number('Reference top', 50, percentRange, 'test')
+    const width = number('Reference width', 150, sizeRange, 'test')
+    const height = number('Reference height', 150, sizeRange, 'test')
+    const placement = select(
+      'Placement',
+      [
+        'auto',
+        'top',
+        'right',
+        'bottom',
+        'left',
+        'auto-start',
+        'top-start',
+        'right-start',
+        'bottom-start',
+        'left-start',
+        'auto-end',
+        'top-end',
+        'right-end',
+        'bottom-end',
+        'left-end'
+      ],
+      undefined,
+      'props'
+    )
+
     const refStyles = {
       position: 'absolute',
       top: `${top}%`,
       left: `${left}%`,
+      width: `${width}px`,
+      height: `${height}px`,
       backgroundColor: 'lime'
     }
 
@@ -182,6 +216,8 @@ storiesOf('Dialogs')
           <PopOverDialog
             actions={boolean('has actions', false, 'test') ? actions : []}
             color={select('color', [undefined, 'danger', 'default'], undefined, 'props')}
+            title={text('Title', 'Title', 'props')}
+            placement={placement}
           >
             {text('children', 'PopOver dialog', 'props')}
           </PopOverDialog>

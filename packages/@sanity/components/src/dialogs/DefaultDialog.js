@@ -6,6 +6,7 @@ import styles from 'part:@sanity/components/dialogs/default-style'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonCollection from 'part:@sanity/components/buttons/button-collection'
 import {partition} from 'lodash'
+import Ink from 'react-ink'
 import {Portal} from '../utilities/Portal'
 import Escapable from '../utilities/Escapable'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
@@ -115,13 +116,27 @@ export default class DefaultDialog extends React.Component {
                       <div className={styles.header}>
                         <h1 className={styles.title}>{title}</h1>
                         {onClose && (
-                          <button className={styles.closeButton} onClick={onClose} type="button">
-                            <CloseIcon color="inherit" />
+                          <button
+                            className={styles.closeButton}
+                            onClick={onClose}
+                            type="button"
+                            title="Close"
+                          >
+                            <div className={styles.closeButtonIcon}>
+                              <CloseIcon color="inherit" />
+                            </div>
+                            <Ink duration={1000} opacity={0.1} radius={200} />
                           </button>
                         )}
                       </div>
                     )}
-                    <div className={styles.content}>{this.props.children}</div>
+                    <div
+                      className={
+                        actions && actions.length > 0 ? styles.content : styles.contentWithoutFooter
+                      }
+                    >
+                      {this.props.children}
+                    </div>
                     {actions &&
                       actions.length > 0 && (
                         <div className={styles.footer}>{this.renderActions(actions)}</div>
