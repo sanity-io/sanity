@@ -33,21 +33,24 @@ class LoginStatus extends React.PureComponent {
   }
 
   handleUserMenuItemClick = item => {
-    const {onLogout} = this.props.onLogout
+    const {onLogout} = this.props
     if (item.action === 'signOut') {
       onLogout()
     }
   }
 
   render() {
-    const {className, user} = this.props
+    const {user} = this.props
     const {userMenuOpened} = this.state
     if (!user) {
       return null
     }
 
+    let className = styles.root
+    if (this.props.className) className += this.props.className
+
     return (
-      <div className={`${styles.root} ${className}`}>
+      <div className={className}>
         <div onClick={this.handleUserMenuToggle}>
           <img src={user.profileImage} className={styles.userImage} />
         </div>

@@ -1,32 +1,23 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.container {
+.root {
   margin-top: auto;
-  font-size: var(--font-size-xsmall);
-  color: color(var(--white) a(50%));
-  text-align: center;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-weight: 300;
-  padding: 0 var(--small-padding);
+  line-height: 3em;
+  padding: 0 1em;
 }
 
 .button {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  opacity: 0.9;
-  text-align: center;
-  overflow: hidden;
+  color: inherit;
+  font-size: 0.75em;
+  cursor: default;
+  text-align: left;
   background-color: transparent;
   margin: 0;
   padding: 0;
-  margin-bottom: 1em;
   outline: none !important;
   border: none;
+  width: 100%;
+  opacity: 0.6;
 
   @nest &:active {
     opacity: 1;
@@ -44,18 +35,19 @@
 .critical {
   composes: button;
   color: var(--state-danger-color);
+  opacity: 1;
 }
 
 .warning {
   composes: button;
   color: var(--state-warning-color);
+  opacity: 1;
 }
 
 .notice {
   composes: button;
-  color: var(--state-info-color);
 }
 
 .upToDateText {
-  color: color(var(--white) a(40%));
+  /* color: color(var(--white) a(40%)); */
 }

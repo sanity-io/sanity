@@ -4,6 +4,7 @@
   display: flex;
   text-align: center;
   align-items: center;
+  position: relative;
 
   @nest & > div:first-child {
     position: relative;
