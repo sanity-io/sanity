@@ -3,9 +3,10 @@ import {storiesOf} from 'part:@sanity/storybook'
 import {withKnobs, text, number, boolean} from 'part:@sanity/storybook/addons/knobs'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import DefaultTextField from 'part:@sanity/components/textfields/default'
-import Chance from 'chance'
-const chance = new Chance()
 import Sanity from 'part:@sanity/storybook/addons/sanity'
+import Chance from 'chance'
+
+const chance = new Chance()
 
 const wrapperStyles = {
   margin: '1rem'
@@ -23,13 +24,14 @@ storiesOf('Fieldsets')
         <div style={wrapperStyles}>
           <Sanity part="part:@sanity/components/fieldsets/default" propTables={[Fieldset]}>
             <Fieldset
-              legend={text('legend (prop)', 'This is the legend')}
-              description={text('description (prop)', 'This is the description')}
-              level={number('level (prop)', 1)}
-              transparent={boolean('transparent (prop)', false)}
-              tabIndex={boolean('tabIndex', false) ? 0 : false}
+              legend={text('legend', 'This is the legend', 'props')}
+              description={text('description', 'This is the description', 'props')}
+              level={number('level', 1, 'props')}
+              transparent={boolean('transparent', false, 'props')}
+              tabIndex={boolean('tabIndex', false, 'test') ? 0 : false}
+              markers={boolean('show markers', false, 'test') ? [] : undefined}
             >
-              {text('children (prop)', 'Put content here')}
+              {text('children', 'Put content here', 'props')}
             </Fieldset>
           </Sanity>
         </div>
