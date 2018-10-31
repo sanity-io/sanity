@@ -42,15 +42,15 @@ export default class FullScreenDialog extends React.PureComponent {
   }
 
   createActionButton = (action, i) => {
-    const {color} = this.props
     return (
       <Button
         key={i}
         onClick={this.handleActionClick}
         data-action-index={i}
         disabled={action.disabled}
-        inverted={color && (color !== 'default')} // invert buttons for colored dialogs
         kind={action.kind}
+        inverted={action.inverted}
+        color={action.color}
         autoFocus={action.autoFocus}
       >
         {action.title}
