@@ -12,7 +12,7 @@ export default class DialogContent extends React.PureComponent {
 
   static defaultProps = {
     size: 'auto',
-    padding: 'medium'
+    padding: undefined
   }
   render() {
     const {size, children, padding} = this.props
