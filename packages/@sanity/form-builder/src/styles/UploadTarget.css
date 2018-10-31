@@ -31,7 +31,7 @@
   padding: var(--medium-padding);
   border-radius: var(--border-radius-base);
   border: 1px solid var(--input-border-color-focus);
-  box-shadow: var(--component-box-shadow--focus);
+  box-shadow: var(--fieldset-box-shadow--focus);
 }
 
 .pasteInput * {
