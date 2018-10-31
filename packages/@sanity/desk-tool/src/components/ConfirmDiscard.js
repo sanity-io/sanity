@@ -5,7 +5,7 @@ import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import DocTitle from './DocTitle'
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
 
-const CANCEL_ACTION = {name: 'cancel', title: 'Cancel', kind: 'simple', secondary: true}
+const CANCEL_ACTION = {name: 'cancel', title: 'Cancel', kind: 'secondary', secondary: true}
 
 export default class ConfirmDiscard extends React.PureComponent {
   static propTypes = {
@@ -36,29 +36,27 @@ export default class ConfirmDiscard extends React.PureComponent {
       <Dialog
         isOpen
         showHeader
-        title={`Confirm discard ${published ? 'changes' : 'document'}`}
+        title={`Discard ${published ? 'changes' : 'document'}`}
         centered
         onClose={onCancel}
         onAction={this.handleAction}
         actions={[confirmAction, CANCEL_ACTION]}
       >
-        <div style={{padding: 10}}>
-          <p>
-            Are you sure you would like to discard {published ? 'changes in' : 'the document'}{' '}
-            <strong>
-              <DocTitle document={draft || published} />
-            </strong>?
-          </p>
-          <p>
-            This will{' '}
-            {published
-              ? `revert to the latest published version of this document (published ${distanceInWordsToNow(
-                  published._updatedAt,
-                  {addSuffix: true}
-                )}).`
-              : 'delete it entirely and there is no going back.'}
-          </p>
-        </div>
+        <p>
+          Are you sure you would like to discard {published ? 'changes in' : 'the document'}{' '}
+          <strong>
+            <DocTitle document={draft || published} />
+          </strong>?
+        </p>
+        <p>
+          This will{' '}
+          {published
+            ? `revert to the latest published version of this document (published ${distanceInWordsToNow(
+                published._updatedAt,
+                {addSuffix: true}
+              )}).`
+            : 'delete it entirely and there is no going back.'}
+        </p>
       </Dialog>
     )
   }
