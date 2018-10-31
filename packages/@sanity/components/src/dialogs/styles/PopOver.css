@@ -180,7 +180,7 @@
   height: 100%;
   box-sizing: border-box;
   overflow: auto;
-  max-height: calc(100vh - 5rem);
+  max-height: calc(100vh - 10rem);
   max-width: 90vw;
   color: var(--text-color);
 
