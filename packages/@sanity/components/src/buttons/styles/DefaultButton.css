@@ -1,6 +1,7 @@
 @import "part:@sanity/base/theme/variables-style";
 
 :root {
+  --button-inverted-color: var(--text-color);
   --button-focus-shadow:
     0 0 0 3px color(var(--input-border-color-focus) a(50%));
   --button-focus-shadow--danger:
@@ -49,6 +50,20 @@
   border-radius: var(--button-border-radius);
   text-decoration: none;
   padding: 0;
+}
+
+.root.bleed {
+  padding: 0 !important;
+  display: flex;
+  border-radius: 0;
+  height: 100%;
+
+  /* justify-self: stretch;
+  width: stretch;
+  align-self: stretch;
+  align-items: stretch;
+  justify-content: stretch;
+   */
 }
 
 span.inner {
@@ -180,8 +195,8 @@ span.content {
 }
 
 .inverted {
-  border: 1px solid var(--gray-base);
-  border-color: var(--gray-base);
+  border: 1px solid var(--button-inverted-color);
+  border-color: var(--button-inverted-color);
   background-color: transparent;
   box-shadow: none;
   composes: default;

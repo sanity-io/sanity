@@ -26,7 +26,8 @@ export default function createButtonLike(Component, {displayName, defaultProps =
       className: PropTypes.string,
       disabled: PropTypes.bool,
       tabIndex: PropTypes.number,
-      padding: PropTypes.oneOf(['default', 'small'])
+      padding: PropTypes.oneOf(['default', 'small']),
+      bleed: PropTypes.bool
     }
 
     static defaultProps = {
@@ -34,6 +35,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
       icon: null,
       onClick() {},
       kind: 'default',
+      bleed: false,
       padding: 'default',
       ...defaultProps
     }
@@ -82,6 +84,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
         className,
         children,
         padding,
+        bleed,
         ...rest
       } = this.props
 
@@ -94,6 +97,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
         styles[`padding_${padding}`],
         inverted && styles.inverted,
         color && styles[`color__${color}`],
+        bleed && styles.bleed,
         disabled && styles.disabled,
         !children && styles.onlyIcon
       ])
