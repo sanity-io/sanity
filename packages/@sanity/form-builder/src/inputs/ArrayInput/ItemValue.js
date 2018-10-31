@@ -214,8 +214,6 @@ export default class RenderItemValue extends React.Component<Props> {
       )
     }
 
-    const dialogSize = 'medium'
-
     const isItemEmpty = isEmpty(item)
     const actions = [
       isItemEmpty ? CANCEL_ACTION : CLOSE_ACTION,
@@ -232,8 +230,9 @@ export default class RenderItemValue extends React.Component<Props> {
             onClickOutside={this.handleEditStop}
             actions={actions}
             onAction={this.handleDialogAction}
+            placement="auto"
           >
-            <DialogContent size={dialogSize}>{content}</DialogContent>
+            <DialogContent size="small">{content}</DialogContent>
           </Popover>
         </div>
       )
@@ -249,7 +248,7 @@ export default class RenderItemValue extends React.Component<Props> {
         showCloseButton={false}
       >
         <div className={styles.defaultDialogContent}>
-          <DialogContent size={dialogSize}>{content}</DialogContent>
+          <DialogContent size="medium">{content}</DialogContent>
         </div>
       </DefaultDialog>
     )
