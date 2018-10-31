@@ -8,6 +8,7 @@
   --default-button-color--active: color(var(--gray-base) a(25%));
   --button-border-radius: var(--border-radius-small);
   --input-bg: var(--component-bg);
+  --input-bg-focus: var(--input-bg);
   --input-bg-invalid: var(--component-bg);
   --input-bg-disabled: var(--gray-lighter);
   --input-color: var(--text-color);
@@ -25,9 +26,8 @@
   --input-border-color-invalid: var(--state-danger-color);
   --focus-color: color(var(--brand-primary) alpha(40%));
   --input-color-placeholder: var(--text-color-secondary);
+  --label-color: var(--text-color);
   --legend-color: var(--text-color);
-  --input-group-addon-bg: var(--gray-lighter);
-  --input-group-addon-border-color: var(--input-border);
   --cursor-disabled: not-allowed;
   --clear-cross-color: var(--input-color);
   --clear-cross-color-hover: var(--state-danger-color);
