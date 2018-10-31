@@ -97,7 +97,6 @@
   box-sizing: border-box;
   height: 3rem;
   padding-left: var(--medium-padding);
-  padding-right: var(--small-padding);
   width: 100%;
 
   @nest .isCollapsed & {
@@ -110,12 +109,14 @@
 .buttonWrapper {
   display: flex;
   align-items: center;
+  align-self: stretch;
+  justify-content: center;
+  font-size: 1.25em;
 }
 
 .menuWrapper {
   composes: buttonWrapper;
   z-index: 2;
-  margin-left: var(--small-padding);
 
   @nest .isCollapsed & {
     display: none;

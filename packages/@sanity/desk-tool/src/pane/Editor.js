@@ -471,7 +471,7 @@ export default withRouterHOC(
       )
     }
 
-    renderActions = () => {
+    renderActions = (props, state) => {
       const {draft, published, markers, type, isReconnecting} = this.props
       const {showSavingStatus, showValidationTooltip} = this.state
 
@@ -529,7 +529,7 @@ export default withRouterHOC(
                 distance="0"
                 title="Synced with the Sanity cloud"
               >
-                <CheckIcon /> Synced
+                <CheckIcon /> Synced {this.isLiveEditEnabled() && 'Live edit enabled'}
               </Tooltip>
             )}
           {(errors.length > 0 || warnings.length > 0) && (
@@ -556,6 +556,7 @@ export default withRouterHOC(
             >
               <Button
                 color="danger"
+                bleed
                 icon={WarningIcon}
                 padding="small"
                 onClick={this.handleToggleValidationResults}
@@ -567,24 +568,60 @@ export default withRouterHOC(
               </Button>
             </Tooltip>
           )}
-          {isActionEnabled(type, 'publish') &&
-            !this.isLiveEditEnabled() && (
-              <Tooltip
-                arrow
-                theme="light"
-                className={styles.publishButton}
-                //title={errors.length > 0 ? 'Fix errors before publishing' : 'Publish (Ctrl+Alt+P)'}
-                html={this.renderPublishButtonTooltip(errors, published)}
-              >
-                <Button
-                  disabled={isReconnecting || !draft || errors.length > 0}
-                  onClick={this.handlePublishRequested}
-                  color="primary"
-                >
-                  Publish
-                </Button>
-              </Tooltip>
+        </div>
+      )
+    }
+
+    renderPublishInfo = () => {
+      const {draft, markers, published, isReconnecting} = this.props
+      const value = draft || published
+      const validation = markers.filter(marker => marker.type === 'validation')
+      const errors = validation.filter(marker => marker.level === 'error')
+
+      return (
+        <div
+          className={
+            draft && !this.isLiveEditEnabled() ? styles.publishInfo : styles.publishInfoHidden
+          }
+        >
+          <Tooltip
+            arrow
+            theme="light"
+            className={styles.publishButton}
+            //title={errors.length > 0 ? 'Fix errors before publishing' : 'Publish (Ctrl+Alt+P)'}
+            html={this.renderPublishButtonTooltip(errors, published)}
+          >
+            <Button
+              disabled={isReconnecting || !draft || errors.length > 0}
+              onClick={this.handlePublishRequested}
+              color="primary"
+            >
+              Publish
+            </Button>
+          </Tooltip>
+          <div className={styles.discardButton}>
+            <Button inverted onClick={() => this.setState({showConfirmDiscard: true})}>
+              Discard
+            </Button>
+          </div>
+          <div className={styles.editedDate}>
+            {value && (
+              <span>
+                Edited <TimeAgo time={value._updatedAt} />
+              </span>
             )}
+          </div>
+          {!this.isLiveEditEnabled() && (
+            <div className={styles.publishedDate}>
+              {published ? (
+                <span>
+                  Published <TimeAgo time={published._updatedAt} />
+                </span>
+              ) : (
+                'Not published'
+              )}
+            </div>
+          )}
         </div>
       )
     }
@@ -648,6 +685,7 @@ export default withRouterHOC(
           renderActions={this.renderActions}
           onMenuToggle={this.handleMenuToggle}
           isSelected // last pane is always selected for now
+          staticContent={this.renderPublishInfo()}
         >
           <div className={styles.root}>
             {(isCreatingDraft || isPublishing || isUnpublishing) && (
@@ -657,26 +695,6 @@ export default withRouterHOC(
                 {isUnpublishing && <Spinner center message="Unpublishing…" />}
               </div>
             )}
-            <div className={styles.top}>
-              <div className={styles.editedDate}>
-                {value && (
-                  <span>
-                    Edited <TimeAgo time={value._updatedAt} />
-                  </span>
-                )}
-              </div>
-              {!this.isLiveEditEnabled() && (
-                <div className={styles.publishedDate}>
-                  {published ? (
-                    <span>
-                      Published <TimeAgo time={published._updatedAt} />
-                    </span>
-                  ) : (
-                    'Not published'
-                  )}
-                </div>
-              )}
-            </div>
             <form
               className={styles.editor}
               onSubmit={preventDefault}

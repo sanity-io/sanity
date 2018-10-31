@@ -208,6 +208,7 @@ class Pane extends React.Component {
     return (
       <div className={styles.buttonWrapper} key={getActionKey(action, i)}>
         <IntentButton
+          bleed
           title={action.title}
           icon={action.icon}
           color="primary"
@@ -228,6 +229,7 @@ class Pane extends React.Component {
     return (
       <div className={styles.buttonWrapper} key={getActionKey(act, i)}>
         <Button
+          bleed
           title={act.title}
           icon={act.icon}
           color="primary"
@@ -252,6 +254,7 @@ class Pane extends React.Component {
         <Button
           // Makes menu component ignore clicks on button (prevents double-toggling)
           data-menu-button-id={this.paneMenuId}
+          bleed
           kind="simple"
           icon={IconMoreVert}
           onClick={this.handleMenuToggle}
@@ -282,7 +285,8 @@ class Pane extends React.Component {
       isScrollable,
       menuItems,
       styles,
-      renderActions
+      renderActions,
+      staticContent
     } = this.props
     const headerStyle = isCollapsed ? {} : this.state.headerStyle
     const actions = menuItems.filter(
@@ -317,6 +321,7 @@ class Pane extends React.Component {
           ) : (
             <div className={styles.notScrollable}>{children}</div>
           )}
+          {staticContent}
         </div>
       </div>
     )
