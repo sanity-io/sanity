@@ -1,3 +1,10 @@
-#root {
+@import 'part:@sanity/base/theme/variables-style';
+
+:global(#root) {
   padding: 1rem;
+  background-color: var(--body-bg);
+  color: var(--text-color);
+  min-height: 100vh;
+  min-width: 100vw;
+  box-sizing: border-box;
 }
