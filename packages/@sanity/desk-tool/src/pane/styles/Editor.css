@@ -52,7 +52,7 @@
   background-color: var(--body-bg);
   z-index: 1;
   transform: translateY(0);
-  transition: transform 0.3s ease-in;
+  transition: transform 0.3s ease-in, box-shadow 0.2s ease-in;
   grid-template-areas:
     "publishButton discardButton"
     "editedDate  publishedDate";
@@ -76,6 +76,7 @@
 .publishInfoHidden {
   composes: publishInfo;
   transform: translateY(100%);
+  box-shadow: 0 0 0 var(--shadow-base);
 }
 
 .publishButton {
