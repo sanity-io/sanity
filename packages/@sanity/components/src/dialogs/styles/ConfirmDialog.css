@@ -11,9 +11,7 @@
 }
 
 .content {
-  font-size: 1.5rem;
   padding: var(--large-padding);
-  clear: both;
 }
 
 .footer {
