@@ -6,10 +6,7 @@
   position: relative;
 
   @nest &:focus {
-    box-shadow:
-      0 0 2px 1px color(var(--input-border-color-focus)),
-      0 0 4px 0 color(var(--input-border-color-focus) a(60%)),
-      0 0 10px 5px color(var(--input-border-color-focus) a(10%));
+    box-shadow: var(--input-box-shadow--focus);
   }
 }
 
@@ -35,10 +32,13 @@
 
 .selectContainer {
   composes: selectContainer from 'part:@sanity/components/selects/default-style';
+  display: flex;
 }
 
 .arrow {
-  composes: functions from './SearchableSelect.css';
+  display: flex;
+  align-items: center;
+  padding-left: 0.5em;
 }
 
 .portal {
