@@ -142,6 +142,7 @@
 
 .legend {
   composes: headingLevel_1 from 'part:@sanity/base/theme/typography/forms-style';
+  color: var(--legend-color);
   display: block;
   width: 100%;
   margin: 0;
