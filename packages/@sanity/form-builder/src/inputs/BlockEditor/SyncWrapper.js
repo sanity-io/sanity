@@ -290,8 +290,8 @@ export default withPatchSubscriber(
       operations.forEach(op => {
         // Create patches from local operations
         if (isRemote) {
-          this._controller.flush() // Must flush here or we might end up trying to patch something that isn't there anymore
           this._controller.applyOperation(op)
+          this._controller.flush() // Must flush here or we might end up trying to patch something that isn't there anymore
         } else {
           const beforeValue = this._controller.value
           this._controller.applyOperation(op)
@@ -304,6 +304,7 @@ export default withPatchSubscriber(
             ),
             operation: op
           })
+          this._controller.flush()
         }
       })
       // Set the new state
@@ -345,6 +346,7 @@ export default withPatchSubscriber(
         return true
       })
       if (finalPatches.length) {
+        // console.log(JSON.stringify(finalPatches, null, 2))
         // Remove the processed patches
         this._pendingLocalChanges.splice(0, cutLength)
         // Send the final patches
@@ -357,13 +359,11 @@ export default withPatchSubscriber(
     }, 1000)
 
     updateDecorations() {
-      const {decorations, editorValue} = this.state
+      const {decorations} = this.state
       this._controller.withoutSaving(() => {
         localChanges$.next({
           operations: this._controller.setDecorations(decorations).operations,
-          isRemote: false,
-          editorValue,
-          timestamp: new Date()
+          isRemote: false
         })
       })
     }
@@ -393,7 +393,6 @@ export default withPatchSubscriber(
       if (patches.length === 0) {
         return
       }
-      const {editorValue} = this.state
 
       // Handle remote (and internal) patches
       const remoteAndInternalPatches = patches.filter(patch =>
@@ -404,9 +403,7 @@ export default withPatchSubscriber(
           const operations = this.patchToOperations(patch, this._controller.value)
           remoteChanges$.next({
             operations,
-            editorValue,
             isRemote: patch.origin,
-            timestamp: new Date(),
             patches: remoteAndInternalPatches
           })
         })

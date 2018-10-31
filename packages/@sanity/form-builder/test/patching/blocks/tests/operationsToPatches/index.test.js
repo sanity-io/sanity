@@ -42,7 +42,7 @@ const controllerOpts = {
   ]
 }
 
-describe('changesToPatches', () => {
+describe('Block editor operations to patches and back to operations', () => {
   const tests = fs.readdirSync(__dirname)
   tests.forEach(test => {
     if (test[0] === '.' || path.extname(test).length > 0) {
@@ -69,40 +69,39 @@ describe('changesToPatches', () => {
 
       const editorA = createEditorController({...controllerOpts, value: editorValue})
       const editorB = createEditorController({...controllerOpts, value: editorValue})
-      const allPatches = []
 
       let patches
       let document = input
 
+      // Run each operation through editorA, patch document, patch editorB
       operations.forEach(op => {
         const beforeValue = editorA.value
         editorA.applyOperation(op)
         patches = operationToPatches(op, beforeValue, editorA.value, document)
-        allPatches.push(patches)
         document = applyAll(document, patches)
+        patches.forEach(patch => {
+          patchToOperations(patch, editorB.value).forEach(patchOp => {
+            editorB.applyOperation(patchOp)
+          })
+        })
       })
 
+      // Serialize final editor values
       const editorASerialized = editorValueToBlocks(
         editorA.value.toJSON(VALUE_TO_JSON_OPTS),
+        blockContentType
+      )
+      const editorBSerialized = editorValueToBlocks(
+        editorB.value.toJSON(VALUE_TO_JSON_OPTS),
         blockContentType
       )
 
       // Test that the serialized editorA value is the same as the patched document
       assert.deepEqual(document, editorASerialized)
 
-      // Play all the patches back to editorB
-      allPatches.forEach(patchGroup => {
-        patchGroup.forEach(patch => {
-          patchToOperations(patch, editorB.value).forEach(op => {
-            editorB.applyOperation(op)
-          })
-        })
-      })
-      const editorBSerialized = editorValueToBlocks(
-        editorB.value.toJSON(VALUE_TO_JSON_OPTS),
-        blockContentType
-      )
+      // Test that both editor have the same value
       assert.deepEqual(editorBSerialized, editorASerialized)
+      // console.log(JSON.stringify(document, null, 2))
     })
   })
 })

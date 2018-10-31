@@ -2,7 +2,9 @@
 
 import {blocksToEditorValue} from '@sanity/block-tools'
 import {Selection, Text, Mark} from 'slate'
-import {isEqual} from 'lodash'
+import {isEqual, isString} from 'lodash'
+import {List} from 'immutable'
+
 import type {
   BlockContentFeatures,
   Path,
@@ -39,15 +41,18 @@ function findLastKey(path: Path[]) {
 }
 
 function findEditorChildNodeFromBlockChildKey(blockNode: SlateNode, childKey: Path) {
-  let count = -1
+  if (!blockNode) {
+    throw new Error('No blockNode given!')
+  }
+  let count = 0
   return blockNode.nodes.find(node => {
     if (node.object === 'text') {
       node.leaves.forEach((leaf, index) => {
-        if (index > 0 && leaf.marks.subtract(node.leaves.get(index - 1)).size > 0) {
-          count++
+        if (`${blockNode.key}${count}` === childKey) {
+          return true
         }
+        count++
       })
-      count++
     } else {
       count++
     }
@@ -241,53 +246,89 @@ export default function createPatchesToChange(
     return replaceValue(patch.value, editor)
   }
 
+  // eslint-disable-next-line complexity
   function patchSpanText(
     patch: InsertPatch | SetPatch | DiffMatchPatch,
     editor: SlateEditor,
     node: SlateNode
   ) {
     const textPath = editor.value.document.assertPath(node.key)
-    let newText
+    const blockKey = patch.path[0]._key
+    const childKey = findLastKey(patch.path)
+    const leafIndex = node.leaves.findIndex((leaf, index) => `${blockKey}${index}` === childKey)
+    const workText = node.toJSON({preserveKeys: true})
+    if (leafIndex === -1) {
+      console.log('No such leaf anymore!')
+      return List([])
+    }
 
+    // Insert patches for new spans
     if (patch.type === 'insert') {
-      let nodeIndex = node.text.length
+      let targetIndex = leafIndex
       if (patch.position === 'before') {
-        nodeIndex--
+        targetIndex--
       }
-      patch.items.forEach(item => {
-        const marks = Mark.createSet(
-          item.marks.map(mrk => ({
-            type: mrk
-          }))
-        )
-        editor.insertTextByPath(textPath, nodeIndex++, item.text, marks)
+      const newLeaves = []
+      workText.leaves.forEach((leaf, index) => {
+        if (targetIndex === index) {
+          newLeaves.push(leaf)
+          patch.items.forEach(item => {
+            const newLeaf = {
+              text: item.text,
+              marks: Mark.createSet(item.marks.map(mark => ({type: mark})))
+            }
+            newLeaves.push(newLeaf)
+          })
+        } else {
+          newLeaves.push(leaf)
+        }
       })
+      workText.leaves = newLeaves
+      // Replace it
+      editor.replaceNodeByPath(textPath, Text.fromJSON(workText))
       return editor.operations
     }
 
+    // Set patches patching either string values or span objects
     if (patch.type === 'set') {
-      newText = Text.create({text: patch.value, marks: node.leaves.map(leaf => leaf.marks).get(0)})
+      const valueIsString = isString(patch.value)
+      const patchText = valueIsString ? patch.value : patch.value.text
+      // If single leaf, we can just replace the text with the current marks
       if (node.leaves.size === 1) {
-        const marks = node.leaves.map(leaf => leaf.marks).get(0)
-        editor.replaceNodeByPath(textPath, newText)
-        marks.forEach(mark => {
-          editor.setMarkByPath(textPath, 0, patch.value.length, mark)
-        })
+        let marks
+        // eslint-disable-next-line max-depth
+        if (valueIsString) {
+          marks = node.leaves.map(leaf => leaf.marks).get(0)
+        } else {
+          marks = Mark.createSet(patch.value.marks.map(mark => ({type: mark})))
+        }
+        editor.replaceNodeByPath(textPath, Text.create({text: patchText, marks}))
         return editor.operations
       }
-      editor.insertTextByPath(
-        textPath,
-        node.text.length,
-        patch.value.slice(node.leaves.last().text.length),
-        node.leaves.map(leaf => leaf.marks).last()
-      )
+
+      // Build the new text
+      workText.leaves[leafIndex] = {
+        object: 'leaf',
+        text: patchText,
+        marks: valueIsString
+          ? node.leaves.get(leafIndex).marks
+          : Mark.createSet(patch.value.marks.map(mark => ({type: mark})))
+      }
+      // Replace it
+      editor.replaceNodeByPath(textPath, Text.fromJSON(workText))
       return editor.operations
     }
 
+    // DiffMatch patches for existing spans text value
     if (patch.type === 'diffMatchPatch') {
-      newText = apply(node.text, {...patch, path: []})
-      const marks = node.leaves.map(leaf => leaf.marks).last()
-      editor.insertTextByPath(textPath, node.text.length, newText.slice(node.text.length), marks)
+      const marks = node.leaves.get(leafIndex).marks
+      workText.leaves[leafIndex] = {
+        object: 'leaf',
+        text: apply(workText.leaves[leafIndex].text, {...patch, path: []}),
+        marks
+      }
+      // Replace it
+      editor.replaceNodeByPath(textPath, Text.fromJSON(workText))
       return editor.operations
     }
     throw new Error(`Don't know how to handle ${patch.type} here`)
@@ -313,6 +354,7 @@ export default function createPatchesToChange(
           editorValue.document.getNode(patch.path[0]._key),
           findLastKey(patch.path)
         )
+        // eslint-disable-next-line max-depth
         if (!node) {
           throw new Error('Could not find childNode')
         }

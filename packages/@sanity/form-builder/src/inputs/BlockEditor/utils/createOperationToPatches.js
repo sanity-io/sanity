@@ -75,13 +75,29 @@ export default function createOperationToPatches(
     )[0]
   }
 
+  // eslint-disable-next-line complexity
   function insertTextPatch(
     operation: Operation,
     beforeValue: SlateValue,
     afterValue: SlateValue,
     formBuilderValue: ?(FormBuilderValue[])
   ) {
-    // console.log(JSON.stringify(operation.toJSON(), null, 2))
+    const patches = []
+    // Make sure we have a document / start block first
+    if (!formBuilderValue || formBuilderValue.length === 0) {
+      // Value is undefined
+      if (!formBuilderValue) {
+        patches.push(
+          setIfMissing(editorValueToBlocks(afterValue.toJSON(VALUE_TO_JSON_OPTS), blockContentType))
+        )
+      }
+      // Value is empty
+      if (formBuilderValue && formBuilderValue.length === 0) {
+        patches.push(
+          set(editorValueToBlocks(afterValue.toJSON(VALUE_TO_JSON_OPTS), blockContentType), [])
+        )
+      }
+    }
     const blockBefore = toBlock(beforeValue, operation.path.get(0))
     const blockAfter = toBlock(afterValue, operation.path.get(0))
     const nodeInEditorValue = afterValue.document.getNode(operation.path)
@@ -98,33 +114,41 @@ export default function createOperationToPatches(
       throw new Error(`Could not find span with key '${targetKey}' in block`)
     }
 
+    const nodeInEditorValueBefore = beforeValue.document.getNode(operation.path)
+
+    // If leaves have changed, and we are not on the end of the text,
+    // set the whole block so we get the new block structure right
+    if (
+      nodeInEditorValue.leaves.size !== beforeValue.document.getNode(operation.path).leaves.size &&
+      operation.offset !== nodeInEditorValueBefore.text.length
+    ) {
+      return setNodePatch(operation, beforeValue, afterValue, formBuilderValue)
+    }
+
     // The span doesn't exist from before, so do an insert patch
     if (blockBefore.children.some(child => child._key === targetKey) === false) {
       const spanIndex = blockAfter.children.findIndex(child => child._key === targetKey)
       const targetInsertPath = targetPath
         .slice(0, -2)
         .concat({_key: blockAfter.children[spanIndex - 1]._key})
-      return [insert([span], 'after', targetInsertPath)]
+      return patches.concat(insert([span], 'after', targetInsertPath))
     }
     // Check if marks have changed and set the whole span with new marks if so
-    // If offset is > 0, marks are 'frozen' to that span
-    // This only happens if Slate inserts an empty text node after an inline void node
-    if (operation.offset === 0) {
-      const point = {path: operation.path, offset: operation.offset + 1}
-      const textMarks = beforeValue.document
-        .getMarksAtRange(
-          Range.fromJSON({
-            anchor: point,
-            focus: point
-          })
-        )
-        .map(m => m.type)
-        .toArray()
-      if (!isEqual(textMarks, span.marks)) {
-        return [set(span, targetPath.slice(0, -1))]
-      }
+    const point = {path: operation.path, offset: operation.offset + 1}
+    const textMarks = beforeValue.document
+      .getMarksAtRange(
+        Range.fromJSON({
+          anchor: point,
+          focus: point
+        })
+      )
+      .map(m => m.type)
+      .toArray()
+    if (!isEqual(textMarks, span.marks)) {
+      return patches.concat(set(span, targetPath.slice(0, -1)))
     }
-    return [set(span.text, targetPath)]
+    // Marks not changed, just set the text
+    return patches.concat(set(span.text, targetPath))
   }
 
   function setNodePatch(
@@ -150,6 +174,7 @@ export default function createOperationToPatches(
     if (formBuilderValue && formBuilderValue.length > 0) {
       patches.push(set(block, [{_key: block._key}]))
     }
+    // console.log(JSON.stringify(patches, null, 2))
     return patches
   }
 
@@ -186,7 +211,6 @@ export default function createOperationToPatches(
 
   function mergeNodePatch(operation: Operation, afterValue: SlateValue) {
     const patches = []
-
     if (operation.path.size === 1) {
       const mergedBlock = toBlock(afterValue, operation.path.get(0))
       const targetBlock = toBlock(afterValue, operation.path.get(0) - 1)
@@ -204,6 +228,8 @@ export default function createOperationToPatches(
       const mergedBlock = toBlock(afterValue, operation.path.get(0))
       patches.push(set(mergedBlock, [{_key: mergedBlock._key}]))
     }
+
+    console.log(JSON.stringify(patches, null, 2))
 
     return patches
   }
