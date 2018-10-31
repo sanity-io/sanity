@@ -120,7 +120,7 @@ export default withPatchSubscriber(
     _undoRedoStack: UndoRedoStack = {undo: [], redo: []}
     _controller: SlateEditor
     _blockContentFeatures: BlockContentFeatures
-    _pendingLocalPatches: [Patch[]][] = []
+    _pendingLocalChanges: [{operation: SlateOperation, patches: Patch[]}][] = []
 
     operationToPatches: (
       operation: SlateOperation,
@@ -286,7 +286,7 @@ export default withPatchSubscriber(
       }
 
       // Run through and apply the incoming operations
-      const localPatches = []
+      const localChangeGroups = []
       operations.forEach(op => {
         // Create patches from local operations
         if (isRemote) {
@@ -295,9 +295,15 @@ export default withPatchSubscriber(
         } else {
           const beforeValue = this._controller.value
           this._controller.applyOperation(op)
-          localPatches.push(
-            this.operationToPatches(op, beforeValue, this._controller.value, this.props.value)
-          )
+          localChangeGroups.push({
+            patches: this.operationToPatches(
+              op,
+              beforeValue,
+              this._controller.value,
+              this.props.value
+            ),
+            operation: op
+          })
         }
       })
       // Set the new state
@@ -306,9 +312,8 @@ export default withPatchSubscriber(
           editorValue: this._controller.value
         },
         () => {
-          const resultingPatches = flatten(localPatches).filter(Boolean)
-          if (resultingPatches.length) {
-            this._pendingLocalPatches.push(resultingPatches)
+          if (localChangeGroups.length) {
+            this._pendingLocalChanges.push(flatten(localChangeGroups))
             this.sendLocalPatchesDebounced()
           }
         }
@@ -317,8 +322,12 @@ export default withPatchSubscriber(
 
     sendLocalPatchesDebounced = debounce(() => {
       const {onChange} = this.props
-      const cutLength = this._pendingLocalPatches.length
-      let finalPatches = flatten(this._pendingLocalPatches)
+      const cutLength = this._pendingLocalChanges.length
+      let finalPatches = flatten(
+        this._pendingLocalChanges.map(changeGroup =>
+          flatten(changeGroup.map(change => change.patches))
+        )
+      )
       // Run through the pending patches and remove any redundant ones.
       finalPatches = finalPatches.filter((patch, index) => {
         if (!patch) {
@@ -337,9 +346,8 @@ export default withPatchSubscriber(
       })
       if (finalPatches.length) {
         // Remove the processed patches
-        this._pendingLocalPatches.splice(0, cutLength)
+        this._pendingLocalChanges.splice(0, cutLength)
         // Send the final patches
-        // console.log(finalPatches.map(p => JSON.stringify([p.type, p.path])))
         onChange(PatchEvent.from(finalPatches))
       }
     }, 200)
@@ -402,6 +410,25 @@ export default withPatchSubscriber(
             patches: remoteAndInternalPatches
           })
         })
+
+        // If we had a rebase, but still have pending local changes, re-apply those
+        if (
+          remoteAndInternalPatches.some(patch => patch.origin === 'internal') &&
+          this._pendingLocalChanges.length > 0
+        ) {
+          console.log(`Pending local changes after rebase: ${this._pendingLocalChanges.length}`)
+          const operations = flatten(
+            this._pendingLocalChanges.map(changeGroup =>
+              flatten(changeGroup.map(changes => changes.operation))
+            )
+          )
+          const {selection} = this._controller.value
+          localChanges$.next({
+            operations,
+            isRemote: false,
+            selection
+          })
+        }
       }
     }
 
