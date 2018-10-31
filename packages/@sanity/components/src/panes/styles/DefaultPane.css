@@ -24,6 +24,7 @@
     left: initial;
     width: initial;
     min-height: initial;
+    overflow: hidden; /* Cuts off the shadow on header */
   }
 }
 
