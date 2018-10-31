@@ -217,6 +217,11 @@ storiesOf('Dialogs')
             actions={boolean('has actions', false, 'test') ? actions : []}
             color={select('color', [undefined, 'danger', 'default'], undefined, 'props')}
             title={text('Title', 'Title', 'props')}
+            onClose={
+              boolean('Has onClose', false, 'test')
+                ? event => console.log('onClose', event)
+                : undefined
+            }
             placement={placement}
           >
             {text('children', 'PopOver dialog', 'props')}
