@@ -90,6 +90,10 @@
   }
 }
 
+.item {
+  padding: var(--small-padding);
+}
+
 .openItem {
   display: flex;
   align-items: center;

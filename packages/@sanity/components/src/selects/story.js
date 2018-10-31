@@ -7,7 +7,7 @@ import SearchableSelect from 'part:@sanity/components/selects/searchable'
 import {range} from 'lodash'
 import StyleSelect from 'part:@sanity/components/selects/style'
 import RadioSelect from 'part:@sanity/components/selects/radio'
-import {withKnobs, boolean, text, number, select} from 'part:@sanity/storybook/addons/knobs'
+import {withKnobs, boolean, text, number, select, color} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import Fuse from 'fuse.js'
 
@@ -173,7 +173,13 @@ storiesOf('Selects')
     }
     const valueIndex = number('Selected item', -1, options)
     return (
-      <div style={centerStyle}>
+      <div
+        style={{
+          ...centerStyle,
+          color: color('color', undefined, 'test'),
+          backgroundColor: color('background color', undefined, 'test')
+        }}
+      >
         <Sanity part="part:@sanity/components/selects/default" propTables={[DefaultSelect]}>
           <DefaultSelect
             label={text('label', 'This is the label', 'props')}
