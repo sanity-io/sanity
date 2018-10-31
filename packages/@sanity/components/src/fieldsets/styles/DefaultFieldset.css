@@ -1,16 +1,18 @@
+/* stylelint-disable no-descending-specificity */
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
   composes: root from "part:@sanity/components/formfields/default-style";
   outline: none;
+}
 
-  & & {
-    /* nested inside itself */
-    margin: 0;
-  }
+.root .root {
+  /* nested inside itself */
+  margin: 0;
 }
 
 .root + .root {
+  /* Margin between fieldsets */
   margin-top: var(--medium-padding);
 }
 
@@ -91,16 +93,28 @@
     background-color: transparent;
   }
 
-  & & {
-    /* nested inside itself */
-    border: none;
-    padding: 0;
-    box-shadow: none;
-  }
-
   @nest .hasErrors:focus-within & {
     box-shadow: var(--fieldset-box-shadow--invalid-focus) !important;
   }
+}
+
+.contentCollapsible {
+  composes: content;
+  border: 1px solid red !important;
+
+  @nest &:empty {
+    display: none;
+  }
+}
+
+/*
+  Nested inside itself
+  Stop border and padding
+*/
+.content .content .content {
+  border: none;
+  padding: 0 !important;
+  box-shadow: none;
 }
 
 .level1,
@@ -183,7 +197,12 @@
   margin-top: var(--small-padding);
 }
 
-.canFocus > .fieldset > .inner > .content {
+.animateHeight {
+  /* needed to prevent cascading of nested */
+}
+
+.canFocus > .fieldset > .inner > .content,
+.canFocus > .fieldset > .inner > .animateHeight > .content {
   padding: var(--small-padding);
   border-radius: var(--border-radius-base);
   box-shadow: var(--fieldset-box-shadow);
@@ -193,7 +212,8 @@
   }
 }
 
-.level1 > .fieldset > .inner > .content {
+.level1 > .fieldset > .inner > .content,
+.level1 > .fieldset > .inner > .animateHeight > .content {
   background-color: var(--fieldset-bg);
   box-shadow: var(--fieldset-box-shadow);
   padding: var(--small-padding);
@@ -204,7 +224,8 @@
   }
 }
 
-.level2 > .fieldset > .inner > .content {
+.level2 > .fieldset > .inner > .content,
+.level2 > .fieldset > .inner > .animateHeight > .content {
   background-color: var(--fieldset-bg);
   box-shadow: var(--fieldset-box-shadow);
   padding: var(--small-padding);
@@ -215,19 +236,23 @@
   }
 }
 
-.level1:focus > .fieldset > .inner > .content {
+.level1:focus > .fieldset > .inner > .content,
+.level1:focus > .fieldset > .inner > .animateHeight > .content {
   box-shadow: var(--fieldset-box-shadow--focus);
 }
 
-.level2:focus > .fieldset > .inner > .content {
+.level2:focus > .fieldset > .inner > .content,
+.level2:focus > .fieldset > .inner > .animateHeight > .content {
   box-shadow: var(--fieldset-box-shadow--focus);
 }
 
-.root:not(.level1):focus > .fieldset > .inner > .content {
+.root:not(.level1):focus > .fieldset > .inner > .content,
+.root:not(.level1):focus > .fieldset > .inner > .animateHeight > .content {
   box-shadow: var(--fieldset-box-shadow--focus);
 }
 
-.root:not(.level2):focus > .fieldset > .inner > .content {
+.root:not(.level2):focus > .fieldset > .inner > .content,
+.root:not(.level2):focus > .fieldset > .inner > .animateHeight > .content {
   box-shadow: var(--fieldset-box-shadow--focus);
 }
 
