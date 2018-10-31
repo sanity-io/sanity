@@ -44,7 +44,8 @@ export type BlockArrayType = Type & {
 
 export type Span = {
   _key: string,
-  text: string
+  text: string,
+  marks: string[]
 }
 
 export type MarkDef = {_key: string, _type: string}

@@ -123,9 +123,10 @@ export default withPatchSubscriber(
     _pendingLocalPatches: [Patch[]][] = []
 
     operationToPatches: (
-      editorValue: SlateValue,
       operation: SlateOperation,
-      value: FormBuilderValue[]
+      beforeValue: SlateValue,
+      afterValue: SlateValue,
+      formBuilderValue?: ?(FormBuilderValue[])
     ) => Patch[]
     patchToOperations: (patch: Patch, editorValue: SlateValue) => SlateOperation[]
 
@@ -186,11 +187,16 @@ export default withPatchSubscriber(
         loading: {},
         userIsWritingText: false
       }
-      const unNormalizedEditorValue =
-        deprecatedSchema || deprecatedBlockValue || invalidBlockValue
-          ? deserialize([], type)
-          : deserialize(value, type)
-
+      let unNormalizedEditorValue
+      try {
+        unNormalizedEditorValue =
+          deprecatedSchema || deprecatedBlockValue || invalidBlockValue
+            ? deserialize([], type)
+            : deserialize(value, type)
+      } catch (err) {
+        this.state.invalidBlockValue = true
+        unNormalizedEditorValue = deserialize([], type)
+      }
       this._unsubscribePatches = props.subscribe(this.handleDocumentPatches)
       this._changeSubscription = changes$.subscribe(this.handleChangeSet)
 
@@ -313,6 +319,7 @@ export default withPatchSubscriber(
       const {onChange} = this.props
       const cutLength = this._pendingLocalPatches.length
       let finalPatches = flatten(this._pendingLocalPatches)
+      // Run through the pending patches and remove any redundant ones.
       finalPatches = finalPatches.filter((patch, index) => {
         if (!patch) {
           return false
@@ -332,9 +339,10 @@ export default withPatchSubscriber(
         // Remove the processed patches
         this._pendingLocalPatches.splice(0, cutLength)
         // Send the final patches
+        // console.log(finalPatches.map(p => JSON.stringify([p.type, p.path])))
         onChange(PatchEvent.from(finalPatches))
       }
-    }, 100)
+    }, 200)
 
     unsetUserIsWritingTextDebounced = debounce(() => {
       this.setState({userIsWritingText: false})
@@ -385,9 +393,6 @@ export default withPatchSubscriber(
       )
       if (remoteAndInternalPatches.length > 0) {
         remoteAndInternalPatches.forEach(patch => {
-          if (patch.origin === 'internal') {
-            patch.type = '__rebase'
-          }
           const operations = this.patchToOperations(patch, this._controller.value)
           remoteChanges$.next({
             operations,

@@ -1,15 +1,18 @@
 // @flow
 
 import {editorValueToBlocks} from '@sanity/block-tools'
+import {Operation, Range} from 'slate'
+import {get, isEqual} from 'lodash'
 import type {
+  Block,
   BlockContentFeatures,
   FormBuilderValue,
-  SlateValue,
   SlateOperation,
+  SlateNode,
+  SlateValue,
   Type
 } from '../typeDefs'
 import {unset, set, insert, setIfMissing} from '../../../PatchEvent'
-import {Operation} from 'slate'
 
 export const VALUE_TO_JSON_OPTS = {
   preserveData: true,
@@ -17,6 +20,43 @@ export const VALUE_TO_JSON_OPTS = {
   preserveSelection: false,
   preserveHistory: false
 }
+
+function findSpanTargetPath(
+  nodeInEditorValue: SlateNode,
+  offset: number,
+  editorValue: SlateValue,
+  block: Block
+) {
+  if (nodeInEditorValue.object !== 'text') {
+    throw new Error('Not a text node!')
+  }
+  const nodeInEditorValueParent = editorValue.document.getParent(nodeInEditorValue.key)
+  let count = 0
+  let targetKey
+  // Note: do 'some' here so we can short circuit it when we reach our target
+  // and don't have to loop through everything
+  nodeInEditorValueParent.nodes.some(node => {
+    if (node.object === 'text') {
+      let text = ''
+      node.leaves.forEach(leaf => {
+        text += leaf.text
+        if (node === nodeInEditorValue && text.length > offset) {
+          targetKey = `${block._key}${count}`
+          return
+        }
+        count++
+      })
+    } else {
+      count++
+    }
+    return node === nodeInEditorValue
+  })
+  if (targetKey) {
+    return [{_key: block._key}, 'children', {_key: targetKey}, 'text']
+  }
+  throw new Error(`No target path found!`)
+}
+
 export default function createOperationToPatches(
   blockContentFeatures: BlockContentFeatures,
   blockContentType: Type
@@ -33,6 +73,58 @@ export default function createOperationToPatches(
       },
       blockContentType
     )[0]
+  }
+
+  function insertTextPatch(
+    operation: Operation,
+    beforeValue: SlateValue,
+    afterValue: SlateValue,
+    formBuilderValue: ?(FormBuilderValue[])
+  ) {
+    // console.log(JSON.stringify(operation.toJSON(), null, 2))
+    const blockBefore = toBlock(beforeValue, operation.path.get(0))
+    const blockAfter = toBlock(afterValue, operation.path.get(0))
+    const nodeInEditorValue = afterValue.document.getNode(operation.path)
+    const targetPath = findSpanTargetPath(
+      nodeInEditorValue,
+      operation.offset,
+      afterValue,
+      blockAfter
+    )
+    const targetKey = get(targetPath.slice(-2)[0], '_key')
+
+    const span = blockAfter.children.find(child => child._key === targetKey)
+    if (!span) {
+      throw new Error(`Could not find span with key '${targetKey}' in block`)
+    }
+
+    // The span doesn't exist from before, so do an insert patch
+    if (blockBefore.children.some(child => child._key === targetKey) === false) {
+      const spanIndex = blockAfter.children.findIndex(child => child._key === targetKey)
+      const targetInsertPath = targetPath
+        .slice(0, -2)
+        .concat({_key: blockAfter.children[spanIndex - 1]._key})
+      return [insert([span], 'after', targetInsertPath)]
+    }
+    // Check if marks have changed and set the whole span with new marks if so
+    // If offset is > 0, marks are 'frozen' to that span
+    // This only happens if Slate inserts an empty text node after an inline void node
+    if (operation.offset === 0) {
+      const point = {path: operation.path, offset: operation.offset + 1}
+      const textMarks = beforeValue.document
+        .getMarksAtRange(
+          Range.fromJSON({
+            anchor: point,
+            focus: point
+          })
+        )
+        .map(m => m.type)
+        .toArray()
+      if (!isEqual(textMarks, span.marks)) {
+        return [set(span, targetPath.slice(0, -1))]
+      }
+    }
+    return [set(span.text, targetPath)]
   }
 
   function setNodePatch(
@@ -55,7 +147,9 @@ export default function createOperationToPatches(
         set(editorValueToBlocks(afterValue.toJSON(VALUE_TO_JSON_OPTS), blockContentType), [])
       )
     }
-    patches.push(set(block, [{_key: block._key}]))
+    if (formBuilderValue && formBuilderValue.length > 0) {
+      patches.push(set(block, [{_key: block._key}]))
+    }
     return patches
   }
 
@@ -174,12 +268,12 @@ export default function createOperationToPatches(
     operation: SlateOperation,
     beforeValue: SlateValue,
     afterValue: SlateValue,
-    formBuilderValue: ?(FormBuilderValue[])
+    formBuilderValue?: ?(FormBuilderValue[]) // This is optional, but needed for setting setIfMissing patches correctly
   ) {
     // console.log(JSON.stringify(operation.toJSON(), null, 2))
     switch (operation.type) {
       case 'insert_text':
-        return setNodePatch(operation, beforeValue, afterValue, formBuilderValue)
+        return insertTextPatch(operation, beforeValue, afterValue, formBuilderValue)
       case 'remove_text':
         return setNodePatch(operation, beforeValue, afterValue, formBuilderValue)
       case 'add_mark':

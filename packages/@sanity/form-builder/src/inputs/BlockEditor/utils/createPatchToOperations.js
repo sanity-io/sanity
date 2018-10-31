@@ -1,23 +1,30 @@
 // @flow
 
 import {blocksToEditorValue} from '@sanity/block-tools'
-import {Selection} from 'slate'
-import type {Type, Path, BlockContentFeatures, SlateValue, SlateEditor} from '../typeDefs'
+import {Selection, Text, Mark} from 'slate'
+import {isEqual} from 'lodash'
+import type {
+  BlockContentFeatures,
+  Path,
+  SlateEditor,
+  SlateNode,
+  SlateValue,
+  Type
+} from '../typeDefs'
 import type {
   Patch,
   SetPatch,
+  DiffMatchPatch,
   InsertPatch,
   UnsetPatch,
   SetIfMissingPatch
 } from '../../../typedefs/patch'
 
-import {applyAll} from '../../../simplePatch'
+import apply, {applyAll} from '../../../simplePatch'
 import findInlineByAnnotationKey from './findInlineByAnnotationKey'
 import createSelectionOperation from './createSelectionOperation'
 import createEditorController from './createEditorController'
 import buildEditorSchema from './buildEditorSchema'
-
-type RebasePatch = SetPatch & {type: '__rebase'}
 
 type JSONValue = number | string | boolean | {[string]: JSONValue} | JSONValue[]
 
@@ -29,6 +36,23 @@ function findLastKey(path: Path[]) {
     }
   })
   return key
+}
+
+function findEditorChildNodeFromBlockChildKey(blockNode: SlateNode, childKey: Path) {
+  let count = -1
+  return blockNode.nodes.find(node => {
+    if (node.object === 'text') {
+      node.leaves.forEach((leaf, index) => {
+        if (index > 0 && leaf.marks.subtract(node.leaves.get(index - 1)).size > 0) {
+          count++
+        }
+      })
+      count++
+    } else {
+      count++
+    }
+    return `${blockNode.key}${count}` === childKey
+  })
 }
 
 export default function createPatchesToChange(
@@ -177,14 +201,7 @@ export default function createPatchesToChange(
     return editor.operations
   }
 
-  function patchInlineData(patch: Patch, editor: SlateEditor) {
-    const doc = editor.value.document
-    const blockKey = patch.path[0]._key
-    const inlineKey = patch.path[2]._key
-    const block = doc.nodes.find(node => node.key === blockKey)
-    const inline = block.nodes.find(
-      node => node.data && node.data.get('value') && node.data.get('value')._key === inlineKey
-    )
+  function patchInlineData(patch: Patch, editor: SlateEditor, inline: SlateNode) {
     const data = inline.data.toObject()
     const _patch = {...patch}
     _patch.path = _patch.path.slice(3)
@@ -194,7 +211,7 @@ export default function createPatchesToChange(
     return editor.operations
   }
 
-  function rebasePatch(patch: RebasePatch, editor: SlateEditor) {
+  function rebasePatch(patch: SetPatch, editor: SlateEditor) {
     if (
       !editor.value.selection.isFocused ||
       !Array.isArray(patch.value) ||
@@ -224,19 +241,95 @@ export default function createPatchesToChange(
     return replaceValue(patch.value, editor)
   }
 
+  function patchSpanText(
+    patch: InsertPatch | SetPatch | DiffMatchPatch,
+    editor: SlateEditor,
+    node: SlateNode
+  ) {
+    const textPath = editor.value.document.assertPath(node.key)
+    let newText
+
+    if (patch.type === 'insert') {
+      let nodeIndex = node.text.length
+      if (patch.position === 'before') {
+        nodeIndex--
+      }
+      patch.items.forEach(item => {
+        const marks = Mark.createSet(
+          item.marks.map(mrk => ({
+            type: mrk
+          }))
+        )
+        editor.insertTextByPath(textPath, nodeIndex++, item.text, marks)
+      })
+      return editor.operations
+    }
+
+    if (patch.type === 'set') {
+      newText = Text.create({text: patch.value, marks: node.leaves.map(leaf => leaf.marks).get(0)})
+      if (node.leaves.size === 1) {
+        const marks = node.leaves.map(leaf => leaf.marks).get(0)
+        editor.replaceNodeByPath(textPath, newText)
+        marks.forEach(mark => {
+          editor.setMarkByPath(textPath, 0, patch.value.length, mark)
+        })
+        return editor.operations
+      }
+      editor.insertTextByPath(
+        textPath,
+        node.text.length,
+        patch.value.slice(node.leaves.last().text.length),
+        node.leaves.map(leaf => leaf.marks).last()
+      )
+      return editor.operations
+    }
+
+    if (patch.type === 'diffMatchPatch') {
+      newText = apply(node.text, {...patch, path: []})
+      const marks = node.leaves.map(leaf => leaf.marks).last()
+      editor.insertTextByPath(textPath, node.text.length, newText.slice(node.text.length), marks)
+      return editor.operations
+    }
+    throw new Error(`Don't know how to handle ${patch.type} here`)
+  }
+
   // eslint-disable-next-line complexity
   return function patchToOperations(patch: Patch, editorValue: SlateValue) {
+    // console.log(JSON.stringify(patch, null, 2))
     controller.flush() // Must flush here or we end up with duplicate operations
     controller.setValue(editorValue, {normalize: false})
+
+    if (patch.origin === 'internal' && patch.type === 'set' && isEqual(patch.path, [])) {
+      return rebasePatch(patch, controller)
+    }
+
+    // Patches working on markDefs or inside blocks
     if (patch.path.length > 1) {
       if (patch.path[1] === 'markDefs') {
         return patchAnnotationData(patch, controller)
-      } else if (patch.path[1] === 'children' && patch.path.length > 3) {
-        return patchInlineData(patch, controller)
+      } else if (patch.path[1] === 'children' && patch.path.length >= 3) {
+        // Find the node (keys can be random on the working document)
+        const node = findEditorChildNodeFromBlockChildKey(
+          editorValue.document.getNode(patch.path[0]._key),
+          findLastKey(patch.path)
+        )
+        if (!node) {
+          throw new Error('Could not find childNode')
+        }
+        const isVoid = controller.query('isVoid', node)
+        // eslint-disable-next-line max-depth
+        if (isVoid) {
+          return patchInlineData(patch, controller, node)
+        }
+        // eslint-disable-next-line max-depth
+        if (patch.type === 'insert' || patch.type === 'set' || patch.type === 'diffMatchPatch') {
+          return patchSpanText(patch, controller, node)
+        }
       }
       return patchBlockData(patch, controller)
     }
-    // Rebase event
+
+    // Patches working on whole blocks or document
     switch (patch.type) {
       case 'set':
         return setPatch(patch, controller)
@@ -246,8 +339,6 @@ export default function createPatchesToChange(
         return insertPatch(patch, controller)
       case 'unset':
         return unsetPatch(patch, controller)
-      case '__rebase':
-        return rebasePatch(patch, controller)
       default:
         throw new Error(`Don't know how to handle the patch ${patch.type}`)
     }

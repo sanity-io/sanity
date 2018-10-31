@@ -40,9 +40,12 @@ export default class EditNode extends React.Component<Props> {
   handleChange = (patchEvent: PatchEvent) => {
     const {onPatch, path, value, onFocus, focusPath} = this.props
     let _patchEvent = patchEvent
-    path.reverse().forEach(segment => {
-      _patchEvent = _patchEvent.prefixAll(segment)
-    })
+    path
+      .slice(0)
+      .reverse()
+      .forEach(segment => {
+        _patchEvent = _patchEvent.prefixAll(segment)
+      })
     // Intercept patches that unsets markDefs.
     // The child using the markDef must have that mark removed,
     // so insert patches that rewrite that block without the mark
