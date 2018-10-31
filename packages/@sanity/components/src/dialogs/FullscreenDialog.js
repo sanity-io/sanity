@@ -36,25 +36,37 @@ export default class FullScreenDialog extends React.PureComponent {
     actions: []
   }
 
-  handleActionClick = event => {
-    const actionIndex = event.currentTarget.getAttribute('data-action-index')
-    this.props.onAction(this.props.actions[actionIndex])
-  }
-
-  createActionButton = (action, i) => {
+  createButtonFromAction = (action, i) => {
     return (
       <Button
         key={i}
-        onClick={this.handleActionClick}
+        onClick={() => this.props.onAction(action)}
         data-action-index={i}
+        color={action.color}
         disabled={action.disabled}
         kind={action.kind}
-        inverted={action.inverted}
-        color={action.color}
         autoFocus={action.autoFocus}
+        className={action.secondary ? styles.actionSecondary : ''}
       >
         {action.title}
       </Button>
+    )
+  }
+
+  renderActions = actions => {
+    if (!actions || actions.length === 0) {
+      return null
+    }
+
+    const [secondary, primary] = partition(actions, action => action.secondary)
+
+    console.log('actions', actions)
+    console.log(primary, secondary)
+
+    return (
+      <ButtonCollection align="end" secondary={secondary.map(this.createButtonFromAction)}>
+        {primary.map(this.createButtonFromAction)}
+      </ButtonCollection>
     )
   }
 
@@ -69,8 +81,6 @@ export default class FullScreenDialog extends React.PureComponent {
       .filter(Boolean)
       .join(' ')
 
-    const [primary, secondary] = partition(actions, action => !action.secondary || action.primary)
-
     return (
       <StackedEscapable onEscape={onClose}>
         <Portal>
@@ -84,16 +94,7 @@ export default class FullScreenDialog extends React.PureComponent {
               <h1 className={styles.heading}>{title}</h1>
               <div className={styles.content}>
                 {this.props.children}
-                <div className={styles.actionsWrapper}>
-                  {actions.length > 0 && (
-                    <ButtonCollection
-                      align="end"
-                      secondary={secondary.map(this.createActionButton)}
-                    >
-                      {primary.map(this.createActionButton)}
-                    </ButtonCollection>
-                  )}
-                </div>
+                <div className={styles.actionsWrapper}>{this.renderActions(actions)}</div>
               </div>
             </div>
           </div>
