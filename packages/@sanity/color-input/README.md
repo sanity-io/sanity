@@ -26,7 +26,7 @@ Use it in your schema types:
 }
 ```
 
-Note that the above only works if you import and use the `all:part:@sanity/base/schema-type` part in your schema. If you do _not_ import this part to your schema, you can import the color schema from `part:@sanity/color-input/schema`.
+Note that the above only works if you import and use the `all:part:@sanity/base/schema-type` part in your schema.
 
 ## Options
 
@@ -52,18 +52,21 @@ To disable the alpha option, set `disableAlpha` to `true`:
   hex: '#29158a',
   alpha: 0.9,
   hsl: {
+    _type: 'hslaColor',
     h: 249.99999999999994,
     s: 0.7328000000000001,
     l: 0.313,
     a: 0.9
   },
   hsv: {
-    h:249.99999999999994,
+    _type: 'hsvaColor',
+    h: 249.99999999999994,
     s: 0.8457987072945522,
     v: 0.5423664,
     a: 0.9
   },
   rgb: {
+    _type: 'rgbaColor',
     r: 41
     g: 21,
     b: 138,
