@@ -14,11 +14,19 @@
     },
     {
       "implements": "part:@sanity/base/schema-type",
-      "path": "schema.js"
+      "path": "schemas/hslaColor.js"
     },
     {
-      "name": "part:@sanity/color-input/schema",
-      "path": "schema.js"
+      "implements": "part:@sanity/base/schema-type",
+      "path": "schemas/hsvaColor.js"
+    },
+    {
+      "implements": "part:@sanity/base/schema-type",
+      "path": "schemas/rgbaColor.js"
+    },
+    {
+      "implements": "part:@sanity/base/schema-type",
+      "path": "schemas/color.js"
     }
   ]
 }
