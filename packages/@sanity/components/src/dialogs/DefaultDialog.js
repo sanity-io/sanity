@@ -74,7 +74,7 @@ export default class DefaultDialog extends React.Component {
       return null
     }
 
-    const [primary, secondary] = partition(actions, action => !action.secondary || action.primary)
+    const [secondary, primary] = partition(actions, action => action.secondary)
 
     return (
       <ButtonCollection align="end" secondary={secondary.map(this.createButtonFromAction)}>
