@@ -6,11 +6,11 @@ import FaAngleDown from 'part:@sanity/base/angle-down-icon'
 import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import CloseIcon from 'part:@sanity/base/close-icon'
+import {Manager, Reference, Popper} from 'react-popper'
 import Stacked from '../utilities/Stacked'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Escapable from '../utilities/Escapable'
 import {Portal} from '../utilities/Portal'
-import {Manager, Reference, Popper} from 'react-popper'
 import Ink from 'react-ink'
 import {get} from 'lodash'
 import SelectMenu from './SelectMenu'
@@ -119,6 +119,10 @@ export default class StatelessSearchableSelect extends React.PureComponent {
 
   focus() {
     this._input.focus()
+  }
+
+  renderItem = item => {
+    return <div className={styles.item}>{this.props.renderItem(item)}</div>
   }
 
   render() {
@@ -247,7 +251,7 @@ export default class StatelessSearchableSelect extends React.PureComponent {
                               items={items}
                               value={value}
                               onSelect={this.handleSelect}
-                              renderItem={renderItem}
+                              renderItem={this.renderItem}
                               highlightIndex={highlightIndex}
                             />
                           )}
