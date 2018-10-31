@@ -35,19 +35,20 @@
 }
 
 .root {
-  position: absolute;
-  display: flex;
+  composes: flexCenter from 'part:@sanity/base/theme/layout/positioning-style';
+  composes: frosted from "part:@sanity/base/theme/layout/backgrounds-style";
+  position: fixed;
   z-index: var(--zindex-portal);
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
   animation-name: fadeIn;
   animation-duration: 0.2s;
   animation-timing-function: cubic-bezier(0, 0, 0, 1);
   animation-iteration-count: once;
-  composes: flexCenter from 'part:@sanity/base/theme/layout/positioning-style';
-  composes: frosted from "part:@sanity/base/theme/layout/backgrounds-style";
+  color: var(--text-color);
 }
 
 .default {
@@ -71,6 +72,8 @@
 }
 
 .dialog {
+  display: flex;
+  position: relative;
   composes: shadow-24dp from "part:@sanity/base/theme/shadows-style";
   border: 0;
   border-radius: var(--dialog-border-radius);
@@ -80,10 +83,10 @@
   animation-timing-function: cubic-bezier(0, 0, 0, 1);
   animation-iteration-count: once;
   transform-origin: center;
-  height: auto;
-  width: calc(100vw - var(--medium-padding) * 2);
   box-sizing: border-box;
   transition: all 0.3s linear;
+  max-width: calc(100% - 2rem);
+  max-height: calc(100% - 8rem);
 
   @media (--screen-medium) {
     width: auto;
@@ -101,6 +104,7 @@
 
 .header {
   height: var(--dialog-header-height);
+  min-height: var(--dialog-header-height);
   line-height: var(--dialog-header-height);
   background-color: var(--dialog-header-background-color);
   color: var(--dialog-header-text-color);
@@ -131,22 +135,20 @@
 }
 
 .inner {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   position: relative;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .content {
   composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
   border-radius: var(--dialog-border-radius) var(--dialog-border-radius) 0 0;
   box-sizing: border-box;
-  max-height: calc(100vh - 50px);
-  max-width: 100vw;
   background-color: var(--body-bg);
-
-  @nest .hasFunctions & {
-    max-height: calc(100vh - 10rem);
-  }
-}
+ }
 
 .contentWithoutFooter {
   composes: content;
@@ -167,8 +169,8 @@
 
   @media (--screen-medium) {
     margin-right: 2rem;
-    overflow: hidden;
     white-space: nowrap;
+    overflow: hidden;
     text-overflow: ellipsis;
   }
 }
@@ -240,6 +242,8 @@
 }
 
 .footer {
+  flex-basis: 5rem;
+  min-height: 5rem;
   font-size: var(--font-size-small);
   box-sizing: border-box;
   padding: var(--medium-padding);

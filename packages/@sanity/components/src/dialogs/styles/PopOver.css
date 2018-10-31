@@ -33,8 +33,8 @@
 
 .target {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 0%;
+  left: 0%;
   width: 100%;
   height: 100%;
 }
@@ -58,47 +58,38 @@
 }
 
 .arrow {
-  position: absolute;
   height: 1em;
   width: 1em;
   transform: translate(-50%, -50%) rotate(45deg);
-  z-index: 1;
+  background-color: var(--component-bg);
+  position: absolute;
 
-  @nest &::before {
-    content: "";
-    position: absolute;
-    height: 1em;
-    width: 1em;
-    background-color: var(--component-bg);
-    z-index: 3;
-    clip-path: polygon(100% 0, 0 0, 0 100%);
+  @nest .color_danger & {
+    background-color: var(--state-danger-color);
+  }
 
-    @nest .color_danger & {
-      background-color: var(--state-danger-color);
-    }
+  @nest .popper[data-placement^="bottom"] & {
+    top: 0;
+    bottom: unset;
+    transform: translate(0, -50%) rotate(45deg);
   }
 
   @nest .popper[data-placement^="top"] & {
+    top: unset;
     bottom: 0;
     transform: translate(-50%, 50%) rotate(45deg);
-
-    @nest &::before {
-      clip-path: polygon(100% 100%, 100% 0, 0 100%);
-    }
   }
 
   @nest .popper[data-placement^="right"] & {
+    right: unset;
     left: 0;
     transform: translate(-50%, 0) rotate(-45deg);
   }
 
   @nest .popper[data-placement^="left"] & {
+    left: unset;
     right: 0;
     transform: translate(50%, 0) rotate(45deg);
-
-    @nest &::before {
-      clip-path: polygon(100% 100%, 100% 0, 0 0);
-    }
   }
 }
 
@@ -106,9 +97,7 @@
   composes: arrow;
 
   @nest .popper[data-placement^="bottom"] & {
-    @nest &::before {
-      background-color: var(--dialog-header-background-color);
-    }
+    background-color: var(--dialog-header-background-color);
   }
 }
 
@@ -191,7 +180,9 @@
   height: 100%;
   box-sizing: border-box;
   overflow: auto;
-  max-height: 40em;
+  max-height: calc(100vh - 5rem);
+  max-width: 90vw;
+  color: var(--text-color);
 
   @nest .responsive & {
     @media (--max-screen-medium) {

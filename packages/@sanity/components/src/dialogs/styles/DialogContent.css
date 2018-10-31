@@ -8,6 +8,10 @@
   composes: root;
 }
 
+.padding {
+  padding: var(--medium-padding);
+}
+
 .small {
   composes: root;
   width: calc(100vw - var(--medium-padding) * 4);

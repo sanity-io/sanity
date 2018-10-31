@@ -1,16 +1,47 @@
 import React from 'react'
 import {storiesOf, linkTo} from 'part:@sanity/storybook'
 import {withKnobs, text, select, boolean, number} from 'part:@sanity/storybook/addons/knobs'
-import Button from 'part:@sanity/components/buttons/default'
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import DialogContent from 'part:@sanity/components/dialogs/content'
 import ConfirmDialog from 'part:@sanity/components/dialogs/confirm'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import PopOverDialog from 'part:@sanity/components/dialogs/popover'
+import Chance from 'chance'
+import {range} from 'lodash'
+
+const chance = new Chance()
 
 const action = actionName => {
   return () => console.log('action', actionName)
+}
+
+const dialogTestContent = {
+  minimal: 'minimal',
+  paragraph: 'paragraph',
+  longtext: 'longtext',
+  example: 'example with dialogcontent'
+}
+
+const paragraph = chance.paragraph()
+const paragraphs = range(0, 20).map(i => <p key={i}>{chance.paragraph()}</p>)
+
+function renderContent(type) {
+  switch (type) {
+    case 'paragraph':
+      return <p>{paragraph}</p>
+    case 'longtext':
+      return <div>{paragraphs}</div>
+    case 'example':
+      return (
+        <DialogContent size="medium">
+          <h1>With dialog content</h1>
+          <p>{paragraph}</p>
+        </DialogContent>
+      )
+    default:
+      return 'Minimal'
+  }
 }
 
 storiesOf('Dialogs')
@@ -36,7 +67,7 @@ storiesOf('Dialogs')
     ]
 
     const dialogActions = boolean('Show actions', false, 'test') ? actions : []
-
+    const contentTest = select('content', dialogTestContent, 'minimal')
     return (
       <Sanity part="part:@sanity/components/dialogs/default" propTables={[DefaultDialog]}>
         <DefaultDialog
@@ -51,7 +82,7 @@ storiesOf('Dialogs')
           onAction={action('onAction')}
           actions={dialogActions}
         >
-          {text('content', 'This is the raw content. use DialogContent to size it', 'props')}
+          {contentTest && renderContent(contentTest)}
         </DefaultDialog>
       </Sanity>
     )
@@ -122,7 +153,7 @@ storiesOf('Dialogs')
     ]
 
     const dialogActions = boolean('Include actions', false, 'test') ? actions : []
-
+    const contentTest = select('content', dialogTestContent, 'minimal')
     return (
       <Sanity part="part:@sanity/components/dialogs/fullscreen" propTables={[FullscreenDialog]}>
         <FullscreenDialog
@@ -137,7 +168,7 @@ storiesOf('Dialogs')
           actions={dialogActions}
           onAction={action('onAction')}
         >
-          {text('children', 'This is the content', 'props')}
+          {contentTest && renderContent(contentTest)}
         </FullscreenDialog>
       </Sanity>
     )
@@ -190,7 +221,7 @@ storiesOf('Dialogs')
         'bottom-end',
         'left-end'
       ],
-      undefined,
+      'auto',
       'props'
     )
 
@@ -202,6 +233,8 @@ storiesOf('Dialogs')
       height: `${height}px`,
       backgroundColor: 'lime'
     }
+
+    const contentTest = select('content', dialogTestContent, 'minimal')
 
     if (window) {
       // Triggers update of popper.js (only reacts to scroll and resize by default)
@@ -224,7 +257,7 @@ storiesOf('Dialogs')
             }
             placement={placement}
           >
-            {text('children', 'PopOver dialog', 'props')}
+            {contentTest && renderContent(contentTest)}
           </PopOverDialog>
           Reference element
         </div>
@@ -233,6 +266,7 @@ storiesOf('Dialogs')
   })
 
   .add('Confirm', () => {
+    const contentTest = select('content', dialogTestContent, 'minimal')
     return (
       <Sanity part="part:@sanity/components/dialogs/confirm" propTables={[ConfirmDialog]}>
         <ConfirmDialog
@@ -255,7 +289,7 @@ storiesOf('Dialogs')
           cancelButtonText={text('cancelButtonText', undefined, 'props')}
           title={text('title', undefined, 'props')}
         >
-          {text('children', 'Do you really want to?', 'props')}
+          {contentTest && renderContent(contentTest)}
         </ConfirmDialog>
       </Sanity>
     )
