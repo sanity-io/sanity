@@ -39,27 +39,79 @@
   opacity: 0.5;
 }
 
-.top {
-  display: none;
-  margin: 0 var(--medium-padding);
+.publishInfo {
+  display: grid;
+  padding: var(--medium-padding);
+  box-sizing: border-box;
   color: var(--text-color-secondary);
-  font-size: 0.7rem;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background-color: var(--body-bg);
+  z-index: 1;
+  transform: translateY(0);
+  transition: transform 0.3s ease-in;
+  grid-template-areas:
+    "publishButton discardButton"
+    "editedDate  publishedDate";
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 3em 1.5em;
+  justify-content: stretch;
+  align-items: center;
+  font-size: 1rem;
+  grid-gap: 1rem;
+  box-shadow: 0 0 25px var(--shadow-base);
 
   @media (--screen-medium) {
+    position: absolute;
+    grid-template-areas: "publishButton discardButton . publishedDate editedDate";
+    grid-template-columns: auto auto auto 1fr 1fr;
+    grid-template-rows: 2.5em;
+    box-shadow: 0 0 25px var(--shadow-base);
+  }
+}
+
+.publishInfoHidden {
+  composes: publishInfo;
+  transform: translateY(100%);
+}
+
+.publishButton {
+  grid-area: publishButton;
+  font-size: var(--font-size-large);
+  justify-self: stretch;
+
+  @nest & > * {
     display: flex;
+    width: 100%;
+  }
+}
+
+.discardButton {
+  grid-area: discardButton;
+  font-size: var(--font-size-large);
+
+  @nest & > * {
+    display: flex;
+    width: 100%;
   }
 }
 
 .dates {
   display: block;
+  font-size: var(--font-size-small);
 }
 
 .publishedDate {
   composes: dates;
+  grid-area: publishedDate;
 }
 
 .editedDate {
   composes: dates;
+  grid-area: editedDate;
   margin-right: 1rem;
 }
 
@@ -76,6 +128,7 @@
 .editor {
   padding: var(--medium-padding);
   max-width: 40em;
+  padding-bottom: 8rem;
 }
 
 .syncStatus {
@@ -115,10 +168,8 @@
 .paneFunctions {
   display: flex;
   flex-wrap: nowrap;
-  align-items: center;
+  align-items: stretch;
   padding-right: 0;
-  font-size: var(--font-size-xsmall);
-  line-height: 1em;
 
   @media (--screen-medium) {
     font-size: 1em;
@@ -146,7 +197,6 @@
 
 .spinnerContainer {
   composes: frosted from "part:@sanity/base/theme/layout/backgrounds-style";
-  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
