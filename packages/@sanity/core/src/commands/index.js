@@ -29,6 +29,9 @@ import corsGroup from './cors/corsGroup'
 import addCorsOriginCommand from './cors/addCorsOriginCommand'
 import listCorsOriginsCommand from './cors/listCorsOriginsCommand'
 import deleteCorsOriginCommand from './cors/deleteCorsOriginCommand'
+import graphqlGroup from './graphql/graphqlGroup'
+import deployGraphQLAPICommand from './graphql/deployGraphQLAPICommand'
+import deleteGraphQLAPICommand from './graphql/deleteGraphQLAPICommand'
 
 export default [
   buildCommand,
@@ -58,6 +61,9 @@ export default [
   queryDocumentsCommand,
   deleteDocumentsCommand,
   createDocumentsCommand,
+  graphqlGroup,
+  deployGraphQLAPICommand,
+  deleteGraphQLAPICommand,
   installCommand,
   startCommand,
   uninstallCommand,
