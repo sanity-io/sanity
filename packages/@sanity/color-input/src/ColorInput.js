@@ -20,11 +20,15 @@ export default class ColorInput extends PureComponent {
         })
       )
     }).isRequired,
-    onChange: PropTypes.func,
+    onChange: PropTypes.func.isRequired,
     value: PropTypes.shape({
       hex: PropTypes.string,
       alpha: PropTypes.number
     })
+  }
+
+  static defaultProps = {
+    value: undefined
   }
 
   state = {
@@ -47,12 +51,28 @@ export default class ColorInput extends PureComponent {
     const {onChange, type} = this.props
 
     if (!color) {
-      console.error('Color missing') //eslint-disable-line
+      // eslint-disable-next-line no-console
+      console.error('Color missing')
     }
 
-    const value = Object.assign({_type: type.name, alpha: color.rgb.a}, color)
+    const fields = Object.keys(color)
+      .map(key => type.fields.find(field => field.name === key))
+      .filter(Boolean)
 
-    onChange(PatchEvent.from(Object.keys(value).map(key => set(value[key], [key]))))
+    onChange(
+      PatchEvent.from([
+        set(type.name, ['_type']),
+        set(color.rgb.a, ['alpha']),
+        ...fields.map(field => {
+          const isObject = field.type.jsonType === 'object'
+          const fieldValue = isObject
+            ? Object.assign({_type: field.type.name}, color[field.name])
+            : color[field.name]
+
+          return set(fieldValue, [field.name])
+        })
+      ])
+    )
   }
 
   handleUnset = () => {
@@ -72,10 +92,9 @@ export default class ColorInput extends PureComponent {
       _type: type.name,
       alpha: type.options && type.options.disableAlpha ? undefined : 1,
       hex: '#24a3e3',
-      oldHue: 200,
-      hsl: {h: 200, s: 0.7732, l: 0.5156, a: 1},
-      hsv: {h: 200, s: 0.8414, v: 0.8901, a: 1},
-      rgb: {r: 46, g: 163, b: 227, a: 1},
+      hsl: {_type: 'hslaColor', h: 200, s: 0.7732, l: 0.5156, a: 1},
+      hsv: {_type: 'hsvaColor', h: 200, s: 0.8414, v: 0.8901, a: 1},
+      rgb: {_type: 'rgbaColor', r: 46, g: 163, b: 227, a: 1},
       source: 'hex'
     }
 
