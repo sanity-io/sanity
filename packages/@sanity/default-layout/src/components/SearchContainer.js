@@ -4,6 +4,7 @@ import React from 'react'
 import schema from 'part:@sanity/base/schema?'
 import client from 'part:@sanity/base/client?'
 import Preview from 'part:@sanity/base/preview?'
+import {joinPath} from 'part:@sanity/base/util/search-utils'
 import {getPublishedId, isDraftId, getDraftId} from 'part:@sanity/base/util/draft-utils'
 import {Subject} from 'rxjs'
 import {IntentLink} from 'part:@sanity/base/router'
@@ -49,11 +50,13 @@ function search(query) {
     return acc
   }, {})
 
-  const uniqueFields = combineFields(candidateTypes.map(type => type.__unstable_searchFields))
-  const constraints = terms.map((term, i) => uniqueFields.map(field => `${field} match $t${i}`))
-  const constraintString = constraints
-    .map(constraint => `(${constraint.join(' || ')})`)
-    .join(' && ')
+  const uniqueFields = combineFields(
+    candidateTypes.map(type => (type.__unstable_searchFields || []).map(joinPath))
+  )
+  const constraints = terms.map((term, i) =>
+    uniqueFields.map(joinedPath => `${joinedPath} match $t${i}`)
+  )
+  const constraintString = constraints.map(constraint => `(${constraint.join('||')})`).join('&&')
   return client.observable.fetch(`*[${constraintString}][0...100]`, params)
 }
 
