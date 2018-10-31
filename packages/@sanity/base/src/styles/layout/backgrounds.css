@@ -1,12 +1,12 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .frosted {
-  background-color: color(var(--component-bg) a(95%));
+  background-color: var(--backdrop-background-color);
 
-  @supports (backdrop-filter: blur(2px)) {
-    background-color: color(var(--component-bg) a(60%));
+  /* @supports (backdrop-filter: blur(2px)) {
+    background-color: color(--backdrop-background-color) a(60%));
     backdrop-filter: blur(2px);
-  }
+  } */
 }
 
 .listItemStates {
