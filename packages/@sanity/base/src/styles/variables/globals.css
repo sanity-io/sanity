@@ -6,7 +6,7 @@
   --component-text-color: color(var(--component-bg) contrast(80%));
   --preview-placeholder-color: color(var(--component-bg) contrast(80%) alpha(10%));
   --component-border-color: color(var(--component-bg) contrast(80%) a(20%));
-  --backdrop-background-color: color(var(--gray-base) a(40%));
+  --backdrop-background-color: color(var(--gray-base) a(20%));
   --main-navigation-background-color: color(var(--brand-primary) shade(70%) saturation(20%));
   --main-navigation-text-color: color(var(--main-navigation-background-color) contrast(80%));
   --dialog-header-background-color: color(var(--brand-primary) shade(20%) saturation(30%));
@@ -15,7 +15,7 @@
   --checkerboard-color: color(var(--component-text-color) a(5%));
 
   /* Shadows */
-  --shadow-base: var(--component-text-color);
+  --shadow-base: color(var(--gray-base) shade(30%));
   --shadow-color-umbra: color(var(--shadow-base) a(2%));
   --shadow-color-penumbra: color(var(--shadow-base) a(14%));
   --shadow-color-ambient: color(var(--shadow-base) a(12%));
