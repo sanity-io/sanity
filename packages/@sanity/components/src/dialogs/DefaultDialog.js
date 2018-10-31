@@ -99,49 +99,47 @@ export default class DefaultDialog extends React.Component {
             <div className={classNames}>
               <div className={styles.dialog}>
                 <Escapable onEscape={event => (isActive || event.shiftKey) && onClose()} />
-                <CaptureOutsideClicks onClickOutside={isActive ? onClose : undefined}>
-                  <div className={styles.inner}>
-                    {!title &&
-                      onClose &&
-                      showCloseButton && (
+                <CaptureOutsideClicks onClickOutside={isActive ? onClose : undefined} className={styles.inner}>
+                  {!title &&
+                    onClose &&
+                    showCloseButton && (
+                      <button
+                        className={styles.closeButtonOutside}
+                        onClick={onClose}
+                        type="button"
+                      >
+                        <CloseIcon color="inherit" />
+                      </button>
+                    )}
+                  {title && (
+                    <div className={styles.header}>
+                      <h1 className={styles.title}>{title}</h1>
+                      {onClose && (
                         <button
-                          className={styles.closeButtonOutside}
+                          className={styles.closeButton}
                           onClick={onClose}
                           type="button"
+                          title="Close"
                         >
-                          <CloseIcon color="inherit" />
+                          <div className={styles.closeButtonIcon}>
+                            <CloseIcon color="inherit" />
+                          </div>
+                          <Ink duration={1000} opacity={0.1} radius={200} />
                         </button>
                       )}
-                    {title && (
-                      <div className={styles.header}>
-                        <h1 className={styles.title}>{title}</h1>
-                        {onClose && (
-                          <button
-                            className={styles.closeButton}
-                            onClick={onClose}
-                            type="button"
-                            title="Close"
-                          >
-                            <div className={styles.closeButtonIcon}>
-                              <CloseIcon color="inherit" />
-                            </div>
-                            <Ink duration={1000} opacity={0.1} radius={200} />
-                          </button>
-                        )}
-                      </div>
-                    )}
-                    <div
-                      className={
-                        actions && actions.length > 0 ? styles.content : styles.contentWithoutFooter
-                      }
-                    >
-                      {this.props.children}
                     </div>
-                    {actions &&
-                      actions.length > 0 && (
-                        <div className={styles.footer}>{this.renderActions(actions)}</div>
-                      )}
+                  )}
+                  <div
+                    className={
+                      actions && actions.length > 0 ? styles.content : styles.contentWithoutFooter
+                    }
+                  >
+                    {this.props.children}
                   </div>
+                  {actions &&
+                    actions.length > 0 && (
+                      <div className={styles.footer}>{this.renderActions(actions)}</div>
+                    )}
                 </CaptureOutsideClicks>
               </div>
             </div>

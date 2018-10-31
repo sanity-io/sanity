@@ -39,14 +39,12 @@ export default class PopOver extends React.PureComponent {
     actions: [],
     color: 'default',
     padding: 'medium',
-    placement: 'top',
+    placement: 'auto',
     useOverlay: true,
     modifiers: {
-      flip: {
-        boundariesElement: 'viewport'
-      },
       preventOverflow: {
-        boundariesElement: 'viewport'
+        boundariesElement: 'viewport',
+        padding: 24
       }
     }
   }
@@ -79,20 +77,19 @@ export default class PopOver extends React.PureComponent {
       onClickOutside,
       onEscape,
       modifiers,
-      placement,
       padding
     } = this.props
     const [primary, secondary] = partition(actions, action => action.primary)
 
     return (
       <Manager>
-        <Reference className={styles.target}>{({ref}) => <div ref={ref} />}</Reference>
+        <Reference>{({ref}) => <div ref={ref} className={styles.target} />}</Reference>
         <Portal>
           <Stacked>
             {isActive => (
               <div>
                 {useOverlay && <div className={styles.overlay} />}
-                <Popper placement={placement} modifiers={modifiers}>
+                <Popper placement={this.props.placement} modifiers={modifiers}>
                   {({ref, style, placement, arrowProps}) => (
                     <div
                       ref={ref}
@@ -108,37 +105,39 @@ export default class PopOver extends React.PureComponent {
                       <Escapable
                         onEscape={event => (isActive || event.shiftKey) && onEscape && onEscape()}
                       />
-                      <CaptureOutsideClicks onClickOutside={isActive ? onClickOutside : undefined}>
-                        <div className={styles.popover}>
-                          {onClose && (
-                            <button
-                              className={title ? styles.closeInverted : styles.close}
-                              type="button"
-                              onClick={onClose}
-                            >
-                              <CloseIcon />
-                            </button>
-                          )}
-                          {title && <h3 className={styles.title}>{title}</h3>}
-                          <div
-                            className={`
-                            ${actions.length > 0 ? styles.contentWithActions : styles.content}
-                            ${styles[`padding_${padding}`]}
-                          `}
+                      <CaptureOutsideClicks
+                        onClickOutside={isActive ? onClickOutside : undefined}
+                        className={styles.popover}
+                      >
+                        {onClose && (
+                          <button
+                            className={title ? styles.closeInverted : styles.close}
+                            type="button"
+                            onClick={onClose}
                           >
-                            {children}
-                          </div>
-                          {actions.length > 0 && (
-                            <div className={styles.footer}>
-                              <ButtonCollection
-                                align="end"
-                                secondary={primary.map(this.createActionButton)}
-                              >
-                                {secondary.map(this.createActionButton)}
-                              </ButtonCollection>
-                            </div>
-                          )}
+                            <CloseIcon />
+                          </button>
+                        )}
+                        {title && <h3 className={styles.title}>{title}</h3>}
+                        <div
+                          className={`
+                          ${actions.length > 0 ? styles.contentWithActions : styles.content}
+                          ${styles[`padding_${padding}`]}
+                        `}
+                        >
+                          {children}
+                          {placement}
                         </div>
+                        {actions.length > 0 && (
+                          <div className={styles.footer}>
+                            <ButtonCollection
+                              align="end"
+                              secondary={primary.map(this.createActionButton)}
+                            >
+                              {secondary.map(this.createActionButton)}
+                            </ButtonCollection>
+                          </div>
+                        )}
                       </CaptureOutsideClicks>
                     </div>
                   )}
