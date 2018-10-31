@@ -107,19 +107,20 @@ const style = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  backgroundColor: '#eee',
   padding: '1em'
-}
-
-const innerStyle = {
-  border: '1px dotted #ccc',
-  width: '500px'
 }
 
 const centered = function(storyFn) {
   return (
     <div style={style}>
-      <div style={innerStyle}>{storyFn()}</div>
+      <div
+        style={{
+          boxShadow: '0 1px 20px #000',
+          width: `${number('width', 300, {range: true, min: 100, max: 2000}, 'test')}px`
+        }}
+      >
+        {storyFn()}
+      </div>
     </div>
   )
 }
@@ -308,11 +309,11 @@ storiesOf('Previews')
     return (
       <Sanity part="part:@sanity/components/previews/card" propTables={[CardPreview]}>
         <CardPreview
-          title={text('title', 'This is the title', 'props')}
-          subtitle={text('subtitle', 'This is the subtitle', 'props')}
+          title={text('title', 'Bill Murray', 'props')}
+          subtitle={text('subtitle', 'American actor', 'props')}
           description={text(
             'description',
-            'This is the long the descriptions that should no be to long, beacuse we will cap it',
+            'William James Murray is an American actor, comedian, and writer. He first gained exposure on Saturday Night Live, a series of performances that earned him his first Emmy Award, and later starred in.',
             'props'
           )}
           date={boolean('date', true, 'test') ? new Date() : false}
