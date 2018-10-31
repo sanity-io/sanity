@@ -9,6 +9,7 @@ import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 // import DefaultTextInput from 'part:@sanity/components/textinputs/default'
 // import InInputButton from 'part:@sanity/components/buttons/in-input'
 // import InInputStyles from 'part:@sanity/components/buttons/in-input-style'
+import FileInputButton from 'part:@sanity/components/fileinput/button'
 import {storiesOf} from 'part:@sanity/storybook'
 import Chance from 'chance'
 import {range} from 'lodash'
@@ -77,7 +78,7 @@ storiesOf('Buttons', module)
     function setConfirmButton(element) {
       testElement = element
     }
-    const backgroundColor = color('View color', '#fff', 'test')
+    const backgroundColor = color('View color', 'rgba(255, 255, 255, 0', 'test')
     button('Test focus', () => testFocus(), 'test')
     return (
       <div style={{backgroundColor, ...centerStyle}}>
@@ -93,6 +94,7 @@ storiesOf('Buttons', module)
             loading={boolean('loading', false, 'props')}
             icon={boolean('icon', false, 'props') ? SanityLogoIcon : false}
             ref={setConfirmButton}
+            bleed={boolean('bleed', false, 'props')}
           >
             {text('children', 'Touch Me!', 'props')}
           </Button>
@@ -101,7 +103,7 @@ storiesOf('Buttons', module)
     )
   })
   .add('Anchor <a>', () => {
-    const backgroundColor = color('View color', '#fff', 'test')
+    const backgroundColor = color('View color', 'rgba(255, 255, 255, 0', 'test')
     return (
       <div style={{backgroundColor, ...centerStyle}}>
         <Sanity part="part:@sanity/components/buttons/anchor" propTables={[Button]}>
@@ -124,7 +126,7 @@ storiesOf('Buttons', module)
     )
   })
   .add('DropDownButton', () => {
-    const backgroundColor = color('View color', '#fff', 'test')
+    const backgroundColor = color('View color', 'rgba(255, 255, 255, 0', 'test')
     return (
       <div style={{backgroundColor, ...centerStyle}}>
         <Sanity part="part:@sanity/components/buttons/dropdown" propTables={[DropDownButton]}>
@@ -153,9 +155,10 @@ storiesOf('Buttons', module)
       </div>
     )
   })
-  .add('Button', () => {
+  .add('FileInputButton', () => {
+    const backgroundColor = color('View color', 'rgba(255, 255, 255, 0', 'test')
     return (
-      <div style={centerStyle}>
+      <div style={{backgroundColor, ...centerStyle}}>
         <Sanity part="part:@sanity/components/fileinput/button" propTables={[FileInputButton]}>
           <FileInputButton onSelect={action('onSelect')}>Upload file…</FileInputButton>
         </Sanity>
@@ -166,7 +169,7 @@ storiesOf('Buttons', module)
     const disabled = boolean('Disabled', false)
     const loading = boolean('Loading', false)
     const fontSize = number('FontSize (rem)', 1, {range: true, min: 0.5, max: 3, step: 0.25})
-    const backgroundColor = color('View color', '#fff', 'test')
+    const backgroundColor = color('View color', 'rgba(255, 255, 255, 0', 'test')
     return (
       <RouterProvider
         router={router}
@@ -516,7 +519,7 @@ storiesOf('Buttons', module)
 storiesOf('Button collection', module)
   .addDecorator(withKnobs)
   .add('Default', () => {
-    const backgroundColor = color('View color', '#fff', 'test')
+    const backgroundColor = color('View color', 'rgba(255, 255, 255, 0', 'test')
     const qtyButtons = number('# buttons', 2, 'test')
     return (
       <div style={{backgroundColor, margin: '2rem'}}>
