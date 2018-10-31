@@ -126,7 +126,6 @@ export default class PopOver extends React.PureComponent {
                         `}
                         >
                           {children}
-                          {placement}
                         </div>
                         {actions.length > 0 && (
                           <div className={styles.footer}>
