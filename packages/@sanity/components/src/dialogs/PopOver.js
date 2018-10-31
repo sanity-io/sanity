@@ -40,6 +40,7 @@ export default class PopOver extends React.PureComponent {
     color: 'default',
     padding: 'medium',
     placement: 'top',
+    useOverlay: true,
     modifiers: {
       flip: {
         boundariesElement: 'viewport'
