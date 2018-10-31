@@ -67,8 +67,8 @@ storiesOf('Icons')
         <ul
           className={styles.sanityIcons}
           style={{
-            color: color('color', '#333'),
-            backgroundColor: color('background', '#fff')
+            color: color('color', undefined),
+            backgroundColor: color('background', undefined)
           }}
         >
           {createIconPreview('Sanity logo', SanityLogoIcon, 'part:@sanity/base/sanity-logo-icon')}
