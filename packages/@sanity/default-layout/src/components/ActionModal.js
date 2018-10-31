@@ -4,12 +4,14 @@ import {IntentLink} from 'part:@sanity/base/router'
 import Dialog from 'part:@sanity/components/dialogs/default'
 import FileIcon from 'part:@sanity/base/file-icon'
 import styles from './styles/ActionModal.css'
+import DialogContent from 'part:@sanity/components/dialogs/content'
+import Ink from 'react-ink'
 
 function ActionModal(props) {
   return (
     <Dialog className={styles.modal} onClose={props.onClose} isOpen>
-      <div className={styles.content}>
-        <h1>Create new</h1>
+      <DialogContent size="large" padding="medium">
+        <h1 className={styles.title}>Create new</h1>
         <ul className={styles.list}>
           {props.actions.map(action => {
             const Icon = action.icon
@@ -23,12 +25,13 @@ function ActionModal(props) {
                 >
                   <span className={styles.icon}>{Icon ? <Icon /> : <FileIcon />}</span>
                   <span>{action.title}</span>
+                  <Ink duration={1000} opacity={0.1} radius={200} />
                 </IntentLink>
               </li>
             )
           })}
         </ul>
-      </div>
+      </DialogContent>
     </Dialog>
   )
 }
