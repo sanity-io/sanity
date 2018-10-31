@@ -7,7 +7,7 @@
 }
 
 .selectButton {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
 
   @nest & > span {
     padding: 0.5em !important;
@@ -19,9 +19,24 @@
   composes: root from 'part:@sanity/base/theme/forms/text-input-style';
   width: 100%;
   display: flex;
+  opacity: 1 !important;
 
   @nest & > div {
     flex-grow: 1;
+  }
+
+  /* from text-input in base */
+  @nest &:hover {
+    box-shadow: var(--input-box-shadow--hover);
+    border-color: var(--input-border-color-hover);
+  }
+
+  @nest &:focus, &:focus-within {
+    box-shadow: var(--input-box-shadow--focus);
+  }
+
+  @nest &:active {
+    border-color: var(--input-border-color-active);
   }
 
   @nest & :global(.react-datepicker-wrapper) {
@@ -38,11 +53,9 @@
 
 .inputWrapperWithError {
   composes: inputWrapper;
-
-  /* copied from part:@sanity/base/theme/forms/text-input-style */
-  border-color: var(--input-border-color-invalid) !important;
-  background-color: var(--input-bg-invalid) !important;
-  box-shadow: var(--input-box-shadow--invalid) !important;
+  border-color: var(--input-border-color-invalid);
+  background-color: var(--input-bg-invalid);
+  box-shadow: var(--input-box-shadow--invalid);
 
   @nest &:focus, &:focus-within {
     box-shadow: var(--input-box-shadow--invalid-focus) !important;
