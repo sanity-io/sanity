@@ -22,6 +22,7 @@ export default class PopOver extends React.PureComponent {
     modifiers: PropTypes.object,
     placement: PropTypes.string,
     useOverlay: PropTypes.bool,
+    hasAnimation: PropTypes.bool,
     color: PropTypes.oneOf(['default', 'danger']),
     padding: PropTypes.oneOf(['none', 'small', 'medium', 'large']),
     actions: PropTypes.arrayOf(
@@ -41,6 +42,7 @@ export default class PopOver extends React.PureComponent {
     padding: 'medium',
     placement: 'auto',
     useOverlay: true,
+    hasAnimation: false,
     modifiers: {
       preventOverflow: {
         boundariesElement: 'viewport',
@@ -67,7 +69,7 @@ export default class PopOver extends React.PureComponent {
   }
 
   render() {
-    const {useOverlay} = this.props
+    const {useOverlay, hasAnimation} = this.props
     const {
       title,
       color,
@@ -97,47 +99,54 @@ export default class PopOver extends React.PureComponent {
                       data-placement={placement}
                       className={`${styles.popper} ${styles[`color_${color}`]}`}
                     >
-                      <div
-                        className={title ? styles.filledArrow : styles.arrow}
-                        ref={arrowProps.ref}
-                        style={arrowProps.style}
-                      />
-                      <Escapable
-                        onEscape={event => (isActive || event.shiftKey) && onEscape && onEscape()}
-                      />
-                      <CaptureOutsideClicks
-                        onClickOutside={isActive ? onClickOutside : undefined}
-                        className={styles.popover}
-                      >
-                        {onClose && (
-                          <button
-                            className={title ? styles.closeInverted : styles.close}
-                            type="button"
-                            onClick={onClose}
-                          >
-                            <CloseIcon />
-                          </button>
-                        )}
-                        {title && <h3 className={styles.title}>{title}</h3>}
+                      <div className={hasAnimation ? styles.popperAnimation : ''}>
                         <div
-                          className={`
-                          ${actions.length > 0 ? styles.contentWithActions : styles.content}
-                          ${styles[`padding_${padding}`]}
-                        `}
+                          className={title ? styles.filledArrow : styles.arrow}
+                          ref={arrowProps.ref}
+                          style={arrowProps.style}
+                        />
+                        <div
+                          className={styles.arrowShadow}
+                          ref={arrowProps.ref}
+                          style={arrowProps.style}
+                        />
+                        <Escapable
+                          onEscape={event => (isActive || event.shiftKey) && onEscape && onEscape()}
+                        />
+                        <CaptureOutsideClicks
+                          onClickOutside={isActive ? onClickOutside : undefined}
+                          className={styles.popover}
                         >
-                          {children}
-                        </div>
-                        {actions.length > 0 && (
-                          <div className={styles.footer}>
-                            <ButtonCollection
-                              align="end"
-                              secondary={primary.map(this.createActionButton)}
+                          {onClose && (
+                            <button
+                              className={title ? styles.closeInverted : styles.close}
+                              type="button"
+                              onClick={onClose}
                             >
-                              {secondary.map(this.createActionButton)}
-                            </ButtonCollection>
+                              <CloseIcon />
+                            </button>
+                          )}
+                          {title && <h3 className={styles.title}>{title}</h3>}
+                          <div
+                            className={`
+                            ${actions.length > 0 ? styles.contentWithActions : styles.content}
+                            ${styles[`padding_${padding}`]}
+                          `}
+                          >
+                            {children}
                           </div>
-                        )}
-                      </CaptureOutsideClicks>
+                          {actions.length > 0 && (
+                            <div className={styles.footer}>
+                              <ButtonCollection
+                                align="end"
+                                secondary={primary.map(this.createActionButton)}
+                              >
+                                {secondary.map(this.createActionButton)}
+                              </ButtonCollection>
+                            </div>
+                          )}
+                        </CaptureOutsideClicks>
+                      </div>
                     </div>
                   )}
                 </Popper>
