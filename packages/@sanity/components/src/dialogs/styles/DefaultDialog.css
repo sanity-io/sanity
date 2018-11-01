@@ -2,16 +2,10 @@
 
 @keyframes reveal {
   0% {
-    opacity: 0;
-  }
-
-  5% {
-    opacity: 0;
-    transform: scale(0.7);
+    transform: scale(0.9);
   }
 
   100% {
-    opacity: 1;
     transform: scale(1);
   }
 }
@@ -36,7 +30,6 @@
 
 .root {
   composes: flexCenter from 'part:@sanity/base/theme/layout/positioning-style';
-  composes: frosted from "part:@sanity/base/theme/layout/backgrounds-style";
   position: fixed;
   z-index: var(--zindex-portal);
   top: 0;
@@ -44,11 +37,21 @@
   bottom: 0;
   width: 100vw;
   height: 100vh;
+  color: var(--text-color);
+}
+
+.overlay {
+  composes: frosted from "part:@sanity/base/theme/layout/backgrounds-style";
   animation-name: fadeIn;
   animation-duration: 0.2s;
   animation-timing-function: cubic-bezier(0, 0, 0, 1);
   animation-iteration-count: once;
-  color: var(--text-color);
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
 }
 
 .default {
@@ -84,7 +87,7 @@
   animation-iteration-count: once;
   transform-origin: center;
   box-sizing: border-box;
-  transition: all 0.3s linear;
+  /* transition: all 0.3s linear; */
   max-width: calc(100% - 2rem);
   max-height: calc(100% - 8rem);
 
