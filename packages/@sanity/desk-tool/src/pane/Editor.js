@@ -10,6 +10,8 @@ import {getPublishedId, newDraftFrom} from 'part:@sanity/base/util/draft-utils'
 import {resolveEnabledActions, isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import Button from 'part:@sanity/components/buttons/default'
+import ButtonCollection from 'part:@sanity/components/buttons/button-collection'
+import PopOverDialog from 'part:@sanity/components/dialogs/popover'
 import FormBuilder from 'part:@sanity/form-builder'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import UndoIcon from 'part:@sanity/base/undo-icon'
@@ -577,7 +579,6 @@ export default withRouterHOC(
       const value = draft || published
       const validation = markers.filter(marker => marker.type === 'validation')
       const errors = validation.filter(marker => marker.level === 'error')
-
       return (
         <div
           className={
@@ -599,10 +600,30 @@ export default withRouterHOC(
               Publish
             </Button>
           </Tooltip>
-          <div className={styles.discardButton}>
-            <Button inverted onClick={() => this.setState({showConfirmDiscard: true})}>
-              Discard
-            </Button>
+          <div className={styles.publishInfoUndoButton}>
+            {published && (
+              <Button kind="simple" onClick={() => this.setState({showConfirmDiscard: true})}>
+                Discard changes
+              </Button>
+            )}
+            {this.state.showConfirmDiscard && (
+              <PopOverDialog onClickOutside={this.handleCancelDiscard} useOverlay={false} hasAnimation>
+                <div style={{padding: '1em'}}>
+                  <p style={{paddingBottom: '1em'}}>
+                    <strong>Are you sure</strong> you want to discard changes?
+                  </p>
+                  <ButtonCollection>
+                    <Button color="primary" onClick={this.handleConfirmDiscard}>Discard</Button>
+                    <Button kind="simple" onClick={this.handleCancelDiscard}>Cancel</Button>
+                  </ButtonCollection>
+                </div>
+              </PopOverDialog>
+            )}
+            {!published && (
+              <Button kind="simple" onClick={() => this.setState({showConfirmDiscard: true})} color="danger">
+                Delete
+              </Button>
+            )}
           </div>
           <div className={styles.editedDate}>
             {value && (
@@ -646,7 +667,6 @@ export default withRouterHOC(
         inspect,
         focusPath,
         showConfirmDelete,
-        showConfirmDiscard,
         showConfirmUnpublish,
         didPublish,
         filterField
@@ -719,14 +739,6 @@ export default withRouterHOC(
             ))}
 
             {inspect && <InspectView value={value} onClose={this.handleHideInspector} />}
-            {showConfirmDiscard && (
-              <ConfirmDiscard
-                draft={draft}
-                published={published}
-                onCancel={this.handleCancelDiscard}
-                onConfirm={this.handleConfirmDiscard}
-              />
-            )}
             {showConfirmDelete && (
               <ConfirmDelete
                 draft={draft}
