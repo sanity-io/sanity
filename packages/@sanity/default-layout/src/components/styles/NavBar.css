@@ -15,9 +15,13 @@
 
   @media (--screen-medium) {
     grid-template-rows: var(--nav-bar-box);
-    grid-template-areas: " hamburger   branding    createButton       search               toolSwitcher extras      loginStatus";
-    grid-template-columns: max-content max-content var(--nav-bar-box) minmax(150px, 400px) auto         max-content var(--nav-bar-box);
-    padding-right: 0.5em;
+    grid-template-areas: " hamburger   branding    createButton       search               extras      loginStatus";
+    grid-template-columns: max-content max-content var(--nav-bar-box) minmax(200px, 400px) max-content calc(var(--nav-bar-box) + 1em);
+
+    @nest &.withToolSwitcher {
+      grid-template-areas: " branding    createButton       search               toolSwitcher extras      loginStatus";
+      grid-template-columns: max-content var(--nav-bar-box) minmax(200px, 400px) auto         max-content calc(var(--nav-bar-box) + 1em);
+    }
   }
 
   @nest & > a {
@@ -48,6 +52,10 @@ a.branding {
   grid-area: hamburger;
   display: flex;
   align-items: stretch;
+
+  @nest .withToolSwitcher & {
+    display: none;
+  }
 }
 
 .hamburgerButton {
@@ -77,10 +85,12 @@ a.branding {
 
 .toolSwitcher {
   display: none;
+  grid-area: toolSwitcher;
 
   @media (--screen-medium) {
-    grid-area: toolSwitcher;
-    display: flex;
+    @nest .withToolSwitcher & {
+      display: flex;
+    }
   }
 }
 
