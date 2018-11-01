@@ -22,14 +22,19 @@ function NavBar(props) {
     onUserLogout,
     onSearchOpen,
     onSearchClose,
+    onSetLoginStatusElement,
     router,
     tools,
-    user
+    user,
+    showLabel,
+    showToolSwitcher
   } = props
   let searchClassName = styles.search
   if (searchIsOpen) searchClassName += ` ${styles.searchIsOpen}`
+  let className = styles.root
+  if (showToolSwitcher) className += ` ${styles.withToolSwitcher}`
   return (
-    <div className={styles.root} data-search-open={searchIsOpen}>
+    <div className={className} data-search-open={searchIsOpen}>
       <div className={styles.hamburger}>
         <button
           className={styles.hamburgerButton}
@@ -63,6 +68,7 @@ function NavBar(props) {
           tools={tools}
           activeToolName={router.state.tool}
           onSwitchTool={onSwitchTool}
+          showLabel={showLabel}
         />
       </div>
       <div className={searchClassName}>
@@ -76,7 +82,7 @@ function NavBar(props) {
       </div>
       <div className={styles.extras}>{/* Insert plugins here */}</div>
       <div className={styles.loginStatus}>
-        <LoginStatus onLogout={onUserLogout} user={user} />
+        <LoginStatus onLogout={onUserLogout} onSetElement={onSetLoginStatusElement} user={user} />
       </div>
       <a className={styles.searchButton} onClick={onSearchOpen}>
         <span className={styles.searchButtonIcon}>
@@ -89,6 +95,12 @@ function NavBar(props) {
   )
 }
 
+NavBar.defaultProps = {
+  showLabel: true,
+  showToolSwitcher: true,
+  onSetLoginStatusElement: undefined
+}
+
 NavBar.propTypes = {
   searchIsOpen: PropTypes.bool.isRequired,
   onCreateButtonClick: PropTypes.func.isRequired,
@@ -97,6 +109,7 @@ NavBar.propTypes = {
   onUserLogout: PropTypes.func.isRequired,
   onSearchOpen: PropTypes.func.isRequired,
   onSearchClose: PropTypes.func.isRequired,
+  onSetLoginStatusElement: PropTypes.func,
   router: PropTypes.shape({
     state: PropTypes.shape({tool: PropTypes.string}),
     navigate: PropTypes.func
@@ -109,7 +122,9 @@ NavBar.propTypes = {
   user: PropTypes.shape({
     name: PropTypes.string,
     profileImage: PropTypes.string
-  }).isRequired
+  }).isRequired,
+  showLabel: PropTypes.bool,
+  showToolSwitcher: PropTypes.bool
 }
 
 export default NavBar

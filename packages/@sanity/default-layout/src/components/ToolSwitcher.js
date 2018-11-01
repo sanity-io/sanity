@@ -6,8 +6,8 @@ import ToolSwitcherItem from './ToolSwitcherItem'
 import ToolSwitcherWidgetStyles from './styles/ToolSwitcherWidget.css'
 
 class ToolSwitcher extends React.PureComponent {
-  renderItem = (tool, showIcon, showLabel) => {
-    const {activeToolName, onSwitchTool, direction} = this.props
+  renderItem = (tool, showIcon) => {
+    const {activeToolName, onSwitchTool, direction, showLabel} = this.props
     return (
       <StateLink
         state={tool.state}

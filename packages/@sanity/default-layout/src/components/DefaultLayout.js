@@ -10,7 +10,7 @@ import userStore from 'part:@sanity/base/user'
 import styles from './styles/DefaultLayout.css'
 import RenderTool from './RenderTool'
 import ActionModal from './ActionModal'
-import NavBar from './NavBar'
+import NavBarContainer from './NavBarContainer'
 import {SchemaErrorReporter} from './SchemaErrorReporter'
 import SideMenu from './SideMenu'
 
@@ -167,7 +167,7 @@ export default withRouterHOC(
           )}
 
           <div className={styles.navBar}>
-            <NavBar
+            <NavBarContainer
               tools={tools}
               onCreateButtonClick={this.handleCreateButtonClick}
               onToggleMenu={this.handleToggleMenu}
