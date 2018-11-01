@@ -1,16 +1,22 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-@keyframes appear {
+@keyframes reveal {
+  0% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
   0% {
     opacity: 0;
-    max-height: 0;
-    transform: scaleY(0);
   }
 
   100% {
     opacity: 1;
-    max-height: 100vh;
-    transform: scaleY(1);
   }
 }
 
@@ -29,6 +35,10 @@
   opacity: 0.75;
   z-index: var(--zindex-portal);
   pointer-events: none;
+  animation-name: fadeIn;
+  animation-duration: 0.2s;
+  animation-timing-function: cubic-bezier(0, 0, 0, 1);
+  animation-iteration-count: once;
 }
 
 .target {
@@ -57,12 +67,21 @@
   }
 }
 
+.popperAnimation {
+  animation-name: reveal;
+  animation-duration: 0.2s;
+  animation-timing-function: cubic-bezier(0, 0, 0, 1);
+  animation-iteration-count: once;
+}
+
 .arrow {
   height: 1em;
   width: 1em;
   transform: translate(-50%, -50%) rotate(45deg);
   background-color: var(--component-bg);
   position: absolute;
+  z-index: 1;
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
 
   @nest .color_danger & {
     background-color: var(--state-danger-color);
@@ -71,26 +90,35 @@
   @nest .popper[data-placement^="bottom"] & {
     top: 0;
     bottom: unset;
-    transform: translate(0, -50%) rotate(45deg);
+    transform: translate(0, -50%) rotate(135deg);
   }
 
   @nest .popper[data-placement^="top"] & {
     top: unset;
     bottom: 0;
-    transform: translate(-50%, 50%) rotate(45deg);
+    transform: translate(-50%, 50%) rotate(-45deg);
   }
 
   @nest .popper[data-placement^="right"] & {
     right: unset;
     left: 0;
-    transform: translate(-50%, 0) rotate(-45deg);
+    transform: translate(-50%, 0) rotate(45deg);
   }
 
   @nest .popper[data-placement^="left"] & {
     left: unset;
     right: 0;
-    transform: translate(50%, 0) rotate(45deg);
+    transform: translate(50%, 0) rotate(225deg);
   }
+}
+
+.arrowShadow {
+  composes: arrow;
+  clip-path: unset;
+  background-color: transparent;
+  z-index: -1;
+  box-shadow: 0 0 10px var(--shadow-base);
+  opacity: 0.2;
 }
 
 .filledArrow {
@@ -233,6 +261,7 @@
   background-color: var(--dialog-header-background-color);
   color: var(--dialog-header-text-color);
   padding: var(--small-padding);
+  padding-right: var(--medium-padding);
   font-size: 1rem;
   font-weight: 400;
   border-radius: var(--border-radius-base) var(--border-radius-base) 0 0;
