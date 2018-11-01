@@ -97,6 +97,7 @@ export default class DefaultDialog extends React.Component {
         <Stacked>
           {isActive => (
             <div className={classNames}>
+              <div className={styles.overlay} />
               <div className={styles.dialog}>
                 <Escapable onEscape={event => (isActive || event.shiftKey) && onClose()} />
                 <CaptureOutsideClicks onClickOutside={isActive ? onClose : undefined} className={styles.inner}>
