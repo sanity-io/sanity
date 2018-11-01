@@ -50,12 +50,12 @@
   right: 0;
   width: 100%;
   background-color: var(--body-bg);
-  z-index: 1;
+  z-index: var(--zindex-pane);
   transform: translateY(0);
   transition: transform 0.3s ease-in, box-shadow 0.2s ease-in;
   grid-template-areas:
-    "publishButton discardButton"
-    "editedDate  publishedDate";
+    "publishButton publishInfoUndoButton"
+    "editedDate    publishedDate";
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 3em 1.5em;
   justify-content: stretch;
@@ -66,10 +66,10 @@
 
   @media (--screen-medium) {
     position: absolute;
-    grid-template-areas: "publishButton discardButton . publishedDate editedDate";
+    grid-template-areas: "publishButton publishInfoUndoButton . publishedDate editedDate";
     grid-template-columns: auto auto auto 1fr 1fr;
     grid-template-rows: 2.5em;
-    box-shadow: 0 0 25px var(--shadow-base);
+    box-shadow: 0 0 20px color(var(--shadow-base) a(30%));
   }
 }
 
@@ -81,7 +81,6 @@
 
 .publishButton {
   grid-area: publishButton;
-  font-size: var(--font-size-large);
   justify-self: stretch;
 
   @nest & > * {
@@ -90,9 +89,9 @@
   }
 }
 
-.discardButton {
-  grid-area: discardButton;
-  font-size: var(--font-size-large);
+.publishInfoUndoButton {
+  position: relative;
+  grid-area: publishInfoUndoButton;
 
   @nest & > * {
     display: flex;
@@ -197,7 +196,7 @@
 }
 
 .spinnerContainer {
-  composes: frosted from "part:@sanity/base/theme/layout/backgrounds-style";
+  background: var(--body-bg);
   top: 0;
   left: 0;
   width: 100%;
