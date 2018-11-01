@@ -61,7 +61,7 @@ class NavBarContainer extends React.PureComponent {
   loginStatusElement = null
 
   componentDidMount() {
-    // Setup IntersectionObserver to check whether elements within the NavBar
+    // Setup a resize listener to check whether elements within the NavBar
     // exits the viewport at any time.
     window.addEventListener('resize', this.handleWindowResize)
     this.handleWindowResize()
