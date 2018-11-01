@@ -11,7 +11,6 @@ export default function PaneItemWrapper(props) {
   const link = (
     <StateLink state={linkState} className={isSelected ? styles.linkIsSelected : styles.link}>
       {props.children}
-      <Ink duration={1000} opacity={0.1} radius={200} />
     </StateLink>
   )
 
