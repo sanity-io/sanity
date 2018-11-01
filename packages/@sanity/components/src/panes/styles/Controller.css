@@ -12,7 +12,6 @@
 .pane {
   flex-grow: 1;
   flex-basis: auto;
-  transition: all 1s linear;
   position: relative;
   border-right: 1px solid transparent;
   padding: 0 1rem;

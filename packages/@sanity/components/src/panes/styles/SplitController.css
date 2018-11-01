@@ -43,7 +43,6 @@
   */
   @nest & :global(.Pane1) {
     flex: 1 !important;
-    transition: all 0.3s;
   }
 
   @nest & :global(.Pane2) {
