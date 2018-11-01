@@ -1,3 +1,4 @@
+import {debounce} from 'lodash'
 import React from 'react'
 import NavBar from './NavBar'
 
@@ -87,7 +88,7 @@ class NavBarContainer extends React.PureComponent {
     }
   }
 
-  handleWindowResize = () => {
+  handleWindowResize = debounce(() => {
     if (this.loginStatusElement) {
       const rect = this.loginStatusElement.getBoundingClientRect()
       const nextState = getNextState(this.state, rect.left + rect.width, window.innerWidth)
@@ -97,7 +98,7 @@ class NavBarContainer extends React.PureComponent {
         this.setState(nextState)
       }
     }
-  }
+  }, 100)
 
   handleSetLoginStatusElement = element => {
     this.loginStatusElement = element
