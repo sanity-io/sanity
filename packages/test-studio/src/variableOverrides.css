@@ -6,7 +6,7 @@
   --main-navigation-color: #2C343D;
   --main-navigation-color--inverted: #fff;
   --brand-primary: #65C5F6;
-  --brand-primary--text: rgba(0, 0, 0, 0.6);
+  --brand-primary--inverted: rgba(0, 0, 0, 0.6);
   --state-success-color: #63E1A2;
   --state-info-color: #65C5F6;
   --state-warning-color: #ffba00;
@@ -16,5 +16,5 @@
   --input-bg-focus: rgba(255, 255, 255, 0.15);
   --shadow-base: rgb(23, 27, 32);
   --backdrop-color: rgba(255, 255, 255, 0.15);
-  --default-button-color: rgba(255, 255, 255, 0.15);
+  --default-button-color: color(var(--body-bg) lightness(+ 5%));
 }

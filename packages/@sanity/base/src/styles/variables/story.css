@@ -18,9 +18,11 @@
 }
 
 .color {
+  composes: shadow-2dp from 'part:@sanity/base/theme/shadows-style';
   display: block;
   padding: 1rem;
   text-align: center;
+  font-family: var(--font-family-monospace);
 
   @nest &::before {
     display: block;
@@ -31,48 +33,49 @@
     display: block;
     font-size: 0.9rem;
     padding: 1rem;
+    white-space: pre-wrap;
   }
 }
 
 .grayBase {
   composes: color;
   background-color: var(--gray-base);
+  color: color(var(--gray-base) contrast(100%));
 
   @nest &::before {
     content: '--gray-base';
   }
 
   @nest &::after {
-    content: '--gray-base var(--gray-base)';
-    color: #fff;
+    content: 'var(--gray-base)';
   }
 }
 
 .brandPrimary {
   composes: color;
   background-color: var(--brand-primary);
-  color: var(--brand-primary--text);
+  color: var(--brand-primary--inverted);
 
   @nest &::before {
     content: '--brand-primary';
   }
 
   @nest &::after {
-    content: "var(--brand-primary) var(--brand-primary--text)";
+    content: "var(--brand-primary)\A Inverted: var(--brand-primary--inverted)";
   }
 }
 
 .brandSecondary {
   composes: color;
   background-color: var(--brand-secondary);
-  color: var(--brand-secondary--text);
+  color: var(--brand-secondary--inverted);
 
   @nest &::before {
     content: '--brand-secondary';
   }
 
   @nest &::after {
-    content: "var(--brand-secondary)\n var(--brand-secondary--text)";
+    content: "var(--brand-secondary)\A Inverted:  var(--brand-secondary--inverted)";
   }
 }
 
@@ -99,7 +102,7 @@
   }
 
   @nest &::after {
-    content: 'var(--selectable-item-base)\n inverted: var(--selectable-item-color--inverted)';
+    content: 'var(--selectable-item-color)\A Inverted: var(--selectable-item-color--inverted)';
   }
 }
 
@@ -113,7 +116,7 @@
   }
 
   @nest &::after {
-    content: 'var(--selectable-item-color-hover)\n inverted: var(--selectable-item-color-hover--inverted)';
+    content: 'var(--selectable-item-color-hover)\A Inverted: var(--selectable-item-color-hover--inverted)';
   }
 }
 
@@ -127,7 +130,7 @@
   }
 
   @nest &::after {
-    content: 'var(--selectable-item-color-focus)\n inverted: var(--selectable-item-color-focus--inverted)';
+    content: 'var(--selectable-item-color-focus)\A Inverted: var(--selectable-item-color-focus--inverted)';
   }
 }
 
@@ -141,7 +144,7 @@
   }
 
   @nest &::after {
-    content: 'var(--selectable-item-color-active)\n inverted: var(--selectable-item-color-active--inverted)';
+    content: 'var(--selectable-item-color-active)\A Inverted: var(--selectable-item-color-active--inverted)';
   }
 }
 
@@ -168,7 +171,7 @@
   }
 
   @nest &::after {
-    content: 'var(--selected-item-color)\n inverted: var(--selected-item-color--inverted)';
+    content: 'var(--selected-item-color)\A Inverted: var(--selected-item-color--inverted)';
   }
 }
 
@@ -182,6 +185,62 @@
   }
 
   @nest &::after {
-    content: 'var(--selected-item-color-hover)\n inverted: var(--selected-item-color-hover--inverted)';
+    content: 'var(--selected-item-color-hover)\A Inverted:  inverted: var(--selected-item-color-hover--inverted)';
+  }
+}
+
+.stateSuccess {
+  composes: color;
+  background-color: var(--state-success-color);
+  color: var(--state-success-color--inverted);
+
+  @nest &::before {
+    content: '--state-success-color';
+  }
+
+  @nest &::after {
+    content: "var(--state-success-color)\A Inverted: var(--state-success-color--inverted)";
+  }
+}
+
+.stateInfo {
+  composes: color;
+  background-color: var(--state-info-color);
+  color: var(--state-info-color--inverted);
+
+  @nest &::before {
+    content: '--state-info-color';
+  }
+
+  @nest &::after {
+    content: "var(--state-info-color) \A inverted: var(--state-info-color--inverted)";
+  }
+}
+
+.stateWarning {
+  composes: color;
+  background-color: var(--state-warning-color);
+  color: var(--state-warning-color--inverted);
+
+  @nest &::before {
+    content: '--state-warning-color';
+  }
+
+  @nest &::after {
+    content: "var(--state-warning-color)\A Inverted:  var(--state-warning-color--inverted)";
+  }
+}
+
+.stateDanger {
+  composes: color;
+  background-color: var(--state-danger-color);
+  color: var(--state-danger-color--inverted);
+
+  @nest &::before {
+    content: '--state-danger-color';
+  }
+
+  @nest &::after {
+    content: "var(--state-danger-color)\A Inverted: var(--state-danger-color--inverted)";
   }
 }

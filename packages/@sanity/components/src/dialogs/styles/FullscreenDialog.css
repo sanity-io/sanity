@@ -31,7 +31,7 @@
 
 .info {
   composes: root;
-  color: var(--state-info-color--text);
+  color: var(--state-info-color--inverted);
   background-color: color(var(--state-info-color) a(95%));
 
   @nest & .closeButton {
@@ -45,7 +45,7 @@
 
 .danger {
   composes: root;
-  color: var(--state-danger-color--text);
+  color: var(--state-danger-color--inverted);
   background-color: color(var(--state-danger-color) a(95%));
 
   @nest & .closeButton {
@@ -59,7 +59,7 @@
 
 .success {
   composes: root;
-  color: var(--state-success-color--text);
+  color: var(--state-success-color--inverted);
   background-color: color(var(--state-success-color) a(95%));
 
   @nest & .closeButton {
@@ -73,7 +73,7 @@
 
 .warning {
   composes: root;
-  color: var(--state-warning-color--text);
+  color: var(--state-warning-color--inverted);
   background-color: color(var(--state-warning-color) a(95%));
 
   @nest & .closeButton {

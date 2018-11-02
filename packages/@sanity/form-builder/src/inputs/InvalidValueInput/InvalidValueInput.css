@@ -4,7 +4,7 @@
   composes: root from 'part:@sanity/components/fieldsets/default-style';
   padding: var(--large-padding);
   background-color: var(--state-warning-color);
-  color: var(--state-warning-color--text);
+  color: var(--state-warning-color--inverted);
 
   @nest & h3 {
     margin: 0;
