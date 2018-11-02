@@ -3,8 +3,8 @@
   --component-bg: #3A4552;
   --gray-base: #3A4552;
   --body-text: rgba(255, 255, 255, 0.9);
-  --main-navigation-background-color: #2C343D;
-  --main-navigation-text-color: #fff;
+  --main-navigation-color: #2C343D;
+  --main-navigation-color--inverted: #fff;
   --brand-primary: #65C5F6;
   --brand-primary--text: rgba(0, 0, 0, 0.6);
   --state-success-color: #63E1A2;
@@ -15,6 +15,6 @@
   --selected-item-color--inverted: rgba(0, 0, 0, 0.6);
   --input-bg-focus: rgba(255, 255, 255, 0.15);
   --shadow-base: rgb(23, 27, 32);
-  --backdrop-background-color: rgba(255, 255, 255, 0.15);
+  --backdrop-color: rgba(255, 255, 255, 0.15);
   --default-button-color: rgba(255, 255, 255, 0.15);
 }
