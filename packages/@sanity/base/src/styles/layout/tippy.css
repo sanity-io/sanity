@@ -541,7 +541,7 @@
 :global(.tippy-tooltip) {
   position: relative;
   color: #fff;
-  border-radius: 4px;
+  border-radius: var(--border-radius-base);
   font-size: 0.95rem;
   padding: 0.4rem 0.8rem;
   text-align: center;
