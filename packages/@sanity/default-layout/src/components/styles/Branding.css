@@ -18,6 +18,10 @@
   padding: 0;
   line-height: calc(17 / 16);
   font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 12em;
+  overflow: hidden;
 }
 
 /* .link {
