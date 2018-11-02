@@ -21,8 +21,9 @@
   --shadow-color-ambient: color(var(--shadow-base) a(12%));
 
   /* Border radius */
-  --border-radius-base: 3px;
-  --border-radius-large: 5px;
+  --border-radius-base: 4px;
+  --border-radius-large: 6px;
+  --border-radius-medium: var(--border-radius-base);
   --border-radius-small: 2px;
 
   /* Padding */
