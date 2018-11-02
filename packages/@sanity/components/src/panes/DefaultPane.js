@@ -5,8 +5,7 @@ import shallowEquals from 'shallow-equals'
 import classNames from 'classnames'
 import Menu from 'part:@sanity/components/menus/default'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
-import Button from 'part:@sanity/components/buttons/default'
-import IntentButton from 'part:@sanity/components/buttons/intent'
+import {IntentLink} from 'part:@sanity/base/router'
 import ScrollContainer from 'part:@sanity/components/utilities/scroll-container'
 import Styleable from '../utilities/Styleable'
 import defaultStyles from './styles/DefaultPane.css'
@@ -205,37 +204,41 @@ class Pane extends React.Component {
 
   renderIntentAction = (action, i) => {
     const {styles} = this.props
+    const Icon = action.icon
+
     return (
       <div className={styles.buttonWrapper} key={getActionKey(action, i)}>
-        <IntentButton
-          bleed
-          title={action.title}
-          icon={action.icon}
-          color="primary"
-          kind="simple"
+        <IntentLink
+          className={styles.actionButton}
           intent={action.intent.type}
           params={action.intent.params}
-        />
+          title={action.title}
+        >
+          <Icon />
+        </IntentLink>
       </div>
     )
   }
 
-  renderAction = (act, i) => {
-    const {styles} = this.props
-    if (act.intent) {
-      return this.renderIntentAction(act, i)
+  renderAction = (action, i) => {
+    if (action.intent) {
+      return this.renderIntentAction(action, i)
     }
 
+    const {styles} = this.props
+    const Icon = action.icon
+
     return (
-      <div className={styles.buttonWrapper} key={getActionKey(act, i)}>
-        <Button
-          bleed
-          title={act.title}
-          icon={act.icon}
-          color="primary"
-          kind="simple"
-          onClick={this.handleMenuAction.bind(this, act)}
-        />
+      <div className={styles.buttonWrapper} key={getActionKey(action, i)}>
+        <button
+          className={styles.actionButton}
+          type="button"
+          title={action.title}
+          // eslint-disable-next-line react/jsx-no-bind
+          onClick={this.handleMenuAction.bind(this, action)}
+        >
+          <Icon />
+        </button>
       </div>
     )
   }
@@ -251,14 +254,16 @@ class Pane extends React.Component {
 
     return (
       <div className={styles.menuWrapper}>
-        <Button
+        <button
+          className={styles.menuOverflowButton}
           // Makes menu component ignore clicks on button (prevents double-toggling)
           data-menu-button-id={this.paneMenuId}
-          bleed
-          kind="simple"
-          icon={IconMoreVert}
+          type="button"
           onClick={this.handleMenuToggle}
-        />
+          title="Show menu"
+        >
+          <IconMoreVert />
+        </button>
         <div className={styles.menuContainer}>
           {menuIsOpen && (
             <Menu
