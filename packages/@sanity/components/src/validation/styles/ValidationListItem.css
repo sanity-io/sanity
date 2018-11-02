@@ -39,7 +39,7 @@
 
 .interactiveItem {
   composes: item;
-  border-radius: var(--border-radius-small);
+  border-radius: var(--border-radius-base);
 
   @nest &.error:hover {
     background-color: color(var(--state-danger-color) a(10%));
