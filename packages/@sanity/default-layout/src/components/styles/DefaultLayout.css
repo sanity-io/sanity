@@ -66,8 +66,8 @@
 }
 
 .navBar {
-  color: var(--main-navigation-text-color);
-  background-color: var(--main-navigation-background-color);
+  background-color: var(--main-navigation-color);
+  color: var(--main-navigation-color--inverted);
 }
 
 .loadingScreen {

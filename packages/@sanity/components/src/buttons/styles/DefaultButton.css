@@ -42,6 +42,7 @@
   outline: none;
   border: none;
   color: inherit;
+  font-weight: inherit;
   font-size: 1em;
   font-family: inherit;
   cursor: default;
