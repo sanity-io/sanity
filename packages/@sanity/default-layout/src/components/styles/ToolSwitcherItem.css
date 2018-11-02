@@ -6,6 +6,7 @@
   text-decoration: none;
   padding: 0.75em;
   white-space: nowrap;
+  opacity: 0.6;
 
   @nest .default & {
     flex-direction: row;
@@ -25,6 +26,8 @@
 
 .rootActive {
   composes: root;
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.07);
 }
 
 .iconContainer {
@@ -40,7 +43,7 @@
 .toolName {
   font-size: calc(14 / 16 * 1em);
   line-height: calc(17 / 14);
-  padding-left: 0.25em;
+  padding: 0 0.25em;
 
   @nest .vertical & {
     padding-left: 0.5em;
