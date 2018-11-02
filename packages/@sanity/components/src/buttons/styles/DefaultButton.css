@@ -130,6 +130,16 @@ span.content {
       }
     }
   }
+
+  @nest &.simple .content {
+    @nest :not(.onlyIcon) & {
+      margin: calc(0.5em + 1px);
+
+      @media (--screen-medium) {
+        margin: calc(0.5em + 1px) calc(1rem + 1px);
+      }
+    }
+  }
 }
 
 .padding_small {
