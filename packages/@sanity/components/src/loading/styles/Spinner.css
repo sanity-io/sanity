@@ -10,6 +10,16 @@
   }
 }
 
+@keyframes appear {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
 .root {
   /* root */
 }
@@ -89,6 +99,12 @@
   top: 0;
   left: 0;
   box-sizing: border-box;
+  opacity: 0;
+  animation-name: appear;
+  animation-duration: 0.2s;
+  animation-timing-function: linear;
+  animation-iteration-count: once;
+  animation-fill-mode: forwards;
 
   @media (--screen-medium) {
     background-color: color(var(--body-bg) a(10%));
@@ -122,6 +138,7 @@
 .fullscreen {
   composes: center;
   background-color: color(var(--body-bg) a(90%));
+  color: var(--body-text);
   position: fixed;
   z-index: var(--zindex-portal);
 }

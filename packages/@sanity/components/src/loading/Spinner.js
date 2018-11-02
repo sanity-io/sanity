@@ -9,13 +9,19 @@ export default class Spinner extends React.PureComponent {
     inline: PropTypes.bool,
     message: PropTypes.string,
     fullscreen: PropTypes.bool,
-    center: PropTypes.bool
+    center: PropTypes.bool,
+    delay: PropTypes.number // delay in ms
+  }
+
+  static defaultProps = {
+    delay: 300
   }
 
   renderSpinner() {
-    const {inline, message, fullscreen, center} = this.props
+    const {inline, message, fullscreen, center, delay} = this.props
     return (
       <div
+        style={{animationDelay: `${delay}ms`}}
         className={`
           ${inline ? styles.inline : styles.block}
           ${fullscreen ? styles.fullscreen : ''}
