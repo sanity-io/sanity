@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import PluginIcon from 'part:@sanity/base/plugin-icon'
-import Ink from 'react-ink'
 import {Tooltip} from 'react-tippy'
 import styles from './styles/ToolSwitcherItem.css'
 
@@ -29,7 +28,6 @@ function ToolSwitcherItem(props) {
         </div>
       )}
       {showLabel && <div className={styles.toolName}>{title}</div>}
-      <Ink duration={1000} opacity={0.1} radius={200} />
     </Tooltip>
   )
 }
