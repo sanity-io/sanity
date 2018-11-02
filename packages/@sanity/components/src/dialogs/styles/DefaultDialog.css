@@ -109,8 +109,8 @@
   height: var(--dialog-header-height);
   min-height: var(--dialog-header-height);
   line-height: var(--dialog-header-height);
-  background-color: var(--dialog-header-background-color);
-  color: var(--dialog-header-text-color);
+  background-color: var(--dialog-header-color);
+  color: var(--dialog-header-color--inverted);
   border-radius: var(--dialog-border-radius) var(--dialog-border-radius) 0 0;
   display: flex;
   align-items: center;

@@ -31,7 +31,7 @@
   left: 0;
   height: 100%;
   width: 100%;
-  background-color: var(--backdrop-background-color);
+  background-color: var(--backdrop-color);
   opacity: 0.75;
   z-index: var(--zindex-portal);
   pointer-events: none;
@@ -125,7 +125,7 @@
   composes: arrow;
 
   @nest .popper[data-placement^="bottom"] & {
-    background-color: var(--dialog-header-background-color);
+    background-color: var(--dialog-header-color);
   }
 }
 
@@ -258,8 +258,8 @@
 
 .title {
   margin: 0;
-  background-color: var(--dialog-header-background-color);
-  color: var(--dialog-header-text-color);
+  background-color: var(--dialog-header-color);
+  color: var(--dialog-header-color);
   padding: var(--small-padding);
   padding-right: var(--medium-padding);
   font-size: 1rem;
