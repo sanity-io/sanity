@@ -36,7 +36,7 @@
     margin-right: 0;
     border-color: #ccc;
     padding: 0;
-    width: 3rem;
+    width: 3.4375em;
     height: 100%;
     flex-direction: row;
   }
@@ -48,9 +48,9 @@
   justify-content: space-between;
   align-items: stretch;
   box-sizing: border-box;
-  line-height: 3rem;
+  line-height: 3.4375em;
   width: 100%;
-  height: 3rem;
+  height: 3.4375em;
   user-select: none;
   background-color: inherit;
   z-index: 2;
@@ -82,10 +82,10 @@
   align-items: stretch;
   align-self: flex-end;
   transition: transform 0.2s linear;
-  transform-origin: 1.2rem 2rem;
+  transform-origin: 1.71875em 1.71875em;
   transform: rotate(0);
   box-sizing: border-box;
-  height: 3rem;
+  height: 3.4375rem;
   padding-left: var(--medium-padding);
   width: 100%;
 
