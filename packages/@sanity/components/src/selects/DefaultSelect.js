@@ -59,7 +59,7 @@ export default class DefaultSelect extends React.Component {
           className={styles.select}
           onChange={this.handleChange}
           disabled={disabled || readOnly}
-          value={value && items.indexOf(value)}
+          value={(value && items.indexOf(value)) || ''}
           autoComplete="off"
           ref={this.setInput}
         >
