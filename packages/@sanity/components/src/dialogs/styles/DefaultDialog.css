@@ -118,22 +118,22 @@
 
   @nest .danger & {
     background-color: var(--state-danger-color);
-    color: var(--state-danger-color--text);
+    color: var(--state-danger-color--inverted);
   }
 
   @nest .success & {
     background-color: var(--state-success-color);
-    color: var(--state-success-color--text);
+    color: var(--state-success-color--inverted);
   }
 
   @nest .warning & {
     background-color: var(--state-warning-color);
-    color: var(--state-warning-color--text);
+    color: var(--state-warning-color--inverted);
   }
 
   @nest .warning & {
     background-color: var(--state-warning-color);
-    color: var(--state-warning-color--text);
+    color: var(--state-warning-color--inverted);
   }
 }
 

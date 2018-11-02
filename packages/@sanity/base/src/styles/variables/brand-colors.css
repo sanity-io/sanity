@@ -3,9 +3,9 @@
   --brand-lightest: #fff;
   --gray-base: #323232;
   --brand-primary: #24a3e3;
-  --brand-primary--text: #fff;
+  --brand-primary--inverted: #fff;
   --brand-secondary: #f43;
-  --brand-secondary--text: #fff;
+  --brand-secondary--inverted: #fff;
 
   /* --brand-primary-light: color(var(--brand-primary) lightness(+ 15%) saturation(- 10%));
   --brand-primary-light--text: #fff;

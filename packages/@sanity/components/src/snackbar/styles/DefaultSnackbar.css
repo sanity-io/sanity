@@ -31,27 +31,27 @@
 
   @nest .info & {
     background-color: color(var(--state-info-color) a(90%));
-    color: var(--state-info-color--text);
+    color: var(--state-info-color--inverted);
   }
 
   @nest .warning & {
     background-color: color(var(--state-warning-color) a(90%));
-    color: var(--state-warning-color--text);
+    color: var(--state-warning-color--inverted);
   }
 
   @nest .success & {
     background-color: color(var(--state-success-color) a(90%));
-    color: var(--state-success-color--text);
+    color: var(--state-success-color--inverted);
   }
 
   @nest .error & {
     background-color: color(var(--state-danger-color) a(90%));
-    color: var(--state-danger-color--text);
+    color: var(--state-danger-color--inverted);
   }
 
   @nest .danger & {
     background-color: color(var(--state-danger-color) a(90%));
-    color: var(--state-danger-color--text);
+    color: var(--state-danger-color--inverted);
   }
 }
 

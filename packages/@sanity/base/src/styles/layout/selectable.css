@@ -4,7 +4,7 @@
   background-color: var(--selectable-item-color);
   color: var(--selectable-item-color--inverted);
   cursor: default;
-  transition: background-color 0.3s ease-out, color 0.1s ease-out 0.1s;
+  transition: background-color 0.2s ease-out, color 0.1s ease-out 0.1s;
 
   @nest &:hover {
     transition: background-color 0.1s ease-out, color 0.05s ease-out 0.05s;
