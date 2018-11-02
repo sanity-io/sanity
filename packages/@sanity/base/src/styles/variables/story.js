@@ -16,6 +16,18 @@ storiesOf('Variables')
       </div>
     )
   })
+  .add('State colors', () => {
+    return (
+      <div>
+        <div className={styles.colors}>
+          <div className={styles.stateDanger} />
+          <div className={styles.stateSuccess} />
+          <div className={styles.stateInfo} />
+          <div className={styles.stateWarning} />
+        </div>
+      </div>
+    )
+  })
   .add('Selectable item', () => {
     return (
       <div>

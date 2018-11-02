@@ -13,7 +13,7 @@
   background-color: var(--state-danger-color);
   font-size: var(--font-size-large);
   padding: var(--large-padding);
-  color: var(--state-danger-color--text);
+  color: var(--state-danger-color--inverted);
 }
 
 .list {

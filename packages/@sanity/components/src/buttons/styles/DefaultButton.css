@@ -233,7 +233,7 @@ span.content {
 .color__primary {
   border-color: var(--brand-primary);
   background-color: var(--brand-primary);
-  color: var(--brand-primary--text);
+  color: var(--brand-primary--inverted);
 
   @nest &:not(.disabled):hover {
     background-color: color(var(--brand-primary) lightness(+ 5%));
@@ -241,7 +241,7 @@ span.content {
   }
 
   @nest & .spinner {
-    color: var(--brand-primary--text);
+    color: var(--brand-primary--inverted);
     background-color: var(--brand-primary);
   }
 
@@ -251,7 +251,7 @@ span.content {
     color: var(--brand-primary);
 
     @nest & .spinner {
-      background-color: var(--brand-primary--text);
+      background-color: var(--brand-primary--inverted);
       color: var(--brand-primary);
     }
 
@@ -276,11 +276,11 @@ span.content {
 .color__danger {
   border-color: var(--state-danger-color);
   background-color: var(--state-danger-color);
-  color: var(--state-danger-color--text);
+  color: var(--state-danger-color--inverted);
 
   @nest & .spinner {
     background-color: var(--state-danger-color);
-    color: var(--state-danger-color--text);
+    color: var(--state-danger-color--inverted);
   }
 
   @nest &.root:focus {
@@ -326,11 +326,11 @@ span.content {
 .color__success {
   border-color: var(--state-success-color);
   background-color: var(--state-success-color);
-  color: var(--state-success-color--text);
+  color: var(--state-success-color--inverted);
 
   @nest & .spinner {
     background-color: var(--state-success-color);
-    color: var(--state-success-color--text);
+    color: var(--state-success-color--inverted);
   }
 
   @nest &.root:focus {
