@@ -22,8 +22,8 @@
   padding: var(--small-padding);
   display: flex;
   align-items: center;
-  background-color: color(var(--main-navigation-background-color) a(90%));
-  color: var(--main-navigation-text-color);
+  background-color: color(var(--main-navigation-color) a(90%));
+  color: var(--main-navigation-color--inverted);
 }
 
 .splitContainer {
