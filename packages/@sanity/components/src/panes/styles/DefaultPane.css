@@ -101,16 +101,47 @@
   align-items: center;
   align-self: stretch;
   justify-content: center;
-  font-size: 1.25em;
+}
+
+.actionButton {
+  -webkit-appearance: none;
+  -webkit-font-smoothing: inherit;
+  font: inherit;
+  background-color: none;
+  border: 0;
+  border-radius: 0;
+  color: inherit;
+  width: 2.1875em;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+
+  @nest & > svg {
+    font-size: 1.5625em;
+    opacity: 0.6;
+  }
+
+  @nest &:hover > svg {
+    opacity: 1;
+  }
 }
 
 .menuWrapper {
   composes: buttonWrapper;
   z-index: 2;
+  margin: 0 0.125em 0 0;
 
   @nest .isCollapsed & {
     display: none;
   }
+}
+
+.menuOverflowButton {
+  composes: actionButton;
 }
 
 .actions {
