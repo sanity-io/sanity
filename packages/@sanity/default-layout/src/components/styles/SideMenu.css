@@ -2,6 +2,8 @@
 
 :root {
   --nav-bar-box: 3.0625em; /* 49px */
+  --side-menu-color: var(--main-navigation-color);
+  --side-menu-color-inverted: var(--main-navigation-color--inverted);
 }
 
 .root {
@@ -20,8 +22,8 @@
   max-width: 260px;
   display: flex;
   flex-direction: column;
-  background: var(--white);
-  color: #000;
+  background: var(--side-menu-color);
+  color: var(--side-menu-color-inverted);
   margin-right: calc(var(--nav-bar-box) * 2);
   height: 100%;
   transition: 200ms transform ease-in-out;
@@ -47,6 +49,8 @@
   margin: 0;
   padding: 0.75em;
   background: none;
+  color: inherit;
+  outline: none;
 
   @nest & > svg {
     font-size: 25px;
@@ -55,10 +59,9 @@
 }
 
 .userProfile {
-  background: #fff;
   display: flex;
   padding: 0.875em;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid color(var(--side-menu-color-inverted) a(10%));
 }
 
 .userProfileImage {
