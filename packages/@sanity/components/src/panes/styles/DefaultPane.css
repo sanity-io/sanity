@@ -107,7 +107,7 @@
   -webkit-appearance: none;
   -webkit-font-smoothing: inherit;
   font: inherit;
-  background-color: none;
+  background-color: transparent;
   border: 0;
   border-radius: 0;
   color: inherit;
