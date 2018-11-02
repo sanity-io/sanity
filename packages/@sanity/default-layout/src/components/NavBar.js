@@ -46,7 +46,7 @@ function NavBar(props) {
         </button>
       </div>
       <StateLink toIndex className={styles.branding}>
-        <Branding projectName={config && config.projectName} />
+        <Branding projectName={config && config.project.name} />
       </StateLink>
       <a className={styles.createButton} onClick={onCreateButtonClick}>
         <Tooltip
