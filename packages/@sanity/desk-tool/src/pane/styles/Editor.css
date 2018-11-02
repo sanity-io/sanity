@@ -41,7 +41,7 @@
 
 .publishInfo {
   display: grid;
-  padding: var(--medium-padding);
+  padding: var(--small-padding) var(--medium-padding);
   box-sizing: border-box;
   color: var(--text-color-secondary);
   position: fixed;
@@ -57,19 +57,18 @@
     "publishButton publishInfoUndoButton"
     "editedDate    publishedDate";
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 3em 1.5em;
+  grid-template-rows: 2.5em 1.5em;
   justify-content: stretch;
   align-items: center;
   font-size: 1rem;
-  grid-gap: 1rem;
-  box-shadow: 0 0 25px var(--shadow-base);
+  grid-gap: 0.5em;
+  box-shadow: 0 0 2px color(var(--shadow-base) a(20%));
 
   @media (--screen-medium) {
     position: absolute;
     grid-template-areas: "publishButton publishInfoUndoButton . publishedDate editedDate";
     grid-template-columns: auto auto auto 1fr 1fr;
     grid-template-rows: 2.5em;
-    box-shadow: 0 0 20px color(var(--shadow-base) a(30%));
   }
 }
 
