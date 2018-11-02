@@ -78,10 +78,15 @@ export default withPatchSubscriber(
           return prevState
         }
         const nextValue = patchEvent.patches.reduce((state, patch) => {
-          const [key, ...path] = patch.path
-          const nodeValue = state.document.getDescendant(key).data.get('value')
-          const change = state.change().setNodeByKey(key, {
-            data: {value: apply(nodeValue, {...patch, path})}
+          const [root, ...path] = patch.path
+          const nodeValue = state.document.getDescendant(root._key).data.get('value')
+          const change = state.change().setNodeByKey(root._key, {
+            data: {
+              value: {
+                ...apply(nodeValue, {...patch, path}),
+                _key: root._key
+              }
+            }
           })
           return change.state
         }, prevState.value)

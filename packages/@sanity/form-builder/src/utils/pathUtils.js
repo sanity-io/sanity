@@ -91,6 +91,6 @@ export function toString(path) {
       return `${target}[_key=="${segment._key}"]`
     }
 
-    throw new Error(`Unsupported path segment "${segment}"`)
+    throw new Error(`Unsupported path segment \`${JSON.stringify(segment)}\``)
   }, '')
 }
