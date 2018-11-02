@@ -69,12 +69,12 @@ export default class FormBuilderBlock extends React.Component {
 
   handleChange = event => {
     const {onPatch, node} = this.props
-    onPatch(event.prefixAll(node.key))
+    onPatch(event.prefixAll({_key: node.key}))
   }
 
   handleInvalidValueChange = event => {
     const {onPatch, node} = this.props
-    onPatch(event.prefixAll(node.key))
+    onPatch(event.prefixAll({_key: node.key}))
   }
 
   handleDragStart = event => {
