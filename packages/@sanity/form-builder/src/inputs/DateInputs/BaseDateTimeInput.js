@@ -1,20 +1,16 @@
+/* eslint-disable complexity */
 // @flow
+import React from 'react'
 import moment from 'moment'
 import type Moment from 'moment'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker-cssmodules.css' // eslint-disable-line import/no-unassigned-import
-import React from 'react'
 import FormField from 'part:@sanity/components/formfields/default'
 import TextInput from 'part:@sanity/components/textinputs/default'
-import styles from './styles/BaseDateTimeInput.css'
-import type {Marker} from '../../typedefs'
-import Dialog from 'part:@sanity/components/dialogs/default'
 import Button from 'part:@sanity/components/buttons/default'
 import CalendarIcon from 'part:@sanity/base/calendar-icon'
-
-type Action = {
-  name: string
-}
+import type {Marker} from '../../typedefs'
+import styles from './styles/BaseDateTimeInput.css'
 
 type Props = {
   value: ?Moment,
@@ -62,11 +58,11 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
   handleDialogChange = (nextMoment?: Moment) => {
     const {onChange} = this.props
     onChange(nextMoment)
-    this.setState({inputValue: null})
+    this.setState({inputValue: null, isDialogOpen: false})
   }
 
-  handleBlur = () => {
-    this.setState({inputValue: null})
+  handleSetNow = event => {
+    this.handleDialogChange(moment())
   }
 
   focus() {
@@ -74,38 +70,42 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
       this._datepicker.input.focus()
     }
   }
-
   setDatePicker = (datePicker: ?DatePicker) => {
     this._datepicker = datePicker
   }
 
   handleKeyDown = (event: SyntheticKeyboardEvent<*>) => {
     if (event.key === 'Enter') {
-      this.open()
+      this.handleOpen()
+    }
+    if (event.key === 'Escape') {
+      this.handleClose()
     }
   }
-  open = () => {
+  handleOpen = () => {
+    this.handleFocus()
     this.setState({
       isDialogOpen: true
     })
   }
 
-  close = () => {
+  handleClose = () => {
     this.setState({
       isDialogOpen: false
     })
   }
 
-  handleDialogOpen = this.open
-  handleDialogClose = this.close
-
-  handleDialogAction = (action: Action) => {
-    if (action.name === 'close') {
-      this.close()
+  handleBlur = event => {
+    this.handleClose()
+    this.setState({inputValue: null})
+    if (this.props.onBlur) {
+      this.props.onBlur(event)
     }
+  }
 
-    if (action.name === 'now') {
-      this.handleDialogChange(moment())
+  handleFocus = event => {
+    if (this.props.onFocus) {
+      this.props.onFocus(event)
     }
   }
 
@@ -142,64 +142,52 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
           />
         )}
         {!readOnly && (
-          <div className={errors.length > 0 ? styles.inputWrapperWithError : styles.inputWrapper}>
-            <DatePicker
-              onKeyDown={this.handleKeyDown}
-              disabledKeyboardNavigation
-              selected={value || undefined}
-              placeholderText={placeholder}
-              calendarClassName={styles.datePicker}
-              popperClassName={styles.hiddenPopper}
-              className={styles.input}
-              onChange={this.handleDialogChange}
-              onChangeRaw={this.handleInputChange}
-              value={inputValue ? inputValue : value && value.format(format)}
-              dateFormat={dateFormat}
-              timeFormat={timeFormat}
-              timeIntervals={timeStep}
-              ref={this.setDatePicker}
-            />
-            <Button
-              color="primary"
-              bleed
-              onClick={this.handleDialogOpen}
-              icon={CalendarIcon}
-              kind="simple"
-            >
-              Select
-            </Button>
-          </div>
-        )}
-        {isDialogOpen && (
-          <Dialog
-            isOpen={isDialogOpen}
-            onClose={this.handleDialogClose}
-            onAction={this.handleDialogAction}
-            actions={[
-              {name: 'close', title: 'Close'},
-              {name: 'now', kind: 'simple', color: 'primary', title: todayLabel, secondary: true}
-            ]}
-            showCloseButton={false}
-          >
-            <div className={dateOnly ? styles.dialogDatePicker : styles.dialogDatePickerWithTime}>
+          <div className={errors.length > 0 ? styles.rootError : styles.root}>
+            <div className={styles.inputWrapper}>
               <DatePicker
-                inline
+                onKeyDown={this.handleKeyDown}
+                autoFocus={false}
+                onFocus={this.handleFocus}
+                onBlur={this.handleBlur}
                 showMonthDropdown
                 showYearDropdown
+                disabledKeyboardNavigation
                 selected={value || undefined}
-                calendarClassName={styles.datePicker}
+                placeholderText={placeholder}
+                calendarClassName={styles.datepicker}
                 popperClassName={styles.popper}
                 className={styles.input}
+                onClickOutside={this.handleClose}
+                onInputClick={this.handleOpen}
                 onChange={this.handleDialogChange}
+                onChangeRaw={this.handleInputChange}
                 value={inputValue ? inputValue : value && value.format(format)}
                 showTimeSelect={!dateOnly}
                 dateFormat={dateFormat}
                 timeFormat={timeFormat}
                 timeIntervals={timeStep}
+                open={isDialogOpen}
+                ref={this.setDatePicker}
                 dropdownMode="select"
+                todayButton={
+                  <Button color="primary" onClick={this.handleSetNow}>
+                    {todayLabel}
+                  </Button>
+                }
               />
             </div>
-          </Dialog>
+            <div className={styles.buttonWrapper}>
+              <Button
+                color="primary"
+                bleed
+                onClick={this.handleOpen}
+                icon={CalendarIcon}
+                kind="simple"
+              >
+                Select
+              </Button>
+            </div>
+          </div>
         )}
       </FormField>
     )

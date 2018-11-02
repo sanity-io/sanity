@@ -8,7 +8,7 @@ import {PatchEvent, set, unset} from 'part:@sanity/form-builder/patch-event'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker-cssmodules.css'
 import DefaultSelect from 'part:@sanity/components/selects/default'
-import {getOptions, getTimeIntervals, getPlaceholderText} from './util'
+import {getOptions, getTimeIntervals} from './util'
 
 const DEPRECATION_WARNING = (
   <div className={styles.deprecationWarning}>
