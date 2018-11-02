@@ -677,7 +677,7 @@ export default withRouterHOC(
       if (isLoading) {
         return (
           <div className={styles.loading}>
-            <Spinner center message={`Loading ${type.title}…`} />
+            <Spinner center message={`Loading ${type.title}…`} delay={600} />
           </div>
         )
       }
