@@ -2,7 +2,6 @@ import styles from './styles/PaneItem.css'
 import listStyles from './styles/ListView.css'
 import PropTypes from 'prop-types'
 import React from 'react'
-// import Ink from 'react-ink'
 import {StateLink} from 'part:@sanity/base/router'
 import {Item as GridListItem} from 'part:@sanity/components/lists/grid'
 
@@ -11,7 +10,6 @@ export default function PaneItemWrapper(props) {
   const link = (
     <StateLink state={linkState} className={isSelected ? styles.linkIsSelected : styles.link}>
       {props.children}
-      {/* <Ink duration={1000} opacity={0.1} radius={200} /> */}
     </StateLink>
   )
 
