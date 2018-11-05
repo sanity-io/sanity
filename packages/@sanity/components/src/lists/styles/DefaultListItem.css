@@ -8,10 +8,4 @@
 
 .lineBetween {
   composes: root;
-  border-bottom: var(--list-border);
-  padding: var(--small-padding) 0;
-
-  @nest &:last-child {
-    border-bottom: none;
-  }
 }
