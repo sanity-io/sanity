@@ -100,6 +100,7 @@ span.content {
 /* Handles fileupload buttons with focus-within */
 .root:not(:focus):focus-within .inner:not(:focus) {
   box-shadow: var(--button-focus-shadow);
+  border-radius: var(--button-border-radius);
 }
 
 .root:not(:focus):focus-within .inner:not(:focus) .content {
