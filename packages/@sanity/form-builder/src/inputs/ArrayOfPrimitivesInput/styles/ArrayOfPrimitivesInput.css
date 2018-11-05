@@ -21,7 +21,7 @@
 .item {
   display: block;
   margin: 0;
-  padding: 0;
+  padding: var(--small-padding) 0;
 }
 
 .addButton {
