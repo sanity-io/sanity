@@ -14,6 +14,8 @@
   --header-height: 3rem;
   --checkerboard-color: color(var(--component-text-color) a(5%));
   --selectable-item-base: #156dff;
+  --default-button-primary-color: #156dff;
+  --default-button-primary-color--inverted: #fff;
 
   /* Shadows */
   --shadow-base: color(var(--gray-base) shade(30%));
