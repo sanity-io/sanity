@@ -36,7 +36,7 @@
 }
 
 .headerStatus {
-  padding: var(--small-padding);
+  padding: 0 var(--small-padding);
 }
 
 .validationIconError {
