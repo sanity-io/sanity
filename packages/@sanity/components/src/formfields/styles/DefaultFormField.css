@@ -65,7 +65,7 @@
 
 .headerStatus {
   display: flex;
-  padding: var(--small-padding);
+  padding: 0 var(--small-padding);
   align-content: center;
 }
 
