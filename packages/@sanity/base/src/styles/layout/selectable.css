@@ -4,11 +4,8 @@
   background-color: var(--selectable-item-color);
   color: var(--selectable-item-color--inverted);
   cursor: default;
-  transition: background-color 0.2s ease-out, color 0.1s ease-out 0.1s;
 
   @nest &:hover {
-    transition: background-color 0.1s ease-out, color 0.05s ease-out 0.05s;
-
     @media (--screen-medium) {
       background-color: var(--selectable-item-color-hover);
       color: var(--selectable-item-color-hover--inverted);
@@ -32,13 +29,13 @@
 
 .selected {
   composes: item;
-  background-color: var(--selected-item-color);
-  color: var(--selected-item-color--inverted);
+  background-color: var(--selected-item-color) !important;
+  color: var(--selected-item-color--inverted) !important;
 
   @nest &:hover {
     @media (--screen-medium) {
-      background-color: var(--selected-item-color-hover);
-      color: var(--selected-item-color-hover--inverted);
+      background-color: var(--selected-item-color-hover) !important;
+      color: var(--selected-item-color-hover--inverted) !important;
     }
   }
 
@@ -46,8 +43,8 @@
     outline: none;
 
     @media (--screen-medium) {
-      background-color: var(--selected-item-color);
-      color: var(--selected-item-color--inverted);
+      background-color: var(--selected-item-color) !important;
+      color: var(--selected-item-color--inverted) !important;
     }
   }
 }
