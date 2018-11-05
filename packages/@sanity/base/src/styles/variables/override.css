@@ -2,3 +2,10 @@
   This needs to be empty.
   It is used to override variables externaly via a part
 */
+
+:root {
+  --selectable-item-color-hover: color(var(--brand-primary) a(15%));
+  --selectable-item-color-focus: color(var(--brand-primary) a(25%));
+  --selectable-item-color-active: color(var(--brand-primary) a(25%));
+  --selectable-item-color-highlighted: color(var(--brand-primary) a(25%));
+}
