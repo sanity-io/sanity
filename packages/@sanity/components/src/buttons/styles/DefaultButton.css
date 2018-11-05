@@ -2,12 +2,9 @@
 
 :root {
   --button-inverted-color: var(--text-color);
-  --button-focus-shadow:
-    0 0 0 3px color(var(--input-border-color-focus) a(50%));
-  --button-focus-shadow--danger:
-    0 0 0 3px color(var(--state-danger-color) a(50%));
-  --button-focus-shadow--success:
-    0 0 0 3px color(var(--state-success-color) a(50%));
+  --button-focus-shadow: 0 0 0 3px color(var(--input-border-color-focus) a(50%));
+  --button-focus-shadow--danger: 0 0 0 3px color(var(--state-danger-color) a(50%));
+  --button-focus-shadow--success: 0 0 0 3px color(var(--state-success-color) a(50%));
 }
 
 @keyframes focused {
@@ -47,7 +44,7 @@
   font-family: inherit;
   cursor: default;
   user-select: none;
-  transition: background-color 0.15s, color 0.15s, opacity 0.15s, box-shadow 0.1s;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s, opacity 0.15s, box-shadow 0.1s;
   border-radius: var(--button-border-radius);
   text-decoration: none;
   padding: 0;
@@ -231,39 +228,39 @@ span.content {
 }
 
 .color__primary {
-  border-color: var(--brand-primary);
-  background-color: var(--brand-primary);
+  border-color: var(--default-button-primary-color);
+  background-color: var(--default-button-primary-color);
   color: var(--brand-primary--inverted);
 
   @nest &:not(.disabled):hover {
-    background-color: color(var(--brand-primary) lightness(+ 5%));
-    border-color: var(--brand-primary);
+    border-color: var(--default-button-primary-color);
+    background-color: color(var(--default-button-primary-color) lightness(+ 5%));
   }
 
   @nest & .spinner {
     color: var(--brand-primary--inverted);
-    background-color: var(--brand-primary);
+    background-color: var(--default-button-primary-color);
   }
 
   @nest &.inverted {
-    border-color: var(--brand-primary);
+    border-color: var(--default-button-primary-color);
     background-color: transparent;
-    color: var(--brand-primary);
+    color: var(--default-button-primary-color);
 
     @nest & .spinner {
-      background-color: var(--brand-primary--inverted);
-      color: var(--brand-primary);
+      background-color: var(--default-button-primary-color--inverted);
+      color: var(--default-button-primary-color);
     }
 
     @nest &:not(.disabled):hover {
+      border-color: var(--default-button-primary-color);
       background-color: color(var(--brand-primary) a(10%));
-      border-color: var(--brand-primary);
     }
   }
 
   @nest &.simple {
     background-color: transparent;
-    color: var(--brand-primary);
+    color: var(--default-button-primary-color);
 
     @nest &:not(.disabled) {
       @nest &:hover {
