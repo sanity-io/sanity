@@ -12,6 +12,10 @@
     flex-direction: row;
     align-items: center;
   }
+
+  @nest &:hover {
+    opacity: 1;
+  }
 }
 
 .horizontal {
