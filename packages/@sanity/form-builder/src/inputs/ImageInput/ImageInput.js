@@ -379,7 +379,6 @@ export default class ImageInput extends React.PureComponent<Props, State> {
             {!readOnly && (
               <FileInputButton
                 icon={UploadIcon}
-                color="primary"
                 onSelect={this.handleSelectFile}
                 accept={'' /* todo build from this.props.resolveUploaders */}
               >
