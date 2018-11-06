@@ -1,7 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .outer {
-  display: inline-block;
+  display: inline-flex;
   composes: spacing from './DefaultButton.css';
 }
 
@@ -33,7 +33,7 @@
 }
 
 .popper {
-  position: relative;
+  position: fixed;
   z-index: var(--zindex-portal);
   max-height: 80vh;
   overflow: auto;
