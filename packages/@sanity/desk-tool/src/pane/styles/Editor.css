@@ -111,6 +111,10 @@
   }
 }
 
+.popOverText {
+  margin-bottom: 1em;
+}
+
 .errors {
   margin-left: 1rem;
   color: var(--state-danger-color);
