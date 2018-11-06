@@ -630,7 +630,7 @@ export default withRouterHOC(
             {!published && (
               <Button
                 kind="simple"
-                onClick={() => this.setState({showConfirmDiscard: true})}
+                onClick={() => this.setState({showConfirmDelete: true})}
                 color="danger"
               >
                 Delete
