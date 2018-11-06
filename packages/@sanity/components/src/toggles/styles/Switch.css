@@ -23,7 +23,7 @@
   --switch-on-track-color: var(--focus-color);
 
   /* Helper */
-  --switch-helper-size: 3rem;
+  --switch-helper-size: calc(var(--switch-thumb-size) + 6px);
   --switch-helper-color: color(var(--brand-primary) alpha(20%));
 }
 
@@ -101,6 +101,7 @@
   composes: shadow-2dp from "part:@sanity/base/theme/shadows-style";
   composes: animation-default from "part:@sanity/base/theme/animation-style";
   transition-property: left;
+  z-index: 1;
 }
 
 .isDisabled .thumb {
