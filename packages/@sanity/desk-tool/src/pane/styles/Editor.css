@@ -58,7 +58,6 @@
 
 .publishInfo {
   display: grid;
-  padding: var(--small-padding) var(--medium-padding);
   box-sizing: border-box;
   color: var(--text-color-secondary);
   position: fixed;
@@ -78,10 +77,16 @@
   font-size: 1rem;
   grid-gap: 0.5em;
   box-shadow: 0 0 2px color(var(--shadow-base) a(20%));
+  padding: var(--small-padding) var(--medium-padding);
+
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    padding-bottom: calc(var(--small-padding) + env(safe-area-inset-bottom));
+  }
 
   @media (--screen-medium) {
     position: absolute;
     grid-template-columns: 6em 6em;
+    padding: var(--small-padding) var(--medium-padding);
   }
 }
 
