@@ -23,10 +23,10 @@ storiesOf('Progress')
       <Sanity part="part:@sanity/components/progress/bar" propTables={[ProgressBar]}>
         <ProgressBar
           isComplete={boolean('isComplete', false, 'props')}
+          isInProgress={boolean('isInProgress', false, 'props')}
           percent={number('percentage', 10, {range: true, min: 0, max: 100, step: 1}, 'props')}
           showPercent={boolean('showPercent', false, 'props')}
           text={text('text', 'Downloaded 5.1 of 8.2Mb', 'props')}
-          isInProgress={boolean('isInProgress', false, 'props')}
         />
       </Sanity>
     </div>
@@ -36,6 +36,7 @@ storiesOf('Progress')
       <Sanity part="part:@sanity/components/progress/circle" propTables={[ProgressCircle]}>
         <ProgressCircle
           isComplete={boolean('isComplete', false, 'props')}
+          isInProgress={boolean('isInProgress', false, 'props')}
           percent={number('percent', 10, {range: true, min: 0, max: 100, step: 1}, 'props')}
           showPercent={boolean('showPercent', true, 'props')}
           text={text('text', 'Uploaded', 'props')}
