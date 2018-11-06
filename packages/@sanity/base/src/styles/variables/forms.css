@@ -2,10 +2,10 @@
 @import 'part:@sanity/base/theme/variables/globals-style';
 
 :root {
-  --default-button-color: color(var(--gray-base) a(15%));
-  --default-button-color--text: var(--text-color);
-  --default-button-color--hover: color(var(--gray-base) a(20%));
-  --default-button-color--active: color(var(--gray-base) a(25%));
+  --default-button-color: var(--text-color);
+  --default-button-color--inverted: var(--white);
+  --default-button-color--hover: var(--text-color);
+  --default-button-color--active: var(--text-color);
   --button-border-radius: var(--border-radius-medium);
   --input-bg: var(--component-bg);
   --input-bg-focus: var(--input-bg);
