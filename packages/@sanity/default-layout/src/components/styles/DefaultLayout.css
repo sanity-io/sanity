@@ -37,7 +37,7 @@
   @nest &::before {
     content: '';
     display: block;
-    z-index: 12;
+    z-index: var(--zindex-drawershade);
     position: fixed;
     top: 0;
     left: 0;
