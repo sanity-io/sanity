@@ -20,7 +20,7 @@ function ToolSwitcherItem(props) {
       sticky
       size="small"
       style={{display: 'flex'}}
-      disabled={showLabel}
+      disabled={showLabel || 'ontouchstart' in document.documentElement}
     >
       {showIcon && (
         <div className={styles.iconContainer}>
