@@ -1,6 +1,7 @@
 /* eslint-disable complexity */
 // @flow
 import React from 'react'
+import ReactDOM from 'react-dom'
 import moment from 'moment'
 import type Moment from 'moment'
 import DatePicker from 'react-datepicker'
@@ -82,11 +83,12 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
       this.handleClose()
     }
   }
-  handleOpen = () => {
-    this.handleFocus()
+  handleOpen = event => {
     this.setState({
       isDialogOpen: true
     })
+    // Prevent focus the input to avoid software keybaord on mobile devices
+    event.preventDefault()
   }
 
   handleClose = () => {
@@ -107,6 +109,10 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
     if (this.props.onFocus) {
       this.props.onFocus(event)
     }
+  }
+
+  renderPopperContainer = ({children}) => {
+    return ReactDOM.createPortal(<div className={styles.portal}>{children}</div>, document.body)
   }
 
   render() {
@@ -147,8 +153,9 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
               <DatePicker
                 onKeyDown={this.handleKeyDown}
                 autoFocus={false}
-                onFocus={this.handleFocus}
-                onBlur={this.handleBlur}
+                // onFocus={this.handleFocus}
+                // onBlur={this.handleBlur}
+                onFocus={() => {}}
                 showMonthDropdown
                 showYearDropdown
                 disabledKeyboardNavigation
@@ -156,6 +163,8 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
                 placeholderText={placeholder}
                 calendarClassName={styles.datepicker}
                 popperClassName={styles.popper}
+                popperContainer={isDialogOpen && this.renderPopperContainer}
+                popperProps={{positionFixed: true}}
                 className={styles.input}
                 onClickOutside={this.handleClose}
                 onInputClick={this.handleOpen}
