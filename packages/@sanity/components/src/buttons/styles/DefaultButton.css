@@ -30,6 +30,8 @@
 }
 
 .root {
+  -webkit-font-smoothing: inherit;
+  appearance: none;
   composes: spacing;
   display: inline-flex;
   vertical-align: middle;
@@ -48,6 +50,7 @@
   border-radius: var(--button-border-radius);
   text-decoration: none;
   padding: 0;
+  min-height: 2.375em;
 }
 
 .root.bleed {
@@ -160,8 +163,10 @@ span.content {
   composes: root;
   composes: shadow;
   background-color: var(--default-button-color);
-  color: var(--default-button-color--text);
+  color: var(--default-button-color--inverted);
   border: 1px solid var(--default-button-color);
+
+  /* min-height: calc(2.375em - 2px); */
 
   @nest & .spinner {
     background-color: var(--gray-lighter);
@@ -170,7 +175,7 @@ span.content {
   @nest &:not(.disabled) {
     @media (hover: hover) {
       @nest &:hover {
-        background-color: var(--default-button-color--hover);
+        background-color: color(var(--default-button-color) lightness(+ 5%));
       }
     }
 
@@ -210,8 +215,8 @@ span.content {
 }
 
 .inverted {
-  border: 1px solid var(--button-inverted-color);
-  border-color: var(--button-inverted-color);
+  color: var(--default-button-color);
+  border: 1px solid color(var(--default-button-color) a(35%));
   background-color: transparent;
   box-shadow: none;
   composes: default;
@@ -222,12 +227,13 @@ span.content {
 
   @media (hover: hover) {
     @nest &:not(.disabled):hover {
-      background-color: color(var(--default-button-color) a(5%));
+      border-color: color(var(--default-button-color) a(70%));
+      background-color: color(var(--default-button-color) a(3%));
     }
   }
 
   @nest &.root:focus {
-    border-color: var(--input-border-color-focus);
+    border-color: color(var(--default-button-color) a(70%));
     box-shadow: var(--button-focus-shadow);
   }
 }
@@ -253,10 +259,18 @@ span.content {
     background-color: var(--default-button-primary-color);
   }
 
-  @nest &.inverted {
+  @nest &.root:focus {
     border-color: var(--default-button-primary-color);
+  }
+
+  @nest &.inverted {
+    border-color: color(var(--brand-primary) a(50%));
     background-color: transparent;
     color: var(--default-button-primary-color);
+
+    @nest &.root:focus {
+      border-color: var(--brand-primary);
+    }
 
     @nest & .spinner {
       background-color: var(--default-button-primary-color--inverted);
@@ -266,7 +280,7 @@ span.content {
     @media (hover: hover) {
       @nest &:not(.disabled):hover {
         border-color: var(--default-button-primary-color);
-        background-color: color(var(--brand-primary) a(10%));
+        background-color: color(var(--brand-primary) a(5%));
       }
     }
   }
@@ -278,7 +292,8 @@ span.content {
     @media (hover: hover) {
       @nest &:not(.disabled) {
         @nest &:hover {
-          background-color: color(var(--brand-primary) a(10%));
+          background-color: color(var(--brand-primary) a(5%));
+          border-color: var(--brand-primary);
         }
       }
     }
@@ -308,7 +323,7 @@ span.content {
   }
 
   @nest &.inverted {
-    border-color: var(--state-danger-color);
+    border-color: color(var(--state-danger-color) a(50%));
     background-color: transparent;
     color: var(--state-danger-color);
 
@@ -320,7 +335,7 @@ span.content {
     @media (hover: hover) {
       @nest &:not(.disabled) {
         @nest &:hover {
-          background-color: color(var(--state-danger-color) a(10%));
+          background-color: color(var(--state-danger-color) a(5%));
           border-color: var(--state-danger-color);
         }
       }
@@ -334,7 +349,7 @@ span.content {
     @media (hover: hover) {
       @nest &:not(.disabled) {
         @nest &:hover {
-          background-color: color(var(--state-danger-color) a(10%));
+          background-color: color(var(--state-danger-color) a(5%));
         }
       }
     }
@@ -364,7 +379,7 @@ span.content {
   }
 
   @nest &.inverted {
-    border-color: var(--state-success-color);
+    border-color: color(var(--state-success-color) a(50%));
     background-color: transparent;
     color: var(--state-success-color);
 
@@ -375,7 +390,7 @@ span.content {
 
     @media (hover: hover) {
       @nest &:not(.disabled):hover {
-        background-color: color(var(--state-success-color) a(10%));
+        background-color: color(var(--state-success-color) a(5%));
         border-color: var(--state-success-color);
       }
     }
@@ -387,14 +402,16 @@ span.content {
 
     @media (hover: hover) {
       @nest &:not(.disabled):hover {
-        background-color: color(var(--state-success-color) a(10%));
+        background-color: color(var(--state-success-color) a(5%));
       }
     }
   }
 }
 
 .color__white {
+  border-color: var(--white);
   background-color: var(--white);
+  color: var(--text-color);
 
   @nest &.root:focus {
     outline-color: var(--white);
