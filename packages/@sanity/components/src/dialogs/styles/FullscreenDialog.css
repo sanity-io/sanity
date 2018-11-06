@@ -9,24 +9,23 @@
   right: 0;
   z-index: var(--zindex-portal);
   overflow: auto;
+  background-color: color(var(--body-bg) a(95%));
+  color: var(--text-color);
 }
 
 .heading {
   font-size: var(--font-size-h1);
-  font-weight: 100;
+  margin: 0;
   margin-bottom: 0.5em;
-  margin-left: var(--medium-padding);
   line-height: 1em;
 }
 
 .content {
-  padding: var(--medium-padding);
+  color: var(--text-color);
 }
 
 .default {
   composes: root;
-  background-color: color(var(--body-bg) a(95%));
-  color: var(--text-color);
 }
 
 .info {
@@ -45,12 +44,7 @@
 
 .danger {
   composes: root;
-  color: var(--state-danger-color--inverted);
-  background-color: color(var(--state-danger-color) a(95%));
-
-  @nest & .closeButton {
-    background-color: color(var(--state-danger-color) a(30%));
-  }
+  color: var(--state-danger-color);
 
   @nest & .content a {
     color: inherit;
@@ -90,6 +84,22 @@
   composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
   max-height: 100vh;
   max-width: 100vw;
+}
+
+.padding_none {
+  padding: 0;
+}
+
+.padding_small {
+  padding: var(--small-padding);
+}
+
+.padding_medium {
+  padding: var(--medium-padding);
+}
+
+.padding_large {
+  padding: var(--large-padding);
 }
 
 .isOpened {
