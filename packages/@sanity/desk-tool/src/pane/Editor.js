@@ -611,10 +611,10 @@ export default withRouterHOC(
                 useOverlay={false}
                 hasAnimation
               >
-                <div style={{padding: '1em'}}>
-                  <p style={{paddingBottom: '1em'}}>
+                <div>
+                  <div className={styles.popOverText}>
                     <strong>Are you sure</strong> you want to discard changes?
-                  </p>
+                  </div>
                   <ButtonCollection>
                     <Button color="primary" onClick={this.handleConfirmDiscard}>
                       Discard
