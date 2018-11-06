@@ -41,7 +41,6 @@
 .empty {
   display: block;
   height: 100%;
-  border-top: 1px solid var(--component-border-color);
   text-align: center;
   position: relative;
 
