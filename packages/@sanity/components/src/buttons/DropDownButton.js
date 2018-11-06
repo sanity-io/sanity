@@ -151,6 +151,7 @@ export default class DropDownButton extends React.PureComponent {
         onEscape={this.handleClose}
         onClickOutside={this.handleClose}
         referenceClassName={styles.outer}
+        positionFixed
       >
         {menuOpened && (
           <div className={styles.popper} style={{minWidth: `${width}px`}}>
