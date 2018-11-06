@@ -168,8 +168,10 @@ span.content {
   }
 
   @nest &:not(.disabled) {
-    @nest &:hover {
-      background-color: var(--default-button-color--hover);
+    @media (hover: hover) {
+      @nest &:hover {
+        background-color: var(--default-button-color--hover);
+      }
     }
 
     @nest &:active {
@@ -187,13 +189,17 @@ span.content {
     background-color: var(--white);
   }
 
-  @nest &:not(.disabled):hover {
-    background-color: color(var(--default-button-color) a(90%));
+  @media (hover: hover) {
+    @nest &:not(.disabled):hover {
+      background-color: color(var(--default-button-color) a(90%));
+    }
   }
 
   @nest &:not(.disabled) {
-    @nest &:hover {
-      background-color: color(var(--default-button-color) lightness(- 5%) a(10%));
+    @media (hover: hover) {
+      @nest &:hover {
+        background-color: color(var(--default-button-color) lightness(- 5%) a(10%));
+      }
     }
 
     @nest &:active {
@@ -214,8 +220,10 @@ span.content {
     background-color: var(--white);
   }
 
-  @nest &:not(.disabled):hover {
-    background-color: color(var(--default-button-color) a(5%));
+  @media (hover: hover) {
+    @nest &:not(.disabled):hover {
+      background-color: color(var(--default-button-color) a(5%));
+    }
   }
 
   @nest &.root:focus {
@@ -233,9 +241,11 @@ span.content {
   background-color: var(--default-button-primary-color);
   color: var(--brand-primary--inverted);
 
-  @nest &:not(.disabled):hover {
-    border-color: var(--default-button-primary-color);
-    background-color: color(var(--default-button-primary-color) lightness(+ 5%));
+  @media (hover: hover) {
+    @nest &:not(.disabled):hover {
+      border-color: var(--default-button-primary-color);
+      background-color: color(var(--default-button-primary-color) lightness(+ 5%));
+    }
   }
 
   @nest & .spinner {
@@ -253,9 +263,11 @@ span.content {
       color: var(--default-button-primary-color);
     }
 
-    @nest &:not(.disabled):hover {
-      border-color: var(--default-button-primary-color);
-      background-color: color(var(--brand-primary) a(10%));
+    @media (hover: hover) {
+      @nest &:not(.disabled):hover {
+        border-color: var(--default-button-primary-color);
+        background-color: color(var(--brand-primary) a(10%));
+      }
     }
   }
 
@@ -263,9 +275,11 @@ span.content {
     background-color: transparent;
     color: var(--default-button-primary-color);
 
-    @nest &:not(.disabled) {
-      @nest &:hover {
-        background-color: color(var(--brand-primary) a(10%));
+    @media (hover: hover) {
+      @nest &:not(.disabled) {
+        @nest &:hover {
+          background-color: color(var(--brand-primary) a(10%));
+        }
       }
     }
   }
@@ -287,8 +301,10 @@ span.content {
     box-shadow: var(--button-focus-shadow--danger);
   }
 
-  @nest &:not(.disabled):hover {
-    background-color: color(var(--state-danger-color) lightness(+ 5%));
+  @media (hover: hover) {
+    @nest &:not(.disabled):hover {
+      background-color: color(var(--state-danger-color) lightness(+ 5%));
+    }
   }
 
   @nest &.inverted {
@@ -301,10 +317,12 @@ span.content {
       color: var(--state-danger-color);
     }
 
-    @nest &:not(.disabled) {
-      @nest &:hover {
-        background-color: color(var(--state-danger-color) a(10%));
-        border-color: var(--state-danger-color);
+    @media (hover: hover) {
+      @nest &:not(.disabled) {
+        @nest &:hover {
+          background-color: color(var(--state-danger-color) a(10%));
+          border-color: var(--state-danger-color);
+        }
       }
     }
   }
@@ -313,9 +331,11 @@ span.content {
     background-color: transparent;
     color: var(--state-danger-color);
 
-    @nest &:not(.disabled) {
-      @nest &:hover {
-        background-color: color(var(--state-danger-color) a(10%));
+    @media (hover: hover) {
+      @nest &:not(.disabled) {
+        @nest &:hover {
+          background-color: color(var(--state-danger-color) a(10%));
+        }
       }
     }
   }
@@ -337,8 +357,10 @@ span.content {
     box-shadow: var(--button-focus-shadow--success);
   }
 
-  @nest &:not(.disabled):hover {
-    background-color: color(var(--state-success-color) lightness(+ 5%));
+  @media (hover: hover) {
+    @nest &:not(.disabled):hover {
+      background-color: color(var(--state-success-color) lightness(+ 5%));
+    }
   }
 
   @nest &.inverted {
@@ -351,9 +373,11 @@ span.content {
       color: var(--state-success-color);
     }
 
-    @nest &:not(.disabled):hover {
-      background-color: color(var(--state-success-color) a(10%));
-      border-color: var(--state-success-color);
+    @media (hover: hover) {
+      @nest &:not(.disabled):hover {
+        background-color: color(var(--state-success-color) a(10%));
+        border-color: var(--state-success-color);
+      }
     }
   }
 
@@ -361,8 +385,10 @@ span.content {
     background-color: transparent;
     color: var(--state-success-color);
 
-    @nest &:not(.disabled):hover {
-      background-color: color(var(--state-success-color) a(10%));
+    @media (hover: hover) {
+      @nest &:not(.disabled):hover {
+        background-color: color(var(--state-success-color) a(10%));
+      }
     }
   }
 }
@@ -378,8 +404,10 @@ span.content {
     background-color: var(--white);
   }
 
-  @nest &:not(.disabled):hover {
-    background-color: color(var(--white) lightness(- 5%));
+  @media (hover: hover) {
+    @nest &:not(.disabled):hover {
+      background-color: color(var(--white) lightness(- 5%));
+    }
   }
 
   @nest &.inverted {
@@ -398,9 +426,11 @@ span.content {
         border-color: var(--white);
       }
 
-      @nest &:hover {
-        background-color: color(var(--white) a(40%));
-        color: var(--white);
+      @media (hover: hover) {
+        @nest &:hover {
+          background-color: color(var(--white) a(40%));
+          color: var(--white);
+        }
       }
     }
   }
@@ -415,9 +445,11 @@ span.content {
       color: var(--text-color);
     }
 
-    @nest &:not(.disabled):hover {
-      background-color: color(var(--white) a(40%));
-      color: var(--white);
+    @media (hover: hover) {
+      @nest &:not(.disabled):hover {
+        background-color: color(var(--white) a(40%));
+        color: var(--white);
+      }
     }
   }
 }
