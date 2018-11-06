@@ -18,6 +18,7 @@ export default class FullScreenDialog extends React.PureComponent {
     onClose: PropTypes.func,
     isOpen: PropTypes.bool,
     onAction: PropTypes.func,
+    padding: PropTypes.oneOf(['none', 'small', 'medium', 'large']),
     actions: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string.isRequired,
@@ -31,6 +32,7 @@ export default class FullScreenDialog extends React.PureComponent {
   static defaultProps = {
     color: 'default',
     isOpen: true,
+    padding: 'large',
     onAction() {},
     onClose() {},
     actions: []
@@ -60,9 +62,6 @@ export default class FullScreenDialog extends React.PureComponent {
 
     const [secondary, primary] = partition(actions, action => action.secondary)
 
-    console.log('actions', actions)
-    console.log(primary, secondary)
-
     return (
       <ButtonCollection align="end" secondary={secondary.map(this.createButtonFromAction)}>
         {primary.map(this.createButtonFromAction)}
@@ -71,7 +70,7 @@ export default class FullScreenDialog extends React.PureComponent {
   }
 
   render() {
-    const {color, title, className, onClose, isOpen, actions} = this.props
+    const {color, title, className, onClose, isOpen, actions, padding} = this.props
 
     const classNames = [
       styles[color] || styles.default,
@@ -91,10 +90,12 @@ export default class FullScreenDialog extends React.PureComponent {
               </button>
             )}
             <div className={styles.inner}>
-              <h1 className={styles.heading}>{title}</h1>
-              <div className={styles.content}>
-                {this.props.children}
-                <div className={styles.actionsWrapper}>{this.renderActions(actions)}</div>
+              <div className={styles[`padding_${padding}`]}>
+                <h1 className={styles.heading}>{title}</h1>
+                <div className={styles.content}>
+                  {this.props.children}
+                  <div className={styles.actionsWrapper}>{this.renderActions(actions)}</div>
+                </div>
               </div>
             </div>
           </div>
