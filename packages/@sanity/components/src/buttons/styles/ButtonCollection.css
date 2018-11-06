@@ -1,11 +1,9 @@
 @import "part:@sanity/base/theme/variables-style";
 
 .root {
-  @media (--screen-medium) {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-  }
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
 }
 
 .alignStart {
