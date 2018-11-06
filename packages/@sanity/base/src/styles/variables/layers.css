@@ -12,4 +12,6 @@
   --zindex-modal: 2010;
   --zindex-moving-item: 3000;
   --zindex-spinner: 3000;
+  --zindex-drawershade: 4000;
+  --zindex-drawer: 4001;
 }
