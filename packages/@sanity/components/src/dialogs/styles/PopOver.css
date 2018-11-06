@@ -76,8 +76,8 @@
 }
 
 .arrow {
-  height: 1em;
-  width: 1em;
+  height: 0.5em;
+  width: 0.5em;
   transform: translate(-50%, -50%) rotate(45deg);
   background-color: var(--component-bg);
   position: absolute;
@@ -118,8 +118,8 @@
   clip-path: unset;
   background-color: transparent;
   z-index: -1;
-  box-shadow: 0 0 10px var(--shadow-base);
-  opacity: 0.2;
+  box-shadow: 0 0 16px var(--shadow-base);
+  opacity: 0.1;
 }
 
 .filledArrow {
@@ -134,7 +134,7 @@
   z-index: 0;
   composes: shadow-24dp from "part:@sanity/base/theme/shadows-style";
   background-color: var(--component-bg);
-  border-radius: var(--border-radius-base);
+  border-radius: var(--border-radius-large);
   box-sizing: border-box;
   position: relative;
 
