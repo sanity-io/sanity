@@ -13,4 +13,10 @@
   @nest .selectedItem & {
     color: var(--selected-item-color--inverted);
   }
+
+  @nest & > i {
+    display: flex;
+    height: 100%;
+    align-items: center;
+  }
 }
