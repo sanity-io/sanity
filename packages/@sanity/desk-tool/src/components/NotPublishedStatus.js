@@ -4,13 +4,19 @@ import {Tooltip} from 'react-tippy'
 import styles from './styles/ItemStatus.css'
 
 const NotPublishedStatus = () => (
-  <div className={styles.itemStatus}>
-    <Tooltip title="Not published" arrow theme="light" distance="2" sticky size="small">
-      <i>
-        <VisibilityOffIcon />
-      </i>
-    </Tooltip>
-  </div>
+  <Tooltip
+    className={styles.itemStatus}
+    title="Not published"
+    arrow
+    theme="light"
+    distance="2"
+    sticky
+    size="small"
+  >
+    <i>
+      <VisibilityOffIcon />
+    </i>
+  </Tooltip>
 )
 
 export default NotPublishedStatus
