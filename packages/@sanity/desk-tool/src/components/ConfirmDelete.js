@@ -1,5 +1,6 @@
+/* eslint-disable complexity */
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, {Fragment} from 'react'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import Spinner from 'part:@sanity/components/loading/spinner'
 
@@ -44,7 +45,8 @@ export default enhanceWithReferringDocuments(
       const actions = [
         canContinue && {
           name: 'confirm',
-          title: hasReferringDocuments ? 'Try to delete anyway' : 'Delete now'
+          title: hasReferringDocuments ? 'Try to delete anyway' : 'Delete now',
+          color: 'danger'
         },
         {name: 'cancel', title: 'Cancel', kind: 'simple'}
       ].filter(Boolean)
@@ -86,19 +88,14 @@ export default enhanceWithReferringDocuments(
           )}
           {!isCheckingReferringDocuments &&
             !hasReferringDocuments && (
-              <div style={{padding: 10}}>
-                <p>
-                  Are you sure you would like to delete the document{' '}
+              <Fragment>
+                <h3>
+                  Are you sure you would like to permanently delete the document
                   <strong>
-                    <DocTitle document={draft || published} />
+                    &nbsp;&ldquo;<DocTitle document={draft || published} />&rdquo;
                   </strong>?
-                </p>
-                <h2>Careful!</h2>
-                <p>
-                  If you continue, this document will be permanently gone and not be available to
-                  anyone anymore.
-                </p>
-              </div>
+                </h3>
+              </Fragment>
             )}
         </Dialog>
       )
