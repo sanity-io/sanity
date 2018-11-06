@@ -39,6 +39,23 @@
   opacity: 0.5;
 }
 
+.top {
+  margin: 0 var(--medium-padding);
+  color: var(--text-color-secondary);
+}
+
+.date {
+  font-size: 0.75em;
+}
+
+.publishedDate {
+  composes: date;
+}
+
+.editedDate {
+  composes: date;
+}
+
 .publishInfo {
   display: grid;
   padding: var(--small-padding) var(--medium-padding);
@@ -53,11 +70,9 @@
   z-index: var(--zindex-pane);
   transform: translateY(0);
   transition: transform 0.3s ease-in, box-shadow 0.2s ease-in;
-  grid-template-areas:
-    "publishButton publishInfoUndoButton"
-    "editedDate    publishedDate";
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 2.5em 1.5em;
+  grid-template-areas: "publishButton publishInfoUndoButton";
+  grid-template-columns: auto auto;
+  grid-template-rows: 2.5em;
   justify-content: stretch;
   align-items: center;
   font-size: 1rem;
@@ -66,9 +81,7 @@
 
   @media (--screen-medium) {
     position: absolute;
-    grid-template-areas: "publishButton publishInfoUndoButton . publishedDate editedDate";
-    grid-template-columns: auto auto auto 1fr 1fr;
-    grid-template-rows: 2.5em;
+    grid-template-columns: 6em 6em;
   }
 }
 
@@ -96,22 +109,6 @@
     display: flex;
     width: 100%;
   }
-}
-
-.dates {
-  display: block;
-  font-size: var(--font-size-small);
-}
-
-.publishedDate {
-  composes: dates;
-  grid-area: publishedDate;
-}
-
-.editedDate {
-  composes: dates;
-  grid-area: editedDate;
-  margin-right: 1rem;
 }
 
 .errors {

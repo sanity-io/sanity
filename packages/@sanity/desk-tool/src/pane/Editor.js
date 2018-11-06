@@ -36,7 +36,7 @@ import filterFieldFn$ from 'part:@sanity/desk-tool/filter-fields-fn?'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 import copyDocument from '../utils/copyDocument'
 import ConfirmUnpublish from '../components/ConfirmUnpublish'
-import ConfirmDiscard from '../components/ConfirmDiscard'
+// import ConfirmDiscard from '../components/ConfirmDiscard'
 import ConfirmDelete from '../components/ConfirmDelete'
 import InspectView from '../components/InspectView'
 import DocTitle from '../components/DocTitle'
@@ -576,7 +576,6 @@ export default withRouterHOC(
 
     renderPublishInfo = () => {
       const {draft, markers, published, isReconnecting} = this.props
-      const value = draft || published
       const validation = markers.filter(marker => marker.type === 'validation')
       const errors = validation.filter(marker => marker.level === 'error')
       return (
@@ -603,46 +602,40 @@ export default withRouterHOC(
           <div className={styles.publishInfoUndoButton}>
             {published && (
               <Button kind="simple" onClick={() => this.setState({showConfirmDiscard: true})}>
-                Discard changes
+                Discard
               </Button>
             )}
             {this.state.showConfirmDiscard && (
-              <PopOverDialog onClickOutside={this.handleCancelDiscard} useOverlay={false} hasAnimation>
+              <PopOverDialog
+                onClickOutside={this.handleCancelDiscard}
+                useOverlay={false}
+                hasAnimation
+              >
                 <div style={{padding: '1em'}}>
                   <p style={{paddingBottom: '1em'}}>
                     <strong>Are you sure</strong> you want to discard changes?
                   </p>
                   <ButtonCollection>
-                    <Button color="primary" onClick={this.handleConfirmDiscard}>Discard</Button>
-                    <Button kind="simple" onClick={this.handleCancelDiscard}>Cancel</Button>
+                    <Button color="primary" onClick={this.handleConfirmDiscard}>
+                      Discard
+                    </Button>
+                    <Button kind="simple" onClick={this.handleCancelDiscard}>
+                      Cancel
+                    </Button>
                   </ButtonCollection>
                 </div>
               </PopOverDialog>
             )}
             {!published && (
-              <Button kind="simple" onClick={() => this.setState({showConfirmDiscard: true})} color="danger">
+              <Button
+                kind="simple"
+                onClick={() => this.setState({showConfirmDiscard: true})}
+                color="danger"
+              >
                 Delete
               </Button>
             )}
           </div>
-          <div className={styles.editedDate}>
-            {value && (
-              <span>
-                Edited <TimeAgo time={value._updatedAt} />
-              </span>
-            )}
-          </div>
-          {!this.isLiveEditEnabled() && (
-            <div className={styles.publishedDate}>
-              {published ? (
-                <span>
-                  Published <TimeAgo time={published._updatedAt} />
-                </span>
-              ) : (
-                'Not published'
-              )}
-            </div>
-          )}
         </div>
       )
     }
@@ -715,6 +708,28 @@ export default withRouterHOC(
                 {isUnpublishing && <Spinner center message="Unpublishing…" />}
               </div>
             )}
+            <div className={styles.top}>
+              {!this.isLiveEditEnabled() && (
+                <span className={styles.publishedDate}>
+                  {published ? (
+                    <strong>
+                      Published <TimeAgo time={published._updatedAt} />
+                    </strong>
+                  ) : (
+                    <strong>Not published</strong>
+                  )}
+                </span>
+              )}
+              {value && (
+                <span className={styles.editedDate}>
+                  {' '}
+                  ·{' '}
+                  <span>
+                    Edited <TimeAgo time={value._updatedAt} />
+                  </span>
+                </span>
+              )}
+            </div>
             <form
               className={styles.editor}
               onSubmit={preventDefault}
