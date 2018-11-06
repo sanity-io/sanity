@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Ink from 'react-ink'
 import {Tooltip} from 'react-tippy'
 import config from 'config:sanity'
 import PlusIcon from 'part:@sanity/base/plus-icon'
@@ -59,7 +58,6 @@ function NavBar(props) {
         >
           <PlusIcon />
           <span className={styles.createButtonText}>New</span>
-          <Ink duration={200} opacity={0.1} radius={200} />
         </Tooltip>
       </a>
       <div className={styles.toolSwitcher}>
@@ -89,7 +87,6 @@ function NavBar(props) {
           <SearchIcon />
         </span>
         <span className={styles.searchButtonText}>Search</span>
-        <Ink duration={200} opacity={0.1} radius={200} />
       </a>
     </div>
   )
