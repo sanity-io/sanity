@@ -113,7 +113,7 @@ a.branding {
 
   @media (--max-screen-medium) {
     position: absolute;
-    z-index: 15;
+    z-index: var(--zindex-drawer);
     width: 100%;
 
     @nest & > div {

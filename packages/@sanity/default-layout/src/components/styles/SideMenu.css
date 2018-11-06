@@ -8,7 +8,7 @@
 
 .root {
   position: fixed;
-  z-index: 16;
+  z-index: var(--zindex-drawer);
   top: 0;
   left: 0;
   width: 100%;
