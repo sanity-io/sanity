@@ -6,14 +6,9 @@ import IconSignOut from 'part:@sanity/base/sign-out-icon'
 import styles from './styles/LoginStatus.css'
 
 class LoginStatus extends React.PureComponent {
-  static defaultProps = {
-    onSetElement: () => null
-  }
-
   static propTypes = {
     className: PropTypes.string,
     onLogout: PropTypes.func,
-    onSetElement: PropTypes.func,
     user: PropTypes.shape({
       name: PropTypes.string,
       profileImage: PropTypes.string
@@ -45,7 +40,7 @@ class LoginStatus extends React.PureComponent {
   }
 
   render() {
-    const {onSetElement, user} = this.props
+    const {user} = this.props
     const {userMenuOpened} = this.state
     if (!user) {
       return null
@@ -55,7 +50,7 @@ class LoginStatus extends React.PureComponent {
     if (this.props.className) className += this.props.className
 
     return (
-      <div className={className} ref={onSetElement}>
+      <div className={className}>
         <div onClick={this.handleUserMenuToggle}>
           <img src={user.profileImage} className={styles.userImage} />
         </div>

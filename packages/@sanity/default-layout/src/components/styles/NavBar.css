@@ -15,8 +15,8 @@
 
   @media (--screen-medium) {
     grid-template-rows: var(--nav-bar-box);
-    grid-template-areas: " hamburger   branding    createButton       search               extras      loginStatus";
-    grid-template-columns: max-content max-content var(--nav-bar-box) minmax(200px, 400px) max-content calc(var(--nav-bar-box) + 1em);
+    grid-template-areas: " hamburger   branding    createButton       search               extras";
+    grid-template-columns: max-content max-content var(--nav-bar-box) minmax(200px, 400px) max-content;
 
     @nest &.withToolSwitcher {
       grid-template-areas: " branding    createButton       search               toolSwitcher extras      loginStatus";
@@ -100,7 +100,9 @@ a.branding {
   align-items: stretch;
 
   @media (--screen-medium) {
-    display: flex;
+    @nest .withToolSwitcher & {
+      display: flex;
+    }
   }
 }
 
@@ -118,8 +120,8 @@ a.branding {
 
     @nest & > div {
       display: none;
-      background: #fff;
-      color: #444;
+      background: var(--body-bg);
+      color: var(--gray-base);
     }
 
     @nest &.searchIsOpen > div {
@@ -133,7 +135,7 @@ a.branding {
     padding: var(--small-padding);
 
     @nest &.searchIsOpen {
-      z-index: 15;
+      z-index: var(--zindex-drawer);
     }
   }
 }

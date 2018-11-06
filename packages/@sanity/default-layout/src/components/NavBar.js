@@ -22,6 +22,7 @@ function NavBar(props) {
     onSearchOpen,
     onSearchClose,
     onSetLoginStatusElement,
+    onSetSearchElement,
     router,
     tools,
     user,
@@ -69,7 +70,7 @@ function NavBar(props) {
           showLabel={showLabel}
         />
       </div>
-      <div className={searchClassName}>
+      <div className={searchClassName} ref={onSetSearchElement}>
         <div>
           <SearchContainer
             shouldBeFocused={searchIsOpen}
@@ -79,8 +80,8 @@ function NavBar(props) {
         </div>
       </div>
       <div className={styles.extras}>{/* Insert plugins here */}</div>
-      <div className={styles.loginStatus}>
-        <LoginStatus onLogout={onUserLogout} onSetElement={onSetLoginStatusElement} user={user} />
+      <div className={styles.loginStatus} ref={onSetLoginStatusElement}>
+        <LoginStatus onLogout={onUserLogout} user={user} />
       </div>
       <a className={styles.searchButton} onClick={onSearchOpen}>
         <span className={styles.searchButtonIcon}>
@@ -95,7 +96,8 @@ function NavBar(props) {
 NavBar.defaultProps = {
   showLabel: true,
   showToolSwitcher: true,
-  onSetLoginStatusElement: undefined
+  onSetLoginStatusElement: undefined,
+  onSetSearchElement: undefined
 }
 
 NavBar.propTypes = {
@@ -107,6 +109,7 @@ NavBar.propTypes = {
   onSearchOpen: PropTypes.func.isRequired,
   onSearchClose: PropTypes.func.isRequired,
   onSetLoginStatusElement: PropTypes.func,
+  onSetSearchElement: PropTypes.func,
   router: PropTypes.shape({
     state: PropTypes.shape({tool: PropTypes.string}),
     navigate: PropTypes.func

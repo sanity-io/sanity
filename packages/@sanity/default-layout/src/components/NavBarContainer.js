@@ -1,50 +1,41 @@
-import {debounce} from 'lodash'
 import React from 'react'
 import NavBar from './NavBar'
 
 /* eslint-disable complexity */
 /* eslint-disable max-depth */
 /* eslint-disable no-lonely-if */
-function getNextState(state, mostRight, viewportWidth) {
+function getNextState(state, mostRight, winWidth) {
   const {showLabel, showLabelMinWidth, showToolSwitcher, showToolSwitcherMinWidth} = state
-  const mostRightIsVisible = mostRight && mostRight <= viewportWidth
-  const nextState = {}
-
-  let didChange = false
+  const mostRightIsVisible = mostRight && mostRight <= winWidth
+  const nextState = {winWidth}
 
   if (mostRightIsVisible) {
     // most-right element is within viewport
     if (showLabel) {
-      if (showLabelMinWidth === -1 || viewportWidth < showLabelMinWidth) {
-        nextState.showLabelMinWidth = viewportWidth
-        didChange = true
+      if (showLabelMinWidth === -1 || winWidth < showLabelMinWidth) {
+        nextState.showLabelMinWidth = winWidth
       }
-    } else if (showLabelMinWidth < viewportWidth) {
+    } else if (showLabelMinWidth < winWidth) {
       nextState.showLabel = true
-      didChange = true
     }
 
     if (showToolSwitcher) {
-      if (showToolSwitcherMinWidth === -1 || viewportWidth < showToolSwitcherMinWidth) {
-        nextState.showToolSwitcherMinWidth = viewportWidth
-        didChange = true
+      if (showToolSwitcherMinWidth === -1 || winWidth < showToolSwitcherMinWidth) {
+        nextState.showToolSwitcherMinWidth = winWidth
       }
-    } else if (showToolSwitcherMinWidth < viewportWidth) {
+    } else if (showToolSwitcherMinWidth < winWidth) {
       nextState.showToolSwitcher = true
-      didChange = true
     }
   } else {
     // most-right element is NOT within viewport
     if (showLabel) {
       nextState.showLabel = false
-      didChange = true
     } else if (showToolSwitcher) {
       nextState.showToolSwitcher = false
-      didChange = true
     }
   }
 
-  return didChange ? nextState : null
+  return nextState
 }
 /* eslint-enable complexity */
 /* eslint-enable max-depth */
@@ -55,16 +46,18 @@ class NavBarContainer extends React.PureComponent {
     showLabel: false,
     showLabelMinWidth: -1,
     showToolSwitcher: false,
-    showToolSwitcherMinWidth: -1
+    showToolSwitcherMinWidth: -1,
+    winWidth: -1
   }
 
   loginStatusElement = null
+  searchElement = null
+  tickAnimFrameId = null
 
   componentDidMount() {
-    // Setup a resize listener to check whether elements within the NavBar
+    // Start an animation frame loop to check whether elements within the NavBar
     // exits the viewport at any time.
-    window.addEventListener('resize', this.handleWindowResize)
-    this.handleWindowResize()
+    this.tick()
   }
 
   /* eslint-disable complexity */
@@ -76,7 +69,7 @@ class NavBarContainer extends React.PureComponent {
     const didHideLabel = showToolSwitcherMinWidth === -1 && prevState.showLabel && !showLabel
 
     if (didShowLabel || didShowToolSwitcher || didHideLabel) {
-      this.handleWindowResize()
+      this.handleCustomResize(window.innerWidth)
     }
   }
   /* eslint-enable complexity */
@@ -86,22 +79,46 @@ class NavBarContainer extends React.PureComponent {
       this.io.disconnect()
       this.io = null
     }
+
+    if (this.tickAnimFrameId) {
+      window.cancelAnimatioNFrame(this.tickAnimFrameId)
+      this.tickAnimFrameId = null
+    }
   }
 
-  handleWindowResize = debounce(() => {
-    if (this.loginStatusElement) {
-      const rect = this.loginStatusElement.getBoundingClientRect()
-      const nextState = getNextState(this.state, rect.left + rect.width, window.innerWidth)
+  tick = () => {
+    this.handleFrame()
+    this.tickAnimFrameId = window.requestAnimationFrame(this.tick)
+  }
 
-      if (nextState) {
-        // console.log(nextState)
-        this.setState(nextState)
-      }
+  handleFrame() {
+    const winWidth = window.innerWidth
+    if (winWidth !== this.state.winWidth) {
+      this.handleCustomResize(winWidth)
     }
-  }, 100)
+  }
+
+  handleCustomResize(winWidth) {
+    if (this.loginStatusElement) {
+      const {showToolSwitcher} = this.state
+      // console.log(this.searchElement)
+      const mostRightRect = showToolSwitcher
+        ? this.loginStatusElement.getBoundingClientRect()
+        : this.searchElement.getBoundingClientRect()
+      this.setState(state => {
+        const nextState = getNextState(state, mostRightRect.left + mostRightRect.width, winWidth)
+        // console.log(nextState)
+        return nextState
+      })
+    }
+  }
 
   handleSetLoginStatusElement = element => {
     this.loginStatusElement = element
+  }
+
+  handleSetSearchElement = element => {
+    this.searchElement = element
   }
 
   render() {
@@ -111,6 +128,7 @@ class NavBarContainer extends React.PureComponent {
       <NavBar
         {...this.props}
         onSetLoginStatusElement={this.handleSetLoginStatusElement}
+        onSetSearchElement={this.handleSetSearchElement}
         showLabel={showLabel}
         showToolSwitcher={showToolSwitcher}
       />
