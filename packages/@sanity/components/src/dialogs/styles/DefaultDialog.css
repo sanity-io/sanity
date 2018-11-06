@@ -211,6 +211,7 @@
   outline: none;
   composes: shadow-5dp from 'part:@sanity/base/theme/shadows-style';
   color: var(--black);
+  border: none;
   border-radius: 50%;
   background-color: var(--component-bg);
   font-size: 1rem;
