@@ -587,6 +587,7 @@ export default withRouterHOC(
           <Tooltip
             arrow
             theme="light"
+            disabled={'ontouchstart' in document.documentElement}
             className={styles.publishButton}
             //title={errors.length > 0 ? 'Fix errors before publishing' : 'Publish (Ctrl+Alt+P)'}
             html={this.renderPublishButtonTooltip(errors, published)}

@@ -50,6 +50,7 @@ function NavBar(props) {
       </StateLink>
       <a className={styles.createButton} onClick={onCreateButtonClick}>
         <Tooltip
+          disabled={'ontouchstart' in document.documentElement}
           title="Create new document"
           className={styles.createButtonIcon}
           theme="dark"
