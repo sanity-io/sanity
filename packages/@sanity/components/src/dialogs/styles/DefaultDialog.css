@@ -87,7 +87,6 @@
   animation-iteration-count: once;
   transform-origin: center;
   box-sizing: border-box;
-  /* transition: all 0.3s linear; */
   max-width: calc(100% - 2rem);
   max-height: calc(100% - 8rem);
 
@@ -151,7 +150,7 @@
   border-radius: var(--dialog-border-radius) var(--dialog-border-radius) 0 0;
   box-sizing: border-box;
   background-color: var(--body-bg);
- }
+}
 
 .contentWithoutFooter {
   composes: content;
@@ -246,8 +245,7 @@
 
 .footer {
   flex-basis: 5rem;
-  min-height: 5rem;
-  font-size: var(--font-size-small);
+  min-height: 4.5rem;
   box-sizing: border-box;
   padding: var(--medium-padding);
   background-color: var(--body-bg);
