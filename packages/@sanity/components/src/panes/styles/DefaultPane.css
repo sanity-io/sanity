@@ -43,7 +43,8 @@
 }
 
 .header {
-  position: relative;
+  position: sticky;
+  top: 0;
   display: flex;
   justify-content: space-between;
   align-items: stretch;
@@ -60,16 +61,6 @@
     flex-grow: 1;
     border-color: transparent;
   }
-}
-
-.headerBackground {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  left: 0;
-  background-color: var(--body-bg);
-  z-index: 0;
 }
 
 .headerContent {

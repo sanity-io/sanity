@@ -14,14 +14,18 @@ function getActionKey(action, index) {
   return (typeof action.action === 'string' ? action.action + action.title : action.title) || index
 }
 
+// This is the height of the global navigation bar
+// TODO: Turn this into a prop that DefaultPane receives
+const GLOBAL_NAV_BAR_HEIGHT = 49
+
 const getScrollShadowState = (scrollTop, prevState) => {
   const {headerStyleRatio} = prevState
-  const threshold = 100
+  const threshold = 30
 
   if (scrollTop < threshold) {
-    // Round of the calculation to cut down rerenders that are not visible to the human eye
+    // Round off the calculation to cut down rerenders that are not visible to the human eye
     // Example: 0.53 -> 0.55 or 0.91 -> 0.9
-    const ratio = Math.round((scrollTop / threshold) * 10 * 2) / 2 / 10
+    const ratio = Math.round((scrollTop / threshold) * 20) / 20
     if (ratio === headerStyleRatio) {
       return null
     }
@@ -29,8 +33,7 @@ const getScrollShadowState = (scrollTop, prevState) => {
     return {
       headerStyleRatio: ratio,
       headerStyle: {
-        opacity: ratio + 0.5,
-        boxShadow: `0 2px ${3 * ratio}px rgba(0, 0, 0, ${ratio * 0.3})`
+        boxShadow: `0 0 ${2 * ratio}px rgba(0, 0, 0, ${ratio * 0.2})`
       }
     }
   }
@@ -48,8 +51,7 @@ const getScrollShadowState = (scrollTop, prevState) => {
     return {
       headerStyleRatio: 1,
       headerStyle: {
-        opacity: 1,
-        boxShadow: '0 2px 3px rgba(0, 0, 0, 0.3)'
+        boxShadow: '0 0px 2px rgba(0, 0, 0, 0.2)'
       }
     }
   }
@@ -114,10 +116,12 @@ class Pane extends React.Component {
     menuIsOpen: false,
     headerStyleRatio: -1,
     headerStyle: {
-      opacity: 0,
       boxShadow: 'none'
-    }
+    },
+    scrollTop: 0
   }
+
+  scrollFrameId = null
 
   constructor(props) {
     super(props)
@@ -137,9 +141,17 @@ class Pane extends React.Component {
     return getScrollShadowState(props.scrollTop, state)
   }
 
+  componentDidMount() {
+    this.scrollFrame()
+  }
+
   componentWillUnmount() {
     if (this.closeRequest) {
       cancelAnimationFrame(this.closeRequest)
+    }
+
+    if (this.scrollFrameId) {
+      cancelAnimationFrame(this.scrollFrameId)
     }
   }
 
@@ -161,6 +173,23 @@ class Pane extends React.Component {
       !shallowEquals(nextProps, this.props) ||
       !shallowEquals(nextState, this.state)
     )
+  }
+
+  scrollFrame = () => {
+    const winScrollTop = (window.pageYOffset || document.scrollTop || 0) - (document.clientTop || 0)
+    const scrollTop = Math.max(winScrollTop - GLOBAL_NAV_BAR_HEIGHT, 0)
+
+    if (this.state.scrollTop !== scrollTop) {
+      const shadowState = getScrollShadowState(scrollTop, this.state)
+      if (shadowState) {
+        shadowState.scrollTop = scrollTop
+        this.setState(shadowState)
+      } else {
+        this.setState({scrollTop: scrollTop})
+      }
+    }
+
+    this.scrollFrameId = requestAnimationFrame(this.scrollFrame)
   }
 
   handleToggleCollapsed = event => {
@@ -316,7 +345,6 @@ class Pane extends React.Component {
             </div>
             {this.renderMenu()}
           </div>
-          <div className={styles.headerBackground} style={{opacity: headerStyle.opacity}} />
         </div>
         <div className={styles.main}>
           {isScrollable ? (
