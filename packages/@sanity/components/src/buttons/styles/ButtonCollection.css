@@ -31,7 +31,7 @@
   display: grid;
   grid-gap: var(--small-padding);
   grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
-  grid-template-rows: repeat(auto-fit, minmax(2.5rem, auto));
+  grid-auto-rows: repeat(auto-fit, 2.5rem);
   width: 100%;
 }
 
