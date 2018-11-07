@@ -49,7 +49,7 @@
 }
 
 .popper {
-  composes: shadow-4dp from "part:@sanity/base/theme/shadows-style";
+  composes: shadow-6dp from "part:@sanity/base/theme/shadows-style";
   box-sizing: border-box;
   background-color: var(--component-bg);
   position: relative;

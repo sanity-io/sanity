@@ -18,7 +18,7 @@
 }
 
 .color {
-  composes: shadow-2dp from 'part:@sanity/base/theme/shadows-style';
+  composes: shadow-1dp from 'part:@sanity/base/theme/shadows-style';
   display: block;
   padding: 1rem;
   text-align: center;

@@ -1,9 +1,14 @@
 @import "part:@sanity/base/theme/variables-style";
 
+:root {
+  --nav-bar-box: 3.0625em; /* 49px */
+}
+
 .root {
   display: flex;
   flex-direction: column;
   background-color: var(--component-bg);
+  min-height: calc(100vh - var(--nav-bar-box));
 
   @media (--screen-medium) {
     /* Reset mobile first */

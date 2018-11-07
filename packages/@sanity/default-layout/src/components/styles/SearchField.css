@@ -155,7 +155,7 @@
 }
 
 .results {
-  composes: shadow-10dp from "part:@sanity/base/theme/shadows-style";
+  composes: shadow-12dp from "part:@sanity/base/theme/shadows-style";
   display: none;
   position: absolute;
   background: #fff;

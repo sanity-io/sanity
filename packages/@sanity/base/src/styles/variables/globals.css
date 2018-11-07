@@ -6,7 +6,7 @@
   --component-text-color: color(var(--component-bg) contrast(80%));
   --preview-placeholder-color: color(var(--component-bg) contrast(80%) alpha(10%));
   --component-border-color: color(var(--component-bg) contrast(80%) a(20%));
-  --backdrop-color: color(var(--gray-base) a(20%));
+  --backdrop-color: color(var(--brand-darkest) a(12%));
   --main-navigation-color: color(var(--brand-primary) shade(70%) saturation(20%));
   --main-navigation-color--inverted: color(var(--main-navigation-color) contrast(80%));
   --dialog-header-color: color(var(--brand-primary) shade(20%) saturation(30%));
@@ -18,10 +18,10 @@
   --default-button-primary-color--inverted: #fff;
 
   /* Shadows */
-  --shadow-base: color(var(--gray-base) shade(30%));
-  --shadow-color-umbra: color(var(--shadow-base) a(2%));
-  --shadow-color-penumbra: color(var(--shadow-base) a(14%));
-  --shadow-color-ambient: color(var(--shadow-base) a(12%));
+  --shadow-base: var(--brand-darkest);
+  --shadow-color-umbra: color(var(--shadow-base) a(7%));
+  --shadow-color-penumbra: color(var(--shadow-base) a(6%));
+  --shadow-color-ambient: color(var(--shadow-base) a(1%));
 
   /* Border radius */
   --border-radius-base: 4px;

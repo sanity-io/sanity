@@ -27,7 +27,7 @@
   z-index: var(--zindex-moving-item);
   position: relative;
   background-color: var(--white);
-  composes: shadow-5dp from 'part:@sanity/base/theme/shadows-style';
+  composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
   box-sizing: content-box;
   overflow: visible;
 }

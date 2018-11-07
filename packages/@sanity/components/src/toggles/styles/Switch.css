@@ -98,7 +98,7 @@
   width: var(--switch-thumb-size);
   border-radius: 50%;
   cursor: default;
-  composes: shadow-2dp from "part:@sanity/base/theme/shadows-style";
+  composes: shadow-1dp from "part:@sanity/base/theme/shadows-style";
   composes: animation-default from "part:@sanity/base/theme/animation-style";
   transition-property: left;
   z-index: 1;
@@ -111,7 +111,7 @@
 
 .thumbChecked {
   composes: thumb;
-  composes: shadow-3dp from "part:@sanity/base/theme/shadows-style";
+  /* composes: shadow-1dp from "part:@sanity/base/theme/shadows-style"; */
   background: var(--switch-thumb-color);
   left: calc(var(--switch-track-length) - var(--switch-thumb-size));
 }
