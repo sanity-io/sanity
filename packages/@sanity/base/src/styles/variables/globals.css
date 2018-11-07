@@ -1,8 +1,8 @@
 :root {
   /* Colors */
-  --body-bg: #fff;
+  --body-bg: #f5f5f5;
   --body-text: color(var(--body-bg) contrast(57%));
-  --component-bg: var(--body-bg);
+  --component-bg: #fff;
   --component-text-color: color(var(--component-bg) contrast(80%));
   --preview-placeholder-color: color(var(--component-bg) contrast(80%) alpha(10%));
   --component-border-color: color(var(--component-bg) contrast(80%) a(20%));
