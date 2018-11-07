@@ -296,7 +296,7 @@ export default class ArrayInput extends React.Component<Props, State> {
             Some items in this list are missing their keys. We need to fix this before the list can
             be edited.
             <div className={styles.fixMissingKeysButtonWrapper}>
-              <Button color="primary" onClick={this.handleFixMissingKeys}>
+              <Button onClick={this.handleFixMissingKeys}>
                 Fix missing keys
               </Button>
             </div>

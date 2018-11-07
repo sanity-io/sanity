@@ -42,7 +42,7 @@ export default class ArrayFunctions extends React.Component<Props> {
     }))
 
     return (
-      <DropDownButton items={items} onAction={this.handleDropDownAction}>
+      <DropDownButton inverted items={items} onAction={this.handleDropDownAction}>
         Add
       </DropDownButton>
     )
@@ -58,7 +58,7 @@ export default class ArrayFunctions extends React.Component<Props> {
       <div className={styles.functions}>
         <ButtonCollection align="start">
           {type.of.length === 1 ? (
-            <Button onClick={this.handleAddBtnClick} className={styles.addButton}>
+            <Button inverted onClick={this.handleAddBtnClick} className={styles.addButton}>
               Add
             </Button>
           ) : (
