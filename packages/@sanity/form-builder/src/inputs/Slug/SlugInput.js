@@ -171,11 +171,12 @@ export default withValuePath(
               {hasSourceField && (
                 <Button
                   className={styles.button}
+                  inverted
                   disabled={loading || !hasSource}
                   loading={loading}
                   onClick={this.handleGenerateSlug}
                 >
-                  Generate slug
+                  Generate
                 </Button>
               )}
             </div>
