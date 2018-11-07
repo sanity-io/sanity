@@ -44,7 +44,7 @@
 }
 
 .previewImage {
-  composes: shadow-5dp from 'part:@sanity/base/theme/shadows-style';
+  composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
   background-color: #eee;
 }
 
