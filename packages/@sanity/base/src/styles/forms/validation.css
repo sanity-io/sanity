@@ -7,16 +7,13 @@
 .validationList {
   margin: 0;
   padding: 0;
-  max-height: 10rem;
-  overflow: hidden;
-  transition: max-height 0.5s linear;
   font-size: var(--font-size-small);
   color: var(--state-danger-color);
 }
 
 .validationListClosed {
   composes: validationList;
-  max-height: 0;
+  height: 0;
 }
 
 .validationListItem {
