@@ -66,7 +66,7 @@ export default class ValidationList extends React.PureComponent {
   }
 
   render() {
-    const {markers, showLink, isOpen} = this.props
+    const {markers, showLink} = this.props
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
     const warnings = validation.filter(marker => marker.level === 'warning')
