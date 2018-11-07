@@ -20,18 +20,22 @@ export default class ButtonCollection extends React.PureComponent {
 
     if (secondary && (secondary.length > 0 || typeof secondary !== 'object')) {
       return (
-        <div className={align === 'start' ? styles.alignStart : styles.alignEnd}>
-          <div className={styles.primary}>{children}</div>
-          <div className={styles.secondary}>
-            {secondary.length > 0 ? secondary.map(child => child) : secondary}
-          </div>
+        <div className={align === 'start' ? styles.alignStart : styles.alignEnd} data-buttons={children.length + secondary.length}>
+          {children}
+          {secondary.length > 0
+            ? secondary.map((child, i) => (
+                <div className={styles.secondary} key={i}>
+                  {child}
+                </div>
+              ))
+            : secondary}
         </div>
       )
     }
 
     return (
       <div className={align === 'start' ? styles.alignStart : styles.alignEnd}>
-        <div className={styles.grid}>{children || secondary}</div>
+        {children || secondary}
       </div>
     )
   }
