@@ -90,7 +90,9 @@ export default class ColorInput extends PureComponent {
       <Fieldset legend={type.title} description={type.description}>
         {!value && (
           <div>
-            <Button onClick={this.handleCreateColor}>Create color</Button>
+            <Button inverted onClick={this.handleCreateColor}>
+              Create color
+            </Button>
           </div>
         )}
         {value && (
