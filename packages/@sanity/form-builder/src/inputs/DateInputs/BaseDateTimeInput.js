@@ -163,7 +163,7 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
                 placeholderText={placeholder}
                 calendarClassName={styles.datepicker}
                 popperClassName={styles.popper}
-                popperContainer={isDialogOpen && this.renderPopperContainer}
+                popperContainer={isDialogOpen ? this.renderPopperContainer : undefined}
                 popperProps={{positionFixed: true}}
                 className={styles.input}
                 onClickOutside={this.handleClose}
