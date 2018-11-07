@@ -132,7 +132,7 @@
 
 .popover {
   z-index: 0;
-  composes: shadow-24dp from "part:@sanity/base/theme/shadows-style";
+  composes: shadow-12dp from "part:@sanity/base/theme/shadows-style";
   background-color: var(--component-bg);
   border-radius: var(--border-radius-large);
   box-sizing: border-box;
