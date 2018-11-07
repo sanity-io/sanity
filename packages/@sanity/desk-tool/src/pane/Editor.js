@@ -700,6 +700,8 @@ export default withRouterHOC(
           onMenuToggle={this.handleMenuToggle}
           isSelected // last pane is always selected for now
           staticContent={this.renderPublishInfo()}
+          minWidth={300}
+          maxWidth={672}
         >
           <div className={styles.root}>
             {(isCreatingDraft || isPublishing || isUnpublishing) && (
