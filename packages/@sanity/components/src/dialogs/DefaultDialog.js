@@ -5,14 +5,14 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import styles from 'part:@sanity/components/dialogs/default-style'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonCollection from 'part:@sanity/components/buttons/button-collection'
-import {partition} from 'lodash'
+import {partition, debounce} from 'lodash'
 import Ink from 'react-ink'
 import {Portal} from '../utilities/Portal'
 import Escapable from '../utilities/Escapable'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Stacked from '../utilities/Stacked'
 
-export default class DefaultDialog extends React.Component {
+export default class DefaultDialog extends React.PureComponent {
   static propTypes = {
     color: PropTypes.oneOf(['default', 'warning', 'success', 'danger', 'info']),
     className: PropTypes.string,
@@ -40,6 +40,33 @@ export default class DefaultDialog extends React.Component {
     color: 'default'
   }
 
+  state = {
+    contentHasOverflow: false
+  }
+
+  componentDidMount() {
+    this.setFooterShadow()
+    window.addEventListener('resize', this.handleResize, {passive: true})
+  }
+
+  componentDidUnmount() {
+    window.removeEventListener('resize', this.handleResize, {passive: true})
+  }
+
+  handleResize = debounce(() => this.setFooterShadow())
+
+  componentDidUpdate() {
+    this.setFooterShadow()
+  }
+
+  setFooterShadow = () => {
+    if (this.contentElement) {
+      this.setState({
+        contentHasOverflow: this.contentElement.scrollHeight > this.contentElement.clientHeight
+      })
+    }
+  }
+
   openDialogElement() {
     this.props.onOpen()
   }
@@ -50,6 +77,10 @@ export default class DefaultDialog extends React.Component {
 
   setDialogElement = element => {
     this.dialog = element
+  }
+
+  setContentElement = element => {
+    this.contentElement = element
   }
 
   createButtonFromAction = (action, i) => {
@@ -85,6 +116,7 @@ export default class DefaultDialog extends React.Component {
 
   render() {
     const {title, actions, color, onClose, className, showCloseButton} = this.props
+    const {contentHasOverflow} = this.state
     const classNames = `
       ${styles.root}
       ${styles[color]}
@@ -100,15 +132,14 @@ export default class DefaultDialog extends React.Component {
               <div className={styles.overlay} />
               <div className={styles.dialog}>
                 <Escapable onEscape={event => (isActive || event.shiftKey) && onClose()} />
-                <CaptureOutsideClicks onClickOutside={isActive ? onClose : undefined} className={styles.inner}>
+                <CaptureOutsideClicks
+                  onClickOutside={isActive ? onClose : undefined}
+                  className={styles.inner}
+                >
                   {!title &&
                     onClose &&
                     showCloseButton && (
-                      <button
-                        className={styles.closeButtonOutside}
-                        onClick={onClose}
-                        type="button"
-                      >
+                      <button className={styles.closeButtonOutside} onClick={onClose} type="button">
                         <CloseIcon color="inherit" />
                       </button>
                     )}
@@ -131,6 +162,7 @@ export default class DefaultDialog extends React.Component {
                     </div>
                   )}
                   <div
+                    ref={this.setContentElement}
                     className={
                       actions && actions.length > 0 ? styles.content : styles.contentWithoutFooter
                     }
@@ -139,7 +171,9 @@ export default class DefaultDialog extends React.Component {
                   </div>
                   {actions &&
                     actions.length > 0 && (
-                      <div className={styles.footer}>{this.renderActions(actions)}</div>
+                      <div className={contentHasOverflow ? styles.footerWithShadow : styles.footer}>
+                        {this.renderActions(actions)}
+                      </div>
                     )}
                 </CaptureOutsideClicks>
               </div>
