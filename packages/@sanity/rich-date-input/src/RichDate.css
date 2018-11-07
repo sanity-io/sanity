@@ -6,7 +6,7 @@
 }
 
 .datepicker {
-  composes: shadow-20dp from 'part:@sanity/base/theme/shadows-style';
+  composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
   position: relative;
 }
 
