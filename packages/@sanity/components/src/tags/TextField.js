@@ -15,7 +15,6 @@ export default class TagsTextField extends React.Component {
     onBlur: PropTypes.func,
     readOnly: PropTypes.bool,
     markers: PropTypes.array,
-    readOnly: PropTypes.bool,
     value: PropTypes.arrayOf(PropTypes.string)
   }
 
@@ -115,20 +114,20 @@ export default class TagsTextField extends React.Component {
                   </li>
                 )
               })}
+              <input
+                {...rest}
+                readOnly={readOnly}
+                value={inputValue}
+                className={styles.input}
+                onKeyDown={this.handleKeyDown}
+                onKeyPress={this.handleKeyPress}
+                onChange={this.handleInputChange}
+                style={{width: `${Math.max(3, inputValue.length) * 0.8}em`}}
+                onBlur={this.handleBlur}
+                ref={this.setInput}
+                autoComplete="off"
+              />
             </ul>
-            <input
-              {...rest}
-              readOnly={readOnly}
-              value={inputValue}
-              className={styles.input}
-              onKeyDown={this.handleKeyDown}
-              onKeyPress={this.handleKeyPress}
-              onChange={this.handleInputChange}
-              style={{width: `${Math.max(3, inputValue.length) * 0.8}em`}}
-              onBlur={this.handleBlur}
-              ref={this.setInput}
-              autoComplete="off"
-            />
           </div>
           <div className={styles.focusHelper} />
         </div>
