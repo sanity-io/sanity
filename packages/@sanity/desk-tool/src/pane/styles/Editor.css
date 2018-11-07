@@ -12,7 +12,6 @@
 
 .root {
   display: block;
-  background-color: var(--body-bg);
   position: relative; /* Needed to keep the spinners in place */
 
   @media (--screen-medium) {
@@ -65,7 +64,7 @@
   left: 0;
   right: 0;
   width: 100%;
-  background-color: var(--body-bg);
+  background-color: var(--component-bg);
   z-index: var(--zindex-pane);
   transform: translateY(0);
   transition: transform 0.3s ease-in, box-shadow 0.2s ease-in;
@@ -132,7 +131,6 @@
 
 .editor {
   padding: var(--medium-padding);
-  max-width: 40em;
   padding-bottom: 8rem;
 }
 
