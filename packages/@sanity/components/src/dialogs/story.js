@@ -34,7 +34,7 @@ function renderContent(type) {
       return <div>{paragraphs}</div>
     case 'example':
       return (
-        <DialogContent size="medium">
+        <DialogContent size="medium" padding="medium">
           <h1>With dialog content</h1>
           <p>{paragraph}</p>
         </DialogContent>
