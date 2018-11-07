@@ -49,7 +49,7 @@ export default class DefaultDialog extends React.PureComponent {
     window.addEventListener('resize', this.handleResize, {passive: true})
   }
 
-  componentDidUnmount() {
+  componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize, {passive: true})
   }
 
