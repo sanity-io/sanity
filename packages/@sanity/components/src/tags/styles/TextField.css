@@ -35,19 +35,15 @@
 
 .tagWithClear {
   composes: tag;
-  padding-right: 1.4em;
 }
 
 .clearTag {
-  position: absolute;
   right: 0;
   top: 0;
   cursor: pointer;
   height: 100%;
   font-size: 1em;
-  line-height: 1.5em;
-  width: 1.5em;
-  text-align: center;
+  padding-left: 0.5em;
 
   @nest &:hover {
     color: var(--black);
@@ -62,10 +58,32 @@
   composes: root from 'part:@sanity/base/theme/forms/text-input-style';
   display: block;
   overflow: hidden;
-  padding-left: 0.3em;
 
-  @nest :focus-within & {
+  @media (hover: hover) {
+    @nest &:hover {
+      box-shadow: var(--input-box-shadow--hover);
+      border-color: var(--input-border-color-hover);
+    }
+  }
+
+  @nest &:focus, &:focus-within {
+    box-shadow: var(--input-box-shadow--focus);
+    background-color: var(--input-bg-focus);
     border-color: var(--input-border-color-focus);
+
+    @nest &:invalid {
+      box-shadow: var(--input-box-shadow--invalid-focus);
+    }
+  }
+
+  @nest &:active {
+    border-color: var(--input-border-color-active);
+  }
+
+  @nest &:invalid {
+    border-color: var(--input-border-color-invalid);
+    background-color: var(--input-bg-invalid);
+    box-shadow: var(--input-box-shadow--invalid);
   }
 }
 
@@ -77,9 +95,8 @@
   margin: 0;
   padding: 0;
   line-height: 1em;
-  width: 2em;
+  width: stretch;
   margin-top: 0.2em;
-  transform: translateY(-0.1em);
   padding-left: 0.1em;
   z-index: 1;
 
