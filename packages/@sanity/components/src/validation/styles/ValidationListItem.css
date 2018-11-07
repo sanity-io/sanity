@@ -47,9 +47,10 @@
 }
 
 .icon {
-  display: block;
+  display: flex;
   padding: var(--medium-padding);
   padding-right: var(--large-padding);
+  align-items: center;
 }
 
 .content {
