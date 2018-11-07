@@ -93,6 +93,8 @@ class Pane extends React.Component {
         title: PropTypes.string
       })
     ),
+    maxWidth: PropTypes.number,
+    minWidth: PropTypes.number,
     styles: PropTypes.object // eslint-disable-line react/forbid-prop-types
   }
 
@@ -320,12 +322,17 @@ class Pane extends React.Component {
       menuItems,
       styles,
       renderActions,
-      staticContent
+      staticContent,
+      minWidth,
+      maxWidth
     } = this.props
     const headerStyle = isCollapsed ? {} : this.state.headerStyle
     const actions = menuItems.filter(
       act => act.showAsAction && (!isCollapsed || act.showAsAction.whenCollapsed)
     )
+    const style = {}
+    if (minWidth) style.minWidth = `${minWidth}px`
+    if (maxWidth) style.maxWidth = `${maxWidth}px`
 
     return (
       <div
@@ -334,6 +341,7 @@ class Pane extends React.Component {
           isSelected ? styles.isActive : styles.isDisabled
         ])}
         ref={this.setRootElement}
+        style={style}
       >
         <div className={styles.header} style={{boxShadow: headerStyle.boxShadow}}>
           <div className={styles.headerContent}>
