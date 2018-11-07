@@ -3,12 +3,11 @@
 .root {
   display: flex;
   flex-direction: column;
-  background-color: var(--body-bg);
+  background-color: var(--component-bg);
 
   @media (--screen-medium) {
     /* Reset mobile first */
     position: relative;
-    background-color: initial;
     height: 100%;
     top: initial;
     left: initial;
