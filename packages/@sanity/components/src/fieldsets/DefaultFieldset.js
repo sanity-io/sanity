@@ -159,7 +159,9 @@ export default class Fieldset extends React.Component {
                 className={styles.animateHeight}
                 contentClassName={styles.content}
               >
-                <div className={styles.fieldWrapper}>{hasBeenToggled && children}</div>
+                <div className={styles.fieldWrapper}>
+                  {(hasBeenToggled || !isCollapsed) && children}
+                </div>
               </AnimateHeight>
             )}
             {!isCollapsible && (
