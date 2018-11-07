@@ -10,7 +10,7 @@
 
 .cardListItem {
   background-color: white;
-  composes: shadow-2dp from 'part:@sanity/base/theme/shadows-style';
+  composes: shadow-1dp from 'part:@sanity/base/theme/shadows-style';
 }
 
 .mediaList {

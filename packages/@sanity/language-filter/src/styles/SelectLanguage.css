@@ -16,7 +16,7 @@
   padding: 0.5em;
   background-color: var(--component-bg);
   color: var(--text-color);
-  composes: shadow-8dp from 'part:@sanity/base/theme/shadows-style';
+  composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
   user-select: none;
   text-align: left;
   overflow: auto;

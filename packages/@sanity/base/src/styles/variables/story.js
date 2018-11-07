@@ -48,7 +48,7 @@ storiesOf('Variables')
     return (
       <div>
         <div className={styles.shadows}>
-          {range(0, 25).map(i => {
+          {[1, 6, 12, 16, 24].map(i => {
             return (
               <div key={i} className={shadowStyles[`shadow-${i}dp`]}>
                 shadow-{i}dp
