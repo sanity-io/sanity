@@ -9,6 +9,7 @@ import SearchIcon from 'part:@sanity/base/search-icon'
 import {StateLink} from 'part:@sanity/base/router'
 import Branding from './Branding'
 import LoginStatus from './LoginStatus'
+import SanityStatusContainer from './SanityStatusContainer'
 import SearchContainer from './SearchContainer'
 import styles from './styles/NavBar.css'
 
@@ -82,6 +83,9 @@ function NavBar(props) {
         />
       </div>
       <div className={styles.extras}>{/* Insert plugins here */}</div>
+      <div className={styles.sanityStatus}>
+        <SanityStatusContainer />
+      </div>
       <div className={styles.loginStatus} ref={onSetLoginStatusElement}>
         <LoginStatus onLogout={onUserLogout} user={user} />
       </div>

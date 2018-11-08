@@ -1,0 +1,31 @@
+.root {
+  display: flex;
+  align-items: center;
+
+  @nest & > button {
+    appearance: none;
+    display: block;
+    border: 0;
+    margin: 0;
+    background: none;
+    border-radius: 0;
+    font: inherit;
+    color: inherit;
+    line-height: calc(25 / 16);
+    padding: 1.125em 1em;
+    outline: none;
+  }
+
+  @nest & > button > svg {
+    display: inline-block;
+    height: 13px;
+    vertical-align: middle;
+  }
+
+  @nest & > button > span {
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 13px;
+    color: #fcc;
+  }
+}
