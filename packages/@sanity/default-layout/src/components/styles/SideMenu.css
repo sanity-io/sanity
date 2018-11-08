@@ -19,12 +19,12 @@
 .root > div {
   position: relative;
   min-width: 200px;
-  max-width: 260px;
+  max-width: 280px;
   display: flex;
   flex-direction: column;
   background: var(--side-menu-color);
   color: var(--side-menu-color-inverted);
-  margin-right: calc(var(--nav-bar-box) * 2);
+  margin-right: calc(var(--nav-bar-box) * 1.5);
   height: 100%;
   transition: 200ms transform ease-in-out;
   transform: translate(-100%);
