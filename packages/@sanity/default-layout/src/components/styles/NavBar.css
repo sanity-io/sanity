@@ -59,8 +59,10 @@ a.branding {
   display: flex;
   align-items: stretch;
 
-  @nest .withToolSwitcher & {
-    display: none;
+  @media (--screen-medium) {
+    @nest .withToolSwitcher & {
+      display: none;
+    }
   }
 }
 
