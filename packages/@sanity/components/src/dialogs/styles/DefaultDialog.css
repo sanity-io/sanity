@@ -23,7 +23,7 @@
 :root {
   --dialog-padding: var(--medium-padding);
   --dialog-border-radius: var(--border-radius-large);
-  --dialog-header-height: 3rem;
+  --dialog-header-height: 3.375em;
   --dialog-functions-height: calc(2em + (var(--medium-padding) * 2));
   --dialog-max-height: calc(100vh - 200px);
 }
@@ -105,6 +105,7 @@
 }
 
 .header {
+  position: relative;
   height: var(--dialog-header-height);
   min-height: var(--dialog-header-height);
   line-height: var(--dialog-header-height);
@@ -114,6 +115,19 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  @nest &::after {
+    content: '';
+    width: 100%;
+    background: linear-gradient(to top, color(var(--shadow-base) a(0%)) 0%, color(var(--shadow-base) a(2%)) 70%, color(var(--shadow-base) a(7%)) 100%);
+    height: 0.25em;
+    top: var(--dialog-header-height);
+    position: absolute;
+    left: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    transition: opacity 0.2s linear;
+  }
 
   @nest .danger & {
     background-color: var(--state-danger-color);
@@ -166,8 +180,8 @@
   line-height: inherit;
   padding: 0 var(--dialog-padding);
   margin: 0;
-  font-size: 1em;
-  font-weight: 400;
+  font-size: 1.25em;
+  font-weight: 700;
 
   @media (--screen-medium) {
     margin-right: 2rem;
@@ -178,6 +192,7 @@
 }
 
 .closeButton {
+  appearance: none;
   display: flex;
   align-items: center;
   align-self: stretch;
@@ -187,7 +202,9 @@
   color: inherit;
   border: none;
   position: relative;
-  width: 3em;
+  width: var(--dialog-header-height);
+  margin: 0;
+  padding: 0;
 
   @nest & .closeButtonIcon {
     transition: transform 0.1s linear;
@@ -197,12 +214,17 @@
     justify-content: center;
   }
 
-  @nest &:hover .closeButtonIcon {
-    transform: scale(1.2);
+  @nest & .closeButtonIcon > svg {
+    font-size: 1.5625em;
+    position: absolute;
   }
 
-  @nest &:active .closeButtonIcon {
-    transform: scale(0.8);
+  @media (hover: hover) {
+    opacity: 0.7;
+
+    @nest &:hover {
+      opacity: 1;
+    }
   }
 }
 
@@ -233,15 +255,6 @@
   @nest &:active .closeButtonIcon {
     transform: scale(0.8);
   }
-
-  @nest & svg {
-    height: 1rem;
-    width: 1rem;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
 }
 
 .footer {
@@ -257,9 +270,9 @@
   @nest &::before {
     content: '';
     width: 100%;
-    background: linear-gradient(to bottom, color(var(--shadow-base) a(0%)) 0%, color(var(--shadow-base) a(15%)) 100%);
-    height: 0.5em;
-    top: -0.5rem;
+    background: linear-gradient(to bottom, color(var(--shadow-base) a(0%)) 0%, color(var(--shadow-base) a(2%)) 70%, color(var(--shadow-base) a(7%)) 100%);
+    height: 0.25em;
+    top: -0.25rem;
     position: absolute;
     left: 0;
     pointer-events: none;
