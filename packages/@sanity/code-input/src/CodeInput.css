@@ -1,0 +1,7 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.aceEditor {
+  composes: root from 'part:@sanity/base/theme/forms/text-input-style';
+  font-size: var(--font-size-xsmall);
+  line-height: 1.5em;
+}
