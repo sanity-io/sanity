@@ -81,7 +81,7 @@ class NavBarContainer extends React.PureComponent {
     }
 
     if (this.tickAnimFrameId) {
-      window.cancelAnimatioNFrame(this.tickAnimFrameId)
+      window.cancelAnimationFrame(this.tickAnimFrameId)
       this.tickAnimFrameId = null
     }
   }
