@@ -14,6 +14,8 @@ import SearchField from './SearchField'
 import SearchResults from './SearchResults'
 import {filter, takeUntil, tap, debounceTime, map, switchMap} from 'rxjs/operators'
 
+import resultsStyles from './styles/SearchResults.css'
+
 const hotKeys = {
   openSearch: isKeyHotkey('ctrl+t')
 }
@@ -262,6 +264,7 @@ class SearchContainer extends React.PureComponent {
         onClick={this.handleHitClick}
         tabIndex={-1}
       >
+        <div className={resultsStyles.itemType}>{type.title}</div>
         <Preview value={item} layout="default" type={type} />
         <Ink duration={200} opacity={0.1} radius={200} />
       </IntentLink>
