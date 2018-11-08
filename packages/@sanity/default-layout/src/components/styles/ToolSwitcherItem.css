@@ -6,15 +6,18 @@
   text-decoration: none;
   padding: 0.75em;
   white-space: nowrap;
-  opacity: 0.6;
 
   @nest .default & {
     flex-direction: row;
     align-items: center;
   }
 
-  @nest &:hover {
-    opacity: 1;
+  @media (hover: hover) {
+    opacity: 0.6;
+
+    @nest &:hover {
+      opacity: 1;
+    }
   }
 }
 
