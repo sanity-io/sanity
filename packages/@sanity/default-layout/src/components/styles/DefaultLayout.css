@@ -51,6 +51,7 @@
 
   @nest &.isOverlayVisible::before {
     pointer-events: all;
+    opacity: 1;
 
     @media (--screen-medium) {
       opacity: 0.5;

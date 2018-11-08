@@ -167,6 +167,7 @@
 
   @nest .root.isBleeding & {
     top: var(--nav-bar-box);
+    box-shadow: none;
   }
 
   @nest .root:not(.isBleeding) & {
