@@ -1,5 +1,5 @@
 import fse from 'fs-extra'
-import UglifyJS from 'uglify-es'
+import Terser from 'terser'
 
 export default async inputFile => {
   const content = await fse.readFile(inputFile, 'utf8')
@@ -9,7 +9,7 @@ export default async inputFile => {
 
 function minify(content, fileName) {
   return new Promise((resolve, reject) => {
-    const result = UglifyJS.minify(content)
+    const result = Terser.minify(content)
 
     if (result.error) {
       reject(formatError(result.error, fileName, content))
