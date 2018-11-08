@@ -40,17 +40,8 @@
 a.branding {
   outline: none;
 
-  @nest &:hover {
-    color: color(var(--white) a(80%));
-    background-color: color(var(--white) a(10%));
-  }
-
   @nest &:focus {
     background-color: color(var(--brand-primary) a(20%));
-  }
-
-  @nest &:active {
-    color: var(--white);
   }
 }
 
@@ -82,15 +73,15 @@ a.branding {
     font-size: calc(25 / 16 * 1em);
   }
 
-  @nest &:hover {
-    background-color: color(var(--white) a(10%));
+  @media (hover: hover) {
+    opacity: 0.7;
+
+    @nest &:hover {
+      opacity: 1;
+    }
   }
 
   @nest &:focus {
-    background-color: color(var(--brand-primary) a(20%));
-  }
-
-  @nest &:active {
     background-color: color(var(--brand-primary) a(20%));
   }
 }
@@ -171,15 +162,16 @@ a.branding {
   margin: 0;
   padding: 0.75em;
 
-  @nest &:hover {
-    background-color: color(var(--white) a(10%));
+  @media (hover: hover) {
+    opacity: 0.7;
+
+    @nest &:hover {
+      opacity: 1;
+    }
   }
 
   @nest &:focus {
-    background-color: color(var(--brand-primary) a(20%));
-  }
-
-  @nest &:active {
+    opacity: 1;
     background-color: color(var(--brand-primary) a(20%));
   }
 }
@@ -236,12 +228,12 @@ a.branding {
   padding: 0.75em;
   margin: 0;
 
-  @nest &:hover {
-    background-color: color(var(--white) a(10%));
-  }
+  @media (hover: hover) {
+    opacity: 0.7;
 
-  @nest &:active {
-    background-color: color(var(--brand-primary) a(20%));
+    @nest &:hover {
+      opacity: 1;
+    }
   }
 
   @media (--screen-medium) {
