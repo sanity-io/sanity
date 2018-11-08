@@ -16,6 +16,9 @@ before_script:
   - travis_wait npm run bootstrap
   - npm run build
 script:
+  # Run tests in all packages
+  - npm run test-all
+
   # Allow running the Sanity CLI tool without specifying absolute path
   - export PATH="${TRAVIS_BUILD_DIR}/packages/@sanity/cli/bin:$PATH"
 
