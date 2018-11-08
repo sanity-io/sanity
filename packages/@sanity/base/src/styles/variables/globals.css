@@ -13,8 +13,8 @@
   --dialog-header-color--inverted: var(--main-navigation-color--inverted);
   --header-height: 3rem;
   --checkerboard-color: color(var(--component-text-color) a(5%));
-  --selectable-item-base: #156dff;
-  --default-button-primary-color: #156dff;
+  --selectable-item-base: var(--brand-primary);
+  --default-button-primary-color: var(--brand-primary);
   --default-button-primary-color--inverted: #fff;
 
   /* Shadows */
