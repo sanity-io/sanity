@@ -19,8 +19,8 @@
     grid-template-columns: max-content max-content var(--nav-bar-box) minmax(200px, 400px) max-content;
 
     @nest &.withToolSwitcher {
-      grid-template-areas: " branding    createButton       search               toolSwitcher extras      loginStatus";
-      grid-template-columns: max-content var(--nav-bar-box) minmax(200px, 400px) auto         max-content calc(var(--nav-bar-box) + 1em);
+      grid-template-areas: " branding    createButton       search               toolSwitcher extras      sanityStatus loginStatus";
+      grid-template-columns: max-content var(--nav-bar-box) minmax(200px, 400px) auto         max-content max-content  calc(var(--nav-bar-box) + 1em);
     }
   }
 
@@ -95,6 +95,12 @@ a.branding {
       display: flex;
     }
   }
+}
+
+.sanityStatus {
+  grid-area: sanityStatus;
+  display: flex;
+  align-items: stretch;
 }
 
 .loginStatus {

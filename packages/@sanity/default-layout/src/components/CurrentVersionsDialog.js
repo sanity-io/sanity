@@ -2,11 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
-import versions from 'sanity:versions'
 import styles from './styles/UpdateNotifierDialog.css'
 
 function CurrentVersionsDialog(props) {
-  const {onClose} = props
+  const {onClose, versions} = props
   return (
     <Dialog isOpen onClose={onClose}>
       <div className={styles.content}>
@@ -43,6 +42,7 @@ function CurrentVersionsDialog(props) {
 
 CurrentVersionsDialog.propTypes = {
   onClose: PropTypes.func.isRequired
+  // versions: PropTypes.object.isRequired
 }
 
 export default CurrentVersionsDialog
