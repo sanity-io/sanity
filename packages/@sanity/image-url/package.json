@@ -12,7 +12,7 @@
     "compile": "babel --source-maps --copy-files -d lib/ src/",
     "clean": "rimraf lib",
     "postpublish": "npm run clean",
-    "minify": "uglifyjs -c -m -- umd/sanityImageUrl.js > umd/sanityImageUrl.min.js",
+    "minify": "terser -c -m -- umd/sanityImageUrl.js > umd/sanityImageUrl.min.js",
     "prepublishOnly": "npm run build",
     "test": "jest"
   },
@@ -28,8 +28,8 @@
     "envify": "^4.0.0",
     "jest": "^23.6.0",
     "rimraf": "^2.6.2",
-    "uglify-js": "^3.1.10",
-    "uglifyify": "^3.0.4"
+    "terser": "^3.10.11",
+    "uglifyify": "^5.0.1"
   },
   "repository": {
     "type": "git",
