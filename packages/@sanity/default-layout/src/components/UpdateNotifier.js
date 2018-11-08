@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import VersionChecker from 'part:@sanity/base/version-checker'
+import versions from 'sanity:versions'
 import UpdateNotifierDialog from './UpdateNotifierDialog'
 import CurrentVersionsDialog from './CurrentVersionsDialog'
 import styles from './styles/UpdateNotifier.css'
@@ -44,7 +45,12 @@ class UpdateNotifier extends Component {
     return (
       <div className={styles.root}>
         {showUpdateNotifier && (
-          <Dialog severity={severity} outdated={outdated} onClose={this.handleHideUpdateNotifier} />
+          <Dialog
+            severity={severity}
+            outdated={outdated}
+            onClose={this.handleHideUpdateNotifier}
+            versions={versions}
+          />
         )}
 
         <a onClick={this.handleShowUpdateNotifier} className={className} tabIndex={tabIndex}>
