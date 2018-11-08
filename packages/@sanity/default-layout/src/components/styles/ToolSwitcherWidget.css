@@ -6,11 +6,6 @@
   margin: 0;
   padding: 0;
   align-self: stretch;
-
-  @nest & a {
-    text-decoration: none;
-    color: inherit;
-  }
 }
 
 .rootVertical {
@@ -40,6 +35,13 @@
 
 .link {
   composes: item;
+  text-decoration: none;
+  color: inherit;
+  outline: none;
+
+  @nest &:focus {
+    background: var(--selectable-item-color-focus);
+  }
 }
 
 .activeItem {

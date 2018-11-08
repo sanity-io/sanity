@@ -48,7 +48,7 @@ function NavBar(props) {
       <StateLink toIndex className={styles.branding}>
         <Branding projectName={config && config.project.name} />
       </StateLink>
-      <a className={styles.createButton} onClick={onCreateButtonClick}>
+      <button className={styles.createButton} onClick={onCreateButtonClick} type="button">
         <Tooltip
           disabled={'ontouchstart' in document.documentElement}
           title="Create new document"
@@ -61,16 +61,7 @@ function NavBar(props) {
           <PlusIcon />
           <span className={styles.createButtonText}>New</span>
         </Tooltip>
-      </a>
-      <div className={styles.toolSwitcher}>
-        <ToolSwitcher
-          direction="horizontal"
-          tools={tools}
-          activeToolName={router.state.tool}
-          onSwitchTool={onSwitchTool}
-          showLabel={showLabel}
-        />
-      </div>
+      </button>
       <div className={searchClassName} ref={onSetSearchElement}>
         <div>
           <SearchContainer
@@ -80,16 +71,26 @@ function NavBar(props) {
           />
         </div>
       </div>
+      <div className={styles.toolSwitcher}>
+        <ToolSwitcher
+          direction="horizontal"
+          isVisible={showToolSwitcher}
+          tools={tools}
+          activeToolName={router.state.tool}
+          onSwitchTool={onSwitchTool}
+          showLabel={showLabel}
+        />
+      </div>
       <div className={styles.extras}>{/* Insert plugins here */}</div>
       <div className={styles.loginStatus} ref={onSetLoginStatusElement}>
         <LoginStatus onLogout={onUserLogout} user={user} />
       </div>
-      <a className={styles.searchButton} onClick={onSearchOpen}>
+      <button className={styles.searchButton} onClick={onSearchOpen} type="button">
         <span className={styles.searchButtonIcon}>
           <SearchIcon />
         </span>
         <span className={styles.searchButtonText}>Search</span>
-      </a>
+      </button>
     </div>
   )
 }

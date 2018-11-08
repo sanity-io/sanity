@@ -38,9 +38,15 @@
 }
 
 a.branding {
+  outline: none;
+
   @nest &:hover {
     color: color(var(--white) a(80%));
     background-color: color(var(--white) a(10%));
+  }
+
+  @nest &:focus {
+    background-color: color(var(--brand-primary) a(20%));
   }
 
   @nest &:active {
@@ -60,7 +66,7 @@ a.branding {
 
 .hamburgerButton {
   -webkit-font-smoothing: antialiased;
-  -webkit-apperance: none;
+  appearance: none;
   outline: none;
   border: 0;
   border-radius: 0;
@@ -76,6 +82,10 @@ a.branding {
 
   @nest &:hover {
     background-color: color(var(--white) a(10%));
+  }
+
+  @nest &:focus {
+    background-color: color(var(--brand-primary) a(20%));
   }
 
   @nest &:active {
@@ -141,6 +151,14 @@ a.branding {
 }
 
 .createButton {
+  -webkit-font-smoothing: antialiased;
+  appearance: none;
+  outline: none;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
   display: flex;
   grid-area: createButton;
   text-align: center;
@@ -148,10 +166,15 @@ a.branding {
   cursor: default;
   position: relative;
   align-items: center;
+  margin: 0;
   padding: 0.75em;
 
   @nest &:hover {
     background-color: color(var(--white) a(10%));
+  }
+
+  @nest &:focus {
+    background-color: color(var(--brand-primary) a(20%));
   }
 
   @nest &:active {
@@ -193,6 +216,14 @@ a.branding {
 }
 
 .searchButton {
+  -webkit-font-smoothing: antialiased;
+  appearance: none;
+  outline: none;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
   display: flex;
   grid-area: searchButton;
   text-align: center;
@@ -201,6 +232,7 @@ a.branding {
   position: relative;
   align-items: center;
   padding: 0.75em;
+  margin: 0;
 
   @nest &:hover {
     background-color: color(var(--white) a(10%));

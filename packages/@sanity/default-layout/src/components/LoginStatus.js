@@ -51,9 +51,14 @@ class LoginStatus extends React.PureComponent {
 
     return (
       <div className={className}>
-        <div onClick={this.handleUserMenuToggle}>
+        <button
+          className={styles.button}
+          onClick={this.handleUserMenuToggle}
+          title="Show user menu"
+          type="button"
+        >
           <img src={user.profileImage} className={styles.userImage} />
-        </div>
+        </button>
 
         <div className={styles.userName}>{user.name}</div>
 
