@@ -7,7 +7,7 @@
     "clean": "rimraf lib",
     "compile": "babel src --copy-files --out-dir lib",
     "compile:watch": "npm run compile -- --watch",
-    "test": "jest",
+    "test": "#todo: jest",
     "test:watch": "jest --watchAll",
     "typecheck": "flow check"
   },
