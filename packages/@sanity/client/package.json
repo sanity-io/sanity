@@ -12,7 +12,7 @@
     "size": "node -r @babel/register src/scripts/print-bundle-size",
     "clean": "rimraf lib coverage .nyc_output umd/*.js",
     "coverage": "DEBUG=sanity NODE_ENV=test nyc --reporter=html --reporter=lcov --reporter=text npm test",
-    "minify": "uglifyjs -c -m -- umd/sanityClient.js > umd/sanityClient.min.js",
+    "minify": "terser -c -m -- umd/sanityClient.js > umd/sanityClient.min.js",
     "prepublishOnly": "npm run build",
     "test": "NODE_ENV=test tape -r @babel/register test/*.test.js"
   },
@@ -43,8 +43,8 @@
     "rimraf": "^2.6.2",
     "sse-channel": "^2.0.6",
     "tape": "^4.8.0",
-    "uglify-js": "^3.1.10",
-    "uglifyify": "^3.0.4"
+    "terser": "^3.10.11",
+    "uglifyify": "^5.0.1"
   },
   "repository": {
     "type": "git",
