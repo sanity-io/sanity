@@ -49,12 +49,14 @@ class SpaceSwitcher extends React.PureComponent {
   }
 
   render() {
-    const {currentSpace} = this.state
+    const {currentSpace, isVisible} = this.state
+    const tabIndex = isVisible ? '0' : '-1'
     return (
       <div className={styles.root}>
         <DefaultSelect
           onChange={this.handleChange}
           items={CONFIGURED_SPACES}
+          tabIndex={tabIndex}
           value={currentSpace}
         />
       </div>

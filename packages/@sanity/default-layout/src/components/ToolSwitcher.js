@@ -7,12 +7,14 @@ import ToolSwitcherWidgetStyles from './styles/ToolSwitcherWidget.css'
 
 class ToolSwitcher extends React.PureComponent {
   renderItem = (tool, showIcon) => {
-    const {activeToolName, onSwitchTool, direction, showLabel} = this.props
+    const {activeToolName, isVisible, onSwitchTool, direction, showLabel} = this.props
+    const tabIndex = isVisible ? '0' : '-1'
     return (
       <StateLink
         state={tool.state}
         onClick={onSwitchTool}
         className={ToolSwitcherWidgetStyles.link}
+        tabIndex={tabIndex}
       >
         <ToolSwitcherItem
           direction={direction}

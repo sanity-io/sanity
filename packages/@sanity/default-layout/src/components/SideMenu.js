@@ -10,14 +10,21 @@ import UpdateNotifier from './UpdateNotifier'
 import styles from './styles/SideMenu.css'
 
 function SideMenu(props) {
-  const {activeToolName, onClose, onSignOut, onSwitchTool, tools, user} = props
+  const {activeToolName, isOpen, onClose, onSignOut, onSwitchTool, tools, user} = props
   let className = styles.root
-  if (props.isOpen) className += ` ${styles.isOpen}`
+  if (isOpen) className += ` ${styles.isOpen}`
+  const tabIndex = isOpen ? '0' : '-1'
 
   return (
     <div className={className}>
       <div>
-        <button className={styles.closeButton} type="button" onClick={onClose} title="Close menu">
+        <button
+          className={styles.closeButton}
+          type="button"
+          onClick={onClose}
+          title="Close menu"
+          tabIndex={tabIndex}
+        >
           <CloseIcon />
         </button>
 
@@ -30,20 +37,21 @@ function SideMenu(props) {
 
         {HAS_SPACES && (
           <div className={styles.spaceSwitcher}>
-            <SpaceSwitcher />
+            <SpaceSwitcher isVisible={isOpen} />
           </div>
         )}
 
         <ToolSwitcher
-          direction="vertical"
-          tools={tools}
           activeToolName={activeToolName}
+          direction="vertical"
+          isVisible={isOpen}
           onSwitchTool={onSwitchTool}
+          tools={tools}
         />
 
         <div className={styles.menuBottom}>
           <div className={styles.signOutButton}>
-            <a onClick={onSignOut}>
+            <a onClick={onSignOut} tabIndex={tabIndex}>
               <span className={styles.signOutButtonIconContainer}>
                 <SignOutIcon />
               </span>{' '}
@@ -51,7 +59,7 @@ function SideMenu(props) {
             </a>
           </div>
 
-          <UpdateNotifier />
+          <UpdateNotifier isVisible={isOpen} />
         </div>
       </div>
     </div>
