@@ -3,11 +3,10 @@ import PropTypes from 'prop-types'
 import AceEditor from 'react-ace'
 import {get, has} from 'lodash'
 import {PatchEvent, set, insert, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
-
+import styles from './CodeInput.css'
 import FormField from 'part:@sanity/components/formfields/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import DefaultSelect from 'part:@sanity/components/selects/default'
-import fieldsetStyles from './Fieldset.css'
 import createHighlightMarkers from './createHighlightMarkers'
 import {
   ACE_EDITOR_PROPS,
@@ -166,6 +165,7 @@ export default class CodeInput extends PureComponent {
     const fixedLanguage = get(type, 'options.language')
     return (
       <AceEditor
+        className={styles.aceEditor}
         mode={(value && value.language) || fixedLanguage || 'text'}
         theme={this.getTheme()}
         width="100%"
@@ -189,11 +189,7 @@ export default class CodeInput extends PureComponent {
 
     if (has(type, 'options.language')) {
       return (
-        <Fieldset
-          className={fieldsetStyles.content}
-          legend={type.title}
-          description={type.description}
-        >
+        <Fieldset legend={type.title} description={type.description} level={level}>
           {this.renderEditor()}
         </Fieldset>
       )
@@ -210,11 +206,7 @@ export default class CodeInput extends PureComponent {
     const languageField = type.fields.find(field => field.name === 'language')
 
     return (
-      <Fieldset
-        legend={type.title}
-        description={type.description}
-        className={fieldsetStyles.content}
-      >
+      <Fieldset legend={type.title} description={type.description} level={level}>
         <FormField level={level + 1} label={languageField.type.title}>
           <DefaultSelect
             onChange={this.handleLanguageChange}
@@ -222,7 +214,7 @@ export default class CodeInput extends PureComponent {
             items={languages}
           />
         </FormField>
-        <FormField label={type.title} level={level + 1}>
+        <FormField label={(selectedLanguage && selectedLanguage.title) || 'Code'} level={level + 1}>
           {this.renderEditor()}
         </FormField>
       </Fieldset>
