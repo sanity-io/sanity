@@ -83,10 +83,12 @@
   margin: 0;
   background-color: transparent;
   font-family: inherit;
-  font-size: 15px;
-  line-height: 17px;
+  font-size: 0.9375em;
+  line-height: calc(17 / 15);
   padding-left: 33px;
+  padding-bottom: 2px;
   box-sizing: border-box;
+  white-space: nowrap;
 
   @nest &::placeholder {
     color: inherit;
@@ -94,9 +96,9 @@
   }
 
   @nest .isBleeding & {
-    font-size: 16px;
-    line-height: 18px;
-    padding: 1em 1em calc(1em - 1px);
+    font-size: 1em;
+    line-height: 1.25;
+    padding: calc(1em - 2px) 1em calc(1em - 1px);
   }
 }
 
