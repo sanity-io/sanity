@@ -138,11 +138,12 @@ export default class ImageInput extends React.PureComponent<Props, State> {
 
   renderMaterializedAsset = (assetDocument: Object): Node => {
     const {value = {}} = this.props
-    return (
+    const srcAspectRatio = get(assetDocument, 'metadata.dimensions.aspectRatio')
+    return typeof srcAspectRatio === 'undefined' ? null : (
       <HotspotImage
         aspectRatio="auto"
         src={assetDocument.url}
-        srcAspectRatio={assetDocument.metadata.dimensions.aspectRatio}
+        srcAspectRatio={srcAspectRatio}
         hotspot={value.hotspot}
         crop={value.crop}
       />
