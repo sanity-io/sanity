@@ -4,6 +4,8 @@
 */
 
 :root {
+  --selectable-item-base: #156dff;
+  --default-button-primary-color: #156dff;
   --selectable-item-color-hover: color(var(--brand-primary) a(15%));
   --selectable-item-color-focus: color(var(--brand-primary) a(25%));
   --selectable-item-color-active: color(var(--brand-primary) a(25%));
