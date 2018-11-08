@@ -9,7 +9,7 @@
     "clean": "rimraf lib",
     "example-testbed": "cd examples/testbed && sanity start",
     "start": "npm run example-testbed",
-    "test": "jest"
+    "test": "#todo: jest"
   },
   "keywords": [
     "sanity",
