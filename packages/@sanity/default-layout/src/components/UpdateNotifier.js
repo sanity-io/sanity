@@ -35,10 +35,11 @@ class UpdateNotifier extends Component {
   }
 
   render() {
-    const {level, outdated, isUpToDate, isSupported, showUpdateNotifier} = this.state
+    const {level, outdated, isSupported, isUpToDate, isVisible, showUpdateNotifier} = this.state
     const severity = isSupported ? level : 'high'
     const className = styles[classes[severity] || 'button']
     const Dialog = isUpToDate ? CurrentVersionsDialog : UpdateNotifierDialog
+    const tabIndex = isVisible ? '0' : '-1'
 
     return (
       <div className={styles.root}>
@@ -46,7 +47,7 @@ class UpdateNotifier extends Component {
           <Dialog severity={severity} outdated={outdated} onClose={this.handleHideUpdateNotifier} />
         )}
 
-        <a onClick={this.handleShowUpdateNotifier} className={className}>
+        <a onClick={this.handleShowUpdateNotifier} className={className} tabIndex={tabIndex}>
           <strong>Sanity Studio</strong>{' '}
           {!isUpToDate && (
             <div className={styles.warningIcon}>
