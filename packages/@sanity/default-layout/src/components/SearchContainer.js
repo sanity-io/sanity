@@ -269,11 +269,12 @@ class SearchContainer extends React.PureComponent {
   }
 
   renderResults() {
-    const {activeIndex, isLoading, results, value} = this.state
+    const {activeIndex, isBleeding, isLoading, results, value} = this.state
 
     return (
       <SearchResults
         activeIndex={activeIndex}
+        isBleeding={isBleeding}
         isLoading={isLoading}
         items={results}
         query={value}

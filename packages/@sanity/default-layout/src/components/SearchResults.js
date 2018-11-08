@@ -7,6 +7,7 @@ import styles from './styles/SearchResults.css'
 class SearchResults extends React.PureComponent {
   static propTypes = {
     activeIndex: PropTypes.number.isRequired,
+    isBleeding: PropTypes.bool.isRequired,
     isLoading: PropTypes.bool.isRequired,
     items: PropTypes.arrayOf(
       PropTypes.shape({
@@ -24,8 +25,10 @@ class SearchResults extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps) {
+    const {isBleeding} = this.props
+
     // Scroll active element into view (when user uses arrow keys)
-    if (this.element && prevProps.activeIndex !== this.props.activeIndex) {
+    if (!isBleeding && this.element && prevProps.activeIndex !== this.props.activeIndex) {
       const activeItemElement = this.element.childNodes[this.props.activeIndex]
 
       if (activeItemElement) {
