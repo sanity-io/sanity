@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "rimraf lib coverage",
     "coverage": "nyc --report=lcov --report=text _mocha -- test/**/*.test.js",
-    "test": "mocha test/**/*.test.js"
+    "test": "#todo: mocha test/**/*.test.js"
   },
   "engines": {
     "node": ">=6.0.0"
