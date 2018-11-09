@@ -583,6 +583,10 @@
       "description": "Exit fullscreen icon"
     },
     {
+      "name": "part:@sanity/base/package-icon",
+      "description": "Package icon"
+    },
+    {
       "name": "part:@sanity/base/plus-icon",
       "description": "Plus icon"
     },
@@ -725,6 +729,10 @@
     {
       "implements": "part:@sanity/base/fullscreen-exit-icon",
       "path": "components/icons/FullscreenExit.js"
+    },
+    {
+      "implements": "part:@sanity/base/package-icon",
+      "path": "components/icons/Package.js"
     },
     {
       "implements": "part:@sanity/base/plus-icon",
