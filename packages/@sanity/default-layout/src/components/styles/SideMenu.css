@@ -2,8 +2,8 @@
 
 :root {
   --nav-bar-box: 3.0625em; /* 49px */
-  --side-menu-color: var(--main-navigation-color);
-  --side-menu-color-inverted: var(--main-navigation-color--inverted);
+  --side-menu-color: var(--component-bg);
+  --side-menu-color-inverted: var(--component-text-color);
 }
 
 .root {
@@ -81,6 +81,7 @@
 
 .menuBottom {
   margin-top: auto;
+  padding-bottom: 1em;
 }
 
 .sanityStudioLogoContainer {
