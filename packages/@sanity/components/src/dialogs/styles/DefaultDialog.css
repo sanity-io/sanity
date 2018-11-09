@@ -77,7 +77,7 @@
 .dialog {
   display: flex;
   position: relative;
-  composes: shadow-16dp from "part:@sanity/base/theme/shadows-style";
+  composes: shadow-24dp from "part:@sanity/base/theme/shadows-style";
   border: 0;
   border-radius: var(--dialog-border-radius);
   padding: 0;
