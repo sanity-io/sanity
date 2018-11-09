@@ -1,10 +1,15 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import SanityLogo from 'part:@sanity/base/sanity-logo'
+import PackageIcon from 'part:@sanity/base/package-icon'
 import UpdateNotifierDialog from './UpdateNotifierDialog'
 import CurrentVersionsDialog from './CurrentVersionsDialog'
 
 import styles from './styles/SanityStatus.css'
+
+function formatUpdateLabel(len) {
+  if (len === 1) return ' 1 update'
+  return `${len} updates`
+}
 
 export default function SanityStatus(props) {
   const {
@@ -17,24 +22,13 @@ export default function SanityStatus(props) {
     showDialog,
     versions
   } = props
-  const severity = isSupported ? level : 'high'
+  const currentLevel = outdated.length ? level : 'notice'
+  const severity = isSupported ? currentLevel : 'high'
+  const className = `${styles.root} ${styles[severity]}`
   const Dialog = isUpToDate ? CurrentVersionsDialog : UpdateNotifierDialog
 
-  let status
-
-  switch (true) {
-    case isUpToDate:
-      status = <span />
-      break
-    case !isUpToDate:
-      status = <span>Not updated</span>
-      break
-    default:
-      break
-  }
-
   return (
-    <div className={styles.root}>
+    <div className={className}>
       {showDialog && (
         <Dialog
           severity={severity}
@@ -44,10 +38,20 @@ export default function SanityStatus(props) {
         />
       )}
       <button onClick={onShowDialog} type="button">
-        <SanityLogo /> {status}
+        {isUpToDate ? (
+          <span>Up to date</span>
+        ) : (
+          <span>
+            <PackageIcon /> {formatUpdateLabel(outdated.length)}
+          </span>
+        )}
       </button>
     </div>
   )
+}
+
+SanityStatus.defaultProps = {
+  outdated: []
 }
 
 SanityStatus.propTypes = {
@@ -56,5 +60,7 @@ SanityStatus.propTypes = {
   level: PropTypes.string.isRequired,
   onHideDialog: PropTypes.func.isRequired,
   onShowDialog: PropTypes.func.isRequired,
-  showDialog: PropTypes.bool.isRequired
+  outdated: PropTypes.array,
+  showDialog: PropTypes.bool.isRequired,
+  versions: PropTypes.any.isRequired
 }

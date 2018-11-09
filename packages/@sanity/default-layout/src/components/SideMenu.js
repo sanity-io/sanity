@@ -5,7 +5,6 @@ import SignOutIcon from 'part:@sanity/base/sign-out-icon'
 import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
 import {HAS_SPACES} from '../util/spaces'
 import SpaceSwitcher from './SpaceSwitcher'
-import UpdateNotifier from './UpdateNotifier'
 
 import styles from './styles/SideMenu.css'
 
@@ -58,8 +57,6 @@ function SideMenu(props) {
               <span className={styles.signOutButtonText}>Sign out</span>
             </a>
           </div>
-
-          <UpdateNotifier isVisible={isOpen} />
         </div>
       </div>
     </div>
