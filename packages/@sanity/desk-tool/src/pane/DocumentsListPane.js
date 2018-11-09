@@ -290,9 +290,21 @@ export default withRouterHOC(
                 )
               }
 
+              if (loading) {
+                return (
+                  <div className={styles[`layout__${layout}`]}>
+                    {loading && <Spinner center message="Loading items…" />}
+                  </div>
+                )
+              }
+
+              if (!result) {
+                return null
+              }
+
               const items = removePublishedWithDrafts(result ? result.documents : [])
 
-              if (!loading && !hasItems(items)) {
+              if (!hasItems(items)) {
                 const schemaType = schema.get(typeName)
                 return (
                   <div className={styles.empty}>
@@ -316,7 +328,6 @@ export default withRouterHOC(
 
               return (
                 <div className={styles[`layout__${layout}`]}>
-                  {loading && <Spinner center message="Loading items…" />}
                   {items && (
                     <InfiniteList
                       className={listStyles.scroll}
