@@ -16,11 +16,11 @@
   @media (--screen-medium) {
     grid-template-rows: var(--nav-bar-box);
     grid-template-areas: " hamburger   branding    createButton       search               extras";
-    grid-template-columns: max-content max-content var(--nav-bar-box) minmax(200px, 400px) max-content;
+    grid-template-columns: max-content max-content var(--nav-bar-box) minmax(240px, 100%) max-content;
 
     @nest &.withToolSwitcher {
       grid-template-areas: " branding    createButton       search               toolSwitcher extras      sanityStatus loginStatus";
-      grid-template-columns: max-content var(--nav-bar-box) minmax(200px, 400px) auto         max-content max-content  calc(var(--nav-bar-box) + 1em);
+      grid-template-columns: max-content var(--nav-bar-box) minmax(240px, 400px) auto         max-content max-content  calc(var(--nav-bar-box) + 1em);
     }
   }
 
@@ -99,8 +99,14 @@ a.branding {
 
 .sanityStatus {
   grid-area: sanityStatus;
-  display: flex;
+  display: none;
   align-items: stretch;
+
+  @media (--screen-medium) {
+    @nest .withToolSwitcher & {
+      display: flex;
+    }
+  }
 }
 
 .loginStatus {

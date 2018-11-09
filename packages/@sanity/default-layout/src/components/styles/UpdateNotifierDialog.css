@@ -8,6 +8,7 @@
 .versionsTable {
   border-collapse: collapse;
   border-bottom: 1px solid #ccc;
+  margin: 0 auto;
   margin-bottom: calc(var(--large-padding) * 2);
 }
 
@@ -27,6 +28,6 @@
 
 .code {
   background: #333;
-  /* color: #fff; */
+  color: #fff;
   padding: 0.5rem;
 }
