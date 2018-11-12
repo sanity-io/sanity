@@ -19,8 +19,14 @@
   --header-height: 3rem;
   --checkerboard-color: color(var(--component-text-color) a(5%));
   --selectable-item-base: var(--brand-primary);
+
+  /* Buttons */
   --default-button-primary-color: var(--brand-primary);
   --default-button-primary-color--inverted: #fff;
+  --default-button-danger-color: var(--state-danger-color);
+  --default-button-danger-color--inverted: #fff;
+  --default-button-success-color: var(--state-success-color);
+  --default-button-success-color--inverted: #fff;
 
   /* Shadows */
   --shadow-base: var(--brand-darkest);
