@@ -204,7 +204,7 @@
 .canFocus > .fieldset > .inner > .content,
 .canFocus > .fieldset > .inner > .animateHeight > .content {
   padding: var(--small-padding);
-  border-radius: var(--border-radius-base);
+  border-radius: var(--border-radius-large);
   box-shadow: var(--fieldset-box-shadow);
 
   @media (--screen-medium) {
@@ -217,7 +217,7 @@
   background-color: var(--fieldset-bg);
   box-shadow: var(--fieldset-box-shadow);
   padding: var(--small-padding);
-  border-radius: var(--border-radius-base);
+  border-radius: var(--border-radius-large);
 
   @media (--screen-medium) {
     padding: var(--medium-padding);
@@ -229,7 +229,7 @@
   background-color: var(--fieldset-bg);
   box-shadow: var(--fieldset-box-shadow);
   padding: var(--small-padding);
-  border-radius: var(--border-radius-base);
+  border-radius: var(--border-radius-large);
 
   @media (--screen-medium) {
     padding: var(--medium-padding);
