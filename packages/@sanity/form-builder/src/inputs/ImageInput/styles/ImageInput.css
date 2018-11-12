@@ -63,7 +63,11 @@
 }
 
 .content + .functions {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
+
+  @media (--screen-medium) {
+    margin-top: 1rem;
+  }
 }
 
 .advancedEditFields {
