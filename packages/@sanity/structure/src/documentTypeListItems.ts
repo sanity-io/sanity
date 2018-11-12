@@ -110,6 +110,13 @@ export function getDocumentTypeList(
         .action('setLayout')
         .params({layout: 'detail'}),
 
+      new MenuItemBuilder()
+        .group('layout')
+        .title('Card')
+        .icon(DetailsIcon)
+        .action('setLayout')
+        .params({layout: 'card'}),
+
       // Create new (from menu)
       ...(canCreate
         ? [

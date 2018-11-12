@@ -21,7 +21,7 @@ import {combineLatest} from 'rxjs'
 import {map, tap} from 'rxjs/operators'
 import styles from './styles/DocumentsListPane.css'
 import listStyles from './styles/ListView.css'
-import InfiniteList from './InfiniteList'
+import VirtualList from '../components/virtual-list/VirtualList'
 import PaneItem from './PaneItem'
 import settingsStore from 'part:@sanity/base/settings'
 
@@ -39,10 +39,6 @@ function removePublishedWithDrafts(documents) {
       hasDraft: draftIds.includes(getDraftId(doc._id))
     }))
     .filter(doc => !(isPublishedId(doc._id) && doc.hasDraft))
-}
-
-function getDocumentKey(document) {
-  return getPublishedId(document._id)
 }
 
 function noActionFn() {
@@ -176,10 +172,13 @@ export default withRouterHOC(
       this.settingsSubscription.unsubscribe()
     }
 
-    itemIsSelected(item) {
+    getSelectedItemId() {
       const {router, index} = this.props
-      const selected = (router.state.panes || [])[index] || ''
-      return getPublishedId(item) === getPublishedId(selected)
+      return getPublishedId((router.state.panes || [])[index] || '')
+    }
+
+    itemIsSelected(item) {
+      return getPublishedId(item) === this.getSelectedItemId()
     }
 
     getLinkStateForItem = id => {
@@ -214,10 +213,6 @@ export default withRouterHOC(
       const {filter, params} = options
       const typeName = getTypeNameFromSingleTypeFilter(filter, params)
       router.navigateIntent('create', {type: typeName})
-    }
-
-    handleScroll = scrollTop => {
-      this.setState({scrollTop})
     }
 
     buildListQuery() {
@@ -329,12 +324,11 @@ export default withRouterHOC(
               return (
                 <div className={styles[`layout__${layout}`]}>
                   {items && (
-                    <InfiniteList
+                    <VirtualList
                       className={listStyles.scroll}
-                      onScroll={this.handleScroll}
                       items={items}
+                      selectedItemId={this.getSelectedItemId()}
                       layout={layout}
-                      getItemKey={getDocumentKey}
                       renderItem={this.renderItem}
                     />
                   )}
