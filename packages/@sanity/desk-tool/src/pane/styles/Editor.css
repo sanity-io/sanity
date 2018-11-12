@@ -116,7 +116,11 @@
 }
 
 .popOverText {
+  font-size: 1em;
+  line-height: 1.25;
   margin-bottom: 1em;
+  text-align: center;
+  max-width: 12em;
 }
 
 .errors {
@@ -137,9 +141,8 @@
 .syncStatus {
   display: block;
   opacity: 1;
-  min-width: 4rem;
-  margin-right: 1em;
   font-size: var(--font-size-xsmall);
+  padding: 0 var(--small-padding);
 }
 
 .syncStatusSynced {
