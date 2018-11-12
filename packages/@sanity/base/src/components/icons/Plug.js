@@ -12,13 +12,13 @@ const PlugIcon = () => (
     height="1em"
   >
     <path
-      d="M9 14L7 16L10 19L12 17C14.5 18.5 16 19 18 17L19.5 15.5L10.5 6.5L9 8C7 10 7.5 11.5 9 14Z"
+      d="M8 13L6 15L9 18L11 16C13.5 17.5 15 18 17 16L18.5 14.5L9.5 5.5L8 7C6 9 6.5 10.5 8 13Z"
       stroke="currentColor"
       style={strokeStyle}
     />
-    <path d="M13 9L18 4" stroke="currentColor" style={strokeStyle} />
-    <path d="M17 13L22 8" stroke="currentColor" style={strokeStyle} />
-    <path d="M8.5 17.5L4.5 21.5" stroke="currentColor" style={strokeStyle} />
+    <path d="M12 8L17 3" stroke="currentColor" style={strokeStyle} />
+    <path d="M16 12L21 7" stroke="currentColor" style={strokeStyle} />
+    <path d="M7.5 16.5L2.5 21.5" stroke="currentColor" style={strokeStyle} />
   </svg>
 )
 
