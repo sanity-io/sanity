@@ -48,6 +48,7 @@
   min-height: 15rem;
   max-height: 40rem;
   border: 1px solid var(--input-border-color);
+  border-radius: var(--input-border-radius);
   background-color: var(--input-bg);
   composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
   z-index: 0;
@@ -57,11 +58,12 @@
     min-height: calc(100vh - 8rem);
     max-width: 50em;
     margin: 3em auto;
-    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 0.25rem rgba(0, 0, 0, 0.1);
     height: auto;
     overflow: hidden;
     max-height: none;
     border: none;
+    border-radius: 0;
     background-color: var(--brand-lightest);
     color: var(--brand-darkest);
   }
@@ -79,6 +81,7 @@
   @nest .fullscreen & {
     padding: 2em;
     border: 0;
+    border-radius: 0;
     max-height: none;
     background-color: var(--brand-lightest);
     color: var(--brand-darkest);
