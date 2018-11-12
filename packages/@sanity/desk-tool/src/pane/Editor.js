@@ -452,7 +452,7 @@ export default withRouterHOC(
       }
       return (
         <PreviewFields document={value} type={type} fields={['title']}>
-          {({title}) => <span>{title}</span>}
+          {({title}) => (title ? <span>{title}</span> : <em>Untitled</em>)}
         </PreviewFields>
       )
     }
