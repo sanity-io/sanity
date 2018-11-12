@@ -61,7 +61,6 @@
 .userProfile {
   display: flex;
   padding: 0.875em;
-  border-bottom: 1px solid color(var(--side-menu-color-inverted) a(10%));
 }
 
 .userProfileImage {

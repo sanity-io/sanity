@@ -1,17 +1,6 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  position: relative;
-  display: flex;
-  text-decoration: none;
-  padding: 0.75em;
-  white-space: nowrap;
-
-  @nest .default & {
-    flex-direction: row;
-    align-items: center;
-  }
-
   @media (hover: hover) {
     opacity: 0.6;
 
@@ -19,6 +8,21 @@
       opacity: 1;
     }
   }
+
+  @nest a:focus & {
+    opacity: 1;
+  }
+}
+
+.inner {
+  position: relative;
+  display: flex;
+  text-decoration: none;
+  padding: 0.75em;
+  white-space: nowrap;
+  outline: none;
+  flex-direction: row;
+  align-items: center;
 }
 
 .horizontal {

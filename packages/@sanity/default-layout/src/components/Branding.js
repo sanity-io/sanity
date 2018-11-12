@@ -8,7 +8,7 @@ function Branding(props) {
   const Logo = props.logo || BrandLogo
 
   return (
-    <div className={styles.root}>
+    <div className={styles.root} tabIndex={-1}>
       {Logo && (
         <div className={styles.brandLogoContainer}>
           <Logo />

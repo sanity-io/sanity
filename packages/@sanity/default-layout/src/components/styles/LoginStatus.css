@@ -16,10 +16,19 @@
   background: none;
   color: inherit;
   font: inherit;
+  padding: 0;
   margin: 0 auto;
   display: block;
-  position: relative;
+
+  @nest &:focus {
+    background-color: color(var(--brand-primary) a(20%));
+  }
+}
+
+.inner {
   padding: 0.5em 1em;
+  position: relative;
+  outline: none;
 
   @nest &::after {
     content: '';
@@ -32,18 +41,6 @@
     bottom: 0.5em;
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 50%;
-  }
-
-  @nest &:hover {
-    background-color: color(var(--white) a(10%));
-  }
-
-  @nest &:focus {
-    background-color: color(var(--brand-primary) a(20%));
-  }
-
-  @nest &:active {
-    background-color: color(var(--brand-primary) a(20%));
   }
 }
 

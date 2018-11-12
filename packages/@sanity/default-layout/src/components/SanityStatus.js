@@ -37,14 +37,16 @@ export default function SanityStatus(props) {
           versions={versions}
         />
       )}
-      <button onClick={onShowDialog} type="button">
-        {isUpToDate ? (
-          <span>Up to date</span>
-        ) : (
-          <span>
-            <PackageIcon /> {formatUpdateLabel(outdated.length)}
-          </span>
-        )}
+      <button className={styles.button} onClick={onShowDialog} type="button">
+        <div className={styles.buttonInner} tabIndex={-1}>
+          {isUpToDate ? (
+            <span>Up to date</span>
+          ) : (
+            <span>
+              <PackageIcon /> {formatUpdateLabel(outdated.length)}
+            </span>
+          )}
+        </div>
       </button>
     </div>
   )
