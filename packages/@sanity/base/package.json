@@ -46,6 +46,7 @@
     "react-icon-base": "^2.1.2",
     "react-icons": "^2.2.7",
     "react-intl": "^2.2.2",
+    "react-props-stream": "^1.0.0",
     "rxjs": "^6.1.0",
     "semver-compare": "^1.0.0",
     "shallow-equals": "^1.0.0"
