@@ -4,7 +4,7 @@
   display: grid;
   grid-gap: var(--small-padding);
   grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
-  grid-auto-rows: repeat(auto-fit, 2.5rem);
+  grid-auto-rows: auto;
   width: 100%;
 
   @nest & > * {
