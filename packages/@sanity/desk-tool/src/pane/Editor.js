@@ -531,7 +531,7 @@ export default withRouterHOC(
                 distance="0"
                 title="Synced with the Sanity cloud"
               >
-                <CheckIcon /> Synced {this.isLiveEditEnabled() && 'Live edit enabled'}
+                <CheckIcon /> Synced {this.isLiveEditEnabled() && ' (live)'}
               </Tooltip>
             )}
           {(errors.length > 0 || warnings.length > 0) && (
