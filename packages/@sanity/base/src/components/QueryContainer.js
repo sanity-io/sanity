@@ -1,198 +1,90 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import {throttle, union} from 'lodash'
-import {filter} from 'rxjs/operators'
-import store from 'part:@sanity/base/datastore/document'
+import {
+  catchError,
+  distinctUntilChanged,
+  map,
+  mergeMapTo,
+  startWith,
+  switchMap,
+  take,
+  scan,
+  delay,
+  takeUntil,
+  share,
+  publishReplay,
+  refCount
+} from 'rxjs/operators'
+
+import {combineLatest, concat, merge, of} from 'rxjs'
 import deepEquals from 'react-fast-compare'
-import shallowEquals from 'shallow-equals'
+import {createEventHandler, streamingComponent} from 'react-props-stream'
+import {listenQuery} from './listenQuery'
 
-function deprecatedCheck(props, propName, componentName, ...rest) {
-  if (React.isValidElement(props[propName])) {
-    return new Error(
-      `Passing a React element as ${propName} to ${componentName} is deprecated. Use a function instead.`
-    )
-  }
-  return PropTypes.func.isRequired(props, propName, componentName, ...rest)
+const INITIAL_CHILD_PROPS = {
+  result: null,
+  error: false
 }
 
-function createInitialState() {
-  return {
-    result: null,
-    complete: false,
-    loading: true,
-    error: false
-  }
-}
+const createResultChildProps = documents => ({
+  result: {documents},
+  loading: false,
+  error: false
+})
 
-function keysEqual(object, otherObject, excludeKeys = []) {
-  const objectKeys = Object.keys(object).filter(key => !excludeKeys.includes(key))
-  const otherObjectKeys = Object.keys(otherObject).filter(key => !excludeKeys.includes(key))
+const createErrorChildProps = error => ({
+  result: null,
+  loading: false,
+  error
+})
 
-  if (objectKeys.length !== otherObjectKeys.length) {
-    return false
-  }
+// todo: split into separate standalone parts so that behavior can be re-used
+export default streamingComponent(receivedProps$ => {
+  const [onRetry$, onRetry] = createEventHandler()
 
-  return union(objectKeys, otherObjectKeys).every(key => object[key] === otherObject[key])
-}
-
-const RESPOND_TO_TRANSITIONS = [
-  'appear',
-  'disappear',
-  'update' // todo: remove this
-]
-
-export default class QueryContainer extends React.Component {
-  static propTypes = {
-    query: PropTypes.string,
-    params: PropTypes.object,
-    mapFn: PropTypes.func,
-    children: deprecatedCheck
-  }
-
-  static defaultProps = {
-    mapFn: props => props
-  }
-
-  state = createInitialState()
-
-  componentWillMount() {
-    this.subscribe(this.props.query, this.props.params)
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe()
-  }
-
-  subscribe(query, params) {
-    this.unsubscribe()
-    this._subscription = store
-      .query(query, params)
-      .pipe(
-        filter(
-          event => event.type === 'snapshot' || RESPOND_TO_TRANSITIONS.includes(event.transition)
-        )
-      )
-      .subscribe(this)
-  }
-
-  next = event => {
-    switch (event.type) {
-      case 'snapshot': {
-        this.setState({error: false, loading: false, result: {documents: event.documents}})
-        break
-      }
-      case 'mutation': {
-        this.receiveMutations(event)
-        break
-      }
-      default:
-    }
-  }
-
-  error = error => {
-    // @todo make sure some kind of error dialog is shown, somewhere
-    console.error(error) // eslint-disable-line no-console
-    this.setState({error, loading: false})
-  }
-
-  complete = () => {
-    this.setState({complete: true, loading: false})
-  }
-
-  receiveMutations(event) {
-    // todo: apply mutations on this.state.collection
-    // just resubcribing for now.
-    /*
-    const exampleEvent = {
-      type: 'mutation',
-      eventId: 'yr50wh-mzc-lby-hcf-3zumkc867#public/hi3HUGlrHu2c292ZddrZes',
-      documentId: 'public/hi3HUGlrHu2c292ZddrZes',
-      transactionId: 'yr50wh-mzc-lby-hcf-3zumkc867',
-      transition: 'disappear',
-      identity: 'Z29vZ2xlX29hdXRoMjo6MTA2MTc2MDY5MDI1MDA3MzA5MTAwOjozMjM=',
-      mutations: [
-        {
-          delete: {
-            id: 'public/hi3HUGlrHu2c292ZddrZes'
-          }
-        }
-      ],
-      previousRev: 'm5qsec-ovr-cv8-i1q-qck9otism',
-      resultRev: 'yr50wh-mzc-lby-hcf-3zumkc867',
-      timestamp: '2016-12-22T12:24:02.433897Z'
-    }
-     */
-    const {result} = this.state
-
-    const hasCreateOrDelete =
-      event.type === 'mutation' &&
-      event.mutations.some(
-        mut =>
-          mut.create ||
-          (mut.delete && (result.documents || []).some(doc => doc._id === mut.delete.id))
-      )
-
-    if (hasCreateOrDelete) {
-      this.refresh()
-      this.refresh() // invoke on both ends to make sure we get the refreshed result
-    }
-  }
-
-  refresh = throttle(
-    () => {
-      this.subscribe(this.props.query, this.props.params)
-    },
-    1000,
-    {leading: true, trailing: true}
+  const queryProps$ = receivedProps$.pipe(
+    map(props => ({query: props.query, params: props.params})),
+    distinctUntilChanged(deepEquals),
+    publishReplay(1),
+    refCount()
   )
 
-  unsubscribe() {
-    if (this._subscription) {
-      this._subscription.unsubscribe()
-    }
-  }
+  const queryResults$ = queryProps$.pipe(
+    switchMap(queryProps => {
+      const query$ = listenQuery(queryProps.query, queryProps.params).pipe(
+        map(createResultChildProps),
+        share()
+      )
+      return merge(
+        of({loading: true}).pipe(
+          delay(400),
+          takeUntil(query$)
+        ),
+        query$
+      )
+    })
+  )
 
-  componentWillUpdate(nextProps) {
-    const sameQuery = nextProps.query === this.props.query
-    const sameParams = deepEquals(nextProps.params, this.props.params)
+  const childProps$ = queryResults$.pipe(
+    startWith(INITIAL_CHILD_PROPS),
+    catchError((err, caught$) =>
+      concat(
+        of(createErrorChildProps(err)),
+        onRetry$.pipe(
+          take(1),
+          mergeMapTo(caught$)
+        )
+      )
+    ),
+    scan((prev, next) => ({...prev, ...next}))
+  )
 
-    if (!sameQuery || !sameParams) {
-      this.setState(createInitialState())
-      this.subscribe(nextProps.query, nextProps.params)
-    }
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    if (!shallowEquals(this.state, nextState)) {
-      return true
-    }
-
-    if (nextProps.query !== this.props.query) {
-      return true
-    }
-
-    if (!deepEquals(nextProps.params, this.props.params)) {
-      return true
-    }
-
-    return !keysEqual(nextProps, this.props, ['mapFn', 'query', 'params'])
-  }
-
-  renderDeprecated() {
-    return React.cloneElement(
-      React.Children.only(this.props.children),
-      this.props.mapFn(this.state)
-    )
-  }
-
-  render() {
-    const {children, mapFn, ...rest} = this.props
-    if (React.isValidElement(children)) {
-      return this.renderDeprecated()
-    }
-    if (!children || typeof children !== 'function') {
-      return <div>Invalid usage of QueryContainer. Expected a function as its only child</div>
-    }
-    return children({...rest, onRetry: this.refresh, ...mapFn(this.state)})
-  }
-}
+  return combineLatest(receivedProps$, childProps$).pipe(
+    map(([receivedProps, queryResult]) => {
+      const {children, mapFn} = receivedProps
+      if (typeof mapFn === 'function') {
+        // eslint-disable-next-line no-console
+        console.warn('The mapFn prop of the <QueryContainer/> is removed.')
+      }
+      return children({...queryResult, onRetry})
+    })
+  )
+})
