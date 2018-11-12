@@ -57,7 +57,9 @@ class LoginStatus extends React.PureComponent {
           title="Show user menu"
           type="button"
         >
-          <img src={user.profileImage} className={styles.userImage} />
+          <div className={styles.inner} tabIndex={-1}>
+            <img src={user.profileImage} className={styles.userImage} />
+          </div>
         </button>
 
         <div className={styles.userName}>{user.name}</div>

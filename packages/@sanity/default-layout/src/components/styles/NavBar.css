@@ -34,7 +34,6 @@
   grid-area: branding;
   display: flex;
   align-items: stretch;
-  padding: 1em;
 }
 
 a.branding {
@@ -60,18 +59,16 @@ a.branding {
 .hamburgerButton {
   -webkit-font-smoothing: antialiased;
   appearance: none;
+  display: flex;
+  align-items: center;
   outline: none;
   border: 0;
   border-radius: 0;
-  padding: 0.75em;
   margin: 0;
+  padding: 0;
   background: none;
   color: inherit;
   font: inherit;
-
-  @nest & > svg {
-    font-size: calc(25 / 16 * 1em);
-  }
 
   @media (hover: hover) {
     opacity: 0.7;
@@ -82,7 +79,19 @@ a.branding {
   }
 
   @nest &:focus {
+    opacity: 1;
     background-color: color(var(--brand-primary) a(20%));
+  }
+}
+
+.hamburgerButtonInner {
+  outline: none;
+  display: flex;
+  align-items: center;
+  padding: 0.75em;
+
+  @nest & > svg {
+    font-size: calc(25 / 16 * 1em);
   }
 }
 
@@ -156,6 +165,7 @@ a.branding {
 }
 
 .createButton {
+  grid-area: createButton;
   -webkit-font-smoothing: antialiased;
   appearance: none;
   outline: none;
@@ -165,14 +175,11 @@ a.branding {
   color: inherit;
   font: inherit;
   display: flex;
-  grid-area: createButton;
-  text-align: center;
   user-select: none;
   cursor: default;
   position: relative;
-  align-items: center;
   margin: 0;
-  padding: 0.75em;
+  padding: 0;
 
   @media (hover: hover) {
     opacity: 0.7;
@@ -186,6 +193,18 @@ a.branding {
     opacity: 1;
     background-color: color(var(--brand-primary) a(20%));
   }
+
+  @nest > [data-tooltipped] {
+    display: flex !important;
+  }
+}
+
+.createButtonInner {
+  outline: none;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  padding: 0.75em;
 }
 
 .createButtonIcon {
@@ -207,20 +226,6 @@ a.branding {
   font-size: 1em;
 }
 
-.sanityStudioLogoContainer {
-  opacity: 0.5;
-  color: #fff;
-  padding: var(--small-padding);
-
-  @nest &:hover {
-    opacity: 1;
-  }
-
-  @nest & svg {
-    height: 0.6rem;
-  }
-}
-
 .searchButton {
   -webkit-font-smoothing: antialiased;
   appearance: none;
@@ -237,8 +242,8 @@ a.branding {
   cursor: default;
   position: relative;
   align-items: center;
-  padding: 0.75em;
   margin: 0;
+  padding: 0;
 
   @media (hover: hover) {
     opacity: 0.7;
@@ -248,12 +253,28 @@ a.branding {
     }
   }
 
+  @nest &:focus {
+    opacity: 1;
+    background-color: color(var(--brand-primary) a(20%));
+  }
+
   @media (--screen-medium) {
     display: none;
   }
 
   @nest .root[data-search-open='true'] & {
     display: none;
+  }
+}
+
+.searchButtonInner {
+  outline: none;
+  display: flex;
+  align-items: center;
+  padding: 0.75em;
+
+  @nest & > svg {
+    font-size: calc(25 / 16 * 1em);
   }
 }
 

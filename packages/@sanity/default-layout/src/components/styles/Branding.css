@@ -8,6 +8,8 @@
   color: inherit;
   font-weight: 400;
   width: 100%;
+  outline: none;
+  padding: 1em;
 }
 
 .projectName {
