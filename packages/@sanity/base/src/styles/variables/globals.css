@@ -36,9 +36,9 @@
 
   /* Border radius */
   --border-radius-base: 4px;
-  --border-radius-large: 6px;
+  --border-radius-large: calc(var(--border-radius-base) * 1.5);
   --border-radius-medium: var(--border-radius-base);
-  --border-radius-small: 2px;
+  --border-radius-small: calc(var(--border-radius-base) / 2);
 
   /* Padding */
   --extra-small-padding: 0.25rem;
