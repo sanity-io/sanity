@@ -43,6 +43,7 @@
   color: inherit;
   font-weight: inherit;
   font-size: 1em;
+  line-height: 1.25;
   font-family: inherit;
   cursor: default;
   user-select: none;
@@ -50,7 +51,6 @@
   border-radius: var(--button-border-radius);
   text-decoration: none;
   padding: 0;
-  min-height: 2.375em;
 }
 
 .root.bleed {
@@ -85,7 +85,6 @@ span.content {
 
 .icon {
   display: flex;
-  font-size: 1em;
   margin-right: var(--small-padding);
 
   @nest & > svg { display: block; }
@@ -113,7 +112,7 @@ span.content {
 
 .onlyIcon {
   @nest & .content {
-    margin: 0.7em 0.7em !important;
+    margin: 0.6875em 0.6875em !important;
   }
 
   @nest & .icon {
@@ -124,15 +123,11 @@ span.content {
 .padding_default {
   @nest & .content {
     @nest :not(.onlyIcon) & {
-      margin: 0.5em;
-
-      @media (--screen-medium) {
-        margin: 0.5em 1rem;
-      }
+      margin: 0.5625em 0.8125rem;
     }
   }
 
-  @nest &.simple .content {
+  /* @nest &.simple .content {
     @nest :not(.onlyIcon) & {
       margin: calc(0.5em + 1px);
 
@@ -140,7 +135,7 @@ span.content {
         margin: calc(0.5em + 1px) calc(1rem + 1px);
       }
     }
-  }
+  } */
 }
 
 .padding_small {
@@ -166,8 +161,6 @@ span.content {
   color: var(--default-button-color--inverted);
   border: 1px solid var(--default-button-color);
 
-  /* min-height: calc(2.375em - 2px); */
-
   @nest & .spinner {
     background-color: var(--gray-lighter);
   }
@@ -188,6 +181,7 @@ span.content {
 
 .simple {
   composes: root;
+  border: 1px solid transparent !important;
   background-color: transparent;
 
   @nest & .spinner {
@@ -203,7 +197,7 @@ span.content {
   @nest &:not(.disabled) {
     @media (hover: hover) {
       @nest &:hover {
-        background-color: color(var(--default-button-color) lightness(- 5%) a(10%));
+        background-color: color(var(--default-button-color) a(5%));
       }
     }
 
@@ -228,7 +222,7 @@ span.content {
   @media (hover: hover) {
     @nest &:not(.disabled):hover {
       border-color: color(var(--default-button-color) a(70%));
-      background-color: color(var(--default-button-color) a(3%));
+      background-color: color(var(--default-button-color) a(5%));
     }
   }
 
@@ -301,13 +295,13 @@ span.content {
 }
 
 .color__danger {
-  border-color: var(--state-danger-color);
-  background-color: var(--state-danger-color);
-  color: var(--state-danger-color--inverted);
+  border-color: var(--default-button-danger-color);
+  background-color: var(--default-button-danger-color);
+  color: var(--default-button-danger-color--inverted);
 
   @nest & .spinner {
-    background-color: var(--state-danger-color);
-    color: var(--state-danger-color--inverted);
+    background-color: var(--default-button-danger-color);
+    color: var(--default-button-danger-color--inverted);
   }
 
   @nest &.root:focus {
@@ -318,18 +312,18 @@ span.content {
 
   @media (hover: hover) {
     @nest &:not(.disabled):hover {
-      background-color: color(var(--state-danger-color) lightness(+ 5%));
+      background-color: color(var(--default-button-danger-color) lightness(+ 5%));
     }
   }
 
   @nest &.inverted {
     border-color: color(var(--state-danger-color) a(50%));
     background-color: transparent;
-    color: var(--state-danger-color);
+    color: var(--default-button-danger-color);
 
     @nest & .spinner {
-      background-color: var(--white);
-      color: var(--state-danger-color);
+      background-color: var(--default-button-danger-color--inverted);
+      color: var(--default-button-danger-color);
     }
 
     @media (hover: hover) {
@@ -344,7 +338,7 @@ span.content {
 
   @nest &.simple {
     background-color: transparent;
-    color: var(--state-danger-color);
+    color: var(--default-button-danger-color);
 
     @media (hover: hover) {
       @nest &:not(.disabled) {
@@ -357,12 +351,12 @@ span.content {
 }
 
 .color__success {
-  border-color: var(--state-success-color);
-  background-color: var(--state-success-color);
-  color: var(--state-success-color--inverted);
+  border-color: var(--default-button-success-color);
+  background-color: var(--default-button-success-color);
+  color: var(--default-button-success-color--inverted);
 
   @nest & .spinner {
-    background-color: var(--state-success-color);
+    background-color: var(--default-button-success-color);
     color: var(--state-success-color--inverted);
   }
 
@@ -374,24 +368,24 @@ span.content {
 
   @media (hover: hover) {
     @nest &:not(.disabled):hover {
-      background-color: color(var(--state-success-color) lightness(+ 5%));
+      background-color: color(var(--default-button-success-color) lightness(+ 5%));
     }
   }
 
   @nest &.inverted {
     border-color: color(var(--state-success-color) a(50%));
     background-color: transparent;
-    color: var(--state-success-color);
+    color: var(--default-button-success-color);
 
     @nest & .spinner {
       background-color: var(--white);
-      color: var(--state-success-color);
+      color: var(--default-button-success-color);
     }
 
     @media (hover: hover) {
       @nest &:not(.disabled):hover {
         background-color: color(var(--state-success-color) a(5%));
-        border-color: var(--state-success-color);
+        border-color: var(--default-button-success-color);
       }
     }
   }
