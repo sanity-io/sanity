@@ -544,7 +544,6 @@ export default withRouterHOC(
               duration={100}
               open={showValidationTooltip}
               onRequestClose={this.handleCloseValidationResults}
-              style={{marginRight: '0.5em'}}
               html={
                 <ValidationList
                   markers={validation}
@@ -617,11 +616,11 @@ export default withRouterHOC(
                     <strong>Are you sure</strong> you want to discard changes?
                   </div>
                   <ButtonCollection>
-                    <Button color="primary" onClick={this.handleConfirmDiscard}>
-                      Discard
-                    </Button>
                     <Button kind="simple" onClick={this.handleCancelDiscard}>
                       Cancel
+                    </Button>
+                    <Button color="danger" onClick={this.handleConfirmDiscard}>
+                      Discard
                     </Button>
                   </ButtonCollection>
                 </div>
