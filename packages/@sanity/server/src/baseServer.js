@@ -15,7 +15,7 @@ const getDefaultModule = mod => {
 
 const getTitle = (project = {}) => {
   const projectName = (project && project.name) || ''
-  return projectName ? `${projectName} - Sanity` : 'Sanity'
+  return projectName ? `${projectName} – Sanity` : 'Sanity'
 }
 
 const assetify = (assetPath, hashes) => ({
