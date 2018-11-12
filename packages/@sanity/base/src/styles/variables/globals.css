@@ -24,9 +24,9 @@
 
   /* Shadows */
   --shadow-base: var(--brand-darkest);
-  --shadow-color-umbra: color(var(--shadow-base) a(7%));
-  --shadow-color-penumbra: color(var(--shadow-base) a(6%));
-  --shadow-color-ambient: color(var(--shadow-base) a(1%));
+  --shadow-color-umbra: color(var(--shadow-base) a(10%));
+  --shadow-color-penumbra: color(var(--shadow-base) a(8%));
+  --shadow-color-ambient: color(var(--shadow-base) a(2%));
 
   /* Border radius */
   --border-radius-base: 4px;
