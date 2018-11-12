@@ -4,20 +4,6 @@
   display: flex;
   align-items: center;
 
-  @nest & button {
-    appearance: none;
-    display: block;
-    border: 0;
-    margin: 0;
-    background: none;
-    border-radius: 0;
-    font: inherit;
-    color: inherit;
-    line-height: calc(25 / 16);
-    padding: 0.75em;
-    outline: none;
-  }
-
   @nest & span {
     font-size: 14px;
     line-height: 25px;
@@ -27,16 +13,39 @@
     font-size: 25px;
     vertical-align: top;
   }
+}
+
+.button {
+  -webkit-font-smoothing: inherit;
+  appearance: none;
+  display: block;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  font: inherit;
+  color: inherit;
+  line-height: calc(25 / 16);
+  margin: 0;
+  padding: 0;
+  outline: none;
 
   @media (hover: hover) {
-    @nest & button {
-      opacity: 0.7;
-    }
+    opacity: 0.7;
 
-    @nest & button:hover {
+    @nest &:hover {
       opacity: 1;
     }
   }
+
+  @nest &:focus {
+    opacity: 1;
+    background: var(--selectable-item-color-focus);
+  }
+}
+
+.buttonInner {
+  outline: none;
+  padding: 0.75em;
 }
 
 .notice {

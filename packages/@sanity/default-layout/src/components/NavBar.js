@@ -40,10 +40,12 @@ function NavBar(props) {
         <button
           className={styles.hamburgerButton}
           type="button"
-          title="Menu"
+          title="Open menu"
           onClick={onToggleMenu}
         >
-          <HamburgerIcon />
+          <div className={styles.hamburgerButtonInner} tabIndex={-1}>
+            <HamburgerIcon />
+          </div>
         </button>
       </div>
       <StateLink toIndex className={styles.branding}>
@@ -53,14 +55,17 @@ function NavBar(props) {
         <Tooltip
           disabled={'ontouchstart' in document.documentElement}
           title="Create new document"
-          className={styles.createButtonIcon}
           theme="dark"
           size="small"
           distance="18"
           arrow
         >
-          <PlusIcon />
-          <span className={styles.createButtonText}>New</span>
+          <div className={styles.createButtonInner} tabIndex={-1}>
+            <div className={styles.createButtonIcon}>
+              <PlusIcon />
+            </div>
+            <span className={styles.createButtonText}>New</span>
+          </div>
         </Tooltip>
       </button>
       <div className={searchClassName} ref={onSetSearchElement}>
@@ -90,10 +95,12 @@ function NavBar(props) {
         <LoginStatus onLogout={onUserLogout} user={user} />
       </div>
       <button className={styles.searchButton} onClick={onSearchOpen} type="button">
-        <span className={styles.searchButtonIcon}>
-          <SearchIcon />
-        </span>
-        <span className={styles.searchButtonText}>Search</span>
+        <div className={styles.searchButtonInner} tabIndex={-1}>
+          <span className={styles.searchButtonIcon}>
+            <SearchIcon />
+          </span>
+          <span className={styles.searchButtonText}>Search</span>
+        </div>
       </button>
     </div>
   )
