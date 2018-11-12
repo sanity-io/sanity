@@ -119,7 +119,7 @@
   @nest &::after {
     content: '';
     width: 100%;
-    background: linear-gradient(to top, color(var(--shadow-base) a(0%)) 0%, color(var(--shadow-base) a(2%)) 70%, color(var(--shadow-base) a(7%)) 100%);
+    background: linear-gradient(to top, color(var(--shadow-base) a(0%)) 0%, color(var(--shadow-base) a(4%)) 75%, color(var(--shadow-base) a(12%)) 100%);
     height: 0.25em;
     top: var(--dialog-header-height);
     position: absolute;
