@@ -724,8 +724,7 @@ export default withRouterHOC(
               )}
               {value && (
                 <span className={styles.editedDate}>
-                  {' '}
-                  ·{' '}
+                  {!this.isLiveEditEnabled() && <span> · </span>}
                   <span>
                     Edited <TimeAgo time={value._updatedAt} />
                   </span>
