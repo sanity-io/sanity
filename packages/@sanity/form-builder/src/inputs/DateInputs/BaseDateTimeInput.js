@@ -114,7 +114,11 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
   }
 
   renderPopperContainer = ({children}) => {
-    return ReactDOM.createPortal(<div className={styles.portal}>{children}</div>, document.body)
+    const {isDialogOpen} = this.state
+    return ReactDOM.createPortal(
+      <div className={isDialogOpen ? styles.portal : styles.portalClosed}>{children}</div>,
+      document.body
+    )
   }
 
   render() {
@@ -164,7 +168,7 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
                 placeholderText={placeholder}
                 calendarClassName={styles.datepicker}
                 popperClassName={styles.popper}
-                popperContainer={isDialogOpen ? this.renderPopperContainer : undefined}
+                popperContainer={this.renderPopperContainer}
                 popperProps={{positionFixed: true}}
                 className={styles.input}
                 onClickOutside={this.handleClose}
@@ -175,7 +179,6 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
                 dateFormat={dateFormat}
                 timeFormat={timeFormat}
                 timeIntervals={timeStep}
-                open={isDialogOpen}
                 ref={this.setDatePicker}
                 dropdownMode="select"
                 todayButton={
