@@ -89,6 +89,10 @@
   height: 100%;
 }
 
+.portalClosed {
+  display: none;
+}
+
 .popper {
   background-color: transparent;
 
