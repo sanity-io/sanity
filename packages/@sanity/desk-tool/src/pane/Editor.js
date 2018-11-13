@@ -712,7 +712,7 @@ export default withRouterHOC(
             )}
             <div className={styles.top}>
               {!this.isLiveEditEnabled() && (
-                <span className={styles.publishedDate}>
+                <>
                   {published ? (
                     <strong>
                       Published <TimeAgo time={published._updatedAt} />
@@ -720,15 +720,15 @@ export default withRouterHOC(
                   ) : (
                     <strong>Not published</strong>
                   )}
-                </span>
+                </>
               )}
               {value && (
-                <span className={styles.editedDate}>
+                <>
                   {!this.isLiveEditEnabled() && <span> · </span>}
                   <span>
                     Edited <TimeAgo time={value._updatedAt} />
                   </span>
-                </span>
+                </>
               )}
             </div>
             <form
