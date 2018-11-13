@@ -1,11 +1,33 @@
 @import "part:@sanity/base/theme/variables-style";
 
 .root {
+  width: 100%;
   display: grid;
   grid-gap: var(--small-padding);
-  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
-  grid-auto-rows: auto;
-  width: 100%;
+  grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
+
+  &[data-buttons="1"] {
+    display: block;
+    grid-template-columns: unset;
+  }
+
+  @media (--screen-medium) {
+    grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+
+    /* @nest &[data-buttons="2"] {
+      min-width: 16rem;
+      display: flex;
+    }
+
+    @nest &[data-buttons="3"] {
+      min-width: 20rem;
+      display: flex;
+    }
+
+    @nest &[data-buttons="4"] {
+      min-width: 24rem;
+    } */
+  }
 
   @nest & > * {
     margin: 0 !important;
@@ -26,67 +48,21 @@
   font-size: var(--font-size-small);
 }
 
-.noSpacing {
-  @nest & > * {
-    margin: 0 !important;
-  }
-}
-
-.grid {
-  composes: noSpacing;
-}
-
 .secondary {
-  /* display: contents; */
-  display: flex;
-
-  @nest & > * {
-    width: stretch;
-  }
-
-  @nest .root[data-buttons="2"] &:last-child {
-    grid-column-start: 4;
-    grid-column-end: 5;
-  }
-
-  @nest .root[data-buttons="3"] &:last-child {
-    grid-column-start: 4;
-    grid-column-end: 5;
-  }
-}
-
-/* .primary,
-.secondary {
-  composes: noSpacing;
-  display: grid;
-  grid-gap: var(--small-padding);
-  grid-template-columns: repeat(auto-fit, minmax(3rem, 10rem));
-  grid-auto-rows: repeat(auto-fit, 2.5rem);
-} */
-
-.alignStart .primary {
-  width: stretch;
-}
-
-.alignEnd .primary {
-  width: stretch;
-  justify-content: end;
-}
-
-.alignStart .primary + .secondary {
-  margin-top: var(--small-padding);
+  display: contents;
 
   @media (--screen-medium) {
-    margin-top: 0;
-    margin-left: var(--large-padding);
-  }
-}
+    display: flex;
+    grid-column: span 1 / -1;
 
-.alignEnd .primary + .secondary {
-  margin-top: var(--small-padding);
+    @nest .root[data-buttons="2"] &:last-child {
+      /* grid-column-start: 4;
+      grid-column-end: 5; */
+    }
 
-  @media (--screen-medium) {
-    margin-top: 0;
-    margin-right: var(--large-padding);
+    @nest .root[data-buttons="3"] &:last-child {
+      /* grid-column-start: 4;
+      grid-column-end: 5; */
+    }
   }
 }
