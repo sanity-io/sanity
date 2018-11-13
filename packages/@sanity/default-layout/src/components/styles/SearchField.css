@@ -73,8 +73,8 @@
 }
 
 .input {
-  -webkit-appearance: none;
   -webkit-font-smoothing: inherit;
+  appearance: none;
   border: none;
   border-radius: 0;
   outline: none;

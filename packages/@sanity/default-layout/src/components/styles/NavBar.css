@@ -5,7 +5,6 @@
 }
 
 .root {
-  -webkit-font-smoothing: antialiased;
   display: grid;
   grid-template-columns: var(--nav-bar-box) var(--nav-bar-box) auto var(--nav-bar-box) var(--nav-bar-box);
   grid-template-rows: var(--nav-bar-box);
@@ -57,7 +56,7 @@ a.branding {
 }
 
 .hamburgerButton {
-  -webkit-font-smoothing: antialiased;
+  -webkit-font-smoothing: inherit;
   appearance: none;
   display: flex;
   align-items: center;
@@ -166,7 +165,7 @@ a.branding {
 
 .createButton {
   grid-area: createButton;
-  -webkit-font-smoothing: antialiased;
+  -webkit-font-smoothing: inherit;
   appearance: none;
   outline: none;
   border: 0;
@@ -227,7 +226,7 @@ a.branding {
 }
 
 .searchButton {
-  -webkit-font-smoothing: antialiased;
+  -webkit-font-smoothing: inherit;
   appearance: none;
   outline: none;
   border: 0;
