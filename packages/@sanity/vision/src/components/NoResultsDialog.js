@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 function NoResultsDialog(props) {
   return (
     <div className="vision_no-results">
-      <h2>No matches</h2>
+      <h1>No matches</h1>
       <p>
         No documents found in dataset <code>{props.dataset}</code> that match query:
       </p>
