@@ -18,9 +18,16 @@ export default class ButtonCollection extends React.PureComponent {
   render() {
     const {align, children, secondary} = this.props
 
+    if (!children) {
+      return null
+    }
+
     if (secondary && (secondary.length > 0 || typeof secondary !== 'object')) {
       return (
-        <div className={align === 'start' ? styles.alignStart : styles.alignEnd} data-buttons={children.length + secondary.length}>
+        <div
+          className={align === 'start' ? styles.alignStart : styles.alignEnd}
+          data-buttons={children.filter(Boolean).length + secondary.filter(Boolean).length}
+        >
           {children}
           {secondary.length > 0
             ? secondary.map((child, i) => (
@@ -34,7 +41,10 @@ export default class ButtonCollection extends React.PureComponent {
     }
 
     return (
-      <div className={align === 'start' ? styles.alignStart : styles.alignEnd}>
+      <div
+        className={align === 'start' ? styles.alignStart : styles.alignEnd}
+        data-buttons={children.filter(Boolean).length}
+      >
         {children || secondary}
       </div>
     )
