@@ -521,6 +521,7 @@ storiesOf('Button collection', module)
   .add('Default', () => {
     const backgroundColor = color('View color', 'rgba(255, 255, 255, 0', 'test')
     const qtyButtons = number('# buttons', 2, 'test')
+    const buttonText = text('Button text', '')
     return (
       <div style={{backgroundColor, margin: '2rem'}}>
         <Sanity
@@ -532,13 +533,15 @@ storiesOf('Button collection', module)
             secondary={range(0, number('# secondary', 1)).map(i => {
               return (
                 <Button inverted key={i}>
-                  {i % 2 ? chance.word() : chance.name()}
+                  {buttonText || (i % 2 ? chance.word() : chance.name())}
                 </Button>
               )
             })}
           >
             {range(0, qtyButtons).map(i => {
-              return <Button key={i}>{i % 2 ? chance.word() : chance.name()}</Button>
+              return (
+                <Button key={i}>{buttonText || (i % 2 ? chance.word() : chance.name())}</Button>
+              )
             })}
           </ButtonCollection>
         </Sanity>
