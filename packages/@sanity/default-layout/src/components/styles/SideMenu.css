@@ -38,8 +38,8 @@
 }
 
 .closeButton {
-  -webkit-appearance: none;
   -webkit-font-smoothing: inherit;
+  appearance: none;
   position: absolute;
   top: 0.375em;
   right: 0.375em;
