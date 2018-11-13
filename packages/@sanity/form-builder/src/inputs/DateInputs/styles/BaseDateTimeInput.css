@@ -120,15 +120,18 @@
 
   @nest & :global(.react-datepicker-time__header) {
     color: var(--main-navigation-color--inverted);
-    border: 0;
   }
 
   @nest & :global(.react-datepicker__time-container) {
-    border-color: color(var(--main-navigation-color) a(50%));
+    border-color: var(--main-navigation-color);
   }
 
-  @nest & :global(.react-datepicker__header--time) {
+  @nest
+  & :global(.react-datepicker__header--time),
+  & :global(.react-datepicker__time-container) {
+    background-color: var(--main-navigation-color);
     border-top-left-radius: 0 !important;
+    border-top-right-radius: var(--border-radius-base) !important;
   }
 
   @nest & :global(.react-datepicker__day-name) {
@@ -138,6 +141,11 @@
   @nest & :global(.react-datepicker__day--selected) {
     background-color: var(--selected-item-color);
     color: var(--selected-item-color--inverted);
+  }
+
+  @nest & :global(li.react-datepicker__time-list-item) {
+    height: 2em !important;
+    line-height: 2em !important;
   }
 
   @nest

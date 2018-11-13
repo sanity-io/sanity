@@ -75,20 +75,22 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
     this._datepicker = datePicker
   }
 
-  handleKeyDown = (event: SyntheticKeyboardEvent<*>) => {
-    if (event.key === 'Enter') {
+  handleInputKeyDown = event => {
+    if (event && event.key === 'Enter') {
       this.handleOpen()
     }
-    if (event.key === 'Escape') {
-      this.handleClose()
-    }
+    return event
   }
+
+  handleButtonClick = event => {
+    this.focus()
+    this.handleOpen()
+  }
+
   handleOpen = event => {
     this.setState({
       isDialogOpen: true
     })
-    // Prevent focus the input to avoid software keybaord on mobile devices
-    event.preventDefault()
   }
 
   handleClose = () => {
@@ -151,14 +153,13 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
           <div className={errors.length > 0 ? styles.rootError : styles.root}>
             <div className={styles.inputWrapper}>
               <DatePicker
-                onKeyDown={this.handleKeyDown}
+                onKeyDown={isDialogOpen ? undefined : this.handleInputKeyDown}
                 autoFocus={false}
-                // onFocus={this.handleFocus}
-                // onBlur={this.handleBlur}
-                onFocus={() => {}}
+                onFocus={this.handleFocus}
+                onBlur={this.handleBlur}
                 showMonthDropdown
                 showYearDropdown
-                disabledKeyboardNavigation
+                disabledKeyboardNavigation={!isDialogOpen}
                 selected={value || undefined}
                 placeholderText={placeholder}
                 calendarClassName={styles.datepicker}
@@ -167,7 +168,6 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
                 popperProps={{positionFixed: true}}
                 className={styles.input}
                 onClickOutside={this.handleClose}
-                onInputClick={this.handleOpen}
                 onChange={this.handleDialogChange}
                 onChangeRaw={this.handleInputChange}
                 value={inputValue ? inputValue : value && value.format(format)}
@@ -189,7 +189,7 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
               <Button
                 color="primary"
                 bleed
-                onClick={this.handleOpen}
+                onClick={this.handleButtonClick}
                 icon={CalendarIcon}
                 kind="simple"
               >
