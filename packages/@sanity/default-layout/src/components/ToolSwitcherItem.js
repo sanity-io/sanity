@@ -16,10 +16,9 @@ function ToolSwitcherItem(props) {
       arrow
       inertia
       theme="dark"
-      distance="8"
+      distance="7"
       sticky
       size="small"
-      style={{display: 'flex'}}
       disabled={showLabel || 'ontouchstart' in document.documentElement}
     >
       <div className={styles.inner} tabIndex={-1}>
