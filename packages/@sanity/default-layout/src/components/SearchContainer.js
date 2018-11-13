@@ -264,8 +264,12 @@ class SearchContainer extends React.PureComponent {
         onClick={this.handleHitClick}
         tabIndex={-1}
       >
-        <div className={resultsStyles.itemType}>{type.title}</div>
-        <Preview value={item} layout="default" type={type} />
+        <Preview
+          value={item}
+          layout="default"
+          type={type}
+          status={<div className={resultsStyles.itemType}>{type.title}</div>}
+        />
         <Ink duration={200} opacity={0.1} radius={200} />
       </IntentLink>
     )
