@@ -126,16 +126,27 @@ export default class Fieldset extends React.Component {
           <div className={styles.inner}>
             <div className={styles.header}>
               <div className={styles.headerMain}>
+                {
+                  // Uses the tabIndex 0 and -1 here to avoid focus state on click
+                }
                 <legend
                   className={`${styles.legend} ${isCollapsed ? '' : styles.isOpen}`}
-                  onClick={isCollapsible ? this.handleToggle : undefined}
+                  tabIndex={isCollapsible ? 0 : undefined}
+                  // eslint-disable-next-line react/jsx-no-bind
+                  onKeyDown={event => (event.key === 'Enter' ? this.handleToggle() : false)}
                 >
-                  {isCollapsible && (
-                    <div className={`${styles.arrow} ${isCollapsed ? '' : styles.isOpen}`}>
-                      <ArrowDropDown />
-                    </div>
-                  )}
-                  {legend || fieldset.legend}
+                  <div
+                    tabIndex={-1}
+                    onClick={isCollapsible ? this.handleToggle : undefined}
+                    style={{outline: 'none'}}
+                  >
+                    {isCollapsible && (
+                      <div className={`${styles.arrow} ${isCollapsed ? '' : styles.isOpen}`}>
+                        <ArrowDropDown />
+                      </div>
+                    )}
+                    {legend || fieldset.legend}
+                  </div>
                 </legend>
                 {(description || fieldset.description) && (
                   <p className={`${styles.description} ${isCollapsed ? '' : styles.isOpen}`}>
