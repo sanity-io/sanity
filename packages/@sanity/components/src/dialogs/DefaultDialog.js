@@ -47,22 +47,35 @@ export default class DefaultDialog extends React.PureComponent {
   componentDidMount() {
     this.setFooterShadow()
     window.addEventListener('resize', this.handleResize, {passive: true})
+    if (this.contentElement) {
+      this.contentElement.addEventListener('scroll', this.handleScroll, {passive: true})
+    }
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize, {passive: true})
+    if (this.contentElement) {
+      this.contentElement.removeEventListener('scroll', this.handleScroll, {passive: true})
+    }
   }
 
   handleResize = debounce(() => this.setFooterShadow())
+  handleScroll = debounce(() => this.setFooterShadowFromScroll(), 10)
 
   componentDidUpdate() {
+    this.setFooterShadow()
+  }
+
+  setFooterShadowFromScroll = () => {
     this.setFooterShadow()
   }
 
   setFooterShadow = () => {
     if (this.contentElement) {
       this.setState({
-        contentHasOverflow: this.contentElement.scrollHeight > this.contentElement.clientHeight
+        contentHasOverflow:
+          this.contentElement.scrollHeight >
+          this.contentElement.clientHeight + this.contentElement.scrollTop
       })
     }
   }
