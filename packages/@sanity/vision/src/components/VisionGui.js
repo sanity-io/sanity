@@ -353,7 +353,7 @@ class VisionGui extends React.PureComponent {
                 {error && <QueryErrorDialog error={error} />}
                 {hasResult && <ResultView data={result} query={query} />}
                 {Array.isArray(result) &&
-                  result.length === 0 && <NoResultsDialog query={query} dataset={dataset} />}
+                  result.length === 0 && <div className={styles.noResult}><NoResultsDialog query={query} dataset={dataset} /></div>}
                 {listenMutations &&
                   listenMutations.length > 0 && <ResultView data={listenMutations} />}
               </div>
