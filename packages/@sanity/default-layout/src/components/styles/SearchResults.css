@@ -42,16 +42,6 @@
 }
 
 .itemType {
-  position: absolute;
-  top: 50%;
-  color: #000;
-  right: var(--small-padding);
   text-transform: uppercase;
   font-size: var(--font-size-tiny);
-  transform: translateY(-50%);
-  opacity: 0.6;
-
-  @nest .activeItem & {
-    color: #fff;
-  }
 }
