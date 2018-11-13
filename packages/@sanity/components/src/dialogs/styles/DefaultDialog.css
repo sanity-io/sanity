@@ -168,12 +168,12 @@
 
 .contentWithoutFooter {
   composes: content;
-  border-radius: var(--dialog-border-radius) !important;
+  border-radius: var(--dialog-border-radius);
 }
 
 .header + .content {
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
 }
 
 .title {
@@ -258,7 +258,6 @@
 }
 
 .footer {
-  flex-basis: 5rem;
   min-height: 4.5rem;
   box-sizing: border-box;
   padding: var(--medium-padding);
