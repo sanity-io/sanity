@@ -2,6 +2,9 @@
 
 @import 'part:@sanity/base/theme/variables-style';
 
+/* background-color: var(--main-navigation-color);
+color: var(--main-navigation-color--inverted); */
+
 :global(.tippy-touch) {
   cursor: pointer !important;
 }
@@ -24,7 +27,7 @@
 }
 
 :global(.tippy-popper[x-placement^='top'] [x-arrow]) {
-  border-top: 7px solid #333;
+  border-top: 7px solid var(--main-navigation-color);
   border-right: 7px solid transparent;
   border-left: 7px solid transparent;
   bottom: -7px;
@@ -32,14 +35,14 @@
 }
 
 :global(.tippy-popper[x-placement^='top'] [x-arrow].arrow-small) {
-  border-top: 5px solid #333;
+  border-top: 5px solid var(--main-navigation-color);
   border-right: 5px solid transparent;
   border-left: 5px solid transparent;
   bottom: -5px;
 }
 
 :global(.tippy-popper[x-placement^='top'] [x-arrow].arrow-big) {
-  border-top: 10px solid #333;
+  border-top: 10px solid var(--main-navigation-color);
   border-right: 10px solid transparent;
   border-left: 10px solid transparent;
   bottom: -10px;
@@ -149,7 +152,7 @@
 }
 
 :global(.tippy-popper[x-placement^='bottom'] [x-arrow]) {
-  border-bottom: 7px solid #333;
+  border-bottom: 7px solid var(--main-navigation-color);
   border-right: 7px solid transparent;
   border-left: 7px solid transparent;
   top: -7px;
@@ -157,14 +160,14 @@
 }
 
 :global(.tippy-popper[x-placement^='bottom'] [x-arrow].arrow-small) {
-  border-bottom: 5px solid #333;
+  border-bottom: 5px solid var(--main-navigation-color);
   border-right: 5px solid transparent;
   border-left: 5px solid transparent;
   top: -5px;
 }
 
 :global(.tippy-popper[x-placement^='bottom'] [x-arrow].arrow-big) {
-  border-bottom: 10px solid #333;
+  border-bottom: 10px solid var(--main-navigation-color);
   border-right: 10px solid transparent;
   border-left: 10px solid transparent;
   top: -10px;
@@ -216,9 +219,7 @@
   border-left: 7px solid transparent;
 }
 
-:global(.tippy-popper[x-placement^='bottom']
-    .tippy-tooltip.transparent-theme
-    [x-arrow].arrow-small) {
+:global(.tippy-popper[x-placement^='bottom'] .tippy-tooltip.transparent-theme [x-arrow].arrow-small) {
   border-bottom: 5px solid rgba(0, 0, 0, 0.7);
   border-right: 5px solid transparent;
   border-left: 5px solid transparent;
@@ -275,7 +276,7 @@
 }
 
 :global(.tippy-popper[x-placement^='left'] [x-arrow]) {
-  border-left: 7px solid #333;
+  border-left: 7px solid var(--main-navigation-color);
   border-top: 7px solid transparent;
   border-bottom: 7px solid transparent;
   right: -7px;
@@ -283,14 +284,14 @@
 }
 
 :global(.tippy-popper[x-placement^='left'] [x-arrow].arrow-small) {
-  border-left: 5px solid #333;
+  border-left: 5px solid var(--main-navigation-color);
   border-top: 5px solid transparent;
   border-bottom: 5px solid transparent;
   right: -5px;
 }
 
 :global(.tippy-popper[x-placement^='left'] [x-arrow].arrow-big) {
-  border-left: 10px solid #333;
+  border-left: 10px solid var(--main-navigation-color);
   border-top: 10px solid transparent;
   border-bottom: 10px solid transparent;
   right: -10px;
@@ -399,7 +400,7 @@
 }
 
 :global(.tippy-popper[x-placement^='right'] [x-arrow]) {
-  border-right: 7px solid #333;
+  border-right: 7px solid var(--main-navigation-color);
   border-top: 7px solid transparent;
   border-bottom: 7px solid transparent;
   left: -7px;
@@ -407,14 +408,14 @@
 }
 
 :global(.tippy-popper[x-placement^='right'] [x-arrow].arrow-small) {
-  border-right: 5px solid #333;
+  border-right: 5px solid var(--main-navigation-color);
   border-top: 5px solid transparent;
   border-bottom: 5px solid transparent;
   left: -5px;
 }
 
 :global(.tippy-popper[x-placement^='right'] [x-arrow].arrow-big) {
-  border-right: 10px solid #333;
+  border-right: 10px solid var(--main-navigation-color);
   border-top: 10px solid transparent;
   border-bottom: 10px solid transparent;
   left: -10px;
@@ -466,9 +467,7 @@
   border-bottom: 7px solid transparent;
 }
 
-:global(.tippy-popper[x-placement^='right']
-    .tippy-tooltip.transparent-theme
-    [x-arrow].arrow-small) {
+:global(.tippy-popper[x-placement^='right'] .tippy-tooltip.transparent-theme [x-arrow].arrow-small) {
   border-right: 5px solid rgba(0, 0, 0, 0.7);
   border-top: 5px solid transparent;
   border-bottom: 5px solid transparent;
@@ -545,24 +544,23 @@
 :global(.tippy-tooltip) {
   position: relative;
   color: #fff;
-  border-radius: var(--border-radius-base);
-  font-size: 0.95rem;
-  padding: 0.4rem 0.8rem;
+  border-radius: var(--border-radius-medium);
+  font-size: 0.875rem;
+  padding: 0.375rem 0.75rem;
   text-align: center;
   will-change: transform;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #333;
+  background-color: var(--main-navigation-color);
 }
 
 :global(.tippy-tooltip--small) {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.8rem;
-  border-radius: 0;
+  padding: 0.25rem 0.4375rem;
+  font-size: 0.75rem;
 }
 
 :global(.tippy-tooltip--big) {
-  padding: 0.6rem 1.2rem;
-  font-size: 1.2rem;
+  padding: 0.5rem 1rem;
+  font-size: 1.25rem;
 }
 
 :global(.tippy-tooltip[data-animatefill]) {
@@ -587,7 +585,7 @@
 :global(.tippy-tooltip [x-circle]) {
   position: absolute;
   will-change: transform;
-  background-color: #333;
+  background-color: var(--main-navigation-color);
   border-radius: 50%;
   width: 130%;
   width: calc(110% + 2rem);
