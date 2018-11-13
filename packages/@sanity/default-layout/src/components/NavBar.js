@@ -55,10 +55,12 @@ function NavBar(props) {
         <Tooltip
           disabled={'ontouchstart' in document.documentElement}
           title="Create new document"
-          theme="dark"
-          size="small"
-          distance="18"
           arrow
+          inertia
+          theme="dark"
+          distance="7"
+          sticky
+          size="small"
         >
           <div className={styles.createButtonInner} tabIndex={-1}>
             <div className={styles.createButtonIcon}>
