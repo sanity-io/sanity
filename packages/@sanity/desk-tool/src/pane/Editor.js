@@ -602,7 +602,7 @@ export default withRouterHOC(
           <div className={styles.publishInfoUndoButton}>
             {published && (
               <Button kind="simple" onClick={() => this.setState({showConfirmDiscard: true})}>
-                Discard
+                Discard…
               </Button>
             )}
             {this.state.showConfirmDiscard && (
@@ -613,7 +613,7 @@ export default withRouterHOC(
               >
                 <div>
                   <div className={styles.popOverText}>
-                    <strong>Are you sure</strong> you want to discard changes?
+                    <strong>Are you sure</strong> you want to discard all changes since last published?
                   </div>
                   <ButtonCollection>
                     <Button kind="simple" onClick={this.handleCancelDiscard}>
@@ -627,12 +627,8 @@ export default withRouterHOC(
               </PopOverDialog>
             )}
             {!published && (
-              <Button
-                kind="simple"
-                onClick={() => this.setState({showConfirmDelete: true})}
-                color="danger"
-              >
-                Delete
+              <Button kind="simple" onClick={() => this.setState({showConfirmDelete: true})}>
+                Delete…
               </Button>
             )}
           </div>
