@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {IntentLink} from 'part:@sanity/base/router'
 import styles from 'part:@sanity/components/menus/default-style'
-import Ink from 'react-ink'
 import classNames from 'classnames'
 
 class DefaultMenuItem extends React.Component {
@@ -11,7 +10,6 @@ class DefaultMenuItem extends React.Component {
     onFocus: PropTypes.func.isRequired,
     onAction: PropTypes.func.isRequired,
     className: PropTypes.string,
-    ripple: PropTypes.bool,
     danger: PropTypes.bool,
     isDisabled: PropTypes.bool,
     item: PropTypes.shape({
@@ -28,8 +26,7 @@ class DefaultMenuItem extends React.Component {
     className: '',
     isFocused: false,
     isDisabled: false,
-    danger: false,
-    ripple: true
+    danger: false
   }
 
   handleClick = event => {
@@ -42,7 +39,7 @@ class DefaultMenuItem extends React.Component {
   }
 
   renderLinkChildren = () => {
-    const {item, isDisabled} = this.props
+    const {item} = this.props
     const {icon: Icon, title} = item
     return (
       <React.Fragment>
@@ -52,7 +49,6 @@ class DefaultMenuItem extends React.Component {
           </span>
         )}
         {title}
-        {this.props.ripple && !isDisabled && <Ink duration={200} opacity={0.1} radius={200} />}
       </React.Fragment>
     )
   }

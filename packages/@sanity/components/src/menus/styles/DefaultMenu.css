@@ -9,6 +9,8 @@
   text-align: left;
   overflow: auto;
   overflow-x: hidden;
+  padding: calc(var(--small-padding) / 2) 0;
+  border-radius: var(--border-radius-medium);
 }
 
 .list {
@@ -19,6 +21,7 @@
   composes: resetListItem from 'part:@sanity/base/theme/layout/helpers';
   composes: item from 'part:@sanity/base/theme/layout/selectable-style';
   white-space: nowrap;
+  position: relative;
 }
 
 .isDisabled {
@@ -55,7 +58,17 @@
 }
 
 .divider {
-  border-top: 1px solid var(--gray-light);
+  margin-top: calc(var(--small-padding) + 1px);
+
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    top: calc(0 - calc(var(--small-padding) / 2) - 1px);
+    border-top: 1px solid rgba(0, 0, 0, 0.07);
+  }
 }
 
 .isDisabled {
