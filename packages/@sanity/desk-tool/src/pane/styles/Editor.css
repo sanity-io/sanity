@@ -41,18 +41,7 @@
 .top {
   margin: 0 var(--medium-padding);
   color: var(--text-color-secondary);
-}
-
-.date {
   font-size: 0.75em;
-}
-
-.publishedDate {
-  composes: date;
-}
-
-.editedDate {
-  composes: date;
 }
 
 .publishInfo {
@@ -68,7 +57,7 @@
   z-index: var(--zindex-pane);
   transform: translateY(0);
   transition: transform 0.3s ease-in, box-shadow 0.2s ease-in;
-  grid-template-areas: "publishButton publishInfoUndoButton";
+  grid-template-areas: 'publishButton publishInfoUndoButton';
   grid-template-columns: auto auto;
   grid-template-rows: 2.5em;
   justify-content: stretch;
@@ -143,6 +132,7 @@
   opacity: 1;
   font-size: var(--font-size-xsmall);
   padding: 0 var(--small-padding);
+  white-space: nowrap;
 }
 
 .syncStatusSynced {
