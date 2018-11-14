@@ -697,6 +697,7 @@ export default withRouterHOC(
           staticContent={this.renderPublishInfo()}
           minWidth={300}
           maxWidth={672}
+          contentMaxWidth={672}
         >
           <div className={styles.root}>
             {(isCreatingDraft || isPublishing || isUnpublishing) && (
