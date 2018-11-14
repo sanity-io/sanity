@@ -155,7 +155,6 @@ export default class DropDownButton extends React.PureComponent {
       >
         {menuOpened && (
           <div className={styles.popper} style={{minWidth: `${width}px`}}>
-            {/* component list causes error here */}
             <List className={styles.list}>
               <ArrowKeyNavigation>
                 {items.map((item, i) => {
