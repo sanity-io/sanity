@@ -44,6 +44,24 @@ function renderContent(type) {
   }
 }
 
+function renderFullscreenContent(type) {
+  switch (type) {
+    case 'paragraph':
+      return <p>{paragraph}</p>
+    case 'longtext':
+      return <div>{paragraphs}</div>
+    case 'example':
+      return (
+        <DialogContent size="medium" padding={false}>
+          <h1>With dialog content</h1>
+          <p>{paragraph}</p>
+        </DialogContent>
+      )
+    default:
+      return 'Minimal'
+  }
+}
+
 storiesOf('Dialogs')
   .addDecorator(withKnobs)
   .add('Default', () => {
@@ -126,8 +144,14 @@ storiesOf('Dialogs')
           <DialogContent
             size={select(
               'size',
-              ['small', 'medium', 'large', 'auto'],
-              undefined,
+              ['default', 'small', 'medium', 'large', 'auto'],
+              'default',
+              'dialogcontent props'
+            )}
+            padding={select(
+              'padding',
+              ['none', 'small', 'medium', 'large'],
+              'medium',
               'dialogcontent props'
             )}
           >
@@ -158,7 +182,8 @@ storiesOf('Dialogs')
       <Sanity part="part:@sanity/components/dialogs/fullscreen" propTables={[FullscreenDialog]}>
         <FullscreenDialog
           title={text('title', undefined, 'props')}
-          onClose={action('onClose')}
+          onClose={boolean('Has onClose', false, 'test') && (event => console.log('onClose', event))}
+          centered={boolean('centered', false, 'props')}
           color={select(
             'Color',
             ['default', 'danger', 'success', 'info', 'warning'],
@@ -168,7 +193,7 @@ storiesOf('Dialogs')
           actions={dialogActions}
           onAction={action('onAction')}
         >
-          {contentTest && renderContent(contentTest)}
+          {contentTest && renderFullscreenContent(contentTest)}
         </FullscreenDialog>
       </Sanity>
     )

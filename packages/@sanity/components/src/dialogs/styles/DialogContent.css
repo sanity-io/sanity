@@ -9,8 +9,20 @@
   composes: root;
 }
 
-.padding {
+.padding_none {
+  padding: 0;
+}
+
+.padding_small {
+  padding: var(--small-padding);
+}
+
+.padding_medium {
   padding: var(--medium-padding);
+}
+
+.padding_large {
+  padding: var(--large-padding);
 }
 
 .small {

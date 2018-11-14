@@ -6,16 +6,20 @@ import styles from 'part:@sanity/components/dialogs/content-style'
 export default class DialogContent extends React.PureComponent {
   static propTypes = {
     size: PropTypes.oneOf(['small', 'medium', 'large', 'auto']),
-    padding: PropTypes.oneOf(['medium']),
+    padding: PropTypes.oneOf(['none', 'small', 'medium', 'large']),
     children: PropTypes.node.isRequired
   }
 
   static defaultProps = {
     size: 'auto',
-    padding: undefined
+    padding: 'medium'
   }
   render() {
     const {size, children, padding} = this.props
-    return <div className={`${styles[size]} ${padding ? styles.padding : ''}`}>{children}</div>
+    return (
+      <div className={`${styles[size]} ${padding ? styles[`padding_${padding}`] : ''}`}>
+        {children}
+      </div>
+    )
   }
 }
