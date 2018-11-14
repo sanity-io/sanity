@@ -16,6 +16,7 @@ export default class FullScreenDialog extends React.PureComponent {
     title: PropTypes.string,
     children: PropTypes.node,
     onClose: PropTypes.func,
+    centered: PropTypes.bool,
     isOpen: PropTypes.bool,
     onAction: PropTypes.func,
     padding: PropTypes.oneOf(['none', 'small', 'medium', 'large']),
@@ -34,7 +35,6 @@ export default class FullScreenDialog extends React.PureComponent {
     isOpen: true,
     padding: 'large',
     onAction() {},
-    onClose() {},
     actions: []
   }
 
@@ -70,11 +70,12 @@ export default class FullScreenDialog extends React.PureComponent {
   }
 
   render() {
-    const {color, title, className, onClose, isOpen, actions, padding} = this.props
+    const {color, title, className, onClose, isOpen, actions, padding, centered} = this.props
 
     const classNames = [
       styles[color] || styles.default,
       isOpen ? styles.isOpen : styles.isClosed,
+      centered && styles.centered,
       className
     ]
       .filter(Boolean)
@@ -84,12 +85,12 @@ export default class FullScreenDialog extends React.PureComponent {
       <StackedEscapable onEscape={onClose}>
         <Portal>
           <div className={classNames}>
-            {onClose && (
-              <button className={styles.closeButton} onClick={onClose} type="button">
-                <CloseIcon color="inherit" />
-              </button>
-            )}
             <div className={styles.inner}>
+              {onClose && (
+                <button className={styles.closeButton} onClick={onClose} type="button">
+                  <CloseIcon color="inherit" />
+                </button>
+              )}
               <div className={styles[`padding_${padding}`]}>
                 <h1 className={styles.heading}>{title}</h1>
                 <div className={styles.content}>
