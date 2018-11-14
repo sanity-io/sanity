@@ -86,7 +86,7 @@
   background-clip: padding-box;
 
   @nest &:hover {
-    opacity: 0.5;
+    opacity: 0.2;
     transition: border 0.2s ease, opacity 0.1s ease;
   }
 
@@ -98,8 +98,8 @@
     cursor: col-resize;
 
     @nest &:hover {
-      border-left: 5px solid color(var(--component-border-color) a(70%));
-      border-right: 5px solid color(var(--component-border-color) a(70%));
+      border-left: 5px solid color(var(--component-border-color) a(25%));
+      border-right: 5px solid color(var(--component-border-color) a(25%));
     }
   }
 
