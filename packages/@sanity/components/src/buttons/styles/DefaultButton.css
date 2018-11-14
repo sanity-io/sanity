@@ -58,13 +58,6 @@
   display: flex;
   border-radius: 0;
   height: 100%;
-
-  /* justify-self: stretch;
-  width: stretch;
-  align-self: stretch;
-  align-items: stretch;
-  justify-content: stretch;
-   */
 }
 
 span.inner {
@@ -126,16 +119,6 @@ span.content {
       margin: 0.5625em 0.8125rem;
     }
   }
-
-  /* @nest &.simple .content {
-    @nest :not(.onlyIcon) & {
-      margin: calc(0.5em + 1px);
-
-      @media (--screen-medium) {
-        margin: calc(0.5em + 1px) calc(1rem + 1px);
-      }
-    }
-  } */
 }
 
 .padding_small {
@@ -148,10 +131,6 @@ span.content {
       }
     }
   }
-}
-
-.shadow {
-  /* composes: shadow-1dp from "part:@sanity/base/theme/shadows-style"; */
 }
 
 .default {
@@ -305,7 +284,6 @@ span.content {
   }
 
   @nest &.root:focus {
-    /* outline-color: var(--state-danger-color); */
     border-color: var(--state-danger-color);
     box-shadow: var(--button-focus-shadow--danger);
   }
@@ -361,7 +339,6 @@ span.content {
   }
 
   @nest &.root:focus {
-    /* outline-color: var(--state-success-color); */
     border-color: var(--state-success-color);
     box-shadow: var(--button-focus-shadow--success);
   }
@@ -480,14 +457,6 @@ span.content {
   align-items: center;
   justify-content: center;
   opacity: 0.9;
-}
-
-.hasIcon {
-  /* empty */
-}
-
-.iconContainer {
-  /* empty */
 }
 
 .disabled {

@@ -111,7 +111,6 @@
 
 .thumbChecked {
   composes: thumb;
-  /* composes: shadow-1dp from "part:@sanity/base/theme/shadows-style"; */
   background: var(--switch-thumb-color);
   left: calc(var(--switch-track-length) - var(--switch-thumb-size));
 }

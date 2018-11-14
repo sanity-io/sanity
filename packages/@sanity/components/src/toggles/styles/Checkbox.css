@@ -110,15 +110,10 @@
   left: calc(var(--checkbox-button-size) * 0.12);
   height: calc(var(--checkbox-button-size) * 0.5);
   width: calc(var(--checkbox-button-size) * 0.5);
-
-  /* mask: url("#{$checkbox-image-path}/tick-mask.svg?embed"); */
   background: transparent;
-
-  /* @include material-animation-default(0.28s); */
   transition-property: background;
 
   @nest .isChecked & {
-    /* background: $checkbox-color url("#{$checkbox-image-path}/tick.svg?embed"); */
     background-color: var(--checkbox-color);
   }
 

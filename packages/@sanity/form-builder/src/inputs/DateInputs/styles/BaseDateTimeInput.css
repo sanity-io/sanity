@@ -107,7 +107,6 @@
 
 .datepicker {
   composes: shadow-12dp from 'part:@sanity/base/theme/shadows-style';
-  /* border-radius: var(--react-datepicker-border-radius); */
   font-family: var(--font-family-sans-serif);
   border: 0;
 

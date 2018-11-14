@@ -1,5 +1,8 @@
 @import "part:@sanity/base/theme/variables-style";
-/* role: "part:@sanity/base/theme/shadows-style" */
+
+/*
+  Unused shadows depths are left commented out for future reference
+*/
 
 .shadow-0dp {
   box-shadow: none;

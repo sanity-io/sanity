@@ -13,20 +13,6 @@
 
   @media (--screen-medium) {
     grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
-
-    /* @nest &[data-buttons="2"] {
-      min-width: 16rem;
-      display: flex;
-    }
-
-    @nest &[data-buttons="3"] {
-      min-width: 20rem;
-      display: flex;
-    }
-
-    @nest &[data-buttons="4"] {
-      min-width: 24rem;
-    } */
   }
 
   @nest & > * {
@@ -54,15 +40,5 @@
   @media (--screen-medium) {
     display: flex;
     grid-column: span 1 / -1;
-
-    @nest .root[data-buttons="2"] &:last-child {
-      /* grid-column-start: 4;
-      grid-column-end: 5; */
-    }
-
-    @nest .root[data-buttons="3"] &:last-child {
-      /* grid-column-start: 4;
-      grid-column-end: 5; */
-    }
   }
 }
