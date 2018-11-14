@@ -93,14 +93,14 @@
 
 .buttonWrapper {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   align-self: stretch;
-  justify-content: center;
+  justify-content: stretch;
 }
 
 .actionButton {
-  -webkit-appearance: none;
   -webkit-font-smoothing: inherit;
+  appearance: none;
   font: inherit;
   background-color: transparent;
   border: 0;
@@ -111,24 +111,47 @@
   padding: 0;
   display: flex;
   align-self: stretch;
+  align-items: stretch;
+  justify-content: stretch;
+  outline: none;
+
+  &:focus {
+    background-color: color(var(--brand-primary) a(20%));
+  }
+}
+
+.actionButtonInner {
+  outline: none;
+  display: flex;
+  align-self: stretch;
   align-items: center;
   justify-content: center;
-  outline: none;
+  width: 100%;
+  height: 100%;
+  height: stretch;
 
   @nest & > svg {
     font-size: 1.5625em;
-    opacity: 0.6;
   }
 
-  @nest &:hover > svg {
-    opacity: 1;
+  @media (hover: hover) {
+    @nest & > svg {
+      opacity: 0.6;
+    }
+
+    @nest &:hover > svg {
+      opacity: 1;
+    }
+
+    @nest .actionButton:focus & > svg {
+      opacity: 1;
+    }
   }
 }
 
 .menuWrapper {
   composes: buttonWrapper;
   z-index: 2;
-  margin: 0 0.125em 0 0;
 
   @nest .isCollapsed & {
     display: none;
@@ -137,6 +160,10 @@
 
 .menuOverflowButton {
   composes: actionButton;
+}
+
+.menuOverflowButtonInner {
+  composes: actionButtonInner;
 }
 
 .actions {

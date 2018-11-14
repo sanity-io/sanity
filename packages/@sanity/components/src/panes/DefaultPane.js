@@ -245,7 +245,9 @@ class Pane extends React.Component {
           params={action.intent.params}
           title={action.title}
         >
-          <Icon />
+          <div className={styles.actionButtonInner} tabIndex={-1}>
+            <Icon />
+          </div>
         </IntentLink>
       </div>
     )
@@ -268,7 +270,9 @@ class Pane extends React.Component {
           // eslint-disable-next-line react/jsx-no-bind
           onClick={this.handleMenuAction.bind(this, action)}
         >
-          <Icon />
+          <div className={styles.actionButtonInner} tabIndex={-1}>
+            <Icon />
+          </div>
         </button>
       </div>
     )
@@ -293,7 +297,9 @@ class Pane extends React.Component {
           onClick={this.handleMenuToggle}
           title="Show menu"
         >
-          <IconMoreVert />
+          <div className={styles.menuOverflowButtonInner} tabIndex={-1}>
+            <IconMoreVert />
+          </div>
         </button>
         <div className={styles.menuContainer}>
           {menuIsOpen && (
