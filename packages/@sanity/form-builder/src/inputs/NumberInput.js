@@ -2,7 +2,6 @@
 import React from 'react'
 import TextInput from 'part:@sanity/components/textinputs/default'
 import FormField from 'part:@sanity/components/formfields/default'
-import {get} from 'lodash'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import type {Type, Marker} from '../typedefs'
 
