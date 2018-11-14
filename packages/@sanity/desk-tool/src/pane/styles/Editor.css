@@ -71,9 +71,13 @@
     padding-bottom: calc(var(--small-padding) + env(safe-area-inset-bottom));
   }
 
+  @media (min-width: 375px) {
+    grid-template-columns: 50% 50%;
+  }
+
   @media (--screen-medium) {
     position: absolute;
-    grid-template-columns: 6em 6em;
+    grid-template-columns: 10em 10em;
     padding: var(--small-padding) var(--medium-padding);
   }
 }
