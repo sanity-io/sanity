@@ -26,12 +26,6 @@
   overflow: hidden;
 }
 
-/* .link {
-  composes: noLink from "part:@sanity/base/theme/layout/helpers";
-  display: block;
-  padding: 1em;
-} */
-
 .brandLogoContainer {
   display: block;
   cursor: pointer;

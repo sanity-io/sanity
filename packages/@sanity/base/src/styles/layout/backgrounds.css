@@ -2,11 +2,6 @@
 
 .frosted {
   background-color: var(--backdrop-color);
-
-  /* @supports (backdrop-filter: blur(2px)) {
-    background-color: color(--backdrop-color) a(60%));
-    backdrop-filter: blur(2px);
-  } */
 }
 
 .listItemStates {

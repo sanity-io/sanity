@@ -14,10 +14,6 @@
   outline-color: var(--focus-color);
 }
 
-/* :global(a:hover) {
-  color: var(--link-hover-color);
-} */
-
 :global(body#sanityBody) {
   font-family: var(--font-family-sans-serif);
   line-height: var(--line-height-base);

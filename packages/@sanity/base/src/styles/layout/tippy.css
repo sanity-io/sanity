@@ -2,9 +2,6 @@
 
 @import 'part:@sanity/base/theme/variables-style';
 
-/* background-color: var(--main-navigation-color);
-color: var(--main-navigation-color--inverted); */
-
 :global(.tippy-touch) {
   cursor: pointer !important;
 }
