@@ -1,10 +1,10 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .content {
-  padding: 1rem;
+  padding: var(--medium-padding);
+  border: 1px solid var(--input-border-color);
   box-sizing: border-box;
-  width: 80vw;
-  height: 80vw;
+  background-color: var(--component-bg);
 }
 
 .toolbar {
@@ -12,6 +12,7 @@
 }
 
 .raw {
+  white-space: pre-wrap;
   font: 14px/1.4 Consolas, monospace;
-  outline-color: var(--brand-primary);
+  outline: none;
 }

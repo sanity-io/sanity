@@ -13,7 +13,7 @@ export default class FullScreenDialog extends React.PureComponent {
   static propTypes = {
     color: PropTypes.oneOf(['default', 'warning', 'info', 'success', 'danger']),
     className: PropTypes.string,
-    title: PropTypes.string,
+    title: PropTypes.node,
     children: PropTypes.node,
     onClose: PropTypes.func,
     centered: PropTypes.bool,

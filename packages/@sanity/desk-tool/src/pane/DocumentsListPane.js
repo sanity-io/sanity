@@ -23,9 +23,7 @@ import styles from './styles/DocumentsListPane.css'
 import listStyles from './styles/ListView.css'
 import InfiniteList from './InfiniteList'
 import PaneItem from './PaneItem'
-import settingsStore from 'part:@sanity/base/settings'
-
-const settings = settingsStore.forNamespace('desk-tool')
+import settings from '../settings'
 
 const DEFAULT_ORDERING = [{field: '_createdAt', direction: 'desc'}]
 
