@@ -15,7 +15,13 @@ export default class Poppable extends React.Component {
     target: PropTypes.node,
     children: PropTypes.node,
     referenceClassName: PropTypes.string,
-    ...Popper.propTypes
+    placement: PropTypes.string,
+    modifiers: PropTypes.shape({
+      preventOverflow: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+      customStyle: PropTypes.object,
+      flip: PropTypes.object,
+      offset: PropTypes.object
+    })
   }
 
   popperNode = undefined
@@ -54,8 +60,8 @@ export default class Poppable extends React.Component {
             <Stacked>
               {isActive => (
                 <div className={styles.portal}>
-                  <Popper {...this.props} innerRef={this.setPopperNode}>
-                    {({ref, placement, style, arrowProps}) => (
+                  <Popper innerRef={this.setPopperNode} modifiers={this.props.modifiers} placement={this.props.placement}>
+                    {({ref, placement, style}) => (
                       <div ref={ref} style={style} data-placement={placement}>
                         <Escapable onEscape={isActive ? onEscape : undefined} />
                         {onClickOutside ? (
