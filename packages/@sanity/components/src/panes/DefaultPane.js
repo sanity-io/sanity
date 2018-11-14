@@ -324,7 +324,8 @@ class Pane extends React.Component {
       renderActions,
       staticContent,
       minWidth,
-      maxWidth
+      maxWidth,
+      contentMaxWidth
     } = this.props
     const headerStyle = isCollapsed ? {} : this.state.headerStyle
     const actions = menuItems.filter(
@@ -341,10 +342,12 @@ class Pane extends React.Component {
           isSelected ? styles.isActive : styles.isDisabled
         ])}
         ref={this.setRootElement}
-        style={style}
       >
         <div className={styles.header} style={{boxShadow: headerStyle.boxShadow}}>
-          <div className={styles.headerContent}>
+          <div
+            className={styles.headerContent}
+            style={contentMaxWidth ? {maxWidth: `${contentMaxWidth}px`} : {}}
+          >
             <h2 className={styles.title} onClick={this.handleToggleCollapsed}>
               {title}
             </h2>
@@ -357,7 +360,9 @@ class Pane extends React.Component {
         <div className={styles.main}>
           {isScrollable ? (
             <ScrollContainer className={styles.scrollContainer} onScroll={this.handleContentScroll}>
-              {children}
+              <div style={contentMaxWidth ? {maxWidth: `${contentMaxWidth}px`} : {}}>
+                {children}
+              </div>
             </ScrollContainer>
           ) : (
             <div className={styles.notScrollable}>{children}</div>
