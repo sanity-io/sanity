@@ -311,8 +311,8 @@ export default withRouterHOC(
                     <div>
                       <h3>
                         {filterIsSimpleTypeContraint
-                          ? 'No documents of this type found.'
-                          : 'No documents matching this filter found.'}
+                          ? 'No documents of this type found'
+                          : 'No documents matching this filter found'}
                       </h3>
 
                       {typeName &&
