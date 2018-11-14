@@ -85,7 +85,7 @@ export default enhanceWithReferringDocuments(
           )}
           {!isCheckingReferringDocuments &&
             !hasReferringDocuments && (
-              <div style={{padding: 10}}>
+              <div>
                 <p>
                   Are you sure you would like to unpublish the document{' '}
                   <strong>

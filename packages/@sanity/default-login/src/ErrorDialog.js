@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Button from 'part:@sanity/components/buttons/default'
+import DialogContent from 'part:@sanity/components/dialogs/content'
 import CorsCheck from './CorsCheck'
 
 export default function ErrorDialog(props) {
@@ -11,10 +12,10 @@ export default function ErrorDialog(props) {
     <FullscreenDialog color="danger" title="Error" isOpen centered>
       {!isNetworkError && <p>{props.error.message}</p>}
       {isNetworkError && (
-        <div>
+        <DialogContent size="medium">
           <p>An error occured while attempting to reach the Sanity API.</p>
           <CorsCheck />
-        </div>
+        </DialogContent>
       )}
 
       <Button onClick={props.onRetry}>Retry</Button>

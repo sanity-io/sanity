@@ -35,7 +35,6 @@ export default enhanceWithReferringDocuments(
         referringDocuments,
         draft,
         published,
-        onCancel
       } = this.props
 
       const hasReferringDocuments = referringDocuments.length > 0
@@ -60,7 +59,6 @@ export default enhanceWithReferringDocuments(
           color="danger"
           centered
           title={title}
-          onClose={onCancel}
           onAction={this.handleAction}
           actions={actions}
         >
