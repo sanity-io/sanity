@@ -1,4 +1,4 @@
-import {isKeyHotkey} from 'is-hotkey'
+// import {isKeyHotkey} from 'is-hotkey'
 import PropTypes from 'prop-types'
 import React from 'react'
 import schema from 'part:@sanity/base/schema?'
@@ -16,9 +16,10 @@ import {filter, takeUntil, tap, debounceTime, map, switchMap} from 'rxjs/operato
 
 import resultsStyles from './styles/SearchResults.css'
 
-const hotKeys = {
-  openSearch: isKeyHotkey('ctrl+t')
-}
+// NOTE: Remove until we know what hotkey to use
+// const hotKeys = {
+//   openSearch: isKeyHotkey('ctrl+t')
+// }
 
 // Removes published documents that also has a draft
 function removeDupes(documents) {
@@ -227,11 +228,11 @@ class SearchContainer extends React.PureComponent {
   }
 
   handleWindowKeyDown = event => {
-    if (hotKeys.openSearch(event)) {
-      this.fieldInstance.inputElement.focus()
-      event.preventDefault()
-      event.stopPropagation()
-    }
+    // if (hotKeys.openSearch(event)) {
+    //   this.fieldInstance.inputElement.focus()
+    //   event.preventDefault()
+    //   event.stopPropagation()
+    // }
   }
 
   handleWindowResize = () => {
@@ -300,7 +301,6 @@ class SearchContainer extends React.PureComponent {
         isFocused={isFocused}
         isLoading={isLoading}
         isOpen={isOpen}
-        hotkeys={['Ctrl', 'T']}
         onBlur={this.handleBlur}
         onChange={this.handleInputChange}
         onClear={this.handleClear}
