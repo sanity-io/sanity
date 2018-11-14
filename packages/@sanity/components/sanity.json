@@ -416,7 +416,7 @@
     },
     {
       "name": "part:@sanity/components/typography/hotkeys",
-      "description": "Display hotlkeys. Takes an array of strings."
+      "description": "Display hotkeys. Takes an array of strings."
     },
     {
       "implements": "part:@sanity/components/utilities/arrow-key-navigation",
