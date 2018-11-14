@@ -6,6 +6,7 @@ import styles from './styles/UpdateNotifierDialog.css'
 
 function CurrentVersionsDialog(props) {
   const {onClose, versions} = props
+
   return (
     <Dialog isOpen onClose={onClose}>
       <div className={styles.content}>
@@ -40,9 +41,13 @@ function CurrentVersionsDialog(props) {
   )
 }
 
+CurrentVersionsDialog.defaultProps = {
+  versions: {}
+}
+
 CurrentVersionsDialog.propTypes = {
-  onClose: PropTypes.func.isRequired
-  // versions: PropTypes.object.isRequired
+  onClose: PropTypes.func.isRequired,
+  versions: PropTypes.objectOf(PropTypes.string)
 }
 
 export default CurrentVersionsDialog
