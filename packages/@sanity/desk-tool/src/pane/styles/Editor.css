@@ -71,6 +71,11 @@
     padding-bottom: calc(var(--small-padding) + env(safe-area-inset-bottom));
   }
 
+  /* NOTE: Work-around for hiding the snack bar when the keyboard is visible on small screens */
+  @media (max-height: 32em) {
+    position: relative;
+  }
+
   @media (min-width: 375px) {
     grid-template-columns: 50% 50%;
   }
