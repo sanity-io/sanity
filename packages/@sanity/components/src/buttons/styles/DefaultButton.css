@@ -135,7 +135,6 @@ span.content {
 
 .default {
   composes: root;
-  composes: shadow;
   background-color: var(--default-button-color);
   color: var(--default-button-color--inverted);
   border: 1px solid var(--default-button-color);
