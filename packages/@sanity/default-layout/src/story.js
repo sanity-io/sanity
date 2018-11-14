@@ -20,7 +20,7 @@ import ToolSwitcherItem from './components/ToolSwitcherItem'
 import NavBarStyles from './components/styles/NavBar.css'
 import DefaultLayoutStyles from './components/styles/DefaultLayout.css'
 
-storiesOf('Default layout')
+storiesOf('[tool] Default layout')
   .addDecorator(withKnobs)
   .add('Example', () => {
     const menuIsOpen = boolean('menuIsOpen', false, 'props')
