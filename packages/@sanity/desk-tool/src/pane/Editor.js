@@ -602,7 +602,7 @@ export default withRouterHOC(
           <div className={styles.publishInfoUndoButton}>
             {published && (
               <Button kind="simple" onClick={() => this.setState({showConfirmDiscard: true})}>
-                Discard…
+                Discard changes
               </Button>
             )}
             {this.state.showConfirmDiscard && (
@@ -628,7 +628,7 @@ export default withRouterHOC(
             )}
             {!published && (
               <Button kind="simple" onClick={() => this.setState({showConfirmDelete: true})}>
-                Delete…
+                Delete document
               </Button>
             )}
           </div>
