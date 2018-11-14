@@ -7,7 +7,7 @@ import styles from './styles/SearchResults.css'
 class SearchResults extends React.PureComponent {
   static propTypes = {
     activeIndex: PropTypes.number.isRequired,
-    isBleeding: PropTypes.bool.isRequired,
+    // isBleeding: PropTypes.bool.isRequired,
     isLoading: PropTypes.bool.isRequired,
     items: PropTypes.arrayOf(
       PropTypes.shape({
@@ -24,23 +24,25 @@ class SearchResults extends React.PureComponent {
     this.element = ref
   }
 
+  // eslint-disable-next-line class-methods-use-this
   componentDidUpdate(prevProps) {
-    const {isBleeding} = this.props
-
-    // Scroll active element into view (when user uses arrow keys)
-    if (!isBleeding && this.element && prevProps.activeIndex !== this.props.activeIndex) {
-      const activeItemElement = this.element.childNodes[this.props.activeIndex]
-
-      if (activeItemElement) {
-        // Use try/catch to avoid crashing unsupported browsers
-        // eslint-disable-next-line max-depth
-        try {
-          activeItemElement.scrollIntoView({block: 'nearest'})
-        } catch (__) {
-          // ignore
-        }
-      }
-    }
+    // NOTE: Disabled because `{block: 'nearest'}` is not supported by all browsers
+    // const {isBleeding} = this.props
+    //
+    // // Scroll active element into view (when user uses arrow keys)
+    // if (!isBleeding && this.element && prevProps.activeIndex !== this.props.activeIndex) {
+    //   const activeItemElement = this.element.childNodes[this.props.activeIndex]
+    //
+    //   if (activeItemElement) {
+    //     // Use try/catch to avoid crashing unsupported browsers
+    //     // eslint-disable-next-line max-depth
+    //     try {
+    //       activeItemElement.scrollIntoView({block: 'nearest'})
+    //     } catch (__) {
+    //       // ignore
+    //     }
+    //   }
+    // }
   }
 
   render() {
