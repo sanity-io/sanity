@@ -19,7 +19,11 @@
 }
 
 .list + .functions {
-  padding-top: var(--medium-padding);
+  padding-top: var(--small-padding);
+
+  @media (--screen-medium) {
+    padding-top: var(--medium-padding);
+  }
 }
 
 .popupAnchor {
@@ -71,4 +75,3 @@
 .fixMissingKeysButtonWrapper {
   margin: 1em 0;
 }
-
