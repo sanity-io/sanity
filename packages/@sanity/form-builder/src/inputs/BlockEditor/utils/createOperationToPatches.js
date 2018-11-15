@@ -229,8 +229,6 @@ export default function createOperationToPatches(
       patches.push(set(mergedBlock, [{_key: mergedBlock._key}]))
     }
 
-    console.log(JSON.stringify(patches, null, 2))
-
     return patches
   }
 
@@ -296,7 +294,6 @@ export default function createOperationToPatches(
     afterValue: SlateValue,
     formBuilderValue?: ?(FormBuilderValue[]) // This is optional, but needed for setting setIfMissing patches correctly
   ) {
-    // console.log(JSON.stringify(operation.toJSON(), null, 2))
     switch (operation.type) {
       case 'insert_text':
         return insertTextPatch(operation, beforeValue, afterValue, formBuilderValue)
