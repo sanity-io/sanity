@@ -1,7 +1,7 @@
 // @flow
 import React from 'react'
 
-import {Tooltip} from '@sanity/react-tippy'
+import {Tooltip} from 'react-tippy'
 import CommentIcon from 'part:@sanity/base/comment-icon'
 import type {Marker} from '../typeDefs'
 

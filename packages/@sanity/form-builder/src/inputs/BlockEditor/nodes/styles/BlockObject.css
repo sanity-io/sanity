@@ -27,10 +27,6 @@
   box-shadow: var(--form-builder-block-shadow--error);
   background-color: color(var(--state-danger-color) a(10%));
   border: 1px solid var(--form-builder-block-border-color-error);
-
-  @nest &:hover {
-    box-shadow: var(--form-builder-block-shadow--error-hover);
-  }
 }
 
 .root.focused > .previewContainer {

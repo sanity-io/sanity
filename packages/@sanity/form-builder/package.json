@@ -6,17 +6,11 @@
   "scripts": {
     "clean": "rimraf lib",
     "typecheck": "flow check",
-<<<<<<< HEAD
-=======
-    "tap": "tap --node-arg -r --node-arg ./test/.init.js",
     "test": "NODE_ENV=test jest",
->>>>>>> [form-builder] Upgrade slate & realtime patching
     "start": "npm run example-testbed",
     "example-testbed": "cd examples/schema-testbed && sanity start",
     "example-undo": "cd examples/undo && sanity start",
-    "example-quickstart": "cd examples/quickstart && sanity start",
-    "tap": "tap --node-arg -r --node-arg ./test/.init.js",
-    "test": "npm run tap ./test/*.test.js ./test/**/*.test.js"
+    "example-quickstart": "cd examples/quickstart && sanity start"
   },
   "jest": {
     "testEnvironment": "node",

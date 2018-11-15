@@ -6,7 +6,7 @@ import React from 'react'
 import classnames from 'classnames'
 import enhanceWithClickOutside from 'react-click-outside'
 import {ContainerQuery} from 'react-container-query'
-import {Tooltip} from '@sanity/react-tippy'
+import {Tooltip} from 'react-tippy'
 
 import ArrowIcon from 'part:@sanity/base/angle-down-icon'
 import Button from 'part:@sanity/components/buttons/default'
