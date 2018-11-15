@@ -1,17 +1,17 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import queryString from 'query-string'
-import {storeState, getState} from '../util/localState'
-import parseApiQueryString from '../util/parseApiQueryString'
-import tryParseParams from '../util/tryParseParams'
-import DelayedSpinner from './DelayedSpinner'
-import QueryEditor from './QueryEditor'
-import ParamsEditor from './ParamsEditor'
-import ResultView from './ResultView'
-import NoResultsDialog from './NoResultsDialog'
-import QueryErrorDialog from './QueryErrorDialog'
-import SplitPane from 'react-split-pane'
-import encodeQueryString from '../util/encodeQueryString'
+import PropTypes from 'prop-types';
+import queryString from 'query-string';
+import React from 'react';
+import SplitPane from 'react-split-pane';
+import encodeQueryString from '../util/encodeQueryString';
+import { getState, storeState } from '../util/localState';
+import parseApiQueryString from '../util/parseApiQueryString';
+import tryParseParams from '../util/tryParseParams';
+import DelayedSpinner from './DelayedSpinner';
+import NoResultsDialog from './NoResultsDialog';
+import ParamsEditor from './ParamsEditor';
+import QueryEditor from './QueryEditor';
+import QueryErrorDialog from './QueryErrorDialog';
+import ResultView from './ResultView';
 
 const sanityUrl = /\.api\.sanity\.io.*?(?:query|listen)\/(.*?)\?(.*)/
 
@@ -28,17 +28,19 @@ const handleCopyUrl = () => {
 }
 
 class VisionGui extends React.PureComponent {
-  constructor(props) {
-    super(props)
+  constructor(props, context) {
+    super(props, context)
 
     const lastQuery = getState('lastQuery')
     const lastParams = getState('lastParams')
 
     const firstDataset = this.props.datasets[0] && this.props.datasets[0].name
-    let dataset = getState('dataset', firstDataset)
+    const defaultDataset = context.client.config().dataset || firstDataset
 
-    if (!this.props.datasets.includes(dataset)) {
-      dataset = firstDataset
+    let dataset = getState('dataset', defaultDataset)
+
+    if (!this.props.datasets.some(({name}) => name === dataset)) {
+      dataset = defaultDataset
     }
 
     this.subscribers = {}
@@ -273,7 +275,7 @@ class VisionGui extends React.PureComponent {
             <label className={styles.datasetSelectorContainer}>
               <span className={styles.datasetLabel}>Dataset</span>
               <Select
-                value={this.state.dataset || client.config().dataset}
+                value={this.state.dataset || client.config().dataset || this.props}
                 values={datasets}
                 onChange={this.handleChangeDataset}
               />
@@ -347,10 +349,12 @@ class VisionGui extends React.PureComponent {
                 {queryInProgress && <DelayedSpinner />}
                 {error && <QueryErrorDialog error={error} />}
                 {hasResult && <ResultView data={result} query={query} />}
-                {Array.isArray(result) &&
-                  result.length === 0 && <NoResultsDialog query={query} dataset={dataset} />}
-                {listenMutations &&
-                  listenMutations.length > 0 && <ResultView data={listenMutations} />}
+                {Array.isArray(result) && result.length === 0 && (
+                  <NoResultsDialog query={query} dataset={dataset} />
+                )}
+                {listenMutations && listenMutations.length > 0 && (
+                  <ResultView data={listenMutations} />
+                )}
               </div>
             </div>
           </SplitPane>
