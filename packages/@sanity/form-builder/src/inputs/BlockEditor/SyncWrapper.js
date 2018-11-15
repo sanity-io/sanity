@@ -22,6 +22,7 @@ import type {
   RenderCustomMarkers,
   SlateEditor,
   SlateOperation,
+  SlateSelection,
   SlateValue,
   Type,
   UndoRedoStack
@@ -253,6 +254,14 @@ export default withPatchSubscriber(
       }
     }
 
+    restoreLatestValue(lastKnownSelection: ?SlateSelection) {
+      this._controller.setValue(deserialize(this.props.value, this.props.type))
+      if (lastKnownSelection) {
+        this._controller.select(lastKnownSelection)
+      }
+      this.setState({editorValue: this._controller.value})
+    }
+
     handleChangeSet = (changeSet: ChangeSet) => {
       const {operations, isRemote, selection} = changeSet
       // Add undo step for local changes
@@ -294,17 +303,26 @@ export default withPatchSubscriber(
           this._controller.flush() // Must flush here or we might end up trying to patch something that isn't there anymore
         } else {
           const beforeValue = this._controller.value
-          this._controller.applyOperation(op)
-          localChangeGroups.push({
-            patches: this.operationToPatches(
-              op,
-              beforeValue,
-              this._controller.value,
-              this.props.value
-            ),
-            operation: op
-          })
-          this._controller.flush()
+          try {
+            this._controller.applyOperation(op)
+            this._controller.flush() // Must flush here too!
+            localChangeGroups.push({
+              patches: this.operationToPatches(
+                op,
+                beforeValue,
+                this._controller.value,
+                this.props.value
+              ),
+              operation: op
+            })
+          } catch (err) {
+            console.log(
+              `Got error trying to apply local operation. The error was '${
+                err.message
+              }' The operation was ${JSON.stringify(op.toJSON())}`
+            )
+            this.restoreLatestValue(beforeValue.selection)
+          }
         }
       })
       // Set the new state
@@ -414,9 +432,11 @@ export default withPatchSubscriber(
           this._pendingLocalChanges.length > 0
         ) {
           console.log(`Pending local changes after rebase: ${this._pendingLocalChanges.length}`)
-          const operations = flatten(
-            this._pendingLocalChanges.map(changeGroup =>
-              flatten(changeGroup.map(changes => changes.operation))
+          const operations = List(
+            flatten(
+              this._pendingLocalChanges.map(changeGroup =>
+                flatten(changeGroup.map(changes => changes.operation))
+              )
             )
           )
           const {selection} = this._controller.value
