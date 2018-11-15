@@ -33,11 +33,10 @@
 }
 
 .popper {
-  position: fixed;
-  z-index: var(--zindex-portal);
-  max-height: 80vh;
-  overflow: auto;
   composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
+  position: fixed;
   box-sizing: border-box;
   background-color: var(--component-bg);
+  overflow: auto;
+  max-height: calc(100vh - var(--medium-padding) * 2);
 }

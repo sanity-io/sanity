@@ -48,7 +48,11 @@ const items = [
   {index: '4', title: 'Test 4'},
   {index: '5', title: 'Test 5'},
   {index: '6', title: 'Test 6'},
-  {index: '7', title: 'Test 7'}
+  {index: '7', title: 'Test 7'},
+  {index: '8', title: 'Test 8'},
+  {index: '9', title: 'Test 9'},
+  {index: '10', title: 'Test 10'},
+  {index: '11', title: 'Test 11'}
 ]
 
 function action(something) {
