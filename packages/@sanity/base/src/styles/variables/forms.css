@@ -58,7 +58,7 @@
     0 2px 5px 0 color(var(--input-border-color-focus) a(25%)),
     0 0 1px 1px color(var(--input-border-color-focus) a(40%));
   --form-builder-block-shadow--focus: var(--input-box-shadow--focus);
-  --form-builder-block-shadow--error: var(--input-box-shadow--error);
-  --form-builder-block-shadow--error-focus: var(--input-box-shadow--error-focus);
-  --form-builder-block-shadow--error-hover: var(--input-box-shadow--error-hover);
+  --form-builder-block-shadow--error: var(--input-box-shadow--invalid);
+  --form-builder-block-shadow--error-focus: var(--input-box-shadow--invalid-focus);
+  --form-builder-block-border-radius: var(--border-radius-small);
 }
