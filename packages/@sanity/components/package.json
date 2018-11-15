@@ -1,6 +1,6 @@
 {
   "name": "@sanity/components",
-  "version": "0.135.4",
+  "version": "0.136.0",
   "description": "Basic UX components",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -20,9 +20,8 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@sanity/date-input": "0.135.0",
-    "@sanity/imagetool": "0.135.0",
-    "react-tippy": "^1.2.3",
+    "@sanity/date-input": "0.136.0",
+    "@sanity/imagetool": "0.136.0",
     "attr-accept": "^1.1.0",
     "boundless-arrow-key-navigation": "^1.1.0",
     "canvas-to-blob": "^0.0.0",
@@ -41,9 +40,9 @@
     "lodash": "^4.17.4",
     "nano-pubsub": "^1.0.2",
     "popper.js": "1.14.1",
-    "react-animate-height": "^2.0.6",
     "react-addons-css-transition-group": "^15.4.1",
     "react-addons-shallow-compare": "^15.4.1",
+    "react-animate-height": "^2.0.6",
     "react-click-outside": "^3.0.0",
     "react-container-query": "^0.8.0",
     "react-draggable": "^2.2.2",
@@ -53,13 +52,14 @@
     "react-popper": "^1.0.2",
     "react-sortable-hoc": "^0.6.3",
     "react-split-pane": "^0.1.63",
+    "react-tippy": "^1.2.3",
     "rxjs": "^6.1.0",
     "scroll": "^2.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "0.135.4",
-    "@sanity/check": "0.135.0",
-    "@sanity/core": "0.135.3",
+    "@sanity/base": "0.136.0",
+    "@sanity/check": "0.136.0",
+    "@sanity/core": "0.136.0",
     "pre-commit": "^1.2.2",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
