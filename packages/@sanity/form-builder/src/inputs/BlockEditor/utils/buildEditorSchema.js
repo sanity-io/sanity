@@ -56,7 +56,7 @@ export default function buildEditorSchema(
             editor: SlateEditor,
             {code, node, child}: {code: string, node: SlateNode, child: SlateNode}
           ) => {
-            if (code === 'child_required') {
+            if (code === 'child_min_invalid') {
               const block = createEmptyBlock()
               editor.applyOperation({
                 type: 'insert_node',
