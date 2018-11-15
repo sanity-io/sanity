@@ -127,7 +127,7 @@
   top: 0;
   left: 0;
   background-color: var(--blockEditorFullscreenBackground);
-  padding-top: 5rem;
+  padding-top: 3rem;
   padding-bottom: 5rem;
   box-sizing: border-box;
   composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
