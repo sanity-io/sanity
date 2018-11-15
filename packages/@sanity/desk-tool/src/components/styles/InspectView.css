@@ -11,6 +11,12 @@
   margin-bottom: 1rem;
 }
 
+.urls {
+  padding: var(--medium-padding);
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 1rem;
+}
+
 .raw {
   white-space: pre-wrap;
   font: 14px/1.4 Consolas, monospace;

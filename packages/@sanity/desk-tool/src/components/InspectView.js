@@ -9,6 +9,9 @@ import JSONInspector from 'react-json-inspector'
 import FullScreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import RadioButtons from 'part:@sanity/components/selects/radio'
 
+import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
+import client from 'part:@sanity/base/client'
+
 import {isObject} from 'lodash'
 import HLRU from 'hashlru'
 import settings from '../settings'
@@ -75,6 +78,16 @@ function mapReceivedPropsToChildProps(props$) {
   )
 }
 
+function getUrl(documentId, section) {
+  return client.getUrl(client.getDataUrl(section, documentId))
+}
+function getListenerUrl(documentId) {
+  return client.getUrl(client.getDataUrl('listen', documentId))
+}
+
+function link(url) {
+  return <a href={url}>{url}</a>
+}
 function InspectView(props) {
   const {value, viewMode, onClose, onViewModeChange} = props
   return (
@@ -94,6 +107,11 @@ function InspectView(props) {
         <RadioButtons value={viewMode} items={VIEW_MODES} onChange={onViewModeChange} />
       </div>
       <div className={styles.content}>
+        <div className={styles.urls}>
+          <div>Draft url: {link(getUrl(getDraftId(value._id), 'doc'))}</div>
+          <div>Published url: {link(getUrl(getPublishedId(value._id), 'doc'))}</div>
+          <div>Listener url: {link(getListenerUrl(getPublishedId(value._id)))}</div>
+        </div>
         {viewMode === VIEW_MODE_PARSED && (
           <JSONInspector isExpanded={isExpanded} onClick={toggleExpanded} data={value} />
         )}
