@@ -39,6 +39,7 @@
   display: flex;
   align-items: center;
   padding-left: 0.5em;
+  margin-left: auto;
 }
 
 .portal {
