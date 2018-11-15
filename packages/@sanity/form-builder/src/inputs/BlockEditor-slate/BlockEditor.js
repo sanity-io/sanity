@@ -3,7 +3,6 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import {Data, State} from 'slate'
 import {Editor} from 'slate-react'
-import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen?'
 import ScrollContainer from 'part:@sanity/components/utilities/scroll-container'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import {uniqueId} from 'lodash'
@@ -16,6 +15,7 @@ import initializeSlatePlugins from './util/initializeSlatePlugins'
 
 import styles from './styles/BlockEditor.css'
 import {SLATE_SPAN_TYPE} from './constants'
+
 const NOOP = () => {}
 
 export default class BlockEditor extends React.Component {
@@ -325,7 +325,10 @@ export default class BlockEditor extends React.Component {
     const {fullscreen, toolbarStyle, preventScroll, editorHasFocus} = this.state
 
     return (
-      <div className={`${styles.root} ${fullscreen ? styles.fullscreen : ''}`} ref={this.blockEditorRef}>
+      <div
+        className={`${styles.root} ${fullscreen ? styles.fullscreen : ''}`}
+        ref={this.blockEditorRef}
+      >
         <ActivateOnFocus
           isActive={editorHasFocus || fullscreen || !preventScroll}
           onClick={this.handleEditorFocus}
@@ -403,6 +406,10 @@ export default class BlockEditor extends React.Component {
     })
   }
 
+  renderPortal = children => {
+    return ReactDOM.createPortal(<div className={styles.portal}>{children}</div>, document.body)
+  }
+
   render() {
     const {type, level, markers} = this.props
     const {fullscreen} = this.state
@@ -424,15 +431,13 @@ export default class BlockEditor extends React.Component {
         >
           Jump to editor
         </button>
-        {fullscreen ? (
-          <FullscreenDialog isOpen onClose={this.handleFullScreenClose}>
-            <ScrollContainer className={styles.portal} onScroll={this.handleFullScreenScroll}>
-              {blockEditor}
-            </ScrollContainer>
-          </FullscreenDialog>
-        ) : (
-          blockEditor
-        )}
+        {fullscreen
+          ? this.renderPortal(
+              <ScrollContainer className={styles.portal} onScroll={this.handleFullScreenScroll}>
+                {blockEditor}
+              </ScrollContainer>
+            )
+          : blockEditor}
       </FormField>
     )
   }
