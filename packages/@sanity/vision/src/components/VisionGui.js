@@ -28,17 +28,19 @@ const handleCopyUrl = () => {
 }
 
 class VisionGui extends React.PureComponent {
-  constructor(props) {
-    super(props)
+  constructor(props, context) {
+    super(props, context)
 
     const lastQuery = getState('lastQuery')
     const lastParams = getState('lastParams')
 
     const firstDataset = this.props.datasets[0] && this.props.datasets[0].name
-    let dataset = getState('dataset', firstDataset)
+    const defaultDataset = context.client.config().dataset || firstDataset
 
-    if (!this.props.datasets.includes(dataset)) {
-      dataset = firstDataset
+    let dataset = getState('dataset', defaultDataset)
+
+    if (!this.props.datasets.some(({name}) => name === dataset)) {
+      dataset = defaultDataset
     }
 
     this.subscribers = {}
