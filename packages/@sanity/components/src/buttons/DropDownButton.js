@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, {Fragment} from 'react'
 import styles from 'part:@sanity/components/buttons/dropdown-style'
 import Button from 'part:@sanity/components/buttons/default'
 import ArrowIcon from 'part:@sanity/base/angle-down-icon'
@@ -9,6 +9,20 @@ import {omit, get} from 'lodash'
 import Poppable from 'part:@sanity/components/utilities/poppable'
 // import ArrowKeyNavigation from 'part:@sanity/components/utilities/arrow-key-navigation'
 import ArrowKeyNavigation from 'boundless-arrow-key-navigation/build'
+
+const modifiers = {
+  preventOverflow: 'viewport',
+  customStyle: {
+    enabled: true,
+    fn: data => {
+      data.styles = {
+        ...data.styles,
+        minWidth: `${get(data, 'offsets.reference.width' || 100)}px`
+      }
+      return data
+    }
+  }
+}
 
 export default class DropDownButton extends React.PureComponent {
   static propTypes = {
@@ -28,13 +42,15 @@ export default class DropDownButton extends React.PureComponent {
     colored: PropTypes.bool,
     color: PropTypes.string,
     className: PropTypes.string,
-    renderItem: PropTypes.func
+    renderItem: PropTypes.func,
+    placement: PropTypes.string
   }
 
   static defaultProps = {
     renderItem(item) {
       return <div>{item.title}</div>
-    }
+    },
+    placement: "bottom-start"
   }
 
   firstItemElement = React.createRef()
@@ -56,8 +72,7 @@ export default class DropDownButton extends React.PureComponent {
 
   handleOnClick = event => {
     this.setState({
-      menuOpened: true,
-      width: event.target.offsetWidth
+      menuOpened: true
     })
     // Checks if the onClick comes from pressing the keyboard
     this.keyboardNavigation = event.detail == 0
@@ -111,22 +126,8 @@ export default class DropDownButton extends React.PureComponent {
   }
 
   render() {
-    const {items, renderItem, children, kind, className, ...rest} = omit(this.props, 'onAction')
-    const {menuOpened, width} = this.state
-
-    const modifiers = {
-      preventOverflow: 'viewport',
-      customStyle: {
-        enabled: true,
-        fn: data => {
-          data.styles = {
-            ...data.styles,
-            minWidth: get(data, 'offsets.width' || 100)
-          }
-          return data
-        }
-      }
-    }
+    const {items, renderItem, children, kind, className, placement, ...rest} = omit(this.props, 'onAction')
+    const {menuOpened} = this.state
 
     const target = (
       <Button
@@ -147,14 +148,16 @@ export default class DropDownButton extends React.PureComponent {
     return (
       <Poppable
         modifiers={modifiers}
+        placement={placement}
         target={target}
         onEscape={this.handleClose}
         onClickOutside={this.handleClose}
         referenceClassName={styles.outer}
+        popperClassName={styles.popper}
         positionFixed
       >
         {menuOpened && (
-          <div className={styles.popper} style={{minWidth: `${width}px`}}>
+          <Fragment>
             <List className={styles.list}>
               <ArrowKeyNavigation>
                 {items.map((item, i) => {
@@ -175,7 +178,7 @@ export default class DropDownButton extends React.PureComponent {
               </ArrowKeyNavigation>
             </List>
             <div tabIndex={0} onFocus={this.handleMenuBlur} />
-          </div>
+          </Fragment>
         )}
       </Poppable>
     )
