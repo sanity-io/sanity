@@ -12,7 +12,7 @@ export default function ErrorDialog(props) {
     <FullscreenDialog color="danger" title="Error" isOpen centered>
       {!isNetworkError && <p>{props.error.message}</p>}
       {isNetworkError && (
-        <DialogContent size="medium">
+        <DialogContent size="medium" padding="none">
           <p>An error occured while attempting to reach the Sanity API.</p>
           <CorsCheck />
         </DialogContent>
