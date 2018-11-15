@@ -34,4 +34,11 @@ export type InsertPatch = {
   items: JSONValue[]
 }
 
-export type Patch = SetPatch | SetIfMissingPatch | UnsetPatch | InsertPatch
+export type DiffMatchPatch = {
+  path: Path,
+  type: 'diffMatchPatch',
+  origin: Origin,
+  value: string
+}
+
+export type Patch = SetPatch | SetIfMissingPatch | UnsetPatch | InsertPatch | DiffMatchPatch
