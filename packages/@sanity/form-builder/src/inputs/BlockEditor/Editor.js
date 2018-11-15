@@ -110,6 +110,7 @@ export default class Editor extends React.Component<Props> {
     super(props)
     this._editorSchema = buildEditorSchema(props.blockContentFeatures)
     this._plugins = [
+      QueryPlugin(),
       ListItemOnEnterKeyPlugin({defaultBlock: EDITOR_DEFAULT_BLOCK_TYPE}),
       ListItemOnTabKeyPlugin(),
       ToggleListItemPlugin(),
@@ -121,15 +122,15 @@ export default class Editor extends React.Component<Props> {
         onlyIn: [EDITOR_DEFAULT_BLOCK_TYPE.type],
         shift: true
       }),
-      // PastePlugin({
-      //   controller: this._controller,
-      //   blockContentType: props.type,
-      //   onChange: props.onChange,
-      //   onProgress: this.handlePasteProgress
-      // }),
+      PastePlugin({
+        controller: this._editor,
+        blockContentType: props.type,
+        blockContentFeatures: props.blockContentFeatures,
+        onChange: props.onChange,
+        onProgress: this.handlePasteProgress
+      }),
       insertBlockOnEnter(EDITOR_DEFAULT_BLOCK_TYPE),
       OnDropPlugin(),
-      QueryPlugin(),
       SetBlockStylePlugin(),
       ToggleAnnotationPlugin(),
       ExpandToWordPlugin(),
@@ -331,8 +332,8 @@ export default class Editor extends React.Component<Props> {
   handleToggleFullscreen = (event: SyntheticEvent<>, editor: SlateEditor, next: void => void) => {
     const isFullscreenKey = isKeyHotkey('mod+enter')
     const isEsc = isKeyHotkey('esc')
-    const {onToggleFullScreen} = this.props
-    if (isFullscreenKey(event) || isEsc(event)) {
+    const {onToggleFullScreen, fullscreen} = this.props
+    if (isFullscreenKey(event) || (isEsc(event) && fullscreen)) {
       event.preventDefault()
       event.stopPropagation()
       onToggleFullScreen(event)
