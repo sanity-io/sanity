@@ -217,7 +217,7 @@ export default withPatchSubscriber(
       this.operationToPatches = createOperationToPatches(this._blockContentFeatures, type)
       this.patchToOperations = createPatchToOperations(this._blockContentFeatures, type)
       this.state.editorValue = this._controller.value // Normalized value by editor schema
-      props.subscribe(this.handleDocumentPatches)
+      this._unsubscribePatches = props.subscribe(this.handleDocumentPatches)
       this._changeSubscription = this.changes$.subscribe(this.handleChangeSet)
     }
 
