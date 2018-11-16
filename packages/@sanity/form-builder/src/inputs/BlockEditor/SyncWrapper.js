@@ -1,6 +1,7 @@
 // @flow
 
 import React from 'react'
+import {Subject} from 'rxjs'
 import {getBlockContentFeatures} from '@sanity/block-tools'
 import generateHelpUrl from '@sanity/generate-help-url'
 import {debounce, unionBy, flatten, isEqual} from 'lodash'
@@ -34,9 +35,10 @@ import createOperationToPatches from './utils/createOperationToPatches'
 import createPatchToOperations from './utils/createPatchToOperations'
 import deserialize from './utils/deserialize'
 import isWritingTextOperationsOnly from './utils/isWritingTextOperation'
-import {localChanges$, remoteChanges$, changes$} from './utils/changeObservers'
 
 import styles from './styles/SyncWrapper.css'
+
+import {merge} from 'rxjs/operators'
 
 function findBlockType(type: Type) {
   return type.of && type.of.find(ofType => ofType.name === 'block')
@@ -130,6 +132,9 @@ export default withPatchSubscriber(
       formBuilderValue?: ?(FormBuilderValue[])
     ) => Patch[]
     patchToOperations: (patch: Patch, editorValue: SlateValue) => SlateOperation[]
+    localChanges$ = new Subject()
+    remoteChanges$ = new Subject()
+    changes$ = this.localChanges$.pipe(merge(this.remoteChanges$))
 
     static getDerivedStateFromProps(nextProps, state) {
       // Make sure changes to markers are reflected in the editor value.
@@ -198,9 +203,6 @@ export default withPatchSubscriber(
         this.state.invalidBlockValue = true
         unNormalizedEditorValue = deserialize([], type)
       }
-      this._unsubscribePatches = props.subscribe(this.handleDocumentPatches)
-      this._changeSubscription = changes$.subscribe(this.handleChangeSet)
-
       this._blockContentFeatures = getBlockContentFeatures(type)
       const editorSchema = buildEditorSchema(this._blockContentFeatures)
       const controllerOpts = {
@@ -214,8 +216,9 @@ export default withPatchSubscriber(
       this._controller = createEditorController(controllerOpts)
       this.operationToPatches = createOperationToPatches(this._blockContentFeatures, type)
       this.patchToOperations = createPatchToOperations(this._blockContentFeatures, type)
-
       this.state.editorValue = this._controller.value // Normalized value by editor schema
+      props.subscribe(this.handleDocumentPatches)
+      this._changeSubscription = this.changes$.subscribe(this.handleChangeSet)
     }
 
     componentWillUnmount() {
@@ -242,7 +245,7 @@ export default withPatchSubscriber(
     handleEditorChange = (editor: SlateEditor, callback: void => void) => {
       const {operations, value} = editor
       const {selection} = value
-      localChanges$.next({
+      this.localChanges$.next({
         operations,
         isRemote: false,
         selection,
@@ -317,6 +320,7 @@ export default withPatchSubscriber(
               operation: op
             })
           } catch (err) {
+            // eslint-disable-next-line no-console
             console.log(
               `Got error trying to apply local operation. The error was '${
                 err.message
@@ -384,7 +388,7 @@ export default withPatchSubscriber(
     updateDecorations() {
       const {decorations} = this.state
       this._controller.withoutSaving(() => {
-        localChanges$.next({
+        this.localChanges$.next({
           operations: this._controller.setDecorations(decorations).operations,
           isRemote: false
         })
@@ -396,7 +400,7 @@ export default withPatchSubscriber(
       const {editorValue} = this.state
       event.patches.forEach(patch => {
         const operations = this.patchToOperations(patch, editorValue)
-        localChanges$.next({
+        this.localChanges$.next({
           operations,
           editorValue: editorValue,
           isRemote: true,
@@ -424,7 +428,7 @@ export default withPatchSubscriber(
       if (remoteAndInternalPatches.length > 0) {
         remoteAndInternalPatches.forEach(patch => {
           const operations = this.patchToOperations(patch, this._controller.value)
-          remoteChanges$.next({
+          this.remoteChanges$.next({
             operations,
             isRemote: patch.origin,
             patches: remoteAndInternalPatches
@@ -436,7 +440,7 @@ export default withPatchSubscriber(
           remoteAndInternalPatches.some(patch => patch.origin === 'internal') &&
           this._pendingLocalChanges.length > 0
         ) {
-          console.log(`Pending local changes after rebase: ${this._pendingLocalChanges.length}`)
+          // console.log(`Pending local changes after rebase: ${this._pendingLocalChanges.length}`)
           const operations = List(
             flatten(
               this._pendingLocalChanges.map(changeGroup =>
@@ -445,7 +449,7 @@ export default withPatchSubscriber(
             )
           )
           const {selection} = this._controller.value
-          localChanges$.next({
+          this.localChanges$.next({
             operations,
             isRemote: false,
             selection
