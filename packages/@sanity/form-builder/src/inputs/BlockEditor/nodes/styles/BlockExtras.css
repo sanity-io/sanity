@@ -5,34 +5,74 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  left: calc(100% - 2px);
+  left: 0;
+  right: 0;
   user-select: none;
   font-weight: normal;
-  font-size: 1rem;
-  padding-left: var(--small-padding);
+  width: 100%;
+  pointer-events: none;
+  font-size: var(--font-size-xsmall);
 }
 
-.withSomething {
-  composes: root;
-  border-left: 2px solid var(--brand-primary);
+.content {
+  height: calc(100% - var(--extra-small-padding) * 2);
+  position: relative;
+  top: 0;
+  right: 0;
+  transform: translateX(100%);
+  pointer-events: all;
+  border-left: 2px solid transparent;
+  padding-left: var(--small-padding);
   margin-bottom: var(--extra-small-padding);
   margin-top: var(--extra-small-padding);
+
+  @nest &:hover {
+    background-color: color(var(--text-color) a(2%));
+  }
+
+  @nest &:hover::before {
+    content: '';
+    position: absolute;
+    box-sizing: border-box;
+    left: -2px;
+    width: calc(100% + 2px);
+    height: 100%;
+    transform: translateX(-100%);
+    background-color: color(var(--text-color) a(3%));
+  }
 }
 
 .withError {
-  composes: withSomething;
-  border-left: 2px solid var(--state-danger-color);
+  composes: root;
+
+  @nest & .content {
+    border-left: 2px solid var(--state-danger-color);
+  }
+
+  @nest & .content:hover::before {
+    background-color: color(var(--state-danger-color) a(10%));
+  }
 }
 
 .withWarning {
-  composes: withSomething;
+  composes: root;
   border-left: 2px solid var(--state-warning-color);
+
+  @nest &:hover::before {
+    background-color: color(var(--state-warning-color) a(10%));
+  }
 }
 
 .blockActions {
-  color: var(--text-color);
+  @nest & .content {
+    color: var(--text-color);
+    border-left: 2px solid var(--text-color);
+  }
 }
 
 .markers {
-  color: var(--text-color);
+  @nest & .content {
+    border-left: 2px solid var(--state-info-color);
+    color: var(--text-color);
+  }
 }

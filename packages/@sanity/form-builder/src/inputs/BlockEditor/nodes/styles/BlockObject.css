@@ -25,8 +25,8 @@
 
 .root.hasErrors > .previewContainer {
   box-shadow: var(--form-builder-block-shadow--error);
-  background-color: color(var(--state-danger-color) a(10%));
-  border: 1px solid var(--form-builder-block-border-color-error);
+  /* background-color: color(var(--state-danger-color) a(10%));
+  border: 1px solid var(--form-builder-block-border-color-error); */
 }
 
 .root.focused > .previewContainer {
@@ -67,12 +67,13 @@
   height: 2.5rem;
   position: absolute;
   padding: var(--small-padding);
+  padding-right: 0;
   border-radius: var(--border-radius-base);
-  background-color: color(var(--component-bg) a(90%));
+  background-color: color(var(--brand-darkest) 70%);
+  color: color(var(--brand-darkest--inverted));
   top: var(--small-padding);
   right: var(--small-padding);
   font-size: var(--font-size-small);
-  border: 1px solid var(--form-builder-block-border-color);
 }
 
 .type {
@@ -119,4 +120,21 @@
 
 .isDragging {
   opacity: 0.15;
+}
+
+.functions {
+  display: flex;
+}
+
+.menuContainer {
+  position: absolute;
+}
+
+.menuItem {
+  display: flex;
+}
+
+.menuItemDanger {
+  composes: menuItem;
+  color: var(--state-danger-color);
 }

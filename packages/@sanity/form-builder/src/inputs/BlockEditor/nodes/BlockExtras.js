@@ -52,19 +52,21 @@ export default class BlockExtras extends React.PureComponent<Props> {
         ])}
         contentEditable={false}
       >
-        {markers.length > 0 && (
-          <div className={styles.markers}>
-            <Markers
-              className={styles.markers}
-              editor={editor}
-              markers={markers}
-              scopedValidation={scopedValidation}
-              onFocus={onFocus}
-              renderCustomMarkers={renderCustomMarkers}
-            />
-          </div>
-        )}
-        {blockActions && <div className={styles.blockActions}>{blockActions}</div>}
+        <div className={styles.content}>
+          {markers.length > 0 && (
+            <div className={styles.markers}>
+              <Markers
+                className={styles.markers}
+                editor={editor}
+                markers={markers}
+                scopedValidation={scopedValidation}
+                onFocus={onFocus}
+                renderCustomMarkers={renderCustomMarkers}
+              />
+            </div>
+          )}
+          {blockActions && <div className={styles.blockActions}>{blockActions}</div>}
+        </div>
       </div>
     )
   }

@@ -34,9 +34,8 @@
 }
 
 .editor > * {
-  box-sizing: content-box;
   position: relative;
-  padding-top: var(--medium-padding);
+  box-sizing: content-box;
   padding-left: var(--small-padding);
   padding-right: var(--small-padding);
 

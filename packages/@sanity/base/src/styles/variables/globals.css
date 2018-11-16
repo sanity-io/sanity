@@ -14,6 +14,7 @@
   --header-height: 3rem;
   --checkerboard-color: color(var(--component-text-color) a(5%));
   --selectable-item-base: var(--brand-primary);
+  --brand-darkest--inverted: color(var(--brand-darkest) contrast(80%));
 
   /* Buttons */
   --default-button-primary-color: var(--brand-primary);

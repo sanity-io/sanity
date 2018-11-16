@@ -3,13 +3,17 @@ import type {Node} from 'react'
 import ReactDOM from 'react-dom'
 import Base64 from 'slate-base64-serializer'
 
-import React from 'react'
+import React, {Fragment} from 'react'
 import classNames from 'classnames'
 
 import {IntentLink} from 'part:@sanity/base/router'
 import BlockExtras from 'part:@sanity/form-builder/input/block-editor/block-extras'
-import ButtonsCollection from 'part:@sanity/components/buttons/button-collection'
 import LinkIcon from 'part:@sanity/base/link-icon'
+import EditIcon from 'part:@sanity/base/edit-icon'
+import VisibilityIcon from 'part:@sanity/base/visibility-icon'
+import TrashIcon from 'part:@sanity/base/trash-icon'
+import IconMoreVert from 'part:@sanity/base/more-vert-icon'
+import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 
 import type {
   BlockContentFeatures,
@@ -28,9 +32,6 @@ import {resolveTypeName} from '../../../utils/resolveTypeName'
 
 import InvalidValue from '../../InvalidValueInput'
 import Preview from '../../../Preview'
-import DeleteButton from '../DeleteButton'
-import EditButton from '../EditButton'
-import ViewButton from '../ViewButton'
 
 import styles from './styles/BlockObject.css'
 
@@ -254,8 +255,12 @@ export default class BlockObject extends React.Component<Props, State> {
     onFocus([{_key: node.key}, FOCUS_TERMINATOR])
   }
 
-  handleEditStart = (event: SyntheticMouseEvent<>) => {
+  handleDoubleClick = (event: SyntheticMouseEvent<>) => {
     event.stopPropagation()
+    this.handleEditStart()
+  }
+
+  handleEditStart = () => {
     const {node, onFocus, editor} = this.props
     editor
       .moveToEndOfNode(node)
@@ -285,45 +290,91 @@ export default class BlockObject extends React.Component<Props, State> {
     onPatch(event.prefixAll({_key: value._key}), value)
   }
 
-  handleRemoveValue = (event: SyntheticMouseEvent<>) => {
-    event.preventDefault()
-    event.stopPropagation()
+  handleRemoveValue = () => {
     const {node, editor} = this.props
     editor.removeNodeByKey(node.key).focus()
   }
 
-  renderPreview(value: FormBuilderValue) {
+  handleHeaderMenuAction = (item, event) => {
+    const {node, editor} = this.props
+    if (item.name === 'delete') {
+      editor.removeNodeByKey(node.key).focus()
+    }
+
+    if (item.name === 'edit') {
+      this.handleEditStart()
+    }
+  }
+
+  renderMenuItem = item => {
+    const Icon = item.icon
+    return (
+      <div className={item.color ? styles.menuItem : styles.menuItemDanger}>
+        {item.intent ? (
+          <IntentLink intent={item.intent} params={item.params}>
+            {Icon && <Icon />}
+            {item.title}
+          </IntentLink>
+        ) : (
+          <Fragment>
+            {Icon && <Icon />}&nbsp;
+            {item.title}
+          </Fragment>
+        )}
+      </div>
+    )
+  }
+
+  renderPreview = (value: FormBuilderValue) => {
     const {type, readOnly} = this.props
+    const menuItems = []
+
+    if (value._ref) {
+      menuItems.push({
+        title: 'Go to reference',
+        icon: LinkIcon,
+        intent: 'edit',
+        params: {id: value._ref}
+      })
+    }
+    if (readOnly) {
+      menuItems.push({
+        title: 'View',
+        icon: VisibilityIcon,
+        name: 'view'
+      })
+    } else {
+      menuItems.push({
+        title: 'Edit',
+        icon: EditIcon,
+        name: 'edit'
+      })
+      menuItems.push({
+        title: 'Delete',
+        name: 'delete',
+        icon: TrashIcon,
+        color: 'danger'
+      })
+    }
     return (
       <div className={styles.preview}>
         <Preview type={type} value={value} layout="block" />
         <div className={styles.header}>
           <div className={styles.type}>{type ? type.title || type.name : 'Unknown'}</div>
-          <ButtonsCollection align="end" className={styles.functions}>
-            {value._ref && (
-              <IntentLink
-                className={styles.linkToReference}
-                intent="edit"
-                params={{id: value._ref}}
-              >
-                <LinkIcon />
-              </IntentLink>
-            )}
-            {readOnly ? (
-              <div>
-                <ViewButton title="View this block" onClick={this.handleFocus} />
-              </div>
-            ) : (
-              <div>
-                <EditButton title="Edit this block" onClick={this.handleEditStart} />
-              </div>
-            )}
-            {!readOnly && (
-              <div>
-                <DeleteButton title="Remove this block" onClick={this.handleRemoveValue} />
-              </div>
-            )}
-          </ButtonsCollection>
+          <div align="end" className={styles.functions}>
+            <DropDownButton
+              title="Show menu"
+              placement="bottom-end"
+              kind="simple"
+              showArrow={false}
+              icon={IconMoreVert}
+              items={menuItems}
+              onAction={this.handleHeaderMenuAction}
+              onClose={this.handleHeaderMenuClose}
+              onClickOutside={this.handleHeaderMenuClose}
+              renderItem={this.renderMenuItem}
+            />
+          </div>
         </div>
       </div>
     )
@@ -379,7 +430,7 @@ export default class BlockObject extends React.Component<Props, State> {
           onDragEnter={this.handleCancelEvent}
           onDragLeave={this.handleCancelEvent}
           onDrop={this.handleCancelEvent}
-          onDoubleClick={this.handleEditStart}
+          onDoubleClick={this.handleDoubleClick}
           draggable={!readOnly}
           className={classname}
         >
