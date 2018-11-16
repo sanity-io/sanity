@@ -1,6 +1,9 @@
 export const DEFAULT_LINK_ANNOTATION = {
   type: 'object',
   name: 'link',
+  options: {
+    editModal: 'popover'
+  },
   fields: [
     {
       name: 'href',
