@@ -11,7 +11,6 @@ import Popover from 'part:@sanity/components/dialogs/popover'
 import Stacked from 'part:@sanity/components/utilities/stacked'
 import Escapable from 'part:@sanity/components/utilities/escapable'
 import {findDOMNode} from 'slate-react'
-import {Popper, Arrow} from 'react-popper'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import {set, PatchEvent} from '../../PatchEvent'
 
@@ -112,7 +111,7 @@ export default class EditNode extends React.Component<Props> {
     }
     if (editModalLayout === 'fold') {
       return (
-        <div className={styles.editBlockContainerFold}>
+        <div className={styles.editBlockContainerFold} style={{border: '1px solid red'}}>
           <EditItemFold isOpen title="Edit" onClose={this.handleClose}>
             {this.renderInput()}
           </EditItemFold>
@@ -121,9 +120,9 @@ export default class EditNode extends React.Component<Props> {
     }
     if (editModalLayout === 'popover') {
       return (
-        <Popper placement="bottom" target={nodeRef}>
-          <Popover>{this.renderInput()}</Popover>
-        </Popper>
+        <Popover placement="bottom" referenceElement={nodeRef}>
+          {this.renderInput()}
+        </Popover>
       )
     }
     return (

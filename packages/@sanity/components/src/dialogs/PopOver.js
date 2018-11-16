@@ -25,6 +25,7 @@ export default class PopOver extends React.PureComponent {
     hasAnimation: PropTypes.bool,
     color: PropTypes.oneOf(['default', 'danger']),
     padding: PropTypes.oneOf(['none', 'small', 'medium', 'large']),
+    referenceElement: PropTypes.element,
     actions: PropTypes.arrayOf(
       PropTypes.shape({
         kind: PropTypes.string,
@@ -69,7 +70,7 @@ export default class PopOver extends React.PureComponent {
   }
 
   render() {
-    const {useOverlay, hasAnimation} = this.props
+    const {useOverlay, hasAnimation, referenceElement} = this.props
     const {
       title,
       color,
@@ -83,15 +84,23 @@ export default class PopOver extends React.PureComponent {
     } = this.props
     const [primary, secondary] = partition(actions, action => action.primary)
 
+    // Undefined referenceElement causes Popper to think it is defined
+    const popperPropHack = {}
+    if (referenceElement) {
+      popperPropHack.referenceElement = referenceElement
+    }
+
     return (
       <Manager>
-        <Reference>{({ref}) => <div ref={ref} className={styles.target} />}</Reference>
+        {!referenceElement && (
+          <Reference>{({ref}) => <div ref={ref} className={styles.target} />}</Reference>
+        )}
         <Portal>
           <Stacked>
             {isActive => (
               <div>
                 {useOverlay && <div className={styles.overlay} />}
-                <Popper placement={this.props.placement} modifiers={modifiers}>
+                <Popper placement={this.props.placement} modifiers={modifiers} {...popperPropHack}>
                   {({ref, style, placement, arrowProps}) => (
                     <div
                       ref={ref}
