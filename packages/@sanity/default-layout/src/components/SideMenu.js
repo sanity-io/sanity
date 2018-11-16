@@ -40,13 +40,15 @@ function SideMenu(props) {
           </div>
         )}
 
-        <ToolSwitcher
-          activeToolName={activeToolName}
-          direction="vertical"
-          isVisible={isOpen}
-          onSwitchTool={onSwitchTool}
-          tools={tools}
-        />
+        <div className={styles.toolSwitcher}>
+          <ToolSwitcher
+            activeToolName={activeToolName}
+            direction="vertical"
+            isVisible={isOpen}
+            onSwitchTool={onSwitchTool}
+            tools={tools}
+          />
+        </div>
 
         <div className={styles.menuBottom}>
           <div className={styles.signOutButton}>

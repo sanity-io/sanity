@@ -7,10 +7,12 @@ import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
 import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import {StateLink} from 'part:@sanity/base/router'
+import {HAS_SPACES} from '../util/spaces'
 import Branding from './Branding'
 import LoginStatus from './LoginStatus'
 import SanityStatusContainer from './SanityStatusContainer'
 import SearchContainer from './SearchContainer'
+import SpaceSwitcher from './SpaceSwitcher'
 import styles from './styles/NavBar.css'
 
 function NavBar(props) {
@@ -79,6 +81,11 @@ function NavBar(props) {
           />
         </div>
       </div>
+      {HAS_SPACES && (
+        <div className={styles.spaceSwitcher}>
+          <SpaceSwitcher isVisible={showToolSwitcher} />
+        </div>
+      )}
       <div className={styles.toolSwitcher}>
         <ToolSwitcher
           direction="horizontal"
