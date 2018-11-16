@@ -239,13 +239,14 @@ export default withPatchSubscriber(
       }
     }
 
-    handleEditorChange = (editor: SlateEditor) => {
+    handleEditorChange = (editor: SlateEditor, callback: void => void) => {
       const {operations, value} = editor
       const {selection} = value
       localChanges$.next({
         operations,
         isRemote: false,
-        selection
+        selection,
+        callback
       })
       const userIsWritingText = isWritingTextOperationsOnly(operations)
       if (userIsWritingText) {
@@ -263,7 +264,7 @@ export default withPatchSubscriber(
     }
 
     handleChangeSet = (changeSet: ChangeSet) => {
-      const {operations, isRemote, selection} = changeSet
+      const {operations, isRemote, selection, callback} = changeSet
       // Add undo step for local changes
       if (
         !isRemote &&
@@ -335,6 +336,10 @@ export default withPatchSubscriber(
             this._pendingLocalChanges.push(flatten(localChangeGroups))
             this.sendLocalPatchesDebounced()
           }
+          if (callback) {
+            return callback()
+          }
+          return true
         }
       )
     }

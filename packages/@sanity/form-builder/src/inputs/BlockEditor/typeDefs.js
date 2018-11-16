@@ -163,5 +163,6 @@ export type ChangeSet = {
   isRemote: boolean,
   operations: List<SlateOperation>,
   patches: Patch[],
-  selection: SlateSelection
+  selection: SlateSelection,
+  callback: void => void
 }
