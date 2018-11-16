@@ -36,7 +36,7 @@ const router = route('/', [route('/bikes/:bikeId'), route.intents('/intents')])
 const preventDefault = evt => evt.preventDefault()
 const getButtonKinds = () => select('kind', ['default', 'simple', 'secondary'], 'default', 'props')
 const getColorKinds = () =>
-  select('color', [false, 'primary', 'success', 'danger', 'white'], false, 'props')
+  select('color', [undefined, 'primary', 'success', 'danger', 'white'], undefined, 'props')
 
 const items = [
   {index: '1', title: 'Test'},
@@ -147,7 +147,7 @@ storiesOf('Buttons', module)
               onFocus={action('onFocus')}
               onBlur={action('onBlur')}
               loading={boolean('loading', false, 'props')}
-              icon={boolean('icon', false, 'props') ? SanityLogoIcon : false}
+              icon={boolean('icon', false, 'props') ? SanityLogoIcon : undefined}
             >
               {text('prop: children', 'This is a dropdown')}
             </DropDownButton>
@@ -276,6 +276,8 @@ storiesOf('Buttons', module)
             onAction={action('Clicked item')}
             disabled={disabled}
             loading={loading}
+            color="primary"
+            inverted
           >
             Dropdown
           </DropDownButton>
@@ -547,20 +549,42 @@ storiesOf('Buttons', module)
   .add('Group', () => {
     const backgroundColor = color('View color', 'rgba(255, 255, 255, 0', 'test')
     const qtyButtons = number('# buttons', 2, 'test')
-    const buttonText = text('Button text', '')
+    const loading = boolean('Loading', false, 'buttonProp')
+    const onlyIcon = boolean('Only icon', false, 'test')
+    const icon = boolean('icon', false, 'buttonProp') ? SanityLogoIcon : undefined
+    const buttonText = text('Button text', '', 'buttonProp')
     const buttonColor = getColorKinds()
     const buttonKind = getButtonKinds()
+
     return (
       <div style={{backgroundColor, margin: '2rem'}}>
         <Sanity part="part:@sanity/components/buttons/button-group" propTables={[ButtonGroup]}>
           <ButtonGroup>
             {range(0, qtyButtons).map(i => {
               return (
-                <Button kind={buttonKind} color={buttonColor} key={i}>
-                  {buttonText || (i % 2 ? chance.word() : chance.name())}
+                <Button
+                  kind={buttonKind}
+                  color={buttonColor}
+                  key={i}
+                  loading={loading}
+                  icon={icon || (onlyIcon && SanityLogoIcon)}
+                >
+                  {buttonText || (!onlyIcon && (i % 2 ? chance.word() : chance.name()))}
                 </Button>
               )
             })}
+            <DropDownButton
+              items={items}
+              kind={buttonKind}
+              color={buttonColor}
+              loading={loading}
+              onAction={action('Clicked item')}
+              onFocus={action('onFocus')}
+              onBlur={action('onBlur')}
+              icon={icon || (onlyIcon && SanityLogoIcon)}
+            >
+              {!onlyIcon && 'Dropdown'}
+            </DropDownButton>
           </ButtonGroup>
         </Sanity>
       </div>
