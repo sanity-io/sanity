@@ -69,7 +69,7 @@ type Props = {
   focusPath: Path,
   markers: Marker[],
   onBlur: (nextPath: []) => void,
-  onChange: (editor: SlateEditor, callback?: (SlateEditor) => void) => void,
+  onChange: (editor: SlateEditor, callback?: (void) => void) => void,
   onLoading: (props: {}) => void,
   onFocus: Path => void,
   onLoading: (props: {}) => void,

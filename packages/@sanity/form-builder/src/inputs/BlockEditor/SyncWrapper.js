@@ -242,7 +242,7 @@ export default withPatchSubscriber(
       }
     }
 
-    handleEditorChange = (editor: SlateEditor, callback: void => void) => {
+    handleEditorChange = (editor: SlateEditor, callback?: void => void) => {
       const {operations, value} = editor
       const {selection} = value
       this.localChanges$.next({
