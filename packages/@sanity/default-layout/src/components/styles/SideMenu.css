@@ -78,6 +78,14 @@
   vertical-align: top;
 }
 
+.spaceSwitcher {
+  padding: var(--small-padding) var(--medium-padding);
+}
+
+.toolSwitcher {
+  padding: 0 calc(var(--small-padding) + 0.25em);
+}
+
 .menuBottom {
   margin-top: auto;
   padding-bottom: 1em;

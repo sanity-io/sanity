@@ -1,11 +1,11 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  padding: var(--small-padding);
-  box-sizing: border-box;
-  opacity: 0.5;
+  @media (hover: hover) {
+    opacity: 0.7;
 
-  @nest &:hover {
-    opacity: 1;
+    @nest &:hover {
+      opacity: 1;
+    }
   }
 }

@@ -18,8 +18,8 @@
     grid-template-columns: max-content max-content var(--nav-bar-box) minmax(240px, 100%) max-content;
 
     @nest &.withToolSwitcher {
-      grid-template-areas: " branding    createButton       search               toolSwitcher extras      sanityStatus loginStatus";
-      grid-template-columns: max-content var(--nav-bar-box) minmax(240px, 400px) auto         max-content max-content  calc(var(--nav-bar-box) + 1em);
+      grid-template-areas: " branding    createButton       search               spaceSwitcher toolSwitcher extras      sanityStatus loginStatus";
+      grid-template-columns: max-content var(--nav-bar-box) minmax(240px, 400px) max-content   auto         max-content max-content  calc(var(--nav-bar-box) + 1em);
     }
   }
 
@@ -91,6 +91,20 @@ a.branding {
 
   @nest & > svg {
     font-size: calc(25 / 16 * 1em);
+  }
+}
+
+.spaceSwitcher {
+  display: none;
+  grid-area: spaceSwitcher;
+  font-size: calc(13 / 16 * 1em);
+  padding: var(--small-padding);
+  box-sizing: border-box;
+
+  @media (--screen-medium) {
+    @nest .withToolSwitcher & {
+      display: flex;
+    }
   }
 }
 
