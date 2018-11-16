@@ -247,15 +247,12 @@ export default class InlineObject extends React.Component<Props, State> {
 
   handleEditStart = (event: SyntheticMouseEvent<>) => {
     event.stopPropagation()
-    const {node, editor, readOnly} = this.props
+    const {editor, readOnly} = this.props
     if (readOnly) {
       this.handleView(event)
       return
     }
-    editor
-      .moveToEndOfNode(node)
-      .focus()
-      .blur()
+    editor.focus().blur()
     setTimeout(() => {
       this.setFocus()
     }, 200)
