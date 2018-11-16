@@ -46,7 +46,7 @@
 
 .editorWrapper {
   /* make it fill its parent */
-  composes: shadow-4dp from 'part:@sanity/base/theme/shadows-style';
+  composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
   position: relative;
   box-sizing: border-box;
   min-height: 100%;
