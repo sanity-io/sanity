@@ -8,7 +8,8 @@ export type UploadEvent = {
 }
 
 export type UploadOptions = {
-  metadata: ?Array<String>
+  metadata: ?Array<String>,
+  storeOriginalFilename: ?boolean
 }
 
 export type UploaderDef = {
