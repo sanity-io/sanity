@@ -57,7 +57,7 @@ exports.initConfig = (config, prevConfig) => {
     throw new Error('Configuration must contain `projectId`')
   }
 
-  const isBrowser = typeof window !== 'undefined'
+  const isBrowser = typeof window !== 'undefined' && window.location && window.location.hostname
   const isLocalhost = isBrowser && isLocal(window.location.hostname)
 
   if (isBrowser && isLocalhost && newConfig.token && newConfig.ignoreBrowserTokenWarning !== true) {
