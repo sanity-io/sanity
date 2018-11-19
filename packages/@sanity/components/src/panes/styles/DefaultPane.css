@@ -58,7 +58,7 @@
   height: 3.4375em;
   user-select: none;
   background-color: inherit;
-  z-index: 2;
+  z-index: 10;
 
   @nest .isCollapsed & {
     flex-direction: row;
