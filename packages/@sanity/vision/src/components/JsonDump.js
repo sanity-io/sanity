@@ -15,7 +15,7 @@ class JsonBlock extends React.PureComponent {
     return (
       <pre className={styles.block}>
         {isJSONValue(data) ? (
-          <ReactJson displayDataTypes={false} src={data} />
+          <ReactJson displayDataTypes={false} src={data} name={null} />
         ) : (
           <span className={styles.primitive}>{data || 'null'}</span>
         )}
