@@ -91,11 +91,7 @@ type Props = {
   value: ?(FormBuilderValue[])
 }
 
-type State = {
-  blockExtras: ?Node
-}
-
-export default class Editor extends React.Component<Props, State> {
+export default class Editor extends React.Component<Props> {
   static defaultProps = {
     readOnly: false,
     onPaste: null,
@@ -108,10 +104,6 @@ export default class Editor extends React.Component<Props, State> {
   _editor: ElementRef<any> = React.createRef()
 
   _plugins = []
-
-  state = {
-    blockExtras: null
-  }
 
   constructor(props: Props) {
     super(props)
@@ -167,7 +159,7 @@ export default class Editor extends React.Component<Props, State> {
     }
   }
 
-  componentDidUpdate(prevProps: Props, prevState: State, snapshot: ?Fragment) {
+  componentDidUpdate(prevProps: Props) {
     const editor = this.getEditor()
     if (!editor) {
       return
