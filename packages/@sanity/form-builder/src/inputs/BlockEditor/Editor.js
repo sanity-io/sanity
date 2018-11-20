@@ -50,6 +50,7 @@ import ToggleAnnotationPlugin from './plugins/ToggleAnnotationPlugin'
 import ToggleListItemPlugin from './plugins/ToggleListItemPlugin'
 import UndoRedoPlugin from './plugins/UndoRedoPlugin'
 import WrapSpanPlugin from './plugins/WrapSpanPlugin'
+import FireFoxVoidNodePlugin from './plugins/FireFoxVoidNodePlugin'
 
 import BlockExtrasOverlay from './BlockExtrasOverlay'
 import BlockObject from './nodes/BlockObject'
@@ -136,7 +137,8 @@ export default class Editor extends React.Component<Props> {
       WrapSpanPlugin(),
       InsertInlineObjectPlugin(props.type),
       InsertBlockObjectPlugin(),
-      UndoRedoPlugin({stack: props.undoRedoStack})
+      UndoRedoPlugin({stack: props.undoRedoStack}),
+      FireFoxVoidNodePlugin()
     ]
   }
 
