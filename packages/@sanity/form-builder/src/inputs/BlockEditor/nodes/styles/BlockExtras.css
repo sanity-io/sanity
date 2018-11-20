@@ -7,11 +7,10 @@
   bottom: 0;
   left: 0;
   right: 0;
-  user-select: none;
   font-weight: normal;
   width: 100%;
-  pointer-events: none;
   font-size: var(--font-size-xsmall);
+  z-index: 0;
 }
 
 .content {
@@ -20,7 +19,6 @@
   top: 0;
   right: 0;
   transform: translateX(100%);
-  pointer-events: all;
   border-left: 2px solid transparent;
   padding-left: var(--small-padding);
   margin-bottom: var(--extra-small-padding);

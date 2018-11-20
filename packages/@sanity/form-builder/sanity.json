@@ -116,7 +116,7 @@
     {
       "name": "part:@sanity/form-builder/input/block-editor/block-extras-default",
       "implements": "part:@sanity/form-builder/input/block-editor/block-extras",
-      "path": "inputs/BlockEditor/nodes/BlockExtras.js"
+      "path": "inputs/BlockEditor/BlockExtras.js"
     },
     {
       "name": "part:@sanity/form-builder/input/block-editor/block-markers-custom-default",

@@ -2,7 +2,6 @@
 import type {Node} from 'react'
 import React from 'react'
 
-import BlockExtras from 'part:@sanity/form-builder/input/block-editor/block-extras'
 import type {
   Block,
   BlockContentFeatures,
@@ -10,8 +9,7 @@ import type {
   Marker,
   Path,
   SlateComponentProps,
-  SlateEditor,
-  SlateValue
+  SlateEditor
 } from '../typeDefs'
 import ListItem from './ListItem'
 import Text from './Text'
@@ -29,18 +27,7 @@ type Props = {
 
 // eslint-disable-next-line complexity
 export default function ContentBlock(props: Props & SlateComponentProps) {
-  const {
-    attributes,
-    block,
-    blockContentFeatures,
-    editor,
-    children,
-    markers,
-    node,
-    onFocus,
-    blockActions,
-    renderCustomMarkers
-  } = props
+  const {attributes, blockContentFeatures, children, node} = props
   const data = node.data
   const listItem = data ? data.get('listItem') : null
   const level = data ? data.get('level') : 1
@@ -57,26 +44,8 @@ export default function ContentBlock(props: Props & SlateComponentProps) {
   }
 
   if (listItem) {
-    let blockExtras = null
-    if ((markers && markers.length > 0) || blockActions) {
-      blockExtras = (
-        <BlockExtras
-          block={block}
-          blockActions={blockActions}
-          editor={editor}
-          markers={markers}
-          onFocus={onFocus}
-          renderCustomMarkers={renderCustomMarkers}
-        />
-      )
-    }
     return (
-      <ListItem
-        attributes={attributes}
-        blockExtras={blockExtras}
-        level={level}
-        listStyle={listItem}
-      >
+      <ListItem attributes={attributes} level={level} listStyle={listItem}>
         <Text style={style} styleComponent={styleComponent}>
           {children}
         </Text>
@@ -88,16 +57,6 @@ export default function ContentBlock(props: Props & SlateComponentProps) {
       <Text style={style} styleComponent={styleComponent}>
         {children}
       </Text>
-      {((markers && markers.length > 0) || blockActions) && (
-        <BlockExtras
-          block={block}
-          blockActions={blockActions}
-          editor={editor}
-          markers={markers}
-          onFocus={onFocus}
-          renderCustomMarkers={renderCustomMarkers}
-        />
-      )}
     </div>
   )
 }

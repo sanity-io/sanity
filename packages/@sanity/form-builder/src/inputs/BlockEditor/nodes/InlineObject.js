@@ -34,7 +34,6 @@ type Props = {
   attributes: any,
   blockContentFeatures: BlockContentFeatures,
   editor: SlateEditor,
-  hasFormBuilderFocus: boolean,
   isSelected?: boolean,
   markers: Marker[],
   node: Block,

@@ -10,7 +10,6 @@ type Props = {
   listStyle: string,
   level: number,
   children: Node,
-  blockExtras: Node,
   attributes?: {}
 }
 
@@ -27,7 +26,6 @@ export default function ListItem(props: Props) {
   return (
     <div className={className} {...attributes}>
       <div className={styles.item}>{props.children}</div>
-      {props.blockExtras}
     </div>
   )
 }

@@ -264,6 +264,7 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
       setFocus,
       type,
       undoRedoStack,
+      userIsWritingText,
       value
     } = this.props
     return (
@@ -288,6 +289,7 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
         setFocus={setFocus}
         type={type}
         undoRedoStack={undoRedoStack}
+        userIsWritingText={userIsWritingText}
         value={value}
       />
     )

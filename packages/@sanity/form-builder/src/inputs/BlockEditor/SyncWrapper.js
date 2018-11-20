@@ -4,7 +4,7 @@ import React from 'react'
 import {Subject} from 'rxjs'
 import {getBlockContentFeatures} from '@sanity/block-tools'
 import generateHelpUrl from '@sanity/generate-help-url'
-import {debounce, unionBy, flatten, isEqual} from 'lodash'
+import {debounce, flatten, isEqual} from 'lodash'
 import {List} from 'immutable'
 import FormField from 'part:@sanity/components/formfields/default'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
@@ -100,8 +100,6 @@ type Props = {
 }
 
 type State = {
-  decorationHash: string,
-  decorations: {anchor: {key: string, offset: number}}[],
   deprecatedBlockValue: boolean,
   deprecatedSchema: boolean | string,
   editorValue: SlateValue,
@@ -136,44 +134,6 @@ export default withPatchSubscriber(
     remoteChanges$ = new Subject()
     changes$ = this.localChanges$.pipe(merge(this.remoteChanges$))
 
-    static getDerivedStateFromProps(nextProps, state) {
-      // Make sure changes to markers are reflected in the editor value.
-      // Slate heavily optimizes when nodes should re-render,
-      // so we use non-visual decorators in Slate to force the relevant editor nodes to re-render
-      // them when markers change.
-      const newDecorationHash = nextProps.markers.map(mrkr => JSON.stringify(mrkr.path)).join('')
-      if (
-        nextProps.markers &&
-        nextProps.markers.length &&
-        newDecorationHash !== state.decorationHash
-      ) {
-        const decorations = unionBy(
-          flatten(
-            nextProps.markers.map(mrkr => {
-              return mrkr.path.slice(0, 3).map(part => {
-                const key = part._key
-                if (!key) {
-                  return null
-                }
-                return {
-                  anchor: {key, offset: 0},
-                  focus: {key, offset: 0},
-                  mark: {type: '__marker'} // non-visible mark (we just want the block to re-render)
-                }
-              })
-            })
-          ).filter(Boolean),
-          state.decorations,
-          'focus.key'
-        )
-        return {
-          decorations,
-          decorationHash: newDecorationHash
-        }
-      }
-      return null
-    }
-
     constructor(props) {
       super(props)
       const {value, type} = props
@@ -183,8 +143,6 @@ export default withPatchSubscriber(
       const invalidBlockValue = isInvalidBlockValue(value)
 
       this.state = {
-        decorationHash: '',
-        decorations: [],
         deprecatedSchema,
         deprecatedBlockValue,
         invalidBlockValue,
@@ -226,22 +184,6 @@ export default withPatchSubscriber(
       this._changeSubscription.unsubscribe()
     }
 
-    getSnapshotBeforeUpdate(prevProps: Props, prevState: State) {
-      if (
-        prevState.decorationHash !==
-        this.props.markers.map(mrkr => JSON.stringify(mrkr.path)).join('')
-      ) {
-        return {updateDecorators: true}
-      }
-      return {updateDecorators: false}
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-      if (snapshot.updateDecorators) {
-        this.updateDecorations()
-      }
-    }
-
     handleEditorChange = (editor: SlateEditor, callback?: void => void) => {
       const {operations, value} = editor
       const {selection} = value
@@ -273,10 +215,7 @@ export default withPatchSubscriber(
         !isRemote &&
         !operations.some(op => op.__isUndoRedo) &&
         !operations.every(op => op.type === 'set_selection') &&
-        !(
-          operations.every(op => op.type === 'set_value') &&
-          isEqual(Object.keys(operations.first().properties), ['decorations'])
-        )
+        !operations.every(op => op.type === 'set_value')
       ) {
         this._undoRedoStack.undo.push({
           operations,
@@ -373,7 +312,6 @@ export default withPatchSubscriber(
         return true
       })
       if (finalPatches.length) {
-        // console.log(JSON.stringify(finalPatches, null, 2))
         // Remove the processed patches
         this._pendingLocalChanges.splice(0, cutLength)
         // Send the final patches
@@ -384,16 +322,6 @@ export default withPatchSubscriber(
     unsetUserIsWritingTextDebounced = debounce(() => {
       this.setState({userIsWritingText: false})
     }, 1000)
-
-    updateDecorations() {
-      const {decorations} = this.state
-      this._controller.withoutSaving(() => {
-        this.localChanges$.next({
-          operations: this._controller.setDecorations(decorations).operations,
-          isRemote: false
-        })
-      })
-    }
 
     handleFormBuilderPatch = (event: PatchEvent) => {
       const {onChange} = this.props

@@ -108,7 +108,7 @@ export type BlockContentFeatures = {
 export type SlateComponentProps = {
   attributes?: {},
   children: Node[],
-  editor?: Node,
+  editor: SlateEditor,
   isFocused?: boolean,
   isSelected?: boolean,
   key?: string,

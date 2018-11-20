@@ -6,8 +6,10 @@ import Base64 from 'slate-base64-serializer'
 import React, {Fragment} from 'react'
 import classNames from 'classnames'
 
+import {findDOMNode, findNode, setEventTransfer} from 'slate-react'
+import {Block} from 'slate'
+
 import {IntentLink} from 'part:@sanity/base/router'
-import BlockExtras from 'part:@sanity/form-builder/input/block-editor/block-extras'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import VisibilityIcon from 'part:@sanity/base/visibility-icon'
@@ -35,14 +37,19 @@ import Preview from '../../../Preview'
 
 import styles from './styles/BlockObject.css'
 
-import {findDOMNode, findNode, setEventTransfer} from 'slate-react'
-import {Block} from 'slate'
+type DropDownButtonItem = {
+  title: string,
+  color: string,
+  icon: ?any,
+  intent: any,
+  params: any,
+  name: string
+}
 
 type Props = {
   attributes: any,
   blockContentFeatures: BlockContentFeatures,
   editor: SlateEditor,
-  hasFormBuilderFocus: boolean,
   isSelected?: boolean,
   markers: Marker[],
   node: Block,
@@ -295,7 +302,7 @@ export default class BlockObject extends React.Component<Props, State> {
     editor.removeNodeByKey(node.key).focus()
   }
 
-  handleHeaderMenuAction = (item, event) => {
+  handleHeaderMenuAction = (item: DropDownButtonItem) => {
     const {node, editor} = this.props
     if (item.name === 'delete') {
       editor.removeNodeByKey(node.key).focus()
@@ -306,7 +313,7 @@ export default class BlockObject extends React.Component<Props, State> {
     }
   }
 
-  renderMenuItem = item => {
+  renderMenuItem = (item: DropDownButtonItem) => {
     const Icon = item.icon
     return (
       <div className={item.color ? styles.menuItem : styles.menuItemDanger}>
@@ -317,7 +324,8 @@ export default class BlockObject extends React.Component<Props, State> {
           </IntentLink>
         ) : (
           <Fragment>
-            {Icon && <Icon />}&nbsp;
+            {Icon && <Icon />}
+            &nbsp;
             {item.title}
           </Fragment>
         )}
@@ -370,8 +378,6 @@ export default class BlockObject extends React.Component<Props, State> {
               icon={IconMoreVert}
               items={menuItems}
               onAction={this.handleHeaderMenuAction}
-              onClose={this.handleHeaderMenuClose}
-              onClickOutside={this.handleHeaderMenuClose}
               renderItem={this.renderMenuItem}
             />
           </div>
@@ -388,10 +394,7 @@ export default class BlockObject extends React.Component<Props, State> {
       isSelected,
       markers,
       node,
-      onFocus,
-      readOnly,
-      blockActions,
-      renderCustomMarkers
+      readOnly
     } = this.props
     const {isDragging} = this.state
     const value = this.getValue()
@@ -438,16 +441,6 @@ export default class BlockObject extends React.Component<Props, State> {
             {this.renderPreview(value)}
           </div>
         </div>
-        {(markers.length > 0 || blockActions) && (
-          <BlockExtras
-            block={value}
-            blockActions={blockActions}
-            editor={editor}
-            markers={markers}
-            onFocus={onFocus}
-            renderCustomMarkers={renderCustomMarkers}
-          />
-        )}
       </div>
     )
   }

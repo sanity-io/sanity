@@ -1,7 +1,7 @@
 // @flow
 import type {ElementRef} from 'react'
 
-import React from 'react'
+import React, {Fragment} from 'react'
 import ReactDOM from 'react-dom'
 import SoftBreakPlugin from 'slate-soft-break'
 import {findDOMNode, Editor as SlateReactEditor, getEventTransfer} from 'slate-react'
@@ -9,10 +9,10 @@ import {isEqual} from 'lodash'
 import {isKeyHotkey} from 'is-hotkey'
 import {EDITOR_DEFAULT_BLOCK_TYPE, editorValueToBlocks} from '@sanity/block-tools'
 import insertBlockOnEnter from 'slate-insert-block-on-enter'
+
 import onPasteFromPart from 'part:@sanity/form-builder/input/block-editor/on-paste?'
 import onCopy from 'part:@sanity/form-builder/input/block-editor/on-copy?'
 
-import {hasItemFocus} from '../../utils/pathUtils'
 import PatchEvent, {insert} from '../../../PatchEvent'
 import type {
   BlockContentFeatures,
@@ -34,7 +34,6 @@ import type {
 import {VALUE_TO_JSON_OPTS} from './utils/createOperationToPatches'
 import buildEditorSchema from './utils/buildEditorSchema'
 import findInlineByAnnotationKey from './utils/findInlineByAnnotationKey'
-import createBlockActionPatchFn from './utils/createBlockActionPatchFn'
 
 import ExpandToWordPlugin from './plugins/ExpandToWordPlugin'
 import InsertBlockObjectPlugin from './plugins/InsertBlockObjectPlugin'
@@ -52,6 +51,7 @@ import ToggleListItemPlugin from './plugins/ToggleListItemPlugin'
 import UndoRedoPlugin from './plugins/UndoRedoPlugin'
 import WrapSpanPlugin from './plugins/WrapSpanPlugin'
 
+import BlockExtrasOverlay from './BlockExtrasOverlay'
 import BlockObject from './nodes/BlockObject'
 import ContentBlock from './nodes/ContentBlock'
 import Decorator from './nodes/Decorator'
@@ -87,10 +87,15 @@ type Props = {
   setFocus: void => void,
   type: Type,
   undoRedoStack: UndoRedoStack,
+  userIsWritingText: boolean,
   value: ?(FormBuilderValue[])
 }
 
-export default class Editor extends React.Component<Props> {
+type State = {
+  blockExtras: ?Node
+}
+
+export default class Editor extends React.Component<Props, State> {
   static defaultProps = {
     readOnly: false,
     onPaste: null,
@@ -100,11 +105,13 @@ export default class Editor extends React.Component<Props> {
   _blockDragMarker: ?HTMLDivElement
   _editorSchema: SlateSchema
 
-  _blockActionsMap = {}
-
   _editor: ElementRef<any> = React.createRef()
 
   _plugins = []
+
+  state = {
+    blockExtras: null
+  }
 
   constructor(props: Props) {
     super(props)
@@ -160,24 +167,34 @@ export default class Editor extends React.Component<Props> {
     }
   }
 
-  // When focusPath has changed, but the editorValue has another focusBlock,
-  // select the block according to the focusPath and scroll there
+  componentDidUpdate(prevProps: Props, prevState: State, snapshot: ?Fragment) {
+    const editor = this.getEditor()
+    if (!editor) {
+      return
+    }
+
+    // Check if focusPAth has changed from what is currently the focus in the editor
+    const {focusPath} = this.props
+    if (!focusPath || focusPath.length === 0) {
+      return
+    }
+    const focusPathChanged = !isEqual(prevProps.focusPath, focusPath)
+    if (!focusPathChanged) {
+      return
+    }
+    this.trackFocusPath()
+  }
+
+  // Select the block according to the focusPath and scroll there
   // eslint-disable-next-line complexity
-  componentDidUpdate(prevProps: Props) {
+  trackFocusPath() {
     const editor = this.getEditor()
     if (!editor) {
       return
     }
     const {focusPath, editorValue, readOnly} = this.props
-    if (!focusPath || focusPath.length === 0) {
-      return
-    }
     const focusPathIsSingleBlock =
       editorValue.focusBlock && isEqual(focusPath, [{_key: editorValue.focusBlock.key}])
-    const focusPathChanged = !isEqual(prevProps.focusPath, focusPath)
-    if (!focusPathChanged) {
-      return
-    }
     const block = editorValue.document.getDescendant(focusPath[0]._key)
     let inline
     if (!focusPathIsSingleBlock) {
@@ -336,6 +353,7 @@ export default class Editor extends React.Component<Props> {
     if (isFullscreenKey(event) || (isEsc(event) && fullscreen)) {
       event.preventDefault()
       event.stopPropagation()
+      this.forceUpdate() // Re-render (blockActions especially)
       onToggleFullScreen(event)
       return true
     }
@@ -351,23 +369,19 @@ export default class Editor extends React.Component<Props> {
     this._blockDragMarker = blockDragMarker
   }
 
+  // eslint-disable-next-line complexity
   renderNode = (props: SlateComponentProps) => {
     const {
       blockContentFeatures,
       editorValue,
-      focusPath,
-      markers,
       onFocus,
       onPatch,
       readOnly,
-      value,
       renderCustomMarkers,
-      type
+      type,
+      value
     } = this.props
     const {node} = props
-    let childMarkers = markers
-      .filter(marker => marker.path.length > 0)
-      .filter(marker => marker.path[0]._key === node.data.get('_key'))
     let ObjectClass = BlockObject
     let ObjectType = blockContentFeatures.types.blockObjects.find(
       memberType => memberType.name === node.type
@@ -378,22 +392,27 @@ export default class Editor extends React.Component<Props> {
       ObjectType = blockContentFeatures.types.inlineObjects.find(
         memberType => memberType.name === node.type
       )
-      childMarkers = markers.filter(
+    }
+
+    let markers = []
+
+    if (node.object === 'inline') {
+      markers = this.props.markers.filter(
         marker => marker.path[2] && marker.path[2]._key === node.data.get('_key')
       )
     }
 
     if (node.type === 'span') {
-      childMarkers = markers.filter(
+      markers = this.props.markers.filter(
         marker => marker.path[2] && marker.path[2]._key === node.data.get('_key')
       )
       // Add any markers for related markDefs here as well
       let annotations
       if ((annotations = node.data.get('annotations'))) {
-        const block = editorValue.document.getParent(node.key)
+        const block = props.editor.value.document.getParent(node.key)
         Object.keys(annotations).forEach(key => {
-          childMarkers = childMarkers.concat(
-            markers.filter(
+          markers = markers.concat(
+            this.props.markers.filter(
               marker =>
                 marker.path[0]._key === block.key &&
                 marker.path[1] === 'markDefs' &&
@@ -402,12 +421,6 @@ export default class Editor extends React.Component<Props> {
           )
         })
       }
-    }
-
-    // Set prop on blocks that are included in focusPath
-    let hasFormBuilderFocus = false
-    if (node.object === 'block') {
-      hasFormBuilderFocus = focusPath ? hasItemFocus(focusPath, {_key: node.key}) : false
     }
 
     switch (node.type) {
@@ -423,12 +436,10 @@ export default class Editor extends React.Component<Props> {
                     type
                   )[0]
             }
-            blockActions={this._blockActionsMap[node.key]}
             blockContentFeatures={blockContentFeatures}
             editor={props.editor}
             editorValue={editorValue}
-            hasFormBuilderFocus={hasFormBuilderFocus}
-            markers={childMarkers}
+            markers={markers}
             node={node}
             onFocus={onFocus}
             readOnly={readOnly}
@@ -444,7 +455,7 @@ export default class Editor extends React.Component<Props> {
             blockContentFeatures={blockContentFeatures}
             editor={props.editor}
             editorValue={editorValue}
-            markers={childMarkers}
+            markers={markers}
             node={props.node}
             onFocus={onFocus}
             onPatch={onPatch}
@@ -461,16 +472,14 @@ export default class Editor extends React.Component<Props> {
             blockContentFeatures={blockContentFeatures}
             editor={props.editor}
             editorValue={editorValue}
-            hasFormBuilderFocus={hasFormBuilderFocus}
             isSelected={props.isFocused}
-            markers={childMarkers}
+            markers={markers}
             node={props.node}
             onFocus={onFocus}
             onHideBlockDragMarker={this.handleHideBlockDragMarker}
             onPatch={onPatch}
             onShowBlockDragMarker={this.handleShowBlockDragMarker}
             readOnly={readOnly}
-            blockActions={this._blockActionsMap[node.key]}
             renderCustomMarkers={renderCustomMarkers}
             type={ObjectType}
           />
@@ -496,45 +505,36 @@ export default class Editor extends React.Component<Props> {
     const {
       editorValue,
       fullscreen,
-      readOnly,
       markers,
+      onFocus,
+      onPatch,
+      readOnly,
       renderBlockActions,
-      value,
-      onPatch
+      renderCustomMarkers,
+      userIsWritingText,
+      value
     } = this.props
 
     const hasMarkers = markers.filter(marker => marker.path.length > 0).length > 0
 
-    // Figure out if we have any block actions
-    let hasBlockActions = false
-    if (renderBlockActions && value) {
-      this._blockActionsMap = {}
-      const RenderComponent = renderBlockActions
-      value.forEach(block => {
-        const actions = (
-          <RenderComponent
-            block={block}
-            value={value}
-            set={createBlockActionPatchFn('set', block, onPatch)}
-            unset={createBlockActionPatchFn('unset', block, onPatch)}
-            insert={createBlockActionPatchFn('insert', block, onPatch)}
-          />
-        )
-        if (actions) {
-          this._blockActionsMap[block._key] = actions
-        }
-      })
-      hasBlockActions = Object.keys(this._blockActionsMap).length > 0
-    }
-
     const classNames = [
       styles.root,
-      (hasBlockActions || hasMarkers) && styles.hasBlockExtras,
+      (renderBlockActions || hasMarkers) && styles.hasBlockExtras,
       fullscreen ? styles.fullscreen : null
     ].filter(Boolean)
 
     return (
       <div className={classNames.join(' ')}>
+        <BlockExtrasOverlay
+          editor={this.getEditor()}
+          markers={markers}
+          onFocus={onFocus}
+          onPatch={onPatch}
+          renderBlockActions={renderBlockActions}
+          renderCustomMarkers={renderCustomMarkers}
+          value={value}
+          userIsWritingText={userIsWritingText}
+        />
         <SlateReactEditor
           spellCheck={false}
           className={styles.editor}
