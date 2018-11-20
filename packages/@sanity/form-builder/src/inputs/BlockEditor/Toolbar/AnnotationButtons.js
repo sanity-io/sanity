@@ -6,13 +6,7 @@ import {randomKey} from '@sanity/block-tools'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import ToggleButton from 'part:@sanity/components/toggles/button'
-import type {
-  BlockContentFeature,
-  BlockContentFeatures,
-  Path,
-  SlateChange,
-  SlateEditor
-} from '../typeDefs'
+import type {BlockContentFeature, BlockContentFeatures, Path, SlateEditor} from '../typeDefs'
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 import CustomIcon from './CustomIcon'
 import ToolbarClickAction from './ToolbarClickAction'
@@ -82,12 +76,13 @@ export default class AnnotationButtons extends React.Component<Props> {
     if (item.disabled) {
       return
     }
-    editor.change((change: SlateChange) => {
-      const key = randomKey(12)
-      editor.command('toggleAnnotation', {annotationName: item.value, key})
-      // Make the block editor focus the annotation input
+    const key = randomKey(12)
+    editor.command('toggleAnnotation', {annotationName: item.value, key})
+    if (editor.value.startInline) {
+      // Make the block editor focus the annotation input if we added an annotation
+      editor.blur()
       const focusPath = [
-        {_key: change.value.focusBlock.key},
+        {_key: editor.value.focusBlock.key},
         'markDefs',
         {_key: key},
         FOCUS_TERMINATOR
@@ -95,7 +90,9 @@ export default class AnnotationButtons extends React.Component<Props> {
       setTimeout(() => {
         onFocus(focusPath)
       }, 200)
-    })
+      return
+    }
+    editor.focus()
   }
 
   renderAnnotationButton = (item: AnnotationItem) => {
@@ -115,11 +112,7 @@ export default class AnnotationButtons extends React.Component<Props> {
       this.handleClick(item, originalSelection)
     }
     return (
-      <ToolbarClickAction
-        onAction={onAction}
-        editor={editor}
-        key={`annotationButton${item.value}`}
-      >
+      <ToolbarClickAction onAction={onAction} editor={editor} key={`annotationButton${item.value}`}>
         <ToggleButton
           selected={!!item.active}
           disabled={item.disabled}
