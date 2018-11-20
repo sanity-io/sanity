@@ -93,8 +93,9 @@ class Pane extends React.Component {
         title: PropTypes.string
       })
     ),
-    maxWidth: PropTypes.number,
-    minWidth: PropTypes.number,
+    index: PropTypes.number,
+    staticContent: PropTypes.node,
+    contentMaxWidth: PropTypes.number,
     styles: PropTypes.object // eslint-disable-line react/forbid-prop-types
   }
 
@@ -108,8 +109,6 @@ class Pane extends React.Component {
     styles: {},
     children: <div />,
     onAction: noop,
-    onCollapse: noop,
-    onExpand: noop,
     menuItems: [],
     menuItemGroups: []
   }
@@ -195,10 +194,16 @@ class Pane extends React.Component {
   }
 
   handleToggleCollapsed = event => {
-    if (this.props.isCollapsed) {
-      this.props.onExpand(this)
+    const {isCollapsed, onCollapse, onExpand, index} = this.props
+
+    if (!onCollapse || !onExpand) {
+      return
+    }
+
+    if (isCollapsed) {
+      onExpand(index)
     } else {
-      this.props.onCollapse(this)
+      onCollapse(index)
     }
   }
 
@@ -329,17 +334,12 @@ class Pane extends React.Component {
       styles,
       renderActions,
       staticContent,
-      minWidth,
-      maxWidth,
       contentMaxWidth
     } = this.props
     const headerStyle = isCollapsed ? {} : this.state.headerStyle
     const actions = menuItems.filter(
       act => act.showAsAction && (!isCollapsed || act.showAsAction.whenCollapsed)
     )
-    const style = {}
-    if (minWidth) style.minWidth = `${minWidth}px`
-    if (maxWidth) style.maxWidth = `${maxWidth}px`
 
     return (
       <div
