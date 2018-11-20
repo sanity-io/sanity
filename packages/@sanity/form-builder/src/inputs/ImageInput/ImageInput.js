@@ -114,7 +114,10 @@ export default class ImageInput extends React.PureComponent<Props, State> {
 
   uploadWith(uploader: Uploader, file: File) {
     const {type, onChange} = this.props
-    const options = {metadata: get(type, 'options.metadata')}
+    const options = {
+      metadata: get(type, 'options.metadata'),
+      storeOriginalFilename: get(type, 'options.storeOriginalFilename')
+    }
     this.cancelUpload()
     this.setState({isUploading: true})
     onChange(PatchEvent.from([setIfMissing({_type: type.name})]))

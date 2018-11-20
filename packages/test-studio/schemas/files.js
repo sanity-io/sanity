@@ -39,6 +39,14 @@ export default {
           type: 'string'
         }
       ]
+    },
+    {
+      name: 'fileWithoutOriginalFilename',
+      title: 'File without original filename',
+      type: 'file',
+      options: {
+        storeOriginalFilename: false
+      }
     }
   ]
 }
