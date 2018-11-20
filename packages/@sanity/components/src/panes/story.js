@@ -1,7 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react'
 import {range} from 'lodash'
-import {storiesOf, action} from 'part:@sanity/storybook'
+import {storiesOf} from 'part:@sanity/storybook'
 import {withKnobs, object, boolean, number, text} from 'part:@sanity/storybook/addons/knobs'
 import {RouterProvider, route} from 'part:@sanity/base/router'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
@@ -13,6 +13,10 @@ import PlusIcon from 'part:@sanity/base/plus-icon'
 import TrashIcon from 'part:@sanity/base/trash-outline-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import renderActionsStyles from './styles/renderActions.css'
+
+const action = event => {
+  console.log('action', event)
+}
 
 const menuItems = [
   {
@@ -82,6 +86,70 @@ const renderActions = isCollapsed => {
   )
 }
 
+class AutoCollapseTest extends React.PureComponent {
+  state = {
+    collapsed: []
+  }
+
+  handleCollapse = collapsedPanes => {
+    this.setState({collapsed: collapsedPanes})
+  }
+
+  handleExpand = collapsedPanes => {
+    this.setState({collapsed: collapsedPanes})
+  }
+
+  handlePaneCollapse = index => {
+    this.setState(prevState => {
+      const collapsed = prevState.collapsed.slice()
+      collapsed[index] = true
+      return {collapsed}
+    })
+  }
+
+  handlePaneExpand = index => {
+    this.setState(prevState => {
+      const collapsed = prevState.collapsed.slice()
+      collapsed[index] = false
+      return {collapsed}
+    })
+  }
+
+  render() {
+    const {panes} = this.props
+    const {collapsed} = this.state
+    return (
+      <SplitController
+        // selectedIndex={selectedPaneIndex}
+        onShouldCollapse={this.handleCollapse}
+        onShouldExpand={this.handleExpand}
+        collapsed={collapsed} // trigger
+      >
+        {panes.map((pane, i) => {
+          return (
+            <SplitPaneWrapper minSize={pane.minSize} defaultSize={pane.defaultSize} key={pane.key} isCollapsed={collapsed[i]}>
+              <DefaultPane
+                index={i}
+                title={pane.title}
+                onExpand={this.handlePaneExpand}
+                onCollapse={this.handlePaneCollapse}
+                onMenuToggle={action}
+                isCollapsed={collapsed[i]}
+              >
+                <div style={{fontSize: '0.5em'}}>
+                  <div>Col: {collapsed[i] ? 'true' : 'false'}</div>
+                  <div>Def: {pane.defaultSize}</div>
+                  <div>Min: {pane.minSize}</div>
+                </div>
+              </DefaultPane>
+            </SplitPaneWrapper>
+          )
+        })}
+      </SplitController>
+    )
+  }
+}
+
 storiesOf('Panes')
   .addDecorator(withKnobs)
   .add('Pane', () => {
@@ -97,7 +165,7 @@ storiesOf('Panes')
             isCollapsed={boolean('isCollapsed', false, 'props')}
             onExpand={action('onExpand')}
             onCollapse={action('onCollapse')}
-            minWidth={number('minWidth', 300, 'props')}
+            minSize={number('minWidth', 300, 'props')}
             onAction={handleMenuAction}
             menuItems={menuItems}
             renderActions={renderActions}
@@ -108,67 +176,23 @@ storiesOf('Panes')
   })
 
   .add('Split', () => {
-    const panes = range(number('#Panes', 2)).map((pane, i) => {
+    const panes = range(number('#Panes', 4)).map((pane, i) => {
       return {
-        title: `Pane ${i} is a long pane an it has a name and it should cap somewhere`,
+        title: `Pane ${i}`,
         key: `pane${i}`,
-        isCollapsed: [true][i],
-        minWidth: [100, 100, 400][i] || 300,
-        defaultWidth: [200, 200, 700][i] || 300
+        isCollapsed: [false][i],
+        minSize: [301, 302, 503, 600][i] || 309,
+        defaultSize: [401, 402, 403, 800][i] || 309
       }
     })
 
-    const handleControllerCollapse = pane => {
-      console.log('handleControllerCollapse', pane)
-    }
-
-    const handleControllerUnCollapse = pane => {
-      console.log('handleControllerUnCollapse', pane)
-    }
-
-    const selectedPaneIndex = number('Selected pane', 1)
-    const knobsPanes = object('Panes', panes)
-    const actionsWhenCollapsed = boolean('Show actions when collapsed', false)
-    const customActionRenderer = boolean('Custom action rendering', false)
+    // const selectedPaneIndex = number('Selected pane', 1)
+    // const actionsWhenCollapsed = boolean('Show actions when collapsed', false)
+    // const customActionRenderer = boolean('Custom action rendering', false)
 
     return (
       <Sanity part="part:@sanity/components/panes/controller" propTables={[PanesController]}>
-        <RouterProvider
-          router={router}
-          onNavigate={handleNavigate}
-          state={router.decode(location.pathname)}
-        >
-          <SplitController
-            selectedIndex={selectedPaneIndex}
-            onCollapse={handleControllerCollapse}
-            onUnCollapse={handleControllerUnCollapse}
-          >
-            {knobsPanes.map((pane, i) => {
-              return (
-                <SplitPaneWrapper
-                  minWidth={pane.minWidth}
-                  defaultWidth={pane.defaultWidth}
-                  key={pane.key}
-                  isCollapsed={pane.isCollapsed}
-                >
-                  <DefaultPane
-                    title={pane.title}
-                    renderActions={customActionRenderer ? renderActions : undefined}
-                    onAction={handleMenuAction}
-                    menuItems={actionsWhenCollapsed ? menuItemsWhenCollapsed : menuItems}
-                    onExpand={action('expand')}
-                    onCollapse={action('onCollapse')}
-                    isCollapsed={pane.isCollapsed}
-                    onMenuToggle={action('onMenuToggle')}
-                  >
-                    <div>defaultWidth: {pane.defaultWidth}</div>
-                    <div>minWidth: {pane.minWidth}</div>
-                  </DefaultPane>
-                </SplitPaneWrapper>
-              )
-            })}
-          </SplitController>
-        </RouterProvider>
+        <AutoCollapseTest panes={panes} />
       </Sanity>
     )
   })
