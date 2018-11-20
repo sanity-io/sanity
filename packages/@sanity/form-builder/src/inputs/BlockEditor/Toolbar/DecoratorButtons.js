@@ -68,7 +68,7 @@ export default class DecoratorButtons extends React.Component<Props> {
 
   handleClick = (item: DecoratorItem) => {
     const {editor} = this.props
-    editor.toggleMark(item.value)
+    editor.toggleMark(item.value).focus()
   }
 
   renderDecoratorButton = (item: DecoratorItem) => {
