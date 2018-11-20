@@ -38,23 +38,28 @@ export default class DeskToolPanes extends React.Component {
     }
   }
 
-  handleControllerCollapse = index => {
-    this.handlePaneCollapse(index)
-  }
-  handleControllerUnCollapse = index => {
-    this.handlePaneExpand(index)
+  handleControllerCollapse = collapsedPanes => {
+    this.setState({collapsedPanes})
   }
 
-  handlePaneExpand = index => {
-    this.setState(prevState => ({
-      collapsedPanes: prevState.collapsedPanes.filter(idx => idx !== index)
-    }))
+  handleControllerUnCollapse = collapsedPanes => {
+    this.setState({collapsedPanes})
   }
 
   handlePaneCollapse = index => {
-    this.setState(prevState => ({
-      collapsedPanes: prevState.collapsedPanes.concat(index)
-    }))
+    this.setState(prevState => {
+      const collapsedPanes = prevState.collapsedPanes.slice()
+      collapsedPanes[index] = true
+      return {collapsedPanes}
+    })
+  }
+
+  handlePaneExpand = index => {
+    this.setState(prevState => {
+      const collapsedPanes = prevState.collapsedPanes.slice()
+      collapsedPanes[index] = false
+      return {collapsedPanes}
+    })
   }
 
   renderPanes() {
@@ -62,7 +67,7 @@ export default class DeskToolPanes extends React.Component {
     const path = []
 
     return panes.map((pane, i) => {
-      const isCollapsed = this.state.collapsedPanes.includes(i)
+      const isCollapsed = this.state.collapsedPanes[i]
       const paneKey = `${i}-${keys[i - 1] || 'root'}`
 
       // Same pane might appear multiple times, so use index as tiebreaker
@@ -72,9 +77,9 @@ export default class DeskToolPanes extends React.Component {
       return (
         <SplitPaneWrapper
           key={wrapperKey}
-          minWidth={70}
-          defaultWidth={300}
-          isCollapsed={isCollapsed}
+          minSize={pane.type === 'document' ? 500 : 320}
+          defaultSize={pane.type === 'document' ? 672 : 350}
+          isCollapsed={!!isCollapsed}
         >
           {pane === LOADING ? (
             <LoadingPane
@@ -83,7 +88,7 @@ export default class DeskToolPanes extends React.Component {
               index={i}
               onExpand={this.handlePaneExpand}
               onCollapse={this.handlePaneCollapse}
-              isCollapsed={isCollapsed}
+              isCollapsed={!!isCollapsed}
               isSelected={i === panes.length - 1}
             />
           ) : (
@@ -93,7 +98,7 @@ export default class DeskToolPanes extends React.Component {
               itemId={keys[i - 1]}
               onExpand={this.handlePaneExpand}
               onCollapse={this.handlePaneCollapse}
-              isCollapsed={isCollapsed}
+              isCollapsed={!!isCollapsed}
               isSelected={i === panes.length - 1}
               {...pane}
             />
@@ -105,14 +110,12 @@ export default class DeskToolPanes extends React.Component {
 
   render() {
     return (
-      <div className={styles.deskToolPanes}>
-        <SplitController
-          onShouldCollapse={this.handleControllerCollapse}
-          onShouldExpand={this.handleControllerUnCollapse}
-        >
-          {this.renderPanes()}
-        </SplitController>
-      </div>
+      <SplitController
+        onShouldCollapse={this.handleControllerCollapse}
+        onShouldExpand={this.handleControllerUnCollapse}
+      >
+        {this.renderPanes()}
+      </SplitController>
     )
   }
 }
