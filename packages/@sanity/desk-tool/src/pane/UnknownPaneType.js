@@ -24,6 +24,7 @@ export default class UnknownPaneType extends React.PureComponent {
     return (
       <DefaultPane
         title="Unknown pane type"
+        index={this.props.index}
         isSelected={isSelected}
         isCollapsed={isCollapsed}
         onCollapse={onCollapse}
