@@ -43,7 +43,9 @@ export default class BlockExtrasFragment extends React.Component<Props> {
       <Fragment>
         {editor.value.document.nodes.map(node => {
           const {onFocus, renderCustomMarkers, renderBlockActions, onPatch} = this.props
-          const markers = this.props.markers.filter(marker => marker.path[0]._key === node.key)
+          const markers = this.props.markers.filter(
+            marker => marker.path[0] && marker.path[0]._key && marker.path[0]._key === node.key
+          )
           if (markers.length === 0 && !renderBlockActions) {
             return null
           }
