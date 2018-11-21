@@ -5,7 +5,7 @@ import classNames from 'classnames'
 
 import Markers from 'part:@sanity/form-builder/input/block-editor/block-markers'
 
-import type {Marker, SlateEditor, Path, RenderCustomMarkers} from '../typeDefs'
+import type {Marker, SlateEditor, Path, RenderCustomMarkers} from './typeDefs'
 import styles from './styles/BlockExtras.css'
 
 type Props = {
