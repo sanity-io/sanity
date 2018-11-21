@@ -178,7 +178,22 @@ export default function createOperationToPatches(
     return patches
   }
 
-  function insertNodePatch(operation: Operation, beforeValue: SlateValue, afterValue: SlateValue) {
+  function insertNodePatch(
+    operation: Operation,
+    beforeValue: SlateValue,
+    afterValue: SlateValue,
+    formBuilderValue: ?(FormBuilderValue[])
+  ) {
+    // Value is undefined
+    if (!formBuilderValue) {
+      return [
+        setIfMissing(editorValueToBlocks(afterValue.toJSON(VALUE_TO_JSON_OPTS), blockContentType))
+      ]
+    }
+    // Value is empty
+    if (formBuilderValue && formBuilderValue.length === 0) {
+      return [set(editorValueToBlocks(afterValue.toJSON(VALUE_TO_JSON_OPTS), blockContentType), [])]
+    }
     const block = toBlock(afterValue, operation.path.get(0))
     if (operation.path.size === 1) {
       let position = 'after'
@@ -306,7 +321,7 @@ export default function createOperationToPatches(
       case 'set_node':
         return setNodePatch(operation, beforeValue, afterValue, formBuilderValue)
       case 'insert_node':
-        return insertNodePatch(operation, beforeValue, afterValue)
+        return insertNodePatch(operation, beforeValue, afterValue, formBuilderValue)
       case 'remove_node':
         return removeNodePatch(operation, beforeValue, afterValue)
       case 'split_node':
