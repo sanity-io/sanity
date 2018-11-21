@@ -43,7 +43,8 @@
     padding: 0;
     flex-direction: row;
     transition: box-shadow 0.2s 0.2s linear;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) inset;
+    box-shadow: -5px -10px 10px rgba(0, 0, 0, 0.1) inset;
+    height: 100vh; /* make the bottom shadow go out of bounderies */
   }
 }
 
@@ -62,9 +63,7 @@
   z-index: 10;
 
   @nest .isCollapsed & {
-    /* flex-direction: row;
-    flex-grow: 1;
-    border-color: transparent; */
+    background-color: transparent;
   }
 }
 
