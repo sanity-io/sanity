@@ -50,7 +50,7 @@ import ToggleAnnotationPlugin from './plugins/ToggleAnnotationPlugin'
 import ToggleListItemPlugin from './plugins/ToggleListItemPlugin'
 import UndoRedoPlugin from './plugins/UndoRedoPlugin'
 import WrapSpanPlugin from './plugins/WrapSpanPlugin'
-import FireFoxVoidNodePlugin from './plugins/FireFoxVoidNodePlugin'
+import FireFoxVoidNodePlugin from './plugins/FirefoxVoidNodePlugin'
 
 import BlockExtrasOverlay from './BlockExtrasOverlay'
 import BlockObject from './nodes/BlockObject'
