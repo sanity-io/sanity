@@ -347,7 +347,6 @@ export default class Editor extends React.Component<Props> {
     if (isFullscreenKey(event) || (isEsc(event) && fullscreen)) {
       event.preventDefault()
       event.stopPropagation()
-      this.forceUpdate() // Re-render (blockActions especially)
       onToggleFullScreen(event)
       return true
     }
@@ -516,18 +515,18 @@ export default class Editor extends React.Component<Props> {
       (renderBlockActions || hasMarkers) && styles.hasBlockExtras,
       fullscreen ? styles.fullscreen : null
     ].filter(Boolean)
-
     return (
       <div className={classNames.join(' ')}>
         <BlockExtrasOverlay
-          editor={this.getEditor()}
+          editor={this._editor}
+          editorValue={editorValue}
           markers={markers}
           onFocus={onFocus}
           onPatch={onPatch}
           renderBlockActions={renderBlockActions}
           renderCustomMarkers={renderCustomMarkers}
-          value={value}
           userIsWritingText={userIsWritingText}
+          value={value}
         />
         <SlateReactEditor
           spellCheck={false}
