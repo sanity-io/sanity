@@ -6,7 +6,7 @@ import {PatchEvent} from 'part:@sanity/form-builder/patch-event'
 
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import {Portal} from 'part:@sanity/components/utilities/portal'
-import Stacked from 'part:@sanity/components/utilities/stacked'
+import StackedEscapeable from 'part:@sanity/components/utilities/stacked-escapable'
 
 import Button from 'part:@sanity/components/buttons/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
@@ -387,15 +387,11 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
     return (
       <div className={styles.root} ref={this.setRootElement}>
         {fullscreen && (
-          <Stacked>
-            {isActive => {
-              return (
-                <Portal>
-                  <div className={styles.fullscreen}>{this.renderBlockEditor()}</div>
-                </Portal>
-              )
-            }}
-          </Stacked>
+          <Portal>
+            <StackedEscapeable onEscape={this.handleToggleFullscreen}>
+              <div className={styles.fullscreen}>{this.renderBlockEditor()}</div>
+            </StackedEscapeable>
+          </Portal>
         )}
         {!fullscreen && (
           <div className={isFocused ? styles.focus : ''}>{this.renderBlockEditor()}</div>
