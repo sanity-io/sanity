@@ -429,7 +429,7 @@ export default class BlockEditor extends React.Component {
           type="button"
           tabIndex={0}
           className={styles.focusSkipper}
-          onClick={() => this.focus()}
+          onClick={() => !fullscreen && this.focus()}
         >
           Jump to editor
         </button>
