@@ -7,6 +7,8 @@ import ScrollContainer from 'part:@sanity/components/utilities/scroll-container'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import {uniqueId} from 'lodash'
 
+import StackedEscapeable from 'part:@sanity/components/utilities/stacked-escapable'
+
 import FormField from 'part:@sanity/components/formfields/default'
 import Toolbar from './toolbar/Toolbar'
 import createBlockEditorOperations from './createBlockEditorOperations'
@@ -431,13 +433,19 @@ export default class BlockEditor extends React.Component {
         >
           Jump to editor
         </button>
-        {fullscreen
-          ? this.renderPortal(
-              <ScrollContainer className={styles.portal} onScroll={this.handleFullScreenScroll}>
-                {blockEditor}
-              </ScrollContainer>
-            )
-          : blockEditor}
+        {fullscreen ? (
+          <StackedEscapeable onEscape={this.handleFullScreenClose}>
+            <div>
+              {this.renderPortal(
+                <ScrollContainer className={styles.portal} onScroll={this.handleFullScreenScroll}>
+                  {blockEditor}
+                </ScrollContainer>
+              )}
+            </div>
+          </StackedEscapeable>
+        ) : (
+          blockEditor
+        )}
       </FormField>
     )
   }
