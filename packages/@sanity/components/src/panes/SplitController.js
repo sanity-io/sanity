@@ -32,7 +32,8 @@ export default class PanesSplitController extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
     onShouldCollapse: PropTypes.func,
-    onShouldExpand: PropTypes.func
+    onShouldExpand: PropTypes.func,
+    autoCollapse: PropTypes.bool
   }
 
   state = {
@@ -43,11 +44,13 @@ export default class PanesSplitController extends React.Component {
   isResizing = false
 
   componentDidMount() {
-    this.resizeSubscriber = windowWidth$.pipe(distinctUntilChanged()).subscribe(windowWidth => {
-      this.setState({windowWidth})
+    if (this.props.autoCollapse) {
+      this.resizeSubscriber = windowWidth$.pipe(distinctUntilChanged()).subscribe(windowWidth => {
+        this.setState({windowWidth})
+        this.handleCheckCollapse()
+      })
       this.handleCheckCollapse()
-    })
-    this.handleCheckCollapse()
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -61,7 +64,11 @@ export default class PanesSplitController extends React.Component {
   }
 
   handleCheckCollapse = () => {
-    const {children, onShouldCollapse} = this.props
+    const {children, onShouldCollapse, autoCollapse} = this.props
+    if (!autoCollapse) {
+      return
+    }
+
     const {windowWidth} = this.state
     const panes = React.Children.toArray(children)
 

@@ -111,6 +111,7 @@ export default class DeskToolPanes extends React.Component {
   render() {
     return (
       <SplitController
+        autoCollapse
         onShouldCollapse={this.handleControllerCollapse}
         onShouldExpand={this.handleControllerUnCollapse}
       >
