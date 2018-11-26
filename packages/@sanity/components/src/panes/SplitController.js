@@ -48,15 +48,17 @@ export default class PanesSplitController extends React.Component {
     if (this.props.autoCollapse) {
       this.resizeSubscriber = windowWidth$.pipe(distinctUntilChanged()).subscribe(windowWidth => {
         this.setState({windowWidth})
-        this.handleCheckCollapse()
+        this.handleCheckCollapse(windowWidth)
       })
-      this.handleCheckCollapse()
+      if (window) {
+        this.handleCheckCollapse(window.innerWidth)
+      }
     }
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.children.length != this.props.children.length) {
-      this.handleCheckCollapse()
+      this.handleCheckCollapse(this.state.windowWidth)
     }
   }
 
@@ -64,13 +66,12 @@ export default class PanesSplitController extends React.Component {
     this.resizeSubscriber.unsubscribe()
   }
 
-  handleCheckCollapse = () => {
+  handleCheckCollapse = windowWidth => {
     const {children, onShouldCollapse, autoCollapse} = this.props
     if (!autoCollapse) {
       return
     }
 
-    const {windowWidth} = this.state
     const panes = React.Children.toArray(children)
 
     const totalMinSize = sumBy(panes, pane => pane.props.minSize)
