@@ -8,7 +8,6 @@ import styles from './styles/SplitController.css'
 import {map, share, debounceTime, distinctUntilChanged} from 'rxjs/operators'
 
 const COLLAPSED_WIDTH = 54
-const panesToCollapse = []
 
 const fromWindowEvent = eventName =>
   new Observable(subscriber => {
@@ -35,6 +34,8 @@ export default class PanesSplitController extends React.Component {
     onShouldExpand: PropTypes.func,
     autoCollapse: PropTypes.bool
   }
+
+  panesToCollapse = []
 
   state = {
     windowWidth: typeof window === 'undefined' ? 1000 : window.innerWidth,
@@ -78,13 +79,13 @@ export default class PanesSplitController extends React.Component {
     if (totalMinSize > windowWidth) {
       panes.forEach((pane, i) => {
         if (sumMinSize > windowWidth && i < panes.length - 1) {
-          panesToCollapse[i] = true
+          this.panesToCollapse[i] = true
         } else {
-          panesToCollapse[i] = false
+          this.panesToCollapse[i] = false
         }
         sumMinSize -= pane.props.minSize - COLLAPSED_WIDTH
       })
-      onShouldCollapse(panesToCollapse)
+      onShouldCollapse(this.panesToCollapse)
     } else {
       // reset
       onShouldCollapse([])
