@@ -2,7 +2,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import SplitPane from 'react-split-pane'
-import {debounce, sumBy} from 'lodash'
+import {sumBy} from 'lodash'
 import {Observable, merge} from 'rxjs'
 import styles from './styles/SplitController.css'
 import {map, share, debounceTime, distinctUntilChanged} from 'rxjs/operators'
@@ -109,21 +109,6 @@ export default class PanesSplitController extends React.Component {
     }
   }
 
-  // Move the resizer
-  handleSplitPaneChange = debounce((size, pane) => {
-    const index = React.Children.toArray(this.props.children).findIndex(
-      curr => curr.key === pane.key
-    )
-    // if (size <= pane.props.minSize) {
-    //   this.handleCollapse(index)
-    // } else if (index) {
-    //   this.handleExpand(index)
-    // }
-    if (size <= pane.props.minSize) {
-      this.lastPaneSize = size
-    }
-  }, 20)
-
   handleDragStarted = () => {
     this.setState({
       isResizing: true
@@ -140,17 +125,7 @@ export default class PanesSplitController extends React.Component {
     const isCollapsed = pane1.props.isCollapsed
     const {isResizing} = this.state
 
-    // // Handle size override when collapsing
-    let size = isCollapsed ? COLLAPSED_WIDTH : undefined
-
-    if (isResizing) {
-      size = undefined
-    } else if (isCollapsed) {
-      size = COLLAPSED_WIDTH
-    } else {
-      size = pane1.props.defaultSize
-      size = undefined
-    }
+    const size = isCollapsed ? COLLAPSED_WIDTH : undefined
 
     return (
       <div
@@ -162,7 +137,6 @@ export default class PanesSplitController extends React.Component {
         `}
       >
         <SplitPane
-          // {...pane1.props}
           minSize={isCollapsed ? COLLAPSED_WIDTH : pane1.props.minSize}
           defaultSize={isCollapsed ? COLLAPSED_WIDTH : pane1.props.defaultSize}
           size={size}
@@ -171,7 +145,6 @@ export default class PanesSplitController extends React.Component {
           className={styles.splitPane}
           onDragStarted={this.handleDragStarted}
           onDragFinished={this.handleDragFinished}
-          onChange={newSize => this.handleSplitPaneChange(newSize, pane1)}
         >
           {pane1}
           {pane2 || ' '}

@@ -1,8 +1,8 @@
-/* eslint-disable react/no-multi-comp */
+/* eslint-disable react/no-multi-comp, react/prop-types, no-console */
 import React from 'react'
 import {range} from 'lodash'
 import {storiesOf} from 'part:@sanity/storybook'
-import {withKnobs, object, boolean, number, text} from 'part:@sanity/storybook/addons/knobs'
+import {withKnobs, boolean, number, text} from 'part:@sanity/storybook/addons/knobs'
 import {RouterProvider, route} from 'part:@sanity/base/router'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import DefaultPane from 'part:@sanity/components/panes/default'
@@ -52,11 +52,6 @@ const menuItems = [
     }
   }
 ]
-
-const menuItemsWhenCollapsed = menuItems.map(
-  item =>
-    item.showAsAction ? Object.assign({}, item, {showAsAction: {whenCollapsed: true}}) : item
-)
 
 const handleMenuAction = menuAction => {
   console.log('action', menuAction)
@@ -120,14 +115,18 @@ class AutoCollapseTest extends React.PureComponent {
     const {collapsed} = this.state
     return (
       <SplitController
-        // selectedIndex={selectedPaneIndex}
         onShouldCollapse={this.handleCollapse}
         onShouldExpand={this.handleExpand}
         collapsed={collapsed} // trigger
       >
         {panes.map((pane, i) => {
           return (
-            <SplitPaneWrapper minSize={pane.minSize} defaultSize={pane.defaultSize} key={pane.key} isCollapsed={collapsed[i]}>
+            <SplitPaneWrapper
+              minSize={pane.minSize}
+              defaultSize={pane.defaultSize}
+              key={pane.key}
+              isCollapsed={collapsed[i]}
+            >
               <DefaultPane
                 index={i}
                 title={pane.title}
@@ -185,10 +184,6 @@ storiesOf('Panes')
         defaultSize: [401, 402, 403, 800][i] || 309
       }
     })
-
-    // const selectedPaneIndex = number('Selected pane', 1)
-    // const actionsWhenCollapsed = boolean('Show actions when collapsed', false)
-    // const customActionRenderer = boolean('Custom action rendering', false)
 
     return (
       <Sanity part="part:@sanity/components/panes/controller" propTables={[PanesController]}>
