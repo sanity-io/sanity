@@ -5,10 +5,6 @@ import Button from 'part:@sanity/components/buttons/default'
 import AnchorButton from 'part:@sanity/components/buttons/anchor'
 import IntentButton from 'part:@sanity/components/buttons/intent'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
-// import DefaultFormField from 'part:@sanity/components/formfields/default'
-// import DefaultTextInput from 'part:@sanity/components/textinputs/default'
-// import InInputButton from 'part:@sanity/components/buttons/in-input'
-// import InInputStyles from 'part:@sanity/components/buttons/in-input-style'
 import FileInputButton from 'part:@sanity/components/fileinput/button'
 import ButtonGroup from 'part:@sanity/components/buttons/button-group'
 import {storiesOf} from 'part:@sanity/storybook'
@@ -29,7 +25,7 @@ import PlusIcon from 'part:@sanity/base/plus-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 
 import Sanity from 'part:@sanity/storybook/addons/sanity'
-import ButtonCollection from 'part:@sanity/components/buttons/button-collection'
+import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 
 const chance = new Chance()
 
@@ -215,7 +211,7 @@ storiesOf('Buttons', module)
             Simple
           </Button>
           <h2>Colors</h2>
-          <ButtonCollection>
+          <ButtonGrid>
             <Button onClick={action('clicked')} disabled={disabled} loading={loading}>
               Undefined
             </Button>
@@ -243,7 +239,7 @@ storiesOf('Buttons', module)
             >
               Success
             </Button>
-          </ButtonCollection>
+          </ButtonGrid>
           <h2>Colors (inverted)</h2>
           <Button onClick={action('clicked')} inverted disabled={disabled} loading={loading}>
             Undefined
@@ -520,17 +516,14 @@ storiesOf('Buttons', module)
     )
   })
 
-  .add('Collection/Grid', () => {
+  .add('Grid', () => {
     const backgroundColor = color('View color', 'rgba(255, 255, 255, 0', 'test')
     const qtyButtons = number('# buttons', 2, 'test')
     const buttonText = text('Button text', '')
     return (
       <div style={{backgroundColor, margin: '2rem'}}>
-        <Sanity
-          part="part:@sanity/components/buttons/button-collection"
-          propTables={[ButtonCollection]}
-        >
-          <ButtonCollection
+        <Sanity part="part:@sanity/components/buttons/button-grid" propTables={[ButtonGrid]}>
+          <ButtonGrid
             align={select('align', ['start', 'end'], 'start', 'props')}
             secondary={range(0, number('# secondary', 1)).map(i => {
               return (
@@ -545,7 +538,7 @@ storiesOf('Buttons', module)
                 <Button key={i}>{buttonText || (i % 2 ? chance.word() : chance.name())}</Button>
               )
             })}
-          </ButtonCollection>
+          </ButtonGrid>
         </Sanity>
       </div>
     )
@@ -559,10 +552,7 @@ storiesOf('Buttons', module)
     const buttonKind = getButtonKinds()
     return (
       <div style={{backgroundColor, margin: '2rem'}}>
-        <Sanity
-          part="part:@sanity/components/buttons/button-collection"
-          propTables={[ButtonCollection]}
-        >
+        <Sanity part="part:@sanity/components/buttons/button-group" propTables={[ButtonGroup]}>
           <ButtonGroup>
             {range(0, qtyButtons).map(i => {
               return (

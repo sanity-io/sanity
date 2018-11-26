@@ -22,7 +22,7 @@
       "description": "Default button"
     },
     {
-      "name": "part:@sanity/components/buttons/button-collection",
+      "name": "part:@sanity/components/buttons/button-grid",
       "description": "Use this to wrap buttons"
     },
     {
@@ -42,8 +42,8 @@
       "description": "Default button styling"
     },
     {
-      "name": "part:@sanity/components/buttons/button-collection-style",
-      "description": "Styling for buttons collection"
+      "name": "part:@sanity/components/buttons/button-grid-style",
+      "description": "Container to set buttons in grid"
     },
     {
       "name": "part:@sanity/components/buttons/fab",
@@ -435,8 +435,8 @@
       "path": "buttons/DefaultButton.js"
     },
     {
-      "implements": "part:@sanity/components/buttons/button-collection",
-      "path": "buttons/ButtonCollection.js"
+      "implements": "part:@sanity/components/buttons/button-grid",
+      "path": "buttons/ButtonGrid.js"
     },
     {
       "implements": "part:@sanity/components/buttons/button-group",
@@ -635,8 +635,8 @@
       "path": "buttons/styles/DefaultButton.css"
     },
     {
-      "implements": "part:@sanity/components/buttons/button-collection-style",
-      "path": "buttons/styles/ButtonCollection.css"
+      "implements": "part:@sanity/components/buttons/button-grid-style",
+      "path": "buttons/styles/ButtonGrid.css"
     },
     {
       "implements": "part:@sanity/components/buttons/dropdown-style",
