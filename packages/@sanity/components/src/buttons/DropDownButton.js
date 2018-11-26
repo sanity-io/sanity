@@ -132,6 +132,7 @@ export default class DropDownButton extends React.PureComponent {
     const target = (
       <Button
         {...rest}
+        className={styles.button}
         onClick={this.handleOnClick}
         kind={kind}
         onKeyDown={this.handleButtonKeyDown}

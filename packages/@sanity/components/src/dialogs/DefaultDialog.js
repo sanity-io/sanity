@@ -22,6 +22,7 @@ export default class DefaultDialog extends React.PureComponent {
     onClose: PropTypes.func.isRequired,
     onAction: PropTypes.func,
     showCloseButton: PropTypes.bool,
+    actionsAlign: PropTypes.oneOf(['start', 'end']),
     actions: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string.isRequired,
@@ -34,6 +35,7 @@ export default class DefaultDialog extends React.PureComponent {
 
   static defaultProps = {
     showCloseButton: true,
+    actionsAlign: 'end',
     onAction() {},
     onOpen() {},
     actions: [],
@@ -121,7 +123,10 @@ export default class DefaultDialog extends React.PureComponent {
     const [secondary, primary] = partition(actions, action => action.secondary)
 
     return (
-      <ButtonCollection align="end" secondary={secondary.map(this.createButtonFromAction)}>
+      <ButtonCollection
+        align={this.props.actionsAlign}
+        secondary={secondary.map(this.createButtonFromAction)}
+      >
         {primary.map(this.createButtonFromAction)}
       </ButtonCollection>
     )
