@@ -10,6 +10,7 @@ import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 // import InInputButton from 'part:@sanity/components/buttons/in-input'
 // import InInputStyles from 'part:@sanity/components/buttons/in-input-style'
 import FileInputButton from 'part:@sanity/components/fileinput/button'
+import ButtonGroup from 'part:@sanity/components/buttons/button-group'
 import {storiesOf} from 'part:@sanity/storybook'
 import Chance from 'chance'
 import {range} from 'lodash'
@@ -282,7 +283,6 @@ storiesOf('Buttons', module)
           >
             Dropdown
           </DropDownButton>
-
           <h2>Colors (simple)</h2>
           <Button onClick={action('clicked')} kind="simple" disabled={disabled} loading={loading}>
             Undefined
@@ -520,9 +520,7 @@ storiesOf('Buttons', module)
     )
   })
 
-storiesOf('Button collection', module)
-  .addDecorator(withKnobs)
-  .add('Default', () => {
+  .add('Collection/Grid', () => {
     const backgroundColor = color('View color', 'rgba(255, 255, 255, 0', 'test')
     const qtyButtons = number('# buttons', 2, 'test')
     const buttonText = text('Button text', '')
@@ -548,6 +546,32 @@ storiesOf('Button collection', module)
               )
             })}
           </ButtonCollection>
+        </Sanity>
+      </div>
+    )
+  })
+
+  .add('Group', () => {
+    const backgroundColor = color('View color', 'rgba(255, 255, 255, 0', 'test')
+    const qtyButtons = number('# buttons', 2, 'test')
+    const buttonText = text('Button text', '')
+    const buttonColor = getColorKinds()
+    const buttonKind = getButtonKinds()
+    return (
+      <div style={{backgroundColor, margin: '2rem'}}>
+        <Sanity
+          part="part:@sanity/components/buttons/button-collection"
+          propTables={[ButtonCollection]}
+        >
+          <ButtonGroup>
+            {range(0, qtyButtons).map(i => {
+              return (
+                <Button kind={buttonKind} color={buttonColor} key={i}>
+                  {buttonText || (i % 2 ? chance.word() : chance.name())}
+                </Button>
+              )
+            })}
+          </ButtonGroup>
         </Sanity>
       </div>
     )

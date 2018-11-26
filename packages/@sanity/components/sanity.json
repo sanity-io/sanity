@@ -26,6 +26,10 @@
       "description": "Use this to wrap buttons"
     },
     {
+      "name": "part:@sanity/components/buttons/button-group",
+      "description": "Use this to group buttons with no spacing"
+    },
+    {
       "name": "part:@sanity/components/buttons/anchor",
       "description": "Same as default button, but with an <a>. Takes href"
     },
@@ -433,6 +437,10 @@
     {
       "implements": "part:@sanity/components/buttons/button-collection",
       "path": "buttons/ButtonCollection.js"
+    },
+    {
+      "implements": "part:@sanity/components/buttons/button-group",
+      "path": "buttons/ButtonGroup.js"
     },
     {
       "implements": "part:@sanity/components/buttons/anchor",
