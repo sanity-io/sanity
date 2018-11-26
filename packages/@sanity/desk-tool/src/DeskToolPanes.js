@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import SplitController from 'part:@sanity/components/panes/split-controller'
 import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
 import {LOADING} from './utils/resolvePanes'
-import styles from './styles/DeskTool.css'
 import LoadingPane from './pane/LoadingPane'
 import Pane from './pane/Pane'
 

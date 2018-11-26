@@ -77,35 +77,17 @@ export default class PanesSplitController extends React.Component {
 
     if (totalMinSize > windowWidth) {
       panes.forEach((pane, i) => {
-        if (sumMinSize > windowWidth) {
+        if (sumMinSize > windowWidth && i < panes.length - 1) {
           panesToCollapse[i] = true
         } else {
           panesToCollapse[i] = false
         }
-        sumMinSize -= pane.props.minSize - COLLAPSED_WIDTH * panesToCollapse.filter(Boolean).length
+        sumMinSize -= pane.props.minSize - COLLAPSED_WIDTH
       })
       onShouldCollapse(panesToCollapse)
     } else {
       // reset
       onShouldCollapse([])
-    }
-  }
-
-  handleCollapse = index => {
-    const {onShouldCollapse} = this.props
-    if (onShouldCollapse) {
-      const collapsed = panesToCollapse.slice()
-      collapsed[index] = true
-      onShouldCollapse(collapsed)
-    }
-  }
-
-  handleExpand = index => {
-    const {onShouldExpand} = this.props
-    if (onShouldExpand) {
-      const collapsed = panesToCollapse.slice()
-      collapsed[index] = false
-      onShouldExpand(collapsed)
     }
   }
 
