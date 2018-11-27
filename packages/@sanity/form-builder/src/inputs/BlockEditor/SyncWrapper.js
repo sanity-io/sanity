@@ -325,14 +325,12 @@ export default withPatchSubscriber(
 
     handleFormBuilderPatch = (event: PatchEvent) => {
       const {onChange} = this.props
-      const {editorValue} = this.state
       event.patches.forEach(patch => {
-        const operations = this.patchToOperations(patch, editorValue)
+        const operations = this.patchToOperations(patch, this._controller.value)
         this.localChanges$.next({
           operations,
-          editorValue: editorValue,
-          isRemote: true,
-          timestamp: new Date()
+          editorValue: this._controller.value,
+          isRemote: true
         })
       })
       return onChange(event)
