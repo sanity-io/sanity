@@ -175,6 +175,7 @@ export default withRouterHOC(
     static propTypes = {
       title: PropTypes.string,
       paneIndex: PropTypes.number.isRequired,
+      index: PropTypes.number,
       paneStyles: PropTypes.object,
       patchChannel: PropTypes.object,
       draft: PropTypes.object,
