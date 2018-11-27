@@ -257,7 +257,7 @@ export default withRouterHOC(
 
       return (
         <div className={styles.deskTool}>
-          {panes && <DeskToolPanes panes={this.state.panes} keys={keys} />}
+          {panes && <DeskToolPanes panes={this.state.panes} keys={keys} autoCollapse />}
         </div>
       )
     }
