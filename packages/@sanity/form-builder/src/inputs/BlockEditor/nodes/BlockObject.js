@@ -368,19 +368,14 @@ export default class BlockObject extends React.Component<Props, State> {
       <div className={styles.preview}>
         <Preview type={type} value={value} layout="block" />
         <div className={styles.header}>
-          <div className={styles.type}>{type ? type.title || type.name : 'Unknown'}</div>
-          <div align="end" className={styles.functions}>
-            <DropDownButton
-              title="Show menu"
-              placement="bottom-end"
-              kind="simple"
-              showArrow={false}
-              icon={IconMoreVert}
-              items={menuItems}
-              onAction={this.handleHeaderMenuAction}
-              renderItem={this.renderMenuItem}
-            />
-          </div>
+          <DropDownButton
+            placement="bottom-end"
+            items={menuItems}
+            onAction={this.handleHeaderMenuAction}
+            renderItem={this.renderMenuItem}
+          >
+            {type ? type.title || type.name : 'Unknown'}
+          </DropDownButton>
         </div>
       </div>
     )

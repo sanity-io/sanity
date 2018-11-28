@@ -25,7 +25,7 @@
 }
 
 .root.hasErrors > .previewContainer {
-  box-shadow: var(--form-builder-block-shadow--error);
+  box-shadow: var(--form-builder-block-shadow--invalid);
   background-color: color(var(--state-danger-color) a(15%));
   border: 1px solid var(--form-builder-block-border-color-error);
 }
@@ -51,7 +51,7 @@
 }
 
 .root.focused.hasErrors > .previewContainer {
-  box-shadow: var(--form-builder-block-shadow--error-focus);
+  box-shadow: var(--form-builder-block-shadow--invalid-focus);
   border: 1px solid var(--state-danger-color);
   background-color: color(var(--state-danger-color) a(30%));
 }
