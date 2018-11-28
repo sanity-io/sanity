@@ -29,10 +29,15 @@
   margin-left: var(--small-padding);
 }
 
+.borderRadius {
+  border-radius: var(--button-border-radius);
+}
+
 .root {
   -webkit-font-smoothing: inherit;
   appearance: none;
   composes: spacing;
+  composes: borderRadius;
   display: inline-flex;
   vertical-align: middle;
   justify-content: stretch;
@@ -48,17 +53,16 @@
   cursor: default;
   user-select: none;
   transition: border-color 0.15s, background-color 0.15s, color 0.15s, opacity 0.15s, box-shadow 0.1s;
-  border-radius: var(--button-border-radius);
   text-decoration: none;
   padding: 0;
 }
 
 .groupContainer {
-  @nest & .root:not(:last-child):not(:first-child) {
+  @nest & .borderRadius:not(:last-child):not(:first-child) {
     border-radius: 0;
   }
 
-  @nest & .root:not(:last-child) {
+  @nest & .borderRadius:not(:last-child) {
     border-right: 1px solid color(var(--body-bg) a(30%));
   }
 
@@ -74,15 +78,15 @@
     }
   }
 
-  @nest & .root:first-child:not(:last-child) {
+  @nest & .borderRadius:first-child:not(:last-child) {
     border-radius: var(--button-border-radius) 0 0 var(--button-border-radius);
   }
 
-  @nest & .root:last-child:not(:first-child) {
+  @nest & .borderRadius:last-child:not(:first-child) {
     border-radius: 0 var(--button-border-radius) var(--button-border-radius) 0;
   }
 
-  @nest & .root + .root {
+  @nest & .borderRadius + .borderRadius {
     margin: 0;
   }
 }
