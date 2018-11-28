@@ -1,10 +1,12 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+.error,
 .deletedDocument,
 .unknownSchemaType {
   composes: flexCenter from 'part:@sanity/base/theme/layout/positioning-style';
 }
 
+.errorInner,
 .deletedDocumentInner,
 .unknownSchemaTypeInner {
   padding: var(--medium-padding);

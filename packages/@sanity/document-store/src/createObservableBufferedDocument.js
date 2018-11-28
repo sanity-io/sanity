@@ -1,12 +1,14 @@
 import {BufferedDocument, Mutation} from '@sanity/mutator'
 import {defer, merge, of, Subject} from 'rxjs'
 import {
+  distinctUntilChanged,
   filter,
   map,
-  distinctUntilChanged,
   publishReplay,
   refCount,
   scan,
+  mapTo,
+  concatMap,
   share,
   tap,
   withLatestFrom
@@ -27,6 +29,9 @@ export const createObservableBufferedDocument = (serverEvents$, doCommit) => {
   // These are "after the fact" events and also includes the next document state.
   const updates$ = new Subject()
 
+  // Stream of commit requests. Must be handled by a commit handler
+  const commits$ = new Subject()
+
   const createInitialBufferedDocument = snapshot => {
     const bufferedDocument = new BufferedDocument(snapshot)
     bufferedDocument.onMutation = ({mutation, remote}) => {
@@ -44,9 +49,7 @@ export const createObservableBufferedDocument = (serverEvents$, doCommit) => {
 
     bufferedDocument.commitHandler = opts => {
       const {resultRev, ...mutation} = opts.mutation.params
-      doCommit(mutation)
-        .pipe(tap(() => updates$.next({type: 'committed'})))
-        .subscribe({next: opts.success, error: opts.failure})
+      commits$.next({onSuccess: opts.success, onError: opts.failure, payload: mutation})
     }
     return bufferedDocument
   }
@@ -113,8 +116,20 @@ export const createObservableBufferedDocument = (serverEvents$, doCommit) => {
     map(buf => snapshotEventFrom(buf.LOCAL))
   )
 
+  const commitResults$ = commits$.pipe(
+    concatMap(commitReq =>
+      doCommit(commitReq.payload).pipe(
+        tap({
+          next: commitReq.onSuccess,
+          error: commitReq.onError
+        })
+      )
+    ),
+    mapTo({type: 'committed'})
+  )
+
   return {
-    updates$: merge(snapshot$, actionHandler$, updates$),
+    updates$: merge(snapshot$, actionHandler$, updates$, commitResults$),
     addMutation,
     addMutations,
     commit

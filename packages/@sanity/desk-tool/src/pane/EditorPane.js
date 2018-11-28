@@ -68,6 +68,9 @@ function documentEventToState(event) {
       // `isSaving` state stays around forever.
       return {}
     }
+    case 'error': {
+      return {}
+    }
     default: {
       // eslint-disable-next-line no-console
       console.log('Unhandled document event type "%s"', event.type, event)
@@ -123,20 +126,29 @@ export default withDocumentType(
       this.subscription = merge(
         published$.pipe(map(event => ({...event, version: 'published'}))),
         draft$.pipe(map(event => ({...event, version: 'draft'})))
-      ).subscribe(event => {
-        this.setState(prevState => {
-          const version = event.version // either 'draft' or 'published'
-          return {
-            isReconnecting: event.type === 'reconnect',
-            validationPending: true,
-            [version]: {
-              ...(prevState[version] || {}),
-              ...documentEventToState(event),
-              isLoading: false
+      )
+        .pipe(
+          catchError((err, _caught$) => {
+            // eslint-disable-next-line no-console
+            console.error(err)
+            return observableOf({type: 'error', error: err})
+          })
+        )
+        .subscribe(event => {
+          this.setState(prevState => {
+            const version = event.version // either 'draft' or 'published'
+            return {
+              isReconnecting: event.type === 'reconnect',
+              validationPending: true,
+              error: event.type === 'error' ? event.error : null,
+              [version]: {
+                ...(prevState[version] || {}),
+                ...documentEventToState(event),
+                isLoading: false
+              }
             }
-          }
-        }, this.validateLatestDocument)
-      })
+          }, this.validateLatestDocument)
+        })
     }
 
     validateDocument = async () => {
@@ -435,6 +447,18 @@ export default withDocumentType(
       )
     }
 
+    renderError(error) {
+      return (
+        <div className={styles.error}>
+          <div className={styles.errorInner}>
+            <h3>{"We're"} sorry, but an error occurred</h3>
+            <div>{error.message}</div>
+            <Button onClick={() => this.setup(this.props.options.id)}>Reload</Button>
+          </div>
+        </div>
+      )
+    }
+
     renderUnknownSchemaType() {
       const {options} = this.props
       const {draft, published} = this.state
@@ -448,15 +472,14 @@ export default withDocumentType(
               This document has the schema type <code>{typeName}</code>, which is not defined as a
               type in the local content studio schema.
             </p>
-            {__DEV__ &&
-              doc && (
-                <div>
-                  <h4>Here is the JSON representation of the document:</h4>
-                  <pre className={styles.jsonDump}>
-                    <code>{JSON.stringify(doc, null, 2)}</code>
-                  </pre>
-                </div>
-              )}
+            {__DEV__ && doc && (
+              <div>
+                <h4>Here is the JSON representation of the document:</h4>
+                <pre className={styles.jsonDump}>
+                  <code>{JSON.stringify(doc, null, 2)}</code>
+                </pre>
+              </div>
+            )}
           </div>
         </div>
       )
@@ -475,6 +498,7 @@ export default withDocumentType(
         transactionResult,
         isPublishing,
         isSaving,
+        error,
         validationPending,
         isReconnecting
       } = this.state
@@ -485,6 +509,10 @@ export default withDocumentType(
 
       if (isRecoverable(draft, published)) {
         return this.renderDeleted()
+      }
+
+      if (error) {
+        return this.renderError(error)
       }
 
       return (
