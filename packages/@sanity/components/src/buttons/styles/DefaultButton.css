@@ -174,7 +174,7 @@ span.content {
   border: 1px solid var(--default-button-color);
 
   @nest & .spinner {
-    background-color: var(--gray-lighter);
+    background-color: var(--default-button-color);
   }
 
   @nest &:not(.disabled) {
