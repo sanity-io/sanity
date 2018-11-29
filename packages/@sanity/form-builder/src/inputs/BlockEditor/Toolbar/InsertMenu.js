@@ -2,9 +2,12 @@
 
 import React from 'react'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
+import BlockObjectIcon from 'part:@sanity/base/block-object-icon'
+import InlineObjectIcon from 'part:@sanity/base/inline-object-icon'
 
 import type {Type, SlateValue, SlateEditor, Path} from '../typeDefs'
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
+import styles from './styles/InsertMenu.css'
 
 type Props = {
   blockTypes: Type[],
@@ -30,17 +33,33 @@ export default class InsertMenu extends React.Component<Props> {
     )
   }
 
+  renderItem = item => {
+    const Icon = item.icon
+    return (
+      <div className={styles.item}>
+        {Icon && (
+          <div className={styles.icon}>
+            <Icon />
+          </div>
+        )}
+        {item.title}
+      </div>
+    )
+  }
+
   getItems() {
     const {editor} = this.props
     const {focusBlock} = editor.value
     const blockItems = this.props.blockTypes.map(type => ({
-      title: `${type.title} ¶`,
+      title: type.title,
       value: type,
+      icon: BlockObjectIcon,
       isInline: false,
       isDisabled: false
     }))
     const inlineItems = this.props.inlineTypes.map(type => ({
       title: type.title,
+      icon: InlineObjectIcon,
       value: type,
       isInline: true,
       isDisabled: focusBlock ? editor.query('isVoid', focusBlock) : true
@@ -71,6 +90,7 @@ export default class InsertMenu extends React.Component<Props> {
     return (
       <DropDownButton
         items={this.getItems()}
+        renderItem={this.renderItem}
         onAction={this.handleOnAction}
         kind="simple"
         origin="right"
