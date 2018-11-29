@@ -23,9 +23,6 @@ module.exports = async args => {
     .concat(scriptPath)
     .concat(args.extraArguments || [])
 
-  const proc = spawn(process.argv[0], nodeArgs)
-
-  proc.stdout.pipe(process.stdout)
-  proc.stderr.pipe(process.stderr)
+  const proc = spawn(process.argv[0], nodeArgs, {stdio: 'inherit'})
   proc.on('close', process.exit)
 }
