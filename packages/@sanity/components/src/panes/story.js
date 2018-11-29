@@ -2,7 +2,7 @@
 import React from 'react'
 import {range} from 'lodash'
 import {storiesOf} from 'part:@sanity/storybook'
-import {withKnobs, boolean, number, text} from 'part:@sanity/storybook/addons/knobs'
+import {withKnobs, boolean, number, text, object} from 'part:@sanity/storybook/addons/knobs'
 import {RouterProvider, route} from 'part:@sanity/base/router'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import DefaultPane from 'part:@sanity/components/panes/default'
@@ -125,20 +125,22 @@ class AutoCollapseTest extends React.PureComponent {
               minSize={pane.minSize}
               defaultSize={pane.defaultSize}
               key={pane.key}
-              isCollapsed={collapsed[i]}
+              isCollapsed={pane.isCollapsed}
             >
               <DefaultPane
                 index={i}
                 title={pane.title}
+                minSize={pane.minSize}
+                defaultSize={pane.defaultSize}
                 onExpand={this.handlePaneExpand}
                 onCollapse={this.handlePaneCollapse}
                 onMenuToggle={action}
-                isCollapsed={collapsed[i]}
+                isCollapsed={pane.isCollapsed}
               >
-                <div style={{fontSize: '0.5em'}}>
-                  <div>Col: {collapsed[i] ? 'true' : 'false'}</div>
-                  <div>Def: {pane.defaultSize}</div>
-                  <div>Min: {pane.minSize}</div>
+                <div style={{marginLeft: '1rem', fontFamily: 'monospace'}}>
+                  <div>Colapsed: {pane.isCollapsed ? 'true' : 'false'}</div>
+                  <div>DefaultSize: {pane.defaultSize}</div>
+                  <div>MinSize: {pane.minSize}</div>
                 </div>
               </DefaultPane>
             </SplitPaneWrapper>
@@ -175,8 +177,9 @@ storiesOf('Panes')
   })
 
   .add('Split', () => {
-    const panes = range(number('#Panes', 4)).map((pane, i) => {
+    const panes = range(number('Panes qty', 4, 'test')).map((pane, i) => {
       return {
+        index: i,
         title: `Pane ${i}`,
         key: `pane${i}`,
         isCollapsed: [false][i],
@@ -187,7 +190,7 @@ storiesOf('Panes')
 
     return (
       <Sanity part="part:@sanity/components/panes/controller" propTables={[PanesController]}>
-        <AutoCollapseTest panes={panes} />
+        <AutoCollapseTest panes={object('Panes', panes, 'props')} />
       </Sanity>
     )
   })
