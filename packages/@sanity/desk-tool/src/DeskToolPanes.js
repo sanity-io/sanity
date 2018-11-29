@@ -69,14 +69,13 @@ export default class DeskToolPanes extends React.Component {
 
   componentDidMount() {
     const {autoCollapse, panes} = this.props
-    const paneToForceExpand = panes.length - 1
     if (autoCollapse) {
       this.resizeSubscriber = windowWidth$.pipe(distinctUntilChanged()).subscribe(windowWidth => {
         this.setState({windowWidth})
-        this.handleAutoCollapse(windowWidth, paneToForceExpand, this.userCollapsedPanes)
+        this.handleAutoCollapse(windowWidth, undefined, this.userCollapsedPanes)
       })
       if (window) {
-        this.handleAutoCollapse(window.innerWidth, paneToForceExpand, this.userCollapsedPanes)
+        this.handleAutoCollapse(window.innerWidth, panes.length - 1, this.userCollapsedPanes)
       }
     }
   }
@@ -98,9 +97,9 @@ export default class DeskToolPanes extends React.Component {
     this.handleAutoCollapse(this.state.windowWidth, index, this.userCollapsedPanes)
   }
 
-  handleAutoCollapse = (windowWidth, paneToForceExpand, userCollapsedPanes = []) => {
+  handleAutoCollapse = (windowWidth, paneWantExpand, userCollapsedPanes = []) => {
     const {autoCollapse, panes} = this.props
-
+    const paneToForceExpand = typeof paneWantExpand === 'number' ? paneWantExpand : panes.length - 1
     if (!autoCollapse || !panes || panes.length === 0) {
       return
     }
@@ -109,12 +108,9 @@ export default class DeskToolPanes extends React.Component {
 
     const totalMinSize = sumBy(panes, pane => getPaneMinSize(pane))
     let remainingMinSize = totalMinSize
-    const hasForceExpand = typeof paneToForceExpand === 'number' && panes[paneToForceExpand]
 
-    if (hasForceExpand) {
-      remainingMinSize -= getPaneMinSize(panes[paneToForceExpand]) - COLLAPSED_WIDTH
-      autoCollapsedPanes[paneToForceExpand] = false
-    }
+    remainingMinSize -= getPaneMinSize(panes[paneToForceExpand]) - COLLAPSED_WIDTH
+    autoCollapsedPanes[paneToForceExpand] = false
 
     if (totalMinSize > windowWidth) {
       panes.forEach((pane, i) => {
