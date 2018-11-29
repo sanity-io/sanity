@@ -93,7 +93,6 @@ export default class InsertMenu extends React.Component<Props> {
         renderItem={this.renderItem}
         onAction={this.handleOnAction}
         kind="simple"
-        origin="right"
       >
         Insert
       </DropDownButton>

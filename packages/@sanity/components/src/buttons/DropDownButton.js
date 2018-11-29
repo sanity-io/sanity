@@ -11,7 +11,10 @@ import Poppable from 'part:@sanity/components/utilities/poppable'
 import ArrowKeyNavigation from 'boundless-arrow-key-navigation/build'
 
 const modifiers = {
-  preventOverflow: 'viewport',
+  preventOverflow: {
+    boundariesElement: 'window',
+    padding: 16
+  },
   customStyle: {
     enabled: true,
     fn: data => {
