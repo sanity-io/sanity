@@ -107,6 +107,7 @@ export default class DefaultDialog extends React.PureComponent {
         color={action.color}
         disabled={action.disabled}
         kind={action.kind}
+        inverted={action.inverted}
         autoFocus={action.autoFocus}
         className={action.secondary ? styles.actionSecondary : ''}
       >

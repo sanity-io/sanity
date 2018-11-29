@@ -47,7 +47,7 @@ const DELETE_ACTION = {
   name: 'delete',
   title: 'Delete',
   color: 'danger',
-  kind: 'inverted',
+  inverted: true,
   secondary: true
 }
 
