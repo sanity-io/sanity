@@ -39,7 +39,8 @@ export default class LoadingPane extends React.PureComponent {
     isCollapsed: PropTypes.bool.isRequired,
     onExpand: PropTypes.func,
     onCollapse: PropTypes.func,
-    path: PropTypes.arrayOf(PropTypes.string)
+    path: PropTypes.arrayOf(PropTypes.string),
+    index: PropTypes.number
   }
 
   static defaultProps = {
@@ -75,6 +76,7 @@ export default class LoadingPane extends React.PureComponent {
         isCollapsed={isCollapsed}
         onCollapse={onCollapse}
         onExpand={onExpand}
+        index={this.props.index}
       >
         {/* div wrapper to match styling of documents list pane - prevents spinner
           * from jumping to new position when pane definition is loaded */}

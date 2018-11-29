@@ -2,15 +2,13 @@
 
 .root {
   @media (--screen-medium) {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    display: flex;
     height: 100%;
-    width: 100%;
-    box-sizing: border-box;
-    overflow: hidden;
+  }
+
+  @nest & :global(.Pane1) {
+    background-color: inherit;
+    transition: width 0.2s ease-in;
   }
 }
 
@@ -19,27 +17,25 @@
 }
 
 .splitPane {
-  position: relative;
-  height: 100%;
+  display: block;
 }
 
 .splitWrapper {
-  position: absolute;
-  height: 100%;
-  width: 100%;
+  display: block;
 }
 
-.isCollapsed {
+.splitWrapperResizing {
+  composes: splitWrapper;
+
   @nest & :global(.Pane1) {
-    margin-right: 0;
-    margin-left: 0;
+    transition: unset !important;
   }
 }
 
 .singleWrapper {
   /*
     This is to keep the DOM-tree in the same structure
-    to avoide a re-render of the dom.
+    to avoide a re-render of the dom and to fill the entire width
   */
   @nest & :global(.Pane1) {
     flex: 1 !important;
@@ -48,34 +44,6 @@
   @nest & :global(.Pane2) {
     display: none;
   }
-}
-
-.doubleWrapper {
-  /*
-  This may be needed when we use more panes
-
-  @nest & :global(.Pane1) {
-    flex: initial !important;
-    transition: all 0.3s;
-  }
-
-  @nest & :global(.Pane2) {
-    display: block;
-  }
-  */
-}
-
-.paneInSplitted {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
-
-.paneInSplittedCollapsed {
-  composes: paneInSplitted;
-  padding: 0;
 }
 
 .Resizer {
@@ -114,4 +82,6 @@
 
 .ResizerIsCollapsed {
   composes: Resizer;
+  opacity: 0 !important;
+  pointer-events: none;
 }
