@@ -3,9 +3,10 @@
 /* eslint-disable no-process-exit, no-console */
 const path = require('path')
 const express = require('express')
-const middleware = require('@storybook/react/dist/server/middleware')
+const utils = require('@storybook/core/dist/server/utils')
+// const options = require('@storybook/react/dist/server/options.js')
 const webpackConfig = require('../config/webpack.config')
-const storybook = middleware.default || middleware
+// const genDefaultConfig = require('@storybook/core/dist/server/config/webpack.config.default.js')
 
 let app = null
 
@@ -32,7 +33,8 @@ function startServer(msg) {
 
   app = express()
   app.use(express.static(msg.config.staticPath, {index: false}))
-  app.use(storybook(path.join(__dirname, '..', 'config')))
+
+  app.use(utils.getMiddleware(path.join(__dirname, '..', 'config')))
 
   app.listen(port, msg.config.httpHost, error => {
     if (error) {
