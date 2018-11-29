@@ -82,7 +82,9 @@ export default class DeskToolPanes extends React.Component {
   }
 
   componentWillUnmount() {
-    this.resizeSubscriber.unsubscribe()
+    if (this.props.autoCollapse && this.resizeSubscriber) {
+      this.resizeSubscriber.unsubscribe()
+    }
   }
 
   handlePaneCollapse = index => {
