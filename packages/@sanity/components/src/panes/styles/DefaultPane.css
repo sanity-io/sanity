@@ -12,11 +12,12 @@
 
   @media (--screen-medium) {
     /* Reset mobile first */
+    transition: box-shadow 0.1s linear;
     position: relative;
     height: 100%;
     top: initial;
     left: initial;
-    width: initial;
+    width: 100%;
     min-height: initial;
     overflow: hidden; /* Cuts off the shadow on header */
   }
@@ -40,9 +41,10 @@
     margin-right: 0;
     border-color: #ccc;
     padding: 0;
-    width: 3.4375em;
-    height: 100%;
     flex-direction: row;
+    transition: box-shadow 0.2s 0.2s linear;
+    box-shadow: -5px -10px 10px rgba(0, 0, 0, 0.1) inset;
+    height: 100vh; /* make the bottom shadow go out of bounderies */
   }
 }
 
@@ -61,9 +63,7 @@
   z-index: 10;
 
   @nest .isCollapsed & {
-    flex-direction: row;
-    flex-grow: 1;
-    border-color: transparent;
+    background-color: transparent;
   }
 }
 
@@ -76,9 +76,6 @@
   flex-grow: 1;
   align-items: stretch;
   align-self: flex-end;
-  transition: transform 0.2s linear;
-  transform-origin: 1.71875em 1.71875em;
-  transform: rotate(0);
   box-sizing: border-box;
   height: 3.4375rem;
   padding-left: var(--medium-padding);
@@ -86,8 +83,6 @@
 
   @nest .isCollapsed & {
     min-width: 100vh;
-    justify-content: flex-start;
-    transform: rotate(90deg);
   }
 }
 
@@ -99,7 +94,7 @@
 }
 
 .actionButton {
-  -webkit-font-smoothing: inherit;
+  /* -webkit-font-smoothing: inherit; */
   appearance: none;
   font: inherit;
   background-color: transparent;
@@ -203,6 +198,13 @@
   max-width: 100%;
   text-overflow: ellipsis;
   margin-right: auto;
+  transform-origin: 0.5em 1.5em;
+  transform: rotate(0deg);
+  transition: transform 0.2s ease-in;
+
+  @nest .isCollapsed & {
+    transform: rotate(90deg);
+  }
 }
 
 .functions {
@@ -292,7 +294,7 @@
 
 .functionsButton {
   @nest .isCollapsed & {
-    transform: rotate(-90deg);
+    display: none;
   }
 }
 

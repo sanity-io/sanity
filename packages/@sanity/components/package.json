@@ -42,7 +42,7 @@
     "react-ink": "^6.1.0",
     "react-popper": "^1.0.2",
     "react-sortable-hoc": "^0.6.3",
-    "react-split-pane": "^0.1.63",
+    "react-split-pane": "^0.1.84",
     "react-tippy": "^1.2.3",
     "rxjs": "^6.1.0",
     "scroll": "^2.0.0"
