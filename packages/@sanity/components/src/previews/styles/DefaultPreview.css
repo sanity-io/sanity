@@ -62,10 +62,10 @@
   margin: 0;
   padding: 0;
   padding-bottom: 0.25em;
-  height: 1em;
+  line-height: 1.5em;
+  height: 1.5em;
   font-size: 0.7em;
   font-weight: 300;
-  line-height: 1.5em;
 }
 
 .media {
