@@ -1,6 +1,6 @@
 {
   "name": "@sanity/import",
-  "version": "0.136.2",
+  "version": "0.136.3",
   "description": "Import documents to a Sanity dataset",
   "main": "lib/import.js",
   "engines": {
@@ -22,7 +22,7 @@
     "ndjson"
   ],
   "dependencies": {
-    "@sanity/mutator": "0.136.0",
+    "@sanity/mutator": "0.136.3",
     "@sanity/uuid": "0.136.0",
     "debug": "^3.1.0",
     "file-url": "^2.0.2",

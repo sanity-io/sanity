@@ -1,6 +1,6 @@
 {
   "name": "@sanity/core",
-  "version": "0.136.2",
+  "version": "0.136.3",
   "description": "Sanity core bundle, containing required packages for the development and build process",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -25,8 +25,8 @@
     "@sanity/check": "0.136.0",
     "@sanity/export": "0.136.2",
     "@sanity/generate-help-url": "0.136.0",
-    "@sanity/import": "0.136.2",
-    "@sanity/mutator": "0.136.0",
+    "@sanity/import": "0.136.3",
+    "@sanity/mutator": "0.136.3",
     "@sanity/plugin-loader": "0.136.0",
     "@sanity/resolver": "0.136.0",
     "@sanity/server": "0.136.0",
