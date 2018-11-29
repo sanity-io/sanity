@@ -9,7 +9,8 @@ export default class UnknownPaneType extends React.PureComponent {
     isSelected: PropTypes.bool.isRequired,
     isCollapsed: PropTypes.bool.isRequired,
     onExpand: PropTypes.func,
-    onCollapse: PropTypes.func
+    onCollapse: PropTypes.func,
+    index: PropTypes.number
   }
 
   static defaultProps = {
@@ -24,6 +25,7 @@ export default class UnknownPaneType extends React.PureComponent {
     return (
       <DefaultPane
         title="Unknown pane type"
+        index={this.props.index}
         isSelected={isSelected}
         isCollapsed={isCollapsed}
         onCollapse={onCollapse}

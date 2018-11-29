@@ -267,6 +267,7 @@ export default withRouterHOC(
           title={title}
           className={className}
           styles={this.props.styles}
+          index={this.props.index}
           scrollTop={this.state.scrollTop}
           menuItems={menuItems}
           menuItemGroups={menuItemGroups}

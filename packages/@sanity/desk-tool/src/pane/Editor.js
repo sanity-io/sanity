@@ -175,6 +175,7 @@ export default withRouterHOC(
     static propTypes = {
       title: PropTypes.string,
       paneIndex: PropTypes.number.isRequired,
+      index: PropTypes.number,
       paneStyles: PropTypes.object,
       patchChannel: PropTypes.object,
       draft: PropTypes.object,
@@ -688,6 +689,7 @@ export default withRouterHOC(
       return (
         <Pane
           styles={this.props.paneStyles}
+          index={this.props.index}
           title={this.getTitle(value)}
           onAction={this.handleMenuAction}
           menuItems={getMenuItems(enabledActions, draft, published, this.isLiveEditEnabled())}
@@ -695,8 +697,6 @@ export default withRouterHOC(
           onMenuToggle={this.handleMenuToggle}
           isSelected // last pane is always selected for now
           staticContent={this.renderPublishInfo()}
-          minWidth={300}
-          maxWidth={672}
           contentMaxWidth={672}
         >
           <div className={styles.root}>
