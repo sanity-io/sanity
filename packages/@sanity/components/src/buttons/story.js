@@ -5,11 +5,8 @@ import Button from 'part:@sanity/components/buttons/default'
 import AnchorButton from 'part:@sanity/components/buttons/anchor'
 import IntentButton from 'part:@sanity/components/buttons/intent'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
-// import DefaultFormField from 'part:@sanity/components/formfields/default'
-// import DefaultTextInput from 'part:@sanity/components/textinputs/default'
-// import InInputButton from 'part:@sanity/components/buttons/in-input'
-// import InInputStyles from 'part:@sanity/components/buttons/in-input-style'
 import FileInputButton from 'part:@sanity/components/fileinput/button'
+import ButtonGroup from 'part:@sanity/components/buttons/button-group'
 import {storiesOf} from 'part:@sanity/storybook'
 import Chance from 'chance'
 import {range} from 'lodash'
@@ -28,7 +25,7 @@ import PlusIcon from 'part:@sanity/base/plus-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 
 import Sanity from 'part:@sanity/storybook/addons/sanity'
-import ButtonCollection from 'part:@sanity/components/buttons/button-collection'
+import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 
 const chance = new Chance()
 
@@ -39,7 +36,7 @@ const router = route('/', [route('/bikes/:bikeId'), route.intents('/intents')])
 const preventDefault = evt => evt.preventDefault()
 const getButtonKinds = () => select('kind', ['default', 'simple', 'secondary'], 'default', 'props')
 const getColorKinds = () =>
-  select('color', [false, 'primary', 'success', 'danger', 'white'], false, 'props')
+  select('color', [undefined, 'primary', 'success', 'danger', 'white'], undefined, 'props')
 
 const items = [
   {index: '1', title: 'Test'},
@@ -150,7 +147,7 @@ storiesOf('Buttons', module)
               onFocus={action('onFocus')}
               onBlur={action('onBlur')}
               loading={boolean('loading', false, 'props')}
-              icon={boolean('icon', false, 'props') ? SanityLogoIcon : false}
+              icon={boolean('icon', false, 'props') ? SanityLogoIcon : undefined}
             >
               {text('prop: children', 'This is a dropdown')}
             </DropDownButton>
@@ -214,7 +211,7 @@ storiesOf('Buttons', module)
             Simple
           </Button>
           <h2>Colors</h2>
-          <ButtonCollection>
+          <ButtonGrid>
             <Button onClick={action('clicked')} disabled={disabled} loading={loading}>
               Undefined
             </Button>
@@ -242,7 +239,7 @@ storiesOf('Buttons', module)
             >
               Success
             </Button>
-          </ButtonCollection>
+          </ButtonGrid>
           <h2>Colors (inverted)</h2>
           <Button onClick={action('clicked')} inverted disabled={disabled} loading={loading}>
             Undefined
@@ -279,10 +276,11 @@ storiesOf('Buttons', module)
             onAction={action('Clicked item')}
             disabled={disabled}
             loading={loading}
+            color="primary"
+            inverted
           >
             Dropdown
           </DropDownButton>
-
           <h2>Colors (simple)</h2>
           <Button onClick={action('clicked')} kind="simple" disabled={disabled} loading={loading}>
             Undefined
@@ -520,19 +518,14 @@ storiesOf('Buttons', module)
     )
   })
 
-storiesOf('Button collection', module)
-  .addDecorator(withKnobs)
-  .add('Default', () => {
+  .add('Grid', () => {
     const backgroundColor = color('View color', 'rgba(255, 255, 255, 0', 'test')
     const qtyButtons = number('# buttons', 2, 'test')
     const buttonText = text('Button text', '')
     return (
       <div style={{backgroundColor, margin: '2rem'}}>
-        <Sanity
-          part="part:@sanity/components/buttons/button-collection"
-          propTables={[ButtonCollection]}
-        >
-          <ButtonCollection
+        <Sanity part="part:@sanity/components/buttons/button-grid" propTables={[ButtonGrid]}>
+          <ButtonGrid
             align={select('align', ['start', 'end'], 'start', 'props')}
             secondary={range(0, number('# secondary', 1)).map(i => {
               return (
@@ -547,7 +540,52 @@ storiesOf('Button collection', module)
                 <Button key={i}>{buttonText || (i % 2 ? chance.word() : chance.name())}</Button>
               )
             })}
-          </ButtonCollection>
+          </ButtonGrid>
+        </Sanity>
+      </div>
+    )
+  })
+
+  .add('Group', () => {
+    const backgroundColor = color('View color', 'rgba(255, 255, 255, 0', 'test')
+    const qtyButtons = number('# buttons', 2, 'test')
+    const loading = boolean('Loading', false, 'buttonProp')
+    const onlyIcon = boolean('Only icon', false, 'test')
+    const icon = boolean('icon', false, 'buttonProp') ? SanityLogoIcon : undefined
+    const buttonText = text('Button text', '', 'buttonProp')
+    const buttonColor = getColorKinds()
+    const buttonKind = getButtonKinds()
+
+    return (
+      <div style={{backgroundColor, margin: '2rem'}}>
+        <Sanity part="part:@sanity/components/buttons/button-group" propTables={[ButtonGroup]}>
+          <ButtonGroup>
+            {range(0, qtyButtons).map(i => {
+              return (
+                <Button
+                  kind={buttonKind}
+                  color={buttonColor}
+                  key={i}
+                  loading={loading}
+                  icon={icon || (onlyIcon && SanityLogoIcon)}
+                >
+                  {buttonText || (!onlyIcon && (i % 2 ? chance.word() : chance.name()))}
+                </Button>
+              )
+            })}
+            <DropDownButton
+              items={items}
+              kind={buttonKind}
+              color={buttonColor}
+              loading={loading}
+              onAction={action('Clicked item')}
+              onFocus={action('onFocus')}
+              onBlur={action('onBlur')}
+              icon={icon || (onlyIcon && SanityLogoIcon)}
+            >
+              {!onlyIcon && 'Dropdown'}
+            </DropDownButton>
+          </ButtonGroup>
         </Sanity>
       </div>
     )

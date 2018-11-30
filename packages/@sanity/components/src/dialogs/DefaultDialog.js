@@ -4,7 +4,7 @@ import React from 'react'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import styles from 'part:@sanity/components/dialogs/default-style'
 import Button from 'part:@sanity/components/buttons/default'
-import ButtonCollection from 'part:@sanity/components/buttons/button-collection'
+import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import {partition, debounce} from 'lodash'
 import Ink from 'react-ink'
 import {Portal} from '../utilities/Portal'
@@ -22,6 +22,7 @@ export default class DefaultDialog extends React.PureComponent {
     onClose: PropTypes.func.isRequired,
     onAction: PropTypes.func,
     showCloseButton: PropTypes.bool,
+    actionsAlign: PropTypes.oneOf(['start', 'end']),
     actions: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string.isRequired,
@@ -34,6 +35,7 @@ export default class DefaultDialog extends React.PureComponent {
 
   static defaultProps = {
     showCloseButton: true,
+    actionsAlign: 'end',
     onAction() {},
     onOpen() {},
     actions: [],
@@ -105,6 +107,7 @@ export default class DefaultDialog extends React.PureComponent {
         color={action.color}
         disabled={action.disabled}
         kind={action.kind}
+        inverted={action.inverted}
         autoFocus={action.autoFocus}
         className={action.secondary ? styles.actionSecondary : ''}
       >
@@ -121,9 +124,12 @@ export default class DefaultDialog extends React.PureComponent {
     const [secondary, primary] = partition(actions, action => action.secondary)
 
     return (
-      <ButtonCollection align="end" secondary={secondary.map(this.createButtonFromAction)}>
+      <ButtonGrid
+        align={this.props.actionsAlign}
+        secondary={secondary.map(this.createButtonFromAction)}
+      >
         {primary.map(this.createButtonFromAction)}
-      </ButtonCollection>
+      </ButtonGrid>
     )
   }
 

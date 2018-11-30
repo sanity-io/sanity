@@ -26,7 +26,7 @@ const modifiers = {
 
 export default class DropDownButton extends React.PureComponent {
   static propTypes = {
-    kind: PropTypes.oneOf(['secondary', 'add', 'delete', 'warning', 'success', 'danger', 'simple']),
+    kind: PropTypes.oneOf(['default', 'simple']),
     items: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string.isRequired,
@@ -50,7 +50,7 @@ export default class DropDownButton extends React.PureComponent {
     renderItem(item) {
       return <div>{item.title}</div>
     },
-    placement: "bottom-start"
+    placement: 'bottom-start'
   }
 
   firstItemElement = React.createRef()
@@ -129,9 +129,13 @@ export default class DropDownButton extends React.PureComponent {
     const {items, renderItem, children, kind, className, placement, ...rest} = omit(this.props, 'onAction')
     const {menuOpened} = this.state
 
-    const target = (
+    const buttonElement =
+      this.buttonElement && this.buttonElement.current && this.buttonElement.current._element
+
+    return (
       <Button
         {...rest}
+        className={styles.button}
         onClick={this.handleOnClick}
         kind={kind}
         onKeyDown={this.handleButtonKeyDown}
@@ -141,46 +145,43 @@ export default class DropDownButton extends React.PureComponent {
         <div className={styles.inner}>
           {children}
           <ArrowIcon color="inherit" className={styles.arrow} />
+          <Poppable
+            modifiers={modifiers}
+            placement={placement}
+            referenceElement={buttonElement}
+            onEscape={this.handleClose}
+            onClickOutside={this.handleClose}
+            referenceClassName={styles.outer}
+            popperClassName={styles.popper}
+            positionFixed
+          >
+            {menuOpened && (
+              <Fragment>
+                <List className={styles.list}>
+                  <ArrowKeyNavigation>
+                    {items.map((item, i) => {
+                      return (
+                        <Item
+                          key={i}
+                          className={styles.listItem}
+                          onClick={() => this.handleItemClick(item)} //eslint-disable-line react/jsx-no-bind
+                          onKeyPress={event => this.handleItemKeyPress(event, item)} //eslint-disable-line react/jsx-no-bind
+                          item={item}
+                          tabIndex={0}
+                          ref={i === 0 && this.firstItemElement}
+                        >
+                          {renderItem(item)}
+                        </Item>
+                      )
+                    })}
+                  </ArrowKeyNavigation>
+                </List>
+                <div tabIndex={0} onFocus={this.handleMenuBlur} />
+              </Fragment>
+            )}
+          </Poppable>
         </div>
       </Button>
-    )
-
-    return (
-      <Poppable
-        modifiers={modifiers}
-        placement={placement}
-        target={target}
-        onEscape={this.handleClose}
-        onClickOutside={this.handleClose}
-        referenceClassName={styles.outer}
-        popperClassName={styles.popper}
-        positionFixed
-      >
-        {menuOpened && (
-          <Fragment>
-            <List className={styles.list}>
-              <ArrowKeyNavigation>
-                {items.map((item, i) => {
-                  return (
-                    <Item
-                      key={i}
-                      className={styles.listItem}
-                      onClick={() => this.handleItemClick(item)} //eslint-disable-line react/jsx-no-bind
-                      onKeyPress={event => this.handleItemKeyPress(event, item)} //eslint-disable-line react/jsx-no-bind
-                      item={item}
-                      tabIndex={0}
-                      ref={i === 0 && this.firstItemElement}
-                    >
-                      {renderItem(item)}
-                    </Item>
-                  )
-                })}
-              </ArrowKeyNavigation>
-            </List>
-            <div tabIndex={0} onFocus={this.handleMenuBlur} />
-          </Fragment>
-        )}
-      </Poppable>
     )
   }
 }

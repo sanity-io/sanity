@@ -1,9 +1,9 @@
 /* eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React from 'react'
-import styles from 'part:@sanity/components/buttons/button-collection-style'
+import styles from 'part:@sanity/components/buttons/button-grid-style'
 
-export default class ButtonCollection extends React.PureComponent {
+export default class ButtonGrid extends React.PureComponent {
   static propTypes = {
     children: PropTypes.node.isRequired,
     secondary: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf([PropTypes.node])]),
