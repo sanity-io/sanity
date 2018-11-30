@@ -46,17 +46,19 @@ export default class Poppable extends React.Component {
     }
   }
   render() {
-    const {onEscape, onClickOutside, target, children, referenceClassName, popperClassName} = this.props
+    const {onEscape, onClickOutside, target, children, referenceClassName, popperClassName, referenceElement} = this.props
+
+    // Undefined referenceElement causes Popper to think it is defined
+    const popperPropHack = {}
+    if (referenceElement) {
+      popperPropHack.referenceElement = referenceElement
+    }
 
     return (
       <Manager>
-        <Reference>
-          {({ref}) => (
-            <div ref={ref} className={referenceClassName}>
-              {target}
-            </div>
-          )}
-        </Reference>
+        {!referenceElement && (
+          <Reference>{({ref}) => <div ref={ref} className={referenceClassName} />}</Reference>
+        )}
         {children && (
           <Portal>
             <Stacked>
@@ -67,6 +69,7 @@ export default class Poppable extends React.Component {
                     modifiers={this.props.modifiers}
                     placement={this.props.placement}
                     positionFixed
+                    {...popperPropHack}
                   >
                     {({ref, placement, style}) => (
                       <div ref={ref} style={style} data-placement={placement} className={popperClassName}>

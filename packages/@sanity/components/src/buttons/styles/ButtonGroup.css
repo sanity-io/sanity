@@ -1,0 +1,4 @@
+.root {
+  display: flex;
+  composes: groupContainer from './DefaultButton.css';
+}

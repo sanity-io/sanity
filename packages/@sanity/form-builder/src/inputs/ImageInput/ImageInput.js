@@ -13,7 +13,7 @@ import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import styles from './styles/ImageInput.css'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import {ObservableI} from '../../typedefs/observable'
-import ButtonCollection from 'part:@sanity/components/buttons/button-collection'
+import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 
 import type {Reference, Type} from '../../typedefs'
 import type {Uploader, UploaderResolver} from '../../sanity/uploads/typedefs'
@@ -379,7 +379,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
           </div>
         </div>
         <div className={styles.functions}>
-          <ButtonCollection>
+          <ButtonGrid>
             {!readOnly && (
               <FileInputButton
                 icon={UploadIcon}
@@ -411,7 +411,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
                   Remove
                 </Button>
               )}
-          </ButtonCollection>
+          </ButtonGrid>
         </div>
         {highlightedFields.length > 0 && (
           <div className={styles.fieldsWrapper}>{this.renderFields(highlightedFields)}</div>

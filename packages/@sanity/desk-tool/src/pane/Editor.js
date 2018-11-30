@@ -10,7 +10,7 @@ import {getPublishedId, newDraftFrom} from 'part:@sanity/base/util/draft-utils'
 import {resolveEnabledActions, isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import Button from 'part:@sanity/components/buttons/default'
-import ButtonCollection from 'part:@sanity/components/buttons/button-collection'
+import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import PopOverDialog from 'part:@sanity/components/dialogs/popover'
 import FormBuilder from 'part:@sanity/form-builder'
 import TrashIcon from 'part:@sanity/base/trash-icon'
@@ -616,14 +616,14 @@ export default withRouterHOC(
                   <div className={styles.popOverText}>
                     <strong>Are you sure</strong> you want to discard all changes since last published?
                   </div>
-                  <ButtonCollection>
+                  <ButtonGrid>
                     <Button kind="simple" onClick={this.handleCancelDiscard}>
                       Cancel
                     </Button>
                     <Button color="danger" onClick={this.handleConfirmDiscard}>
                       Discard
                     </Button>
-                  </ButtonCollection>
+                  </ButtonGrid>
                 </div>
               </PopOverDialog>
             )}

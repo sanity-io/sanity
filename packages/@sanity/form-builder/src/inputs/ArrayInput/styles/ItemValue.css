@@ -138,11 +138,6 @@
   }
 }
 
-.defaultDialogContent {
-  padding: var(--medium-padding);
-  box-sizing: border-box;
-}
-
 .validationIconError {
   composes: validationIconError from 'part:@sanity/base/theme/forms/validation-style';
 }

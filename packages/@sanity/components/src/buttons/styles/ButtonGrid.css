@@ -15,19 +15,32 @@
     grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
   }
 
+  /* When buttons are alone */
   @nest & > * {
+    min-width: 6rem;
+  }
+
+  /* Stretch buttons to fit grid when not alone */
+  @nest &:not([data-buttons="1"]) > * {
     margin: 0 !important;
+    width: stretch;
+    display: flex;
   }
 }
 
 .alignStart {
   composes: root;
-  flex-direction: row;
+  direction: ltr;
 }
 
 .alignEnd {
   composes: root;
-  flex-direction: row-reverse;
+  direction: rtl;
+}
+
+/* reset direction */
+.root > * {
+  direction: ltr;
 }
 
 .small {
@@ -36,6 +49,11 @@
 
 .secondary {
   display: contents;
+
+  @nest &:not([data-buttons="1"]) > * {
+    margin: 0 !important;
+    width: stretch;
+  }
 
   @media (--screen-medium) {
     display: flex;
