@@ -224,6 +224,18 @@ class Pane extends React.Component {
     this.setState(prev => ({menuIsOpen: !prev.menuIsOpen}))
   }
 
+  handleRootClick = event => {
+    if (this.props.isCollapsed) {
+      this.props.onExpand()
+    }
+  }
+
+  handleTitleClick = event => {
+    if (!this.props.isCollapsed) {
+      this.props.onCollapse()
+    }
+  }
+
   handleMenuAction = item => {
     // When closing the menu outright, the menu button will be focused and the "enter" keypress
     // will bouble up to it and trigger a re-open of the menu. To work around this, use rAF to
@@ -347,6 +359,7 @@ class Pane extends React.Component {
           isCollapsed ? styles.isCollapsed : styles.root,
           isSelected ? styles.isActive : styles.isDisabled
         ])}
+        onClick={this.handleRootClick}
         ref={this.setRootElement}
       >
         <div className={styles.header} style={{boxShadow: headerStyle.boxShadow}}>
@@ -354,7 +367,7 @@ class Pane extends React.Component {
             className={styles.headerContent}
             style={contentMaxWidth ? {maxWidth: `${contentMaxWidth}px`} : {}}
           >
-            <h2 className={styles.title} onClick={this.handleToggleCollapsed}>
+            <h2 className={styles.title} onClick={this.handleTitleClick}>
               {title}
             </h2>
             <div className={styles.actions}>
