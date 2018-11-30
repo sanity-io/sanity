@@ -10,6 +10,7 @@ import {Observable, merge} from 'rxjs'
 import {map, share, debounceTime, distinctUntilChanged} from 'rxjs/operators'
 
 const COLLAPSED_WIDTH = 54
+const BREAKPOINT_SCREEN_MEDIUM = 512
 
 const fromWindowEvent = eventName =>
   new Observable(subscriber => {
@@ -53,7 +54,8 @@ export default class DeskToolPanes extends React.Component {
 
   state = {
     collapsedPanes: [],
-    windowWidth: typeof window === 'undefined' ? 1000 : window.innerWidth
+    windowWidth: typeof window === 'undefined' ? 1000 : window.innerWidth,
+    isMobile: typeof window !== 'undefined' && window.innerWidth < BREAKPOINT_SCREEN_MEDIUM
   }
 
   collapsedPanes = []
@@ -71,7 +73,10 @@ export default class DeskToolPanes extends React.Component {
     const {autoCollapse, panes} = this.props
     if (autoCollapse) {
       this.resizeSubscriber = windowWidth$.pipe(distinctUntilChanged()).subscribe(windowWidth => {
-        this.setState({windowWidth})
+        this.setState({
+          windowWidth,
+          isMobile: windowWidth < BREAKPOINT_SCREEN_MEDIUM
+        })
         this.handleAutoCollapse(windowWidth, undefined, this.userCollapsedPanes)
       })
       if (window) {
@@ -87,20 +92,27 @@ export default class DeskToolPanes extends React.Component {
   }
 
   handlePaneCollapse = index => {
+    if (this.state.isMobile || this.props.panes.length === 1) {
+      return
+    }
     this.userCollapsedPanes[index] = true
     const paneToForceExpand = this.props.panes.length - 1
     this.handleAutoCollapse(this.state.windowWidth, paneToForceExpand, this.userCollapsedPanes)
   }
 
   handlePaneExpand = index => {
+    if (this.state.isMobile || this.props.panes.length === 1) {
+      return
+    }
     this.userCollapsedPanes[index] = false
     this.handleAutoCollapse(this.state.windowWidth, index, this.userCollapsedPanes)
   }
 
   handleAutoCollapse = (windowWidth, paneWantExpand, userCollapsedPanes = []) => {
     const {autoCollapse, panes} = this.props
+    const {isMobile} = this.state
     const paneToForceExpand = typeof paneWantExpand === 'number' ? paneWantExpand : panes.length - 1
-    if (!autoCollapse || !panes || panes.length === 0) {
+    if (isMobile || !autoCollapse || !panes || panes.length === 0) {
       return
     }
 
@@ -131,10 +143,11 @@ export default class DeskToolPanes extends React.Component {
 
   renderPanes() {
     const {panes, keys} = this.props
+    const {isMobile} = this.state
     const path = []
 
     return panes.map((pane, i) => {
-      const isCollapsed = this.state.collapsedPanes[i]
+      const isCollapsed = !isMobile && this.state.collapsedPanes[i]
       const paneKey = `${i}-${keys[i - 1] || 'root'}`
 
       // Same pane might appear multiple times, so use index as tiebreaker
@@ -176,10 +189,10 @@ export default class DeskToolPanes extends React.Component {
   }
 
   render() {
-    const isLessThanScreenMedium = this.state.windowWidth < 512
+    const {isMobile} = this.state
     return (
       <SplitController
-        isMobile={isLessThanScreenMedium}
+        isMobile={isMobile}
         autoCollapse={this.props.autoCollapse}
         collapsedWidth={COLLAPSED_WIDTH}
         onCheckCollapse={this.handleCheckCollapse}

@@ -193,20 +193,6 @@ class Pane extends React.Component {
     this.scrollFrameId = requestAnimationFrame(this.scrollFrame)
   }
 
-  handleToggleCollapsed = event => {
-    const {isCollapsed, onCollapse, onExpand, index} = this.props
-
-    if (!onCollapse || !onExpand) {
-      return
-    }
-
-    if (isCollapsed) {
-      onExpand(index)
-    } else {
-      onCollapse(index)
-    }
-  }
-
   handleContentScroll = event => {
     const shadowState = getScrollShadowState(event.target.scrollTop, this.state)
     if (shadowState) {
@@ -225,14 +211,16 @@ class Pane extends React.Component {
   }
 
   handleRootClick = event => {
-    if (this.props.isCollapsed) {
-      this.props.onExpand()
+    const {onExpand, isCollapsed, index} = this.props
+    if (isCollapsed && onExpand && index) {
+      onExpand(index)
     }
   }
 
   handleTitleClick = event => {
-    if (!this.props.isCollapsed) {
-      this.props.onCollapse()
+    const {onCollapse, isCollapsed, index} = this.props
+    if (!isCollapsed && onCollapse && index) {
+      onCollapse(index)
     }
   }
 
