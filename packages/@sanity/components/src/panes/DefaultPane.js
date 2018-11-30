@@ -212,14 +212,14 @@ class Pane extends React.Component {
 
   handleRootClick = event => {
     const {onExpand, isCollapsed, index} = this.props
-    if (isCollapsed && onExpand && index) {
+    if (isCollapsed && onExpand) {
       onExpand(index)
     }
   }
 
   handleTitleClick = event => {
     const {onCollapse, isCollapsed, index} = this.props
-    if (!isCollapsed && onCollapse && index) {
+    if (!isCollapsed && onCollapse) {
       onCollapse(index)
     }
   }

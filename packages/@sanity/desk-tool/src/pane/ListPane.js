@@ -99,6 +99,7 @@ export default withRouterHOC(
 
       return (
         <DefaultPane
+          index={index}
           title={title}
           styles={styles}
           className={className}
