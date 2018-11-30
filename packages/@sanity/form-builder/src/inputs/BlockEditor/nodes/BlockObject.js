@@ -139,7 +139,10 @@ export default class BlockObject extends React.Component<Props, State> {
         document.body.appendChild(this._dragGhost)
         // eslint-disable-next-line max-depth
         if (this._dragGhost) {
-          event.dataTransfer.setDragImage(this._dragGhost)
+          const rect = element.getBoundingClientRect()
+          const x = event.clientX - rect.left
+          const y = event.clientY - rect.top
+          event.dataTransfer.setDragImage(this._dragGhost, x, y)
         }
       }
     }
