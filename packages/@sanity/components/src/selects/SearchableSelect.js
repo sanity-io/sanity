@@ -6,6 +6,7 @@ export default class SearchableSelect extends React.PureComponent {
   static propTypes = {
     label: PropTypes.string,
     description: PropTypes.string,
+    className: PropTypes.string,
     onChange: PropTypes.func,
     onSearch: PropTypes.func,
     onOpen: PropTypes.func,
@@ -126,9 +127,9 @@ export default class SearchableSelect extends React.PureComponent {
 
   render() {
     const {isOpen, highlightIndex, isInputSelected, inputValue, hasFocus} = this.state
-    const {onSearch, ...rest} = this.props
+    const {onSearch, className, ...rest} = this.props
     return (
-      <div ref={this.setRootElement}>
+      <div ref={this.setRootElement} className={className}>
         <StatelessSearchableSelect
           {...rest}
           onFocus={this.handleFocus}
