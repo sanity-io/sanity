@@ -9,7 +9,7 @@ import Pane from './pane/Pane'
 import {Observable, merge} from 'rxjs'
 import {map, share, debounceTime, distinctUntilChanged} from 'rxjs/operators'
 
-const COLLAPSED_WIDTH = 54
+const COLLAPSED_WIDTH = 55
 const BREAKPOINT_SCREEN_MEDIUM = 512
 
 const fromWindowEvent = eventName =>
@@ -121,13 +121,13 @@ export default class DeskToolPanes extends React.Component {
     const totalMinSize = sumBy(panes, pane => getPaneMinSize(pane))
     let remainingMinSize = totalMinSize
 
-    remainingMinSize -= getPaneMinSize(panes[paneToForceExpand]) - COLLAPSED_WIDTH
+    remainingMinSize -= getPaneMinSize(panes[paneToForceExpand])
     autoCollapsedPanes[paneToForceExpand] = false
 
     if (totalMinSize > windowWidth) {
       panes.forEach((pane, i) => {
         if (paneToForceExpand != i) {
-          if (remainingMinSize + getPaneMinSize(pane) + COLLAPSED_WIDTH > windowWidth) {
+          if (remainingMinSize > windowWidth - getPaneMinSize(panes[paneToForceExpand])) {
             autoCollapsedPanes[i] = true
             remainingMinSize -= getPaneMinSize(pane) - COLLAPSED_WIDTH
           }
@@ -159,7 +159,7 @@ export default class DeskToolPanes extends React.Component {
           key={wrapperKey}
           isCollapsed={!!isCollapsed}
           minSize={getPaneMinSize(pane)}
-          defaultSize={getPaneDefaultSize(pane)}
+          defaultSize={getPaneMinSize(pane)}
         >
           {pane === LOADING ? (
             <LoadingPane
