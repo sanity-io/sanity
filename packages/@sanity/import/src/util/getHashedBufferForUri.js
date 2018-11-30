@@ -1,4 +1,5 @@
 const crypto = require('crypto')
+const {URL} = require('whatwg-url')
 const miss = require('mississippi')
 const getUri = require('get-uri')
 const retryOnFailure = require('./retryOnFailure')
@@ -31,8 +32,9 @@ async function getHashedBufferForUri(uri) {
 }
 
 function getStream(uri) {
+  const parsed = new URL(uri)
   return new Promise((resolve, reject) =>
-    getUri(uri, (err, stream) => {
+    getUri(parsed.href, (err, stream) => {
       if (err) {
         reject(new Error(readError(uri, err)))
         return
