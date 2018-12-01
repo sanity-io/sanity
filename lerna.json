@@ -11,7 +11,8 @@
     "packages/movies-studio",
     "packages/storybook",
     "packages/test-studio",
-    "packages/create-sanity"
+    "packages/create-sanity",
+    "packages/sanity"
   ],
   "version": "0.136.3"
 }
