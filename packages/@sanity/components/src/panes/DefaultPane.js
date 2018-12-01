@@ -193,20 +193,6 @@ class Pane extends React.Component {
     this.scrollFrameId = requestAnimationFrame(this.scrollFrame)
   }
 
-  handleToggleCollapsed = event => {
-    const {isCollapsed, onCollapse, onExpand, index} = this.props
-
-    if (!onCollapse || !onExpand) {
-      return
-    }
-
-    if (isCollapsed) {
-      onExpand(index)
-    } else {
-      onCollapse(index)
-    }
-  }
-
   handleContentScroll = event => {
     const shadowState = getScrollShadowState(event.target.scrollTop, this.state)
     if (shadowState) {
@@ -222,6 +208,20 @@ class Pane extends React.Component {
   // Triggered by pane menu button
   handleMenuToggle = () => {
     this.setState(prev => ({menuIsOpen: !prev.menuIsOpen}))
+  }
+
+  handleRootClick = event => {
+    const {onExpand, isCollapsed, index} = this.props
+    if (isCollapsed && onExpand) {
+      onExpand(index)
+    }
+  }
+
+  handleTitleClick = event => {
+    const {onCollapse, isCollapsed, index} = this.props
+    if (!isCollapsed && onCollapse) {
+      onCollapse(index)
+    }
   }
 
   handleMenuAction = item => {
@@ -347,6 +347,7 @@ class Pane extends React.Component {
           isCollapsed ? styles.isCollapsed : styles.root,
           isSelected ? styles.isActive : styles.isDisabled
         ])}
+        onClick={this.handleRootClick}
         ref={this.setRootElement}
       >
         <div className={styles.header} style={{boxShadow: headerStyle.boxShadow}}>
@@ -354,7 +355,7 @@ class Pane extends React.Component {
             className={styles.headerContent}
             style={contentMaxWidth ? {maxWidth: `${contentMaxWidth}px`} : {}}
           >
-            <h2 className={styles.title} onClick={this.handleToggleCollapsed}>
+            <h2 className={styles.title} onClick={this.handleTitleClick}>
               {title}
             </h2>
             <div className={styles.actions}>
