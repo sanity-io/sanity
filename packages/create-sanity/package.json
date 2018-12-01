@@ -1,7 +1,7 @@
 {
   "name": "create-sanity",
   "version": "0.136.0",
-  "description": "Display info about how to create a new sanity app",
+  "description": "Initialize a new Sanity project",
   "bin": "index.js",
   "keywords": [
     "sanity",
