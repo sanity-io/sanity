@@ -45,10 +45,6 @@
     transition: box-shadow 0.2s 0.2s linear;
     box-shadow: -5px -10px 10px rgba(0, 0, 0, 0.1) inset;
     height: 100vh; /* make the bottom shadow go out of bounderies */
-
-    @nest &:hover {
-      background-color: color(var(--text-color) a(1%));
-    }
   }
 }
 

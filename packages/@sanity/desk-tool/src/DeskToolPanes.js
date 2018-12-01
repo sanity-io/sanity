@@ -159,7 +159,7 @@ export default class DeskToolPanes extends React.Component {
           key={wrapperKey}
           isCollapsed={!!isCollapsed}
           minSize={getPaneMinSize(pane)}
-          defaultSize={getPaneMinSize(pane)}
+          defaultSize={getPaneDefaultSize(pane)}
         >
           {pane === LOADING ? (
             <LoadingPane
