@@ -1,0 +1,27 @@
+{
+  "name": "create-sanity",
+  "version": "0.136.0",
+  "description": "Display info about how to create a new sanity app",
+  "bin": "index.js",
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "create-sanity"
+  ],
+  "author": "Sanity.io <hello@sanity.io>",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/",
+  "license": "MIT",
+  "dependencies": {
+    "@sanity/cli": "^0.136.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
+  }
+}
