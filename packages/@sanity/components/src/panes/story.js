@@ -6,7 +6,6 @@ import {withKnobs, boolean, number, text, object} from 'part:@sanity/storybook/a
 import {RouterProvider, route} from 'part:@sanity/base/router'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import DefaultPane from 'part:@sanity/components/panes/default'
-import PanesController from 'part:@sanity/components/panes/controller'
 import SplitController from 'part:@sanity/components/panes/split-controller'
 import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
 import PlusIcon from 'part:@sanity/base/plus-icon'

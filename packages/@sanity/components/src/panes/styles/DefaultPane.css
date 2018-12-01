@@ -196,6 +196,7 @@
   white-space: nowrap;
   overflow: hidden;
   max-width: 100%;
+  width: stretch;
   text-overflow: ellipsis;
   margin-right: auto;
   transform-origin: 0.5em 1.5em;
