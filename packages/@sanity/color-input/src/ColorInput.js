@@ -68,18 +68,13 @@ export default class ColorInput extends PureComponent {
     )
   }
 
+  // The color picker emits onChange events continuously while the user is sliding the
+  // hue/saturation/alpha selectors. This debounces the event to avoid excessive patches
+  handleColorChange = debounce(this.emitSetColor, 100)
+
   handleCreateColor = () => {
     this.emitSetColor(DEFAULT_COLOR)
   }
-
-  handleColorChange = nextColor => {
-    this._scheduledNextColor = nextColor
-    this.throttledUpdate()
-  }
-
-  throttledUpdate = debounce(() => {
-    this.emitSetColor(this._scheduledNextColor)
-  }, 100)
 
   handleUnset = () => {
     this.props.onChange(PatchEvent.from(unset()))
