@@ -20,7 +20,8 @@
   ],
   "dependencies": {
     "react-color": "^2.13.8",
-    "reactcss": "^1.2.0"
+    "reactcss": "^1.2.0",
+    "lodash": "^4.17.4"
   },
   "devDependencies": {
     "@sanity/check": "0.136.0",

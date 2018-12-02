@@ -5,10 +5,20 @@ import PropTypes from 'prop-types'
 import {PatchEvent, patches} from 'part:@sanity/form-builder'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import ColorPicker from './ColorPicker'
+import {debounce} from 'lodash'
 
-const {set, unset} = patches
+const {set, unset, setIfMissing} = patches
+
+const DEFAULT_COLOR = {
+  hex: '#24a3e3',
+  hsl: {h: 200, s: 0.7732, l: 0.5156, a: 1},
+  hsv: {h: 200, s: 0.8414, v: 0.8901, a: 1},
+  rgb: {r: 46, g: 163, b: 227, a: 1},
+  source: 'hex'
+}
 
 export default class ColorInput extends PureComponent {
+  focusRef = React.createRef()
   static propTypes = {
     type: PropTypes.shape({
       name: PropTypes.string,
@@ -27,101 +37,65 @@ export default class ColorInput extends PureComponent {
     })
   }
 
-  static defaultProps = {
-    value: undefined
-  }
-
-  state = {
-    value: this.props.value
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.value !== this.props.value) {
-      this.setState({
-        value: nextProps.value
-      })
+  focus() {
+    // todo: make the ColorPicker component support .focus()
+    if (this.focusRef.current && this.focusRef.current.focus) {
+      this.focusRef.current.focus()
     }
   }
 
-  handleColorChange = color => {
-    this.setState({value: color})
-  }
-
-  handleColorChangeComplete = (color, event) => {
+  emitSetColor = nextColor => {
     const {onChange, type} = this.props
 
-    if (!color) {
-      // eslint-disable-next-line no-console
-      console.error('Color missing')
-    }
-
-    const fields = Object.keys(color)
-      .map(key => type.fields.find(field => field.name === key))
-      .filter(Boolean)
+    const fieldPatches = type.fields
+      .filter(field => field.name in nextColor)
+      .map(field => {
+        const nextFieldValue = nextColor[field.name]
+        const isObject = field.type.jsonType === 'object'
+        return set(
+          isObject ? Object.assign({_type: field.type.name}, nextFieldValue) : nextFieldValue,
+          [field.name]
+        )
+      })
 
     onChange(
       PatchEvent.from([
+        setIfMissing({_type: type.name}),
         set(type.name, ['_type']),
-        set(color.rgb.a, ['alpha']),
-        ...fields.map(field => {
-          const isObject = field.type.jsonType === 'object'
-          const fieldValue = isObject
-            ? Object.assign({_type: field.type.name}, color[field.name])
-            : color[field.name]
-
-          return set(fieldValue, [field.name])
-        })
+        set(nextColor.rgb.a, ['alpha']),
+        ...fieldPatches
       ])
     )
   }
 
-  handleUnset = () => {
-    const {onChange} = this.props
-
-    this.setState({
-      value: undefined
-    })
-
-    onChange(PatchEvent.from(unset()))
-  }
+  // The color picker emits onChange events continuously while the user is sliding the
+  // hue/saturation/alpha selectors. This debounces the event to avoid excessive patches
+  handleColorChange = debounce(this.emitSetColor, 100)
 
   handleCreateColor = () => {
-    const {onChange, type} = this.props
+    this.emitSetColor(DEFAULT_COLOR)
+  }
 
-    const value = {
-      _type: type.name,
-      alpha: type.options && type.options.disableAlpha ? undefined : 1,
-      hex: '#24a3e3',
-      hsl: {_type: 'hslaColor', h: 200, s: 0.7732, l: 0.5156, a: 1},
-      hsv: {_type: 'hsvaColor', h: 200, s: 0.8414, v: 0.8901, a: 1},
-      rgb: {_type: 'rgbaColor', r: 46, g: 163, b: 227, a: 1},
-      source: 'hex'
-    }
-
-    onChange(PatchEvent.from(set(value)))
+  handleUnset = () => {
+    this.props.onChange(PatchEvent.from(unset()))
   }
 
   render() {
-    const {type} = this.props
-    const {value} = this.state
-
+    const {type, value} = this.props
     return (
       <Fieldset legend={type.title} description={type.description}>
-        {!value && (
-          <div>
-            <Button inverted onClick={this.handleCreateColor}>
-              Create color
-            </Button>
-          </div>
-        )}
-        {value && (
+        {value ? (
           <ColorPicker
+            ref={this.focusRef}
             color={value.hsl || value.hex}
             onChange={this.handleColorChange}
-            onChangeComplete={this.handleColorChangeComplete}
             disableAlpha={type.options && type.options.disableAlpha}
             onUnset={this.handleUnset}
           />
+        ) : (
+          <Button ref={this.focusRef} inverted onClick={this.handleCreateColor}>
+            Create color
+          </Button>
         )}
       </Fieldset>
     )
