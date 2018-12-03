@@ -88,6 +88,23 @@ export default {
           type: 'color'
         }
       ]
+    },
+    {
+      name: 'objectWithObjectWithColors',
+      title: 'Object with object with colors',
+      type: 'object',
+      fields: [
+        {
+          name: 'objectWithColors',
+          title: 'Object with colors',
+          type: 'object',
+          fields: [
+            {name: 'primaryColor', title: 'Primary color', type: 'color'},
+            {name: 'secondaryColor', title: 'Secondary color', type: 'color'},
+            {name: 'extraColor', title: 'Extra color', type: 'color'}
+          ]
+        }
+      ]
     }
   ]
 }
