@@ -10,7 +10,8 @@
     "packages/example-studio",
     "packages/movies-studio",
     "packages/storybook",
-    "packages/test-studio"
+    "packages/test-studio",
+    "packages/create-sanity"
   ],
   "version": "0.136.3"
 }
