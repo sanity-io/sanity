@@ -1,3 +1,4 @@
+import {flatten} from 'lodash'
 import {
   createRuleOptions,
   defaultParseHtml,
@@ -11,10 +12,10 @@ import createRules from './rules'
 import resolveJsType from '../util/resolveJsType'
 
 /**
- * A internal variable to keep track of annotation mark definitions within the 'run' of a block
+ * A internal variable to keep track of annotation mark definitions
  *
  */
-let _markDefsWithinBlock = []
+let _markDefs = []
 
 /**
  * HTML Deserializer
@@ -56,14 +57,25 @@ export default class HtmlDeserializer {
    */
 
   deserialize = html => {
+    _markDefs = []
     const {parseHtml} = this
     const fragment = parseHtml(html)
     const children = Array.from(fragment.childNodes)
-    let blocks = this.deserializeElements(children)
-    // Ensure that all top-level objects are wrapped into a block
-    blocks = ensureRootIsBlocks(blocks)
+    const blocks = trimWhitespace(
+      flattenNestedBlocks(ensureRootIsBlocks(this.deserializeElements(children)))
+    )
+    if (_markDefs.length > 0) {
+      blocks.forEach(block => {
+        block.markDefs = block.markDefs || []
+        block.markDefs = block.markDefs.concat(
+          _markDefs.filter(def => {
+            return flatten(block.children.map(child => child.marks || [])).includes(def._key)
+          })
+        )
+      })
+    }
     // Ensure that there are no blocks within blocks, and trim whitespace
-    return trimWhitespace(flattenNestedBlocks(blocks))
+    return blocks
   }
 
   /**
@@ -98,9 +110,8 @@ export default class HtmlDeserializer {
    * @return {Any}
    */
 
+  // eslint-disable-next-line complexity
   deserializeElement = element => {
-    // eslint-disable-line complexity
-
     let node
     if (!element.tagName) {
       element.tagName = ''
@@ -144,10 +155,6 @@ export default class HtmlDeserializer {
         node = this.deserializeDecorator(ret)
       } else if (ret._type === '__annotation') {
         node = this.deserializeAnnotation(ret)
-      } else if (ret._type === 'block' && _markDefsWithinBlock.length) {
-        ret.markDefs = _markDefsWithinBlock
-        _markDefsWithinBlock = [] // Reset here
-        node = ret
       } else {
         node = ret
       }
@@ -219,7 +226,7 @@ export default class HtmlDeserializer {
 
   deserializeAnnotation = annotation => {
     const {markDef} = annotation
-    _markDefsWithinBlock.push(markDef)
+    _markDefs.push(markDef)
     const applyAnnotation = node => {
       if (node._type === '__annotation') {
         return this.deserializeAnnotation(node)

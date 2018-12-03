@@ -19,6 +19,7 @@ describe('HtmlDeserializer', () => {
         parseHtml: html => new JSDOM(html).window.document
       }
       const output = fn(input, blockTools, commonOptions)
+      // console.log(JSON.stringify(output, null, 2))
       assert.deepEqual(output, expected)
     })
   })

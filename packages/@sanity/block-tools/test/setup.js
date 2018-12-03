@@ -1,5 +1,3 @@
-import randomKey from '../src/util/randomKey'
-
 let mockTestKey = 0
 
 jest.mock('../src/util/randomKey', () => {

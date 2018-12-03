@@ -111,6 +111,17 @@ export default function createHTMLRules(blockContentType, options = {}) {
       }
     },
 
+    // Ignore div tags
+    {
+      deserialize(el, next) {
+        const div = tagName(el) === 'div'
+        if (!div) {
+          return undefined
+        }
+        return next(el.childNodes)
+      }
+    },
+
     // Ignore list containers
     {
       deserialize(el, next) {
