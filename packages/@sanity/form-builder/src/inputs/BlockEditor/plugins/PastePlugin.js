@@ -1,6 +1,9 @@
 import blockTools from '@sanity/block-tools'
 import {Block, Data, Document} from 'slate'
 import {getEventTransfer} from 'slate-react'
+import deserialize from '../utils/deserialize'
+import buildEditorSchema from '../utils/buildEditorSchema'
+import createEditorController from '../utils/createEditorController'
 
 function processNode(node, editor) {
   if (!node.get('nodes')) {
@@ -31,29 +34,15 @@ function processNode(node, editor) {
 const NOOP = () => {}
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
 
-function handleHTML(html, editor, blockContentType, onProgress) {
-  return wait(0).then(() => {
+function handleHTML(html, editor, blockContentType, onProgress, pasteController) {
+  return wait(100).then(() => {
     onProgress({status: 'html'})
     const blocks = blockTools.htmlToBlocks(html, blockContentType)
     onProgress({status: 'blocks'})
-    const value = blockTools.blocksToEditorValue(blocks, blockContentType)
-    const {focusBlock} = editor.value
-    value.document.nodes.forEach((block, index) => {
-      if (
-        index === 0 &&
-        focusBlock &&
-        !editor.query('isVoid', focusBlock) &&
-        focusBlock.nodes.size === 1 &&
-        focusBlock.text === ''
-      ) {
-        editor
-          .insertBlock(block)
-          .moveToEndOfBlock()
-          .removeNodeByKey(focusBlock.key)
-      } else {
-        editor.insertBlock(block).moveToEndOfBlock()
-      }
-    })
+    const value = deserialize(blocks, blockContentType)
+    pasteController.setValue(value)
+    editor.insertFragment(pasteController.value.document)
+    pasteController.setValue(deserialize(null, blockContentType))
     onProgress({status: null})
     return editor
   })
@@ -66,13 +55,22 @@ export default function PastePlugin(options: Options = {}) {
     throw new Error("Missing required option 'blockContentType'")
   }
 
+  const editorSchema = buildEditorSchema(options.blockContentFeatures)
+  const controllerOpts = {
+    plugins: [
+      {
+        schema: editorSchema
+      }
+    ]
+  }
+  const pasteController = createEditorController(controllerOpts)
+
   function onPaste(event, editor, next: void => void) {
     event.preventDefault()
     onProgress({status: 'start'})
-    const {shiftKey} = event
     const transfer = getEventTransfer(event)
-    const {fragment, html} = transfer
-    let type = transfer.type
+    const {fragment, html, text} = transfer
+    const {type} = transfer
     if (type === 'fragment') {
       onProgress({status: 'fragment'})
       // Check if we have all block types in the schema,
@@ -109,18 +107,19 @@ export default function PastePlugin(options: Options = {}) {
         onProgress({status: null})
         return editor
       }
-      type = 'html'
     }
-    if (type === 'html' && !shiftKey) {
-      onProgress({status: 'parsing'})
-      handleHTML(html, editor, blockContentType, onProgress).catch(err => {
-        onProgress({status: null, error: err})
-        throw err
-      })
-      return true
-    }
-    onProgress({status: null})
-    return next()
+    onProgress({status: 'parsing'})
+    handleHTML(
+      html || `<html><body>${text.split('\n').map(line => `<p>${line}</p>`)}</body></html>`,
+      editor,
+      blockContentType,
+      onProgress,
+      pasteController
+    ).catch(err => {
+      onProgress({status: null, error: err})
+      throw err
+    })
+    return true
   }
 
   return {
