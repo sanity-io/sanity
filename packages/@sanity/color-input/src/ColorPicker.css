@@ -4,21 +4,12 @@
   height: 5em;
   margin-bottom: var(--small-padding);
   position: relative;
-  margin-left: calc(var(--small-padding) * -1);
-  margin-top: calc(var(--small-padding) * -1);
-  margin-right: calc(var(--small-padding) * -1);
   overflow: hidden;
   border-radius:
     var(--border-radius-small)
     var(--border-radius-small)
     0
     0;
-
-  @media (--screen-medium) {
-    margin-left: calc(var(--medium-padding) * -1);
-    margin-top: calc(var(--medium-padding) * -1);
-    margin-right: calc(var(--medium-padding) * -1);
-  }
 }
 
 .hue {
