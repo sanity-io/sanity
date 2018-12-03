@@ -70,7 +70,10 @@ export default class PanesSplitController extends React.Component {
 
     // only 2 panes left
     if (panes.length === 2) {
-      return this.renderSplitPane(panes[0], this.renderSplitPane(panes[1]))
+      return this.renderSplitPane(
+        panes[0],
+        <div className={styles.lastPane}>{this.renderSplitPane(panes[1])}</div>
+      )
     }
 
     // Recursive
