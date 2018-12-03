@@ -3,6 +3,9 @@
   "version": "0.136.1",
   "description": "Initialize a new Sanity project",
   "bin": "index.js",
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "keywords": [
     "sanity",
     "cms",
