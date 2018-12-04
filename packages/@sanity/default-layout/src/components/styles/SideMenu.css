@@ -29,6 +29,7 @@
   transition: 200ms transform ease-in-out;
   transform: translate(-100%);
   pointer-events: all;
+  padding-left: env(safe-area-inset-left);
 }
 
 .root.isOpen {

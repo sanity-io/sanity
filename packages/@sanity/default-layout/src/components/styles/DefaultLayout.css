@@ -68,6 +68,8 @@
 .navBar {
   background-color: var(--main-navigation-color);
   color: var(--main-navigation-color--inverted);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 
 .loadingScreen {
@@ -98,6 +100,8 @@
   flex-grow: 1;
   display: block;
   margin-top: 0;
+  margin-left: env(safe-area-inset-left);
+  margin-right: env(safe-area-inset-right);
 
   @media (--screen-medium) {
     max-height: 100%;
