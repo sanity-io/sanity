@@ -319,7 +319,7 @@ export default class BlockObject extends React.Component<Props, State> {
   renderMenuItem = (item: DropDownButtonItem) => {
     const Icon = item.icon
     return (
-      <div className={item.color ? styles.menuItem : styles.menuItemDanger}>
+      <div className={item.color === 'danger' ? styles.menuItemDanger : styles.menuItem}>
         {item.intent ? (
           <IntentLink intent={item.intent} params={item.params}>
             {Icon && <Icon />}
