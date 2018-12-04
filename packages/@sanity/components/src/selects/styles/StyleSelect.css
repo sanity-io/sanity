@@ -6,7 +6,10 @@
   position: relative;
 
   @nest &:focus {
-    box-shadow: var(--input-box-shadow--focus);
+    box-shadow:
+      0 0 2px 1px color(var(--input-border-color-focus)),
+      0 0 4px 0 color(var(--input-border-color-focus) a(60%)),
+      0 0 10px 5px color(var(--input-border-color-focus) a(10%));
   }
 }
 
@@ -26,6 +29,11 @@
   }
 }
 
+.title {
+  padding-right: 1em;
+  color: var(--text-color);
+}
+
 .transparent:not(:hover) .inner {
   box-shadow: none;
 }
@@ -40,13 +48,6 @@
   align-items: center;
   padding-left: 0.5em;
   margin-left: auto;
-}
-
-.portal {
-  position: fixed;
-  z-index: var(--zindex-portal);
-  top: 0;
-  left: 0;
 }
 
 .popper {
@@ -64,27 +65,8 @@
   display: block;
 }
 
-.text {
-  color: var(--text-color);
-}
-
-.listContainerHidden {
-  display: none;
-}
-
-.noResultText {
-  text-align: center;
-  padding: 0.5em;
-}
-
-.spinner {
-  position: absolute;
-  top: 0.5em;
-  right: 0.75em;
-}
-
 .item {
-  display: block;
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
   position: relative;
   border-bottom: 1px solid var(--gray-light);
   white-space: nowrap;
@@ -96,14 +78,6 @@
 
   &:last-child {
     border: 0;
-  }
-
-  &:hover {
-    background-color: var(--selectable-item-color-hover);
-  }
-
-  &:active {
-    background-color: var(--gray-light--transparent);
   }
 }
 
@@ -126,9 +100,9 @@
 .itemIcon {
   display: block;
   position: absolute;
+  transform: translateY(-50%);
   top: 50%;
   left: 0.5em;
-  transform: translateY(-50%);
   font-size: 1em;
   width: 2em;
   overflow: hidden;
