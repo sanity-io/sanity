@@ -62,6 +62,7 @@ export default class PopOver extends React.PureComponent {
         kind={action.kind}
         autoFocus={action.autoFocus}
         className={action.secondary ? styles.actionSecondary : ''}
+        inverted={action.inverted}
       >
         {action.title}
       </Button>

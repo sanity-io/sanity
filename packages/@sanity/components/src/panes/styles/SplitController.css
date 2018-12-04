@@ -82,6 +82,10 @@
 
 .ResizerIsCollapsed {
   composes: Resizer;
-  opacity: 0 !important;
+  display: none;
   pointer-events: none;
+}
+
+.lastPane .Resizer {
+  display: none;
 }
