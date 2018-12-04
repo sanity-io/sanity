@@ -91,6 +91,7 @@
   align-items: stretch;
   align-self: stretch;
   justify-content: stretch;
+  position: relative;
 }
 
 .actionButton {
