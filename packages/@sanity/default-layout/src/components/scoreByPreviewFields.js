@@ -51,7 +51,7 @@ export default function scoreByTitle(items, searchString) {
       }
 
       // Boost exact match
-      if (titleField === searchString) {
+      if (titleField.toLowerCase() === searchString.toLowerCase()) {
         score *= 1.5
       }
     }
@@ -73,7 +73,6 @@ export default function scoreByTitle(items, searchString) {
     }
     const newHit = Object.assign(hit, {})
     newHit.score = score
-    console.log(score, titleField)
     return newHit
   })
 
