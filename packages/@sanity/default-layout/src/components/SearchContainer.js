@@ -38,6 +38,21 @@ const combineFields = flow([flatten, union, compact])
 
 const UNSAFE_GROQ_FIELDS = ['match', 'in', 'asc', 'desc', 'true', 'false', 'null']
 
+const searchPreviewFields = ['title', 'subtitle', 'description']
+
+function getFieldsFromPreviewField(candidateTypes, previewField) {
+  return candidateTypes
+    .filter(type => type.preview)
+    .map(type => type.preview.select)
+    .map(select => select || {previewField})
+    .map(select => select[previewField] || previewField)
+    .filter(field => field.indexOf('.') === -1)
+    .map(field => {
+      if (UNSAFE_GROQ_FIELDS.indexOf(field) === -1) return field
+      return `"${field}":@["${field}"]`
+    })
+}
+
 function search(query) {
   if (!client) {
     throw new Error('Sanity client is missing')
@@ -48,18 +63,22 @@ function search(query) {
     .filter(typeName => !typeName.startsWith('sanity.'))
     .map(typeName => schema.get(typeName))
 
-  const titleFields = candidateTypes
-    .filter(type => type.preview)
-    .map(type => type.preview.select)
-    .map(select => select || {title: 'title'})
-    .map(select => select.title || 'title')
-    .filter(titleField => titleField.indexOf('.') === -1)
-    .map(titleField => {
-      if (UNSAFE_GROQ_FIELDS.indexOf(titleField) === -1) return titleField
-      return `"${titleField}":@["${titleField}"]`
-    })
+  // const titleFields = candidateTypes
+  //   .filter(type => type.preview)
+  //   .map(type => type.preview.select)
+  //   .map(select => select || {title: 'title'})
+  //   .map(select => select.title || 'title')
+  //   .filter(titleField => titleField.indexOf('.') === -1)
+  //   .map(titleField => {
+  //     if (UNSAFE_GROQ_FIELDS.indexOf(titleField) === -1) return titleField
+  //     return `"${titleField}":@["${titleField}"]`
+  //   })
 
-  const uniqueTitleFields = uniq(titleFields)
+  const previewFields = flatten(
+    searchPreviewFields.map(field => getFieldsFromPreviewField(candidateTypes, field))
+  )
+
+  const uniquePreviewFields = uniq(previewFields)
 
   const terms = query.split(/\s+/).filter(Boolean)
 
@@ -76,7 +95,7 @@ function search(query) {
   )
   const constraintString = constraints.map(constraint => `(${constraint.join('||')})`).join('&&')
   return client.observable.fetch(
-    `*[${constraintString}][0...100]{_id,_type,${uniqueTitleFields.join(',')}}`,
+    `*[${constraintString}][0...100]{_id,_type,${uniquePreviewFields.join(',')}}`,
     params
   )
 }
