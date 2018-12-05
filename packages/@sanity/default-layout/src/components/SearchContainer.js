@@ -6,13 +6,13 @@ import client from 'part:@sanity/base/client?'
 import Preview from 'part:@sanity/base/preview?'
 import {joinPath} from 'part:@sanity/base/util/search-utils'
 import {getPublishedId, isDraftId, getDraftId} from 'part:@sanity/base/util/draft-utils'
-import {Subject} from 'rxjs'
+import {Subject, of} from 'rxjs'
 import {IntentLink} from 'part:@sanity/base/router'
 import {flow, compact, flatten, union, uniq} from 'lodash'
 import Ink from 'react-ink'
 import SearchField from './SearchField'
 import SearchResults from './SearchResults'
-import {filter, takeUntil, tap, debounceTime, map, switchMap} from 'rxjs/operators'
+import {filter, takeUntil, tap, debounceTime, map, switchMap, catchError} from 'rxjs/operators'
 
 import resultsStyles from './styles/SearchResults.css'
 
@@ -32,6 +32,13 @@ function removeDupes(documents) {
     const isPublished = doc._id === publishedId
     return isPublished ? !hasDraft : true
   })
+}
+
+function isGroq(query) {
+  if (!query) {
+    return false
+  }
+  return query.startsWith('*[') && query.endsWith(']')
 }
 
 const combineFields = flow([flatten, union, compact])
@@ -76,6 +83,17 @@ function search(query) {
   //     return `"${titleField}":@["${titleField}"]`
   //   })
 
+  if (isGroq(query)) {
+    //console.log('GROQ', query)
+    return client.observable.fetch(`${query}[0...100]`).pipe(
+      map(data => ({error: null, data})),
+      catchError(error => {
+        // console.log(error)
+        return of({error, data: null})
+      })
+    )
+  }
+
   const previewFields = getFieldsFromPreviewField(candidateTypes)
 
   const terms = query.split(/\s+/).filter(Boolean)
@@ -92,13 +110,16 @@ function search(query) {
     uniqueFields.map(joinedPath => `${joinedPath} match $t${i}`)
   )
   const constraintString = constraints.map(constraint => `(${constraint.join('||')})`).join('&&')
-  return client.observable.fetch(
-    `*[${constraintString}][0...100]{_id,_type,${previewFields.join(',')}}`,
-    params
-  )
+  return client.observable
+    .fetch(`*[${constraintString}][0...100]{_id,_type,${previewFields.join(',')}}`, params)
+    .pipe(
+      map(data => ({error: null, data})),
+      catchError(error => {
+        // console.log(error)
+        return of({error, data: null})
+      })
+    )
 }
-
-
 
 class SearchContainer extends React.PureComponent {
   static propTypes = {
@@ -114,6 +135,7 @@ class SearchContainer extends React.PureComponent {
 
   state = {
     activeIndex: -1,
+    error: false,
     isBleeding: true, // mobile first
     isFocused: false,
     isLoading: false,
@@ -131,7 +153,7 @@ class SearchContainer extends React.PureComponent {
       .asObservable()
       .pipe(
         map(event => event.target.value),
-        tap(value => this.setState({activeIndex: -1, value})),
+        tap(value => this.setState({activeIndex: -1, value, error: false})),
         takeUntil(this.componentWillUnmount$.asObservable())
       )
       .subscribe()
@@ -142,35 +164,58 @@ class SearchContainer extends React.PureComponent {
         map(event => event.target.value),
         filter(value => value.length === 0),
         tap(() => {
-          this.setState({results: []})
+          this.setState({results: [], error: false})
         })
       )
       .subscribe()
 
-    this.input$
-      .asObservable()
+    const result$ = this.input$.asObservable().pipe(
+      map(event => event.target.value),
+      filter(value => value.length > 0),
+      tap(() => {
+        this.setState({
+          isLoading: true,
+          error: false
+        })
+      }),
+      debounceTime(100),
+      switchMap(search)
+    )
+
+    const hits$ = result$.pipe(
+      filter(result => result.data),
+      map(result => result.data)
+    )
+    const error$ = result$.pipe(
+      filter(result => result.error),
+      map(result => result.error)
+    )
+
+    hits$
       .pipe(
-        map(event => event.target.value),
-        filter(value => value.length > 0),
-        tap(() => {
-          this.setState({
-            isLoading: true
-          })
-        }),
-        debounceTime(100),
-        switchMap(search),
         // we need this filtering because the search may return documents of types not in schema
         map(hits => hits.filter(hit => schema.has(hit._type))),
         map(removeDupes),
         tap(results => {
           this.setState({
             isLoading: false,
+            error: false,
             results
           })
         }),
         takeUntil(this.componentWillUnmount$.asObservable())
       )
       .subscribe()
+
+    error$.subscribe({
+      next: error => {
+        this.setState({
+          error: true,
+          isLoading: false,
+          results: []
+        })
+      }
+    })
 
     // trigger initial resize
     this.handleWindowResize()
@@ -219,7 +264,7 @@ class SearchContainer extends React.PureComponent {
 
   handleClear = () => {
     this.props.onClose()
-    this.setState({isFocused: false, value: '', results: []})
+    this.setState({isFocused: false, value: '', results: [], error: false})
   }
 
   /* eslint-disable-next-line complexity */
@@ -314,7 +359,10 @@ class SearchContainer extends React.PureComponent {
   }
 
   renderResults() {
-    const {activeIndex, isBleeding, isLoading, results, value} = this.state
+    const {activeIndex, isBleeding, isLoading, results, value, error} = this.state
+    if (error) {
+      return <div style={{color: 'red'}}>GROQ error</div>
+    }
 
     return (
       <SearchResults
