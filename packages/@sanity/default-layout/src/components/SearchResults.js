@@ -1,7 +1,7 @@
 import Spinner from 'part:@sanity/components/loading/spinner'
 import PropTypes from 'prop-types'
 import React from 'react'
-
+import scoreBytTitle from './scoreByTitle'
 import styles from './styles/SearchResults.css'
 
 class SearchResults extends React.PureComponent {
@@ -74,7 +74,7 @@ class SearchResults extends React.PureComponent {
 
     return (
       <ul className={styles.root} ref={this.setElement}>
-        {items.map((item, index) => {
+        {scoreBytTitle(items, query).map((item, index) => {
           return (
             <li key={item._id} className={styles.listItem}>
               {renderItem(item, index, activeIndex === index ? styles.activeItem : styles.item)}

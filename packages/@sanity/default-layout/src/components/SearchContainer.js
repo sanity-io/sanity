@@ -60,7 +60,7 @@ function search(query) {
     uniqueFields.map(joinedPath => `${joinedPath} match $t${i}`)
   )
   const constraintString = constraints.map(constraint => `(${constraint.join('||')})`).join('&&')
-  return client.observable.fetch(`*[${constraintString}][0...100] {_id, _type}`, params)
+  return client.observable.fetch(`*[${constraintString}][0...100] {_id, _type, title, name}`, params)
 }
 
 class SearchContainer extends React.PureComponent {
