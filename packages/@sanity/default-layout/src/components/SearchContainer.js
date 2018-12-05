@@ -40,17 +40,19 @@ const UNSAFE_GROQ_FIELDS = ['match', 'in', 'asc', 'desc', 'true', 'false', 'null
 
 const searchPreviewFields = ['title', 'subtitle', 'description']
 
-function getFieldsFromPreviewField(candidateTypes, previewField) {
-  return candidateTypes
-    .filter(type => type.preview)
-    .map(type => type.preview.select)
-    .map(select => select || {previewField})
-    .map(select => select[previewField] || previewField)
-    .filter(field => field.indexOf('.') === -1)
-    .map(field => {
-      if (UNSAFE_GROQ_FIELDS.indexOf(field) === -1) return field
-      return `"${field}":@["${field}"]`
-    })
+function getFieldsFromPreviewField(candidateTypes) {
+  return uniq(
+    candidateTypes
+      .filter(type => type.preview)
+      .filter(type => type.preview.select)
+      .map(type => Object.values(type.preview.select))
+      .reduce((acc, x) => acc.concat(x), [])
+      .filter(titleField => titleField.indexOf('.') === -1)
+      .map(field => {
+        if (UNSAFE_GROQ_FIELDS.indexOf(field) === -1) return field
+        return `"${field}":@["${field}"]`
+      })
+  )
 }
 
 function search(query) {
@@ -74,11 +76,7 @@ function search(query) {
   //     return `"${titleField}":@["${titleField}"]`
   //   })
 
-  const previewFields = flatten(
-    searchPreviewFields.map(field => getFieldsFromPreviewField(candidateTypes, field))
-  )
-
-  const uniquePreviewFields = uniq(previewFields)
+  const previewFields = getFieldsFromPreviewField(candidateTypes)
 
   const terms = query.split(/\s+/).filter(Boolean)
 
@@ -95,10 +93,12 @@ function search(query) {
   )
   const constraintString = constraints.map(constraint => `(${constraint.join('||')})`).join('&&')
   return client.observable.fetch(
-    `*[${constraintString}][0...100]{_id,_type,${uniquePreviewFields.join(',')}}`,
+    `*[${constraintString}][0...100]{_id,_type,${previewFields.join(',')}}`,
     params
   )
 }
+
+
 
 class SearchContainer extends React.PureComponent {
   static propTypes = {
