@@ -9,6 +9,8 @@ import {partition} from 'lodash'
 import {Portal} from '../utilities/Portal'
 import StackedEscapable from '../utilities/StackedEscapable'
 
+const noop = () => {}
+
 export default class FullScreenDialog extends React.PureComponent {
   static propTypes = {
     color: PropTypes.oneOf(['default', 'warning', 'info', 'success', 'danger']),
@@ -16,6 +18,7 @@ export default class FullScreenDialog extends React.PureComponent {
     title: PropTypes.node,
     children: PropTypes.node,
     onClose: PropTypes.func,
+    onEscape: PropTypes.func,
     centered: PropTypes.bool,
     isOpen: PropTypes.bool,
     onAction: PropTypes.func,
@@ -70,7 +73,7 @@ export default class FullScreenDialog extends React.PureComponent {
   }
 
   render() {
-    const {color, title, className, onClose, isOpen, actions, padding, centered} = this.props
+    const {color, title, className, onClose, onEscape, isOpen, actions, padding, centered} = this.props
 
     const classNames = [
       styles[color] || styles.default,
@@ -82,7 +85,7 @@ export default class FullScreenDialog extends React.PureComponent {
       .join(' ')
 
     return (
-      <StackedEscapable onEscape={onClose}>
+      <StackedEscapable onEscape={onEscape || onClose || noop}>
         <Portal>
           <div className={classNames}>
             <div className={styles.inner}>
