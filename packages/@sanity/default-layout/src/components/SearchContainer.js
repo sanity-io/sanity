@@ -8,7 +8,7 @@ import {joinPath} from 'part:@sanity/base/util/search-utils'
 import {getPublishedId, isDraftId, getDraftId} from 'part:@sanity/base/util/draft-utils'
 import {Subject} from 'rxjs'
 import {IntentLink} from 'part:@sanity/base/router'
-import {flow, compact, flatten, union} from 'lodash'
+import {flow, compact, flatten, union, uniq} from 'lodash'
 import Ink from 'react-ink'
 import SearchField from './SearchField'
 import SearchResults from './SearchResults'
@@ -36,6 +36,8 @@ function removeDupes(documents) {
 
 const combineFields = flow([flatten, union, compact])
 
+const UNSAFE_GROQ_FIELDS = ['match', 'in', 'asc', 'desc', 'true', 'false', 'null']
+
 function search(query) {
   if (!client) {
     throw new Error('Sanity client is missing')
@@ -45,6 +47,19 @@ function search(query) {
     .getTypeNames()
     .filter(typeName => !typeName.startsWith('sanity.'))
     .map(typeName => schema.get(typeName))
+
+  const titleFields = candidateTypes
+    .filter(type => type.preview)
+    .map(type => type.preview.select)
+    .map(select => select || {title: 'title'})
+    .map(select => select.title || 'title')
+    .filter(titleField => titleField.indexOf('.') === -1)
+    .map(titleField => {
+      if (UNSAFE_GROQ_FIELDS.indexOf(titleField) === -1) return titleField
+      return `"${titleField}":@["${titleField}"]`
+    })
+
+  const uniqueTitleFields = uniq(titleFields)
 
   const terms = query.split(/\s+/).filter(Boolean)
 
@@ -60,7 +75,10 @@ function search(query) {
     uniqueFields.map(joinedPath => `${joinedPath} match $t${i}`)
   )
   const constraintString = constraints.map(constraint => `(${constraint.join('||')})`).join('&&')
-  return client.observable.fetch(`*[${constraintString}][0...100] {_id, _type, title, name}`, params)
+  return client.observable.fetch(
+    `*[${constraintString}][0...100]{_id,_type,${uniqueTitleFields.join(',')}}`,
+    params
+  )
 }
 
 class SearchContainer extends React.PureComponent {
