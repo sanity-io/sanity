@@ -111,7 +111,7 @@ export default class EditNode extends React.Component<Props> {
     }
     if (editModalLayout === 'fold') {
       return (
-        <div className={styles.editBlockContainerFold} style={{border: '1px solid red'}}>
+        <div className={styles.editBlockContainerFold}>
           <EditItemFold isOpen title="Edit" onClose={this.handleClose}>
             {this.renderInput()}
           </EditItemFold>
