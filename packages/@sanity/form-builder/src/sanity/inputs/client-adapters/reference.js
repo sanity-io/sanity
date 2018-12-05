@@ -14,12 +14,13 @@ function wrapIn(chars = '') {
 
 const wrapInParens = wrapIn('()')
 
-function buildConstraintFromType(type, termParams) {
+function buildConstraintFromType(type, termParams, userConstraints) {
   const typeConstraint = `_type == '${type.name}'`
 
   const termParamNames = Object.keys(termParams)
 
   const stringFieldPaths = type.__unstable_searchFields || []
+
   if (termParamNames.length === 0 || stringFieldPaths.length === 0) {
     return typeConstraint
   }
@@ -28,16 +29,26 @@ function buildConstraintFromType(type, termParams) {
     termParamNames.map(paramName => `${joinPath(fieldPath)} match $${paramName}`).join(' && ')
   )
 
-  return `${typeConstraint} && (${stringFieldConstraints.join(' || ')})`
+  const userContraintsString = userConstraints ? `&& ${userConstraints}` : ''
+
+  return `${typeConstraint} ${userContraintsString} && (${stringFieldConstraints.join(' || ')})`
 }
+
 export function search(textTerm, referenceType) {
-  const terms = textTerm.split(/\s+/).filter(Boolean)
+  const userConstraints = textTerm.match(/\(([^)]+)\)/)
+  const terms = textTerm
+    .split('(')[0]
+    .split(/\s+/)
+    .filter(Boolean)
+
   const termParams = terms.reduce((acc, term, i) => {
     acc[`t${i}`] = `${term}*`
     return acc
   }, {})
 
-  const typeConstraints = referenceType.to.map(type => buildConstraintFromType(type, termParams))
+  const typeConstraints = referenceType.to.map(type =>
+    buildConstraintFromType(type, termParams, userConstraints && userConstraints[1])
+  )
 
   const query = `*[!(_id in path('drafts.**')) && (${typeConstraints
     .map(wrapInParens)
