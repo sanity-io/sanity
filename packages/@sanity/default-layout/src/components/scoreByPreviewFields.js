@@ -42,7 +42,7 @@ export default function scoreByTitle(items, searchString) {
     const subtitleField = getPreviewField(hit, 'subtitle')
     const descriptionField = getPreviewField(hit, 'description')
 
-    if (titleField) {
+    if (titleField && typeof titleField === 'string') {
       const titleMatchCount = uniqueMatches(titleField)
       if (titleMatchCount >= terms.length) {
         score *= 10
