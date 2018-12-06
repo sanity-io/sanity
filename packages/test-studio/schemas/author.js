@@ -61,6 +61,13 @@ export default {
           to: {type: 'book'}
         }
       ]
+    },
+    {
+      name: 'specie',
+      title: 'Specie',
+      description: 'There are a lot of species. Use this to test reference search performence',
+      type: 'reference',
+      to: {type: 'species'}
     }
   ]
 }
