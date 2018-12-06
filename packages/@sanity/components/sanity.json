@@ -26,6 +26,10 @@
       "description": "Use this to wrap buttons"
     },
     {
+      "name": "part:@sanity/components/buttons/button-collection",
+      "description": "Deprecated. Use button-grid"
+    },
+    {
       "name": "part:@sanity/components/buttons/button-group",
       "description": "Use this to group buttons with no spacing"
     },
@@ -437,6 +441,10 @@
     {
       "implements": "part:@sanity/components/buttons/button-grid",
       "path": "buttons/ButtonGrid.js"
+    },
+    {
+      "implements": "part:@sanity/components/buttons/button-collection",
+      "path": "buttons/ButtonCollection.js"
     },
     {
       "implements": "part:@sanity/components/buttons/button-group",
