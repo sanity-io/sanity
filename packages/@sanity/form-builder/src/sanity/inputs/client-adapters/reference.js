@@ -41,7 +41,7 @@ export function search(textTerm, referenceType) {
 
   const query = `*[!(_id in path('drafts.**')) && (${typeConstraints
     .map(wrapInParens)
-    .join('||')})]`
+    .join('||')})][0...20]`
 
   return client.observable.fetch(query, termParams)
 }
