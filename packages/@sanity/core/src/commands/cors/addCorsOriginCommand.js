@@ -1,3 +1,5 @@
+const path = require('path')
+const fse = require('fs-extra')
 const addCorsOrigin = require('../../actions/cors/addCorsOrigin')
 
 const helpText = `
@@ -15,7 +17,14 @@ export default {
   action: async (args, context) => {
     const {output} = context
     const [origin] = args.argsWithoutOptions
-    await addCorsOrigin(origin, context)
-    output.print('CORS origin added successfully')
+    const isFile = await fse.pathExists(path.join(process.cwd(), origin))
+    if (isFile) {
+      output.warn(`Origin "${origin}?" Remember to quote values (sanity cors add "*")`)
+    }
+
+    const success = await addCorsOrigin(origin, context)
+    if (success) {
+      output.print('CORS origin added successfully')
+    }
   }
 }
