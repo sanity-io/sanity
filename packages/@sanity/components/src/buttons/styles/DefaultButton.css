@@ -50,7 +50,6 @@
   font-size: 1em;
   line-height: 1.25;
   font-family: inherit;
-  cursor: default;
   user-select: none;
   transition: border-color 0.15s, background-color 0.15s, color 0.15s, opacity 0.15s, box-shadow 0.1s;
   text-decoration: none;
