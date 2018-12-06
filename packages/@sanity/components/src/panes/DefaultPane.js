@@ -360,8 +360,8 @@ class Pane extends React.Component {
             </h2>
             <div className={styles.actions}>
               {renderActions ? renderActions(actions) : actions.map(this.renderAction)}
+              {this.renderMenu()}
             </div>
-            {this.renderMenu()}
           </div>
         </div>
         <div className={styles.main}>
