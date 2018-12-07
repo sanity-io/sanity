@@ -56,7 +56,7 @@ function promptForCredentials(hasWildcard, context) {
       session cookies? Be aware that any script on this origin will be able to send
       requests ${chalk.underline('on your behalf')} to read and modify data if you
       are logged in to a Sanity studio. If this origin hosts a studio, you will need
-      this, otherwise you should answer "No" (n) in most cases.
+      this, otherwise you should probably answer "No" (n).
     `)
   }
 
