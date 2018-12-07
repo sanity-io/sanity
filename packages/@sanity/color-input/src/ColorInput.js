@@ -46,7 +46,6 @@ export default class ColorInput extends PureComponent {
 
   emitSetColor = nextColor => {
     const {onChange, type} = this.props
-    console.log('change')
 
     const fieldPatches = type.fields
       .filter(field => field.name in nextColor)

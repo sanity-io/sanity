@@ -4,11 +4,9 @@ import Button from 'part:@sanity/components/buttons/default'
 import {ColorWrap, Checkboard, Saturation, Hue, Alpha} from 'react-color/lib/components/common'
 import ColorPickerFields from './ColorPickerFields'
 import TrashIcon from 'part:@sanity/base/trash-icon'
-import invertColor from 'invert-color'
 import styles from './ColorPicker.css'
 
 const ColorPicker = ({width, rgb, hex, hsv, hsl, onChange, onUnset, disableAlpha, renderers, readOnly}) => {
-  const invertedHue = ((hsl.h + 180) % 360) < 0 ? 360 + hsl.h : hsl.h;
   return (
     <div style={{width}}>
       {!readOnly && (
