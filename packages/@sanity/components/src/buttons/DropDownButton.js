@@ -95,7 +95,8 @@ export default class DropDownButton extends React.PureComponent {
     this.buttonElement.current.focus()
   }
 
-  handleItemClick = item => {
+  handleItemClick = (event, item) => {
+    event.stopPropagation()
     this.handleAction(item)
   }
 
@@ -164,7 +165,7 @@ export default class DropDownButton extends React.PureComponent {
                         <Item
                           key={i}
                           className={styles.listItem}
-                          onClick={() => this.handleItemClick(item)} //eslint-disable-line react/jsx-no-bind
+                          onClick={event => this.handleItemClick(event, item)} //eslint-disable-line react/jsx-no-bind
                           onKeyPress={event => this.handleItemKeyPress(event, item)} //eslint-disable-line react/jsx-no-bind
                           item={item}
                           tabIndex={0}
