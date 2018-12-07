@@ -5,13 +5,11 @@ import {Value as SlateValue, Range} from 'slate'
 import {randomKey} from '@sanity/block-tools'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
+import ButtonGroup from 'part:@sanity/components/buttons/button-group'
 import ToggleButton from 'part:@sanity/components/toggles/button'
 import type {BlockContentFeature, BlockContentFeatures, Path, SlateEditor} from '../typeDefs'
 import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
 import CustomIcon from './CustomIcon'
-import ToolbarClickAction from './ToolbarClickAction'
-
-import styles from './styles/AnnotationButtons.css'
 
 type AnnotationItem = BlockContentFeature & {
   active: boolean,
@@ -34,8 +32,6 @@ function getIcon(type: string) {
       return SanityLogoIcon
   }
 }
-
-const NOOP = () => {}
 
 export default class AnnotationButtons extends React.Component<Props> {
   shouldComponentUpdate(nextProps: Props) {
@@ -107,26 +103,20 @@ export default class AnnotationButtons extends React.Component<Props> {
       }
     }
     Icon = Icon || getIcon(item.value)
-    // We must not do a click-event here, because that messes with the editor focus!
-    const onAction = (originalSelection: Range) => {
-      this.handleClick(item, originalSelection)
-    }
+
     return (
-      <ToolbarClickAction onAction={onAction} editor={editor} key={`annotationButton${item.value}`}>
-        <ToggleButton
-          selected={!!item.active}
-          disabled={item.disabled}
-          onClick={NOOP}
-          title={item.title}
-          className={styles.button}
-          icon={Icon}
-        />
-      </ToolbarClickAction>
+      <ToggleButton
+        selected={!!item.active}
+        disabled={item.disabled}
+        onClick={() => this.handleClick(item, editor.value.selection)}
+        title={item.title}
+        icon={Icon}
+      />
     )
   }
 
   render() {
     const items = this.getItems()
-    return <div className={styles.root}>{items.map(this.renderAnnotationButton)}</div>
+    return <ButtonGroup>{items.map(this.renderAnnotationButton)}</ButtonGroup>
   }
 }

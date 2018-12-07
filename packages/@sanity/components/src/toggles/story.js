@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import ToggleButtons from 'part:@sanity/components/toggles/buttons'
@@ -5,8 +6,10 @@ import ToggleButton from 'part:@sanity/components/toggles/button'
 import Switch from 'part:@sanity/components/toggles/switch'
 import Checkbox from 'part:@sanity/components/toggles/checkbox'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
-import {withKnobs, boolean, text, number} from 'part:@sanity/storybook/addons/knobs'
+import {withKnobs, boolean, text, number, select} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
+import ButtonGroup from 'part:@sanity/components/buttons/button-group'
+import { bool } from 'prop-types';
 
 const centerStyle = {
   display: 'block',
@@ -99,13 +102,16 @@ storiesOf('Toggles')
       </div>
     )
   })
-  .add('Toggle button collection', () => {
+
+  .add('Toggle button in ButtonGroup', () => {
     return (
       <div style={centerStyle}>
-        <ToggleButton icon={SanityLogoIcon} selected onClick={action('onClick')} />
-        <ToggleButton icon={SanityLogoIcon} selected onClick={action('onClick')} />
-        <ToggleButton icon={SanityLogoIcon} selected onClick={action('onClick')} />
-        <ToggleButton icon={SanityLogoIcon} selected onClick={action('onClick')} />
+        <ButtonGroup>
+          <ToggleButton icon={SanityLogoIcon} selected={boolean('button 1', true, 'test')} onClick={action('onClick')} />
+          <ToggleButton icon={SanityLogoIcon} selected={boolean('button 2', false, 'test')} onClick={action('onClick')} />
+          <ToggleButton icon={SanityLogoIcon} selected={boolean('button 3', false, 'test')} onClick={action('onClick')} />
+          <ToggleButton icon={SanityLogoIcon} selected={boolean('button 4', false, 'test')} onClick={action('onClick')} />
+        </ButtonGroup>
       </div>
     )
   })

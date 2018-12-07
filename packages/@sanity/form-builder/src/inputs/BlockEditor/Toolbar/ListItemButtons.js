@@ -6,12 +6,9 @@ import FormatListBulletedIcon from 'part:@sanity/base/format-list-bulleted-icon'
 import FormatListNumberedIcon from 'part:@sanity/base/format-list-numbered-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import ToggleButton from 'part:@sanity/components/toggles/button'
-
+import ButtonGroup from 'part:@sanity/components/buttons/button-group'
 import type {BlockContentFeature, BlockContentFeatures, SlateEditor, SlateValue} from '../typeDefs'
 import CustomIcon from './CustomIcon'
-import ToolbarClickAction from './ToolbarClickAction'
-
-import styles from './styles/ListItemButtons.css'
 
 type ListItem = BlockContentFeature & {active: boolean, disabled: boolean}
 
@@ -31,8 +28,6 @@ function getIcon(type: string) {
       return SanityLogoIcon
   }
 }
-
-const NOOP = () => {}
 
 export default class ListItemButtons extends React.Component<Props> {
   shouldComponentUpdate(nextProps: Props) {
@@ -80,7 +75,6 @@ export default class ListItemButtons extends React.Component<Props> {
   }
 
   renderListItemButton = (item: ListItem) => {
-    const {editor} = this.props
     let Icon
     const icon = item.blockEditor ? item.blockEditor.icon : null
     if (icon) {
@@ -91,23 +85,19 @@ export default class ListItemButtons extends React.Component<Props> {
       }
     }
     Icon = Icon || getIcon(item.value)
-    const onAction = () => this.handleClick(item)
     return (
-      <ToolbarClickAction onAction={onAction} editor={editor} key={`listItemButton${item.value}`}>
-        <ToggleButton
-          selected={item.active}
-          disabled={item.disabled}
-          onClick={NOOP}
-          title={item.title}
-          className={styles.button}
-          icon={Icon}
-        />
-      </ToolbarClickAction>
+      <ToggleButton
+        selected={item.active}
+        disabled={item.disabled}
+        onClick={() => this.handleClick(item)}
+        title={item.title}
+        icon={Icon}
+      />
     )
   }
 
   render() {
     const items = this.getItems()
-    return <div className={styles.root}>{items.map(this.renderListItemButton)}</div>
+    return <ButtonGroup>{items.map(this.renderListItemButton)}</ButtonGroup>
   }
 }

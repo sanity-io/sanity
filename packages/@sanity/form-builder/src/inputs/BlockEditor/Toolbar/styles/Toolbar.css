@@ -2,7 +2,7 @@
 
 .root {
   position: relative;
-  font-size: 0.8rem;
+  font-size: var(--font-size-xsmall);
   display: flex;
   width: 100%;
   justify-content: space-between;
@@ -10,7 +10,7 @@
   padding-bottom: var(--small-padding);
 
   @media (--screen-medium) {
-    font-size: 0.8rem;
+    font-size: var(--font-size-small);
   }
 
   @nest &.fullscreen {
@@ -76,7 +76,6 @@
   @media (--screen-medium) {
     max-width: none;
     min-width: 8em;
-    padding-top: 0.2em;
   }
 }
 

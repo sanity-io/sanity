@@ -9,12 +9,10 @@ import FormatUnderlinedIcon from 'part:@sanity/base/format-underlined-icon'
 import FormatCodeIcon from 'part:@sanity/base/format-code-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import ToggleButton from 'part:@sanity/components/toggles/button'
+import ButtonGroup from 'part:@sanity/components/buttons/button-group'
 import type {BlockContentFeature, BlockContentFeatures, SlateValue, SlateEditor} from '../typeDefs'
 
 import {keyMaps} from '../plugins/SetMarksOnKeyComboPlugin'
-import ToolbarClickAction from './ToolbarClickAction'
-
-import styles from './styles/DecoratorButtons.css'
 
 type DecoratorItem = BlockContentFeature & {active: boolean, disabled: boolean}
 
@@ -40,8 +38,6 @@ function getIcon(type: string) {
       return SanityLogoIcon
   }
 }
-
-const NOOP = () => {}
 
 export default class DecoratorButtons extends React.Component<Props> {
   shouldComponentUpdate(nextProps: Props) {
@@ -72,37 +68,23 @@ export default class DecoratorButtons extends React.Component<Props> {
   }
 
   renderDecoratorButton = (item: DecoratorItem) => {
-    const {editor} = this.props
     const icon = item.blockEditor ? item.blockEditor.icon : null
     const Icon = icon || getIcon(item.value)
-    // We must not do a click-event here, because that messes with the editor focus!
-    const onAction = () => {
-      this.handleClick(item)
-    }
     const shortCut = keyMaps[item.value] ? `(${keyMaps[item.value]})` : ''
     const title = `${item.title} ${shortCut}`
     return (
-      <span className={styles.buttonWrapper} key={item.value}>
-        <ToolbarClickAction
-          onAction={onAction}
-          editor={editor}
-          key={`decoratorButton${item.value}`}
-        >
-          <ToggleButton
-            selected={!!item.active}
-            disabled={item.disabled}
-            onClick={NOOP}
-            title={title}
-            className={styles.button}
-            icon={Icon}
-          />
-        </ToolbarClickAction>
-      </span>
+      <ToggleButton
+        selected={!!item.active}
+        disabled={item.disabled}
+        onClick={() => this.handleClick(item)}
+        title={title}
+        icon={Icon}
+      />
     )
   }
 
   render() {
     const items = this.getItems()
-    return <div className={styles.root}>{items.map(this.renderDecoratorButton)}</div>
+    return <ButtonGroup>{items.map(this.renderDecoratorButton)}</ButtonGroup>
   }
 }

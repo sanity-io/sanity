@@ -3,7 +3,7 @@ import React from 'react'
 import styles from 'part:@sanity/components/toggles/button-style'
 import Button from 'part:@sanity/components/buttons/default'
 
-export default class ToggleButton extends React.Component {
+export default class ToggleButton extends React.PureComponent {
   static propTypes = {
     icon: PropTypes.func,
     onClick: PropTypes.func.isRequired,
@@ -21,18 +21,16 @@ export default class ToggleButton extends React.Component {
 
   render() {
     const {disabled, selected, icon, className, title} = this.props
-    const buttonClasses = `
-      ${selected ? styles.selected : styles.unSelected}
-      ${className}
-    `
+
     return (
       <Button
-        className={buttonClasses}
+        className={`${selected ? styles.selected : styles.unSelected} ${className}`}
+        color="primary"
         icon={icon}
         title={title}
         disabled={disabled}
-        onClick={this.props.onClick}
         kind="simple"
+        onClick={this.props.onClick}
       >
         {this.props.children}
       </Button>
