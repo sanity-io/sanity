@@ -76,6 +76,13 @@ export default {
       ]
     },
     {
+      name: 'readOnlyColor',
+      title: 'Read-only color',
+      description: 'Color input in readOnly mode',
+      readOnly: true,
+      type: 'color'
+    },
+    {
       name: 'colorGrid',
       title: 'Grid of colors',
       description: 'An grid of colors with the built in color preview',

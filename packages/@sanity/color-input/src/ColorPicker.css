@@ -52,13 +52,38 @@
   border-radius: var(--border-radius-large);
   overflow: hidden;
   box-shadow: 0 0 3px color(var(--gray) a(50%));
-  margin-right: 1em;
 }
 
 .fields {
   display: flex;
+  margin-left: 1rem;
 
   @nest & button:last-child {
     margin-left: var(--small-padding);
+  }
+}
+
+.readOnly {
+  display: flex;
+  box-sizing: border-box;
+  justify-content: space-between;
+  margin-top: 6rem;
+  background-color: var(--component-bg);
+  font-size: 1rem;
+  z-index: 2;
+  position: relative;
+  width: 100%;
+  padding: var(--small-padding);
+
+  @nest & h3 {
+    padding: 0;
+    margin: 0;
+  }
+
+  @nest & p {
+    padding: 0;
+    margin: 0;
+    font-size: var(--font-size-small);
+    color: var(--text-color-secondary);
   }
 }
