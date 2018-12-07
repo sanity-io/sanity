@@ -55,11 +55,16 @@ const ColorPicker = ({width, rgb, hex, hsv, hsl, onChange, onUnset, disableAlpha
           />
           {readOnly && (
             <div className={styles.readOnly}>
-              <h3>{hex}</h3>
-              <p>
-                <strong>RGB</strong> {rgb.r} {rgb.g} {rgb.b} &nbsp; &nbsp;
-                <strong>HSL</strong>: {Math.round(hsl.h)} {Math.round(hsl.s)}% {Math.round(hsl.l)}%
-              </p>
+              <div>
+                <h3>{hex}</h3>
+                <p>
+                  <strong>RGB</strong> {rgb.r} {rgb.g} {rgb.b} &nbsp; &nbsp;
+                  <strong>HSL</strong>: {Math.round(hsl.h)} {Math.round(hsl.s)}% {Math.round(hsl.l)}%
+                </p>
+              </div>
+              <Button disabled title="This color can not be changed (read only)">
+                Change
+              </Button>
             </div>
           )}
         </div>

@@ -64,6 +64,9 @@
 }
 
 .readOnly {
+  display: flex;
+  box-sizing: border-box;
+  justify-content: space-between;
   margin-top: 6rem;
   background-color: var(--component-bg);
   font-size: 1rem;
