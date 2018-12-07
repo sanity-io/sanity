@@ -31,6 +31,7 @@ export default class ColorInput extends PureComponent {
       )
     }).isRequired,
     onChange: PropTypes.func.isRequired,
+    readOnly: PropTypes.bool,
     value: PropTypes.shape({
       hex: PropTypes.string,
       alpha: PropTypes.number
@@ -81,13 +82,14 @@ export default class ColorInput extends PureComponent {
   }
 
   render() {
-    const {type, value} = this.props
+    const {type, readOnly, value} = this.props
     return (
       <Fieldset legend={type.title} description={type.description}>
         {value ? (
           <ColorPicker
             ref={this.focusRef}
             color={value.hsl || value.hex}
+            readOnly={readOnly || type.readOnly}
             onChange={this.handleColorChange}
             disableAlpha={type.options && type.options.disableAlpha}
             onUnset={this.handleUnset}
