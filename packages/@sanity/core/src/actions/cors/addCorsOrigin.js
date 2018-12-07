@@ -5,18 +5,23 @@ const oneline = require('oneline')
 const wildcardReplacement = 'a-wild-card-r3pl4c3m3n7-a'
 const portReplacement = ':7777777'
 
-module.exports = async function addCorsOrigin(givenOrigin, context) {
+module.exports = async function addCorsOrigin(givenOrigin, flags, context) {
   const {apiClient, prompt, output} = context
   const origin = await (givenOrigin
     ? filterAndValidateOrigin(givenOrigin)
     : promptForOrigin(prompt))
 
+  const hasWildcard = origin.includes('*')
+  if (hasWildcard && !(await promptForWildcardConfirmation(origin, context))) {
+    return false
+  }
+  const allowCredentials =
+    typeof flags.credentials === 'undefined'
+      ? await promptForCredentials(hasWildcard, context)
+      : Boolean(flags.credentials)
+
   if (givenOrigin !== origin) {
     output.print(`Normalized origin to ${origin}`)
-  }
-
-  if (origin.includes('*') && !(await promptForWildcardConfirmation(origin, context))) {
-    return false
   }
 
   const client = apiClient({
@@ -27,8 +32,42 @@ module.exports = async function addCorsOrigin(givenOrigin, context) {
   return client.request({
     method: 'POST',
     url: '/cors',
-    body: {origin},
+    body: {origin, allowCredentials},
     maxRedirects: 0
+  })
+}
+
+function promptForCredentials(hasWildcard, context) {
+  const {prompt, output, chalk} = context
+
+  output.print('')
+  if (hasWildcard) {
+    output.print(oneline`
+      ${chalk.yellow(`${logSymbols.warning} Warning:`)}
+      We ${chalk.red(chalk.underline('HIGHLY'))} recommend NOT allowing credentials
+      on origins containing wildcards. If you are logged in to a studio, people will
+      be able to send requests ${chalk.underline('on your behalf')} to read and modify
+      data, from any matching origin. Please tread carefully!
+    `)
+  } else {
+    output.print(oneline`
+      ${chalk.yellow(`${logSymbols.warning} Warning:`)}
+      Should this origin be allowed to send requests using authentication tokens or
+      session cookies? Be aware that any script on this origin will be able to send
+      requests ${chalk.underline('on your behalf')} to read and modify data if you
+      are logged in to a Sanity studio. If this origin hosts a studio, you will need
+      this, otherwise you should answer "No" (n) in most cases.
+    `)
+  }
+
+  output.print('')
+
+  return prompt.single({
+    type: 'confirm',
+    message: oneline`
+      Allow credentials to be sent from this origin? Please read the warning above.
+    `,
+    default: false
   })
 }
 
