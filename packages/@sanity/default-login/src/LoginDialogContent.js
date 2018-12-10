@@ -57,7 +57,11 @@ function getProviderLogo(provider) {
       return GithubLogo
     default:
       return function CustomLogo() {
-        return provider.logo ? <img src={provider.logo} /> : <QuestionmarkLogo />
+        return provider.logo ? (
+          <img src={provider.logo} alt={`Logo for ${provider.name}`} />
+        ) : (
+          <QuestionmarkLogo />
+        )
       }
   }
 }

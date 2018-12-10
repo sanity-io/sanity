@@ -131,7 +131,11 @@ class GeopointInput extends React.Component {
       >
         {value && (
           <div>
-            <img className={styles.previewImage} src={getStaticImageUrl(value)} />
+            <img
+              className={styles.previewImage}
+              src={getStaticImageUrl(value)}
+              alt="Map location"
+            />
           </div>
         )}
 
