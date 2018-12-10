@@ -38,7 +38,7 @@ function getPaneDefaultSize(pane) {
   return pane.type === 'document' ? 672 : 350
 }
 
-export default class DeskToolPanes extends React.Component {
+export default class DeskToolPanes extends React.PureComponent {
   static propTypes = {
     keys: PropTypes.arrayOf(PropTypes.string).isRequired,
     autoCollapse: PropTypes.bool,
@@ -58,13 +58,23 @@ export default class DeskToolPanes extends React.Component {
     isMobile: typeof window !== 'undefined' && window.innerWidth < BREAKPOINT_SCREEN_MEDIUM
   }
 
-  collapsedPanes = []
   userCollapsedPanes = []
 
   componentDidUpdate(prevProps) {
     if (this.props.panes.length != prevProps.panes.length) {
-      const paneToForceExpand = this.props.panes.length - 1
       this.userCollapsedPanes = []
+      this.handleAutoCollapse(this.state.windowWidth, undefined, this.userCollapsedPanes)
+    }
+
+    let paneToForceExpand
+
+    // Expand new panes
+    this.props.panes.map((pane, i) => {
+      if (prevProps.panes[i] !== pane) {
+        paneToForceExpand = i
+      }
+    })
+    if (paneToForceExpand) {
       this.handleAutoCollapse(this.state.windowWidth, paneToForceExpand, this.userCollapsedPanes)
     }
   }
@@ -73,6 +83,7 @@ export default class DeskToolPanes extends React.Component {
     const {autoCollapse, panes} = this.props
     if (autoCollapse) {
       this.resizeSubscriber = windowWidth$.pipe(distinctUntilChanged()).subscribe(windowWidth => {
+        console.log('resize')
         this.setState({
           windowWidth,
           isMobile: windowWidth < BREAKPOINT_SCREEN_MEDIUM
@@ -96,8 +107,7 @@ export default class DeskToolPanes extends React.Component {
       return
     }
     this.userCollapsedPanes[index] = true
-    const paneToForceExpand = this.props.panes.length - 1
-    this.handleAutoCollapse(this.state.windowWidth, paneToForceExpand, this.userCollapsedPanes)
+    this.handleAutoCollapse(this.state.windowWidth, undefined, this.userCollapsedPanes)
   }
 
   handlePaneExpand = index => {
@@ -123,6 +133,7 @@ export default class DeskToolPanes extends React.Component {
 
     remainingMinSize -= getPaneMinSize(panes[paneToForceExpand])
     autoCollapsedPanes[paneToForceExpand] = false
+    userCollapsedPanes[paneToForceExpand] = false
 
     if (totalMinSize > windowWidth) {
       panes.forEach((pane, i) => {
@@ -136,9 +147,8 @@ export default class DeskToolPanes extends React.Component {
     }
 
     // Respect userCollapsed before autoCollapsed
-    this.setState({
-      collapsedPanes: panes.map((pane, i) => userCollapsedPanes[i] || autoCollapsedPanes[i])
-    })
+    const collapsedPanes = panes.map((pane, i) => userCollapsedPanes[i] || autoCollapsedPanes[i])
+    this.setState({collapsedPanes})
   }
 
   renderPanes() {

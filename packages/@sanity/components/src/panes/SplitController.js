@@ -4,7 +4,7 @@ import React from 'react'
 import SplitPane from 'react-split-pane'
 import styles from './styles/SplitController.css'
 
-export default class PanesSplitController extends React.Component {
+export default class PanesSplitController extends React.PureComponent {
   static propTypes = {
     children: PropTypes.node.isRequired,
     onCheckCollapse: PropTypes.func,
@@ -56,7 +56,7 @@ export default class PanesSplitController extends React.Component {
           onDragFinished={this.handleDragFinished}
         >
           {pane1}
-          {pane2 || ' '}
+          {pane2}
         </SplitPane>
       </div>
     )
@@ -70,10 +70,7 @@ export default class PanesSplitController extends React.Component {
 
     // only 2 panes left
     if (panes.length === 2) {
-      return this.renderSplitPane(
-        panes[0],
-        <div className={styles.lastPane}>{this.renderSplitPane(panes[1])}</div>
-      )
+      return this.renderSplitPane(panes[0], panes[1])
     }
 
     // Recursive
@@ -88,7 +85,6 @@ export default class PanesSplitController extends React.Component {
     if (panes.length === 0) {
       return <div>No panes</div>
     }
-
     return isMobile
       ? children
       : this.renderRecursivePanes(panes.filter(pane => pane.type !== 'div'))
