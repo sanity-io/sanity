@@ -1,9 +1,18 @@
-import PropTypes from 'prop-types'
 import React from 'react'
-import {get} from 'lodash'
-import shallowEquals from 'shallow-equals'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import observeForPreview from '../observeForPreview'
+import {withPropsStream} from 'react-props-stream'
+import shallowEquals from 'shallow-equals'
+import {
+  distinctUntilChanged,
+  filter,
+  map,
+  publishReplay,
+  refCount,
+  switchMap,
+  tap
+} from 'rxjs/operators'
+import {concat, of} from 'rxjs'
 import {INVALID_PREVIEW_CONFIG} from '../constants'
 
 const INVALID_PREVIEW_FALLBACK = {
@@ -12,65 +21,58 @@ const INVALID_PREVIEW_FALLBACK = {
   media: WarningIcon
 }
 
-const INITIAL_STATE = {
-  error: null,
-  isLoading: false,
-  result: {snapshot: null, type: null}
+// Will track a memo of the value as long as the isActive$ stream emits true,
+// and emit the memoized value after it switches to to false
+// (disclaimer: there's probably a better way to do this)
+const memoizeBy = isActive$ => producer$ => {
+  let memo
+  return isActive$.pipe(
+    distinctUntilChanged(),
+    switchMap(isActive =>
+      isActive ? producer$.pipe(tap(v => (memo = v))) : of(memo).pipe(filter(Boolean))
+    )
+  )
 }
 
-export default class PreviewSubscriber extends React.Component {
-  static propTypes = {
-    type: PropTypes.object.isRequired,
-    fields: PropTypes.arrayOf(PropTypes.oneOf(['title', 'description', 'imageUrl'])),
-    value: PropTypes.any.isRequired,
-    ordering: PropTypes.object,
-    children: PropTypes.func
-  }
+const connect = props$ => {
+  const sharedProps$ = props$.pipe(
+    publishReplay(1),
+    refCount()
+  )
 
-  state = INITIAL_STATE
+  const isActive$ = sharedProps$.pipe(map(props => props.isActive !== false))
 
-  componentDidMount() {
-    this.subscribe(this.props.value, this.props.type, this.props.fields)
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe()
-  }
-
-  unsubscribe() {
-    if (this.subscription) {
-      this.subscription.unsubscribe()
-      this.subscription = null
-    }
-  }
-
-  componentWillUpdate(nextProps) {
-    if (get(nextProps, 'value._id') !== get(this.props, 'value._id')) {
-      this.setState(INITIAL_STATE)
-    }
-
-    if (!shallowEquals(nextProps.value, this.props.value)) {
-      this.subscribe(nextProps.value, nextProps.type)
-    }
-  }
-
-  subscribe(value, type, fields) {
-    this.unsubscribe()
-
-    const viewOptions = this.props.ordering ? {ordering: this.props.ordering} : {}
-
-    this.setState({isLoading: true})
-    this.subscription = observeForPreview(value, type, fields, viewOptions).subscribe(result => {
-      this.setState({isLoading: false, result})
-    })
-  }
-
-  render() {
-    const {result, error, isLoading} = this.state
-    const {children} = this.props
-    const snapshot =
-      result.snapshot === INVALID_PREVIEW_CONFIG ? INVALID_PREVIEW_FALLBACK : result.snapshot
-
-    return children({result: {...result, snapshot}, error, isLoading})
-  }
+  return sharedProps$.pipe(
+    distinctUntilChanged((props, nextProps) => shallowEquals(props.value, nextProps.value)),
+    switchMap(props =>
+      concat(
+        of({isLoading: true, children: props.children}),
+        observeForPreview(
+          props.value,
+          props.type,
+          props.fields,
+          props.ordering ? {ordering: props.ordering} : {}
+        ).pipe(
+          map(result => ({
+            type: result.type,
+            snapshot: result.snapshot,
+            children: props.children
+          }))
+        )
+      )
+    ),
+    memoizeBy(isActive$)
+  )
 }
+// eslint-disable-next-line prefer-arrow-callback
+export default withPropsStream(connect, function ObserveForPreview(props) {
+  const {snapshot, type, error, isLoading, children} = props
+  return children({
+    error,
+    isLoading,
+    result: {
+      type,
+      snapshot: snapshot === INVALID_PREVIEW_CONFIG ? INVALID_PREVIEW_FALLBACK : snapshot
+    }
+  })
+})
