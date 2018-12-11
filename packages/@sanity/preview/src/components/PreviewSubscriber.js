@@ -16,11 +16,14 @@ export default class PreviewSubscriber extends React.Component {
 
   renderChild = isVisible => {
     const {children, type, value, ordering, ...props} = this.props
-    if (!isVisible) {
-      return children({...props, snapshot: null, isLoading: false, isLive: false, type, ordering})
-    }
-    return (
-      <ObserveForPreview type={type} value={value} ordering={ordering}>
+    // isVisible may be null which means undetermined
+    return isVisible === null ? null : (
+      <ObserveForPreview
+        isActive={isVisible === true}
+        type={type}
+        value={value}
+        ordering={ordering}
+      >
         {({result, error, isLoading}) =>
           children({
             ...props,
