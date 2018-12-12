@@ -17,6 +17,10 @@
       "description": "An editor for code in sanity"
     },
     {
+      "implements": "part:@sanity/base/schema-type",
+      "path": "deprecatedSchema.js"
+    },
+    {
       "implements": "part:@sanity/form-builder/input/code/schema",
       "path": "schema.js"
     }
