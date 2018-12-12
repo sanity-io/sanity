@@ -29,7 +29,7 @@ function SideMenu(props) {
 
         <div className={styles.userProfile}>
           <div className={styles.userProfileImage}>
-            <img src={user.profileImage} />
+            <img src={user.profileImage} alt={`${user.name}'s profile image`} />
           </div>
           <div className={styles.userProfileText}>{user.name}</div>
         </div>

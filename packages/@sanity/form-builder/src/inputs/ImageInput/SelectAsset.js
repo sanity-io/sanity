@@ -98,7 +98,11 @@ export default class SelectAsset extends React.Component<Props, State> {
                   className={styles.padder}
                   style={{paddingBottom: `${(height / width) * 100}%`}}
                 />
-                <img src={`${asset.url}?h=100`} className={styles.image} />
+                <img
+                  src={`${asset.url}?h=100`}
+                  className={styles.image}
+                  alt={asset.caption || 'Image missing descriptoin'}
+                />
               </a>
             )
           })}
