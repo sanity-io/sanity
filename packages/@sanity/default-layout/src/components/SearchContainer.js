@@ -72,25 +72,10 @@ function search(query) {
     .filter(typeName => !typeName.startsWith('sanity.'))
     .map(typeName => schema.get(typeName))
 
-  // const titleFields = candidateTypes
-  //   .filter(type => type.preview)
-  //   .map(type => type.preview.select)
-  //   .map(select => select || {title: 'title'})
-  //   .map(select => select.title || 'title')
-  //   .filter(titleField => titleField.indexOf('.') === -1)
-  //   .map(titleField => {
-  //     if (UNSAFE_GROQ_FIELDS.indexOf(titleField) === -1) return titleField
-  //     return `"${titleField}":@["${titleField}"]`
-  //   })
-
   if (isGroq(query)) {
-    //console.log('GROQ', query)
     return client.observable.fetch(`${query}[0...100]`).pipe(
       map(data => ({error: null, data})),
-      catchError(error => {
-        // console.log(error)
-        return of({error, data: null})
-      })
+      catchError(error => of({error, data: null}))
     )
   }
 
@@ -114,10 +99,7 @@ function search(query) {
     .fetch(`*[${constraintString}][0...100]{_id,_type,${previewFields.join(',')}}`, params)
     .pipe(
       map(data => ({error: null, data})),
-      catchError(error => {
-        // console.log(error)
-        return of({error, data: null})
-      })
+      catchError(error => of({error, data: null}))
     )
 }
 
