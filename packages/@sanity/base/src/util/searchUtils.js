@@ -80,12 +80,12 @@ export function sortResultsByScore(results, terms = []) {
     return uniq(matches).length
   }
 
-  const sortedResults = results.map((hit, i) => {
+  const sortedResults = results.map(result => {
     let score = 1
 
-    const titleField = getPreviewField(hit, 'title')
-    const subtitleField = getPreviewField(hit, 'subtitle')
-    const descriptionField = getPreviewField(hit, 'description')
+    const titleField = getPreviewField(result, 'title')
+    const subtitleField = getPreviewField(result, 'subtitle')
+    const descriptionField = getPreviewField(result, 'description')
 
     if (titleField && typeof titleField === 'string') {
       const titleMatchCount = uniqueMatches(titleField)
@@ -116,14 +116,11 @@ export function sortResultsByScore(results, terms = []) {
         score *= 2
       }
     }
-    const newHit = Object.assign(hit, {})
-    newHit._score = score
-    return newHit
+
+    return {result, score}
   })
 
-  sortedResults.sort((a, b) => {
-    return b._score - a._score
-  })
+  sortedResults.sort((a, b, idx) => b.score - a.score)
 
-  return sortedResults
+  return sortedResults.map(item => item.result)
 }
