@@ -83,7 +83,6 @@ export default class DeskToolPanes extends React.PureComponent {
     const {autoCollapse, panes} = this.props
     if (autoCollapse) {
       this.resizeSubscriber = windowWidth$.pipe(distinctUntilChanged()).subscribe(windowWidth => {
-        console.log('resize')
         this.setState({
           windowWidth,
           isMobile: windowWidth < BREAKPOINT_SCREEN_MEDIUM
