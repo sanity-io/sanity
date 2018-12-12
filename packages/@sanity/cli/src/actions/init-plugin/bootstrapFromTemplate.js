@@ -22,14 +22,19 @@ module.exports = async (context, url) => {
     // Intentional noop
   }
 
+  debug(inProjectContext ? 'Project context found' : 'Not in project context')
+
   let zip
   try {
+    debug('Fetching zip from %s', url)
     zip = await getZip(url)
+    debug('Zip finished downloading')
   } catch (err) {
     err.message = `Failed to get template: ${err.message}`
     throw err
   }
 
+  debug('Looking up template manifest from zip')
   const manifest = zip.find(
     file => path.basename(file.path) === 'package.json' && !file.path.includes('node_modules')
   )
@@ -38,16 +43,23 @@ module.exports = async (context, url) => {
     throw new Error('Could not find `package.json` in template')
   }
 
-  const baseDir = path.join(path.dirname(manifest.path), 'template')
+  // Note: Paths inside the zips are always unix-style, so do not use `path.join` here
+  const baseDir = `${path.dirname(manifest.path)}/template`
+  debug('Manifest path resolved to %s', manifest.path)
   debug('Base directory resolved to %s', baseDir)
 
   const templateFiles = zip.filter(file => file.type === 'file' && file.path.indexOf(baseDir) === 0)
+  debug('%d files found in template', templateFiles.length)
+
   const manifestContent = manifest.data.toString()
   const tplVars = parseJson(manifestContent).sanityTemplate || {}
   const {minimumBaseVersion, minimumCliVersion} = tplVars
 
   if (minimumBaseVersion) {
+    debug('Template requires Sanity version %s', minimumBaseVersion)
     const installed = getSanityVersion(workDir)
+    debug('Installed Sanity version is %s', installed)
+
     if (semver.lt(installed, minimumBaseVersion)) {
       throw new Error(
         `Template requires Sanity at version ${minimumBaseVersion}, installed is ${installed}`
@@ -55,10 +67,15 @@ module.exports = async (context, url) => {
     }
   }
 
-  if (minimumCliVersion && semver.lt(pkg.version, minimumCliVersion)) {
-    throw new Error(
-      `Template requires @sanity/cli at version ${minimumCliVersion}, installed is ${pkg.version}`
-    )
+  if (minimumCliVersion) {
+    debug('Template requires Sanity CLI version %s', minimumCliVersion)
+    debug('Installed CLI version is %s', pkg.version)
+
+    if (semver.lt(pkg.version, minimumCliVersion)) {
+      throw new Error(
+        `Template requires @sanity/cli at version ${minimumCliVersion}, installed is ${pkg.version}`
+      )
+    }
   }
 
   const name = await prompt.single({
@@ -93,6 +110,8 @@ module.exports = async (context, url) => {
     })
   }
 
+  debug('Output path set to %s', outputPath)
+
   let createConfig = tplVars.requiresConfig
   if (typeof createConfig === 'undefined') {
     createConfig = await prompt.single({
@@ -102,10 +121,14 @@ module.exports = async (context, url) => {
     })
   }
 
+  debug('Ensuring directory exists: %s', outputPath)
   await fse.ensureDir(outputPath)
+
   await Promise.all(
     templateFiles.map(file => {
       const filename = file.path.slice(baseDir.length)
+
+      debug('Writing template file "%s" to "%s"', filename, outputPath)
       return fse.outputFile(path.join(outputPath, filename), file.data)
     })
   )
