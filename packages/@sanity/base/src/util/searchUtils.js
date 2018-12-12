@@ -21,3 +21,24 @@ export const joinPath = pathArray =>
     }
     return isFirst ? pathSegment : `${prev}.${pathSegment}`
   }, '')
+
+// eslint-disable-next-line no-useless-escape
+const FILTER_RE = /[\[|(]([^\]]+)[\]|)]/g
+
+export function parseQuery(str) {
+  const filters = []
+  let termsStr = str
+
+  let match
+  while ((match = FILTER_RE.exec(str))) {
+    filters.push(match[1])
+    termsStr = termsStr.replace(match[0], '')
+  }
+
+  const terms = termsStr.split(/\s+/g).filter(Boolean)
+
+  return {
+    filters,
+    terms
+  }
+}
