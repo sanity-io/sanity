@@ -48,7 +48,6 @@ class LoginStatus extends React.PureComponent {
 
     let className = styles.root
     if (this.props.className) className += this.props.className
-
     return (
       <div className={className}>
         <button
@@ -58,7 +57,11 @@ class LoginStatus extends React.PureComponent {
           type="button"
         >
           <div className={styles.inner} tabIndex={-1}>
-            <img src={user.profileImage} className={styles.userImage} />
+            <img
+              src={user.profileImage}
+              className={styles.userImage}
+              alt={`${user.name}'s profile image`}
+            />
           </div>
         </button>
 
