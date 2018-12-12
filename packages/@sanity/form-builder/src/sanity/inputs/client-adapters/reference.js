@@ -1,20 +1,13 @@
 import client from 'part:@sanity/base/client'
-import {joinPath} from 'part:@sanity/base/util/search-utils'
-import {map} from 'rxjs/operators'
+import {joinPath, parseQuery, sortResultsByScore} from 'part:@sanity/base/util/search-utils'
 import {observeForPreview} from 'part:@sanity/base/preview'
+import {map} from 'rxjs/operators'
 
 export function getPreviewSnapshot(value, referenceType) {
   return observeForPreview(value, referenceType).pipe(map(result => result.snapshot))
 }
 
-function wrapIn(chars = '') {
-  const [start = '', end = start] = chars
-  return value => start + value + end
-}
-
-const wrapInParens = wrapIn('()')
-
-function buildConstraintFromType(type, termParams, userConstraints) {
+function buildConstraintFromType(type, termParams) {
   const typeConstraint = `_type == '${type.name}'`
 
   const termParamNames = Object.keys(termParams)
@@ -29,30 +22,24 @@ function buildConstraintFromType(type, termParams, userConstraints) {
     termParamNames.map(paramName => `${joinPath(fieldPath)} match $${paramName}`).join(' && ')
   )
 
-  const userContraintsString = userConstraints ? `&& ${userConstraints}` : ''
-
-  return `${typeConstraint} ${userContraintsString} && (${stringFieldConstraints.join(' || ')})`
+  return `${typeConstraint} && (${stringFieldConstraints.join(' || ')})`
 }
 
 export function search(textTerm, referenceType) {
-  const userConstraints = textTerm.match(/\(([^)]+)\)/)
-  const terms = textTerm
-    .split('(')[0]
-    .split(/\s+/)
-    .filter(Boolean)
+  const {filters, terms} = parseQuery(textTerm)
 
   const termParams = terms.reduce((acc, term, i) => {
     acc[`t${i}`] = `${term}*`
     return acc
   }, {})
 
-  const typeConstraints = referenceType.to.map(type =>
-    buildConstraintFromType(type, termParams, userConstraints && userConstraints[1])
-  )
+  const typeConstraints = referenceType.to.map(type => buildConstraintFromType(type, termParams))
 
-  const query = `*[!(_id in path('drafts.**')) && (${typeConstraints
-    .map(wrapInParens)
-    .join('||')})][0...20]`
+  filters.push(typeConstraints.join('||'))
 
-  return client.observable.fetch(query, termParams)
+  const query = `*[!(_id in path('drafts.**')) && (${filters.join(') && (')})][0..1000]`
+
+  return client.observable
+    .fetch(query, termParams)
+    .pipe(map(data => sortResultsByScore(data, terms).slice(0, 20)))
 }
