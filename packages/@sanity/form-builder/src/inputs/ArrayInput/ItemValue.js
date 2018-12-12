@@ -195,9 +195,11 @@ export default class RenderItemValue extends React.Component<Props> {
     // test focus issues by uncommenting the next line
     // return content
 
+    const title = readOnly || memberType.readOnly ? memberType.title : `Edit ${memberType.title}`
+
     if (options.editModal === 'fullscreen') {
       return (
-        <FullscreenDialog title={memberType.title} onClose={this.handleEditStop} isOpen>
+        <FullscreenDialog title={title} onClose={this.handleEditStop} isOpen>
           {content}
         </FullscreenDialog>
       )
@@ -206,7 +208,7 @@ export default class RenderItemValue extends React.Component<Props> {
     if (options.editModal === 'fold') {
       return (
         <div className={styles.popupAnchorRelative}>
-          <EditItemFold title={`Edit ${memberType.title}`} onClose={this.handleEditStop}>
+          <EditItemFold title={title} onClose={this.handleEditStop}>
             {content}
           </EditItemFold>
         </div>
@@ -223,7 +225,7 @@ export default class RenderItemValue extends React.Component<Props> {
       return (
         <div className={styles.popupAnchor}>
           <Popover
-            title={`Edit ${memberType.title}`}
+            title={title}
             onClose={this.handleEditStop}
             onEscape={this.handleEditStop}
             onClickOutside={this.handleEditStop}
