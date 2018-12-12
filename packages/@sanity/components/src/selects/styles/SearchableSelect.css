@@ -74,9 +74,15 @@
   display: none;
 }
 
+.error {
+  color: var(--state-danger-color);
+  text-align: center;
+  padding: 1em;
+}
+
 .noResultText {
   text-align: center;
-  padding: 0.5em;
+  padding: 1em;
   opacity: 0.5;
 }
 
@@ -133,6 +139,7 @@
 
 .listSpinner {
   opacity: 0.5;
+  padding: 1em;
 }
 
 .clearButton {

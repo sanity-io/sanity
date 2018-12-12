@@ -4,6 +4,7 @@ import StatelessSearchableSelect from './StatelessSearchableSelect'
 
 export default class SearchableSelect extends React.PureComponent {
   static propTypes = {
+    error: PropTypes.string,
     label: PropTypes.string,
     description: PropTypes.string,
     className: PropTypes.string,
@@ -14,7 +15,6 @@ export default class SearchableSelect extends React.PureComponent {
     onClear: PropTypes.func,
     value: PropTypes.object,
     inputValue: PropTypes.string,
-    error: PropTypes.bool,
     placeholder: PropTypes.string,
     isLoading: PropTypes.bool,
     renderItem: PropTypes.func.isRequired,
@@ -23,6 +23,7 @@ export default class SearchableSelect extends React.PureComponent {
   }
 
   static defaultProps = {
+    error: null,
     placeholder: 'Type to search…',
     isLoading: false,
     onChange() {},

@@ -19,6 +19,7 @@ const noop = () => {}
 
 export default class StatelessSearchableSelect extends React.PureComponent {
   static propTypes = {
+    error: PropTypes.string,
     onChange: PropTypes.func,
     value: PropTypes.any,
     inputValue: PropTypes.string,
@@ -41,6 +42,7 @@ export default class StatelessSearchableSelect extends React.PureComponent {
   }
 
   static defaultProps = {
+    error: null,
     onChange: noop,
     onOpen: noop,
     onClose: noop,
@@ -125,9 +127,23 @@ export default class StatelessSearchableSelect extends React.PureComponent {
     return <div className={styles.item}>{this.props.renderItem(item)}</div>
   }
 
+  renderError = () => {
+    const {error} = this.props
+
+    switch (error) {
+      case 'queryParseError':
+        return <span>Query syntax error</span>
+      case 'queryError':
+        return <span>Query error</span>
+      default:
+        return <span>Unknown error</span>
+    }
+  }
+
   render() {
     const {
       onClear,
+      error,
       placeholder,
       isLoading,
       value,
@@ -238,23 +254,27 @@ export default class StatelessSearchableSelect extends React.PureComponent {
                           <Escapable
                             onEscape={event => (isActive || event.shiftKey) && this.handleClose()}
                           />
-                          {items.length === 0 &&
-                            !isLoading && <p className={styles.noResultText}>No results</p>}
-                          {items.length === 0 &&
+                          {error && <div className={styles.error}>{this.renderError()}</div>}
+                          {!error &&
+                            items.length === 0 &&
+                            !isLoading && <div className={styles.noResultText}>No results</div>}
+                          {!error &&
+                            items.length === 0 &&
                             isLoading && (
                               <div className={styles.listSpinner}>
                                 <Spinner message="Loading items…" />
                               </div>
                             )}
-                          {items.length > 0 && (
-                            <SelectMenu
-                              items={items}
-                              value={value}
-                              onSelect={this.handleSelect}
-                              renderItem={this.renderItem}
-                              highlightIndex={highlightIndex}
-                            />
-                          )}
+                          {!error &&
+                            items.length > 0 && (
+                              <SelectMenu
+                                items={items}
+                                value={value}
+                                onSelect={this.handleSelect}
+                                renderItem={this.renderItem}
+                                highlightIndex={highlightIndex}
+                              />
+                            )}
                         </div>
                       </CaptureOutsideClicks>
                     </div>
