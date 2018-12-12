@@ -2,6 +2,7 @@ import React from 'react'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import observeForPreview from '../observeForPreview'
 import {withPropsStream} from 'react-props-stream'
+import shallowEquals from 'shallow-equals'
 import {
   distinctUntilChanged,
   filter,
@@ -19,8 +20,6 @@ const INVALID_PREVIEW_FALLBACK = {
   subtitle: <span style={{fontStyle: 'italic'}}>Check the error log in the console</span>,
   media: WarningIcon
 }
-
-const getId = value => value && (value._id || value._ref)
 
 // Will track a memo of the value as long as the isActive$ stream emits true,
 // and emit the memoized value after it switches to to false
@@ -44,7 +43,7 @@ const connect = props$ => {
   const isActive$ = sharedProps$.pipe(map(props => props.isActive !== false))
 
   return sharedProps$.pipe(
-    distinctUntilChanged((props, nextProps) => getId(props.value) === getId(nextProps.value)),
+    distinctUntilChanged((props, nextProps) => shallowEquals(props.value, nextProps.value)),
     switchMap(props =>
       concat(
         of({isLoading: true, children: props.children}),
