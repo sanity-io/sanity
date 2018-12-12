@@ -8,7 +8,8 @@ import {
   escapeField,
   fieldNeedsEscape,
   joinPath,
-  parseQuery
+  parseQuery,
+  sortResultsByScore
 } from 'part:@sanity/base/util/search-utils'
 import {getPublishedId, isDraftId, getDraftId} from 'part:@sanity/base/util/draft-utils'
 import {Subject, of} from 'rxjs'
@@ -17,7 +18,6 @@ import {flow, compact, flatten, union, uniq} from 'lodash'
 import Ink from 'react-ink'
 import SearchField from './SearchField'
 import SearchResults from './SearchResults'
-import scoreByPreviewFields from './scoreByPreviewFields'
 import {
   filter,
   takeUntil,
@@ -102,7 +102,7 @@ function search(queryStr) {
   const query = `*[${filtersQuery}][0...100]{_id,_type,${previewFields.join(',')}}`
 
   return client.observable.fetch(query, params).pipe(
-    map(data => ({error: null, data: scoreByPreviewFields(data, terms)})),
+    map(data => ({error: null, data: sortResultsByScore(data, terms)})),
     catchError(error => of({error, data: null}))
   )
 }
