@@ -29,7 +29,7 @@ export default class PanesSplitController extends React.PureComponent {
     })
   }
 
-  renderSplitPane = (pane1, pane2, restMinSize, restDefaultSize) => {
+  renderSplitPane = (pane1, pane2) => {
     const isCollapsed = pane1.props.isCollapsed
     const {collapsedWidth} = this.props
     const {isResizing} = this.state
@@ -56,7 +56,7 @@ export default class PanesSplitController extends React.PureComponent {
           onDragFinished={this.handleDragFinished}
         >
           {pane1}
-          {pane2}
+          {pane2 || <div style={{display: 'none'}} />}
         </SplitPane>
       </div>
     )
@@ -70,7 +70,7 @@ export default class PanesSplitController extends React.PureComponent {
 
     // only 2 panes left
     if (panes.length === 2) {
-      return this.renderSplitPane(panes[0], panes[1])
+      return this.renderSplitPane(panes[0], this.renderSplitPane(panes[1]))
     }
 
     // Recursive
