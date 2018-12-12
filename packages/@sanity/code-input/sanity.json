@@ -18,7 +18,7 @@
     },
     {
       "implements": "part:@sanity/base/schema-type",
-      "path": "schema.js"
+      "path": "deprecatedSchema.js"
     },
     {
       "implements": "part:@sanity/form-builder/input/code/schema",
