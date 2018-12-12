@@ -1,5 +1,6 @@
 const debug = require('debug')('sanity:import:array')
 const flatten = require('lodash/flatten')
+const ensureUniqueIds = require('./util/ensureUniqueIds')
 const {getAssetRefs, unsetAssetRefs, absolutifyPaths} = require('./assetRefs')
 const assignArrayKeys = require('./assignArrayKeys')
 const assignDocumentId = require('./assignDocumentId')
@@ -7,6 +8,7 @@ const uploadAssets = require('./uploadAssets')
 const documentHasErrors = require('./documentHasErrors')
 const batchDocuments = require('./batchDocuments')
 const importBatches = require('./importBatches')
+
 const {
   getStrongRefs,
   weakenStrongRefs,
@@ -17,6 +19,9 @@ const {
 async function importDocuments(documents, options, importers) {
   options.onProgress({step: 'Reading/validating data file'})
   documents.some(documentHasErrors.validate)
+
+  // Validate that there are no duplicate IDs in the documents
+  ensureUniqueIds(documents)
 
   // Replace relative asset paths if one is defined
   // (file://./images/foo-bar.png -> file:///abs/olute/images/foo-bar.png)

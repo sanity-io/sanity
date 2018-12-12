@@ -10,7 +10,8 @@
   "license": "MIT",
   "scripts": {
     "clean": "rimraf lib",
-    "test": "#todo: jest"
+    "coverage": "jest --coverage",
+    "test": "jest"
   },
   "keywords": [
     "sanity",
@@ -44,6 +45,9 @@
     "get-it": "^4.0.1",
     "jest": "^23.6.0",
     "rimraf": "^2.6.2"
+  },
+  "jest": {
+    "testEnvironment": "node"
   },
   "repository": {
     "type": "git",
