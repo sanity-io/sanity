@@ -99,10 +99,10 @@ function search(queryStr) {
 
   const filtersQuery = filters.length ? `(${filters.join(') && (')})` : ''
 
-  const query = `*[${filtersQuery}][0...100]{_id,_type,${previewFields.join(',')}}`
+  const query = `*[${filtersQuery}][0...1000]{_id,_type,${previewFields.join(',')}}`
 
   return client.observable.fetch(query, params).pipe(
-    map(data => ({error: null, data: sortResultsByScore(data, terms)})),
+    map(data => ({error: null, data: sortResultsByScore(data, terms).slice(0, 100)})),
     catchError(error => of({error, data: null}))
   )
 }
