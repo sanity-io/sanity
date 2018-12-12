@@ -119,7 +119,7 @@ export default class AuthorReferenceInput extends React.Component {
                 <img
                   className={styles.authorImage}
                   title={author.name}
-                  alt={author.name || 'Missing description'}
+                  alt={`${author.name || 'Author'}.`}
                   src={imageBuilder
                     .image(author.image)
                     .width(150)
