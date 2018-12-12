@@ -1,5 +1,3 @@
-const addCorsOrigin = require('../../actions/cors/addCorsOrigin')
-
 const helpText = `
 Examples
   sanity cors delete
