@@ -3,6 +3,7 @@ import checkCommand from './check/checkCommand'
 import configCheckCommand from './config/configCheckCommand'
 import datasetGroup from './dataset/datasetGroup'
 import deployCommand from './deploy/deployCommand'
+import undeployCommand from './deploy/undeployCommand'
 import listDatasetsCommand from './dataset/listDatasetsCommand'
 import createDatasetCommand from './dataset/createDatasetCommand'
 import datasetVisibilityCommand from './dataset/datasetVisibilityCommand'
@@ -35,6 +36,7 @@ export default [
   configCheckCommand,
   datasetGroup,
   deployCommand,
+  undeployCommand,
   listDatasetsCommand,
   createDatasetCommand,
   datasetVisibilityCommand,
