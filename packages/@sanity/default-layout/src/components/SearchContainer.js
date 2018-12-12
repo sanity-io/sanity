@@ -4,7 +4,7 @@ import React from 'react'
 import schema from 'part:@sanity/base/schema?'
 import client from 'part:@sanity/base/client?'
 import Preview from 'part:@sanity/base/preview?'
-import {joinPath} from 'part:@sanity/base/util/search-utils'
+import {escapeField, joinPath} from 'part:@sanity/base/util/search-utils'
 import {getPublishedId, isDraftId, getDraftId} from 'part:@sanity/base/util/draft-utils'
 import {Subject, of} from 'rxjs'
 import {IntentLink} from 'part:@sanity/base/router'
@@ -43,8 +43,6 @@ function isGroq(query) {
 
 const combineFields = flow([flatten, union, compact])
 
-const UNSAFE_GROQ_FIELDS = ['match', 'in', 'asc', 'desc', 'true', 'false', 'null']
-
 function getFieldsFromPreviewField(candidateTypes) {
   return uniq(
     candidateTypes
@@ -53,10 +51,7 @@ function getFieldsFromPreviewField(candidateTypes) {
       .map(type => Object.values(type.preview.select))
       .reduce((acc, x) => acc.concat(x), [])
       .filter(titleField => titleField.indexOf('.') === -1)
-      .map(field => {
-        if (UNSAFE_GROQ_FIELDS.indexOf(field) === -1) return field
-        return `"${field}":@["${field}"]`
-      })
+      .map(escapeField)
   )
 }
 
