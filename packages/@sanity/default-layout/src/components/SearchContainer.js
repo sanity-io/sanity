@@ -45,8 +45,6 @@ const combineFields = flow([flatten, union, compact])
 
 const UNSAFE_GROQ_FIELDS = ['match', 'in', 'asc', 'desc', 'true', 'false', 'null']
 
-const searchPreviewFields = ['title', 'subtitle', 'description']
-
 function getFieldsFromPreviewField(candidateTypes) {
   return uniq(
     candidateTypes
