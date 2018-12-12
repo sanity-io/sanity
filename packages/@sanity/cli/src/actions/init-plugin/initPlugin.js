@@ -1,5 +1,6 @@
 import addPluginToManifest from '@sanity/util/lib/addPluginToManifest'
 import bootstrapFromTemplate from '../../actions/init-plugin/bootstrapFromTemplate'
+import debug from '../../debug'
 import pluginTemplates from './pluginTemplates'
 
 export default async function initPlugin(args, context, initOpts = {}) {
@@ -12,6 +13,7 @@ export default async function initPlugin(args, context, initOpts = {}) {
   const hasTemplateUrl = /^https?:\/\//.test(specifiedTemplateUrl || '')
 
   if (hasTemplateUrl) {
+    debug('User provided template URL: %s', specifiedTemplateUrl)
     return bootstrapFromUrl(context, specifiedTemplateUrl)
   }
 
@@ -21,6 +23,12 @@ export default async function initPlugin(args, context, initOpts = {}) {
   }
 
   if (specifiedTemplate) {
+    debug(
+      'User wanted template "%s", match found at %s',
+      specifiedTemplateUrl,
+      specifiedTemplate.url
+    )
+
     return bootstrapFromUrl(context, specifiedTemplate.url)
   } else if (specifiedTemplateUrl) {
     throw new Error(`Cannot find template with name "${specifiedTemplateUrl}"`)
@@ -34,11 +42,14 @@ export default async function initPlugin(args, context, initOpts = {}) {
   })
 
   specifiedTemplate = pluginTemplates.find(tpl => tpl.value === selected)
+  debug('User selected template URL: %s', specifiedTemplate.url)
   return bootstrapFromUrl(context, specifiedTemplate.url)
 }
 
 async function bootstrapFromUrl(context, url) {
   const {output, prompt, yarn, workDir} = context
+
+  debug('Bootstrapping from URL: %s', url)
   const {name, outputPath, inPluginsPath, dependencies} = await bootstrapFromTemplate(context, url)
 
   if (inPluginsPath) {
