@@ -4,7 +4,12 @@ import React from 'react'
 import schema from 'part:@sanity/base/schema?'
 import client from 'part:@sanity/base/client?'
 import Preview from 'part:@sanity/base/preview?'
-import {escapeField, joinPath} from 'part:@sanity/base/util/search-utils'
+import {
+  escapeField,
+  fieldNeedsEscape,
+  joinPath,
+  parseQuery
+} from 'part:@sanity/base/util/search-utils'
 import {getPublishedId, isDraftId, getDraftId} from 'part:@sanity/base/util/draft-utils'
 import {Subject, of} from 'rxjs'
 import {IntentLink} from 'part:@sanity/base/router'
@@ -12,7 +17,17 @@ import {flow, compact, flatten, union, uniq} from 'lodash'
 import Ink from 'react-ink'
 import SearchField from './SearchField'
 import SearchResults from './SearchResults'
-import {filter, takeUntil, tap, debounceTime, map, switchMap, catchError} from 'rxjs/operators'
+import scoreByPreviewFields from './scoreByPreviewFields'
+import {
+  filter,
+  takeUntil,
+  tap,
+  debounceTime,
+  map,
+  share,
+  switchMap,
+  catchError
+} from 'rxjs/operators'
 
 import resultsStyles from './styles/SearchResults.css'
 
@@ -34,13 +49,6 @@ function removeDupes(documents) {
   })
 }
 
-function isGroq(query) {
-  if (!query) {
-    return false
-  }
-  return query.startsWith('*[') && query.endsWith(']')
-}
-
 const combineFields = flow([flatten, union, compact])
 
 function getFieldsFromPreviewField(candidateTypes) {
@@ -51,11 +59,14 @@ function getFieldsFromPreviewField(candidateTypes) {
       .map(type => Object.values(type.preview.select))
       .reduce((acc, x) => acc.concat(x), [])
       .filter(titleField => titleField.indexOf('.') === -1)
-      .map(escapeField)
+      .map(fieldName => {
+        if (fieldNeedsEscape(fieldName)) return `"${fieldName}":${escapeField(fieldName)}`
+        return fieldName
+      })
   )
 }
 
-function search(query) {
+function search(queryStr) {
   if (!client) {
     throw new Error('Sanity client is missing')
   }
@@ -65,16 +76,9 @@ function search(query) {
     .filter(typeName => !typeName.startsWith('sanity.'))
     .map(typeName => schema.get(typeName))
 
-  if (isGroq(query)) {
-    return client.observable.fetch(`${query}[0...100]`).pipe(
-      map(data => ({error: null, data})),
-      catchError(error => of({error, data: null}))
-    )
-  }
-
   const previewFields = getFieldsFromPreviewField(candidateTypes)
 
-  const terms = query.split(/\s+/).filter(Boolean)
+  const {filters, terms} = parseQuery(queryStr)
 
   const params = terms.reduce((acc, term, i) => {
     acc[`t${i}`] = `${term}*`
@@ -88,12 +92,19 @@ function search(query) {
     uniqueFields.map(joinedPath => `${joinedPath} match $t${i}`)
   )
   const constraintString = constraints.map(constraint => `(${constraint.join('||')})`).join('&&')
-  return client.observable
-    .fetch(`*[${constraintString}][0...100]{_id,_type,${previewFields.join(',')}}`, params)
-    .pipe(
-      map(data => ({error: null, data})),
-      catchError(error => of({error, data: null}))
-    )
+
+  if (constraintString.length) {
+    filters.push(constraintString)
+  }
+
+  const filtersQuery = filters.length ? `(${filters.join(') && (')})` : ''
+
+  const query = `*[${filtersQuery}][0...100]{_id,_type,${previewFields.join(',')}}`
+
+  return client.observable.fetch(query, params).pipe(
+    map(data => ({error: null, data: scoreByPreviewFields(data, terms)})),
+    catchError(error => of({error, data: null}))
+  )
 }
 
 class SearchContainer extends React.PureComponent {
@@ -110,7 +121,7 @@ class SearchContainer extends React.PureComponent {
 
   state = {
     activeIndex: -1,
-    error: false,
+    error: null,
     isBleeding: true, // mobile first
     isFocused: false,
     isLoading: false,
@@ -128,7 +139,7 @@ class SearchContainer extends React.PureComponent {
       .asObservable()
       .pipe(
         map(event => event.target.value),
-        tap(value => this.setState({activeIndex: -1, value, error: false})),
+        tap(value => this.setState({activeIndex: -1, value, error: null})),
         takeUntil(this.componentWillUnmount$.asObservable())
       )
       .subscribe()
@@ -139,7 +150,7 @@ class SearchContainer extends React.PureComponent {
         map(event => event.target.value),
         filter(value => value.length === 0),
         tap(() => {
-          this.setState({results: [], error: false})
+          this.setState({results: [], error: null})
         })
       )
       .subscribe()
@@ -150,11 +161,12 @@ class SearchContainer extends React.PureComponent {
       tap(() => {
         this.setState({
           isLoading: true,
-          error: false
+          error: null
         })
       }),
       debounceTime(100),
-      switchMap(search)
+      switchMap(search),
+      share()
     )
 
     const hits$ = result$.pipe(
@@ -174,7 +186,7 @@ class SearchContainer extends React.PureComponent {
         tap(results => {
           this.setState({
             isLoading: false,
-            error: false,
+            error: null,
             results
           })
         }),
@@ -184,8 +196,14 @@ class SearchContainer extends React.PureComponent {
 
     error$.subscribe({
       next: error => {
+        const errorType =
+          error.response &&
+          error.response.body &&
+          error.response.body.error &&
+          error.response.body.error.type
+
         this.setState({
-          error: true,
+          error: errorType || 'error',
           isLoading: false,
           results: []
         })
@@ -239,7 +257,7 @@ class SearchContainer extends React.PureComponent {
 
   handleClear = () => {
     this.props.onClose()
-    this.setState({isFocused: false, value: '', results: [], error: false})
+    this.setState({isFocused: false, value: '', results: [], error: null})
   }
 
   /* eslint-disable-next-line complexity */
@@ -335,13 +353,11 @@ class SearchContainer extends React.PureComponent {
 
   renderResults() {
     const {activeIndex, isBleeding, isLoading, results, value, error} = this.state
-    if (error) {
-      return <div style={{color: 'red'}}>GROQ error</div>
-    }
 
     return (
       <SearchResults
         activeIndex={activeIndex}
+        error={error}
         isBleeding={isBleeding}
         isLoading={isLoading}
         items={results}

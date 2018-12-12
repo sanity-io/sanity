@@ -19,8 +19,7 @@ function getPreviewField(item, field) {
   return item[get(type, `preview.select.${field}`)]
 }
 
-export default function scoreByTitle(items, searchString) {
-  const terms = (searchString || '').match(/\w+/g) || []
+export default function scoreByTitle(items, terms) {
   const regexpTerms = terms.map(term => `\\b${term}`).join('|')
 
   const matcher = new RegExp(`(${regexpTerms})`, 'gi')
@@ -51,7 +50,7 @@ export default function scoreByTitle(items, searchString) {
       }
 
       // Boost exact match
-      if (titleField.toLowerCase() === searchString.toLowerCase()) {
+      if (terms.length === 1 && titleField.toLowerCase() === terms[0].toLowerCase()) {
         score *= 1.5
       }
     }

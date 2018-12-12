@@ -1,12 +1,12 @@
 import Spinner from 'part:@sanity/components/loading/spinner'
 import PropTypes from 'prop-types'
 import React from 'react'
-import scoreByPreviewFields from './scoreByPreviewFields'
 import styles from './styles/SearchResults.css'
 
 class SearchResults extends React.PureComponent {
   static propTypes = {
     activeIndex: PropTypes.number.isRequired,
+    error: PropTypes.string,
     // isBleeding: PropTypes.bool.isRequired,
     isLoading: PropTypes.bool.isRequired,
     items: PropTypes.arrayOf(
@@ -16,6 +16,10 @@ class SearchResults extends React.PureComponent {
     ).isRequired,
     query: PropTypes.string.isRequired,
     renderItem: PropTypes.func.isRequired
+  }
+
+  static defaultProps = {
+    error: null
   }
 
   element = null
@@ -46,8 +50,16 @@ class SearchResults extends React.PureComponent {
   }
 
   render() {
-    const {activeIndex, isLoading, items, query, renderItem} = this.props
+    const {activeIndex, error, isLoading, items, query, renderItem} = this.props
     const noResults = !isLoading && query.length > 0 && items.length === 0
+
+    if (error === 'queryParseError') {
+      return <div className={`${styles.root} ${styles.error}`}>Query syntax error</div>
+    } else if (error === 'queryError') {
+      return <div className={`${styles.root} ${styles.error}`}>Query error</div>
+    } else if (error) {
+      return <div className={`${styles.root} ${styles.noResults}`}>Unknown error</div>
+    }
 
     if (noResults) {
       return (
@@ -74,7 +86,7 @@ class SearchResults extends React.PureComponent {
 
     return (
       <ul className={styles.root} ref={this.setElement}>
-        {scoreByPreviewFields(items, query).map((item, index) => {
+        {items.map((item, index) => {
           return (
             <li key={item._id} className={styles.listItem}>
               {renderItem(item, index, activeIndex === index ? styles.activeItem : styles.item)}
