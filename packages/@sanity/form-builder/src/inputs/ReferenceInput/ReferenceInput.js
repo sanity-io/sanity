@@ -35,6 +35,7 @@ type Props = {
 }
 
 type State = {
+  error: string | null,
   isFetching: boolean,
   hits: Array<SearchHit>,
   previewSnapshot: ?PreviewSnapshot,
@@ -45,6 +46,7 @@ const MISSING_SNAPSHOT = {}
 
 const getInitialState = (): State => {
   return {
+    error: null,
     isFetching: false,
     hits: [],
     previewSnapshot: null,
@@ -142,17 +144,33 @@ export default class ReferenceInput extends React.Component<Props, State> {
 
     this.subscriptions.replace(
       'search',
-      onSearch(query, type).subscribe((items: Array<SearchHit>) => {
-        const updatedCache = items.reduce((cache, item) => {
-          cache[item._id] = item
-          return cache
-        }, Object.assign({}, this.state.refCache))
+      onSearch(query, type).subscribe({
+        next: (items: Array<SearchHit>) => {
+          const updatedCache = items.reduce((cache, item) => {
+            cache[item._id] = item
+            return cache
+          }, Object.assign({}, this.state.refCache))
 
-        this.setState({
-          hits: items,
-          isFetching: false,
-          refCache: updatedCache
-        })
+          this.setState({
+            error: null,
+            hits: items,
+            isFetching: false,
+            refCache: updatedCache
+          })
+        },
+        error: (error: any) => {
+          const errorType: string =
+            error.response &&
+            error.response.body &&
+            error.response.body.error &&
+            error.response.body.error.type
+
+          this.setState({
+            error: errorType,
+            hits: [],
+            isFetching: false
+          })
+        }
       })
     )
   }
@@ -201,7 +219,7 @@ export default class ReferenceInput extends React.Component<Props, State> {
       ...rest
     } = this.props
 
-    const {previewSnapshot, isFetching, hits} = this.state
+    const {error, previewSnapshot, isFetching, hits} = this.state
     const valueFromHit = value && hits.find(hit => hit._id === value._ref)
 
     const weakIs = value && value._weak ? 'weak' : 'strong'
@@ -233,6 +251,7 @@ export default class ReferenceInput extends React.Component<Props, State> {
             </div>
           )}
           <SearchableSelect
+            error={error}
             placeholder="Type to search…"
             title={
               isMissing && hasRef
