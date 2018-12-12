@@ -78,7 +78,7 @@ export default class SimpleImagePreview extends React.Component {
     return (
       <span>
         <span>
-          <img src={url} title={caption} style={{maxWidth: 100, maxHeight: 100}} />
+          <img src={url} title={caption} alt={caption} style={{maxWidth: 100, maxHeight: 100}} />
         </span>
         <span>{caption}</span>
       </span>
