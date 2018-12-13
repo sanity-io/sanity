@@ -38,7 +38,7 @@ function getPaneDefaultSize(pane) {
   return pane.type === 'document' ? 672 : 350
 }
 
-export default class DeskToolPanes extends React.PureComponent {
+export default class DeskToolPanes extends React.Component {
   static propTypes = {
     keys: PropTypes.arrayOf(PropTypes.string).isRequired,
     autoCollapse: PropTypes.bool,

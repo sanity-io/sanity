@@ -4,7 +4,7 @@ import React from 'react'
 import SplitPane from 'react-split-pane'
 import styles from './styles/SplitController.css'
 
-export default class PanesSplitController extends React.PureComponent {
+export default class PanesSplitController extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
     onCheckCollapse: PropTypes.func,
