@@ -7,7 +7,7 @@ import React from 'react'
  * @todo See if this can be done in a more intuitive way without this extra layer
  */
 
-export default class SplitPaneWrapper extends React.PureComponent {
+export default class SplitPaneWrapper extends React.Component {
   /* eslint-disable react/no-unused-prop-types */
   static propTypes = {
     minSize: PropTypes.number,
