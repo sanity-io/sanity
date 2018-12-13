@@ -1,0 +1,7 @@
+[
+  {
+    "object": "operation",
+    "type": "remove_node",
+    "path": [0]
+  }
+]

@@ -1,0 +1,39 @@
+[
+  {
+    "object": "operation",
+    "type": "insert_node",
+    "path": [
+      1
+    ],
+    "node": {
+      "object": "block",
+      "type": "image",
+      "isVoid": true,
+      "data": {
+        "value": {
+          "_type": "image"
+        },
+        "_key": "dvn3u3h21s"
+      },
+      "nodes": []
+    }
+  },
+  {
+    "object": "operation",
+    "type": "insert_node",
+    "path": [
+      1,
+      0
+    ],
+    "node": {
+      "object": "text",
+      "leaves": [
+        {
+          "object": "leaf",
+          "text": "",
+          "marks": []
+        }
+      ]
+    }
+  }
+]

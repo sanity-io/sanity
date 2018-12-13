@@ -1,0 +1,16 @@
+[
+  {
+    "_key": "894eb580e49e",
+    "_type": "block",
+    "children": [
+      {
+        "_key": "894eb580e49e0",
+        "_type": "span",
+        "marks": [],
+        "text": "1234"
+      }
+    ],
+    "markDefs": [],
+    "style": "normal"
+  }
+]
