@@ -1,5 +1,6 @@
 const Rule = require('./Rule')
 const {slugValidator} = require('./validators/slugValidator')
+const {blockValidator} = require('./validators/blockValidator')
 
 // eslint-disable-next-line complexity
 function inferFromSchemaType(typeDef, schema, visited = new Set()) {
@@ -46,6 +47,14 @@ function inferFromSchemaType(typeDef, schema, visited = new Set()) {
 
   if (type && type.name === 'email') {
     base = base.email()
+  }
+
+  if (type && type.name === 'block') {
+    base = base.custom(blockValidator)
+  }
+
+  if (typeDef.annotations) {
+    typeDef.annotations.forEach(annotation => inferFromSchemaType(annotation))
   }
 
   if (typeDef.options && typeDef.options.list) {
