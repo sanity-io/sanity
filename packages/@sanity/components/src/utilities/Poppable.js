@@ -15,6 +15,7 @@ export default class Poppable extends React.Component {
     target: PropTypes.node,
     children: PropTypes.node,
     referenceClassName: PropTypes.string,
+    referenceElement: PropTypes.instanceOf(Element),
     placement: PropTypes.string,
     positionFixed: PropTypes.bool,
     popperClassname: PropTypes.string,

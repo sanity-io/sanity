@@ -11,7 +11,10 @@ import Poppable from 'part:@sanity/components/utilities/poppable'
 import ArrowKeyNavigation from 'boundless-arrow-key-navigation/build'
 
 const modifiers = {
-  preventOverflow: 'viewport',
+  preventOverflow: {
+    boundariesElement: 'window',
+    padding: 16
+  },
   customStyle: {
     enabled: true,
     fn: data => {
@@ -34,7 +37,7 @@ export default class DropDownButton extends React.PureComponent {
       })
     ),
     onAction: PropTypes.func.isRequired,
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
     inverted: PropTypes.bool,
     icon: PropTypes.func,
     loading: PropTypes.bool,
@@ -43,13 +46,15 @@ export default class DropDownButton extends React.PureComponent {
     color: PropTypes.string,
     className: PropTypes.string,
     renderItem: PropTypes.func,
-    placement: PropTypes.string
+    placement: PropTypes.string,
+    showArrow: PropTypes.bool
   }
 
   static defaultProps = {
     renderItem(item) {
       return <div>{item.title}</div>
     },
+    showArrow: true,
     placement: 'bottom-start'
   }
 
@@ -85,7 +90,7 @@ export default class DropDownButton extends React.PureComponent {
   }
 
   handleClickOutside = event => {
-    if (this._rootElement && this._rootElement.contains(event.target)) {
+    if (event && this._rootElement && this._rootElement.contains(event.target)) {
       // Stop the open button from being clicked
       event.stopPropagation()
       this.handleClose()
@@ -127,7 +132,7 @@ export default class DropDownButton extends React.PureComponent {
   }
 
   render() {
-    const {items, renderItem, children, kind, className, placement, ...rest} = omit(this.props, 'onAction')
+    const {items, renderItem, children, kind, className, placement, showArrow, ...rest} = omit(this.props, 'onAction')
     const {menuOpened} = this.state
 
     const buttonElement =
@@ -144,8 +149,14 @@ export default class DropDownButton extends React.PureComponent {
         ref={this.buttonElement}
       >
         <div className={styles.inner}>
-          {children}
-          <ArrowIcon color="inherit" className={styles.arrow} />
+          {showArrow ? (
+            <div className={styles.inner}>
+              {children}
+              <ArrowIcon color="inherit" className={styles.arrow} />
+            </div>
+          ) : (
+            children
+          )}
           <Poppable
             modifiers={modifiers}
             placement={placement}
