@@ -24,7 +24,7 @@ export default class BlockImagePreview extends React.PureComponent {
   }
 
   static defaultProps = {
-    mediaDimensions: {width: 600, height: 300, aspect: 1, fit: 'fill'},
+    mediaDimensions: {width: 600, height: 600, fit: 'fillmax'},
     type: {
       title: undefined,
       name: undefined
@@ -36,25 +36,26 @@ export default class BlockImagePreview extends React.PureComponent {
 
     return (
       <div className={styles.root}>
-        {media && (
-          <div className={`${styles.media}`}>
-            {typeof media === 'function' &&
-              media({dimensions: mediaDimensions, layout: 'blockImage'})}
-            {typeof media === 'string' && <div className={styles.mediaString}>{media}</div>}
-            {React.isValidElement(media) && media}
-          </div>
-        )}
-        <div className={styles.heading}>
-          <h2 className={styles.title}>{title}</h2>
-          {subtitle && <h3 className={styles.subtitle}>{subtitle}</h3>}
-          {description && <p className={styles.description}>{description}</p>}
-          {status && (
-            <div className={styles.status}>
-              {(typeof status === 'function' && status({layout: 'default'})) || status}
+        <h2 className={styles.title}>{title}</h2>
+        <div className={styles.preview}>
+          {media && (
+            <div className={`${styles.media}`}>
+              {typeof media === 'function' &&
+                media({dimensions: mediaDimensions, layout: 'blockImage'})}
+              {typeof media === 'string' && <div className={styles.mediaString}>{media}</div>}
+              {React.isValidElement(media) && media}
             </div>
           )}
+          <div className={styles.heading}>
+            {subtitle && <h3 className={styles.subtitle}>{subtitle}</h3>}
+            {description && <p className={styles.description}>{description}</p>}
+            {status && (
+              <div className={styles.status}>
+                {(typeof status === 'function' && status({layout: 'default'})) || status}
+              </div>
+            )}
+          </div>
         </div>
-
         {children && <div className={styles.children}>{children}</div>}
       </div>
     )

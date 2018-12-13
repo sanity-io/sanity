@@ -7,12 +7,14 @@ export default class ButtonGrid extends React.PureComponent {
   static propTypes = {
     children: PropTypes.node.isRequired,
     secondary: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf([PropTypes.node])]),
-    align: PropTypes.oneOf(['start', 'end'])
+    align: PropTypes.oneOf(['start', 'end']),
+    className: PropTypes.string
   }
 
   static defaultProps = {
     align: 'start',
-    secondary: null
+    secondary: null,
+    className: ''
   }
 
   render() {

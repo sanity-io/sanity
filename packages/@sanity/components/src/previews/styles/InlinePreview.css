@@ -1,20 +1,29 @@
+/* line-height: 1.428571429; */
+
 .root {
   display: inline;
+  position: relative;
 }
 
 .media {
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-  overflow: hidden;
+  display: inline;
   position: relative;
-  vertical-align: baseline;
 
   @nest & img {
+    height: 1.4ex;
+    display: inline;
     object-fit: cover;
   }
 
   @nest & div {
-    display: inline-block;
+    display: inline;
   }
+}
+
+.title:empty {
+  display: none;
+}
+
+.media:not(:empty) + .title:not(:empty) {
+  padding-left: 0.2em;
 }
