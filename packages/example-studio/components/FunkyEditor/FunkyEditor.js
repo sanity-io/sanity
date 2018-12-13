@@ -1,8 +1,13 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import {BlockEditor} from 'part:@sanity/form-builder'
+import CustomMarkers from './CustomMarkers'
+import BlockActions from './BlockActions'
 
 function extractTextFromBlocks(blocks) {
+  if (!blocks) {
+    return ''
+  }
   return blocks
     .filter(val => val._type === 'block')
     .map(block => {
@@ -21,16 +26,25 @@ export default class FunkyEditor extends React.Component {
     }).isRequired,
     level: PropTypes.number,
     value: PropTypes.array,
+    markers: PropTypes.array,
     onChange: PropTypes.func.isRequired
   }
 
   render() {
-    const {type, value = [], level, onChange} = this.props
+    const {markers, value} = this.props
     return (
       <div>
-        <BlockEditor type={type} level={level} value={value} onChange={onChange} />
+        <BlockEditor
+          {...this.props}
+          renderBlockActions={BlockActions}
+          renderCustomMarkers={CustomMarkers}
+          markers={markers.concat([
+            {type: 'customMarkerTest', path: value && value[0] ? [{_key: value[0]._key}] : []}
+          ])}
+        />
         <p>
-          Your funkyness is <strong>{extractTextFromBlocks(value).length}</strong> characters long
+          Your funkyness is <strong>{extractTextFromBlocks(this.props.value).length}</strong>{' '}
+          characters long
         </p>
       </div>
     )
