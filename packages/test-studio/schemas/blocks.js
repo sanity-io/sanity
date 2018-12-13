@@ -34,13 +34,6 @@ export default {
         {type: 'code', title: 'Code'},
         {
           type: 'color',
-          title: 'Color',
-          options: {
-            inline: true
-          }
-        },
-        {
-          type: 'color',
           name: 'colorBlock',
           title: 'Color (block)'
         },
@@ -68,7 +61,15 @@ export default {
             }
           ]
         },
-        {type: 'block'}
+        {
+          type: 'block',
+          of: [
+            {
+              type: 'color',
+              title: 'Color'
+            }
+          ]
+        }
       ]
     },
     {
@@ -95,13 +96,6 @@ export default {
         {type: 'code', title: 'Code'},
         {
           type: 'color',
-          title: 'Color',
-          options: {
-            inline: true
-          }
-        },
-        {
-          type: 'color',
           name: 'colorBlock',
           title: 'Color (block)'
         },
@@ -129,7 +123,15 @@ export default {
             }
           ]
         },
-        {type: 'block'}
+        {
+          type: 'block',
+          of: [
+            {
+              type: 'color',
+              title: 'Color'
+            }
+          ]
+        }
       ]
     },
     {
@@ -153,21 +155,6 @@ export default {
       title: 'Customized with block types',
       type: 'array',
       of: [
-        {
-          type: 'image',
-          title: 'Image',
-          fields: [
-            {title: 'Caption', name: 'caption', type: 'string', options: {isHighlighted: true}},
-            {
-              title: 'Authors',
-              name: 'authors',
-              type: 'array',
-              options: {isHighlighted: true},
-              of: [{type: 'author', title: 'Author'}]
-            }
-          ],
-          options: {inline: true}
-        },
         {type: 'author', title: 'Author'},
         {
           type: 'block',
@@ -183,7 +170,23 @@ export default {
             annotations: [
               {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}
             ]
-          }
+          },
+          of: [
+            {
+              type: 'image',
+              title: 'Image',
+              fields: [
+                {title: 'Caption', name: 'caption', type: 'string', options: {isHighlighted: true}},
+                {
+                  title: 'Authors',
+                  name: 'authors',
+                  type: 'array',
+                  options: {isHighlighted: true},
+                  of: [{type: 'author', title: 'Author'}]
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -235,31 +238,32 @@ export default {
       name: 'blockInBlock',
       type: 'array',
       of: [
-        {type: 'block'},
         {
-          name: 'footnote',
-          title: 'Footnote',
-          type: 'object',
-          options: {
-            inline: true
-          },
-          fields: [
+          type: 'block',
+          of: [
             {
-              title: 'Footnote',
               name: 'footnote',
-              type: 'array',
-              of: [
+              title: 'Footnote',
+              type: 'object',
+              fields: [
                 {
-                  type: 'block',
-                  lists: [],
-                  styles: [],
-                  marks: {
-                    decorators: [
-                      {title: 'Strong', value: 'strong'},
-                      {title: 'Emphasis', value: 'em'}
-                    ],
-                    annotations: []
-                  }
+                  title: 'Footnote',
+                  name: 'footnote',
+                  type: 'array',
+                  of: [
+                    {
+                      type: 'block',
+                      lists: [],
+                      styles: [],
+                      marks: {
+                        decorators: [
+                          {title: 'Strong', value: 'strong'},
+                          {title: 'Emphasis', value: 'em'}
+                        ],
+                        annotations: []
+                      }
+                    }
+                  ]
                 }
               ]
             }
