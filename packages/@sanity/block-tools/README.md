@@ -1,8 +1,8 @@
 # Sanity Block Tools
 
-Various tools for processing Sanity block content
+Various tools for processing Sanity block content. Mostly used internally in the Studio code, but it got some nice functions (especially `htmlToBlocks`) which is handy when you are importing data from HTML into your dataset as block text.
 
-## Interface
+## Example
 
 Let's start with a complete example:
 
@@ -40,17 +40,24 @@ const blockContentType = defaultSchema.get('blogPost')
   .fields.find(field => field.name === 'body').type
 
 
-// Convert HTML to blocks
+// Convert HTML to block array
 const blocks = blockTools.htmlToBlocks(
   '<html><body><h1>Hello world!</h1><body></html>',
-  {blockContentType}
+  blockContentType
 )
+// Outputs
+//
+//  {
+//    _type: 'block',
+//    style: 'h1'
+//    children: [
+//      {
+//        _type: 'span'
+//        text: 'Hello world!'
+//      }
+//    ]
+//  }
 
-// Convert a Slate state to blocks
-const blocks = blockTools.slateStateToBlocks(slateJson, blockContentType)
-
-// Convert blocks to a JSON serialized Slate state
-const slateState = blockTools.blocksToSlateState(blocks, blockContentType)
 
 // Get the feature-set of a blockContentType
 const features = blockTools.getBlockContentFeatures(blockContentType)
@@ -59,11 +66,11 @@ const features = blockTools.getBlockContentFeatures(blockContentType)
 
 ## Methods
 
-### ``htmlToBlocks(html, options)`` (html deserializer)
+### ``htmlToBlocks(html, blockContentType, options)`` (html deserializer)
 
 This will deserialize the input html (string) into blocks.
 
-#### Options
+#### Params
 
 ##### ``blockContentType``
 
@@ -71,7 +78,9 @@ A compiled version of the block content schema type.
 When you give this option, the deserializer will respect the schema when deserializing to blocks.
 I.e. if the schema doesn't allow h2-styles, all h2 html-elements will deserialized to normal styled blocks.
 
-##### ``parseHtml``
+##### ``options``
+
+###### ``parseHtml``
 The HTML-deserialization is done by default by the browser's native DOMParser.
 On the server side you can give the function ``parseHtml``
 that parses the html into a DOMParser compatible model / API.
@@ -85,8 +94,8 @@ const {JSDOM} = jsdom
 
 const blocks = blockTools.htmlToBlocks(
   '<html><body><h1>Hello world!</h1><body></html>',
+  blockContentType,
   {
-    blockContentType,
     parseHtml: html => new JSDOM(html).window.document
   }
 )
@@ -101,14 +110,14 @@ You may add your own rules to deal with special HTML cases.
 ```js
 blockTools.htmlToBlocks(
   '<html><body><pre><code>const foo = "bar"</code></pre></body></html>',
+  blockContentType,
   {
-    blockContentType: compiledBlockContentType,
     parseHtml: html => new JSDOM(html),
     rules: [
 
-      // Special rule for code blocks (wrapped in pre and code tag)
+      // Special rule for code blocks
       {
-        deserialize(el, next) {
+        deserialize(el, next, block) {
           if (el.tagName.toLowerCase() != 'pre') {
             return undefined
           }
@@ -120,29 +129,19 @@ blockTools.htmlToBlocks(
           childNodes.forEach(node => {
             text += node.textContent
           })
-          return {
-            _type: 'span',
-            marks: ['code'],
+          // Return this as an own block (via block helper function), instead of appending it to a default block's children
+          return block({
+            _type: 'code',
+            langauge: 'javascript',
             text: text
-          }
+          })
         }
       }
-
     ]
   }
 )
 
 ```
-
-### ``blocksToSlateState(blocks, blockContentTypeSchema)``
-
-Convert blocks to a serialized Slate state respecting the input schema.
-
-
-### ``slateStateToBlocks(slateState, blockContentTypeSchema)``
-
-Convert a slate state to blocks respecting the input schema.
-
 
 ### ``getBlockContentFeatures(blockContentType)``
 
@@ -150,23 +149,34 @@ Will return an object with the features enabled for the input block content type
 
 ```js
 {
-  enabledBlockAnnotations: ['link'],
-  enabledSpanDecorators: [
-    'strong',
-    'em',
-    'code',
-    'underline',
-    'strike-through'
+  annotations: [{title: 'Link', value: 'link'}],
+  decorators: [
+    {title: 'Strong', value: 'strong'},
+    {title: 'Emphasis', value: 'em'},
+    {title: 'Code', value: 'code'},
+    {title: 'Underline', value: 'underline'},
+    {title: 'Strike', value: 'strike-through'}
   ],
-  enabledBlockStyles: [
-    'normal',
-    'h1',
-    'h2',
-    'h3',
-    'h4',
-    'h5',
-    'h6',
-    'blockquote'
+  styles: [
+    {title: 'Normal', value: 'normal'},
+    {title: 'Heading 1', value: 'h1'},
+    {title: 'H2', value: 'h2'},
+    {title: 'H3', value: 'h3'},
+    {title: 'H4', value: 'h4'},
+    {title: 'H5', value: 'h5'},
+    {title: 'H6', value: 'h6'},
+    {title: 'Quote', value: 'blockquote'}
   ]
 }
 ```
+
+### ``blocksToEditorValue(blocks, blockContentTypeSchema)``
+
+Convert blocks to a serialized editor value respecting the input schema.
+This function does not make much sense outside the studio internal code.
+
+
+### ``editorValueToBlocks(slateState, blockContentTypeSchema)``
+
+Convert a slate state to blocks respecting the input schema.
+This function does not make much sense outside the studio internal code.
