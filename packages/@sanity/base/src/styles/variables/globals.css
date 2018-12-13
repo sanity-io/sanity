@@ -14,6 +14,7 @@
   --header-height: 3rem;
   --checkerboard-color: color(var(--component-text-color) a(5%));
   --selectable-item-base: var(--brand-primary);
+  --brand-darkest--inverted: color(var(--brand-darkest) contrast(80%));
 
   /* Buttons */
   --default-button-primary-color: var(--brand-primary);
@@ -41,5 +42,17 @@
   --medium-padding: 1rem;
   --large-padding: 1.5rem;
   --extra-large-padding: 3rem;
+  --extra-small-padding--em: 0.25em;
+  --small-padding--em: 0.5em;
+  --medium-padding--em: 1em;
+  --large-padding--em: 1.5em;
+  --extra-large-padding--em: 3em;
   --text-selection-color: color(var(--brand-primary) alpha(20%));
+
+  /* Block editor */
+  --block-editor-base-font-family: inherit;
+  --block-editor-header-font-family: inherit;
+  --block-extras-width: 10rem;
+  --block-extras-border-color: #ccc;
+  --block-extras-background-color: #eee;
 }

@@ -44,20 +44,14 @@
   font-size: var(--blockquote-font-size);
   font-family: var(--font-family-serif);
   font-style: italic;
-  padding-left: 1.1rem;
-
-  @nest &:before {
-    content: "“";
-    font-size: 5em;
-    font-family: var(--font-family-serif);
-    position: absolute;
-    left: -3rem;
-    top: -2rem;
-    opacity: 0.5;
-    height: 4rem;
-    width: 4rem;
-    overflow: hidden;
-  }
+  margin: 0;
+  padding: 0.5em;
+  padding-left: 2.5em;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 400 300'><polygon opacity='0.15' fill='currentColor' points='184,40 108,150 166,150 166,300 0,300 16,139 103,40'/><polygon opacity='0.15' fill='currentColor' points='216,260 292,150 234,150 234,0 400,0 384,161 297,260'/></svg>");
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  background-origin: border-box;
+  background-size: 2em;
 }
 
 .blockquoteSmall {
