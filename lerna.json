@@ -5,14 +5,14 @@
   "packages": [
     "packages/@sanity/*",
     "packages/blog-studio",
+    "packages/create-sanity",
     "packages/ecommerce-studio",
     "packages/eslint-config-sanity",
     "packages/example-studio",
     "packages/movies-studio",
+    "packages/sanity",
     "packages/storybook",
-    "packages/test-studio",
-    "packages/create-sanity",
-    "packages/sanity"
+    "packages/test-studio"
   ],
-  "version": "0.136.3"
+  "version": "0.137.0"
 }
