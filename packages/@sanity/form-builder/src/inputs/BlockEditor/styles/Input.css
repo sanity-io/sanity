@@ -1,0 +1,21 @@
+@import "part:@sanity/base/theme/variables-style";
+
+.focusSkipper {
+  position: absolute;
+  height: 1px;
+  width: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  padding: 0.2em;
+  background-color: var(--body-bg);
+  border: 1px dotted var(--input-border-color-focus);
+
+  @nest &:focus {
+    z-index: 20;
+    width: auto;
+    height: auto;
+    clip: auto;
+    outline: none;
+  }
+}

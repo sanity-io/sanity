@@ -1,0 +1,100 @@
+@import "part:@sanity/base/theme/variables-style";
+
+.root {
+  position: relative;
+  font-size: 0.8rem;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  padding-bottom: var(--small-padding);
+
+  @media (--screen-medium) {
+    font-size: 0.8rem;
+  }
+
+  @nest &.fullscreen {
+    position: fixed;
+    box-sizing: border-box;
+    width: 100vw;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    padding: var(--small-padding);
+    background-color: var(--input-bg);
+    box-shadow: 0 0 8px color(var(--input-border-color) a(35%));
+
+    @media (--screen-medium) {
+      padding: var(--medium-padding--em);
+    }
+  }
+}
+
+.primary {
+  display: flex;
+}
+
+.secondary {
+  margin-left: auto;
+  display: flex;
+}
+
+.compactable {
+  display: none;
+}
+
+.expanded {
+  composes: shadow-12dp from 'part:@sanity/base/theme/shadows-style';
+}
+
+.largeContainer .compactable {
+  display: flex;
+}
+
+.root:not(.largeContainer) .compactable.expanded {
+  display: flex;
+  flex-wrap: wrap;
+  z-index: var(--zindex-dropdown);
+  position: absolute;
+  max-width: calc(100% - var(--medium-padding) * 2);
+  top: 0;
+  left: 0;
+  background-color: var(--component-bg);
+  padding: var(--small-padding);
+  box-sizing: border-box;
+  margin: var(--medium-padding);
+}
+
+.largeContainer .expandButton {
+  display: none;
+}
+
+.blockFormatContainer {
+  max-width: 5em;
+  min-width: 4em;
+  padding-right: 0.5em;
+
+  @media (--screen-medium) {
+    max-width: none;
+    min-width: 8em;
+    padding-top: 0.2em;
+  }
+}
+
+.decoratorButtonsContainer {
+  padding-right: var(--medium-padding--em);
+}
+
+.annotationButtonsContainer {
+  padding-right: var(--medium-padding--em);
+}
+
+.fullscreenButtonContainer {
+  margin-left: auto;
+  height: 100%;
+
+  @nest & svg {
+    transform: scale(1.5);
+  }
+}
