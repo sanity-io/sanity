@@ -33,7 +33,9 @@ function fetchSearchResults(query) {
     uniqueFields.map(joinedPath => `${joinedPath} match $t${i}`)
   )
 
-  groqFilters.push(constraints.map(constraint => `(${constraint.join('||')})`).join('&&'))
+  if (constraints.length) {
+    groqFilters.push(constraints.map(constraint => `(${constraint.join('||')})`).join('&&'))
+  }
 
   const groqFilterString = `(${groqFilters.join(')&&(')})`
 
