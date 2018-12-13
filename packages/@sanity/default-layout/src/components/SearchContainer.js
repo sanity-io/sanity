@@ -4,13 +4,13 @@ import React from 'react'
 import schema from 'part:@sanity/base/schema?'
 import Preview from 'part:@sanity/base/preview?'
 import {removeDupes} from 'part:@sanity/base/util/draft-utils'
-import {Subject} from 'rxjs'
+import {Subject, of} from 'rxjs'
 import {IntentLink} from 'part:@sanity/base/router'
 import search from 'part:@sanity/base/search'
 import Ink from 'react-ink'
 import SearchField from './SearchField'
 import SearchResults from './SearchResults'
-import {filter, takeUntil, tap, debounceTime, map, switchMap} from 'rxjs/operators'
+import {catchError, filter, takeUntil, tap, debounceTime, map, switchMap} from 'rxjs/operators'
 
 import resultsStyles from './styles/SearchResults.css'
 
@@ -18,6 +18,15 @@ import resultsStyles from './styles/SearchResults.css'
 // const hotKeys = {
 //   openSearch: isKeyHotkey('ctrl+t')
 // }
+
+function getSearchErrorType(searchError) {
+  return (
+    searchError.response &&
+    searchError.response.body &&
+    searchError.response.body.error &&
+    searchError.response.body.error.type
+  )
+}
 
 class SearchContainer extends React.PureComponent {
   static propTypes = {
@@ -33,6 +42,7 @@ class SearchContainer extends React.PureComponent {
 
   state = {
     activeIndex: -1,
+    error: null,
     isBleeding: true, // mobile first
     isFocused: false,
     isLoading: false,
@@ -77,14 +87,21 @@ class SearchContainer extends React.PureComponent {
           })
         }),
         debounceTime(100),
-        switchMap(queryStr => search(queryStr, {limit: 100})),
-        // we need this filtering because the search may return documents of types not in schema
-        map(hits => hits.filter(hit => schema.has(hit._type))),
-        map(removeDupes),
-        tap(results => {
+        switchMap(queryStr =>
+          search(queryStr, {limit: 100}).pipe(
+            // we need this filtering because the search may return documents of types not in schema
+            map(hits => hits.filter(hit => schema.has(hit._type))),
+            map(removeDupes),
+            map(results => ({results})),
+            // catch request errors
+            catchError(error => of({error}))
+          )
+        ),
+        tap(result => {
           this.setState({
             isLoading: false,
-            results
+            results: result.results || [],
+            error: result.error ? getSearchErrorType(result.error) : null
           })
         }),
         takeUntil(this.componentWillUnmount$.asObservable())
@@ -233,11 +250,12 @@ class SearchContainer extends React.PureComponent {
   }
 
   renderResults() {
-    const {activeIndex, isBleeding, isLoading, results, value} = this.state
+    const {activeIndex, error, isBleeding, isLoading, results, value} = this.state
 
     return (
       <SearchResults
         activeIndex={activeIndex}
+        error={error}
         isBleeding={isBleeding}
         isLoading={isLoading}
         items={results}
