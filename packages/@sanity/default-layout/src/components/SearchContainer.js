@@ -2,13 +2,11 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import schema from 'part:@sanity/base/schema?'
-import client from 'part:@sanity/base/client?'
 import Preview from 'part:@sanity/base/preview?'
-import {joinPath} from 'part:@sanity/base/util/search-utils'
-import {getPublishedId, isDraftId, getDraftId} from 'part:@sanity/base/util/draft-utils'
+import {removeDupes} from 'part:@sanity/base/util/draft-utils'
 import {Subject} from 'rxjs'
 import {IntentLink} from 'part:@sanity/base/router'
-import {flow, compact, flatten, union} from 'lodash'
+import search from 'part:@sanity/base/search'
 import Ink from 'react-ink'
 import SearchField from './SearchField'
 import SearchResults from './SearchResults'
@@ -20,48 +18,6 @@ import resultsStyles from './styles/SearchResults.css'
 // const hotKeys = {
 //   openSearch: isKeyHotkey('ctrl+t')
 // }
-
-// Removes published documents that also has a draft
-function removeDupes(documents) {
-  const drafts = documents.map(doc => doc._id).filter(isDraftId)
-
-  return documents.filter(doc => {
-    const draftId = getDraftId(doc._id)
-    const publishedId = getPublishedId(doc._id)
-    const hasDraft = drafts.includes(draftId)
-    const isPublished = doc._id === publishedId
-    return isPublished ? !hasDraft : true
-  })
-}
-
-const combineFields = flow([flatten, union, compact])
-
-function search(query) {
-  if (!client) {
-    throw new Error('Sanity client is missing')
-  }
-
-  const candidateTypes = schema
-    .getTypeNames()
-    .filter(typeName => !typeName.startsWith('sanity.'))
-    .map(typeName => schema.get(typeName))
-
-  const terms = query.split(/\s+/).filter(Boolean)
-
-  const params = terms.reduce((acc, term, i) => {
-    acc[`t${i}`] = `${term}*`
-    return acc
-  }, {})
-
-  const uniqueFields = combineFields(
-    candidateTypes.map(type => (type.__unstable_searchFields || []).map(joinPath))
-  )
-  const constraints = terms.map((term, i) =>
-    uniqueFields.map(joinedPath => `${joinedPath} match $t${i}`)
-  )
-  const constraintString = constraints.map(constraint => `(${constraint.join('||')})`).join('&&')
-  return client.observable.fetch(`*[${constraintString}][0...100] {_id, _type}`, params)
-}
 
 class SearchContainer extends React.PureComponent {
   static propTypes = {
@@ -121,7 +77,7 @@ class SearchContainer extends React.PureComponent {
           })
         }),
         debounceTime(100),
-        switchMap(search),
+        switchMap(queryStr => search(queryStr, {limit: 100})),
         // we need this filtering because the search may return documents of types not in schema
         map(hits => hits.filter(hit => schema.has(hit._type))),
         map(removeDupes),
