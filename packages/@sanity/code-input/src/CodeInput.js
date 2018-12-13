@@ -64,8 +64,8 @@ export default class CodeInput extends PureComponent {
     onChange() {}
   }
 
-  state = {
-    hasFocus: false
+  focus() {
+    this.editor.focus()
   }
 
   componentWillUnmount() {

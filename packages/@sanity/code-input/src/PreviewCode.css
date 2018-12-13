@@ -8,11 +8,15 @@
 
 .aceWrapper {
   border-top: 1px solid #ccc;
+  box-sizing: border-box;
   cursor: default;
+  background-color: #272822;
+  padding: 1rem;
 }
 
 .aceWrapper :global(.ace_content) {
-  padding: 0 0.5rem;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .defaultPreviewContainer {
