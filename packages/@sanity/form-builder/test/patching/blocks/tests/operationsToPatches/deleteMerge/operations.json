@@ -1,0 +1,71 @@
+[
+  {
+    "object": "operation",
+    "type": "remove_node",
+    "path": [
+      1
+    ]
+  },
+  {
+    "object": "operation",
+    "type": "remove_text",
+    "path": [
+      0,
+      0
+    ],
+    "offset": 1,
+    "text": "2",
+    "marks": []
+  },
+  {
+    "object": "operation",
+    "type": "remove_text",
+    "path": [
+      1,
+      0
+    ],
+    "offset": 0,
+    "text": "5",
+    "marks": []
+  },
+  {
+    "object": "operation",
+    "type": "move_node",
+    "path": [
+      1
+    ],
+    "newPath": [
+      1
+    ]
+  },
+  {
+    "object": "operation",
+    "type": "merge_node",
+    "path": [
+      1
+    ],
+    "position": 1,
+    "properties": {
+      "data": {
+        "_type": "block",
+        "_key": "75787ae94c2c",
+        "style": "normal"
+      },
+      "type": "contentBlock"
+    },
+    "target": null
+  },
+  {
+    "object": "operation",
+    "type": "merge_node",
+    "path": [
+      0,
+      1
+    ],
+    "position": 1,
+    "properties": {
+      "data": {}
+    },
+    "target": null
+  }
+]

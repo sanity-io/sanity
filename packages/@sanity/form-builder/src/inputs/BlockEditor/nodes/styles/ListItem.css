@@ -1,0 +1,235 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  width: auto;
+  position: relative;
+  composes: xsmallToxSmall from './Spacing.css';
+  display: block;
+
+  /* Important 'transform' in order to force refresh the ::before and ::after rules
+     in Webkit: https://stackoverflow.com/a/21947628/831480
+  */
+  transform: translateZ(0);
+  left: var(--large-padding);
+}
+
+.level-2 {
+  left: 3em;
+}
+
+.level-3 {
+  left: 6em;
+}
+
+.level-4 {
+  left: 9em;
+}
+
+.level-5 {
+  left: 12em;
+}
+
+.level-6 {
+  left: 16em;
+}
+
+.level-7 {
+  left: 18em;
+}
+
+.level-8 {
+  left: 21em;
+}
+
+.level-9 {
+  left: 24em;
+}
+
+.level-10 {
+  left: 27em;
+}
+
+.root > .item {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+
+  @nest &:before {
+    justify-content: flex-start;
+    vertical-align: top;
+  }
+}
+
+.root > .item > * {
+  word-break: break-word; /* Break long words to fit sheet */
+  margin-right: var(--large-padding);
+}
+
+.bullet {
+  composes: root;
+
+  @nest & > .item:before {
+    content: '\25CF '; /* BLACK CIRCLE */
+  }
+
+  @nest &.level-2 > .item {
+    @nest &:before {
+      content: '\25CB '; /* WHITE CIRCLE */
+    }
+  }
+
+  @nest &.level-3 > .item {
+    @nest &:before {
+      content: '\25A0 '; /* BIG BLACK SQUARE */
+    }
+  }
+
+  @nest &.level-5 > .item {
+    @nest &:before {
+      content: '\25CB '; /* WHITE CIRCLE */
+    }
+  }
+
+  @nest &.level-6 > .item {
+    @nest &:before {
+      content: '\25A0 '; /* BIG BLACK SQUARE */
+    }
+  }
+
+  @nest &.level-8 > .item {
+    @nest &:before {
+      content: '\25CB '; /* WHITE CIRCLE */
+    }
+  }
+
+  @nest &.level-9 > .item {
+    @nest &:before {
+      content: '\25A0 '; /* BIG BLACK SQUARE */
+    }
+  }
+}
+
+.bullet > .item {
+  @nest &:before {
+    min-width: 1.5em; /* Make sure space between bullet and text never shrinks */
+  }
+}
+
+.number {
+  composes: root;
+
+  @nest &.level-1 {
+    counter-increment: listItemNumber;
+    counter-reset: listItemAlpha;
+  }
+
+  @nest &.level-2 {
+    counter-increment: listItemAlpha;
+    counter-reset: listItemRoman;
+  }
+
+  @nest &.level-3 {
+    counter-increment: listItemRoman;
+    counter-reset: listItemNumberNext;
+  }
+
+  @nest &.level-4 {
+    counter-increment: listItemNumberNext;
+    counter-reset: listItemLetterNext;
+  }
+
+  @nest &.level-5 {
+    counter-increment: listItemLetterNext;
+    counter-reset: listItemRomanNext;
+  }
+
+  @nest &.level-6 {
+    counter-increment: listItemRomanNext;
+    counter-reset: listItemNumberNextNext;
+  }
+
+  @nest &.level-7 {
+    counter-increment: listItemNumberNextNext;
+    counter-reset: listItemAlphaNextNext;
+  }
+
+  @nest &.level-8 {
+    counter-increment: listItemAlphaNextNext;
+    counter-reset: listItemRomanNextNext;
+  }
+
+  @nest &.level-9 {
+    counter-increment: listItemRomanNextNext;
+    counter-reset: listItemNumberNextNextNext;
+  }
+
+  @nest &.level-10 {
+    counter-increment: listItemNumberNextNextNext;
+  }
+
+  @nest & + :not(.number) {
+    counter-reset: listItemNumber;
+  }
+
+  @nest &.level-2 > .item {
+    @nest &:before {
+      content: counter(listItemAlpha, lower-alpha) ". ";
+    }
+  }
+
+  @nest &.level-3 > .item {
+    @nest &:before {
+      content: counter(listItemRoman, lower-roman) ". ";
+    }
+  }
+
+  @nest &.level-4 > .item {
+    @nest &:before {
+      content: counter(listItemNumberNext) ". ";
+    }
+  }
+
+  @nest &.level-5 > .item {
+    @nest &:before {
+      content: counter(listItemLetterNext, lower-alpha) ". ";
+    }
+  }
+
+  @nest &.level-6 > .item {
+    @nest &:before {
+      content: counter(listItemRomanNext, lower-roman) ". ";
+    }
+  }
+
+  @nest &.level-7 > .item {
+    @nest &:before {
+      content: counter(listItemNumberNextNext) ". ";
+    }
+  }
+
+  @nest &.level-8 > .item {
+    @nest &:before {
+      content: counter(listItemAlphaNextNext, lower-alpha) ". ";
+    }
+  }
+
+  @nest &.level-9 > .item {
+    @nest &:before {
+      content: counter(listItemRomanNextNext, lower-roman) ". ";
+    }
+  }
+
+  @nest &.level-10 > .item {
+    @nest &:before {
+      content: counter(listItemNumberNextNextNext) ". ";
+    }
+  }
+}
+
+.number > .item {
+  @nest &:before {
+    min-width: 1.6em;  /* Make sure space between number and text never shrinks */
+    content: counter(listItemNumber) ". ";
+  }
+}

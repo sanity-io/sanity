@@ -1,0 +1,35 @@
+[
+  {
+    "object": "operation",
+    "type": "split_node",
+    "path": [2, 0],
+    "position": 2,
+    "target": null,
+    "properties": {}
+  },
+  {
+    "object": "operation",
+    "type": "split_node",
+    "path": [2, 1],
+    "position": 2,
+    "target": null,
+    "properties": {}
+  },
+  {"object": "operation", "type": "remove_node", "path": [2, 1]},
+  {
+    "object": "operation",
+    "type": "merge_node",
+    "path": [2, 1],
+    "position": 2,
+    "target": null,
+    "properties": {}
+  },
+  {
+    "object": "operation",
+    "type": "insert_text",
+    "path": [1, 0],
+    "offset": 0,
+    "text": "34",
+    "marks": []
+  }
+]
