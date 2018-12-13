@@ -52,6 +52,22 @@
       "description": "React Storybook (https://github.com/kadirahq/react-storybook) stories"
     },
     {
+      "name": "part:@sanity/base/search",
+      "description": "Parse the search query and fetch search results from the dataset"
+    },
+    {
+      "name": "part:@sanity/base/search/fetchSearchResults",
+      "description": "Fetch search results from the dataset"
+    },
+    {
+      "name": "part:@sanity/base/search/parseSearchQuery",
+      "description": "Parse a search query string"
+    },
+    {
+      "name": "part:@sanity/base/search/prepareSearchResults",
+      "description": "Prepare array of search results"
+    },
+    {
       "name": "part:@sanity/base/theme/variables-style",
       "description": "Base theme variables for Sanity. Dont override this unless you provide all the new variables"
     },
@@ -251,6 +267,22 @@
     {
       "implements": "part:@sanity/base/schema-creator",
       "path": "schema/createSchema.js"
+    },
+    {
+      "implements": "part:@sanity/base/search",
+      "path": "search/index.js"
+    },
+    {
+      "implements": "part:@sanity/base/search/fetchSearchResults",
+      "path": "search/fetchSearchResults.js"
+    },
+    {
+      "implements": "part:@sanity/base/search/parseSearchQuery",
+      "path": "search/parseSearchQuery.js"
+    },
+    {
+      "implements": "part:@sanity/base/search/prepareSearchResults",
+      "path": "search/prepareSearchResults.js"
     },
     {
       "implements": "part:@sanity/base/util/draft-utils",
