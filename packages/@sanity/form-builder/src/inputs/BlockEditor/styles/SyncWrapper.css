@@ -1,0 +1,24 @@
+@import "part:@sanity/base/theme/variables-style";
+
+.root {
+  position: relative;
+}
+
+.warning {
+  padding: 2em;
+  background-color: color(var(--state-warning-color) a(90%));
+  color: var(--white);
+}
+
+.isOutOfSyncWarning {
+  composes: warning;
+  position: absolute;
+  top: 2em;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.disabledEditor {
+  composes: warning;
+}

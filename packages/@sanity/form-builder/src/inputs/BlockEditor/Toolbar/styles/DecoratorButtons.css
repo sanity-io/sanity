@@ -1,0 +1,9 @@
+@import "part:@sanity/base/theme/variables-style";
+
+.root {
+  display: flex;
+}
+
+.buttonWrapper + .buttonWrapper {
+  margin-left: 0.1em;
+}

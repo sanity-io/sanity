@@ -1,0 +1,98 @@
+@import "part:@sanity/base/theme/variables-style";
+
+/*
+  The flex alignment here is to stretch the editor to
+  fit its parrent, and to make the last child selectable for editing
+*/
+
+.root {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--block-editor-base-font-family);
+  margin: 0;
+  padding: 0;
+}
+
+.blockExtras {
+  position: absolute;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  @nest .fullscreen & {
+    padding-left: 0;
+  }
+}
+
+.editor {
+  /* make the whole field clickable */
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.root.hasBlockExtras:not(.fullscreen) .editor {
+  padding-right: var(--block-extras-width);
+}
+
+/* less spacing on block objects / non-text objects */
+.editor div[data-slate-void="true"] + div[data-slate-void="true"] {
+  padding-top: var(--small-padding);
+}
+
+.editor > * {
+  position: relative;
+  box-sizing: content-box;
+  word-break: break-word;
+  padding-left: var(--small-padding);
+  padding-right: var(--small-padding);
+
+  @media (--screen-medium) {
+    padding-left: var(--medium-padding);
+    padding-right: var(--medium-padding);
+  }
+
+  @nest .fullscreen & {
+    padding-left: var(--small-padding);
+    padding-right: var(--small-padding);
+
+    @media (--screen-medium) {
+      padding-left: var(--large-padding);
+      padding-right: var(--large-padding);
+    }
+
+    @media (--screen-large) {
+      padding-left: 4rem;
+      padding-right: 4rem;
+    }
+  }
+}
+
+.editor > *:first-child {
+  padding-top: var(--small-padding);
+
+  @media (--screen-medium) {
+    margin-top: var(--medium-padding);
+  }
+
+  @nest .fullscreen & {
+    @media (--screen-medium) {
+      margin-top: var(--large-padding);
+    }
+
+    @media (--screen-large) {
+      margin-top: 4rem;
+    }
+  }
+}
+
+.blockDragMarker {
+  display: block;
+  background-color: var(--brand-primary);
+  width: 100%;
+  height: 2px;
+  position: absolute;
+  pointer-events: none;
+}
