@@ -1,12 +1,8 @@
-import {
-  DEFAULT_BLOCK,
-  DEFAULT_SUPPORTED_STYLES,
-  DEFAULT_SUPPORTED_DECORATORS,
-  DEFAULT_SUPPORTED_ANNOTATIONS
-} from '../constants'
+import {DEFAULT_BLOCK} from '../constants'
 import blockContentTypeToOptions from '../util/blockContentTypeToOptions'
 import preprocessors from './preprocessors'
 import resolveJsType from '../util/resolveJsType'
+import {isEqual} from 'lodash'
 
 /**
  * A utility function to create the options needed for the various rule sets,
@@ -18,9 +14,10 @@ import resolveJsType from '../util/resolveJsType'
 
 export function createRuleOptions(blockContentType) {
   const options = blockContentTypeToOptions(blockContentType)
-  const enabledBlockStyles = options.enabledBlockStyles || DEFAULT_SUPPORTED_STYLES
-  const enabledSpanDecorators = options.enabledSpanDecorators || DEFAULT_SUPPORTED_DECORATORS
-  const enabledBlockAnnotations = options.enabledBlockAnnotations || DEFAULT_SUPPORTED_ANNOTATIONS
+  const mapItem = item => item.value
+  const enabledBlockStyles = options.styles.map(mapItem)
+  const enabledSpanDecorators = options.decorators.map(mapItem)
+  const enabledBlockAnnotations = options.annotations.map(mapItem)
   return {
     enabledBlockStyles,
     enabledSpanDecorators,
@@ -102,22 +99,31 @@ export function flattenNestedBlocks(blocks) {
   return flattened
 }
 
+function nextSpan(block, child, index) {
+  const next = block.children[index + 1]
+  return next && next._type === 'span' ? next : null
+}
+function prevSpan(block, child, index) {
+  const prev = block.children[index - 1]
+  return prev && prev._type === 'span' ? prev : null
+}
+
+function isWhiteSpaceChar(text) {
+  return ['\xa0', ' '].includes(text)
+}
+
 export function trimWhitespace(blocks) {
   blocks.forEach(block => {
-    const nextSpan = (child, index) => {
-      const next = block.children[index + 1]
-      return next && next._type === 'span' ? next : null
+    if (!block.children) {
+      return
     }
-    const prevSpan = (child, index) => {
-      const prev = block.children[index - 1]
-      return prev && prev._type === 'span' ? prev : null
-    }
+    // eslint-disable-next-line complexity
     block.children.forEach((child, index) => {
       if (child._type !== 'span') {
         return
       }
-      const nextChild = nextSpan(child, index)
-      const prevChild = prevSpan(child, index)
+      const nextChild = nextSpan(block, child, index)
+      const prevChild = prevSpan(block, child, index)
       if (index === 0) {
         child.text = child.text.replace(/^[^\S\n]+/g, '')
       }
@@ -141,6 +147,17 @@ export function trimWhitespace(blocks) {
       if (!child.text) {
         block.children.splice(index, 1)
       }
+      if (prevChild && isEqual(prevChild.marks, child.marks) && isWhiteSpaceChar(child.text)) {
+        prevChild.text += ' '
+        block.children.splice(index, 1)
+      } else if (
+        nextChild &&
+        isEqual(nextChild.marks, child.marks) &&
+        isWhiteSpaceChar(child.text)
+      ) {
+        nextChild.text = ` ${nextChild.text}`
+        block.children.splice(index, 1)
+      }
     })
   })
   return blocks
@@ -150,6 +167,11 @@ export function ensureRootIsBlocks(blocks) {
   return blocks.reduce((memo, node, i, original) => {
     if (node._type === 'block') {
       memo.push(node)
+      return memo
+    }
+
+    if (node._type === '__block') {
+      memo.push(node.block)
       return memo
     }
 

@@ -1,0 +1,18 @@
+[
+  {
+    "_type": "block",
+    "children": [
+      {"_type": "span", "marks": [], "text": "This is markdown with "},
+      {"_type": "span", "marks": ["code"], "text": "code"},
+      {"_type": "span", "marks": [], "text": ", "},
+      {"_type": "span", "marks": ["strong"], "text": "strong"},
+      {"_type": "span", "marks": [], "text": ", and "},
+      {"_type": "span", "marks": ["em"], "text": "emphasis"},
+      {"_type": "span", "marks": [], "text": ". And "},
+      {"_type": "span", "marks": ["randomKey0"], "text": "a link"},
+      {"_type": "span", "marks": [], "text": " too!"}
+    ],
+    "markDefs": [{"_key": "randomKey0", "_type": "link", "href": "https://www.sanity.io"}],
+    "style": "normal"
+  }
+]

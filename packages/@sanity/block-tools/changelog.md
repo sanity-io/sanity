@@ -1,0 +1,1 @@
+2018-12-13:  BREAKING: Changed params for `htmlToBlocks` from `(html, options={blockContentType})` to `(html, blockContentType, options={}` as blockContentType is now required.

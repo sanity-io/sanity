@@ -2,7 +2,8 @@
   {
     "_type": "block",
     "children": [
-      { "_type": "span", "marks": ["code"], "text": "const foo = 'bar'" }
+      {"_type": "span", "marks": ["strong"], "text": "Hei"},
+      {"_type": "span", "marks": ["code"], "text": "const foo = 'bar'"}
     ],
     "markDefs": [],
     "style": "normal"
@@ -21,9 +22,16 @@
   {
     "_type": "block",
     "children": [
-      {"_type": "image", "src": "http://image.gif"}
+      {"_type": "image", "src": "http://image.gif"},
+      {"_type": "span", "marks": ["randomKey0"], "text": "Image link"}
     ],
-    "markDefs": [],
+    "markDefs": [
+      {
+        "_key": "randomKey0",
+        "_type": "link",
+        "href": "http://foo"
+      }
+    ],
     "style": "normal"
   }
 ]

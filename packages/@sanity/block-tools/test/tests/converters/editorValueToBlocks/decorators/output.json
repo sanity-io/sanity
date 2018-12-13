@@ -1,0 +1,26 @@
+[
+  {
+    "_key": "randomKey0",
+    "_type": "block",
+    "children": [
+      {"_key": "randomKey00", "_type": "span", "marks": ["strong"], "text": "Bold "},
+      {"_key": "randomKey01", "_type": "span", "marks": ["strong", "em"], "text": "italic"}
+    ],
+    "markDefs": [],
+    "style": "normal"
+  },
+  {
+    "_key": "randomKey1",
+    "_type": "block",
+    "children": [{"_key": "randomKey10", "_type": "span", "marks": ["em"], "text": "Italic"}],
+    "markDefs": [],
+    "style": "normal"
+  },
+  {
+    "_key": "randomKey2",
+    "_type": "block",
+    "children": [{"_key": "randomKey20", "_type": "span", "marks": ["code"], "text": "Code"}],
+    "markDefs": [],
+    "style": "normal"
+  }
+]

@@ -1,0 +1,90 @@
+{
+  "object": "value",
+  "document": {
+    "object": "document",
+    "nodes": [
+      {
+        "object": "block",
+        "isVoid": false,
+        "type": "contentBlock",
+        "data": {
+          "_type": "block",
+          "_key": "37369d86a5ce",
+          "markDefs": [],
+          "style": "normal"
+        },
+        "nodes": [
+          {
+            "object": "text",
+            "leaves": [
+              {
+                "object": "leaf",
+                "text": "Bold ",
+                "marks": [{ "object": "mark", "type": "strong" }]
+              }
+            ]
+          },
+          {
+            "object": "text",
+            "leaves": [
+              {
+                "object": "leaf",
+                "text": "italic",
+                "marks": [
+                  { "object": "mark", "type": "strong" },
+                  { "object": "mark", "type": "em" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "object": "block",
+        "isVoid": false,
+        "type": "contentBlock",
+        "data": {
+          "_type": "block",
+          "_key": "745d6428661b",
+          "markDefs": [],
+          "style": "normal"
+        },
+        "nodes": [
+          {
+            "object": "text",
+            "leaves": [
+              {
+                "object": "leaf",
+                "text": "Italic",
+                "marks": [{ "object": "mark", "type": "em" }]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "object": "block",
+        "isVoid": false,
+        "type": "contentBlock",
+        "data": {
+          "_type": "block",
+          "_key": "5c7d58f13d18",
+          "markDefs": [],
+          "style": "normal"
+        },
+        "nodes": [
+          {
+            "object": "text",
+            "leaves": [
+              {
+                "object": "leaf",
+                "text": "Code",
+                "marks": [{ "object": "mark", "type": "code" }]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

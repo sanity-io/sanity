@@ -1,15 +1,9 @@
 [
   {
     "_type": "block",
-    "children": [
-      {
-        "_type": "span",
-        "marks": [],
-        "text": "Header"
-      }
-    ],
+    "children": [{"_type": "span", "marks": ["strong"], "text": "Keywords"}],
     "markDefs": [],
-    "style": "h5"
+    "style": "normal"
   },
   {
     "_type": "block",
@@ -17,7 +11,68 @@
       {
         "_type": "span",
         "marks": [],
-        "text": "Paragraph"
+        "text":
+          "Natural resource management, oil, minerals, resource curse, commodity trading, corruption, national oil companies, state-owned enterprises, extractive revenue misappropriation."
+      }
+    ],
+    "markDefs": [],
+    "style": "normal"
+  },
+  {"_type": "block", "children": [], "markDefs": [], "style": "normal"},
+  {
+    "_type": "block",
+    "children": [{"_type": "span", "marks": ["strong"], "text": "About the authors"}],
+    "markDefs": [],
+    "style": "normal"
+  },
+  {
+    "_type": "block",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text":
+          "Olivier Longchamp is in charge of tax policy and international finance at Public Eye. Nathalie Perrot is a legal advisor. She previously worked for Public Eye as a project manager."
+      }
+    ],
+    "markDefs": [],
+    "style": "normal"
+  },
+  {"_type": "block", "children": [], "markDefs": [], "style": "normal"},
+  {
+    "_type": "block",
+    "children": [{"_type": "span", "marks": ["strong"], "text": "About Public Eye"}],
+    "markDefs": [],
+    "style": "normal"
+  },
+  {
+    "_type": "block",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text":
+          "Created in 1968 and now with 25,000 members, Public Eye (formerly the Berne Declaration) is an independent Swiss NGO that uses a mixture of research, advocacy, and campaigning to fight for human rights and justice around the world, especially in poorer countries where Switzerland and its companies are involved. Public Eye has worked on Switzerland’s commodity trading sector since 2011."
+      }
+    ],
+    "markDefs": [],
+    "style": "normal"
+  },
+  {"_type": "block", "children": [], "markDefs": [], "style": "normal"},
+  {
+    "_type": "block",
+    "children": [{"_type": "span", "marks": ["strong"], "text": "Acknowledgements"}],
+    "markDefs": [],
+    "style": "normal"
+  },
+  {
+    "_type": "block",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text":
+          "We would like to thank the following people for providing information and constructive comments on earlier drafts of this paper: Alexandra Gillies, Aaron Sayne and Joe Williams (NRGI); Laure Brillaud (TI); Werner Thut (SDC); Marc Guéniat, Silvie Lang, Andreas Missbach, Urs Rybi, Lyssandra Sears, and Valentino Viredaz (Public Eye). Kendra Dupuy and Aled Williams (U4-CMI)."
       }
     ],
     "markDefs": [],
