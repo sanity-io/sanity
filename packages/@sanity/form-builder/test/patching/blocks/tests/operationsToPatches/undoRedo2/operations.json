@@ -1,0 +1,52 @@
+[
+  {
+    "object": "operation",
+    "type": "split_node",
+    "path": [0, 0],
+    "position": 1,
+    "properties": {
+      "data": {}
+    },
+    "target": null
+  },
+  {
+    "object": "operation",
+    "type": "split_node",
+    "path": [0],
+    "position": 1,
+    "properties": {
+      "data": {
+        "_type": "block",
+        "_key": "9ed945a83b90",
+        "style": "normal"
+      },
+      "type": "contentBlock"
+    },
+    "target": 1
+  },
+  {
+    "object": "operation",
+    "type": "merge_node",
+    "path": [1],
+    "position": 1,
+    "properties": {
+      "data": {
+        "_type": "block",
+        "_key": "9ed945a83b90",
+        "style": "normal"
+      },
+      "type": "contentBlock"
+    },
+    "target": 1
+  },
+  {
+    "object": "operation",
+    "type": "merge_node",
+    "path": [0, 1],
+    "position": 1,
+    "properties": {
+      "data": {}
+    },
+    "target": null
+  }
+]
