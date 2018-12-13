@@ -27,10 +27,14 @@ test('fails if asset download fails', () => {
   return expect(uploadAssets([asset], {client: null, onProgress: noop})).rejects.toMatchSnapshot()
 })
 
-test('fails if asset lookup fails', () => {
+test('fails if asset lookup fails', async () => {
   const options = {client: fetchFailClient, onProgress: noop}
-  const upload = uploadAssets([fileAsset], options)
-  return expect(upload).rejects.toMatchSnapshot()
+  try {
+    const result = await uploadAssets([fileAsset], options)
+    expect(result).toBeFalsy()
+  } catch (err) {
+    expect(err.message).toMatch(/Some network err/)
+  }
 })
 
 test('will reuse an existing asset if it exists', () => {
