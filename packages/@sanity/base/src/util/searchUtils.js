@@ -1,3 +1,5 @@
+import schema from 'part:@sanity/base/schema?'
+
 const GROQ_KEYWORDS = ['match', 'in', 'asc', 'desc', 'true', 'false', 'null']
 const VALID_FIELD = /^[a-zA-Z_][a-zA-Z0-9_]*$/
 
@@ -21,3 +23,7 @@ export const joinPath = pathArray =>
     }
     return isFirst ? pathSegment : `${prev}.${pathSegment}`
   }, '')
+
+export function getSearchableTypeNames() {
+  return schema.getTypeNames().filter(typeName => !typeName.startsWith('sanity.'))
+}
