@@ -2,7 +2,7 @@
 const fs = require('fs')
 const path = require('path')
 const sanityClient = require('@sanity/client')
-const importer = require('../')
+const importer = require('../src/import')
 const {getSanityClient} = require('./helpers')
 
 const defaultClient = sanityClient({
@@ -79,6 +79,14 @@ test('rejects on missing `_type` property (from array)', async () => {
   await expect(importer(getFixtureArray('missing-type'), importOptions)).rejects.toHaveProperty(
     'message',
     'Failed to parse document at index #2: Document did not contain required "_type" property of type string'
+  )
+})
+
+test('rejects on duplicate IDs', async () => {
+  expect.assertions(1)
+  await expect(importer(getFixtureStream('duplicate-ids'), importOptions)).rejects.toHaveProperty(
+    'message',
+    'Found 2 duplicate IDs:\n- pk\n- espen'
   )
 })
 

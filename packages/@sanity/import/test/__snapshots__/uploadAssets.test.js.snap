@@ -5,12 +5,6 @@ exports[`fails if asset download fails 1`] = `
 connect ECONNREFUSED 127.0.0.1:49999]
 `;
 
-exports[`fails if asset lookup fails 1`] = `
-[Error: Failed to upload image @ file:///Users/espenh/webdev/sanity-voof/packages/@sanity/import/test/fixtures/img.gif:
-Error while attempt to query Sanity API:
-Some network err]
-`;
-
 exports[`will reuse an existing asset if it exists: single asset mutation 1`] = `
 Object {
   "mutations": Array [
