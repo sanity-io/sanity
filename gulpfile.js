@@ -23,8 +23,18 @@ const isWindows = /^win/.test(process.platform)
 const tsPaths = globby.sync(['./packages/@sanity/*/tsconfig.json'])
 const tsProjects = tsPaths.map(conf => ts.createProject(conf))
 const tsScripts = tsPaths.map(proj => `${path.dirname(proj)}/src/**/*.ts`)
-const scripts = ['./packages/@sanity/*/src/**/*.js', './packages/sanity-plugin-*/src/**/*.js']
-const assets = ['./packages/@sanity/*/src/**/*', './packages/sanity-plugin-*/src/**/*']
+const scripts = [
+  './packages/@sanity/*/src/**/*.js',
+  './packages/sanity-plugin-*/src/**/*.js',
+  './packages/groq/src/**/*.js'
+]
+
+const assets = [
+  './packages/@sanity/*/src/**/*',
+  './packages/sanity-plugin-*/src/**/*',
+  './packages/groq/src/**/*.js'
+]
+
 const srcOpts = {base: 'packages'}
 
 const getProjectEnv = projectPath => {
@@ -43,11 +53,11 @@ let libFragment
 
 if (path.win32 === path) {
   srcEx = /(@sanity\\[^\\]+)\\src\\/
-  srcRootEx = /(sanity-plugin-[^\\]+)\\src\\/
+  srcRootEx = /(groq|sanity-plugin-[^\\]+)\\src\\/
   libFragment = '$1\\lib\\'
 } else {
   srcEx = new RegExp('(@sanity/[^/]+)/src/')
-  srcRootEx = /(sanity-plugin-[^/]+)\/src\//
+  srcRootEx = /(groq|sanity-plugin-[^/]+)\/src\//
   libFragment = '$1/lib/'
 }
 
