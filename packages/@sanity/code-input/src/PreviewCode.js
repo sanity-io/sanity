@@ -2,7 +2,7 @@ import React, {PureComponent} from 'react'
 import PropTypes from 'prop-types'
 import AceEditor from 'react-ace'
 import {get} from 'lodash'
-import styles from './Preview.css'
+import styles from './PreviewCode.css'
 
 /* eslint-disable import/no-unassigned-import */
 import 'brace/mode/batchfile'
@@ -15,7 +15,6 @@ import 'brace/mode/markdown'
 import 'brace/mode/php'
 import 'brace/mode/sh'
 import 'brace/mode/text'
-
 import 'brace/theme/github'
 import 'brace/theme/monokai'
 import 'brace/theme/terminal'
@@ -25,12 +24,7 @@ import 'brace/theme/tomorrow'
 import {SUPPORTED_LANGUAGES, ACE_EDITOR_PROPS, ACE_SET_OPTIONS} from './config'
 import createHighlightMarkers from './createHighlightMarkers'
 
-function getLanguageTitle(value) {
-  const found = SUPPORTED_LANGUAGES.find(lang => lang.value === value)
-  return found ? found.title : null
-}
-
-export default class CodePreview extends PureComponent {
+export default class PreviewCode extends PureComponent {
   static propTypes = {
     type: PropTypes.object,
     layout: PropTypes.string,
@@ -42,27 +36,25 @@ export default class CodePreview extends PureComponent {
     })
   }
 
-  render() {
-    const {layout} = this.props
-    return layout === 'block' ? this.renderBlockPreview() : this.renderDefaultPreview()
+  ace = React.createRef()
+
+  componentDidMount() {
+    // Avoid cursor and focus tracking by Ace
+    const ace = this.ace && this.ace.current
+    if (ace) {
+      ace.editor.renderer.$cursorLayer.element.style.opacity = 0
+      ace.editor.textInput.getElement().disabled = true
+    }
   }
 
-  renderDefaultPreview() {
-    const {value} = this.props
-    return (
-      <div className={styles.defaultPreviewContainer}>
-        <div>{value && value.language ? getLanguageTitle(value.language) : 'Unknown language'}</div>
-      </div>
-    )
-  }
-  renderBlockPreview() {
+  render() {
     const {value, type} = this.props
     const fixedLanguage = get(type, 'options.language')
     return (
       <div className={styles.root}>
-        <h3>{value && getLanguageTitle(value.language)}</h3>
         <div className={styles.aceWrapper}>
           <AceEditor
+            ref={this.ace}
             mode={(value && value.language) || fixedLanguage || 'text'}
             theme="monokai"
             width="100%"
