@@ -72,6 +72,26 @@
       "description": "Input component for the slug type"
     },
     {
+      "name": "part:@sanity/form-builder/input/block-editor/on-paste",
+      "description": "Function for handling on-paste event in the block editor"
+    },
+    {
+      "name": "part:@sanity/form-builder/input/block-editor/on-copy",
+      "description": "Function for handling on-copy event in the block editor"
+    },
+    {
+      "name": "part:@sanity/form-builder/input/block-editor/block-markers",
+      "description": "Component that shows and handles all markers (validation and custom) within a block"
+    },
+    {
+      "name": "part:@sanity/form-builder/input/block-editor/block-extras",
+      "description": "Component that renders block actions and markers for a block (all content in the right marigin)"
+    },
+    {
+      "name": "part:@sanity/form-builder/input/block-editor/block-markers-custom",
+      "description": "Component that renders custom markers for a block (everything but validation markers)"
+    },
+    {
       "implements": "part:@sanity/base/locale-messages",
       "path": "sanity/locale/strings.json"
     },
@@ -87,6 +107,21 @@
       "name": "part:@sanity/form-builder/input/array/functions-default",
       "implements": "part:@sanity/form-builder/input/array/functions",
       "path": "inputs/ArrayInput/ArrayFunctions.js"
+    },
+    {
+      "name": "part:@sanity/form-builder/input/block-editor/block-markers-default",
+      "implements": "part:@sanity/form-builder/input/block-editor/block-markers",
+      "path": "inputs/BlockEditor/nodes/Markers.js"
+    },
+    {
+      "name": "part:@sanity/form-builder/input/block-editor/block-extras-default",
+      "implements": "part:@sanity/form-builder/input/block-editor/block-extras",
+      "path": "inputs/BlockEditor/BlockExtras.js"
+    },
+    {
+      "name": "part:@sanity/form-builder/input/block-editor/block-markers-custom-default",
+      "implements": "part:@sanity/form-builder/input/block-editor/block-markers-custom",
+      "path": "inputs/BlockEditor/nodes/CustomMarkers.js"
     }
   ]
 }

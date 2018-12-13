@@ -91,6 +91,11 @@ export default class SanityDefaultPreview extends React.PureComponent {
       return media
     }
 
+    // If the asset is on media
+    if (value.media && value.media._type === 'reference' && value.media._ref) {
+      return this.renderMedia
+    }
+
     // Legacy support for imageUrl
     if (value.imageUrl) {
       return this.renderImageUrl
@@ -138,6 +143,7 @@ export default class SanityDefaultPreview extends React.PureComponent {
         title={item.title}
         subtitle={item.subtitle}
         description={item.description}
+        extendedPreview={item.extendedPreview}
         media={media}
         progress={_upload && _upload.progress}
       />
