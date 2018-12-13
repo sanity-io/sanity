@@ -1,7 +1,8 @@
-import {isObject} from 'lodash'
+import {isObject, isString} from 'lodash'
 import applyArrayPatch from './array'
 import applyObjectPatch from './object'
 import applyPrimitivePatch from './primitive'
+import applyStringPatch from './string'
 
 export function applyAll(value, patches) {
   return patches.reduce(_apply, value)
@@ -10,6 +11,9 @@ export function applyAll(value, patches) {
 function applyPatch(value, patch) {
   if (Array.isArray(value)) {
     return applyArrayPatch(value, patch)
+  }
+  if (isString(value)) {
+    return applyStringPatch(value, patch)
   }
   if (isObject(value)) {
     return applyObjectPatch(value, patch)

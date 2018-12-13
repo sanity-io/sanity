@@ -4,7 +4,7 @@ import * as gradientPatchAdapter from './utils/gradientPatchAdapter'
 import {map, scan} from 'rxjs/operators'
 import type {Patch} from '../typedefs/patch'
 
-function preparePatchEvent(event) {
+function prepareMutationEvent(event) {
   const patches = event.mutations.map(mut => mut.patch).filter(Boolean)
   return {
     ...event,
@@ -12,9 +12,33 @@ function preparePatchEvent(event) {
   }
 }
 
+function prepareRebaseEvent(event) {
+  const patches = [
+    {
+      id: event.document._id,
+      set: event.document
+    }
+  ]
+  return {
+    type: 'mutation',
+    document: event.document,
+    mutations: patches.map(patch => ({
+      patch
+    })),
+    patches: gradientPatchAdapter.toFormBuilder('internal', patches)
+  }
+}
+
 function wrap(document) {
   const events$ = document.events.pipe(
-    map(event => (event.type === 'mutation' ? preparePatchEvent(event) : event)),
+    map(event => {
+      if (event.type === 'mutation') {
+        return prepareMutationEvent(event)
+      } else if (event.type === 'rebase') {
+        return prepareRebaseEvent(event)
+      }
+      return event
+    }),
     scan((prevEvent, currentEvent) => {
       const deletedSnapshot =
         prevEvent &&
