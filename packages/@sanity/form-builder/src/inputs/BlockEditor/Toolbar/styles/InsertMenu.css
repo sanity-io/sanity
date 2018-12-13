@@ -1,0 +1,13 @@
+@import "part:@sanity/base/theme/variables-style";
+
+.item {
+  display: flex;
+  padding: var(--extra-small-padding);
+  align-items: stretch;
+}
+
+.icon {
+  margin-right: var(--small-padding);
+  display: flex;
+  align-items: center;
+}
