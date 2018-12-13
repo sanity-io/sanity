@@ -12,6 +12,7 @@ import customObject from './customObject'
 import protein from '../components/ProteinInput/schema'
 import localeBlockContent from './localeBlockContent'
 import {blockContent} from './blockContent'
+import customBlockEditor from './customBlockEditor'
 
 export default createSchema({
   name: 'example-blog',
@@ -26,6 +27,7 @@ export default createSchema({
     videoEmbed,
     proteinTest,
     protein,
-    blockContent
+    blockContent,
+    customBlockEditor
   ])
 })
