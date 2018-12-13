@@ -1,6 +1,6 @@
-function prepareSearchResults(results, query) {
+function prepareSearchResults(results, query, opts = {}) {
   // This function may be extended by overriding using the part system
-  return results.slice(0, 100)
+  return results
 }
 
 export default prepareSearchResults
