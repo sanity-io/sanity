@@ -44,6 +44,10 @@
   @nest & :global(.Pane2) {
     display: none;
   }
+
+  @nest & .Resizer {
+    display: none;
+  }
 }
 
 .Resizer {
@@ -88,4 +92,9 @@
 
 .lastPane .Resizer {
   display: none;
+}
+
+.hideResize > .splitPane > .Resizer {
+  display: none;
+  border: 10px solid red !important;
 }
