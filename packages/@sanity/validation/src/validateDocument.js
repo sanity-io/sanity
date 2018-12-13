@@ -30,6 +30,8 @@ function validateItem(item, type, path, options) {
   return validatePrimitive(item, type, path, options)
 }
 
+module.exports.validateItem = validateItem
+
 function validateObject(obj, type, path, options) {
   if (!type) {
     return []
@@ -86,7 +88,6 @@ function validateArray(items, type, path, options) {
       return applyPath(ruleResults, path)
     })
   }
-
   // Validate items within array
   const itemChecks = items.map((item, i) => {
     const pathSegment = item._key ? {_key: item._key} : i

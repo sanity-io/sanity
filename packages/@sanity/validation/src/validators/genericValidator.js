@@ -87,6 +87,13 @@ const custom = async (fn, value, message, options) => {
 
   clearTimeout(slowTimer)
 
+  if (Array.isArray(result)) {
+    if (result.length === 0) {
+      return true
+    }
+    return result
+  }
+
   if (result === true) {
     return true
   }
