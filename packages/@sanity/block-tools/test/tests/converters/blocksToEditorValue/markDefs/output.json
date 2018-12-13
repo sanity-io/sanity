@@ -1,0 +1,61 @@
+{
+  "object": "value",
+  "data": {},
+  "document": {
+    "object": "document",
+    "key": "randomKey0",
+    "data": {},
+    "nodes": [
+      {
+        "object": "block",
+        "isVoid": false,
+        "key": "37369d86a5ce",
+        "type": "contentBlock",
+        "data": {
+          "_type": "block",
+          "_key": "37369d86a5ce",
+          "style": "normal"
+        },
+        "nodes": [
+          {
+            "object": "text",
+            "key": "37369d86a5ce0",
+            "leaves": [{ "object": "leaf", "text": "", "marks": [] }]
+          },
+          {
+            "object": "inline",
+            "isVoid": false,
+            "key": "37369d86a5ce1",
+            "type": "span",
+            "data": {
+              "_key": "37369d86a5ce1",
+              "annotations": {
+                "link": {
+                  "_key": "4713633924e9",
+                  "_type": "link",
+                  "href": "1234"
+                }
+              }
+            },
+            "nodes": [
+              {
+                "object": "text",
+                "leaves": [{ "object": "leaf", "text": "Link", "marks": [
+                  {
+                    "object": "mark",
+                    "type": "4713633924e9"
+                  }
+                ] }]
+              }
+            ]
+          },
+          {
+            "object": "text",
+            "key": "37369d86a5ce2",
+            "leaves": [{ "object": "leaf", "text": "", "marks": [] }]
+          }
+        ]
+      }
+    ]
+  }
+}

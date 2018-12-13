@@ -1,0 +1,9 @@
+[
+  {
+    "_type": "block",
+    "children": [{"_type": "span", "marks": ["em"], "text": "Hei"}],
+    "markDefs": [],
+    "style": "normal"
+  },
+  {"_type": "code", "text": "const foo = 'bar'"}
+]

@@ -1,0 +1,961 @@
+[
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "You might think you’re writing JSX:"
+      }
+    ]
+  },
+  {
+    "_type": "code",
+    "language": "javascript",
+    "code": "<marquee bgcolor=\"#ffa7c4\">hi</marquee> "
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "But really, you’re calling a function:"
+      }
+    ]
+  },
+  {
+    "_type": "code",
+    "language": "javascript",
+    "code":
+      "React.createElement( /* type */ 'marquee', /* props */ { bgcolor: '#ffa7c4' }, /* children */ 'hi' ) "
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "And that function gives you back an object. We call this object a React "
+      },
+      {
+        "_type": "span",
+        "marks": ["em"],
+        "text": "element"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": ". It tells React what to render next. Your components return a tree of them."
+      }
+    ]
+  },
+  {
+    "_type": "code",
+    "language": "javascript",
+    "code":
+      "{ type: 'marquee', props: { bgcolor: '#ffa7c4', children: 'hi', }, key: null, ref: null, $$typeof: Symbol.for('react.element'), // 🧐 Who dis } "
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "If you used React you might be familiar with "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "type"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": ", "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "props"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": ", "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "key"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": ", and "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "ref"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " fields. "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong"],
+        "text": "But what is "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong", "code"],
+        "text": "$$typeof"
+      },
+      {
+        "_type": "span",
+        "marks": ["strong"],
+        "text": "? And why does it have a "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong", "code"],
+        "text": "Symbol()"
+      },
+      {
+        "_type": "span",
+        "marks": ["strong"],
+        "text": " as a value?"
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "That’s another one of those things that you don’t "
+      },
+      {
+        "_type": "span",
+        "marks": ["em"],
+        "text": "need"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text":
+          " to know to use React, but that will make you feel good when you do. There’s also some tips about security in this post that you might want to know. Maybe one day you’ll write your own UI library and all of this will come in handy. I certainly hope so."
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text":
+          "Before client-side UI libraries became common and added basic protection, it was common for app code to construct HTML and insert it into the DOM:"
+      }
+    ]
+  },
+  {
+    "_type": "code",
+    "language": "javascript",
+    "code":
+      "const messageEl = document.getElementById('message'); messageEl.innerHTML = '<p>' + message.text + '</p>'; "
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "That works fine, except when your "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "message.text"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " is something like "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "'<img src onerror=\"stealYourPassword()\">'"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": ". "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong"],
+        "text":
+          "You don’t want things written by strangers to appear verbatim in your app’s rendered HTML."
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [
+      {
+        "_key": "randomKey0",
+        "_type": "link",
+        "href":
+          "https://gomakethings.com/preventing-cross-site-scripting-attacks-when-using-innerhtml-in-vanilla-javascript/"
+      }
+    ],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "(Fun fact: if you only do client-side rendering, a "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "<script>"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " tag here wouldn’t let you run JavaScript. But "
+      },
+      {
+        "_type": "span",
+        "marks": ["randomKey0"],
+        "text": "don’t let this"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " lull you into a false sense of security.)"
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "To protect against such attacks, you can use safe APIs like "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "document.createTextNode()"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " or "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "textContent"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text":
+          " that only deal with text. You can also preemptively “escape” inputs by replacing potentially dangerous characters like "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "<"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": ", "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": ">"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " and others in any user-provided text."
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text":
+          "Still, the cost of a mistake is high and it’s a hassle to remember it every time you interpolate a user-written string into your output. "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong"],
+        "text":
+          "This is why modern libraries like React escape text content for strings by default:"
+      }
+    ]
+  },
+  {
+    "_type": "code",
+    "language": "javascript",
+    "code": "<p> {message.text} </p> "
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "If "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "message.text"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " is a malicious string with an "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "<img>"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " or another tag, it won’t turn into a real "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "<img>"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " tag. React will escape the content and "
+      },
+      {
+        "_type": "span",
+        "marks": ["em"],
+        "text": "then"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " insert it into the DOM. So instead of seeing the "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "<img>"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " tag you’ll just see its markup."
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "To render arbitrary HTML inside a React element, you have to write "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "dangerouslySetInnerHTML={{ __html: message.text }}"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": ". "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong"],
+        "text": "The fact that it’s clumsy to write is a "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong", "em"],
+        "text": "feature"
+      },
+      {
+        "_type": "span",
+        "marks": ["strong"],
+        "text": "."
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text":
+          " It’s meant to be highly visible so that you can catch it in code reviews and codebase audits."
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [
+      {
+        "_key": "randomKey1",
+        "_type": "link",
+        "href": "https://github.com/facebook/react/issues/3473#issuecomment-90594748"
+      }
+    ],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": ["strong"],
+        "text": "Does it mean React is entirely safe from injection attacks? No."
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " HTML and DOM offer "
+      },
+      {
+        "_type": "span",
+        "marks": ["randomKey1"],
+        "text": "plenty of attack surface"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text":
+          " that is too difficult or slow for React or other UI libraries to mitigate against. Most of the remaining attack vectors involve attributes. For example, if you render "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "<a href={user.website}>"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": ", beware of the user whose website is "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "'javascript: stealYourPassword()'"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": ". Spreading user input like "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "<div {...userData}>"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " is rare but also dangerous."
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [
+      {
+        "_key": "randomKey2",
+        "_type": "link",
+        "href": "https://github.com/facebook/react/issues/10506"
+      },
+      {
+        "_key": "randomKey3",
+        "_type": "link",
+        "href": "https://github.com/facebook/react/issues/3473#issuecomment-91327040"
+      }
+    ],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "React "
+      },
+      {
+        "_type": "span",
+        "marks": ["randomKey2"],
+        "text": "could"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text":
+          " provide more protection over time but in many cases these are consequences of server issues that "
+      },
+      {
+        "_type": "span",
+        "marks": ["randomKey3"],
+        "text": "should"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " be fixed there anyway."
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text":
+          "Still, escaping text content is a reasonable first line of defence that catches a lot of potential attacks. Isn’t it nice to know that code like this is safe?"
+      }
+    ]
+  },
+  {
+    "_type": "code",
+    "language": "javascript",
+    "code": "// Escaped automatically <p> {message.text} </p> "
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": ["strong"],
+        "text": "Well, that wasn’t always true either."
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " And that’s where "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "$$typeof"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " comes in."
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "React elements are plain objects by design:"
+      }
+    ]
+  },
+  {
+    "_type": "code",
+    "language": "javascript",
+    "code":
+      "{ type: 'marquee', props: { bgcolor: '#ffa7c4', children: 'hi', }, key: null, ref: null, $$typeof: Symbol.for('react.element'), } "
+  },
+  {
+    "_type": "block",
+    "markDefs": [
+      {
+        "_key": "randomKey4",
+        "_type": "link",
+        "href": "https://github.com/facebook/react/pull/3583#issuecomment-90296667"
+      }
+    ],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "While normally you create them with "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "React.createElement()"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text":
+          ", it is not required. There are valid use cases for React to support plain element objects written like I just did above. Of course, you probably wouldn’t "
+      },
+      {
+        "_type": "span",
+        "marks": ["em"],
+        "text": "want"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " to write them like this — but this "
+      },
+      {
+        "_type": "span",
+        "marks": ["randomKey4"],
+        "text": "can be"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text":
+          " useful for an optimizing compiler, passing UI elements between workers, or for decoupling JSX from the React package."
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "However, "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong"],
+        "text": "if your server has a hole that lets the user store an arbitrary JSON object"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " while the client code expects a string, this could become a problem:"
+      }
+    ]
+  },
+  {
+    "_type": "code",
+    "language": "javascript",
+    "code":
+      "// Server could have a hole that lets user store JSON let expectedTextButGotJSON = { type: 'div', props: { dangerouslySetInnerHTML: { __html: '/* put your exploit here */' }, }, // ... }; let message = { text: expectedTextButGotJSON }; // Dangerous in React 0.13 <p> {message.text} </p> "
+  },
+  {
+    "_type": "block",
+    "markDefs": [
+      {
+        "_key": "randomKey5",
+        "_type": "link",
+        "href": "http://danlec.com/blog/xss-via-a-spoofed-react-element"
+      }
+    ],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "In that case, React 0.13 would be "
+      },
+      {
+        "_type": "span",
+        "marks": ["randomKey5"],
+        "text": "vulnerable"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " to an XSS attack. To clarify, again, "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong"],
+        "text": "this attack depends on an existing server hole"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text":
+          ". Still, React could do a better job of protecting people against it. And starting with React 0.14, it does."
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [
+      {
+        "_key": "randomKey6",
+        "_type": "link",
+        "href": "https://github.com/facebook/react/pull/4832"
+      }
+    ],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "The fix in React 0.14 was to "
+      },
+      {
+        "_type": "span",
+        "marks": ["randomKey6"],
+        "text": "tag every React element with a Symbol"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": ":"
+      }
+    ]
+  },
+  {
+    "_type": "code",
+    "language": "javascript",
+    "code":
+      "{ type: 'marquee', props: { bgcolor: '#ffa7c4', children: 'hi', }, key: null, ref: null, $$typeof: Symbol.for('react.element'), } "
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "This works because you can’t just put "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "Symbol"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "s in JSON. "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong"],
+        "text":
+          "So even if the server has a security hole and returns JSON instead of text, that JSON can’t include "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong", "code"],
+        "text": "Symbol.for('react.element')"
+      },
+      {
+        "_type": "span",
+        "marks": ["strong"],
+        "text": "."
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " React will check "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "element.$$typeof"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": ", and will refuse to process the element if it’s missing or invalid."
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "The nice thing about using "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "Symbol.for()"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " specifically is that "
+      },
+      {
+        "_type": "span",
+        "marks": ["strong"],
+        "text": "Symbols are global between environments like iframes and workers."
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text":
+          " So this fix doesn’t prevent passing trusted elements between different parts of the app even in more exotic conditions. Similarly, even if there are multiple copies of React on the page, they can still “agree” on the valid "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "$$typeof"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " value."
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [
+      {
+        "_key": "randomKey7",
+        "_type": "link",
+        "href":
+          "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol#Browser_compatibility"
+      }
+    ],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "What about the browsers that "
+      },
+      {
+        "_type": "span",
+        "marks": ["randomKey7"],
+        "text": "don’t support"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " Symbols?"
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [
+      {
+        "_key": "randomKey8",
+        "_type": "link",
+        "href":
+          "https://github.com/facebook/react/blob/8482cbe22d1a421b73db602e1f470c632b09f693/packages/shared/ReactSymbols.js#L14-L16"
+      }
+    ],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "Alas, they don’t get this extra protection. React still includes the "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "$$typeof"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " field on the element for consistency, but it’s "
+      },
+      {
+        "_type": "span",
+        "marks": ["randomKey8"],
+        "text": "set to a number"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " — "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "0xeac7"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "."
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "Why this number specifically? "
+      },
+      {
+        "_type": "span",
+        "marks": ["code"],
+        "text": "0xeac7"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " kinda looks like “React”."
+      }
+    ]
+  }
+]

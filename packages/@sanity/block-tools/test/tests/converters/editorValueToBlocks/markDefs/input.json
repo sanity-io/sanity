@@ -1,0 +1,48 @@
+{
+  "object": "value",
+  "document": {
+    "object": "document",
+    "data": {},
+    "nodes": [
+      {
+        "object": "block",
+        "isVoid": false,
+        "type": "contentBlock",
+        "data": {
+          "_type": "block",
+          "style": "normal"
+        },
+        "nodes": [
+          {
+            "object": "text",
+            "leaves": [{ "object": "leaf", "text": "", "marks": [] }]
+          },
+          {
+            "object": "inline",
+            "isVoid": false,
+            "type": "span",
+            "data": {
+              "annotations": {
+                "link": {
+                  "_key": "4713633924e9",
+                  "_type": "link",
+                  "href": "1234"
+                }
+              }
+            },
+            "nodes": [
+              {
+                "object": "text",
+                "leaves": [{ "object": "leaf", "text": "Link", "marks": [] }]
+              }
+            ]
+          },
+          {
+            "object": "text",
+            "leaves": [{ "object": "leaf", "text": "", "marks": [] }]
+          }
+        ]
+      }
+    ]
+  }
+}

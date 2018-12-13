@@ -7,18 +7,11 @@
     "clean": "rimraf lib",
     "compile": "babel src --copy-files --out-dir lib",
     "compile:watch": "npm run compile -- --watch",
-    "test": "#todo: NODE_ENV=test jest",
+    "test": "NODE_ENV=test jest",
     "coverage": "NODE_ENV=test jest --coverage"
   },
   "publishConfig": {
     "access": "public"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "setupTestFrameworkScriptFile": "./test/setup.js",
-    "collectCoverageFrom": [
-      "src/**.js"
-    ]
   },
   "keywords": [
     "sanity",
@@ -39,8 +32,8 @@
     "assert": "^1.4.1",
     "in-publish": "^2.0.0",
     "jest": "^23.6.0",
-    "jsdom": "^11.3.0",
-    "xpath": "^0.0.24"
+    "jsdom": "^12.0.0",
+    "xpath": "0.0.27"
   },
   "directories": {
     "test": "test"
