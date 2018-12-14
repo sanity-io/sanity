@@ -1,3 +1,4 @@
 {
-  presets: ['@babel/react', '@babel/flow']
+  "extends": "../../../.babelrc.js",
+  "presets": ["@babel/react", "@babel/flow"]
 }

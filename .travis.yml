@@ -1,12 +1,11 @@
 language: node_js
 node_js:
-  - '6'
   - '8'
   - '10'
 
 cache:
   directories:
-  - "$HOME/.npm"
+    - '$HOME/.npm'
 
 install:
   # todo: remove the `|| npm install` part below when we no run CI with node 6

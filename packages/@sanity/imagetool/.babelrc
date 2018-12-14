@@ -1,11 +1,14 @@
 {
-  presets: [
-    '@babel/preset-flow',
-    '@babel/preset-react',
-    ['@babel/preset-env', {
-        targets: {
-          ie: '9'
+  "presets": [
+    "@babel/preset-flow",
+    "@babel/preset-react",
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "ie": "9"
         }
-    }]
+      }
+    ]
   ]
 }
