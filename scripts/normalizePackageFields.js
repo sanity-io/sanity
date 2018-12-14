@@ -2,7 +2,7 @@ const uniq = require('lodash/uniq')
 const transformPkgs = require('./transformPkgs')
 
 const COMMON_KEYWORDS = ['sanity', 'cms', 'headless', 'realtime', 'content']
-const supportedNodeVersionRange = '>=6.0.0'
+const supportedNodeVersionRange = '>=8.0.0'
 
 transformPkgs(pkgManifest => {
   const name = pkgManifest.name.split('/').slice(-1)[0]

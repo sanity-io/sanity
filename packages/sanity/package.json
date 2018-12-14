@@ -18,7 +18,7 @@
     "content"
   ],
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=8.0.0"
   },
   "homepage": "https://www.sanity.io/",
   "license": "MIT",

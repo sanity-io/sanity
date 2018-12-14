@@ -6,7 +6,7 @@
   "types": "./lib/index.d.ts",
   "author": "Sanity.io <hello@sanity.io>",
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=8.0.0"
   },
   "license": "MIT",
   "scripts": {
@@ -39,7 +39,7 @@
     "rimraf": "^2.6.2",
     "rxjs": "^6.1.0",
     "ts-jest": "^22.4.3",
-    "typescript": "^2.9.2"
+    "typescript": "^3.2.2"
   },
   "repository": {
     "type": "git",
