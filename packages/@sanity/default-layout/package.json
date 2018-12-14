@@ -30,7 +30,7 @@
   "homepage": "https://www.sanity.io/",
   "dependencies": {
     "@sanity/generate-help-url": "0.138.0",
-    "is-hotkey": "^0.1.2",
+    "is-hotkey": "^0.1.4",
     "lodash": "^4.17.4",
     "react-click-outside": "^3.0.0",
     "react-ink": "^6.1.0",
