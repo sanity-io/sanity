@@ -48,5 +48,9 @@
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "homepage": "https://www.sanity.io/"
+  "homepage": "https://www.sanity.io/",
+  "jest": {
+    "verbose": true,
+    "testURL": "http://localhost/"
+  }
 }

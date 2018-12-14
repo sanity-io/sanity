@@ -39,6 +39,7 @@
   },
   "jest": {
     "verbose": true,
-    "collectCoverage": true
+    "collectCoverage": true,
+    "testURL": "http://localhost/"
   }
 }
