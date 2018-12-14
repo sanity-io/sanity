@@ -36,7 +36,8 @@
     "@sanity/storybook",
     "@sanity/google-maps-input",
     "@sanity/vision",
-    "@sanity/production-preview"
+    "@sanity/production-preview",
+    "@sanity/search-basic-score"
   ],
   "parts": [
     {

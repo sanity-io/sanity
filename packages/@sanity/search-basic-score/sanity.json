@@ -1,0 +1,17 @@
+{
+  "paths": {
+    "source": "./src",
+    "compiled": "./lib"
+  },
+
+  "parts": [
+    {
+      "implements": "part:@sanity/base/search",
+      "path": "search.js"
+    },
+    {
+      "implements": "part:@sanity/base/search/prepareSearchResults",
+      "path": "prepareSearchResults.js"
+    }
+  ]
+}

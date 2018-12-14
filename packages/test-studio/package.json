@@ -32,6 +32,7 @@
     "@sanity/image-url": "0.139.0",
     "@sanity/production-preview": "0.139.0",
     "@sanity/rich-date-input": "0.139.0",
+    "@sanity/search-basic-score": "0.139.0",
     "@sanity/storybook": "0.139.3",
     "@sanity/vision": "0.139.5",
     "@turf/helpers": "^6.0.1",
