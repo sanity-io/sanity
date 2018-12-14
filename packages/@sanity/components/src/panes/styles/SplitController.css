@@ -38,6 +38,7 @@
     to avoide a re-render of the dom and to fill the entire width
   */
   @nest & :global(.Pane1) {
+    max-width: 100% !important;
     flex: 1 !important;
   }
 
@@ -96,5 +97,4 @@
 
 .hideResize > .splitPane > .Resizer {
   display: none;
-  border: 10px solid red !important;
 }
