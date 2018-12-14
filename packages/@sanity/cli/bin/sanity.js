@@ -10,8 +10,8 @@
  */
 
 const nodeVersion = Number(process.version.replace(/^v/i, '').split('.', 2)[0])
-if (nodeVersion < 6) {
-  console.error('ERROR: Node.js version 6 or higher required. You are running ' + process.version)
+if (nodeVersion < 8) {
+  console.error('ERROR: Node.js version 8 or higher required. You are running ' + process.version)
   process.exit(1)
 }
 

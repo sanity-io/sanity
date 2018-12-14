@@ -1,5 +1,5 @@
 /* eslint-disable import/no-commonjs, import/no-unassigned-import */
-// Note: Node 6 compat, please!
+// Note: Node 8 compat, please!
 require('hard-rejection/register')
 
 const path = require('path')
@@ -11,7 +11,7 @@ const watch = require('gulp-watch')
 const gutil = require('gulp-util')
 const filter = require('gulp-filter')
 const plumber = require('gulp-plumber')
-const ts = require('@rexxars/gulp-typescript')
+const ts = require('gulp-typescript')
 const sourcemaps = require('gulp-sourcemaps')
 const through = require('through2')
 const chalk = require('chalk')
