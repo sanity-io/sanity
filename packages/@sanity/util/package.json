@@ -22,6 +22,10 @@
     "content",
     "util"
   ],
+  "jest": {
+    "verbose": true,
+    "testURL": "http://localhost/"
+  },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "bugs": {
