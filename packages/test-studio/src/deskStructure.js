@@ -50,7 +50,16 @@ export default () =>
                 .showAsAction(true)
             ])
         ),
-
+      S.listItem()
+        .title('Deep')
+        .child(
+          S.list()
+            .title('Deeper')
+            .items([
+              S.documentTypeListItem('book').title('Books'),
+              S.documentTypeListItem('author').title('Authors')
+            ])
+        ),
       S.listItem()
         .title('Deep panes')
         .child(
