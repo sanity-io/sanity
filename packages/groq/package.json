@@ -1,0 +1,38 @@
+{
+  "name": "groq",
+  "version": "0.137.0",
+  "description": "Tagged template literal for Sanity.io GROQ-queries",
+  "main": "lib/groq.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "engines": {
+    "node": ">=6"
+  },
+  "scripts": {
+    "test": "node test/groq.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
+  },
+  "keywords": [
+    "groq",
+    "tagged",
+    "template",
+    "literal",
+    "string",
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content"
+  ],
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/"
+}

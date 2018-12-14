@@ -4,6 +4,7 @@
   "ci": false,
   "packages": [
     "packages/@sanity/*",
+    "packages/groq",
     "packages/blog-studio",
     "packages/create-sanity",
     "packages/ecommerce-studio",
