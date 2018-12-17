@@ -39,6 +39,14 @@ export default {
       }
     },
     {
+      name: 'fixedTime',
+      type: 'datetime',
+      title: 'A datetime field with a fixed time',
+      options: {
+        fixedTime: '13:00'
+      }
+    },
+    {
       name: 'aReadOnlyDateTime',
       type: 'datetime',
       title: 'A read only datetime',

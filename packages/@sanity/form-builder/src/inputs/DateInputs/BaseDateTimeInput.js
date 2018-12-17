@@ -36,6 +36,14 @@ type State = {
   isDialogOpen: boolean
 }
 
+const setWithFixedTime = (target: Moment, time: string) => {
+  const [hour, minutes, seconds] = time.split(':')
+  return target
+    .set('hour', hour)
+    .set('minutes', minutes || 0)
+    .set('seconds', seconds || 0)
+}
+
 export default class BaseDateTimeInput extends React.Component<Props, State> {
   _datepicker: ?DatePicker
 
@@ -46,19 +54,23 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
 
   handleInputChange = (event: SyntheticEvent<HTMLInputElement>) => {
     const inputValue = event.currentTarget.value
-    const {onChange, dateFormat, timeFormat} = this.props
+    const {dateFormat, timeFormat} = this.props
     const parsed = moment(inputValue, getFormat(dateFormat, timeFormat), true)
     if (parsed.isValid()) {
       this.setState({inputValue: null})
-      onChange(parsed)
+      this.emitOnChange(parsed)
     } else {
       this.setState({inputValue: inputValue})
     }
   }
 
+  emitOnChange = (nextMoment: Moment) => {
+    const {onChange, fixedTime} = this.props
+    onChange(fixedTime ? setWithFixedTime(nextMoment, fixedTime) : nextMoment)
+  }
+
   handleDialogChange = (nextMoment?: Moment) => {
-    const {onChange} = this.props
-    onChange(nextMoment)
+    this.emitOnChange(nextMoment)
     this.setState({inputValue: null, isDialogOpen: false})
   }
 
@@ -133,7 +145,8 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
       todayLabel,
       readOnly,
       timeStep,
-      level
+      level,
+      fixedTime
     } = this.props
 
     const {inputValue, isDialogOpen} = this.state
@@ -175,7 +188,7 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
                 onChange={this.handleDialogChange}
                 onChangeRaw={this.handleInputChange}
                 value={inputValue ? inputValue : value && value.format(format)}
-                showTimeSelect={!dateOnly}
+                showTimeSelect={!dateOnly && !fixedTime}
                 dateFormat={dateFormat}
                 timeFormat={timeFormat}
                 timeIntervals={timeStep}

@@ -41,9 +41,11 @@ type Props = {
 }
 
 function parseOptions(options: SchemaOptions = {}): ParsedOptions {
+  const fixedTime = options.fixedTime
   return {
     dateFormat: options.dateFormat || DEFAULT_DATE_FORMAT,
-    timeFormat: options.timeFormat || DEFAULT_TIME_FORMAT,
+    timeFormat: options.timeFormat || (fixedTime ? '' : DEFAULT_TIME_FORMAT),
+    fixedTime: options.fixedTime,
     timeStep: ('timeStep' in options && Number(options.timeStep)) || 15,
     calendarTodayLabel: options.calendarTodayLabel || 'Now'
   }
@@ -87,6 +89,7 @@ export default class DateInput extends React.Component<Props> {
         dateFormat={options.dateFormat}
         timeFormat={options.timeFormat}
         timeStep={options.timeStep}
+        fixedTime={options.fixedTime}
         todayLabel={options.calendarTodayLabel}
         onChange={this.handleChange}
       />
