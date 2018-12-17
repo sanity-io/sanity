@@ -305,18 +305,21 @@ export default withRouterHOC(
     handleCreateCopy = () => {
       const {router, draft, published, paneIndex} = this.props
       const prevId = getPublishedId((draft || published)._id)
-      this.duplicate$ = documentStore
-        .create(newDraftFrom(copyDocument(draft || published)))
-        .subscribe(copied => {
-          const copyDocId = getPublishedId(copied._id)
-          const newPanes = router.state.panes.map(
-            (prev, i) => (i === paneIndex - 1 && prev === prevId ? copyDocId : prev)
-          )
-          router.navigate({
-            ...router.state,
-            panes: newPanes
-          })
+
+      const duplicatedDocument = this.isLiveEditEnabled()
+        ? copyDocument(published)
+        : newDraftFrom(copyDocument(draft || published))
+
+      this.duplicate$ = documentStore.create(duplicatedDocument).subscribe(copied => {
+        const copyDocId = getPublishedId(copied._id)
+        const newPanes = router.state.panes.map((prev, i) =>
+          i === paneIndex - 1 && prev === prevId ? copyDocId : prev
+        )
+        router.navigate({
+          ...router.state,
+          panes: newPanes
         })
+      })
     }
 
     handleEditAsActualType = () => {
