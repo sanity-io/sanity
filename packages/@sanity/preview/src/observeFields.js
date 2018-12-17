@@ -38,21 +38,24 @@ const getGlobalEvents = () => {
       )
     ).pipe(share())
 
+    // This is a stream of welcome events from the server, each telling us that we have established listener connection
+    // We map these to snapshot fetch/sync. It is good to wait for the first welcome event before fetching any snapshots as, we may miss
+    // events that happens in the time period after initial fetch and before the listener is established.
+    const welcome$ = allEvents$.pipe(
+      filter(event => event.type === 'welcome'),
+      publishReplay(1),
+      refCount()
+    )
+
     // This will keep the listener active forever and in turn reduce the number of initial fetches
     // as less 'welcome' events will be emitted.
     // @todo: see if we can delay unsubscribing or connect with some globally defined shared listener
-    allEvents$.subscribe()
+    welcome$.subscribe()
 
+    const mutations$ = allEvents$.pipe(filter(event => event.type === 'mutation'))
     _globalListener = {
-      // This is a stream of welcome events from the server, each telling us that we have established listener connection
-      // We map these to snapshot fetch/sync. It is good to wait for the first welcome event before fetching any snapshots as, we may miss
-      // events that happens in the time period after initial fetch and before the listener is established.
-      welcome$: allEvents$.pipe(
-        filter(event => event.type === 'welcome'),
-        publishReplay(1),
-        refCount()
-      ),
-      mutations$: allEvents$.pipe(filter(event => event.type === 'mutation'))
+      welcome$,
+      mutations$
     }
   }
   return _globalListener
