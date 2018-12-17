@@ -364,7 +364,8 @@ class Pane extends React.Component {
             </div>
           </div>
         </div>
-        <div className={styles.main}>
+        {!isCollapsed && (
+          <div className={styles.main}>
           {isScrollable ? (
             <ScrollContainer className={styles.scrollContainer} onScroll={this.handleContentScroll}>
               <div style={contentMaxWidth ? {maxWidth: `${contentMaxWidth}px`} : {}}>
@@ -376,6 +377,7 @@ class Pane extends React.Component {
           )}
           {staticContent}
         </div>
+        )}
       </div>
     )
   }
