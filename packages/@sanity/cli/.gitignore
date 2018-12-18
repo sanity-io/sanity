@@ -15,7 +15,7 @@ node_modules
 !/vendor/README.md
 
 # Packed version of Sanity binary
-/bin/sanity
+/bin/sanity-cli.js
 
 # Dependency of opn module
 /bin/xdg-open
