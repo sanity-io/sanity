@@ -169,34 +169,38 @@ export default class StatelessSearchableSelect extends React.PureComponent {
                 disabled={disabled}
                 ref={this.setInput}
                 spellCheck="false"
+                readOnly={readOnly}
               />
               <div className={styles.functions}>
                 {openItemElement &&
                   value && <span className={styles.openItem}>{openItemElement(value)}</span>}
-                {onClear &&
+                {!readOnly &&
+                  onClear &&
                   value && (
                     <button type="button" className={styles.clearButton} onClick={onClear}>
                       <CloseIcon color="inherit" />
                     </button>
                   )}
-                <div className={styles.arrowAndSpinnerContainer}>
-                  {!isLoading && (
-                    <div
-                      className={styles.arrow}
-                      onClick={disabled ? null : this.handleArrowClick}
-                      tabIndex={0}
-                      onKeyPress={disabled ? null : this.handleArrowKeyPress}
-                    >
-                      <FaAngleDown color="inherit" />
-                      <Ink duration={200} opacity={0.1} radius={200} />
-                    </div>
-                  )}
-                  {isLoading && (
-                    <div className={styles.spinner}>
-                      <Spinner />
-                    </div>
-                  )}
-                </div>
+                {!readOnly && (
+                  <div className={styles.arrowAndSpinnerContainer}>
+                    {!isLoading && (
+                      <div
+                        className={styles.arrow}
+                        onClick={disabled ? null : this.handleArrowClick}
+                        tabIndex={0}
+                        onKeyPress={disabled ? null : this.handleArrowKeyPress}
+                      >
+                        <FaAngleDown color="inherit" />
+                        <Ink duration={200} opacity={0.1} radius={200} />
+                      </div>
+                    )}
+                    {isLoading && (
+                      <div className={styles.spinner}>
+                        <Spinner />
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}
