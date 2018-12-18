@@ -4,16 +4,16 @@
   "ci": false,
   "packages": [
     "packages/@sanity/*",
-    "packages/groq",
     "packages/blog-studio",
     "packages/create-sanity",
     "packages/ecommerce-studio",
     "packages/eslint-config-sanity",
     "packages/example-studio",
+    "packages/groq",
     "packages/movies-studio",
     "packages/sanity",
     "packages/storybook",
     "packages/test-studio"
   ],
-  "version": "0.137.1"
+  "version": "0.138.0"
 }
