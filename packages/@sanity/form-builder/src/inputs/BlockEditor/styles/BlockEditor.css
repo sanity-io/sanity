@@ -23,6 +23,7 @@
   border: 1px solid var(--input-border-color);
   border-radius: var(--input-border-radius);
   box-sizing: border-box;
+  overflow-y: overlay;
 
   @nest &.hasBlockExtras::after {
     content: '';

@@ -11,7 +11,7 @@
 }
 
 .content {
-  margin-left: calc(100% - 1px - var(--block-extras-width) + var(--medium-padding));
+  margin-left: calc(100% - var(--block-extras-width));
   pointer-events: all;
   border-left: 2px solid transparent;
   padding-left: var(--small-padding);
