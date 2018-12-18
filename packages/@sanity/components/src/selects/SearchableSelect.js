@@ -19,7 +19,8 @@ export default class SearchableSelect extends React.PureComponent {
     isLoading: PropTypes.bool,
     renderItem: PropTypes.func.isRequired,
     items: PropTypes.array,
-    dropdownPosition: PropTypes.string
+    dropdownPosition: PropTypes.string,
+    readOnly: PropTypes.bool
   }
 
   static defaultProps = {
@@ -127,24 +128,33 @@ export default class SearchableSelect extends React.PureComponent {
 
   render() {
     const {isOpen, highlightIndex, isInputSelected, inputValue, hasFocus} = this.state
-    const {onSearch, className, ...rest} = this.props
+    const {onSearch, className, readOnly, placeholder, ...rest} = this.props
+
+    const changeHandlers = readOnly
+      ? {}
+      : {
+          onInputChange: this.handleInputChange,
+          onChange: this.handleChange
+        }
+
     return (
       <div ref={this.setRootElement} className={className}>
         <StatelessSearchableSelect
           {...rest}
+          {...changeHandlers}
+          placeholder={readOnly ? 'No value' : placeholder}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
           onHighlightIndexChange={this.handleHighlightIndexChange}
           onOpen={this.handleOpen}
           onClose={this.handleClose}
-          onChange={this.handleChange}
           isOpen={isOpen}
           highlightIndex={highlightIndex}
           isInputSelected={isInputSelected}
           inputValue={inputValue}
-          onInputChange={this.handleInputChange}
           isSelected={hasFocus}
           ref={this.setInput}
+          readOnly={readOnly}
         />
       </div>
     )

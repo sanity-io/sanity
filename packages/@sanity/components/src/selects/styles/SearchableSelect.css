@@ -102,6 +102,10 @@
   cursor: pointer;
   outline: none;
 
+  @nest &:last-child {
+    margin-right: var(--medium-padding);
+  }
+
   @nest & a, & button {
     outline: none;
   }
