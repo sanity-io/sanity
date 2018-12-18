@@ -2,8 +2,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import StatelessSearchableSelect from './StatelessSearchableSelect'
 
-const NOOP = () => {}
-
 export default class SearchableSelect extends React.PureComponent {
   static propTypes = {
     label: PropTypes.string,
@@ -131,22 +129,29 @@ export default class SearchableSelect extends React.PureComponent {
   render() {
     const {isOpen, highlightIndex, isInputSelected, inputValue, hasFocus} = this.state
     const {onSearch, className, readOnly, placeholder, ...rest} = this.props
+
+    const changeHandlers = readOnly
+      ? {}
+      : {
+          onInputChange: this.handleInputChange,
+          onChange: this.handleChange
+        }
+
     return (
       <div ref={this.setRootElement} className={className}>
         <StatelessSearchableSelect
           {...rest}
+          {...changeHandlers}
           placeholder={readOnly ? 'No value' : placeholder}
-          onFocus={readOnly ? NOOP : this.handleFocus}
+          onFocus={this.handleFocus}
           onBlur={this.handleBlur}
           onHighlightIndexChange={this.handleHighlightIndexChange}
           onOpen={this.handleOpen}
           onClose={this.handleClose}
-          onChange={readOnly ? NOOP : this.handleChange}
           isOpen={isOpen}
           highlightIndex={highlightIndex}
           isInputSelected={isInputSelected}
           inputValue={inputValue}
-          onInputChange={readOnly ? NOOP : this.handleInputChange}
           isSelected={hasFocus}
           ref={this.setInput}
           readOnly={readOnly}
