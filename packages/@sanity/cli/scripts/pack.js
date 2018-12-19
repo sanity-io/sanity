@@ -41,11 +41,11 @@ const nodeOptions = {
 const compiler = webpack({
   mode: 'production',
   entry: {
-    sanity: path.join(basedir, 'bin/sanity.js')
+    sanity: path.join(basedir, 'bin/entry.js')
   },
   output: {
     pathinfo: true,
-    filename: 'sanity',
+    filename: 'sanity-cli.js',
     path: path.join(basedir, 'bin'),
     libraryTarget: 'commonjs2'
   },
