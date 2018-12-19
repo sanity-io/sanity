@@ -200,7 +200,7 @@ export default withPatchSubscriber(
       }
     }
 
-    restoreLatestValue(lastKnownSelection: ?SlateSelection) {
+    restoreCurrentValue(lastKnownSelection: ?SlateSelection) {
       this._controller.setValue(deserialize(this.props.value, this.props.type))
       if (lastKnownSelection) {
         this._controller.select(lastKnownSelection)
@@ -240,15 +240,20 @@ export default withPatchSubscriber(
       // Run through and apply the incoming operations
       const localChangeGroups = []
       operations.forEach(op => {
-        // Create patches from local operations
-        if (isRemote) {
+        this._controller.flush() // Must flush here or we might end up trying to apply on something that isn't yet manifested
+        if (isRemote === 'remote') {
           this._controller.applyOperation(op)
-          this._controller.flush() // Must flush here or we might end up trying to patch something that isn't there anymore
+        } else if (isRemote === 'internal') {
+          // Rebase events that sets the whole document should not normalize or save state, or we may end up re-producing patches for it
+          this._controller.withoutSaving(() => {
+            this._controller.withoutNormalizing(() => {
+              this._controller.applyOperation(op)
+            })
+          })
         } else {
           const beforeValue = this._controller.value
           try {
             this._controller.applyOperation(op)
-            this._controller.flush() // Must flush here too!
             localChangeGroups.push({
               patches: this.operationToPatches(
                 op,
@@ -259,13 +264,15 @@ export default withPatchSubscriber(
               operation: op
             })
           } catch (err) {
+            // Let's keep this console.log for a while (2018-12-19), if we end up here, there is something fishy going on!
             // eslint-disable-next-line no-console
             console.log(
               `Got error trying to apply local operation. The error was '${
                 err.message
               }' The operation was ${JSON.stringify(op.toJSON())}`
             )
-            this.restoreLatestValue(beforeValue.selection)
+            // Restore to current formbuilder value (but try to apply the last known selection)
+            this.restoreCurrentValue(beforeValue.selection)
           }
         }
       })
