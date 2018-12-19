@@ -63,6 +63,22 @@ export default {
       ]
     },
     {
+      name: 'minimalBlock',
+      title: 'Reset all options',
+      type: 'array',
+      of: [
+        {
+          type: 'block',
+          styles: [],
+          lists: [],
+          marks: {
+            decorators: [],
+            annotations: []
+          }
+        }
+      ]
+    },
+    {
       name: 'specie',
       title: 'Specie',
       description: 'There are a lot of species. Use this to test reference search performence',
