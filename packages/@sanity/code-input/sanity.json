@@ -18,11 +18,11 @@
     },
     {
       "implements": "part:@sanity/base/schema-type",
-      "path": "deprecatedSchema.js"
+      "path": "schema.js"
     },
     {
       "implements": "part:@sanity/form-builder/input/code/schema",
-      "path": "schema.js"
+      "path": "deprecatedSchema.js"
     }
   ]
 }
