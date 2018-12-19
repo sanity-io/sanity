@@ -88,7 +88,7 @@ class SearchContainer extends React.PureComponent {
         }),
         debounceTime(100),
         switchMap(queryStr =>
-          search(queryStr, {limit: 100}).pipe(
+          search(queryStr).pipe(
             // we need this filtering because the search may return documents of types not in schema
             map(hits => hits.filter(hit => schema.has(hit._type))),
             map(removeDupes),
