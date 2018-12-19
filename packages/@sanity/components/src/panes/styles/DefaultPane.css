@@ -43,8 +43,17 @@
     padding: 0;
     flex-direction: row;
     transition: box-shadow 0.2s 0.2s linear;
-    box-shadow: -5px -10px 10px rgba(0, 0, 0, 0.1) inset;
-    height: 100vh; /* make the bottom shadow go out of bounderies */
+    background-image:
+      linear-gradient(
+        90deg,
+        transparent,
+        color(var(--text-color) a(10%))
+      );
+    background-size: 0.8rem 100%;
+    background-repeat: no-repeat;
+    background-position: right;
+    height: 100%;
+    overflow: hidden;
   }
 }
 
