@@ -1,7 +1,7 @@
 {
   "name": "ecommerce-studio",
   "private": true,
-  "version": "0.138.0",
+  "version": "0.139.0",
   "description": "",
   "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
@@ -19,14 +19,14 @@
     "ecommerce-studio"
   ],
   "dependencies": {
-    "@sanity/base": "0.138.0",
-    "@sanity/cli": "0.138.0",
-    "@sanity/components": "0.138.0",
-    "@sanity/core": "0.138.0",
-    "@sanity/default-layout": "0.138.0",
-    "@sanity/default-login": "0.138.0",
-    "@sanity/desk-tool": "0.138.0",
-    "@sanity/vision": "0.138.0",
+    "@sanity/base": "0.139.0",
+    "@sanity/cli": "0.139.0",
+    "@sanity/components": "0.139.0",
+    "@sanity/core": "0.139.0",
+    "@sanity/default-layout": "0.139.0",
+    "@sanity/default-login": "0.139.0",
+    "@sanity/desk-tool": "0.139.0",
+    "@sanity/vision": "0.139.0",
     "react": "^16.2.0",
     "react-barcode": "^1.3.2",
     "react-dom": "^16.2.0"
