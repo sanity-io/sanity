@@ -13,6 +13,7 @@ import client from 'part:@sanity/base/client'
 import withDocumentType from '../utils/withDocumentType'
 import styles from './styles/EditorWrapper.css'
 import Editor from './Editor'
+import UseState from '../utils/UseState'
 
 const INITIAL_DOCUMENT_STATE = {
   isLoading: true,
@@ -451,9 +452,26 @@ export default withDocumentType(
       return (
         <div className={styles.error}>
           <div className={styles.errorInner}>
-            <h3>{"We're"} sorry, but an error occurred</h3>
-            <div>{error.message}</div>
-            <Button onClick={() => this.setup(this.props.options.id)}>Reload</Button>
+            <h3>We’re sorry, but your changes could not be applied.</h3>
+            <UseState startWith={false}>
+              {([isExpanded, setExpanded]) => (
+                <>
+                  <Button onClick={() => this.setup(this.props.options.id)}>Reload</Button>
+                  <Button inverted onClick={() => setExpanded(!isExpanded)}>
+                    {isExpanded ? 'Hide' : 'Show'} details
+                  </Button>
+                  <div>
+                    {isExpanded && (
+                      <textarea
+                        className={styles.errorDetails}
+                        onFocus={e => e.currentTarget.select()}
+                        value={error.stack}
+                      />
+                    )}
+                  </div>
+                </>
+              )}
+            </UseState>
           </div>
         </div>
       )
