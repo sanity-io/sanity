@@ -284,7 +284,7 @@ export default withPatchSubscriber(
         () => {
           if (localChangeGroups.length) {
             this._pendingLocalChanges.push(flatten(localChangeGroups))
-            this.sendLocalPatchesDebounced()
+            this.sendLocalPatches()
           }
           if (callback) {
             return callback()
@@ -294,7 +294,7 @@ export default withPatchSubscriber(
       )
     }
 
-    sendLocalPatchesDebounced = debounce(() => {
+    sendLocalPatches = () => {
       const {onChange} = this.props
       const cutLength = this._pendingLocalChanges.length
       let finalPatches = flatten(
@@ -324,7 +324,7 @@ export default withPatchSubscriber(
         // Send the final patches
         onChange(PatchEvent.from(finalPatches))
       }
-    }, 200)
+    }
 
     unsetUserIsWritingTextDebounced = debounce(() => {
       this.setState({userIsWritingText: false})
