@@ -6,17 +6,20 @@ export default function ScrollAbsoluteTopBottomPlugin(scrollContainer: ElementRe
   return {
     // eslint-disable-next-line complexity
     onChange(editor: any, next: void => void) {
-      if (scrollContainer && scrollContainer.current && editor.value.focusBlock) {
-        const isFirstBlock =
-          editor.value.focusBlock.key === editor.value.document.nodes.first().key &&
-          editor.value.selection.focus.offset === 0
-        const isLastBlock =
-          editor.value.focusBlock.key === editor.value.document.nodes.last().key &&
-          editor.value.selection.focus.offset === editor.value.focusBlock.text.length
-        if (isFirstBlock || isLastBlock) {
+      const {focusBlock, anchorBlock, document, selection} = editor.value
+      if (!(scrollContainer && scrollContainer.current)) {
+        return next()
+      }
+      if (!focusBlock) {
+        return next()
+      }
+      if (focusBlock.key === anchorBlock.key) {
+        const isFirstBlock = focusBlock.key === document.nodes.first().key
+        const isStartOffset = selection.focus.offset === 0
+        if (isFirstBlock && isStartOffset) {
           scrollContainer.current.scrollTo({
             left: 0,
-            top: isFirstBlock ? 0 : scrollContainer.current.scrollHeight,
+            top: 0,
             behavior: 'smooth'
           })
         }
