@@ -35,7 +35,7 @@ type State = {
   visible: boolean
 }
 
-export default class BlockExtrasFragment extends React.Component<Props, State> {
+export default class BlockExtrasOverlay extends React.Component<Props, State> {
   state = {
     windowWidth: undefined, // eslint-disable-line react/no-unused-state
     visible: false
@@ -44,21 +44,21 @@ export default class BlockExtrasFragment extends React.Component<Props, State> {
   componentDidMount() {
     window.addEventListener('resize', this.handleResize)
     // Wait for things to get finshed rendered before rendering the aboslute positions
-    setTimeout(
+    this._setVisibleTimer = setTimeout(
       () =>
         window.requestAnimationFrame(() => {
           this.setState({visible: true})
+          this._setVisibleTimer = setTimeout(() => {
+            this.setState({visible: true})
+          }, 200)
         }),
       0
     )
-
-    setTimeout(() => {
-      this.setState({visible: true})
-    }, 200)
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize)
+    clearTimeout(this._setVisibleTimer)
   }
 
   // Don't update this while user is writing
