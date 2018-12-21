@@ -123,9 +123,10 @@ export default class Document {
 
   // Attempts to apply any resolvable incoming patches to HEAD. Will keep patching as long as there are
   // applicable patches to be applied
+  // eslint-disable-next-line complexity
   considerIncoming() {
     let mustRebase = false
-    let nextMut: Mutation
+    let nextMut: ?Mutation
     // Filter mutations that are older than the document
     if (this.HEAD) {
       const updatedAt = new Date(this.HEAD._updatedAt)
@@ -145,13 +146,17 @@ export default class Document {
         // operation will be considered.
         nextMut = this.incoming.find(mut => mut.appliesToMissingDocument())
       }
-      mustRebase = mustRebase || this.applyIncoming(nextMut)
-      if (protect++ > 10000) {
-        throw new Error(
-          `Mutator stuck flushing incoming mutations. Probably stuck here: ${JSON.stringify(
-            nextMut
-          )}`
-        )
+      if (nextMut) {
+        const applied = this.applyIncoming(nextMut)
+        mustRebase = mustRebase || applied
+        // eslint-disable-next-line max-depth
+        if (protect++ > 10) {
+          throw new Error(
+            `Mutator stuck flushing incoming mutations. Probably stuck here: ${JSON.stringify(
+              nextMut
+            )}`
+          )
+        }
       }
     } while (nextMut)
 
