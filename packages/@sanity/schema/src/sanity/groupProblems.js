@@ -1,8 +1,8 @@
-import {flatten} from 'lodash'
+import {get, flatten} from 'lodash'
 
 function createTypeWithMembersProblemsAccessor(
   memberPropertyName,
-  getMembers = type => type[memberPropertyName]
+  getMembers = type => get(type, memberPropertyName)
 ) {
   return function getProblems(type, parentPath) {
     const currentPath = [...parentPath, {kind: 'type', type: type.type, name: type.name}]
@@ -28,6 +28,12 @@ const arrify = val => (Array.isArray(val) ? val : (typeof val === 'undefined' &&
 const getObjectProblems = createTypeWithMembersProblemsAccessor('fields')
 const getArrayProblems = createTypeWithMembersProblemsAccessor('of')
 const getReferenceProblems = createTypeWithMembersProblemsAccessor('to', type => arrify(type.to))
+const getBlockAnnotationProblems = createTypeWithMembersProblemsAccessor('marks.annotations')
+const getBlockMemberProblems = createTypeWithMembersProblemsAccessor('of')
+const getBlockProblems = (...args) => [
+  ...getBlockAnnotationProblems(...args),
+  ...getBlockMemberProblems(...args)
+]
 
 function getDefaultProblems(type, path = []) {
   return [
@@ -51,6 +57,9 @@ export function getTypeProblems(type, path = []) {
     }
     case 'reference': {
       return getReferenceProblems(type, path)
+    }
+    case 'block': {
+      return getBlockProblems(type, path)
     }
     default: {
       return getDefaultProblems(type, path)

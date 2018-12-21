@@ -5,6 +5,7 @@ import array from './validation/types/array'
 import slug from './validation/types/slug'
 import file from './validation/types/file'
 import image from './validation/types/image'
+import block from './validation/types/block'
 import common from './validation/types/common'
 import rootType from './validation/types/rootType'
 
@@ -14,6 +15,7 @@ const typeVisitors = {
   slug,
   file,
   image,
+  block,
   document: object,
   reference: reference
 }
