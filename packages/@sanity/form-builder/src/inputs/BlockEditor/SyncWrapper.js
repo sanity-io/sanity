@@ -200,7 +200,7 @@ export default withPatchSubscriber(
       }
     }
 
-    restoreLatestValue(lastKnownSelection: ?SlateSelection) {
+    restoreCurrentValue(lastKnownSelection: ?SlateSelection) {
       this._controller.setValue(deserialize(this.props.value, this.props.type))
       if (lastKnownSelection) {
         this._controller.select(lastKnownSelection)
@@ -239,36 +239,50 @@ export default withPatchSubscriber(
 
       // Run through and apply the incoming operations
       const localChangeGroups = []
-      operations.forEach(op => {
-        // Create patches from local operations
-        if (isRemote) {
-          this._controller.applyOperation(op)
-          this._controller.flush() // Must flush here or we might end up trying to patch something that isn't there anymore
-        } else {
-          const beforeValue = this._controller.value
-          try {
+      if (isRemote === 'internal') {
+        const rebaseOperations = operations.filter(op => op.type !== 'set_selection')
+        const selectOperations = operations.filter(op => op.type === 'set_selection')
+        // Rebase events (replace the nodes) must not be done with normalization!
+        this._controller.withoutNormalizing(() => {
+          rebaseOperations.forEach(op => {
             this._controller.applyOperation(op)
-            this._controller.flush() // Must flush here too!
-            localChangeGroups.push({
-              patches: this.operationToPatches(
-                op,
-                beforeValue,
-                this._controller.value,
-                this.props.value
-              ),
-              operation: op
-            })
-          } catch (err) {
-            // eslint-disable-next-line no-console
-            console.log(
-              `Got error trying to apply local operation. The error was '${
-                err.message
-              }' The operation was ${JSON.stringify(op.toJSON())}`
-            )
-            this.restoreLatestValue(beforeValue.selection)
+          })
+        })
+        // Restoring of selection should be done with normalization
+        selectOperations.forEach(op => {
+          this._controller.applyOperation(op)
+        })
+      } else {
+        operations.forEach(op => {
+          if (isRemote) {
+            this._controller.applyOperation(op)
+          } else {
+            const beforeValue = this._controller.value
+            try {
+              this._controller.applyOperation(op)
+              localChangeGroups.push({
+                patches: this.operationToPatches(
+                  op,
+                  beforeValue,
+                  this._controller.value,
+                  this.props.value
+                ),
+                operation: op
+              })
+            } catch (err) {
+              // Let's keep this console.log for a while (2018-12-19), if we end up here, there is something fishy going on!
+              // eslint-disable-next-line no-console
+              console.log(
+                `Got error trying to apply local operation. The error was '${
+                  err.message
+                }' The operation was ${JSON.stringify(op.toJSON())}`
+              )
+              // Restore to current formbuilder value (but try to apply the last known selection)
+              this.restoreCurrentValue(beforeValue.selection)
+            }
           }
-        }
-      })
+        })
+      }
       // Set the new state
       this.setState(
         {
@@ -277,7 +291,7 @@ export default withPatchSubscriber(
         () => {
           if (localChangeGroups.length) {
             this._pendingLocalChanges.push(flatten(localChangeGroups))
-            this.sendLocalPatchesDebounced()
+            this.sendLocalPatches()
           }
           if (callback) {
             return callback()
@@ -287,7 +301,7 @@ export default withPatchSubscriber(
       )
     }
 
-    sendLocalPatchesDebounced = debounce(() => {
+    sendLocalPatches = () => {
       const {onChange} = this.props
       const cutLength = this._pendingLocalChanges.length
       let finalPatches = flatten(
@@ -317,7 +331,7 @@ export default withPatchSubscriber(
         // Send the final patches
         onChange(PatchEvent.from(finalPatches))
       }
-    }, 200)
+    }
 
     unsetUserIsWritingTextDebounced = debounce(() => {
       this.setState({userIsWritingText: false})
@@ -360,27 +374,6 @@ export default withPatchSubscriber(
             patches: remoteAndInternalPatches
           })
         })
-
-        // If we had a rebase, but still have pending local changes, re-apply those
-        if (
-          remoteAndInternalPatches.some(patch => patch.origin === 'internal') &&
-          this._pendingLocalChanges.length > 0
-        ) {
-          // console.log(`Pending local changes after rebase: ${this._pendingLocalChanges.length}`)
-          const operations = List(
-            flatten(
-              this._pendingLocalChanges.map(changeGroup =>
-                flatten(changeGroup.map(changes => changes.operation))
-              )
-            )
-          )
-          const {selection} = this._controller.value
-          this.localChanges$.next({
-            operations,
-            isRemote: false,
-            selection
-          })
-        }
       }
     }
 
