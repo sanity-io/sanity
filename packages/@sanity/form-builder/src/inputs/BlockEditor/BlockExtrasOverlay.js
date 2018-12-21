@@ -77,7 +77,14 @@ export default class BlockExtrasOverlay extends React.Component<Props, State> {
 
   // eslint-disable-next-line complexity
   renderBlockExtras = (node: SlateNode) => {
-    const {onFocus, renderCustomMarkers, renderBlockActions, onPatch, fullscreen, editor} = this.props
+    const {
+      onFocus,
+      renderCustomMarkers,
+      renderBlockActions,
+      onPatch,
+      fullscreen,
+      editor
+    } = this.props
     const markers = this.props.markers.filter(
       marker => marker.path[0] && marker.path[0]._key && marker.path[0]._key === node.key
     )
@@ -99,8 +106,9 @@ export default class BlockExtrasOverlay extends React.Component<Props, State> {
       if (block) {
         actions = (
           <RenderComponent
-            block={node}
-            value={block}
+            element={element}
+            block={block}
+            value={value}
             set={createBlockActionPatchFn('set', block, onPatch)}
             unset={createBlockActionPatchFn('unset', block, onPatch)}
             insert={createBlockActionPatchFn('insert', block, onPatch)}
