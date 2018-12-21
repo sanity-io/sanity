@@ -353,7 +353,11 @@ function extractFromSanitySchema(sanitySchema) {
   }
 
   function arrayify(thing) {
-    return Array.isArray(thing) ? thing : [thing]
+    if (Array.isArray(thing)) {
+      return thing
+    }
+
+    return thing === null || typeof thing === 'undefined' ? [] : [thing]
   }
 
   function hasValidationFlag(field, flag) {
