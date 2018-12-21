@@ -9,7 +9,6 @@ import StyleSelect from 'part:@sanity/components/selects/style'
 import RadioSelect from 'part:@sanity/components/selects/radio'
 import {withKnobs, boolean, text, number, select, color} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
-import Fuse from 'fuse.js'
 
 import Chance from 'chance'
 
@@ -79,86 +78,6 @@ const renderStyleItem = function(item) {
       return <div style={{fontSize: '1.2em', fontWeight: 'bold'}}>{item.title}</div>
     default:
       return <div>Style: {item.title}</div>
-  }
-}
-
-class SearchableTest extends React.Component {
-  constructor(...args) {
-    super(...args)
-
-    const fuseOptions = {
-      keys: ['title']
-    }
-
-    this.searchAbleItems = range(100).map((item, i) => {
-      return {
-        title: chance.name(),
-        key: `${i}`
-      }
-    })
-
-    this.fuse = new Fuse(this.searchAbleItems, fuseOptions)
-
-    this.state = {
-      searchResult: [],
-      value: null
-    }
-  }
-
-  handleFocus() {
-    console.log('handleFocus') // eslint-disable-line
-  }
-
-  handleChange = value => {
-    this.setState({
-      value: value
-    })
-  }
-
-  renderItem(item) {
-    return <div>{item.title}</div>
-  }
-
-  renderValue(item) {
-    console.log('Value to string:', item, item.title) // eslint-disable-line
-    if (item) {
-      return item.title
-    }
-
-    return ''
-  }
-
-  handleSearch = query => {
-    console.log('query2', query) // eslint-disable-line
-    const result = this.fuse.search(query)
-    this.setState({
-      loading: true
-    })
-
-    setTimeout(() => {
-      this.setState({
-        searchResult: result,
-        loading: false
-      })
-    }, 500)
-  }
-
-  render() {
-    return (
-      <SearchableSelect
-        label="This is the label"
-        placeholder="This is the placeholder"
-        onSearch={this.handleSearch}
-        onChange={this.handleChange}
-        onFocus={this.handleFocus}
-        onOpen={action('onOpen')}
-        isLoading={this.state.loading}
-        items={this.state.searchResult}
-        value={this.state.value}
-        renderItem={this.renderItem}
-        valueToString={this.renderValue}
-      />
-    )
   }
 }
 
@@ -267,28 +186,9 @@ storiesOf('Selects')
             onOpen={action('onOpen')}
             renderItem={renderStyleItem}
             items={styleItems}
-            // value={select(
-            //   'value',
-            //   {
-            //     'No value': undefined,
-            //     'One value': [styleItems[0]],
-            //     'Multiple values': [styleItems[0], styleItems[2]]
-            //   },
-            //   undefined,
-            //   'props'
-            // )}
           />
         </div>
       </Sanity>
-    )
-  })
-
-  .add('Searchable example', () => {
-    return (
-      <div style={centerStyle}>
-        <SearchableTest />
-        This text should be behind the dropdown
-      </div>
     )
   })
 
