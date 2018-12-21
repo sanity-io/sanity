@@ -109,6 +109,7 @@ export default class BlockExtrasOverlay extends React.Component<Props, State> {
             element={element}
             block={block}
             value={value}
+            path={[{_key: block._key}]}
             set={createBlockActionPatchFn('set', block, onPatch)}
             unset={createBlockActionPatchFn('unset', block, onPatch)}
             insert={createBlockActionPatchFn('insert', block, onPatch)}
