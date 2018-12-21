@@ -5,10 +5,10 @@ import {error, warning} from '../createValidationResult'
 
 const getTypeOf = thing => (Array.isArray(thing) ? 'array' : typeof thing)
 const quote = str => `"${str}"`
-const allowedKeys = ['type', 'styles', 'marks', 'lists', 'of']
+const allowedKeys = ['type', 'styles', 'marks', 'lists', 'of', 'title']
 const allowedMarkKeys = ['decorators', 'annotations']
-const allowedStyleKeys = ['title', 'value']
-const allowedDecoratorKeys = ['title', 'value']
+const allowedStyleKeys = ['title', 'value', 'blockEditor']
+const allowedDecoratorKeys = ['title', 'value', 'blockEditor']
 
 export default function validateBlockType(typeDef, visitorContext) {
   const problems = []
