@@ -1,4 +1,4 @@
-module.exports = async function deployApiActions(args, context) {
+module.exports = async function deleteApiAction(args, context) {
   const {apiClient, output, prompt} = context
 
   const client = apiClient({
