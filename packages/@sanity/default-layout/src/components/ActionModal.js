@@ -9,29 +9,31 @@ import Ink from 'react-ink'
 
 function ActionModal(props) {
   return (
-    <Dialog className={styles.modal} onClose={props.onClose} isOpen>
-      <DialogContent size="large" padding="medium">
-        <h1 className={styles.title}>Create new</h1>
-        <ul className={styles.list}>
-          {props.actions.map(action => {
-            const Icon = action.icon
-            return (
-              <li className={styles.listItem} key={action.title}>
-                <IntentLink
-                  onClick={props.onClose}
-                  className={styles.actionLink}
-                  intent="create"
-                  params={action.params}
-                >
-                  <span className={styles.icon}>{Icon ? <Icon /> : <FileIcon />}</span>
-                  <span>{action.title}</span>
-                  <Ink duration={1000} opacity={0.1} radius={200} />
-                </IntentLink>
-              </li>
-            )
-          })}
-        </ul>
-      </DialogContent>
+    <Dialog className={styles.modal} onClose={props.onClose} isOpen padding="none">
+      <div className={styles.contentWrapper}>
+        <DialogContent size="large" padding="medium">
+          <h1 className={styles.title}>Create new</h1>
+          <ul className={styles.list}>
+            {props.actions.map(action => {
+              const Icon = action.icon
+              return (
+                <li className={styles.listItem} key={action.title}>
+                  <IntentLink
+                    onClick={props.onClose}
+                    className={styles.actionLink}
+                    intent="create"
+                    params={action.params}
+                  >
+                    <span className={styles.icon}>{Icon ? <Icon /> : <FileIcon />}</span>
+                    <span>{action.title}</span>
+                    <Ink duration={1000} opacity={0.1} radius={200} />
+                  </IntentLink>
+                </li>
+              )
+            })}
+          </ul>
+        </DialogContent>
+      </div>
     </Dialog>
   )
 }
