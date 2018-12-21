@@ -12,6 +12,8 @@ import Escapable from '../utilities/Escapable'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Stacked from '../utilities/Stacked'
 
+const noop = () => {}
+
 export default class DefaultDialog extends React.PureComponent {
   static propTypes = {
     color: PropTypes.oneOf(['default', 'warning', 'success', 'danger', 'info']),
@@ -19,7 +21,8 @@ export default class DefaultDialog extends React.PureComponent {
     title: PropTypes.string,
     children: PropTypes.node,
     onOpen: PropTypes.func,
-    onClose: PropTypes.func.isRequired,
+    onClose: PropTypes.func,
+    onEscape: PropTypes.func,
     onAction: PropTypes.func,
     showCloseButton: PropTypes.bool,
     actionsAlign: PropTypes.oneOf(['start', 'end']),
@@ -38,6 +41,7 @@ export default class DefaultDialog extends React.PureComponent {
     actionsAlign: 'end',
     onAction() {},
     onOpen() {},
+    onClose() {},
     actions: [],
     color: 'default'
   }
@@ -134,7 +138,7 @@ export default class DefaultDialog extends React.PureComponent {
   }
 
   render() {
-    const {title, actions, color, onClose, className, showCloseButton} = this.props
+    const {title, actions, color, onClose, onEscape, className, showCloseButton} = this.props
     const {contentHasOverflow} = this.state
     const classNames = `
       ${styles.root}
@@ -142,6 +146,7 @@ export default class DefaultDialog extends React.PureComponent {
       ${actions && actions.length > 0 ? styles.hasFunctions : ''}
       ${className}
     `
+    const handleEscape = onEscape || onClose || noop
 
     return (
       <Portal>
@@ -150,7 +155,7 @@ export default class DefaultDialog extends React.PureComponent {
             <div className={classNames}>
               <div className={styles.overlay} />
               <div className={styles.dialog}>
-                <Escapable onEscape={event => (isActive || event.shiftKey) && onClose()} />
+                <Escapable onEscape={event => (isActive || event.shiftKey) && handleEscape()} />
                 <CaptureOutsideClicks
                   onClickOutside={isActive ? onClose : undefined}
                   className={styles.inner}

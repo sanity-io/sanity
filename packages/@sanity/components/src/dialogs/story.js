@@ -96,6 +96,8 @@ storiesOf('Dialogs')
             undefined,
             'props'
           )}
+          showCloseButton={boolean('showCloseButton', false, 'props')}
+          onEscape={action('onEscape')}
           onClose={action('onClose')}
           onAction={action('onAction')}
           actions={dialogActions}
@@ -137,7 +139,6 @@ storiesOf('Dialogs')
             undefined,
             'dialog props'
           )}
-          onClose={action('onClose')}
           onAction={action('onAction')}
           actions={dialogActions}
         >
@@ -297,7 +298,7 @@ storiesOf('Dialogs')
         <ConfirmDialog
           color={select(
             'color',
-            [undefined, 'danger', 'success', 'info', 'warning'],
+            ['default', 'danger', 'success', 'info', 'warning'],
             undefined,
             'props'
           )}
@@ -312,7 +313,7 @@ storiesOf('Dialogs')
           onCancel={action('onCancel')}
           confirmButtonText={text('confirmButtonText', 'Yes, delete', 'props')}
           cancelButtonText={text('cancelButtonText', undefined, 'props')}
-          title={text('title', undefined, 'props')}
+          title={text('title', 'Confirm', 'props')}
         >
           {contentTest && renderContent(contentTest)}
         </ConfirmDialog>

@@ -7,7 +7,7 @@ import Button from 'part:@sanity/components/buttons/default'
 export default class ConfirmDialog extends React.PureComponent {
   static propTypes = {
     title: PropTypes.string,
-    color: PropTypes.oneOf(['warning', 'success', 'danger', 'info']),
+    color: PropTypes.oneOf(['default', 'warning', 'success', 'danger', 'info']),
     cancelColor: PropTypes.oneOf(['primary', 'success', 'danger', 'white']),
     confirmColor: PropTypes.oneOf(['primary', 'success', 'danger', 'white']),
     children: PropTypes.node,
@@ -19,7 +19,7 @@ export default class ConfirmDialog extends React.PureComponent {
 
   static defaultProps = {
     confirmColor: 'danger',
-    cancelColor: 'default',
+    cancelColor: undefined,
     confirmButtonText: 'OK',
     cancelButtonText: 'Cancel'
   }
@@ -31,6 +31,15 @@ export default class ConfirmDialog extends React.PureComponent {
   setDialogElement = element => {
     this.dialog = element
   }
+
+  handleAction = (action, event) => {
+    if (action.key === 'confirm') {
+      this.props.onConfirm(event)
+    } else {
+      this.props.onCancel(event)
+    }
+  }
+
   render() {
     const {
       color,
@@ -45,12 +54,14 @@ export default class ConfirmDialog extends React.PureComponent {
 
     const actions = [
       {
+        key: 'confirm',
         index: 1,
         title: confirmButtonText,
         color: confirmColor,
         action: onConfirm
       },
       {
+        key: 'cancel',
         index: 2,
         title: cancelButtonText,
         color: cancelColor,
@@ -61,7 +72,14 @@ export default class ConfirmDialog extends React.PureComponent {
     ]
 
     return (
-      <DefaultDialog color={color} actions={actions} title={title}>
+      <DefaultDialog
+        color={color}
+        actions={actions}
+        title={title}
+        showCloseButton={false}
+        onEscape={this.props.onCancel}
+        onAction={this.handleAction}
+      >
         <div className={styles.content}>{this.props.children}</div>
       </DefaultDialog>
     )
