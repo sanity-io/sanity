@@ -7,6 +7,7 @@ const coreCommands = [
   'build',
   'check',
   'configcheck',
+  'cors',
   'dataset',
   'deploy',
   'documents',
@@ -25,22 +26,22 @@ export default (cmdName, parentGroupName, groups) => {
     return suggestCommand(cmdName, groups[parentGroupName], parentGroupName)
   }
 
-  const isCoreCommand = coreCommands.indexOf(cmdName) >= 0
+  const isCoreCommand = coreCommands.includes(cmdName)
   if (isCoreCommand) {
     return `"${cmdName}" is not available outside of a Sanity project context.${helpText}`
   }
 
-  return suggestCommand(cmdName, groups.default)
+  return suggestCommand(cmdName, groups ? groups.default : [])
 }
 
 function suggestCommand(cmdName, group, parentGroupName = null) {
   // Try to find something similar
-  const closest = group.map(command => leven(command.name, cmdName)).reduce(
-    (current, distance, index) => {
-      return distance < current.distance ? {index, distance} : current
-    },
-    {index: null, distance: +Infinity}
-  )
+  const closest = group
+    .map(command => leven(command.name, cmdName))
+    .reduce(
+      (current, distance, index) => (distance < current.distance ? {index, distance} : current),
+      {index: null, distance: +Infinity}
+    )
 
   // Given we are within our target threshold, suggest the command
   let suggestCmd = ''
