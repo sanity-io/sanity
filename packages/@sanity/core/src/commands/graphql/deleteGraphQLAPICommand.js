@@ -1,9 +1,9 @@
 const lazyRequire = require('@sanity/util/lib/lazyRequire')
 
 export default {
-  name: 'delete',
+  name: 'undeploy',
   group: 'graphql',
-  description: 'Delete a deployed GraphQL API',
+  description: 'Remove a deployed GraphQL API',
   action: lazyRequire(require.resolve('../../actions/graphql/deleteApiAction')),
   hideFromHelp: true
 }
