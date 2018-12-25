@@ -1,12 +1,33 @@
-const Table = require('tty-table')
+const {size, sortBy} = require('lodash')
+
+const headings = ['id', 'members', 'name', 'url', 'created']
+const helpText = `
+Options
+  --sort <field> Sort output by specified column
+  --order <asc/desc> Sort output ascending/descending
+
+Examples
+  # List projects
+  sanity projects list
+
+  # List projects sorted by member count, ascending
+  sanity projects list --sort=members --order=asc
+`
+
+const defaultFlags = {
+  sort: 'created',
+  order: 'desc'
+}
 
 export default {
   name: 'list',
   group: 'projects',
   signature: '',
+  helpText,
   description: 'Lists projects connected to your user',
   action: async (args, context) => {
-    const {apiClient, output} = context
+    const {apiClient, output, chalk} = context
+    const flags = {...defaultFlags, ...args.extOptions}
     const client = apiClient({
       requireUser: true,
       requireProject: false
@@ -15,21 +36,25 @@ export default {
       method: 'GET',
       uri: '/projects'
     })
-    const maxWidth = col => projects.reduce((max, current) => Math.max(current[col].length, max), 0)
-    const rows = projects.map(({displayName, id, members = [], studioHost = ''}) => {
-      const studio = studioHost ? `https://${studioHost}.sanity.studio` : 'Not deployed'
-      const row = [id, members.length, displayName, studio]
-      return row
-    })
-    const table = new Table(
-      ['id', 'members #', 'name', 'url'].map(value => ({
-        value,
-        align: 'left',
-        headerColor: 'green'
-      })),
-      rows
+
+    const ordered = sortBy(
+      projects.map(({displayName, id, members = [], studioHost = '', createdAt}) => {
+        const studio = studioHost ? `https://${studioHost}.sanity.studio` : 'Not deployed'
+        return [id, members.length, displayName, studio, createdAt]
+      }),
+      [headings.indexOf(flags.sort)]
     )
 
-    output.print(table.render())
+    const rows = flags.order === 'asc' ? ordered : ordered.reverse()
+
+    const maxWidths = rows.reduce(
+      (max, row) => row.map((current, index) => Math.max(size(current), max[index])),
+      headings.map(str => size(str))
+    )
+
+    const printRow = row => row.map((col, i) => `${col}`.padEnd(maxWidths[i])).join('   ')
+
+    output.print(chalk.cyan(printRow(headings)))
+    rows.forEach(row => output.print(printRow(row)))
   }
 }
