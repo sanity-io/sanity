@@ -48,7 +48,7 @@ export default (config = {}) => {
     }
   }
 
-  const cssLoaderLocation = resolve('css-loader')
+  const cssLoaderLocation = resolve('@sanity/css-loader')
   const baseCssLoader = `${cssLoaderLocation}?modules&localIdentName=[name]_[local]_[hash:base64:5]&importLoaders=1`
   const cssLoader =
     isProd && !skipMinify ? `${baseCssLoader}&minimize` : `${baseCssLoader}&sourceMap`
@@ -114,7 +114,7 @@ export default (config = {}) => {
                     },
                     use: [
                       {
-                        loader: resolve('css-loader'),
+                        loader: resolve('@sanity/css-loader'),
                         options: {
                           importLoaders: 1,
                           minimize: true,
@@ -126,7 +126,7 @@ export default (config = {}) => {
                 : [
                     resolve('style-loader'),
                     {
-                      loader: resolve('css-loader'),
+                      loader: resolve('@sanity/css-loader'),
                       options: {
                         importLoaders: 1
                       }
