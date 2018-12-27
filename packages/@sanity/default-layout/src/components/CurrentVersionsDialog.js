@@ -8,7 +8,7 @@ function CurrentVersionsDialog(props) {
   const {onClose, versions} = props
 
   return (
-    <Dialog isOpen onClose={onClose}>
+    <Dialog isOpen onClose={onClose} onClickOutside={onClose}>
       <div className={styles.content}>
         <div>
           <h2>Studio is up to date</h2>
