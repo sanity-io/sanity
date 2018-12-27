@@ -23,6 +23,7 @@ export default class DefaultDialog extends React.PureComponent {
     onOpen: PropTypes.func,
     onClose: PropTypes.func,
     onEscape: PropTypes.func,
+    onClickOutside: PropTypes.func,
     onAction: PropTypes.func,
     showCloseButton: PropTypes.bool,
     actionsAlign: PropTypes.oneOf(['start', 'end']),
@@ -138,7 +139,16 @@ export default class DefaultDialog extends React.PureComponent {
   }
 
   render() {
-    const {title, actions, color, onClose, onEscape, className, showCloseButton} = this.props
+    const {
+      title,
+      actions,
+      color,
+      onClose,
+      onClickOutside,
+      onEscape,
+      className,
+      showCloseButton
+    } = this.props
     const {contentHasOverflow} = this.state
     const classNames = `
       ${styles.root}
@@ -157,7 +167,7 @@ export default class DefaultDialog extends React.PureComponent {
               <div className={styles.dialog}>
                 <Escapable onEscape={event => (isActive || event.shiftKey) && handleEscape()} />
                 <CaptureOutsideClicks
-                  onClickOutside={isActive ? onClose : undefined}
+                  onClickOutside={isActive ? onClickOutside : undefined}
                   className={styles.inner}
                 >
                   {!title &&
