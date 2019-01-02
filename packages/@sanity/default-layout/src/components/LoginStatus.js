@@ -29,7 +29,9 @@ class LoginStatus extends React.PureComponent {
   }
 
   handleUserMenuToggle = () => {
-    this.setState({userMenuOpened: !this.state.userMenuOpened})
+    this.setState(state => {
+      return {userMenuOpened: !state.userMenuOpened}
+    })
   }
 
   handleUserMenuItemClick = item => {

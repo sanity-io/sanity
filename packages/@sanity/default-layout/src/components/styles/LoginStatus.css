@@ -57,7 +57,7 @@
 
 .userMenu {
   position: absolute;
-  top: 100%;
-  right: 0;
-  z-index: 10;
+  top: 2rem;
+  right: 1rem;
+  z-index: var(--zindex-portal);
 }

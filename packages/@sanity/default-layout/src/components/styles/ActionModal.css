@@ -4,6 +4,12 @@
   display: flex;
 }
 
+.contentWrapper {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+}
+
 .title {
   margin: 0;
   padding: 0;
