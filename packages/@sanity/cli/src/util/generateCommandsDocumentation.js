@@ -6,13 +6,14 @@ import noSuchCommandText from './noSuchCommandText'
  */
 export function generateCommandsDocumentation(commandGroups, group = 'default') {
   const commandGroup = commandGroups[group]
+  const commands = commandGroup && commandGroup.filter(cmd => !cmd.hideFromHelp)
 
-  if (!commandGroup) {
+  if (!commands || commands.length === 0) {
     throw new Error(noSuchCommandText(group))
   }
 
   // Find the maximum length of a command name, so we can pad the descriptions
-  const cmdLength = commandGroup.reduce((max, cmd) => Math.max(cmd.name.length, max), 0)
+  const cmdLength = commands.reduce((max, cmd) => Math.max(cmd.name.length, max), 0)
   const prefix = group === 'default' ? '' : ` ${group}`
 
   const rows = [
@@ -20,7 +21,7 @@ export function generateCommandsDocumentation(commandGroups, group = 'default') 
     '',
     'Commands:'
   ]
-    .concat(commandGroup.map(cmd => `   ${padEnd(cmd.name, cmdLength + 1)} ${cmd.description}`))
+    .concat(commands.map(cmd => `   ${padEnd(cmd.name, cmdLength + 1)} ${cmd.description}`))
     .concat(['', `See 'sanity help${prefix} <command>' for specific information on a subcommand.`])
 
   return rows.join('\n')

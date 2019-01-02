@@ -39,9 +39,9 @@ export function generateCommandDocumentation(command, group, subCommand) {
 
   const cmdParts = [group, subCommand].filter(Boolean).join(' ')
   return [
-    `usage: sanity ${cmdParts} ${command.signature}`,
+    `usage: sanity ${cmdParts} ${command.signature || ''}`,
     '',
-    `   ${command.description}`,
+    `   ${command.description || ''}`,
     '',
     (command.helpText || '').trim()
   ].join('\n')
