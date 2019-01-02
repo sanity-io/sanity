@@ -1,4 +1,5 @@
 import {get, flatten} from 'lodash'
+import {error} from './validation/createValidationResult'
 
 function createTypeWithMembersProblemsAccessor(
   memberPropertyName,
@@ -8,10 +9,17 @@ function createTypeWithMembersProblemsAccessor(
     const currentPath = [...parentPath, {kind: 'type', type: type.type, name: type.name}]
     const members = getMembers(type) || []
 
-    const memberProblems = members.map(memberType => {
-      const memberPath = [...currentPath, {kind: 'property', name: memberPropertyName}]
-      return getTypeProblems(memberType, memberPath)
-    })
+    const memberProblems = Array.isArray(members)
+      ? members.map(memberType => {
+          const memberPath = [...currentPath, {kind: 'property', name: memberPropertyName}]
+          return getTypeProblems(memberType, memberPath)
+        })
+      : [
+          {
+            path: currentPath,
+            problems: [error(`Member declaration (${memberPropertyName}) is not an array`)]
+          }
+        ]
 
     return [
       {
