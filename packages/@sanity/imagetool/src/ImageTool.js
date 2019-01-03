@@ -57,11 +57,11 @@ function getCropCursorForHandle(handle) {
   switch (handle) {
     case 'left':
     case 'right':
-      return 'col-resize'
+      return 'ew-resize'
 
     case 'top':
     case 'bottom':
-      return 'row-resize'
+      return 'ns-resize'
 
     case 'topRight':
     case 'bottomLeft':
@@ -96,11 +96,16 @@ export default class ImageTool extends React.PureComponent {
       height: PropTypes.number,
       width: PropTypes.number
     }),
+    showHotspot: PropTypes.bool,
+    showCrop: PropTypes.bool,
+    readOnly: PropTypes.bool,
     onChange: PropTypes.func,
     onChangeEnd: PropTypes.func
   }
 
   static defaultProps = {
+    showCrop: true,
+    showHotspot: true,
     onChange() {},
     onChangeEnd() {}
   }
@@ -295,7 +300,7 @@ export default class ImageTool extends React.PureComponent {
   }
 
   paintHotspot(context, opacity) {
-    const {image, readOnly} = this.props
+    const {image, readOnly, showHotspot} = this.props
 
     const imageRect = new Rect().setSize(image.width, image.height)
 
@@ -306,11 +311,14 @@ export default class ImageTool extends React.PureComponent {
 
     context.save()
     drawBackdrop()
-    drawEllipse()
-    context.clip()
-    drawHole()
+    if (showHotspot) {
+      drawEllipse()
+      context.clip()
+      drawHole()
+    }
+
     context.restore()
-    if (!readOnly) {
+    if (!readOnly && showHotspot) {
       drawDragHandle(Math.PI * 1.25)
     }
 
@@ -379,7 +387,7 @@ export default class ImageTool extends React.PureComponent {
         dest.width,
         dest.height
       )
-      context.globalAlpha = 0.5
+      context.globalAlpha = showHotspot ? 0.3 : 0
       context.fillStyle = 'black'
       context.fillRect(dest.left, dest.top, dest.width, dest.height)
       context.restore()
@@ -480,12 +488,17 @@ export default class ImageTool extends React.PureComponent {
   paintBackground(context) {
     const {image} = this.props
     const inner = new Rect().setSize(image.width, image.height).shrink(MARGIN_PX * this.getScale())
-
-    context.save()
-    context.fillStyle = 'white'
     context.clearRect(0, 0, image.width, image.height)
 
+    context.save()
+
+    if (this.props.showCrop) {
+      context.fillStyle = 'white'
+      context.clearRect(0, 0, image.width, image.height)
+    }
+
     context.globalAlpha = 0.3
+
     //context.globalCompositeOperation = 'lighten';
 
     context.drawImage(image, inner.left, inner.top, inner.width, inner.height)
@@ -493,7 +506,7 @@ export default class ImageTool extends React.PureComponent {
   }
 
   paint(context) {
-    const {readOnly} = this.props
+    const {readOnly, showCrop, showHotspot} = this.props
     context.save()
 
     const pxratio = getDevicePixelRatio()
@@ -502,13 +515,15 @@ export default class ImageTool extends React.PureComponent {
     const opacity = this.state.mousePosition ? 0.8 : 0.2
 
     this.paintBackground(context)
-    //return context.restore();
-    this.paintHotspot(context, opacity)
-    //this.paintDragHandle(context);
-    this.debug(context)
-    this.paintCropBorder(context)
 
-    if (!readOnly) {
+    this.paintHotspot(context, opacity)
+
+    // this.debug(context)
+    if (showCrop) {
+      this.paintCropBorder(context)
+    }
+
+    if (!readOnly && showCrop) {
       this.highlightCropHandles(context, opacity)
     }
 
@@ -532,6 +547,7 @@ export default class ImageTool extends React.PureComponent {
     const cropRect = this.getCropRect()
     context.save()
     context.beginPath()
+    context.globalAlpha = 1
     context.fillStyle = 'rgba(66, 66, 66, 0.9)'
     context.lineWidth = 1
     context.rect(cropRect.left, cropRect.top, cropRect.width, cropRect.height)
@@ -549,7 +565,7 @@ export default class ImageTool extends React.PureComponent {
     Object.keys(crophandles).forEach(handle => {
       context.fillStyle =
         this.state.cropping === handle
-          ? `rgba(202, 54, 53, ${opacity})`
+          ? `rgba(0, 0, 0, ${opacity})`
           : `rgba(230, 230, 230, ${opacity + 0.4})`
       const {left, top, height, width} = crophandles[handle]
       context.fillRect(left, top, width, height)
@@ -616,15 +632,16 @@ export default class ImageTool extends React.PureComponent {
   }
 
   handleDragStart = ({x, y}) => {
+    const {showCrop, showHotspot} = this.props
     const mousePosition = {x: x * this.getScale(), y: y * this.getScale()}
 
-    const inHotspot = utils2d.isPointInEllipse(mousePosition, this.getHotspotRect())
+    const inHotspot = showHotspot && utils2d.isPointInEllipse(mousePosition, this.getHotspotRect())
 
-    const inDragHandle = utils2d.isPointInCircle(mousePosition, this.getDragHandleCoords())
+    const inDragHandle = showHotspot && utils2d.isPointInCircle(mousePosition, this.getDragHandleCoords())
 
-    const activeCropHandle = this.getActiveCropHandleFor(mousePosition)
+    const activeCropHandle = showCrop && this.getActiveCropHandleFor(mousePosition)
 
-    const inCropRect = utils2d.isPointInRect(mousePosition, this.getCropRect())
+    const inCropRect = showCrop && utils2d.isPointInRect(mousePosition, this.getCropRect())
 
     if (activeCropHandle) {
       this.setState({cropping: activeCropHandle})

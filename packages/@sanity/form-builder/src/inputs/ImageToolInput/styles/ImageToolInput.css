@@ -5,17 +5,18 @@
 }
 
 .wrapper {
+  position: relative;
+  border: 1px solid color(var(--gray-base) a(15%));
+  background-color: var(--white);
+  border-radius: var(--border-radius-base);
   display: flex;
+  align-items: center;
   flex-direction: column;
-
-  @media (--screen-medium) {
-    flex-direction: row;
-    justify-content: space-between;
-  }
 }
 
 .previewsContainer {
-  flex-basis: 30vw;
+  position: relative;
+  width: 100%;
 
   @nest & h2 {
     margin-bottom: 0;
@@ -23,33 +24,83 @@
   }
 }
 
-.imageToolContainer {
+.imageToolWrapper {
   position: relative;
-  flex-grow: 1;
-  max-height: 70vh;
-  min-width: 250px;
+  background-color: color(var(--gray-base) a(10%));
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--medium-padding);
+}
 
-  @media (--screen-medium) {
-    min-width: 500px;
-    margin-right: var(--medium-padding);
-    max-height: 60vh;
-    max-width: 70vw;
-  }
+.imageToolContainer {
+  display: flex;
+  align-self: center;
+  justify-content: center;
+  position: relative;
+  margin: 0 auto;
+  max-width: 50rem;
+  max-height: 50vh;
+  padding: 10px 7px; /* compensate for padding inside canvas */
+}
+
+.tools {
+  display: flex;
+  justify-content: center;
+  max-width: 50rem;
+  margin: 0 auto;
 }
 
 .previews {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-gap: var(--medium-padding);
+  align-items: center;
+  padding: var(--medium-padding);
+  max-width: 50rem;
+  margin: 0 auto;
+
+  @media (--screen-medium) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.preview {
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  align-items: center;
+  position: relative;
 }
 
 .previewImage {
+  width: 100%;
+  position: relative;
+  max-width: 4rem;
   composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
-  background-color: #eee;
+  background-color: var(--component-bg);
+  background-image:
+    linear-gradient(45deg, var(--checkerboard-color) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--checkerboard-color) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--checkerboard-color) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--checkerboard-color) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+
+  @media (--screen-medium) {
+    max-width: 7rem;
+  }
+}
+
+.preview[data-name="panorama"] .previewImage {
+  max-width: 10rem;
+}
+
+.preview[data-name="portrait"] .previewImage {
+  max-width: 4rem;
 }
 
 .preview h4 {
-  font-size: var(--font-size-small);
-  margin-bottom: var(--small-padding);
-  font-weight: 400;
+  font-size: var(--font-size-base);
+  padding: 0;
+  margin: 0;
+  margin-top: var(--small-padding);
 }
