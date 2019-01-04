@@ -14,6 +14,7 @@ const getDocumentsStream = require('./getDocumentsStream')
 const filterSystemDocuments = require('./filterSystemDocuments')
 const filterDocumentTypes = require('./filterDocumentTypes')
 const filterDrafts = require('./filterDrafts')
+const logFirstChunk = require('./logFirstChunk')
 
 const noop = () => null
 
@@ -83,15 +84,19 @@ function exportDataset(opts) {
     }
 
     const inputStream = await getDocumentsStream(options.client, options.dataset)
+    debug('Got HTTP %d', inputStream.statusCode)
+    debug('Response headers: %o', inputStream.headers)
+
     const jsonStream = miss.pipeline(
       inputStream,
+      logFirstChunk(),
       split(JSON.parse),
-      rejectOnApiError,
-      filterSystemDocuments,
+      rejectOnApiError(),
+      filterSystemDocuments(),
       assetStreamHandler,
       filterDocumentTypes(options.types),
-      options.drafts ? miss.through.obj() : filterDrafts,
-      stringifyStream,
+      options.drafts ? miss.through.obj() : filterDrafts(),
+      stringifyStream(),
       miss.through(reportDocumentCount)
     )
 
