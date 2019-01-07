@@ -1,6 +1,6 @@
 {
   "name": "@sanity/base",
-  "version": "0.139.4",
+  "version": "0.139.6",
   "description": "Sanity plugin containing the base components and roles for a Sanity configuration",
   "main": "lib/index.js",
   "scripts": {
@@ -33,7 +33,7 @@
     "@sanity/image-url": "0.139.0",
     "@sanity/observable": "0.139.0",
     "@sanity/preview": "0.139.0",
-    "@sanity/schema": "0.139.4",
+    "@sanity/schema": "0.139.6",
     "@sanity/state-router": "0.139.0",
     "@sanity/validation": "0.139.0",
     "history": "^4.6.3",
