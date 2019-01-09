@@ -1,0 +1,20 @@
+.authorGroup {
+  max-width: 500px;
+}
+
+.authorImage {
+  display: block;
+  width: 75px;
+  height: 75px;
+}
+
+.button {
+  padding: 0;
+  margin: 2px;
+  border: 3px solid transparent;
+}
+
+.activeButton {
+  composes: button;
+  border-color: lime;
+}
