@@ -1,0 +1,15 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.item {
+  padding: var(--small-padding);
+}
+
+.searchableSelect {
+  composes: spacing from 'part:@sanity/components/buttons/default-style';
+  grid-column: span 2;
+  width: stretch;
+}
+
+.searchableSelectInput {
+  width: 100%;
+}
