@@ -5,6 +5,7 @@ clone:
 
 pipeline:
   build:
+    group: build
     image: node:8
     pull: true
     when:
@@ -25,6 +26,7 @@ pipeline:
     #- echo "//registry.npmjs.org/:_authToken=$${NPM_TOKEN}" > ~/.npmrc
     #- /drone/src/github.com/sanity-io/sanity/node_modules/.bin/lerna publish --npm-tag=next --skip-git --cd-version=prepatch --preid=next --yes
   testVisual:
+    group: build
     image: catsoss/node-headless-chrome
     pull: true
     when:
