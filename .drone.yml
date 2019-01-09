@@ -31,8 +31,7 @@ pipeline:
     pull: true
     when:
       event:
-      - push
-      - pull
+      - pull_request
     secrets: [sanity_auth_token, backstop_auth_token, npm_token, slack_webhook]
     commands:
       # Install & build
