@@ -24,3 +24,17 @@ pipeline:
     # Publish a new `next`
     #- echo "//registry.npmjs.org/:_authToken=$${NPM_TOKEN}" > ~/.npmrc
     #- /drone/src/github.com/sanity-io/sanity/node_modules/.bin/lerna publish --npm-tag=next --skip-git --cd-version=prepatch --preid=next --yes
+  testVisual:
+    image: catsoss/node-headless-chrome
+    pull: true
+    when:
+      event:
+      - push
+      - pull
+    secrets: [sanity_auth_token, backstop_auth_token, npm_token, slack_webhook]
+    commands:
+      # Install & build
+      - npm install -s
+      - npm run bootstrap
+      - npm run build
+      - /drone/src/github.com/sanity-io/sanity/scripts/backstop.sh
