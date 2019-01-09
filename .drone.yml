@@ -33,6 +33,7 @@ pipeline:
       event:
       - pull_request
     secrets: [sanity_auth_token, backstop_auth_token, npm_token, slack_webhook]
+    build_args_from_env: [ backstop_auth_token ]
     commands:
       # Install & build
       - npm install -s
