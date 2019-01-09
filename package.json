@@ -30,6 +30,7 @@
     "test-all": "lerna run test --stream",
     "test:backstop": "gulp backstop",
     "test:backstop:approve": "gulp backstop:approve",
+    "test:backstop:reference": "gulp backstop:reference",
     "updated": "lerna updated",
     "watch": "gulp watch",
     "install-husky": "node node_modules/husky/bin/install",
