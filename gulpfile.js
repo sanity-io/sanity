@@ -17,6 +17,7 @@ const through = require('through2')
 const chalk = require('chalk')
 const globby = require('globby')
 const mergeStream = require('merge-stream')
+const backstop = require('backstopjs')
 
 const isWindows = /^win/.test(process.platform)
 
@@ -238,4 +239,27 @@ gulp.task('storybook', ['watch-js', 'watch-ts', 'watch-assets'], () => {
 
   proc.stdout.pipe(process.stdout)
   proc.stderr.pipe(process.stderr)
+})
+
+gulp.task('backstop', cb => {
+  const DRONE = !!process.env.DRONE
+  backstop('test', {
+    docker: !DRONE,
+    config: './backstop_data/backstop.js'
+  })
+    .then(() => {
+      gutil.log(gutil.colors.green('Backstop test success'))
+    })
+    .catch(() => {
+      throw new gutil.PluginError({
+        plugin: 'backstop',
+        message: 'Tests failed'
+      })
+    })
+})
+
+gulp.task('backstop:approve', cb => {
+  backstop('approve', {
+    docker: true
+  })
 })

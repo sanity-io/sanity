@@ -1,0 +1,14 @@
+[
+  {
+    "domain": ".xtlrc4xo.api.sanity.io",
+    "path": "/v1/users/me",
+    "name": "sanitySession",
+    "value": "sktOMwifahxA73ddSCMKRGcaS75nvh4kZTudOjjnOlze7SmgBdeeilP73JEJcRIZUD8GAhJeENqKXcQSx3J4PxJL0btsuzQmHrgKVeeIBROj7KsLkckxZMVkpom6XsMM1j2DYyq60z4f9V3kPTJG1uOxHPFmx5QskEsQIGfruPMprm1yFLgI",
+    "expirationDate": 2143588996000,
+    "hostOnly": true,
+    "httpOnly": true,
+    "secure": false,
+    "session": true,
+    "sameSite": "no_restriction"
+  }
+]
