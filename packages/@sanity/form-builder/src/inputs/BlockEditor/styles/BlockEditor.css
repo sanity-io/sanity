@@ -40,7 +40,7 @@
 
   @nest .fullscreen & {
     position: absolute;
-    top: 0;
+    top: 60px;
     left: 0;
     height: 100vh;
     width: 100vw;
@@ -71,7 +71,7 @@
 .fullscreen .editorWrapper {
   max-width: 50em;
   min-height: 90vh;
-  margin: 3rem auto;
+  margin: 0 auto;
   background-color: var(--input-bg);
   width: 95vw;
   box-sizing: border-box;

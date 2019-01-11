@@ -2,6 +2,18 @@
 
 // This plugin scrolls the scrollcontainer to absolute top or bottom if first block or last block is selected
 
+function scrollToTop(scrollContainer, isEdge) {
+  if (window.navigator.userAgent.indexOf('Edge') > -1) {
+    scrollContainer.scrollTop = 0
+    return
+  }
+  scrollContainer.scrollTo({
+    left: 0,
+    top: 0,
+    behavior: 'smooth'
+  })
+}
+
 export default function ScrollAbsoluteTopBottomPlugin(scrollContainer: ElementRef<any>) {
   return {
     // eslint-disable-next-line complexity
@@ -17,11 +29,7 @@ export default function ScrollAbsoluteTopBottomPlugin(scrollContainer: ElementRe
         const isFirstBlock = focusBlock.key === document.nodes.first().key
         const isStartOffset = selection.focus.offset === 0
         if (isFirstBlock && isStartOffset) {
-          scrollContainer.current.scrollTo({
-            left: 0,
-            top: 0,
-            behavior: 'smooth'
-          })
+          scrollToTop(scrollContainer.current)
         }
       }
       return next()
