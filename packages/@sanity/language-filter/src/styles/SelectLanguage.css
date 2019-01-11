@@ -1,11 +1,16 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .target {
-  composes: textInput from 'part:@sanity/base/theme/forms/text-input-style';
+  display: flex;
+  align-items: center;
   color: var(--text-color);
   opacity: 1;
   min-width: 4rem;
   font-size: var(--font-size-xsmall);
+  white-space: nowrap;
+  height: 2.5rem;
+  align-self: center;
+  margin-right: 1em;
 }
 
 .arrow {
