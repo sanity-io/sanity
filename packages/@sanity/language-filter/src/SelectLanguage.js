@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import React from 'react'
+import React, {Fragment} from 'react'
 import PropTypes from 'prop-types'
 import Poppable from 'part:@sanity/components/utilities/poppable'
 import Checkbox from 'part:@sanity/components/toggles/checkbox'
@@ -17,6 +17,7 @@ export default class SelectLanguage extends React.Component {
   }
 
   state = {isOpen: false}
+  refElement = React.createRef()
 
   handleToggle = () => this.setState(prevState => ({isOpen: !prevState.isOpen}))
   handleOpen = () => this.setState({isOpen: true})
@@ -52,49 +53,54 @@ export default class SelectLanguage extends React.Component {
     const {isOpen} = this.state
     const {languages, selected} = this.props
     const allIsSelected = languages.length === selected.length
+    const refElement =
+      this.refElement && this.refElement.current && this.refElement.current._element
+
     return (
-      <Poppable
-        onEscape={this.handleClose}
-        onClickOutside={this.handleClose}
-        target={
-          <span
-            className={styles.target}
-            onClick={this.handleToggle}
-            title={
-              allIsSelected
-                ? 'Filter language fields'
-                : 'Displaying only fields for selected languages'
-            }
-          >
-            Filter languages{allIsSelected ? '…' : ` (${selected.length}/${languages.length})`}
-            <span className={styles.arrow}>{isOpen ? <AngleUp /> : <AngleDown />}</span>
-          </span>
-        }
-        placement="bottom-end"
-      >
-        {isOpen && (
-          <div className={styles.root}>
-            <div className={styles.functions}>
-              <Button onClick={allIsSelected ? this.handleSelectNone : this.handleSelectAll}>
-                Select {allIsSelected ? 'none' : 'all'}
-              </Button>
+      <Fragment>
+        <span
+          className={styles.target}
+          onClick={this.handleToggle}
+          ref={this.refElement}
+          title={
+            allIsSelected
+              ? 'Filter language fields'
+              : 'Displaying only fields for selected languages'
+          }
+        >
+          Filter languages{allIsSelected ? '…' : ` (${selected.length}/${languages.length})`}
+          <span className={styles.arrow}>{isOpen ? <AngleUp /> : <AngleDown />}</span>
+        </span>
+        <Poppable
+          onEscape={this.handleClose}
+          onClickOutside={this.handleClose}
+          placement="bottom-end"
+          referenceElement={refElement}
+        >
+          {isOpen && (
+            <div className={styles.root}>
+              <div className={styles.functions}>
+                <Button onClick={allIsSelected ? this.handleSelectNone : this.handleSelectAll}>
+                  Select {allIsSelected ? 'none' : 'all'}
+                </Button>
+              </div>
+              <ul className={styles.list}>
+                {languages.map(lang => (
+                  <li className={styles.item} key={lang.id}>
+                    <Checkbox
+                      onChange={this.handleLangCheckboxChange}
+                      data-lang-id={lang.id}
+                      checked={selected.includes(lang.id)}
+                    >
+                      {lang.title}
+                    </Checkbox>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <ul className={styles.list}>
-              {languages.map(lang => (
-                <li className={styles.item} key={lang.id}>
-                  <Checkbox
-                    onChange={this.handleLangCheckboxChange}
-                    data-lang-id={lang.id}
-                    checked={selected.includes(lang.id)}
-                  >
-                    {lang.title}
-                  </Checkbox>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </Poppable>
+          )}
+        </Poppable>
+      </Fragment>
     )
   }
 }
