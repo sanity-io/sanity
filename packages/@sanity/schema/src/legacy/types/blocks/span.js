@@ -18,6 +18,19 @@ const SPAN_CORE = {
   jsonType: 'object'
 }
 
+const MARKS_FIELD = {
+  name: 'marks',
+  title: 'Marks',
+  type: 'array',
+  of: [{type: 'string'}]
+}
+
+const TEXT_FIELD = {
+  name: 'text',
+  title: 'Text',
+  type: 'string'
+}
+
 const DEFAULT_OPTIONS = {}
 
 export const SpanType = {
@@ -27,7 +40,9 @@ export const SpanType = {
   extend(subTypeDef, extendMember) {
     const options = {...(subTypeDef.options || DEFAULT_OPTIONS)}
 
-    const {fields = [], annotations = [], marks = []} = subTypeDef
+    const {annotations = [], marks = []} = subTypeDef
+
+    const fields = [MARKS_FIELD, TEXT_FIELD]
 
     const parsed = Object.assign(pick(SPAN_CORE, INHERITED_FIELDS), subTypeDef, {
       type: SPAN_CORE,
