@@ -982,6 +982,10 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "panes/story.js"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "validation/story.js"
     }
   ]
 }

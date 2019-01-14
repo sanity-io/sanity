@@ -10,6 +10,7 @@ export default class ValidationListItem extends React.PureComponent {
     showLink: PropTypes.bool,
     path: PropTypes.string,
     hasFocus: PropTypes.bool,
+    truncate: PropTypes.bool,
     marker: PropTypes.shape({
       path: PropTypes.arrayOf(
         PropTypes.oneOfType([
@@ -66,7 +67,7 @@ export default class ValidationListItem extends React.PureComponent {
   }
 
   render() {
-    const {marker, onClick, path, showLink} = this.props
+    const {marker, onClick, path, showLink, truncate} = this.props
     const shouldRenderLink = onClick && showLink
 
     return (
@@ -78,6 +79,7 @@ export default class ValidationListItem extends React.PureComponent {
         className={`
           ${onClick ? styles.interactiveItem : styles.item}
           ${styles[marker.level]}
+          ${truncate ? styles.truncate : ''}
         `}
       >
         <span className={styles.icon}>
