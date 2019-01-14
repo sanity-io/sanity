@@ -8,7 +8,7 @@ export default class ValidationList extends React.PureComponent {
     onFocus: PropTypes.func,
     onClose: PropTypes.func,
     showLink: PropTypes.bool,
-    isOpen: PropTypes.bool,
+    truncate: PropTypes.bool,
     documentType: PropTypes.shape({
       fields: PropTypes.arrayOf(PropTypes.shape({name: PropTypes.string.isRequired}))
     }),
@@ -66,7 +66,7 @@ export default class ValidationList extends React.PureComponent {
   }
 
   render() {
-    const {markers, showLink} = this.props
+    const {markers, showLink, truncate} = this.props
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
     const warnings = validation.filter(marker => marker.level === 'warning')
@@ -82,9 +82,8 @@ export default class ValidationList extends React.PureComponent {
             {errors.length > 0 &&
               errors.map((error, i) => (
                 <ValidationListItem
+                  truncate={truncate}
                   key={i}
-                  // focus is not ready yet
-                  // hasFocus={i === 0 && isOpen}
                   path={this.resolvePathTitle(error.path)}
                   marker={error}
                   onClick={this.handleClick}
@@ -95,9 +94,8 @@ export default class ValidationList extends React.PureComponent {
             {warnings.length > 0 &&
               warnings.map((warning, i) => (
                 <ValidationListItem
+                  truncate={truncate}
                   key={i}
-                  // focus is not ready yet
-                  // hasFocus={i === 0 && isOpen}
                   path={this.resolvePathTitle(warning.path)}
                   marker={warning}
                   onClick={this.handleClick}

@@ -550,6 +550,7 @@ export default withRouterHOC(
               onRequestClose={this.handleCloseValidationResults}
               html={
                 <ValidationList
+                  truncate
                   markers={validation}
                   showLink
                   isOpen={showValidationTooltip}

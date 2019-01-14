@@ -4,12 +4,15 @@
   display: flex;
   margin: 0;
   flex-grow: 1;
-  align-items: center;
   width: 100%;
   padding: var(--small-padding);
   cursor: pointer;
   box-sizing: border-box;
   outline: none;
+
+  @nest &.truncate {
+    align-items: center;
+  }
 }
 
 .error {
@@ -50,16 +53,20 @@
   display: flex;
   padding: var(--medium-padding);
   padding-right: var(--large-padding);
-  align-items: center;
 }
 
 .content {
   display: block;
   padding-right: 2em;
   flex-grow: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  padding-top: 1em;
+
+  @nest .truncate & {
+    padding-top: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .path {
