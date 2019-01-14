@@ -260,6 +260,23 @@ gulp.task('backstop', cb => {
 
 gulp.task('backstop:approve', cb => {
   backstop('approve', {
-    docker: true
+    docker: true,
+    config: './backstop_data/backstop.js'
   })
+})
+
+gulp.task('backstop:reference', cb => {
+  backstop('reference', {
+    docker: true,
+    config: './backstop_data/backstop.js'
+  })
+    .then(() => {
+      gutil.log(gutil.colors.green('References created'))
+    })
+    .catch(() => {
+      throw new gutil.PluginError({
+        plugin: 'backstop',
+        message: 'Making references failed'
+      })
+    })
 })
