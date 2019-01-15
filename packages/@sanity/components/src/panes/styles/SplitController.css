@@ -8,7 +8,7 @@
 
   @nest & :global(.Pane1) {
     background-color: inherit;
-    transition: width 0.2s ease-in;
+    transition: width 200ms linear;
   }
 }
 
@@ -60,7 +60,7 @@
 
   @nest &:hover {
     opacity: 0.2;
-    transition: border 0.2s ease, opacity 0.1s ease;
+    transition: border 200ms ease, opacity 100ms ease;
   }
 
   @nest .vertical & {
