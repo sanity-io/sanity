@@ -72,7 +72,7 @@ export default async function initSanity(args, context) {
     if (hasProjectId) {
       print('The previous project configuration will be overwritten.')
     }
-    print(`We're first going to make sure you have an account with Sanity. Hang on.`)
+    print(`We're first going to make sure you have an account with Sanity.io. Hang on.`)
     print('Press ctrl + C at any time to quit.\n')
   } else {
     print(`You're setting up a new project!`)
