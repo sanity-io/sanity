@@ -2,7 +2,6 @@
 import React from 'react'
 
 import PatchEvent, {set} from '../../PatchEvent'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
 import Switch from 'part:@sanity/components/toggles/switch'
 import {get, isEqual, pick} from 'lodash'
 import ImageTool from '@sanity/imagetool'
@@ -114,10 +113,9 @@ export default class ImageToolInput extends React.Component<Props, State> {
 
   handleToggleHotSpot = event => {
     const checked = event.target.checked
-    const value = this.state.value
+    const value = this.state.value || INITIAL_HOTSPOT
 
     if (checked) {
-      console.log('hotspot', get(this.state, 'tempValue.hotspot'))
       value.hotspot = get(this.state, 'tempValue.hotspot') || INITIAL_HOTSPOT
       this.setState({
         showHotspot: true,
@@ -134,10 +132,8 @@ export default class ImageToolInput extends React.Component<Props, State> {
 
   handleToggleCrop = event => {
     const checked = event.target.checked
+    const value = this.state.value || INITIAL_CROP
 
-    this.setState({showCrop: checked})
-
-    const value = this.state.value
     if (checked) {
       value.crop = get(this.state, 'tempValue.crop') || INITIAL_CROP
       this.setState({
