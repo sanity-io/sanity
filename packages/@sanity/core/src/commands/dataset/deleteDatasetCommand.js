@@ -1,3 +1,5 @@
+import validateDatasetName from '../../actions/dataset/validateDatasetName'
+
 export default {
   name: 'delete',
   group: 'dataset',
@@ -11,6 +13,10 @@ export default {
     }
 
     const dataset = `${ds}`
+    const dsError = validateDatasetName(dataset)
+    if (dsError) {
+      throw dsError
+    }
 
     await prompt.single({
       type: 'input',

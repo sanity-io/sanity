@@ -1,5 +1,6 @@
 import debug from '../../debug'
 import promptForDatasetName from '../../actions/dataset/datasetNamePrompt'
+import validateDatasetName from '../../actions/dataset/validateDatasetName'
 
 const helpText = `
 Options
@@ -24,6 +25,11 @@ export default {
     const flags = args.extOptions
     const [dataset] = args.argsWithoutOptions
     const client = apiClient()
+
+    const nameError = dataset && validateDatasetName(dataset)
+    if (nameError) {
+      throw new Error(nameError)
+    }
 
     const [datasets, projectFeatures] = await Promise.all([
       client.datasets.list().then(sets => sets.map(ds => ds.name)),

@@ -4,6 +4,7 @@ import prettyMs from 'pretty-ms'
 import {pathTools} from '@sanity/util'
 import exportDataset from '@sanity/export'
 import chooseDatasetPrompt from '../../actions/dataset/chooseDatasetPrompt'
+import validateDatasetName from '../../actions/dataset/validateDatasetName'
 
 const noop = () => null
 
@@ -43,6 +44,11 @@ export default {
     let dataset = targetDataset ? `${targetDataset}` : null
     if (!dataset) {
       dataset = await chooseDatasetPrompt(context, {message: 'Select dataset to export'})
+    }
+
+    const dsError = validateDatasetName(dataset)
+    if (dsError) {
+      throw dsError
     }
 
     // Verify existence of dataset before trying to export from it
