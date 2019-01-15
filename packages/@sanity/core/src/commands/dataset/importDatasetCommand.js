@@ -5,6 +5,7 @@ import sanityImport from '@sanity/import'
 import padStart from 'lodash/padStart'
 import prettyMs from 'pretty-ms'
 import chooseDatasetPrompt from '../../actions/dataset/chooseDatasetPrompt'
+import validateDatasetName from '../../actions/dataset/validateDatasetName'
 import debug from '../../debug'
 
 const yellow = str => `\u001b[33m${str}\u001b[39m`
@@ -178,6 +179,13 @@ export default {
 async function determineTargetDataset(target, context) {
   const {apiClient, output, prompt} = context
   const client = apiClient()
+
+  if (target) {
+    const dsError = validateDatasetName(target)
+    if (dsError) {
+      throw new Error(dsError)
+    }
+  }
 
   debug('Fetching available datasets')
   const spinner = output.spinner('Fetching available datasets').start()

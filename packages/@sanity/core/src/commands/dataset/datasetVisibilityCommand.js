@@ -1,9 +1,10 @@
+import validateDatasetName from '../../actions/dataset/validateDatasetName'
+
 export default {
   name: 'visibility',
   group: 'dataset',
   signature: 'get/set [dataset] [mode]',
   description: 'Set visibility of a dataset',
-  // eslint-disable-next-line complexity
   action: async (args, context) => {
     const {apiClient, output} = context
     const [action, ds, aclMode] = args.argsWithoutOptions
@@ -30,6 +31,11 @@ export default {
     }
 
     const dataset = `${ds}`
+    const dsError = validateDatasetName(dataset)
+    if (dsError) {
+      throw new Error(dsError)
+    }
+
     const current = (await client.datasets.list()).find(curr => curr.name === dataset)
 
     if (!current) {
