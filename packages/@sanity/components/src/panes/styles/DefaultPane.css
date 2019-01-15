@@ -2,6 +2,7 @@
 
 :root {
   --nav-bar-box: 3.0625em; /* 49px */
+  --pane-animation-time: 200ms;
 }
 
 .root {
@@ -42,7 +43,7 @@
     border-color: #ccc;
     padding: 0;
     flex-direction: row;
-    transition: box-shadow 0.2s 0.2s linear;
+    transition: box-shadow var(--pane-animation-time) var(--pane-animation-time) linear;
     background-image:
       linear-gradient(
         90deg,
@@ -215,7 +216,7 @@
   margin-right: auto;
   transform-origin: 0.5em 1.5em;
   transform: rotate(0deg);
-  transition: transform 0.2s ease-in;
+  transition: transform var(--pane-animation-time) linear;
 
   @nest .isCollapsed & {
     transform: rotate(90deg);
@@ -243,11 +244,13 @@
 .main {
   flex-grow: 1;
   display: block;
-  opacity: 1;
   position: relative;
+  opacity: 1;
+  transition: opacity var(--pane-animation-time) var(--pane-animation-time) linear;
 
   @nest .isCollapsed & {
-    display: none;
+    opacity: 0;
+    transition: opacity 0 0;
   }
 }
 
@@ -300,10 +303,6 @@
     height: initial;
     width: initial;
     overflow: initial;
-  }
-
-  @nest .isCollapsed & {
-    display: none;
   }
 }
 

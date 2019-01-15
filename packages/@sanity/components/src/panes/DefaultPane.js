@@ -348,7 +348,6 @@ class Pane extends React.Component {
           isSelected ? styles.isActive : styles.isDisabled
         ])}
         onClick={this.handleRootClick}
-        ref={this.setRootElement}
       >
         <div className={styles.header} style={{boxShadow: headerStyle.boxShadow}}>
           <div
@@ -364,8 +363,7 @@ class Pane extends React.Component {
             </div>
           </div>
         </div>
-        {!isCollapsed && (
-          <div className={styles.main}>
+        <div className={styles.main}>
           {isScrollable ? (
             <ScrollContainer className={styles.scrollContainer} onScroll={this.handleContentScroll}>
               <div style={contentMaxWidth ? {maxWidth: `${contentMaxWidth}px`} : {}}>
@@ -377,7 +375,6 @@ class Pane extends React.Component {
           )}
           {staticContent}
         </div>
-        )}
       </div>
     )
   }
