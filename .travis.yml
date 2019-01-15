@@ -34,6 +34,7 @@ script:
   - sanity build
 
   # Test initializing a project in unattended mode
+  - cd /tmp
   - sanity init -y --project=ppsg7ml5 --dataset=test --output-path=/tmp/test-project
 
   # Use the newly commited changes instead of the latest dependencies from NPM
