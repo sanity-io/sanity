@@ -68,20 +68,19 @@ export default async function initSanity(args, context) {
   }
 
   if (reconfigure) {
-    print(`You're reconfiguring an existing Sanity project!`)
+    print(`The Sanity Studio in this folder will be tied to a new project on Sanity.io!`)
     if (hasProjectId) {
-      print('Selected values will overwrite any previously set values')
+      print('The previous project configuration will be overwritten.')
     }
-
-    print('')
+    print(`We're first going to make sure you have an account with Sanity.io. Hang on.`)
+    print('Press ctrl + C at any time to quit.\n')
   } else {
     print(`You're setting up a new project!`)
+    print(`We'll make sure you have an account with Sanity.io. Then we'll`)
+    print('install an open-source JS content editor that connects to')
+    print('the real-time hosted API on Sanity.io. Hang on.')
+    print('Press ctrl + C at any time to quit.\n')
   }
-
-  print(`We'll make sure you have an account with Sanity.io. Then we'll`)
-  print('locally install an open-source JS content editor that connects to')
-  print('the real-time hosted API on Sanity.io. Hang on.')
-  print('Press ctrl + C at any time to quit.\n')
 
   // If the user isn't already authenticated, make it so
   const userConfig = getUserConfig()
@@ -553,7 +552,7 @@ function promptImplicitReconfigure(prompt) {
   return prompt.single({
     type: 'confirm',
     message:
-      'The current folder holds a configured Sanity studio. Would you like to reconfigure it?',
+      'The current folder contains a configured Sanity studio. Would you like to reconfigure it?',
     default: true
   })
 }
