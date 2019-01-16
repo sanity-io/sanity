@@ -179,7 +179,7 @@
   @nest .root:not(.isBleeding) & {
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px;
-    max-height: 380px;
+    max-height: 80vh;
     overflow: auto;
 
     @media (max-height: 429px) {
