@@ -59,7 +59,7 @@ export default async function initSanity(args, context) {
     reconfigure = await promptImplicitReconfigure(prompt)
     if (!reconfigure) {
       print(
-        'Init cancelled. If you want to create a new project, try running `sanity init` in an empty folder!'
+        'Init cancelled. If you want to create a new project, try running `sanity init` in an empty folder'
       )
       return
     }
