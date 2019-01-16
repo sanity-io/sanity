@@ -4,9 +4,10 @@ import React from 'react'
 
 import styles from './styles/SearchResults.css'
 
-class SearchResults extends React.PureComponent {
+class SearchResults extends React.Component {
   static propTypes = {
     activeIndex: PropTypes.number.isRequired,
+    error: PropTypes.instanceOf(Error),
     // isBleeding: PropTypes.bool.isRequired,
     isLoading: PropTypes.bool.isRequired,
     items: PropTypes.arrayOf(
@@ -16,6 +17,10 @@ class SearchResults extends React.PureComponent {
     ).isRequired,
     query: PropTypes.string.isRequired,
     renderItem: PropTypes.func.isRequired
+  }
+
+  static defaultProps = {
+    error: null
   }
 
   element = null
@@ -46,8 +51,11 @@ class SearchResults extends React.PureComponent {
   }
 
   render() {
-    const {activeIndex, isLoading, items, query, renderItem} = this.props
+    const {activeIndex, error, isLoading, items, query, renderItem} = this.props
     const noResults = !isLoading && query.length > 0 && items.length === 0
+    if (error) {
+      return <div className={`${styles.root} ${styles.noResults}`}>{error.message}</div>
+    }
 
     if (noResults) {
       return (

@@ -56,16 +56,8 @@
       "description": "Parse the search query and fetch search results from the dataset"
     },
     {
-      "name": "part:@sanity/base/search/fetchSearchResults",
-      "description": "Fetch search results from the dataset"
-    },
-    {
-      "name": "part:@sanity/base/search/parseSearchQuery",
-      "description": "Parse a search query string"
-    },
-    {
-      "name": "part:@sanity/base/search/prepareSearchResults",
-      "description": "Prepare array of search results"
+      "name": "part:@sanity/base/search/weighted",
+      "description": "Weighted search implementation"
     },
     {
       "name": "part:@sanity/base/theme/variables-style",
@@ -273,16 +265,8 @@
       "path": "search/index.js"
     },
     {
-      "implements": "part:@sanity/base/search/fetchSearchResults",
-      "path": "search/fetchSearchResults.js"
-    },
-    {
-      "implements": "part:@sanity/base/search/parseSearchQuery",
-      "path": "search/parseSearchQuery.js"
-    },
-    {
-      "implements": "part:@sanity/base/search/prepareSearchResults",
-      "path": "search/prepareSearchResults.js"
+      "implements": "part:@sanity/base/search/weighted",
+      "path": "search/weighted/index.js"
     },
     {
       "implements": "part:@sanity/base/util/draft-utils",

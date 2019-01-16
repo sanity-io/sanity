@@ -1,4 +1,7 @@
+import {uniqBy} from 'lodash'
 const stringFieldsSymbol = Symbol('__cachedStringFields')
+
+const isReference = type => type.type && type.type.name === 'reference'
 
 function reduceType(type, reducer, accumulator, path = [], maxDepth) {
   if (maxDepth < 0) {
@@ -7,7 +10,7 @@ function reduceType(type, reducer, accumulator, path = [], maxDepth) {
   if (type.jsonType === 'array' && Array.isArray(type.of)) {
     return reduceArray(type, reducer, accumulator, path, maxDepth)
   }
-  if (type.jsonType === 'object' && Array.isArray(type.fields)) {
+  if (type.jsonType === 'object' && Array.isArray(type.fields) && !isReference(type)) {
     return reduceObject(type, reducer, accumulator, path, maxDepth)
   }
   return reducer(accumulator, type, path)
@@ -27,9 +30,34 @@ function reduceObject(objectType, reducer, accumulator, path, maxDepth) {
   }, accumulator)
 }
 
+const BASE_WEIGHTS = [{weight: 1, path: ['_id']}, {weight: 1, path: ['_type']}]
+
+const PREVIEW_FIELD_WEIGHT_MAP = {
+  title: 10,
+  subtitle: 5,
+  description: 1.5
+}
+
+function deriveFromPreview(type) {
+  const select = type.preview.select
+  return Object.keys(select)
+    .filter(fieldName => fieldName in PREVIEW_FIELD_WEIGHT_MAP)
+    .map(fieldName => ({
+      weight: PREVIEW_FIELD_WEIGHT_MAP[fieldName],
+      path: select[fieldName].split('.')
+    }))
+}
+
 function getCachedStringFieldPaths(type, maxDepth) {
   if (!type[stringFieldsSymbol]) {
-    type[stringFieldsSymbol] = getStringFieldPaths(type, maxDepth)
+    type[stringFieldsSymbol] = uniqBy(
+      [
+        ...BASE_WEIGHTS,
+        ...deriveFromPreview(type),
+        ...getStringFieldPaths(type, maxDepth).map(path => ({weight: 1, path}))
+      ],
+      spec => spec.path.join('.')
+    )
   }
   return type[stringFieldsSymbol]
 }
@@ -41,6 +69,6 @@ function getStringFieldPaths(type, maxDepth) {
   return reduceType(type, reducer, [], [], maxDepth)
 }
 
-export default function resolveSearchFieldPaths(type) {
+export default function resolveSearchConfig(type) {
   return getCachedStringFieldPaths(type, 4)
 }

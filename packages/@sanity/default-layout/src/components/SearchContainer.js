@@ -1,25 +1,29 @@
-// import {isKeyHotkey} from 'is-hotkey'
+import {isKeyHotkey} from 'is-hotkey'
 import PropTypes from 'prop-types'
 import React from 'react'
 import schema from 'part:@sanity/base/schema?'
 import Preview from 'part:@sanity/base/preview?'
-import {removeDupes} from 'part:@sanity/base/util/draft-utils'
-import {Subject} from 'rxjs'
+import {concat, of, Subject, timer} from 'rxjs'
+import {catchError, map, mergeMapTo, switchMap, takeUntil, tap} from 'rxjs/operators'
 import {IntentLink} from 'part:@sanity/base/router'
 import search from 'part:@sanity/base/search'
 import Ink from 'react-ink'
 import SearchField from './SearchField'
 import SearchResults from './SearchResults'
-import {filter, takeUntil, tap, debounceTime, map, switchMap} from 'rxjs/operators'
 
 import resultsStyles from './styles/SearchResults.css'
 
-// NOTE: Remove until we know what hotkey to use
-// const hotKeys = {
-//   openSearch: isKeyHotkey('ctrl+t')
-// }
+const hotKeys = {
+  // NOTE: Remove until we know what hotkey to use
+  // openSearch: isKeyHotkey('ctrl+t'),
+  debugSearch: isKeyHotkey('ctrl+shift+d')
+}
 
-class SearchContainer extends React.PureComponent {
+const searchOrEmpty = queryStr => {
+  return queryStr === '' ? of([]) : search(queryStr)
+}
+
+class SearchContainer extends React.Component {
   static propTypes = {
     onOpen: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,
@@ -33,12 +37,14 @@ class SearchContainer extends React.PureComponent {
 
   state = {
     activeIndex: -1,
+    error: null,
     isBleeding: true, // mobile first
     isFocused: false,
     isLoading: false,
     isPressing: false,
     results: [],
-    value: ''
+    value: '',
+    isDebug: false
   }
 
   componentDidMount() {
@@ -50,43 +56,18 @@ class SearchContainer extends React.PureComponent {
       .asObservable()
       .pipe(
         map(event => event.target.value),
-        tap(value => this.setState({activeIndex: -1, value})),
-        takeUntil(this.componentWillUnmount$.asObservable())
-      )
-      .subscribe()
-
-    this.input$
-      .asObservable()
-      .pipe(
-        map(event => event.target.value),
-        filter(value => value.length === 0),
-        tap(() => {
-          this.setState({results: []})
-        })
-      )
-      .subscribe()
-
-    this.input$
-      .asObservable()
-      .pipe(
-        map(event => event.target.value),
-        filter(value => value.length > 0),
-        tap(() => {
-          this.setState({
-            isLoading: true
-          })
-        }),
-        debounceTime(100),
-        switchMap(queryStr => search(queryStr, {limit: 100})),
-        // we need this filtering because the search may return documents of types not in schema
-        map(hits => hits.filter(hit => schema.has(hit._type))),
-        map(removeDupes),
-        tap(results => {
-          this.setState({
-            isLoading: false,
-            results
-          })
-        }),
+        switchMap(queryStr =>
+          concat(
+            of({value: queryStr, isLoading: true}),
+            timer(100).pipe(
+              mergeMapTo(searchOrEmpty(queryStr)),
+              map(results => ({results, isLoading: false}))
+            )
+          )
+        ),
+        // catch any error
+        catchError(error => of({error})),
+        tap(nextState => this.setState(nextState)),
         takeUntil(this.componentWillUnmount$.asObservable())
       )
       .subscribe()
@@ -184,11 +165,9 @@ class SearchContainer extends React.PureComponent {
   }
 
   handleWindowKeyDown = event => {
-    // if (hotKeys.openSearch(event)) {
-    //   this.fieldInstance.inputElement.focus()
-    //   event.preventDefault()
-    //   event.stopPropagation()
-    // }
+    if (hotKeys.debugSearch(event)) {
+      this.setState(prevState => ({isDebug: !prevState.isDebug}))
+    }
   }
 
   handleWindowResize = () => {
@@ -209,35 +188,63 @@ class SearchContainer extends React.PureComponent {
     this.resultsInstance = ref
   }
 
+  wrapWithDebug = (item, children) => {
+    const {isDebug} = this.state
+    if (!isDebug) {
+      return children
+    }
+    const {stories, score} = item
+    return (
+      <div style={{border: '1px solid #aaa'}}>
+        <div style={{padding: 4, fontSize: '90%', backgroundColor: '#f0f0f0'}}>
+          <strong>Total score: {Math.round(score * 100) / 100}</strong>
+          <ul>
+            {stories
+              .filter(story => story.score > 0)
+              .map((story, i) => (
+                <li key={i}>
+                  {story.path}: {story.score} ({story.why})
+                </li>
+              ))}
+          </ul>
+        </div>
+        {children}
+      </div>
+    )
+  }
   renderItem = (item, index, className) => {
-    const type = schema.get(item._type)
+    const {hit} = item
+    const type = schema.get(hit._type)
     return (
       <IntentLink
         className={className}
         intent="edit"
-        params={{id: item._id, type: type.name}}
+        params={{id: hit._id, type: type.name}}
         data-hit-index={index}
         onMouseDown={this.handleHitMouseDown}
         onClick={this.handleHitClick}
         tabIndex={-1}
       >
-        <Preview
-          value={item}
-          layout="default"
-          type={type}
-          status={<div className={resultsStyles.itemType}>{type.title}</div>}
-        />
+        {this.wrapWithDebug(
+          item,
+          <Preview
+            value={hit}
+            layout="default"
+            type={type}
+            status={<div className={resultsStyles.itemType}>{type.title}</div>}
+          />
+        )}
         <Ink duration={200} opacity={0.1} radius={200} />
       </IntentLink>
     )
   }
 
   renderResults() {
-    const {activeIndex, isBleeding, isLoading, results, value} = this.state
-
+    const {activeIndex, error, isBleeding, isLoading, results, value} = this.state
     return (
       <SearchResults
         activeIndex={activeIndex}
+        error={error}
         isBleeding={isBleeding}
         isLoading={isLoading}
         items={results}
