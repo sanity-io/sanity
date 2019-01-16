@@ -1,7 +1,7 @@
-/* eslint-disable import/no-commonjs, camelcase */
-const DRONE = process.env.DRONE
+/* eslint-disable import/no-commonjs, camelcase, no-process-env */
+const URL = 'http://host.docker.internal:5000'
 
-const URL = DRONE ? 'https://backstop.sanity.studio' : 'http://host.docker.internal:5000'
+const loggedInUserCookiePath = './test/backstop/engineScripts/cookies.json'
 
 module.exports = {
   id: 'content_studio',
@@ -42,7 +42,7 @@ module.exports = {
     },
     {
       label: 'Front',
-      cookiePath: './backstop_data/engineScripts/cookies.json',
+      cookiePath: loggedInUserCookiePath,
       url: URL,
       delay: 1000,
       readySelector: '[class^="PaneItem_item"]',
@@ -53,7 +53,7 @@ module.exports = {
     },
     {
       label: 'Book pane',
-      cookiePath: './backstop_data/engineScripts/cookies.json',
+      cookiePath: loggedInUserCookiePath,
       url: `${URL}/desk/book`,
       delay: 1000,
       readySelector: '[class^="PaneItem_item"]',
@@ -64,7 +64,7 @@ module.exports = {
     },
     {
       label: 'Book document',
-      cookiePath: './backstop_data/engineScripts/cookies.json',
+      cookiePath: loggedInUserCookiePath,
       url: `${URL}/desk/book;c6b1208f-cd89-4a55-88f1-0b979e005f0a`,
       delay: 1000,
       readySelector: '[class^="Editor_root"]',
@@ -75,13 +75,13 @@ module.exports = {
     }
   ],
   paths: {
-    bitmaps_reference: 'backstop_data/bitmapsReference',
-    bitmaps_test: 'backstop_data/bitmapsTest',
-    engine_scripts: 'backstop_data/engineScripts',
-    html_report: 'backstop_data/htmlReport',
-    ci_report: 'backstop_data/ciReport'
+    bitmaps_reference: 'test/backstop/bitmapsReference',
+    bitmaps_test: 'test/backstop/bitmapsTest',
+    engine_scripts: 'test/backstop/engineScripts',
+    html_report: 'test/backstop/htmlReport',
+    ci_report: 'test/backstop/ciReport'
   },
-  report: ['browser', 'CI'],
+  report: process.env.CI ? ['browser', 'CI'] : ['browser'],
   engine: 'puppeteer',
   engineOptions: {
     args: ['--no-sandbox']

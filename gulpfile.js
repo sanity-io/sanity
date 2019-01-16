@@ -18,6 +18,8 @@ const chalk = require('chalk')
 const globby = require('globby')
 const mergeStream = require('merge-stream')
 const backstop = require('backstopjs')
+const waitPort = require('wait-port')
+const kill = require('kill-port')
 
 const isWindows = /^win/.test(process.platform)
 
@@ -242,18 +244,47 @@ gulp.task('storybook', ['watch-js', 'watch-ts', 'watch-assets'], () => {
 })
 
 gulp.task('backstop', cb => {
-  const DRONE = !!process.env.DRONE
-  backstop('test', {
-    docker: !DRONE,
-    config: './backstop_data/backstop.js'
-  })
-    .then(() => {
-      gutil.log(gutil.colors.green('Backstop test success'))
+  gulp.start('backstop-test-studio')
+
+  const params = {
+    host: 'localhost',
+    port: 5000,
+    timeout: 100 * 60 * 10
+  }
+
+  waitPort(params)
+    .then(open => {
+      if (open) {
+        backstop('test', {
+          docker: true,
+          config: './test/backstop/backstop.js'
+        })
+          .then(() => {
+            kill(params.port).then(() => {
+              gutil.log(gutil.colors.green('Backstop test success'))
+              process.exit(0)
+            })
+          })
+          .catch(() => {
+            kill(params.port)
+            throw new gutil.PluginError({
+              plugin: 'backstop',
+              message: 'Tests failed'
+            })
+          })
+      } else {
+        kill(params.port)
+        throw new gutil.PluginError({
+          plugin: 'backstop',
+          message: 'The backstop-studio did not start'
+        })
+      }
     })
-    .catch(() => {
+    .catch(err => {
+      kill(params.port)
       throw new gutil.PluginError({
         plugin: 'backstop',
-        message: 'Tests failed'
+        message: `An unknown error occured while waiting for the port: ${err}`
       })
     })
 })
@@ -261,14 +292,14 @@ gulp.task('backstop', cb => {
 gulp.task('backstop:approve', cb => {
   backstop('approve', {
     docker: true,
-    config: './backstop_data/backstop.js'
+    config: './test/backstop/backstop.js'
   })
 })
 
 gulp.task('backstop:reference', cb => {
   backstop('reference', {
     docker: true,
-    config: './backstop_data/backstop.js'
+    config: './test/backstop/backstop.js'
   })
     .then(() => {
       gutil.log(gutil.colors.green('References created'))
