@@ -10,6 +10,7 @@ Options
   --template <template> Project template to use [default: "clean"]
   --visibility <mode> Visibility mode for dataset (public/private)
   --create-project <name> Create a new project with the given name
+  --reconfigure Reconfigure Sanity studio in current folder with new project/dataset
 
 Examples
   # Initialize a new project, prompt for required information along the way

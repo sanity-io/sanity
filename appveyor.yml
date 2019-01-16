@@ -33,10 +33,10 @@ test_script:
 
   # Test initializing a project in unattended mode
   - mkdir %APPVEYOR_BUILD_FOLDER%\tmp
+  - cd %APPVEYOR_BUILD_FOLDER%\tmp
   - sanity init -y --project=ppsg7ml5 --dataset=test --output-path=%APPVEYOR_BUILD_FOLDER%\tmp
 
   # Use the newly commited changes instead of the latest dependencies from NPM
-  - cd %APPVEYOR_BUILD_FOLDER%\tmp
   - node %APPVEYOR_BUILD_FOLDER%\scripts\symlinkDependencies.js .
 
   # Test building the project with latest dependencies
