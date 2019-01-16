@@ -6,6 +6,7 @@ export default {
   title: 'Author',
   icon,
   description: 'This represents an author',
+  __experimental_search: [{path: 'name', weight: 10}],
   preview: {
     select: {
       title: 'name',

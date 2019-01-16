@@ -1,8 +1,8 @@
-import {pick, keyBy, startCase} from 'lodash'
+import {pick, toPath, keyBy, startCase, isPlainObject} from 'lodash'
 import {lazyGetter} from './utils'
 import createPreviewGetter from '../preview/createPreviewGetter'
 import guessOrderingConfig from '../ordering/guessOrderingConfig'
-import resolveSearchFieldPaths from '../resolveSearchFieldPaths'
+import resolveSearchConfig from '../resolveSearchConfig'
 
 const OVERRIDABLE_FIELDS = [
   'jsonType',
@@ -13,11 +13,34 @@ const OVERRIDABLE_FIELDS = [
   'readOnly',
   'hidden',
   'description',
-  '__unstable_searchFields',
+  '__experimental_search',
   'options',
   'inputComponent',
   'validation'
 ]
+
+const normalizeSearchConfig = configs => {
+  if (!Array.isArray(configs)) {
+    throw new Error(
+      'The search config of a document type must be an array of search config objects'
+    )
+  }
+  return configs.map(conf => {
+    if (conf === 'defaults') {
+      return conf
+    }
+    if (!isPlainObject(conf)) {
+      throw new Error('Search config must be an object of {path: string, weight: number}')
+    }
+    if (typeof conf.path !== 'string') {
+      throw new Error('The path property of the search field declaration must be a string')
+    }
+    return {
+      weight: 'weight' in conf ? conf.weight : 1,
+      path: toPath(conf.path)
+    }
+  })
+}
 
 export const ObjectType = {
   get() {
@@ -59,9 +82,25 @@ export const ObjectType = {
 
     lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))
 
-    lazyGetter(parsed, '__unstable_searchFields', () => resolveSearchFieldPaths(parsed), {
-      enumerable: false
-    })
+    lazyGetter(
+      parsed,
+      '__experimental_search',
+      () => {
+        const userProvidedSearchConfig = subTypeDef.__experimental_search
+          ? normalizeSearchConfig(subTypeDef.__experimental_search)
+          : null
+
+        if (userProvidedSearchConfig) {
+          return userProvidedSearchConfig.map(entry =>
+            entry === 'defaults' ? resolveSearchConfig(subTypeDef) : entry
+          )
+        }
+        return resolveSearchConfig(parsed)
+      },
+      {
+        enumerable: false
+      }
+    )
 
     return subtype(parsed)
 
@@ -78,7 +117,7 @@ export const ObjectType = {
             title: extensionDef.title || subTypeDef.title,
             type: parent
           })
-          lazyGetter(current, '__unstable_searchFields', () => parent.__unstable_searchFields)
+          lazyGetter(current, '__experimental_search', () => parent.__experimental_search)
           return subtype(current)
         }
       }

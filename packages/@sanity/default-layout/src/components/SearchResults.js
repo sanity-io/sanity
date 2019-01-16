@@ -4,18 +4,25 @@ import React from 'react'
 
 import styles from './styles/SearchResults.css'
 
-class SearchResults extends React.PureComponent {
+class SearchResults extends React.Component {
   static propTypes = {
     activeIndex: PropTypes.number.isRequired,
+    error: PropTypes.instanceOf(Error),
     // isBleeding: PropTypes.bool.isRequired,
     isLoading: PropTypes.bool.isRequired,
     items: PropTypes.arrayOf(
       PropTypes.shape({
-        _id: PropTypes.string.isRequired
+        hit: PropTypes.shape({
+          _id: PropTypes.string.isRequired
+        })
       })
     ).isRequired,
     query: PropTypes.string.isRequired,
     renderItem: PropTypes.func.isRequired
+  }
+
+  static defaultProps = {
+    error: null
   }
 
   element = null
@@ -46,8 +53,11 @@ class SearchResults extends React.PureComponent {
   }
 
   render() {
-    const {activeIndex, isLoading, items, query, renderItem} = this.props
+    const {activeIndex, error, isLoading, items, query, renderItem} = this.props
     const noResults = !isLoading && query.length > 0 && items.length === 0
+    if (error) {
+      return <div className={`${styles.root} ${styles.noResults}`}>{error.message}</div>
+    }
 
     if (noResults) {
       return (
@@ -76,7 +86,7 @@ class SearchResults extends React.PureComponent {
       <ul className={styles.root} ref={this.setElement}>
         {items.map((item, index) => {
           return (
-            <li key={item._id} className={styles.listItem}>
+            <li key={item.hit._id} className={styles.listItem}>
               {renderItem(item, index, activeIndex === index ? styles.activeItem : styles.item)}
             </li>
           )
