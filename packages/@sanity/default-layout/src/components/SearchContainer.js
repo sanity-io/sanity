@@ -4,7 +4,15 @@ import React from 'react'
 import schema from 'part:@sanity/base/schema?'
 import Preview from 'part:@sanity/base/preview?'
 import {concat, of, Subject, timer} from 'rxjs'
-import {catchError, map, mergeMapTo, switchMap, takeUntil, tap} from 'rxjs/operators'
+import {
+  distinctUntilChanged,
+  catchError,
+  map,
+  mergeMapTo,
+  switchMap,
+  takeUntil,
+  tap
+} from 'rxjs/operators'
 import {IntentLink} from 'part:@sanity/base/router'
 import search from 'part:@sanity/base/search'
 import Ink from 'react-ink'
@@ -29,11 +37,11 @@ class SearchContainer extends React.Component {
     onClose: PropTypes.func.isRequired,
     shouldBeFocused: PropTypes.bool.isRequired
   }
+  fieldRef = React.createRef()
+  resultsRef = React.createRef()
 
-  input$ = new Subject()
+  searchTerm$ = new Subject()
   componentWillUnmount$ = new Subject()
-  fieldInstance = null
-  resultsInstance = null
 
   state = {
     activeIndex: -1,
@@ -52,13 +60,12 @@ class SearchContainer extends React.Component {
     window.addEventListener('mouseup', this.handleWindowMouseUp)
     window.addEventListener('resize', this.handleWindowResize)
 
-    this.input$
-      .asObservable()
+    this.searchTerm$
       .pipe(
-        map(event => event.target.value),
+        distinctUntilChanged(),
         switchMap(queryStr =>
           concat(
-            of({value: queryStr, isLoading: true}),
+            of({activeIndex: -1, error: null, value: queryStr, isLoading: true}),
             timer(100).pipe(
               mergeMapTo(searchOrEmpty(queryStr)),
               map(results => ({results, isLoading: false}))
@@ -66,7 +73,7 @@ class SearchContainer extends React.Component {
           )
         ),
         // catch any error
-        catchError(error => of({error})),
+        catchError((error, caught$) => concat(of({error}), caught$)),
         tap(nextState => this.setState(nextState)),
         takeUntil(this.componentWillUnmount$.asObservable())
       )
@@ -78,7 +85,7 @@ class SearchContainer extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (!prevProps.shouldBeFocused && this.props.shouldBeFocused) {
-      this.fieldInstance.inputElement.select()
+      this.fieldRef.current.inputElement.select()
     }
   }
 
@@ -92,7 +99,7 @@ class SearchContainer extends React.Component {
   }
 
   handleInputChange = event => {
-    this.input$.next(event)
+    this.searchTerm$.next(event.currentTarget.value)
   }
 
   handleBlur = () => {
@@ -108,9 +115,7 @@ class SearchContainer extends React.Component {
   }
 
   handleHitMouseDown = event => {
-    this.setState({
-      activeIndex: Number(event.currentTarget.getAttribute('data-hit-index'))
-    })
+    this.setState({activeIndex: Number(event.currentTarget.getAttribute('data-hit-index'))})
   }
 
   handleHitClick = event => {
@@ -119,7 +124,8 @@ class SearchContainer extends React.Component {
 
   handleClear = () => {
     this.props.onClose()
-    this.setState({isFocused: false, value: '', results: []})
+    this.searchTerm$.next('')
+    this.setState({isFocused: false})
   }
 
   /* eslint-disable-next-line complexity */
@@ -129,12 +135,15 @@ class SearchContainer extends React.Component {
     const lastIndex = results.length - 1
 
     if (event.key === 'Enter') {
-      this.resultsInstance.element.querySelector(`[data-hit-index="${activeIndex}"]`).click()
+      const hitEl = this.resultsRef.current.element.querySelector(
+        `[data-hit-index="${activeIndex}"]`
+      )
+      if (hitEl) hitEl.click()
     }
 
     if (event.key === 'Escape') {
       // this.handleClear()
-      this.fieldInstance.inputElement.blur()
+      this.fieldRef.current.inputElement.blur()
     }
 
     // TODO: is it safe to remove this?
@@ -178,14 +187,6 @@ class SearchContainer extends React.Component {
 
   handleWindowMouseUp = () => {
     this.setState({isPressing: false})
-  }
-
-  setFieldInstance = ref => {
-    this.fieldInstance = ref
-  }
-
-  setResultsInstance = ref => {
-    this.resultsInstance = ref
   }
 
   wrapWithDebug = (item, children) => {
@@ -250,7 +251,7 @@ class SearchContainer extends React.Component {
         items={results}
         query={value}
         renderItem={this.renderItem}
-        ref={this.setResultsInstance}
+        ref={this.resultsRef}
       />
     )
   }
@@ -270,7 +271,7 @@ class SearchContainer extends React.Component {
         onFocus={this.handleFocus}
         onKeyDown={this.handleKeyDown}
         onMouseDown={this.handleMouseDown}
-        ref={this.setFieldInstance}
+        ref={this.fieldRef}
         results={this.renderResults()}
         value={value}
       />
