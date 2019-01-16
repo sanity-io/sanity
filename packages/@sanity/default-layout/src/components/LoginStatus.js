@@ -59,11 +59,17 @@ class LoginStatus extends React.PureComponent {
           type="button"
         >
           <div className={styles.inner} tabIndex={-1}>
-            <img
-              src={user.profileImage}
-              className={styles.userImage}
-              alt={`${user.name}'s profile image`}
-            />
+            {user.profileImage ? (
+              <img
+                src={user.profileImage}
+                className={styles.userImage}
+                alt={`${user.name}'s profile image`}
+              />
+            ) : (
+              <div className={styles.userImageMissing}>
+                {user.name ? user.name.charAt(0) : user.email.charAt(0)}
+              </div>
+            )}
           </div>
         </button>
 

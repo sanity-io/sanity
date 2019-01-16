@@ -28,9 +28,17 @@ function SideMenu(props) {
         </button>
 
         <div className={styles.userProfile}>
-          <div className={styles.userProfileImage}>
-            <img src={user.profileImage} alt={`${user.name}'s profile image`} />
-          </div>
+          {user.profileImage ? (
+            <img
+              className={styles.userProfileImage}
+              src={user.profileImage}
+              alt={`${user.name}'s profile image`}
+            />
+          ) : (
+            <div className={styles.userProfileImageMissing}>
+              {user.name ? user.name.charAt(0) : user.email.charAt(0)}
+            </div>
+          )}
           <div className={styles.userProfileText}>{user.name}</div>
         </div>
 
