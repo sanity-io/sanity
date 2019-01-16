@@ -51,6 +51,17 @@
   border-radius: 50%;
 }
 
+.userImageMissing {
+  composes: userImage;
+  display: flex;
+  background-color: var(--brand-primary);
+  color: var(--brand-primary--inverted);
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  border: none;
+}
+
 .userName {
   display: none;
 }
