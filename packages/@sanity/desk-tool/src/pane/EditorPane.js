@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import promiseLatest from 'promise-latest'
-import {merge, of as observableOf} from 'rxjs'
-import {catchError, map, tap} from 'rxjs/operators'
+import {merge, timer, of as observableOf} from 'rxjs'
+import {catchError, switchMap, map, mapTo, tap} from 'rxjs/operators'
 import {validateDocument} from '@sanity/validation'
 import {omit, throttle, debounce} from 'lodash'
 import {FormBuilder, checkoutPair} from 'part:@sanity/form-builder'
@@ -129,6 +129,9 @@ export default withDocumentType(
         draft$.pipe(map(event => ({...event, version: 'draft'})))
       )
         .pipe(
+          switchMap(event =>
+            event.type === 'reconnect' ? timer(500).pipe(mapTo(event)) : observableOf(event)
+          ),
           catchError((err, _caught$) => {
             // eslint-disable-next-line no-console
             console.error(err)
