@@ -37,10 +37,12 @@ export function createWeightedSearch(types, client) {
     const constraints = terms.map((term, i) =>
       combinedSearchPaths.map(joinedPath => `${joinedPath} match $t${i}`)
     )
+
     const filters = [
       '_type in $types',
+      opts.includeDrafts === false && `!(_id in path('drafts.**'))`,
       ...constraints.map(constraint => `(${constraint.join('||')})`)
-    ]
+    ].filter(Boolean)
 
     const query = `*[${filters.join('&&')}][0...$limit]{_type, _id, ...select(${selections.join(
       ',\n'
