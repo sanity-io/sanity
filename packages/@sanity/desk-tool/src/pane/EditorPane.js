@@ -134,9 +134,8 @@ export default withDocumentType(
         draft$.pipe(map(event => ({...event, version: 'draft'})))
       )
         .pipe(
-          switchMap(
-            event =>
-              event.type === 'reconnect' ? timer(500).pipe(mapTo(event)) : observableOf(event)
+          switchMap(event =>
+            event.type === 'reconnect' ? timer(500).pipe(mapTo(event)) : observableOf(event)
           ),
           catchError((err, _caught$) => {
             // eslint-disable-next-line no-console
@@ -163,7 +162,7 @@ export default withDocumentType(
 
     presenceToMarkers = states => {
       const currentDocument = states.filter(
-        presence => presence.documentId === this.props.documentId
+        presence => presence.documentId === this.props.options.id
       )
       const presenceMarkers = currentDocument.map(presence => ({
         type: 'presence',
@@ -283,8 +282,7 @@ export default withDocumentType(
         .delete(getPublishedId(documentId))
         .delete(getDraftId(documentId))
 
-      tx
-        .commit()
+      tx.commit()
         .pipe(
           map(result => ({
             type: 'success',
@@ -322,8 +320,7 @@ export default withDocumentType(
         })
       }
 
-      tx
-        .commit()
+      tx.commit()
         .pipe(
           map(result => ({
             type: 'success',
@@ -361,23 +358,20 @@ export default withDocumentType(
       } else {
         // If it exists already, we only want to update it if the revision on the remote server
         // matches what our local state thinks it's at
-        tx
-          .patch(getPublishedId(documentId), {
-            // Hack until other mutations support revision locking
-            unset: ['_reserved_prop_'],
-            ifRevisionID: published.snapshot._rev
-          })
-          .createOrReplace({
-            ...omit(draft.snapshot, '_updatedAt'),
-            _id: getPublishedId(documentId)
-          })
+        tx.patch(getPublishedId(documentId), {
+          // Hack until other mutations support revision locking
+          unset: ['_reserved_prop_'],
+          ifRevisionID: published.snapshot._rev
+        }).createOrReplace({
+          ...omit(draft.snapshot, '_updatedAt'),
+          _id: getPublishedId(documentId)
+        })
       }
 
       tx.delete(getDraftId(documentId))
 
       // @todo add error handling for revision mismatch
-      tx
-        .commit()
+      tx.commit()
         .pipe(
           map(result => ({
             type: 'success',
@@ -528,15 +522,14 @@ export default withDocumentType(
               This document has the schema type <code>{typeName}</code>, which is not defined as a
               type in the local content studio schema.
             </p>
-            {__DEV__ &&
-              doc && (
-                <div>
-                  <h4>Here is the JSON representation of the document:</h4>
-                  <pre className={styles.jsonDump}>
-                    <code>{JSON.stringify(doc, null, 2)}</code>
-                  </pre>
-                </div>
-              )}
+            {__DEV__ && doc && (
+              <div>
+                <h4>Here is the JSON representation of the document:</h4>
+                <pre className={styles.jsonDump}>
+                  <code>{JSON.stringify(doc, null, 2)}</code>
+                </pre>
+              </div>
+            )}
           </div>
         </div>
       )
@@ -574,6 +567,7 @@ export default withDocumentType(
 
       return (
         <Editor
+          id={options.id}
           title={title}
           paneIndex={index}
           patchChannel={this.patchChannel}
