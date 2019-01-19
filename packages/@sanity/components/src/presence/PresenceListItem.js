@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Tooltip} from '@sanity/react-tippy'
+import {Tooltip} from 'react-tippy'
 import userStore from 'part:@sanity/base/user'
 import styles from './styles/PresenceListItem.css'
 import colorHasher from './colorHasher'
@@ -34,7 +34,7 @@ export default class PresenceListItem extends React.PureComponent {
   render() {
     const {user} = this.state
     const imgUrl = user.imageUrl || user.profileImage
-    const userColor = colorHasher.hex(this.props.marker.session)
+    const userColor = colorHasher.hex(this.props.marker.identity)
     const imgStyles = {
       boxShadow: `0 0 1px 1px ${userColor}`,
       backgroundColor: userColor,
