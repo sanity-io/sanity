@@ -13,6 +13,8 @@ import LoginStatus from './LoginStatus'
 import SanityStatusContainer from './SanityStatusContainer'
 import SearchContainer from './SearchContainer'
 import SpaceSwitcher from './SpaceSwitcher'
+import Presence from './Presence'
+
 import styles from './styles/NavBar.css'
 
 function NavBar(props) {
@@ -99,6 +101,9 @@ function NavBar(props) {
       <div className={styles.extras}>{/* Insert plugins here */}</div>
       <div className={styles.sanityStatus}>
         <SanityStatusContainer />
+      </div>
+      <div className={styles.presence}>
+        <Presence user={user} />
       </div>
       <div className={styles.loginStatus} ref={onSetLoginStatusElement}>
         <LoginStatus onLogout={onUserLogout} user={user} />
