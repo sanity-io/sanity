@@ -1,7 +1,7 @@
 import {Observable} from 'rxjs'
 import createActions from '../utils/createActions'
 import pubsub from 'nano-pubsub'
-import authenticationFetcher from 'part:@sanity/base/authentication-fetcher'
+import authenticationFetcher from 'part:@sanity/base/authentication-fetcher?'
 import client from 'part:@sanity/base/client'
 
 const userChannel = pubsub()
@@ -19,14 +19,24 @@ errorChannel.subscribe(val => {
   _currentError = val
 })
 
-function fetchInitial() {
+function getAuthenticationFetcher() {
+  if (!authenticationFetcher) {
+    throw new Error(
+      'Authentication fetcher not implemented - try adding `@sanity/default-login` to your list of plugins?'
+    )
+  }
+
   return authenticationFetcher
+}
+
+function fetchInitial() {
+  return getAuthenticationFetcher()
     .getCurrentUser()
     .then(user => userChannel.publish(user), err => errorChannel.publish(err))
 }
 
 function logout() {
-  return authenticationFetcher
+  return getAuthenticationFetcher()
     .logout()
     .then(() => userChannel.publish(null), err => errorChannel.publish(err))
 }
