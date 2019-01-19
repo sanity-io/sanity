@@ -191,7 +191,7 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
     let childMarkers = markers
     if (!isRoot) {
       childMarkers = markers
-        .filter(marker => PathUtils.startsWith(path, marker.path))
+        .filter(marker => PathUtils.startsWith(path, marker.path || []))
         .map(marker => ({
           ...marker,
           path: trimChildPath(path, marker.path)
