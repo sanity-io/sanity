@@ -3,6 +3,7 @@ import React from 'react'
 
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import CustomMarkers from 'part:@sanity/form-builder/input/block-editor/block-markers-custom-default'
+import PresenceList from '../PresenceList'
 
 import type {Marker, Path, RenderCustomMarkers, SlateEditor} from '../typeDefs'
 
@@ -42,14 +43,20 @@ export default class Markers extends React.Component<Props> {
     if (markers.length === 0) {
       return null
     }
-    const customMarkers = markers.filter(mrkr => mrkr.type !== 'validation')
+    const customMarkers = markers.filter(mrkr => !['validation', 'presence'].includes(mrkr.type))
     const validationMarkers = markers.filter(mrkr => mrkr.type === 'validation')
+    const presenceMarkers = markers.filter(mrkr => mrkr.type === 'presence')
 
     return (
       <div onClick={this.handleCancelEvent} className={styles.root}>
         {validationMarkers.length > 0 && (
           <div className={styles.markerGroup} onClick={this.handleValidationMarkerClick}>
             <ValidationStatus markers={validationMarkers} />
+          </div>
+        )}
+        {presenceMarkers.length > 0 && (
+          <div className={styles.markerGroup}>
+            <PresenceList markers={presenceMarkers} />
           </div>
         )}
         {customMarkers.length > 0 && (
