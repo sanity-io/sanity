@@ -36,7 +36,7 @@ export default class PresenceListItem extends React.PureComponent {
     const imgUrl = user.imageUrl || user.profileImage
     const userColor = colorHasher(this.props.marker.identity)
     const imgStyles = {
-      boxShadow: `0 0 1px 1px ${userColor}`,
+      borderColor: userColor,
       backgroundColor: userColor,
       backgroundImage: imgUrl && `url(${imgUrl})`
     }
