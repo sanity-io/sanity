@@ -8,22 +8,19 @@ import colorHasher from './colorHasher'
 
 export default class PresenceListItem extends React.PureComponent {
   static propTypes = {
-    marker: PropTypes.shape({
-      identity: PropTypes.string,
-      session: PropTypes.string
-    }).isRequired
+    identity: PropTypes.string.isRequired
   }
 
   state = {user: {}}
 
   constructor(props) {
     super(props)
-    this.fetchUser(props.marker.identity)
+    this.fetchUser(props.identity)
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.marker.identity !== this.props.marker.identity) {
-      this.fetchUser(nextProps.marker.identity)
+    if (nextProps.identity !== this.props.identity) {
+      this.fetchUser(nextProps.identity)
     }
   }
 
@@ -34,7 +31,7 @@ export default class PresenceListItem extends React.PureComponent {
   render() {
     const {user} = this.state
     const imgUrl = user.imageUrl || user.profileImage
-    const userColor = colorHasher(this.props.marker.identity)
+    const userColor = colorHasher(this.props.identity)
     const imgStyles = {
       borderColor: userColor,
       backgroundColor: userColor,

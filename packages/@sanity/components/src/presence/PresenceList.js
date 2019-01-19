@@ -33,7 +33,9 @@ export default class PresenceList extends React.PureComponent {
 
     return (
       <div className={styles.root}>
-        {presence.map(marker => <PresenceListItem key={marker.session} marker={marker} />)}
+        {presence.map(marker => (
+          <PresenceListItem key={marker.session} identity={marker.identity} />
+        ))}
       </div>
     )
   }
