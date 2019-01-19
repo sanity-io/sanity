@@ -884,6 +884,14 @@
       "path": "typography/Hotkeys.js"
     },
     {
+      "name": "part:@sanity/components/presence/list-item",
+      "description": "Presence list item"
+    },
+    {
+      "implements": "part:@sanity/components/presence/list-item",
+      "path": "presence/PresenceListItem.js"
+    },
+    {
       "implements": "part:@sanity/base/component",
       "path": "buttons/story.js"
     },
