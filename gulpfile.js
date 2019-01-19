@@ -1,4 +1,4 @@
-/* eslint-disable import/no-commonjs, import/no-unassigned-import */
+/* eslint-disable import/no-commonjs, import/no-unassigned-import, max-nested-callbacks */
 // Note: Node 8 compat, please!
 require('hard-rejection/register')
 
@@ -244,6 +244,17 @@ gulp.task('storybook', ['watch-js', 'watch-ts', 'watch-assets'], () => {
 })
 
 gulp.task('backstop', cb => {
+  const {exec} = require('child_process')
+
+  exec('docker -v', (err, stdout, stderr) => {
+    if (err) {
+      throw new gutil.PluginError({
+        plugin: 'backstop',
+        message: gutil.colors.red('Please install Docker on your computer. https://www.docker.com/')
+      })
+    }
+  })
+
   gulp.start('backstop-test-studio')
 
   const params = {
@@ -262,6 +273,7 @@ gulp.task('backstop', cb => {
           .then(() => {
             kill(params.port).then(() => {
               gutil.log(gutil.colors.green('Backstop test success'))
+              // eslint-disable-next-line
               process.exit(0)
             })
           })
