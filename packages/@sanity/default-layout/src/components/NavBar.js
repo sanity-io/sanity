@@ -31,6 +31,7 @@ function NavBar(props) {
     router,
     tools,
     user,
+    presence,
     showLabel,
     showToolSwitcher
   } = props
@@ -103,7 +104,7 @@ function NavBar(props) {
         <SanityStatusContainer />
       </div>
       <div className={styles.presence}>
-        <Presence user={user} />
+        {presence.length > 0 && <Presence presence={presence} user={user} />}
       </div>
       <div className={styles.loginStatus} ref={onSetLoginStatusElement}>
         <LoginStatus onLogout={onUserLogout} user={user} />
@@ -124,7 +125,8 @@ NavBar.defaultProps = {
   showLabel: true,
   showToolSwitcher: true,
   onSetLoginStatusElement: undefined,
-  onSetSearchElement: undefined
+  onSetSearchElement: undefined,
+  presence: []
 }
 
 NavBar.propTypes = {
@@ -150,6 +152,19 @@ NavBar.propTypes = {
     name: PropTypes.string,
     profileImage: PropTypes.string
   }).isRequired,
+  presence: PropTypes.arrayOf(
+    PropTypes.shape({
+      documentId: PropTypes.string,
+      identity: PropTypes.string,
+      path: PropTypes.arrayOf(
+        PropTypes.oneOfType([
+          PropTypes.string,
+          PropTypes.number,
+          PropTypes.shape({_key: PropTypes.string})
+        ])
+      )
+    })
+  ),
   showLabel: PropTypes.bool,
   showToolSwitcher: PropTypes.bool
 }

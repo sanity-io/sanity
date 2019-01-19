@@ -1,4 +1,6 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+import presenceStore from 'part:@sanity/base/datastore/presence'
 import NavBar from './NavBar'
 
 /* eslint-disable complexity */
@@ -58,6 +60,9 @@ class NavBarContainer extends React.PureComponent {
     // Start an animation frame loop to check whether elements within the NavBar
     // exits the viewport at any time.
     this.tick()
+
+    // Start listening for presence updates
+    this.presence$ = presenceStore.presence.subscribe(this.handleUpdatePresence)
   }
 
   /* eslint-disable complexity */
@@ -75,14 +80,14 @@ class NavBarContainer extends React.PureComponent {
   /* eslint-enable complexity */
 
   componentWillUnmount() {
-    if (this.io) {
-      this.io.disconnect()
-      this.io = null
-    }
-
     if (this.tickAnimFrameId) {
       window.cancelAnimationFrame(this.tickAnimFrameId)
       this.tickAnimFrameId = null
+    }
+
+    if (this.presence$) {
+      this.presence$.unsubscribe()
+      this.presence$ = null
     }
   }
 
@@ -121,8 +126,16 @@ class NavBarContainer extends React.PureComponent {
     this.searchElement = element
   }
 
+  handleUpdatePresence = presence => {
+    this.setState({
+      presence: presence.filter(
+        session => session.identity !== this.props.user.id && session.documentId
+      )
+    })
+  }
+
   render() {
-    const {showLabel, showToolSwitcher} = this.state
+    const {showLabel, showToolSwitcher, presence} = this.state
 
     return (
       <NavBar
@@ -131,9 +144,16 @@ class NavBarContainer extends React.PureComponent {
         onSetSearchElement={this.handleSetSearchElement}
         showLabel={showLabel}
         showToolSwitcher={showToolSwitcher}
+        presence={presence}
       />
     )
   }
+}
+
+NavBarContainer.propTypes = {
+  user: PropTypes.shape({
+    id: PropTypes.string
+  }).isRequired
 }
 
 export default NavBarContainer
