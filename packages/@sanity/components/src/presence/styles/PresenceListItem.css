@@ -1,9 +1,31 @@
+@import "part:@sanity/base/theme/variables-style";
+
+@keyframes appear {
+  0% {
+    opacity: 0;
+    width: 1px;
+  }
+
+  50% {
+    opacity: 0;
+    width: 1em;
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .root {
   width: 1em;
   height: 1em;
   border-radius: 50%;
   background-size: 100%;
   transition: 0.1s linear transform;
+  border: 2px solid var(--text-color);
+  animation-duration: 400ms;
+  animation-name: appear;
 
   @nest &:hover {
     transform: scale(2);
