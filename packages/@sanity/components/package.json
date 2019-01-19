@@ -28,7 +28,6 @@
     "chance": "^1.0.4",
     "circular-at": "^1.0.3",
     "classnames": "^2.2.5",
-    "color-hash": "^1.0.3",
     "date-fns": "^1.29.0",
     "dom-scroll-into-view": "^1.2.1",
     "element-resize-detector": "^1.1.14",
@@ -45,7 +44,8 @@
     "react-split-pane": "^0.1.84",
     "react-tippy": "^1.2.3",
     "rxjs": "^6.1.0",
-    "scroll": "^2.0.0"
+    "scroll": "^2.0.0",
+    "string-hash": "^1.1.3"
   },
   "devDependencies": {
     "@sanity/base": "0.140.2",
