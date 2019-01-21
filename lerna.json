@@ -8,6 +8,7 @@
     "packages/create-sanity",
     "packages/ecommerce-studio",
     "packages/eslint-config-sanity",
+    "packages/backstop-test-studio",
     "packages/example-studio",
     "packages/groq",
     "packages/movies-studio",
