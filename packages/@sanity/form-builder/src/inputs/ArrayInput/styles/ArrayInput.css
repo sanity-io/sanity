@@ -75,3 +75,12 @@
 .fixMissingKeysButtonWrapper {
   margin: 1em 0;
 }
+
+.nonObjectsWarning {
+  composes: warning;
+  padding: 1em;
+}
+
+.removeNonObjectsButtonWrapper {
+  composes: fixMissingKeysButtonWrapper;
+}
