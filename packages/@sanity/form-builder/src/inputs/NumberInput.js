@@ -2,6 +2,7 @@
 import React from 'react'
 import TextInput from 'part:@sanity/components/textinputs/default'
 import FormField from 'part:@sanity/components/formfields/default'
+import {getValidationRule} from '../utils/getValidationRule'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import type {Type, Marker} from '../typedefs'
 
@@ -39,18 +40,8 @@ export default class NumberInput extends React.Component<Props> {
     const errors = validation.filter(marker => marker.level === 'error')
 
     // Show numpad on mobile if only positive numbers is preferred
-    let onlyPositiveNumber = false
-    if (type && type.validation && type.validation.length) {
-      type.validation.forEach(rule => {
-        if (rule._rules && rule._rules.length) {
-          rule._rules.forEach(_r => {
-            if (_r.flag === 'min' && _r.constraint >= 0) {
-              onlyPositiveNumber = true
-            }
-          })
-        }
-      })
-    }
+    const minRule = getValidationRule(type, 'min')
+    const onlyPositiveNumber = minRule && minRule.constraint >= 0
 
     return (
       <FormField markers={markers} level={level} label={type.title} description={type.description}>
@@ -63,7 +54,7 @@ export default class NumberInput extends React.Component<Props> {
           onChange={this.handleChange}
           onFocus={onFocus}
           ref={this.setInput}
-          pattern={onlyPositiveNumber ? '[\d]*' : undefined}
+          pattern={onlyPositiveNumber ? '[d]*' : undefined}
         />
       </FormField>
     )
