@@ -9,7 +9,11 @@ export const DEFAULT_LINK_ANNOTATION = {
       name: 'href',
       type: 'url',
       title: 'Url',
-      validation: Rule => Rule.uri({scheme: ['http', 'https', 'tel', 'mailto']})
+      validation: Rule =>
+        Rule.uri({
+          scheme: ['http', 'https', 'tel', 'mailto'],
+          allowRelative: true
+        })
     }
   ]
 }
