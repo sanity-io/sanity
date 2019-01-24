@@ -1,7 +1,9 @@
 //@flow
 import React from 'react'
+import {get} from 'lodash'
 import TextInput from 'part:@sanity/components/textinputs/default'
 import FormField from 'part:@sanity/components/formfields/default'
+import {getValidationRule} from '../utils/getValidationRule'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import type {Type, Marker} from '../typedefs'
 
@@ -38,11 +40,15 @@ export default class UrlInput extends React.Component<Props> {
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
 
+    // Use text input for relative URIs
+    const uriRule = getValidationRule(type, 'uri')
+    const inputType = uriRule && get(uriRule, 'constraint.options.allowRelative') ? 'text' : 'url'
+
     return (
       <FormField markers={markers} level={level} label={type.title} description={type.description}>
         <TextInput
           customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
-          type="url"
+          type={inputType}
           value={value}
           readOnly={readOnly}
           placeholder={type.placeholder}

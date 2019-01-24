@@ -53,6 +53,13 @@ export default {
       validation: Rule => Rule.uri({scheme: ['mailto', 'tel']})
     },
     {
+      name: 'relativeUrl',
+      type: 'url',
+      title: 'Relative URL',
+      description: 'URL that allows relative URLs',
+      validation: Rule => Rule.uri({allowRelative: true})
+    },
+    {
       name: 'date',
       type: 'datetime',
       title: 'Some date',
@@ -88,6 +95,12 @@ export default {
       title: 'Highest temperature recorded',
       description: 'Only positive numbers larger than lowest temperature',
       validation: Rule => Rule.positive().min(Rule.valueOfField('lowestTemperature'))
+    },
+    {
+      name: 'onlyPositive',
+      type: 'number',
+      title: 'Only positive',
+      validation: Rule => Rule.positive()
     },
     {
       name: 'someInteger',
