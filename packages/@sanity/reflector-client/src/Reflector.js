@@ -1,9 +1,14 @@
 /* global window, navigator */
 
 import {Observable} from 'rxjs'
+import WebSocketImpl from 'isomorphic-ws'
 
+const MODE_WEBSOCKET = 'ws'
+const MODE_EVENTSOURCE = 'es'
+
+const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined'
 const EventSource =
-  typeof window !== 'undefined' && window.EventSource
+  isBrowser && window.EventSource
     ? window.EventSource // Native browser EventSource
     : require('@sanity/eventsource') // Node.js, IE etc
 
@@ -18,9 +23,56 @@ function parseEvent(event) {
 class Reflector {
   constructor(sanityClient) {
     this.sanityClient = sanityClient
+    this.hasToken = Boolean(sanityClient.config().token)
+    this.mode = (isBrowser && this.hasToken) || !WebSocketImpl ? MODE_EVENTSOURCE : MODE_EVENTSOURCE
+    this.sockets = {}
   }
 
   listen(channel) {
+    return this.mode === MODE_WEBSOCKET ? this.listenWs(channel) : this.listenEs(channel)
+  }
+
+  listenWs(channel) {
+    const {token} = this.sanityClient.config()
+
+    const options = {}
+    if (this.hasToken) {
+      options.headers = {Authorization: `Bearer ${token}`}
+    }
+
+    const url = this.sanityClient.getUrl(`presence/socket/${channel}`).replace(/^http/, 'ws')
+    return new Observable(observer => {
+      const ws = new WebSocketImpl(url, options)
+      ws.addEventListener('message', onMessage, false)
+      ws.addEventListener('open', onOpen, false)
+      ws.addEventListener('close', onClose, false)
+
+      function onMessage(evt) {
+        const event = parseEvent(evt)
+        return event instanceof Error ? observer.error(event) : observer.next(event)
+      }
+
+      function unsubscribe() {
+        ws.removeEventListener('message', onMessage, false)
+        ws.removeEventListener('open', onOpen, false)
+        ws.removeEventListener('close', onClose, false)
+        ws.close()
+        delete this.sockets[channel]
+      }
+
+      function onOpen() {
+        this.sockets[channel] = ws
+      }
+
+      function onClose() {
+        delete this.sockets[channel]
+      }
+
+      return unsubscribe
+    })
+  }
+
+  listenEs(channel) {
     const {token, withCredentials} = this.sanityClient.clientConfig
 
     const esOptions = {}
@@ -54,6 +106,10 @@ class Reflector {
   }
 
   send(channel, message) {
+    if (this.mode === MODE_WEBSOCKET && this.sockets[channel]) {
+      return Promise.resolve(this.sockets[channel].send(JSON.stringify(message)))
+    }
+
     return this.sanityClient.request({
       url: `presence/send/${channel}`,
       method: 'POST',

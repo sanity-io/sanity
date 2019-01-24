@@ -14,7 +14,9 @@
   },
   "dependencies": {
     "@sanity/eventsource": "0.147.0",
-    "rxjs": "^6.5.3"
+    "isomorphic-ws": "^4.0.1",
+    "rxjs": "^6.5.3",
+    "ws": "^6.1.3"
   },
   "publishConfig": {
     "access": "public"
