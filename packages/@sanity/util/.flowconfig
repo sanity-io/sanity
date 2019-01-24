@@ -1,0 +1,7 @@
+[include]
+./src
+../../../
+[libs]
+defs
+[ignore]
+.*/examples/.*

@@ -7,7 +7,7 @@ import type {Marker, Type} from '../../typedefs'
 import type {Path} from '../../typedefs/path'
 import type {Subscription} from '../../typedefs/observable'
 import {resolveTypeName} from '../../utils/resolveTypeName'
-import {FOCUS_TERMINATOR, startsWith} from '../../utils/pathUtils'
+import {FOCUS_TERMINATOR, startsWith} from '@sanity/util/paths'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import {insert, PatchEvent, set, setIfMissing, unset} from '../../PatchEvent'
 import styles from './styles/ArrayInput.css'
@@ -296,9 +296,7 @@ export default class ArrayInput extends React.Component<Props, State> {
             Some items in this list are missing their keys. We need to fix this before the list can
             be edited.
             <div className={styles.fixMissingKeysButtonWrapper}>
-              <Button onClick={this.handleFixMissingKeys}>
-                Fix missing keys
-              </Button>
+              <Button onClick={this.handleFixMissingKeys}>Fix missing keys</Button>
             </div>
             <Details title={<b>Why is this happening?</b>}>
               This usually happens when items are created through the API client from outside the

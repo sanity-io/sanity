@@ -4,7 +4,7 @@ import React from 'react'
 import type {Path} from './typedefs/path'
 import PatchEvent from './PatchEvent'
 import generateHelpUrl from '@sanity/generate-help-url'
-import * as PathUtils from './utils/pathUtils'
+import * as PathUtils from '@sanity/util/paths'
 import type {Type} from './typedefs'
 
 type Props = {
