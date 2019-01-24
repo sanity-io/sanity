@@ -73,7 +73,7 @@ Document.defaultProps = {
   charset: 'utf-8',
   title: 'Sanity',
   viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
-  loading: 'Sanity Content Studio',
+  loading: 'Connecting to Sanity.io',
   staticPath: '/static',
   favicons: [{path: 'favicon.ico'}],
   stylesheets: [],
