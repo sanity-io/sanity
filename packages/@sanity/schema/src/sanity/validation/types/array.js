@@ -20,10 +20,25 @@ export default (typeDef, visitorContext) => {
           HELP_IDS.ARRAY_OF_INVALID
         )
   ])
+  const of = ofIsArray ? typeDef.of : []
+
+  // Don't allow object types without a name in block arrays
+  const hasObjectTypesWithoutName = of.some(
+    type => type.type === 'object' && typeof type.name === 'undefined'
+  )
+  const hasBlockType = of.some(ofType => ofType.type === 'block')
+  if (hasBlockType && hasObjectTypesWithoutName) {
+    problems.push(
+      error(
+        "The array type's 'of' property can't have an object type without a 'name' property as member, when the 'block' type is also a member of that array.",
+        HELP_IDS.ARRAY_OF_INVALID
+      )
+    )
+  }
 
   return {
     ...typeDef,
-    of: (ofIsArray ? typeDef.of : []).map(visitorContext.visit),
+    of: of.map(visitorContext.visit),
     _problems: problems
   }
 }
