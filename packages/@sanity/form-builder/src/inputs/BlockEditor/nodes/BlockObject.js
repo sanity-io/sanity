@@ -28,7 +28,7 @@ import type {
 } from '../typeDefs'
 
 import {PatchEvent} from '../../../PatchEvent'
-import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import {resolveTypeName} from '../../../utils/resolveTypeName'
 
 import InvalidValue from '../../InvalidValueInput'

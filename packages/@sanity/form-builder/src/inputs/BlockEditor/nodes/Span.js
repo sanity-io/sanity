@@ -3,7 +3,7 @@
 import type {Node} from 'react'
 import React from 'react'
 import type {BlockContentFeatures, Type, Marker, Path, SlateEditor} from '../typeDefs'
-import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import styles from './styles/Span.css'
 import {Inline} from 'slate'
 

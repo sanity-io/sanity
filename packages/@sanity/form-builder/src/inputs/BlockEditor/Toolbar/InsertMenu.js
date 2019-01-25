@@ -6,7 +6,7 @@ import BlockObjectIcon from 'part:@sanity/base/block-object-icon'
 import InlineObjectIcon from 'part:@sanity/base/inline-object-icon'
 
 import type {Type, SlateValue, SlateEditor, Path} from '../typeDefs'
-import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import styles from './styles/InsertMenu.css'
 
 type Props = {
