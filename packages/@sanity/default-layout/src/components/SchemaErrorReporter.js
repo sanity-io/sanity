@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import schema from 'part:@sanity/base/schema'
-import {SchemaErrors} from './SchemaErrors'
+import SchemaErrors from './SchemaErrors'
 
 function renderPath(path) {
   return path
