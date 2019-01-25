@@ -1,19 +1,22 @@
 import React from 'react'
-import styles from './styles/SchemaErrors.css'
+import PropTypes from 'prop-types'
 import ErrorIcon from 'part:@sanity/base/error-icon'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import generateHelpUrl from '@sanity/generate-help-url'
+import styles from './styles/SchemaErrors.css'
 
 function renderPath(path) {
   return path
-    .map(segment => {
+    .map((segment, i) => {
+      const key = `s_${i}`
       if (segment.kind === 'type') {
         return (
-          <span className={styles.segment}>
+          <span className={styles.segment} key={key}>
             <span key="name" className={styles.pathSegmentTypeName}>
               {segment.name}
             </span>
-            &ensp;<span key="type" className={styles.pathSegmentTypeType}>
+            &ensp;
+            <span key="type" className={styles.pathSegmentTypeType}>
               {segment.type}
             </span>
           </span>
@@ -21,14 +24,14 @@ function renderPath(path) {
       }
       if (segment.kind === 'property') {
         return (
-          <span className={styles.segment}>
+          <span className={styles.segment} key={key}>
             <span className={styles.pathSegmentProperty}>{segment.name}</span>
           </span>
         )
       }
       if (segment.kind === 'type') {
         return (
-          <span className={styles.segment}>
+          <span className={styles.segment} key={key}>
             <span key="name" className={styles.pathSegmentTypeName}>
               {segment.name}
             </span>
@@ -43,7 +46,7 @@ function renderPath(path) {
     .filter(Boolean)
 }
 
-export function SchemaErrors(props) {
+function SchemaErrors(props) {
   const {problemGroups} = props
   return (
     <div className={styles.root}>
@@ -51,11 +54,11 @@ export function SchemaErrors(props) {
       <ul className={styles.list}>
         {problemGroups.map((group, i) => {
           return (
-            <li key={i} className={styles.listItem}>
+            <li key={`g_${i}`} className={styles.listItem}>
               <h2 className={styles.path}>{renderPath(group.path)}</h2>
               <ul className={styles.problems}>
                 {group.problems.map((problem, j) => (
-                  <li key={j} className={styles[`problem_${problem.severity}`]}>
+                  <li key={`g_${i}_p_${j}`} className={styles[`problem_${problem.severity}`]}>
                     <div className={styles.problemSeverity}>
                       <span className={styles.problemSeverityIcon}>
                         {problem.severity === 'error' && <ErrorIcon />}
@@ -70,6 +73,7 @@ export function SchemaErrors(props) {
                           className={styles.problemLink}
                           href={generateHelpUrl(problem.helpId)}
                           target="_blank"
+                          rel="noopener noreferrer"
                         >
                           View documentation
                         </a>
@@ -85,3 +89,24 @@ export function SchemaErrors(props) {
     </div>
   )
 }
+
+SchemaErrors.propTypes = {
+  problemGroups: PropTypes.arrayOf(
+    PropTypes.shape({
+      path: PropTypes.arrayOf(
+        PropTypes.shape({
+          kind: PropTypes.string,
+          type: PropTypes.string,
+          name: PropTypes.string
+        })
+      ),
+      problems: PropTypes.arrayOf(
+        PropTypes.shape({
+          severity: PropTypes.string
+        })
+      )
+    }).isRequired
+  ).isRequired
+}
+
+export default SchemaErrors
