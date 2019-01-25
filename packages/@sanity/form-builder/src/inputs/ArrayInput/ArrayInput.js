@@ -2,6 +2,7 @@
 import React from 'react'
 import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'
 import {map} from 'rxjs/operators'
+import {isPlainObject} from 'lodash'
 import type {Uploader} from '../../sanity/uploads/typedefs'
 import type {Marker, Type} from '../../typedefs'
 import type {Path} from '../../typedefs/path'
@@ -261,6 +262,15 @@ export default class ArrayInput extends React.Component<Props, State> {
     onChange(PatchEvent.from(...patches))
   }
 
+  handleRemoveNonObjectValues = () => {
+    const {onChange, value} = this.props
+    const nonObjects = value
+      .reduce((acc, val, i) => (isPlainObject(val) ? acc : acc.concat(i)), [])
+      .reverse()
+    const patches = nonObjects.map(index => unset([index]))
+    onChange(PatchEvent.from(...patches))
+  }
+
   handleUpload = ({file, type, uploader}) => {
     const {onChange} = this.props
     const item = createProtoValue(type)
@@ -280,6 +290,34 @@ export default class ArrayInput extends React.Component<Props, State> {
 
   render() {
     const {type, level, markers, readOnly, onChange, value} = this.props
+    const hasNonObjectValues = (value || []).some(item => !isPlainObject(item))
+    if (hasNonObjectValues) {
+      return (
+        <Fieldset
+          legend={type.title}
+          description={type.description}
+          level={level}
+          tabIndex={0}
+          onFocus={this.handleFocus}
+          ref={this.setElement}
+          markers={markers}
+        >
+          <div className={styles.nonObjectsWarning}>
+            Some items in this list are not objects. We need to remove them before the list can be
+            edited.
+            <div className={styles.removeNonObjectsButtonWrapper}>
+              <Button onClick={this.handleRemoveNonObjectValues}>Remove non-object values</Button>
+            </div>
+            <Details title={<b>Why is this happening?</b>}>
+              This usually happens when items are created through an API client from outside the
+              Content Studio and sets invalid data, or a custom input component have inserted
+              incorrect values into the list.
+            </Details>
+          </div>
+        </Fieldset>
+      )
+    }
+
     const hasMissingKeys = (value || []).some(item => !item._key)
     if (hasMissingKeys) {
       return (
