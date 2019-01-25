@@ -340,6 +340,10 @@ export default class ArrayInput extends React.Component<Props, State> {
               This usually happens when items are created through the API client from outside the
               Content Studio and someone forgets to set the <code>_key</code>-property of list
               items.
+              <p>
+                The value of the <code>_key</code> can be any <b>string</b> as long as it is{' '}
+                <b>unique</b> for each element within the array.
+              </p>
             </Details>
           </div>
           {this.renderList()}
