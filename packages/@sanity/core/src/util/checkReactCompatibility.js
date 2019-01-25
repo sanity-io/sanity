@@ -35,7 +35,7 @@ module.exports = workDir => {
         )} `
       )
     }
-    if (!semver.satisfies(installed, supported[pkg])) {
+    if (!semver.satisfies(semver.coerce(installed), supported[pkg])) {
       throw new Error(
         `Sanity currently only supports ${pkg}@${supported[pkg]}. Installed version: ${installed}.`
       )
