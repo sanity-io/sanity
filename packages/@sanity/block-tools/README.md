@@ -143,6 +143,39 @@ blockTools.htmlToBlocks(
 
 ```
 
+### ``normalizeBlock(block)``
+Normalize a block object structure to make sure it has what it needs.
+
+```js
+import {normalizeBlock} from '@sanity/block-tools'
+const partialBlock = {
+  _type: 'block',
+  children: [
+    {
+      _type: 'span',
+      text: 'Foobar'
+    }
+  ]
+}
+normalizeBlock(partialBlock)
+```
+Will produce
+```
+{
+  _key: 'randomKey0',
+  _type: 'block',
+  children: [
+    {
+      _key: 'randomKey00',
+      _type: 'span',
+      marks: [],
+      text: 'Foobar'
+    }
+  ],
+  markDefs: []
+}
+```
+
 ### ``getBlockContentFeatures(blockContentType)``
 
 Will return an object with the features enabled for the input block content type.
