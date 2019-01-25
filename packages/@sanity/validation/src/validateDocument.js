@@ -90,7 +90,7 @@ function validateArray(items, type, path, options) {
   }
   // Validate items within array
   const itemChecks = items.map((item, i) => {
-    const pathSegment = item._key ? {_key: item._key} : i
+    const pathSegment = item && item._key ? {_key: item._key} : i
     const itemType = resolveTypeForArrayItem(item, type.of)
     const itemPath = appendPath(path, [pathSegment])
     return validateItem(item, itemType, itemPath, {
@@ -104,6 +104,17 @@ function validateArray(items, type, path, options) {
 }
 
 function validatePrimitive(item, type, path, options) {
+  if (!type) {
+    return [
+      {
+        type: 'validation',
+        level: 'error',
+        path,
+        item: new ValidationError('Unable to resolve type for item')
+      }
+    ]
+  }
+
   if (!type.validation) {
     return []
   }
@@ -118,7 +129,7 @@ function validatePrimitive(item, type, path, options) {
 }
 
 function resolveTypeForArrayItem(item, candidates) {
-  const primitive = !item._type && Type.string(item).toLowerCase()
+  const primitive = !item || (!item._type && Type.string(item).toLowerCase())
   if (primitive) {
     return candidates.find(candidate => candidate.jsonType === primitive)
   }
