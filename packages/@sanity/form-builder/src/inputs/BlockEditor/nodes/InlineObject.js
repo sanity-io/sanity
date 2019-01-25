@@ -20,7 +20,7 @@ import type {
 
 import {resolveTypeName} from '../../../utils/resolveTypeName'
 import {PatchEvent} from '../../../PatchEvent'
-import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 
 import InvalidValue from '../../InvalidValueInput'
 import Preview from '../../../Preview'

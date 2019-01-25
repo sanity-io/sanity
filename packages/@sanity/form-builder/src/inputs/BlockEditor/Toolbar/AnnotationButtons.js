@@ -7,7 +7,7 @@ import LinkIcon from 'part:@sanity/base/link-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import ToggleButton from 'part:@sanity/components/toggles/button'
 import type {BlockContentFeature, BlockContentFeatures, Path, SlateEditor} from '../typeDefs'
-import {FOCUS_TERMINATOR} from '../../../utils/pathUtils'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import CustomIcon from './CustomIcon'
 import ToolbarClickAction from './ToolbarClickAction'
 

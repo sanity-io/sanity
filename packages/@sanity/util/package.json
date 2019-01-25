@@ -38,6 +38,7 @@
     "resolve-from": "^4.0.0"
   },
   "devDependencies": {
+    "@babel/preset-flow": "^7.0.0",
     "jest": "^23.6.0",
     "rimraf": "^2.6.2"
   }
