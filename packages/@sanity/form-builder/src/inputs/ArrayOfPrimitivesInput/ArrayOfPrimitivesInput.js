@@ -6,7 +6,7 @@ import {Item as SortableItem, List as SortableList} from 'part:@sanity/component
 import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import {PatchEvent, set, unset} from '../../PatchEvent'
-import {startsWith} from '../../utils/pathUtils'
+import {startsWith} from '@sanity/util/paths'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import type {Path} from '../../typedefs/path'
 import type {Type, Marker} from '../../typedefs'
