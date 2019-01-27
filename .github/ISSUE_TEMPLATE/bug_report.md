@@ -8,12 +8,6 @@ assignees: ''
 ---
 If you find a security vulnerability, do NOT open an issue. Email [security@sanity.io](mailto:security@sanity.io) instead.
 
-# How to suggest a feature or enhancement
-
-If you find yourself wishing for a feature that doesn't exist in Sanity, you are probably not alone. There are bound to be others out there with similar needs. Many of the features that Sanity has today have been added because our users saw the need. Open an issue on our issues list on GitHub which describes the feature you would like to see, why you need it, and how it should work.
-
-# How to file an issue
-
 **Describe the bug**
 
 A clear and concise description of what the bug is.
