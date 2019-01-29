@@ -1,0 +1,48 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.image {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  vertical-align: bottom;
+  box-sizing: border-box;
+  background-color: var(--component-bg);
+}
+
+.item {
+  composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
+  background-color: var(--gray-lighter);
+  display: block;
+  margin: calc(var(--small-padding) / 2);
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+}
+
+.padder {
+  display: block;
+}
+
+.deleteContainer {
+  position: absolute;
+  z-index: 10;
+  top: 0.2rem;
+  right: 0.2rem;
+  font-size: var(--font-size-tiny);
+  opacity: 0.5;
+
+  @nest &:hover {
+    opacity: 1;
+  }
+}
+
+.spinnerContainer {
+  position: absolute;
+  z-index: 9;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--backdrop-color);
+  color: var(--text-color);
+}
