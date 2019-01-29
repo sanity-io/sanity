@@ -26,6 +26,7 @@ export default {
       of: [
         {type: 'block'},
         {
+          name: 'gallery',
           type: 'object',
           title: 'Gallery',
           fields: [
