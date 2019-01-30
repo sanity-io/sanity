@@ -374,7 +374,7 @@ export default async function initSanity(args, context) {
     if (datasets.length === 0) {
       debug('No datasets found for project, prompting for name')
       const name = await promptForDatasetName(prompt, {
-        message: 'Name of your first dataset:',
+        message: 'A dataset is where your documents is stored. Name of your first dataset:',
         default: 'production'
       })
 
@@ -399,7 +399,7 @@ export default async function initSanity(args, context) {
     if (selected === 'new') {
       debug('User wants to create a new dataset, prompting for name')
       const newDatasetName = await promptForDatasetName(prompt, {
-        message: 'Name your dataset:',
+        message: 'Name your dataset. Use only lowercase letters, numbers, underscores and dashes:',
         default: 'production'
       })
       const aclMode = await getAclMode()
@@ -598,7 +598,8 @@ function absolutify(dir) {
 async function promptForAclMode(prompt, output) {
   const mode = await prompt.single({
     type: 'list',
-    message: 'Choose dataset visibility – this can be changed later',
+    message:
+      'Choose dataset visibility. Requests to a public dataset can use the CDN. A private dataset requires the requests to be authenticated by a logged in user or a token. You can change visibility later',
     choices: [
       {
         value: 'public',
@@ -606,14 +607,14 @@ async function promptForAclMode(prompt, output) {
       },
       {
         value: 'private',
-        name: 'Private (Authenticated user or token needed for API requests)'
+        name: 'Private'
       }
     ]
   })
 
   if (mode === 'private') {
     output.print(
-      'Please note that while documents are private, assets (files and images) are still public\n'
+      'Please note that while documents are private, assets (files and images) can be accessed by the public via their direct URLs\n'
     )
   }
 
