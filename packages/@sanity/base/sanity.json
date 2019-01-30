@@ -188,6 +188,10 @@
       "description": "Wraps a query and passes down results as props to its child component"
     },
     {
+      "name": "part:@sanity/base/with-referring-documents",
+      "description": "A utility component that takes a document id and calls its child render prop with a list of documents referring to it"
+    },
+    {
       "name": "part:@sanity/base/theme/layout/resets-style",
       "description": "Provides resets for resetting browser styling"
     },
@@ -409,6 +413,10 @@
     {
       "implements": "part:@sanity/base/query-container",
       "path": "components/QueryContainer"
+    },
+    {
+      "implements": "part:@sanity/base/with-referring-documents",
+      "path": "components/WithReferringDocuments"
     },
     {
       "implements": "part:@sanity/base/locale/formatters",
