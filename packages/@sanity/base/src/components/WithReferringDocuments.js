@@ -1,5 +1,3 @@
-import React from 'react'
-import PropTypes from 'prop-types'
 import documentStore from 'part:@sanity/base/datastore/document'
 import {withPropsStream} from 'react-props-stream'
 import {concat, of} from 'rxjs'
@@ -25,24 +23,3 @@ const loadProps = receivedProps$ =>
 export const WithReferringDocuments = withPropsStream(loadProps, ({children, ...props}) =>
   children(props)
 )
-
-export function enhanceWithReferringDocuments(Component) {
-  function Wrapper(props) {
-    return (
-      <WithReferringDocuments id={props.published._id}>
-        {({isLoading, referringDocuments}) => (
-          <Component
-            {...props}
-            referringDocuments={referringDocuments}
-            isCheckingReferringDocuments={isLoading}
-          />
-        )}
-      </WithReferringDocuments>
-    )
-  }
-  Wrapper.displayName = `enhanceWithReferringDocuments(${Component.displayName || Component.name})`
-  Wrapper.propTypes = {
-    published: PropTypes.object
-  }
-  return Wrapper
-}
