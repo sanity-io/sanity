@@ -1,51 +1,28 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import documentStore from 'part:@sanity/base/datastore/document'
+import {WithReferringDocuments} from 'part:@sanity/base/with-referring-documents'
 
-export default function withReferringDocuments(Component) {
-  return class extends React.PureComponent {
-    static displayName = `enhanceWithAvailHeight(${Component.displayName || Component.name})`
-
-    static propTypes = {
-      published: PropTypes.object
-    }
-
-    state = {
-      isLoading: false,
-      referringDocuments: []
-    }
-
-    componentDidMount() {
-      const {published} = this.props
-      if (!published) {
-        return
-      }
-      this.setState({isLoading: true})
-      this.refSubscription = documentStore
-        .query('*[references($docId)] [0...101]', {docId: published._id})
-        .subscribe(event => {
-          this.setState({
-            referringDocuments: event.documents || [],
-            isLoading: false
-          })
-        })
-    }
-
-    componentWillUnmount() {
-      if (this.refSubscription) {
-        this.refSubscription.unsubscribe()
-      }
-    }
-
-    render() {
-      const {isLoading, referringDocuments} = this.state
-      return (
-        <Component
-          {...this.props}
-          referringDocuments={referringDocuments}
-          isCheckingReferringDocuments={isLoading}
-        />
-      )
-    }
+export default function enhanceWithReferringDocuments(Component) {
+  function EnhancedWithReferringDocuments(props) {
+    // eslint-disable-next-line react/no-multi-comp
+    const renderChild = ({isLoading, referringDocuments}) => (
+      <Component
+        {...props}
+        referringDocuments={referringDocuments}
+        isCheckingReferringDocuments={isLoading}
+      />
+    )
+    return props.published ? (
+      <WithReferringDocuments id={props.published._id}>{renderChild}</WithReferringDocuments>
+    ) : (
+      renderChild({referringDocuments: [], isLoading: false})
+    )
   }
+
+  EnhancedWithReferringDocuments.displayName = `enhanceWithReferringDocuments(${Component.displayName ||
+    Component.name})`
+  EnhancedWithReferringDocuments.propTypes = {
+    published: PropTypes.object
+  }
+  return EnhancedWithReferringDocuments
 }
