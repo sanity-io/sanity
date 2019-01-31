@@ -24,7 +24,6 @@ function createQuery(start = 0, end = PER_PAGE) {
     *[_type == "sanity.imageAsset"] | order(_updatedAt desc) [${start}...${end}] {
       _id,
       url,
-      "referenceCount": count(*[references(^._id)]),
       metadata {dimensions}
     }
   `
@@ -53,14 +52,8 @@ export default class SelectAsset extends React.Component<Props, State> {
     })
   }
 
-  handleDeleteAsset = asset => {
-    return client.delete(asset._id).then(() => {
-      this.setState(prevState => {
-        return {
-          assets: prevState.assets.filter(prevAsset => prevAsset._id != asset._id)
-        }
-      })
-    })
+  handleUpdate = () => {
+    this.fetchPage(this.pageNo)
   }
 
   componentDidMount() {
@@ -100,7 +93,7 @@ export default class SelectAsset extends React.Component<Props, State> {
               asset={asset}
               onClick={this.handleItemClick}
               onKeyPress={this.handleItemKeyPress}
-              onDelete={this.handleDeleteAsset}
+              onDeleteFinished={this.handleUpdate}
             />
           ))}
         </div>

@@ -17,19 +17,25 @@
   position: relative;
   overflow: hidden;
   cursor: default;
+  flex-wrap: nowrap;
 }
 
 .padder {
   display: block;
 }
 
-.deleteContainer {
+.menuContainer {
+  box-sizing: border-box;
   position: absolute;
   z-index: 10;
-  top: 0.2rem;
-  right: 0.2rem;
-  font-size: var(--font-size-tiny);
-  opacity: 0.5;
+  top: 0.2em;
+  right: 0.2em;
+  opacity: 1;
+  font-size: var(--font-size-small);
+
+  @nest & [class^=DefaultButton_content] {
+    margin: 0.2em !important;
+  }
 
   @nest &:hover {
     opacity: 1;
@@ -43,6 +49,36 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: var(--backdrop-color);
+  background-color: color(var(--component-bg) a(50%));
   color: var(--text-color);
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+}
+
+.menuItemDanger {
+  composes: menuItem;
+  color: var(--state-danger-color);
+}
+
+.intentLink {
+  color: inherit;
+  text-decoration: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--small-padding);
+}
+
+.dialogContent {
+  display: grid;
+  grid-gap: var(--medium-padding);
+  grid-template-columns: max-content 1fr;
+}
+
+.openDocLink {
+  font-size: var(--font-size-small);
+  white-space: nowrap;
 }

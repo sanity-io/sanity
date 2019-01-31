@@ -95,6 +95,10 @@
   display: flex;
   border-radius: 0;
   height: 100%;
+
+  @nest & .content {
+    margin: 0 !important;
+  }
 }
 
 span.inner {
