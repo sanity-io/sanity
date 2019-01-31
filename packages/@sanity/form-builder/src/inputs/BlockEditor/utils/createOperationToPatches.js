@@ -82,20 +82,16 @@ export default function createOperationToPatches(
     afterValue: SlateValue,
     formBuilderValue: ?(FormBuilderValue[])
   ) {
-    const patches = []
     // Make sure we have a document / start block first
     if (!formBuilderValue || formBuilderValue.length === 0) {
+      const blocks = editorValueToBlocks(afterValue.toJSON(VALUE_TO_JSON_OPTS), blockContentType)
       // Value is undefined
       if (!formBuilderValue) {
-        patches.push(
-          setIfMissing(editorValueToBlocks(afterValue.toJSON(VALUE_TO_JSON_OPTS), blockContentType))
-        )
+        return [setIfMissing(blocks), set(blocks, [])]
       }
       // Value is empty
       if (formBuilderValue && formBuilderValue.length === 0) {
-        patches.push(
-          set(editorValueToBlocks(afterValue.toJSON(VALUE_TO_JSON_OPTS), blockContentType), [])
-        )
+        return [set(blocks, [])]
       }
     }
     const blockBefore = toBlock(beforeValue, operation.path.get(0))
@@ -131,7 +127,7 @@ export default function createOperationToPatches(
       const targetInsertPath = targetPath
         .slice(0, -2)
         .concat({_key: blockAfter.children[spanIndex - 1]._key})
-      return patches.concat(insert([span], 'after', targetInsertPath))
+      return [insert([span], 'after', targetInsertPath)]
     }
     // Check if marks have changed and set the whole span with new marks if so
     const point = {path: operation.path, offset: operation.offset + 1}
@@ -145,10 +141,10 @@ export default function createOperationToPatches(
       .map(m => m.type)
       .toArray()
     if (!isEqual(textMarks, span.marks)) {
-      return patches.concat(set(span, targetPath.slice(0, -1)))
+      return [set(span, targetPath.slice(0, -1))]
     }
     // Marks not changed, just set the text
-    return patches.concat(set(span.text, targetPath))
+    return [set(span.text, targetPath)]
   }
 
   function setNodePatch(
@@ -157,25 +153,17 @@ export default function createOperationToPatches(
     afterValue: SlateValue,
     formBuilderValue: ?(FormBuilderValue[])
   ) {
-    const patches = []
-    const block = toBlock(afterValue, operation.path.get(0))
     // Value is undefined
     if (!formBuilderValue) {
-      patches.push(
-        setIfMissing(editorValueToBlocks(afterValue.toJSON(VALUE_TO_JSON_OPTS), blockContentType))
-      )
+      const blocks = editorValueToBlocks(afterValue.toJSON(VALUE_TO_JSON_OPTS), blockContentType)
+      return [setIfMissing(blocks), set(blocks)]
     }
     // Value is empty
     if (formBuilderValue && formBuilderValue.length === 0) {
-      patches.push(
-        set(editorValueToBlocks(afterValue.toJSON(VALUE_TO_JSON_OPTS), blockContentType), [])
-      )
+      return [set(editorValueToBlocks(afterValue.toJSON(VALUE_TO_JSON_OPTS), blockContentType), [])]
     }
-    if (formBuilderValue && formBuilderValue.length > 0) {
-      patches.push(set(block, [{_key: block._key}]))
-    }
-    // console.log(JSON.stringify(patches, null, 2))
-    return patches
+    const block = toBlock(afterValue, operation.path.get(0))
+    return [set(block, [{_key: block._key}])]
   }
 
   function insertNodePatch(
@@ -186,9 +174,8 @@ export default function createOperationToPatches(
   ) {
     // Value is undefined
     if (!formBuilderValue) {
-      return [
-        setIfMissing(editorValueToBlocks(afterValue.toJSON(VALUE_TO_JSON_OPTS), blockContentType))
-      ]
+      const blocks = editorValueToBlocks(afterValue.toJSON(VALUE_TO_JSON_OPTS), blockContentType)
+      return [setIfMissing(blocks), set(blocks, [])]
     }
     // Value is empty
     if (formBuilderValue && formBuilderValue.length === 0) {
