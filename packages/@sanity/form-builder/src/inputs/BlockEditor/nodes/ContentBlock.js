@@ -29,18 +29,26 @@ type Props = {
 export default class Markers extends React.Component<Props & SlateComponentProps> {
   _clickCounter = 0
   _clickTimeout = null
+  _clickMouseXY = {x: null, y: null}
 
-  handleMouseDown = () => {
+  // Prevent triple clicks for tangling with the block below
+  // This is a bug in Slate (Jan. 2019), and should be fixed there!
+  handleMouseDown = (event: SyntheticMouseEvent<>) => {
+    const mouseXWithinRange =
+      this._clickMouseXY.x && Math.abs(event.clientX - this._clickMouseXY.x) < 20
+    const mouseYWithinRange =
+      this._clickMouseXY.y && Math.abs(event.clientY - this._clickMouseXY.y) < 20
     if (this._clickTimeout) {
       clearTimeout(this._clickTimeout)
     }
     this._clickTimeout = setTimeout(() => {
-      if (this._clickCounter > 2) {
+      if (this._clickCounter > 2 && mouseXWithinRange && mouseYWithinRange) {
         this.props.editor.moveToRangeOfNode(this.props.editor.value.anchorBlock)
       }
       this._clickCounter = 0
     }, 500)
     this._clickCounter++
+    this._clickMouseXY = {x: event.clientX, y: event.clientY}
   }
 
   render() {
