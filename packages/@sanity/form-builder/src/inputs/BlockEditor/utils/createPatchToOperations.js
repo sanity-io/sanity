@@ -196,9 +196,11 @@ export default function createPatchesToChange(
       delete data.annotations[annotationKey]
       // If no more annotations, unwrap the inline
       if (Object.keys(data.annotations).length === 0) {
-        return editor.unwrapInlineByKey(node.key)
+        editor.unwrapInlineByKey(node.key)
+        return editor.operations
       }
-      return editor.setNodeByKey(node.key, {data})
+      editor.setNodeByKey(node.key, {data})
+      return editor.operations
     }
     const _patch = {...patch}
     _patch.path = patch.path.slice(2)
