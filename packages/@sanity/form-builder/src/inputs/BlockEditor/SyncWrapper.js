@@ -416,32 +416,31 @@ export default withPatchSubscriber(
       const isDeprecated = deprecatedSchema || deprecatedBlockValue
       return (
         <div className={styles.root}>
-          {!isDeprecated &&
-            !invalidBlockValue && (
-              <Input
-                blockContentFeatures={this._blockContentFeatures}
-                controller={this._controller}
-                editorValue={editorValue}
-                focusPath={focusPath}
-                isLoading={isLoading}
-                level={level}
-                markers={markers}
-                onBlur={onBlur}
-                onChange={this.handleEditorChange}
-                onFocus={onFocus}
-                onLoading={this.handleOnLoading}
-                onPaste={onPaste}
-                onPatch={this.handleFormBuilderPatch}
-                readOnly={readOnly}
-                ref={this.refInput}
-                renderBlockActions={renderBlockActions}
-                renderCustomMarkers={renderCustomMarkers}
-                type={type}
-                undoRedoStack={this._undoRedoStack}
-                userIsWritingText={userIsWritingText}
-                value={value}
-              />
-            )}
+          {!isDeprecated && !invalidBlockValue && (
+            <Input
+              blockContentFeatures={this._blockContentFeatures}
+              controller={this._controller}
+              editorValue={editorValue}
+              focusPath={focusPath}
+              isLoading={isLoading}
+              level={level}
+              markers={markers}
+              onBlur={onBlur}
+              onChange={this.handleEditorChange}
+              onFocus={onFocus}
+              onLoading={this.handleOnLoading}
+              onPaste={onPaste}
+              onPatch={this.handleFormBuilderPatch}
+              readOnly={readOnly}
+              ref={this.refInput}
+              renderBlockActions={renderBlockActions}
+              renderCustomMarkers={renderCustomMarkers}
+              type={type}
+              undoRedoStack={this._undoRedoStack}
+              userIsWritingText={userIsWritingText}
+              value={value}
+            />
+          )}
           {invalidBlockValue && (
             <InvalidValueInput
               validTypes={type.of ? type.of.map(mType => mType.name) : []}
