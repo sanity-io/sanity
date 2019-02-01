@@ -85,7 +85,7 @@ SideMenu.propTypes = {
     })
   ).isRequired,
   user: PropTypes.shape({
-    profileImage: PropTypes.string.isRequired,
+    profileImage: PropTypes.string,
     name: PropTypes.string.isRequired
   }).isRequired
 }
