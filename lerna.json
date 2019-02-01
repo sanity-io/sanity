@@ -4,11 +4,11 @@
   "ci": false,
   "packages": [
     "packages/@sanity/*",
+    "packages/backstop-test-studio",
     "packages/blog-studio",
     "packages/create-sanity",
     "packages/ecommerce-studio",
     "packages/eslint-config-sanity",
-    "packages/backstop-test-studio",
     "packages/example-studio",
     "packages/groq",
     "packages/movies-studio",
@@ -16,5 +16,5 @@
     "packages/storybook",
     "packages/test-studio"
   ],
-  "version": "0.140.2"
+  "version": "0.140.3"
 }
