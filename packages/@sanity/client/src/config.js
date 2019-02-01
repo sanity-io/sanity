@@ -1,11 +1,12 @@
 const generateHelpUrl = require('@sanity/generate-help-url')
 const assign = require('object-assign')
 const validate = require('./validators')
-const once = require('./util/once')
+const warnings = require('./warnings')
 
 const defaultCdnHost = 'apicdn.sanity.io'
 const defaultConfig = {
   apiHost: 'https://api.sanity.io',
+  apiVersion: '1',
   useProjectHostname: true,
   gradientMode: false,
   isPromiseAPI: true,
@@ -14,33 +15,16 @@ const defaultConfig = {
 const LOCALHOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 const isLocal = (host) => LOCALHOSTS.indexOf(host) !== -1
 
-// eslint-disable-next-line no-console
-const createWarningPrinter = (message) => once(() => console.warn(message.join(' ')))
-
-const printCdnWarning = createWarningPrinter([
-  'You are not using the Sanity CDN. That means your data is always fresh, but the CDN is faster and',
-  `cheaper. Think about it! For more info, see ${generateHelpUrl('js-client-cdn-configuration')}.`,
-  'To hide this warning, please set the `useCdn` option to either `true` or `false` when creating',
-  'the client.',
-])
-
-const printBrowserTokenWarning = createWarningPrinter([
-  'You have configured Sanity client to use a token in the browser. This may cause unintentional security issues.',
-  `See ${generateHelpUrl(
-    'js-client-browser-token'
-  )} for more information and how to hide this warning.`,
-])
-
-const printCdnTokenWarning = createWarningPrinter([
-  'You have set `useCdn` to `true` while also specifying a token. This is usually not what you',
-  'want. The CDN cannot be used with an authorization token, since private data cannot be cached.',
-  `See ${generateHelpUrl('js-client-usecdn-token')} for more information.`,
-])
-
 exports.defaultConfig = defaultConfig
 
+// eslint-disable-next-line complexity
 exports.initConfig = (config, prevConfig) => {
-  const newConfig = assign({}, defaultConfig, prevConfig, config)
+  const specifiedConfig = assign({}, prevConfig, config)
+  if (!specifiedConfig.apiVersion) {
+    warnings.printNoApiVersionSpecifiedWarning()
+  }
+
+  const newConfig = assign({}, defaultConfig, specifiedConfig)
   const gradientMode = newConfig.gradientMode
   const projectBased = !gradientMode && newConfig.useProjectHostname
 
@@ -61,11 +45,11 @@ exports.initConfig = (config, prevConfig) => {
   const isLocalhost = isBrowser && isLocal(window.location.hostname)
 
   if (isBrowser && isLocalhost && newConfig.token && newConfig.ignoreBrowserTokenWarning !== true) {
-    printBrowserTokenWarning()
+    warnings.printBrowserTokenWarning()
   } else if ((!isBrowser || isLocalhost) && newConfig.useCdn && newConfig.token) {
-    printCdnTokenWarning()
+    warnings.printCdnTokenWarning()
   } else if (typeof newConfig.useCdn === 'undefined') {
-    printCdnWarning()
+    warnings.printCdnWarning()
   }
 
   if (projectBased) {
@@ -76,8 +60,11 @@ exports.initConfig = (config, prevConfig) => {
     validate.dataset(newConfig.dataset, newConfig.gradientMode)
   }
 
+  newConfig.apiVersion = `${newConfig.apiVersion}`.replace(/^v/, '')
   newConfig.isDefaultApi = newConfig.apiHost === defaultConfig.apiHost
   newConfig.useCdn = Boolean(newConfig.useCdn) && !newConfig.token && !newConfig.withCredentials
+
+  exports.validateApiVersion(newConfig.apiVersion)
 
   if (newConfig.gradientMode) {
     newConfig.url = newConfig.apiHost
@@ -89,13 +76,27 @@ exports.initConfig = (config, prevConfig) => {
     const cdnHost = newConfig.isDefaultApi ? defaultCdnHost : host
 
     if (newConfig.useProjectHostname) {
-      newConfig.url = `${protocol}://${newConfig.projectId}.${host}/v1`
-      newConfig.cdnUrl = `${protocol}://${newConfig.projectId}.${cdnHost}/v1`
+      newConfig.url = `${protocol}://${newConfig.projectId}.${host}/v${newConfig.apiVersion}`
+      newConfig.cdnUrl = `${protocol}://${newConfig.projectId}.${cdnHost}/v${newConfig.apiVersion}`
     } else {
-      newConfig.url = `${newConfig.apiHost}/v1`
+      newConfig.url = `${newConfig.apiHost}/v${newConfig.apiVersion}`
       newConfig.cdnUrl = newConfig.url
     }
   }
 
   return newConfig
+}
+
+exports.validateApiVersion = function validateApiVersion(apiVersion) {
+  if (apiVersion === '1' || apiVersion === 'X') {
+    return
+  }
+
+  const apiDate = new Date(apiVersion)
+  const apiVersionValid =
+    /^\d{4}-\d{2}-\d{2}$/.test(apiVersion) && apiDate instanceof Date && apiDate.getTime() > 0
+
+  if (!apiVersionValid) {
+    throw new Error('Invalid API version string, expected `1` or date in format `YYYY-MM-DD`')
+  }
 }

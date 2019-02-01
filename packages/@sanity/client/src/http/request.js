@@ -20,10 +20,20 @@ const httpError = {
   },
 }
 
+const printWarnings = {
+  onResponse: (res) => {
+    const warn = res.headers['x-sanity-warning']
+    const warnings = Array.isArray(warn) ? warn : [warn]
+    warnings.filter(Boolean).forEach((msg) => console.warn(msg)) // eslint-disable-line no-console
+    return res
+  },
+}
+
 // Environment-specific middleware.
 const envSpecific = require('./nodeMiddleware')
 
 const middleware = envSpecific.concat([
+  printWarnings,
   jsonRequest(),
   jsonResponse(),
   progress(),
