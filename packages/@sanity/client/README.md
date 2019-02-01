@@ -23,14 +23,25 @@ const sanityClient = require('@sanity/client')
 const client = sanityClient({
   projectId: 'your-project-id',
   dataset: 'bikeshop',
-  token: 'sanity-auth-token', // or leave blank to be anonymous user
-  useCdn: true // `false` if you want to ensure fresh data
+  apiVersion: '2019-01-29', // use current UTC date - see "specifying API version"!
+  token: 'sanity-auth-token', // or leave blank for unauthenticated usage
+  useCdn: true, // `false` if you want to ensure fresh data
 })
 ```
 
 `const client = sanityClient(options)`
 
-Initializes a new Sanity Client. Required options are `projectId` and `dataset`.
+Initializes a new Sanity Client. Required options are `projectId`, `dataset` and `apiVersion`. Setting a value for `useCdn` is encouraged.
+
+### Specifying API version
+
+Sanity uses ISO dates (YYYY-MM-DD) in UTC timezone for versioning. The explanation for this can be found [in the documentation](http://sanity.io/help/api-versioning)
+
+In general, unless you know what API version you want to use, you'll want to set it to todays UTC date. By doing this, you'll get all the latest bugfixes and features, while locking the API to prevent breaking changes.
+
+**Note**: Do not be tempted to use a dynamic value for the `apiVersion`. The reason for setting a static value is to prevent unexpected, breaking changes.
+
+In future versions, specifying an API version will be required. For now (to maintain backwards compatiblity) not specifying a version will trigger a deprecation warning and fall back to using `v1`.
 
 ### Performing queries
 
@@ -38,9 +49,9 @@ Initializes a new Sanity Client. Required options are `projectId` and `dataset`.
 const query = '*[_type == "bike" && seats >= $minSeats] {name, seats}'
 const params = {minSeats: 2}
 
-client.fetch(query, params).then(bikes => {
+client.fetch(query, params).then((bikes) => {
   console.log('Bikes with more than one seat:')
-  bikes.forEach(bike => {
+  bikes.forEach((bike) => {
     console.log(`${bike.name} (${bike.seats} seats)`)
   })
 })
@@ -56,11 +67,10 @@ Perform a query using the given parameters (if any).
 const query = '*[_type == "comment" && authorId != $ownerId]'
 const params = {ownerId: 'bikeOwnerUserId'}
 
-const subscription = client.listen(query, params)
-  .subscribe(update => {
-    const comment = update.result
-    console.log(`${comment.author} commented: ${comment.text}`)
-  })
+const subscription = client.listen(query, params).subscribe((update) => {
+  const comment = update.result
+  console.log(`${comment.author} commented: ${comment.text}`)
+})
 
 // to unsubscribe later on
 subscription.unsubscribe()
@@ -74,18 +84,20 @@ The update events which are emitted always contain `mutation`, which is an objec
 
 By default, the emitted update event will also contain a `result` property, which contains the document with the mutation applied to it. In case of a delete mutation, this property will not be present, however. You can also tell the client not to return the document (to save bandwidth, or in cases where the mutation or the document ID is the only relevant factor) by setting the `includeResult` property to `false` in the options.
 
-Likewise, you can also have the client return the document *before* the mutation was applied, by setting`includePreviousRevision` to `true` in the options, which will include a `previous` property in each emitted object.
+Likewise, you can also have the client return the document _before_ the mutation was applied, by setting `includePreviousRevision` to `true` in the options, which will include a `previous` property in each emitted object.
 
 ### Fetch a single document
+
 This will fetch a document from the [DOC endpoint](https://www.sanity.io/docs/http-query#the-doc-endpoint). Should be used sparingly and performing a query is usually a better option.
 
 ```js
-client.getDocument('bike-123').then(bike => {
+client.getDocument('bike-123').then((bike) => {
   console.log(`${bike.name} (${bike.seats} seats)`)
 })
 ```
 
 ### Fetch multiple documents in one go
+
 This will fetch multiple documents in one request from the [DOC endpoint](https://www.sanity.io/docs/http-query#the-doc-endpoint). Should be used sparingly and performing a query is usually a better option.
 
 ```js
@@ -99,7 +111,7 @@ Note: Unlike in the HTTP API, the order/position of documents is _preserved_ bas
 
 ```js
 const ids = ['bike123', 'nonexistent-document', 'bike345']
-client.getDocuments(ids).then(docs => {
+client.getDocuments(ids).then((docs) => {
   // the docs array will be:
   // [{_id: 'bike123', ...}, null, {_id: 'bike345', ...}]
 })
@@ -111,18 +123,17 @@ client.getDocuments(ids).then(docs => {
 const doc = {
   _type: 'bike',
   name: 'Sanity Tandem Extraordinaire',
-  seats: 2
+  seats: 2,
 }
 
-client.create(doc).then(res => {
+client.create(doc).then((res) => {
   console.log(`Bike was created, document ID is ${res._id}`)
 })
 ```
 
 `client.create(doc)`
 
-Create a document. Argument is a plain JS object representing the document. It must contain a `_type` attribute. It *may* contain an `_id`. If an ID is not specified, it will automatically be created.
-
+Create a document. Argument is a plain JS object representing the document. It must contain a `_type` attribute. It _may_ contain an `_id`. If an ID is not specified, it will automatically be created.
 
 ### Creating/replacing documents
 
@@ -131,10 +142,10 @@ const doc = {
   _id: 'my-bike',
   _type: 'bike',
   name: 'Sanity Tandem Extraordinaire',
-  seats: 2
+  seats: 2,
 }
 
-client.createOrReplace(doc).then(res => {
+client.createOrReplace(doc).then((res) => {
   console.log(`Bike was created, document ID is ${res._id}`)
 })
 ```
@@ -150,10 +161,10 @@ const doc = {
   _id: 'my-bike',
   _type: 'bike',
   name: 'Sanity Tandem Extraordinaire',
-  seats: 2
+  seats: 2,
 }
 
-client.createIfNotExists(doc).then(res => {
+client.createIfNotExists(doc).then((res) => {
   console.log('Bike was created (or was already present)')
 })
 ```
@@ -161,7 +172,6 @@ client.createIfNotExists(doc).then(res => {
 `client.createIfNotExists(doc)`
 
 If you want to create a document if it does not already exist, but fall back without error if it does, you can use the `createIfNotExists()` method. When using this method, the document must contain an `_id` attribute.
-
 
 ### Patch/update a document
 
@@ -171,11 +181,11 @@ client
   .set({inStock: false}) // Shallow merge
   .inc({numSold: 1}) // Increment field by count
   .commit() // Perform the patch and return a promise
-  .then(updatedBike => {
+  .then((updatedBike) => {
     console.log('Hurray, the bike is updated! New document:')
     console.log(updatedBike)
   })
-  .catch(err => {
+  .catch((err) => {
     console.error('Oh no, the update failed: ', err.message)
   })
 ```
@@ -185,19 +195,13 @@ Modify a document. `patch` takes a document ID. `set` merges the partialDoc with
 ### Setting a field only if not already present
 
 ```js
-client
-  .patch('bike-123')
-  .setIfMissing({title: 'Untitled bike'})
-  .commit()
+client.patch('bike-123').setIfMissing({title: 'Untitled bike'}).commit()
 ```
 
 ### Removing/unsetting fields
 
 ```js
-client
-  .patch('bike-123')
-  .unset(['title', 'price'])
-  .commit()
+client.patch('bike-123').unset(['title', 'price']).commit()
 ```
 
 ### Incrementing/decrementing numbers
@@ -237,7 +241,7 @@ client
   .insert('after', 'reviews[-1]', [
     // Add a `_key` unique within the array to ensure it can be addressed uniquely
     // in a real-time collaboration context
-    {_key: nanoid(), title: 'Great bike!', stars: 5}
+    {_key: nanoid(), title: 'Great bike!', stars: 5},
   ])
   .commit()
 ```
@@ -252,9 +256,7 @@ const {nanoid} = require('nanoid')
 client
   .patch('bike-123')
   .setIfMissing({reviews: []})
-  .append('reviews', [
-    {_key: nanoid(), title: 'Great bike!', stars: 5}
-  ])
+  .append('reviews', [{_key: nanoid(), title: 'Great bike!', stars: 5}])
   .commit()
 ```
 
@@ -264,23 +266,20 @@ Each entry in the `unset` array can be either an attribute or a JSON path.
 
 In this example, we remove the first review and the review with `_key: 'abc123'` from the `bike.reviews` array:
 
-
 ```js
 const reviewsToRemove = ['reviews[0]', 'reviews[_key=="abc123"]']
-client
-  .patch('bike-123')
-  .unset(reviewsToRemove)
-  .commit()
+client.patch('bike-123').unset(reviewsToRemove).commit()
 ```
 
 ### Delete a document
 
 ```js
-client.delete('bike-123')
-  .then(res => {
+client
+  .delete('bike-123')
+  .then((res) => {
     console.log('Bike deleted')
   })
-  .catch(err => {
+  .catch((err) => {
     console.error('Delete failed: ', err.message)
   })
 ```
@@ -292,9 +291,7 @@ Delete a document. Parameter is a document ID.
 ### Multiple mutations in a transaction
 
 ```js
-const namePatch = client
-  .patch('bike-310')
-  .set({name: 'A Bike To Go'})
+const namePatch = client.patch('bike-310').set({name: 'A Bike To Go'})
 
 client
   .transaction()
@@ -302,10 +299,10 @@ client
   .delete('bike-123')
   .patch(namePatch)
   .commit()
-  .then(res => {
+  .then((res) => {
     console.log('Whole lot of stuff just happened')
   })
-  .catch(err => {
+  .catch((err) => {
     console.error('Transaction failed: ', err.message)
   })
 ```
@@ -318,12 +315,12 @@ Create a transaction to perform chained mutations.
 client
   .transaction()
   .create({name: 'Sanity Tandem Extraordinaire', seats: 2})
-  .patch('bike-123', p => p.set({inStock: false}))
+  .patch('bike-123', (p) => p.set({inStock: false}))
   .commit()
-  .then(res => {
+  .then((res) => {
     console.log('Bike created and a different bike is updated')
   })
-  .catch(err => {
+  .catch((err) => {
     console.error('Transaction failed: ', err.message)
   })
 ```
@@ -331,7 +328,6 @@ client
 `client.transaction().create(doc).patch(docId, p => p.set(partialDoc)).commit()`
 
 A `patch` can be performed inline on a `transaction`.
-
 
 ### Clientless patches & transactions
 
@@ -341,7 +337,7 @@ Transactions and patches can also be built outside the scope of a client:
 const sanityClient = require('@sanity/client')
 const client = sanityClient({
   projectId: 'your-project-id',
-  dataset: 'bikeshop'
+  dataset: 'bikeshop',
 })
 
 // Patches:
@@ -378,10 +374,10 @@ client.asset.upload(type: 'file' | image', body: File | Blob | Buffer | NodeStre
 // Upload a file from the file system
 client.assets
   .upload('file', fs.createReadStream('myFile.txt'), {filename: 'myFile.txt'})
-  .then(document => {
+  .then((document) => {
     console.log('The file was uploaded!', document)
   })
-  .catch(error => {
+  .catch((error) => {
     console.error('Upload failed:', error.message)
   })
 ```
@@ -390,10 +386,10 @@ client.assets
 // Upload an image file from the file system
 client.assets
   .upload('image', fs.createReadStream('myImage.jpg'), {filename: 'myImage.jpg'})
-  .then(document => {
+  .then((document) => {
     console.log('The image was uploaded!', document)
   })
-  .catch(error => {
+  .catch((error) => {
     console.error('Upload failed:', error.message)
   })
 ```
@@ -406,10 +402,10 @@ const file = new File(['foo'], 'foo.txt', {type: 'text/plain'})
 // Upload it
 client.assets
   .upload('file', file)
-  .then(document => {
+  .then((document) => {
     console.log('The file was uploaded!', document)
   })
-  .catch(error => {
+  .catch((error) => {
     console.error('Upload failed:', error.message)
   })
 ```
@@ -428,10 +424,10 @@ canvas.toBlob(uploadImageBlob, 'image/png')
 function uploadImageBlob(blob) {
   client.assets
     .upload('image', blob, {contentType: 'image/png', filename: 'someText.png'})
-    .then(document => {
+    .then((document) => {
       console.log('The image was uploaded!', document)
     })
-    .catch(error => {
+    .catch((error) => {
       console.error('Upload failed:', error.message)
     })
 }
@@ -443,10 +439,10 @@ function uploadImageBlob(blob) {
 // Extract palette of colors as well as GPS location from exif
 client.assets
   .upload('image', someFile, {extract: ['palette', 'location']})
-  .then(document => {
+  .then((document) => {
     console.log('The file was uploaded!', document)
   })
-  .catch(error => {
+  .catch((error) => {
     console.error('Upload failed:', error.message)
   })
 ```
@@ -460,10 +456,9 @@ client.delete(id: string): Promise
 ```
 
 ```js
-client.delete('image-abc123_someAssetId-500x500-png')
-  .then(result => {
-    console.log('deleted imageAsset', result)
-  })
+client.delete('image-abc123_someAssetId-500x500-png').then((result) => {
+  console.log('deleted imageAsset', result)
+})
 ```
 
 ### Get client configuration
@@ -476,7 +471,6 @@ console.log(config.dataset)
 `client.config()`
 
 Get client configuration.
-
 
 ### Set client configuration
 

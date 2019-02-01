@@ -17,6 +17,7 @@ const getClient = (options) =>
         apiHost: `http://localhost:${options.port}`,
         useProjectHostname: false,
         useCdn: false,
+        apiVersion: '1',
       },
       options
     )
@@ -62,7 +63,7 @@ test('[listener] can listen for mutations', (t) => {
       request.url,
       [
         '/v1/data/listen/prod',
-        '?query=*%5Bis%20%22beer%22%20%26%26%20title%20%3D%3D%20%24beerName%5D',
+        '?query=*%5B_type%20%3D%3D%20%22beer%22%20%26%26%20title%20%3D%3D%20%24beerName%5D',
         '&%24beerName=%22Headroom%20Double%20IPA%22&includeResult=true',
       ].join(''),
       'url should be correct'
@@ -72,7 +73,7 @@ test('[listener] can listen for mutations', (t) => {
     process.nextTick(() => channel.close())
   })
     .then(({server, client}) => {
-      const query = '*[is "beer" && title == $beerName]'
+      const query = '*[_type == "beer" && title == $beerName]'
       const params = {beerName: 'Headroom Double IPA'}
 
       const subscription = client.listen(query, params).subscribe({

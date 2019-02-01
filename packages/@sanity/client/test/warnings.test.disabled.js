@@ -1,6 +1,7 @@
 // This test suite fails using tape but should pass if running with as a node script
 const test = require('tape')
-const SanityClient = require('../src/sanityClient')
+const nock = require('nock')
+const sanityClient = require('../src/sanityClient')
 
 const stub = (target, prop, stubbed) => {
   const original = target[prop]
@@ -30,7 +31,7 @@ test('warns if useCdn is not given', (t) => {
       t.end()
     })
   )
-  new SanityClient({projectId: 'abc123'})
+  sanityClient({projectId: 'abc123', apiVersion: '1'})
 })
 
 test('warns if in browser on localhost and a token is provided', (t) => {
@@ -45,7 +46,7 @@ test('warns if in browser on localhost and a token is provided', (t) => {
       t.end()
     })
   )
-  new SanityClient({projectId: 'abc123', useCdn: false, token: 'foo'})
+  sanityClient({projectId: 'abc123', useCdn: false, token: 'foo', apiVersion: '1'})
 })
 
 test('warns a token is provided together with useCdn:true (and not in browser)', (t) => {
@@ -59,5 +60,21 @@ test('warns a token is provided together with useCdn:true (and not in browser)',
       t.end()
     })
   )
-  new SanityClient({projectId: 'abc123', token: 'foo', useCdn: true})
+  sanityClient({projectId: 'abc123', token: 'foo', useCdn: true, apiVersion: '1'})
+})
+
+test('warns if server sends warning back', (t) => {
+  const restore = combine(
+    stub(console, 'warn', (message) => {
+      t.equal(message, 'Friction endures')
+      restore()
+      t.end()
+    })
+  )
+
+  nock('https://abc123.api.sanity.io')
+    .get('/v1/users/me')
+    .reply(200, {}, {'X-Sanity-Warning': 'Friction endures'})
+
+  sanityClient({projectId: 'abc123', useCdn: true, apiVersion: '1'}).users.getById('me')
 })

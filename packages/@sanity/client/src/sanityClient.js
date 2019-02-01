@@ -54,6 +54,10 @@ assign(SanityClient.prototype, {
     return this
   },
 
+  withConfig(newConfig) {
+    return this.clone().config(newConfig)
+  },
+
   getUrl(uri, canUseCdn = false) {
     const base = canUseCdn ? this.clientConfig.cdnUrl : this.clientConfig.url
     return `${base}/${uri.replace(/^\//, '')}`

@@ -26,10 +26,10 @@ test('[gradient] throws when creating client without specifying namespace', (t) 
 })
 
 test('[gradient] can query for documents', (t) => {
-  const query = '*[is "beerfiesta.beer" && title == $beerName]'
+  const query = '*[_type == "beerfiesta.beer" && title == $beerName]'
   const params = {beerName: 'Headroom Double IPA'}
   const qs =
-    '*%5Bis%20%22beerfiesta.beer%22%20%26%26%20title%20%3D%3D%20%24beerName%5D&%24beerName=%22Headroom%20Double%20IPA%22'
+    '*%5B_type%20%3D%3D%20%22beerfiesta.beer%22%20%26%26%20title%20%3D%3D%20%24beerName%5D&%24beerName=%22Headroom%20Double%20IPA%22'
 
   nock(apiHost)
     .get(`/query/beerns?query=${qs}`)

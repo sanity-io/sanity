@@ -1,3 +1,4 @@
+/* eslint-disable no-dupe-class-members, @typescript-eslint/no-misused-new */
 import Observable from '@sanity/observable/minimal'
 
 export type AssetMetadataType = 'location' | 'exif' | 'image' | 'palette' | 'lqip' | 'none'
@@ -470,6 +471,7 @@ interface BaseClientConfig {
   useCdn?: boolean
   token?: string
   apiHost?: string
+  apiVersion?: string
   ignoreBrowserTokenWarning?: boolean
   withCredentials?: boolean
 
@@ -770,6 +772,13 @@ export class ObservableSanityClient {
    * @param newConfig New client configuration properties
    */
   config(newConfig?: Partial<ClientConfig>): this
+
+  /**
+   * Clone the client with a new (partial) configuration.
+   *
+   * @param newConfig New client configuration properties, shallowly merged with existing configuration
+   */
+  withConfig(newConfig?: Partial<ClientConfig>): ObservableSanityClient
 
   /**
    * @deprecated Use `client.config()` instead
@@ -1389,6 +1398,13 @@ export interface SanityClient {
    * @param newConfig New client configuration properties
    */
   config(newConfig?: Partial<ClientConfig>): this
+
+  /**
+   * Clone the client with a new (partial) configuration.
+   *
+   * @param newConfig New client configuration properties, shallowly merged with existing configuration
+   */
+  withConfig(newConfig?: Partial<ClientConfig>): SanityClient
 
   /**
    * @deprecated Use `client.config()` instead
