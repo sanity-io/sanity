@@ -1,5 +1,5 @@
 import fse from 'fs-extra'
-import Terser from 'terser'
+import Terser, {minify as minifyJs} from 'terser'
 
 export default async inputFile => {
   const content = await fse.readFile(inputFile, 'utf8')
@@ -9,7 +9,17 @@ export default async inputFile => {
 
 function minify(content, fileName) {
   return new Promise((resolve, reject) => {
-    const result = Terser.minify(content)
+    // Terser introduced a breaking API change in a patch version
+    // In case they revert or people are using an older version,
+    // try both combinations
+    let result
+    if (minifyJs) {
+      result = minifyJs(content)
+    } else if (Terser.minify) {
+      result = Terser.minify(content)
+    } else {
+      return reject(new Error('Breaking change in Terser - `minify` function not found'))
+    }
 
     if (result.error) {
       reject(formatError(result.error, fileName, content))
