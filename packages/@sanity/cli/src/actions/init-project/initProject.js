@@ -374,7 +374,7 @@ export default async function initSanity(args, context) {
     if (datasets.length === 0) {
       debug('No datasets found for project, prompting for name')
       const name = await promptForDatasetName(prompt, {
-        message: 'A dataset is where your documents is stored. Name of your first dataset:',
+        message: 'A dataset is where your documents are stored. Name of your first dataset:',
         default: 'production'
       })
 
