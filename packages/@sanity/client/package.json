@@ -74,7 +74,6 @@
     "require": [
       "@babel/register"
     ],
-    "sourceMap": false,
-    "instrument": false
+    "sourceMap": false
   }
 }
