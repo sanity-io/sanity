@@ -183,7 +183,8 @@ function validateAnnotations(annotations, visitorContext, problems) {
 
     const {_problems} = visitorContext.visit(annotation, visitorContext)
     const targetType = annotation.type && visitorContext.getType(annotation.type)
-    if (targetType && targetType.jsonType !== 'object') {
+    const jsonType = targetType && (targetType.jsonType || targetType.type)
+    if (jsonType && jsonType !== 'object') {
       _problems.push(
         error(
           `Annotation cannot have type "${
