@@ -54,9 +54,8 @@ module.exports = async function runCli(cliRoot) {
 
   const cliRunner = getCliRunner(commands)
   cliRunner.runCommand(args.groupOrCommand, args, options).catch(err => {
-    const debug = core.d || core.debug
-    const error = (debug && err.details) || err
-    const errMessage = debug ? error.stack || error : error.message || error
+    const error = err.details || err
+    const errMessage = error.stack || error
     console.error(chalk.red(errMessage)) // eslint-disable-line no-console
     process.exit(1) // eslint-disable-line no-process-exit
   })
