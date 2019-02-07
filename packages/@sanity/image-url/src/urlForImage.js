@@ -29,7 +29,7 @@ export default function urlForImage(options) {
     return null
   }
 
-  const asset = parseAssetId(image.asset._ref)
+  const asset = parseAssetId(image.asset._ref || image.asset._id)
 
   // Compute crop rect in terms of pixel coordinates in the raw source image
   const crop = {
