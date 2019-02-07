@@ -40,7 +40,6 @@ export default class SearchableSelect extends React.PureComponent {
       isOpen: false,
       highlightIndex: -1,
       isInputSelected: false,
-      arrowNavigationPosition: 0,
       hasFocus: false
     }
   }
