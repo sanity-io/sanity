@@ -13,6 +13,7 @@ import protein from '../components/ProteinInput/schema'
 import localeBlockContent from './localeBlockContent'
 import {blockContent} from './blockContent'
 import customBlockEditor from './customBlockEditor'
+import durationWithSeconds from './durationWithSeconds'
 
 export default createSchema({
   name: 'example-blog',
@@ -21,6 +22,7 @@ export default createSchema({
     author,
     code,
     customObject,
+    durationWithSeconds,
     localeString,
     localeBlockContent,
     localeSlug,
