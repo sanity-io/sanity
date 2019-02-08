@@ -18,9 +18,13 @@ exports[`builder flip horizontal 1`] = `"flip=h"`;
 
 exports[`builder flip vertical 1`] = `"flip=v"`;
 
+exports[`builder handles crop and hotspot being set to null (GraphQL) 1`] = `"https://cdn.sanity.io/images/zp7mbokg/production/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg"`;
+
 exports[`builder handles crop but no hotspot 1`] = `"https://cdn.sanity.io/images/zp7mbokg/production/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg?rect=200,300,1600,2400"`;
 
 exports[`builder handles hotspot but no crop 1`] = `"https://cdn.sanity.io/images/zp7mbokg/production/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg"`;
+
+exports[`builder handles materialized assets (GraphQL) 1`] = `"https://cdn.sanity.io/images/zp7mbokg/production/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg"`;
 
 exports[`builder skips hotspot/crop if crop mode specified 1`] = `"https://cdn.sanity.io/images/zp7mbokg/production/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg?w=100&h=80&crop=center"`;
 

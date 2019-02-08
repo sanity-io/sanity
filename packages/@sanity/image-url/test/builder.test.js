@@ -46,6 +46,36 @@ const cases = [
       })
       .url()
   },
+
+  {
+    name: 'handles crop and hotspot being set to null (GraphQL)',
+    url: urlFor
+      .image({
+        _type: 'image',
+        asset: {
+          _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg',
+          _type: 'reference'
+        },
+        crop: null,
+        hotspot: null
+      })
+      .url()
+  },
+
+  {
+    name: 'handles materialized assets (GraphQL)',
+    url: urlFor
+      .image({
+        _type: 'image',
+        asset: {
+          _id: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg'
+        },
+        crop: null,
+        hotspot: null
+      })
+      .url()
+  },
+
   {
     name: 'constrains aspect ratio',
     url: urlFor

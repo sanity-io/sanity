@@ -68,19 +68,26 @@ function applyDefaults(image) {
     return image
   }
 
-  return {
-    crop: {
+  // We need to pad in default values for crop or hotspot
+  const result = Object.assign({}, image)
+
+  if (!result.crop) {
+    result.crop = {
       left: 0,
       top: 0,
       bottom: 0,
       right: 0
-    },
-    hotspot: {
+    }
+  }
+
+  if (!result.hotspot) {
+    result.hotspot = {
       x: 0.5,
       y: 0.5,
       height: 1.0,
       width: 1.0
-    },
-    ...image
+    }
   }
+
+  return result
 }
