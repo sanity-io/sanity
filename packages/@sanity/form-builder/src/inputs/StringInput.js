@@ -34,7 +34,7 @@ export default class StringInput extends React.Component<Props> {
   }
 
   render() {
-    const {value, readOnly, type, markers, level, onFocus} = this.props
+    const {value, readOnly, type, markers, level, onFocus, onBlur} = this.props
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
 
@@ -48,6 +48,7 @@ export default class StringInput extends React.Component<Props> {
           placeholder={type.placeholder}
           onChange={this.handleChange}
           onFocus={onFocus}
+          onBlur={onBlur}
           ref={this.setInput}
         />
       </FormField>
