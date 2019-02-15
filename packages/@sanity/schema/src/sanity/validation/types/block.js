@@ -2,6 +2,7 @@
 import {omit, isPlainObject} from 'lodash'
 import humanizeList from 'humanize-list'
 import {error, warning} from '../createValidationResult'
+import {isJSONTypeOf} from '../utils/isJSONTypeOf'
 
 const getTypeOf = thing => (Array.isArray(thing) ? 'array' : typeof thing)
 const quote = str => `"${str}"`
@@ -183,7 +184,7 @@ function validateAnnotations(annotations, visitorContext, problems) {
 
     const {_problems} = visitorContext.visit(annotation, visitorContext)
     const targetType = annotation.type && visitorContext.getType(annotation.type)
-    if (targetType && targetType.jsonType !== 'object') {
+    if (targetType && !isJSONTypeOf(targetType, 'object', visitorContext)) {
       _problems.push(
         error(
           `Annotation cannot have type "${
