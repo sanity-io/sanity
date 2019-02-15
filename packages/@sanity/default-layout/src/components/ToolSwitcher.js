@@ -9,15 +9,13 @@ class ToolSwitcher extends React.PureComponent {
   renderItem = (tool, showIcon) => {
     const {activeToolName, router, isVisible, onSwitchTool, direction, showLabel} = this.props
     const tabIndex = isVisible ? '0' : '-1'
-    let linkState = tool.state
-
-    // Reset tool when clicking current tool
-    if (router.state.tool === tool.state.tool) {
-      linkState = {tool: tool.state.tool, space: tool.state.space}
-    }
     return (
       <StateLink
-        state={linkState}
+        state={{
+          ...router.state,
+          tool: tool.name,
+          [tool.name]: undefined
+        }}
         onClick={onSwitchTool}
         className={ToolSwitcherWidgetStyles.link}
         tabIndex={tabIndex}
@@ -36,19 +34,8 @@ class ToolSwitcher extends React.PureComponent {
   }
 
   render() {
-    const {router, tools} = this.props
-    return (
-      <ToolSwitcherWidget
-        {...this.props}
-        renderItem={this.renderItem}
-        tools={tools.map(tool => {
-          return {
-            state: router && Object.assign({}, router.state, {tool: tool.name}),
-            ...tool
-          }
-        })}
-      />
-    )
+    const {tools} = this.props
+    return <ToolSwitcherWidget {...this.props} renderItem={this.renderItem} tools={tools} />
   }
 }
 
