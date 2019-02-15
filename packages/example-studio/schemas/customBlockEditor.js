@@ -75,6 +75,7 @@ export default {
                   {name: 'href', type: 'string', title: 'Url', validation: Rule => Rule.required()}
                 ]
               },
+              {type: 'videoEmbed'},
               {
                 name: 'author',
                 title: 'Author',
