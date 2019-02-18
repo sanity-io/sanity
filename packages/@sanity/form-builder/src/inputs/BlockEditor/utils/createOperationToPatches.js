@@ -296,6 +296,13 @@ export default function createOperationToPatches(
     afterValue: SlateValue,
     formBuilderValue?: ?(FormBuilderValue[]) // This is optional, but needed for setting setIfMissing patches correctly
   ) {
+    // Check if this is the last contentBlock, and if no text left unset the field
+    if (afterValue.document.nodes.size === 1) {
+      const afterBlock = afterValue.document.nodes.first()
+      if (afterBlock.type === 'contentBlock' && afterBlock.text === '') {
+        return unset([])
+      }
+    }
     switch (operation.type) {
       case 'insert_text':
         return insertTextPatch(operation, beforeValue, afterValue, formBuilderValue)

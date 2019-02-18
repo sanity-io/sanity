@@ -36,6 +36,7 @@ import buildEditorSchema from './utils/buildEditorSchema'
 import findInlineByAnnotationKey from './utils/findInlineByAnnotationKey'
 
 import ExpandToWordPlugin from './plugins/ExpandToWordPlugin'
+import EnsureEmptyTextBlockPlugin from './plugins/ensureEmptyTextBlockPlugin'
 import InsertBlockObjectPlugin from './plugins/InsertBlockObjectPlugin'
 import InsertInlineObjectPlugin from './plugins/InsertInlineObjectPlugin'
 import ListItemOnEnterKeyPlugin from './plugins/ListItemOnEnterKeyPlugin'
@@ -153,6 +154,7 @@ export default class Editor extends React.Component<Props> {
       WrapSpanPlugin(),
       InsertInlineObjectPlugin(props.type),
       InsertBlockObjectPlugin(),
+      EnsureEmptyTextBlockPlugin(props.blockContentFeatures),
       UndoRedoPlugin({stack: props.undoRedoStack}),
       FireFoxVoidNodePlugin(),
       FocusNoScrollPlugin(props.scrollContainer),
