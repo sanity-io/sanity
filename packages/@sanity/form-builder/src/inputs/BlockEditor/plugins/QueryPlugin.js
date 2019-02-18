@@ -25,12 +25,14 @@ export default function QueryPlugin() {
         case 'activeStyles':
           return value.blocks.map(block => block.data.get('style')).sort()
         case 'hasAnnotation':
-          return value.inlines.filter(inline => inline.type === 'span').some(span => {
-            const annotations = span.data.get('annotations') || {}
-            return Object.keys(annotations).find(
-              key => annotations[key] && annotations[key]._type === query.args[0]
-            )
-          })
+          return value.inlines
+            .filter(inline => inline.type === 'span')
+            .some(span => {
+              const annotations = span.data.get('annotations') || {}
+              return Object.keys(annotations).find(
+                key => annotations[key] && annotations[key]._type === query.args[0]
+              )
+            })
         case 'hasListItem':
           return value.blocks.some(block => {
             return block.data.get('listItem') === query.args[0]
