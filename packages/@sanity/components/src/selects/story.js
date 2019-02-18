@@ -149,7 +149,10 @@ storiesOf('Selects')
         max: items.length,
         step: 1
       })
-      const selectedItem = items[selected]
+
+      const hasItems = boolean('hasItems', false, 'test') || undefined
+
+      const selectedItem = (items && items[selected]) || undefined
       return (
         <div style={{minWidth: '320px', ...centerStyle}}>
           <Sanity part="part:@sanity/components/selects/searchable" propTables={[SearchableSelect]}>
@@ -160,10 +163,10 @@ storiesOf('Selects')
               onFocus={action('onFocus')}
               onBlur={action('onBlur')}
               onOpen={action('onOpen')}
-              value={selectedItem}
+              value={hasItems && selectedItem}
               inputValue={text('Inputvalue', selectedItem && selectedItem.title, 'props')}
               renderItem={renderItem}
-              items={items}
+              items={hasItems && items}
               isLoading={boolean('isLoading', false, 'props')}
               disabled={boolean('disabled (prop)', false, 'props')}
               onClear={hasOnclear ? action('onClear') : undefined}
