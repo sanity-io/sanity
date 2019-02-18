@@ -62,11 +62,18 @@
 .listContainer {
   composes: shadow-24dp from "part:@sanity/base/theme/shadows-style";
   display: block;
+  min-height: 3.5rem;
   max-height: 20rem;
   overflow: auto;
   border: 1px solid var(--component-border-color);
   box-sizing: border-box;
   background-color: var(--component-bg);
+  transition: max-height 100ms linear;
+}
+
+.listContainerNoResult {
+  composes: listContainer;
+  max-height: 4rem;
 }
 
 .listContainerHidden {
@@ -75,9 +82,18 @@
 }
 
 .noResultText {
-  text-align: center;
-  padding: 0.5em;
-  opacity: 0.5;
+  position: absolute;
+  width: 100%;
+  opacity: 1;
+  padding: var(--medium-padding);
+  transition: opacity 100ms ease-out;
+  transition-delay: 100ms;
+}
+
+.noResultTextHidden {
+  composes: noResultText;
+  transition: none;
+  opacity: 0;
 }
 
 .spinner {
@@ -133,10 +149,6 @@
     display: block;
     color: var(--text-color);
   }
-}
-
-.listSpinner {
-  opacity: 0.5;
 }
 
 .clearButton {

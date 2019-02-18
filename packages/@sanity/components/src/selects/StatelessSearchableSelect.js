@@ -172,15 +172,14 @@ export default class StatelessSearchableSelect extends React.PureComponent {
                 readOnly={readOnly}
               />
               <div className={styles.functions}>
-                {openItemElement &&
-                  value && <span className={styles.openItem}>{openItemElement(value)}</span>}
-                {!readOnly &&
-                  onClear &&
-                  value && (
-                    <button type="button" className={styles.clearButton} onClick={onClear}>
-                      <CloseIcon color="inherit" />
-                    </button>
-                  )}
+                {openItemElement && value && (
+                  <span className={styles.openItem}>{openItemElement(value)}</span>
+                )}
+                {!readOnly && onClear && value && (
+                  <button type="button" className={styles.clearButton} onClick={onClear}>
+                    <CloseIcon color="inherit" />
+                  </button>
+                )}
                 {!readOnly && (
                   <div className={styles.arrowAndSpinnerContainer}>
                     {!isLoading && (
@@ -238,18 +237,23 @@ export default class StatelessSearchableSelect extends React.PureComponent {
                       <CaptureOutsideClicks
                         onClickOutside={isActive && isOpen ? this.handleClose : undefined}
                       >
-                        <div className={styles.listContainer}>
+                        <div
+                          className={
+                            items.length === 0 ? styles.listContainerNoResult : styles.listContainer
+                          }
+                        >
                           <Escapable
                             onEscape={event => (isActive || event.shiftKey) && this.handleClose()}
                           />
-                          {items.length === 0 &&
-                            !isLoading && <p className={styles.noResultText}>No results</p>}
-                          {items.length === 0 &&
-                            isLoading && (
-                              <div className={styles.listSpinner}>
-                                <Spinner message="Loading items…" />
-                              </div>
-                            )}
+                          <div
+                            className={
+                              items.length === 0 && !isLoading
+                                ? styles.noResultText
+                                : styles.noResultTextHidden
+                            }
+                          >
+                            No results
+                          </div>
                           {items.length > 0 && (
                             <SelectMenu
                               items={items}
