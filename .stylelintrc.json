@@ -8,6 +8,7 @@
         "ignoreAtRules": ["value"]
       }
     ],
+    "block-no-empty": null,
     "color-hex-length": null,
     "declaration-block-no-redundant-longhand-properties": null,
     "property-no-unknown": [
