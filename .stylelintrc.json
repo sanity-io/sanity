@@ -10,6 +10,7 @@
     ],
     "block-no-empty": null,
     "color-hex-length": null,
+    "comment-empty-line-before": null,
     "declaration-block-no-redundant-longhand-properties": null,
     "property-no-unknown": [
       true,
