@@ -145,6 +145,18 @@ export default function createPatchesToChange(
   }
 
   function unsetPatch(patch: UnsetPatch, editor: SlateEditor) {
+    // Deal with patches unsetting the whole field
+    if (patch.path.length === 0) {
+      editor.value.document.nodes.forEach(node => {
+        editor.applyOperation({
+          type: 'remove_node',
+          path: [0],
+          node: node
+        })
+      })
+      return editor.operations
+    }
+    // Deal with patches unsetting something inside
     const lastKey = findLastKey(patch.path)
     editor.removeNodeByKey(lastKey)
     return editor.operations
