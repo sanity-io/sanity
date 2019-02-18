@@ -1,15 +1,20 @@
 @import "part:@sanity/base/theme/variables-style";
 
 .root {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   text-decoration: none;
   color: inherit;
   font-weight: 400;
   width: 100%;
   outline: none;
   padding: 1em;
+  box-sizing: border-box;
+  position: relative;
+
+  @media (--screen-medium) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .projectName {
@@ -22,8 +27,13 @@
   font-weight: 600;
   white-space: nowrap;
   text-overflow: ellipsis;
-  max-width: 12em;
+  width: 100%;
   overflow: hidden;
+
+  @media (--screen-medium) {
+    width: unset;
+    max-width: 12em;
+  }
 }
 
 .brandLogoContainer {
