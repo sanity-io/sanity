@@ -97,7 +97,7 @@
   height: 100%;
 
   @nest & .content {
-    margin: 0 !important;
+    margin: 0;
   }
 }
 
