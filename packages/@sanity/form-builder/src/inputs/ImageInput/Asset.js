@@ -16,7 +16,10 @@ import TrashIcon from 'react-icons/lib/md/delete'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import MoreVertIcon from 'part:@sanity/base/more-vert-icon'
 
-import {get, startsWith} from 'lodash'
+import {get} from 'lodash'
+
+const DIALOG_DELETE_ACTION = {name: 'delete', title: 'Delete', icon: TrashIcon, color: 'danger'}
+const DIALOG_CLOSE_ACTION = {name: 'close', title: 'Close'}
 
 export default class Asset extends React.PureComponent {
   static propTypes = {
@@ -31,7 +34,6 @@ export default class Asset extends React.PureComponent {
   }
 
   state = {
-    showDialog: false,
     isDeleting: false,
     dialogType: undefined
   }
@@ -44,16 +46,14 @@ export default class Asset extends React.PureComponent {
       .delete(asset._id)
       .then(() => {
         this.setState({
-          showDialog: false,
           isDeleting: false
         })
         onDeleteComplete()
       })
       .catch(err => {
         this.setState({
-          showDialog: true,
           isDeleting: false,
-          dialogType: 'cantDelete'
+          dialogType: 'error'
         })
         // eslint-disable-next-line
         console.error('Could not delete asset', err)
@@ -62,18 +62,15 @@ export default class Asset extends React.PureComponent {
 
   handleDialogClose = () => {
     this.setState({
-      showDialog: false,
-      isDeleting: false
+      dialogType: null
     })
   }
 
   handleMenuAction = action => {
     if (action.name === 'delete') {
       this.handleDeleteAsset(this.props.asset)
-    }
-    if (action.name === 'showRefs') {
+    } else if (action.name === 'showRefs') {
       this.setState({
-        showDialog: true,
         dialogType: 'showRefs'
       })
     }
@@ -82,9 +79,7 @@ export default class Asset extends React.PureComponent {
   handleDialogAction = action => {
     if (action.name === 'close') {
       this.handleDialogClose()
-    }
-
-    if (action.name === 'delete') {
+    } else if (action.name === 'delete') {
       this.handleDeleteAsset(this.props.asset)
     }
   }
@@ -100,23 +95,16 @@ export default class Asset extends React.PureComponent {
   }
 
   getDialogActions = dialogType => {
-    const actions = []
-
-    if (dialogType != 'cantDelete') {
-      actions.push({name: 'delete', title: 'Delete', icon: TrashIcon, color: 'danger'})
+    if (dialogType != 'error') {
+      return [DIALOG_DELETE_ACTION, DIALOG_CLOSE_ACTION]
     }
 
-    actions.push({
-      name: 'close',
-      title: 'Close'
-    })
-
-    return actions
+    return [DIALOG_CLOSE_ACTION]
   }
 
   render() {
     const {asset, onClick, onKeyPress} = this.props
-    const {isDeleting, showDialog, dialogType} = this.state
+    const {isDeleting, dialogType} = this.state
     const size = 75
     const width = get(asset, 'metadata.dimensions.width') || 100
     const height = get(asset, 'metadata.dimensions.height') || 100
@@ -169,12 +157,10 @@ export default class Asset extends React.PureComponent {
           >
             <MoreVertIcon />
           </DropDownButton>
-          {showDialog && (
+          {dialogType && (
             <Dialog
-              title={
-                dialogType === 'cantDelete' ? 'Could not delete asset' : 'Documents using this'
-              }
-              color={dialogType === 'cantDelete' ? 'danger' : undefined}
+              title={dialogType === 'error' ? 'Could not delete asset' : 'Documents using this'}
+              color={dialogType === 'error' ? 'danger' : undefined}
               onClose={this.handleDialogClose}
               onAction={this.handleDialogAction}
               actions={this.getDialogActions(dialogType)}
@@ -205,7 +191,7 @@ export default class Asset extends React.PureComponent {
                             <div>No documents are referencing this asset</div>
                           ) : (
                             <>
-                              {dialogType === 'cantDelete' && (
+                              {dialogType === 'error' && (
                                 <>
                                   <h4 className={styles.dialogSubtitle}>
                                     {filteredDocuments.length > 1

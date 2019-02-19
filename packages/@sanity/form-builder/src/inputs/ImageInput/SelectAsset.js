@@ -3,7 +3,7 @@ import React from 'react'
 import client from 'part:@sanity/base/client'
 import Button from 'part:@sanity/components/buttons/default'
 import styles from './styles/SelectAsset.css'
-import ImageAsset from './Asset'
+import AssetWidget from './Asset'
 
 const PER_PAGE = 200
 
@@ -52,7 +52,7 @@ export default class SelectAsset extends React.Component<Props, State> {
     })
   }
 
-  handleUpdate = () => {
+  handleDeleteFinished = () => {
     this.fetchPage(this.pageNo)
   }
 
@@ -88,12 +88,12 @@ export default class SelectAsset extends React.Component<Props, State> {
       <div className={styles.root}>
         <div className={styles.imageList}>
           {assets.map(asset => (
-            <ImageAsset
+            <AssetWidget
               key={asset._id}
               asset={asset}
               onClick={this.handleItemClick}
               onKeyPress={this.handleItemKeyPress}
-              onDeleteFinished={this.handleUpdate}
+              onDeleteFinished={this.handleDeleteFinished}
             />
           ))}
         </div>

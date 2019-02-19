@@ -30,6 +30,7 @@ export default class DefaultDialog extends React.PureComponent {
     actions: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string.isRequired,
+        icon: PropTypes.func,
         tooltip: PropTypes.string,
         kind: PropTypes.string,
         autoFocus: PropTypes.bool
