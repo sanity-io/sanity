@@ -165,7 +165,7 @@ export default class Asset extends React.PureComponent {
               onAction={this.handleDialogAction}
               actions={this.getDialogActions(dialogType)}
             >
-              <DialogContent size="medium">
+              <DialogContent size="medium" key={dialogType}>
                 <div className={styles.dialogContent}>
                   <img src={`${asset.url}?w=200`} style={{maxWidth: '200px'}} />
                   <WithReferringDocuments id={asset._id}>
@@ -192,7 +192,7 @@ export default class Asset extends React.PureComponent {
                           ) : (
                             <>
                               {dialogType === 'error' && (
-                                <>
+                                <div>
                                   <h4 className={styles.dialogSubtitle}>
                                     {filteredDocuments.length > 1
                                       ? `${filteredDocuments.length} documents are using this asset`
@@ -202,7 +202,7 @@ export default class Asset extends React.PureComponent {
                                     {`Open the document${referringDocuments.length > 1 &&
                                       's'} and remove the asset before deleting it.`}
                                   </p>
-                                </>
+                                </div>
                               )}
                               <List>
                                 {filteredDocuments.map(doc => {
