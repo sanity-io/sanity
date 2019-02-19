@@ -16,7 +16,7 @@ import TrashIcon from 'react-icons/lib/md/delete'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import MoreVertIcon from 'part:@sanity/base/more-vert-icon'
 
-import {get} from 'lodash'
+import {get, startsWith} from 'lodash'
 
 export default class Asset extends React.PureComponent {
   static propTypes = {
@@ -183,22 +183,43 @@ export default class Asset extends React.PureComponent {
                 <div className={styles.dialogContent}>
                   <img src={`${asset.url}?w=200`} style={{maxWidth: '200px'}} />
                   <WithReferringDocuments id={asset._id}>
-                    {({isLoading, referringDocuments}) =>
-                      isLoading ? (
-                        <Spinner>Loading…</Spinner>
-                      ) : (
+                    {({isLoading, referringDocuments}) => {
+
+                      const drafts = referringDocuments.reduce(
+                        (acc, doc) =>
+                          doc._id.startsWith('drafts.') ? acc.concat(doc._id.slice(7)) : acc,
+                        []
+                      )
+
+                      const filteredDocuments = referringDocuments.filter(
+                        doc => !drafts.includes(doc._id)
+                      )
+
+                      if (isLoading) {
+                        return <Spinner>Loading…</Spinner>
+                      }
+
+                      return (
                         <div>
-                          {referringDocuments.length === 0 ? (
+                          {filteredDocuments.length === 0 ? (
                             <div>No documents are referencing this asset</div>
                           ) : (
                             <>
                               {dialogType === 'cantDelete' && (
-                                <p className={styles.dialoigSubtitle}>
-                                  Documents using this asset:
-                                </p>
+                                <>
+                                  <h4 className={styles.dialogSubtitle}>
+                                    {filteredDocuments.length > 1
+                                      ? `${filteredDocuments.length} documents are using this asset`
+                                      : 'A document is using this asset'}
+                                  </h4>
+                                  <p className={styles.referringDocumentsDescription}>
+                                    {`Open the document${referringDocuments.length > 1 &&
+                                      's'} and remove the asset before deleting it.`}
+                                  </p>
+                                </>
                               )}
                               <List>
-                                {referringDocuments.map(doc => {
+                                {filteredDocuments.map(doc => {
                                   return (
                                     <Item key={doc._id}>
                                       <IntentLink
@@ -220,7 +241,7 @@ export default class Asset extends React.PureComponent {
                           )}
                         </div>
                       )
-                    }
+                    }}
                   </WithReferringDocuments>
                 </div>
               </DialogContent>

@@ -78,10 +78,14 @@
   grid-template-columns: max-content 1fr;
 }
 
-.dialoigSubtitle {
+.dialogSubtitle {
   margin: 0;
   padding: 0;
-  padding-bottom: var(--medium-padding);
+}
+
+.referringDocumentsDescription {
+  composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
+  margin-bottom: var(--medium-padding);
 }
 
 .openDocLink {
