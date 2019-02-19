@@ -5,6 +5,6 @@
   },
   "rules": {
     "import/no-commonjs": "off",
-    "complexity": [15, "error"]
+    "complexity": ["error", 15]
   }
 }
