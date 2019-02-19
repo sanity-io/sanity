@@ -172,9 +172,7 @@ export default class Asset extends React.PureComponent {
           {showDialog && (
             <Dialog
               title={
-                dialogType === 'cantDelete'
-                  ? `Can't delete asset. Used in other documents`
-                  : 'Documents using this'
+                dialogType === 'cantDelete' ? 'Could not delete asset' : 'Documents using this'
               }
               color={dialogType === 'cantDelete' ? 'danger' : undefined}
               onClose={this.handleDialogClose}
@@ -183,9 +181,7 @@ export default class Asset extends React.PureComponent {
             >
               <DialogContent size="medium">
                 <div className={styles.dialogContent}>
-                  <div>
-                    <img src={`${asset.url}?w=200`} />
-                  </div>
+                  <img src={`${asset.url}?w=200`} style={{maxWidth: '200px'}} />
                   <WithReferringDocuments id={asset._id}>
                     {({isLoading, referringDocuments}) =>
                       isLoading ? (
@@ -193,27 +189,34 @@ export default class Asset extends React.PureComponent {
                       ) : (
                         <div>
                           {referringDocuments.length === 0 ? (
-                            <div>No documents are using this asset</div>
+                            <div>No documents are referencing this asset</div>
                           ) : (
-                            <List>
-                              {referringDocuments.map(doc => {
-                                return (
-                                  <Item key={doc._id}>
-                                    <IntentLink
-                                      intent="edit"
-                                      params={{id: doc._id}}
-                                      key={doc._id}
-                                      className={styles.intentLink}
-                                    >
-                                      <Preview value={doc} type={schema.get(doc._type)} />
-                                      <span className={styles.openDocLink}>
-                                        <LinkIcon /> Open
-                                      </span>
-                                    </IntentLink>
-                                  </Item>
-                                )
-                              })}
-                            </List>
+                            <>
+                              {dialogType === 'cantDelete' && (
+                                <p className={styles.dialoigSubtitle}>
+                                  Documents using this asset:
+                                </p>
+                              )}
+                              <List>
+                                {referringDocuments.map(doc => {
+                                  return (
+                                    <Item key={doc._id}>
+                                      <IntentLink
+                                        intent="edit"
+                                        params={{id: doc._id}}
+                                        key={doc._id}
+                                        className={styles.intentLink}
+                                      >
+                                        <Preview value={doc} type={schema.get(doc._type)} />
+                                        <span className={styles.openDocLink}>
+                                          <LinkIcon /> Open
+                                        </span>
+                                      </IntentLink>
+                                    </Item>
+                                  )
+                                })}
+                              </List>
+                            </>
                           )}
                         </div>
                       )

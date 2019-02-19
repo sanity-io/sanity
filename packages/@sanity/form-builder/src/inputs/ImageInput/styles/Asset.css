@@ -78,6 +78,12 @@
   grid-template-columns: max-content 1fr;
 }
 
+.dialoigSubtitle {
+  margin: 0;
+  padding: 0;
+  padding-bottom: var(--medium-padding);
+}
+
 .openDocLink {
   font-size: var(--font-size-small);
   white-space: nowrap;
