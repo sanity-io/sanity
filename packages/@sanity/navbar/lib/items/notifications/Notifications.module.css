@@ -1,0 +1,12 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  line-height: calc(17 / 16);
+  padding: var(--medium-padding);
+
+  @nest & svg {
+    vertical-align: top;
+    font-size: 25px;
+    margin: -4px;
+  }
+}
