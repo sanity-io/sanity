@@ -1,0 +1,16 @@
+{
+  "paths": {
+    "source": "./src",
+    "compiled": "./lib"
+  },
+  "parts": [
+    {
+      "implements": "part:@sanity/base/tool",
+      "path": "DashboardTool.js"
+    },
+    {
+      "name": "part:@sanity/dashboard-widget",
+      "description": "Anything suitable for the dashboard"
+    }
+  ]
+}
