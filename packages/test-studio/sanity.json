@@ -35,6 +35,7 @@
     "@sanity/desk-tool",
     "@sanity/storybook",
     "@sanity/google-maps-input",
+    "@sanity/dashboard",
     "@sanity/vision",
     "@sanity/production-preview"
   ],
