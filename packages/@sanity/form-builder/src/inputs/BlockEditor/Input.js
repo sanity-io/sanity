@@ -80,15 +80,10 @@ export default class BlockEditorInput extends React.Component<Props, State> {
     const {focusPath, onFocus, readOnly} = this.props
     const blockEditor = this.blockEditor && this.blockEditor.current
     const editor = blockEditor && blockEditor.getEditor()
-
-    if (editor && !readOnly) {
-      editor.command('ensureEmptyTextBlock')
-    }
-
     window.requestAnimationFrame(() => {
       if (editor && !readOnly) {
         editor.focus()
-        if (!focusPath || focusPath.length === 0) {
+        if (editor.value.focusBlock && (!focusPath || focusPath.length === 0)) {
           onFocus([{_key: editor.value.focusBlock.key}])
         }
       }
