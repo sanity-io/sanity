@@ -3,20 +3,22 @@
 import createEmptyBlock from '../utils/createEmptyBlock'
 import type {SlateEditor, BlockContentFeatures} from '../typeDefs'
 
-export default function InsertEmptyTextBlockPlugin(blockContentFeatures: BlockContentFeatures) {
+export default function EnsurePlaceHolderBlockPlugin(blockContentFeatures: BlockContentFeatures) {
   return {
     onCommand(command: any, editor: SlateEditor, next: void => void) {
-      if (command.type !== 'ensureEmptyTextBlock') {
+      if (command.type !== 'ensurePlaceHolderBlock') {
         return next()
       }
       if (editor.value.document.nodes.size !== 0) {
         return next()
       }
       const block = createEmptyBlock(blockContentFeatures)
+      const node = block.toJSON({preserveKeys: true, preserveData: true})
+      node.data = {...node.data, placeholder: true}
       editor.applyOperation({
         type: 'insert_node',
         path: [0],
-        node: block.toJSON({preserveKeys: true, preserveData: true})
+        node: node
       })
       return editor
     }

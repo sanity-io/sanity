@@ -153,6 +153,10 @@ export default function createOperationToPatches(
     afterValue: SlateValue,
     formBuilderValue: ?(FormBuilderValue[])
   ) {
+    // Unset the field if every node is a placeholder
+    if (afterValue.document.nodes.every(node => node.data.get('placeholder'))) {
+      return [unset([])]
+    }
     // Value is undefined
     if (!formBuilderValue) {
       const blocks = editorValueToBlocks(afterValue.toJSON(VALUE_TO_JSON_OPTS), blockContentType)
@@ -172,6 +176,10 @@ export default function createOperationToPatches(
     afterValue: SlateValue,
     formBuilderValue: ?(FormBuilderValue[])
   ) {
+    // Don't send anything if this is just a placeholder
+    if (afterValue.document.nodes.every(node => node.data.get('placeholder'))) {
+      return []
+    }
     // Value is undefined
     if (!formBuilderValue) {
       const blocks = editorValueToBlocks(afterValue.toJSON(VALUE_TO_JSON_OPTS), blockContentType)
@@ -197,7 +205,20 @@ export default function createOperationToPatches(
     return [set(block, [{_key: block._key}])]
   }
 
-  function splitNodePatch(operation: Operation, afterValue: SlateValue) {
+  function splitNodePatch(
+    operation: Operation,
+    afterValue: SlateValue,
+    formBuilderValue: FormBuilderValue
+  ) {
+    // Value is undefined
+    if (!formBuilderValue) {
+      const blocks = editorValueToBlocks(afterValue.toJSON(VALUE_TO_JSON_OPTS), blockContentType)
+      return [setIfMissing(blocks), set(blocks)]
+    }
+    // Value is empty
+    if (formBuilderValue && formBuilderValue.length === 0) {
+      return [set(editorValueToBlocks(afterValue.toJSON(VALUE_TO_JSON_OPTS), blockContentType), [])]
+    }
     const patches = []
     const splitBlock = toBlock(afterValue, operation.path.get(0))
     if (operation.path.size === 1) {
@@ -211,8 +232,21 @@ export default function createOperationToPatches(
     return patches
   }
 
-  function mergeNodePatch(operation: Operation, afterValue: SlateValue) {
+  function mergeNodePatch(
+    operation: Operation,
+    afterValue: SlateValue,
+    formBuilderValue: FormBuilderValue
+  ) {
     const patches = []
+    // Value is undefined
+    if (!formBuilderValue) {
+      const blocks = editorValueToBlocks(afterValue.toJSON(VALUE_TO_JSON_OPTS), blockContentType)
+      return [setIfMissing(blocks), set(blocks)]
+    }
+    // Value is empty
+    if (formBuilderValue && formBuilderValue.length === 0) {
+      return [set(editorValueToBlocks(afterValue.toJSON(VALUE_TO_JSON_OPTS), blockContentType), [])]
+    }
     if (operation.path.size === 1) {
       const mergedBlock = toBlock(afterValue, operation.path.get(0))
       const targetBlock = toBlock(afterValue, operation.path.get(0) - 1)
@@ -296,13 +330,6 @@ export default function createOperationToPatches(
     afterValue: SlateValue,
     formBuilderValue?: ?(FormBuilderValue[]) // This is optional, but needed for setting setIfMissing patches correctly
   ) {
-    // Check if this is the last contentBlock, and if no text left unset the field
-    if (afterValue.document.nodes.size === 1) {
-      const afterBlock = afterValue.document.nodes.first()
-      if (afterBlock.type === 'contentBlock' && afterBlock.text === '') {
-        return unset([])
-      }
-    }
     switch (operation.type) {
       case 'insert_text':
         return insertTextPatch(operation, beforeValue, afterValue, formBuilderValue)
@@ -319,9 +346,9 @@ export default function createOperationToPatches(
       case 'remove_node':
         return removeNodePatch(operation, beforeValue, afterValue)
       case 'split_node':
-        return splitNodePatch(operation, afterValue)
+        return splitNodePatch(operation, afterValue, formBuilderValue)
       case 'merge_node':
-        return mergeNodePatch(operation, beforeValue)
+        return mergeNodePatch(operation, beforeValue, formBuilderValue)
       case 'move_node':
         return moveNodePatch(operation, beforeValue, afterValue)
       default:

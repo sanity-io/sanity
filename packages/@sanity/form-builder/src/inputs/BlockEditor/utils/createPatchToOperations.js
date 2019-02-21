@@ -26,6 +26,7 @@ import findInlineByAnnotationKey from './findInlineByAnnotationKey'
 import createSelectionOperation from './createSelectionOperation'
 import createEditorController from './createEditorController'
 import buildEditorSchema from './buildEditorSchema'
+import createEmptyBlock from './createEmptyBlock'
 
 type JSONValue = number | string | boolean | {[string]: JSONValue} | JSONValue[]
 
@@ -154,11 +155,23 @@ export default function createPatchesToChange(
           node: node
         })
       })
+      // Create a placeholder block and set focus
+      const block = createEmptyBlock(blockContentFeatures)
+      const node = block.toJSON({preserveKeys: true, preserveData: true})
+      node.data = {...node.data, placeholder: true}
+      editor.applyOperation({
+        type: 'insert_node',
+        path: [0],
+        node: node
+      })
+      editor.focus()
       return editor.operations
     }
     // Deal with patches unsetting something inside
     const lastKey = findLastKey(patch.path)
-    editor.removeNodeByKey(lastKey)
+    if (lastKey && editor.value.document.getDescendant(lastKey)) {
+      editor.removeNodeByKey(lastKey)
+    }
     return editor.operations
   }
 
@@ -399,7 +412,6 @@ export default function createPatchesToChange(
       }
       return patchBlockData(patch, controller)
     }
-
     // Patches working on whole blocks or document
     switch (patch.type) {
       case 'set':
