@@ -1,24 +1,20 @@
 import {randomKey, normalizeBlock} from '@sanity/block-tools'
 import deserialize from './deserialize'
 
-export default function createEmptyBlock(blockContentFeatures) {
-  const key = randomKey(12)
-  return deserialize(
-    [
-      normalizeBlock({
-        _key: key,
-        _type: 'block',
-        children: [
-          {
-            _type: 'span',
-            _key: `${key}0`,
-            text: '',
-            marks: []
-          }
-        ],
-        style: 'normal'
-      })
+export default function createEmptyBlock(blockContentFeatures, options = {}) {
+  const key = options.key || randomKey(12)
+  const raw = {
+    _key: key,
+    _type: 'block',
+    children: [
+      {
+        _type: 'span',
+        _key: `${key}0`,
+        text: '',
+        marks: []
+      }
     ],
-    blockContentFeatures.types.block
-  ).document.nodes.first()
+    style: options.style || 'normal'
+  }
+  return deserialize([normalizeBlock(raw)], blockContentFeatures.types.block).document.nodes.first()
 }

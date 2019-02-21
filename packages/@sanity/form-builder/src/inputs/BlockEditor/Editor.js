@@ -36,12 +36,14 @@ import buildEditorSchema from './utils/buildEditorSchema'
 import findInlineByAnnotationKey from './utils/findInlineByAnnotationKey'
 
 import ExpandToWordPlugin from './plugins/ExpandToWordPlugin'
-import EnsureEmptyTextBlockPlugin from './plugins/ensureEmptyTextBlockPlugin'
+import EnsurePlaceHolderBlockPlugin from './plugins/EnsurePlaceHolderBlockPlugin'
 import InsertBlockObjectPlugin from './plugins/InsertBlockObjectPlugin'
 import InsertInlineObjectPlugin from './plugins/InsertInlineObjectPlugin'
 import ListItemOnEnterKeyPlugin from './plugins/ListItemOnEnterKeyPlugin'
 import ListItemOnTabKeyPlugin from './plugins/ListItemOnTabKeyPlugin'
 import OnDropPlugin from './plugins/OnDropPlugin'
+import OnFocusPlugin from './plugins/OnFocusPlugin'
+import TogglePlaceHolderPlugin from './plugins/TogglePlaceHolderPlugin'
 import PastePlugin from './plugins/PastePlugin'
 import QueryPlugin from './plugins/QueryPlugin'
 import SetBlockStylePlugin from './plugins/SetBlockStylePlugin'
@@ -148,13 +150,16 @@ export default class Editor extends React.Component<Props> {
       }),
       insertBlockOnEnter(EDITOR_DEFAULT_BLOCK_TYPE),
       OnDropPlugin(),
+      OnFocusPlugin(),
+      // OnBlurPlugin(),
+      TogglePlaceHolderPlugin(),
       SetBlockStylePlugin(),
       ToggleAnnotationPlugin(),
       ExpandToWordPlugin(),
       WrapSpanPlugin(),
       InsertInlineObjectPlugin(props.type),
       InsertBlockObjectPlugin(),
-      EnsureEmptyTextBlockPlugin(props.blockContentFeatures),
+      EnsurePlaceHolderBlockPlugin(props.blockContentFeatures),
       UndoRedoPlugin({stack: props.undoRedoStack}),
       FireFoxVoidNodePlugin(),
       FocusNoScrollPlugin(props.scrollContainer),
@@ -238,9 +243,9 @@ export default class Editor extends React.Component<Props> {
     return onChange(editor)
   }
 
-  handleEditorFocus = () => {
-    const {setFocus} = this.props
-    setFocus()
+  handleEditorFocus = (event: any, editor: SlateEditor, next: void => void) => {
+    this.props.setFocus() // Tell the formbuilder to set focus here
+    next() // Continue Slate's focus plugin stack
   }
 
   getValue = () => {
