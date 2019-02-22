@@ -153,6 +153,7 @@ class GeopointInput extends React.Component {
           <Dialog
             title="Place on map"
             onClose={this.handleCloseModal}
+            onClickOutside={this.handleCloseModal}
             onCloseClick={this.handleCloseModal}
             onOpen={this.handleOpenModal}
             message="Select location by dragging the marker or search for a place"

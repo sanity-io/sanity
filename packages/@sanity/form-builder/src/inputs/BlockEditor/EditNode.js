@@ -139,6 +139,7 @@ export default class EditNode extends React.Component<Props> {
         isOpen
         title="Edit"
         onClose={this.handleClose}
+        onClickOutside={this.handleClose}
         showCloseButton
         onAction={this.handleDialogAction}
       >

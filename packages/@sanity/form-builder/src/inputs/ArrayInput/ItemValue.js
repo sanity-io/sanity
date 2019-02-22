@@ -242,6 +242,7 @@ export default class RenderItemValue extends React.Component<Props> {
     return (
       <DefaultDialog
         onClose={this.handleEditStop}
+        onClickOutside={this.handleEditStop}
         key={item._key}
         title={`Edit ${memberType.title}`}
         actions={actions}
