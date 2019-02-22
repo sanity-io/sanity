@@ -1,11 +1,8 @@
 export default {
-  sections: [
-    {name: 'stack-overview'},
-    [
-      {name: 'cats', options: {imageWidth: 90}},
-      {name: 'cats', options: {imageWidth: 120}},
-      {name: 'cats', options: {imageWidth: 10}}
-    ],
-    {name: 'document-count'}
+  widgets: [
+    {name: 'stack-overview', layout: {fullWidth: true}},
+    {name: 'document-count'},
+    {name: 'cats', options: {imageWidth: 50}},
+    {name: 'cats', options: {imageWidth: 150}}
   ]
 }
