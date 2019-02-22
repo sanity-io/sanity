@@ -9,6 +9,10 @@
       "path": "DashboardTool.js"
     },
     {
+      "implements": "part:@sanity/base/component",
+      "path": "components/story.js"
+    },
+    {
       "name": "part:@sanity/dashboard/config",
       "description": "Anything suitable for the dashboard"
     },
@@ -26,8 +30,9 @@
       "path": "widgets/stack-overview"
     },
     {
-      "implements": "part:@sanity/base/component",
-      "path": "components/story.js"
+      "name": "part:@sanity/dashboard/widget/project-info",
+      "implements": "part:@sanity/dashboard/widget",
+      "path": "widgets/project-info"
     }
   ]
 }
