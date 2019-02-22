@@ -45,7 +45,9 @@
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "react-icons": "^2.2.7"
+    "react-icons": "^2.2.7",
+    "sanity-plugin-dashboard-widget-document-count": "0.0.1",
+    "sanity-plugin-dashboard-widget-cats": "0.0.2"
   },
   "devDependencies": {
     "rimraf": "^2.6.2"

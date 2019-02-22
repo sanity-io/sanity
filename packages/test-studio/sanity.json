@@ -37,7 +37,9 @@
     "@sanity/google-maps-input",
     "@sanity/dashboard",
     "@sanity/vision",
-    "@sanity/production-preview"
+    "@sanity/production-preview",
+    "dashboard-widget-cats",
+    "dashboard-widget-document-count"
   ],
   "parts": [
     {
@@ -59,6 +61,10 @@
     {
       "implements": "part:@sanity/form-builder/input/array/functions",
       "path": "src/components/SearchableArrayFunctions.js"
+    },
+    {
+      "implements": "part:@sanity/dashboard/config",
+      "path": "src/dashboardConfig.js"
     },
     {
       "name": "part:@sanity/desk-tool/structure",
