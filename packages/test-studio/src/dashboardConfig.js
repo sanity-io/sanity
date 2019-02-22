@@ -1,8 +1,8 @@
 export default {
   widgets: [
-    {name: 'stack-overview', layout: {fullWidth: true}},
+    {name: 'stack-overview', layout: {width: 'full'}},
     {name: 'document-count'},
-    {name: 'cats', options: {imageWidth: 50}},
-    {name: 'cats', options: {imageWidth: 150}}
+    {name: 'cats', layout: {width: 'medium'}, options: {imageWidth: 50}},
+    {name: 'cats', layout: {width: 'medium'}, options: {imageWidth: 150}}
   ]
 }

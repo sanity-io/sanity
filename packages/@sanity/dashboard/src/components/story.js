@@ -5,26 +5,50 @@ import DashboardGrid from './DashboardGrid'
 import WidgetWrapper from './WidgetWrapper'
 import {withKnobs, number} from 'part:@sanity/storybook/addons/knobs'
 import {range} from 'lodash'
+import Chance from 'chance'
+
+const chance = new Chance()
+const para = chance.paragraph({sentences: 2})
 
 class StoryWidget extends React.Component {
   state = {
-    width: 'full'
+    width: 'auto'
   }
 
   handleWidthChange = event => {
-    console.log('change', event)
+    this.setState({width: event.target.value})
+  }
+
+  handleHeightChange = event => {
+    this.setState({height: event.target.value})
   }
 
   render() {
     return (
       <WidgetWrapper {...this.state}>
-        <label>Width</label>
-        <select onChange={this.handleWidthChange}>
-          <option>auto</option>
-          <option>small</option>
-          <option>medium</option>
-          <option>large</option>
-        </select>
+        <h1>{this.props.title}</h1>
+        <p>{para}</p>
+        <div style={{dispay: 'flex'}}>
+          <label>Width</label>
+          <select onChange={this.handleWidthChange}>
+            <option>auto</option>
+            <option>small</option>
+            <option>medium</option>
+            <option>large</option>
+            <option>full</option>
+          </select>
+        </div>
+
+        <div style={{dispay: 'flex'}}>
+          <label>Height</label>
+          <select onChange={this.handleHeightChange}>
+            <option>auto</option>
+            <option>small</option>
+            <option>medium</option>
+            <option>large</option>
+            <option>full</option>
+          </select>
+        </div>
       </WidgetWrapper>
     )
   }
@@ -33,11 +57,11 @@ class StoryWidget extends React.Component {
 storiesOf('Dashboard')
   .addDecorator(withKnobs)
   .add('Grid', () => {
-    const widgets = range(number('widgets', 5))
+    const widgets = range(number('widgets', 7))
     return (
       <DashboardGrid>
         {widgets.map(widget => (
-          <StoryWidget key={widget} />
+          <StoryWidget key={widget} title={widget + 1} />
         ))}
       </DashboardGrid>
     )

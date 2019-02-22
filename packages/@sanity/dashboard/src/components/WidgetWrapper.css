@@ -1,7 +1,57 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+@custom-media --grid-small-min (min-width: 520px);
+@custom-media --grid-medium-min (min-width: 820px);
+
 .root {
-  padding: 1rem;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  box-shadow: 0 0 5px #00000033;
-  border-radius: 5px;
+  composes: shadow-1dp from 'part:@sanity/base/theme/shadows-style';
+  border-radius: var(--border-radius-base);
+  background-color: var(--component-bg);
+  padding: var(--medium-padding);
+  position: relative;
+  overflow: hidden;
+}
+
+.root[data-width="medium"] {
+  @media (--grid-small-min) {
+    grid-column: span 2;
+  }
+}
+
+.root[data-width="large"] {
+  @media (--grid-small-min) {
+    grid-column: span 2;
+  }
+
+  @media (--grid-medium-min) {
+    grid-column: span 3;
+  }
+}
+
+.root[data-width="full"] {
+  @media (--grid-small-min) {
+    grid-column: 1 / -1;
+  }
+}
+
+.root[data-height="medium"] {
+  @media (--grid-small-min) {
+    grid-row: span 2;
+  }
+}
+
+.root[data-height="large"] {
+  @media (--grid-small-min) {
+    grid-row: span 2;
+  }
+
+  @media (--grid-medium-min) {
+    grid-row: span 3;
+  }
+}
+
+.root[data-height="full"] {
+  @media (--grid-small-min) {
+    grid-row: 1 / -1;
+  }
 }
