@@ -1,4 +1,10 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .root {
   display: grid;
-  grid-gap: 1rem;
+  grid-gap: var(--medium-padding);
+  padding: var(--medium-padding);
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-rows: repeat(auto-fill, minmax(100px, 1fr));
+  grid-auto-flow: dense;
 }

@@ -2,7 +2,6 @@
 import React from 'react'
 import widgetDefinitions from 'all:part:@sanity/dashboard/widget?'
 import dashboardConfigs from 'all:part:@sanity/dashboard/config?'
-import styles from '../styles/DashboardLayout.css'
 import DashboardGrid from './DashboardGrid'
 import WidgetWrapper from './WidgetWrapper'
 
