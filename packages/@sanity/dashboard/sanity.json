@@ -9,8 +9,21 @@
       "path": "DashboardTool.js"
     },
     {
-      "name": "part:@sanity/dashboard-widget",
+      "name": "part:@sanity/dashboard/config",
       "description": "Anything suitable for the dashboard"
+    },
+    {
+      "implements": "part:@sanity/dashboard/config",
+      "path": "dashboardConfig.js"
+    },
+    {
+      "name": "part:@sanity/dashboard/widget",
+      "description": "Anything suitable for the dashboard"
+    },
+    {
+      "name": "part:@sanity/dashboard/widget/stack-overview",
+      "implements": "part:@sanity/dashboard/widget",
+      "path": "widgets/stack-overview"
     }
   ]
 }
