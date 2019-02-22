@@ -1,16 +1,20 @@
-.container {
-  border-top: 1px solid rgb(184, 184, 184);
-  background-color: rgb(31, 41, 46);
-  color: rgb(232, 232, 232);
-  padding: 0px 20px 0px 20px;
-
+.root {
   margin: 0em;
   overflow: auto;
   height: calc(100vh - 3rem);
 }
 
-.widgetContainer {
-  border: 1px solid rgb(184, 184, 184);
-  border-radius: 5px;
-  margin-bottom: 20px;
+.row {
+  display: flex;
+  padding: 0.5rem;
+}
+
+.column {
+  flex: 1;
+  padding: 0.5rem;
+  box-sizing: border-box;
+
+  @nest & > * {
+    outline: 1px solid #f00;
+  }
 }
