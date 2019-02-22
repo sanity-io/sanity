@@ -4,17 +4,9 @@
   height: calc(100vh - 3rem);
 }
 
-.row {
+.widget {
   display: flex;
   padding: 0.5rem;
-}
-
-.column {
-  flex: 1;
-  padding: 0.5rem;
-  box-sizing: border-box;
-
-  @nest & > * {
-    outline: 1px solid #f00;
-  }
+  margin: 30px;
+  outline: 1px solid #f00;
 }

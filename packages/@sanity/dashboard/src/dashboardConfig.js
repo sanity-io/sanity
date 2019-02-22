@@ -1,3 +1,3 @@
 export default {
-  sections: [{name: 'stack-overview'}]
+  widgets: [{name: 'stack-overview', layout: {fullWidth: true}}]
 }
