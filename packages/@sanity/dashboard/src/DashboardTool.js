@@ -1,4 +1,3 @@
-import React from 'react'
 import Icon from 'react-icons/lib/go/dashboard'
 import DashboardLayout from './components/DashboardLayout'
 
