@@ -24,6 +24,10 @@
       "name": "part:@sanity/dashboard/widget/stack-overview",
       "implements": "part:@sanity/dashboard/widget",
       "path": "widgets/stack-overview"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "components/story.js"
     }
   ]
 }

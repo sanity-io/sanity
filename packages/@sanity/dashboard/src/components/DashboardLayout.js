@@ -3,6 +3,8 @@ import React from 'react'
 import widgetDefinitions from 'all:part:@sanity/dashboard/widget?'
 import dashboardConfigs from 'all:part:@sanity/dashboard/config?'
 import styles from '../styles/DashboardLayout.css'
+import DashboardGrid from './DashboardGrid'
+import WidgetWrapper from './WidgetWrapper'
 
 class DashboardLayout extends React.Component {
   renderWidget(config) {
@@ -13,7 +15,11 @@ class DashboardLayout extends React.Component {
       // Need to apply layout to widget styling somehow
       const Widget = widgetDefinition.component
       const props = options || {}
-      return <Widget {...props} />
+      return (
+        <WidgetWrapper {...layout}>
+          <Widget {...props} />
+        </WidgetWrapper>
+      )
     }
 
     console.error(
@@ -24,21 +30,16 @@ class DashboardLayout extends React.Component {
     return null
   }
 
-  renderConfiguredDashboard() {
-    const widgetConfigs = dashboardConfigs[dashboardConfigs.length - 1].widgets
-    return widgetConfigs.map((widgetConfig, index) => {
-      const key = `${widgetConfig.name}_${index}`
-      return (
-        <div key={key} className={styles.widget}>
-          {this.renderWidget(widgetConfig)}
-        </div>
-      )
-    })
-  }
-
   render() {
     if (dashboardConfigs && dashboardConfigs.length > 0) {
-      return <div className={styles.root}>{this.renderConfiguredDashboard()}</div>
+      const widgetConfigs = dashboardConfigs[dashboardConfigs.length - 1].widgets
+      return (
+        <DashboardGrid>
+          {widgetConfigs.map((widgetConfig, index) => {
+            return this.renderWidget(widgetConfig)
+          })}
+        </DashboardGrid>
+      )
     }
     return null
   }

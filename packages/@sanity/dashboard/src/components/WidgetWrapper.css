@@ -1,0 +1,7 @@
+.root {
+  padding: 1rem;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 5px #00000033;
+  border-radius: 5px;
+}
