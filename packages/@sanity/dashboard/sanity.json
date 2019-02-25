@@ -30,9 +30,27 @@
       "path": "widgets/stack-overview"
     },
     {
+      "name": "part:@sanity/dashboard/widget/sanity-tutorials",
+      "implements": "part:@sanity/dashboard/widget",
+      "path": "widgets/sanity-tutorials"
+    },
+    {
       "name": "part:@sanity/dashboard/widget/project-info",
       "implements": "part:@sanity/dashboard/widget",
       "path": "widgets/project-info"
+    },
+    {
+      "name": "part:@sanity/dashboard/widget/document-list",
+      "implements": "part:@sanity/dashboard/widget",
+      "path": "widgets/document-list"
+    },
+    {
+      "name": "part:@sanity/dashboard/widget-styles",
+      "description": "Provides pseudo styles for selectable items"
+    },
+    {
+      "implements": "part:@sanity/dashboard/widget-styles",
+      "path": "styles.css"
     }
   ]
 }

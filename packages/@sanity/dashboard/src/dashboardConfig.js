@@ -1,3 +1,3 @@
 export default {
-  widgets: [{name: 'stack-overview', layout: {fullWidth: true}}]
+  widgets: [{name: 'sanity-tutorials', layout: {width: 'full'}}]
 }
