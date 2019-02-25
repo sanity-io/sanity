@@ -1,0 +1,19 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.container {
+  padding: var(--medium-padding);
+}
+
+.title {
+  composes: heading5 from "part:@sanity/base/theme/typography/headings-style";
+  border-bottom: 1px solid #eee;
+  padding: var(--small-padding) var(--medium-padding) !important;
+  line-height: 2em;
+}
+
+.bottomButtonContainer {
+  display: block;
+  text-align: center;
+  font-weight: 600;
+  height: 4em;
+}
