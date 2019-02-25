@@ -1,8 +1,8 @@
 import React from 'react'
 import sanityClient from '@sanity/client'
+import imageUrlBuilder from '@sanity/image-url'
 import styles from './index.css'
 import Tutorial from './Tutorial'
-import imageUrlBuilder from '@sanity/image-url'
 
 const client = sanityClient({
   projectId: '3do82whm',
@@ -68,7 +68,10 @@ class SanityTutorials extends React.Component {
               <Tutorial
                 key={tutorial._id}
                 title={tutorial.title}
-                posterUrl={builder.image(tutorial.poster).height(240).width(450)}
+                posterUrl={builder
+                  .image(tutorial.poster)
+                  .height(240)
+                  .width(450)}
                 authorName={author.name}
                 durationText={tutorial.durationText}
                 avatarUrl={builder
