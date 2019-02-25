@@ -15,7 +15,7 @@ class DashboardLayout extends React.Component {
       const Widget = widgetDefinition.component
       const props = options || {}
       return (
-        <WidgetWrapper key={}`${name}_${index}`} {...layout}>
+        <WidgetWrapper key={`${name}_${index}`} {...layout}>
           <Widget {...props} />
         </WidgetWrapper>
       )
