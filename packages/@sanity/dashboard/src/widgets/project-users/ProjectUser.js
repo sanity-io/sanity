@@ -13,8 +13,12 @@ export default function ProjectUser(props) {
 
   return (
     <div className={styles.container}>
-      <img className={styles.profileImage} src={user.imageUrl} />
-      {membership.isRobot ? <ToolIcon /> : <span className={styles.name}>{user.displayName}</span>}
+      {membership.isRobot ? (
+        <ToolIcon className={styles.profileImage} />
+      ) : (
+        <img className={styles.profileImage} src={user.imageUrl} />
+      )}
+      <span className={styles.name}>{user.displayName}</span>
       <span className={styles.role}>[{membership.role}]</span>
     </div>
   )
