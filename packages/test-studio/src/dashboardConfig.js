@@ -1,11 +1,15 @@
 export default {
   widgets: [
-    {name: 'stack-overview', layout: {width: 'full'}},
+    {name: 'sanity-tutorials', layout: {width: 'full'}},
+    {name: 'document-list'},
     {name: 'document-count'},
-    {name: 'cats', layout: {width: 'medium'}, options: {imageWidth: 50}},
-    {name: 'cats', layout: {width: 'medium'}, options: {imageWidth: 150}},
+    // {name: 'cats', layout: {width: 'medium'}, options: {imageWidth: 50}},
+    // {name: 'cats', layout: {width: 'medium'}, options: {imageWidth: 150}},
     {
       name: 'project-info',
+      layout: {
+        width: 'medium'
+      },
       options: {
         data: [
           {title: 'Frontend', value: 'https://asdf.heroku.com/greedy-goblin', category: 'apps'},
@@ -14,6 +18,7 @@ export default {
         ]
       }
     },
-    {name: 'cats', options: {imageWidth: 90}}
+    // {name: 'cats', options: {imageWidth: 90}},
+    {name: 'stack-overview', layout: {width: 'full'}}
   ]
 }
