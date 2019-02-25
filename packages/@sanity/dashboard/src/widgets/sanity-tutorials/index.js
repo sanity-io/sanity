@@ -74,12 +74,14 @@ class SanityTutorials extends React.Component {
                 posterUrl={builder
                   .image(tutorial.poster)
                   .height(240)
-                  .width(450)}
+                  .width(450)
+                  .url()}
                 authorName={author.name}
                 avatarUrl={builder
                   .image(author.mugshot)
                   .height(100)
-                  .width(100)}
+                  .width(100)
+                  .url()}
               />
             )
           })}
