@@ -39,7 +39,7 @@ function DashboardLayout(props) {
             <div className={styles.missingWidget}>
               <h4>{`Could not find the Dashboard Widget named "${name}" `}</h4>
               <p>
-                Make sure your <code>sanity.json</code> file mentions such a widget and that it's an
+                Make sure your <code>sanity.json</code> file mentions such a widget and that it’s an
                 implementaion of <code>part:@sanity/dashboard/widget</code>
               </p>
             </div>
