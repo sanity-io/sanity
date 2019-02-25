@@ -5,7 +5,7 @@ class StackOverview extends React.Component {
   render() {
     return (
       <div className={styles.container}>
-        <h2>About your stack</h2>
+        <h2 className={styles.title}>About your stack</h2>
       </div>
     )
   }
