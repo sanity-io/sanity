@@ -14,16 +14,12 @@ const builder = imageUrlBuilder(client)
 
 const query = `
   *[_id == 'studioDashboardDocument'] {
+    _id,
     title,
     tutorials[] {
       title,
       poster,
-      durationText,
-      author-> {
-        name,
-        mugshot
-      },
-      tutorial-> {
+      tutorialDocuments[]-> {
         _id,
         title,
         slug,
@@ -39,15 +35,13 @@ const query = `
 
 class SanityTutorials extends React.Component {
   state = {
-    title: 'Welcome to sanity',
     tutorials: []
   }
 
   componentDidMount() {
-    client.fetch(query).then(res => {
+    client.fetch(query).then(response => {
       this.setState({
-        title: res.title,
-        tutorials: res.tutorials
+        tutorials: response.tutorials
       })
     })
   }
@@ -59,21 +53,29 @@ class SanityTutorials extends React.Component {
         <h1 className={styles.title}>Tutorials & videos</h1>
         <ul className={styles.tutorials}>
           {tutorials.map(tutorial => {
-            const author = tutorial.author ||
-              (tutorial.tutorial && tutorial.tutorial.author) || {
-                name: 'Unknown',
-                mugshot: undefined
-              }
+            const primaryTutorialDocument =
+              tutorial.tutorialDocuments && tutorial.tutorialDocuments.length > 0
+                ? tutorial.tutorialDocuments[0]
+                : null
+
+            if (!primaryTutorialDocument) {
+              return null
+            }
+            const author = primaryTutorialDocument.author || {
+              name: 'Unknown',
+              mugshot: null
+            }
+            const title = tutorial.title || primaryTutorialDocument.title
+
             return (
               <Tutorial
-                key={tutorial._id}
-                title={tutorial.title}
+                key={primaryTutorialDocument._id}
+                title={title}
                 posterUrl={builder
                   .image(tutorial.poster)
                   .height(240)
                   .width(450)}
                 authorName={author.name}
-                durationText={tutorial.durationText}
                 avatarUrl={builder
                   .image(author.mugshot)
                   .height(100)

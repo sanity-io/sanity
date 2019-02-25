@@ -124,33 +124,30 @@ class ProjectInfo extends React.Component {
         <h1 className={styles.title}>Project info</h1>
         <table className={styles.table}>
           {this.assembleTableRows().map(item => {
-            if (item) {
-              if (!item.rows) {
-                return null
-              }
-              return (
-                <tbody>
-                  <tr>
-                    <th colSpan="2" className={styles.sectionHeader}>
-                      {item.title}
-                    </th>
-                  </tr>
-                  {item.rows.map(row => {
-                    return (
-                      <tr key={row.title}>
-                        <th>{row.title}</th>
-                        <td>
-                          {isUrl(row.value) ? <a href={row.value}>{row.value}</a> : row.value}
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              )
+            if (!item || !item.rows) {
+              return null
             }
+
+            return (
+              <tbody key={item.title}>
+                <tr>
+                  <th colSpan="2" className={styles.sectionHeader}>
+                    {item.title}
+                  </th>
+                </tr>
+                {item.rows.map(row => {
+                  return (
+                    <tr key={row.title}>
+                      <th>{row.title}</th>
+                      <td>{isUrl(row.value) ? <a href={row.value}>{row.value}</a> : row.value}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            )
           })}
         </table>
-        <a className={styles.button}>
+        <span className={styles.button}>
           <AnchorButton
             href={getManageUrl(sanityClient.clientConfig.projectId)}
             bleed
@@ -159,7 +156,7 @@ class ProjectInfo extends React.Component {
           >
             Manage project
           </AnchorButton>
-        </a>
+        </span>
       </div>
     )
   }
