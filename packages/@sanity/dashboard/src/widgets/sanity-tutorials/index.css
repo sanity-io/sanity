@@ -1,0 +1,14 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.title {
+  composes: title from "part:@sanity/dashboard/widget-styles";
+}
+
+.tutorials {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  margin-top: var(--medium-padding);
+  flex-wrap: nowrap;
+  overflow-x: scroll;
+}

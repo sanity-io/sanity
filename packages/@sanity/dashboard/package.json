@@ -27,6 +27,7 @@
   "devDependencies": {
     "@sanity/base": "0.140.8",
     "@sanity/check": "0.140.3",
+    "@sanity/image-url": "0.140.8",
     "@sanity/client": "0.140.8",
     "@sanity/components": "0.140.8",
     "@sanity/core": "0.140.8",

@@ -1,0 +1,46 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-right: var(--large-padding);
+  padding-left: var(--medium-padding);
+  padding-bottom: var(--medium-padding);
+  max-width: 225px;
+}
+
+.author {
+  display: flex;
+  margin-top: auto;
+  font-size: var(--font-size-small);
+  line-height: 1.1em;
+}
+
+.authorName {
+  font-weight: 500;
+  margin-top: 0.25em;
+}
+
+.durationText {
+  color: var(--text-color-secondary);
+  font-size: var(--font-size-small--relative);
+}
+
+.avatar {
+  height: 2.5em;
+  margin-right: var(--small-padding);
+  border-radius: 50%;
+}
+
+.title {
+  font-size: inherit;
+  margin: 0;
+  padding: 0;
+  margin-bottom: var(--small-padding);
+}
+
+.poster {
+  height: 120px;
+  margin-bottom: var(--small-padding);
+}
