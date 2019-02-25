@@ -4,8 +4,8 @@ import sanityClient from 'part:@sanity/base/client'
 import getIt from 'get-it'
 import jsonResponse from 'get-it/lib/middleware/jsonResponse'
 import promise from 'get-it/lib/middleware/promise'
-import styles from './ProjectInfo.css'
 import AnchorButton from 'part:@sanity/components/buttons/anchor'
+import styles from './ProjectInfo.css'
 
 const request = getIt([promise(), jsonResponse()])
 
@@ -19,6 +19,10 @@ function getGraphQlUrl(projectId) {
 
 function getGroqUrl(projectId) {
   return `https://${projectId}.api.sanity.io/v1/groq/test`
+}
+
+function getManageUrl(projectId) {
+  return `https://manage.sanity.io/projects/${projectId}`
 }
 
 class ProjectInfo extends React.Component {
@@ -110,7 +114,6 @@ class ProjectInfo extends React.Component {
 
   render() {
     const {error} = this.state
-    const manageUrl = `https://manage.sanity.io/projects/${sanityClient.clientConfig.projectId}`
 
     if (error) {
       return <pre>{JSON.stringify(error, null, 2)}</pre>
@@ -148,7 +151,12 @@ class ProjectInfo extends React.Component {
           })}
         </table>
         <a className={styles.button}>
-          <AnchorButton href={manageUrl} bleed color="primary" kind="simple">
+          <AnchorButton
+            href={getManageUrl(sanityClient.clientConfig.projectId)}
+            bleed
+            color="primary"
+            kind="simple"
+          >
             Manage project
           </AnchorButton>
         </a>
