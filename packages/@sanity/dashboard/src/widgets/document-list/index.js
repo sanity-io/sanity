@@ -39,11 +39,11 @@ class DocumentList extends React.Component {
       return query
     }
     if (types) {
-      return `*[!(_id in path("_.**")) && _type in ${stringifyArray(
+      return `*[!(_id in path("_.**")) && !(_id in path("drafts.**")) && _type in ${stringifyArray(
         types
       )}] | order(_createdAt desc) [0...10]`
     }
-    return `*[!(_id in path("_.**")) && _type != 'sanity.imageAsset'] | order(_createdAt desc) [0...10]`
+    return `*[!(_id in path("_.**")) && !(_id in path("drafts.**")) && _type != 'sanity.imageAsset'] | order(_createdAt desc) [0...10]`
   }
 
   render() {
