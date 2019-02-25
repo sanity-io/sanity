@@ -1,7 +1,7 @@
 export default {
   widgets: [
     {name: 'sanity-tutorials', layout: {width: 'full'}},
-    {name: 'document-list'},
+    {name: 'document-list', layout: {width: 'auto'}, options: {types: ['book']}},
     {name: 'document-count'},
     {name: 'project-users'},
     {
