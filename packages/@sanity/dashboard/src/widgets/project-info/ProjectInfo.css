@@ -1,3 +1,42 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .container {
-  padding: 10px;
+  padding: 0;
+}
+
+.title {
+  composes: title from 'part:@sanity/dashboard/widget-styles';
+}
+
+.table {
+  text-align: left;
+  border-collapse: collapse;
+  width: 100%;
+
+  @nest & th {
+    font-weight: 500;
+  }
+
+  @nest & td, & th {
+    padding: var(--small-padding) var(--medium-padding);
+  }
+
+  @nest & tr {
+    border-bottom: 1px solid #eee;
+  }
+
+  @nest & .sectionHeader {
+    text-align: left;
+    text-transform: uppercase;
+    padding-left: var(--medium-padding);
+    padding-bottom: var(--small-padding);
+    padding-top: var(--large-padding);
+    font-size: var(--font-size-small);
+    color: var(--text-color-secondary);
+    width: 100%;
+  }
+}
+
+.button {
+  composes: bottomButtonContainer from 'part:@sanity/dashboard/widget-styles';
 }

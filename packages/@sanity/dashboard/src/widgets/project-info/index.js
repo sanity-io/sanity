@@ -5,6 +5,7 @@ import getIt from 'get-it'
 import jsonResponse from 'get-it/lib/middleware/jsonResponse'
 import promise from 'get-it/lib/middleware/promise'
 import styles from './ProjectInfo.css'
+import AnchorButton from 'part:@sanity/components/buttons/anchor'
 
 const request = getIt([promise(), jsonResponse()])
 
@@ -60,9 +61,10 @@ class ProjectInfo extends React.Component {
     const propsData = this.props.data
 
     let result = [
-      {title: 'Sanity project'},
-      {title: 'Project ID', value: projectId},
-      {title: 'Dataset', value: dataset}
+      {
+        title: 'Sanity project',
+        rows: [{title: 'Project ID', value: projectId}, {title: 'Dataset', value: dataset}]
+      }
     ]
 
     // Handle any apps
@@ -70,15 +72,19 @@ class ProjectInfo extends React.Component {
       .concat(propsData.filter(item => item.category === 'apps'))
       .filter(Boolean)
     if (apps.length > 0) {
-      result = result.concat([{title: 'Apps'}], apps)
+      result = result.concat([{title: 'Apps', rows: apps}])
     }
 
     // Handle APIs
     result = result.concat(
       [
-        {title: 'APIs'},
-        {title: 'GROQ', value: getGroqUrl(projectId)},
-        {title: 'GraphQL', value: graphqlApi || 'Not deployed'}
+        {
+          title: 'APIs',
+          rows: [
+            {title: 'GROQ', value: getGroqUrl(projectId)},
+            {title: 'GraphQL', value: graphqlApi || 'Not deployed'}
+          ]
+        }
       ],
       propsData.filter(item => item.category === 'apis')
     )
@@ -104,7 +110,6 @@ class ProjectInfo extends React.Component {
 
   render() {
     const {error} = this.state
-    const tableRows = this.assembleTableRows()
     const manageUrl = `https://manage.sanity.io/projects/${sanityClient.clientConfig.projectId}`
 
     if (error) {
@@ -113,31 +118,40 @@ class ProjectInfo extends React.Component {
 
     return (
       <div className={styles.container}>
-        <h2>ProjectInfo</h2>
-        <table>
-          <tbody>
-            {tableRows.map(item => {
-              if (item.value) {
-                return (
-                  <tr key={item.title}>
-                    <th>{item.title}</th>
-                    <td>
-                      {isUrl(item.value) ? <a href={item.value}>{item.value}</a> : item.value}
-                    </td>
-                  </tr>
-                )
+        <h1 className={styles.title}>Project info</h1>
+        <table className={styles.table}>
+          {this.assembleTableRows().map(item => {
+            if (item) {
+              if (!item.rows) {
+                return null
               }
               return (
-                <tr key={item.title}>
-                  <th colSpan="2">{item.title}</th>
-                </tr>
+                <tbody>
+                  <tr>
+                    <th colSpan="2" className={styles.sectionHeader}>
+                      {item.title}
+                    </th>
+                  </tr>
+                  {item.rows.map(row => {
+                    return (
+                      <tr key={row.title}>
+                        <th>{row.title}</th>
+                        <td>
+                          {isUrl(row.value) ? <a href={row.value}>{row.value}</a> : row.value}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
               )
-            })}
-          </tbody>
+            }
+          })}
         </table>
-        <div>
-          <a href={manageUrl}>Manage project</a>
-        </div>
+        <a className={styles.button}>
+          <AnchorButton href={manageUrl} bleed color="primary" kind="simple">
+            Manage project
+          </AnchorButton>
+        </a>
       </div>
     )
   }
