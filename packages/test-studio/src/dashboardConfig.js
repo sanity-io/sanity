@@ -3,8 +3,7 @@ export default {
     {name: 'sanity-tutorials', layout: {width: 'full'}},
     {name: 'document-list'},
     {name: 'document-count'},
-    // {name: 'cats', layout: {width: 'medium'}, options: {imageWidth: 50}},
-    // {name: 'cats', layout: {width: 'medium'}, options: {imageWidth: 150}},
+    {name: 'project-users'},
     {
       name: 'project-info',
       layout: {
