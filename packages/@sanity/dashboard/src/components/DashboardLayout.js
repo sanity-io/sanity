@@ -6,7 +6,7 @@ import DashboardGrid from './DashboardGrid'
 import WidgetWrapper from './WidgetWrapper'
 
 class DashboardLayout extends React.Component {
-  renderWidget(config) {
+  renderWidget(config, index) {
     const {name, options, layout} = config // eslint-disable-line no-unused-vars
     const widgetDefinition = widgetDefinitions.find(wid => wid.name === name)
 
@@ -15,7 +15,7 @@ class DashboardLayout extends React.Component {
       const Widget = widgetDefinition.component
       const props = options || {}
       return (
-        <WidgetWrapper {...layout}>
+        <WidgetWrapper key={}`${name}_${index}`} {...layout}>
           <Widget {...props} />
         </WidgetWrapper>
       )
@@ -35,7 +35,7 @@ class DashboardLayout extends React.Component {
       return (
         <DashboardGrid>
           {widgetConfigs.map((widgetConfig, index) => {
-            return this.renderWidget(widgetConfig)
+            return this.renderWidget(widgetConfig, index)
           })}
         </DashboardGrid>
       )

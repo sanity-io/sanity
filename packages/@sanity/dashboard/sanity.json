@@ -40,6 +40,11 @@
       "path": "widgets/project-info"
     },
     {
+      "name": "part:@sanity/dashboard/widget/project-users",
+      "implements": "part:@sanity/dashboard/widget",
+      "path": "widgets/project-users"
+    },
+    {
       "name": "part:@sanity/dashboard/widget/document-list",
       "implements": "part:@sanity/dashboard/widget",
       "path": "widgets/document-list"
