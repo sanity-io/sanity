@@ -1,0 +1,3 @@
+.title {
+  composes: title from "part:@sanity/dashboard/widget-styles";
+}
