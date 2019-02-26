@@ -1,8 +1,11 @@
 import React from 'react'
 import sanityClient from 'part:@sanity/base/client'
 import Spinner from 'part:@sanity/components/loading/spinner'
-import styles from './ProjectUsers.css'
-import ProjectUser from './ProjectUser'
+import styles from './index.css'
+import DefaultPreview from 'part:@sanity/components/previews/default'
+import {List, Item} from 'part:@sanity/components/lists/default'
+import AnchorButton from 'part:@sanity/components/buttons/anchor'
+import ToolIcon from 'react-icons/lib/go/tools'
 
 function getInviteUrl(projectId) {
   return `https://manage.sanity.io/projects/${projectId}/team/invite`
@@ -48,9 +51,7 @@ class ProjectUsers extends React.Component {
   render() {
     const {error, project, users} = this.state
 
-    if (!project || !users) {
-      return <Spinner />
-    }
+    const isLoading = !project || !users
 
     if (error) {
       return <pre>{JSON.stringify(error, null, 2)}</pre>
@@ -58,17 +59,39 @@ class ProjectUsers extends React.Component {
 
     return (
       <div className={styles.container}>
-        <h2>Project Users</h2>
-        <ul>
-          {users.sort(this.sortUsersByRobotStatus).map(user => {
-            const membership = project.members.find(member => member.id === user.id)
-            return <ProjectUser key={user.id} user={user} membership={membership} />
-          })}
-        </ul>
-        <div>
-          <a href={getInviteUrl(project.id)} target="_blank" rel="noopener noreferrer">
+        <h1 className={styles.title}>Project Users</h1>
+        <List className={styles.list}>
+          {isLoading && <Spinner center />}
+          {!isLoading &&
+            users.sort(this.sortUsersByRobotStatus).map(user => {
+              const membership = project.members.find(member => member.id === user.id)
+              const media = membership.isRobot ? (
+                <ToolIcon className={styles.profileImage} />
+              ) : (
+                <img src={user.imageUrl} className={styles.avatar} />
+              )
+              return (
+                <Item key={user.id} className={styles.item}>
+                  <DefaultPreview
+                    title={user.displayName}
+                    subtitle={membership.role}
+                    media={media}
+                  />
+                </Item>
+              )
+            })}
+        </List>
+
+        <div className={styles.buttonContainer}>
+          <AnchorButton
+            disabled={isLoading}
+            href={isLoading ? undefined : getInviteUrl(project.id)}
+            bleed
+            color="primary"
+            kind="simple"
+          >
             Invite members
-          </a>
+          </AnchorButton>
         </div>
       </div>
     )
