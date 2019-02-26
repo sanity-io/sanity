@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {IntentLink} from 'part:@sanity/base/router'
-import {SanityDefaultPreview} from 'part:@sanity/base/preview'
+import SanityPreview from 'part:@sanity/base/preview'
 import QueryContainer from 'part:@sanity/base/query-container'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import schema from 'part:@sanity/base/schema'
@@ -57,8 +57,12 @@ class DocumentList extends React.Component {
                 const type = schema.get(item._type)
 
                 return (
-                  <IntentLink key={item._id} intent="edit" params={{type: item._type, id: item._id}}>
-                    <SanityDefaultPreview layout="default" type={type} value={item} key={item._id} />
+                  <IntentLink
+                    key={item._id}
+                    intent="edit"
+                    params={{type: item._type, id: item._id}}
+                  >
+                    <SanityPreview layout="default" type={type} value={item} key={item._id} />
                   </IntentLink>
                 )
               })
