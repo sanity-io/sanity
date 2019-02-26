@@ -6,9 +6,20 @@
 
 .list {
   display: block;
-  min-height: 20rem;
+  height: 24.5rem;
+  overflow-y: auto;
   margin: 0;
   padding: 0;
+}
+
+.link {
+  display: block;
+  color: inherit;
+  text-decoration: inherit;
+  outline: none;
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
+  padding: var(--small-padding) var(--medium-padding);
+  height: 100%;
 }
 
 .buttonContainer {
