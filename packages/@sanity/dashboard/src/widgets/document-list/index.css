@@ -4,6 +4,13 @@
   composes: title from "part:@sanity/dashboard/widget-styles";
 }
 
+.list {
+  display: block;
+  min-height: 20rem;
+  margin: 0;
+  padding: 0;
+}
+
 .buttonContainer {
   composes: bottomButtonContainer from 'part:@sanity/dashboard/widget-styles';
   border-top: 1px solid var(--list-border-color);

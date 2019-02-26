@@ -40,32 +40,34 @@ class DocumentList extends React.Component {
   }
 
   render() {
-    const {title} = this.props
+    const {title, types} = this.props
     const query = this.assembleQuery()
 
     return (
       <div className={styles.container}>
         <h2 className={styles.title}>{title}</h2>
-        <QueryContainer query={query}>
-          {({result, loading, error, onRetry}) => {
-            if (loading) {
-              return <Spinner message="Loading items…" />
-            }
-            const items = result ? result.documents : []
-            return items.map(item => {
-              const type = schema.get(item._type)
+        <ul className={styles.list}>
+          <QueryContainer query={query}>
+            {({result, loading, error, onRetry}) => {
+              if (loading) {
+                return <Spinner center message="Loading items…" />
+              }
+              const items = result ? result.documents : []
+              return items.map(item => {
+                const type = schema.get(item._type)
 
-              return (
-                <IntentLink key={item._id} intent="edit" params={{type: item._type, id: item._id}}>
-                  <SanityDefaultPreview layout="default" type={type} value={item} key={item._id} />
-                </IntentLink>
-              )
-            })
-          }}
-        </QueryContainer>
+                return (
+                  <IntentLink key={item._id} intent="edit" params={{type: item._type, id: item._id}}>
+                    <SanityDefaultPreview layout="default" type={type} value={item} key={item._id} />
+                  </IntentLink>
+                )
+              })
+            }}
+          </QueryContainer>
+        </ul>
         <div className={styles.buttonContainer}>
           <Button bleed color="primary" kind="simple">
-            Create new document
+            {types && types.length === 1 ? `Create new ${types[0]}` : 'Create new document'}
           </Button>
         </div>
       </div>
