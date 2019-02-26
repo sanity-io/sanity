@@ -2,6 +2,7 @@ export default {
   widgets: [
     {name: 'sanity-tutorials', layout: {width: 'full'}},
     {name: 'document-list'},
+    {name: 'document-list', options: {title: 'Last edited', order: '_updatedAt desc'}},
     {name: 'document-list', options: {title: 'Last created books', types: ['book']}},
     {name: 'document-list', options: {title: 'Last created authors', types: ['author']}},
     {name: 'document-count'},
