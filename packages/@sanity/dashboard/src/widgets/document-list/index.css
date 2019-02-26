@@ -1,3 +1,10 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .title {
   composes: title from "part:@sanity/dashboard/widget-styles";
+}
+
+.buttonContainer {
+  composes: bottomButtonContainer from 'part:@sanity/dashboard/widget-styles';
+  border-top: 1px solid var(--list-border-color);
 }

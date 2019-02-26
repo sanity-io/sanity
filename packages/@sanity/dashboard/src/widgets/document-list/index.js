@@ -5,14 +5,7 @@ import {SanityDefaultPreview} from 'part:@sanity/base/preview'
 import QueryContainer from 'part:@sanity/base/query-container'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import schema from 'part:@sanity/base/schema'
-import {StateLink} from 'part:@sanity/base/router'
-
-import {
-  getPublishedId,
-  isDraftId,
-  isPublishedId,
-  getDraftId
-} from 'part:@sanity/base/util/draft-utils'
+import Button from 'part:@sanity/components/buttons/default'
 import styles from './index.css'
 
 function stringifyArray(array) {
@@ -70,6 +63,11 @@ class DocumentList extends React.Component {
             })
           }}
         </QueryContainer>
+        <div className={styles.buttonContainer}>
+          <Button bleed color="primary" kind="simple">
+            Create new document
+          </Button>
+        </div>
       </div>
     )
   }
