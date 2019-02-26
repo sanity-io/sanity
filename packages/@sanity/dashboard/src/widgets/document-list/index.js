@@ -6,6 +6,7 @@ import QueryContainer from 'part:@sanity/base/query-container'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import schema from 'part:@sanity/base/schema'
 import Button from 'part:@sanity/components/buttons/default'
+import {List, Item} from 'part:@sanity/components/lists/default'
 import styles from './index.css'
 
 function stringifyArray(array) {
@@ -46,7 +47,7 @@ class DocumentList extends React.Component {
     return (
       <div className={styles.container}>
         <h2 className={styles.title}>{title}</h2>
-        <ul className={styles.list}>
+        <List className={styles.list}>
           <QueryContainer query={query}>
             {({result, loading, error, onRetry}) => {
               if (loading) {
@@ -55,20 +56,21 @@ class DocumentList extends React.Component {
               const items = result ? result.documents : []
               return items.map(item => {
                 const type = schema.get(item._type)
-
                 return (
-                  <IntentLink
-                    key={item._id}
-                    intent="edit"
-                    params={{type: item._type, id: item._id}}
-                  >
-                    <SanityPreview layout="default" type={type} value={item} key={item._id} />
-                  </IntentLink>
+                  <Item key={item._id}>
+                    <IntentLink
+                      intent="edit"
+                      params={{type: item._type, id: item._id}}
+                      className={styles.link}
+                    >
+                      <SanityPreview layout="default" type={type} value={item} key={item._id} />
+                    </IntentLink>
+                  </Item>
                 )
               })
             }}
           </QueryContainer>
-        </ul>
+        </List>
         <div className={styles.buttonContainer}>
           <Button bleed color="primary" kind="simple">
             {types && types.length === 1 ? `Create new ${types[0]}` : 'Create new document'}
