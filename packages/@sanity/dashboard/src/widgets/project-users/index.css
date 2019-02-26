@@ -1,0 +1,30 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.title {
+  composes: title from 'part:@sanity/dashboard/widget-styles';
+}
+
+.list {
+  height: 25rem;
+  overflow-y: auto;
+}
+
+.item {
+  padding: var(--small-padding) var(--medium-padding);
+}
+
+.avatar {
+  box-sizing: border-box;
+  border-radius: 50%;
+  border-color: transparent;
+  background-color: var(--preview-placeholder-color);
+
+  @nest &:not([src]) {
+    border: 1px solid var(--list-border-color);
+  }
+}
+
+.buttonContainer {
+  composes: bottomButtonContainer from 'part:@sanity/dashboard/widget-styles';
+  border-top: 1px solid var(--list-border-color);
+}
