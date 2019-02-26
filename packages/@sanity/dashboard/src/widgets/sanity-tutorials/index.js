@@ -19,6 +19,10 @@ const query = `
     tutorials[] {
       title,
       poster,
+      presentedBy->{
+        name,
+        mugshot
+      },
       tutorialDocuments[]-> {
         _id,
         title,
@@ -61,10 +65,11 @@ class SanityTutorials extends React.Component {
             if (!primaryTutorialDocument) {
               return null
             }
-            const author = primaryTutorialDocument.author || {
-              name: 'Unknown',
-              mugshot: null
-            }
+            const author = primaryTutorialDocument.author ||
+              tutorial.presentedBy || {
+                name: 'Unknown',
+                mugshot: null
+              }
             const title = tutorial.title || primaryTutorialDocument.title
 
             return (
