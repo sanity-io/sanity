@@ -7,7 +7,10 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 import schema from 'part:@sanity/base/schema'
 import Button from 'part:@sanity/components/buttons/default'
 import {List, Item} from 'part:@sanity/components/lists/default'
+import {intersection} from 'lodash'
 import styles from './index.css'
+
+const schemaTypeNames = schema.getTypeNames()
 
 function stringifyArray(array) {
   return `["${array.join('","')}"]`
@@ -17,27 +20,42 @@ class DocumentList extends React.Component {
   static propTypes = {
     title: PropTypes.string,
     types: PropTypes.array,
-    query: PropTypes.string
+    query: PropTypes.string,
+    order: PropTypes.string,
+    limit: PropTypes.number
   }
 
   static defaultProps = {
     title: 'Last created',
+    order: '_createdAt desc',
+    limit: 10,
     types: null,
     query: null
   }
 
   assembleQuery = () => {
-    const {query, types} = this.props
+    const {query, types, order, limit} = this.props
 
     if (query) {
       return query
     }
+
+    const documentTypes = schemaTypeNames.filter(typeName => {
+      const schemaType = schema.get(typeName)
+      return schemaType.type && schemaType.type.name === 'document'
+    })
+
     if (types) {
-      return `*[!(_id in path("_.**")) && !(_id in path("drafts.**")) && _type in ${stringifyArray(
-        types
-      )}] | order(_createdAt desc) [0...10]`
+      return `
+        *[
+          _type in ${stringifyArray(intersection(types, documentTypes))}
+        ] | order(${order}) [0...${limit}]`
     }
-    return `*[!(_id in path("_.**")) && !(_id in path("drafts.**")) && _type != 'sanity.imageAsset'] | order(_createdAt desc) [0...10]`
+
+    return `
+      *[
+        _type in ${stringifyArray(documentTypes)}
+      ] | {_id, _type} | order(${order}) [0...${limit}]`
   }
 
   render() {
