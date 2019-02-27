@@ -7,27 +7,30 @@
   padding-right: var(--large-padding);
   padding-left: var(--medium-padding);
   padding-bottom: var(--medium-padding);
-  max-width: 225px;
 }
 
-.author {
+.byLine {
   display: flex;
   margin-top: auto;
   font-size: var(--font-size-small);
   line-height: 1.1em;
 }
 
-.authorName {
+.presenter {
+  display: flex;
+}
+
+.presenterName {
   font-weight: 500;
   margin-top: 0.25em;
 }
 
-.durationText {
+.presenterSubtitle {
   color: var(--text-color-secondary);
   font-size: var(--font-size-small--relative);
 }
 
-.avatar {
+.presenterAvatar {
   height: 2.5em;
   margin-right: var(--small-padding);
   border-radius: 50%;
@@ -40,7 +43,31 @@
   margin-bottom: var(--small-padding);
 }
 
-.poster {
+.posterContainer {
+  width: 100%;
   height: 120px;
+  position: relative;
+  background-color: var(--brand-darkest);
+  color: var(--brand-darkest--inverted);
   margin-bottom: var(--small-padding);
+
+  @nest &:hover .playIcon {
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+.poster {
+  height: 100%;
+  width: auto;
+  display: block;
+}
+
+.playIcon {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: inherit;
+  transition: transform 0.1s linear;
 }

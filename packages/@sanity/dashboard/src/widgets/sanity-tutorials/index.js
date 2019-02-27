@@ -3,6 +3,7 @@ import sanityClient from '@sanity/client'
 import imageUrlBuilder from '@sanity/image-url'
 import styles from './index.css'
 import Tutorial from './Tutorial'
+import {get} from 'lodash'
 
 const client = sanityClient({
   projectId: '3do82whm',
@@ -18,17 +19,20 @@ const query = `
       _id,
       title,
       poster,
-      guideOrTutorial {
+      youtubeURL,
+      "presenter": authors[0]-> {name, mugshot, bio},
+      guideOrTutorial-> {
         title,
-        presentedBy->{
-          name,
-          mugshot
-        },
-      },
-      authors[]->
+        slug,
+        "presenter": authors[0]-> {name, mugshot, bio}
+      }
     }
   }[0]
 `
+
+function createReadUrl(slug) {
+  return `https://www.sanity.io/guide/${slug}`
+}
 
 class SanityTutorials extends React.Component {
   state = {
@@ -47,18 +51,30 @@ class SanityTutorials extends React.Component {
     const {feedItems} = this.state
     return (
       <>
-        <h1 className={styles.title}>Tutorials & videos</h1>
+        <h1 className={styles.title}>Guides & tutorials</h1>
         <ul className={styles.tutorials}>
           {feedItems.map(feedItem => {
+            if (!feedItem.title) {
+              return null
+            }
+            const presenter = feedItem.presenter || get(feedItem, 'guideOrTutorial.presenter') || {}
             return (
               <Tutorial
                 key={feedItem._id}
                 title={feedItem.title}
-                posterUrl={builder
+                videoURL={feedItem.youtubeURL}
+                readURL={createReadUrl(get(feedItem, 'guideOrTutorial.slug.current'))}
+                presenterName={presenter.name}
+                presenterAvatar={builder
+                  .image(presenter.mugshot)
+                  .height(100)
+                  .width(100)
+                  .url()}
+                presenterSubtitle={presenter.bio}
+                posterURL={builder
                   .image(feedItem.poster)
                   .height(240)
                   .url()}
-                presenters={feedItem.title}
               />
             )
           })}
