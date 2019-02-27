@@ -78,7 +78,10 @@ class DocumentList extends React.Component {
                   <Item key={item._id}>
                     <IntentLink
                       intent="edit"
-                      params={{type: item._type, id: item._id}}
+                      params={{
+                        type: item._type,
+                        id: item._id
+                      }}
                       className={styles.link}
                     >
                       <SanityPreview layout="default" type={type} value={item} key={item._id} />
