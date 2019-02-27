@@ -18,11 +18,13 @@
 
 .presenter {
   display: flex;
+  min-width: 180px;
 }
 
 .presenterName {
   font-weight: 500;
   margin-top: 0.25em;
+  white-space: nowrap;
 }
 
 .presenterSubtitle {

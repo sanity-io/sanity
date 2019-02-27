@@ -12,17 +12,28 @@
   text-align: left;
   border-collapse: collapse;
   width: 100%;
+  word-break: break-word;
 
   @nest & th {
     font-weight: 500;
   }
 
   @nest & td, & th {
+    min-width: 5em;
     padding: var(--small-padding) var(--medium-padding);
   }
 
   @nest & tr {
     border-bottom: 1px solid #eee;
+  }
+
+  @nest & td {
+    font-family: var(--font-family-monospace);
+  }
+
+  @nest & td a {
+    color: inherit;
+    text-decoration: inherit;
   }
 
   @nest & .sectionHeader {
