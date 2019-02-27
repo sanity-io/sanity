@@ -2,9 +2,13 @@
 
 .root {
   display: grid;
-  grid-gap: var(--medium-padding);
-  padding: var(--medium-padding);
+  grid-column-gap: var(--medium-padding);
+  grid-row-gap: var(--large-padding);
+  padding: var(--large-padding) var(--medium-padding);
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   grid-template-rows: repeat(auto-fill, minmax(100px, 1fr));
   grid-auto-flow: dense;
+  max-width: 100rem;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
