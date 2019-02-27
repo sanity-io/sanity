@@ -13,80 +13,52 @@ const client = sanityClient({
 const builder = imageUrlBuilder(client)
 
 const query = `
-  *[_id == 'studioDashboardDocument'] {
-    _id,
-    title,
-    tutorials[] {
+  *[_id == 'dashboardFeed-v1'] {
+    items[]-> {
+      _id,
       title,
       poster,
-      presentedBy->{
-        name,
-        mugshot
-      },
-      tutorialDocuments[]-> {
-        _id,
+      guideOrTutorial {
         title,
-        slug,
-        url,
-        author-> {
+        presentedBy->{
           name,
           mugshot
-        }
-      }
+        },
+      },
+      authors[]->
     }
   }[0]
 `
 
 class SanityTutorials extends React.Component {
   state = {
-    tutorials: []
+    feedItems: []
   }
 
   componentDidMount() {
     client.fetch(query).then(response => {
       this.setState({
-        tutorials: response.tutorials
+        feedItems: response.items
       })
     })
   }
 
   render() {
-    const {tutorials} = this.state
+    const {feedItems} = this.state
     return (
       <>
         <h1 className={styles.title}>Tutorials & videos</h1>
         <ul className={styles.tutorials}>
-          {tutorials.map(tutorial => {
-            const primaryTutorialDocument =
-              tutorial.tutorialDocuments && tutorial.tutorialDocuments.length > 0
-                ? tutorial.tutorialDocuments[0]
-                : null
-
-            if (!primaryTutorialDocument) {
-              return null
-            }
-            const author = primaryTutorialDocument.author ||
-              tutorial.presentedBy || {
-                name: 'Unknown',
-                mugshot: null
-              }
-            const title = tutorial.title || primaryTutorialDocument.title
-
+          {feedItems.map(feedItem => {
             return (
               <Tutorial
-                key={primaryTutorialDocument._id}
-                title={title}
+                key={feedItem._id}
+                title={feedItem.title}
                 posterUrl={builder
-                  .image(tutorial.poster)
+                  .image(feedItem.poster)
                   .height(240)
-                  .width(450)
                   .url()}
-                authorName={author.name}
-                avatarUrl={builder
-                  .image(author.mugshot)
-                  .height(100)
-                  .width(100)
-                  .url()}
+                presenters={feedItem.title}
               />
             )
           })}
