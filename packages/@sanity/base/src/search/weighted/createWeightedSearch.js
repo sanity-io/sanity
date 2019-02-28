@@ -1,8 +1,9 @@
 import {map} from 'rxjs/operators'
 import {joinPath} from '../../util/searchUtils'
-import {compact, toLower, flatten, uniq, flow, sortBy, union, words} from 'lodash'
+import {compact, toLower, flatten, uniq, flow, sortBy, union} from 'lodash'
 import {removeDupes} from '../../util/draftUtils'
 import {applyWeights} from './applyWeights'
+import {tokenize} from '../common/tokenize'
 
 const combinePaths = flow([flatten, union, compact])
 
@@ -33,7 +34,7 @@ export function createWeightedSearch(types, client) {
 
   // this is the actual search function that takes the search string and returns the hits
   return function search(queryString, opts = {}) {
-    const terms = uniq(compact(words(toLower(queryString))))
+    const terms = uniq(compact(tokenize(toLower(queryString))))
     const constraints = terms.map((term, i) =>
       combinedSearchPaths.map(joinedPath => `${joinedPath} match $t${i}`)
     )
