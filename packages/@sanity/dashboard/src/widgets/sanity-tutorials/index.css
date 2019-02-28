@@ -8,7 +8,6 @@
   margin: 0;
   padding: 0;
   display: flex;
-  margin-top: var(--medium-padding);
   flex-wrap: nowrap;
   overflow-x: scroll;
 }

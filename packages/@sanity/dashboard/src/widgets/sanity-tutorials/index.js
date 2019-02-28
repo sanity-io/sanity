@@ -4,7 +4,7 @@ import imageUrlBuilder from '@sanity/image-url'
 import styles from './index.css'
 import Tutorial from './Tutorial'
 import {get} from 'lodash'
-
+import {distanceInWords} from 'date-fns'
 const client = sanityClient({
   projectId: '3do82whm',
   dataset: 'production',
@@ -24,14 +24,15 @@ const query = `
       guideOrTutorial-> {
         title,
         slug,
-        "presenter": authors[0]-> {name, mugshot, bio}
+        "presenter": authors[0]-> {name, mugshot, bio},
+        _createdAt
       }
     }
   }[0]
 `
 
-function createReadUrl(slug) {
-  return `https://www.sanity.io/guide/${slug}`
+function createUrl(slug) {
+  return `https://www.sanity.io/guide/${slug.current}`
 }
 
 class SanityTutorials extends React.Component {
@@ -58,19 +59,15 @@ class SanityTutorials extends React.Component {
               return null
             }
             const presenter = feedItem.presenter || get(feedItem, 'guideOrTutorial.presenter') || {}
+            const date = get(feedItem, 'guideOrTutorial._createdAt')
             return (
               <Tutorial
                 key={feedItem._id}
                 title={feedItem.title}
-                videoURL={feedItem.youtubeURL}
-                readURL={createReadUrl(get(feedItem, 'guideOrTutorial.slug.current'))}
+                hasVideo={!!feedItem.youtubeURL}
+                href={createUrl(get(feedItem, 'guideOrTutorial.slug'))}
                 presenterName={presenter.name}
-                presenterAvatar={builder
-                  .image(presenter.mugshot)
-                  .height(100)
-                  .width(100)
-                  .url()}
-                presenterSubtitle={presenter.bio}
+                presenterSubtitle={`${distanceInWords(new Date(date), new Date())} ago`}
                 posterURL={builder
                   .image(feedItem.poster)
                   .height(240)

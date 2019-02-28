@@ -21,43 +21,32 @@ const PlayIcon = (
 class Tutorial extends React.PureComponent {
   static propTypes = {
     title: PropTypes.string.isRequired,
+    hasVideo: PropTypes.bool,
     posterURL: PropTypes.string,
-    readURL: PropTypes.string,
-    videoURL: PropTypes.string,
+    href: PropTypes.string,
     presenterName: PropTypes.string,
-    presenterAvatar: PropTypes.string,
     presenterSubtitle: PropTypes.string
   }
 
   render() {
-    const {
-      title,
-      posterURL,
-      readURL,
-      videoURL,
-      presenterName,
-      presenterAvatar,
-      presenterSubtitle
-    } = this.props
+    const {title, posterURL, href, presenterName, presenterSubtitle, hasVideo} = this.props
 
     return (
-      <div className={styles.root}>
-        <a className={styles.posterContainer} href={videoURL || readURL}>
+      <a className={styles.root} href={href}>
+        <div className={styles.posterContainer}>
           <img className={styles.poster} src={posterURL} />
-          {videoURL && PlayIcon}
-        </a>
+          {hasVideo && PlayIcon}
+        </div>
         <h3 className={styles.title}>{title}</h3>
         <div className={styles.byLine}>
           <div className={styles.presenter}>
-            <img src={presenterAvatar} className={styles.presenterAvatar} />
             <div>
               <div className={styles.presenterName}>{presenterName}</div>
-              <div className={styles.presenterSubtitle}>Something must go here</div>
+              <div className={styles.presenterSubtitle}>{presenterSubtitle}</div>
             </div>
           </div>
-          {readURL && videoURL && <a href={readURL}>Read</a>}
         </div>
-      </div>
+      </a>
     )
   }
 }
