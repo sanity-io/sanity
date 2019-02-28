@@ -1,12 +1,22 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
+  text-decoration: inherit;
+  color: inherit;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  padding-top: var(--medium-padding);
   padding-right: var(--large-padding);
   padding-left: var(--medium-padding);
   padding-bottom: var(--medium-padding);
+}
+
+.root:visited {
+  opacity: 0.7;
+  order: -1;
 }
 
 .byLine {
@@ -52,10 +62,6 @@
   background-color: var(--brand-darkest);
   color: var(--brand-darkest--inverted);
   margin-bottom: var(--small-padding);
-
-  @nest &:hover .playIcon {
-    transform: translate(-50%, -50%) scale(1.1);
-  }
 }
 
 .poster {
