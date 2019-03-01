@@ -49,7 +49,7 @@ export default function urlForImage(options) {
     left: hotSpotCenterX - hotSpotHorizontalRadius,
     top: hotSpotCenterY - hotSpotVerticalRadius,
     right: hotSpotCenterX + hotSpotHorizontalRadius,
-    bottom: hotSpotCenterY + hotSpotHorizontalRadius
+    bottom: hotSpotCenterY + hotSpotVerticalRadius
   }
 
   spec.asset = asset

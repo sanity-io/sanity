@@ -1,10 +1,5 @@
 import urlForHotspotImage from '../src/urlForImage'
-import {
-  uncroppedImage,
-  croppedImage,
-  noHotspotImage,
-  materializedAssetWithCrop
-} from './fixtures'
+import {uncroppedImage, croppedImage, noHotspotImage, materializedAssetWithCrop} from './fixtures'
 
 describe('urlForHotspotImage', () => {
   test('does not crop when no crop is required', () => {
@@ -65,7 +60,7 @@ describe('urlForHotspotImage', () => {
         height: 30
       })
     ).toBe(
-      'https://cdn.sanity.io/images/zp7mbokg/production/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg?rect=0,525,2000,600&w=100&h=30'
+      'https://cdn.sanity.io/images/zp7mbokg/production/Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000.jpg?rect=0,600,2000,600&w=100&h=30'
     )
   })
 
