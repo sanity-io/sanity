@@ -1,12 +1,15 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+.container {
+  composes: container from 'part:@sanity/dashboard/widget-styles';
+}
+
 .title {
   composes: title from 'part:@sanity/dashboard/widget-styles';
 }
 
 .list {
-  height: 25rem;
-  overflow-y: auto;
+  composes: listContainer from 'part:@sanity/dashboard/widget-styles';
 }
 
 .item {
@@ -26,5 +29,4 @@
 
 .buttonContainer {
   composes: bottomButtonContainer from 'part:@sanity/dashboard/widget-styles';
-  border-top: 1px solid var(--list-border-color);
 }

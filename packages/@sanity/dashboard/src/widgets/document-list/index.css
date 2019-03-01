@@ -1,19 +1,15 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+.container {
+  composes: container from "part:@sanity/dashboard/widget-styles";
+}
+
 .title {
   composes: title from "part:@sanity/dashboard/widget-styles";
 }
 
 .list {
-  display: block;
-  margin: 0;
-  padding: 0;
-  min-height: 10rem;
-
-  @media (--screen-medium) {
-    height: 24.5rem;
-    overflow-y: auto;
-  }
+  composes: listContainer from 'part:@sanity/dashboard/widget-styles';
 }
 
 .link {

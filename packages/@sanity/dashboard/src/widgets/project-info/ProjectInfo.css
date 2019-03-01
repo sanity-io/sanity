@@ -1,7 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .container {
-  padding: 0;
+  composes: container from 'part:@sanity/dashboard/widget-styles';
 }
 
 .title {
@@ -23,7 +23,7 @@
     padding: var(--small-padding) var(--medium-padding);
   }
 
-  @nest & tr {
+  @nest & tr:not(:last-child) {
     border-bottom: 1px solid #eee;
   }
 

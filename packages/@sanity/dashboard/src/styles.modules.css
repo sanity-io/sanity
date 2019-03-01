@@ -1,6 +1,14 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .container {
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  height: 100%;
+}
+
+.containerWithPadding {
+  composes: container;
   padding: var(--medium-padding);
 }
 
@@ -11,11 +19,27 @@
   line-height: 2em;
 }
 
+.listContainer {
+  display: block;
+  margin: 0;
+  padding: 0;
+  min-height: 20rem;
+
+  @media (--screen-medium) {
+    height: fill-available;
+    max-height: 30rem;
+    overflow-y: auto;
+  }
+}
+
 .bottomButtonContainer {
   display: flex;
   text-align: center;
   font-weight: 600;
+  min-height: 4em;
   height: 4em;
+  border-top: 1px solid var(--list-border-color);
+  margin-top: auto;
 
   @nest & > * {
     width: 100%;
