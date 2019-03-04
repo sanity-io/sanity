@@ -26,7 +26,7 @@
   min-height: 20rem;
 
   @media (--screen-medium) {
-    height: fill-available;
+    height: stretch;
     max-height: 30rem;
     overflow-y: auto;
   }
