@@ -127,16 +127,30 @@ export default class PopOver extends React.PureComponent {
                           onClickOutside={isActive ? onClickOutside : undefined}
                           className={styles.popover}
                         >
-                          {onClose && (
+                          {title && (
+                            <div className={styles.header}>
+                              <h3 className={styles.title}>{title}</h3>
+                              {onClose && (
+                                <button
+                                  className={styles.closeInHeader}
+                                  type="button"
+                                  onClick={onClose}
+                                >
+                                  <CloseIcon />
+                                </button>
+                              )}
+                            </div>
+                          )}
+                          {!title && onClose && (
                             <button
-                              className={title ? styles.closeInverted : styles.close}
+                              className={styles.closeOutsideHeader}
                               type="button"
                               onClick={onClose}
                             >
                               <CloseIcon />
                             </button>
                           )}
-                          {title && <h3 className={styles.title}>{title}</h3>}
+
                           <div
                             className={`
                             ${actions.length > 0 ? styles.contentWithActions : styles.content}

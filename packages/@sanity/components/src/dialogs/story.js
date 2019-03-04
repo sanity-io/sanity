@@ -276,6 +276,12 @@ storiesOf('Dialogs')
             actions={boolean('has actions', false, 'test') ? actions : []}
             color={select('color', [undefined, 'danger', 'default'], undefined, 'props')}
             title={text('Title', 'Title', 'props')}
+            padding={select(
+              'Padding',
+              [undefined, 'none', 'small', 'medium', 'large'],
+              undefined,
+              'props'
+            )}
             onClose={
               boolean('Has onClose', false, 'test')
                 ? event => console.log('onClose', event)
