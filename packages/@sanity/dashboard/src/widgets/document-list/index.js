@@ -5,7 +5,7 @@ import SanityPreview from 'part:@sanity/base/preview'
 import QueryContainer from 'part:@sanity/base/query-container'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import schema from 'part:@sanity/base/schema'
-import Button from 'part:@sanity/components/buttons/default'
+import IntentButton from 'part:@sanity/components/buttons/intent'
 import {List, Item} from 'part:@sanity/components/lists/default'
 import {intersection} from 'lodash'
 import styles from './index.css'
@@ -92,11 +92,19 @@ class DocumentList extends React.Component {
             }}
           </QueryContainer>
         </List>
-        <div className={styles.buttonContainer}>
-          <Button bleed color="primary" kind="simple">
-            {types && types.length === 1 ? `Create new ${types[0]}` : 'Create new document'}
-          </Button>
-        </div>
+        {types && types.length === 1 && (
+          <div className={styles.buttonContainer}>
+            <IntentButton
+              bleed
+              color="primary"
+              kind="simple"
+              intent="create"
+              params={{type: types[0]}}
+            >
+              Create new {types[0]}
+            </IntentButton>
+          </div>
+        )}
       </div>
     )
   }
