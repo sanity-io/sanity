@@ -195,14 +195,13 @@ export default function createHTMLRules(blockContentType, options = {}) {
             _type: 'link',
             href: href
           }
+          return {
+            _type: '__annotation',
+            markDef: markDef,
+            children: next(el.childNodes)
+          }
         }
-        return {
-          _type: '__annotation',
-          markDef: markDef,
-          children: linkEnabled
-            ? next(el.childNodes)
-            : el.appendChild(el.ownerDocument.createTextNode(` (${href})`)) && next(el.childNodes)
-        }
+        return el.appendChild(el.ownerDocument.createTextNode(` (${href})`)) && next(el.childNodes)
       }
     }
   ]
