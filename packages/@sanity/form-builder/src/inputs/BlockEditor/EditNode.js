@@ -105,7 +105,7 @@ export default class EditNode extends React.Component<Props> {
     const {type, node} = this.props
     const nodeRef = findDOMNode(node)
     const editModalLayout = get(type.options, 'editModal')
-    const title = `${type.title}`
+    const {title} = type
 
     if (editModalLayout === 'fullscreen') {
       return (
