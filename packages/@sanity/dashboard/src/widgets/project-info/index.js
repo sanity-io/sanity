@@ -121,7 +121,9 @@ class ProjectInfo extends React.Component {
 
     return (
       <div className={styles.container}>
-        <h1 className={styles.title}>Project info</h1>
+        <header className={styles.header}>
+          <h2 className={styles.title}>Project info</h2>
+        </header>
         <table className={styles.table}>
           {this.assembleTableRows().map(item => {
             if (!item || !item.rows) {
