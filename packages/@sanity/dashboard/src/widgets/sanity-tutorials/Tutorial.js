@@ -21,11 +21,11 @@ const PlayIcon = (
 class Tutorial extends React.PureComponent {
   static propTypes = {
     title: PropTypes.string.isRequired,
-    hasVideo: PropTypes.bool,
-    posterURL: PropTypes.string,
-    href: PropTypes.string,
-    presenterName: PropTypes.string,
-    presenterSubtitle: PropTypes.string
+    hasVideo: PropTypes.bool.isRequired,
+    posterURL: PropTypes.string.isRequired,
+    href: PropTypes.string.isRequired,
+    presenterName: PropTypes.string.isRequired,
+    presenterSubtitle: PropTypes.string.isRequired
   }
 
   render() {

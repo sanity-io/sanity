@@ -19,7 +19,7 @@ function stringifyArray(array) {
 class DocumentList extends React.Component {
   static propTypes = {
     title: PropTypes.string,
-    types: PropTypes.array,
+    types: PropTypes.arrayOf([PropTypes.string]),
     query: PropTypes.string,
     order: PropTypes.string,
     limit: PropTypes.number
@@ -92,19 +92,20 @@ class DocumentList extends React.Component {
             }}
           </QueryContainer>
         </List>
-        {types && types.length === 1 && (
-          <div className={styles.buttonContainer}>
-            <IntentButton
-              bleed
-              color="primary"
-              kind="simple"
-              intent="create"
-              params={{type: types[0]}}
-            >
-              Create new {types[0]}
-            </IntentButton>
-          </div>
-        )}
+        {types &&
+          types.length === 1 && (
+            <div className={styles.buttonContainer}>
+              <IntentButton
+                bleed
+                color="primary"
+                kind="simple"
+                intent="create"
+                params={{type: types[0]}}
+              >
+                Create new {types[0]}
+              </IntentButton>
+            </div>
+          )}
       </div>
     )
   }

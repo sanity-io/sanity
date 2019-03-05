@@ -1,11 +1,12 @@
 import React from 'react'
 import sanityClient from 'part:@sanity/base/client'
 import Spinner from 'part:@sanity/components/loading/spinner'
-import styles from './index.css'
 import DefaultPreview from 'part:@sanity/components/previews/default'
 import {List, Item} from 'part:@sanity/components/lists/default'
 import AnchorButton from 'part:@sanity/components/buttons/anchor'
 import ToolIcon from 'react-icons/lib/go/tools'
+
+import styles from './index.css'
 
 function getInviteUrl(projectId) {
   return `https://manage.sanity.io/projects/${projectId}/team/invite`

@@ -1,10 +1,12 @@
 import React from 'react'
 import sanityClient from '@sanity/client'
 import imageUrlBuilder from '@sanity/image-url'
-import styles from './index.css'
-import Tutorial from './Tutorial'
 import {get} from 'lodash'
 import {distanceInWords} from 'date-fns'
+import Tutorial from './Tutorial'
+
+import styles from './index.css'
+
 const client = sanityClient({
   projectId: '3do82whm',
   dataset: 'production',
