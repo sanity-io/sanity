@@ -1,5 +1,6 @@
 // @flow
 import {Inline} from 'slate'
+import {randomKey} from '@sanity/block-tools'
 import type {SlateEditor, Type} from '../typeDefs'
 
 export default function InsertInlineObjectPlugin(blockContentType: Type) {
@@ -10,8 +11,7 @@ export default function InsertInlineObjectPlugin(blockContentType: Type) {
       }
       const options = command.args[0] || {}
       const {objectType} = options
-      const {focusBlock, focusText} = editor.value
-      const key = options.key || `${focusBlock.key}${focusBlock.nodes.indexOf(focusText) + 1}`
+      const key = options.key || randomKey(12)
       const inlineProps = {
         key,
         type: objectType.name,
