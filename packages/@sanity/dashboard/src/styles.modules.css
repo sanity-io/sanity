@@ -13,7 +13,6 @@
 }
 
 .header {
-  border-bottom: 1px solid var(--hairline-color);
 }
 
 .title {
@@ -41,7 +40,6 @@
   font-weight: 600;
   min-height: 4em;
   height: 4em;
-  border-top: 1px solid var(--hairline-color);
   margin-top: auto;
 
   @nest & > * {

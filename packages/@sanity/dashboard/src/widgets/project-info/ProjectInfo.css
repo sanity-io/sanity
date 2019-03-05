@@ -33,6 +33,7 @@
 
   @nest & td {
     font-family: var(--font-family-monospace);
+    font-size: var(--font-size-small);
   }
 
   @nest & td a {
@@ -46,12 +47,15 @@
     padding-left: var(--medium-padding);
     padding-bottom: var(--small-padding);
     padding-top: var(--large-padding);
-    font-size: var(--font-size-small);
+    font-size: var(--font-size-xsmall);
+    font-weight: 400;
+    letter-spacing: 0.5px;
     color: var(--text-color-secondary);
     width: 100%;
   }
 }
 
-.button {
+.buttonContainer {
   composes: bottomButtonContainer from 'part:@sanity/dashboard/widget-styles';
+  border-top: 1px solid var(--hairline-color);
 }
