@@ -25,29 +25,24 @@
       "description": "Anything suitable for the dashboard"
     },
     {
-      "name": "part:@sanity/dashboard/widget/stack-overview",
-      "implements": "part:@sanity/dashboard/widget",
-      "path": "widgets/stack-overview"
-    },
-    {
       "name": "part:@sanity/dashboard/widget/sanity-tutorials",
       "implements": "part:@sanity/dashboard/widget",
-      "path": "widgets/sanity-tutorials"
+      "path": "widgets/sanityTutorials"
     },
     {
       "name": "part:@sanity/dashboard/widget/project-info",
       "implements": "part:@sanity/dashboard/widget",
-      "path": "widgets/project-info"
+      "path": "widgets/projectInfo"
     },
     {
       "name": "part:@sanity/dashboard/widget/project-users",
       "implements": "part:@sanity/dashboard/widget",
-      "path": "widgets/project-users"
+      "path": "widgets/projectUsers"
     },
     {
       "name": "part:@sanity/dashboard/widget/document-list",
       "implements": "part:@sanity/dashboard/widget",
-      "path": "widgets/document-list"
+      "path": "widgets/documentList"
     },
     {
       "name": "part:@sanity/dashboard/widget-styles",
