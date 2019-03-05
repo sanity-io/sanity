@@ -1,5 +1,9 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+.header {
+  composes: header from "part:@sanity/dashboard/widget-styles";
+}
+
 .title {
   composes: title from "part:@sanity/dashboard/widget-styles";
 }

@@ -54,7 +54,9 @@ class SanityTutorials extends React.Component {
     const {feedItems} = this.state
     return (
       <>
-        <h1 className={styles.title}>Guides & tutorials</h1>
+        <header className={styles.header}>
+          <h1 className={styles.title}>Guides & tutorials</h1>
+        </header>
         <ul className={styles.tutorials}>
           {feedItems.map(feedItem => {
             if (!feedItem.title) {

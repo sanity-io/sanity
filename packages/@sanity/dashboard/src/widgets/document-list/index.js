@@ -64,7 +64,9 @@ class DocumentList extends React.Component {
 
     return (
       <div className={styles.container}>
-        <h2 className={styles.title}>{title}</h2>
+        <header className={styles.header}>
+          <h2 className={styles.title}>{title}</h2>
+        </header>
         <List className={styles.list}>
           <QueryContainer query={query}>
             {({result, loading, error, onRetry}) => {
