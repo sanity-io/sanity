@@ -61,7 +61,7 @@ class ProjectUsers extends React.Component {
     return (
       <div className={styles.container}>
         <header className={styles.header}>
-          <h2 className={styles.title}>Project Users</h2>
+          <h2 className={styles.title}>Project users</h2>
         </header>
         <List className={styles.list}>
           {isLoading && <Spinner center />}

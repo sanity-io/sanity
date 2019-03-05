@@ -149,7 +149,7 @@ class ProjectInfo extends React.Component {
             )
           })}
         </table>
-        <span className={styles.button}>
+        <div className={styles.buttonContainer}>
           <AnchorButton
             href={getManageUrl(sanityClient.clientConfig.projectId)}
             bleed
@@ -158,7 +158,7 @@ class ProjectInfo extends React.Component {
           >
             Manage project
           </AnchorButton>
-        </span>
+        </div>
       </div>
     )
   }

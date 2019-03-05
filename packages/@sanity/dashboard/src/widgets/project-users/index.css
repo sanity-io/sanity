@@ -14,6 +14,9 @@
 
 .list {
   composes: listContainer from 'part:@sanity/dashboard/widget-styles';
+  border-top: 1px solid var(--hairline-color);
+  padding-top: var(--small-padding);
+  padding-bottom: var(--medium-padding);
 }
 
 .item {
@@ -27,10 +30,12 @@
   background-color: var(--preview-placeholder-color);
 
   @nest &:not([src]) {
-    border: 1px solid var(--list-border-color);
+    /* display: block; */
+    /* border: 1px solid var(--hairline-color); */
   }
 }
 
 .buttonContainer {
   composes: bottomButtonContainer from 'part:@sanity/dashboard/widget-styles';
+  border-top: 1px solid var(--hairline-color);
 }
