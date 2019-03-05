@@ -8,10 +8,12 @@
   composes: title from "part:@sanity/dashboard/widget-styles";
 }
 
-.tutorials {
+.grid {
+  list-style: none;
   margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: nowrap;
+  padding: 0 var(--medium-padding) var(--medium-padding);
+  display: grid;
+  grid-gap: var(--small-padding);
   overflow-x: auto;
+  grid-template-columns: repeat(5, minmax(200px, 300px));
 }

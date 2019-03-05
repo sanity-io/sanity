@@ -24,10 +24,18 @@
 
   @nest & td, & th {
     min-width: 5em;
-    padding: var(--small-padding) var(--medium-padding);
+    padding: var(--medium-padding) var(--small-padding);
   }
 
-  @nest & tr:not(:last-child) {
+  @nest & td:first-child, & th:first-child {
+    padding-left: calc(var(--medium-padding) + var(--small-padding));
+  }
+
+  @nest & td:last-child, & th:last-child {
+    padding-right: calc(var(--medium-padding) + var(--small-padding));
+  }
+
+  @nest & tr {
     border-bottom: 1px solid var(--hairline-color);
   }
 
@@ -37,25 +45,34 @@
   }
 
   @nest & td a {
-    color: inherit;
+    color: var(--default-button-primary-color);
     text-decoration: inherit;
-  }
 
-  @nest & .sectionHeader {
-    text-align: left;
-    text-transform: uppercase;
-    padding-left: var(--medium-padding);
-    padding-bottom: var(--small-padding);
-    padding-top: var(--large-padding);
-    font-size: var(--font-size-xsmall);
-    font-weight: 400;
-    letter-spacing: 0.5px;
-    color: var(--text-color-secondary);
-    width: 100%;
+    @media (hover: hover) {
+      @nest &:hover {
+        color: inherit;
+      }
+    }
+  }
+}
+
+th.sectionHeader {
+  text-align: left;
+  text-transform: uppercase;
+  padding-left: var(--medium-padding);
+  padding-bottom: var(--small-padding);
+  padding-top: var(--medium-padding);
+  font-size: var(--font-size-xsmall);
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  color: var(--text-color-secondary);
+  width: 100%;
+
+  @nest .table > tbody:first-child & {
+    padding-top: 0;
   }
 }
 
 .buttonContainer {
   composes: bottomButtonContainer from 'part:@sanity/dashboard/widget-styles';
-  border-top: 1px solid var(--hairline-color);
 }

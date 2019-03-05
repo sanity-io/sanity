@@ -39,12 +39,8 @@ class Tutorial extends React.PureComponent {
         </div>
         <h3 className={styles.title}>{title}</h3>
         <div className={styles.byLine}>
-          <div className={styles.presenter}>
-            <div>
-              <div className={styles.presenterName}>{presenterName}</div>
-              <div className={styles.presenterSubtitle}>{presenterSubtitle}</div>
-            </div>
-          </div>
+          <div className={styles.presenterName}>{presenterName}</div>
+          <div className={styles.presenterSubtitle}>{presenterSubtitle}</div>
         </div>
       </a>
     )

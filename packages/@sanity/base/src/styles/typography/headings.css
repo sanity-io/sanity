@@ -34,15 +34,14 @@
 
 .heading4 {
   composes: root;
-  text-transform: uppercase;
   font-size: var(--font-size-h4);
+  /* line-height: calc(22 / 16); */
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
 
 .heading5 {
   composes: root;
-  text-transform: uppercase;
   font-size: var(--font-size-h5);
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;

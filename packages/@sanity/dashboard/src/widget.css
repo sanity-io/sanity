@@ -13,12 +13,12 @@
 }
 
 .header {
+  padding: var(--small-padding);
 }
 
 .title {
   composes: heading4 from "part:@sanity/base/theme/typography/headings-style";
   padding: var(--small-padding) var(--medium-padding) !important;
-  line-height: 2em;
 }
 
 .listContainer {
