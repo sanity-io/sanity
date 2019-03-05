@@ -1,11 +1,11 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react'
 import {storiesOf} from 'part:@sanity/storybook'
-import DashboardGrid from './DashboardGrid'
-import WidgetWrapper from './WidgetWrapper'
 import {withKnobs, number} from 'part:@sanity/storybook/addons/knobs'
 import {range} from 'lodash'
 import Chance from 'chance'
+import WidgetWrapper from './WidgetWrapper'
+import DashboardGrid from './DashboardGrid'
 
 const chance = new Chance()
 const para = chance.paragraph({sentences: 2})
