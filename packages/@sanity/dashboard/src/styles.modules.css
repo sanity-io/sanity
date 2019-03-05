@@ -13,8 +13,7 @@
 }
 
 .header {
-  /* border-bottom: 1px solid var(--list-border-color); */
-  border-bottom: 1px solid var(--gray-lighter);
+  border-bottom: 1px solid var(--hairline-color);
 }
 
 .title {
@@ -42,8 +41,7 @@
   font-weight: 600;
   min-height: 4em;
   height: 4em;
-  border-top: 1px solid var(--gray-lighter);
-  /* border-top: 1px solid var(--list-border-color); */
+  border-top: 1px solid var(--hairline-color);
   margin-top: auto;
 
   @nest & > * {
