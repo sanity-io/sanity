@@ -67,10 +67,6 @@
     width: 100%;
     left: 0;
     top: calc(0 - calc(var(--small-padding) / 2) - 1px);
-    border-top: 1px solid rgba(0, 0, 0, 0.07);
+    border-top: 1px solid var(--hairline-color);
   }
-}
-
-.isDisabled {
-  opacity: 0.4;
 }

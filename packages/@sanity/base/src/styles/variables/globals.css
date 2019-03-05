@@ -16,6 +16,9 @@
   --selectable-item-base: var(--brand-primary);
   --brand-darkest--inverted: color(var(--brand-darkest) contrast(80%));
 
+  /* Hairline */
+  --hairline-color: color(var(--component-bg) contrast(80%) a(10%));
+
   /* Buttons */
   --default-button-primary-color: var(--brand-primary);
   --default-button-primary-color--inverted: #fff;

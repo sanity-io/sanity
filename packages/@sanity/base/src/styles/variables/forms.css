@@ -39,7 +39,7 @@
   --input-box-shadow--invalid-focus: 0 0 0 3px color(var(--input-border-color-invalid) a(42%));
 
   /* fieldset */
-  --fieldset-border: var(--input-border-size) solid var(--input-border-color);
+  --fieldset-border: var(--input-border-size) solid var(--hairline-color);
   --fieldset-box-shadow: none;
   --fieldset-box-shadow--hover: none;
   --fieldset-box-shadow--invalid: none;

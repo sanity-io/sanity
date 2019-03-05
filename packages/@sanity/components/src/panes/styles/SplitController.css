@@ -52,8 +52,7 @@
 }
 
 .Resizer {
-  background: var(--gray-darker);
-  opacity: 0.1;
+  background: var(--hairline-color);
   z-index: 10;
   box-sizing: border-box;
   background-clip: padding-box;

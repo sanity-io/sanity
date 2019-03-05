@@ -1,6 +1,6 @@
 @import "part:@sanity/base/theme/variables/gray-colors-style";
 
 :root {
-  --list-border-color: color(var(--component-border-color) a(30%));
+  --list-border-color: var(--hairline-color);
   --list-border: 1px solid var(--list-border-color);
 }

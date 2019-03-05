@@ -28,7 +28,7 @@
   }
 
   @nest & tr:not(:last-child) {
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--hairline-color);
   }
 
   @nest & td {
