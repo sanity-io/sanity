@@ -7,39 +7,35 @@
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  padding-top: var(--medium-padding);
-  padding-right: var(--large-padding);
-  padding-left: var(--medium-padding);
-  padding-bottom: var(--medium-padding);
-}
+  padding: var(--small-padding);
+  border-radius: 2px;
 
-.root:visited {
-  opacity: 0.7;
-  order: -1;
+  &:focus {
+    background: var(--default-button-primary-color);
+    color: var(--default-button-primary-color--inverted);
+  }
+
+  &:visited {
+    opacity: 0.7;
+  }
 }
 
 .byLine {
-  display: flex;
   margin-top: auto;
-  font-size: var(--font-size-small);
-  line-height: 1.1em;
-}
-
-.presenter {
-  display: flex;
-  min-width: 180px;
 }
 
 .presenterName {
+  font-size: var(--font-size-small);
+  line-height: calc(18 / 14);
   font-weight: 500;
   margin-top: 0.25em;
   white-space: nowrap;
 }
 
 .presenterSubtitle {
-  color: var(--text-color-secondary);
-  font-size: var(--font-size-small--relative);
+  font-size: var(--font-size-xsmall);
+  line-height: calc(16 / 12);
+  opacity: 0.7;
 }
 
 .presenterAvatar {
@@ -50,6 +46,7 @@
 
 .title {
   font-size: inherit;
+  line-height: calc(22 / 16);
   margin: 0;
   padding: 0;
   margin-bottom: var(--small-padding);
@@ -57,7 +54,7 @@
 
 .posterContainer {
   width: 100%;
-  height: 120px;
+  padding-bottom: calc(9 / 16 * 100%);
   position: relative;
   background-color: var(--brand-darkest);
   color: var(--brand-darkest--inverted);
@@ -65,9 +62,17 @@
 }
 
 .poster {
+  position: absolute;
+  top: 0;
+  left: 0;
   height: 100%;
-  width: auto;
+  width: 100%;
+  object-fit: cover;
   display: block;
+
+  @nest &:not([src]) {
+    display: none;
+  }
 }
 
 .playIcon {

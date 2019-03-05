@@ -50,7 +50,7 @@
     },
     {
       "implements": "part:@sanity/dashboard/widget-styles",
-      "path": "styles.modules.css"
+      "path": "widget.css"
     }
   ]
 }
