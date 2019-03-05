@@ -4,6 +4,7 @@ import 'babel-polyfill'
 import path from 'path'
 import chalk from 'chalk'
 import fse from 'fs-extra'
+import neatStack from 'neat-stack'
 import resolveFrom from 'resolve-from'
 import {resolveProjectRoot} from '@sanity/resolver'
 import pkg from '../package.json'
@@ -55,9 +56,10 @@ module.exports = async function runCli(cliRoot) {
   const cliRunner = getCliRunner(commands)
   cliRunner.runCommand(args.groupOrCommand, args, options).catch(err => {
     const error = err.details || err
-    const errMessage = error.stack || error
-    console.error(chalk.red(errMessage)) // eslint-disable-line no-console
-    process.exit(1) // eslint-disable-line no-process-exit
+    // eslint-disable-next-line no-console
+    console.error(error.stack ? neatStack(err) : error)
+    // eslint-disable-next-line no-process-exit
+    process.exit(1)
   })
 }
 
