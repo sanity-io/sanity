@@ -88,7 +88,7 @@ export default class EditNode extends React.Component<Props> {
       <div className={styles.formBuilderInputWrapper}>
         <FormBuilderInput
           type={type}
-          level={1}
+          level={0}
           readOnly={readOnly || type.readOnly}
           value={nodeValue}
           onChange={this.handleChange}
@@ -105,9 +105,11 @@ export default class EditNode extends React.Component<Props> {
     const {type, node} = this.props
     const nodeRef = findDOMNode(node)
     const editModalLayout = get(type.options, 'editModal')
+    const {title} = type
+
     if (editModalLayout === 'fullscreen') {
       return (
-        <FullscreenDialog isOpen title="Edit" onClose={this.handleClose}>
+        <FullscreenDialog isOpen title={title} onClose={this.handleClose}>
           {this.renderInput()}
         </FullscreenDialog>
       )
@@ -115,7 +117,7 @@ export default class EditNode extends React.Component<Props> {
     if (editModalLayout === 'fold') {
       return (
         <div className={styles.editBlockContainerFold}>
-          <EditItemFold isOpen title="Edit" onClose={this.handleClose}>
+          <EditItemFold isOpen title={title} onClose={this.handleClose}>
             {this.renderInput()}
           </EditItemFold>
         </div>
@@ -129,15 +131,17 @@ export default class EditNode extends React.Component<Props> {
           onClickOutside={this.handleClose}
           onEscape={this.handleClose}
           onClose={this.handleClose}
+          title={title}
+          padding="none"
         >
-          {this.renderInput()}
+          <DialogContent size="medium" padding="small">{this.renderInput()}</DialogContent>
         </Popover>
       )
     }
     return (
       <DefaultDialog
         isOpen
-        title="Edit"
+        title={title}
         onClose={this.handleClose}
         showCloseButton
         onAction={this.handleDialogAction}
