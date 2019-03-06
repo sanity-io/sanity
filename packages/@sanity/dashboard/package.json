@@ -7,7 +7,6 @@
   "license": "MIT",
   "scripts": {
     "clean": "rimraf lib",
-    "example-testbed": "cd examples/testbed && sanity start",
     "start": "npm run example-testbed",
     "test": "#todo: jest"
   },
@@ -27,10 +26,6 @@
   "devDependencies": {
     "@sanity/base": "0.140.8",
     "@sanity/check": "0.140.3",
-    "@sanity/image-url": "0.140.8",
-    "@sanity/client": "0.140.8",
-    "@sanity/components": "0.140.8",
-    "@sanity/core": "0.140.8",
     "history": "^4.6.3",
     "jest": "^23.6.0",
     "postcss-cssnext": "^3.0.2",
