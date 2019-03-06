@@ -124,10 +124,6 @@
 
 .filledArrow {
   composes: arrow;
-
-  @nest .popper[data-placement^="bottom"] & {
-    background-color: var(--dialog-header-color);
-  }
 }
 
 .popover {
@@ -137,9 +133,11 @@
   border-radius: var(--border-radius-large);
   box-sizing: border-box;
   position: relative;
+  color: var(--text-color);
 
   @nest .color_danger & {
     background-color: var(--state-danger-color);
+    color: var(--state-danger-color--inverted);
   }
 
   @nest .responsive & {
@@ -161,21 +159,28 @@
 }
 
 .close {
-  position: absolute;
-  border: 0;
+  display: flex;
+  align-items: center;
   background-color: transparent;
   font-size: 1.5em;
+  border: none;
   cursor: pointer;
   outline: none;
-  padding-right: 0.25em;
-  color: var(--text-color);
-  top: var(--small-padding);
-  right: var(--small-padding);
-  z-index: 1;
+  color: inherit;
+  margin-right: 0.1em;
+}
 
-  @nest .color_default & {
-    background-color: color(var(--component-bg) a(50%));
-  }
+.closeInHeader {
+  composes: close;
+}
+
+.closeOutsideHeader {
+  composes: close;
+  position: absolute;
+  border: 0;
+  top: var(--small-padding);
+  right: 0;
+  z-index: 1;
 
   @nest .color_danger & {
     color: var(--white);
@@ -186,31 +191,12 @@
   }
 }
 
-.closeInverted {
-  composes: close;
-  color: #fff;
-  background-color: transparent;
-  right: 0;
-
-  @nest .color_default & {
-    background-color: transparent;
-  }
-
-  @nest .responsive & {
-    @media (--max-screen-medium) {
-      top: var(--small-padding);
-      right: var(--small-padding);
-    }
-  }
-}
-
 .content {
   height: 100%;
   box-sizing: border-box;
   overflow: auto;
   max-height: calc(100vh - 10rem);
   max-width: 90vw;
-  color: var(--text-color);
 
   @nest .responsive & {
     @media (--max-screen-medium) {
@@ -256,15 +242,19 @@
   }
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  height: var(--header-height);
+  border-bottom: 1px solid color(var(--text-color) a(10%));
+  justify-content: space-between;
+}
+
 .title {
-  font-size: 1em;
+  font-size: 1.25em;
+  font-weight: 700;
   margin: 0;
-  background-color: var(--dialog-header-color);
-  color: var(--dialog-header-color--inverted);
-  padding: var(--small-padding);
-  padding-right: var(--medium-padding);
-  font-weight: 400;
-  border-radius: var(--border-radius-base) var(--border-radius-base) 0 0;
+  padding: var(--small-padding) var(--medium-padding);
 
   @nest .responsive & {
     @media (--max-screen-medium) {
