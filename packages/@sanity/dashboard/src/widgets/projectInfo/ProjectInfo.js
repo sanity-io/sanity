@@ -1,13 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import sanityClient from 'part:@sanity/base/client'
-import getIt from 'get-it'
-import jsonResponse from 'get-it/lib/middleware/jsonResponse'
-import promise from 'get-it/lib/middleware/promise'
 import AnchorButton from 'part:@sanity/components/buttons/anchor'
 import styles from './ProjectInfo.css'
-
-const request = getIt([promise(), jsonResponse()])
 
 function isUrl(url) {
   return /^https?:\/\//.test(`${url}`)
@@ -40,7 +35,7 @@ class ProjectInfo extends React.Component {
   }
 
   componentDidMount() {
-    const {projectId} = sanityClient.clientConfig
+    const {projectId} = sanityClient.config()
     // fetch project data
     sanityClient.projects
       .getById(projectId)
@@ -51,16 +46,25 @@ class ProjectInfo extends React.Component {
       .catch(error => this.setState({error}))
 
     // ping assumed graphql endpoint
-    const graphqlApi = getGraphQlUrl(projectId)
-    request({url: graphqlApi})
-      .then(response => {
-        this.setState({graphqlApi: response.statusCode === 200 ? graphqlApi : null})
+    sanityClient
+      .request({
+        method: 'HEAD',
+        uri: `/graphql/${sanityClient.config().dataset}/default`
       })
-      .catch(error => this.setState({error}))
+      .then(response => {
+        this.setState({graphqlApi: getGraphQlUrl(projectId)})
+      })
+      .catch(error => {
+        if (error.statusCode === 404) {
+          this.setState({graphqlApi: null})
+        } else {
+          this.setState({error})
+        }
+      })
   }
 
   assembleTableRows() {
-    const {projectId, dataset} = sanityClient.clientConfig
+    const {projectId, dataset} = sanityClient.config()
     const {graphqlApi, studioHost} = this.state
     const propsData = this.props.data
 
