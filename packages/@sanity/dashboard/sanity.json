@@ -40,11 +40,6 @@
       "path": "widgets/projectUsers"
     },
     {
-      "name": "part:@sanity/dashboard/widget/document-list",
-      "implements": "part:@sanity/dashboard/widget",
-      "path": "widgets/documentList"
-    },
-    {
       "name": "part:@sanity/dashboard/widget-styles",
       "description": "Provides pseudo styles for selectable items"
     },
