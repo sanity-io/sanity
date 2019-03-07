@@ -42,12 +42,19 @@ class SanityTutorials extends React.Component {
     feedItems: []
   }
 
+  feedItems$ = null
+
   componentDidMount() {
-    client.fetch(query).then(response => {
+    this.feedItems$ = client.observable.fetch(query)
+    this.feedItems$.subscribe(response => {
       this.setState({
         feedItems: response.items
       })
     })
+  }
+
+  componentWillUnmount() {
+    this.feedItems$.unsubscribe()
   }
 
   render() {
