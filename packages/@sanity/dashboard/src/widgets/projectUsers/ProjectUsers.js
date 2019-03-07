@@ -36,22 +36,21 @@ class ProjectUsers extends React.Component {
   }
 
   componentDidMount = () => {
-    const {projectId} = sanityClient.clientConfig
+    const {projectId} = sanityClient.config()
     // fetch project data
     sanityClient.projects
       .getById(projectId)
       .then(project => {
         this.setState({project})
-        sanityClient.users
-          .getById(project.members.map(mem => mem.id).join(','))
-          .then(users => this.setState({users}))
+        return project
       })
+      .then(project => sanityClient.users.getById(project.members.map(mem => mem.id).join(',')))
+      .then(users => this.setState({users}))
       .catch(error => this.setState({error}))
   }
 
   render() {
     const {error, project, users} = this.state
-
     const isLoading = !project || !users
 
     if (error) {

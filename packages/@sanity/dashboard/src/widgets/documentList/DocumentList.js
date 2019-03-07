@@ -13,15 +13,12 @@ import styles from './DocumentList.css'
 
 const schemaTypeNames = schema.getTypeNames()
 
-function stringifyArray(array) {
-  return `["${array.join('","')}"]`
-}
-
 class DocumentList extends React.Component {
   static propTypes = {
     title: PropTypes.string,
     types: PropTypes.arrayOf([PropTypes.string]),
     query: PropTypes.string,
+    queryParams: PropTypes.object, // eslint-disable-line react/forbid-prop-types
     order: PropTypes.string,
     limit: PropTypes.number
   }
@@ -31,14 +28,15 @@ class DocumentList extends React.Component {
     order: '_createdAt desc',
     limit: 10,
     types: null,
-    query: null
+    query: null,
+    queryParams: {}
   }
 
   assembleQuery = () => {
-    const {query, types, order, limit} = this.props
+    const {query, queryParams, types, order, limit} = this.props
 
     if (query) {
-      return query
+      return {query, params: queryParams}
     }
 
     const documentTypes = schemaTypeNames.filter(typeName => {
@@ -47,21 +45,21 @@ class DocumentList extends React.Component {
     })
 
     if (types) {
-      return `
-        *[
-          _type in ${stringifyArray(intersection(types, documentTypes))}
-        ] | order(${order}) [0...${limit}]`
+      return {
+        query: '*[_type in $types] | order($order) [0...$limit]',
+        params: {types: intersection(types, documentTypes), order, limit}
+      }
     }
 
-    return `
-      *[
-        _type in ${stringifyArray(documentTypes)}
-      ] | {_id, _type} | order(${order}) [0...${limit}]`
+    return {
+      query: '*[_type in $types] | order($order) [0...$limit]',
+      params: {types: documentTypes, order, limit}
+    }
   }
 
   render() {
     const {title, types} = this.props
-    const query = this.assembleQuery()
+    const {query, params} = this.assembleQuery()
 
     return (
       <div className={styles.container}>
@@ -69,7 +67,7 @@ class DocumentList extends React.Component {
           <h2 className={styles.title}>{title}</h2>
         </header>
         <List className={styles.list}>
-          <QueryContainer query={query}>
+          <QueryContainer query={query} params={params}>
             {({result, loading, error, onRetry}) => {
               if (loading) {
                 return <Spinner center message="Loading items…" />

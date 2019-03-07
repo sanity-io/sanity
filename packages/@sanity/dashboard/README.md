@@ -1,5 +1,13 @@
 # Dashboard
 
-Tool which picks up and renders any defined `@sanity/dashboard/widget` parts. Install it to display stats about your project, number of edits last 24 hours, etc.
+Tool which picks up and renders any widgets implementing `part:@sanity/dashboard/widget`. Install this plugin in your Content Studio to display stats about your project, number of edits last 24 hours, etc.
 
-Override `part:@sanity/dashboard/config` in your Content Studio to take control of what appears on the dashboard.
+The Dashboard tool has been designed to be as generic as possible, making few assumptions about its widgets. The Dashboard itself is mostly concerned about the layout of the configured widgets.
+
+## How to install a widget
+
+## How to create a widget
+
+## How to configure the Dashboard
+
+Override `part:@sanity/dashboard/config` in your Studio to take control of what appears on the dashboard.
