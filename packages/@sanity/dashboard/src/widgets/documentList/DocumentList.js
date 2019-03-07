@@ -16,7 +16,7 @@ const schemaTypeNames = schema.getTypeNames()
 class DocumentList extends React.Component {
   static propTypes = {
     title: PropTypes.string,
-    types: PropTypes.arrayOf([PropTypes.string]),
+    types: PropTypes.arrayOf(PropTypes.string),
     query: PropTypes.string,
     queryParams: PropTypes.object, // eslint-disable-line react/forbid-prop-types
     order: PropTypes.string,
@@ -34,7 +34,6 @@ class DocumentList extends React.Component {
 
   assembleQuery = () => {
     const {query, queryParams, types, order, limit} = this.props
-
     if (query) {
       return {query, params: queryParams}
     }
