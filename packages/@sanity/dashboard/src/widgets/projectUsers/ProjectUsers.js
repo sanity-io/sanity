@@ -37,7 +37,6 @@ class ProjectUsers extends React.Component {
 
   componentDidMount = () => {
     const {projectId} = sanityClient.config()
-    // fetch project data
     sanityClient.projects
       .getById(projectId)
       .then(project => {
