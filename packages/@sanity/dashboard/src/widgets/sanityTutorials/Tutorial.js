@@ -22,10 +22,13 @@ class Tutorial extends React.PureComponent {
   static propTypes = {
     title: PropTypes.string.isRequired,
     hasVideo: PropTypes.bool.isRequired,
-    posterURL: PropTypes.string.isRequired,
+    posterURL: PropTypes.string,
     href: PropTypes.string.isRequired,
     presenterName: PropTypes.string.isRequired,
     presenterSubtitle: PropTypes.string.isRequired
+  }
+  static defaultProps = {
+    posterURL: null
   }
 
   render() {
