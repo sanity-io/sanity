@@ -5,7 +5,7 @@
 }
 
 .header {
-  composes: header from "part:@sanity/dashboard/widget-styles";
+  composes: header from 'part:@sanity/dashboard/widget-styles';
 }
 
 .title {
@@ -20,7 +20,12 @@
 }
 
 .item {
-  padding: var(--small-padding) var(--medium-padding);
+  @nest &:first-child {
+    margin-top: var(--small-padding);
+  }
+  @nest .container & {
+    padding: var(--small-padding) var(--medium-padding);
+  }
 }
 
 .avatar {
@@ -38,4 +43,8 @@
 .buttonContainer {
   composes: bottomButtonContainer from 'part:@sanity/dashboard/widget-styles';
   border-top: 1px solid var(--hairline-color);
+}
+
+.retry {
+  cursor: pointer;
 }

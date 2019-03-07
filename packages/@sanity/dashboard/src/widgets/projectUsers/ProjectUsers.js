@@ -5,7 +5,6 @@ import DefaultPreview from 'part:@sanity/components/previews/default'
 import {List, Item} from 'part:@sanity/components/lists/default'
 import AnchorButton from 'part:@sanity/components/buttons/anchor'
 import ToolIcon from 'react-icons/lib/go/tools'
-
 import styles from './ProjectUsers.css'
 
 function getInviteUrl(projectId) {
@@ -35,7 +34,11 @@ class ProjectUsers extends React.Component {
     return 0
   }
 
-  componentDidMount = () => {
+  componentDidMount() {
+    this.fetchData()
+  }
+
+  fetchData() {
     const {projectId} = sanityClient.config()
     sanityClient.projects
       .getById(projectId)
@@ -48,12 +51,24 @@ class ProjectUsers extends React.Component {
       .catch(error => this.setState({error}))
   }
 
+  handleRetryFetch = () => {
+    this.fetchData()
+  }
+
   render() {
     const {error, project, users} = this.state
-    const isLoading = !project || !users
+    const isLoading = !users || !project
 
     if (error) {
-      return <pre>{JSON.stringify(error, null, 2)}</pre>
+      return (
+        <div>
+          Something went wrong while fetching data. You could{' '}
+          <a className={styles.retry} onClick={this.handleRetryFetch} title="Retry users fetch">
+            retry
+          </a>
+          ..?
+        </div>
+      )
     }
 
     return (
@@ -61,39 +76,43 @@ class ProjectUsers extends React.Component {
         <header className={styles.header}>
           <h2 className={styles.title}>Project users</h2>
         </header>
-        <List className={styles.list}>
-          {isLoading && <Spinner center />}
-          {!isLoading &&
-            users.sort(this.sortUsersByRobotStatus).map(user => {
-              const membership = project.members.find(member => member.id === user.id)
-              const media = membership.isRobot ? (
-                <ToolIcon className={styles.profileImage} />
-              ) : (
-                <img src={user.imageUrl} className={styles.avatar} />
-              )
-              return (
-                <Item key={user.id} className={styles.item}>
-                  <DefaultPreview
-                    title={user.displayName}
-                    subtitle={membership.role}
-                    media={media}
-                  />
-                </Item>
-              )
-            })}
-        </List>
 
-        <div className={styles.buttonContainer}>
-          <AnchorButton
-            disabled={isLoading}
-            href={isLoading ? undefined : getInviteUrl(project.id)}
-            bleed
-            color="primary"
-            kind="simple"
-          >
-            Invite members
-          </AnchorButton>
-        </div>
+        {isLoading && <Spinner center message="Loading items…" />}
+
+        {!isLoading && (
+          <>
+            <List className={styles.list}>
+              {users.sort(this.sortUsersByRobotStatus).map(user => {
+                const membership = project.members.find(member => member.id === user.id)
+                const media = membership.isRobot ? (
+                  <ToolIcon className={styles.profileImage} />
+                ) : (
+                  <img src={user.imageUrl} className={styles.avatar} />
+                )
+                return (
+                  <Item key={user.id} className={styles.item}>
+                    <DefaultPreview
+                      title={user.displayName}
+                      subtitle={membership.role}
+                      media={media}
+                    />
+                  </Item>
+                )
+              })}
+            </List>
+            <div className={styles.buttonContainer}>
+              <AnchorButton
+                disabled={isLoading}
+                href={isLoading ? undefined : getInviteUrl(project.id)}
+                bleed
+                color="primary"
+                kind="simple"
+              >
+                Invite members
+              </AnchorButton>
+            </div>
+          </>
+        )}
       </div>
     )
   }
