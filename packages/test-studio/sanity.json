@@ -39,7 +39,8 @@
     "@sanity/vision",
     "@sanity/production-preview",
     "dashboard-widget-cats",
-    "dashboard-widget-document-count"
+    "dashboard-widget-document-count",
+    "dashboard-widget-document-list"
   ],
   "parts": [
     {
