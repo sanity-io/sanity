@@ -1,37 +1,11 @@
 import React from 'react'
-import sanityClient from '@sanity/client'
-import imageUrlBuilder from '@sanity/image-url'
 import {get} from 'lodash'
 import {distanceInWords} from 'date-fns'
 import Tutorial from './Tutorial'
-
 import styles from './SanityTutorials.css'
+import dataAdapter from './dataAdapter'
 
-const client = sanityClient({
-  projectId: '3do82whm',
-  dataset: 'production',
-  useCdn: true
-})
-
-const builder = imageUrlBuilder(client)
-
-const query = `
-  *[_id == 'dashboardFeed-v1'] {
-    items[]-> {
-      _id,
-      title,
-      poster,
-      youtubeURL,
-      "presenter": authors[0]-> {name, mugshot, bio},
-      guideOrTutorial-> {
-        title,
-        slug,
-        "presenter": authors[0]-> {name, mugshot, bio},
-        _createdAt
-      }
-    }
-  }[0]
-`
+const {urlBuilder, getFeed} = dataAdapter
 
 function createUrl(slug) {
   return `https://www.sanity.io/guide/${slug.current}`
@@ -42,11 +16,9 @@ class SanityTutorials extends React.Component {
     feedItems: []
   }
 
-  feedItems$ = null
-
   componentDidMount() {
-    this.feedItems$ = client.observable.fetch(query)
-    this.feedItems$.subscribe(response => {
+    this.unsubscribe()
+    this.subscription = getFeed().subscribe(response => {
       this.setState({
         feedItems: response.items
       })
@@ -54,7 +26,13 @@ class SanityTutorials extends React.Component {
   }
 
   componentWillUnmount() {
-    this.feedItems$.unsubscribe()
+    this.unsubscribe()
+  }
+
+  unsubscribe() {
+    if (this.subscription) {
+      this.subscription.unsubscribe()
+    }
   }
 
   render() {
@@ -79,7 +57,7 @@ class SanityTutorials extends React.Component {
                   href={createUrl(get(feedItem, 'guideOrTutorial.slug'))}
                   presenterName={presenter.name}
                   presenterSubtitle={`${distanceInWords(new Date(date), new Date())} ago`}
-                  posterURL={builder
+                  posterURL={urlBuilder
                     .image(feedItem.poster)
                     .height(240)
                     .url()}
