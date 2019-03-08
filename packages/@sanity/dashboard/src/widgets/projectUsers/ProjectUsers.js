@@ -87,7 +87,9 @@ class ProjectUsers extends React.Component {
                 const media = membership.isRobot ? (
                   <ToolIcon className={styles.profileImage} />
                 ) : (
-                  <img src={user.imageUrl} className={styles.avatar} />
+                  <div className={styles.avatar}>
+                    {user.imageUrl && <img src={user.imageUrl} alt={user.displayName} />}
+                  </div>
                 )
                 return (
                   <Item key={user.id} className={styles.item}>

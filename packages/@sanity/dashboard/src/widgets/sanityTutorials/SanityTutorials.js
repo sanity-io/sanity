@@ -53,7 +53,6 @@ class SanityTutorials extends React.Component {
               <li key={feedItem._id}>
                 <Tutorial
                   title={feedItem.title}
-                  hasVideo={!!feedItem.youtubeURL}
                   href={createUrl(get(feedItem, 'guideOrTutorial.slug'))}
                   presenterName={presenter.name}
                   presenterSubtitle={`${distanceInWords(new Date(date), new Date())} ago`}

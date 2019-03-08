@@ -9,15 +9,6 @@
   flex-direction: column;
   padding: var(--small-padding);
   border-radius: 2px;
-
-  &:focus {
-    background: var(--default-button-primary-color);
-    color: var(--default-button-primary-color--inverted);
-  }
-
-  &:visited {
-    opacity: 0.7;
-  }
 }
 
 .byLine {
@@ -56,8 +47,7 @@
   width: 100%;
   padding-bottom: calc(9 / 16 * 100%);
   position: relative;
-  background-color: var(--brand-darkest);
-  color: var(--brand-darkest--inverted);
+  background-color: var(--preview-placeholder-color);
   margin-bottom: var(--small-padding);
 }
 
@@ -73,14 +63,4 @@
   @nest &:not([src]) {
     display: none;
   }
-}
-
-.playIcon {
-  position: absolute;
-  z-index: 1;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: inherit;
-  transition: transform 0.1s linear;
 }
