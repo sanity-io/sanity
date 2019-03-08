@@ -11,3 +11,13 @@ The Dashboard tool has been designed to be as generic as possible, making few as
 ## How to configure the Dashboard
 
 Override `part:@sanity/dashboard/config` in your Studio to take control of what appears on the dashboard.
+
+A widget’s size behavior can be defined using the `layout` configuration, e.g.:
+
+```
+export default {
+  widgets: [
+    {name: 'project-info', layout: {width: 'medium', height: 'auto'}}
+  ]
+}
+```
