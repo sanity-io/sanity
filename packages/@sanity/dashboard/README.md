@@ -14,10 +14,8 @@ Override `part:@sanity/dashboard/config` in your Studio to take control of what 
 
 A widget’s size behavior can be defined using the `layout` configuration, e.g.:
 
-```
+```js
 export default {
-  widgets: [
-    {name: 'project-info', layout: {width: 'medium', height: 'auto'}}
-  ]
+  widgets: [{name: 'project-info', layout: {width: 'medium', height: 'auto'}}]
 }
 ```
