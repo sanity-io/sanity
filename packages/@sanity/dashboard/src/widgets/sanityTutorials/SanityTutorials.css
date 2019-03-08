@@ -16,4 +16,13 @@
   grid-gap: var(--small-padding);
   overflow-x: auto;
   grid-template-columns: repeat(5, minmax(200px, 300px));
+
+  @nest & li {
+    display: flex;
+    align-items: stretch;
+
+    @nest & > * {
+      flex: 1;
+    }
+  }
 }
