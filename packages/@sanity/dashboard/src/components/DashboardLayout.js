@@ -15,15 +15,16 @@ function DashboardLayout(props) {
   return (
     <DashboardGrid>
       {widgetConfigs.map((widgetConfig, index) => {
-        const {name, options, layout} = widgetConfig
+        const {name} = widgetConfig
         const widgetDefinition = widgetDefinitions.find(wid => wid.name === name)
+        const widgetOptions = {...(widgetDefinition.options || {}), ...(widgetConfig.options || {})}
+        const widgetLayout = {...(widgetDefinition.layout || {}), ...(widgetConfig.layout || {})}
 
         if (widgetDefinition) {
           const Widget = widgetDefinition.component
           const key = `${name}_${index}`
-          const widgetOptions = options || {}
           return (
-            <WidgetWrapper key={key} {...layout}>
+            <WidgetWrapper key={key} {...widgetLayout}>
               <Widget {...widgetOptions} />
             </WidgetWrapper>
           )
