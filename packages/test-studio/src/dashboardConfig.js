@@ -17,6 +17,7 @@ export default {
           {title: 'With strawberry jam?', value: 'Yes', category: 'Waffles'}
         ]
       }
-    }
+    },
+    {name: 'cats'}
   ]
 }
