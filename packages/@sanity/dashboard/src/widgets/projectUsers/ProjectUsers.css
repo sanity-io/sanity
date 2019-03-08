@@ -15,15 +15,14 @@
 .list {
   composes: listContainer from 'part:@sanity/dashboard/widget-styles';
   border-top: 1px solid var(--hairline-color);
-  padding-top: var(--small-padding);
-  padding-bottom: var(--medium-padding);
+
+  @nest .container & {
+    padding-top: var(--small-padding);
+    padding-bottom: var(--medium-padding);
+  }
 }
 
 .item {
-  @nest &:first-child {
-    margin-top: var(--small-padding);
-  }
-
   @nest .container & {
     padding: var(--small-padding) var(--medium-padding);
   }

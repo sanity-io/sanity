@@ -77,44 +77,47 @@ class ProjectUsers extends React.Component {
           <h2 className={styles.title}>Project users</h2>
         </header>
 
-        {isLoading && <Spinner center message="Loading items…" />}
+        {isLoading && (
+          <List className={styles.list}>
+            <Spinner center message="Loading items…" />
+          </List>
+        )}
 
         {!isLoading && (
-          <>
-            <List className={styles.list}>
-              {users.sort(this.sortUsersByRobotStatus).map(user => {
-                const membership = project.members.find(member => member.id === user.id)
-                const media = membership.isRobot ? (
-                  <ToolIcon className={styles.profileImage} />
-                ) : (
-                  <div className={styles.avatar}>
-                    {user.imageUrl && <img src={user.imageUrl} alt={user.displayName} />}
-                  </div>
-                )
-                return (
-                  <Item key={user.id} className={styles.item}>
-                    <DefaultPreview
-                      title={user.displayName}
-                      subtitle={membership.role}
-                      media={media}
-                    />
-                  </Item>
-                )
-              })}
-            </List>
-            <div className={styles.buttonContainer}>
-              <AnchorButton
-                disabled={isLoading}
-                href={isLoading ? undefined : getInviteUrl(project.id)}
-                bleed
-                color="primary"
-                kind="simple"
-              >
-                Invite members
-              </AnchorButton>
-            </div>
-          </>
+          <List className={styles.list}>
+            {users.sort(this.sortUsersByRobotStatus).map(user => {
+              const membership = project.members.find(member => member.id === user.id)
+              const media = membership.isRobot ? (
+                <ToolIcon className={styles.profileImage} />
+              ) : (
+                <div className={styles.avatar}>
+                  {user.imageUrl && <img src={user.imageUrl} alt={user.displayName} />}
+                </div>
+              )
+              return (
+                <Item key={user.id} className={styles.item}>
+                  <DefaultPreview
+                    title={user.displayName}
+                    subtitle={membership.role}
+                    media={media}
+                  />
+                </Item>
+              )
+            })}
+          </List>
         )}
+
+        <div className={styles.buttonContainer}>
+          <AnchorButton
+            disabled={isLoading}
+            href={isLoading ? undefined : getInviteUrl(project.id)}
+            bleed
+            color="primary"
+            kind="simple"
+          >
+            Invite members
+          </AnchorButton>
+        </div>
       </div>
     )
   }
