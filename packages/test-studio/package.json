@@ -47,7 +47,7 @@
     "react-dom": "^16.2.0",
     "react-icons": "^2.2.7",
     "sanity-plugin-dashboard-widget-document-count": "0.0.1",
-    "sanity-plugin-dashboard-widget-document-list": "0.0.2",
+    "sanity-plugin-dashboard-widget-document-list": "0.0.3",
     "sanity-plugin-dashboard-widget-cats": "0.0.2"
   },
   "devDependencies": {
