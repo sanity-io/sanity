@@ -1,4 +1,4 @@
-const pattern = /([^\s,]+)/g
+const pattern = /([^\s,-])+/g
 
 export function tokenize(string) {
   return string.match(pattern) || []

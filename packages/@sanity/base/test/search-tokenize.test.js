@@ -5,6 +5,8 @@ const tests = [
   ['foo', ['foo']],
   ['0foo', ['0foo']],
   ['a16z', ['a16z']],
+  ['foo,,, ,    ,foo,bar', ['foo', 'foo', 'bar']],
+  ['pho-bar, foo-bar', ['pho', 'bar', 'foo', 'bar']],
   ['0 foo', ['0', 'foo']],
   ['foo 🤪🤪🤪', ['foo', '🤪🤪🤪']],
   ['foo 🤪🤪🤪 bar', ['foo', '🤪🤪🤪', 'bar']],
@@ -12,8 +14,8 @@ const tests = [
   ['foo, bar, baz', ['foo', 'bar', 'baz']],
   ['foo   , bar   , baz', ['foo', 'bar', 'baz']],
   ['a.b.c', ['a.b.c']],
-  ['fourty-two', ['fourty-two']],
-  ['abc -23 def', ['abc', '-23', 'def']]
+  ['fourty-two', ['fourty', 'two']],
+  ['abc -23 def', ['abc', '23', 'def']]
 ]
 
 tests.forEach(([input, expected]) => {
