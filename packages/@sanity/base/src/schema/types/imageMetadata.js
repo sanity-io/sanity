@@ -33,6 +33,18 @@ export default {
       title: 'LQIP (Low-Quality Image Placeholder)',
       type: 'string',
       readOnly: true
+    },
+    {
+      name: 'hasAlpha',
+      title: 'Has alpha channel',
+      type: 'boolean',
+      readOnly: true
+    },
+    {
+      name: 'isOpaque',
+      title: 'Is opaque',
+      type: 'boolean',
+      readOnly: true
     }
   ]
 }
