@@ -47,7 +47,7 @@ class ProjectUsers extends React.Component {
         return project
       })
       .then(project => sanityClient.users.getById(project.members.map(mem => mem.id).join(',')))
-      .then(users => this.setState({users}))
+      .then(users => this.setState({users: Array.isArray(users) ? users : [users]}))
       .catch(error => this.setState({error}))
   }
 
