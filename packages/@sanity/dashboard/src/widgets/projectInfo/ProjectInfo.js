@@ -32,8 +32,7 @@ class ProjectInfo extends React.Component {
 
   state = {
     studioHost: null,
-    graphqlApi: null,
-    error: null
+    graphqlApi: null
   }
 
   componentDidMount() {
@@ -121,22 +120,14 @@ class ProjectInfo extends React.Component {
         otherStuff[item.category].push(item)
       }
     })
-
     Object.keys(otherStuff).forEach(category => {
-      result.push({title: category})
-      result = result.concat(otherStuff[category])
+      result.push({title: category, rows: otherStuff[category]})
     })
 
     return result
   }
 
   render() {
-    const {error} = this.state
-
-    if (error) {
-      return <pre>{JSON.stringify(error, null, 2)}</pre>
-    }
-
     return (
       <div className={styles.container}>
         <header className={styles.header}>
