@@ -88,6 +88,11 @@ export default {
       type: 'string'
     },
     {
+      name: 'filename',
+      title: 'Filename',
+      type: 'string'
+    },
+    {
       title: 'Highlighted lines',
       name: 'highlightedLines',
       type: 'array',
@@ -103,11 +108,12 @@ export default {
     select: {
       language: 'language',
       code: 'code',
+      filename: 'filename',
       highlightedLines: 'highlightedLines'
     },
     prepare: value => {
       return {
-        title: (value.language || 'unknown').toUpperCase(),
+        title: value.filename || (value.language || 'unknown').toUpperCase(),
         media: getMedia(value.language),
         extendedPreview: <Preview value={value} />
       }

@@ -7,6 +7,7 @@ import styles from './CodeInput.css'
 import FormField from 'part:@sanity/components/formfields/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import DefaultSelect from 'part:@sanity/components/selects/default'
+import TextInput from 'part:@sanity/components/textinputs/default'
 import createHighlightMarkers from './createHighlightMarkers'
 import {
   ACE_EDITOR_PROPS,
@@ -44,6 +45,7 @@ export default class CodeInput extends PureComponent {
     value: PropTypes.shape({
       _type: PropTypes.string,
       code: PropTypes.string,
+      filename: PropTypes.string,
       language: PropTypes.string,
       highlightedLines: PropTypes.array
     }),
@@ -149,6 +151,18 @@ export default class CodeInput extends PureComponent {
     )
   }
 
+  handleFilenameChange = item => {
+    const {type, onChange} = this.props
+    const path = ['filename']
+
+    onChange(
+      PatchEvent.from([
+        setIfMissing({_type: type.name}),
+        item ? set(item.target.value, path) : unset(path)
+      ])
+    )
+  }
+
   getLanguageAlternatives() {
     return get(this.props.type, 'options.languageAlternatives') || SUPPORTED_LANGUAGES
   }
@@ -204,6 +218,7 @@ export default class CodeInput extends PureComponent {
       languages.unshift({title: 'Select language'})
     }
     const languageField = type.fields.find(field => field.name === 'language')
+    const filenameField = type.fields.find(field => field.name === 'filename')
 
     return (
       <Fieldset legend={type.title} description={type.description} level={level}>
@@ -214,6 +229,17 @@ export default class CodeInput extends PureComponent {
             items={languages}
           />
         </FormField>
+        { get(type, 'options.withFilename', false) && (
+          <FormField label={filenameField.title || 'Filename'} level={level + 1}>
+            <TextInput
+              type="text"
+              name="filename"
+              value={value.filename}
+              placeholder={filenameField.placeholder}
+              onChange={this.handleFilenameChange}
+            />
+          </FormField>
+        ) }
         <FormField label={(selectedLanguage && selectedLanguage.title) || 'Code'} level={level + 1}>
           {this.renderEditor()}
         </FormField>
