@@ -8,13 +8,16 @@ export default {
     {
       name: 'project-info',
       layout: {
-        width: 'medium'
+        width: 'medium',
+        height: 'auto'
       },
       options: {
         data: [
           {title: 'Frontend', value: 'https://asdf.heroku.com/greedy-goblin', category: 'apps'},
           {title: 'Strange endpoint', value: 'https://example.com/v1/strange', category: 'apis'},
-          {title: 'With strawberry jam?', value: 'Yes', category: 'Waffles'}
+          {title: 'With strawberry jam?', value: 'Yes', category: 'Waffles'},
+          {title: 'Gummy bears?', value: 'nope', category: 'Cheweies'},
+          {title: 'With rømme?', value: 'maybe', category: 'Waffles'}
         ]
       }
     },
