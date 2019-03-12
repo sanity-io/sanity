@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* eslint-disable react/forbid-prop-types, no-console */
 import React from 'react'
 import {isPlainObject} from 'lodash'
 import PropTypes from 'prop-types'
@@ -6,19 +6,21 @@ import sanityClient from 'part:@sanity/base/client'
 import AnchorButton from 'part:@sanity/components/buttons/anchor'
 import styles from './ProjectInfo.css'
 
+const {projectId, dataset} = sanityClient.config()
+
 function isUrl(url) {
   return /^https?:\/\//.test(`${url}`)
 }
 
-function getGraphQlUrl(projectId) {
-  return `https://${projectId}.api.sanity.io/v1/graphql/test`
+function getGraphQlUrl() {
+  return `https://${projectId}.api.sanity.io/v1/graphql/${dataset}/default`
 }
 
-function getGroqUrl(projectId) {
-  return `https://${projectId}.api.sanity.io/v1/groq/test`
+function getGroqUrl() {
+  return `https://${projectId}.api.sanity.io/v1/groq/${dataset}`
 }
 
-function getManageUrl(projectId) {
+function getManageUrl() {
   return `https://manage.sanity.io/projects/${projectId}`
 }
 
@@ -36,7 +38,6 @@ class ProjectInfo extends React.Component {
   }
 
   componentDidMount() {
-    const {projectId} = sanityClient.config()
     // fetch project data
     sanityClient.projects
       .getById(projectId)
@@ -57,10 +58,10 @@ class ProjectInfo extends React.Component {
     sanityClient
       .request({
         method: 'HEAD',
-        uri: `/graphql/${sanityClient.config().dataset}/default`
+        uri: `/graphql/${dataset}/default`
       })
       .then(response => {
-        this.setState({graphqlApi: getGraphQlUrl(projectId)})
+        this.setState({graphqlApi: getGraphQlUrl()})
       })
       .catch(error => {
         if (error.statusCode === 404) {
@@ -77,7 +78,6 @@ class ProjectInfo extends React.Component {
   }
 
   assembleTableRows() {
-    const {projectId, dataset} = sanityClient.config()
     const {graphqlApi, studioHost} = this.state
     const propsData = this.props.data
 
@@ -102,7 +102,7 @@ class ProjectInfo extends React.Component {
         {
           title: 'APIs',
           rows: [
-            {title: 'GROQ', value: getGroqUrl(projectId)},
+            {title: 'GROQ', value: getGroqUrl()},
             {title: 'GraphQL', value: graphqlApi || 'Not deployed'}
           ]
         }
@@ -166,12 +166,7 @@ class ProjectInfo extends React.Component {
           })}
         </table>
         <div className={styles.buttonContainer}>
-          <AnchorButton
-            href={getManageUrl(sanityClient.clientConfig.projectId)}
-            bleed
-            color="primary"
-            kind="simple"
-          >
+          <AnchorButton href={getManageUrl()} bleed color="primary" kind="simple">
             Manage project
           </AnchorButton>
         </div>
