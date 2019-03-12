@@ -1,4 +1,6 @@
+/* eslint-disable no-console */
 import React from 'react'
+import {isPlainObject} from 'lodash'
 import PropTypes from 'prop-types'
 import sanityClient from 'part:@sanity/base/client'
 import AnchorButton from 'part:@sanity/components/buttons/anchor'
@@ -43,7 +45,14 @@ class ProjectInfo extends React.Component {
         const {studioHost} = result
         this.setState({studioHost: studioHost ? `https://${studioHost}.sanity.studio` : null})
       })
-      .catch(error => this.setState({error}))
+      .catch(error => {
+        console.log('Error while looking for studioHost', error)
+        this.setState({
+          studioHost: {
+            error: 'Something went wrong while looking up studioHost. See console.'
+          }
+        })
+      })
 
     // ping assumed graphql endpoint
     sanityClient
@@ -58,7 +67,12 @@ class ProjectInfo extends React.Component {
         if (error.statusCode === 404) {
           this.setState({graphqlApi: null})
         } else {
-          this.setState({error})
+          console.log('Error while looking for graphqlApi', error)
+          this.setState({
+            graphqlApi: {
+              error: 'Something went wrong while looking up graphqlApi. See console.'
+            }
+          })
         }
       })
   }
@@ -145,7 +159,14 @@ class ProjectInfo extends React.Component {
                   return (
                     <tr key={row.title}>
                       <th>{row.title}</th>
-                      <td>{isUrl(row.value) ? <a href={row.value}>{row.value}</a> : row.value}</td>
+                      {isPlainObject(row.value) && (
+                        <td className={styles.apiError}>{row.value.error}</td>
+                      )}
+                      {!isPlainObject(row.value) && (
+                        <td>
+                          {isUrl(row.value) ? <a href={row.value}>{row.value}</a> : row.value}
+                        </td>
+                      )}
                     </tr>
                   )
                 })}

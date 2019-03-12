@@ -5,11 +5,15 @@
 }
 
 .header {
-  composes: header from "part:@sanity/dashboard/widget-styles";
+  composes: header from 'part:@sanity/dashboard/widget-styles';
 }
 
 .title {
   composes: title from 'part:@sanity/dashboard/widget-styles';
+}
+
+.apiError {
+  color: var(--state-danger-color);
 }
 
 .table {
