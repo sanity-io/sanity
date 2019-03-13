@@ -1,6 +1,6 @@
 # Dashboard
 
-Dashboard is a Tool which picks up and renders any widgets implementing `part:@sanity/dashboard/widget`. Install this plugin in your Content Studio to display stats about your project, number of edits last 24 hours, etc.
+Dashboard is a Sanity Content Studio Tool which picks up and renders any widgets which implement `part:@sanity/dashboard/widget`. Install this plugin in your Studio to display stats about your project, recently edited documents, etc.
 
 The Dashboard tool has been designed to be as generic as possible, making few assumptions about its widgets. The Dashboard itself is mostly concerned about the layout of the configured widgets.
 
@@ -28,7 +28,7 @@ Changing what is rendered on your Dashboard is easy. To take control, do the fol
 
 2. Create the file `src/dashboardConfig.js` and make sure it's shaped something like this:
 
-```javascript
+```js
 export default {
   widgets: [{name: 'sanity-tutorials'}, {name: 'project-info'}, {name: 'project-users'}]
 }
@@ -42,14 +42,32 @@ A widget’s size behavior can be defined by adding a `layout` key to a the widg
 
 ## How to install a widget
 
-Install a Dashboard widget as you would any other [Sanity Studio plugin](https://www.sanity.io/docs/plugins).
+Install a Dashboard widget as you would any other [Sanity Studio plugin](https://www.sanity.io/docs/extending/plugins).
 
-E.g. if you want to install the cats example widget mentioned below, just type `sanity install dashboard-widget-cats` (this works because it's published on npm under the name `sanity-plugin-dashboard-widget-cats`) and update your `src/dashboardConfig.js` file by adding `{name: 'cats'}` to the `widgets` array. Poof, you've got 🐱 in your Studio.
+E.g. if you want to install the cats example widget mentioned below, proceed as follows:
+
+1. Type `sanity install dashboard-widget-cats` in your terminal (this works because it's published on npm under the name `sanity-plugin-dashboard-widget-cats`)
+2. Update your `src/dashboardConfig.js` file by adding `{name: 'cats'}` to the `widgets` array
+3. You've got 🐱 in your Studio
 
 Some widgets allow options to change aspects of their behavior. If you install the document-list widget mentioned below, it can be configured with:
 
 ```js
 {name: 'document-list', options: {title: 'Last edited books', order: '_updatedAt desc', types: ['book']}}
+```
+
+Thus, if you want your dashboard to display both newest documents across all document types and another widget showing the last edited books, your dashboardConfig would look like this:
+
+```js
+export default {
+  widgets: [
+    {name: 'document-list', options: {title: 'New', order: '_createdAt desc'}},
+    {
+      name: 'document-list',
+      options: {title: 'Last edited books', order: '_updatedAt desc', types: ['book']}
+    }
+  ]
+}
 ```
 
 ## How to create a widget
