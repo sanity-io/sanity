@@ -5,6 +5,7 @@ import widgetDefinitions from 'all:part:@sanity/dashboard/widget?'
 import dashboardConfig from 'part:@sanity/dashboard/config?'
 import DashboardGrid from './DashboardGrid'
 import WidgetWrapper from './WidgetWrapper'
+import styles from './DashboardLayout.css'
 
 function DashboardLayout(props) {
   if (!dashboardConfig) {
@@ -17,12 +18,15 @@ function DashboardLayout(props) {
       {widgetConfigs.map((widgetConfig, index) => {
         const {name} = widgetConfig
         const widgetDefinition = widgetDefinitions.find(wid => wid.name === name)
-        const widgetOptions = {...(widgetDefinition.options || {}), ...(widgetConfig.options || {})}
-        const widgetLayout = {...(widgetDefinition.layout || {}), ...(widgetConfig.layout || {})}
+        const key = `${name}_${index}`
 
         if (widgetDefinition) {
+          const widgetOptions = {
+            ...(widgetDefinition.options || {}),
+            ...(widgetConfig.options || {})
+          }
+          const widgetLayout = {...(widgetDefinition.layout || {}), ...(widgetConfig.layout || {})}
           const Widget = widgetDefinition.component
-          const key = `${name}_${index}`
           return (
             <WidgetWrapper key={key} {...widgetLayout}>
               <Widget {...widgetOptions} />
@@ -30,12 +34,17 @@ function DashboardLayout(props) {
           )
         }
 
-        console.error(
-          `Unable to locate widget with name ${name} among ${widgetDefinitions
-            .map(wid => wid.name)
-            .join(', ')}`
+        return (
+          <WidgetWrapper key={key}>
+            <div className={styles.missingWidget}>
+              <h4>{`Could not find the Dashboard Widget named "${name}" `}</h4>
+              <p>
+                Make sure your <code>sanity.json</code> file mentions such a widget and that it's an
+                implementaion of <code>part:@sanity/dashboard/widget</code>
+              </p>
+            </div>
+          </WidgetWrapper>
         )
-        return null
       })}
     </DashboardGrid>
   )
