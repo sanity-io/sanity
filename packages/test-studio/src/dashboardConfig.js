@@ -5,6 +5,7 @@ export default {
     {name: 'document-list', options: {title: 'Last edited', order: '_updatedAt desc'}},
     {name: 'document-list', options: {title: 'Last created books', types: ['book']}},
     {name: 'project-users'},
+    {name: 'widget-which-does-not-exist'},
     {
       name: 'project-info',
       layout: {
