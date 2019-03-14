@@ -118,19 +118,22 @@ function registerLoader(options) {
         return request
       }
 
+      // Strip any query string stuff
+      const pathRequest = request.replace(/\?[^\/]*/g, '')
+
       if (!options.allowLocalDependencies) {
-        return realResolve(request, parent)
+        return realResolve(pathRequest, parent)
       }
 
       try {
-        return realResolve(request, parent)
+        return realResolve(pathRequest, parent)
       } catch (err) {
         /* intentional noop */
       }
 
       // Attempt local resolve
       try {
-        return realResolve(request, module.parent)
+        return realResolve(pathRequest, module.parent)
       } catch (deepErr) {
         return undefined
       }
