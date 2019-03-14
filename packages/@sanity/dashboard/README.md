@@ -74,4 +74,32 @@ export default {
 
 Widgets are Sanity plugins which implement the part `part:@sanity/dashboard/widget`. Stay tuned for a complete "Widget Authors Cookbook", but until then, have a look at some sample widgets: E.g. [A document List](https://github.com/sanity-io/dashboard-widget-document-list/tree/master) or [maybe some cats](https://github.com/sanity-io/example-dashboard-widget-cats)?
 
+When writing your widget components, it's recommended to use the styles defined in `./src/widgets.css` for your basic building blocks:
+
+```
+@import 'part:@sanity/base/theme/variables-style';
+
+.container {
+  composes: container from 'part:@sanity/dashboard/widget-styles';
+}
+
+.containerWithPadding {
+  composes: containerWithPadding from 'part:@sanity/dashboard/widget-styles';
+}
+
+.header {
+  composes: header from "part:@sanity/dashboard/widget-styles";
+}
+
+.title {
+  composes: title from 'part:@sanity/dashboard/widget-styles';
+}
+
+.buttonContainer {
+  composes: bottomButtonContainer from 'part:@sanity/dashboard/widget-styles';
+}
+```
+
+Your widget root element should aways be wrapped with the `container` style from `part:@sanity/dashboard/widget-styles`
+
 ---
