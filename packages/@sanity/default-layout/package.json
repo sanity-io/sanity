@@ -1,6 +1,6 @@
 {
   "name": "@sanity/default-layout",
-  "version": "0.140.9",
+  "version": "0.140.10",
   "description": "The default layout components for Sanity",
   "main": "lib/default-layout.js",
   "scripts": {
@@ -39,11 +39,11 @@
     "rxjs": "^6.1.0"
   },
   "devDependencies": {
-    "@sanity/base": "0.140.9",
+    "@sanity/base": "0.140.10",
     "@sanity/check": "0.140.3",
-    "@sanity/cli": "0.140.9",
-    "@sanity/components": "0.140.9",
-    "@sanity/core": "0.140.9",
+    "@sanity/cli": "0.140.10",
+    "@sanity/components": "0.140.10",
+    "@sanity/core": "0.140.10",
     "@sanity/schema": "0.140.9",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
