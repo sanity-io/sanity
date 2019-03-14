@@ -1,6 +1,5 @@
 // These are inputs that may be implemented by provided parts
 import BooleanInput from 'part:@sanity/form-builder/input/boolean?'
-import CodeInput from 'part:@sanity/form-builder/input/code?'
 import DateTimeInput from 'part:@sanity/form-builder/input/datetime?'
 import EmailInput from 'part:@sanity/form-builder/input/email?'
 import GeoPointInput from 'part:@sanity/form-builder/input/geopoint?'
@@ -23,6 +22,5 @@ export default {
   richDate: RichDateInput,
   email: EmailInput,
   geopoint: GeoPointInput,
-  code: CodeInput,
   url: UrlInput
 }
