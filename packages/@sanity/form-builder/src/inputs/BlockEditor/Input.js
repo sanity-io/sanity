@@ -73,21 +73,21 @@ export default class BlockEditorInput extends React.Component<Props, State> {
 
   handleToggleFullScreen = (event?: SyntheticEvent<*>) => {
     this.setState((prevState: State) => ({fullscreen: !prevState.fullscreen}))
-    this.focus()
+    window.requestAnimationFrame(() => {
+      this.focus()
+    })
   }
 
   focus = () => {
     const {focusPath, onFocus, readOnly} = this.props
     const blockEditor = this.blockEditor && this.blockEditor.current
     const editor = blockEditor && blockEditor.getEditor()
-    window.requestAnimationFrame(() => {
-      if (editor && !readOnly) {
-        editor.focus()
-        if (editor.value.focusBlock && (!focusPath || focusPath.length === 0)) {
-          onFocus([{_key: editor.value.focusBlock.key}])
-        }
+    if (editor && !readOnly) {
+      editor.focus()
+      if (editor.value.focusBlock && (!focusPath || focusPath.length === 0)) {
+        onFocus([{_key: editor.value.focusBlock.key}])
       }
-    })
+    }
   }
 
   handleFocusSkipper = () => {
