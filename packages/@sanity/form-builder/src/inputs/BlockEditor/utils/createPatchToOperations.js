@@ -30,6 +30,7 @@ import createEmptyBlock from './createEmptyBlock'
 
 type JSONValue = number | string | boolean | {[string]: JSONValue} | JSONValue[]
 
+// Helper function to find the last part of a patch path that has a known key
 function findLastKey(path: Path[]) {
   let key = null
   path.forEach(part => {
@@ -40,7 +41,8 @@ function findLastKey(path: Path[]) {
   return key
 }
 
-function findEditorChildNodeFromBlockChildKey(blockNode: SlateNode, childKey: Path) {
+// Helper function to find a Slate Text node from a patch path key
+function findTextNodeFromPathKey(blockNode: SlateNode, pathKey: Path) {
   if (!blockNode) {
     throw new Error('No blockNode given!')
   }
@@ -50,16 +52,30 @@ function findEditorChildNodeFromBlockChildKey(blockNode: SlateNode, childKey: Pa
       for (let i = 0; i < node.leaves.size; i++) {
         count++
         // eslint-disable-next-line max-depth
-        if (`${blockNode.key}${count}` === childKey) {
+        if (`${blockNode.key}${count}` === pathKey) {
           break
         }
       }
     } else {
       count++
     }
-    return `${blockNode.key}${count}` === childKey
+    return `${blockNode.key}${count}` === pathKey
   })
   return blockNode.nodes.get(targetIndex)
+}
+
+// Helper function to find the last known node to the editor inside a patch path
+function findLastKnownEditorNodeInPath(block, patchPath) {
+  let node = null
+  let pIndex = patchPath.length - 1
+  while (node === null && pIndex >= 0) {
+    const key = patchPath[pIndex]._key
+    if (key) {
+      node = block.getDescendant(key) || null
+    }
+    pIndex--
+  }
+  return node
 }
 
 function getBlockTextIndex(blockNode: SlateNode, childNode: SlateNode) {
@@ -393,13 +409,8 @@ export default function createPatchesToChange(
       if (patch.path[1] === 'markDefs') {
         return patchAnnotationData(patch, controller)
       } else if (patch.path[1] === 'children' && patch.path.length >= 3) {
-        // Find the node (keys can be random on the working document)
-        const blockNode = controller.value.document.getNode(patch.path[0]._key)
-        const node = findEditorChildNodeFromBlockChildKey(blockNode, findLastKey(patch.path))
-        // eslint-disable-next-line max-depth
-        if (!node) {
-          throw new Error('Could not find childNode')
-        }
+        const rootBlockNode = controller.value.document.getNode(patch.path[0]._key)
+        const node = findLastKnownEditorNodeInPath(rootBlockNode, patch.path)
         const isVoid = controller.query('isVoid', node)
         // eslint-disable-next-line max-depth
         if (isVoid) {
@@ -407,7 +418,12 @@ export default function createPatchesToChange(
         }
         // eslint-disable-next-line max-depth
         if (patch.type === 'insert' || patch.type === 'set' || patch.type === 'diffMatchPatch') {
-          return patchSpanText(patch, controller, node, blockNode)
+          return patchSpanText(
+            patch,
+            controller,
+            findTextNodeFromPathKey(rootBlockNode, findLastKey(patch.path)),
+            rootBlockNode
+          )
         }
       }
       return patchBlockData(patch, controller)
