@@ -68,15 +68,18 @@ const subscription = client.listen(query, params)
   .subscribe(comment => {
     console.log(`${comment.author} commented: ${comment.text}`)
   })
+  
+// to unsubscribe later on
+subscription.unsubscribe()
 ```
 
 `client.listen(query, params = {}, options = {includeResult: true})`
 
-Open a query that listens for updates on matched documents, using the given parameters (if any). The return value is an [Observable](https://github.com/sanity-io/sanity/tree/master/packages/@sanity/observable). When calling `subscribe()` on the observable, a subscription is returned which can be used to unsubscribe from the query.
+Open a query that listens for updates on matched documents, using the given parameters (if any). The return value is an [RxJS Observable](https://rxjs.dev/guide/observable). When calling `.subscribe()` on the returned observable, a [subscription](https://rxjs.dev/api/index/class/Subscription) is returned, and this can be used to unsubscribe from the query later on by calling `subscription.unsubscribe()`
 
-The objects which are emitted always contain `mutation`, which is an object containing the mutation which triggered the document to appear as part of the query.
+The update events which are emitted always contain `mutation`, which is an object containing the mutation which triggered the document to appear as part of the query.
 
-By default, the emitted object will also contain a `result` property, which contains the document with the mutation applied to it. In case of a delete mutation, this property will not be present, however. You can also tell the client not to return the document (to save bandwidth, or in cases where the mutation or the document ID is the only relevant factor) by setting the `includeResult` property to `false` in the options.
+By default, the emitted update event will also contain a `result` property, which contains the document with the mutation applied to it. In case of a delete mutation, this property will not be present, however. You can also tell the client not to return the document (to save bandwidth, or in cases where the mutation or the document ID is the only relevant factor) by setting the `includeResult` property to `false` in the options.
 
 Likewise, you can also have the client return the document *before* the mutation was applied, by setting`includePreviousRevision` to `true` in the options, which will include a `previous` property in each emitted object.
 
