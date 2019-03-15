@@ -29,7 +29,6 @@ export default {
       of: [
         {
           title: 'Variant',
-          name: 'variant',
           type: 'productVariant'
         }
       ]
