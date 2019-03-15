@@ -166,6 +166,16 @@ const cases = [
   },
 
   {
+    name: 'automatic format',
+    url: stripPath(
+      urlFor
+        .image(noHotspotImage())
+        .auto('format')
+        .url()
+    )
+  },
+
+  {
     name: 'sub zero top/left',
     url: stripPath(
       urlFor
@@ -191,6 +201,7 @@ const cases = [
         .orientation(90)
         .quality(50)
         .sharpen(7)
+        .auto('format')
         .forceDownload('a.png')
         .flipHorizontal()
         .flipVertical()
@@ -216,6 +227,7 @@ const cases = [
         .invert(true)
         .orientation(90)
         .quality(50)
+        .auto('format')
         .forceDownload('a.png')
         .flipHorizontal()
         .flipVertical()

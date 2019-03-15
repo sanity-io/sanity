@@ -14,7 +14,7 @@ In addition to the core use case, this library provides a handy builder to acces
 
 The most common way to use this library in your project is to configure it by passing it your configured sanityClient. That way it will automatically be preconfigured to your current project and dataset:
 
-``` js
+```js
 import React from 'react'
 import myConfiguredSanityClient from './sanityClient'
 import imageUrlBuilder from '@sanity/image-url'
@@ -28,19 +28,23 @@ function urlFor(source) {
 
 Then you can use the handy builder syntax to generate your urls:
 
-``` js
-  <img src={urlFor(author.image).width(200).url()} />
+```js
+<img
+  src={urlFor(author.image)
+    .width(200)
+    .url()}
+/>
 ```
 
 This will ensure that the author image is alway 200 pixels wide, automatically applying any crop specified by the editor and cropping towards the hot-spot she drew. You can specify both width and height like this:
 
-``` js
+```js
   <img src={urlFor(movie.poster).width(500).height(300).url()}>
 ```
 
 There are a huge number of useful options you can specify, like e.g. blur:
 
-``` js
+```js
   <img src={urlFor(mysteryPerson.mugshot).width(200).height(200).blur(50).url()}>
 ```
 
@@ -85,6 +89,12 @@ Specify the crop in pixels. Overrides any crop/hotspot in the image record.
 ### `format(name)`
 
 Specify the image format of the image. 'jpg', 'pjpg', 'png', 'webp'
+
+### `auto(mode)`
+
+Specify transformations to automatically apply based on browser capabilities. Supported values:
+
+- `format` - Automatically uses WebP if supported
 
 ### `orientation(angle)`
 
