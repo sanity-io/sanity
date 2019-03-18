@@ -4,7 +4,7 @@ import normalizeBlock from '../util/normalizeBlock'
 import {BLOCK_DEFAULT_STYLE} from '../constants'
 import blockContentTypeToOptions from '../util/blockContentTypeToOptions'
 
-function createCustomBlockFromData(block) {
+function createBlockObjectFromData(block) {
   const {value} = block.data
   if (!value) {
     throw new Error(`Data got no value: ${JSON.stringify(block.data)}`)
@@ -99,13 +99,13 @@ function toSanityBlock(block, blockContentFeatures, options = {}) {
 
   // Handle block objects
   if (blockContentFeatures.types.blockObjects.map(bObj => bObj.name).includes(block.type)) {
-    return createCustomBlockFromData(block)
+    return createBlockObjectFromData(block)
   }
 
   // Put the right type back on the block if marked as __unknown from blocksToEditorValue
   if (block.type === '__unknown') {
     block.type = block.data.value._type
-    return createCustomBlockFromData({...block, type: block.data.value._type})
+    return createBlockObjectFromData({...block, type: block.data.value._type})
   }
 
   // A block that is not in the schema, so we don't know what to do with it
