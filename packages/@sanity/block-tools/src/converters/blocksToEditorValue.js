@@ -129,7 +129,7 @@ function sanityBlockToRawNode(sanityBlock, blockContentFeatures, options = {}) {
         : [EMPTY_TEXT_NODE]
   }
   if (options.normalize) {
-    return normalizeBlock(block)
+    return normalizeBlock(block, blockContentFeatures.types.block)
   }
   return block
 }
@@ -141,9 +141,12 @@ function sanityBlockItemToRaw(blockItem, blockContentFeatures) {
   }
   const type = blockContentFeatures.types.blockObjects
     .map(objType => objType.name)
-    .concat('block').includes(blockItem._type) ? blockItem._type : '__unknown'
+    .concat(blockContentFeatures.types.block.name)
+    .includes(blockItem._type)
+    ? blockItem._type
+    : '__unknown'
   return {
-    object: 'block',
+    object: blockContentFeatures.types.block.name,
     key: blockItem._key,
     type,
     isVoid: true,
@@ -155,7 +158,7 @@ function sanityBlockItemToRaw(blockItem, blockContentFeatures) {
 function sanityBlockItemToRawNode(blockItem, type, blockContentFeatures, options) {
   const blockItemType = resolveTypeName(blockItem)
 
-  return blockItemType === 'block'
+  return blockItemType === blockContentFeatures.types.block.name
     ? sanityBlockToRawNode(blockItem, blockContentFeatures, options)
     : sanityBlockItemToRaw(blockItem, blockContentFeatures, options)
 }

@@ -26,7 +26,7 @@ export function resolveListItem(listNodeTagName) {
   return listStyle
 }
 
-export default function createHTMLRules(blockContentType, options = {}) {
+export default function createHTMLRules(blockContentFeatures) {
   return [
     // Text nodes
     {
@@ -69,7 +69,7 @@ export default function createHTMLRules(blockContentType, options = {}) {
         })
 
         return {
-          _type: 'block',
+          _type: blockContentFeatures.types.block.name,
           style: 'blockquote',
           markDefs: [],
           children: next(children)
@@ -89,12 +89,13 @@ export default function createHTMLRules(blockContentType, options = {}) {
         if (el.parentNode && tagName(el) === 'li') {
           return next(el.childNodes)
         }
-        // If style is not supported, return a defaultBlockType
-        if (!options.enabledBlockStyles.includes(block.style)) {
+        // If style is not supported, return a default block type
+        if (!blockContentFeatures.styles.find(style => style.value === block.style)) {
           block = DEFAULT_BLOCK
         }
         return {
           ...block,
+          _type: blockContentFeatures.types.block.name,
           children: next(el.childNodes)
         }
       }
@@ -165,7 +166,10 @@ export default function createHTMLRules(blockContentType, options = {}) {
     {
       deserialize(el, next) {
         const decorator = HTML_DECORATOR_TAGS[tagName(el)]
-        if (!decorator || !options.enabledSpanDecorators.includes(decorator)) {
+        if (
+          !decorator ||
+          !blockContentFeatures.decorators.map(dec => dec.value).includes(decorator)
+        ) {
           return undefined
         }
         return {
@@ -183,7 +187,7 @@ export default function createHTMLRules(blockContentType, options = {}) {
         if (tagName(el) != 'a') {
           return undefined
         }
-        const linkEnabled = options.enabledBlockAnnotations.includes('link')
+        const linkEnabled = blockContentFeatures.annotations.find(an => an.value === 'link')
         const href = el.getAttribute('href')
         if (!href) {
           return next(el.childNodes)

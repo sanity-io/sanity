@@ -1,29 +1,7 @@
-import {DEFAULT_BLOCK} from '../constants'
-import blockContentTypeToOptions from '../util/blockContentTypeToOptions'
-import preprocessors from './preprocessors'
-import resolveJsType from '../util/resolveJsType'
 import {isEqual} from 'lodash'
-
-/**
- * A utility function to create the options needed for the various rule sets,
- * based on the structure of the blockContentType
- *
- * @param {Object} The compiled schema type for the block content
- * @return {Object}
- */
-
-export function createRuleOptions(blockContentType) {
-  const options = blockContentTypeToOptions(blockContentType)
-  const mapItem = item => item.value
-  const enabledBlockStyles = options.styles.map(mapItem)
-  const enabledSpanDecorators = options.decorators.map(mapItem)
-  const enabledBlockAnnotations = options.annotations.map(mapItem)
-  return {
-    enabledBlockStyles,
-    enabledSpanDecorators,
-    enabledBlockAnnotations
-  }
-}
+import {BLOCK_DEFAULT_STYLE} from '../constants'
+import resolveJsType from '../util/resolveJsType'
+import preprocessors from './preprocessors'
 
 /**
  * A utility function that always return a lowerCase version of the element.tagName
@@ -72,7 +50,8 @@ export function defaultParseHtml() {
   }
 }
 
-export function flattenNestedBlocks(blocks) {
+export function flattenNestedBlocks(blocks, blockContentFeatures) {
+  const blockTypeName = blockContentFeatures.types.block.name
   let depth = 0
   const flattened = []
   const traverse = _nodes => {
@@ -81,7 +60,7 @@ export function flattenNestedBlocks(blocks) {
       if (depth === 0) {
         flattened.push(node)
       }
-      if (node._type === 'block') {
+      if (node._type === blockTypeName) {
         if (depth > 0) {
           toRemove.push(node)
           flattened.push(node)
@@ -163,26 +142,30 @@ export function trimWhitespace(blocks) {
   return blocks
 }
 
-export function ensureRootIsBlocks(blocks) {
+export function ensureRootIsBlocks(blocks, blockContentFeatures) {
+  const blockTypeName = blockContentFeatures.types.block.name
   return blocks.reduce((memo, node, i, original) => {
-    if (node._type === 'block') {
+    if (node._type === blockTypeName) {
       memo.push(node)
       return memo
     }
 
+    // __block is a symbol name, should not be blockTypeName!
     if (node._type === '__block') {
       memo.push(node.block)
       return memo
     }
 
-    if (i > 0 && original[i - 1]._type !== 'block') {
+    if (i > 0 && original[i - 1]._type !== blockTypeName) {
       const block = memo[memo.length - 1]
       block.children.push(node)
       return memo
     }
 
     const block = {
-      ...DEFAULT_BLOCK,
+      _type: blockTypeName,
+      markDefs: [],
+      style: BLOCK_DEFAULT_STYLE,
       children: [node]
     }
 

@@ -157,7 +157,7 @@ const partialBlock = {
     }
   ]
 }
-normalizeBlock(partialBlock)
+normalizeBlock(partialBlock, blockType)
 ```
 Will produce
 ```
@@ -178,7 +178,7 @@ Will produce
 
 ### ``getBlockContentFeatures(blockContentType)``
 
-Will return an object with the features enabled for the input block content type.
+Will return an object with the features enabled for the input block content type and an overview of types.
 
 ```js
 {
@@ -199,7 +199,18 @@ Will return an object with the features enabled for the input block content type
     {title: 'H5', value: 'h5'},
     {title: 'H6', value: 'h6'},
     {title: 'Quote', value: 'blockquote'}
-  ]
+  ],
+  lists: [
+    {type: "Bullet", value: "bullet"},
+    {type: "Number", value: "number"}
+  ],
+  types: {
+    blockArray: {...},
+    block: {...},
+    blockObjects: {...},
+    inlineObjects: {...},
+    span: {...}
+  }
 }
 ```
 

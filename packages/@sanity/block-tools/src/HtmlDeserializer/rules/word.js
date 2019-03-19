@@ -36,13 +36,14 @@ function isWordListElement(el) {
   return undefined
 }
 
-export default function createWordRules(blockContentType, options = {}) {
+export default function createWordRules(blockContentFeatures) {
   return [
     {
       deserialize(el, next) {
         if (tagName(el) === 'p' && isWordListElement(el)) {
           return {
             ...DEFAULT_BLOCK,
+            _type: blockContentFeatures.types.block.name,
             listItem: getListItemStyle(el),
             level: getListItemLevel(el),
             style: BLOCK_DEFAULT_STYLE,

@@ -1,6 +1,7 @@
 import {flatten} from 'lodash'
+import blockContentTypeToOptions from '../util/blockContentTypeToOptions'
+import resolveJsType from '../util/resolveJsType'
 import {
-  createRuleOptions,
   defaultParseHtml,
   ensureRootIsBlocks,
   flattenNestedBlocks,
@@ -9,7 +10,6 @@ import {
   tagName
 } from './helpers'
 import createRules from './rules'
-import resolveJsType from '../util/resolveJsType'
 
 /**
  * A internal variable to keep track of annotation mark definitions
@@ -40,7 +40,8 @@ export default class HtmlDeserializer {
     if (!blockContentType) {
       throw new Error("Parameter 'blockContentType' is required")
     }
-    const standardRules = createRules(blockContentType, createRuleOptions(blockContentType))
+    this.blockContentFeatures = blockContentTypeToOptions(blockContentType)
+    const standardRules = createRules(this.blockContentFeatures)
     this.rules = [...rules, ...standardRules]
     const parseHtml = options.parseHtml || defaultParseHtml()
     this.parseHtml = html => {
@@ -62,17 +63,22 @@ export default class HtmlDeserializer {
     const fragment = parseHtml(html)
     const children = Array.from(fragment.childNodes)
     const blocks = trimWhitespace(
-      flattenNestedBlocks(ensureRootIsBlocks(this.deserializeElements(children)))
+      flattenNestedBlocks(
+        ensureRootIsBlocks(this.deserializeElements(children), this.blockContentFeatures),
+        this.blockContentFeatures
+      )
     )
     if (_markDefs.length > 0) {
-      blocks.filter(block => block._type === 'block').forEach(block => {
-        block.markDefs = block.markDefs || []
-        block.markDefs = block.markDefs.concat(
-          _markDefs.filter(def => {
-            return flatten(block.children.map(child => child.marks || [])).includes(def._key)
-          })
-        )
-      })
+      blocks
+        .filter(block => block._type === this.blockContentFeatures.types.block.name)
+        .forEach(block => {
+          block.markDefs = block.markDefs || []
+          block.markDefs = block.markDefs.concat(
+            _markDefs.filter(def => {
+              return flatten(block.children.map(child => child.marks || [])).includes(def._key)
+            })
+          )
+        })
     }
     // Ensure that there are no blocks within blocks, and trim whitespace
     return blocks
@@ -167,7 +173,7 @@ export default class HtmlDeserializer {
         node = ret
       }
       // Set list level on list item
-      if (ret && ret._type === 'block' && ret.listItem) {
+      if (ret && ret._type === this.blockContentFeatures.types.block.name && ret.listItem) {
         let parent = element.parentNode.parentNode
         while (tagName(parent) === 'li') {
           parent = parent.parentNode.parentNode
@@ -175,7 +181,11 @@ export default class HtmlDeserializer {
         }
       }
       // Set newlines on spans orginating from a block element within a blockquote
-      if (ret && ret._type === 'block' && ret.style === 'blockquote') {
+      if (
+        ret &&
+        ret._type === this.blockContentFeatures.types.block.name &&
+        ret.style === 'blockquote'
+      ) {
         ret.children.forEach((child, index) => {
           if (child._type === 'span' && child.text === '\r') {
             child.text = '\n\n'

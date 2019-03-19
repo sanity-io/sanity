@@ -75,7 +75,7 @@ function toSanityBlock(block, blockContentFeatures, options = {}) {
   if (block.type === 'contentBlock') {
     const sanityBlock = {
       ...block.data,
-      _type: 'block',
+      _type: blockContentFeatures.types.block.name,
       markDefs: []
     }
     let index = 0
@@ -121,5 +121,5 @@ export default function editorValueToBlocks(value, type, options = {}) {
   return nodes
     .map(node => toSanityBlock(node, blockContentFeatures, options))
     .filter(Boolean)
-    .map(normalizeBlock)
+    .map(block => normalizeBlock(block, blockContentFeatures.types.block))
 }
