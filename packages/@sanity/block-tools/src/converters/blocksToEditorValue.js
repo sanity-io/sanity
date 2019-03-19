@@ -91,13 +91,17 @@ function sanitySpanToRawSlateBlockNode(span, sanityBlock, blockContentFeatures, 
 
 // Block type object
 function sanityBlockToRawNode(sanityBlock, blockContentFeatures, options = {}) {
-  const {children, _type, markDefs, ...rest} = sanityBlock
-  if (!sanityBlock._key) {
-    sanityBlock._key = randomKey(12)
+  let rawBlock = {...sanityBlock}
+  if (!rawBlock._key) {
+    rawBlock._key = randomKey(12)
   }
+  if (options.normalize) {
+    rawBlock = normalizeBlock(rawBlock, blockContentFeatures.types.block)
+  }
+  const {children, _type, markDefs, ...rest} = rawBlock
   let restData = {}
   if (hasKeys(rest)) {
-    restData = {data: {_type, _key: sanityBlock._key, ...rest}}
+    restData = {data: {_type, _key: rawBlock._key, ...rest}}
     // Check if we should allow listItem if present
     const {listItem} = restData.data
     if (listItem && !blockContentFeatures.lists.find(list => list.value === listItem)) {
@@ -117,19 +121,16 @@ function sanityBlockToRawNode(sanityBlock, blockContentFeatures, options = {}) {
 
   const block = {
     object: 'block',
-    key: sanityBlock._key,
+    key: rawBlock._key,
     isVoid: false,
     type: 'contentBlock',
     ...restData,
     nodes:
       children.length > 0
         ? children.map(child =>
-            sanitySpanToRawSlateBlockNode(child, sanityBlock, blockContentFeatures, childIndex)
+            sanitySpanToRawSlateBlockNode(child, rawBlock, blockContentFeatures, childIndex)
           )
         : [EMPTY_TEXT_NODE]
-  }
-  if (options.normalize) {
-    return normalizeBlock(block, blockContentFeatures.types.block)
   }
   return block
 }

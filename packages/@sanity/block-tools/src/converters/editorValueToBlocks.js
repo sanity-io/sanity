@@ -121,5 +121,9 @@ export default function editorValueToBlocks(value, type, options = {}) {
   return nodes
     .map(node => toSanityBlock(node, blockContentFeatures, options))
     .filter(Boolean)
-    .map(block => normalizeBlock(block, blockContentFeatures.types.block))
+    .map(block =>
+      block._type === blockContentFeatures.types.block.name
+        ? normalizeBlock(block, blockContentFeatures.types.block)
+        : block
+    )
 }
