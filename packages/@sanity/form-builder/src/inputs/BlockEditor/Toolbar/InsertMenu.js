@@ -48,19 +48,23 @@ export default class InsertMenu extends React.Component<Props> {
     )
   }
 
+  getIcon = (type, fallbackIcon) => {
+    return type.icon || (type.type && type.type.icon) || fallbackIcon
+  }
+
   getItems() {
     const {editor} = this.props
     const {focusBlock} = editor.value
     const blockItems = this.props.blockTypes.map(type => ({
       title: type.title,
       value: type,
-      icon: BlockObjectIcon,
+      icon: this.getIcon(type, BlockObjectIcon),
       isInline: false,
       isDisabled: false
     }))
     const inlineItems = this.props.inlineTypes.map(type => ({
       title: type.title,
-      icon: InlineObjectIcon,
+      icon: this.getIcon(type, InlineObjectIcon),
       value: type,
       isInline: true,
       isDisabled: focusBlock ? editor.query('isVoid', focusBlock) : true
