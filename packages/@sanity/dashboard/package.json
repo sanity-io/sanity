@@ -24,7 +24,7 @@
     "lodash": "^4.17.4"
   },
   "devDependencies": {
-    "@sanity/base": "0.140.8",
+    "@sanity/base": "0.140.11",
     "@sanity/check": "0.140.3",
     "history": "^4.6.3",
     "jest": "^23.6.0",
