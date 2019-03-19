@@ -9,6 +9,7 @@ import localeString from './localeString'
 import localeSlug from './localeSlug'
 import proteinTest from './proteinTest'
 import customObject from './customObject'
+import customBlock from './customBlock'
 import protein from '../components/ProteinInput/schema'
 import localeBlockContent from './localeBlockContent'
 import {blockContent} from './blockContent'
@@ -27,6 +28,7 @@ export default createSchema({
     videoEmbed,
     proteinTest,
     protein,
+    customBlock,
     blockContent,
     customBlockEditor
   ])

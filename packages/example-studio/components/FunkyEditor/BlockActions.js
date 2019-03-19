@@ -13,7 +13,7 @@ export default class FunkyBlockActions extends React.Component {
   handleClick = evnt => {
     const {insert} = this.props
     insert({
-      _type: 'block',
+      _type: 'customBlock',
       children: [
         {
           _type: 'span',
