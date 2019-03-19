@@ -2,6 +2,7 @@ import urlForImage from './urlForImage'
 
 const validFits = ['clip', 'crop', 'fill', 'fillmax', 'max', 'scale', 'min']
 const validCrops = ['top', 'bottom', 'left', 'right', 'center', 'focalpoint', 'entropy']
+const validAutoModes = ['format']
 
 class ImageUrlBuilder {
   constructor(parent, options) {
@@ -141,6 +142,14 @@ class ImageUrlBuilder {
     }
 
     return this.withOptions({crop: value})
+  }
+
+  auto(value) {
+    if (validAutoModes.indexOf(value) === -1) {
+      throw new Error(`Invalid auto mode "${value}"`)
+    }
+
+    return this.withOptions({auto: value})
   }
 
   // Gets the url based on the submitted parameters

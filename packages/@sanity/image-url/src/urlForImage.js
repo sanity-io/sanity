@@ -16,7 +16,8 @@ const SPEC_NAME_TO_URL_NAME_MAPPINGS = [
   ['maxWidth', 'max-w'],
   ['quality', 'q'],
   ['fit', 'fit'],
-  ['crop', 'crop']
+  ['crop', 'crop'],
+  ['auto', 'auto']
 ]
 
 export default function urlForImage(options) {
