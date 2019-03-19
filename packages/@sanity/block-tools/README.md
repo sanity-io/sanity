@@ -66,7 +66,7 @@ const features = blockTools.getBlockContentFeatures(blockContentType)
 
 ## Methods
 
-### ``htmlToBlocks(html, blockContentType, options)`` (html deserializer)
+###``htmlToBlocks(html, blockContentType, options)``
 
 This will deserialize the input html (string) into blocks.
 
@@ -99,8 +99,6 @@ const blocks = blockTools.htmlToBlocks(
     parseHtml: html => new JSDOM(html).window.document
   }
 )
-
-
 ```
 
 ##### ``rules``
@@ -132,7 +130,7 @@ blockTools.htmlToBlocks(
           // Return this as an own block (via block helper function), instead of appending it to a default block's children
           return block({
             _type: 'code',
-            langauge: 'javascript',
+            language: 'javascript',
             text: text
           })
         }
@@ -142,6 +140,8 @@ blockTools.htmlToBlocks(
 )
 
 ```
+
+For a complete example to play around with, see this [CodeSandbox](https://codesandbox.io/s/wqzj35kq87).
 
 ### ``normalizeBlock(block)``
 Normalize a block object structure to make sure it has what it needs.
@@ -205,8 +205,8 @@ Will return an object with the features enabled for the input block content type
     {type: "Number", value: "number"}
   ],
   types: {
-    blockArray: {...},
     block: {...},
+    blockArray: {...},
     blockObjects: {...},
     inlineObjects: {...},
     span: {...}
