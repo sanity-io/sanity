@@ -11,6 +11,7 @@ import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {PatchEvent} from '../../PatchEvent'
 import InvalidValueInput from '../InvalidValueInput'
 import {resolveTypeName} from '../../utils/resolveTypeName'
+import * as is from '../../utils/is'
 import type {
   BlockArrayType,
   BlockContentFeatures,
@@ -41,7 +42,7 @@ import styles from './styles/SyncWrapper.css'
 import {merge} from 'rxjs/operators'
 
 function findBlockType(type: Type) {
-  return type.of && type.of.find(ofType => ofType.name === 'block')
+  return type.of && type.of.find(ofType => is.type('block', ofType))
 }
 
 function isDeprecatedBlockSchema(type: Type) {
@@ -57,11 +58,12 @@ function isDeprecatedBlockSchema(type: Type) {
   return false
 }
 
-function isDeprecatedBlockValue(value: ?(FormBuilderValue[])) {
+function isDeprecatedBlockValue(value: ?(FormBuilderValue[]), type: Type) {
   if (!value || !Array.isArray(value)) {
     return false
   }
-  const block = value.find(item => item._type === 'block')
+  const blockType = findBlockType(type)
+  const block = value.find(item => item._type === blockType.name)
   if (block && Object.keys(block).includes('spans')) {
     return true
   }
@@ -139,7 +141,7 @@ export default withPatchSubscriber(
       const {value, type} = props
 
       const deprecatedSchema = isDeprecatedBlockSchema(type)
-      const deprecatedBlockValue = isDeprecatedBlockValue(value)
+      const deprecatedBlockValue = isDeprecatedBlockValue(value, type)
       const invalidBlockValue = isInvalidBlockValue(value)
 
       this.state = {

@@ -309,7 +309,7 @@ export default function createOperationToPatches(
     }
     if (operation.path.size > 1) {
       // Only relevant for 'block' type blocks
-      if (block._type !== 'block') {
+      if (block._type !== blockContentFeatures.types.block.name) {
         return patches
       }
       const changedBlock = toBlock(afterValue, operation.path.get(0))
