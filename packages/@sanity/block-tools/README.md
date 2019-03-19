@@ -132,7 +132,7 @@ blockTools.htmlToBlocks(
           // Return this as an own block (via block helper function), instead of appending it to a default block's children
           return block({
             _type: 'code',
-            langauge: 'javascript',
+            language: 'javascript',
             text: text
           })
         }
