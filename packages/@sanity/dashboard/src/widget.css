@@ -1,14 +1,12 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .container {
-  composes: shadow-1dp from 'part:@sanity/base/theme/shadows-style';
   display: flex;
   flex-direction: column;
   justify-content: stretch;
   border-radius: var(--border-radius-base);
   background-color: var(--component-bg);
   position: relative;
-  overflow: hidden;
   height: 100%;
   min-height: 10em;
   max-height: 40em;
