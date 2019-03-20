@@ -3,8 +3,8 @@ export default {
     {
       type: 'group',
       widgets: [
-        {name: 'project-users', layout: {width: 'auto'}},
-        {name: 'project-users', layout: {width: 'auto'}}
+        {name: 'project-users', layout: {width: 'medium'}},
+        {name: 'project-users', layout: {width: 'medium'}}
       ],
       layout: {width: 'medium'}
     },
