@@ -32,7 +32,6 @@
   flex: 1;
   display: block;
   min-height: 20rem;
-  /* height: stretch; */
   overflow-y: auto;
 }
 

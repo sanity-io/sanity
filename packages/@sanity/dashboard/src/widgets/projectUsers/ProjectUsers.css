@@ -13,7 +13,6 @@
 }
 
 .list {
-  /* background: #fe0; */
   composes: content from 'part:@sanity/dashboard/widget-styles';
   border-top: 1px solid var(--hairline-color);
   min-height: 10em;
