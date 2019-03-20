@@ -1,6 +1,6 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-@custom-media --grid-small-min (min-width: 520px);
+@custom-media --grid-small-min (min-width: 547px);
 @custom-media --grid-medium-min (min-width: 820px);
 
 .root {
