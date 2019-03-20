@@ -1,7 +1,7 @@
 export default {
   widgets: [
     {
-      type: 'group',
+      type: '__experimental_group',
       widgets: [
         {name: 'project-users', layout: {width: 'medium'}},
         {name: 'project-users', layout: {width: 'medium'}}

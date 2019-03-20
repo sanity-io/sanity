@@ -48,7 +48,7 @@ function WidgetGroup(props) {
       data-height={layout.height || 'auto'}
     >
       {widgets.map((widgetConfig, index) => {
-        if (widgetConfig.type === 'group') {
+        if (widgetConfig.type === '__experimental_group') {
           return <WidgetGroup key={String(index)} config={widgetConfig} />
         }
 
@@ -67,7 +67,7 @@ function DashboardLayout(props) {
   return (
     <DashboardGrid>
       {widgetConfigs.map((widgetConfig, index) => {
-        if (widgetConfig.type === 'group') {
+        if (widgetConfig.type === '__experimental_group') {
           return <WidgetGroup key={String(index)} config={widgetConfig} />
         }
 
