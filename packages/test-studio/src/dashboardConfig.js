@@ -1,5 +1,13 @@
 export default {
   widgets: [
+    {
+      type: 'group',
+      widgets: [
+        {name: 'project-users', layout: {width: 'auto'}},
+        {name: 'project-users', layout: {width: 'auto'}}
+      ],
+      layout: {width: 'medium'}
+    },
     {name: 'sanity-tutorials', layout: {width: 'full'}},
     {name: 'document-list'},
     {name: 'document-list', options: {title: 'Last edited', order: '_updatedAt desc'}},

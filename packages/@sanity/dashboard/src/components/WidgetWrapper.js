@@ -7,22 +7,19 @@ class WidgetWrapper extends React.PureComponent {
     // eslint-disable-next-line react/forbid-prop-types
     children: PropTypes.any,
     width: PropTypes.oneOf(['auto', 'small', 'medium', 'large', 'full']),
-    height: PropTypes.oneOf(['auto', 'small', 'medium', 'large', 'full']),
-    // eslint-disable-next-line react/forbid-prop-types
-    style: PropTypes.object
+    height: PropTypes.oneOf(['auto', 'small', 'medium', 'large', 'full'])
   }
 
   static defaultProps = {
     children: null,
     width: 'auto',
-    height: 'auto',
-    style: {}
+    height: 'auto'
   }
 
   render() {
-    const {width, height, style, children} = this.props
+    const {width, height, children} = this.props
     return (
-      <div className={styles.root} data-width={width} data-height={height} style={style}>
+      <div className={styles.root} data-width={width} data-height={height}>
         {children}
       </div>
     )
