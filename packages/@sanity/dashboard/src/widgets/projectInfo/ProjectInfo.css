@@ -32,11 +32,11 @@
   }
 
   @nest & td:first-child, & th:first-child {
-    padding-left: calc(var(--medium-padding) + var(--small-padding));
+    padding-left: var(--medium-padding);
   }
 
   @nest & td:last-child, & th:last-child {
-    padding-right: calc(var(--medium-padding) + var(--small-padding));
+    padding-right: var(--medium-padding);
   }
 
   @nest & tr {
