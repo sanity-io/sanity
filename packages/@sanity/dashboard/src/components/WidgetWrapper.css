@@ -4,7 +4,7 @@
 @custom-media --grid-medium-min (min-width: 820px);
 
 .root {
-  /* intentionally empty */
+  overflow: hidden;
 }
 
 .root[data-width="medium"] {
