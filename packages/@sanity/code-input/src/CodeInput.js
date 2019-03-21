@@ -26,6 +26,7 @@ import 'brace/mode/json'
 import 'brace/mode/jsx'
 import 'brace/mode/markdown'
 import 'brace/mode/php'
+import 'brace/mode/python'
 import 'brace/mode/sh'
 import 'brace/mode/text'
 
