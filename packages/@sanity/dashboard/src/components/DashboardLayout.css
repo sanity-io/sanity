@@ -1,0 +1,8 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  max-width: 100rem;
+  margin: 0 auto;
+  padding: var(--large-padding) var(--medium-padding);
+  box-sizing: border-box;
+}

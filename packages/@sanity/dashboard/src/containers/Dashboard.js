@@ -1,23 +1,20 @@
 import React from 'react'
-import {get} from 'lodash'
 import dashboardConfig from 'part:@sanity/dashboard/config?'
-import DashboardGrid from '../components/DashboardGrid'
-import WidgetContainer from './WidgetContainer'
+import DashboardLayout from '../components/DashboardLayout'
+import WidgetGroup from '../components/WidgetGroup'
 
-function DashboardLayout(props) {
+function Dashboard(props) {
   if (!dashboardConfig) {
     return null
   }
 
-  const widgetConfigs = get(dashboardConfig, 'widgets', [])
+  const widgetConfigs = dashboardConfig.widgets || []
 
   return (
-    <DashboardGrid>
-      {widgetConfigs.map((widgetConfig, index) => (
-        <WidgetContainer key={String(index)} config={widgetConfig} />
-      ))}
-    </DashboardGrid>
+    <DashboardLayout>
+      <WidgetGroup config={{widgets: widgetConfigs}} />
+    </DashboardLayout>
   )
 }
 
-export default DashboardLayout
+export default Dashboard

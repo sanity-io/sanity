@@ -24,7 +24,7 @@
   padding: var(--small-padding) var(--medium-padding) !important;
 }
 
-.listContainer {
+.content {
   display: block;
   margin: 0;
   padding: 0;
@@ -37,7 +37,7 @@
   }
 }
 
-.bottomButtonContainer {
+.footer {
   display: flex;
   text-align: center;
   font-weight: 600;
@@ -48,4 +48,14 @@
   @nest & > * {
     width: 100%;
   }
+}
+
+/* TODO: remove after changing document list plugin */
+.listContainer {
+  composes: content;
+}
+
+/* TODO: remove after changing document list plugin */
+.bottomButtonContainer {
+  composes: footer;
 }

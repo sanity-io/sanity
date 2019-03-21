@@ -1,0 +1,9 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  composes: container from 'part:@sanity/dashboard/widget-styles';
+  justify-content: center;
+  align-items: center;
+  background: #b4bcc7;
+  padding: var(--medium-padding);
+}
