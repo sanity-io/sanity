@@ -1,6 +1,8 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .parentWrapper {
+  height: 100%;
+
   @nest & > * + * {
     margin-top: var(--medium-padding);
   }
