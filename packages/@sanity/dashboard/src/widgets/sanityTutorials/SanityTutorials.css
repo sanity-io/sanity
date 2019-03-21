@@ -20,6 +20,7 @@
   grid-gap: var(--small-padding);
   overflow-x: auto;
   grid-template-columns: repeat(5, minmax(200px, 300px));
+  height: 15rem;
 
   @nest & li {
     display: flex;

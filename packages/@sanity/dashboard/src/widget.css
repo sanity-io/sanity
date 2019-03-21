@@ -9,7 +9,7 @@
   position: relative;
   height: 100%;
   min-height: 10em;
-  max-height: 40em;
+  max-height: 40rem;
 }
 
 .containerWithPadding {
@@ -44,4 +44,13 @@
   @nest & > * {
     width: 100%;
   }
+}
+
+/* remove after changing document list plugin */
+.listContainer {
+  composes: content;
+}
+
+.bottomButtonContainer {
+  composes: footer;
 }

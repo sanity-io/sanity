@@ -1,19 +1,11 @@
 export default {
   widgets: [
-    {
-      type: '__experimental_group',
-      widgets: [
-        {name: 'project-users', layout: {width: 'medium'}},
-        {name: 'project-users', layout: {width: 'medium'}}
-      ],
-      layout: {width: 'medium'}
-    },
-    {name: 'sanity-tutorials', layout: {width: 'full'}},
-    {name: 'document-list'},
-    {name: 'document-list', options: {title: 'Last edited', order: '_updatedAt desc'}},
-    {name: 'document-list', options: {title: 'Last created books', types: ['book']}},
+    {name: 'sanity-tutorials', layout: {width: 'full', height: 'auto'}},
     {name: 'project-users'},
-    {name: 'widget-which-does-not-exist'},
+    {name: 'project-users'},
+    {name: 'document-list'},
+    {name: 'document-list', layout: {height: 'auto'}, options: {title: 'Last edited', order: '_updatedAt desc'}},
+    {name: 'document-list', layout: {height: 'auto'}, options: {title: 'Last created books', types: ['book']}},
     {
       name: 'project-info',
       layout: {
@@ -30,6 +22,8 @@ export default {
         ]
       }
     },
-    {name: 'cats'}
+    {name: 'project-users'},
+    {name: 'project-users'},
+    {name: 'project-users'}
   ]
 }
