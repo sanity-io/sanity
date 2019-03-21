@@ -70,6 +70,11 @@
     {
       "name": "part:@sanity/desk-tool/structure",
       "path": "src/deskStructure.js"
+    },
+    {
+      "name": "part:@sanity/dashboard/widget/test-dummy",
+      "implements": "part:@sanity/dashboard/widget",
+      "path": "src/widgets/DummyWidget"
     }
   ],
   "env": {

@@ -38,7 +38,7 @@ class SanityTutorials extends React.Component {
   render() {
     const {feedItems} = this.state
     return (
-      <>
+      <div className={styles.root}>
         <header className={styles.header}>
           <h1 className={styles.title}>Guides & tutorials</h1>
         </header>
@@ -65,7 +65,7 @@ class SanityTutorials extends React.Component {
             )
           })}
         </ul>
-      </>
+      </div>
     )
   }
 }

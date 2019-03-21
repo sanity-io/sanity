@@ -5,6 +5,9 @@
   flex-direction: column;
   justify-content: stretch;
   height: 100%;
+  border-radius: var(--border-radius-base);
+  background-color: var(--component-bg);
+  box-sizing: border-box;
 }
 
 .containerWithPadding {
@@ -13,7 +16,7 @@
 }
 
 .header {
-  padding: var(--small-padding);
+  padding: var(--small-padding) 0;
 }
 
 .title {
@@ -21,11 +24,12 @@
   padding: var(--small-padding) var(--medium-padding) !important;
 }
 
-.listContainer {
+.content {
+  flex: 1;
   display: block;
   margin: 0;
   padding: 0;
-  min-height: 20rem;
+  min-height: 21.5rem;
 
   @media (--screen-medium) {
     height: stretch;
@@ -34,7 +38,7 @@
   }
 }
 
-.bottomButtonContainer {
+.footer {
   display: flex;
   text-align: center;
   font-weight: 600;
@@ -45,4 +49,14 @@
   @nest & > * {
     width: 100%;
   }
+}
+
+/* TODO: remove after changing document list plugin */
+.listContainer {
+  composes: content;
+}
+
+/* TODO: remove after changing document list plugin */
+.bottomButtonContainer {
+  composes: footer;
 }

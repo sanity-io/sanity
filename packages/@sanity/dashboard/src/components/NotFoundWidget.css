@@ -1,0 +1,22 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  composes: container from 'part:@sanity/dashboard/widget-styles';
+  background: #fcc;
+
+  @nest & > div {
+    padding: var(--medium-padding);
+  }
+}
+
+.title {
+  composes: heading4 from "part:@sanity/base/theme/typography/headings-style";
+  margin: 0 0 var(--small-padding);
+  padding: 0;
+}
+
+.content {
+  @nest & p {
+    margin: var(--small-padding) 0 0;
+  }
+}

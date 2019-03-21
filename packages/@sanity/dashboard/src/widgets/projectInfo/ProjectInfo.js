@@ -4,6 +4,7 @@ import {isPlainObject} from 'lodash'
 import PropTypes from 'prop-types'
 import sanityClient from 'part:@sanity/base/client'
 import AnchorButton from 'part:@sanity/components/buttons/anchor'
+import WidgetContainer from 'part:@sanity/dashboard/widget-container'
 import styles from './ProjectInfo.css'
 
 const {projectId, dataset} = sanityClient.config()
@@ -26,9 +27,13 @@ function getManageUrl() {
 
 class ProjectInfo extends React.Component {
   static propTypes = {
+    // eslint-disable-next-line camelcase
+    __experimental_before: PropTypes.array,
     data: PropTypes.array
   }
   static defaultProps = {
+    // eslint-disable-next-line camelcase
+    __experimental_before: [],
     data: []
   }
 
@@ -129,46 +134,52 @@ class ProjectInfo extends React.Component {
 
   render() {
     return (
-      <div className={styles.container}>
-        <header className={styles.header}>
-          <h2 className={styles.title}>Project info</h2>
-        </header>
-        <table className={styles.table}>
-          {this.assembleTableRows().map(item => {
-            if (!item || !item.rows) {
-              return null
-            }
+      <div className={styles.parentWrapper}>
+        {this.props.__experimental_before &&
+          this.props.__experimental_before.map((widgetConfig, idx) => (
+            <WidgetContainer key={String(idx)} config={widgetConfig} />
+          ))}
+        <div className={styles.container}>
+          <header className={styles.header}>
+            <h2 className={styles.title}>Project info</h2>
+          </header>
 
-            return (
-              <tbody key={item.title}>
-                <tr>
-                  <th colSpan="2" className={styles.sectionHeader}>
-                    {item.title}
-                  </th>
-                </tr>
-                {item.rows.map(row => {
-                  return (
-                    <tr key={row.title}>
-                      <th>{row.title}</th>
-                      {isPlainObject(row.value) && (
-                        <td className={styles.apiError}>{row.value.error}</td>
-                      )}
-                      {!isPlainObject(row.value) && (
-                        <td>
-                          {isUrl(row.value) ? <a href={row.value}>{row.value}</a> : row.value}
-                        </td>
-                      )}
-                    </tr>
-                  )
-                })}
-              </tbody>
-            )
-          })}
-        </table>
-        <div className={styles.buttonContainer}>
-          <AnchorButton href={getManageUrl()} bleed color="primary" kind="simple">
-            Manage project
-          </AnchorButton>
+          <table className={styles.table}>
+            {this.assembleTableRows().map(item => {
+              if (!item || !item.rows) {
+                return null
+              }
+
+              return (
+                <tbody key={item.title}>
+                  <tr className={styles.sectionHeaderRow}>
+                    <th colSpan="2">{item.title}</th>
+                  </tr>
+                  {item.rows.map(row => {
+                    return (
+                      <tr key={row.title}>
+                        <th className={styles.rowTitle}>{row.title}</th>
+                        {isPlainObject(row.value) && (
+                          <td className={styles.apiError}>{row.value.error}</td>
+                        )}
+                        {!isPlainObject(row.value) && (
+                          <td>
+                            {isUrl(row.value) ? <a href={row.value}>{row.value}</a> : row.value}
+                          </td>
+                        )}
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              )
+            })}
+          </table>
+
+          <div className={styles.footer}>
+            <AnchorButton href={getManageUrl()} bleed color="primary" kind="simple">
+              Manage project
+            </AnchorButton>
+          </div>
         </div>
       </div>
     )

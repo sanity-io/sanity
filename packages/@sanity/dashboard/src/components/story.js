@@ -1,17 +1,23 @@
-/* eslint-disable react/no-multi-comp */
+import PropTypes from 'prop-types'
 import React from 'react'
+import widgetStyles from 'part:@sanity/dashboard/widget-styles'
 import {storiesOf} from 'part:@sanity/storybook'
 import {withKnobs, number} from 'part:@sanity/storybook/addons/knobs'
 import {range} from 'lodash'
 import Chance from 'chance'
-import WidgetWrapper from './WidgetWrapper'
-import DashboardGrid from './DashboardGrid'
+import DashboardLayout from './DashboardLayout'
+import widgetGroupStyles from './WidgetGroup.css'
 
 const chance = new Chance()
 const para = chance.paragraph({sentences: 2})
 
 class StoryWidget extends React.Component {
+  static propTypes = {
+    title: PropTypes.string.isRequired
+  }
+
   state = {
+    height: 'auto',
     width: 'auto'
   }
 
@@ -25,31 +31,36 @@ class StoryWidget extends React.Component {
 
   render() {
     return (
-      <WidgetWrapper {...this.state}>
-        <h1>{this.props.title}</h1>
-        <p>{para}</p>
-        <div style={{dispay: 'flex'}}>
-          <label>Width</label>
-          <select onChange={this.handleWidthChange}>
-            <option>auto</option>
-            <option>small</option>
-            <option>medium</option>
-            <option>large</option>
-            <option>full</option>
-          </select>
+      <div data-width={this.state.width || 'auto'} data-height={this.state.height || 'auto'}>
+        <div className={widgetStyles.container}>
+          <div className={widgetStyles.header}>
+            <h2 className={widgetStyles.title}>{this.props.title}</h2>
+          </div>
+          <div style={{padding: '0 1rem 1rem'}}>
+            <p>{para}</p>
+            <div style={{dispay: 'flex'}}>
+              <label>Width</label>
+              <select onChange={this.handleWidthChange}>
+                <option>auto</option>
+                <option>small</option>
+                <option>medium</option>
+                <option>large</option>
+                <option>full</option>
+              </select>
+            </div>
+            <div style={{dispay: 'flex'}}>
+              <label>Height</label>
+              <select onChange={this.handleHeightChange}>
+                <option>auto</option>
+                <option>small</option>
+                <option>medium</option>
+                <option>large</option>
+                <option>full</option>
+              </select>
+            </div>
+          </div>
         </div>
-
-        <div style={{dispay: 'flex'}}>
-          <label>Height</label>
-          <select onChange={this.handleHeightChange}>
-            <option>auto</option>
-            <option>small</option>
-            <option>medium</option>
-            <option>large</option>
-            <option>full</option>
-          </select>
-        </div>
-      </WidgetWrapper>
+      </div>
     )
   }
 }
@@ -59,10 +70,12 @@ storiesOf('Dashboard')
   .add('Grid', () => {
     const widgets = range(number('widgets', 7))
     return (
-      <DashboardGrid>
-        {widgets.map(widget => (
-          <StoryWidget key={widget} title={widget + 1} />
-        ))}
-      </DashboardGrid>
+      <DashboardLayout>
+        <div className={widgetGroupStyles.root}>
+          {widgets.map(widget => (
+            <StoryWidget key={widget} title={`Widget ${widget + 1}`} />
+          ))}
+        </div>
+      </DashboardLayout>
     )
   })

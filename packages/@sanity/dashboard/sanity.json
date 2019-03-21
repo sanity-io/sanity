@@ -46,6 +46,14 @@
     {
       "implements": "part:@sanity/dashboard/widget-styles",
       "path": "widget.css"
+    },
+    {
+      "name": "part:@sanity/dashboard/widget-container",
+      "description": "A container component that resolves and renders widget components"
+    },
+    {
+      "implements": "part:@sanity/dashboard/widget-container",
+      "path": "containers/WidgetContainer"
     }
   ]
 }

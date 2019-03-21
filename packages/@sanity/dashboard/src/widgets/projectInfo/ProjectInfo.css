@@ -1,5 +1,11 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+.parentWrapper {
+  @nest & > * + * {
+    margin-top: var(--medium-padding);
+  }
+}
+
 .container {
   composes: container from 'part:@sanity/dashboard/widget-styles';
 }
@@ -22,25 +28,29 @@
   width: 100%;
   word-break: break-word;
 
-  @nest & th {
-    font-weight: 500;
+  @nest & .sectionHeaderRow + tr {
+    @nest & td, & th {
+      padding-top: var(--small-padding);
+    }
+  }
+
+  @nest & tr:last-child {
+    @nest & td, & th {
+      padding-bottom: var(--small-padding);
+    }
   }
 
   @nest & td, & th {
     min-width: 5em;
-    padding: var(--medium-padding) var(--small-padding);
+    padding: calc(var(--small-padding) / 2) var(--small-padding);
   }
 
   @nest & td:first-child, & th:first-child {
-    padding-left: calc(var(--medium-padding) + var(--small-padding));
+    padding-left: var(--medium-padding);
   }
 
   @nest & td:last-child, & th:last-child {
-    padding-right: calc(var(--medium-padding) + var(--small-padding));
-  }
-
-  @nest & tr {
-    border-bottom: 1px solid var(--hairline-color);
+    padding-right: var(--medium-padding);
   }
 
   @nest & td {
@@ -48,7 +58,7 @@
     font-size: var(--font-size-small);
   }
 
-  @nest & td a {
+  @nest & a {
     color: var(--default-button-primary-color);
     text-decoration: inherit;
 
@@ -60,23 +70,32 @@
   }
 }
 
-th.sectionHeader {
-  text-align: left;
-  text-transform: uppercase;
-  padding-left: var(--medium-padding);
-  padding-bottom: var(--small-padding);
-  padding-top: var(--medium-padding);
-  font-size: var(--font-size-xsmall);
-  font-weight: 400;
-  letter-spacing: 0.5px;
-  color: var(--text-color-secondary);
-  width: 100%;
+.rowTitle {
+  font-weight: 500;
+}
 
-  @nest .table > tbody:first-child & {
-    padding-top: 0;
+.sectionHeaderRow {
+  @nest & > th {
+    text-align: left;
+    text-transform: uppercase;
+    padding: var(--small-padding) var(--medium-padding);
+    font-size: var(--font-size-xsmall);
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    color: var(--text-color-secondary);
+    width: 100%;
+
+    /* TODO: figure out why this won't work, then remove hard-coded color: */
+    /* border-bottom: 1px solid var(--hairline-color); */
+    border-bottom: 1px solid #e7e7e7;
+
+    @nest .table > tbody:first-child & {
+      padding-top: 0;
+    }
   }
 }
 
-.buttonContainer {
-  composes: bottomButtonContainer from 'part:@sanity/dashboard/widget-styles';
+.footer {
+  composes: footer from 'part:@sanity/dashboard/widget-styles';
+  border-top: 1px solid var(--hairline-color);
 }

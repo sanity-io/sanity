@@ -107,7 +107,7 @@ class ProjectUsers extends React.Component {
           </List>
         )}
 
-        <div className={styles.buttonContainer}>
+        <div className={styles.footer}>
           <AnchorButton
             disabled={isLoading}
             href={isLoading ? undefined : getInviteUrl(project.id)}

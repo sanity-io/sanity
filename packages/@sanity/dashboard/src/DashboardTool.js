@@ -1,5 +1,5 @@
 import React from 'react'
-import DashboardLayout from './components/DashboardLayout'
+import Dashboard from './containers/Dashboard'
 
 const Icon = () => (
   <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -16,5 +16,5 @@ export default {
   title: 'Dashboard',
   name: 'dashboard',
   icon: Icon,
-  component: DashboardLayout
+  component: Dashboard
 }

@@ -1,19 +1,22 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import styles from './DashboardLayout.css'
+import styles from './DummyWidget.css'
 
-function DashboardLayout(props) {
+function DummyWidget(props) {
   return <div className={styles.root}>{props.children}</div>
 }
 
-DashboardLayout.propTypes = {
+DummyWidget.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   children: PropTypes.any
 }
 
-DashboardLayout.defaultProps = {
+DummyWidget.defaultProps = {
   children: 'Dummy'
 }
 
-export default DashboardLayout
+export default {
+  name: 'dummy',
+  component: DummyWidget
+}
