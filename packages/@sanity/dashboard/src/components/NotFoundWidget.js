@@ -17,7 +17,8 @@ function NotFoundWidget(props) {
 NotFoundWidget.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   children: PropTypes.any,
-  title: PropTypes.string
+  // eslint-disable-next-line react/forbid-prop-types
+  title: PropTypes.any
 }
 
 NotFoundWidget.defaultProps = {

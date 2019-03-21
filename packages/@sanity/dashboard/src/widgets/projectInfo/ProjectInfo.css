@@ -1,5 +1,11 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+.parentWrapper {
+  @nest & > * + * {
+    margin-top: var(--medium-padding);
+  }
+}
+
 .container {
   composes: container from 'part:@sanity/dashboard/widget-styles';
 }
