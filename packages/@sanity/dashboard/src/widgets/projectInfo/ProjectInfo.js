@@ -152,15 +152,13 @@ class ProjectInfo extends React.Component {
 
               return (
                 <tbody key={item.title}>
-                  <tr>
-                    <th colSpan="2" className={styles.sectionHeader}>
-                      {item.title}
-                    </th>
+                  <tr className={styles.sectionHeaderRow}>
+                    <th colSpan="2">{item.title}</th>
                   </tr>
                   {item.rows.map(row => {
                     return (
                       <tr key={row.title}>
-                        <th>{row.title}</th>
+                        <th className={styles.rowTitle}>{row.title}</th>
                         {isPlainObject(row.value) && (
                           <td className={styles.apiError}>{row.value.error}</td>
                         )}
