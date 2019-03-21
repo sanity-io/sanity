@@ -5,6 +5,9 @@
   flex-direction: column;
   justify-content: stretch;
   height: 100%;
+  border-radius: var(--border-radius-base);
+  background-color: var(--component-bg);
+  box-sizing: border-box;
 }
 
 .containerWithPadding {
@@ -13,7 +16,7 @@
 }
 
 .header {
-  padding: var(--small-padding);
+  padding: var(--small-padding) 0;
 }
 
 .title {

@@ -3,20 +3,17 @@ import React from 'react'
 
 import styles from './DashboardGrid.css'
 
-class DashboardGrid extends React.PureComponent {
-  static propTypes = {
-    // eslint-disable-next-line react/forbid-prop-types
-    children: PropTypes.any
-  }
+function DashboardGrid(props) {
+  return <div className={styles.root}>{props.children}</div>
+}
 
-  static defaultProps = {
-    children: null
-  }
+DashboardGrid.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
+  children: PropTypes.any
+}
 
-  render() {
-    const {children} = this.props
-    return <div className={styles.root}>{children}</div>
-  }
+DashboardGrid.defaultProps = {
+  children: null
 }
 
 export default DashboardGrid
