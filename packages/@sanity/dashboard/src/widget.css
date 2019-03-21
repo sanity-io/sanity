@@ -25,10 +25,11 @@
 }
 
 .content {
+  flex: 1;
   display: block;
   margin: 0;
   padding: 0;
-  min-height: 20rem;
+  min-height: 21.5rem;
 
   @media (--screen-medium) {
     height: stretch;

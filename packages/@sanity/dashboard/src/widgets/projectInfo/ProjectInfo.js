@@ -133,6 +133,7 @@ class ProjectInfo extends React.Component {
         <header className={styles.header}>
           <h2 className={styles.title}>Project info</h2>
         </header>
+
         <table className={styles.table}>
           {this.assembleTableRows().map(item => {
             if (!item || !item.rows) {
@@ -165,7 +166,8 @@ class ProjectInfo extends React.Component {
             )
           })}
         </table>
-        <div className={styles.buttonContainer}>
+
+        <div className={styles.footer}>
           <AnchorButton href={getManageUrl()} bleed color="primary" kind="simple">
             Manage project
           </AnchorButton>
