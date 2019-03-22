@@ -17,22 +17,11 @@ class SanityTutorials extends React.Component {
   }
 
   componentDidMount() {
-    this.unsubscribe()
-    this.subscription = getFeed().subscribe(response => {
+    getFeed().then(response => {
       this.setState({
         feedItems: response.items
       })
     })
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe()
-  }
-
-  unsubscribe() {
-    if (this.subscription) {
-      this.subscription.unsubscribe()
-    }
   }
 
   render() {
