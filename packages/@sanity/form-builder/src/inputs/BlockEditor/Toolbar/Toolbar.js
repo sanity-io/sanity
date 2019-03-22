@@ -117,6 +117,12 @@ class Toolbar extends React.PureComponent<Props, State> {
     const errors = validation.filter(marker => marker.level === 'error')
     const warnings = validation.filter(marker => marker.level === 'warning')
 
+    const hasMore =
+      blockContentFeatures.decorators.length > 0 ||
+      blockContentFeatures.annotations.length > 0 ||
+      blockContentFeatures.types.blockObjects.length > 0 ||
+      blockContentFeatures.types.inlineObjects.length > 0
+
     return (
       <ContainerQuery query={query}>
         {params => (
@@ -136,12 +142,14 @@ class Toolbar extends React.PureComponent<Props, State> {
                   editorValue={editorValue}
                 />
               </div>
-              <Button className={styles.expandButton} onClick={this.handleExpand} kind="simple">
-                More&nbsp;
-                <span className={styles.arrow}>
-                  <ArrowIcon color="inherit" />
-                </span>
-              </Button>
+              {hasMore && (
+                <Button className={styles.expandButton} onClick={this.handleExpand} kind="simple">
+                  More&nbsp;
+                  <span className={styles.arrow}>
+                    <ArrowIcon color="inherit" />
+                  </span>
+                </Button>
+              )}
               <div className={`${styles.compactable} ${expanded ? styles.expanded : ''}`}>
                 {blockContentFeatures.decorators.length > 0 && (
                   <div className={styles.decoratorButtonsContainer}>
@@ -187,43 +195,42 @@ class Toolbar extends React.PureComponent<Props, State> {
               </div>
             </div>
             <div className={styles.secondary}>
-              {fullscreen &&
-                (errors.length > 0 || warnings.length > 0) && (
-                  <Tooltip
-                    arrow
-                    duration={100}
-                    html={
-                      <ValidationList
-                        markers={validation}
-                        showLink
-                        isOpen={showValidationTooltip}
-                        documentType={type}
-                        onClose={this.handleCloseValidationResults}
-                        onFocus={this.handleFocus}
-                      />
-                    }
-                    interactive
-                    onRequestClose={this.handleCloseValidationResults}
-                    open={showValidationTooltip}
-                    position="bottom"
-                    style={{padding: 0}}
-                    theme="light noPadding"
-                    trigger="click"
+              {fullscreen && (errors.length > 0 || warnings.length > 0) && (
+                <Tooltip
+                  arrow
+                  duration={100}
+                  html={
+                    <ValidationList
+                      markers={validation}
+                      showLink
+                      isOpen={showValidationTooltip}
+                      documentType={type}
+                      onClose={this.handleCloseValidationResults}
+                      onFocus={this.handleFocus}
+                    />
+                  }
+                  interactive
+                  onRequestClose={this.handleCloseValidationResults}
+                  open={showValidationTooltip}
+                  position="bottom"
+                  style={{padding: 0}}
+                  theme="light noPadding"
+                  trigger="click"
+                >
+                  <Button
+                    color="danger"
+                    icon={WarningIcon}
+                    kind="simple"
+                    onClick={this.handleToggleValidationResults}
+                    padding="small"
                   >
-                    <Button
-                      color="danger"
-                      icon={WarningIcon}
-                      kind="simple"
-                      onClick={this.handleToggleValidationResults}
-                      padding="small"
-                    >
-                      {errors.length}
-                      <span style={{paddingLeft: '0.5em'}}>
-                        <ChevronDown />
-                      </span>
-                    </Button>
-                  </Tooltip>
-                )}
+                    {errors.length}
+                    <span style={{paddingLeft: '0.5em'}}>
+                      <ChevronDown />
+                    </span>
+                  </Button>
+                </Tooltip>
+              )}
               <div className={styles.fullscreenButtonContainer} onClick={this.handleContract}>
                 <Button
                   kind="simple"
