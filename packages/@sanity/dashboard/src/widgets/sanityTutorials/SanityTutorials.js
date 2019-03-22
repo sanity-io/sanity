@@ -8,7 +8,7 @@ import dataAdapter from './dataAdapter'
 const {urlBuilder, getFeed} = dataAdapter
 
 function createUrl(slug) {
-  return `https://www.sanity.io/guide/${slug.current}`
+  return `https://www.sanity.io/docs/guides/${slug.current}`
 }
 
 class SanityTutorials extends React.Component {
