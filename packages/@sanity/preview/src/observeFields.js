@@ -34,7 +34,7 @@ const getGlobalEvents = () => {
       client.listen(
         '*[!(_id in path("_.**"))]',
         {},
-        {events: ['welcome', 'mutation'], includeResult: false}
+        {events: ['welcome', 'mutation'], includeResult: false, visibility: 'query'}
       )
     ).pipe(share())
 
@@ -82,7 +82,7 @@ const fetchDocumentPathsSlow = debounceCollect(fetchAllDocumentPaths, 1000)
 function listenFields(id: Id, fields: FieldName[]) {
   return listen(id).pipe(
     switchMap(event => {
-      if (event.type === 'welcome') {
+      if (event.type === 'welcome' || event.visibility === 'query') {
         return fetchDocumentPathsFast(id, fields).pipe(
           mergeMap(result => {
             return concat(
