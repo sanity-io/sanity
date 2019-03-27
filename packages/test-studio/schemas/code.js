@@ -21,7 +21,10 @@ export default {
           {title: 'LaTeX', value: 'latex'},
           {title: 'JavaScript', value: 'javascript'},
           {title: 'CSS', value: 'css'},
-          {title: 'text', value: 'text'}
+          {title: 'text', value: 'text'},
+          {title: 'Python', value: 'python'},
+          {title: 'SASS', value: 'sass'},
+          {title: 'SCSS', value: 'scss'}
         ]
       }
     },
