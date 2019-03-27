@@ -39,7 +39,7 @@
     "@babel/preset-env": "^7.1.0",
     "@babel/preset-react": "^7.0.0",
     "@babel/register": "^7.0.0",
-    "@sanity/css-loader": "^0.28.7",
+    "@sanity/css-loader": "^0.28.12",
     "@sanity/resolver": "0.140.3",
     "@sanity/webpack-integration": "0.140.3",
     "@sanity/webpack-loader": "0.140.3",
