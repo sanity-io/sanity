@@ -30,6 +30,7 @@ export default class DefaultDialog extends React.PureComponent {
     actions: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string.isRequired,
+        icon: PropTypes.func,
         tooltip: PropTypes.string,
         kind: PropTypes.string,
         autoFocus: PropTypes.bool
@@ -114,6 +115,7 @@ export default class DefaultDialog extends React.PureComponent {
         kind={action.kind}
         inverted={action.inverted}
         autoFocus={action.autoFocus}
+        icon={action.icon}
         className={action.secondary ? styles.actionSecondary : ''}
       >
         {action.title}

@@ -3,7 +3,7 @@ import React from 'react'
 import client from 'part:@sanity/base/client'
 import Button from 'part:@sanity/components/buttons/default'
 import styles from './styles/SelectAsset.css'
-import {get} from 'lodash'
+import AssetWidget from './Asset'
 
 const PER_PAGE = 200
 
@@ -20,7 +20,13 @@ type Props = {
 }
 
 function createQuery(start = 0, end = PER_PAGE) {
-  return `*[_type == "sanity.imageAsset"] | order(_updatedAt desc) [${start}...${end}] {_id,url,metadata {dimensions}}`
+  return `
+    *[_type == "sanity.imageAsset"] | order(_updatedAt desc) [${start}...${end}] {
+      _id,
+      url,
+      metadata {dimensions}
+    }
+  `
 }
 
 export default class SelectAsset extends React.Component<Props, State> {
@@ -44,6 +50,10 @@ export default class SelectAsset extends React.Component<Props, State> {
         isLoading: false
       }))
     })
+  }
+
+  handleDeleteFinished = () => {
+    this.fetchPage(this.pageNo)
   }
 
   componentDidMount() {
@@ -77,32 +87,15 @@ export default class SelectAsset extends React.Component<Props, State> {
     return (
       <div className={styles.root}>
         <div className={styles.imageList}>
-          {assets.map(asset => {
-            const size = 75
-            const width = get(asset, 'metadata.dimensions.width') || 100
-            const height = get(asset, 'metadata.dimensions.height') || 100
-            return (
-              <a
-                key={asset._id}
-                className={styles.item}
-                data-id={asset._id}
-                onClick={this.handleItemClick}
-                onKeyPress={this.handleItemKeyPress}
-                tabIndex={0}
-                style={{
-                  width: `${(width * size) / height}px`,
-                  flexGrow: `${(width * size) / height}`
-                }}
-              >
-                <i
-                  className={styles.padder}
-                  style={{paddingBottom: `${(height / width) * 100}%`}}
-                />
-                {/* We can not determine an alt text on image */}
-                <img src={`${asset.url}?h=100`} className={styles.image} />
-              </a>
-            )
-          })}
+          {assets.map(asset => (
+            <AssetWidget
+              key={asset._id}
+              asset={asset}
+              onClick={this.handleItemClick}
+              onKeyPress={this.handleItemKeyPress}
+              onDeleteFinished={this.handleDeleteFinished}
+            />
+          ))}
         </div>
         <div className={styles.loadMore}>
           {!isLastPage && (

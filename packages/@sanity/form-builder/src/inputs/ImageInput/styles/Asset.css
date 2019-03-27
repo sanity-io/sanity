@@ -1,0 +1,97 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.image {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  vertical-align: bottom;
+  box-sizing: border-box;
+  background-color: var(--component-bg);
+}
+
+.item {
+  composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
+  background-color: var(--gray-lighter);
+  display: block;
+  margin: calc(var(--small-padding) / 2);
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  flex-wrap: nowrap;
+}
+
+.padder {
+  display: block;
+}
+
+.menuContainer {
+  box-sizing: border-box;
+  position: absolute;
+  z-index: 10;
+  top: 0.2em;
+  right: 0.2em;
+  opacity: 1;
+  font-size: var(--font-size-small);
+
+  @nest & [class^=DefaultButton_content] {
+    margin: 0.2em !important;
+  }
+
+  @nest &:hover {
+    opacity: 1;
+  }
+}
+
+.spinnerContainer {
+  position: absolute;
+  z-index: 9;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: color(var(--component-bg) a(50%));
+  color: var(--text-color);
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+}
+
+.menuItemDanger {
+  composes: menuItem;
+  color: var(--state-danger-color);
+}
+
+.intentLink {
+  color: inherit;
+  text-decoration: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--small-padding);
+}
+
+.dialogContent {
+  display: grid;
+  grid-gap: var(--medium-padding);
+
+  @media (--screen-medium) {
+    grid-template-columns: max-content 1fr;
+  }
+}
+
+.dialogSubtitle {
+  margin: 0;
+  padding: 0;
+}
+
+.referringDocumentsDescription {
+  composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
+  margin-bottom: var(--medium-padding);
+}
+
+.openDocLink {
+  font-size: var(--font-size-small);
+  white-space: nowrap;
+}

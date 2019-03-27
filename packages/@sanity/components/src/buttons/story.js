@@ -144,6 +144,7 @@ storiesOf('Buttons', module)
               onClick={action('clicked')}
               disabled={boolean('disabled', false, 'props')}
               inverted={boolean('inverted', false, 'props')}
+              showArrow={boolean('showArrow', true, 'props')}
               onFocus={action('onFocus')}
               onBlur={action('onBlur')}
               loading={boolean('loading', false, 'props')}

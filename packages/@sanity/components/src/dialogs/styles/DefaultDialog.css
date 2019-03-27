@@ -182,12 +182,12 @@
   margin: 0;
   font-size: 1.25em;
   font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   @media (--screen-medium) {
     margin-right: 2rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 }
 
@@ -203,6 +203,7 @@
   border: none;
   position: relative;
   width: var(--dialog-header-height);
+  min-width: var(--dialog-header-height);
   margin: 0;
   padding: 0;
 
