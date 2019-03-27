@@ -1,7 +1,7 @@
 {
   "name": "blog-studio",
   "private": true,
-  "version": "0.140.12",
+  "version": "0.140.13",
   "description": "Content studio running with schema from the blog init template",
   "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
@@ -24,7 +24,7 @@
     "@sanity/core": "0.140.12",
     "@sanity/default-layout": "0.140.12",
     "@sanity/default-login": "0.140.3",
-    "@sanity/desk-tool": "0.140.12",
+    "@sanity/desk-tool": "0.140.13",
     "@sanity/google-maps-input": "0.140.12",
     "@sanity/vision": "0.140.12",
     "react": "^16.2.0",
