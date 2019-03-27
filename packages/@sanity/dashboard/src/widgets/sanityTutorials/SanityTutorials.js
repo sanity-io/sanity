@@ -8,7 +8,7 @@ import dataAdapter from './dataAdapter'
 const {urlBuilder, getFeed} = dataAdapter
 
 function createUrl(slug) {
-  return `https://www.sanity.io/guide/${slug.current}`
+  return `https://www.sanity.io/docs/guides/${slug.current}`
 }
 
 class SanityTutorials extends React.Component {
@@ -17,22 +17,11 @@ class SanityTutorials extends React.Component {
   }
 
   componentDidMount() {
-    this.unsubscribe()
-    this.subscription = getFeed().subscribe(response => {
+    getFeed().then(response => {
       this.setState({
         feedItems: response.items
       })
     })
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe()
-  }
-
-  unsubscribe() {
-    if (this.subscription) {
-      this.subscription.unsubscribe()
-    }
   }
 
   render() {
