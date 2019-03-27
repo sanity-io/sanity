@@ -199,8 +199,9 @@ export default class Asset extends React.PureComponent {
                                       : 'A document is using this asset'}
                                   </h4>
                                   <p className={styles.referringDocumentsDescription}>
-                                    {`Open the document${referringDocuments.length > 1 &&
-                                      's'} and remove the asset before deleting it.`}
+                                    {`Open the document${
+                                      referringDocuments.length > 1 ? 's' : ''
+                                    } and remove the asset before deleting it.`}
                                   </p>
                                 </div>
                               )}

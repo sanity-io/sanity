@@ -75,7 +75,10 @@
 .dialogContent {
   display: grid;
   grid-gap: var(--medium-padding);
-  grid-template-columns: max-content 1fr;
+
+  @media (--screen-medium) {
+    grid-template-columns: max-content 1fr;
+  }
 }
 
 .dialogSubtitle {
