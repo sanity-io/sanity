@@ -1,6 +1,8 @@
 export const SUPPORTED_LANGUAGES = [
   {title: 'Batch file', value: 'batchfile'},
   {title: 'CSS', value: 'css'},
+  {title: 'SASS', value: 'sass'},
+  {title: 'SCSS', value: 'scss'},
   {title: 'HTML', value: 'html'},
   {title: 'JavaScript', value: 'javascript'},
   {title: 'JSON', value: 'json'},
