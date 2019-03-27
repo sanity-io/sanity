@@ -12,7 +12,7 @@ import {IntentLink} from 'part:@sanity/base/router'
 import client from 'part:@sanity/base/client'
 
 import styles from './styles/Asset.css'
-import TrashIcon from 'react-icons/lib/md/delete'
+import TrashIcon from 'part:@sanity/base/trash-icon'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import MoreVertIcon from 'part:@sanity/base/more-vert-icon'
 
