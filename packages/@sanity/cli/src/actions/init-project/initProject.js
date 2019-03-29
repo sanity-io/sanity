@@ -250,7 +250,7 @@ export default async function initSanity(args, context) {
     (await prompt.single({
       type: 'confirm',
       message:
-        'We have an awesome developer community, would you like us to send you an invitation to join?',
+        'We have an excellent developer community, would you like us to send you an invitation to join?',
       default: true
     }))
 
