@@ -98,7 +98,7 @@ export default async function initSanity(args, context) {
 
   // We're authenticated, now lets select or create a project
   debug('Prompting user to select or create a project')
-  const {projectId, displayName} = await getOrCreateProject()
+  const {projectId, displayName, isFirstProject} = await getOrCreateProject()
   const sluggedName = deburr(displayName.toLowerCase())
     .replace(/\s+/g, '-')
     .replace(/[^a-z0-9]/g, '')
@@ -245,6 +245,24 @@ export default async function initSanity(args, context) {
     print(`\n${successMessage}`)
   }
 
+  const sendInvite =
+    isFirstProject &&
+    (await prompt.single({
+      type: 'confirm',
+      message:
+        'We have an excellent developer community, would you like us to send you an invitation to join?',
+      default: true
+    }))
+
+  if (sendInvite) {
+    apiClient({requireProject: false})
+      .request({
+        uri: '/invitations/community',
+        method: 'POST'
+      })
+      .catch(noop)
+  }
+
   async function getOrCreateUser() {
     print(`We can't find any auth credentials in your Sanity config`)
     print('- log in or create a new account\n')
@@ -262,7 +280,7 @@ export default async function initSanity(args, context) {
       projects = await apiClient({requireProject: false}).projects.list()
     } catch (err) {
       if (unattended) {
-        return {projectId: flags.project, displayName: 'Unknown project'}
+        return {projectId: flags.project, displayName: 'Unknown project', isFirstProject: false}
       }
 
       throw new Error(`Failed to communicate with the Sanity API:\n${err.message}`)
@@ -282,14 +300,19 @@ export default async function initSanity(args, context) {
 
       return {
         projectId: flags.project,
-        displayName: project ? project.displayName : 'Unknown project'
+        displayName: project ? project.displayName : 'Unknown project',
+        isFirstProject: false
       }
     }
 
-    if (projects.length === 0) {
+    const isFirstProject = projects.length === 0
+    if (isFirstProject) {
       debug('No projects found for user, prompting for name')
       const projectName = await prompt.single({message: 'Project name'})
-      return createProject(apiClient, {displayName: projectName})
+      return createProject(apiClient, {displayName: projectName}).then(response => ({
+        ...response,
+        isFirstProject
+      }))
     }
 
     debug(`User has ${projects.length} project(s) already, showing list of choices`)
@@ -315,13 +338,17 @@ export default async function initSanity(args, context) {
         displayName: await prompt.single({
           message: 'Informal name for your project'
         })
-      })
+      }).then(response => ({
+        ...response,
+        isFirstProject
+      }))
     }
 
     debug(`Returning selected project (${selected})`)
     return {
       projectId: selected,
-      displayName: projects.find(proj => proj.id === selected).displayName
+      displayName: projects.find(proj => proj.id === selected).displayName,
+      isFirstProject
     }
   }
 
