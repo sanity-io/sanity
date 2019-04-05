@@ -1,5 +1,6 @@
 const diffPatch = require('../src/diff-patch')
 const dataTypes = require('./fixtures/data-types')
+const typeChange = require('./fixtures/type-change')
 
 describe('diff data types', () => {
   test('same data type', () => {
@@ -46,6 +47,27 @@ describe('diff data types', () => {
           set: {slug: ['die-hard-with-a-vengeance']}
         }
       }
+    ])
+  })
+
+  test('type changes', () => {
+    expect(diffPatch(typeChange.a, typeChange.b)).toEqual([
+      {
+        patch: {
+          id: 'abc123',
+          set: {
+            'array[0]': 0,
+            'array[1]': 'one',
+            'array[2].two.levels.other': 'value',
+            bool: false,
+            number: 1337,
+            'object["12"]': '12',
+            'object["13"]': null,
+            string: 'bar'
+          }
+        }
+      },
+      {patch: {id: 'abc123', unset: ['unset', 'array[2].two.levels.deep']}}
     ])
   })
 })

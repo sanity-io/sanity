@@ -230,8 +230,10 @@ function pathToString(path) {
     }
 
     const segmentType = typeof segment
-    if (segmentType === 'number' || /^\d+$/.test(segment)) {
+    if (segmentType === 'number') {
       return `${target}[${segment}]`
+    } else if (/^\d+$/.test(segment)) {
+      return `${target}["${segment}"]`
     }
 
     if (segmentType === 'string') {

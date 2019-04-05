@@ -68,7 +68,7 @@ describeIt('integration tests', () => {
         client.transaction(trx.concat(diff)).commit({visibility: 'async', returnDocuments: true})
       )
 
-      expect(omit(result[0], ignoredKeys)).toMatchObject(omit(output, ignoredKeys))
+      expect(omit(result[0], ignoredKeys)).toEqual(omit(output, ignoredKeys))
     })
   )
 })
