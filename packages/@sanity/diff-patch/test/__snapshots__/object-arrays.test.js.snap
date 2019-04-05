@@ -1,0 +1,104 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`object arrays add to end (multiple) 1`] = `
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "insert": Object {
+        "after": "characters[-1]",
+        "items": Array [
+          Object {
+            "_key": "simon",
+            "name": "Simon Gruber",
+          },
+          Object {
+            "_key": "zeus",
+            "name": "Zeus Carver",
+          },
+        ],
+      },
+    },
+  },
+]
+`;
+
+exports[`object arrays add to end (single) 1`] = `
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "insert": Object {
+        "after": "characters[-1]",
+        "items": Array [
+          Object {
+            "_key": "simon",
+            "name": "Simon Gruber",
+          },
+        ],
+      },
+    },
+  },
+]
+`;
+
+exports[`object arrays change item 1`] = `
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "set": Object {
+        "characters[_key==\\"simon\\"].name": "Simon Grüber",
+      },
+    },
+  },
+]
+`;
+
+exports[`object arrays remove from end (multiple) 1`] = `
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "unset": Array [
+        "characters[1:]",
+      ],
+    },
+  },
+]
+`;
+
+exports[`object arrays remove from end (single) 1`] = `
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "unset": Array [
+        "characters[2]",
+      ],
+    },
+  },
+]
+`;
+
+exports[`object arrays remove from middle (single) 1`] = `
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "set": Object {
+        "characters[1]._key": "zeus",
+        "characters[1].name": "Zeus Carver",
+      },
+    },
+  },
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "unset": Array [
+        "characters[2]",
+      ],
+    },
+  },
+]
+`;

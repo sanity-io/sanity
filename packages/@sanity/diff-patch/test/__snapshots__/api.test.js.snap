@@ -1,0 +1,69 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`module api can include ifRevisionID 1`] = `
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "ifRevisionID": "foo",
+      "set": Object {
+        "slug.current": "die-hard-with-a-vengeance",
+      },
+    },
+  },
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "unset": Array [
+        "year",
+        "slug.auto",
+      ],
+    },
+  },
+]
+`;
+
+exports[`module api can include ifRevisionId (lowercase d) 1`] = `
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "ifRevisionID": "foo",
+      "set": Object {
+        "slug.current": "die-hard-with-a-vengeance",
+      },
+    },
+  },
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "unset": Array [
+        "year",
+        "slug.auto",
+      ],
+    },
+  },
+]
+`;
+
+exports[`module api can pass different document ID 1`] = `
+Array [
+  Object {
+    "patch": Object {
+      "id": "moop",
+      "set": Object {
+        "slug.current": "die-hard-with-a-vengeance",
+      },
+    },
+  },
+  Object {
+    "patch": Object {
+      "id": "moop",
+      "unset": Array [
+        "year",
+        "slug.auto",
+      ],
+    },
+  },
+]
+`;

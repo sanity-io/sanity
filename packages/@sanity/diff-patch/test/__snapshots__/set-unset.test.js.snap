@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`set/unset basic nested changes 1`] = `
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "set": Object {
+        "slug.current": "die-hard-with-a-vengeance",
+      },
+    },
+  },
+]
+`;
+
+exports[`set/unset set + unset, nested changes 1`] = `
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "set": Object {
+        "slug.current": "die-hard-with-a-vengeance",
+      },
+    },
+  },
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "unset": Array [
+        "year",
+        "slug.auto",
+      ],
+    },
+  },
+]
+`;
+
+exports[`set/unset simple root-level changes 1`] = `
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "set": Object {
+        "rating": 4,
+        "title": "Die Hard with a Vengeance",
+      },
+    },
+  },
+]
+`;

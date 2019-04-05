@@ -1,0 +1,81 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`primitive arrays add to end (multiple) 1`] = `
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "insert": Object {
+        "after": "characters[-1]",
+        "items": Array [
+          "Simon Gruber",
+          "Zeus Carver",
+        ],
+      },
+    },
+  },
+]
+`;
+
+exports[`primitive arrays add to end (single) 1`] = `
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "insert": Object {
+        "after": "characters[-1]",
+        "items": Array [
+          "Simon Gruber",
+        ],
+      },
+    },
+  },
+]
+`;
+
+exports[`primitive arrays remove from end (multiple) 1`] = `
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "unset": Array [
+        "characters[1:]",
+      ],
+    },
+  },
+]
+`;
+
+exports[`primitive arrays remove from end (single) 1`] = `
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "unset": Array [
+        "characters[2]",
+      ],
+    },
+  },
+]
+`;
+
+exports[`primitive arrays remove from middle (single) 1`] = `
+Array [
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "set": Object {
+        "characters[1]": "Zeus Carver",
+      },
+    },
+  },
+  Object {
+    "patch": Object {
+      "id": "die-hard-iii",
+      "unset": Array [
+        "characters[2]",
+      ],
+    },
+  },
+]
+`;
