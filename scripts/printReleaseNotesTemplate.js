@@ -1,7 +1,8 @@
 const CHANGELOG_COMMAND =
-  "git log --pretty=format:'%aN | %s | %h' --abbrev-commit --reverse origin/master..origin/next"
+  "git log --pretty=format:'%aN | %s | %h' --abbrev-commit --reverse $(git describe --abbrev=0)..origin/next"
 
 const execa = require('execa')
+
 const TEMPLATE = `
 Upgrade the Command Line Interface (CLI) with
 
