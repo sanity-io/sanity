@@ -118,14 +118,12 @@ function filterOrigin(origin) {
       .replace(/:\*/, portReplacement)
 
     const parsed = url.parse(example)
-    if (!/^https?:$/.test(parsed.protocol || '')) {
-      return null
+    let host = parsed.host
+    if (/^https?:$/.test(parsed.protocol || '')) {
+      host = parsed.host.replace(/:(80|443)$/, '')
     }
 
-    const host = parsed.host
-      .replace(/:(80|443)$/, '')
-      .replace(portReplacement, ':*')
-      .replace(new RegExp(wildcardReplacement, 'g'), '*')
+    host = host.replace(portReplacement, ':*').replace(new RegExp(wildcardReplacement, 'g'), '*')
 
     return `${parsed.protocol}//${host}`
   } catch (err) {
