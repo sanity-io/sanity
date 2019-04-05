@@ -153,8 +153,10 @@ export default function createOperationToPatches(
     afterValue: SlateValue,
     formBuilderValue: ?(FormBuilderValue[])
   ) {
-    // Unset the field if every node is a placeholder
-    if (afterValue.document.nodes.every(node => node.data.get('placeholder'))) {
+    if (
+      afterValue.document.nodes.size > 0 &&
+      afterValue.document.nodes.every(node => node.data.get('placeholder'))
+    ) {
       return [unset([])]
     }
     // Value is undefined
@@ -177,7 +179,10 @@ export default function createOperationToPatches(
     formBuilderValue: ?(FormBuilderValue[])
   ) {
     // Don't send anything if this is just a placeholder
-    if (afterValue.document.nodes.every(node => node.data.get('placeholder'))) {
+    if (
+      afterValue.document.nodes.size > 0 &&
+      afterValue.document.nodes.every(node => node.data.get('placeholder'))
+    ) {
       return []
     }
     // Value is undefined
@@ -330,6 +335,7 @@ export default function createOperationToPatches(
     afterValue: SlateValue,
     formBuilderValue?: ?(FormBuilderValue[]) // This is optional, but needed for setting setIfMissing patches correctly
   ) {
+    // console.log(JSON.stringify(operation.toJSON(), null, 2))
     switch (operation.type) {
       case 'insert_text':
         return insertTextPatch(operation, beforeValue, afterValue, formBuilderValue)
