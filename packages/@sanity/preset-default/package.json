@@ -1,0 +1,15 @@
+{
+  "name": "@sanity/preset-default",
+  "version": "0.140.13",
+  "description": "Default plugins for Sanity",
+  "main": "sanity.json",
+  "dependencies": {
+    "@sanity/base": "^0.140.12",
+    "@sanity/components": "^0.140.12",
+    "@sanity/default-layout": "^0.140.12",
+    "@sanity/default-login": "^0.140.3",
+    "@sanity/desk-tool": "^0.140.13"
+  },
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT"
+}

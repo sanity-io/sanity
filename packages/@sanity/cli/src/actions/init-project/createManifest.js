@@ -115,13 +115,7 @@ export function createSanityManifest(data, opts) {
         token: data.provisionalToken || undefined
       },
 
-      plugins: [
-        '@sanity/base',
-        '@sanity/components',
-        '@sanity/default-layout',
-        '@sanity/default-login',
-        '@sanity/desk-tool'
-      ],
+      plugins: ['@sanity/preset-default'],
 
       parts: [
         {

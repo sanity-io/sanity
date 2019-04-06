@@ -19,14 +19,10 @@
     "movies-studio"
   ],
   "dependencies": {
-    "@sanity/base": "0.140.12",
     "@sanity/cli": "0.140.12",
-    "@sanity/components": "0.140.12",
     "@sanity/core": "0.140.12",
-    "@sanity/default-layout": "0.140.12",
-    "@sanity/default-login": "0.140.3",
-    "@sanity/desk-tool": "0.140.13",
     "@sanity/google-maps-input": "0.140.12",
+    "@sanity/preset-default": "0.140.13",
     "@sanity/production-preview": "0.140.0",
     "@sanity/vision": "0.140.12",
     "react": "^16.2.0",
