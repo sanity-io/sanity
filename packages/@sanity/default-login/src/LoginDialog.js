@@ -57,13 +57,7 @@ export default class LoginDialog extends React.Component {
   redirectToProvider(provider) {
     const {projectId} = this.props
     const currentUrl = encodeURIComponent(window.location.toString())
-    const ua = navigator.userAgent || ''
-    const isSafari = ua.includes('Safari') && !ua.includes('Chrome')
-    const params = [
-      `origin=${currentUrl}`,
-      projectId && `projectId=${projectId}`,
-      projectId && isSafari && `withSid=1`
-    ].filter(Boolean)
+    const params = [`origin=${currentUrl}`, projectId && `projectId=${projectId}`].filter(Boolean)
 
     if (provider.custom && !provider.supported) {
       this.setState({
