@@ -53,15 +53,9 @@ export default class SelectAsset extends React.Component<Props, State> {
   }
 
   handleDeleteFinished = id => {
-    this.setState(prevState => {
-      const index = prevState.assets.indexOf(prevState.assets.find(asset => asset._id === id))
-      if (index !== -1) {
-        prevState.assets.splice(index, 1)
-        return {
-          assets: prevState.assets
-        }
-      }
-    })
+    this.setState(prevState => ({
+      assets: prevState.assets.filter(asset => asset._id !== id)
+    }))
   }
 
   componentDidMount() {
