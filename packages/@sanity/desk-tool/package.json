@@ -1,6 +1,6 @@
 {
   "name": "@sanity/desk-tool",
-  "version": "0.140.13",
+  "version": "0.140.14",
   "description": "Tool for managing all sorts of content in a structured manner",
   "main": "src/plugin.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -23,7 +23,7 @@
   ],
   "dependencies": {
     "@sanity/data-aspects": "0.140.3",
-    "@sanity/form-builder": "0.140.13",
+    "@sanity/form-builder": "0.140.14",
     "@sanity/generate-help-url": "0.140.0",
     "@sanity/mutator": "0.140.0",
     "@sanity/structure": "0.140.0",
