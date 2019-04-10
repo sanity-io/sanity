@@ -12,6 +12,7 @@ type Props = {
   readOnly: ?boolean,
   onChange: PatchEvent => void,
   onFocus: () => void,
+  onBlur: () => void,
   markers: Array<Marker>
 }
 
@@ -34,7 +35,7 @@ export default class TextInput extends React.Component<Props> {
   }
 
   render() {
-    const {value, markers, type, readOnly, level, onFocus} = this.props
+    const {value, markers, type, readOnly, level, onFocus, onBlur} = this.props
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
 
@@ -47,6 +48,7 @@ export default class TextInput extends React.Component<Props> {
           placeholder={type.placeholder}
           onChange={this.handleChange}
           onFocus={onFocus}
+          onBlur={onBlur}
           rows={type.rows}
           ref={this.setInput}
         />

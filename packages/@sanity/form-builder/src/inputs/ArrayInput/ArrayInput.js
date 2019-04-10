@@ -218,8 +218,8 @@ export default class ArrayInput extends React.Component<Props, State> {
                 focusPath={focusPath}
                 filterField={filterField}
                 onFocus={onFocus}
-                readOnly={readOnly || hasMissingKeys}
                 onBlur={onBlur}
+                readOnly={readOnly || hasMissingKeys}
               />
             </Item>
           )
