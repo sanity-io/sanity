@@ -30,7 +30,7 @@ export default class Asset extends React.PureComponent {
     }),
     onClick: PropTypes.func,
     onKeyPress: PropTypes.func,
-    onDeleteComplete: PropTypes.func
+    onDeleteFinished: PropTypes.func.isRequired
   }
 
   state = {
@@ -39,16 +39,15 @@ export default class Asset extends React.PureComponent {
   }
 
   handleDeleteAsset = asset => {
-    const {onDeleteComplete} = this.props
+    const {onDeleteFinished} = this.props
     this.setState({isDeleting: true})
-
     return client
       .delete(asset._id)
       .then(() => {
         this.setState({
           isDeleting: false
         })
-        onDeleteComplete()
+        onDeleteFinished(asset._id)
       })
       .catch(err => {
         this.setState({
