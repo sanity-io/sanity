@@ -52,8 +52,16 @@ export default class SelectAsset extends React.Component<Props, State> {
     })
   }
 
-  handleDeleteFinished = () => {
-    this.fetchPage(this.pageNo)
+  handleDeleteFinished = id => {
+    this.setState(prevState => {
+      const index = prevState.assets.indexOf(prevState.assets.find(asset => asset._id === id))
+      if (index !== -1) {
+        prevState.assets.splice(index, 1)
+        return {
+          assets: prevState.assets
+        }
+      }
+    })
   }
 
   componentDidMount() {
