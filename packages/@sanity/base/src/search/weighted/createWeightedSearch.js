@@ -1,9 +1,10 @@
+/* eslint-disable import/prefer-default-export */
+import {compact, toLower, flatten, uniq, flow, sortBy, union} from 'lodash'
 import {map} from 'rxjs/operators'
 import {joinPath} from '../../util/searchUtils'
-import {compact, toLower, flatten, uniq, flow, sortBy, union} from 'lodash'
 import {removeDupes} from '../../util/draftUtils'
-import {applyWeights} from './applyWeights'
 import {tokenize} from '../common/tokenize'
+import {applyWeights} from './applyWeights'
 
 const combinePaths = flow([flatten, union, compact])
 
@@ -13,7 +14,8 @@ const toGroqParams = terms =>
     return acc
   }, {})
 
-export function createWeightedSearch(types, client) {
+export function createWeightedSearch(types, client, options = {}) {
+  const {filter, filterParams} = options
   const searchSpec = types.map(type => {
     return {
       typeName: type.name,
@@ -40,19 +42,21 @@ export function createWeightedSearch(types, client) {
       .filter(constraint => constraint.length > 0)
 
     const filters = [
-      '_type in $types',
+      '_type in $__types',
       opts.includeDrafts === false && `!(_id in path('drafts.**'))`,
-      ...constraints.map(constraint => `(${constraint.join('||')})`)
+      ...constraints.map(constraint => `(${constraint.join('||')})`),
+      filter ? `(${filter})` : ''
     ].filter(Boolean)
 
     const selection = selections.length > 0 ? `...select(${selections.join(',\n')})` : ''
-    const query = `*[${filters.join('&&')}][0...$limit]{_type, _id, ${selection}}`
+    const query = `*[${filters.join('&&')}][0...$__limit]{_type, _id, ${selection}}`
 
     return client.observable
       .fetch(query, {
         ...toGroqParams(terms),
-        types: searchSpec.map(spec => spec.typeName),
-        limit: 1000
+        __types: searchSpec.map(spec => spec.typeName),
+        __limit: 1000,
+        ...(filterParams || {})
       })
       .pipe(
         map(removeDupes),
