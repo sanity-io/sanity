@@ -19,12 +19,16 @@ type PreviewSnapshot = {
   title: string
   description: string
 }
+type SearchOptions = {
+  filter?: string
+  filterParams?: {[key: string]: any}
+}
 export type Props = {
   value?: Reference
   type: Type
   markers: Array<Marker>
   readOnly?: boolean
-  onSearch: (query: string, type: Type) => ObservableI<Array<SearchHit>>
+  onSearch: (query: string, type: Type, options: SearchOptions) => ObservableI<Array<SearchHit>>
   getPreviewSnapshot: (Reference, Type) => ObservableI<PreviewSnapshot>
   onChange: (event: PatchEvent) => void
   level: number
@@ -117,12 +121,13 @@ export default class ReferenceInput extends React.Component<Props, State> {
   }
   search = (query: string) => {
     const {type, onSearch} = this.props
+    const options = type.options || {}
     this.setState({
       isFetching: true
     })
     this.subscriptions.replace(
       'search',
-      onSearch(query, type).subscribe((items: Array<SearchHit>) => {
+      onSearch(query, type, options).subscribe((items: Array<SearchHit>) => {
         const updatedCache = items.reduce((cache, item) => {
           cache[item._id] = item
           return cache
