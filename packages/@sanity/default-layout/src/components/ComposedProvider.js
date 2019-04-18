@@ -1,17 +1,17 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
+/* eslint-disable react/no-multi-comp */
 const Composed = ({wrappers, children}) => {
-  console.log(wrappers)
-  const Component = wrappers.reverse().reduce(
+  const Component = wrappers.reduce(
     (Prev, {component, props}) => {
-      console.log(props)
       const Outer = component
-      return () => (
+      const Wrapped = () => (
         <Outer {...props}>
           <Prev />
         </Outer>
       )
+      return Wrapped
     },
     () => <React.Fragment>{children}</React.Fragment>
   )
