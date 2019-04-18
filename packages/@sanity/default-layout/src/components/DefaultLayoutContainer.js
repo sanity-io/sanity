@@ -7,8 +7,16 @@ import getOrderedTools from '../util/getOrderedTools'
 import rootRouter, {maybeRedirectToBase} from '../defaultLayoutRouter'
 import DefaultLayout from './DefaultLayout'
 import NotFound from './NotFound'
+import ComposedProvider from './ComposedProvider'
 
 const handleNavigate = urlStateStore.navigate
+
+/* Extract all providers into an array */
+const getAllProviders = tools =>
+  tools.reduce((acc, tool) => {
+    if (!tool.providers || !tool.providers.length) return acc
+    return [...acc, ...tool.providers]
+  }, [])
 
 export default class DefaultLayoutContainer extends React.PureComponent {
   state = {}
@@ -30,7 +38,7 @@ export default class DefaultLayoutContainer extends React.PureComponent {
     this.urlStateSubscription.unsubscribe()
   }
 
-  render() {
+  renderInner() {
     const {intent, urlState, isNotFound} = this.state
     const tools = getOrderedTools()
 
@@ -58,5 +66,11 @@ export default class DefaultLayoutContainer extends React.PureComponent {
     ) : (
       router
     )
+  }
+
+  render() {
+    const tools = getOrderedTools()
+    const providers = getAllProviders(tools)
+    return <ComposedProvider wrappers={providers}>{this.renderInner()}</ComposedProvider>
   }
 }
