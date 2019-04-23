@@ -36,7 +36,7 @@ function Document(props) {
   const scriptLoader = generateScriptLoader(scripts)
 
   const favicons = props.favicons.map((item, index) => (
-    <link key={item.path} rel="icon" href={assetUrl(staticPath, item)} />
+    <link {...item} key={item.path} rel={item.rel || 'icon'} href={assetUrl(staticPath, item)} />
   ))
 
   return (
@@ -75,7 +75,14 @@ Document.defaultProps = {
   viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
   loading: 'Connecting to Sanity.io',
   staticPath: '/static',
-  favicons: [{path: 'favicon.ico'}],
+  favicons: [
+    {path: 'favicon-16x16.png', type: 'image/png', sizes: '16x16'},
+    {path: 'favicon-32x32.png', type: 'image/png', sizes: '32x32'},
+    {path: 'favicon-64x64.png', type: 'image/png', sizes: '64x64'},
+    {path: 'favicon-96x96.png', type: 'image/png', sizes: '96x96'},
+    {path: 'favicon-mask.svg', type: 'image/svg+xml', rel: 'mask-icon', color: '#f43'},
+    {path: 'favicon.ico', type: 'image/x-icon'}
+  ],
   stylesheets: [],
   scripts: []
 }
