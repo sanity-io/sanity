@@ -1,7 +1,9 @@
-module.exports = name => {
-  if (!name) {
+module.exports = datasetName => {
+  if (!datasetName) {
     return 'Dataset name is missing'
   }
+
+  const name = `${datasetName}`
 
   if (name.toLowerCase() !== name) {
     return 'Dataset name must be all lowercase characters'
