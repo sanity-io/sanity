@@ -18,12 +18,12 @@ import {
 import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
 
 import {combineLatest} from 'rxjs'
-import {map, tap} from 'rxjs/operators'
+import settings from '../settings'
 import styles from './styles/DocumentsListPane.css'
 import listStyles from './styles/ListView.css'
 import InfiniteList from './InfiniteList'
 import PaneItem from './PaneItem'
-import settings from '../settings'
+import {map, tap} from 'rxjs/operators'
 
 const DEFAULT_ORDERING = [{field: '_createdAt', direction: 'desc'}]
 
@@ -230,6 +230,13 @@ export default withRouterHOC(
 
       if (extendedProjection) {
         const firstProjection = projectionFields.concat(extendedProjection).join(', ')
+        // At first glance, you might think that 'order' should come before 'slice'?
+        // However, this is actullay a counter-bug
+        // to https://github.com/sanity-io/gradient/issues/922 which causes:
+        // 1. case-insensitive ordering (we want this)
+        // 2. null-values to sort to the top, even when order is desc (we don't want this)
+        // Because Studios in the wild rely on the buggy nature of this
+        // do not change this until we have API versioning
         return [
           `*[${filter}] [0...50000]`,
           `{${firstProjection}}`,
