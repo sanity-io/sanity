@@ -21,6 +21,9 @@ class Tutorial extends React.PureComponent {
       <a className={styles.root} href={href}>
         <div className={styles.posterContainer}>
           <img className={styles.poster} src={posterURL} />
+          <div className={styles.playIcon}>
+            <span />
+          </div>
         </div>
         <h3 className={styles.title}>{title}</h3>
         <div className={styles.byLine}>

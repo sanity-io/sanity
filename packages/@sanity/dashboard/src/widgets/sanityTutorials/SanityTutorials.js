@@ -26,10 +26,11 @@ class SanityTutorials extends React.Component {
 
   render() {
     const {feedItems} = this.state
+    const title = 'Learn about Sanity'
     return (
       <div className={styles.root}>
         <header className={styles.header}>
-          <h1 className={styles.title}>Guides & tutorials</h1>
+          <h1 className={styles.title}>{title}</h1>
         </header>
         <ul className={styles.grid}>
           {feedItems.map(feedItem => {
@@ -47,7 +48,7 @@ class SanityTutorials extends React.Component {
                   presenterSubtitle={`${distanceInWords(new Date(date), new Date())} ago`}
                   posterURL={urlBuilder
                     .image(feedItem.poster)
-                    .height(240)
+                    .height(360)
                     .url()}
                 />
               </li>
