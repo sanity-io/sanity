@@ -33,6 +33,7 @@ export default {
         ]
       }
     },
-    {name: 'cats'}
+    {name: 'cats'},
+    {name: 'document-list', options: {limit: 100}}
   ]
 }

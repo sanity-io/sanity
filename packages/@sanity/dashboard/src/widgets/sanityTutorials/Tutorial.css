@@ -9,6 +9,21 @@
   flex-direction: column;
   padding: var(--small-padding);
   border-radius: 2px;
+
+  @nest li:first-child & {
+    background-color: var(--main-navigation-color);
+    color: var(--main-navigation-color--inverted);
+
+    @nest &:hover {
+      background: var(--selected-item-color);
+      color: var(--selected-item-color--inverted);
+    }
+
+    @nest &:active {
+      background: var(--selected-item-color-hover);
+      color: var(--selected-item-color-hover--inverted);
+    }
+  }
 }
 
 .byLine {
@@ -62,5 +77,29 @@
 
   @nest &:not([src]) {
     display: none;
+  }
+}
+
+.playIcon {
+  position: absolute;
+  top: calc(50% - 1.375em);
+  left: calc(50% - 1.375em);
+  background: color(var(--component-bg) alpha(90%));
+  width: 2.75em;
+  height: 2.75em;
+  border-radius: 50%;
+
+  @nest & > span {
+    position: absolute;
+    left: 1em;
+    top: calc(50% - 10px);
+    border-left: 15px solid #000;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    display: block;
+  }
+
+  @nest .root:hover & {
+    background: var(--component-bg);
   }
 }
