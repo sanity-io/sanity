@@ -14,7 +14,7 @@ function hashKeyForState(identity, session) {
 class PresenceStore {
   constructor(connection, channel) {
     this.connection = connection
-    this.unsubscribeListener = this.connection.listen().subscribe(this.handleMessage).unsubscribe
+    this.messageSubscription = this.connection.listen().subscribe(this.handleMessage)
     this.myState = {}
     this.states = new Map()
     this.timestamps = new Map()
@@ -31,7 +31,7 @@ class PresenceStore {
   // Close Presence Store, should be called when window closes
   close() {
     this.connection.sendBeacon({type: 'disconnect', session: this.sessionId})
-    this.unsubscribeListener()
+    this.messageSubscription.unsubscribe()
     clearTimeout(this.resendReportTimer)
     clearInterval(this.performPurgeTimer)
     clearTimeout(this.changeReportDebounceTimer)
