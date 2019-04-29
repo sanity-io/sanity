@@ -1,12 +1,15 @@
 const ValidationError = require('../ValidationError')
 const genericValidator = require('./genericValidator')
 
+const metaKeys = ['_key', '_type', '_weak']
+
 const presence = (expected, value, message) => {
   if (expected !== 'required') {
     return true
   }
 
-  if (typeof value === 'undefined' || Object.keys(value).length === 0) {
+  const keys = value && Object.keys(value).filter(key => !metaKeys.includes(key))
+  if (typeof value === 'undefined' || (keys && keys.length === 0)) {
     return new ValidationError(message || 'Required')
   }
 
