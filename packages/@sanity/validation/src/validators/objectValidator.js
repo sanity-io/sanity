@@ -25,7 +25,17 @@ const reference = (unused, value, message) => {
   return true
 }
 
+const assetRequired = (flag, value, message) => {
+  if (!value || !value.asset || !value.asset._ref) {
+    const assetType = flag.assetType || 'Asset'
+    return new ValidationError(message || `${assetType} required`)
+  }
+
+  return true
+}
+
 module.exports = Object.assign({}, genericValidator, {
   presence,
-  reference
+  reference,
+  assetRequired
 })

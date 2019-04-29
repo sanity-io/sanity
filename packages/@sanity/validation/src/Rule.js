@@ -16,16 +16,17 @@ const mergeRequired = (prev, next) => {
 
 class Rule {
   static FIELD_REF = Symbol('FIELD_REF')
-  static array = () => new Rule().type('Array')
-  static object = () => new Rule().type('Object')
-  static string = () => new Rule().type('String')
-  static number = () => new Rule().type('Number')
-  static boolean = () => new Rule().type('Boolean')
-  static dateTime = () => new Rule().type('Date')
+  static array = def => new Rule(def).type('Array')
+  static object = def => new Rule(def).type('Object')
+  static string = def => new Rule(def).type('String')
+  static number = def => new Rule(def).type('Number')
+  static boolean = def => new Rule(def).type('Boolean')
+  static dateTime = def => new Rule(def).type('Date')
   static valueOfField = path => ({type: Rule.FIELD_REF, path})
 
-  constructor() {
+  constructor(typeDef) {
     this.FIELD_REF = Rule.FIELD_REF
+    this._typeDef = typeDef
 
     this.reset()
   }
@@ -72,6 +73,7 @@ class Rule {
     rule._rules = cloneDeep(this._rules)
     rule._level = this._level
     rule._fieldRules = this._fieldRules
+    rule._typeDef = this._typeDef
     return rule
   }
 
@@ -258,6 +260,19 @@ class Rule {
     rule._fieldRules = rules
     return rule
   }
+
+  assetRequired() {
+    const base = getBaseType(this._typeDef)
+    let assetType = 'Asset'
+    if (base && ['image', 'file'].includes(base.name)) {
+      assetType = base.name === 'image' ? 'Image' : 'File'
+    }
+    return this.cloneWithRules([{flag: 'assetRequired', constraint: {assetType}}])
+  }
+}
+
+function getBaseType(type) {
+  return type && type.type ? getBaseType(type.type) : type
 }
 
 module.exports = Rule
