@@ -338,7 +338,8 @@ export default class ImageInput extends React.PureComponent<Props, State> {
 
     const hasAsset = value && value.asset
 
-    const showAdvancedEditButton = value && (otherFields.length > 0 || this.isImageToolEnabled())
+    const showAdvancedEditButton =
+      value && (otherFields.length > 0 || (hasAsset && this.isImageToolEnabled()))
 
     return (
       <UploadTargetFieldset
