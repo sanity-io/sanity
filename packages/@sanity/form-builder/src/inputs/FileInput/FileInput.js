@@ -15,7 +15,7 @@ import styles from './styles/FileInput.css'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import {ObservableI} from '../../typedefs/observable'
 
-import type {Reference, Type} from '../../typedefs'
+import type {Reference, Type, Marker} from '../../typedefs'
 import type {Uploader, UploaderResolver} from '../../sanity/uploads/typedefs'
 
 import WithMaterializedReference from '../../utils/WithMaterializedReference'
@@ -46,7 +46,8 @@ type Props = {
   onBlur: () => void,
   onFocus: () => void,
   readOnly: ?boolean,
-  focusPath: Array<*>
+  focusPath: Array<*>,
+  markers: Array<Marker>
 }
 
 type State = {
@@ -283,7 +284,7 @@ export default class FileInput extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {type, value, level, readOnly} = this.props
+    const {type, value, level, markers, readOnly} = this.props
 
     const {isAdvancedEditOpen, uploadError} = this.state
 
@@ -296,6 +297,7 @@ export default class FileInput extends React.PureComponent<Props, State> {
 
     return (
       <UploadTargetFieldset
+        markers={markers}
         legend={type.title}
         description={type.description}
         level={level}
