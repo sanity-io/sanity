@@ -9,7 +9,15 @@ export default {
         {name: 'dummy', options: {children: 'D'}}
       ]
     },
-    {name: 'sanity-tutorials', layout: {width: 'full'}},
+    {
+      name: 'sanity-tutorials',
+      layout: {
+        width: 'full'
+      },
+      options: {
+        templateRepoId: 'sanity-io/sanity-template-gatsby-blog'
+      }
+    },
     {name: 'document-list'},
     {name: 'document-list', options: {title: 'Last edited', order: '_updatedAt desc'}},
     {name: 'document-list', options: {title: 'Last created books', types: ['book']}},
