@@ -13,7 +13,7 @@ module.exports = config => {
 
   return {
     headers: headers,
-    timeout: 'timeout' in config ? config.timeout : 30000,
+    timeout: 'timeout' in config ? config.timeout : 5 * 60 * 1000,
     json: true,
     withCredentials: Boolean(config.token || config.withCredentials)
   }
