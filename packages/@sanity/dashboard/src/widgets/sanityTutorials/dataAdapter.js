@@ -9,6 +9,11 @@ const configuredClient = sanityClient({
 })
 
 export default {
-  getFeed: () => client.request({uri: '/addons/dashboard', withCredentials: false}),
+  getFeed: templateRepoId => {
+    const uri = templateRepoId
+      ? `/addons/dashboard?templateRepoId=${templateRepoId}`
+      : '/addons/dashboard'
+    return client.request({uri, withCredentials: false})
+  },
   urlBuilder: imageUrlBuilder(configuredClient)
 }

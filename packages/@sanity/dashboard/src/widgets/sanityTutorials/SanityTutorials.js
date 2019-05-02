@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import {get} from 'lodash'
 import {distanceInWords} from 'date-fns'
 import Tutorial from './Tutorial'
@@ -12,12 +13,21 @@ function createUrl(slug) {
 }
 
 class SanityTutorials extends React.Component {
+  static propTypes = {
+    templateRepoId: PropTypes.string
+  }
+
+  static defaultProps = {
+    templateRepoId: null
+  }
+
   state = {
     feedItems: []
   }
 
   componentDidMount() {
-    getFeed().then(response => {
+    const {templateRepoId} = this.props
+    getFeed(templateRepoId).then(response => {
       this.setState({
         feedItems: response.items
       })
