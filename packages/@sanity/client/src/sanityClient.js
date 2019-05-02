@@ -70,12 +70,14 @@ assign(SanityClient.prototype, {
       ['GET', 'HEAD'].indexOf(options.method || 'GET') >= 0 &&
       uri.indexOf('/data/') === 0
 
-    return httpRequest(
-      mergeOptions(getRequestOptions(this.clientConfig), options, {
+    const reqOptions = getRequestOptions(
+      this.clientConfig,
+      assign({}, options, {
         url: this.getUrl(uri, canUseCdn)
-      }),
-      this.clientConfig.requester
+      })
     )
+
+    return httpRequest(reqOptions, this.clientConfig.requester)
   },
 
   request(options) {
@@ -87,17 +89,6 @@ assign(SanityClient.prototype, {
     return this.isPromiseAPI() ? toPromise(observable) : observable
   }
 })
-
-// Merge http options and headers
-function mergeOptions(...opts) {
-  const headers = opts.reduce((merged, options) => {
-    if (!merged && !options.headers) {
-      return null
-    }
-    return assign(merged || {}, options.headers || {})
-  }, null)
-  return assign(...opts, headers ? {headers} : {})
-}
 
 SanityClient.Patch = Patch
 SanityClient.Transaction = Transaction
