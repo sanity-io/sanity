@@ -236,13 +236,16 @@ function getAssetType(assetId) {
 
 function reducePatch(trx, task) {
   return trx.patch(task.documentId, patch =>
-    patch.setIfMissing({[task.path]: {}}).set({
-      [`${task.path}._type`]: getAssetType(task.assetId),
-      [`${task.path}.asset`]: {
-        _type: 'reference',
-        _ref: task.assetId
-      }
-    })
+    patch
+      .setIfMissing({
+        [task.path]: {_type: getAssetType(task.assetId)}
+      })
+      .set({
+        [`${task.path}.asset`]: {
+          _type: 'reference',
+          _ref: task.assetId
+        }
+      })
   )
 }
 
