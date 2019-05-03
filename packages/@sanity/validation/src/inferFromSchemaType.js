@@ -27,7 +27,7 @@ function inferFromSchemaType(typeDef, schema, visited = new Set()) {
 
   const type = typeDef.type
   const typed = Rule[typeDef.jsonType]
-  let base = typed ? typed() : new Rule()
+  let base = typed ? typed(typeDef) : new Rule(typeDef)
 
   if (type && type.name === 'datetime') {
     base = base.type('Date')
