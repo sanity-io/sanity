@@ -1,6 +1,6 @@
 {
   "name": "@sanity/base",
-  "version": "0.140.12",
+  "version": "0.140.17",
   "description": "Sanity plugin containing the base components and roles for a Sanity configuration",
   "main": "lib/index.js",
   "scripts": {
@@ -28,14 +28,14 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
-    "@sanity/client": "0.140.11",
+    "@sanity/client": "0.140.17",
     "@sanity/document-store": "0.140.0",
     "@sanity/image-url": "0.140.12",
     "@sanity/observable": "0.140.0",
     "@sanity/preview": "0.140.12",
-    "@sanity/schema": "0.140.9",
+    "@sanity/schema": "0.140.17",
     "@sanity/state-router": "0.140.0",
-    "@sanity/validation": "0.140.3",
+    "@sanity/validation": "0.140.17",
     "history": "^4.6.3",
     "in-publish": "^2.0.0",
     "lodash": "^4.17.4",
