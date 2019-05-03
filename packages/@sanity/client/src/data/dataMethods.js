@@ -42,7 +42,7 @@ module.exports = {
   fetch(query, params, options = {}) {
     const mapResponse = options.filterResponse === false ? res => res : res => res.result
 
-    const observable = this._dataRequest('query', {query, params}).pipe(map(mapResponse))
+    const observable = this._dataRequest('query', {query, params}, options).pipe(map(mapResponse))
     return this.isPromiseAPI() ? toPromise(observable) : observable
   },
 
@@ -108,6 +108,7 @@ module.exports = {
     const useGet = !isMutation && strQuery.length < getQuerySizeLimit
     const stringQuery = useGet ? strQuery : ''
     const returnFirst = options.returnFirst
+    const {timeout, token} = options
 
     const uri = this.getDataUrl(endpoint, stringQuery)
 
@@ -116,7 +117,9 @@ module.exports = {
       uri: uri,
       json: true,
       body: useGet ? undefined : body,
-      query: isMutation && getMutationQuery(options)
+      query: isMutation && getMutationQuery(options),
+      timeout,
+      token
     }
 
     return this._requestObservable(reqOptions).pipe(

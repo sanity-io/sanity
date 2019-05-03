@@ -1,20 +1,24 @@
+const assign = require('object-assign')
+
 const projectHeader = 'X-Sanity-Project-ID'
 
-module.exports = config => {
+module.exports = (config, overrides = {}) => {
   const headers = {}
 
-  if (config.token) {
-    headers.Authorization = `Bearer ${config.token}`
+  const token = overrides.token || config.token
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
   }
 
   if (!config.useProjectHostname && config.projectId) {
     headers[projectHeader] = config.projectId
   }
 
-  return {
-    headers: headers,
-    timeout: 'timeout' in config ? config.timeout : 30000,
+  const timeout = typeof overrides.timeout === 'undefined' ? config.timeout : overrides.timeout
+  return assign({}, overrides, {
+    headers: assign({}, headers, overrides.headers || {}),
+    timeout: typeof timeout === 'undefined' ? 5 * 60 * 1000 : timeout,
     json: true,
     withCredentials: Boolean(config.token || config.withCredentials)
-  }
+  })
 }

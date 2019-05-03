@@ -966,6 +966,24 @@ test('executes patch when commit() is called', t => {
     .then(t.end)
 })
 
+test('executes patch with given token override commit() is called', t => {
+  const expectedPatch = {patch: {id: 'abc123', inc: {count: 1}, set: {visited: true}}}
+  nock(projectHost(), {reqheaders: {Authorization: 'Bearer abc123'}})
+    .post('/v1/data/mutate/foo?returnIds=true&visibility=sync', {mutations: [expectedPatch]})
+    .reply(200, {transactionId: 'blatti'})
+
+  getClient()
+    .patch('abc123')
+    .inc({count: 1})
+    .set({visited: true})
+    .commit({returnDocuments: false, token: 'abc123'})
+    .then(res => {
+      t.equal(res.transactionId, 'blatti', 'applies given patch')
+    })
+    .catch(t.ifError)
+    .then(t.end)
+})
+
 test('returns patched document by default', t => {
   const expectedPatch = {patch: {id: 'abc123', inc: {count: 1}, set: {visited: true}}}
   const expectedBody = {mutations: [expectedPatch]}
@@ -1752,6 +1770,39 @@ test('includes token if set', t => {
 
   getClient({token})
     .fetch('foo.bar')
+    .then(docs => {
+      t.equal(docs.length, 0)
+    })
+    .catch(t.ifError)
+    .then(t.end)
+})
+
+test('allows overriding token', t => {
+  const qs = '?query=foo.bar'
+  const token = 'abcdefghijklmnopqrstuvwxyz'
+  const override = '123456789'
+  const reqheaders = {Authorization: `Bearer ${override}`}
+  nock(projectHost(), {reqheaders})
+    .get(`/v1/data/query/foo${qs}`)
+    .reply(200, {result: []})
+
+  getClient({token})
+    .fetch('foo.bar', {}, {token: override})
+    .then(docs => {
+      t.equal(docs.length, 0)
+    })
+    .catch(t.ifError)
+    .then(t.end)
+})
+
+test('allows overriding timeout', t => {
+  const qs = `?query=${encodeURIComponent('*[][0]')}`
+  nock(projectHost())
+    .get(`/v1/data/query/foo${qs}`)
+    .reply(200, {result: []})
+
+  getClient()
+    .fetch('*[][0]', {}, {timeout: 60 * 1000})
     .then(docs => {
       t.equal(docs.length, 0)
     })
