@@ -56,6 +56,10 @@ Object {
     "_sanityAsset": "image@file://./images/idx_abc123-3360x840.png",
     "_type": "image",
     "caption": "Scooter bike",
+    "nested": Object {
+      "_sanityAsset": "image@file://./images/idx_abc123-3360x840.png",
+      "_type": "image",
+    },
   },
   "name": "Scooter",
 }

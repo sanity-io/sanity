@@ -15,7 +15,7 @@ describe('asset handler', () => {
   test('can rewrite documents / queue downloads', done => {
     // prettier-ignore
     const docs = [
-      {_id: 'doc1', _type: 'bike', name: 'Scooter', image: {_type: 'image', caption: 'Scooter bike', asset: {_ref: 'image-idx_abc123-3360x840-png'}}},
+      {_id: 'doc1', _type: 'bike', name: 'Scooter', image: {_type: 'image', caption: 'Scooter bike', asset: {_ref: 'image-idx_abc123-3360x840-png'}, nested: {_type: 'image', asset: {_ref: 'image-idx_abc123-3360x840-png'}}}},
       {_id: 'doc2', _type: 'bike', name: 'Dupe', image: {_type: 'image', asset: {_ref: 'image-idx_abc123-3360x840-png'}}},
       {_id: 'doc3', _type: 'bike', name: 'Tandem', image: {_type: 'image', asset: {_ref: 'image-idx_abc456-310x282-jpg'}}},
       {_id: 'old4', _type: 'bike', name: 'Cool', image: {asset: {_ref: 'mzFgq1cvHSEeGscxBsRFoqKG'}}},
