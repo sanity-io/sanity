@@ -146,13 +146,19 @@ class AssetHandler {
       if (isModernAsset(assetId)) {
         const assetType = getAssetType(item)
         const filePath = `${assetType}s/${generateFilename(assetId)}`
-        return {_sanityAsset: `${assetType}@file://./${filePath}`, ...other}
+        return {
+          _sanityAsset: `${assetType}@file://./${filePath}`,
+          ...(await this.findAndModify(other, action))
+        }
       }
 
       // Legacy asset
       const type = this.assetsSeen.get(assetId) || (await this.lookupAssetType(assetId))
       const filePath = `${type}s/${generateFilename(assetId)}`
-      return {_sanityAsset: `${type}@file://./${filePath}`, ...other}
+      return {
+        _sanityAsset: `${type}@file://./${filePath}`,
+        ...(await this.findAndModify(other, action))
+      }
     }
 
     const newItem = {}
