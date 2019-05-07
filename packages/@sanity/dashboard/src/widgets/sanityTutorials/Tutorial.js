@@ -7,23 +7,27 @@ class Tutorial extends React.PureComponent {
     title: PropTypes.string.isRequired,
     posterURL: PropTypes.string,
     href: PropTypes.string.isRequired,
+    showPlayIcon: PropTypes.bool,
     presenterName: PropTypes.string.isRequired,
     presenterSubtitle: PropTypes.string.isRequired
   }
   static defaultProps = {
-    posterURL: null
+    posterURL: null,
+    showPlayIcon: false
   }
 
   render() {
-    const {title, posterURL, href, presenterName, presenterSubtitle} = this.props
+    const {title, posterURL, showPlayIcon, href, presenterName, presenterSubtitle} = this.props
 
     return (
       <a className={styles.root} href={href}>
         <div className={styles.posterContainer}>
           <img className={styles.poster} src={posterURL} />
-          <div className={styles.playIcon}>
-            <span />
-          </div>
+          {showPlayIcon && (
+            <div className={styles.playIcon}>
+              <span />
+            </div>
+          )}
         </div>
         <h3 className={styles.title}>{title}</h3>
         <div className={styles.byLine}>

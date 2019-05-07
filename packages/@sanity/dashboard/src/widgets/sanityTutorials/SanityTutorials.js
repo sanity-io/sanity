@@ -61,6 +61,7 @@ class SanityTutorials extends React.Component {
                   href={createUrl(guideOrTutorial.slug, guideOrTutorial._type)}
                   presenterName={presenter.name}
                   presenterSubtitle={`${distanceInWords(new Date(date), new Date())} ago`}
+                  showPlayIcon={feedItem.hasVideo}
                   posterURL={urlBuilder
                     .image(feedItem.poster)
                     .height(360)
