@@ -7,7 +7,6 @@
   display: grid;
   grid-gap: var(--medium-padding);
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  grid-template-rows: repeat(auto-fit, minmax(100px, 1fr));
   grid-auto-flow: dense;
 
   @nest & > div {
