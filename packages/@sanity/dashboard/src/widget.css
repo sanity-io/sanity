@@ -26,11 +26,10 @@
 }
 
 .content {
-  flex: 1;
   display: block;
   margin: 0;
   padding: 0;
-  min-height: 21.5rem;
+  min-height: 21.5em;
 
   @media (--screen-medium) {
     height: stretch;
@@ -45,6 +44,7 @@
   min-height: 4em;
   height: 4em;
   margin-top: auto;
+  overflow: hidden;
 
   @nest & > * {
     width: 100%;

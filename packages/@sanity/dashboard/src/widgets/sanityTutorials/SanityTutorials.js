@@ -8,8 +8,13 @@ import dataAdapter from './dataAdapter'
 
 const {urlBuilder, getFeed} = dataAdapter
 
-function createUrl(slug) {
-  return `https://www.sanity.io/docs/guides/${slug.current}`
+function createUrl(slug, type) {
+  if (type === 'tutorial') {
+    return `https://www.sanity.io/docs/tutorials/${slug.current}`
+  } else if (type === 'guide') {
+    return `https://www.sanity.io/docs/guides/${slug.current}`
+  }
+  return false
 }
 
 class SanityTutorials extends React.Component {
@@ -44,18 +49,22 @@ class SanityTutorials extends React.Component {
         </header>
         <ul className={styles.grid}>
           {feedItems.map(feedItem => {
-            if (!feedItem.title) {
+            if (!feedItem.title || (!feedItem.guideOrTutorial && !feedItem.externalLink)) {
               return null
             }
             const presenter = feedItem.presenter || get(feedItem, 'guideOrTutorial.presenter') || {}
             const date = get(feedItem, 'guideOrTutorial._createdAt')
+            const {guideOrTutorial = {}} = feedItem
             return (
               <li key={feedItem._id}>
                 <Tutorial
                   title={feedItem.title}
-                  href={createUrl(get(feedItem, 'guideOrTutorial.slug'))}
+                  href={
+                    createUrl(guideOrTutorial.slug, guideOrTutorial._type) || feedItem.externalLink
+                  }
                   presenterName={presenter.name}
                   presenterSubtitle={`${distanceInWords(new Date(date), new Date())} ago`}
+                  showPlayIcon={feedItem.hasVideo}
                   posterURL={urlBuilder
                     .image(feedItem.poster)
                     .height(360)

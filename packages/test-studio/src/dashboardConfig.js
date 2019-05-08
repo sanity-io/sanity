@@ -13,9 +13,6 @@ export default {
       name: 'sanity-tutorials',
       layout: {
         width: 'full'
-      },
-      options: {
-        templateRepoId: 'sanity-io/sanity-template-gatsby-blog'
       }
     },
     {name: 'document-list'},
