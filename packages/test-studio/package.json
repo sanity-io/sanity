@@ -1,7 +1,7 @@
 {
   "name": "test-studio",
   "private": true,
-  "version": "0.140.18",
+  "version": "0.140.19",
   "description": "A bloated, ugly Sanity studio with a contrived schema for edge case testing and development",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
@@ -24,7 +24,7 @@
     "@sanity/color-input": "0.140.3",
     "@sanity/components": "0.140.18",
     "@sanity/core": "0.140.18",
-    "@sanity/dashboard": "0.140.17",
+    "@sanity/dashboard": "0.140.19",
     "@sanity/default-layout": "0.140.18",
     "@sanity/default-login": "0.140.15",
     "@sanity/desk-tool": "0.140.18",

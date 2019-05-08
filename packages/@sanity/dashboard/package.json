@@ -1,6 +1,6 @@
 {
   "name": "@sanity/dashboard",
-  "version": "0.140.17",
+  "version": "0.140.19",
   "description": "Tool for rendering dashboard widgets",
   "main": "src/DashboardTool.js",
   "author": "Sanity.io <hello@sanity.io>",
