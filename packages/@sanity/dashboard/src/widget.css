@@ -44,7 +44,7 @@
   min-height: 4em;
   height: 4em;
   margin-top: auto;
-  overflow:hidden;
+  overflow: hidden;
 
   @nest & > * {
     width: 100%;
