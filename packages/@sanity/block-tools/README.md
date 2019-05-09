@@ -2,6 +2,12 @@
 
 Various tools for processing Sanity block content. Mostly used internally in the Studio code, but it got some nice functions (especially `htmlToBlocks`) which is handy when you are importing data from HTML into your dataset as block text.
 
+**NOTE:** If you want to use `@sanity/block-tools` in a Node.js script, make sure to run it with `sanity exec` (see [docs](https://www.sanity.io/docs/cli/exec)):
+
+```sh
+sanity exec path/to/script.js
+```
+
 ## Example
 
 Let's start with a complete example:
