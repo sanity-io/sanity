@@ -18,6 +18,7 @@
     "example-studio"
   ],
   "dependencies": {
+    "@sanity/block-tools": "0.140.17",
     "@sanity/base": "0.140.17",
     "@sanity/cli": "0.140.17",
     "@sanity/code-input": "0.140.12",
