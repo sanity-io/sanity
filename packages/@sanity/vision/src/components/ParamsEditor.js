@@ -1,7 +1,9 @@
+/* eslint-disable import/no-commonjs */
+/* eslint-disable import/no-unassigned-import */
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import ReactCodeMirror from 'react-codemirror2'
+import {UnControlled as ReactCodeMirror} from 'react-codemirror2'
 import isPlainObject from '../util/isPlainObject'
 import tryParseParams from '../util/tryParseParams'
 
@@ -33,10 +35,11 @@ class ParamsEditor extends React.PureComponent {
   }
 
   render() {
-    const {className, classNameInvalid} = this.props
+    const {className, classNameInvalid, height} = this.props
     const options = {
       lineNumbers: true,
       tabSize: 2,
+      height,
       mode: {name: 'javascript', json: true},
       autoCloseBrackets: true
     }
@@ -46,6 +49,7 @@ class ParamsEditor extends React.PureComponent {
         value={this.props.value}
         onChange={this.handleChange}
         options={options}
+        autoCursor={false}
       />
     )
   }
@@ -56,15 +60,15 @@ ParamsEditor.propTypes = {
   classNameInvalid: PropTypes.string,
   onExecute: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
-  onHeightChange: PropTypes.func,
   value: PropTypes.string,
-  style: PropTypes.object // eslint-disable-line react/forbid-prop-types
+  height: PropTypes.number
 }
 
 ParamsEditor.defaultProps = {
   value: '{\n  \n}',
   className: 'vision_params-editor',
-  classNameInvalid: 'vision_params-editor-invalid'
+  classNameInvalid: 'vision_params-editor-invalid',
+  height: 100
 }
 
 export default ParamsEditor

@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import React from 'react'
 import PropTypes from 'prop-types'
 import queryString from 'query-string'
@@ -12,6 +13,12 @@ import NoResultsDialog from './NoResultsDialog'
 import QueryErrorDialog from './QueryErrorDialog'
 import SplitPane from 'react-split-pane'
 import encodeQueryString from '../util/encodeQueryString'
+import {debounce} from 'lodash'
+
+// eslint-disable-next-line import/no-unassigned-import
+import 'codemirror/lib/codemirror.css?raw'
+// eslint-disable-next-line import/no-unassigned-import
+import 'codemirror/theme/material.css?raw'
 
 const sanityUrl = /\.api\.sanity\.io.*?(?:query|listen)\/(.*?)\?(.*)/
 
@@ -43,13 +50,17 @@ class VisionGui extends React.PureComponent {
       dataset = defaultDataset
     }
 
+    this._queryEditorContainer = React.createRef()
+    this._paramsEditorContainer = React.createRef()
+
     this.subscribers = {}
     this.state = {
       query: lastQuery,
       params: lastParams && tryParseParams(lastParams),
       rawParams: lastParams,
       queryInProgress: false,
-      editorHeight: 100,
+      queryEditorHeight: 100,
+      paramsEditorHeight: 100,
       dataset
     }
 
@@ -59,14 +70,22 @@ class VisionGui extends React.PureComponent {
     this.handleQueryExecution = this.handleQueryExecution.bind(this)
     this.handleQueryChange = this.handleQueryChange.bind(this)
     this.handleParamsChange = this.handleParamsChange.bind(this)
-    this.handleHeightChange = this.handleHeightChange.bind(this)
     this.handlePaste = this.handlePaste.bind(this)
   }
 
   componentDidMount() {
     this.context.client.config({dataset: this.state.dataset})
     window.document.addEventListener('paste', this.handlePaste)
+    this.handleResize()
   }
+
+  handleResize = debounce(() => {
+    if (this._paramsEditorContainer && this._queryEditorContainer) {
+      const queryEditorHeight = this._queryEditorContainer.current.offsetHeight
+      const paramsEditorHeight = this._paramsEditorContainer.current.offsetHeight
+      this.setState({queryEditorHeight, paramsEditorHeight})
+    }
+  }, 50)
 
   componentWillUnmount() {
     this.cancelQuery()
@@ -130,6 +149,7 @@ class VisionGui extends React.PureComponent {
   }
 
   handleListenerMutation(mut) {
+    // eslint-disable-next-line react/no-access-state-in-setstate
     const listenMutations = [mut].concat(this.state.listenMutations)
     if (listenMutations.length > 50) {
       listenMutations.pop()
@@ -234,12 +254,6 @@ class VisionGui extends React.PureComponent {
     this.setState({rawParams: data.raw, params: data.parsed})
   }
 
-  handleHeightChange(newHeight) {
-    if (this.state.editorHeight !== newHeight) {
-      this.setState({editorHeight: Math.max(newHeight, 75)})
-    }
-  }
-
   render() {
     const {client, components} = this.context
     const {
@@ -303,13 +317,21 @@ class VisionGui extends React.PureComponent {
                     : styles.queryTimingLong || 'queryTiming'
                 }
               >
-                Query time<br/>
-                <span>{queryTime}ms (end-to-end: {e2eTime}ms)</span>
+                Query time
+                <br />
+                <span>
+                  {queryTime}ms (end-to-end: {e2eTime}ms)
+                </span>
               </p>
             )}
           </div>
           <div className={styles.headerFunctions}>
-            <Button onClick={this.handleListenExecution} loading={listenInProgress} color="white" inverted>
+            <Button
+              onClick={this.handleListenExecution}
+              loading={listenInProgress}
+              color="white"
+              inverted
+            >
               Listen
             </Button>
 
@@ -321,20 +343,19 @@ class VisionGui extends React.PureComponent {
         <div className={styles.splitContainer}>
           <SplitPane split="vertical" minSize={150} defaultSize={400}>
             <div className={styles.edit}>
-              <SplitPane split="horizontal" defaultSize={'80%'}>
-                <div className={styles.inputContainer}>
+              <SplitPane split="horizontal" defaultSize={'80%'} onChange={this.handleResize}>
+                <div className={styles.inputContainer} ref={this._queryEditorContainer}>
                   <h3 className={styles.inputLabelQuery || 'query'}>Query</h3>
                   <QueryEditor
                     className={styles.queryEditor}
                     value={this.state.query}
                     onExecute={this.handleQueryExecution}
                     onChange={this.handleQueryChange}
-                    onHeightChange={this.handleHeightChange}
-                    style={{minHeight: this.state.editorHeight}}
                     schema={this.props.schema}
+                    height={this.state.queryEditorHeight}
                   />
                 </div>
-                <div className={styles.inputContainer}>
+                <div className={styles.inputContainer} ref={this._paramsEditorContainer}>
                   <h3 className={styles.inputLabelQuery || 'query'}>Params</h3>
                   <ParamsEditor
                     className={styles.paramsEditor}
@@ -342,8 +363,7 @@ class VisionGui extends React.PureComponent {
                     value={this.state.rawParams}
                     onExecute={this.handleQueryExecution}
                     onChange={this.handleParamsChange}
-                    onHeightChange={this.handleHeightChange}
-                    style={{minHeight: this.state.editorHeight}}
+                    height={this.state.paramsEditorHeight}
                   />
                 </div>
               </SplitPane>
@@ -354,10 +374,14 @@ class VisionGui extends React.PureComponent {
                 {queryInProgress && <DelayedSpinner />}
                 {error && <QueryErrorDialog error={error} />}
                 {hasResult && <ResultView data={result} query={query} />}
-                {Array.isArray(result) &&
-                  result.length === 0 && <div className={styles.noResult}><NoResultsDialog query={query} dataset={dataset} /></div>}
-                {listenMutations &&
-                  listenMutations.length > 0 && <ResultView data={listenMutations} />}
+                {Array.isArray(result) && result.length === 0 && (
+                  <div className={styles.noResult}>
+                    <NoResultsDialog query={query} dataset={dataset} />
+                  </div>
+                )}
+                {listenMutations && listenMutations.length > 0 && (
+                  <ResultView data={listenMutations} />
+                )}
               </div>
             </div>
           </SplitPane>
@@ -368,6 +392,7 @@ class VisionGui extends React.PureComponent {
 }
 
 VisionGui.propTypes = {
+  schema: PropTypes.object,
   datasets: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string
