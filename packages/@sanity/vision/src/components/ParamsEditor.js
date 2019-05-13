@@ -34,10 +34,11 @@ class ParamsEditor extends React.PureComponent {
   }
 
   render() {
-    const {className, classNameInvalid} = this.props
+    const {className, classNameInvalid, height} = this.props
     const options = {
       lineNumbers: true,
       tabSize: 2,
+      height,
       mode: {name: 'javascript', json: true},
       autoCloseBrackets: true
     }

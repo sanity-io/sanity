@@ -13,6 +13,12 @@ import NoResultsDialog from './NoResultsDialog'
 import QueryErrorDialog from './QueryErrorDialog'
 import SplitPane from 'react-split-pane'
 import encodeQueryString from '../util/encodeQueryString'
+import {debounce} from 'lodash'
+
+// eslint-disable-next-line import/no-unassigned-import
+import 'codemirror/lib/codemirror.css?raw'
+// eslint-disable-next-line import/no-unassigned-import
+import 'codemirror/theme/material.css?raw'
 
 // eslint-disable-next-line import/no-unassigned-import
 import 'codemirror/lib/codemirror.css?raw'
@@ -75,7 +81,16 @@ class VisionGui extends React.PureComponent {
   componentDidMount() {
     this.context.client.config({dataset: this.state.dataset})
     window.document.addEventListener('paste', this.handlePaste)
+    this.handleResize()
   }
+
+  handleResize = debounce(() => {
+    if (this._paramsEditorContainer && this._queryEditorContainer) {
+      const queryEditorHeight = this._queryEditorContainer.current.offsetHeight
+      const paramsEditorHeight = this._paramsEditorContainer.current.offsetHeight
+      this.setState({queryEditorHeight, paramsEditorHeight})
+    }
+  }, 50)
 
   componentWillUnmount() {
     this.cancelQuery()
@@ -342,6 +357,7 @@ class VisionGui extends React.PureComponent {
                     onExecute={this.handleQueryExecution}
                     onChange={this.handleQueryChange}
                     schema={this.props.schema}
+                    height={this.state.queryEditorHeight}
                   />
                 </div>
                 <div className={styles.inputContainer} ref={this._paramsEditorContainer}>
