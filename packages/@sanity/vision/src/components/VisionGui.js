@@ -19,6 +19,8 @@ import {debounce} from 'lodash'
 import 'codemirror/lib/codemirror.css?raw'
 // eslint-disable-next-line import/no-unassigned-import
 import 'codemirror/theme/material.css?raw'
+// eslint-disable-next-line import/no-unassigned-import
+import 'codemirror/addon/hint/show-hint.css?raw'
 
 // eslint-disable-next-line import/no-unassigned-import
 import 'codemirror/lib/codemirror.css?raw'
