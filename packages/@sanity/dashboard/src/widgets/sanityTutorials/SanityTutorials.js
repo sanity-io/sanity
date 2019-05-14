@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {get} from 'lodash'
-import {distanceInWords} from 'date-fns'
 import Tutorial from './Tutorial'
 import styles from './SanityTutorials.css'
 import dataAdapter from './dataAdapter'
@@ -42,6 +41,7 @@ class SanityTutorials extends React.Component {
   render() {
     const {feedItems} = this.state
     const title = 'Learn about Sanity'
+
     return (
       <div className={styles.root}>
         <header className={styles.header}>
@@ -53,7 +53,7 @@ class SanityTutorials extends React.Component {
               return null
             }
             const presenter = feedItem.presenter || get(feedItem, 'guideOrTutorial.presenter') || {}
-            const date = get(feedItem, 'guideOrTutorial._createdAt')
+            const subtitle = get(feedItem, 'category')
             const {guideOrTutorial = {}} = feedItem
             return (
               <li key={feedItem._id}>
@@ -63,7 +63,7 @@ class SanityTutorials extends React.Component {
                     createUrl(guideOrTutorial.slug, guideOrTutorial._type) || feedItem.externalLink
                   }
                   presenterName={presenter.name}
-                  presenterSubtitle={`${distanceInWords(new Date(date), new Date())} ago`}
+                  presenterSubtitle={subtitle}
                   showPlayIcon={feedItem.hasVideo}
                   posterURL={urlBuilder
                     .image(feedItem.poster)
