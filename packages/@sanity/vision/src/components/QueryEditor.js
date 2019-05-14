@@ -55,7 +55,6 @@ class QueryEditor extends React.PureComponent {
       tabSize: 2,
       mode: {name: 'javascript', json: true},
       hintOptions: {hint: this.getHint},
-      height: this.props.height,
       extraKeys: {
         'Ctrl-Space': 'autocomplete',
         'Ctrl-Enter': this.props.onExecute
