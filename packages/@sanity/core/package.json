@@ -1,6 +1,6 @@
 {
   "name": "@sanity/core",
-  "version": "0.140.20",
+  "version": "0.140.21",
   "description": "Sanity core bundle, containing required packages for the development and build process",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -25,7 +25,7 @@
     "@babel/preset-react": "^7.0.0",
     "@babel/register": "^7.0.0",
     "@sanity/check": "0.140.3",
-    "@sanity/export": "0.140.18",
+    "@sanity/export": "0.140.21",
     "@sanity/generate-help-url": "0.140.0",
     "@sanity/import": "0.140.20",
     "@sanity/mutator": "0.140.0",
