@@ -17,7 +17,6 @@ class ParamsEditor extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = {valid: true}
-
     this.handleChange = this.handleChange.bind(this)
     this.handleKeyUp = this.handleKeyUp.bind(this)
   }
@@ -35,11 +34,10 @@ class ParamsEditor extends React.PureComponent {
   }
 
   render() {
-    const {className, classNameInvalid, height} = this.props
+    const {className, classNameInvalid} = this.props
     const options = {
       lineNumbers: true,
       tabSize: 2,
-      height,
       mode: {name: 'javascript', json: true},
       autoCloseBrackets: true
     }
@@ -50,6 +48,7 @@ class ParamsEditor extends React.PureComponent {
         onChange={this.handleChange}
         options={options}
         autoCursor={false}
+        autoScroll
       />
     )
   }
