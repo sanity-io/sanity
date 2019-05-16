@@ -7,7 +7,7 @@ const getHashedBufferForUri = require('./util/getHashedBufferForUri')
 const retryOnFailure = require('./util/retryOnFailure')
 
 const ASSET_UPLOAD_CONCURRENCY = 3
-const ASSET_PATCH_CONCURRENCY = 3
+const ASSET_PATCH_CONCURRENCY = 1
 const ASSET_PATCH_BATCH_SIZE = 50
 
 async function uploadAssets(assets, options) {
