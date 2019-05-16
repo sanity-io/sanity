@@ -321,13 +321,12 @@ export default class Editor extends React.Component<Props> {
           throw result
         }
         if (result && result.insert) {
-          const patches =
+          const patches = [
+            setIfMissing(result.insert),
             this.props.value && this.props.value.length !== 0
-              ? [
-                  setIfMissing(result.insert),
-                  insert(result.insert, 'after', result.path || focusPath)
-                ]
-              : [setIfMissing(result.insert), set(result.insert, [])]
+              ? insert(result.insert, 'after', result.path || focusPath)
+              : set(result.insert, [])
+          ]
           onPatch(PatchEvent.from(patches))
           onLoading({paste: null})
           return result.insert
