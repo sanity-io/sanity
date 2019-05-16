@@ -4,7 +4,7 @@ const {parse: parseUrl, format: formatUrl} = require('url')
 const fse = require('fs-extra')
 const miss = require('mississippi')
 const PQueue = require('p-queue')
-const {omit} = require('lodash')
+const {omit, noop} = require('lodash')
 const pkg = require('../package.json')
 const requestStream = require('./requestStream')
 const debug = require('./debug')
@@ -24,8 +24,9 @@ class AssetHandler {
     this.filesWritten = 0
     this.queueSize = 0
     this.queue = options.queue || new PQueue({concurrency: 3})
-    this.reject = () => {
-      throw new Error('Asset handler errored before `finish()` was called')
+    this.rejectedError = null
+    this.reject = err => {
+      this.rejectedError = err
     }
   }
 
@@ -37,6 +38,11 @@ class AssetHandler {
 
   finish() {
     return new Promise((resolve, reject) => {
+      if (this.rejectedError) {
+        reject(this.rejectedError)
+        return
+      }
+
       this.reject = reject
       this.queue.onIdle().then(() => resolve(this.assetMap))
     })
@@ -126,7 +132,13 @@ class AssetHandler {
 
     if (stream.statusCode !== 200) {
       this.queue.clear()
-      this.reject(new Error(`Referenced asset URL "${url}" returned HTTP ${stream.statusCode}`))
+      const err = await tryGetErrorFromStream(stream)
+      let errMsg = `Referenced asset URL "${url}" returned HTTP ${stream.statusCode}`
+      if (err) {
+        errMsg = `${errMsg}:\n\n${err}`
+      }
+
+      this.reject(new Error(errMsg))
       return false
     }
 
@@ -281,6 +293,25 @@ function writeHashedStream(filePath, stream) {
             })
     )
   )
+}
+
+function tryGetErrorFromStream(stream) {
+  return new Promise((resolve, reject) => {
+    miss.pipe(
+      stream,
+      miss.concat(parse),
+      err => (err ? reject(err) : noop)
+    )
+
+    function parse(body) {
+      try {
+        const parsed = JSON.parse(body.toString('utf8'))
+        resolve(parsed.message || parsed.error || null)
+      } catch (err) {
+        resolve(body.toString('utf8').slice(0, 16000))
+      }
+    }
+  })
 }
 
 module.exports = AssetHandler
