@@ -6,7 +6,7 @@ const serializePath = require('./serializePath')
 const progressStepper = require('./util/progressStepper')
 const retryOnFailure = require('./util/retryOnFailure')
 
-const STRENGTHEN_CONCURRENCY = 3
+const STRENGTHEN_CONCURRENCY = 1
 const STRENGTHEN_BATCH_SIZE = 30
 
 function getStrongRefs(doc) {
