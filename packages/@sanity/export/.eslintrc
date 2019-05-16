@@ -4,6 +4,7 @@
     "node": true
   },
   "rules": {
-    "import/no-commonjs": "off"
+    "import/no-commonjs": "off",
+    "complexity": ["warn", 15]
   }
 }
