@@ -138,11 +138,19 @@ class AssetHandler {
 
     // If we have an ETag, it should be the md5 sum of the image
     // Verify it against our downloaded stream to make sure we have the same copy
+    const remoteSha1 = stream.headers['x-sanity-sha1']
     const etag = stream.headers.etag
-    const differs = etag && etag !== md5
+    const method = etag ? 'md5' : 'sha1'
+
+    let differs = false
+    if (etag) {
+      differs = etag !== md5
+    } else if (remoteSha1) {
+      differs = remoteSha1 !== sha1
+    }
 
     if (differs && attemptNum < 3) {
-      debug('ETag does not match downloaded asset, retrying (#%d)', attemptNum + 1)
+      debug('%s does not match downloaded asset, retrying (#%d)', method, attemptNum + 1)
       return this.downloadAsset(assetDoc, dstPath, attemptNum + 1)
     } else if (differs) {
       await fse.unlink(tmpPath)
