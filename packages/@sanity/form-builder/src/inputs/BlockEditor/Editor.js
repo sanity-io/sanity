@@ -13,7 +13,7 @@ import insertBlockOnEnter from 'slate-insert-block-on-enter'
 import onPasteFromPart from 'part:@sanity/form-builder/input/block-editor/on-paste?'
 import onCopy from 'part:@sanity/form-builder/input/block-editor/on-copy?'
 
-import PatchEvent, {insert} from '../../../PatchEvent'
+import PatchEvent, {insert, set, setIfMissing} from '../../../PatchEvent'
 import type {
   BlockContentFeatures,
   FormBuilderValue,
@@ -321,7 +321,13 @@ export default class Editor extends React.Component<Props> {
           throw result
         }
         if (result && result.insert) {
-          onPatch(PatchEvent.from([insert(result.insert, 'after', result.path || focusPath)]))
+          const patches = [
+            setIfMissing(result.insert),
+            this.props.value && this.props.value.length !== 0
+              ? insert(result.insert, 'after', result.path || focusPath)
+              : set(result.insert, [])
+          ]
+          onPatch(PatchEvent.from(patches))
           onLoading({paste: null})
           return result.insert
         }
