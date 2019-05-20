@@ -223,9 +223,9 @@ export default class InlineObject extends React.Component<Props, State> {
   handleInvalidValue = (event: PatchEvent) => {
     let _event = event
     const {editor, onPatch} = this.props
-    const {focusBlock} = editor.value
     const value = this.getValue()
-    const path = [{_key: focusBlock.key}, 'children', {_key: value._key}]
+    const parentBlock = editor.value.document.getClosestBlock(value._key)
+    const path = [{_key: parentBlock.key}, 'children', {_key: value._key}]
     path.reverse().forEach(part => {
       _event = _event.prefixAll(part)
     })
@@ -276,6 +276,11 @@ export default class InlineObject extends React.Component<Props, State> {
     return this.props.node.data.get('value')
   }
 
+  handleInvalidTypeContainerClick = event => {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
   // eslint-disable-next-line complexity
   render() {
     const {
@@ -294,7 +299,7 @@ export default class InlineObject extends React.Component<Props, State> {
 
     if (!validTypes.includes(valueType)) {
       return (
-        <div onClick={this.handleCancelEvent}>
+        <div {...attributes} onClick={this.handleInvalidTypeContainerClick} contentEditable={false}>
           <InvalidValue
             validTypes={validTypes}
             actualType={valueType}

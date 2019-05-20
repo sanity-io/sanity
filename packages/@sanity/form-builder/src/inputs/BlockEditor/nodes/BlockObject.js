@@ -404,6 +404,11 @@ export default class BlockObject extends React.Component<Props, State> {
     )
   }
 
+  handleInvalidTypeContainerClick = event => {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
   render() {
     const {
       attributes,
@@ -423,7 +428,7 @@ export default class BlockObject extends React.Component<Props, State> {
 
     if (!validTypes.includes(valueType)) {
       return (
-        <div {...attributes}>
+        <div {...attributes} onClick={this.handleInvalidTypeContainerClick} contentEditable={false}>
           <InvalidValue
             validTypes={validTypes}
             actualType={valueType}
