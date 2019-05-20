@@ -141,7 +141,7 @@ export default class SearchableSelect extends React.PureComponent {
         <StatelessSearchableSelect
           {...rest}
           {...changeHandlers}
-          placeholder={readOnly ? 'No value' : placeholder}
+          placeholder={placeholder}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
           onHighlightIndexChange={this.handleHighlightIndexChange}
