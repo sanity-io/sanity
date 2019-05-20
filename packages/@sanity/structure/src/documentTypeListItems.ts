@@ -27,25 +27,25 @@ function shouldShowIcon(schemaType: SchemaType): boolean {
 export function getDocumentTypeListItems(schema: Schema = defaultSchema): ListItemBuilder[] {
   const resolver = getDataAspectsForSchema(schema)
   const types = resolver.getInferredTypes()
-  return types.map(name => getDocumentTypeListItem(name, schema))
+  return types.map(typeName => getDocumentTypeListItem(typeName, schema))
 }
 
 export function getDocumentTypeListItem(
-  name: string,
+  typeName: string,
   schema: Schema = defaultSchema
 ): ListItemBuilder {
-  const type = schema.get(name)
+  const type = schema.get(typeName)
   if (!type) {
-    throw new Error(`Schema type with name "${name}" not found`)
+    throw new Error(`Schema type with name "${typeName}" not found`)
   }
 
   const resolver = getDataAspectsForSchema(schema)
-  const title = resolver.getDisplayName(name)
+  const title = resolver.getDisplayName(typeName)
   return new ListItemBuilder()
-    .id(name)
+    .id(typeName)
     .title(title)
     .schemaType(type)
-    .child(getDocumentTypeList(name, schema))
+    .child(getDocumentTypeList(typeName, schema))
 }
 
 export function getDocumentTypeList(
