@@ -35,6 +35,10 @@ export function getDocumentTypeListItem(
   schema: Schema = defaultSchema
 ): ListItemBuilder {
   const type = schema.get(name)
+  if (!type) {
+    throw new Error(`Schema type with name "${name}" not found`)
+  }
+
   const resolver = getDataAspectsForSchema(schema)
   const title = resolver.getDisplayName(name)
   return new ListItemBuilder()
@@ -49,6 +53,10 @@ export function getDocumentTypeList(
   schema: Schema = defaultSchema
 ): DocumentListBuilder {
   const type = schema.get(typeName)
+  if (!type) {
+    throw new Error(`Schema type with name "${typeName}" not found`)
+  }
+
   const resolver = getDataAspectsForSchema(schema)
   const title = resolver.getDisplayName(typeName)
   const showIcons = shouldShowIcon(type)
