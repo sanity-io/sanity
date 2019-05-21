@@ -190,16 +190,7 @@ export default class ReferenceInput extends React.Component<Props, State> {
   }
 
   render() {
-    const {
-      type,
-      value,
-      level,
-      markers,
-      readOnly,
-      onSearch,
-      getPreviewSnapshot,
-      ...rest
-    } = this.props
+    const {type, value, level, markers, readOnly} = this.props
 
     const {previewSnapshot, isFetching, hits} = this.state
     const valueFromHit = value && hits.find(hit => hit._id === value._ref)
@@ -220,6 +211,9 @@ export default class ReferenceInput extends React.Component<Props, State> {
       inputValue = 'Untitled document'
     }
 
+    const isLoadingSnapshot = value && value._ref && !previewSnapshot
+    const placeholder = isLoadingSnapshot ? 'Loading…' : 'Type to search…'
+
     return (
       <FormField markers={markers} label={type.title} level={level} description={type.description}>
         <div className={hasWeakMismatch || isMissing ? styles.hasWarnings : ''}>
@@ -233,7 +227,7 @@ export default class ReferenceInput extends React.Component<Props, State> {
             </div>
           )}
           <SearchableSelect
-            placeholder="Type to search…"
+            placeholder={placeholder}
             title={
               isMissing && hasRef
                 ? `Document id: ${value._ref || 'unknown'}`
@@ -249,10 +243,10 @@ export default class ReferenceInput extends React.Component<Props, State> {
             value={valueFromHit || value}
             inputValue={isMissing ? '<Unpublished or missing document>' : inputValue}
             renderItem={this.renderHit}
-            isLoading={isFetching}
+            isLoading={isFetching || isLoadingSnapshot}
             items={hits}
             ref={this.setInput}
-            readOnly={readOnly}
+            readOnly={readOnly || isLoadingSnapshot}
           />
         </div>
       </FormField>
