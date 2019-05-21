@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import {startCase} from 'lodash'
 import schema from 'part:@sanity/base/schema'
-import DataAspectsResolver from 'part:@sanity/data-aspects/resolver'
+import DataAspectsResolver from 'part:@sanity/data-aspects/resolver?'
 import AppLoadingScreen from 'part:@sanity/base/app-loading-screen'
 import {RouteScope, withRouterHOC} from 'part:@sanity/base/router'
 import absolutes from 'all:part:@sanity/base/absolutes'
@@ -14,7 +15,19 @@ import NavBarContainer from './NavBarContainer'
 import {SchemaErrorReporter} from './SchemaErrorReporter'
 import SideMenu from './SideMenu'
 
-const dataAspects = new DataAspectsResolver(schema)
+let dataAspects
+if (DataAspectsResolver) {
+  dataAspects = new DataAspectsResolver(schema)
+}
+
+function getDocumentTypeNames() {
+  return dataAspects
+    ? dataAspects.getInferredTypes()
+    : schema.getTypeNames().filter(typeName => {
+        const schemaType = schema.get(typeName)
+        return schemaType.type && schemaType.type.name === 'document'
+      })
+}
 
 export default withRouterHOC(
   class DefaultLayout extends React.Component {
@@ -131,21 +144,16 @@ export default withRouterHOC(
       const {tools, router} = this.props
       const {createMenuIsOpen, menuIsOpen, searchIsOpen} = this.state
 
-      const TYPE_ITEMS = dataAspects
-        .getInferredTypes()
-        .filter(typeName => isActionEnabled(schema.get(typeName), 'create'))
-        .map(typeName => ({
-          key: typeName,
-          name: typeName,
-          title: dataAspects.getDisplayName(typeName),
-          icon: dataAspects.getIcon(typeName)
+      const modalActions = getDocumentTypeNames()
+        .map(typeName => schema.get(typeName))
+        .filter(type => isActionEnabled(type, 'create'))
+        .map(type => ({
+          title: dataAspects
+            ? dataAspects.getDisplayName(type.name)
+            : type.title || startCase(type.name),
+          icon: dataAspects ? dataAspects.getIcon(type.name) : type.icon,
+          params: {type: type.name}
         }))
-
-      const modalActions = TYPE_ITEMS.map(item => ({
-        title: item.title,
-        icon: item.icon,
-        params: {type: item.name}
-      }))
 
       const isOverlayVisible = menuIsOpen || searchIsOpen
       let className = styles.root
@@ -206,7 +214,9 @@ export default withRouterHOC(
           {createMenuIsOpen && (
             <ActionModal onClose={this.handleActionModalClose} actions={modalActions} />
           )}
-          {absolutes.map((Abs, i) => <Abs key={i} />)}
+          {absolutes.map((Abs, i) => (
+            <Abs key={i} />
+          ))}
         </div>
       )
     }
