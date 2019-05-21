@@ -74,7 +74,7 @@ function SideMenu(props) {
 }
 
 SideMenu.propTypes = {
-  activeToolName: PropTypes.string.isRequired,
+  activeToolName: PropTypes.string,
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onSignOut: PropTypes.func.isRequired,
@@ -88,6 +88,10 @@ SideMenu.propTypes = {
     profileImage: PropTypes.string,
     name: PropTypes.string.isRequired
   }).isRequired
+}
+
+SideMenu.defaultProps = {
+  activeToolName: ''
 }
 
 export default SideMenu
