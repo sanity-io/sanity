@@ -14,11 +14,13 @@ function resolveUrlStateWithDefaultSpace(state) {
 }
 
 function resolveUrlStateWithDefaultTool(state) {
-  if (!state || state.tool) {
+  const defaultTool = getOrderedTools()[0]
+  if (!state || state.tool || !defaultTool) {
     return state
   }
+
   return Object.assign({}, state, {
-    tool: getOrderedTools()[0].name
+    tool: defaultTool.name
   })
 }
 
