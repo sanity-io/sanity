@@ -29,7 +29,6 @@ type Props = {
   onPatch: (event: PatchEvent) => void,
   path: Path,
   readOnly?: boolean,
-  setFocus: void => void,
   type: Type,
   value: ?(FormBuilderValue[])
 }
@@ -134,7 +133,9 @@ export default class EditNode extends React.Component<Props> {
           title={title}
           padding="none"
         >
-          <DialogContent size="medium" padding="small">{this.renderInput()}</DialogContent>
+          <DialogContent size="medium" padding="small">
+            {this.renderInput()}
+          </DialogContent>
         </Popover>
       )
     }
