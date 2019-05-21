@@ -1,12 +1,12 @@
+import fs from 'fs'
 import os from 'os'
 import path from 'path'
-import fs from 'fs'
 import fse from 'fs-extra'
 import resolveFrom from 'resolve-from'
 import deburr from 'lodash/deburr'
 import noop from 'lodash/noop'
-import {reduceConfig} from '@sanity/util'
 import {loadJson} from '@sanity/util/lib/safeJson'
+import {reduceConfig} from '@sanity/util'
 import debug from '../../debug'
 import clientWrapper from '../../util/clientWrapper'
 import getUserConfig from '../../util/getUserConfig'
@@ -30,6 +30,7 @@ export default async function initSanity(args, context) {
   const cliFlags = args.extOptions
   const unattended = cliFlags.y || cliFlags.yes
   const print = unattended ? noop : output.print
+  const specifiedOutputPath = cliFlags['output-path']
   let reconfigure = cliFlags.reconfigure
 
   // Check if we have a project manifest already
@@ -43,6 +44,8 @@ export default async function initSanity(args, context) {
     // Intentional noop
   }
 
+  const toDifferentPath = specifiedOutputPath && absolutify(specifiedOutputPath) !== workDir
+
   // If explicitly reconfiguring, make sure we have something to reconfigure
   if (reconfigure && !inProjectContext) {
     throw new Error(
@@ -55,7 +58,7 @@ export default async function initSanity(args, context) {
   // If we are in a Sanity studio project folder and the project manifest has projectId/dataset,
   // ASK if we want to reconfigure. If no projectId/dataset is present, we assume reconfigure
   const hasProjectId = projectManifest && projectManifest.api && projectManifest.api.projectId
-  if (hasProjectId && !reconfigure) {
+  if (!toDifferentPath && hasProjectId && !reconfigure) {
     reconfigure = await promptImplicitReconfigure(prompt)
     if (!reconfigure) {
       print(
@@ -63,7 +66,7 @@ export default async function initSanity(args, context) {
       )
       return
     }
-  } else {
+  } else if (!toDifferentPath) {
     reconfigure = inProjectContext
   }
 
