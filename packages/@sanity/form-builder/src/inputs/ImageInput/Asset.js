@@ -105,6 +105,12 @@ export default class Asset extends React.PureComponent {
     const {asset, onClick, onKeyPress} = this.props
     const {isDeleting, dialogType} = this.state
     const size = 75
+    const dpi =
+      typeof window === 'undefined' || !window.devicePixelRatio
+        ? 1
+        : Math.ceil(window.devicePixelRatio)
+
+    const imgH = 100 * Math.max(1, dpi)
     const width = get(asset, 'metadata.dimensions.width') || 100
     const height = get(asset, 'metadata.dimensions.height') || 100
 
@@ -136,7 +142,7 @@ export default class Asset extends React.PureComponent {
         <i className={styles.padder} style={{paddingBottom: `${(height / width) * 100}%`}} />
         {/* We can not determine an alt text on image */}
         <img
-          src={`${asset.url}?h=100`}
+          src={`${asset.url}?h=${imgH}&fit=max`}
           className={styles.image}
           onClick={onClick}
           data-id={asset._id}
@@ -169,7 +175,6 @@ export default class Asset extends React.PureComponent {
                   <img src={`${asset.url}?w=200`} style={{maxWidth: '200px'}} />
                   <WithReferringDocuments id={asset._id}>
                     {({isLoading, referringDocuments}) => {
-
                       const drafts = referringDocuments.reduce(
                         (acc, doc) =>
                           doc._id.startsWith('drafts.') ? acc.concat(doc._id.slice(7)) : acc,
