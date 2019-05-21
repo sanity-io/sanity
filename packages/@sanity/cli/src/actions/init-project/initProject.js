@@ -369,7 +369,7 @@ export default async function initSanity(args, context) {
     const privateDatasetsAllowed = projectFeatures.includes('privateDataset')
     const allowedModes = privateDatasetsAllowed ? ['public', 'private'] : ['public']
 
-    if (opts.aclMode && allowedModes.includes(opts.aclMode)) {
+    if (opts.aclMode && !allowedModes.includes(opts.aclMode)) {
       throw new Error(`Visibility mode "${opts.aclMode}" not allowed`)
     }
 
