@@ -2,10 +2,10 @@ const os = require('os')
 const path = require('path')
 const fse = require('fs-extra')
 const json5 = require('json5')
-const uuid = require('@sanity/uuid')
 const execa = require('execa')
 const chokidar = require('chokidar')
 const {isPlainObject, isEqual, noop} = require('lodash')
+const uuid = require('@sanity/uuid')
 
 const helpText = `
 Options

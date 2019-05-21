@@ -24,7 +24,7 @@ export default {
   action: async (args, context) => {
     const {apiClient, output, chalk} = context
     const {pretty, dataset} = args.extOptions
-    const [docId] = args.argsWithoutOptions
+    const [docId] = args.argsWithoutOptions.map(str => `${str}`)
 
     if (!docId) {
       throw new Error('Document ID must be specified')
