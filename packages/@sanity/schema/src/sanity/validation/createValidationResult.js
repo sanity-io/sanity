@@ -3,6 +3,8 @@ import type {Severity, ValidationResult} from '../typedefs'
 
 // Temporary solution to ensure we have a central registry over used helpIds
 export const HELP_IDS = {
+  TYPE_INVALID: 'schema-type-invalid',
+  TYPE_IS_ESM_MODULE: 'schema-type-is-esm-module',
   TYPE_NAME_RESERVED: 'schema-type-name-reserved',
   TYPE_MISSING_NAME: 'schema-type-missing-name-or-type',
   TYPE_MISSING_TYPE: 'schema-type-missing-name-or-type',

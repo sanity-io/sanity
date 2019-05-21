@@ -20,7 +20,8 @@ const typeVisitors = {
   reference: reference
 }
 
-const NOOP_VISITOR = schemaDef => ({
+const getNoopVisitor = visitorContext => schemaDef => ({
+  name: `<unnamed_type_@_index_${visitorContext.index}>`,
   ...schemaDef,
   _problems: []
 })
@@ -45,10 +46,14 @@ function combine(...visitors) {
 // Clean up the api
 export default function validateSchema(schemaTypes) {
   return traverseSchema(schemaTypes, (schemaDef, visitorContext) => {
-    const typeVisitor = (schemaDef.type && typeVisitors[schemaDef.type]) || NOOP_VISITOR
+    const typeVisitor =
+      (schemaDef && schemaDef.type && typeVisitors[schemaDef.type]) ||
+      getNoopVisitor(visitorContext)
+
     if (visitorContext.isRoot) {
       return combine(rootType, common, typeVisitor)(schemaDef, visitorContext)
     }
+
     return combine(common, typeVisitor)(schemaDef, visitorContext)
   })
 }
