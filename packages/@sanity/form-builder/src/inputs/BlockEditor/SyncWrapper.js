@@ -151,20 +151,20 @@ export default withPatchSubscriber(
         loading: {},
         userIsWritingText: false
       }
-      let unNormalizedEditorValue
+      let displayValue = null
       try {
-        unNormalizedEditorValue =
+        displayValue =
           deprecatedSchema || deprecatedBlockValue || invalidBlockValue
             ? deserialize([], type)
             : deserialize(value, type)
       } catch (err) {
         this.state.invalidBlockValue = true
-        unNormalizedEditorValue = deserialize([], type)
+        displayValue = deserialize([], type)
       }
       this._blockContentFeatures = getBlockContentFeatures(type)
       const editorSchema = buildEditorSchema(this._blockContentFeatures)
       const controllerOpts = {
-        value: unNormalizedEditorValue,
+        value: displayValue,
         plugins: [
           {
             schema: editorSchema
