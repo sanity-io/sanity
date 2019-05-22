@@ -1,8 +1,8 @@
-import {DEFAULT_BLOCK} from '../constants'
-import blockContentTypeToOptions from '../util/blockContentTypeToOptions'
-import preprocessors from './preprocessors'
-import resolveJsType from '../util/resolveJsType'
 import {isEqual} from 'lodash'
+import {DEFAULT_BLOCK} from '../constants'
+import blockContentTypeFeatures from '../util/blockContentTypeFeatures'
+import resolveJsType from '../util/resolveJsType'
+import preprocessors from './preprocessors'
 
 /**
  * A utility function to create the options needed for the various rule sets,
@@ -13,11 +13,11 @@ import {isEqual} from 'lodash'
  */
 
 export function createRuleOptions(blockContentType) {
-  const options = blockContentTypeToOptions(blockContentType)
+  const features = blockContentTypeFeatures(blockContentType)
   const mapItem = item => item.value
-  const enabledBlockStyles = options.styles.map(mapItem)
-  const enabledSpanDecorators = options.decorators.map(mapItem)
-  const enabledBlockAnnotations = options.annotations.map(mapItem)
+  const enabledBlockStyles = features.styles.map(mapItem)
+  const enabledSpanDecorators = features.decorators.map(mapItem)
+  const enabledBlockAnnotations = features.annotations.map(mapItem)
   return {
     enabledBlockStyles,
     enabledSpanDecorators,

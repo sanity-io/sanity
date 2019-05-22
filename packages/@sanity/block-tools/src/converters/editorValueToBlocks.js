@@ -2,7 +2,7 @@ import {get, flatten, uniq, uniqBy} from 'lodash'
 import randomKey from '../util/randomKey'
 import normalizeBlock from '../util/normalizeBlock'
 import {BLOCK_DEFAULT_STYLE} from '../constants'
-import blockContentTypeToOptions from '../util/blockContentTypeToOptions'
+import blockContentTypeFeatures from '../util/blockContentTypeFeatures'
 
 function createCustomBlockFromData(block) {
   const {value} = block.data
@@ -113,7 +113,7 @@ function toSanityBlock(block, blockContentFeatures, options = {}) {
 }
 
 export default function editorValueToBlocks(value, type, options = {}) {
-  const blockContentFeatures = blockContentTypeToOptions(type)
+  const blockContentFeatures = blockContentTypeFeatures(type)
   const nodes = get(value, 'document.nodes')
   if (!nodes || nodes.length === 0) {
     return []

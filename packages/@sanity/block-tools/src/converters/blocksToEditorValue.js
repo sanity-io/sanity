@@ -1,7 +1,7 @@
 import {uniq} from 'lodash'
 import randomKey from '../util/randomKey'
 import resolveJsType from '../util/resolveJsType'
-import blockContentTypeToOptions from '../util/blockContentTypeToOptions'
+import blockContentTypeFeatures from '../util/blockContentTypeFeatures'
 import normalizeBlock from '../util/normalizeBlock'
 
 const EMPTY_TEXT_NODE = {
@@ -141,7 +141,10 @@ function sanityBlockItemToRaw(blockItem, blockContentFeatures) {
   }
   const type = blockContentFeatures.types.blockObjects
     .map(objType => objType.name)
-    .concat('block').includes(blockItem._type) ? blockItem._type : '__unknown'
+    .concat('block')
+    .includes(blockItem._type)
+    ? blockItem._type
+    : '__unknown'
   return {
     object: 'block',
     key: blockItem._key,
@@ -165,7 +168,7 @@ function sanityBlocksArrayToRawNodes(blockArray, type, blockContentFeatures, opt
 }
 
 export default function blocksToEditorValue(array, type, options = {}) {
-  const blockContentFeatures = blockContentTypeToOptions(type)
+  const blockContentFeatures = blockContentTypeFeatures(type)
   return {
     object: 'value',
     data: {},
