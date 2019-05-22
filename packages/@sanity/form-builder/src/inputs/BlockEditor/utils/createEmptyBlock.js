@@ -5,7 +5,7 @@ export default function createEmptyBlock(blockContentFeatures, options = {}) {
   const key = options.key || randomKey(12)
   const raw = {
     _key: key,
-    _type: 'block',
+    _type: blockContentFeatures.types.block.name,
     children: [
       {
         _type: 'span',
@@ -16,5 +16,8 @@ export default function createEmptyBlock(blockContentFeatures, options = {}) {
     ],
     style: options.style || 'normal'
   }
-  return deserialize([normalizeBlock(raw)], blockContentFeatures.types.block).document.nodes.first()
+  return deserialize(
+    [normalizeBlock(raw, blockContentFeatures.types.block)],
+    blockContentFeatures.types.blockArray
+  ).document.nodes.first()
 }

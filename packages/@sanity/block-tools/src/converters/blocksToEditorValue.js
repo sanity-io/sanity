@@ -91,13 +91,17 @@ function sanitySpanToRawSlateBlockNode(span, sanityBlock, blockContentFeatures, 
 
 // Block type object
 function sanityBlockToRawNode(sanityBlock, blockContentFeatures, options = {}) {
-  const {children, _type, markDefs, ...rest} = sanityBlock
-  if (!sanityBlock._key) {
-    sanityBlock._key = randomKey(12)
+  let rawBlock = {...sanityBlock}
+  if (!rawBlock._key) {
+    rawBlock._key = randomKey(12)
   }
+  if (options.normalize) {
+    rawBlock = normalizeBlock(rawBlock, blockContentFeatures.types.block)
+  }
+  const {children, _type, markDefs, ...rest} = rawBlock
   let restData = {}
   if (hasKeys(rest)) {
-    restData = {data: {_type, _key: sanityBlock._key, ...rest}}
+    restData = {data: {_type, _key: rawBlock._key, ...rest}}
     // Check if we should allow listItem if present
     const {listItem} = restData.data
     if (listItem && !blockContentFeatures.lists.find(list => list.value === listItem)) {
@@ -117,19 +121,16 @@ function sanityBlockToRawNode(sanityBlock, blockContentFeatures, options = {}) {
 
   const block = {
     object: 'block',
-    key: sanityBlock._key,
+    key: rawBlock._key,
     isVoid: false,
     type: 'contentBlock',
     ...restData,
     nodes:
       children.length > 0
         ? children.map(child =>
-            sanitySpanToRawSlateBlockNode(child, sanityBlock, blockContentFeatures, childIndex)
+            sanitySpanToRawSlateBlockNode(child, rawBlock, blockContentFeatures, childIndex)
           )
         : [EMPTY_TEXT_NODE]
-  }
-  if (options.normalize) {
-    return normalizeBlock(block)
   }
   return block
 }
@@ -141,9 +142,12 @@ function sanityBlockItemToRaw(blockItem, blockContentFeatures) {
   }
   const type = blockContentFeatures.types.blockObjects
     .map(objType => objType.name)
-    .concat('block').includes(blockItem._type) ? blockItem._type : '__unknown'
+    .concat(blockContentFeatures.types.block.name)
+    .includes(blockItem._type)
+    ? blockItem._type
+    : '__unknown'
   return {
-    object: 'block',
+    object: blockContentFeatures.types.block.name,
     key: blockItem._key,
     type,
     isVoid: true,
@@ -155,7 +159,7 @@ function sanityBlockItemToRaw(blockItem, blockContentFeatures) {
 function sanityBlockItemToRawNode(blockItem, type, blockContentFeatures, options) {
   const blockItemType = resolveTypeName(blockItem)
 
-  return blockItemType === 'block'
+  return blockItemType === blockContentFeatures.types.block.name
     ? sanityBlockToRawNode(blockItem, blockContentFeatures, options)
     : sanityBlockItemToRaw(blockItem, blockContentFeatures, options)
 }

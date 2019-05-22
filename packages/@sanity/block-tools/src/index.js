@@ -19,11 +19,11 @@ const blockContentFunctions = {
    *
    * @param {String} html
    *
-   * @param {Object} options
-   *   @property {Object} blockContentType
+   * @param {Object} blockContentType
    *      A compiled version of the schema type for the block content
+   * @param {Object} options
    *   @property {Array} rules
-   *      Optional rules working on the HTML (will be ruled first)
+   *      Optional rules working on the HTML (will be applied first)
    *   @property {Function} parseHtml
    *      API compatible model as returned from DOMParser for using server side.
    * @returns {Array} Blocks

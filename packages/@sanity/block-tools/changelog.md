@@ -1,1 +1,3 @@
+2019-03-19:  BREAKING: `normalizeBlock` now requires the block type to normalize to as a second parameter in order to support custom block types. It will now throw error unless the type is given, or the input block doesn't match the given type.
+
 2018-12-13:  BREAKING: Changed params for `htmlToBlocks` from `(html, options={blockContentType})` to `(html, blockContentType, options={}` as blockContentType is now required.

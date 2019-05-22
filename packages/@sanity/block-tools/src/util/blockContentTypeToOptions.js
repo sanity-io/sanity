@@ -65,14 +65,15 @@ export default function blockContentTypeToOptions(blockContentType) {
   const ofType = blockType.fields.find(field => field.name === 'children').type.of
   const spanType = ofType.find(memberType => memberType.name === 'span')
   const inlineObjectTypes = ofType.filter(memberType => memberType.name !== 'span')
-  const blockObjectTypes = blockContentType.of.filter(field => field.name !== 'block')
+  const blockObjectTypes = blockContentType.of.filter(field => field.name !== blockType.name)
   return {
     styles: resolveEnabledStyles(blockType),
     decorators: resolveEnabledDecorators(spanType),
     annotations: resolveEnabledAnnotationTypes(spanType),
     lists: resolveEnabledListItems(blockType),
     types: {
-      block: blockContentType,
+      blockArray: blockContentType,
+      block: blockType,
       span: spanType,
       inlineObjects: inlineObjectTypes,
       blockObjects: blockObjectTypes

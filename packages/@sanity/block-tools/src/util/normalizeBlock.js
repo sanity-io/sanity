@@ -1,14 +1,17 @@
 import {isEqual} from 'lodash'
 import randomKey from './randomKey'
 
-// For a block with _type 'block' (text), join spans where possible
-export default function normalizeBlock(block) {
+// Normalizes a block with a complete block structure, and optimizes spans
+export default function normalizeBlock(block, blockType) {
+  if (!blockType) {
+    throw new Error('You must input the block type definition')
+  }
   let newIndex = 0
   if (!block._key) {
     block._key = randomKey(12)
   }
-  if (block._type !== 'block') {
-    return block
+  if (block._type !== blockType.name) {
+    throw new Error("The input type doesn't match the given block type definition")
   }
   if (!block.children) {
     block.children = []

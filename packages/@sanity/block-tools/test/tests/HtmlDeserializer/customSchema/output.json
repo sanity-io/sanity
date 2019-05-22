@@ -1,6 +1,6 @@
 [
   {
-    "_type": "block",
+    "_type": "customBlock",
     "children": [
       { "_type": "span", "marks": [], "text": "A heading that is not allowed" }
     ],

@@ -419,7 +419,7 @@ export default class BlockObject extends React.Component<Props, State> {
     const valueType = resolveTypeName(value)
     const validTypes = blockContentFeatures.types.blockObjects
       .map(objType => objType.name)
-      .concat('block')
+      .concat(blockContentFeatures.types.block.name)
 
     if (!validTypes.includes(valueType)) {
       return (

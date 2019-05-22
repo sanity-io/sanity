@@ -7,6 +7,7 @@ import PatchEvent from '../../../PatchEvent'
 import createBlockActionPatchFn from './utils/createBlockActionPatchFn'
 
 import type {
+  BlockContentFeatures,
   Marker,
   Path,
   FormBuilderValue,
@@ -18,6 +19,7 @@ import type {
 } from './typeDefs'
 
 type Props = {
+  blockContentFeatures: BlockContentFeatures,
   editor: ?SlateEditor,
   editorValue: ?SlateValue,
   fullscreen: boolean,
@@ -78,12 +80,13 @@ export default class BlockExtrasOverlay extends React.Component<Props, State> {
   // eslint-disable-next-line complexity
   renderBlockExtras = (node: SlateNode) => {
     const {
-      onFocus,
-      renderCustomMarkers,
-      renderBlockActions,
-      onPatch,
+      blockContentFeatures,
+      editor,
       fullscreen,
-      editor
+      onFocus,
+      onPatch,
+      renderBlockActions,
+      renderCustomMarkers
     } = this.props
     const markers = this.props.markers.filter(
       marker => marker.path[0] && marker.path[0]._key && marker.path[0]._key === node.key
@@ -102,6 +105,7 @@ export default class BlockExtrasOverlay extends React.Component<Props, State> {
     const value = this.props.value || []
     if (renderBlockActions) {
       const block = value.find(blk => blk._key == node.key)
+      const blockType = blockContentFeatures.types.block
       const RenderComponent = renderBlockActions
       if (block) {
         actions = (
@@ -110,9 +114,9 @@ export default class BlockExtrasOverlay extends React.Component<Props, State> {
             block={block}
             value={value}
             path={[{_key: block._key}]}
-            set={createBlockActionPatchFn('set', block, onPatch)}
-            unset={createBlockActionPatchFn('unset', block, onPatch)}
-            insert={createBlockActionPatchFn('insert', block, onPatch)}
+            set={createBlockActionPatchFn('set', block, blockType, onPatch)}
+            unset={createBlockActionPatchFn('unset', block, blockType, onPatch)}
+            insert={createBlockActionPatchFn('insert', block, blockType, onPatch)}
           />
         )
       }

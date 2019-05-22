@@ -64,7 +64,7 @@ function getBlockStyle(el, enabledBlockStyles) {
   return block.style
 }
 
-export default function createGDocsRules(blockContentType, options = {}) {
+export default function createGDocsRules(blockContentFeatures) {
   return [
     {
       deserialize(el, next) {
@@ -90,9 +90,10 @@ export default function createGDocsRules(blockContentType, options = {}) {
         if (tagName(el) === 'li' && isGoogleDocs(el)) {
           return {
             ...DEFAULT_BLOCK,
+            _type: blockContentFeatures.types.block.name,
             listItem: getListItemStyle(el),
             level: getListItemLevel(el),
-            style: getBlockStyle(el, options.enabledBlockStyles),
+            style: getBlockStyle(el, blockContentFeatures.styles.map(style => style.value)),
             children: next(el.firstChild.childNodes)
           }
         }

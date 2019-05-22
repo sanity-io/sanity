@@ -7,7 +7,7 @@ export default function resolveInput(type) {
     return Slider
   }
 
-  if (type.name === 'array' && type.of.find(ofType => ofType.name === 'block')) {
+  if (type.name === 'array' && type.of.find(ofType => ofType.name === 'customBlock')) {
     return FunkyEditor
   }
 
