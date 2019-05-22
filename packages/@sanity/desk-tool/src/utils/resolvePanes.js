@@ -58,7 +58,7 @@ function resolveForStructure(structure, ids, prevStructure, fromIndex) {
         return
       }
 
-      if (!parent || typeof parent.child !== 'function') {
+      if (!parent || !parent.child) {
         subscriber.complete()
         return
       }
