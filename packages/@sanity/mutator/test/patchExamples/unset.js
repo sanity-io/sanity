@@ -130,5 +130,20 @@ export default [
     after: {
       a: [{key: 'two'}]
     }
+  },
+
+  {
+    name: 'Numeric key for string value',
+    before: {
+      a: [{key: '123'}],
+      b: [{key: 123}, {key: '123'}]
+    },
+    patch: {
+      unset: ['a[key==123]', 'b[key==123]']
+    },
+    after: {
+      a: [{key: '123'}],
+      b: [{key: '123'}]
+    }
   }
 ]

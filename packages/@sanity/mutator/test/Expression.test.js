@@ -42,6 +42,20 @@ test('Expression constraints', tap => {
   tap.equal(true, attrCompare.testConstraint(new PlainProbe({banana: 'rotten'})))
   tap.equal(false, attrCompare.testConstraint(new PlainProbe(7)))
 
+  const numCompare = new Expression(parse('[number == 123]').nodes[0])
+  tap.equal(false, numCompare.constraintTargetIsSelf())
+  tap.equal(true, numCompare.constraintTargetIsAttribute())
+  tap.equal(false, numCompare.testConstraint(new PlainProbe({number: '123'})))
+  tap.equal(true, numCompare.testConstraint(new PlainProbe({number: 123})))
+  tap.equal(false, numCompare.testConstraint(new PlainProbe(7)))
+
+  const strNumCompare = new Expression(parse('[number == "123"]').nodes[0])
+  tap.equal(false, strNumCompare.constraintTargetIsSelf())
+  tap.equal(true, strNumCompare.constraintTargetIsAttribute())
+  tap.equal(false, strNumCompare.testConstraint(new PlainProbe({number: 123})))
+  tap.equal(true, strNumCompare.testConstraint(new PlainProbe({number: '123'})))
+  tap.equal(false, strNumCompare.testConstraint(new PlainProbe(7)))
+
   tap.end()
 })
 
