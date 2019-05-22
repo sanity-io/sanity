@@ -55,7 +55,7 @@ function validateObject(obj, type, path, options) {
   // Validate fields within object
   const fields = type.fields || []
   const fieldChecks = fields.map(field => {
-    const validation = field.type.validation
+    const validation = field.type && field.type.validation
     if (!validation) {
       return []
     }
@@ -74,6 +74,16 @@ function validateObject(obj, type, path, options) {
 }
 
 function validateArray(items, type, path, options) {
+  if (!type) {
+    return [
+      {
+        type: 'validation',
+        level: 'error',
+        path,
+        item: new ValidationError('Unable to resolve type for array')
+      }
+    ]
+  }
   // Validate actual array itself
   let arrayChecks = []
   if (type.validation) {
