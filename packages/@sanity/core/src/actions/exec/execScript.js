@@ -1,5 +1,5 @@
-const path = require('path')
 const spawn = require('child_process').spawn
+const path = require('path')
 const fse = require('fs-extra')
 
 module.exports = async args => {
@@ -17,7 +17,7 @@ module.exports = async args => {
   }
 
   const babel = require.resolve('./babel')
-  const loader = require.resolve('@sanity/plugin-loader/register')
+  const loader = require.resolve('./pluginLoader')
   const nodeArgs = ['-r', babel, '-r', loader]
     .concat(withToken ? ['-r', require.resolve('./configClient')] : [])
     .concat(scriptPath)
