@@ -232,13 +232,6 @@ export default class InlineObject extends React.Component<Props, State> {
     onPatch(_event, value)
   }
 
-  handleRemoveValue = (event: SyntheticMouseEvent<>) => {
-    event.preventDefault()
-    event.stopPropagation()
-    const {node, editor} = this.props
-    editor.removeNodeByKey(node.key).focus()
-  }
-
   handleCancelEvent = (event: SyntheticEvent<>) => {
     event.stopPropagation()
     event.preventDefault()
