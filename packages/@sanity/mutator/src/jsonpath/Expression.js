@@ -198,7 +198,7 @@ function testBinaryOperator(lhsValue, operator, rhsValue) {
     case '<=':
       return lhsValue <= rhsValue
     case '==':
-      return lhsValue == rhsValue
+      return lhsValue === rhsValue
     case '!=':
       return lhsValue != rhsValue
     default:
