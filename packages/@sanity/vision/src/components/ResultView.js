@@ -1,28 +1,29 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import ResultCollection from './ResultCollection'
-import JsonDump from './JsonDump'
+import ReactJsonView from 'react-json-view'
 
-const dumpableTypes = ['string', 'number', 'boolean']
+function isJSONValue(data) {
+  return data !== null && typeof data === 'object'
+}
 
 function ResultView(props) {
-  const {data, viewMode} = props
+  const {data} = props
 
-  const isDumpable = data === null || dumpableTypes.includes(typeof data)
-  return isDumpable ? (
-    <JsonDump data={data} />
+  return isJSONValue(data) ? (
+    <ReactJsonView
+      name="result"
+      src={data}
+      displayDataTypes={false}
+      collapsed={3}
+      groupArraysAfterLength={50}
+    />
   ) : (
-    <ResultCollection data={data} viewMode={viewMode} />
+    <pre>{data || 'null'}</pre>
   )
 }
 
 ResultView.propTypes = {
-  data: PropTypes.any,
-  viewMode: PropTypes.oneOf(['inspector', 'dump'])
-}
-
-ResultView.defaultProps = {
-  viewMode: 'dump'
+  data: PropTypes.any
 }
 
 export default ResultView

@@ -1,6 +1,8 @@
+/* eslint-disable import/no-commonjs */
+/* eslint-disable import/no-unassigned-import */
 import React from 'react'
 import PropTypes from 'prop-types'
-import ReactCodeMirror from 'react-codemirror2'
+import {UnControlled as ReactCodeMirror} from 'react-codemirror2'
 import CodeMirror from 'codemirror'
 
 require('codemirror/mode/javascript/javascript')
@@ -51,7 +53,6 @@ class QueryEditor extends React.PureComponent {
     const options = {
       lineNumbers: true,
       tabSize: 2,
-      scrollbarStyle: null,
       mode: {name: 'javascript', json: true},
       hintOptions: {hint: this.getHint},
       extraKeys: {
@@ -66,6 +67,9 @@ class QueryEditor extends React.PureComponent {
         onChange={this.handleChange}
         options={options}
         className={this.props.className}
+        onHeightChange={this.props.onHeightChange}
+        autoCursor={false}
+        autoScroll
       />
     )
   }
@@ -75,7 +79,10 @@ QueryEditor.propTypes = {
   onExecute: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
   value: PropTypes.string,
-  schema: PropTypes.object
+  schema: PropTypes.object,
+  className: PropTypes.string,
+  onHeightChange: PropTypes.func,
+  height: PropTypes.number
 }
 
 QueryEditor.defaultProps = {
