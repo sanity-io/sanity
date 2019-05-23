@@ -26,6 +26,7 @@ import {FormBuilderInput} from '../../FormBuilderInput'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import Snackbar from 'part:@sanity/components/snackbar/default'
+import ImageTool from '@sanity/imagetool'
 
 type FieldT = {
   name: string,
@@ -61,6 +62,14 @@ type State = {
 }
 
 const HIDDEN_FIELDS = ['asset', 'hotspot', 'crop']
+
+const getDevicePixelRatio = () => {
+  if (typeof window === 'undefined' || !window.devicePixelRatio) {
+    return 1
+  }
+
+  return Math.max(1, window.devicePixelRatio)
+}
 
 export default class ImageInput extends React.PureComponent<Props, State> {
   uploadSubscription: any
@@ -141,13 +150,21 @@ export default class ImageInput extends React.PureComponent<Props, State> {
     })
   }
 
+  getConstrainedImageSrc = (assetDocument: Object): string => {
+    const materializedSize = ImageTool.maxWidth || 1000
+    const maxSize = materializedSize * getDevicePixelRatio()
+    const constrainedSrc = `${assetDocument.url}?w=${maxSize}&h=${maxSize}&fit=max`
+    return constrainedSrc
+  }
+
   renderMaterializedAsset = (assetDocument: Object): Node => {
     const {value = {}} = this.props
+    const constrainedSrc = this.getConstrainedImageSrc(assetDocument)
     const srcAspectRatio = get(assetDocument, 'metadata.dimensions.aspectRatio')
     return typeof srcAspectRatio === 'undefined' ? null : (
       <HotspotImage
         aspectRatio="auto"
-        src={assetDocument.url}
+        src={constrainedSrc}
         srcAspectRatio={srcAspectRatio}
         hotspot={value.hotspot}
         crop={value.crop}
@@ -246,22 +263,20 @@ export default class ImageInput extends React.PureComponent<Props, State> {
 
     return (
       <Dialog title="Edit details" onClose={this.handleStopAdvancedEdit} isOpen>
-        {this.isImageToolEnabled() &&
-          value &&
-          value.asset && (
-            <WithMaterializedReference materialize={materialize} reference={value.asset}>
-              {imageAsset => (
-                <ImageToolInput
-                  type={type}
-                  level={level}
-                  readOnly={readOnly}
-                  imageUrl={imageAsset.url}
-                  value={value}
-                  onChange={onChange}
-                />
-              )}
-            </WithMaterializedReference>
-          )}
+        {this.isImageToolEnabled() && value && value.asset && (
+          <WithMaterializedReference materialize={materialize} reference={value.asset}>
+            {imageAsset => (
+              <ImageToolInput
+                type={type}
+                level={level}
+                readOnly={readOnly}
+                imageUrl={this.getConstrainedImageSrc(imageAsset)}
+                value={value}
+                onChange={onChange}
+              />
+            )}
+          </WithMaterializedReference>
+        )}
         <div className={styles.advancedEditFields}>{this.renderFields(fields)}</div>
         <Button onClick={this.handleStopAdvancedEdit}>Close</Button>
       </Dialog>
@@ -366,10 +381,9 @@ export default class ImageInput extends React.PureComponent<Props, State> {
         )}
         <div className={styles.content}>
           <div className={styles.assetWrapper}>
-            {value &&
-              value._upload && (
-                <div className={styles.uploadState}>{this.renderUploadState(value._upload)}</div>
-              )}
+            {value && value._upload && (
+              <div className={styles.uploadState}>{this.renderUploadState(value._upload)}</div>
+            )}
             {hasAsset ? (
               <WithMaterializedReference reference={value.asset} materialize={materialize}>
                 {this.renderMaterializedAsset}
@@ -408,12 +422,11 @@ export default class ImageInput extends React.PureComponent<Props, State> {
                 {readOnly ? 'View details' : 'Edit'}
               </Button>
             )}
-            {hasAsset &&
-              !readOnly && (
-                <Button color="danger" inverted onClick={this.handleRemoveButtonClick}>
-                  Remove
-                </Button>
-              )}
+            {hasAsset && !readOnly && (
+              <Button color="danger" inverted onClick={this.handleRemoveButtonClick}>
+                Remove
+              </Button>
+            )}
           </ButtonGrid>
         </div>
         {highlightedFields.length > 0 && (
