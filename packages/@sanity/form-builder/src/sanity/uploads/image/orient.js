@@ -2,8 +2,6 @@
 import {Observable} from 'rxjs'
 
 /* eslint-disable */
-// Polyfills HTMLCanvasElement.toBlob
-require('canvas-to-blob').init()
 
 /**
  * Check if we need to change dims.

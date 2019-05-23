@@ -38,7 +38,6 @@
     "@sanity/schema": "0.140.17",
     "@sanity/util": "0.140.3",
     "attr-accept": "^1.1.0",
-    "canvas-to-blob": "^0.0.0",
     "classnames": "^2.2.5",
     "date-fns": "^1.29.0",
     "debug": "^3.1.0",
