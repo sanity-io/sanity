@@ -73,9 +73,10 @@
   position: relative;
   height: 100%;
   width: 100%;
-  overflow: scroll;
+  overflow: auto;
   padding: var(--medium-padding);
   background-color: var(--white);
+  box-sizing: border-box;
 }
 
 .noResult {
