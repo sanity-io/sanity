@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import DefaultPane from 'part:@sanity/components/panes/default'
+import listStyles from 'part:@sanity/components/lists/default-style'
 import PaneItem from './PaneItem'
 import ListView from './ListView'
 
@@ -22,6 +23,7 @@ export default withRouterHOC(
       items: PropTypes.arrayOf(
         PropTypes.shape({
           id: PropTypes.string.isRequired,
+          type: PropTypes.string.isRequired,
           schemaType: PropTypes.shape({name: PropTypes.string})
         })
       ),
@@ -111,19 +113,23 @@ export default withRouterHOC(
           menuItemGroups={menuItemGroups}
         >
           <ListView layout={defaultLayout}>
-            {items.map(item => (
-              <PaneItem
-                key={item.id}
-                id={item.id}
-                index={index}
-                value={item}
-                icon={this.shouldShowIconForItem(item)}
-                layout={defaultLayout}
-                isSelected={this.itemIsSelected(item)}
-                getLinkState={this.getLinkStateForItem}
-                schemaType={item.schemaType}
-              />
-            ))}
+            {items.map(item =>
+              item.type === 'divider' ? (
+                <hr key={item.id} className={listStyles.divider} />
+              ) : (
+                <PaneItem
+                  key={item.id}
+                  id={item.id}
+                  index={index}
+                  value={item}
+                  icon={this.shouldShowIconForItem(item)}
+                  layout={defaultLayout}
+                  isSelected={this.itemIsSelected(item)}
+                  getLinkState={this.getLinkStateForItem}
+                  schemaType={item.schemaType}
+                />
+              )
+            )}
           </ListView>
         </DefaultPane>
       )
