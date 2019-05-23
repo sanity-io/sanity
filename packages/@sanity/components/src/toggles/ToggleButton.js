@@ -20,20 +20,13 @@ export default class ToggleButton extends React.Component {
   }
 
   render() {
-    const {disabled, selected, icon, className, title} = this.props
+    const {selected, className} = this.props
     const buttonClasses = `
       ${selected ? styles.selected : styles.unSelected}
       ${className}
     `
     return (
-      <Button
-        className={buttonClasses}
-        icon={icon}
-        title={title}
-        disabled={disabled}
-        onClick={this.props.onClick}
-        kind="simple"
-      >
+      <Button {...this.props} className={buttonClasses} kind="simple">
         {this.props.children}
       </Button>
     )
