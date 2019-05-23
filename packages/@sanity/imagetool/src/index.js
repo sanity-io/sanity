@@ -16,7 +16,11 @@ export default function ImageToolWrapper(props) {
         }
         if (image) {
           return (
-            <Resize image={image} maxHeight={500} maxWidth={1000}>
+            <Resize
+              image={image}
+              maxHeight={ImageToolWrapper.maxHeight}
+              maxWidth={ImageToolWrapper.maxWidth}
+            >
               {canvas => <ImageTool image={canvas} {...props} />}
             </Resize>
           )
@@ -30,3 +34,6 @@ export default function ImageToolWrapper(props) {
 ImageToolWrapper.propTypes = {
   src: PropTypes.string.isRequired
 }
+
+ImageToolWrapper.maxHeight = 500
+ImageToolWrapper.maxWidth = 1000
