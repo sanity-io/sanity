@@ -1,3 +1,4 @@
+import {uniqueId} from 'lodash'
 import {ListBuilder, ListInput} from './List'
 import {
   getDocumentTypeListItems,
@@ -14,7 +15,7 @@ import {ListItemBuilder, ListItemInput} from './ListItem'
 import {MenuItemGroup, MenuItemGroupBuilder} from './MenuItemGroup'
 import {DocumentListBuilder, DocumentListInput} from './DocumentList'
 import {EditorBuilder} from './Editor'
-import {EditorNode} from './StructureNodes'
+import {EditorNode, Divider} from './StructureNodes'
 import {SerializeError} from './SerializeError'
 import {ComponentInput, ComponentBuilder} from './Component'
 import {DocumentListItemBuilder, DocumentListItemInput} from './DocumentListItem'
@@ -42,7 +43,9 @@ const StructureBuilder = {
     return typeof spec === 'function'
       ? new ComponentBuilder().component(spec)
       : new ComponentBuilder(spec)
-  }
+  },
+
+  divider: (): Divider => ({id: uniqueId('__divider__'), type: 'divider'})
 }
 
 export {StructureBuilder, SerializeError}

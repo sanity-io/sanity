@@ -22,6 +22,11 @@ export interface EditorNode extends StructureNode {
   }
 }
 
+export interface Divider {
+  id: string
+  type: 'divider'
+}
+
 export type SerializePath = (string | number)[]
 
 export interface SerializeOptions {
