@@ -16,6 +16,10 @@ function errHandler(msg, url, lineNo, columnNo, error) {
 
   var pre = document.createElement('pre')
   var stack = document.createElement('code')
+  pre.style.fontSize = '0.8em'
+  pre.style.opacity = '0.7'
+  pre.style.overflow = 'auto'
+  pre.style.maxHeight = '70vh'
 
   var cleanStack = err.stack && err.stack.replace(err.message, '').replace(/^error: *\n?/i, '')
   var errTitle = err.stack ? err.message : err.toString()
@@ -24,10 +28,17 @@ function errHandler(msg, url, lineNo, columnNo, error) {
   stack.textContent = errString
 
   var reload = document.createElement('button')
+  reload.style.padding = '0.8em 1em'
+  reload.style.marginTop = '1em'
+  reload.style.border = 'none'
+  reload.style.backgroundColor = '#303030'
+  reload.style.color = '#fff'
+  reload.style.borderRadius = '4px'
+
   reload.onclick = function() {
     window.location.reload()
   }
-  reload.textContent = 'Try reloading?'
+  reload.textContent = 'Reload'
 
   pre.appendChild(stack)
   wrapper.appendChild(header)
