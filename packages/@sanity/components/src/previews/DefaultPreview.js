@@ -62,7 +62,6 @@ class DefaultPreview extends React.PureComponent {
         className={`
           ${styles.root}
           ${subtitle ? styles.hasSubtitle : ''}
-          ${media ? styles.hasMedia : ''}
         `}
       >
         {media !== false && (

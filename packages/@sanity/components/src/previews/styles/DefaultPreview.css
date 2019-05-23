@@ -27,6 +27,10 @@
   clear: both;
 }
 
+.hasSubtitle {
+  /* this is used nested */
+}
+
 .heading {
   min-width: 0; /* making ellipsis work */
   margin-right: var(--small-padding);
@@ -107,7 +111,6 @@
 
 .placeholder {
   composes: root;
-  composes: hasSubtitle;
 
   @nest & .heading {
     display: flex;
