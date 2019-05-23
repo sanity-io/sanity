@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import uncaughtErrorHandler from '../util/uncaughtErrorHandler'
 import generateScriptLoader from '../util/generateScriptLoader'
 import AppLoadingScreen from './AppLoadingScreen'
 import NoJavascript from './NoJavascript'
@@ -34,6 +35,7 @@ function Document(props) {
 
   const scripts = props.scripts.map(item => assetUrl(staticPath, item))
   const scriptLoader = generateScriptLoader(scripts)
+  const errorHandler = uncaughtErrorHandler()
 
   const favicons = props.favicons.map((item, index) => (
     <link key={item.path} rel="icon" href={assetUrl(staticPath, item)} />
@@ -56,6 +58,7 @@ function Document(props) {
         </div>
 
         {/* eslint-disable react/no-danger */}
+        <script dangerouslySetInnerHTML={{__html: errorHandler}} />
         <script dangerouslySetInnerHTML={{__html: scriptLoader}} />
         {/* eslint-enable react/no-danger */}
       </body>
