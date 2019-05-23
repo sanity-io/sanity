@@ -207,6 +207,7 @@
   width: 100%;
   z-index: 10;
   height: 100%;
+  background-color: color(var(--component-bg) a(60%));
 
   @media (--screen-medium) {
     position: absolute;

@@ -718,7 +718,6 @@ export default withRouterHOC(
           contentMaxWidth={672}
         >
           <div className={styles.root}>
-
             <div className={styles.top}>
               {!this.isLiveEditEnabled() && (
                 <>
