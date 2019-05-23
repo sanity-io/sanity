@@ -16,6 +16,8 @@ export default () =>
         .title('Singleton author')
         .schemaType('author'),
 
+      S.divider(),
+
       S.listItem()
         .title('Anything with a title')
         .icon(() => <span style={{fontSize: '2em'}}>T</span>)
@@ -103,6 +105,8 @@ export default () =>
                 )
             ])
         ),
+
+      S.divider(),
 
       ...S.documentTypeListItems()
     ])
