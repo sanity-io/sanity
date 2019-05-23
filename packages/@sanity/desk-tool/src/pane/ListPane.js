@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import DefaultPane from 'part:@sanity/components/panes/default'
+import listStyles from 'part:@sanity/components/lists/default-style'
 import PaneItem from './PaneItem'
 import ListView from './ListView'
 
@@ -114,7 +115,7 @@ export default withRouterHOC(
           <ListView layout={defaultLayout}>
             {items.map(item =>
               item.type === 'divider' ? (
-                <hr key={item.id} />
+                <hr key={item.id} className={listStyles.divider} />
               ) : (
                 <PaneItem
                   key={item.id}
