@@ -579,65 +579,82 @@ export default withRouterHOC(
     }
 
     renderPublishInfo = () => {
-      const {draft, markers, published, isReconnecting} = this.props
+      const {
+        draft,
+        markers,
+        published,
+        isReconnecting,
+        isCreatingDraft,
+        isPublishing,
+        isUnpublishing
+      } = this.props
       const validation = markers.filter(marker => marker.type === 'validation')
       const errors = validation.filter(marker => marker.level === 'error')
       return (
-        <div
-          className={
-            draft && !this.isLiveEditEnabled() ? styles.publishInfo : styles.publishInfoHidden
-          }
-        >
-          <Tooltip
-            arrow
-            theme="light"
-            disabled={'ontouchstart' in document.documentElement}
-            className={styles.publishButton}
-            //title={errors.length > 0 ? 'Fix errors before publishing' : 'Publish (Ctrl+Alt+P)'}
-            html={this.renderPublishButtonTooltip(errors, published)}
+        <>
+          {(isCreatingDraft || isPublishing || isUnpublishing) && (
+            <div className={styles.spinnerContainer}>
+              {isCreatingDraft && <Spinner center message="Making changes…" />}
+              {isPublishing && <Spinner center message="Publishing…" />}
+              {isUnpublishing && <Spinner center message="Unpublishing…" />}
+            </div>
+          )}
+          <div
+            className={
+              draft && !this.isLiveEditEnabled() ? styles.publishInfo : styles.publishInfoHidden
+            }
           >
-            <Button
-              disabled={isReconnecting || !draft || errors.length > 0}
-              onClick={this.handlePublishRequested}
-              color="primary"
+            <Tooltip
+              arrow
+              theme="light"
+              disabled={'ontouchstart' in document.documentElement}
+              className={styles.publishButton}
+              //title={errors.length > 0 ? 'Fix errors before publishing' : 'Publish (Ctrl+Alt+P)'}
+              html={this.renderPublishButtonTooltip(errors, published)}
             >
-              Publish
-            </Button>
-          </Tooltip>
-          <div className={styles.publishInfoUndoButton}>
-            {published && (
-              <Button kind="simple" onClick={() => this.setState({showConfirmDiscard: true})}>
-                Discard changes
-              </Button>
-            )}
-            {this.state.showConfirmDiscard && (
-              <PopOverDialog
-                onClickOutside={this.handleCancelDiscard}
-                useOverlay={false}
-                hasAnimation
+              <Button
+                disabled={isReconnecting || !draft || errors.length > 0}
+                onClick={this.handlePublishRequested}
+                color="primary"
               >
-                <div>
-                  <div className={styles.popOverText}>
-                    <strong>Are you sure</strong> you want to discard all changes since last published?
-                  </div>
-                  <ButtonGrid>
-                    <Button kind="simple" onClick={this.handleCancelDiscard}>
-                      Cancel
-                    </Button>
-                    <Button color="danger" onClick={this.handleConfirmDiscard}>
-                      Discard
-                    </Button>
-                  </ButtonGrid>
-                </div>
-              </PopOverDialog>
-            )}
-            {!published && (
-              <Button kind="simple" onClick={() => this.setState({showConfirmDelete: true})}>
-                Delete document
+                Publish
               </Button>
-            )}
+            </Tooltip>
+            <div className={styles.publishInfoUndoButton}>
+              {published && (
+                <Button kind="simple" onClick={() => this.setState({showConfirmDiscard: true})}>
+                  Discard changes
+                </Button>
+              )}
+              {this.state.showConfirmDiscard && (
+                <PopOverDialog
+                  onClickOutside={this.handleCancelDiscard}
+                  useOverlay={false}
+                  hasAnimation
+                >
+                  <div>
+                    <div className={styles.popOverText}>
+                      <strong>Are you sure</strong> you want to discard all changes since last published?
+                    </div>
+                    <ButtonGrid>
+                      <Button kind="simple" onClick={this.handleCancelDiscard}>
+                        Cancel
+                      </Button>
+                      <Button color="danger" onClick={this.handleConfirmDiscard}>
+                        Discard
+                      </Button>
+                    </ButtonGrid>
+                  </div>
+                </PopOverDialog>
+              )}
+              {!published && (
+                <Button kind="simple" onClick={() => this.setState({showConfirmDelete: true})}>
+                  Delete document
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
+        </>
       )
     }
 
@@ -648,9 +665,6 @@ export default withRouterHOC(
         published,
         type,
         isLoading,
-        isPublishing,
-        isUnpublishing,
-        isCreatingDraft,
         isReconnecting,
         patchChannel,
         transactionResult,
@@ -704,13 +718,6 @@ export default withRouterHOC(
           contentMaxWidth={672}
         >
           <div className={styles.root}>
-            {(isCreatingDraft || isPublishing || isUnpublishing) && (
-              <div className={styles.spinnerContainer}>
-                {isCreatingDraft && <Spinner center message="Making changes…" />}
-                {isPublishing && <Spinner center message="Publishing…" />}
-                {isUnpublishing && <Spinner center message="Unpublishing…" />}
-              </div>
-            )}
             <div className={styles.top}>
               {!this.isLiveEditEnabled() && (
                 <>

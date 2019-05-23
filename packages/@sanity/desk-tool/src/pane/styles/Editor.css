@@ -201,13 +201,16 @@
 }
 
 .spinnerContainer {
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 3;
-  height: 100vh;
+  z-index: 10;
+  height: 100%;
+  background-color: color(var(--component-bg) a(60%));
 
   @media (--screen-medium) {
+    position: absolute;
     height: calc(100vh - 6rem); /* 6rem is aprox the height of the header stuff */
   }
 }
