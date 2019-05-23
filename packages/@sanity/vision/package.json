@@ -27,8 +27,7 @@
     "react-icon-base": "^2.1.2",
     "react-json-view": "^1.19.1",
     "react-spinner": "^0.2.6",
-    "react-split-pane": "^0.1.84",
-    "lodash": "^4.17.11"
+    "react-split-pane": "^0.1.84"
   },
   "devDependencies": {
     "@sanity/base": "0.140.17",
