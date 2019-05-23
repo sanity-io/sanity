@@ -22,6 +22,7 @@ export default withRouterHOC(
       items: PropTypes.arrayOf(
         PropTypes.shape({
           id: PropTypes.string.isRequired,
+          type: PropTypes.string.isRequired,
           schemaType: PropTypes.shape({name: PropTypes.string})
         })
       ),
@@ -111,19 +112,23 @@ export default withRouterHOC(
           menuItemGroups={menuItemGroups}
         >
           <ListView layout={defaultLayout}>
-            {items.map(item => (
-              <PaneItem
-                key={item.id}
-                id={item.id}
-                index={index}
-                value={item}
-                icon={this.shouldShowIconForItem(item)}
-                layout={defaultLayout}
-                isSelected={this.itemIsSelected(item)}
-                getLinkState={this.getLinkStateForItem}
-                schemaType={item.schemaType}
-              />
-            ))}
+            {items.map(item =>
+              item.type === 'divider' ? (
+                <hr key={item.id} />
+              ) : (
+                <PaneItem
+                  key={item.id}
+                  id={item.id}
+                  index={index}
+                  value={item}
+                  icon={this.shouldShowIconForItem(item)}
+                  layout={defaultLayout}
+                  isSelected={this.itemIsSelected(item)}
+                  getLinkState={this.getLinkStateForItem}
+                  schemaType={item.schemaType}
+                />
+              )
+            )}
           </ListView>
         </DefaultPane>
       )
