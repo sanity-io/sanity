@@ -2,8 +2,10 @@
 
 import React from 'react'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
+import Button from 'part:@sanity/components/buttons/default'
 import BlockObjectIcon from 'part:@sanity/base/block-object-icon'
 import InlineObjectIcon from 'part:@sanity/base/inline-object-icon'
+import {Tooltip} from 'react-tippy'
 
 import type {Type, SlateValue, SlateEditor, Path} from '../typeDefs'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
@@ -14,7 +16,8 @@ type Props = {
   editor: SlateEditor,
   editorValue: SlateValue,
   inlineTypes: Type[],
-  onFocus: Path => void
+  onFocus: Path => void,
+  collapsed: boolean
 }
 
 type BlockItem = {
@@ -28,6 +31,7 @@ type BlockItem = {
 export default class InsertMenu extends React.Component<Props> {
   shouldComponentUpdate(nextProps: Props) {
     return (
+      this.props.collapsed !== nextProps.collapsed ||
       this.props.blockTypes !== nextProps.blockTypes ||
       this.props.inlineTypes !== nextProps.inlineTypes ||
       this.props.editorValue.focusBlock !== nextProps.editorValue.focusBlock
@@ -45,6 +49,21 @@ export default class InsertMenu extends React.Component<Props> {
         )}
         {item.title}
       </div>
+    )
+  }
+
+  renderButton = (item: BlockItem) => {
+    return (
+      <Tooltip title={`Insert ${item.title}`} disabled={this.props.collapsed}>
+        <Button
+          key={`insertMenuItem_${item.title}`}
+          onClick={() => this.handleOnAction(item)}
+          title={`Insert ${item.title}`}
+          icon={item.icon}
+          kind="simple"
+          bleed
+        />
+      </Tooltip>
     )
   }
 
@@ -91,9 +110,16 @@ export default class InsertMenu extends React.Component<Props> {
   }
 
   render() {
+    const {collapsed} = this.props
+    const items = this.getItems()
+
+    if (!collapsed) {
+      return items.map(this.renderButton)
+    }
+
     return (
       <DropDownButton
-        items={this.getItems()}
+        items={items}
         renderItem={this.renderItem}
         onAction={this.handleOnAction}
         kind="simple"

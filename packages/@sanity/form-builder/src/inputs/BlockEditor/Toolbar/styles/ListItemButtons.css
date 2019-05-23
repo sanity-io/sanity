@@ -1,7 +1,4 @@
 .root {
-  display: inline-block;
-}
-
-.iconContainer {
-  transform: scale(1.5);
+  display: flex;
+  flex-wrap: nowrap;
 }

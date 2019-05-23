@@ -3,6 +3,7 @@ import ChevronDown from 'part:@sanity/base/chevron-down-icon'
 import ToggleButton from 'part:@sanity/components/toggles/button'
 import styles from './styles/CollapsibleButtonGroup.css'
 import PropTypes from 'prop-types'
+import Poppable from 'part:@sanity/components/utilities/poppable'
 
 export default class CollapsibleButtonGroup extends React.Component {
   state = {
@@ -36,8 +37,10 @@ export default class CollapsibleButtonGroup extends React.Component {
         <ToggleButton onClick={this.handleToggle}>
           <Icon />
           <ChevronDown />
+          <Poppable onClickOutside={this.handleClose} onEscape={this.handleClose}>
+            {isOpen && <div className={styles.popup}>{children}</div>}
+          </Poppable>
         </ToggleButton>
-        {isOpen && <div className={styles.popup}>{children}</div>}
       </div>
     )
   }

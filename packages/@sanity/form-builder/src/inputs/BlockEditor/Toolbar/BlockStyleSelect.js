@@ -24,7 +24,8 @@ export type BlockStyleItem = {
 type Props = {
   blockContentFeatures: BlockContentFeatures,
   editor: SlateEditor,
-  editorValue: SlateValue
+  editorValue: SlateValue,
+  className: string
 }
 
 export default class BlockStyleSelect extends React.Component<Props> {
@@ -93,11 +94,11 @@ export default class BlockStyleSelect extends React.Component<Props> {
     if (!items || items.length === 0) {
       return null
     }
-    const {editorValue} = this.props
+    const {editorValue, className} = this.props
     const {focusBlock} = editorValue
     const disabled = focusBlock ? focusBlock.isVoid : false
     return (
-      <label>
+      <label className={className}>
         <span style={{display: 'none'}}>Text</span>
         <StyleSelect
           items={items}
