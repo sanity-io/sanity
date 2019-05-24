@@ -99,7 +99,9 @@ export default class SelectAsset extends React.Component<Props, State> {
             />
           ))}
         </div>
-        {!isLoading && assets.length === 0 && <div>No images found</div>}
+        {!isLoading && assets.length === 0 && (
+          <div className={styles.noAssets}>No images found</div>
+        )}
         <div className={styles.loadMore}>
           {!isLastPage && (
             <Button onClick={this.handleFetchNextPage} loading={isLoading}>

@@ -37,8 +37,12 @@
     margin: 0.2em !important;
   }
 
-  @nest &:hover {
-    opacity: 1;
+  @media (hover: hover) {
+    opacity: 0.5;
+
+    @nest &:hover {
+      opacity: 1;
+    }
   }
 }
 
