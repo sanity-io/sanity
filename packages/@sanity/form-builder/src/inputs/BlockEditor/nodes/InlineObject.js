@@ -122,6 +122,7 @@ export default class InlineObject extends React.Component<Props, State> {
     editor.withoutSaving(() => {
       editor.moveToEndOfNode(this.props.node).focus()
     })
+    this.resetDropTarget()
   }
 
   handleDragOverOtherNode = (event: DragEvent) => {
@@ -141,7 +142,7 @@ export default class InlineObject extends React.Component<Props, State> {
     const {editor} = this.props
 
     const range = getEventRange(event, editor)
-    if (range === null || typeof range.focus.offset === undefined) {
+    if (range === null || range.focus && range.focus.offset === undefined) {
       this.restoreSelection()
       return
     }
@@ -193,7 +194,7 @@ export default class InlineObject extends React.Component<Props, State> {
       }
       return editor
     })
-  }, 60)
+  }, 30)
 
   handleDragEnd = (event: SyntheticDragEvent<>) => {
     this.setState({isDragging: false})
