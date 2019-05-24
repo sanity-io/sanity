@@ -11,6 +11,14 @@ import {
 } from './GenericList'
 
 const getArgType = (thing: ListItem) => {
+  if (thing instanceof ListBuilder) {
+    return 'ListBuilder'
+  }
+
+  if (isPromise<ListItem>(thing)) {
+    return 'Promise'
+  }
+
   return Array.isArray(thing) ? 'array' : typeof thing
 }
 
@@ -55,6 +63,10 @@ function maybeSerializeListItem(
   }
 
   return item
+}
+
+function isPromise<T>(thing: any): thing is Promise<T> {
+  return thing && typeof thing.then === 'function'
 }
 
 export interface List extends GenericList {
