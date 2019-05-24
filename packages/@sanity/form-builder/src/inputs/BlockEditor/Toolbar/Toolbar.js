@@ -3,7 +3,7 @@
 /* eslint-disable complexity */
 
 import React from 'react'
-import Tooltip from 'react-tippy'
+import {Tooltip} from 'react-tippy'
 import Measure from 'react-measure'
 import ArrowIcon from 'part:@sanity/base/angle-down-icon'
 import Button from 'part:@sanity/components/buttons/default'
@@ -251,6 +251,7 @@ class Toolbar extends React.PureComponent<Props, State> {
                   onClick={onToggleFullScreen}
                   title={`Open in fullscreen (${IS_MAC ? 'cmd' : 'ctrl'}+enter)`}
                   icon={fullscreen ? CloseIcon : FullscreenIcon}
+                  bleed
                 />
               </div>
             </div>
