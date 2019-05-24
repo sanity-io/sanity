@@ -72,6 +72,7 @@ export default class LoadingPane extends React.PureComponent {
     return (
       <DefaultPane
         title={'\u00a0'} // Non-breaking space
+        isScrollable={false}
         isSelected={isSelected}
         isCollapsed={isCollapsed}
         onCollapse={onCollapse}
@@ -79,7 +80,7 @@ export default class LoadingPane extends React.PureComponent {
         index={this.props.index}
       >
         {/* div wrapper to match styling of documents list pane - prevents spinner
-          * from jumping to new position when pane definition is loaded */}
+         * from jumping to new position when pane definition is loaded */}
         <div className={styles.root}>
           <Spinner center message={message} />
         </div>
