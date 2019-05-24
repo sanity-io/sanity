@@ -3,7 +3,7 @@
 .root {
   display: block;
   position: relative;
-  min-height: 100vh;
+  min-height: calc(100vh - 12em);
 }
 
 .imageList {
@@ -20,4 +20,9 @@
 
 .loadMore {
   margin: var(--medium-padding) 0;
+}
+
+.noAssets {
+  composes: absoluteCenter from 'part:@sanity/base/theme/layout/positioning-style';
+  font-size: var(--font-size-large);
 }
