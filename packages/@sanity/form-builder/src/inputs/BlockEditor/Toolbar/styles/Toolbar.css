@@ -7,6 +7,7 @@
   justify-content: stretch;
   flex-wrap: nowrap;
   padding-bottom: var(--small-padding);
+  font-size: var(--font-size-small);
 
   @nest &.fullscreen {
     position: fixed;
@@ -20,8 +21,10 @@
     background-color: var(--component-bg);
     box-shadow: 0 0 8px color(var(--component-border-color) a(35%));
 
+
     @media (--screen-medium) {
-      padding: var(--medium-padding--em);
+      padding: var(--small-padding);
+      font-size: var(--font-size-base);
     }
   }
 }
@@ -82,6 +85,7 @@
   display: flex;
   flex-wrap: nowrap;
   position: relative;
+  align-items: center;
 }
 
 .group {
@@ -98,6 +102,7 @@
 
 .fullscreenButtonContainer {
   margin-left: auto;
+  width: 2.5em;
   height: 100%;
 
   @nest & svg {
