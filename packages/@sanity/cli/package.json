@@ -36,6 +36,9 @@
     "url": "https://github.com/sanity-io/sanity/issues"
   },
   "homepage": "https://www.sanity.io/",
+  "dependencies": {
+    "v8-compile-cache": "^2.0.2"
+  },
   "devDependencies": {
     "@sanity/client": "0.140.17",
     "@sanity/resolver": "0.140.3",
