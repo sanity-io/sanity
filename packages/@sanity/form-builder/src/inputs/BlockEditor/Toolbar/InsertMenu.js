@@ -54,9 +54,12 @@ export default class InsertMenu extends React.Component<Props> {
 
   renderButton = (item: BlockItem) => {
     return (
-      <Tooltip title={`Insert ${item.title}`} disabled={this.props.collapsed}>
+      <Tooltip
+        title={`Insert ${item.title}`}
+        disabled={this.props.collapsed}
+        key={`insertMenuItem_${item.key}`}
+      >
         <Button
-          key={`insertMenuItem_${item.title}`}
           onClick={() => this.handleOnAction(item)}
           title={`Insert ${item.title}`}
           icon={item.icon}
@@ -114,7 +117,7 @@ export default class InsertMenu extends React.Component<Props> {
     const items = this.getItems()
 
     if (!collapsed) {
-      return items.map(this.renderButton)
+      return items.map((item, key) => ({...item, key})).map(this.renderButton)
     }
 
     return (
