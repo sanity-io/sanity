@@ -5,6 +5,31 @@ import {getDupes} from '../utils/getDupes'
 export default (typeDef, visitorContext) => {
   // name should already have been marked
   const ofIsArray = Array.isArray(typeDef.of)
+
+  if (ofIsArray) {
+    const invalid = typeDef.of.reduce((errs, def, idx) => {
+      if (def) {
+        return errs
+      }
+
+      const err = `Found ${def === null ? 'null' : typeof def}, expected member declaration`
+      return errs.concat(
+        error(
+          `Found invalid type member declaration in array at index ${idx}: ${err}`,
+          HELP_IDS.ARRAY_OF_INVALID
+        )
+      )
+    }, [])
+
+    if (invalid.length > 0) {
+      return {
+        ...typeDef,
+        of: [],
+        _problems: invalid
+      }
+    }
+  }
+
   const problems = flatten([
     ofIsArray
       ? getDupes(typeDef.of, t => `${t.name};${t.type}`).map(dupes =>
