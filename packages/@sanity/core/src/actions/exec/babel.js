@@ -1,14 +1,28 @@
+import fs from 'fs'
+import path from 'path'
 import registerBabel from '@babel/register'
 
-registerBabel({
-  presets: [
-    [
-      '@babel/preset-env',
-      {
-        targets: {
-          node: 'current'
-        }
-      }
-    ]
-  ]
-})
+function getConfig() {
+  try {
+    // eslint-disable-next-line no-sync
+    const content = fs.readFileSync(path.join(process.cwd(), '.babelrc'))
+    return JSON.parse(content)
+  } catch (err) {
+    return {
+      presets: [
+        require.resolve('@babel/preset-react'),
+        [
+          require.resolve('@babel/preset-env'),
+          {
+            targets: {
+              node: 'current'
+            }
+          }
+        ]
+      ],
+      plugins: [require.resolve('@babel/plugin-proposal-class-properties')]
+    }
+  }
+}
+
+registerBabel(getConfig())
