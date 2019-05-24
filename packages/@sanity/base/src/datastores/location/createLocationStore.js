@@ -2,11 +2,11 @@ import {Observable} from 'rxjs'
 import {map, share} from 'rxjs/operators'
 
 import Location from '../utils/Location'
-import createHistory from 'history/createBrowserHistory'
+import {createBrowserHistory} from 'history'
 import createActions from '../utils/createActions'
 
 const noop = () => {} // eslint-disable-line no-empty-function
-const history = createHistory()
+const history = createBrowserHistory()
 
 function readLocation() {
   return Location.parse(document.location.href)
