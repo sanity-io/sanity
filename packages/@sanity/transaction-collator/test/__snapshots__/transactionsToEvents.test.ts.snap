@@ -1,0 +1,70 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`parses ndjson 1`] = `
+Array [
+  Object {
+    "authors": Array [
+      "ppJZEsNw6",
+    ],
+    "endTime": 2019-05-29T08:03:40.026Z,
+    "startTime": 2019-05-29T08:03:40.026Z,
+    "type": "created",
+  },
+  Object {
+    "authors": Array [
+      "ppJZEsNw6",
+    ],
+    "endTime": 2019-05-29T08:03:55.787Z,
+    "startTime": 2019-05-29T08:03:55.787Z,
+    "type": "edited",
+  },
+  Object {
+    "authors": Array [
+      "ppJZEsNw6",
+    ],
+    "endTime": 2019-05-29T08:03:57.598Z,
+    "startTime": 2019-05-29T08:03:57.598Z,
+    "type": "published",
+  },
+  Object {
+    "authors": Array [
+      "ppJZEsNw6",
+    ],
+    "endTime": 2019-05-29T08:06:26.839Z,
+    "startTime": 2019-05-29T08:06:26.839Z,
+    "type": "unpublished",
+  },
+  Object {
+    "authors": Array [
+      "ppJZEsNw6",
+    ],
+    "endTime": 2019-05-29T08:06:36.860Z,
+    "startTime": 2019-05-29T08:06:36.860Z,
+    "type": "edited",
+  },
+  Object {
+    "authors": Array [
+      "ppJZEsNw6",
+    ],
+    "endTime": 2019-05-29T08:06:40.080Z,
+    "startTime": 2019-05-29T08:06:40.080Z,
+    "type": "published",
+  },
+  Object {
+    "authors": Array [
+      "ppJZEsNw6",
+    ],
+    "endTime": 2019-05-29T08:06:46.378Z,
+    "startTime": 2019-05-29T08:06:45.347Z,
+    "type": "edited",
+  },
+  Object {
+    "authors": Array [
+      "ppJZEsNw6",
+    ],
+    "endTime": 2019-05-29T09:11:41.204Z,
+    "startTime": 2019-05-29T09:11:40.172Z,
+    "type": "edited",
+  },
+]
+`;
