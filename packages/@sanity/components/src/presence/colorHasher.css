@@ -1,0 +1,5 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+:export {
+  brandPrimary: var(--brand-primary);
+}
