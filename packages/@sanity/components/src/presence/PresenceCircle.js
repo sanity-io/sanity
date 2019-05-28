@@ -12,12 +12,7 @@ export default class PresenceCircle extends React.PureComponent {
     html: PropTypes.node,
     imageUrl: PropTypes.string,
     animateOnHover: PropTypes.bool,
-    interactive: PropTypes.bool,
-    user: PropTypes.shape({
-      identity: PropTypes.string,
-      imageUrl: PropTypes.string,
-      displayName: PropTypes.string
-    })
+    interactive: PropTypes.bool
   }
 
   render() {
