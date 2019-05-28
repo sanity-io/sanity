@@ -1,0 +1,71 @@
+{
+  "name": "@sanity/transaction-collator",
+  "version": "0.140.0",
+  "description": "Collate events from a series of transactions",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "author": "Sanity.io <hello@sanity.io>",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "license": "MIT",
+  "scripts": {
+    "test": "jest",
+    "posttest": "tsc --noEmit",
+    "clean": "rimraf lib coverage"
+  },
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "mutations",
+    "history"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@types/lodash": "^4.14.116",
+    "@types/node": "^8.0.0",
+    "lodash": "^4.17.4"
+  },
+  "devDependencies": {
+    "@types/jest": "^22.0.0",
+    "jest": "^23.6.0",
+    "rimraf": "^2.6.2",
+    "rxjs": "^6.1.0",
+    "ts-jest": "^22.4.3",
+    "typescript": "^3.2.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/",
+  "jest": {
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$",
+    "testURL": "http://localhost",
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json",
+      "node"
+    ],
+    "moduleNameMapper": {
+      "^part:@sanity/base/schema$": "<rootDir>/test/mocks/schema.js",
+      "^part:@sanity/base/client$": "<rootDir>/test/mocks/client.js"
+    },
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test/"
+    ]
+  }
+}
