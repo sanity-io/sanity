@@ -1,9 +1,14 @@
 /* eslint-disable no-var, prefer-template */
 /* Unminified: */
 /*
-function errHandler(msg, url, lineNo, columnNo, error) {
-  window.lolerr = error
-  var err = error || msg
+function errHandler(msg, url, lineNo, columnNo, err) {
+  // Certain events (ResizeObserver max loop threshold, for instance)
+  // only gives a _message_. We choose to ignore these events since
+  // they are usually not _fatal_
+  if (!err) {
+    return
+  }
+
   var container = document.getElementById('sanity')
   var wrapper = document.createElement('div')
   wrapper.style.position = 'absolute'
@@ -56,4 +61,4 @@ export default () => `window.onerror = ${errHandler.toString()}`
 */
 
 export default () =>
-  `/* Global error handler */\nwindow.onerror = function(e,t,n,o,l){var a=l||e,r=document.getElementById("sanity"),d=document.createElement("div");d.style.position="absolute",d.style.top="50%",d.style.left="50%",d.style.transform="translate(-50%, -50%)";var s=document.createElement("h1");s.innerText="Uncaught error";var i=document.createElement("pre"),c=document.createElement("code");i.style.fontSize="0.8em",i.style.opacity="0.7",i.style.overflow="auto",i.style.maxHeight="70vh";var m=a.stack&&a.stack.replace(a.message,"").replace(/^error: *\\n?/i,""),p=(a.stack?a.message:a.toString())+(a.stack?"\\n\\nStack:\\n\\n"+m:"")+"\\n\\n(Your browsers Developer Tools may contain more info)";c.textContent=p;var y=document.createElement("button");for(y.style.padding="0.8em 1em",y.style.marginTop="1em",y.style.border="none",y.style.backgroundColor="#303030",y.style.color="#fff",y.style.borderRadius="4px",y.onclick=function(){window.location.reload()},y.textContent="Reload",i.appendChild(c),d.appendChild(s),d.appendChild(i),d.appendChild(y);r.firstChild;)r.removeChild(r.firstChild);r.appendChild(d)}`
+  `/* Global error handler */\nwindow.onerror = function(e,t,n,o,a){if(!a){return};var r=document.getElementById("sanity"),d=document.createElement("div");d.style.position="absolute",d.style.top="50%",d.style.left="50%",d.style.transform="translate(-50%, -50%)";var s=document.createElement("h1");s.innerText="Uncaught error";var i=document.createElement("pre"),c=document.createElement("code");i.style.fontSize="0.8em",i.style.opacity="0.7",i.style.overflow="auto",i.style.maxHeight="70vh";var m=a.stack&&a.stack.replace(a.message,"").replace(/^error: *\\n?/i,""),p=(a.stack?a.message:a.toString())+(a.stack?"\\n\\nStack:\\n\\n"+m:"")+"\\n\\n(Your browsers Developer Tools may contain more info)";c.textContent=p;var y=document.createElement("button");for(y.style.padding="0.8em 1em",y.style.marginTop="1em",y.style.border="none",y.style.backgroundColor="#303030",y.style.color="#fff",y.style.borderRadius="4px",y.onclick=function(){window.location.reload()},y.textContent="Reload",i.appendChild(c),d.appendChild(s),d.appendChild(i),d.appendChild(y);r.firstChild;)r.removeChild(r.firstChild);r.appendChild(d)}`
