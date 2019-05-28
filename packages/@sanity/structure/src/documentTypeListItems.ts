@@ -26,7 +26,7 @@ function shouldShowIcon(schemaType: SchemaType): boolean {
 
 export function getDocumentTypeListItems(schema: Schema = defaultSchema): ListItemBuilder[] {
   const resolver = getDataAspectsForSchema(schema)
-  const types = resolver.getInferredTypes()
+  const types = resolver.getDocumentTypes()
   return types.map(typeName => getDocumentTypeListItem(typeName, schema))
 }
 

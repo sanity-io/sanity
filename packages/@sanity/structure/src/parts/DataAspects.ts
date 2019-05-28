@@ -3,6 +3,7 @@ import getDefaultModule from './getDefaultModule'
 
 export interface DataAspectsResolver {
   getDisplayName(typeName: string): string
+  getDocumentTypes(): string[]
   getInferredTypes(): string[]
 }
 
