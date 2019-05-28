@@ -1,0 +1,8 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+}
+
+.message {
+  margin-left: 1em;
+}
