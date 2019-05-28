@@ -81,7 +81,7 @@ class DataAspectsResolver {
 
   getInferredTypes() {
     return schemaHasUserDefinedDocumentTypes(this.schema)
-      ? this.getDocumentTypes(this.schema)
+      ? this.getDocumentTypes()
       : this.inferTypesLegacy()
   }
 
