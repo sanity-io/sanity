@@ -17,7 +17,6 @@
   z-index: 1;
   display: inline-block;
   box-sizing: border-box;
-  /* height: var(--checkbox-label-height); */
   margin: 0;
   padding: 0;
   padding-left: calc(var(--checkbox-button-size) + var(--checkbox-padding));
