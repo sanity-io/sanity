@@ -16,7 +16,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
 
     static propTypes = {
       kind: PropTypes.oneOf(['default', 'simple']),
-      color: PropTypes.oneOf(['primary', 'success', 'danger', 'white']),
+      color: PropTypes.oneOf(['primary', 'success', 'danger', 'white', 'warning']),
       onClick: PropTypes.func,
       children: PropTypes.node,
       inverted: PropTypes.bool,

@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {debounce} from 'lodash'
 import {Tooltip} from 'react-tippy'
+import {distanceInWordsToNow} from 'date-fns'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import {PreviewFields} from 'part:@sanity/base/preview'
 import {getPublishedId, newDraftFrom} from 'part:@sanity/base/util/draft-utils'
@@ -41,6 +42,7 @@ import ConfirmDelete from '../components/ConfirmDelete'
 import InspectView from '../components/InspectView'
 import DocTitle from '../components/DocTitle'
 import TimeAgo from '../components/TimeAgo'
+import History from './History'
 import styles from './styles/Editor.css'
 
 function navigateUrl(url) {
@@ -166,6 +168,7 @@ const INITIAL_STATE = {
   showConfirmUnpublish: false,
   showValidationTooltip: false,
   focusPath: [],
+  showHistory: false,
   filterField: () => true
 }
 
@@ -658,6 +661,20 @@ export default withRouterHOC(
       )
     }
 
+    handleToggleHistory = () => {
+      this.setState(prevState => ({
+        showHistory: !prevState.showHistory
+      }))
+    }
+
+    handleTopClick = event => {
+      this.handleToggleHistory()
+    }
+
+    renderStaticContent = () => {
+      return this.renderPublishInfo()
+    }
+
     render() {
       const {
         draft,
@@ -677,7 +694,8 @@ export default withRouterHOC(
         showConfirmDelete,
         showConfirmUnpublish,
         didPublish,
-        filterField
+        filterField,
+        showHistory
       } = this.state
 
       const value = draft || published
@@ -705,95 +723,115 @@ export default withRouterHOC(
 
       const enabledActions = resolveEnabledActions(type)
       return (
-        <Pane
-          styles={this.props.paneStyles}
-          index={this.props.index}
-          title={this.getTitle(value)}
-          onAction={this.handleMenuAction}
-          menuItems={getMenuItems(enabledActions, draft, published, this.isLiveEditEnabled())}
-          renderActions={this.renderActions}
-          onMenuToggle={this.handleMenuToggle}
-          isSelected // last pane is always selected for now
-          staticContent={this.renderPublishInfo()}
-          contentMaxWidth={672}
-        >
-          <div className={styles.root}>
-            <div className={styles.top}>
-              {!this.isLiveEditEnabled() && (
-                <>
-                  {published ? (
-                    <strong>
-                      Published <TimeAgo time={published._updatedAt} />
-                    </strong>
-                  ) : (
-                    <strong>Not published</strong>
-                  )}
-                </>
-              )}
-              {value && (
-                <>
-                  {!this.isLiveEditEnabled() && <span> · </span>}
-                  <span>
+        <div className={showHistory ? styles.paneWrapperWithHistory : styles.paneWrapper}>
+          {showHistory && (
+            <div className={styles.history}>
+              <History onClose={this.handleToggleHistory} />
+            </div>
+          )}
+          <Pane
+            styles={this.props.paneStyles}
+            index={this.props.index}
+            title={this.getTitle(value)}
+            onAction={this.handleMenuAction}
+            menuItems={getMenuItems(enabledActions, draft, published, this.isLiveEditEnabled())}
+            renderActions={this.renderActions}
+            onMenuToggle={this.handleMenuToggle}
+            isSelected // last pane is always selected for now
+            staticContent={this.renderStaticContent()}
+            contentMaxWidth={672}
+          >
+            <div className={styles.pane}>
+              <div className={styles.top}>
+                {this.isLiveEditEnabled() ? (
+                  <Button color="success" padding="none">
+                    <span className={styles.badgeText}>Live</span>
+                  </Button>
+                ) : (
+                  <>
+                    {draft && (
+                      <Button inverted padding="none">
+                        <span className={styles.badgeText}>Draft</span>
+                      </Button>
+                    )}
+                    {published ? (
+                      <Button
+                        padding="none"
+                        color={draft ? 'warning' : 'success'}
+                        onClick={this.handleToggleHistory}
+                        title={`Published ${distanceInWordsToNow(published._updatedAt, {
+                          addSuffix: true
+                        })}`}
+                      >
+                        <span className={styles.badgeText}>Published</span>
+                      </Button>
+                    ) : (
+                      <Button padding="none" inverted>
+                        <span className={styles.badgeText}>Unpublished</span>
+                      </Button>
+                    )}
+                  </>
+                )}
+                {value && (
+                  <span className={styles.editedTime}>
                     Edited <TimeAgo time={value._updatedAt} />
                   </span>
-                </>
-              )}
-            </div>
-            <form
-              className={styles.editor}
-              onSubmit={preventDefault}
-              id="Sanity_Default_DeskTool_Editor_ScrollContainer"
-            >
-              <FormBuilder
-                schema={schema}
-                patchChannel={patchChannel}
-                value={draft || published || {_type: type.name}}
-                type={type}
-                filterField={filterField}
-                readOnly={isReconnecting || !isActionEnabled(type, 'update')}
-                onBlur={this.handleBlur}
-                onFocus={this.handleFocus}
-                focusPath={focusPath}
-                onChange={this.handleChange}
-                markers={markers}
-              />
-            </form>
-            {afterEditorComponents.map((AfterEditorComponent, i) => (
-              <AfterEditorComponent key={i} documentId={published._id} />
-            ))}
+                )}
+              </div>
+              <form
+                className={styles.editor}
+                onSubmit={preventDefault}
+                id="Sanity_Default_DeskTool_Editor_ScrollContainer"
+              >
+                <FormBuilder
+                  schema={schema}
+                  patchChannel={patchChannel}
+                  value={draft || published || {_type: type.name}}
+                  type={type}
+                  filterField={filterField}
+                  readOnly={isReconnecting || !isActionEnabled(type, 'update')}
+                  onBlur={this.handleBlur}
+                  onFocus={this.handleFocus}
+                  focusPath={focusPath}
+                  onChange={this.handleChange}
+                  markers={markers}
+                />
+              </form>
+              {afterEditorComponents.map((AfterEditorComponent, i) => (
+                <AfterEditorComponent key={i} documentId={published._id} />
+              ))}
 
-            {inspect && <InspectView value={value} onClose={this.handleHideInspector} />}
-            {showConfirmDelete && (
-              <ConfirmDelete
-                draft={draft}
-                published={published}
-                onCancel={this.handleCancelDelete}
-                onConfirm={this.handleConfirmDelete}
-              />
-            )}
-            {showConfirmUnpublish && (
-              <ConfirmUnpublish
-                draft={draft}
-                published={published}
-                onCancel={this.handleCancelUnpublish}
-                onConfirm={this.handleConfirmUnpublish}
-              />
-            )}
-            {isReconnecting && (
-              <Snackbar kind="warning">
-                <WarningIcon /> Connection lost. Reconnecting…
-              </Snackbar>
-            )}
-            {didPublish && (
-              <Snackbar kind="success" timeout={4}>
-                <CheckCircleIcon /> You just published{' '}
-                <em>
-                  <DocTitle document={draft || published} />
-                </em>
-              </Snackbar>
-            )}
-            {transactionResult &&
-              transactionResult.type === 'error' && (
+              {inspect && <InspectView value={value} onClose={this.handleHideInspector} />}
+              {showConfirmDelete && (
+                <ConfirmDelete
+                  draft={draft}
+                  published={published}
+                  onCancel={this.handleCancelDelete}
+                  onConfirm={this.handleConfirmDelete}
+                />
+              )}
+              {showConfirmUnpublish && (
+                <ConfirmUnpublish
+                  draft={draft}
+                  published={published}
+                  onCancel={this.handleCancelUnpublish}
+                  onConfirm={this.handleConfirmUnpublish}
+                />
+              )}
+              {isReconnecting && (
+                <Snackbar kind="warning">
+                  <WarningIcon /> Connection lost. Reconnecting…
+                </Snackbar>
+              )}
+              {didPublish && (
+                <Snackbar kind="success" timeout={4}>
+                  <CheckCircleIcon /> You just published{' '}
+                  <em>
+                    <DocTitle document={draft || published} />
+                  </em>
+                </Snackbar>
+              )}
+              {transactionResult && transactionResult.type === 'error' && (
                 <Snackbar
                   kind="danger"
                   action={{title: 'Ok, got it'}}
@@ -805,8 +843,9 @@ export default withRouterHOC(
                   </div>
                 </Snackbar>
               )}
-          </div>
-        </Pane>
+            </div>
+          </Pane>
+        </div>
       )
     }
   }

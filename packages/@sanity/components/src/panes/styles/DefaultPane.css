@@ -10,6 +10,7 @@
   flex-direction: column;
   background-color: var(--component-bg);
   min-height: calc(100vh - var(--nav-bar-box));
+  width: 100%;
 
   @media (--screen-medium) {
     /* Reset mobile first */
@@ -18,7 +19,6 @@
     height: 100%;
     top: initial;
     left: initial;
-    width: 100%;
     min-height: initial;
     overflow: hidden; /* Cuts off the shadow on header */
   }

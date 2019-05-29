@@ -10,7 +10,36 @@
   }
 }
 
-.root {
+.paneWrapper {
+  display: flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  height: 100%;
+  width: 100%;
+  justify-content: stretch;
+}
+
+.paneWrapperWithHistory {
+  composes: paneWrapper;
+}
+
+.history {
+  /* animation-name: showHistory;
+  animation-duration: 200ms;
+  animation-timing-function: linear;
+  animation-iteration-count: 1; */
+  position: relative;
+  width: calc(100vw - 3rem);
+
+  @media (--screen-medium) {
+    position: relative;
+    width: unset;
+  }
+}
+
+.pane {
   display: block;
   position: relative; /* Needed to keep the spinners in place */
 
@@ -134,6 +163,7 @@
 .editor {
   padding: var(--medium-padding);
   padding-bottom: 8rem;
+  flex-grow: 1;
 }
 
 .syncStatus {
@@ -213,4 +243,15 @@
     position: absolute;
     height: calc(100vh - 6rem); /* 6rem is aprox the height of the header stuff */
   }
+}
+
+.editedTime {
+  padding-left: 1em;
+}
+
+.badgeText {
+  display: block;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 3px 5px;
 }

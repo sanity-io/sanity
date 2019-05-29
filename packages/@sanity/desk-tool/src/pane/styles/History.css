@@ -1,0 +1,28 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  min-width: 260px;
+  background-color: var(--gray-lighter);
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: var(--medium-padding);
+  height: 3em;
+  box-sizing: border-box;
+  min-height: 3em;
+}
+
+.list {
+  height: 100%;
+  overflow: auto;
+  padding-bottom: 10rem;
+}
