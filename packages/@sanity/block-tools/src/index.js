@@ -1,4 +1,4 @@
-import blockContentTypeToOptions from './util/blockContentTypeToOptions'
+import blockContentTypeFeatures from './util/blockContentTypeFeatures'
 import _blocksToEditorValue from './converters/blocksToEditorValue'
 import _editorValueToBlocks from './converters/editorValueToBlocks'
 import HtmlDeserializer from './HtmlDeserializer'
@@ -62,7 +62,7 @@ const blockContentFunctions = {
    * @returns {Object} The feature-set
    */
   getBlockContentFeatures(blockContentType) {
-    return blockContentTypeToOptions(blockContentType)
+    return blockContentTypeFeatures(blockContentType)
   },
 
   randomKey(length) {

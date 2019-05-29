@@ -1,0 +1,826 @@
+{
+  "styles": [
+    {
+      "title": "Normal",
+      "value": "normal"
+    },
+    {
+      "title": "H1",
+      "value": "h1"
+    },
+    {
+      "title": "H2",
+      "value": "h2"
+    }
+  ],
+  "decorators": [
+    {
+      "title": "Strong",
+      "value": "strong"
+    },
+    {
+      "title": "Emphasis",
+      "value": "em"
+    }
+  ],
+  "annotations": [
+    {
+      "title": "Author",
+      "type": {
+        "jsonType": "object",
+        "type": {
+          "name": "reference",
+          "type": null,
+          "jsonType": "object"
+        },
+        "name": "author",
+        "title": "Author",
+        "to": [
+          {
+            "jsonType": "object",
+            "type": {
+              "jsonType": "object",
+              "type": {
+                "name": "document",
+                "type": null,
+                "jsonType": "object"
+              },
+              "name": "author",
+              "fields": [
+                {
+                  "name": "name",
+                  "type": {
+                    "jsonType": "string",
+                    "type": {
+                      "name": "string",
+                      "type": null,
+                      "jsonType": "string"
+                    },
+                    "name": "string",
+                    "title": "Name",
+                    "preview": {}
+                  }
+                }
+              ],
+              "title": "Author",
+              "options": {},
+              "orderings": [
+                {
+                  "name": "name",
+                  "title": "Name",
+                  "by": [
+                    {
+                      "field": "name",
+                      "direction": "asc"
+                    }
+                  ]
+                }
+              ],
+              "fieldsets": [
+                {
+                  "single": true,
+                  "field": {
+                    "name": "name",
+                    "type": {
+                      "jsonType": "string",
+                      "type": {
+                        "name": "string",
+                        "type": null,
+                        "jsonType": "string"
+                      },
+                      "name": "string",
+                      "title": "Name",
+                      "preview": {}
+                    }
+                  }
+                }
+              ],
+              "preview": {
+                "select": {
+                  "title": "name"
+                }
+              }
+            },
+            "name": "author",
+            "fields": [
+              {
+                "name": "name",
+                "type": {
+                  "jsonType": "string",
+                  "type": {
+                    "name": "string",
+                    "type": null,
+                    "jsonType": "string"
+                  },
+                  "name": "string",
+                  "title": "Name",
+                  "preview": {}
+                }
+              }
+            ],
+            "options": {},
+            "orderings": [
+              {
+                "name": "name",
+                "title": "Name",
+                "by": [
+                  {
+                    "field": "name",
+                    "direction": "asc"
+                  }
+                ]
+              }
+            ],
+            "fieldsets": [
+              {
+                "single": true,
+                "field": {
+                  "name": "name",
+                  "type": {
+                    "jsonType": "string",
+                    "type": {
+                      "name": "string",
+                      "type": null,
+                      "jsonType": "string"
+                    },
+                    "name": "string",
+                    "title": "Name",
+                    "preview": {}
+                  }
+                }
+              }
+            ],
+            "preview": {
+              "select": {
+                "title": "name"
+              }
+            },
+            "__experimental_search": [
+              {
+                "weight": 1,
+                "path": [
+                  "_id"
+                ]
+              },
+              {
+                "weight": 1,
+                "path": [
+                  "_type"
+                ]
+              },
+              {
+                "weight": 10,
+                "path": [
+                  "name"
+                ]
+              }
+            ]
+          }
+        ],
+        "fields": [
+          {
+            "name": "_ref",
+            "type": {
+              "jsonType": "string",
+              "type": {
+                "name": "string",
+                "type": null,
+                "jsonType": "string"
+              },
+              "name": "string",
+              "title": "Referenced document ID",
+              "preview": {}
+            }
+          },
+          {
+            "name": "_weak",
+            "type": {
+              "jsonType": "boolean",
+              "type": {
+                "name": "boolean",
+                "type": null,
+                "jsonType": "boolean"
+              },
+              "name": "boolean",
+              "title": "Weak reference",
+              "preview": {}
+            }
+          }
+        ]
+      },
+      "value": "author"
+    }
+  ],
+  "lists": [
+    {
+      "title": "Numbered",
+      "value": "number"
+    }
+  ],
+  "types": {
+    "block": {
+      "jsonType": "array",
+      "type": {
+        "name": "array",
+        "type": null,
+        "jsonType": "array",
+        "of": []
+      },
+      "name": "array",
+      "title": "Body",
+      "of": [
+        {
+          "type": {
+            "name": "block",
+            "type": null,
+            "jsonType": "object"
+          },
+          "name": "block",
+          "jsonType": "object",
+          "options": {},
+          "fields": [
+            {
+              "name": "children",
+              "type": {
+                "jsonType": "array",
+                "type": {
+                  "name": "array",
+                  "type": null,
+                  "jsonType": "array",
+                  "of": []
+                },
+                "name": "array",
+                "title": "Content",
+                "of": [
+                  {
+                    "type": {
+                      "name": "span",
+                      "type": null,
+                      "jsonType": "object"
+                    },
+                    "name": "span",
+                    "jsonType": "object",
+                    "fields": [
+                      {
+                        "name": "marks",
+                        "type": {
+                          "jsonType": "array",
+                          "type": {
+                            "name": "array",
+                            "type": null,
+                            "jsonType": "array",
+                            "of": []
+                          },
+                          "name": "array",
+                          "title": "Marks",
+                          "of": [
+                            {
+                              "jsonType": "string",
+                              "type": {
+                                "name": "string",
+                                "type": null,
+                                "jsonType": "string"
+                              },
+                              "name": "string",
+                              "preview": {}
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "name": "text",
+                        "type": {
+                          "jsonType": "string",
+                          "type": {
+                            "name": "string",
+                            "type": null,
+                            "jsonType": "string"
+                          },
+                          "name": "string",
+                          "title": "Text",
+                          "preview": {}
+                        }
+                      }
+                    ],
+                    "annotations": [
+                      {
+                        "jsonType": "object",
+                        "type": {
+                          "name": "reference",
+                          "type": null,
+                          "jsonType": "object"
+                        },
+                        "name": "author",
+                        "title": "Author",
+                        "to": [
+                          {
+                            "jsonType": "object",
+                            "type": {
+                              "jsonType": "object",
+                              "type": {
+                                "name": "document",
+                                "type": null,
+                                "jsonType": "object"
+                              },
+                              "name": "author",
+                              "fields": [
+                                {
+                                  "name": "name",
+                                  "type": {
+                                    "jsonType": "string",
+                                    "type": {
+                                      "name": "string",
+                                      "type": null,
+                                      "jsonType": "string"
+                                    },
+                                    "name": "string",
+                                    "title": "Name",
+                                    "preview": {}
+                                  }
+                                }
+                              ],
+                              "title": "Author",
+                              "options": {},
+                              "orderings": [
+                                {
+                                  "name": "name",
+                                  "title": "Name",
+                                  "by": [
+                                    {
+                                      "field": "name",
+                                      "direction": "asc"
+                                    }
+                                  ]
+                                }
+                              ],
+                              "fieldsets": [
+                                {
+                                  "single": true,
+                                  "field": {
+                                    "name": "name",
+                                    "type": {
+                                      "jsonType": "string",
+                                      "type": {
+                                        "name": "string",
+                                        "type": null,
+                                        "jsonType": "string"
+                                      },
+                                      "name": "string",
+                                      "title": "Name",
+                                      "preview": {}
+                                    }
+                                  }
+                                }
+                              ],
+                              "preview": {
+                                "select": {
+                                  "title": "name"
+                                }
+                              }
+                            },
+                            "name": "author",
+                            "fields": [
+                              {
+                                "name": "name",
+                                "type": {
+                                  "jsonType": "string",
+                                  "type": {
+                                    "name": "string",
+                                    "type": null,
+                                    "jsonType": "string"
+                                  },
+                                  "name": "string",
+                                  "title": "Name",
+                                  "preview": {}
+                                }
+                              }
+                            ],
+                            "options": {},
+                            "orderings": [
+                              {
+                                "name": "name",
+                                "title": "Name",
+                                "by": [
+                                  {
+                                    "field": "name",
+                                    "direction": "asc"
+                                  }
+                                ]
+                              }
+                            ],
+                            "fieldsets": [
+                              {
+                                "single": true,
+                                "field": {
+                                  "name": "name",
+                                  "type": {
+                                    "jsonType": "string",
+                                    "type": {
+                                      "name": "string",
+                                      "type": null,
+                                      "jsonType": "string"
+                                    },
+                                    "name": "string",
+                                    "title": "Name",
+                                    "preview": {}
+                                  }
+                                }
+                              }
+                            ],
+                            "preview": {
+                              "select": {
+                                "title": "name"
+                              }
+                            },
+                            "__experimental_search": [
+                              {
+                                "weight": 1,
+                                "path": [
+                                  "_id"
+                                ]
+                              },
+                              {
+                                "weight": 1,
+                                "path": [
+                                  "_type"
+                                ]
+                              },
+                              {
+                                "weight": 10,
+                                "path": [
+                                  "name"
+                                ]
+                              }
+                            ]
+                          }
+                        ],
+                        "fields": [
+                          {
+                            "name": "_ref",
+                            "type": {
+                              "jsonType": "string",
+                              "type": {
+                                "name": "string",
+                                "type": null,
+                                "jsonType": "string"
+                              },
+                              "name": "string",
+                              "title": "Referenced document ID",
+                              "preview": {}
+                            }
+                          },
+                          {
+                            "name": "_weak",
+                            "type": {
+                              "jsonType": "boolean",
+                              "type": {
+                                "name": "boolean",
+                                "type": null,
+                                "jsonType": "boolean"
+                              },
+                              "name": "boolean",
+                              "title": "Weak reference",
+                              "preview": {}
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    "decorators": [
+                      {
+                        "title": "Strong",
+                        "value": "strong"
+                      },
+                      {
+                        "title": "Emphasis",
+                        "value": "em"
+                      }
+                    ],
+                    "options": {},
+                    "marks": [],
+                    "preview": {
+                      "select": {
+                        "text": "text",
+                        "marks": "marks"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "name": "style",
+              "type": {
+                "jsonType": "string",
+                "type": {
+                  "name": "string",
+                  "type": null,
+                  "jsonType": "string"
+                },
+                "name": "string",
+                "title": "Style",
+                "options": {
+                  "list": [
+                    {
+                      "title": "Normal",
+                      "value": "normal"
+                    },
+                    {
+                      "title": "H1",
+                      "value": "h1"
+                    },
+                    {
+                      "title": "H2",
+                      "value": "h2"
+                    }
+                  ]
+                },
+                "preview": {}
+              }
+            },
+            {
+              "name": "list",
+              "type": {
+                "jsonType": "string",
+                "type": {
+                  "name": "string",
+                  "type": null,
+                  "jsonType": "string"
+                },
+                "name": "string",
+                "title": "List type",
+                "options": {
+                  "list": [
+                    {
+                      "title": "Numbered",
+                      "value": "number"
+                    }
+                  ]
+                },
+                "preview": {}
+              }
+            }
+          ],
+          "preview": {
+            "select": {}
+          }
+        }
+      ]
+    },
+    "span": {
+      "type": {
+        "name": "span",
+        "type": null,
+        "jsonType": "object"
+      },
+      "name": "span",
+      "jsonType": "object",
+      "fields": [
+        {
+          "name": "marks",
+          "type": {
+            "jsonType": "array",
+            "type": {
+              "name": "array",
+              "type": null,
+              "jsonType": "array",
+              "of": []
+            },
+            "name": "array",
+            "title": "Marks",
+            "of": [
+              {
+                "jsonType": "string",
+                "type": {
+                  "name": "string",
+                  "type": null,
+                  "jsonType": "string"
+                },
+                "name": "string",
+                "preview": {}
+              }
+            ]
+          }
+        },
+        {
+          "name": "text",
+          "type": {
+            "jsonType": "string",
+            "type": {
+              "name": "string",
+              "type": null,
+              "jsonType": "string"
+            },
+            "name": "string",
+            "title": "Text",
+            "preview": {}
+          }
+        }
+      ],
+      "annotations": [
+        {
+          "jsonType": "object",
+          "type": {
+            "name": "reference",
+            "type": null,
+            "jsonType": "object"
+          },
+          "name": "author",
+          "title": "Author",
+          "to": [
+            {
+              "jsonType": "object",
+              "type": {
+                "jsonType": "object",
+                "type": {
+                  "name": "document",
+                  "type": null,
+                  "jsonType": "object"
+                },
+                "name": "author",
+                "fields": [
+                  {
+                    "name": "name",
+                    "type": {
+                      "jsonType": "string",
+                      "type": {
+                        "name": "string",
+                        "type": null,
+                        "jsonType": "string"
+                      },
+                      "name": "string",
+                      "title": "Name",
+                      "preview": {}
+                    }
+                  }
+                ],
+                "title": "Author",
+                "options": {},
+                "orderings": [
+                  {
+                    "name": "name",
+                    "title": "Name",
+                    "by": [
+                      {
+                        "field": "name",
+                        "direction": "asc"
+                      }
+                    ]
+                  }
+                ],
+                "fieldsets": [
+                  {
+                    "single": true,
+                    "field": {
+                      "name": "name",
+                      "type": {
+                        "jsonType": "string",
+                        "type": {
+                          "name": "string",
+                          "type": null,
+                          "jsonType": "string"
+                        },
+                        "name": "string",
+                        "title": "Name",
+                        "preview": {}
+                      }
+                    }
+                  }
+                ],
+                "preview": {
+                  "select": {
+                    "title": "name"
+                  }
+                }
+              },
+              "name": "author",
+              "fields": [
+                {
+                  "name": "name",
+                  "type": {
+                    "jsonType": "string",
+                    "type": {
+                      "name": "string",
+                      "type": null,
+                      "jsonType": "string"
+                    },
+                    "name": "string",
+                    "title": "Name",
+                    "preview": {}
+                  }
+                }
+              ],
+              "options": {},
+              "orderings": [
+                {
+                  "name": "name",
+                  "title": "Name",
+                  "by": [
+                    {
+                      "field": "name",
+                      "direction": "asc"
+                    }
+                  ]
+                }
+              ],
+              "fieldsets": [
+                {
+                  "single": true,
+                  "field": {
+                    "name": "name",
+                    "type": {
+                      "jsonType": "string",
+                      "type": {
+                        "name": "string",
+                        "type": null,
+                        "jsonType": "string"
+                      },
+                      "name": "string",
+                      "title": "Name",
+                      "preview": {}
+                    }
+                  }
+                }
+              ],
+              "preview": {
+                "select": {
+                  "title": "name"
+                }
+              },
+              "__experimental_search": [
+                {
+                  "weight": 1,
+                  "path": [
+                    "_id"
+                  ]
+                },
+                {
+                  "weight": 1,
+                  "path": [
+                    "_type"
+                  ]
+                },
+                {
+                  "weight": 10,
+                  "path": [
+                    "name"
+                  ]
+                }
+              ]
+            }
+          ],
+          "fields": [
+            {
+              "name": "_ref",
+              "type": {
+                "jsonType": "string",
+                "type": {
+                  "name": "string",
+                  "type": null,
+                  "jsonType": "string"
+                },
+                "name": "string",
+                "title": "Referenced document ID",
+                "preview": {}
+              }
+            },
+            {
+              "name": "_weak",
+              "type": {
+                "jsonType": "boolean",
+                "type": {
+                  "name": "boolean",
+                  "type": null,
+                  "jsonType": "boolean"
+                },
+                "name": "boolean",
+                "title": "Weak reference",
+                "preview": {}
+              }
+            }
+          ]
+        }
+      ],
+      "decorators": [
+        {
+          "title": "Strong",
+          "value": "strong"
+        },
+        {
+          "title": "Emphasis",
+          "value": "em"
+        }
+      ],
+      "options": {},
+      "marks": [],
+      "preview": {
+        "select": {
+          "text": "text",
+          "marks": "marks"
+        }
+      }
+    },
+    "inlineObjects": [],
+    "blockObjects": []
+  }
+}

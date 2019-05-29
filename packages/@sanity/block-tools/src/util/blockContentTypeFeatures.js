@@ -1,3 +1,30 @@
+// Helper method for describing a blockContentType's feature set
+export default function blockContentFeatures(blockContentType) {
+  if (!blockContentType) {
+    throw new Error("Parameter 'blockContentType' required")
+  }
+  const blockType = blockContentType.of.find(findBlockType)
+  if (!blockType) {
+    throw new Error("'block' type is not defined in this schema (required).")
+  }
+  const ofType = blockType.fields.find(field => field.name === 'children').type.of
+  const spanType = ofType.find(memberType => memberType.name === 'span')
+  const inlineObjectTypes = ofType.filter(memberType => memberType.name !== 'span')
+  const blockObjectTypes = blockContentType.of.filter(field => field.name !== 'block')
+  return {
+    styles: resolveEnabledStyles(blockType),
+    decorators: resolveEnabledDecorators(spanType),
+    annotations: resolveEnabledAnnotationTypes(spanType),
+    lists: resolveEnabledListItems(blockType),
+    types: {
+      block: blockContentType,
+      span: spanType,
+      inlineObjects: inlineObjectTypes,
+      blockObjects: blockObjectTypes
+    }
+  }
+}
+
 function resolveEnabledStyles(blockType) {
   const styleField = blockType.fields.find(btField => btField.name === 'style')
   if (!styleField) {
@@ -52,30 +79,4 @@ function findBlockType(type) {
   }
 
   return null
-}
-
-export default function blockContentTypeToOptions(blockContentType) {
-  if (!blockContentType) {
-    throw new Error("Parameter 'blockContentType' required")
-  }
-  const blockType = blockContentType.of.find(findBlockType)
-  if (!blockType) {
-    throw new Error("'block' type is not defined in this schema (required).")
-  }
-  const ofType = blockType.fields.find(field => field.name === 'children').type.of
-  const spanType = ofType.find(memberType => memberType.name === 'span')
-  const inlineObjectTypes = ofType.filter(memberType => memberType.name !== 'span')
-  const blockObjectTypes = blockContentType.of.filter(field => field.name !== 'block')
-  return {
-    styles: resolveEnabledStyles(blockType),
-    decorators: resolveEnabledDecorators(spanType),
-    annotations: resolveEnabledAnnotationTypes(spanType),
-    lists: resolveEnabledListItems(blockType),
-    types: {
-      block: blockContentType,
-      span: spanType,
-      inlineObjects: inlineObjectTypes,
-      blockObjects: blockObjectTypes
-    }
-  }
 }

@@ -1,0 +1,835 @@
+{
+  "styles": [
+    {
+      "title": "Normal",
+      "value": "normal"
+    },
+    {
+      "title": "Heading 1",
+      "value": "h1"
+    },
+    {
+      "title": "H2",
+      "value": "h2"
+    },
+    {
+      "title": "H3",
+      "value": "h3"
+    },
+    {
+      "title": "H4",
+      "value": "h4"
+    },
+    {
+      "title": "H5",
+      "value": "h5"
+    },
+    {
+      "title": "H6",
+      "value": "h6"
+    },
+    {
+      "title": "Quote",
+      "value": "blockquote"
+    }
+  ],
+  "decorators": [
+    {
+      "title": "Strong",
+      "value": "strong"
+    },
+    {
+      "title": "Emphasis",
+      "value": "em"
+    },
+    {
+      "title": "Code",
+      "value": "code"
+    },
+    {
+      "title": "Underline",
+      "value": "underline"
+    },
+    {
+      "title": "Strike",
+      "value": "strike-through"
+    }
+  ],
+  "annotations": [
+    {
+      "title": "Link",
+      "type": {
+        "jsonType": "object",
+        "type": {
+          "name": "object",
+          "type": null,
+          "jsonType": "object"
+        },
+        "name": "link",
+        "fields": [
+          {
+            "name": "href",
+            "type": {
+              "jsonType": "string",
+              "type": {
+                "name": "url",
+                "title": "Url",
+                "type": null,
+                "jsonType": "string"
+              },
+              "name": "url",
+              "title": "Url",
+              "preview": {}
+            }
+          }
+        ],
+        "options": {
+          "editModal": "popover"
+        },
+        "title": "Link",
+        "orderings": [],
+        "fieldsets": [
+          {
+            "single": true,
+            "field": {
+              "name": "href",
+              "type": {
+                "jsonType": "string",
+                "type": {
+                  "name": "url",
+                  "title": "Url",
+                  "type": null,
+                  "jsonType": "string"
+                },
+                "name": "url",
+                "title": "Url",
+                "preview": {}
+              }
+            }
+          }
+        ],
+        "preview": {
+          "select": {
+            "href": "href"
+          }
+        }
+      },
+      "value": "link"
+    }
+  ],
+  "lists": [
+    {
+      "title": "Bullet",
+      "value": "bullet"
+    },
+    {
+      "title": "Numbered",
+      "value": "number"
+    }
+  ],
+  "types": {
+    "block": {
+      "jsonType": "array",
+      "type": {
+        "name": "array",
+        "type": null,
+        "jsonType": "array",
+        "of": []
+      },
+      "name": "array",
+      "title": "Body",
+      "of": [
+        {
+          "type": {
+            "name": "block",
+            "type": null,
+            "jsonType": "object"
+          },
+          "name": "block",
+          "jsonType": "object",
+          "options": {},
+          "fields": [
+            {
+              "name": "children",
+              "type": {
+                "jsonType": "array",
+                "type": {
+                  "name": "array",
+                  "type": null,
+                  "jsonType": "array",
+                  "of": []
+                },
+                "name": "array",
+                "title": "Content",
+                "of": [
+                  {
+                    "type": {
+                      "name": "span",
+                      "type": null,
+                      "jsonType": "object"
+                    },
+                    "name": "span",
+                    "jsonType": "object",
+                    "fields": [
+                      {
+                        "name": "marks",
+                        "type": {
+                          "jsonType": "array",
+                          "type": {
+                            "name": "array",
+                            "type": null,
+                            "jsonType": "array",
+                            "of": []
+                          },
+                          "name": "array",
+                          "title": "Marks",
+                          "of": [
+                            {
+                              "jsonType": "string",
+                              "type": {
+                                "name": "string",
+                                "type": null,
+                                "jsonType": "string"
+                              },
+                              "name": "string",
+                              "preview": {}
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "name": "text",
+                        "type": {
+                          "jsonType": "string",
+                          "type": {
+                            "name": "string",
+                            "type": null,
+                            "jsonType": "string"
+                          },
+                          "name": "string",
+                          "title": "Text",
+                          "preview": {}
+                        }
+                      }
+                    ],
+                    "annotations": [
+                      {
+                        "jsonType": "object",
+                        "type": {
+                          "name": "object",
+                          "type": null,
+                          "jsonType": "object"
+                        },
+                        "name": "link",
+                        "fields": [
+                          {
+                            "name": "href",
+                            "type": {
+                              "jsonType": "string",
+                              "type": {
+                                "name": "url",
+                                "title": "Url",
+                                "type": null,
+                                "jsonType": "string"
+                              },
+                              "name": "url",
+                              "title": "Url",
+                              "preview": {}
+                            }
+                          }
+                        ],
+                        "options": {
+                          "editModal": "popover"
+                        },
+                        "title": "Link",
+                        "orderings": [],
+                        "fieldsets": [
+                          {
+                            "single": true,
+                            "field": {
+                              "name": "href",
+                              "type": {
+                                "jsonType": "string",
+                                "type": {
+                                  "name": "url",
+                                  "title": "Url",
+                                  "type": null,
+                                  "jsonType": "string"
+                                },
+                                "name": "url",
+                                "title": "Url",
+                                "preview": {}
+                              }
+                            }
+                          }
+                        ],
+                        "preview": {
+                          "select": {
+                            "href": "href"
+                          }
+                        }
+                      }
+                    ],
+                    "decorators": [
+                      {
+                        "title": "Strong",
+                        "value": "strong"
+                      },
+                      {
+                        "title": "Emphasis",
+                        "value": "em"
+                      },
+                      {
+                        "title": "Code",
+                        "value": "code"
+                      },
+                      {
+                        "title": "Underline",
+                        "value": "underline"
+                      },
+                      {
+                        "title": "Strike",
+                        "value": "strike-through"
+                      }
+                    ],
+                    "options": {},
+                    "marks": [],
+                    "preview": {
+                      "select": {
+                        "text": "text",
+                        "marks": "marks"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "name": "style",
+              "type": {
+                "jsonType": "string",
+                "type": {
+                  "name": "string",
+                  "type": null,
+                  "jsonType": "string"
+                },
+                "name": "string",
+                "title": "Style",
+                "options": {
+                  "list": [
+                    {
+                      "title": "Normal",
+                      "value": "normal"
+                    },
+                    {
+                      "title": "Heading 1",
+                      "value": "h1"
+                    },
+                    {
+                      "title": "H2",
+                      "value": "h2"
+                    },
+                    {
+                      "title": "H3",
+                      "value": "h3"
+                    },
+                    {
+                      "title": "H4",
+                      "value": "h4"
+                    },
+                    {
+                      "title": "H5",
+                      "value": "h5"
+                    },
+                    {
+                      "title": "H6",
+                      "value": "h6"
+                    },
+                    {
+                      "title": "Quote",
+                      "value": "blockquote"
+                    }
+                  ]
+                },
+                "preview": {}
+              }
+            },
+            {
+              "name": "list",
+              "type": {
+                "jsonType": "string",
+                "type": {
+                  "name": "string",
+                  "type": null,
+                  "jsonType": "string"
+                },
+                "name": "string",
+                "title": "List type",
+                "options": {
+                  "list": [
+                    {
+                      "title": "Bullet",
+                      "value": "bullet"
+                    },
+                    {
+                      "title": "Numbered",
+                      "value": "number"
+                    }
+                  ]
+                },
+                "preview": {}
+              }
+            }
+          ],
+          "preview": {
+            "select": {}
+          }
+        },
+        {
+          "jsonType": "object",
+          "type": {
+            "name": "object",
+            "type": null,
+            "jsonType": "object"
+          },
+          "name": "code",
+          "fields": [
+            {
+              "name": "code",
+              "type": {
+                "jsonType": "string",
+                "type": {
+                  "name": "text",
+                  "type": null,
+                  "jsonType": "string"
+                },
+                "name": "text",
+                "title": "Code",
+                "preview": {}
+              }
+            },
+            {
+              "name": "language",
+              "type": {
+                "jsonType": "string",
+                "type": {
+                  "name": "string",
+                  "type": null,
+                  "jsonType": "string"
+                },
+                "name": "string",
+                "title": "Language",
+                "preview": {}
+              }
+            },
+            {
+              "name": "highlightedLines",
+              "type": {
+                "jsonType": "array",
+                "type": {
+                  "name": "array",
+                  "type": null,
+                  "jsonType": "array",
+                  "of": []
+                },
+                "name": "array",
+                "title": "Highlighted lines",
+                "of": [
+                  {
+                    "jsonType": "number",
+                    "type": {
+                      "name": "number",
+                      "type": null,
+                      "jsonType": "number"
+                    },
+                    "name": "number",
+                    "title": "Highlighted line",
+                    "preview": {}
+                  }
+                ]
+              }
+            }
+          ],
+          "title": "Code",
+          "options": {},
+          "orderings": [
+            {
+              "name": "language",
+              "title": "Language",
+              "by": [
+                {
+                  "field": "language",
+                  "direction": "asc"
+                }
+              ]
+            }
+          ],
+          "fieldsets": [
+            {
+              "single": true,
+              "field": {
+                "name": "code",
+                "type": {
+                  "jsonType": "string",
+                  "type": {
+                    "name": "text",
+                    "type": null,
+                    "jsonType": "string"
+                  },
+                  "name": "text",
+                  "title": "Code",
+                  "preview": {}
+                }
+              }
+            },
+            {
+              "single": true,
+              "field": {
+                "name": "language",
+                "type": {
+                  "jsonType": "string",
+                  "type": {
+                    "name": "string",
+                    "type": null,
+                    "jsonType": "string"
+                  },
+                  "name": "string",
+                  "title": "Language",
+                  "preview": {}
+                }
+              }
+            },
+            {
+              "single": true,
+              "field": {
+                "name": "highlightedLines",
+                "type": {
+                  "jsonType": "array",
+                  "type": {
+                    "name": "array",
+                    "type": null,
+                    "jsonType": "array",
+                    "of": []
+                  },
+                  "name": "array",
+                  "title": "Highlighted lines",
+                  "of": [
+                    {
+                      "jsonType": "number",
+                      "type": {
+                        "name": "number",
+                        "type": null,
+                        "jsonType": "number"
+                      },
+                      "name": "number",
+                      "title": "Highlighted line",
+                      "preview": {}
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "preview": {
+            "select": {
+              "title": "language"
+            }
+          }
+        }
+      ]
+    },
+    "span": {
+      "type": {
+        "name": "span",
+        "type": null,
+        "jsonType": "object"
+      },
+      "name": "span",
+      "jsonType": "object",
+      "fields": [
+        {
+          "name": "marks",
+          "type": {
+            "jsonType": "array",
+            "type": {
+              "name": "array",
+              "type": null,
+              "jsonType": "array",
+              "of": []
+            },
+            "name": "array",
+            "title": "Marks",
+            "of": [
+              {
+                "jsonType": "string",
+                "type": {
+                  "name": "string",
+                  "type": null,
+                  "jsonType": "string"
+                },
+                "name": "string",
+                "preview": {}
+              }
+            ]
+          }
+        },
+        {
+          "name": "text",
+          "type": {
+            "jsonType": "string",
+            "type": {
+              "name": "string",
+              "type": null,
+              "jsonType": "string"
+            },
+            "name": "string",
+            "title": "Text",
+            "preview": {}
+          }
+        }
+      ],
+      "annotations": [
+        {
+          "jsonType": "object",
+          "type": {
+            "name": "object",
+            "type": null,
+            "jsonType": "object"
+          },
+          "name": "link",
+          "fields": [
+            {
+              "name": "href",
+              "type": {
+                "jsonType": "string",
+                "type": {
+                  "name": "url",
+                  "title": "Url",
+                  "type": null,
+                  "jsonType": "string"
+                },
+                "name": "url",
+                "title": "Url",
+                "preview": {}
+              }
+            }
+          ],
+          "options": {
+            "editModal": "popover"
+          },
+          "title": "Link",
+          "orderings": [],
+          "fieldsets": [
+            {
+              "single": true,
+              "field": {
+                "name": "href",
+                "type": {
+                  "jsonType": "string",
+                  "type": {
+                    "name": "url",
+                    "title": "Url",
+                    "type": null,
+                    "jsonType": "string"
+                  },
+                  "name": "url",
+                  "title": "Url",
+                  "preview": {}
+                }
+              }
+            }
+          ],
+          "preview": {
+            "select": {
+              "href": "href"
+            }
+          }
+        }
+      ],
+      "decorators": [
+        {
+          "title": "Strong",
+          "value": "strong"
+        },
+        {
+          "title": "Emphasis",
+          "value": "em"
+        },
+        {
+          "title": "Code",
+          "value": "code"
+        },
+        {
+          "title": "Underline",
+          "value": "underline"
+        },
+        {
+          "title": "Strike",
+          "value": "strike-through"
+        }
+      ],
+      "options": {},
+      "marks": [],
+      "preview": {
+        "select": {
+          "text": "text",
+          "marks": "marks"
+        }
+      }
+    },
+    "inlineObjects": [],
+    "blockObjects": [
+      {
+        "jsonType": "object",
+        "type": {
+          "name": "object",
+          "type": null,
+          "jsonType": "object"
+        },
+        "name": "code",
+        "fields": [
+          {
+            "name": "code",
+            "type": {
+              "jsonType": "string",
+              "type": {
+                "name": "text",
+                "type": null,
+                "jsonType": "string"
+              },
+              "name": "text",
+              "title": "Code",
+              "preview": {}
+            }
+          },
+          {
+            "name": "language",
+            "type": {
+              "jsonType": "string",
+              "type": {
+                "name": "string",
+                "type": null,
+                "jsonType": "string"
+              },
+              "name": "string",
+              "title": "Language",
+              "preview": {}
+            }
+          },
+          {
+            "name": "highlightedLines",
+            "type": {
+              "jsonType": "array",
+              "type": {
+                "name": "array",
+                "type": null,
+                "jsonType": "array",
+                "of": []
+              },
+              "name": "array",
+              "title": "Highlighted lines",
+              "of": [
+                {
+                  "jsonType": "number",
+                  "type": {
+                    "name": "number",
+                    "type": null,
+                    "jsonType": "number"
+                  },
+                  "name": "number",
+                  "title": "Highlighted line",
+                  "preview": {}
+                }
+              ]
+            }
+          }
+        ],
+        "title": "Code",
+        "options": {},
+        "orderings": [
+          {
+            "name": "language",
+            "title": "Language",
+            "by": [
+              {
+                "field": "language",
+                "direction": "asc"
+              }
+            ]
+          }
+        ],
+        "fieldsets": [
+          {
+            "single": true,
+            "field": {
+              "name": "code",
+              "type": {
+                "jsonType": "string",
+                "type": {
+                  "name": "text",
+                  "type": null,
+                  "jsonType": "string"
+                },
+                "name": "text",
+                "title": "Code",
+                "preview": {}
+              }
+            }
+          },
+          {
+            "single": true,
+            "field": {
+              "name": "language",
+              "type": {
+                "jsonType": "string",
+                "type": {
+                  "name": "string",
+                  "type": null,
+                  "jsonType": "string"
+                },
+                "name": "string",
+                "title": "Language",
+                "preview": {}
+              }
+            }
+          },
+          {
+            "single": true,
+            "field": {
+              "name": "highlightedLines",
+              "type": {
+                "jsonType": "array",
+                "type": {
+                  "name": "array",
+                  "type": null,
+                  "jsonType": "array",
+                  "of": []
+                },
+                "name": "array",
+                "title": "Highlighted lines",
+                "of": [
+                  {
+                    "jsonType": "number",
+                    "type": {
+                      "name": "number",
+                      "type": null,
+                      "jsonType": "number"
+                    },
+                    "name": "number",
+                    "title": "Highlighted line",
+                    "preview": {}
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "preview": {
+          "select": {
+            "title": "language"
+          }
+        }
+      }
+    ]
+  }
+}

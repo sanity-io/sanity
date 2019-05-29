@@ -1,7 +1,7 @@
 import Schema from '@sanity/schema'
 
 export default Schema.compile({
-  name: 'myBlog',
+  name: 'withDefaultBlockType',
   types: [
     {
       type: 'object',
