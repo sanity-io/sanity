@@ -1,6 +1,6 @@
 import { client } from './utils/Client'
 
-export function getHistory(documentIds: string | string[], options: { [key: string]: any }): Promise<any> {
+export function getHistory(documentIds: string | string[], options: { [key: string]: any } = {}): Promise<any> {
   const ids = Array.isArray(documentIds) ? documentIds : [documentIds]
   const { time, revision } = options
   const dataset = client.clientConfig.dataset
