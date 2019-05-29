@@ -30,7 +30,7 @@ function mapToEvents(transaction: Transaction): HistoryEvent {
   const timestamp = new Date(transaction.timestamp)
   return {
     type,
-    authors: [transaction.author],
+    userIds: [transaction.author],
     startTime: timestamp,
     endTime: timestamp
   }
@@ -50,7 +50,7 @@ function reduceEdits(
     nextEvent.endTime.getTime() - current.endTime.getTime() < EDIT_EVENT_TIME_TRESHHOLD_MS
   if (skipEvent) {
     // Lift authors over to next event
-    nextEvent.authors = uniq(nextEvent.authors.concat(current.authors))
+    nextEvent.userIds = uniq(nextEvent.userIds.concat(current.userIds))
     // Set startTime on next event to be this one if not done already
     // (then startTime and endTime would be different)
     if (current.startTime.getTime() === current.endTime.getTime()) {
