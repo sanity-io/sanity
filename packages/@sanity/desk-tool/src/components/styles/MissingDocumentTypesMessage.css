@@ -1,0 +1,6 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  composes: absoluteCenter from 'part:@sanity/base/theme/layout/positioning-style';
+  text-align: left;
+}
