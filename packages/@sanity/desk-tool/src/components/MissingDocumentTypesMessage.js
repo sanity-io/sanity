@@ -6,16 +6,17 @@ export default function MissingDocumentTypesMessage(props) {
     <div className={styles.root}>
       <h2>Empty schema</h2>
       <p>
-        Your{' '}
+        Your schema does not contain any document types. If it did, those types would be listed
+        here.{' '}
         <a
           title="Schema documentation"
           target="_blank"
           rel="noopener noreferrer"
           href="https://www.sanity.io/docs/content-studio/the-schema"
         >
-          schema
-        </a>{' '}
-        does not contain any document types. If it did, those types would be listed here.
+          Read more about how to add schema types
+        </a>
+        .
       </p>
     </div>
   )
