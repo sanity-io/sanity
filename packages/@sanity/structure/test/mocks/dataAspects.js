@@ -7,6 +7,10 @@ module.exports = class AspectsMock {
     return this.schema.getTypeNames()
   }
 
+  getDocumentTypes() {
+    return this.schema.getTypeNames()
+  }
+
   getDisplayName(name) {
     return this.schema.get(name).title
   }
