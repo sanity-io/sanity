@@ -19,7 +19,8 @@ export default async function login(args, context) {
   const provider = await promptProviders(prompt, providers)
 
   // Open an authentication listener channel and wait for secret
-  const es = getAuthChannel(client.config().apiHost, provider)
+  const iv = crypto.randomBytes(8).toString('hex')
+  const es = getAuthChannel(client.config().apiHost, provider, iv)
   const encryptedToken = getAuthToken(es) // This is a promise, will resolve later
   const {secret, url} = await getAuthInfo(es)
 
@@ -47,7 +48,7 @@ export default async function login(args, context) {
   }
 
   // Decrypt the token with the secret we received earlier
-  const authToken = decryptToken(token, secret)
+  const authToken = decryptToken(token, secret, iv)
 
   // Store the token
   getUserConfig().set({
@@ -58,9 +59,9 @@ export default async function login(args, context) {
   output.print(chalk.green('Login successful'))
 }
 
-function getAuthChannel(baseUrl, provider) {
+function getAuthChannel(baseUrl, provider, iv) {
   const uuid = crypto.randomBytes(16).toString('hex')
-  const listenUrl = `${baseUrl}/v1/auth/listen/${provider.name}/${uuid}`
+  const listenUrl = `${baseUrl}/v1/auth/listen/${provider.name}/${uuid}?iv=${iv}`
   return new EventSource(listenUrl)
 }
 
@@ -103,8 +104,8 @@ function getAuthToken(es) {
   })
 }
 
-function decryptToken(token, secret) {
-  const decipher = crypto.createDecipher('aes-256-cbc', secret)
+function decryptToken(token, secret, iv) {
+  const decipher = crypto.createDecipheriv('aes-256-cbc', secret, iv)
   const dec = decipher.update(token, 'hex', 'utf8')
   return `${dec}${decipher.final('utf8')}`
 }
