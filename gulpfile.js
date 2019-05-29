@@ -194,6 +194,7 @@ const STUDIOS = [
   {name: 'example-studio', port: '3335'},
   {name: 'blog-studio', port: '3336'},
   {name: 'ecommerce-studio', port: '3337'},
+  {name: 'clean-studio', port: '3338'},
   {name: 'backstop-test-studio', port: '5000'}
 ]
 
