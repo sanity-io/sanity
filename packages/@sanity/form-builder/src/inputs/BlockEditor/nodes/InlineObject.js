@@ -122,6 +122,7 @@ export default class InlineObject extends React.Component<Props, State> {
     editor.withoutSaving(() => {
       editor.moveToEndOfNode(this.props.node).focus()
     })
+    this.resetDropTarget()
   }
 
   handleDragOverOtherNode = (event: DragEvent) => {
@@ -141,7 +142,7 @@ export default class InlineObject extends React.Component<Props, State> {
     const {editor} = this.props
 
     const range = getEventRange(event, editor)
-    if (range === null || typeof range.focus.offset === undefined) {
+    if (range === null || range.focus && range.focus.offset === undefined) {
       this.restoreSelection()
       return
     }
@@ -193,7 +194,7 @@ export default class InlineObject extends React.Component<Props, State> {
       }
       return editor
     })
-  }, 60)
+  }, 30)
 
   handleDragEnd = (event: SyntheticDragEvent<>) => {
     this.setState({isDragging: false})
@@ -223,20 +224,13 @@ export default class InlineObject extends React.Component<Props, State> {
   handleInvalidValue = (event: PatchEvent) => {
     let _event = event
     const {editor, onPatch} = this.props
-    const {focusBlock} = editor.value
     const value = this.getValue()
-    const path = [{_key: focusBlock.key}, 'children', {_key: value._key}]
+    const parentBlock = editor.value.document.getClosestBlock(value._key)
+    const path = [{_key: parentBlock.key}, 'children', {_key: value._key}]
     path.reverse().forEach(part => {
       _event = _event.prefixAll(part)
     })
     onPatch(_event, value)
-  }
-
-  handleRemoveValue = (event: SyntheticMouseEvent<>) => {
-    event.preventDefault()
-    event.stopPropagation()
-    const {node, editor} = this.props
-    editor.removeNodeByKey(node.key).focus()
   }
 
   handleCancelEvent = (event: SyntheticEvent<>) => {
@@ -276,6 +270,11 @@ export default class InlineObject extends React.Component<Props, State> {
     return this.props.node.data.get('value')
   }
 
+  handleInvalidTypeContainerClick = event => {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
   // eslint-disable-next-line complexity
   render() {
     const {
@@ -294,7 +293,7 @@ export default class InlineObject extends React.Component<Props, State> {
 
     if (!validTypes.includes(valueType)) {
       return (
-        <div onClick={this.handleCancelEvent}>
+        <div {...attributes} onClick={this.handleInvalidTypeContainerClick} contentEditable={false}>
           <InvalidValue
             validTypes={validTypes}
             actualType={valueType}

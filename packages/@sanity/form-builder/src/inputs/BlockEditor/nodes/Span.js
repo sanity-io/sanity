@@ -2,10 +2,11 @@
 
 import type {Node} from 'react'
 import React from 'react'
-import type {BlockContentFeatures, Type, Marker, Path, SlateEditor} from '../typeDefs'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import styles from './styles/Span.css'
 import {Inline} from 'slate'
+import type {BlockContentFeatures, Type, Marker, Path, SlateEditor} from '../typeDefs'
+import InvalidValue from '../../InvalidValueInput'
+import styles from './styles/Span.css'
 
 type Props = {
   attributes: any,
@@ -74,6 +75,18 @@ export default class Span extends React.Component<Props, State> {
     this._clickCounter++
   }
 
+  handleInvalidValue = (event: PatchEvent) => {
+    let _event = event
+    const {editor, onPatch} = this.props
+    const key = this.getFirstAnnotation()._key
+    const parentBlock = editor.value.document.getClosestBlock(this.props.node.key)
+    const path = [{_key: parentBlock.key}, 'markDefs', {_key: key}]
+    path.reverse().forEach(part => {
+      _event = _event.prefixAll(part)
+    })
+    onPatch(_event, this.getFirstAnnotation())
+  }
+
   startEditing() {
     const {editor, node, onFocus} = this.props
     const block = editor.value.document.getClosestBlock(node.key)
@@ -103,6 +116,11 @@ export default class Span extends React.Component<Props, State> {
     this._isMarkingText = false
   }
 
+  handleInvalidTypeContainerClick = event => {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
   handleClick = () => {
     const {type} = this.props
     if (!type) {
@@ -128,6 +146,11 @@ export default class Span extends React.Component<Props, State> {
     // If no focusedAnnotationName was found, buttons to edit respective annotations will be show
   }
 
+  getFirstAnnotation() {
+    const annotations = this.getAnnotations()
+    return annotations[Object.keys(annotations)[0]]
+  }
+
   render() {
     const {attributes, blockContentFeatures, markers} = this.props
     let children = this.props.children
@@ -144,6 +167,25 @@ export default class Span extends React.Component<Props, State> {
         children = <CustomComponent {...annotations[annotation.value]}>{children}</CustomComponent>
       }
     })
+    if (annotationTypes.length === 0) {
+      const firstAnnotation = this.getFirstAnnotation()
+      return (
+        <span
+          {...attributes}
+          className={styles.error}
+          onClick={this.handleInvalidTypeContainerClick}
+          contentEditable={false}
+        >
+          {children}
+          <InvalidValue
+            validTypes={blockContentFeatures.annotations.map(a => a.type.name)}
+            actualType={firstAnnotation._type}
+            value={firstAnnotation}
+            onChange={this.handleInvalidValue}
+          />
+        </span>
+      )
+    }
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
     return (

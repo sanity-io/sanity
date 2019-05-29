@@ -404,7 +404,7 @@ export default function createPatchesToChange(
       return rebasePatch(patch, controller)
     }
 
-    // Patches working on markDefs or inside blocks
+    // Patches working on markDefs or deep inside blocks needs some special care
     if (patch.path.length > 1) {
       if (patch.path[1] === 'markDefs') {
         return patchAnnotationData(patch, controller)
@@ -412,6 +412,12 @@ export default function createPatchesToChange(
         const rootBlockNode = controller.value.document.getNode(patch.path[0]._key)
         const node = findLastKnownEditorNodeInPath(rootBlockNode, patch.path)
         const isVoid = controller.query('isVoid', node)
+        // If it is a unset patch, just remove the node normally and return
+        // eslint-disable-next-line max-depth
+        if (patch.type === 'unset') {
+          return unsetPatch(patch, controller)
+        }
+        // If it is void, it's a inline object, and it's data should be patched
         // eslint-disable-next-line max-depth
         if (isVoid) {
           return patchInlineData(patch, controller, node)
@@ -426,6 +432,7 @@ export default function createPatchesToChange(
           )
         }
       }
+      // Everything else is patching of custom block data
       return patchBlockData(patch, controller)
     }
     // Patches working on whole blocks or document
