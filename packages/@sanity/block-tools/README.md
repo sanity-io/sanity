@@ -18,7 +18,7 @@ import blockTools from '@sanity/block-tools'
 
 
 // Start with compiling a schema we can work against
-const schema = Schema.compile({
+const defaultSchema = Schema.compile({
   name: 'myBlog',
   types: [
     {
