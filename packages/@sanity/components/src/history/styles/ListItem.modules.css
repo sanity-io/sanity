@@ -85,6 +85,10 @@
 
 .root[data-status="unpublished"]::after {
   background-color: var(--state-danger-color);
+  height: calc(var(--history-circle-size) / 3);
+  border-radius: 0;
+  border-color: transparent;
+  transform: translateY(100%);
 }
 
 .status {
@@ -120,4 +124,8 @@
 
 .title {
   margin-bottom: var(--small-padding);
+}
+
+.children {
+  padding: var(--medium-padding) 0;
 }

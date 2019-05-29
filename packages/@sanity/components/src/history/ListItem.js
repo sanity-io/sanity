@@ -9,7 +9,7 @@ import styles from './styles/ListItem.modules.css'
 
 const MAX_USERS = 3
 
-export default class DefaultLabel extends React.PureComponent {
+export default class HistoryListItem extends React.PureComponent {
   static propTypes = {
     status: PropTypes.oneOf(['published', 'edited', 'created', 'unpublished']),
     title: PropTypes.string,
@@ -78,7 +78,7 @@ export default class DefaultLabel extends React.PureComponent {
             )}
           </div>
         )}
-        <div>{children}</div>
+        {children && <div className={styles.children}>{children}</div>}
       </div>
     )
   }
