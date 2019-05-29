@@ -16,7 +16,7 @@
 
 .unSelected {
   composes: root;
-  composes: selectable from 'part:@sanity/base/theme/layout/selectable-style';
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
 }
 
 .selected {
@@ -67,12 +67,20 @@
   left: calc(var(--history-padding-left) - var(--history-circle-size) / 2 + 0.5px);
   height: var(--history-circle-size);
   width: var(--history-circle-size);
-  background-color: currentColor;
   border: 1px solid currentColor;
   border-radius: 50%;
   box-sizing: border-box;
   border-collapse: separate;
   opacity: 0.8;
+}
+
+.root[data-status="published"]::after {
+  background-color: currentColor;
+}
+
+.root[data-status="published"][data-is-current-version="true"]::after {
+  background-color: var(--state-success-color);
+  border-color: var(--state-success-color);
 }
 
 .root[data-status="draft"]::after {

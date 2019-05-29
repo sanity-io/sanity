@@ -2,9 +2,10 @@ import React from 'react'
 import {storiesOf} from 'part:@sanity/storybook'
 import Button from 'part:@sanity/components/buttons/default'
 import {withKnobs, text, select, number, boolean} from 'part:@sanity/storybook/addons/knobs'
-import ListItem from './ListItem'
+import ListItem from 'part:@sanity/components/history/list-item'
 import {range} from 'lodash'
 import Chance from 'chance'
+import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 const chance = new Chance()
 
@@ -32,7 +33,13 @@ storiesOf('History')
     return (
       <div>
         <ListItem status="draft" title="test" users={[mockUser()]} />
-        <ListItem status="published" title="23 may 2018" users={[mockUser()]} isSelected />
+        <ListItem
+          status="published"
+          title="23 may 2018"
+          users={[mockUser()]}
+          isSelected
+          isCurrentVersion
+        />
         <ListItem status="unpublished" title="22 may 2018" users={[mockUser()]} />
         {range(number('items', 10, 'test')).map(() => {
           const item = mockHistoryItem()
@@ -44,20 +51,27 @@ storiesOf('History')
   })
 
   .add('List item', () => {
-    const users = range(number('users', 1, 'test')).map(() => mockUser)
+    const users = range(number('users', 1, 'test')).map(() => mockUser())
     return (
-      <ListItem
-        status={select('status', ['published', 'edited', 'created'], 'edited')}
-        title={text('title', 'Steve Wozniak')}
-        users={users}
-        isSelected={boolean('isSelected', false, 'props')}
-      >
-        {boolean('children', false, 'test') && (
-          <div>
-            <Button inverted color="white" padding="small">Publish</Button>
-            <Button kind="simple" padding="small">Discard</Button>
-          </div>
-        )}
-      </ListItem>
+      <Sanity part="part:@sanity/components/history/list-item" propTables={[ListItem]}>
+        <ListItem
+          status={select('status', ['published', 'unpublished', 'edited', 'created'], 'edited')}
+          title={text('title', '23 may 2019')}
+          users={users}
+          isCurrentVersion={boolean('isCurrentVersion', false, 'props')}
+          isSelected={boolean('isSelected', false, 'props')}
+        >
+          {boolean('children', false, 'test') && (
+            <>
+              <Button inverted color="white" padding="small">
+                Publish
+              </Button>
+              <Button kind="simple" padding="small">
+                Discard
+              </Button>
+            </>
+          )}
+        </ListItem>
+      </Sanity>
     )
   })

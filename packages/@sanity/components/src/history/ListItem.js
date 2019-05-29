@@ -14,6 +14,7 @@ export default class HistoryListItem extends React.PureComponent {
     status: PropTypes.oneOf(['published', 'edited', 'created', 'unpublished']),
     title: PropTypes.string,
     children: PropTypes.node,
+    isCurrentVersion: PropTypes.bool,
     isSelected: PropTypes.bool,
     users: PropTypes.arrayOf(
       PropTypes.shape({
@@ -27,14 +28,20 @@ export default class HistoryListItem extends React.PureComponent {
   static defaultProps = {
     status: 'unknown',
     title: 'Untitled',
+    isCurrentVersion: false,
+    isSelected: false,
     users: [],
     children: undefined
   }
 
   render() {
-    const {status, isSelected, title, users, children} = this.props
+    const {status, isSelected, title, users, children, isCurrentVersion} = this.props
     return (
-      <div className={isSelected ? styles.selected : styles.unSelected} data-status={status}>
+      <div
+        className={isSelected ? styles.selected : styles.unSelected}
+        data-status={status}
+        data-is-current-version={isCurrentVersion}
+      >
         <div className={styles.startLine} aria-hidden="true" />
         <div className={styles.endLine} aria-hidden="true" />
         <div className={styles.status}>{status}</div>
