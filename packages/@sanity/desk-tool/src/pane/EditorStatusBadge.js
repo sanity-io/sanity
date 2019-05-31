@@ -1,0 +1,60 @@
+import React from 'react'
+import PropTypes from 'prop-types'
+import Button from 'part:@sanity/components/buttons/default'
+import styles from './styles/Editor.css'
+
+export default class EditorStatusBadge extends React.PureComponent {
+  static propTypes = {
+    isDraft: PropTypes.bool,
+    isPublished: PropTypes.bool,
+    onClick: PropTypes.func,
+    title: PropTypes.string,
+    liveEdit: PropTypes.bool,
+    historyStatus: PropTypes.oneOf(['published', 'edited'])
+  }
+  render() {
+    const {isDraft, isPublished, onClick, title, liveEdit, historyStatus} = this.props
+
+    if (historyStatus) {
+      return (
+        <Button inverted padding="none">
+          <span className={styles.badgeText}>{historyStatus}</span>
+        </Button>
+      )
+    }
+
+    return (
+      <>
+        {liveEdit ? (
+          <Button color="success" padding="none">
+            <span className={styles.badgeText}>Live</span>
+          </Button>
+        ) : (
+          <>
+            {!isDraft && !isPublished && (
+              <Button inverted padding="none">
+                <span className={styles.badgeText}>Creating</span>
+              </Button>
+            )}
+            {isDraft && (
+              <Button inverted padding="none" onClick={onClick}>
+                <span className={styles.badgeText}>Edited</span>
+              </Button>
+            )}
+            {isPublished && (
+              <Button
+                padding="none"
+                color={isDraft ? 'warning' : 'success'}
+                onClick={onClick}
+                title={title}
+              >
+                <span className={styles.badgeText}>Published</span>
+              </Button>
+            )}
+          </>
+        )}
+      </>
+    )
+  }
+}
+

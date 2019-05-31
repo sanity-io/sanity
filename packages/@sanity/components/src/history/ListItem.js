@@ -11,16 +11,18 @@ const MAX_USERS = 3
 
 export default class HistoryListItem extends React.PureComponent {
   static propTypes = {
-    status: PropTypes.oneOf(['published', 'edited', 'created', 'unpublished']),
+    status: PropTypes.oneOf(['published', 'edited', 'created', 'unpublished', 'draft']),
     title: PropTypes.string,
     children: PropTypes.node,
     isCurrentVersion: PropTypes.bool,
     isSelected: PropTypes.bool,
+    onClick: PropTypes.func,
     users: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string,
         email: PropTypes.string,
-        imageUrl: PropTypes.string
+        imageUrl: PropTypes.string,
+        id: PropTypes.string
       })
     )
   }
@@ -28,6 +30,7 @@ export default class HistoryListItem extends React.PureComponent {
   static defaultProps = {
     status: 'unknown',
     title: 'Untitled',
+    onClick: () => {},
     isCurrentVersion: false,
     isSelected: false,
     users: [],
@@ -35,12 +38,13 @@ export default class HistoryListItem extends React.PureComponent {
   }
 
   render() {
-    const {status, isSelected, title, users, children, isCurrentVersion} = this.props
+    const {status, isSelected, title, users, children, isCurrentVersion, onClick} = this.props
     return (
       <div
         className={isSelected ? styles.selected : styles.unSelected}
         data-status={status}
         data-is-current-version={isCurrentVersion}
+        onClick={onClick}
       >
         <div className={styles.startLine} aria-hidden="true" />
         <div className={styles.endLine} aria-hidden="true" />
@@ -49,11 +53,11 @@ export default class HistoryListItem extends React.PureComponent {
         {users && users.length > 0 && (
           <div className={styles.users}>
             {users.slice(0, MAX_USERS).map(user => (
-              <div className={styles.user} key={user.identity}>
+              <div className={styles.user} key={user.id}>
                 <PresenceCircle
                   title={users.length === 1 ? false : user.displayName}
                   imageUrl={user.imageUrl}
-                  color={colorHasher(user.identity)}
+                  color={colorHasher(user.id)}
                 />
               </div>
             ))}
@@ -65,7 +69,7 @@ export default class HistoryListItem extends React.PureComponent {
                     <PresenceList
                       markers={users.map(user => ({
                         type: 'presence',
-                        identity: user.identity,
+                        identity: user.id,
                         user: {...user}
                       }))}
                     />

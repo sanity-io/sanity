@@ -44,6 +44,7 @@ import DocTitle from '../components/DocTitle'
 import TimeAgo from '../components/TimeAgo'
 import History from './History'
 import styles from './styles/Editor.css'
+import EditorStatusBadge from './EditorStatusBadge'
 
 function navigateUrl(url) {
   window.open(url)
@@ -169,6 +170,8 @@ const INITIAL_STATE = {
   showValidationTooltip: false,
   focusPath: [],
   showHistory: false,
+  historyValue: undefined,
+  historyStatus: undefined,
   filterField: () => true
 }
 
@@ -663,8 +666,17 @@ export default withRouterHOC(
 
     handleToggleHistory = () => {
       this.setState(prevState => ({
-        showHistory: !prevState.showHistory
+        showHistory: !prevState.showHistory,
+        historyValue: prevState.showHistory ? undefined : prevState.historyValue
       }))
+    }
+
+    handleCloseHistory = () => {
+      this.setState({
+        showHistory: false,
+        historyValue: null,
+        historyStatus: null
+      })
     }
 
     handleTopClick = event => {
@@ -673,6 +685,23 @@ export default withRouterHOC(
 
     renderStaticContent = () => {
       return this.renderPublishInfo()
+    }
+
+    handleHistorySelect = event => {
+      this.setState({
+        historyValue: event.value,
+        historyStatus: event.status
+      })
+    }
+
+    getDocumentId = value => {
+      if (!value || !value._id) {
+        return null
+      }
+      if (value._id.split('drafts.').length === 2) {
+        return value._id.split('drafts.')[1]
+      }
+      return value._id
     }
 
     render() {
@@ -695,7 +724,9 @@ export default withRouterHOC(
         showConfirmUnpublish,
         didPublish,
         filterField,
-        showHistory
+        showHistory,
+        historyValue,
+        historyStatus
       } = this.state
 
       const value = draft || published
@@ -707,8 +738,6 @@ export default withRouterHOC(
           </div>
         )
       }
-
-      console.log(this.props)
 
       const hasTypeMismatch = value && value._type && value._type !== type.name
       if (hasTypeMismatch) {
@@ -728,7 +757,12 @@ export default withRouterHOC(
         <div className={showHistory ? styles.paneWrapperWithHistory : styles.paneWrapper}>
           {showHistory && (
             <div className={styles.history}>
-              <History documentId={value && value._id} onClose={this.handleToggleHistory} />
+              <History
+                documentId={this.getDocumentId(value)}
+                onClose={this.handleCloseHistory}
+                onItemSelect={this.handleHistorySelect}
+                currentRev={value._rev}
+              />
             </div>
           )}
           <Pane
@@ -745,40 +779,19 @@ export default withRouterHOC(
           >
             <div className={styles.pane}>
               <div className={styles.top}>
-                {this.isLiveEditEnabled() ? (
-                  <Button color="success" padding="none">
-                    <span className={styles.badgeText}>Live</span>
-                  </Button>
-                ) : (
-                  <>
-                    {!draft && !published && (
-                      <Button inverted padding="none">
-                        <span className={styles.badgeText}>Draft</span>
-                      </Button>
-                    )}
-                    {draft && (
-                      <Button
-                        inverted
-                        padding="none"
-                        onClick={published && this.handleToggleHistory}
-                      >
-                        <span className={styles.badgeText}>Draft</span>
-                      </Button>
-                    )}
-                    {published && (
-                      <Button
-                        padding="none"
-                        color={draft ? 'warning' : 'success'}
-                        onClick={this.handleToggleHistory}
-                        title={`Published ${distanceInWordsToNow(published._updatedAt, {
-                          addSuffix: true
-                        })}`}
-                      >
-                        <span className={styles.badgeText}>Published</span>
-                      </Button>
-                    )}
-                  </>
-                )}
+                <EditorStatusBadge
+                  liveEdit={this.isLiveEditEnabled()}
+                  onClick={this.handleToggleHistory}
+                  historyStatus={historyStatus}
+                  isDraft={!!draft}
+                  isPublished={!!published}
+                  title={
+                    published &&
+                    `Published ${distanceInWordsToNow(published._updatedAt, {
+                      addSuffix: true
+                    })}`
+                  }
+                />
                 {value && (
                   <span className={styles.editedTime} onClick={this.handleToggleHistory}>
                     Edited <TimeAgo time={value._updatedAt} />
@@ -793,16 +806,15 @@ export default withRouterHOC(
                 <FormBuilder
                   schema={schema}
                   patchChannel={patchChannel}
-                  value={draft || published || {_type: type.name}}
+                  value={historyValue || draft || published || {_type: type.name}}
                   type={type}
                   filterField={filterField}
-                  readOnly={isReconnecting || !isActionEnabled(type, 'update')}
+                  readOnly={!!historyValue || isReconnecting || !isActionEnabled(type, 'update')}
                   onBlur={this.handleBlur}
                   onFocus={this.handleFocus}
                   focusPath={focusPath}
                   onChange={this.handleChange}
                   markers={markers}
-                  readOnly
                 />
               </form>
               {afterEditorComponents.map((AfterEditorComponent, i) => (
