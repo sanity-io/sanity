@@ -1,7 +1,7 @@
 {
   "name": "example-studio",
   "private": true,
-  "version": "0.140.30",
+  "version": "0.140.31",
   "description": "A sanity studio with instructional examples and useful patterns",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
@@ -31,7 +31,7 @@
     "@sanity/form-builder": "0.140.30",
     "@sanity/language-filter": "0.140.0",
     "@sanity/storybook": "0.140.12",
-    "@sanity/vision": "0.140.30",
+    "@sanity/vision": "0.140.31",
     "bio-pv": "^1.8.1",
     "date-fns": "^1.29.0",
     "fetch": "^1.1.0",
