@@ -708,6 +708,8 @@ export default withRouterHOC(
         )
       }
 
+      console.log(this.props)
+
       const hasTypeMismatch = value && value._type && value._type !== type.name
       if (hasTypeMismatch) {
         return (
@@ -726,7 +728,7 @@ export default withRouterHOC(
         <div className={showHistory ? styles.paneWrapperWithHistory : styles.paneWrapper}>
           {showHistory && (
             <div className={styles.history}>
-              <History onClose={this.handleToggleHistory} />
+              <History documentId={value && value._id} onClose={this.handleToggleHistory} />
             </div>
           )}
           <Pane
@@ -749,12 +751,21 @@ export default withRouterHOC(
                   </Button>
                 ) : (
                   <>
-                    {draft && (
+                    {!draft && !published && (
                       <Button inverted padding="none">
                         <span className={styles.badgeText}>Draft</span>
                       </Button>
                     )}
-                    {published ? (
+                    {draft && (
+                      <Button
+                        inverted
+                        padding="none"
+                        onClick={published && this.handleToggleHistory}
+                      >
+                        <span className={styles.badgeText}>Draft</span>
+                      </Button>
+                    )}
+                    {published && (
                       <Button
                         padding="none"
                         color={draft ? 'warning' : 'success'}
@@ -765,15 +776,11 @@ export default withRouterHOC(
                       >
                         <span className={styles.badgeText}>Published</span>
                       </Button>
-                    ) : (
-                      <Button padding="none" inverted>
-                        <span className={styles.badgeText}>Unpublished</span>
-                      </Button>
                     )}
                   </>
                 )}
                 {value && (
-                  <span className={styles.editedTime}>
+                  <span className={styles.editedTime} onClick={this.handleToggleHistory}>
                     Edited <TimeAgo time={value._updatedAt} />
                   </span>
                 )}
@@ -795,6 +802,7 @@ export default withRouterHOC(
                   focusPath={focusPath}
                   onChange={this.handleChange}
                   markers={markers}
+                  readOnly
                 />
               </form>
               {afterEditorComponents.map((AfterEditorComponent, i) => (

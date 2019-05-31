@@ -26,7 +26,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
       className: PropTypes.string,
       disabled: PropTypes.bool,
       tabIndex: PropTypes.number,
-      padding: PropTypes.oneOf(['default', 'small']),
+      padding: PropTypes.oneOf(['default', 'small', 'none']),
       bleed: PropTypes.bool
     }
 

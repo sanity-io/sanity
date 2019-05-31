@@ -4,6 +4,7 @@ import HistoryListItem from 'part:@sanity/components/history/list-item'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import styles from './styles/History.css'
+import {HistoryStore} from '../../../history-store/lib'
 
 const testUsers = [
   {
@@ -16,10 +17,20 @@ const testUsers = [
 
 export default class History extends React.PureComponent {
   static propTypes = {
-    onClose: PropTypes.func
+    onClose: PropTypes.func,
+    documentId: PropTypes.string
   }
+
+  componentDidMount() {
+    const {documentId} = this.props
+    HistoryStore.getHistory(documentId).then(history => {
+      console.log(history)
+    })
+  }
+
   render() {
     const {onClose} = this.props
+
     return (
       <div className={styles.root}>
         <div className={styles.header}>

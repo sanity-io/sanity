@@ -5,6 +5,7 @@
   --button-focus-shadow: 0 0 0 3px color(var(--input-border-color-focus) a(50%));
   --button-focus-shadow--danger: 0 0 0 3px color(var(--state-danger-color) a(50%));
   --button-focus-shadow--success: 0 0 0 3px color(var(--state-success-color) a(50%));
+  --button-focus-shadow--warning: 0 0 0 3px color(var(--state-warning-color) a(50%));
 }
 
 @keyframes focused {
