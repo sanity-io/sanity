@@ -7,11 +7,11 @@ interface SanityClient {
   clientConfig: any
 }
 
-const sanityEnv = process.env.SANITY_ENV || 'production'
+const sanityEnv = window.location.hostname === 'localhost' ? 'staging' : (process.env.SANITY_ENV || 'production')
+
 const apiHosts = {
   production: 'https://api.sanity.io',
-  staging: 'https://api.sanity.work',
-  development: 'http://api.sanity.wtf'
+  staging: 'https://api.sanity.work'
 }
 
 const getClientConfig = (): { [key: string]: any } => {
