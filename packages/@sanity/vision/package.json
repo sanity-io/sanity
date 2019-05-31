@@ -21,6 +21,7 @@
   ],
   "dependencies": {
     "classnames": "^2.2.5",
+    "codemirror": "^5.47.0",
     "moment": "^2.19.1",
     "query-string": "^4.3.2",
     "react-codemirror2": "^6.0.0",
