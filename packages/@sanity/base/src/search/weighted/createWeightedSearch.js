@@ -7,9 +7,16 @@ import {tokenize} from '../common/tokenize'
 
 const combinePaths = flow([flatten, union, compact])
 
+const isArrayPath = path => path.endsWith('[]')
+
+// "some[].thing[]" => "some[].thing"
+const joinedPathRemoveArray = path => path.substr(0, path.length - 2)
+
 const toGroqParams = terms =>
   terms.reduce((acc, term, i) => {
     acc[`t${i}`] = `${term}*` // "t" is short for term
+    // For searching in arrays we also need the literal search term
+    acc[`tl${i}`] = term
     return acc
   }, {})
 
@@ -35,9 +42,15 @@ export function createWeightedSearch(types, client) {
   // this is the actual search function that takes the search string and returns the hits
   return function search(queryString, opts = {}) {
     const terms = uniq(compact(tokenize(toLower(queryString))))
-    const constraints = terms.map((term, i) =>
-      combinedSearchPaths.map(joinedPath => `${joinedPath} match $t${i}`)
-    )
+    const constraints = terms.map((term, i) => (
+      combinedSearchPaths.map(joinedPath => {
+        // Arrays need to be searched differently
+        if (isArrayPath(joinedPath)) {
+          return `$tl${i} in ${joinedPathRemoveArray(joinedPath)}`
+        }
+        return `${joinedPath} match $t${i}`
+      })
+    ))
 
     const filters = [
       '_type in $types',
