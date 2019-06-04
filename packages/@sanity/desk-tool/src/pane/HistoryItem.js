@@ -36,7 +36,7 @@ export default class HistoryItem extends React.PureComponent {
     return (
       <HistoryListItem
         status={type}
-        title={format(endTime, 'DD MMM HH:MM')}
+        title={format(endTime, 'DD MMM HH:mm:ss')}
         users={users}
         onClick={this.handleClick}
         isSelected={isSelected}
