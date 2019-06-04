@@ -10,14 +10,29 @@ export default class EditorStatusBadge extends React.PureComponent {
     onClick: PropTypes.func,
     title: PropTypes.string,
     liveEdit: PropTypes.bool,
+    isPublishedRev: PropTypes.bool,
     historyStatus: PropTypes.oneOf(['published', 'edited'])
   }
+
   render() {
-    const {isDraft, isPublished, onClick, title, liveEdit, historyStatus} = this.props
+    const {
+      isDraft,
+      isPublished,
+      onClick,
+      title,
+      liveEdit,
+      historyStatus,
+      isPublishedRev
+    } = this.props
 
     if (historyStatus) {
       return (
-        <Button inverted padding="none">
+        <Button
+          inverted={!isPublishedRev}
+          padding="none"
+          onClick={onClick}
+          color={isPublishedRev ? 'success' : undefined}
+        >
           <span className={styles.badgeText}>{historyStatus}</span>
         </Button>
       )
@@ -36,7 +51,7 @@ export default class EditorStatusBadge extends React.PureComponent {
                 <span className={styles.badgeText}>Creating</span>
               </Button>
             )}
-            {isDraft && (
+            {isDraft && onClick && (
               <Button inverted padding="none" onClick={onClick}>
                 <span className={styles.badgeText}>Edited</span>
               </Button>
@@ -57,4 +72,3 @@ export default class EditorStatusBadge extends React.PureComponent {
     )
   }
 }
-

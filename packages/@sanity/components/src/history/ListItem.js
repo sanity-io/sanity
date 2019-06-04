@@ -50,6 +50,7 @@ export default class HistoryListItem extends React.PureComponent {
         <div className={styles.endLine} aria-hidden="true" />
         <div className={styles.status}>{status}</div>
         <div className={styles.title}>{title}</div>
+        <div style={{fontSize: '0.5em'}}>{this.props.subtitle}</div>
         {users && users.length > 0 && (
           <div className={styles.users}>
             {users.slice(0, MAX_USERS).map(user => (
@@ -70,6 +71,7 @@ export default class HistoryListItem extends React.PureComponent {
                       markers={users.map(user => ({
                         type: 'presence',
                         identity: user.id,
+                        color: colorHasher(user.id),
                         user: {...user}
                       }))}
                     />

@@ -667,7 +667,8 @@ export default withRouterHOC(
     handleToggleHistory = () => {
       this.setState(prevState => ({
         showHistory: !prevState.showHistory,
-        historyValue: prevState.showHistory ? undefined : prevState.historyValue
+        historyValue: prevState.showHistory ? null : prevState.historyValue,
+        historyStatus: prevState.showHistory ? null : prevState.showHistory
       }))
     }
 
@@ -690,7 +691,7 @@ export default withRouterHOC(
     handleHistorySelect = event => {
       this.setState({
         historyValue: event.value,
-        historyStatus: event.status
+        historyStatus: event.status || undefined
       })
     }
 
@@ -753,6 +754,7 @@ export default withRouterHOC(
       }
 
       const enabledActions = resolveEnabledActions(type)
+
       return (
         <div className={showHistory ? styles.paneWrapperWithHistory : styles.paneWrapper}>
           {showHistory && (
@@ -762,6 +764,8 @@ export default withRouterHOC(
                 onClose={this.handleCloseHistory}
                 onItemSelect={this.handleHistorySelect}
                 currentRev={value._rev}
+                lastEdited={new Date(value._updatedAt)}
+                publishedRev={published && published._rev}
               />
             </div>
           )}
@@ -776,15 +780,17 @@ export default withRouterHOC(
             isSelected // last pane is always selected for now
             staticContent={this.renderStaticContent()}
             contentMaxWidth={672}
+            minSize={showHistory && 1000}
           >
             <div className={styles.pane}>
               <div className={styles.top}>
                 <EditorStatusBadge
                   liveEdit={this.isLiveEditEnabled()}
                   onClick={this.handleToggleHistory}
-                  historyStatus={historyStatus}
+                  historyStatus={historyStatus || undefined}
                   isDraft={!!draft}
                   isPublished={!!published}
+                  isPublishedRev={published && historyValue && published._rev === historyValue._rev}
                   title={
                     published &&
                     `Published ${distanceInWordsToNow(published._updatedAt, {

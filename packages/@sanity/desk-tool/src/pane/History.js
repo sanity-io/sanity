@@ -12,30 +12,31 @@ export default class History extends React.PureComponent {
     onClose: PropTypes.func,
     documentId: PropTypes.string,
     onItemSelect: PropTypes.func,
-    currentRev: PropTypes.string
+    currentRev: PropTypes.string,
+    publishedRev: PropTypes.string,
+    lastEdited: PropTypes.object
   }
 
-  state = {events: [], rev: undefined}
+  state = {events: [], selectedRev: undefined}
 
   componentDidMount() {
     const {documentId} = this.props
     HistoryStore.getTransactions([documentId, `drafts.${documentId}`]).then(transactions => {
       const events = transactionsToEvents(documentId, transactions).reverse()
-      this.setState({events, rev: events[0].rev})
+      this.setState({events, selectedRev: events[0].rev})
     })
   }
 
   handleItemClick = (rev, type) => {
     const {onItemSelect, documentId, currentRev} = this.props
     if (onItemSelect) {
-      this.setState({rev})
+      this.setState({selectedRev: rev})
       if (currentRev === rev) {
         onItemSelect({
           value: null,
           status: null
         })
       } else {
-        console.log('get revision', documentId, rev)
         HistoryStore.getHistory(documentId, {revision: rev}).then(({documents}) => {
           if (documents && documents[0]) {
             onItemSelect({
@@ -49,8 +50,13 @@ export default class History extends React.PureComponent {
   }
 
   render() {
-    const {onClose} = this.props
-    const {events, rev} = this.state
+    const {onClose, publishedRev} = this.props
+    const {events, selectedRev} = this.state
+
+    if (!events || !events[0]) {
+      return <div>Loading</div>
+    }
+
     return (
       <div className={styles.root}>
         <div className={styles.header}>
@@ -63,7 +69,8 @@ export default class History extends React.PureComponent {
               {...event}
               key={event.rev}
               onClick={this.handleItemClick}
-              isSelected={event.rev === rev}
+              isSelected={event.rev === selectedRev}
+              isCurrentVersion={event.rev === publishedRev}
             />
           ))}
         </div>

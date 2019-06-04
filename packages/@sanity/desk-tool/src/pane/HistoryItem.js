@@ -15,11 +15,16 @@ export default class HistoryItem extends React.PureComponent {
     endTime: PropTypes.object,
     userIds: PropTypes.arrayOf(PropTypes.string),
     onClick: PropTypes.func,
-    isSelected: PropTypes.bool
+    isSelected: PropTypes.bool,
+    isCurrentVersion: PropTypes.bool
   }
 
   componentDidMount() {
-    getUsers(this.props.userIds).then(users => {
+    const {userIds} = this.props
+    if (!userIds) {
+      return
+    }
+    getUsers(userIds).then(users => {
       this.setState({users})
     })
   }
@@ -31,12 +36,14 @@ export default class HistoryItem extends React.PureComponent {
   state = {users: []}
 
   render() {
-    const {type, endTime, isSelected} = this.props
+    const {type, endTime, isSelected, isCurrentVersion, rev} = this.props
     const {users} = this.state
     return (
       <HistoryListItem
+        isCurrentVersion={isCurrentVersion}
         status={type}
         title={format(endTime, 'DD MMM HH:mm:ss')}
+        subtitle={`debug rev: ${rev}`}
         users={users}
         onClick={this.handleClick}
         isSelected={isSelected}
