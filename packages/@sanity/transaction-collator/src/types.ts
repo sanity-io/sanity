@@ -8,7 +8,6 @@ export type Mutation = {
 
 export type HistoryEvent = {
   type: 'created' | 'edited' | 'published' | 'unpublished' | 'unknown'
-  rev: string
   userIds: string[]
   startTime: Date
   endTime: Date

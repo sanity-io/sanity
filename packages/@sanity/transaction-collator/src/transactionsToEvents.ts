@@ -30,7 +30,6 @@ function mapToEvents(transaction: Transaction): HistoryEvent {
   const timestamp = new Date(transaction.timestamp)
   return {
     type,
-    rev: transaction.id,
     userIds: [transaction.author],
     startTime: timestamp,
     endTime: timestamp
