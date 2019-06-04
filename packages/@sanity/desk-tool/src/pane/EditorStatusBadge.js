@@ -53,7 +53,7 @@ export default class EditorStatusBadge extends React.PureComponent {
             )}
             {isDraft && onClick && (
               <Button inverted padding="none" onClick={onClick}>
-                <span className={styles.badgeText}>Edited</span>
+                <span className={styles.badgeText}>Draft</span>
               </Button>
             )}
             {isPublished && (

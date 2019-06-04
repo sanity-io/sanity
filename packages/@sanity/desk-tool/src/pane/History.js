@@ -3,9 +3,12 @@ import React from 'react'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import HistoryStore from 'part:@sanity/base/datastore/history'
+import Snackbar from 'part:@sanity/components/snackbar/default'
 import {transactionsToEvents} from '../../../transaction-collator/lib'
-import styles from './styles/History.css'
 import HistoryItem from './HistoryItem'
+
+import styles from './styles/History.css'
+import { isConstructorDeclaration } from 'typescript';
 
 export default class History extends React.PureComponent {
   static propTypes = {
@@ -14,10 +17,11 @@ export default class History extends React.PureComponent {
     onItemSelect: PropTypes.func,
     currentRev: PropTypes.string,
     publishedRev: PropTypes.string,
-    lastEdited: PropTypes.object
+    lastEdited: PropTypes.object,
+    errorMessage: PropTypes.string
   }
 
-  state = {events: [], selectedRev: undefined}
+  state = {events: [], selectedRev: undefined, errorMessage: undefined}
 
   componentDidMount() {
     const {documentId} = this.props
@@ -30,28 +34,34 @@ export default class History extends React.PureComponent {
   handleItemClick = (rev, type) => {
     const {onItemSelect, documentId, currentRev} = this.props
     if (onItemSelect) {
-      this.setState({selectedRev: rev})
       if (currentRev === rev) {
+        this.setState({selectedRev: rev})
         onItemSelect({
           value: null,
           status: null
         })
       } else {
-        HistoryStore.getHistory(documentId, {revision: rev}).then(({documents}) => {
-          if (documents && documents[0]) {
-            onItemSelect({
-              value: documents[0],
-              status: type
-            })
-          }
-        })
+        HistoryStore.getHistory(documentId, {revision: rev})
+          .then(({documents}) => {
+            if (documents && documents[0]) {
+              this.setState({selectedRev: rev})
+              onItemSelect({
+                value: documents[0],
+                status: type
+              })
+            }
+          })
+          .catch(res => {
+            console.error(res)
+            this.setState({errorMessage: `Could not fetch rev: ${rev}`})
+          })
       }
     }
   }
 
   render() {
     const {onClose, publishedRev} = this.props
-    const {events, selectedRev} = this.state
+    const {events, selectedRev, errorMessage} = this.state
 
     if (!events || !events[0]) {
       return <div>Loading</div>
@@ -74,6 +84,11 @@ export default class History extends React.PureComponent {
             />
           ))}
         </div>
+        {errorMessage && (
+          <Snackbar kind="danger" timeout={3}>
+            {errorMessage}
+          </Snackbar>
+        )}
       </div>
     )
   }

@@ -409,6 +409,9 @@ export default withRouterHOC(
       const {onRestore} = this.props
       const {historyValue} = this.state
       onRestore(historyValue)
+      this.setState({
+        showConfirmHistoryRestore: false
+      })
     }
 
     handleCancelHistoryRestore = () => {
@@ -880,7 +883,8 @@ export default withRouterHOC(
                 />
                 {value && (
                   <span className={styles.editedTime} onClick={this.handleToggleHistory}>
-                    Edited <TimeAgo time={value._updatedAt} />
+                    {historyValue ? '' : 'Edited '}
+                    <TimeAgo time={historyValue ? historyValue._updatedAt : value._updatedAt} />
                   </span>
                 )}
               </div>
