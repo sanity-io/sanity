@@ -99,6 +99,15 @@ function mutationsToEventType(mutations: Mutation[]) {
     return 'unpublished'
   }
 
+  // Restored (return edited for now)
+  if (
+    mutations.length === 1 &&
+    mutations[0].createOrReplace &&
+    mutations[0].createOrReplace._id.startsWith('drafts.')
+  ) {
+    return 'edited'
+  }
+
   // Edited
   if (mutations.some(mut => mut.patch)) {
     return 'edited'
