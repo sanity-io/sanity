@@ -2,9 +2,9 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import Button from 'part:@sanity/components/buttons/default'
-import styles from './styles/History.css'
-import {HistoryStore} from '../../../history-store/lib'
+import HistoryStore from 'part:@sanity/base/datastore/history'
 import {transactionsToEvents} from '../../../transaction-collator/lib'
+import styles from './styles/History.css'
 import HistoryItem from './HistoryItem'
 
 export default class History extends React.PureComponent {

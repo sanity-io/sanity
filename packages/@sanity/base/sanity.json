@@ -3,7 +3,6 @@
     "source": "./src",
     "compiled": "./lib"
   },
-
   "parts": [
     {
       "name": "part:@sanity/base/document",
@@ -223,7 +222,6 @@
       "name": "part:@sanity/base/theme/forms/clear-button-style",
       "description": "Styling for for clear button connected to a form control"
     },
-
     {
       "name": "part:@sanity/base/theme/typography/text-blocks-style",
       "description": "Styling for text blocks and paragrapgs. Like lead text, default, small, blockquote etc."
@@ -316,22 +314,18 @@
       "implements": "part:@sanity/base/theme/shadows-style",
       "path": "styles/shadows.css"
     },
-
     {
       "implements": "part:@sanity/base/theme/variables/code-style",
       "path": "styles/variables/code.css"
     },
-
     {
       "implements": "part:@sanity/base/theme/variables/forms-style",
       "path": "styles/variables/forms.css"
     },
-
     {
       "implements": "part:@sanity/base/theme/variables/gray-colors-style",
       "path": "styles/variables/gray-colors.css"
     },
-
     {
       "implements": "part:@sanity/base/theme/variables/layers-style",
       "path": "styles/variables/layers.css"
@@ -340,22 +334,18 @@
       "implements": "part:@sanity/base/theme/variables/list-style",
       "path": "styles/variables/list.css"
     },
-
     {
       "implements": "part:@sanity/base/theme/variables/progress-style",
       "path": "styles/variables/progress.css"
     },
-
     {
       "implements": "part:@sanity/base/theme/variables/selectable-item-style",
       "path": "styles/variables/selectable-item.css"
     },
-
     {
       "implements": "part:@sanity/base/theme/variables/state-colors-style",
       "path": "styles/variables/state-colors.css"
     },
-
     {
       "implements": "part:@sanity/base/theme/variables/typography-style",
       "path": "styles/variables/typography.css"
@@ -367,6 +357,10 @@
     {
       "name": "part:@sanity/base/datastore/document",
       "path": "datastores/document"
+    },
+    {
+      "name": "part:@sanity/base/datastore/history",
+      "path": "datastores/history"
     },
     {
       "name": "part:@sanity/base/user",
@@ -393,7 +387,6 @@
       "implements": "part:@sanity/base/document",
       "path": "components/Document"
     },
-
     {
       "implements": "part:@sanity/base/language-resolver",
       "path": "locale/languageResolver.js"
