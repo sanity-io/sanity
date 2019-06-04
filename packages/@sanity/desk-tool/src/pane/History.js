@@ -19,7 +19,7 @@ export default class History extends React.PureComponent {
 
   componentDidMount() {
     const {documentId} = this.props
-    HistoryStore.getTransactions(documentId).then(transactions => {
+    HistoryStore.getTransactions([documentId, `drafts.${documentId}`]).then(transactions => {
       const events = transactionsToEvents(documentId, transactions).reverse()
       this.setState({events, rev: events[0].rev})
     })
