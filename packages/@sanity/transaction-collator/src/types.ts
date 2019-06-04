@@ -10,7 +10,9 @@ export type HistoryEvent = {
   type: 'created' | 'edited' | 'published' | 'unpublished' | 'unknown'
   userIds: string[]
   startTime: Date
-  endTime: Date
+  endTime: Date,
+  documentIDs: string[]
+  rev: string
 }
 
 export type Transaction = {
