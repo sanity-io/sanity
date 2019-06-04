@@ -33,6 +33,11 @@ function exportDataset(opts) {
 
   const prefix = `${opts.dataset}-export-${slugDate}`
   const tmpDir = path.join(os.tmpdir(), prefix)
+  const cleanup = () =>
+    fse.remove(tmpDir).catch(err => {
+      debug(`Error while cleaning up temporary files: ${err.message}`)
+    })
+
   const assetHandler = new AssetHandler({
     client: options.client,
     tmpDir,
@@ -50,9 +55,10 @@ function exportDataset(opts) {
   }
 
   return new Promise(async (resolve, reject) => {
-    miss.finished(archive, archiveErr => {
+    miss.finished(archive, async archiveErr => {
       if (archiveErr) {
         debug('Archiving errored! %s', archiveErr.stack)
+        await cleanup()
         reject(archiveErr)
         return
       }
@@ -139,6 +145,7 @@ function exportDataset(opts) {
         clearInterval(progressInterval)
       } catch (assetErr) {
         clearInterval(progressInterval)
+        await cleanup()
         reject(assetErr)
         return
       }
@@ -165,7 +172,7 @@ function exportDataset(opts) {
 
     async function onComplete(err) {
       onProgress({step: 'Clearing temporary files...'})
-      await fse.remove(tmpDir)
+      await cleanup()
 
       if (!err) {
         resolve()
