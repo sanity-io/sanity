@@ -18,10 +18,7 @@ const getHistory = (documentIds, options = {}) => {
     url = `${url}?time=${timestamp}`
   }
 
-  return client.request({url}).catch(error => {
-    console.warn('getHistory failed', url) // eslint-disable-line no-console
-    throw new Error('getHistory failed', error)
-  })
+  return client.request({url})
 }
 
 const getTransactions = documentIds => {
@@ -29,10 +26,7 @@ const getTransactions = documentIds => {
   const dataset = client.clientConfig.dataset
   const url = `/data/history/${dataset}/transactions/${ids.join(',')}`
 
-  return client.request({url}).catch(error => {
-    console.warn('getTransactions failed', url) // eslint-disable-line no-console
-    throw new Error('getTransactions failed', error)
-  })
+  return client.request({url})
 }
 
 export default function createHistoryStore() {
