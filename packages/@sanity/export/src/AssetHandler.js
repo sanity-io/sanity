@@ -146,17 +146,17 @@ class AssetHandler {
 
     debug('Asset stream ready, writing to filesystem at %s', dstPath)
     const tmpPath = path.join(this.tmpDir, dstPath)
-    const {sha1, md5} = await writeHashedStream(tmpPath, stream)
+    const {sha1, md5, size} = await writeHashedStream(tmpPath, stream)
 
-    // If we have an ETag, it should be the md5 sum of the image
     // Verify it against our downloaded stream to make sure we have the same copy
+    const contentLength = stream.headers['content-length']
     const remoteSha1 = stream.headers['x-sanity-sha1']
-    const etag = stream.headers.etag
-    const method = etag ? 'md5' : 'sha1'
+    const remoteMd5 = stream.headers['x-sanity-md5']
+    const method = md5 ? 'md5' : 'sha1'
 
     let differs = false
-    if (etag) {
-      differs = etag !== md5
+    if (md5) {
+      differs = remoteMd5 !== md5
     } else if (remoteSha1) {
       differs = remoteSha1 !== sha1
     }
@@ -165,11 +165,28 @@ class AssetHandler {
       debug('%s does not match downloaded asset, retrying (#%d)', method, attemptNum + 1)
       return this.downloadAsset(assetDoc, dstPath, attemptNum + 1)
     } else if (differs) {
+      const details = [
+        method === 'md5'
+          ? `md5 should be ${remoteMd5}, got ${md5}`
+          : `sha1 should be ${remoteSha1}, got ${sha1}`,
+
+        contentLength &&
+          parseInt(contentLength, 10) !== size &&
+          `Image should be ${contentLength} bytes, got ${size}`,
+
+        `Did not succeed after ${attemptNum} attempts.`
+      ]
+
+      const detailsString = `Details:\n - ${details.filter(Boolean).join('\n - ')}`
+
       await fse.unlink(tmpPath)
       this.queue.clear()
-      this.reject(
-        new Error(`Failed to download image at ${assetDoc.url} after 3 attempts, giving up`)
+
+      const error = new Error(
+        `Failed to download image at ${assetDoc.url}, giving up. ${detailsString}`
       )
+
+      this.reject(error)
       return false
     }
 
@@ -270,10 +287,12 @@ function generateFilename(assetId) {
 }
 
 function writeHashedStream(filePath, stream) {
+  let size = 0
   const md5 = crypto.createHash('md5')
   const sha1 = crypto.createHash('sha1')
 
   const hasher = miss.through((chunk, enc, cb) => {
+    size += chunk.length
     md5.update(chunk)
     sha1.update(chunk)
     cb(null, chunk)
@@ -284,13 +303,18 @@ function writeHashedStream(filePath, stream) {
       stream,
       hasher,
       fse.createWriteStream(filePath),
-      err =>
-        err
-          ? reject(err)
-          : resolve({
-              sha1: sha1.digest('hex'),
-              md5: md5.digest('hex')
-            })
+      err => {
+        if (err) {
+          reject(err)
+          return
+        }
+
+        resolve({
+          size,
+          sha1: sha1.digest('hex'),
+          md5: md5.digest('hex')
+        })
+      }
     )
   )
 }
