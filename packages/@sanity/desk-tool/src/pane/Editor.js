@@ -172,6 +172,7 @@ const INITIAL_STATE = {
   showHistory: false,
   historyValue: undefined,
   historyStatus: undefined,
+  showConfirmHistoryRestore: false,
   filterField: () => true
 }
 
@@ -397,6 +398,23 @@ export default withRouterHOC(
       this.setState({showConfirmDiscard: false})
     }
 
+    handleShowHistoryRestore = () => {
+      this.setState({showConfirmHistoryRestore: true})
+    }
+
+    handleConfirmHistoryRestore = () => {
+      const {onChange} = this.props
+      const {historyValue} = this.state
+      console.log('Restore to', historyValue)
+      this.props.onChange(historyValue)
+    }
+
+    handleCancelHistoryRestore = () => {
+      this.setState({
+        showConfirmHistoryRestore: false
+      })
+    }
+
     handleConfirmDelete = () => {
       const {onDelete, onDiscardDraft, published} = this.props
       if (published) {
@@ -530,20 +548,18 @@ export default withRouterHOC(
               </span>
             </Tooltip>
           )}
-          {value &&
-            !showSavingStatus &&
-            !isReconnecting && (
-              <Tooltip
-                className={styles.syncStatusSynced}
-                arrow
-                theme="light"
-                size="small"
-                distance="0"
-                title="Synced with the Sanity cloud"
-              >
-                <CheckIcon /> Synced {this.isLiveEditEnabled() && ' (live)'}
-              </Tooltip>
-            )}
+          {value && !showSavingStatus && !isReconnecting && (
+            <Tooltip
+              className={styles.syncStatusSynced}
+              arrow
+              theme="light"
+              size="small"
+              distance="0"
+              title="Synced with the Sanity cloud"
+            >
+              <CheckIcon /> Synced {this.isLiveEditEnabled() && ' (live)'}
+            </Tooltip>
+          )}
           {(errors.length > 0 || warnings.length > 0) && (
             <Tooltip
               arrow
@@ -605,58 +621,105 @@ export default withRouterHOC(
               {isUnpublishing && <Spinner center message="Unpublishing…" />}
             </div>
           )}
-          <div
-            className={
-              draft && !this.isLiveEditEnabled() ? styles.publishInfo : styles.publishInfoHidden
-            }
+          <Tooltip
+            arrow
+            theme="light"
+            disabled={'ontouchstart' in document.documentElement}
+            className={styles.publishButton}
+            //title={errors.length > 0 ? 'Fix errors before publishing' : 'Publish (Ctrl+Alt+P)'}
+            html={this.renderPublishButtonTooltip(errors, published)}
           >
+            <Button
+              disabled={isReconnecting || !draft || errors.length > 0}
+              onClick={this.handlePublishRequested}
+              color="primary"
+            >
+              Publish
+            </Button>
+          </Tooltip>
+          <div className={styles.publishInfoUndoButton}>
+            {published && (
+              <Button kind="simple" onClick={() => this.setState({showConfirmDiscard: true})}>
+                Discard changes
+              </Button>
+            )}
+            {this.state.showConfirmDiscard && (
+              <PopOverDialog
+                onClickOutside={this.handleCancelDiscard}
+                useOverlay={false}
+                hasAnimation
+              >
+                <div>
+                  <div className={styles.popOverText}>
+                    <strong>Are you sure</strong> you want to discard all changes since last published?
+                  </div>
+                  <ButtonGrid>
+                    <Button kind="simple" onClick={this.handleCancelDiscard}>
+                      Cancel
+                    </Button>
+                    <Button color="danger" onClick={this.handleConfirmDiscard}>
+                      Discard
+                    </Button>
+                  </ButtonGrid>
+                </div>
+              </PopOverDialog>
+            )}
+            {!published && (
+              <Button kind="simple" onClick={() => this.setState({showConfirmDelete: true})}>
+                Delete document
+              </Button>
+            )}
+          </div>
+        </>
+      )
+    }
+
+    renderHistoryInfo = () => {
+      const {historyValue, historyStatus, isReconnecting} = this.props
+      const {showConfirmHistoryRestore} = this.state
+      if (historyStatus && historyStatus != 'unpublished') {
+        return null
+      }
+
+      return (
+        <>
+          <div>
             <Tooltip
               arrow
               theme="light"
               disabled={'ontouchstart' in document.documentElement}
               className={styles.publishButton}
-              //title={errors.length > 0 ? 'Fix errors before publishing' : 'Publish (Ctrl+Alt+P)'}
-              html={this.renderPublishButtonTooltip(errors, published)}
+              html={<div>Restore to this version</div>}
             >
               <Button
-                disabled={isReconnecting || !draft || errors.length > 0}
-                onClick={this.handlePublishRequested}
+                disabled={isReconnecting}
+                onClick={this.handleShowHistoryRestore}
                 color="primary"
               >
-                Publish
+                Restore
               </Button>
             </Tooltip>
             <div className={styles.publishInfoUndoButton}>
-              {published && (
-                <Button kind="simple" onClick={() => this.setState({showConfirmDiscard: true})}>
-                  Discard changes
-                </Button>
-              )}
-              {this.state.showConfirmDiscard && (
+              {showConfirmHistoryRestore && (
                 <PopOverDialog
-                  onClickOutside={this.handleCancelDiscard}
+                  onClickOutside={this.handleCancelHistoryRestore}
                   useOverlay={false}
                   hasAnimation
                 >
                   <div>
                     <div className={styles.popOverText}>
-                      <strong>Are you sure</strong> you want to discard all changes since last published?
+                      <strong>Are you sure</strong> you want to restore this document?
                     </div>
                     <ButtonGrid>
-                      <Button kind="simple" onClick={this.handleCancelDiscard}>
+                      <Button kind="simple" onClick={this.handleCancelHistoryRestore}>
                         Cancel
                       </Button>
-                      <Button color="danger" onClick={this.handleConfirmDiscard}>
-                        Discard
+                      <Button color="danger" onClick={this.handleConfirmHistoryRestore}>
+                        Restore
                       </Button>
                     </ButtonGrid>
                   </div>
                 </PopOverDialog>
-              )}
-              {!published && (
-                <Button kind="simple" onClick={() => this.setState({showConfirmDelete: true})}>
-                  Delete document
-                </Button>
               )}
             </div>
           </div>
@@ -685,7 +748,20 @@ export default withRouterHOC(
     }
 
     renderStaticContent = () => {
-      return this.renderPublishInfo()
+      const {draft} = this.props
+      const {historyValue, historyStatus} = this.state
+      return (
+        <div
+          className={
+            (draft || historyValue) && !this.isLiveEditEnabled()
+              ? styles.publishInfo
+              : styles.publishInfoHidden
+          }
+        >
+          {historyValue && historyStatus !== 'unpublished' && this.renderHistoryInfo()}
+          {!historyValue && draft && this.renderPublishInfo()}
+        </div>
+      )
     }
 
     handleHistorySelect = event => {
