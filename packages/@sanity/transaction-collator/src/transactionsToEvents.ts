@@ -1,4 +1,4 @@
-import {uniq} from 'lodash'
+import {isEqual, uniq} from 'lodash'
 import {HistoryEvent, Transaction, Mutation} from './types'
 import {ndjsonToArray} from './utils/ndjsonToArray'
 
@@ -18,6 +18,8 @@ export function transactionsToEvents(
           (transaction.documentIDs.includes(documentId) ||
             transaction.documentIDs.includes(`drafts.${documentId}`))
       )
+      // ensure transactions are sorted by time
+      .sort(compareTimestamp)
       // Turn a transaction into a classified HistoryEvent
       .map(mapToEvents)
       // Chunk and group edit events
@@ -30,6 +32,8 @@ function mapToEvents(transaction: Transaction): HistoryEvent {
   const timestamp = new Date(transaction.timestamp)
   return {
     type,
+    documentIDs: transaction.documentIDs,
+    rev: transaction.id,
     userIds: [transaction.author],
     startTime: timestamp,
     endTime: timestamp
@@ -47,7 +51,8 @@ function reduceEdits(
     current.type === 'edited' &&
     nextEvent &&
     nextEvent.type === 'edited' &&
-    nextEvent.endTime.getTime() - current.endTime.getTime() < EDIT_EVENT_TIME_TRESHHOLD_MS
+    nextEvent.endTime.getTime() - current.endTime.getTime() < EDIT_EVENT_TIME_TRESHHOLD_MS &&
+    isEqual(current.documentIDs, nextEvent.documentIDs)
   if (skipEvent) {
     // Lift authors over to next event
     nextEvent.userIds = uniq(nextEvent.userIds.concat(current.userIds))
@@ -63,32 +68,33 @@ function reduceEdits(
 }
 
 function mutationsToEventType(mutations: Mutation[]) {
+  const withoutPatches = mutations.filter(mut => mut.patch === undefined)
   // Created
   if (
-    mutations.length === 2 &&
     mutations[0].createIfNotExists &&
     mutations[0].createIfNotExists._id.startsWith('drafts.') &&
-    mutations[1].patch.id.startsWith('drafts.')
+    mutations[1].patch.id.startsWith('drafts.') &&
+    mutations[1].patch.set !== undefined
   ) {
     return 'created'
   }
 
   // Published
   if (
-    mutations.length === 2 &&
-    mutations[0].create &&
-    mutations[1].delete &&
-    mutations[1].delete.id.startsWith('drafts.')
+    withoutPatches.length === 2 &&
+    (withoutPatches[0].create || withoutPatches[0].createOrReplace) &&
+    withoutPatches[1].delete &&
+    withoutPatches[1].delete.id.startsWith('drafts.')
   ) {
     return 'published'
   }
   // Unpublished
   if (
-    mutations.length === 2 &&
-    mutations[1].createIfNotExists &&
-    mutations[1].createIfNotExists._id.startsWith('drafts.') &&
-    mutations[0].delete &&
-    !mutations[0].delete.id.startsWith('drafts.')
+    withoutPatches.length === 2 &&
+    withoutPatches[1].createIfNotExists &&
+    withoutPatches[1].createIfNotExists._id.startsWith('drafts.') &&
+    withoutPatches[0].delete &&
+    !withoutPatches[0].delete.id.startsWith('drafts.')
   ) {
     return 'unpublished'
   }
@@ -99,4 +105,8 @@ function mutationsToEventType(mutations: Mutation[]) {
   }
 
   return 'unknown'
+}
+
+function compareTimestamp(a: Transaction, b: Transaction) {
+  return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
 }
