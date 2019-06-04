@@ -202,6 +202,7 @@ export default withRouterHOC(
       onChange: PropTypes.func,
       onDiscardDraft: PropTypes.func,
       onPublish: PropTypes.func,
+      onRestore: PropTypes.func,
       onUnpublish: PropTypes.func,
       transactionResult: PropTypes.shape({type: PropTypes.string}),
       onClearTransactionResult: PropTypes.func,
@@ -211,6 +212,7 @@ export default withRouterHOC(
       isUnpublishing: PropTypes.bool,
       isPublishing: PropTypes.bool,
       isReconnecting: PropTypes.bool,
+      isRestoring: PropTypes.bool,
       isLoading: PropTypes.bool,
       isSaving: PropTypes.bool,
       deletedSnapshot: PropTypes.object
@@ -224,6 +226,7 @@ export default withRouterHOC(
       isUnpublishing: false,
       isPublishing: false,
       isReconnecting: false,
+      isRestoring: false,
       isCreatingDraft: false,
       deletedSnapshot: null,
       transactionResult: null,
@@ -403,10 +406,9 @@ export default withRouterHOC(
     }
 
     handleConfirmHistoryRestore = () => {
-      const {onChange} = this.props
+      const {onRestore} = this.props
       const {historyValue} = this.state
-      console.log('Restore to', historyValue)
-      this.props.onChange(historyValue)
+      onRestore(historyValue)
     }
 
     handleCancelHistoryRestore = () => {
@@ -603,22 +605,24 @@ export default withRouterHOC(
     renderPublishInfo = () => {
       const {
         draft,
-        markers,
-        published,
-        isReconnecting,
         isCreatingDraft,
         isPublishing,
-        isUnpublishing
+        isReconnecting,
+        isRestoring,
+        isUnpublishing,
+        markers,
+        published
       } = this.props
       const validation = markers.filter(marker => marker.type === 'validation')
       const errors = validation.filter(marker => marker.level === 'error')
       return (
         <>
-          {(isCreatingDraft || isPublishing || isUnpublishing) && (
+          {(isCreatingDraft || isPublishing || isUnpublishing || isRestoring) && (
             <div className={styles.spinnerContainer}>
               {isCreatingDraft && <Spinner center message="Making changes…" />}
               {isPublishing && <Spinner center message="Publishing…" />}
               {isUnpublishing && <Spinner center message="Unpublishing…" />}
+              {isRestoring && <Spinner center message="Restoring changes…" />}
             </div>
           )}
           <Tooltip
