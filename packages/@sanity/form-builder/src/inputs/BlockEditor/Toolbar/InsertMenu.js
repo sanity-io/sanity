@@ -2,8 +2,11 @@
 
 import React from 'react'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
+import Button from 'part:@sanity/components/buttons/default'
 import BlockObjectIcon from 'part:@sanity/base/block-object-icon'
 import InlineObjectIcon from 'part:@sanity/base/inline-object-icon'
+import {Tooltip} from 'react-tippy'
+import {get} from 'lodash'
 
 import type {Type, SlateValue, SlateEditor, Path} from '../typeDefs'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
@@ -14,7 +17,9 @@ type Props = {
   editor: SlateEditor,
   editorValue: SlateValue,
   inlineTypes: Type[],
-  onFocus: Path => void
+  onFocus: Path => void,
+  collapsed: boolean,
+  showLabels: boolean
 }
 
 type BlockItem = {
@@ -28,6 +33,7 @@ type BlockItem = {
 export default class InsertMenu extends React.Component<Props> {
   shouldComponentUpdate(nextProps: Props) {
     return (
+      this.props.collapsed !== nextProps.collapsed ||
       this.props.blockTypes !== nextProps.blockTypes ||
       this.props.inlineTypes !== nextProps.inlineTypes ||
       this.props.editorValue.focusBlock !== nextProps.editorValue.focusBlock
@@ -48,8 +54,32 @@ export default class InsertMenu extends React.Component<Props> {
     )
   }
 
+  renderButton = (item: BlockItem) => {
+    const {showLabels} = this.props
+    return (
+      <Tooltip
+        title={`Insert ${item.title}`}
+        disabled={this.props.collapsed}
+        key={`insertMenuItem_${item.key}`}
+        style={showLabels ? {display: 'block', flexGrow: 1, minWidth: 'fit-content'} : {}}
+      >
+        <Button
+          onClick={() => this.handleOnAction(item)}
+          title={`Insert ${item.title}`}
+          aria-label={`Insert ${item.title}`}
+          icon={item.icon}
+          kind="simple"
+          bleed
+        >
+          {showLabels && item.title}
+        </Button>
+      </Tooltip>
+    )
+  }
+
   getIcon = (type, fallbackIcon) => {
-    return type.icon || (type.type && type.type.icon) || fallbackIcon
+    const referenceIcon = get(type, 'to[0].icon')
+    return type.icon || (type.type && type.type.icon) || referenceIcon || fallbackIcon
   }
 
   getItems() {
@@ -91,9 +121,16 @@ export default class InsertMenu extends React.Component<Props> {
   }
 
   render() {
+    const {collapsed} = this.props
+    const items = this.getItems()
+
+    if (!collapsed) {
+      return items.map((item, key) => ({...item, key})).map(this.renderButton)
+    }
+
     return (
       <DropDownButton
-        items={this.getItems()}
+        items={items}
         renderItem={this.renderItem}
         onAction={this.handleOnAction}
         kind="simple"

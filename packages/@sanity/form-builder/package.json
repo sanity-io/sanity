@@ -57,6 +57,7 @@
     "react-click-outside": "^3.0.0",
     "react-container-query": "^0.11.0",
     "react-datepicker": "^1.8.0",
+    "react-measure": "^2.3.0",
     "rxjs": "^6.1.0",
     "shallow-equals": "^1.0.0",
     "slate": "0.44.10",

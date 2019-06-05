@@ -12,6 +12,7 @@ import CustomIcon from './CustomIcon'
 import ToolbarClickAction from './ToolbarClickAction'
 
 import styles from './styles/AnnotationButtons.css'
+import CollapsibleButtonGroup from './CollapsibleButtonGroup';
 
 type AnnotationItem = BlockContentFeature & {
   active: boolean,
@@ -23,7 +24,8 @@ type Props = {
   editor: SlateEditor,
   editorValue: SlateValue,
   onFocus: Path => void,
-  userIsWritingText: boolean
+  userIsWritingText: boolean,
+  collapsed: boolean
 }
 
 function getIcon(type: string) {
@@ -126,7 +128,24 @@ export default class AnnotationButtons extends React.Component<Props> {
   }
 
   render() {
+    const {collapsed} = this.props
     const items = this.getItems()
+    let Icon
+    const icon = items[0].blockEditor ? items[0].blockEditor.icon : null
+    if (icon) {
+      if (typeof icon === 'string') {
+        Icon = () => <CustomIcon icon={icon} active={!!items[0].active} />
+      } else if (typeof icon === 'function') {
+        Icon = icon
+      }
+    }
+    if (items.length > 1 && collapsed) {
+      return (
+        <CollapsibleButtonGroup icon={Icon || getIcon(items[0].value)}>
+          <div className={styles.root}>{items.map(this.renderAnnotationButton)}</div>
+        </CollapsibleButtonGroup>
+      )
+    }
     return <div className={styles.root}>{items.map(this.renderAnnotationButton)}</div>
   }
 }

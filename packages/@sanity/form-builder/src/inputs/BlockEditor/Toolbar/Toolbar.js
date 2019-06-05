@@ -3,11 +3,8 @@
 /* eslint-disable complexity */
 
 import React from 'react'
-import classnames from 'classnames'
-import enhanceWithClickOutside from 'react-click-outside'
-import {ContainerQuery} from 'react-container-query'
 import {Tooltip} from 'react-tippy'
-
+import Measure from 'react-measure'
 import ArrowIcon from 'part:@sanity/base/angle-down-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import ChevronDown from 'part:@sanity/base/chevron-down-icon'
@@ -15,18 +12,17 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import FullscreenIcon from 'part:@sanity/base/fullscreen-icon'
 import ValidationList from 'part:@sanity/components/validation/list'
 import WarningIcon from 'part:@sanity/base/warning-icon'
-
-import IS_MAC from '../utils/isMac'
+import Poppable from 'part:@sanity/components/utilities/poppable'
+import {debounce, xor} from 'lodash'
 
 import type {BlockContentFeatures, SlateValue, Path, SlateEditor, Type} from '../typeDefs'
 
-import AnnotationButtons from './AnnotationButtons'
-import BlockStyleSelect from './BlockStyleSelect'
-import DecoratorButtons from './DecoratorButtons'
-import InsertMenu from './InsertMenu'
-import ListItemButtons from './ListItemButtons'
-
+import IS_MAC from '../utils/isMac'
+import PrimaryGroup from './PrimaryGroup'
 import styles from './styles/Toolbar.css'
+
+const collapsibleGroups = ['insertMenu', 'annotationButtons', 'decoratorButtons', 'listItemButtons']
+const BREAKPOINT_SCREEN_MEDIUM = 512
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
@@ -42,37 +38,47 @@ type Props = {
 }
 
 type State = {
-  expanded: boolean,
-  showValidationTooltip: boolean
-}
-
-const query = {
-  [styles.largeContainer]: {
-    minWidth: 600
-  }
+  collapsePrimaryIsOpen: boolean,
+  showValidationTooltip: boolean,
+  collapsePrimary: boolean,
+  collapsedGroups: any,
+  isMobile: boolean,
+  lastContentWidth: number
 }
 
 class Toolbar extends React.PureComponent<Props, State> {
   state = {
-    expanded: false,
-    showValidationTooltip: false
+    collapsePrimaryIsOpen: false,
+    collapsePrimary: false,
+    showValidationTooltip: false,
+    collapsedGroups: [],
+    lastContentWidth: -1,
+    isMobile: false
   }
 
-  handleExpand = () => {
+  _primaryToolbar = React.createRef()
+
+  componentDidMount() {
+    if (window) {
+      this.setState({isMobile: window.innerWidth < BREAKPOINT_SCREEN_MEDIUM})
+    }
+  }
+
+  handleOpenPrimary = () => {
     this.setState({
-      expanded: true
+      collapsePrimaryIsOpen: true
     })
   }
 
-  handleContract = () => {
+  handleClosePrimary = () => {
     this.setState({
-      expanded: false
+      collapsePrimaryIsOpen: false
     })
   }
 
-  handleClickOutside = () => {
+  handleClickOutsidePrimary = () => {
     this.setState({
-      expanded: false
+      collapsePrimaryIsOpen: false
     })
   }
 
@@ -89,25 +95,60 @@ class Toolbar extends React.PureComponent<Props, State> {
     this.setState(prevState => ({showValidationTooltip: !prevState.showValidationTooltip}))
   }
 
+  handleResize = debounce(() => {
+    if (this.state.isMobile) return
+
+    const {_primaryToolbar} = this
+    const {collapsedGroups, lastContentWidth, collapsePrimary} = this.state
+
+    if (!_primaryToolbar || !_primaryToolbar.current) return
+
+    const width = _primaryToolbar.current.offsetWidth
+    const contentWidth = _primaryToolbar.current.scrollWidth
+    if (contentWidth > width && !collapsePrimary) {
+      const groupToCollapse = xor(collapsibleGroups, collapsedGroups)[0]
+      this.setState(
+        {collapsedGroups: [...collapsedGroups, groupToCollapse], lastContentWidth: contentWidth},
+        () => {
+          if (contentWidth > width && collapsedGroups.length != collapsibleGroups.length) {
+            this.handleResize()
+          } else if (collapsedGroups.length === collapsibleGroups.length && contentWidth > width) {
+            this.setState({collapsePrimary: true})
+          }
+        }
+      )
+    }
+
+    if (collapsePrimary && lastContentWidth < width) {
+      this.setState({
+        collapsePrimary: false,
+        collapsePrimaryIsOpen: false
+      })
+    }
+
+    if (width >= lastContentWidth && collapsedGroups.length != 0) {
+      this.setState({
+        collapsedGroups: []
+      })
+    }
+  }, 50)
+
   render() {
     const {
       blockContentFeatures,
       editor,
-      editorValue,
       fullscreen,
       markers,
-      onFocus,
       onToggleFullScreen,
       style,
-      type,
-      userIsWritingText
+      type
     } = this.props
 
     if (!editor) {
       return null
     }
 
-    const {expanded, showValidationTooltip} = this.state
+    const {showValidationTooltip, isMobile} = this.state
 
     const insertItems = blockContentFeatures.types.inlineObjects.concat(
       blockContentFeatures.types.blockObjects
@@ -117,80 +158,53 @@ class Toolbar extends React.PureComponent<Props, State> {
     const errors = validation.filter(marker => marker.level === 'error')
     const warnings = validation.filter(marker => marker.level === 'warning')
 
-    const hasMore =
-      blockContentFeatures.decorators.length > 0 ||
-      blockContentFeatures.annotations.length > 0 ||
-      blockContentFeatures.types.blockObjects.length > 0 ||
-      blockContentFeatures.types.inlineObjects.length > 0
+    const {collapsedGroups, collapsePrimary, collapsePrimaryIsOpen} = this.state
 
     return (
-      <ContainerQuery query={query}>
-        {params => (
+      <Measure offset scroll onResize={contentRect => this.handleResize(contentRect)}>
+        {({measureRef}) => (
           <div
+            ref={measureRef}
+            style={style}
             className={`
               ${styles.root}
-              ${classnames(params)}
               ${fullscreen ? ` ${styles.fullscreen}` : ''}
             `}
-            style={style}
           >
-            <div className={styles.primary}>
-              <div className={styles.blockFormatContainer} onClick={this.handleContract}>
-                <BlockStyleSelect
-                  blockContentFeatures={blockContentFeatures}
-                  editor={editor}
-                  editorValue={editorValue}
-                />
-              </div>
-              {hasMore && (
-                <Button className={styles.expandButton} onClick={this.handleExpand} kind="simple">
-                  More&nbsp;
+            <div className={styles.primary} ref={this._primaryToolbar}>
+              {collapsePrimary && (
+                <Button
+                  className={styles.showMoreButton}
+                  onClick={this.handleOpenPrimary}
+                  kind="simple"
+                >
+                  Show menu&nbsp;
                   <span className={styles.arrow}>
                     <ArrowIcon color="inherit" />
                   </span>
+                  <Poppable
+                    onClickOutside={this.handleClosePrimary}
+                    onEscape={this.handleClosePrimary}
+                  >
+                    {collapsePrimaryIsOpen && (
+                      <PrimaryGroup
+                        {...this.props}
+                        isPopped
+                        collapsedGroups={collapsedGroups}
+                        insertItems={insertItems}
+                      />
+                    )}
+                  </Poppable>
                 </Button>
               )}
-              <div className={`${styles.compactable} ${expanded ? styles.expanded : ''}`}>
-                {blockContentFeatures.decorators.length > 0 && (
-                  <div className={styles.decoratorButtonsContainer}>
-                    <DecoratorButtons
-                      blockContentFeatures={blockContentFeatures}
-                      editor={editor}
-                      editorValue={editorValue}
-                    />
-                  </div>
-                )}
-                {blockContentFeatures.lists.length > 0 && (
-                  <div className={styles.decoratorButtonsContainer}>
-                    <ListItemButtons
-                      blockContentFeatures={blockContentFeatures}
-                      editor={editor}
-                      editorValue={editorValue}
-                    />
-                  </div>
-                )}
-                {blockContentFeatures.annotations.length > 0 && (
-                  <div className={styles.annotationButtonsContainer}>
-                    <AnnotationButtons
-                      blockContentFeatures={blockContentFeatures}
-                      editor={editor}
-                      editorValue={editorValue}
-                      onFocus={onFocus}
-                      userIsWritingText={userIsWritingText}
-                    />
-                  </div>
-                )}
-                {insertItems.length > 0 && (
-                  <div className={styles.insertContainer}>
-                    <InsertMenu
-                      blockTypes={blockContentFeatures.types.blockObjects}
-                      editor={editor}
-                      editorValue={editorValue}
-                      inlineTypes={blockContentFeatures.types.inlineObjects}
-                      onFocus={onFocus}
-                      type={type}
-                    />
-                  </div>
+              <div className={styles.primaryInner}>
+                {!collapsePrimary && (
+                  <PrimaryGroup
+                    {...this.props}
+                    collapsedGroups={collapsedGroups}
+                    insertItems={insertItems}
+                    isMobile={isMobile}
+                  />
                 )}
               </div>
             </div>
@@ -231,20 +245,21 @@ class Toolbar extends React.PureComponent<Props, State> {
                   </Button>
                 </Tooltip>
               )}
-              <div className={styles.fullscreenButtonContainer} onClick={this.handleContract}>
+              <div className={styles.fullscreenButtonContainer}>
                 <Button
                   kind="simple"
                   onClick={onToggleFullScreen}
                   title={`Open in fullscreen (${IS_MAC ? 'cmd' : 'ctrl'}+enter)`}
                   icon={fullscreen ? CloseIcon : FullscreenIcon}
+                  bleed
                 />
               </div>
             </div>
           </div>
         )}
-      </ContainerQuery>
+      </Measure>
     )
   }
 }
 
-export default enhanceWithClickOutside(Toolbar)
+export default Toolbar

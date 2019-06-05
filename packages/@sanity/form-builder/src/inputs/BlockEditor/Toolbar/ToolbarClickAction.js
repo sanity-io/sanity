@@ -44,7 +44,7 @@ export default function ToolBarClickAction(props: Props) {
   }
 
   return (
-    <span onMouseDown={onMouseDown} onClick={onClick}>
+    <span onMouseDown={onMouseDown} onClick={onClick} style={{display: 'contents'}}>
       {props.children}
     </span>
   )

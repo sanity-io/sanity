@@ -10,6 +10,7 @@ import ToggleButton from 'part:@sanity/components/toggles/button'
 import type {BlockContentFeature, BlockContentFeatures, SlateEditor, SlateValue} from '../typeDefs'
 import CustomIcon from './CustomIcon'
 import ToolbarClickAction from './ToolbarClickAction'
+import CollapsibleButtonGroup from './CollapsibleButtonGroup';
 
 import styles from './styles/ListItemButtons.css'
 
@@ -18,7 +19,8 @@ type ListItem = BlockContentFeature & {active: boolean, disabled: boolean}
 type Props = {
   blockContentFeatures: BlockContentFeatures,
   editor: SlateEditor,
-  editorValue: SlateValue
+  editorValue: SlateValue,
+  collapsed: boolean
 }
 
 function getIcon(type: string) {
@@ -40,6 +42,9 @@ export default class ListItemButtons extends React.Component<Props> {
     const currentFocusBlock = this.props.editorValue.focusBlock
     // Always update if we have selected more than one block
     if (nextProps.editorValue.blocks.size > 1) {
+      return true
+    }
+    if (nextProps.collapsed != this.props.collapsed) {
       return true
     }
     // Update if we have navigated to another block, or the block's data litItem prop is changed
@@ -107,7 +112,18 @@ export default class ListItemButtons extends React.Component<Props> {
   }
 
   render() {
+    const {collapsed} = this.props
     const items = this.getItems()
+    const icon = items[0].blockEditor ? items[0].blockEditor.icon : null
+
+    if (items.length > 0 && collapsed) {
+      return (
+        <CollapsibleButtonGroup icon={icon || getIcon(items[0].value)}>
+          {items.map(this.renderListItemButton)}
+        </CollapsibleButtonGroup>
+      )
+    }
+
     return <div className={styles.root}>{items.map(this.renderListItemButton)}</div>
   }
 }

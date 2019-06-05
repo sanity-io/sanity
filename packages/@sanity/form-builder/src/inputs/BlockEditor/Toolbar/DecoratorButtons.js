@@ -15,13 +15,15 @@ import {keyMaps} from '../plugins/SetMarksOnKeyComboPlugin'
 import ToolbarClickAction from './ToolbarClickAction'
 
 import styles from './styles/DecoratorButtons.css'
+import CollapsibleButtonGroup from './CollapsibleButtonGroup';
 
 type DecoratorItem = BlockContentFeature & {active: boolean, disabled: boolean}
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
   editor: SlateEditor,
-  editorValue: SlateValue
+  editorValue: SlateValue,
+  collapsed: boolean
 }
 
 function getIcon(type: string) {
@@ -47,6 +49,9 @@ export default class DecoratorButtons extends React.Component<Props> {
   shouldComponentUpdate(nextProps: Props) {
     const nextMarks = nextProps.editorValue.marks.map(mrk => mrk.type)
     const currentMarks = this.props.editorValue.marks.map(mrk => mrk.type)
+    if (nextProps.collapsed != this.props.collapsed) {
+      return true
+    }
     if (isEqual(nextMarks, currentMarks)) {
       return false
     }
@@ -102,7 +107,17 @@ export default class DecoratorButtons extends React.Component<Props> {
   }
 
   render() {
+    const {collapsed} = this.props
     const items = this.getItems()
+    const icon = items[0].blockEditor ? items[0].blockEditor.icon : null
+
+    if (items.length > 0 && collapsed) {
+      return (
+        <CollapsibleButtonGroup icon={icon || getIcon(items[0].value)}>
+          {items.map(this.renderDecoratorButton)}
+        </CollapsibleButtonGroup>
+      )
+    }
     return <div className={styles.root}>{items.map(this.renderDecoratorButton)}</div>
   }
 }

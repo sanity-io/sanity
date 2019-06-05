@@ -1,0 +1,33 @@
+@import "part:@sanity/base/theme/variables-style";
+
+.root {
+  display: flex;
+  flex-wrap: nowrap;
+  background-color: var(--component-bg);
+}
+
+.isPopped {
+  composes: root;
+  composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
+  position: relative;
+  z-index: 20;
+  padding: var(--small-padding);
+  height: 2.5em;
+}
+
+.group {
+  composes: group from './Toolbar.css';
+}
+
+.blockStyleSelect {
+  min-width: 8em;
+  white-space: nowrap;
+}
+
+.blockStyleGroup {
+  composes: group;
+
+  @nest &:not(:empty) + .group {
+    border-left: none;
+  }
+}

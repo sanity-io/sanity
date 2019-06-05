@@ -2,6 +2,7 @@
 
 .root {
   display: flex;
+  flex-wrap: nowrap;
 }
 
 .buttonWrapper + .buttonWrapper {

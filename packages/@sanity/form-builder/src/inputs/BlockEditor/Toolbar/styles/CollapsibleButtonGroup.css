@@ -1,0 +1,18 @@
+@import "part:@sanity/base/theme/variables-style";
+
+.root {
+  display: flex;
+  height: 100%;
+  flex-wrap: nowrap;
+  align-items: stretch;
+}
+
+.popup {
+  composes: shadow-1dp from 'part:@sanity/base/theme/shadows-style';
+  display: flex;
+  top: 100%;
+  z-index: 1;
+  position: absolute;
+  background-color: var(--component-bg);
+  padding: var(--small-padding);
+}
