@@ -27,6 +27,7 @@
     "@sanity/generate-help-url": "0.140.0",
     "@sanity/mutator": "0.140.30",
     "@sanity/structure": "0.140.30",
+    "@sanity/transaction-collator": "0.140.0",
     "@sanity/uuid": "0.140.0",
     "@sanity/validation": "0.140.34",
     "classnames": "^2.2.5",

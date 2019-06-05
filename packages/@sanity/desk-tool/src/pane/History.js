@@ -4,11 +4,10 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import HistoryStore from 'part:@sanity/base/datastore/history'
 import Snackbar from 'part:@sanity/components/snackbar/default'
-import {transactionsToEvents} from '../../../transaction-collator/lib'
+import {transactionsToEvents} from '@sanity/transaction-collator'
 import HistoryItem from './HistoryItem'
 
 import styles from './styles/History.css'
-import { isConstructorDeclaration } from 'typescript';
 
 export default class History extends React.PureComponent {
   static propTypes = {
