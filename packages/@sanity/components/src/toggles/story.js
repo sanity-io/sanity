@@ -37,19 +37,26 @@ storiesOf('Toggles')
     )
   })
   .add('Checkbox', () => {
+    const fontSize = number('fontSize', 1, {range: true, min: 0.5, max: 3, step: 0.1}, 'test')
     return (
       <div style={centerStyle}>
         <Sanity part="part:@sanity/components/toggles/checkbox" propTables={[Checkbox]}>
-          <Checkbox
-            label={text('label', 'This is the label', 'props')}
-            checked={boolean('undefined', false) ? undefined : boolean('checked', false, 'props')}
-            disabled={boolean('disabled', false, 'props')}
-            onChange={action('onChange')}
-            onBlur={action('onBlur')}
-            onFocus={action('onFocus')}
+          <div
+            style={{
+              fontSize: `${fontSize}em`
+            }}
           >
-            {boolean('Children', false, 'test') ? <h1 style={{color: 'red'}}>Test</h1> : false}
-          </Checkbox>
+            <Checkbox
+              label={text('label', `This is the label (${fontSize}em)`, 'props')}
+              checked={boolean('undefined', false) ? undefined : boolean('checked', false, 'props')}
+              disabled={boolean('disabled', false, 'props')}
+              onChange={action('onChange')}
+              onBlur={action('onBlur')}
+              onFocus={action('onFocus')}
+            >
+              {boolean('Children', false, 'test') ? <h1 style={{color: 'red'}}>Test</h1> : false}
+            </Checkbox>
+          </div>
         </Sanity>
       </div>
     )

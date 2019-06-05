@@ -86,8 +86,6 @@ export default class Checkbox extends React.Component {
         <div className={styles.boxOutline}>
           <div className={styles.tickOutline} />
         </div>
-        <div className={styles.tickHelper} />
-        <div className={styles.rippleContainer} />
       </label>
     )
   }
