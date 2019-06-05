@@ -35,9 +35,9 @@ export function createWeightedSearch(types, client) {
   // this is the actual search function that takes the search string and returns the hits
   return function search(queryString, opts = {}) {
     const terms = uniq(compact(tokenize(toLower(queryString))))
-    const constraints = terms.map((term, i) =>
-      combinedSearchPaths.map(joinedPath => `${joinedPath} match $t${i}`)
-    )
+    const constraints = terms
+      .map((term, i) => combinedSearchPaths.map(joinedPath => `${joinedPath} match $t${i}`))
+      .filter(constraint => constraint.length > 0)
 
     const filters = [
       '_type in $types',
@@ -45,9 +45,8 @@ export function createWeightedSearch(types, client) {
       ...constraints.map(constraint => `(${constraint.join('||')})`)
     ].filter(Boolean)
 
-    const query = `*[${filters.join('&&')}][0...$limit]{_type, _id, ...select(${selections.join(
-      ',\n'
-    )})}`
+    const selection = selections.length > 0 ? `...select(${selections.join(',\n')})` : ''
+    const query = `*[${filters.join('&&')}][0...$limit]{_type, _id, ${selection}}`
 
     return client.observable
       .fetch(query, {
