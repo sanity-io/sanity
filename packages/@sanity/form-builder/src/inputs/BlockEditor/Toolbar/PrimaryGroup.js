@@ -99,6 +99,11 @@ export default class PrimaryGroup extends React.PureComponent<Props, State> {
           <div className={styles.group}>
             <InsertMenu
               collapsed={isMobile || collapsedGroups.indexOf('insertMenu') >= 0}
+              showLabels={
+                blockContentFeatures.types.blockObjects.concat(
+                  blockContentFeatures.types.inlineObjects
+                ).length < 4
+              }
               blockTypes={blockContentFeatures.types.blockObjects}
               editor={editor}
               editorValue={editorValue}

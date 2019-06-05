@@ -1,4 +1,6 @@
 import icon from 'react-icons/lib/md/rate-review'
+import imageIcon from 'react-icons/lib/md/photo-library'
+import colorIcon from 'react-icons/lib/md/format-color-fill'
 
 export default {
   name: 'blocksTest',
@@ -17,7 +19,7 @@ export default {
       description: 'Profound description of what belongs here',
       type: 'array',
       of: [
-        {type: 'image', title: 'Image'},
+        {type: 'image', title: 'Image', icon: imageIcon},
         {
           type: 'reference',
           name: 'authorReference',
@@ -35,7 +37,8 @@ export default {
         {
           type: 'color',
           name: 'colorBlock',
-          title: 'Color (block)'
+          title: 'Color (block)',
+          icon: colorIcon
         },
         {
           type: 'object',

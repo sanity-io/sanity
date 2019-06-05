@@ -21,7 +21,6 @@
     background-color: var(--component-bg);
     box-shadow: 0 0 8px color(var(--component-border-color) a(35%));
 
-
     @media (--screen-medium) {
       padding: var(--small-padding);
       font-size: var(--font-size-base);
@@ -35,6 +34,7 @@
   flex-grow: 1;
   flex-wrap: nowrap;
   overflow-x: scroll;
+  -webkit-overflow-scrolling: touch;
 
   @nest &::scrollbar {
     display: none;

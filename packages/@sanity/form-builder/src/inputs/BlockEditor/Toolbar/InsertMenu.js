@@ -6,6 +6,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import BlockObjectIcon from 'part:@sanity/base/block-object-icon'
 import InlineObjectIcon from 'part:@sanity/base/inline-object-icon'
 import {Tooltip} from 'react-tippy'
+import {get} from 'lodash'
 
 import type {Type, SlateValue, SlateEditor, Path} from '../typeDefs'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
@@ -17,7 +18,8 @@ type Props = {
   editorValue: SlateValue,
   inlineTypes: Type[],
   onFocus: Path => void,
-  collapsed: boolean
+  collapsed: boolean,
+  showLabels: boolean
 }
 
 type BlockItem = {
@@ -53,25 +55,31 @@ export default class InsertMenu extends React.Component<Props> {
   }
 
   renderButton = (item: BlockItem) => {
+    const {showLabels} = this.props
     return (
       <Tooltip
         title={`Insert ${item.title}`}
         disabled={this.props.collapsed}
         key={`insertMenuItem_${item.key}`}
+        style={showLabels ? {display: 'block', flexGrow: 1, minWidth: 'fit-content'} : {}}
       >
         <Button
           onClick={() => this.handleOnAction(item)}
           title={`Insert ${item.title}`}
+          aria-label={`Insert ${item.title}`}
           icon={item.icon}
           kind="simple"
           bleed
-        />
+        >
+          {showLabels && item.title}
+        </Button>
       </Tooltip>
     )
   }
 
   getIcon = (type, fallbackIcon) => {
-    return type.icon || (type.type && type.type.icon) || fallbackIcon
+    const referenceIcon = get(type, 'to[0].icon')
+    return type.icon || (type.type && type.type.icon) || referenceIcon || fallbackIcon
   }
 
   getItems() {
