@@ -128,29 +128,20 @@ class SearchContainer extends React.Component {
     this.setState({isFocused: false})
   }
 
-  /* eslint-disable-next-line complexity */
   handleKeyDown = event => {
     const {results, activeIndex} = this.state
     const isArrowKey = ['ArrowUp', 'ArrowDown'].includes(event.key)
     const lastIndex = results.length - 1
 
     if (event.key === 'Enter') {
-      const hitEl = this.resultsRef.current.element.querySelector(
-        `[data-hit-index="${activeIndex}"]`
-      )
+      const resultsEl = this.resultsRef.current.element
+      const hitEl = resultsEl && resultsEl.querySelector(`[data-hit-index="${activeIndex}"]`)
       if (hitEl) hitEl.click()
     }
 
     if (event.key === 'Escape') {
-      // this.handleClear()
       this.fieldRef.current.inputElement.blur()
     }
-
-    // TODO: is it safe to remove this?
-    // if (!isFocused && isArrowKey) {
-    //   this.handleFocus()
-    //   return
-    // }
 
     if (isArrowKey) {
       event.preventDefault()
