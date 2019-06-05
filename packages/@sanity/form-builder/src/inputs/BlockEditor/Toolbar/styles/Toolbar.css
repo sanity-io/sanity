@@ -94,7 +94,7 @@
   flex-wrap: nowrap;
 }
 
-.group + .group {
+.group:not(:empty) + .group {
   border-left: 1px solid #eee;
   padding-left: calc(var(--small-padding--em) / 2);
   margin-left: calc(var(--small-padding--em) / 2);

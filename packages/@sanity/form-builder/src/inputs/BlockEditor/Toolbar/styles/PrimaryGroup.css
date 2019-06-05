@@ -27,7 +27,7 @@
 .blockStyleGroup {
   composes: group;
 
-  @nest & + .group {
+  @nest &:not(:empty) + .group {
     border-left: none;
   }
 }

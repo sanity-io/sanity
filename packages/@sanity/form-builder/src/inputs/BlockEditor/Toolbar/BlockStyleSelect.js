@@ -91,12 +91,13 @@ export default class BlockStyleSelect extends React.Component<Props> {
 
   render() {
     const {items, value} = this.getItemsAndValue()
-    if (!items || items.length === 0) {
+    if (!items || items.length < 2) {
       return null
     }
     const {editorValue, className} = this.props
     const {focusBlock} = editorValue
     const disabled = focusBlock ? focusBlock.isVoid : false
+
     return (
       <label className={className}>
         <span style={{display: 'none'}}>Text</span>
