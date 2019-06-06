@@ -16,7 +16,6 @@ export type HistoryEvent = {
 }
 
 export type Transaction = {
-  namespace: string
   id: string
   author: string
   mutations: Mutation[]

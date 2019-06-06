@@ -6,9 +6,9 @@ const EDIT_EVENT_TIME_TRESHHOLD_MS = 5 * 1000 * 60 * 5 // 5 minutes
 
 export function transactionsToEvents(
   documentId: string,
-  transactions: string | Buffer
+  transactions: string | Buffer | Transaction[]
 ): HistoryEvent[] {
-  const rawItems = ndjsonToArray(transactions)
+  const rawItems = Array.isArray(transactions) ? transactions : ndjsonToArray(transactions)
   return (
     rawItems
       // Make sure we only deal with ids that are for our document (including the draft)
@@ -67,12 +67,14 @@ function reduceEdits(
   return acc
 }
 
-function mutationsToEventType(mutations: Mutation[]) {
+export function mutationsToEventType(mutations: Mutation[]) {
   const withoutPatches = mutations.filter(mut => mut.patch === undefined)
   // Created
   if (
     mutations[0].createIfNotExists &&
     mutations[0].createIfNotExists._id.startsWith('drafts.') &&
+    mutations[1] &&
+    mutations[1].patch &&
     mutations[1].patch.id.startsWith('drafts.') &&
     mutations[1].patch.set !== undefined
   ) {
@@ -82,19 +84,22 @@ function mutationsToEventType(mutations: Mutation[]) {
   // Published
   if (
     withoutPatches.length === 2 &&
-    (withoutPatches[0].create || withoutPatches[0].createOrReplace) &&
-    withoutPatches[1].delete &&
-    withoutPatches[1].delete.id.startsWith('drafts.')
+    (withoutPatches.some(patch => patch.delete) ||
+      withoutPatches.some(patch => patch.createOrReplace)) &&
+    withoutPatches.some(patch => patch.delete && patch.delete.id.startsWith('drafts.'))
   ) {
     return 'published'
   }
+
   // Unpublished
   if (
     withoutPatches.length === 2 &&
-    withoutPatches[1].createIfNotExists &&
-    withoutPatches[1].createIfNotExists._id.startsWith('drafts.') &&
-    withoutPatches[0].delete &&
-    !withoutPatches[0].delete.id.startsWith('drafts.')
+    withoutPatches.some(
+      patch =>
+        (patch.createIfNotExists && patch.createIfNotExists._id.startsWith('drafts.')) ||
+        (patch.create && patch.create._id.startsWith('drafts.'))
+    ) &&
+    withoutPatches.some(patch => patch.delete && !patch.delete.id.startsWith('drafts.'))
   ) {
     return 'unpublished'
   }
