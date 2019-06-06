@@ -5,18 +5,17 @@ import {ndjsonToArray} from './utils/ndjsonToArray'
 const EDIT_EVENT_TIME_TRESHHOLD_MS = 5 * 1000 * 60 * 5 // 5 minutes
 
 export function transactionsToEvents(
-  documentId: string,
+  documentIds: string[],
   transactions: string | Buffer | Transaction[]
 ): HistoryEvent[] {
   const rawItems = Array.isArray(transactions) ? transactions : ndjsonToArray(transactions)
   return (
     rawItems
-      // Make sure we only deal with ids that are for our document (including the draft)
+      // Make sure we only deal with transactions that are relevant for our documents
       .filter(
         (transaction: Transaction) =>
           transaction.documentIDs &&
-          (transaction.documentIDs.includes(documentId) ||
-            transaction.documentIDs.includes(`drafts.${documentId}`))
+          transaction.documentIDs.some(r => documentIds.indexOf(r) >= 0)
       )
       // ensure transactions are sorted by time
       .sort(compareTimestamp)
