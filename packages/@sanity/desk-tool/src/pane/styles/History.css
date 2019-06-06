@@ -2,7 +2,7 @@
 
 .root {
   min-width: 260px;
-  background-color: var(--gray-lighter);
+  background-color: var(--gray-lightest);
   height: 100%;
   width: 100%;
   z-index: 1;

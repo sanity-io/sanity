@@ -5,6 +5,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import HistoryStore from 'part:@sanity/base/datastore/history'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import {transactionsToEvents} from '@sanity/transaction-collator'
+import Spinner from 'part:@sanity/components/loading/spinner'
 import HistoryItem from './HistoryItem'
 
 import styles from './styles/History.css'
@@ -17,21 +18,46 @@ export default class History extends React.PureComponent {
     currentRev: PropTypes.string,
     publishedRev: PropTypes.string,
     lastEdited: PropTypes.object,
-    errorMessage: PropTypes.string
+    errorMessage: PropTypes.string,
+    draft: PropTypes.object,
+    published: PropTypes.object
   }
 
-  state = {events: [], selectedRev: undefined, errorMessage: undefined}
+  state = {events: [], selectedRev: undefined, errorMessage: undefined, loading: true}
 
   componentDidMount() {
-    const {documentId} = this.props
-    HistoryStore.getTransactions([documentId, `drafts.${documentId}`]).then(transactions => {
-      const events = transactionsToEvents(documentId, transactions).reverse()
-      this.setState({events, selectedRev: events[0].rev})
-    })
+    this.loadHistory()
   }
 
-  handleItemClick = (rev, type) => {
-    const {onItemSelect, documentId, currentRev} = this.props
+  getDocumentId = () => {
+    const {published, draft} = this.props
+    return (published && published._id) || (draft && draft._id)
+  }
+
+  loadHistory = () => {
+    const {published, draft} = this.props
+    const documentIds = [published && published._id, draft && draft._id].filter(Boolean)
+
+    HistoryStore.getTransactions(documentIds)
+      .then(transactions => {
+        const events = transactionsToEvents(documentIds[0], transactions).reverse()
+        if (!events || !events[0]) {
+          // eslint-disable-next-line no-console
+          console.error('No history events', events)
+        } else {
+          this.setState({events, selectedRev: events[0].rev, loading: false})
+        }
+      })
+      .catch(res => {
+        // eslint-disable-next-line no-console
+        console.error(`could not load history for ${documentIds.join(', ')}`, res)
+        this.setState({loading: false, loadingError: true})
+      })
+  }
+
+  handleItemClick = ({rev, type}) => {
+    const {onItemSelect, currentRev} = this.props
+    const documentId = this.getDocumentId()
     if (onItemSelect) {
       if (currentRev === rev) {
         this.setState({selectedRev: rev})
@@ -41,17 +67,23 @@ export default class History extends React.PureComponent {
         })
       } else {
         HistoryStore.getHistory(documentId, {revision: rev})
-          .then(({documents}) => {
+          .then(res => {
+            const {documents} = res
             if (documents && documents[0]) {
               this.setState({selectedRev: rev})
               onItemSelect({
                 value: documents[0],
                 status: type
               })
+            } else {
+              // eslint-disable-next-line no-console
+              console.error(`Got no document for revision ${rev}`, res)
+              this.setState({errorMessage: `Could not fetch rev: ${rev}`})
             }
           })
           .catch(res => {
-            console.error(res)
+            // eslint-disable-next-line no-console
+            console.error(`Could not fetch revision ${rev}`, res)
             this.setState({errorMessage: `Could not fetch rev: ${rev}`})
           })
       }
@@ -60,11 +92,7 @@ export default class History extends React.PureComponent {
 
   render() {
     const {onClose, publishedRev} = this.props
-    const {events, selectedRev, errorMessage} = this.state
-
-    if (!events || !events[0]) {
-      return <div>Loading</div>
-    }
+    const {events, selectedRev, errorMessage, loadingError, loading} = this.state
 
     return (
       <div className={styles.root}>
@@ -72,16 +100,21 @@ export default class History extends React.PureComponent {
           History
           <Button onClick={onClose} title="Close" icon={CloseIcon} bleed kind="simple" />
         </div>
+        {loading && <Spinner center message="Loading history" />}
+        {loadingError && <p>Could not load history</p>}
         <div className={styles.list}>
-          {events.map(event => (
-            <HistoryItem
-              {...event}
-              key={event.rev}
-              onClick={this.handleItemClick}
-              isSelected={event.rev === selectedRev}
-              isCurrentVersion={event.rev === publishedRev}
-            />
-          ))}
+          {!loadingError &&
+            !loading &&
+            events &&
+            events.map(event => (
+              <HistoryItem
+                {...event}
+                key={event.rev}
+                onClick={this.handleItemClick}
+                isSelected={event.rev === selectedRev}
+                isCurrentVersion={event.rev === publishedRev}
+              />
+            ))}
         </div>
         {errorMessage && (
           <Snackbar kind="danger" timeout={3}>

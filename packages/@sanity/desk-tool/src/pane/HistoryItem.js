@@ -9,6 +9,7 @@ const {getUsers} = UserStore
 
 export default class HistoryItem extends React.PureComponent {
   static propTypes = {
+    id: PropTypes.string,
     rev: PropTypes.string,
     type: PropTypes.string,
     endTime: PropTypes.object,
@@ -29,7 +30,10 @@ export default class HistoryItem extends React.PureComponent {
   }
 
   handleClick = () => {
-    this.props.onClick(this.props.rev, this.props.type)
+    this.props.onClick({
+      rev: this.props.rev,
+      type: this.props.type
+    })
   }
 
   state = {users: []}
