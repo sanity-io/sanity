@@ -25,34 +25,26 @@ export default class History extends React.PureComponent {
 
   state = {events: [], selectedRev: undefined, errorMessage: undefined, loading: true}
 
-  componentDidMount() {
-    this.loadHistory()
-  }
-
   getDocumentId = () => {
     const {published, draft} = this.props
     return (published && published._id) || (draft && draft._id)
   }
 
-  loadHistory = () => {
-    const {published, draft} = this.props
-    const documentIds = [published && published._id, draft && draft._id].filter(Boolean)
+  componentDidMount() {
+    const {documentId} = this.props
+    this.streamer = HistoryStore.eventStreamer$([documentId, `drafts.${documentId}`]).subscribe({
+      next: events => {
+        this.setState({events, selectedRev: events[0].rev})
+      },
+      error: error => {
+        console.error(error) // eslint-disable-line no-console
+        this.setState({errorMessage: `Could not setup history event subscriber`})
+      }
+    })
+  }
 
-    HistoryStore.getTransactions(documentIds)
-      .then(transactions => {
-        const events = transactionsToEvents(documentIds[0], transactions).reverse()
-        if (!events || !events[0]) {
-          // eslint-disable-next-line no-console
-          console.error('No history events', events)
-        } else {
-          this.setState({events, selectedRev: events[0].rev, loading: false})
-        }
-      })
-      .catch(res => {
-        // eslint-disable-next-line no-console
-        console.error(`could not load history for ${documentIds.join(', ')}`, res)
-        this.setState({loading: false, loadingError: true})
-      })
+  componentWillUnmount() {
+    this.streamer.unsubscribe()
   }
 
   handleItemClick = ({rev, type}) => {
