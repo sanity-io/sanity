@@ -846,8 +846,8 @@ export default withRouterHOC(
                 documentId={this.getDocumentId(value)}
                 onClose={this.handleCloseHistory}
                 onItemSelect={this.handleHistorySelect}
-                currentRev={value._rev}
-                lastEdited={new Date(value._updatedAt)}
+                currentRev={value && value._rev}
+                lastEdited={value && new Date(value._updatedAt)}
                 publishedRev={published && published._rev}
                 published={published}
                 draft={draft}
