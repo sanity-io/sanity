@@ -1,5 +1,6 @@
 {
-  "name": "sanity",
+  "//": "Note: The actual “@sanity/client” package is located under “./packages/@sanity/client”. The “name” field below is there to get the GitHub's “Used by” number right",
+  "name": "@sanity/client",
   "private": true,
   "scripts": {
     "bootstrap": "lerna bootstrap && npm run package-yarn && npm run install-husky",
