@@ -71,7 +71,7 @@ const eventStreamer$ = documentIds => {
     }, {}),
     map(transactions =>
       transactionsToEvents(
-        documentIds[0],
+        documentIds,
         Object.keys(transactions).map(key => transactions[key])
       ).reverse()
     )
