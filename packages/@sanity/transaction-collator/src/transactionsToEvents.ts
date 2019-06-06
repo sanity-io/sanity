@@ -103,7 +103,7 @@ export function mutationsToEventType(mutations: Mutation[]) {
     return 'unpublished'
   }
 
-  // Restored (return edited for now)
+  // Restored to previous version (return edited for now)
   if (
     mutations.length === 1 &&
     mutations[0].createOrReplace &&
@@ -115,6 +115,11 @@ export function mutationsToEventType(mutations: Mutation[]) {
   // Edited
   if (mutations.some(mut => mut.patch)) {
     return 'edited'
+  }
+
+  // Discard drafted changes
+  if (mutations.length === 1 && mutations[0].delete && mutations[0].delete.id.startsWith('drafts.')) {
+    return 'discardDraft'
   }
 
   return 'unknown'

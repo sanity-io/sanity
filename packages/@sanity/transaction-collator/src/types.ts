@@ -7,7 +7,7 @@ export type Mutation = {
 }
 
 export type HistoryEvent = {
-  type: 'created' | 'edited' | 'published' | 'unpublished' | 'unknown'
+  type: 'created' | 'edited' | 'published' | 'unpublished' | 'discardDraft' | 'unknown'
   userIds: string[]
   startTime: Date
   endTime: Date,
