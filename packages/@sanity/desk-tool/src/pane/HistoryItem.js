@@ -31,7 +31,8 @@ export default class HistoryItem extends React.PureComponent {
   handleClick = () => {
     this.props.onClick({
       rev: this.props.rev,
-      type: this.props.type
+      type: this.props.type,
+      title: format(this.props.endTime, 'D MMM HH:mm:ss')
     })
   }
 
@@ -44,7 +45,7 @@ export default class HistoryItem extends React.PureComponent {
       <HistoryListItem
         isCurrentVersion={isCurrentVersion}
         status={type}
-        title={format(endTime, 'DD MMM HH:mm:ss')}
+        title={format(endTime, 'D MMM HH:mm:ss')}
         subtitle={`debug rev: ${rev}`}
         users={users}
         onClick={this.handleClick}

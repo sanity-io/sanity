@@ -25,7 +25,7 @@ export default class EditorStatusBadge extends React.PureComponent {
       isPublishedRev
     } = this.props
 
-    if (historyStatus) {
+    if (historyStatus && isPublishedRev) {
       return (
         <Button
           inverted={!isPublishedRev}
@@ -36,6 +36,10 @@ export default class EditorStatusBadge extends React.PureComponent {
           <span className={styles.badgeText}>{historyStatus}</span>
         </Button>
       )
+    }
+
+    if (historyStatus) {
+      return null
     }
 
     return (

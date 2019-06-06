@@ -251,7 +251,11 @@
 }
 
 .editedTime {
-  padding-left: 1em;
+  display: inline-block;
+}
+
+button + .editedTime {
+  margin-left: 0.75em;
 }
 
 .badgeText {
