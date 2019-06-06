@@ -1,7 +1,7 @@
 import client from 'part:@sanity/base/client'
 import {from, merge} from 'rxjs'
 import {transactionsToEvents} from '@sanity/transaction-collator'
-import {map, scan, reduce, mergeMap, tap} from 'rxjs/operators'
+import {map, scan, reduce, mergeMap} from 'rxjs/operators'
 
 const compileTransactions = (acc, curr) => {
   if (acc[curr.id]) {
