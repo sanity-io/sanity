@@ -410,7 +410,9 @@ export default withRouterHOC(
       const {historyValue} = this.state
       onRestore(historyValue)
       this.setState({
-        showConfirmHistoryRestore: false
+        showConfirmHistoryRestore: false,
+        historyValue: undefined,
+        historyStatus: undefined
       })
     }
 
@@ -685,11 +687,8 @@ export default withRouterHOC(
     }
 
     renderHistoryInfo = () => {
-      const {historyStatus, isReconnecting} = this.props
+      const {isReconnecting} = this.props
       const {showConfirmHistoryRestore} = this.state
-      if (historyStatus && historyStatus != 'unpublished') {
-        return null
-      }
 
       return (
         <>

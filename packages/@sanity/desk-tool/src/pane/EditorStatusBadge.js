@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import React from 'react'
 import PropTypes from 'prop-types'
 import Button from 'part:@sanity/components/buttons/default'
@@ -11,7 +12,7 @@ export default class EditorStatusBadge extends React.PureComponent {
     title: PropTypes.string,
     liveEdit: PropTypes.bool,
     isPublishedRev: PropTypes.bool,
-    historyStatus: PropTypes.oneOf(['published', 'edited'])
+    historyStatus: PropTypes.oneOf(['published', 'edited', 'unpublished', 'created'])
   }
 
   render() {
@@ -27,12 +28,15 @@ export default class EditorStatusBadge extends React.PureComponent {
 
     if (historyStatus && isPublishedRev) {
       return (
-        <Button
-          inverted={!isPublishedRev}
-          padding="none"
-          onClick={onClick}
-          color={isPublishedRev ? 'success' : undefined}
-        >
+        <Button inverted={!isPublishedRev} padding="none" onClick={onClick} color="success">
+          <span className={styles.badgeText}>{historyStatus}</span>
+        </Button>
+      )
+    }
+
+    if (historyStatus === 'unpublished') {
+      return (
+        <Button inverted={!isPublishedRev} padding="none" onClick={onClick} color="danger">
           <span className={styles.badgeText}>{historyStatus}</span>
         </Button>
       )

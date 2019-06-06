@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import scroll from 'scroll'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import HistoryStore from 'part:@sanity/base/datastore/history'
@@ -23,6 +24,7 @@ export default class History extends React.PureComponent {
   }
 
   state = {events: [], selectedRev: undefined, errorMessage: undefined, loading: true}
+  _listElement = React.createRef()
 
   getDocumentId = () => {
     const {published, draft} = this.props
@@ -40,22 +42,22 @@ export default class History extends React.PureComponent {
         if (this._isMounted) {
           this.setState({events, selectedRev: events[0].rev, loading: false})
         }
-      },
-      error: error => {
-        console.error(error) // eslint-disable-line no-console
-        if (this._isMounted) {
-          this.setState({loading: false, errorMessage: `Could not setup history event subscriber`})
-        }
       }
     })
   }
 
   componentWillUnmount() {
-    this._isMounted = false
     this.eventStreamer.unsubscribe()
   }
 
-  handleItemClick = ({rev, type}) => {
+  componentDidUpdate(prevProps) {
+    const {events, selectedRev} = this.state
+    if (events && events[0].rev === selectedRev) {
+      scroll(this._listElement.current, 0)
+    }
+  }
+
+  handleItemClick = ({rev, type, title}) => {
     const {onItemSelect, currentRev} = this.props
     const documentId = this.getDocumentId()
     if (onItemSelect) {
@@ -78,13 +80,13 @@ export default class History extends React.PureComponent {
             } else {
               // eslint-disable-next-line no-console
               console.error(`Got no document for revision ${rev}`, res)
-              this.setState({errorMessage: `Could not fetch rev: ${rev}`})
+              this.setState({errorMessage: `Sorry, we could not load history for ${title}`})
             }
           })
           .catch(res => {
             // eslint-disable-next-line no-console
             console.error(`Could not fetch revision ${rev}`, res)
-            this.setState({errorMessage: `Could not fetch rev: ${rev}`})
+            this.setState({errorMessage: `Sorry, we could not load history for ${title}`})
           })
       }
     }
@@ -102,7 +104,7 @@ export default class History extends React.PureComponent {
         </div>
         {loading && <Spinner center message="Loading history" />}
         {loadingError && <p>Could not load history</p>}
-        <div className={styles.list}>
+        <div className={styles.list} ref={this._listElement}>
           {!loadingError &&
             !loading &&
             events &&
@@ -117,7 +119,7 @@ export default class History extends React.PureComponent {
             ))}
         </div>
         {errorMessage && (
-          <Snackbar kind="danger" timeout={3}>
+          <Snackbar kind="danger" timeout={3} onHide={() => this.setState({errorMessage: undefined})}>
             {errorMessage}
           </Snackbar>
         )}
