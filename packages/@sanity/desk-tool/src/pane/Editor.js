@@ -871,7 +871,7 @@ export default withRouterHOC(
               <div className={styles.top}>
                 <EditorStatusBadge
                   liveEdit={this.isLiveEditEnabled()}
-                  onClick={this.handleToggleHistory}
+                  onClick={this.isLiveEditEnabled() ? () => {} : this.handleToggleHistory}
                   historyStatus={historyStatus || undefined}
                   isDraft={!!draft}
                   isPublished={!!published}

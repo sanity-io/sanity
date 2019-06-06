@@ -71,6 +71,11 @@
   margin: 0 var(--medium-padding);
   color: var(--text-color-secondary);
   font-size: 0.75em;
+  pointer-events: none;
+
+  @media (--screen-medium) {
+    pointer-events: initial;
+  }
 }
 
 .publishInfo {
