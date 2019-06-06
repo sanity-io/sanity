@@ -14,6 +14,8 @@ export const SUPPORTED_LANGUAGES = [
   {title: 'Plain text', value: 'text'}
 ]
 
+export const LANGUAGE_ALIASES = {js: 'javascript'}
+
 export const SUPPORTED_THEMES = ['github', 'monokai', 'terminal', 'tomorrow']
 
 export const DEFAULT_THEME = 'tomorrow'

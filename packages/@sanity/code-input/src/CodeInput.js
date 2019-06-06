@@ -10,6 +10,7 @@ import DefaultSelect from 'part:@sanity/components/selects/default'
 import TextInput from 'part:@sanity/components/textinputs/default'
 import createHighlightMarkers from './createHighlightMarkers'
 import {
+  LANGUAGE_ALIASES,
   ACE_EDITOR_PROPS,
   ACE_SET_OPTIONS,
   SUPPORTED_LANGUAGES,
@@ -18,6 +19,7 @@ import {
 } from './config'
 
 /* eslint-disable import/no-unassigned-import */
+// NOTE: MAKE SURE THESE ALIGN WITH SUPPORTED_LANGUAGES
 import 'brace/mode/batchfile'
 import 'brace/mode/css'
 import 'brace/mode/html'
@@ -40,6 +42,21 @@ import 'brace/theme/tomorrow'
 
 function compareNumbers(numA, numB) {
   return numA - numB
+}
+
+// Returns a string with the mode name if supported (because aliases), otherwise false
+function isSupportedLanguage(mode) {
+  const alias = LANGUAGE_ALIASES[mode]
+  if (alias) {
+    return alias
+  }
+
+  const isSupported = SUPPORTED_LANGUAGES.find(lang => lang.value === mode)
+  if (isSupported) {
+    return mode
+  }
+
+  return false
 }
 
 export default class CodeInput extends PureComponent {
@@ -167,7 +184,42 @@ export default class CodeInput extends PureComponent {
   }
 
   getLanguageAlternatives() {
-    return get(this.props.type, 'options.languageAlternatives') || SUPPORTED_LANGUAGES
+    const languageAlternatives = get(this.props.type, 'options.languageAlternatives')
+    if (!languageAlternatives) {
+      return SUPPORTED_LANGUAGES
+    }
+
+    if (!Array.isArray(languageAlternatives)) {
+      throw new Error(
+        `'options.languageAlternatives' should be an array, got ${typeof languageAlternatives}`
+      )
+    }
+
+    return languageAlternatives.reduce((acc, {title, value}) => {
+      const alias = LANGUAGE_ALIASES[value]
+      if (alias) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `'options.languageAlternatives' lists a language with value "%s", which is an alias of "%s" - please replace the value to read "%s"`,
+          value,
+          alias,
+          alias
+        )
+
+        return acc.concat({title, value: alias})
+      }
+
+      if (!SUPPORTED_LANGUAGES.find(lang => lang.value === value)) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `'options.languageAlternatives' lists a language which is not supported: "%s", ignoring it.`,
+          value
+        )
+        return acc
+      }
+
+      return acc.concat({title, value})
+    }, [])
   }
 
   getTheme() {
@@ -180,10 +232,11 @@ export default class CodeInput extends PureComponent {
   renderEditor = () => {
     const {value, type} = this.props
     const fixedLanguage = get(type, 'options.language')
+    const language = isSupportedLanguage((value && value.language) || fixedLanguage) || 'text'
     return (
       <AceEditor
         className={styles.aceEditor}
-        mode={(value && value.language) || fixedLanguage || 'text'}
+        mode={language}
         theme={this.getTheme()}
         width="100%"
         onChange={this.handleCodeChange}
@@ -212,14 +265,14 @@ export default class CodeInput extends PureComponent {
       )
     }
 
+    const isSupported = isSupportedLanguage(value && value.language)
     const selectedLanguage =
-      value && value.language
-        ? this.getLanguageAlternatives().find(item => item.value === value.language)
-        : undefined
+      value && value.language ? languages.find(item => item.value === isSupported) : undefined
 
     if (!selectedLanguage) {
       languages.unshift({title: 'Select language'})
     }
+
     const languageField = type.fields.find(field => field.name === 'language')
     const filenameField = type.fields.find(field => field.name === 'filename')
 
@@ -232,7 +285,7 @@ export default class CodeInput extends PureComponent {
             items={languages}
           />
         </FormField>
-        { get(type, 'options.withFilename', false) && (
+        {get(type, 'options.withFilename', false) && (
           <FormField label={filenameField.title || 'Filename'} level={level + 1}>
             <TextInput
               type="text"
@@ -242,7 +295,7 @@ export default class CodeInput extends PureComponent {
               onChange={this.handleFilenameChange}
             />
           </FormField>
-        ) }
+        )}
         <FormField label={(selectedLanguage && selectedLanguage.title) || 'Code'} level={level + 1}>
           {this.renderEditor()}
         </FormField>
