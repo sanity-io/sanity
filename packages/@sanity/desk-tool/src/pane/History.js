@@ -4,7 +4,6 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import HistoryStore from 'part:@sanity/base/datastore/history'
 import Snackbar from 'part:@sanity/components/snackbar/default'
-import {transactionsToEvents} from '@sanity/transaction-collator'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import HistoryItem from './HistoryItem'
 
@@ -32,19 +31,22 @@ export default class History extends React.PureComponent {
 
   componentDidMount() {
     const {documentId} = this.props
-    this.streamer = HistoryStore.eventStreamer$([documentId, `drafts.${documentId}`]).subscribe({
+    this.eventStreamer = HistoryStore.eventStreamer$([
+      documentId,
+      `drafts.${documentId}`
+    ]).subscribe({
       next: events => {
-        this.setState({events, selectedRev: events[0].rev})
+        this.setState({events, selectedRev: events[0].rev, loading: false})
       },
       error: error => {
         console.error(error) // eslint-disable-line no-console
-        this.setState({errorMessage: `Could not setup history event subscriber`})
+        this.setState({loading: false, errorMessage: `Could not setup history event subscriber`})
       }
     })
   }
 
   componentWillUnmount() {
-    this.streamer.unsubscribe()
+    this.eventStreamer.unsubscribe()
   }
 
   handleItemClick = ({rev, type}) => {
