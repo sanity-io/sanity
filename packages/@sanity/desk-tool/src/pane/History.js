@@ -30,22 +30,28 @@ export default class History extends React.PureComponent {
   }
 
   componentDidMount() {
+    this._isMounted = true
     const {documentId} = this.props
     this.eventStreamer = HistoryStore.eventStreamer$([
       documentId,
       `drafts.${documentId}`
     ]).subscribe({
       next: events => {
-        this.setState({events, selectedRev: events[0].rev, loading: false})
+        if (this._isMounted) {
+          this.setState({events, selectedRev: events[0].rev, loading: false})
+        }
       },
       error: error => {
         console.error(error) // eslint-disable-line no-console
-        this.setState({loading: false, errorMessage: `Could not setup history event subscriber`})
+        if (this._isMounted) {
+          this.setState({loading: false, errorMessage: `Could not setup history event subscriber`})
+        }
       }
     })
   }
 
   componentWillUnmount() {
+    this._isMounted = false
     this.eventStreamer.unsubscribe()
   }
 
