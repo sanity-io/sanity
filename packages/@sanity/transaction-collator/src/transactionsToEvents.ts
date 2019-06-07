@@ -15,7 +15,7 @@ export function transactionsToEvents(
       .filter(
         (transaction: Transaction) =>
           transaction.documentIDs &&
-          transaction.documentIDs.some(r => documentIds.indexOf(r) >= 0)
+          transaction.documentIDs.some(id => documentIds.includes(id))
       )
       // ensure transactions are sorted by time
       .sort(compareTimestamp)
