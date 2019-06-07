@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import HistoryListItem from 'part:@sanity/components/history/list-item'
-import Button from 'part:@sanity/components/buttons/default'
 import UserStore from 'part:@sanity/base/user'
 import {format} from 'date-fns'
 
