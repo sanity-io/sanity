@@ -14,8 +14,7 @@ export function transactionsToEvents(
       // Make sure we only deal with transactions that are relevant for our documents
       .filter(
         (transaction: Transaction) =>
-          transaction.documentIDs &&
-          transaction.documentIDs.some(id => documentIds.includes(id))
+          transaction.documentIDs && transaction.documentIDs.some(id => documentIds.includes(id))
       )
       // ensure transactions are sorted by time
       .sort(compareTimestamp)
@@ -106,8 +105,8 @@ export function mutationsToEventType(mutations: Mutation[]) {
   // Restored to previous version (return edited for now)
   if (
     mutations.length === 1 &&
-    mutations[0].createOrReplace &&
-    mutations[0].createOrReplace._id.startsWith('drafts.')
+    ((mutations[0].createOrReplace && mutations[0].createOrReplace._id.startsWith('drafts.')) ||
+      (mutations[0].create && mutations[0].create._id.startsWith('drafts.')))
   ) {
     return 'edited'
   }
@@ -118,7 +117,11 @@ export function mutationsToEventType(mutations: Mutation[]) {
   }
 
   // Discard drafted changes
-  if (mutations.length === 1 && mutations[0].delete && mutations[0].delete.id.startsWith('drafts.')) {
+  if (
+    mutations.length === 1 &&
+    mutations[0].delete &&
+    mutations[0].delete.id.startsWith('drafts.')
+  ) {
     return 'discardDraft'
   }
 
