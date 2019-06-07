@@ -18,5 +18,10 @@ module.exports = [
     value: 'chessInput',
     name: 'Chess board input component w/ block preview',
     url: 'https://github.com/sanity-io/plugin-template-chess-input/archive/master.zip'
+  },
+  {
+    value: 'dashboardWidget',
+    name: 'A Dashboard widget with cats',
+    url: 'https://github.com/sanity-io/plugin-template-dashboard-widget-cats/archive/master.zip'
   }
 ]
