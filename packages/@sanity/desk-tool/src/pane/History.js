@@ -43,6 +43,13 @@ export default class History extends React.PureComponent {
         if (this._isMounted) {
           this.setState({events, selectedRev: events[0].rev, loading: false})
         }
+        if (
+          this._listElement.current &&
+          this._listElement.current.firstChild &&
+          this._listElement.current.firstChild.firstChild
+        ) {
+          this._listElement.current.firstChild.firstChild.focus()
+        }
       }
     })
   }
@@ -105,25 +112,22 @@ export default class History extends React.PureComponent {
         </div>
         {loading && <Spinner center message="Loading history" />}
         {loadingError && <p>Could not load history</p>}
-        <ArrowKeyNavigation
-          className={styles.list}
-          ref={this._listElement}
-          component="div"
-          mode={ArrowKeyNavigation.mode.VERTICAL}
-        >
-          {!loadingError &&
-            !loading &&
-            events &&
-            events.map(event => (
-              <HistoryItem
-                {...event}
-                key={event.rev}
-                onClick={this.handleItemClick}
-                isSelected={event.rev === selectedRev}
-                isCurrentVersion={event.rev === publishedRev}
-              />
-            ))}
-        </ArrowKeyNavigation>
+        <div className={styles.list} ref={this._listElement}>
+          <ArrowKeyNavigation mode={ArrowKeyNavigation.mode.VERTICAL}>
+            {!loadingError &&
+              !loading &&
+              events &&
+              events.map(event => (
+                <HistoryItem
+                  {...event}
+                  key={event.rev}
+                  onClick={this.handleItemClick}
+                  isSelected={event.rev === selectedRev}
+                  isCurrentVersion={event.rev === publishedRev}
+                />
+              ))}
+          </ArrowKeyNavigation>
+        </div>
         {errorMessage && (
           <Snackbar kind="danger" timeout={3} onHide={() => this.setState({errorMessage: undefined})}>
             {errorMessage}
