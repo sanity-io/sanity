@@ -555,20 +555,18 @@ export default withRouterHOC(
               </span>
             </Tooltip>
           )}
-          {value &&
-            !showSavingStatus &&
-            !isReconnecting && (
-              <Tooltip
-                className={styles.syncStatusSynced}
-                arrow
-                theme="light"
-                size="small"
-                distance="0"
-                title="Synced with the Sanity cloud"
-              >
-                <CheckIcon /> Synced {this.isLiveEditEnabled() && ' (live)'}
-              </Tooltip>
-            )}
+          {value && !showSavingStatus && !isReconnecting && (
+            <Tooltip
+              className={styles.syncStatusSynced}
+              arrow
+              theme="light"
+              size="small"
+              distance="0"
+              title="Synced with the Sanity cloud"
+            >
+              <CheckIcon /> Synced {this.isLiveEditEnabled() && ' (live)'}
+            </Tooltip>
+          )}
           {(errors.length > 0 || warnings.length > 0) && (
             <Tooltip
               arrow
@@ -759,6 +757,7 @@ export default withRouterHOC(
     renderStaticContent = () => {
       const {draft} = this.props
       const {historyValue, historyStatus} = this.state
+
       return (
         <div
           className={
@@ -938,26 +937,30 @@ export default withRouterHOC(
                 </Snackbar>
               )}
               {didPublish && (
-                <Snackbar kind="success" timeout={4}>
+                <Snackbar
+                  kind="success"
+                  timeout={4}
+                  // eslint-disable-next-line react/jsx-no-bind
+                  onHide={() => this.setState({didPublish: false})}
+                >
                   <CheckCircleIcon /> You just published{' '}
                   <em>
                     <DocTitle document={draft || published} />
                   </em>
                 </Snackbar>
               )}
-              {transactionResult &&
-                transactionResult.type === 'error' && (
-                  <Snackbar
-                    kind="danger"
-                    action={{title: 'Ok, got it'}}
-                    onAction={onClearTransactionResult}
-                  >
-                    <div>
-                      {transactionResult.message}
-                      <details>{transactionResult.error.message}</details>
-                    </div>
-                  </Snackbar>
-                )}
+              {transactionResult && transactionResult.type === 'error' && (
+                <Snackbar
+                  kind="danger"
+                  action={{title: 'Ok, got it'}}
+                  onAction={onClearTransactionResult}
+                >
+                  <div>
+                    {transactionResult.message}
+                    <details>{transactionResult.error.message}</details>
+                  </div>
+                </Snackbar>
+              )}
             </div>
           </Pane>
         </div>

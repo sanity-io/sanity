@@ -65,53 +65,54 @@ export default class HistoryListItem extends React.PureComponent {
         data-status={status}
         data-is-current-version={isCurrentVersion}
         onClick={onClick}
+        tabIndex={0}
+        onKeyUp={event => event.keyCode === 13 && onClick()}
       >
         <div className={styles.startLine} aria-hidden="true" />
         <div className={styles.endLine} aria-hidden="true" />
         <div className={styles.status}>{status}</div>
         <div className={styles.title}>{title}</div>
         <div style={{fontSize: '0.5em'}}>{subtitle}</div>
-        {users &&
-          users.length > 0 && (
-            <div className={styles.users}>
-              {users.slice(0, MAX_USERS).map(user => (
-                <div className={styles.user} key={user.id}>
-                  <PresenceCircle
-                    title={users.length === 1 ? false : user.displayName}
-                    imageUrl={user.imageUrl}
-                    color={colorHasher(user.id)}
-                  />
-                </div>
-              ))}
-              {users.length === 1 && <div className={styles.userName}>{users[0].displayName}</div>}
-              {users.length > 1 && (
-                <div className={styles.extraItems}>
-                  <Tooltip
-                    html={
-                      <PresenceList
-                        markers={users.map(user => ({
-                          type: 'presence',
-                          identity: user.id,
-                          color: colorHasher(user.id),
-                          user: {...user}
-                        }))}
-                      />
-                    }
-                    interactive
-                    position="top"
-                    trigger="mouseenter"
-                    animation="scale"
-                    arrow
-                    theme="light"
-                    distance="10"
-                    duration={50}
-                  >
-                    <div className={styles.userName}>{users.length} people</div>
-                  </Tooltip>
-                </div>
-              )}
-            </div>
-          )}
+        {users && users.length > 0 && (
+          <div className={styles.users}>
+            {users.slice(0, MAX_USERS).map(user => (
+              <div className={styles.user} key={user.id}>
+                <PresenceCircle
+                  title={users.length === 1 ? false : user.displayName}
+                  imageUrl={user.imageUrl}
+                  color={colorHasher(user.id)}
+                />
+              </div>
+            ))}
+            {users.length === 1 && <div className={styles.userName}>{users[0].displayName}</div>}
+            {users.length > 1 && (
+              <div className={styles.extraItems}>
+                <Tooltip
+                  html={
+                    <PresenceList
+                      markers={users.map(user => ({
+                        type: 'presence',
+                        identity: user.id,
+                        color: colorHasher(user.id),
+                        user: {...user}
+                      }))}
+                    />
+                  }
+                  interactive
+                  position="top"
+                  trigger="mouseenter"
+                  animation="scale"
+                  arrow
+                  theme="light"
+                  distance="10"
+                  duration={50}
+                >
+                  <div className={styles.userName}>{users.length} people</div>
+                </Tooltip>
+              </div>
+            )}
+          </div>
+        )}
         {children && <div className={styles.children}>{children}</div>}
       </div>
     )

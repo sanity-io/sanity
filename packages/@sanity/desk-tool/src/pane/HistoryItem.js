@@ -6,10 +6,11 @@ import {format} from 'date-fns'
 
 const {getUsers} = UserStore
 
+const dateFormat = 'Do of MMMM YYYY HH:mm:ss '
+
 export default class HistoryItem extends React.PureComponent {
   static propTypes = {
-    id: PropTypes.string,
-    rev: PropTypes.string,
+    rev: PropTypes.string.isRequired,
     type: PropTypes.string,
     endTime: PropTypes.object,
     userIds: PropTypes.arrayOf(PropTypes.string),
@@ -32,7 +33,7 @@ export default class HistoryItem extends React.PureComponent {
     this.props.onClick({
       rev: this.props.rev,
       type: this.props.type,
-      title: format(this.props.endTime, 'D MMM HH:mm:ss')
+      title: format(this.props.endTime, dateFormat)
     })
   }
 
@@ -45,7 +46,7 @@ export default class HistoryItem extends React.PureComponent {
       <HistoryListItem
         isCurrentVersion={isCurrentVersion}
         status={type}
-        title={format(endTime, 'D MMM HH:mm:ss')}
+        title={format(endTime, dateFormat)}
         subtitle={`debug rev: ${rev}`}
         users={users}
         onClick={this.handleClick}
