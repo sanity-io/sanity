@@ -11,7 +11,15 @@ const MAX_USERS = 3
 
 export default class HistoryListItem extends React.PureComponent {
   static propTypes = {
-    status: PropTypes.oneOf(['published', 'edited', 'created', 'unpublished', 'draft', 'unknown']),
+    status: PropTypes.oneOf([
+      'created',
+      'discardDraft',
+      'draft',
+      'edited',
+      'published',
+      'unknown',
+      'unpublished'
+    ]),
     title: PropTypes.string,
     subtitle: PropTypes.string,
     children: PropTypes.node,
