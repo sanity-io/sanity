@@ -14,6 +14,7 @@ const rimraf = promisify(rimTheRaf)
 const absoluteMatch = /^https?:\/\//i
 
 export default async (args, context) => {
+  const overrides = args.overrides || {}
   const {output, prompt, workDir} = context
   const flags = Object.assign(
     {minify: true, profile: false, stats: false, 'source-maps': false},
@@ -32,7 +33,7 @@ export default async (args, context) => {
     sourceMaps: flags['source-maps'],
     skipMinify: !flags.minify,
     profile: flags.profile,
-    project: config.get('project')
+    project: Object.assign({}, config.get('project'), overrides.project)
   }
 
   await tryInitializePluginConfigs({workDir, output})
