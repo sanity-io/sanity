@@ -1,13 +1,14 @@
 import client from 'part:@sanity/base/client'
-import {auditTime, take, share, filter, mergeMap, switchMapTo} from 'rxjs/operators'
-import {defer, concat, throwError} from 'rxjs'
+import {defer, merge, of, throwError, asyncScheduler} from 'rxjs'
+import {mergeMap, partition, throttleTime, share, switchMapTo, take} from 'rxjs/operators'
 
 const fetch = (query, params) => defer(() => client.observable.fetch(query, params))
 const listen = (query, params) =>
   defer(() =>
     client.listen(query, params, {
       events: ['welcome', 'mutation', 'reconnect'],
-      includeResult: false
+      includeResult: false,
+      visibility: 'query'
     })
   )
 
@@ -16,30 +17,29 @@ const listen = (query, params) =>
 export const listenQuery = (query, params) => {
   const fetchOnce$ = fetch(query, params)
 
-  const events$ = listen(query, params).pipe(share())
-  const mutations$ = events$.pipe(filter(ev => ev.type === 'mutation'))
-
-  return concat(
-    events$.pipe(
-      mergeMap(first => {
-        if (first.type === 'welcome') {
-          return fetchOnce$
-        }
+  const [welcome$, mutation$] = listen(query, params).pipe(
+    mergeMap((ev, i) => {
+      const isFirst = i === 0
+      const isWelcome = ev.type === 'welcome'
+      if (isFirst && !isWelcome) {
+        // if the first event is not welcome, it is most likely a reconnect and
+        // if it's not a reconnect something is very wrong
         return throwError(
           new Error(
-            first.type === 'reconnect'
-              ? // if the first event is not welcome, it is most likely a reconnect and
-                'Could not establish EventSource connection'
-              : // if it's not a reconnect something is very wrong
-                `Received unexpected type of first event "${first.type}"`
+            ev.type === 'reconnect'
+              ? 'Could not establish EventSource connection'
+              : `Received unexpected type of first event "${ev.type}"`
           )
         )
-      }),
-      take(1)
-    ),
-    mutations$.pipe(
-      auditTime(1000),
-      switchMapTo(fetchOnce$)
-    )
+      }
+      return of(ev)
+    }),
+    share(),
+    partition(ev => ev.type === 'welcome')
   )
+
+  return merge(
+    welcome$.pipe(take(1)),
+    mutation$.pipe(throttleTime(1000, asyncScheduler, {leading: true, trailing: true}))
+  ).pipe(switchMapTo(fetchOnce$))
 }
