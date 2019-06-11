@@ -43,13 +43,6 @@ export default class History extends React.PureComponent {
         if (this._isMounted) {
           this.setState({events, selectedRev: events[0].rev, loading: false})
         }
-        if (
-          this._listElement.current &&
-          this._listElement.current.firstChild &&
-          this._listElement.current.firstChild.firstChild
-        ) {
-          this._listElement.current.firstChild.firstChild.focus()
-        }
       }
     })
   }
@@ -59,10 +52,20 @@ export default class History extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    const {events, selectedRev} = this.state
-    if (events && events[0].rev === selectedRev) {
-      scroll.top(this._listElement.current, 0)
-    }
+    // TODO Enable this when we have an updated currentRev from the document._rev
+    // const {events, selectedRev} = this.state
+    // const {currentRev} = this.props
+    // if (
+    //   events &&
+    //   events[0].rev === this.state.selectedRev &&
+    //   currentRev === events[0].rev &&
+    //   this._listElement.current &&
+    //   this._listElement.current.firstChild &&
+    //   this._listElement.current.firstChild.firstChild
+    // ) {
+    //   this._listElement.current.firstChild.firstChild.focus()
+    //   scroll.top(this._listElement.current, 0)
+    // }
   }
 
   handleItemClick = ({rev, type, title}) => {
