@@ -14,4 +14,5 @@
   background: none;
   border-top: 1px solid var(--hairline-color);
   border-bottom: none;
+  box-sizing: border-box;
 }
