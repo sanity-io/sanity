@@ -864,6 +864,10 @@
       "path": "components/icons/Comment.js"
     },
     {
+      "implements": "part:@sanity/base/history-icon",
+      "path": "components/icons/History.js"
+    },
+    {
       "implements": "part:@sanity/base/sanity-logo",
       "path": "components/logos/SanityLogo.js"
     },

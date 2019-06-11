@@ -27,6 +27,7 @@ import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-compo
 import SyncIcon from 'part:@sanity/base/sync-icon'
 import CheckIcon from 'part:@sanity/base/check-icon'
 import CheckCircleIcon from 'part:@sanity/base/circle-check-icon'
+import HistoryIcon from 'part:@sanity/base/history-icon'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import resolveProductionPreviewUrl from 'part:@sanity/transitional/production-preview/resolve-production-url?'
 import ValidationList from 'part:@sanity/components/validation/list'
@@ -96,6 +97,15 @@ const getDeleteItem = (draft, published) => ({
   isDisabled: !draft && !published
 })
 
+const getHistoryMenuItem = (draft, published, isLiveEditEnabled) =>
+  isLiveEditEnabled
+    ? null
+    : {
+        action: 'browseHistory',
+        title: 'Browse history',
+        icon: HistoryIcon
+      }
+
 const getInspectItem = (draft, published) => ({
   action: 'inspect',
   title: (
@@ -150,6 +160,7 @@ const getMenuItems = (enabledActions, draft, published, isLiveEditEnabled) =>
     enabledActions.includes('delete') && getDiscardItem,
     enabledActions.includes('delete') && getUnpublishItem,
     enabledActions.includes('create') && getDuplicateItem,
+    getHistoryMenuItem,
     getInspectItem,
     enabledActions.includes('delete') && getDeleteItem
   ]
@@ -459,6 +470,10 @@ export default withRouterHOC(
 
       if (item.action === 'inspect') {
         this.setState({inspect: true})
+      }
+
+      if (item.action === 'browseHistory') {
+        this.setState({showHistory: true})
       }
 
       this.setState({isMenuOpen: false})
