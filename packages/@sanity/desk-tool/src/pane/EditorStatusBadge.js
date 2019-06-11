@@ -71,12 +71,7 @@ export default class EditorStatusBadge extends React.PureComponent {
               </Button>
             )}
             {isPublished && (
-              <Button
-                padding="none"
-                color={isDraft ? 'warning' : 'success'}
-                onClick={onClick}
-                title={title}
-              >
+              <Button padding="none" color="success" onClick={onClick} title={title}>
                 <span className={styles.badgeText}>Published</span>
               </Button>
             )}

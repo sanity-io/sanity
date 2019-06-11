@@ -26,6 +26,7 @@ export default class HistoryListItem extends React.PureComponent {
     isCurrentVersion: PropTypes.bool,
     isSelected: PropTypes.bool,
     onClick: PropTypes.func,
+    rev: PropTypes.string,
     users: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string,
@@ -44,7 +45,8 @@ export default class HistoryListItem extends React.PureComponent {
     isCurrentVersion: false,
     isSelected: false,
     users: [],
-    children: undefined
+    children: undefined,
+    rev: undefined
   }
 
   render() {
@@ -56,7 +58,8 @@ export default class HistoryListItem extends React.PureComponent {
       children,
       isCurrentVersion,
       onClick,
-      subtitle
+      subtitle,
+      rev
     } = this.props
 
     return (
@@ -64,6 +67,7 @@ export default class HistoryListItem extends React.PureComponent {
         className={isSelected ? styles.selected : styles.unSelected}
         data-status={status}
         data-is-current-version={isCurrentVersion}
+        data-rev={rev}
         onClick={onClick}
         tabIndex={0}
         onKeyUp={event => event.keyCode === 13 && onClick()}

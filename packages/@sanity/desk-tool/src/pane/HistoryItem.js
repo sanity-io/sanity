@@ -2,11 +2,21 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import HistoryListItem from 'part:@sanity/components/history/list-item'
 import UserStore from 'part:@sanity/base/user'
-import {format} from 'date-fns'
+import {format, isYesterday, isToday} from 'date-fns'
 
 const {getUsers} = UserStore
 
-const dateFormat = 'Do of MMMM YYYY HH:mm:ss '
+const dateFormat = ''
+
+function getDateString(date) {
+  if (isToday(date)) {
+    return `Today, ${format(date, 'hh:mm A')}`
+  }
+  if (isYesterday(date)) {
+    return `Yesterday, ${format(date, 'hh:mm A')}`
+  }
+  return format(date, 'MMM D, YYYY, hh:mm A')
+}
 
 export default class HistoryItem extends React.PureComponent {
   static propTypes = {
@@ -33,7 +43,7 @@ export default class HistoryItem extends React.PureComponent {
     this.props.onClick({
       rev: this.props.rev,
       type: this.props.type,
-      title: format(this.props.endTime, dateFormat)
+      title: getDateString(this.props.endTime)
     })
   }
 
@@ -46,8 +56,8 @@ export default class HistoryItem extends React.PureComponent {
       <HistoryListItem
         isCurrentVersion={isCurrentVersion}
         status={type}
-        title={format(endTime, dateFormat)}
-        subtitle={`debug rev: ${rev}`}
+        title={getDateString(endTime)}
+        rev={rev}
         users={users}
         onClick={this.handleClick}
         isSelected={isSelected}

@@ -252,9 +252,16 @@
 
 .editedTime {
   display: inline-block;
+  cursor: pointer;
 
   @nest &::first-letter {
     text-transform: uppercase;
+  }
+
+  @media (hover: hover) {
+    @nest &:hover {
+      text-decoration: underline;
+    }
   }
 }
 
