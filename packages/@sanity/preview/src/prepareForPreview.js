@@ -6,8 +6,6 @@ const identity = v => v
 const PRESERVE_KEYS = ['_id', '_type', '_upload']
 const EMPTY = []
 
-type __DEV__ = boolean
-
 type ViewOptions = {}
 
 type SelectedValue = {}
@@ -70,8 +68,7 @@ const reportErrors = debounce(() => {
   console.groupCollapsed(
     `%cHeads up! Got ${
       errorCount === 1 ? 'error' : `${errorCount} errors`
-    } while preparing data for preview. Click for details.` +
-      ' This may be a hard failure in production and cause your Studio to crash.',
+    } while preparing data for preview. Click for details.`,
     'color: #ff7e7c'
   )
 
@@ -194,7 +191,7 @@ function validateReturnedPreview(result: PrepareInvocationResult) {
   }
 }
 
-function invokePrepareChecked(
+export function invokePrepare(
   type: Type,
   value: SelectedValue,
   viewOptions: ViewOptions
@@ -208,24 +205,10 @@ function invokePrepareChecked(
   } catch (error) {
     return {
       returnValue: null,
-      errors: [assignType(error, 'prepareError')]
+      errors: [assignType('prepareError', error)]
     }
   }
 }
-
-function invokePrepareUnchecked(
-  type: Type,
-  value: SelectedValue,
-  viewOptions: ViewOptions
-): PrepareInvocationResult {
-  return {
-    selectedValue: value,
-    returnValue: (type.preview.prepare || identity)(value, viewOptions),
-    errors: EMPTY
-  }
-}
-
-export const invokePrepare = __DEV__ ? invokePrepareChecked : invokePrepareUnchecked
 
 function withErrors(result, type, selectedValue) {
   result.errors.forEach(error => errorCollector.add(type, selectedValue, error))
