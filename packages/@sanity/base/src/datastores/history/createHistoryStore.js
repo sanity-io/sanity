@@ -44,7 +44,7 @@ const getTransactions = documentIds => {
 const eventStreamer$ = documentIds => {
   const query = '*[_id in $documentIds]'
   const params = {documentIds: documentIds}
-  const pastTransactions$ = from(getTransactions([documentIds])).pipe(
+  const pastTransactions$ = from(getTransactions(documentIds)).pipe(
     mergeMap(transactions => from(transactions)),
     map(trans => ({
       author: trans.author,
