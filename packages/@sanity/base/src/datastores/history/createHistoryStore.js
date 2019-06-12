@@ -13,6 +13,14 @@ const compileTransactions = (acc, curr) => {
   return acc
 }
 
+const ndjsonToArray = ndjson => {
+  return ndjson
+    .toString('utf8')
+    .split('\n')
+    .filter(Boolean)
+    .map(line => JSON.parse(line))
+}
+
 const getHistory = (documentIds, options = {}) => {
   const ids = Array.isArray(documentIds) ? documentIds : [documentIds]
   const {time, revision} = options
@@ -84,14 +92,6 @@ export default function createHistoryStore() {
     getTransactions,
     eventStreamer$
   }
-}
-
-export function ndjsonToArray(ndjson) {
-  return ndjson
-    .toString('utf8')
-    .split('\n')
-    .filter(Boolean)
-    .map(line => JSON.parse(line))
 }
 
 // setupListener = () => {
