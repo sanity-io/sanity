@@ -83,9 +83,8 @@ export default class History extends React.PureComponent {
     // }
   }
 
-  handleItemClick = ({rev, type, title}) => {
+  handleItemClick = ({rev, type, title, displayDocumentId}) => {
     const {onItemSelect, currentRev} = this.props
-    const documentId = this.getDocumentId()
     if (onItemSelect) {
       if (currentRev === rev) {
         this.setState({selectedRev: rev})
@@ -94,7 +93,7 @@ export default class History extends React.PureComponent {
           status: null
         })
       } else {
-        HistoryStore.getHistory(documentId, {revision: rev})
+        HistoryStore.getHistory(displayDocumentId, {revision: rev})
           .then(res => {
             const {documents} = res
             if (documents && documents[0]) {

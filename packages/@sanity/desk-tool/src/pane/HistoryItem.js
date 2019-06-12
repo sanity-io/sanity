@@ -6,8 +6,6 @@ import {format, isYesterday, isToday} from 'date-fns'
 
 const {getUsers} = UserStore
 
-const dateFormat = ''
-
 function getDateString(date) {
   if (isToday(date)) {
     return `Today, ${format(date, 'hh:mm A')}`
@@ -19,14 +17,19 @@ function getDateString(date) {
 }
 
 export default class HistoryItem extends React.PureComponent {
+  static defaultProps = {
+    displayDocumentId: undefined
+  }
+
   static propTypes = {
+    displayDocumentId: PropTypes.string,
+    endTime: PropTypes.instanceOf(Date).isRequired,
+    isCurrentVersion: PropTypes.bool.isRequired,
+    isSelected: PropTypes.bool.isRequired,
+    onClick: PropTypes.func.isRequired,
     rev: PropTypes.string.isRequired,
-    type: PropTypes.string,
-    endTime: PropTypes.object,
-    userIds: PropTypes.arrayOf(PropTypes.string),
-    onClick: PropTypes.func,
-    isSelected: PropTypes.bool,
-    isCurrentVersion: PropTypes.bool
+    type: PropTypes.string.isRequired,
+    userIds: PropTypes.arrayOf(PropTypes.string).isRequired
   }
 
   componentDidMount() {
@@ -40,11 +43,19 @@ export default class HistoryItem extends React.PureComponent {
   }
 
   handleClick = () => {
-    this.props.onClick({
-      rev: this.props.rev,
-      type: this.props.type,
-      title: getDateString(this.props.endTime)
-    })
+    const {rev, type, displayDocumentId, endTime} = this.props
+    if (displayDocumentId) {
+      return this.props.onClick({
+        rev,
+        type,
+        displayDocumentId,
+        title: getDateString(endTime)
+      })
+    }
+    // eslint-disable-next-line no-console
+    return console.error(
+      `No displayDocumentId tied to the event type '${type}', not doing the click action`
+    )
   }
 
   state = {users: []}
