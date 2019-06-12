@@ -19,18 +19,41 @@ export function transactionsToEvents(
       // ensure transactions are sorted by time
       .sort(compareTimestamp)
       // Turn a transaction into a classified HistoryEvent
-      .map(mapToEvents)
+      .map(transaction => {
+        return mapToEvents(transaction, documentIds)
+      })
       // Chunk and group edit events
       .reduce(reduceEdits, [])
   )
 }
 
-function mapToEvents(transaction: Transaction): HistoryEvent {
+function findDisplayDocumentId(type: string, documentIds: string[]): string | undefined {
+  const publishedId = documentIds.find(id => !id.startsWith('drafts.'))
+  const draftId = documentIds.find(id => id.startsWith('drafts.')) || `drafts.${publishedId}`
+  switch(type) {
+    case 'created':
+      return draftId
+    case 'edited':
+      return draftId
+    case 'published':
+      return publishedId
+    case 'unpublished':
+      return draftId
+    case 'discardDraft':
+      return publishedId
+    default:
+      return undefined
+  }
+}
+
+function mapToEvents(transaction: Transaction, documentIds: string[]): HistoryEvent {
   const type = mutationsToEventType(transaction.mutations)
+  const displayDocumentId = findDisplayDocumentId(type, documentIds)
   const timestamp = new Date(transaction.timestamp)
   return {
     type,
     documentIDs: transaction.documentIDs,
+    displayDocumentId,
     rev: transaction.id,
     userIds: [transaction.author],
     startTime: timestamp,

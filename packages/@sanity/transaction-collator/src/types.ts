@@ -12,6 +12,7 @@ export type HistoryEvent = {
   startTime: Date
   endTime: Date,
   documentIDs: string[]
+  displayDocumentId?: string
   rev: string
 }
 
