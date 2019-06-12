@@ -132,7 +132,7 @@ export default class History extends React.PureComponent {
       <div className={styles.root}>
         <div className={styles.header}>
           History
-          <Button onClick={onClose} title="Close" icon={CloseIcon} bleed kind="simple" />
+          <Button onClick={onClose} title="Close" icon={CloseIcon} bleed kind="simple" className={styles.closeButton}/>
         </div>
         {loading && <Spinner center message="Loading history" />}
         {loadingError && <p>Could not load history</p>}

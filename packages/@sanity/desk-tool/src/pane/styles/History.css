@@ -19,6 +19,11 @@
   height: 3.5em;
   box-sizing: border-box;
   min-height: 3.5em;
+  font-weight: 500;
+}
+
+.closeButton {
+  font-size: 1.5em;
 }
 
 .list {
