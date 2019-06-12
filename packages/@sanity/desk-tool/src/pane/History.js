@@ -23,7 +23,13 @@ export default class History extends React.PureComponent {
     published: PropTypes.object
   }
 
-  state = {events: [], selectedRev: undefined, errorMessage: undefined, loading: true}
+  state = {
+    events: [],
+    selectedRev: undefined,
+    errorMessage: undefined,
+    loading: true,
+    headerShadowOpacity: 0
+  }
   _listElement = React.createRef()
 
   getDocumentId = () => {
@@ -34,6 +40,9 @@ export default class History extends React.PureComponent {
   componentDidMount() {
     this._isMounted = true
     const {documentId} = this.props
+    if (this._listElement.current && this._listElement.current) {
+      this._listElement.current.addEventListener('scroll', this.handleListScroll, {passive: true})
+    }
     this.eventStreamer = HistoryStore.eventStreamer$([
       documentId,
       `drafts.${documentId}`
@@ -43,6 +52,13 @@ export default class History extends React.PureComponent {
           this.setState({events, selectedRev: events[0].rev, loading: false})
         }
       }
+    })
+  }
+
+  handleListScroll = event => {
+    const {scrollTop} = event.target
+    this.setState({
+      headerShadowOpacity: Math.min(scrollTop, 50) / 100
     })
   }
 
@@ -104,7 +120,14 @@ export default class History extends React.PureComponent {
 
   render() {
     const {onClose, publishedRev} = this.props
-    const {events, selectedRev, errorMessage, loadingError, loading} = this.state
+    const {
+      events,
+      selectedRev,
+      errorMessage,
+      loadingError,
+      loading,
+      headerShadowOpacity
+    } = this.state
 
     return (
       <div className={styles.root}>
@@ -114,7 +137,11 @@ export default class History extends React.PureComponent {
         </div>
         {loading && <Spinner center message="Loading history" />}
         {loadingError && <p>Could not load history</p>}
-        <div className={styles.list} ref={this._listElement}>
+        <div
+          className={styles.list}
+          ref={this._listElement}
+          style={{boxShadow: `0 0px 2px rgba(0, 0, 0, ${headerShadowOpacity})`}}
+        >
           <ArrowKeyNavigation mode={ArrowKeyNavigation.mode.VERTICAL}>
             {!loadingError &&
               !loading &&

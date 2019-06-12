@@ -16,9 +16,9 @@
   justify-content: space-between;
   align-items: center;
   padding-left: var(--medium-padding);
-  height: 3em;
+  height: 3.5em;
   box-sizing: border-box;
-  min-height: 3em;
+  min-height: 3.5em;
 }
 
 .list {
