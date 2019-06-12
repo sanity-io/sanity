@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import scroll from 'scroll'
 import ArrowKeyNavigation from 'boundless-arrow-key-navigation/build'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import Button from 'part:@sanity/components/buttons/default'
@@ -132,7 +131,11 @@ export default class History extends React.PureComponent {
           </ArrowKeyNavigation>
         </div>
         {errorMessage && (
-          <Snackbar kind="danger" timeout={3} onHide={() => this.setState({errorMessage: undefined})}>
+          <Snackbar
+            kind="danger"
+            timeout={3}
+            onHide={() => this.setState({errorMessage: undefined})}
+          >
             {errorMessage}
           </Snackbar>
         )}
