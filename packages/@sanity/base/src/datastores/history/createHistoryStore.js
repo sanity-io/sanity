@@ -93,29 +93,3 @@ export default function createHistoryStore() {
     eventStreamer$
   }
 }
-
-// setupListener = () => {
-//   const {documentId} = this.props
-//   const query = '*[_id in [$documentId, $draftId]]'
-//   const params = {documentId, draftId: `drafts.${documentId}`}
-//   HistoryStore.getTransactions([documentId, `drafts.${documentId}`]).then(
-//     previousTransactions => {
-//       const oldEvents = transactionsToEvents(documentId, previousTransactions).reverse()
-//       this.setState({events: oldEvents, selectedRev: oldEvents[0].rev})
-
-//       this.mutationListener$ = client.observable.listen(query, params).subscribe(item => {
-//         console.log(item)
-//         this.setState((prevState, props) => {
-//           const events = transactionsToEvents(
-//             documentId,
-//             `${previousTransactions}\n${JSON.stringify(listenerItemToTransaction(item))}`
-//           ).reverse()
-//           return {
-//             events,
-//             selectedRev: events[0].rev
-//           }
-//         })
-//       })
-//     }
-//   )
-// }
