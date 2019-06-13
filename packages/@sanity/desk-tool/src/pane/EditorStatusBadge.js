@@ -60,13 +60,17 @@ export default class EditorStatusBadge extends React.PureComponent {
           </Badge>
         ) : (
           <>
-            {!isDraft && !isPublished && <Badge inverted>Creating</Badge>}
+            {!isDraft && !isPublished && (
+              <Badge inverted faded>
+                Draft
+              </Badge>
+            )}
             {isPublished && (
               <Badge color="success" title={title}>
                 Published
               </Badge>
             )}
-            {isDraft && onClick && (
+            {isDraft && (
               <Badge inverted color="neutral">
                 Draft
               </Badge>

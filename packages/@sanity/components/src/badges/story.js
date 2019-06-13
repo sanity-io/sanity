@@ -1,3 +1,4 @@
+/* eslint-disable max-nested-callbacks */
 import React from 'react'
 
 import Sanity from 'part:@sanity/storybook/addons/sanity'
@@ -30,6 +31,7 @@ storiesOf('Badges', module)
           <DefaultBadge
             color={selectColorKinds()}
             inverted={boolean('inverted', false, 'props')}
+            faded={boolean('faded', false, 'props')}
             title={text('title', 'Hint hint hint!', 'props')}
           >
             {text('children', 'Cool', 'props')}
@@ -42,23 +44,29 @@ storiesOf('Badges', module)
     return (
       <div
         style={{
-          display: 'flex',
           padding: '1rem',
           fontSize: `${number('font-size in px', 11, 'test')}px`
         }}
       >
         {colors.map(badgeColor => {
-          return [false, true].map(inverted => {
-            return (
-              <DefaultBadge
-                color={badgeColor}
-                inverted={inverted}
-                key={`badge_${badgeColor}_${inverted && 'inverted'}`}
-              >
-                {badgeColor || 'No color'} {inverted && ' inverted'}
-              </DefaultBadge>
-            )
-          })
+          return (
+            <div key={badgeColor || 'none'} style={{padding: '1em'}}>
+              {[false, true].map(inverted => {
+                return [false, true].map(faded => {
+                  return (
+                    <DefaultBadge
+                      color={badgeColor}
+                      inverted={inverted}
+                      faded={faded}
+                      key={`badge_${badgeColor}_${inverted && 'inverted'}_${faded && 'faded'}`}
+                    >
+                      {badgeColor || 'No color'} {inverted && ' inverted'} {faded && 'faded'}
+                    </DefaultBadge>
+                  )
+                })
+              })}
+            </div>
+          )
         })}
       </div>
     )

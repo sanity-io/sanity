@@ -7,6 +7,7 @@ export default class DefaultBadge extends React.PureComponent {
   static propTypes = {
     color: PropTypes.oneOf([undefined, 'success', 'warning', 'danger', 'info', 'neutral']),
     inverted: PropTypes.bool,
+    faded: PropTypes.bool,
     children: PropTypes.node,
     title: PropTypes.string
   }
@@ -17,11 +18,12 @@ export default class DefaultBadge extends React.PureComponent {
   }
 
   render() {
-    const {color, inverted, children, title} = this.props
+    const {color, inverted, children, title, faded} = this.props
     return (
       <span
         className={inverted ? styles.inverted : styles.default}
         data-color={color}
+        data-faded={faded}
         title={title}
       >
         {children}

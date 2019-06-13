@@ -17,6 +17,10 @@
   -webkit-font-smooth: always;
 }
 
+.root[data-faded="true"] {
+  opacity: 0.5;
+}
+
 .root + .root {
   margin-left: var(--extra-small-padding--em);
 }
