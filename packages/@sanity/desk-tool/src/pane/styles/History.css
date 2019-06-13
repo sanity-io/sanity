@@ -16,9 +16,9 @@
   justify-content: space-between;
   align-items: center;
   padding-left: var(--medium-padding);
-  height: 3.5em;
+  height: var(--pane-header-height);
   box-sizing: border-box;
-  min-height: 3.5em;
+  min-height: var(--pane-header-height);
   font-weight: 500;
 }
 

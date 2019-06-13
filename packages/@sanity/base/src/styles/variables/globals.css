@@ -60,4 +60,7 @@
   --block-extras-width: 10rem;
   --block-extras-border-color: #ccc;
   --block-extras-background-color: #eee;
+
+  /* Others */
+  --pane-header-height: 3.4375rem; /* 55px */
 }

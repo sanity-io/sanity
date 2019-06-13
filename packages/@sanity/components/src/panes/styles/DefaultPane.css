@@ -65,9 +65,9 @@
   justify-content: space-between;
   align-items: stretch;
   box-sizing: border-box;
-  line-height: 3.4375em;
+  line-height: var(--pane-header-height);
   width: 100%;
-  height: 3.4375em;
+  height: var(--pane-header-height);
   user-select: none;
   background-color: inherit;
   z-index: 10;
