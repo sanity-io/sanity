@@ -9,8 +9,6 @@
  * └────────────────┘
  */
 
-require('v8-compile-cache')
-
 var err = '\u001b[31m\u001b[1mERROR:\u001b[22m\u001b[39m '
 var nodeVersion = Number(process.version.replace(/^v/i, '').split('.', 2)[0])
 if (nodeVersion < 8) {
