@@ -1010,6 +1010,18 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "history/story.js"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "badges/story.js"
+    },
+    {
+      "name": "part:@sanity/components/badges/default",
+      "description": "Default badge"
+    },
+    {
+      "implements": "part:@sanity/components/badges/default",
+      "path": "badges/DefaultBadge.js"
     }
   ]
 }
