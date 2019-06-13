@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "clean": "rimraf lib",
-    "test": "jest test/**.test.js"
+    "test": "tap test/**.test.js"
   },
   "engines": {
     "node": ">=8.0.0"
@@ -22,10 +22,6 @@
     "content",
     "util"
   ],
-  "jest": {
-    "verbose": true,
-    "testURL": "http://localhost/"
-  },
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "bugs": {
@@ -39,7 +35,7 @@
   },
   "devDependencies": {
     "@babel/preset-flow": "^7.0.0",
-    "jest": "^23.6.0",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.6.2",
+    "tap": "^14.2.2"
   }
 }
