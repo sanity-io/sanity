@@ -16,7 +16,8 @@ export default class EditorStatusBadge extends React.PureComponent {
       'edited',
       'unpublished',
       'created',
-      'discardDraft'
+      'discardDraft',
+      'truncated'
     ])
   }
 
