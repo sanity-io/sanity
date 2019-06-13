@@ -1,25 +1,26 @@
 export type Mutation = {
   create: any
-  delete: any
   createIfNotExists: any
   createOrReplace: any
+  createSquashed: any
+  delete: any
   patch: any
 }
 
 export type HistoryEvent = {
-  type: 'created' | 'edited' | 'published' | 'unpublished' | 'discardDraft' | 'unknown'
-  userIds: string[]
-  startTime: Date
-  endTime: Date,
-  documentIDs: string[]
   displayDocumentId?: string
+  documentIDs: string[]
+  endTime: Date,
   rev: string
+  startTime: Date
+  type: 'created' | 'edited' | 'published' | 'unpublished' | 'discardDraft' | 'truncated' | 'unknown'
+  userIds: string[]
 }
 
 export type Transaction = {
-  id: string
   author: string
-  mutations: Mutation[]
   documentIDs: string[]
+  id: string
+  mutations: Mutation[]
   timestamp: string
 }

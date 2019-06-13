@@ -148,6 +148,10 @@ export function mutationsToEventType(mutations: Mutation[]) {
     return 'discardDraft'
   }
 
+  if (mutations.length === 1 && mutations[0].createSquashed) {
+    return 'truncated'
+  }
+
   return 'unknown'
 }
 
