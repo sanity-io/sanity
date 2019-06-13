@@ -18,7 +18,8 @@ export default class HistoryListItem extends React.PureComponent {
       'edited',
       'published',
       'unknown',
-      'unpublished'
+      'unpublished',
+      'truncated'
     ]),
     title: PropTypes.string,
     subtitle: PropTypes.string,
