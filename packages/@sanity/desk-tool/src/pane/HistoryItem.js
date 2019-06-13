@@ -6,6 +6,8 @@ import {format, isYesterday, isToday} from 'date-fns'
 
 const {getUsers} = UserStore
 
+const dateFormat = 'MMM D, YYYY, hh:mm A'
+
 function getDateString(date) {
   if (isToday(date)) {
     return `Today, ${format(date, 'hh:mm A')}`
@@ -13,20 +15,23 @@ function getDateString(date) {
   if (isYesterday(date)) {
     return `Yesterday, ${format(date, 'hh:mm A')}`
   }
-  return format(date, 'MMM D, YYYY, hh:mm A')
+  return format(date, dateFormat)
 }
 
 export default class HistoryItem extends React.PureComponent {
   static defaultProps = {
-    displayDocumentId: undefined
+    displayDocumentId: undefined,
+    isSelected: false
   }
 
   static propTypes = {
     displayDocumentId: PropTypes.string,
     endTime: PropTypes.instanceOf(Date).isRequired,
     isCurrentVersion: PropTypes.bool.isRequired,
-    isSelected: PropTypes.bool.isRequired,
+    isSelected: PropTypes.bool,
     onClick: PropTypes.func.isRequired,
+    onSelectNext: PropTypes.func,
+    onSelectPrev: PropTypes.func,
     rev: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
     userIds: PropTypes.arrayOf(PropTypes.string).isRequired
@@ -58,6 +63,25 @@ export default class HistoryItem extends React.PureComponent {
     )
   }
 
+  handleKeyUp = event => {
+    const {onSelectPrev, onSelectNext} = this.props
+    if (event.key === 'Enter') {
+      this.handleClick()
+    }
+    if (event.key === 'ArrowDown') {
+      onSelectNext()
+    } else if (event.key === 'ArrowUp') {
+      onSelectPrev()
+    }
+  }
+
+  handleKeyDown = event => {
+    // Prevent arrow keypress scrolling
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault()
+    }
+  }
+
   state = {users: []}
 
   render() {
@@ -68,9 +92,12 @@ export default class HistoryItem extends React.PureComponent {
         isCurrentVersion={isCurrentVersion}
         status={type}
         title={getDateString(endTime)}
+        tooltip={format(endTime, dateFormat)}
         rev={rev}
         users={users}
         onClick={this.handleClick}
+        onKeyUp={this.handleKeyUp}
+        onKeyDown={this.handleKeyDown}
         isSelected={isSelected}
       />
     )

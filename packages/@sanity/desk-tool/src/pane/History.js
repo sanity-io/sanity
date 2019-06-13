@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import scroll from 'scroll'
-import ArrowKeyNavigation from 'boundless-arrow-key-navigation/build'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import HistoryStore from 'part:@sanity/base/datastore/history'
@@ -77,18 +76,20 @@ export default class History extends React.PureComponent {
   }
 
   handleNewCurrentEvent = () => {
-    if (
-      this._listElement.current &&
-      this._listElement.current.firstChild &&
-      this._listElement.current.firstChild.firstChild
-    ) {
+    if (this._listElement && this._listElement.current) {
       scroll.top(this._listElement.current, 0)
-      this._listElement.current.firstChild.firstChild.focus()
     }
   }
 
-  handleItemClick = ({rev, type, title, displayDocumentId}) => {
+  handleSelectEvent = event => {
     const {onItemSelect, currentRev} = this.props
+    if (!event) {
+      return
+    }
+    const {rev, type, title, displayDocumentId} = event
+    if (!rev || !type || !displayDocumentId) {
+      return
+    }
     if (onItemSelect) {
       if (currentRev === rev) {
         this.setState({selectedRev: rev})
@@ -121,6 +122,10 @@ export default class History extends React.PureComponent {
     }
   }
 
+  handleItemClick = props => {
+    this.handleSelectEvent(props)
+  }
+
   render() {
     const {onClose, publishedRev} = this.props
     const {
@@ -151,20 +156,20 @@ export default class History extends React.PureComponent {
         {loading && <Spinner center message="Loading history" />}
         {loadingError && <p>Could not load history</p>}
         <div className={styles.list} ref={this._listElement}>
-          <ArrowKeyNavigation mode={ArrowKeyNavigation.mode.VERTICAL}>
-            {!loadingError &&
-              !loading &&
-              events &&
-              events.map(event => (
-                <HistoryItem
-                  {...event}
-                  key={event.rev}
-                  onClick={this.handleItemClick}
-                  isSelected={event.rev === selectedRev}
-                  isCurrentVersion={event.rev === publishedRev}
-                />
-              ))}
-          </ArrowKeyNavigation>
+          {!loadingError &&
+            !loading &&
+            events &&
+            events.map((event, i) => (
+              <HistoryItem
+                {...event}
+                key={event.rev}
+                onClick={this.handleItemClick}
+                isSelected={!!selectedRev && event.rev === selectedRev}
+                isCurrentVersion={event.rev === publishedRev}
+                onSelectPrev={() => this.handleSelectEvent(events[i - 1])}
+                onSelectNext={() => this.handleSelectEvent(events[i + 1])}
+              />
+            ))}
         </div>
         {errorMessage && (
           <Snackbar

@@ -27,7 +27,10 @@ export default class HistoryListItem extends React.PureComponent {
     isCurrentVersion: PropTypes.bool,
     isSelected: PropTypes.bool,
     onClick: PropTypes.func,
+    onKeyUp: PropTypes.func,
+    onKeyDown: PropTypes.func,
     rev: PropTypes.string,
+    tooltip: PropTypes.string,
     users: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string,
@@ -43,11 +46,35 @@ export default class HistoryListItem extends React.PureComponent {
     title: 'Untitled',
     subtitle: null,
     onClick: () => {},
+    onKeyUp: () => {},
+    onKeyDown: () => {},
     isCurrentVersion: false,
     isSelected: false,
     users: [],
     children: undefined,
     rev: undefined
+  }
+
+  _rootElement = React.createRef()
+
+  componentDidMount() {
+    if (this.props.isSelected) {
+      this.focus()
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    const {isSelected} = this.props
+    // Focus the element when it becomes selected
+    if (isSelected && (!prevProps || !prevProps.isSelected)) {
+      this.focus()
+    }
+  }
+
+  focus() {
+    if (this._rootElement && this._rootElement.current) {
+      this._rootElement.current.focus()
+    }
   }
 
   render() {
@@ -60,7 +87,10 @@ export default class HistoryListItem extends React.PureComponent {
       isCurrentVersion,
       onClick,
       subtitle,
-      rev
+      rev,
+      onKeyUp,
+      onKeyDown,
+      tooltip
     } = this.props
 
     return (
@@ -70,8 +100,11 @@ export default class HistoryListItem extends React.PureComponent {
         data-is-current-version={isCurrentVersion}
         data-rev={rev}
         onClick={onClick}
-        tabIndex={0}
-        onKeyUp={event => event.keyCode === 13 && onClick()}
+        tabIndex="0"
+        onKeyUp={onKeyUp}
+        onKeyDown={onKeyDown}
+        title={tooltip}
+        ref={this._rootElement}
       >
         <div className={styles.startLine} aria-hidden="true" />
         <div className={styles.endLine} aria-hidden="true" />
