@@ -885,20 +885,24 @@ export default withRouterHOC(
           >
             <div className={styles.pane}>
               <div className={styles.top}>
-                <EditorStatusBadge
-                  liveEdit={this.isLiveEditEnabled()}
-                  onClick={this.isLiveEditEnabled() ? () => {} : this.handleToggleHistory}
-                  historyStatus={historyStatus || undefined}
-                  isDraft={!!draft}
-                  isPublished={!!published}
-                  isPublishedRev={published && historyValue && published._rev === historyValue._rev}
-                  title={
-                    published &&
-                    `Published ${distanceInWordsToNow(published._updatedAt, {
-                      addSuffix: true
-                    })}`
-                  }
-                />
+                <span className={styles.statusBadges}>
+                  <EditorStatusBadge
+                    liveEdit={this.isLiveEditEnabled()}
+                    onClick={this.isLiveEditEnabled() ? () => {} : this.handleToggleHistory}
+                    historyStatus={historyStatus || undefined}
+                    isDraft={!!draft}
+                    isPublished={!!published}
+                    isPublishedRev={
+                      published && historyValue && published._rev === historyValue._rev
+                    }
+                    title={
+                      published &&
+                      `Published ${distanceInWordsToNow(published._updatedAt, {
+                        addSuffix: true
+                      })}`
+                    }
+                  />
+                </span>
                 {value && (
                   <span className={styles.editedTime} onClick={this.handleToggleHistory}>
                     {'Updated '}

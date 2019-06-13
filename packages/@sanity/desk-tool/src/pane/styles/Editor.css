@@ -70,12 +70,6 @@
 .top {
   margin: 0 var(--medium-padding);
   color: var(--text-color-secondary);
-  font-size: 0.75em;
-  pointer-events: none;
-
-  @media (--screen-medium) {
-    pointer-events: initial;
-  }
 }
 
 .publishInfo {
@@ -250,9 +244,20 @@
   }
 }
 
+.statusBadges {
+  font-size: var(--font-size-xsmall--uppercase);
+  color: var(--text-muted);
+}
+
 .editedTime {
   display: inline-block;
   cursor: pointer;
+  pointer-events: none;
+  font-size: var(--font-size-xsmall);
+
+  @media (--screen-medium) {
+    pointer-events: initial;
+  }
 
   @nest &::first-letter {
     text-transform: uppercase;
@@ -265,13 +270,6 @@
   }
 }
 
-button + .editedTime {
-  margin-left: 0.75em;
-}
-
-.badgeText {
-  display: block;
-  text-transform: uppercase;
-  font-weight: 700;
-  padding: 3px 5px;
+.statusBadges:not(:empty) + .editedTime {
+  margin-left: 0.5em;
 }

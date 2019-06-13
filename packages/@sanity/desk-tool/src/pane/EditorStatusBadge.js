@@ -1,8 +1,7 @@
 /* eslint-disable complexity */
 import React from 'react'
 import PropTypes from 'prop-types'
-import Button from 'part:@sanity/components/buttons/default'
-import styles from './styles/Editor.css'
+import Badge from 'part:@sanity/components/badges/default'
 
 export default class EditorStatusBadge extends React.PureComponent {
   static propTypes = {
@@ -34,17 +33,17 @@ export default class EditorStatusBadge extends React.PureComponent {
 
     if (historyStatus && historyStatus === 'published' && isPublishedRev) {
       return (
-        <Button inverted={!isPublishedRev} padding="none" onClick={onClick} color="success">
-          <span className={styles.badgeText}>{historyStatus}</span>
-        </Button>
+        <Badge inverted={!isPublishedRev} color="success">
+          {historyStatus}
+        </Badge>
       )
     }
 
     if (historyStatus === 'unpublished') {
       return (
-        <Button inverted={!isPublishedRev} padding="none" onClick={onClick} color="danger">
-          <span className={styles.badgeText}>{historyStatus}</span>
-        </Button>
+        <Badge inverted={!isPublishedRev} color="danger">
+          {historyStatus}
+        </Badge>
       )
     }
 
@@ -55,25 +54,21 @@ export default class EditorStatusBadge extends React.PureComponent {
     return (
       <>
         {liveEdit ? (
-          <Button color="success" padding="none">
-            <span className={styles.badgeText}>Live</span>
-          </Button>
+          <Badge color="success" inverted>
+            Live
+          </Badge>
         ) : (
           <>
-            {!isDraft && !isPublished && (
-              <Button inverted padding="none">
-                <span className={styles.badgeText}>Creating</span>
-              </Button>
+            {!isDraft && !isPublished && <Badge inverted>Creating</Badge>}
+            {isPublished && (
+              <Badge color="success" title={title}>
+                Published
+              </Badge>
             )}
             {isDraft && onClick && (
-              <Button inverted padding="none" onClick={onClick}>
-                <span className={styles.badgeText}>Draft</span>
-              </Button>
-            )}
-            {isPublished && (
-              <Button padding="none" color="success" onClick={onClick} title={title}>
-                <span className={styles.badgeText}>Published</span>
-              </Button>
+              <Badge inverted color="neutral">
+                Draft
+              </Badge>
             )}
           </>
         )}

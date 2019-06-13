@@ -130,17 +130,23 @@ export default class History extends React.PureComponent {
 
     return (
       <div className={styles.root}>
-        <div className={styles.header}>
+        <div
+          className={styles.header}
+          style={{boxShadow: `0 0px 2px rgba(0, 0, 0, ${headerShadowOpacity})`}}
+        >
           History
-          <Button onClick={onClose} title="Close" icon={CloseIcon} bleed kind="simple" className={styles.closeButton}/>
+          <Button
+            onClick={onClose}
+            title="Close"
+            icon={CloseIcon}
+            bleed
+            kind="simple"
+            className={styles.closeButton}
+          />
         </div>
         {loading && <Spinner center message="Loading history" />}
         {loadingError && <p>Could not load history</p>}
-        <div
-          className={styles.list}
-          ref={this._listElement}
-          style={{boxShadow: `0 0px 2px rgba(0, 0, 0, ${headerShadowOpacity})`}}
-        >
+        <div className={styles.list} ref={this._listElement}>
           <ArrowKeyNavigation mode={ArrowKeyNavigation.mode.VERTICAL}>
             {!loadingError &&
               !loading &&
