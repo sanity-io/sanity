@@ -1,7 +1,7 @@
 import client from 'part:@sanity/base/client'
 import {from, merge} from 'rxjs'
-import {transactionsToEvents} from '@sanity/transaction-collator'
 import {map, scan, reduce, mergeMap} from 'rxjs/operators'
+import {transactionsToEvents} from '@sanity/transaction-collator'
 
 const compileTransactions = (acc, curr) => {
   if (acc[curr.id]) {
@@ -52,6 +52,7 @@ const getTransactions = documentIds => {
 const eventStreamer$ = documentIds => {
   const query = '*[_id in $documentIds]'
   const params = {documentIds: documentIds}
+
   const pastTransactions$ = from(getTransactions(documentIds)).pipe(
     mergeMap(transactions => from(transactions)),
     map(trans => ({
@@ -63,6 +64,7 @@ const eventStreamer$ = documentIds => {
     })),
     reduce(compileTransactions, {})
   )
+
   const realtimeTransactions$ = client.observable.listen(query, params).pipe(
     map(item => ({
       author: item.identity,
@@ -73,6 +75,7 @@ const eventStreamer$ = documentIds => {
     })),
     scan(compileTransactions, {})
   )
+
   return merge(realtimeTransactions$, pastTransactions$).pipe(
     scan((prev, next) => {
       return {...prev, ...next}
