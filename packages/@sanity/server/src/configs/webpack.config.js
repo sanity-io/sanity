@@ -75,6 +75,7 @@ export default (config = {}) => {
       alias: {
         react: path.dirname(reactPath),
         'react-dom': path.dirname(reactDomPath),
+        'react-hot-loader': path.dirname(resolve('react-hot-loader')),
         moment$: 'moment/moment.js',
         ...rxPaths()
       }
