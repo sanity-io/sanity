@@ -867,13 +867,14 @@ export default withRouterHOC(
                 publishedRev={published && published._rev}
                 published={published}
                 draft={draft}
+                historyValue={historyValue}
               />
             </div>
           )}
           <Pane
             styles={this.props.paneStyles}
             index={this.props.index}
-            title={this.getTitle(value)}
+            title={this.getTitle(historyValue || value)}
             onAction={this.handleMenuAction}
             menuItems={getMenuItems(enabledActions, draft, published, this.isLiveEditEnabled())}
             renderActions={this.renderActions}

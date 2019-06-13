@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import scroll from 'scroll'
 import ArrowKeyNavigation from 'boundless-arrow-key-navigation/build'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import Button from 'part:@sanity/components/buttons/default'
@@ -20,7 +21,8 @@ export default class History extends React.PureComponent {
     lastEdited: PropTypes.object,
     errorMessage: PropTypes.string,
     draft: PropTypes.object,
-    published: PropTypes.object
+    published: PropTypes.object,
+    historyValue: PropTypes.object
   }
 
   state = {
@@ -67,20 +69,22 @@ export default class History extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    // TODO Enable this when we have an updated currentRev from the document._rev
-    // const {events, selectedRev} = this.state
-    // const {currentRev} = this.props
-    // if (
-    //   events &&
-    //   events[0].rev === this.state.selectedRev &&
-    //   currentRev === events[0].rev &&
-    //   this._listElement.current &&
-    //   this._listElement.current.firstChild &&
-    //   this._listElement.current.firstChild.firstChild
-    // ) {
-    //   this._listElement.current.firstChild.firstChild.focus()
-    //   scroll.top(this._listElement.current, 0)
-    // }
+    const {events} = this.state
+    const {currentRev, historyValue} = this.props
+    if (prevProps.historyValue && !historyValue && events[0].rev === currentRev) {
+      this.handleNewCurrentEvent()
+    }
+  }
+
+  handleNewCurrentEvent = () => {
+    if (
+      this._listElement.current &&
+      this._listElement.current.firstChild &&
+      this._listElement.current.firstChild.firstChild
+    ) {
+      scroll.top(this._listElement.current, 0)
+      this._listElement.current.firstChild.firstChild.focus()
+    }
   }
 
   handleItemClick = ({rev, type, title, displayDocumentId}) => {
