@@ -24,12 +24,13 @@ function dateFormat(d) {
 
   if (diffMonths || diffYears) return format(d, 'MMM D, YYYY, hh:mm A')
   if (diffWeeks) return `${diffWeeks}w ago`
+  if (diffDays === 1) return 'yesterday'
   if (diffDays) return `${diffDays}d ago`
   if (diffHours) return `${diffHours}h ago`
   if (diffMins) return `${diffMins}m ago`
-  if (diffSeconds) return `${diffMins}s ago`
+  if (diffSeconds > 5) return `${diffSeconds}s ago`
 
-  return format(d, 'MMM D, YYYY, hh:mm A')
+  return 'just now'
 }
 
 export default class TimeAgo extends React.PureComponent {
@@ -39,7 +40,7 @@ export default class TimeAgo extends React.PureComponent {
   }
 
   static defaultProps = {
-    refreshInterval: 1000 * 30
+    refreshInterval: 1000 * 5
   }
 
   componentDidMount() {
