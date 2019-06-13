@@ -3,6 +3,7 @@ import CustomStringInput from '../src/components/CustomStringInput'
 import CustomMyObjectInput from '../src/components/CustomMyObjectInput'
 import CustomFontStringInput from '../src/components/CustomFontStringInput'
 import AuthorReferenceInput from '../src/components/AuthorReferenceInput'
+import SvgStringInput from '../src/components/SvgStringInput'
 
 export default {
   name: 'customInputsTest',
@@ -38,6 +39,13 @@ export default {
       description: 'Custom input that has a bundled, custom font',
       type: 'string',
       inputComponent: CustomFontStringInput
+    },
+    {
+      name: 'svgString',
+      title: 'SVG => String',
+      description: 'An input for reading a svg string from a file and use it as the string value',
+      type: 'string',
+      inputComponent: SvgStringInput
     },
     {
       name: 'taskEstimate',
