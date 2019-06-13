@@ -905,7 +905,16 @@ export default withRouterHOC(
                   />
                 </span>
                 {value && (
-                  <span className={styles.editedTime} onClick={this.handleToggleHistory}>
+                  <span
+                    className={
+                      showHistory || this.isLiveEditEnabled()
+                        ? styles.editedTime
+                        : styles.editedTimeClickable
+                    }
+                    onClick={
+                      showHistory || this.isLiveEditEnabled() ? undefined : this.handleToggleHistory
+                    }
+                  >
                     {'Updated '}
                     <TimeAgo time={historyValue ? historyValue._updatedAt : value._updatedAt} />
                   </span>

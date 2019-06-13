@@ -112,15 +112,15 @@
 .status {
   text-transform: uppercase;
   font-size: var(--font-size-xsmall, 0.75rem);
-  opacity: 0.8;
   letter-spacing: 0.5px;
   line-height: 1;
 }
 
 .users {
   position: relative;
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  font-size: var(--font-size-large);
 }
 
 .user {
@@ -137,7 +137,7 @@
 }
 
 .userName {
-  margin-left: 1em;
+  margin-left: var(--medium-padding);
   font-size: var(--font-size-xsmall, 0.75rem);
 }
 

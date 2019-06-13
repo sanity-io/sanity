@@ -55,9 +55,7 @@ export default class EditorStatusBadge extends React.PureComponent {
     return (
       <>
         {liveEdit ? (
-          <Badge color="success" inverted>
-            Live
-          </Badge>
+          <Badge color="danger">Live</Badge>
         ) : (
           <>
             {!isDraft && !isPublished && (

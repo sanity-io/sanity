@@ -14,7 +14,7 @@
   text-align: center;
   border: calc(1 / 11 * 1em) solid transparent;
   transform: translateZ(0);
-  -webkit-font-smooth: always;
+  cursor: default;
 }
 
 .root[data-faded="true"] {

@@ -251,16 +251,21 @@
 
 .editedTime {
   display: inline-block;
-  cursor: pointer;
-  pointer-events: none;
+  cursor: default;
   font-size: var(--font-size-xsmall);
-
-  @media (--screen-medium) {
-    pointer-events: initial;
-  }
+  pointer-events: none;
 
   @nest &::first-letter {
     text-transform: uppercase;
+  }
+}
+
+.editedTimeClickable {
+  composes: editedTime;
+  cursor: pointer;
+
+  @media (--screen-medium) {
+    pointer-events: initial;
   }
 
   @media (hover: hover) {
@@ -271,5 +276,5 @@
 }
 
 .statusBadges:not(:empty) + .editedTime {
-  margin-left: 0.5em;
+  margin-left: 0.5rem;
 }

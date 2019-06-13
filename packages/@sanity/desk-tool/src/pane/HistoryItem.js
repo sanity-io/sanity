@@ -64,20 +64,19 @@ export default class HistoryItem extends React.PureComponent {
   }
 
   handleKeyUp = event => {
-    const {onSelectPrev, onSelectNext} = this.props
     if (event.key === 'Enter') {
       this.handleClick()
-    }
-    if (event.key === 'ArrowDown') {
-      onSelectNext()
-    } else if (event.key === 'ArrowUp') {
-      onSelectPrev()
     }
   }
 
   handleKeyDown = event => {
     // Prevent arrow keypress scrolling
-    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+    const {onSelectPrev, onSelectNext} = this.props
+    if (event.key === 'ArrowDown') {
+      onSelectNext()
+      event.preventDefault()
+    } else if (event.key === 'ArrowUp') {
+      onSelectPrev()
       event.preventDefault()
     }
   }

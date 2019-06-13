@@ -12,11 +12,25 @@ export default class PresenceCircle extends React.PureComponent {
     html: PropTypes.node,
     imageUrl: PropTypes.string,
     animateOnHover: PropTypes.bool,
-    interactive: PropTypes.bool
+    interactive: PropTypes.bool,
+    showTooltip: PropTypes.bool
+  }
+
+  static defaultProps = {
+    showTooltip: true
   }
 
   render() {
-    const {text, color, title, interactive, html, imageUrl, animateOnHover} = this.props
+    const {
+      text,
+      color,
+      title,
+      interactive,
+      html,
+      imageUrl,
+      animateOnHover,
+      showTooltip
+    } = this.props
 
     const imgStyles = {
       display: 'block',
@@ -27,8 +41,8 @@ export default class PresenceCircle extends React.PureComponent {
 
     return (
       <Tooltip
-        disabled={!title && !html}
-        title={title || 'Unknown user'}
+        disabled={!showTooltip || (!title && !html)}
+        title={title}
         html={html}
         interactive={interactive}
         position="top"
