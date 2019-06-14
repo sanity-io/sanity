@@ -86,7 +86,6 @@
   position: relative;
   display: block;
   background-color: var(--fieldset-bg);
-  border: var(--fieldset-border);
   transition: all 0.1s linear;
 
   @nest .transparent & {
@@ -217,6 +216,7 @@
   background-color: var(--fieldset-bg);
   box-shadow: var(--fieldset-box-shadow);
   padding: var(--small-padding);
+  border: var(--fieldset-border);
   border-radius: var(--border-radius-large);
 
   @media (--screen-medium) {
@@ -230,6 +230,7 @@
   box-shadow: var(--fieldset-box-shadow);
   padding: var(--small-padding);
   border-radius: var(--border-radius-large);
+  border: var(--fieldset-border);
 
   @media (--screen-medium) {
     padding: var(--medium-padding);
