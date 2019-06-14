@@ -28,9 +28,10 @@ export function transactionsToEvents(
 }
 
 function findDisplayDocumentId(type: string, documentIds: string[]): string | undefined {
-  const publishedId = documentIds.find(id => !id.startsWith('drafts.'))
-  const draftId = documentIds.find(id => id.startsWith('drafts.')) || `drafts.${publishedId}`
-  switch(type) {
+  const ids = documentIds.filter(Boolean)
+  const publishedId = ids.find(id => !id.startsWith('drafts.'))
+  const draftId = ids.find(id => id.startsWith('drafts.')) || `drafts.${publishedId}`
+  switch (type) {
     case 'created':
       return draftId
     case 'edited':
