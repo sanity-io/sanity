@@ -7,6 +7,7 @@ import colorHasher from '../presence/colorHasher'
 
 import styles from './styles/ListItem.modules.css'
 
+const noop = () => {} // eslint-disable-line no-empty-function
 const MAX_USERS = 3
 
 export default class HistoryListItem extends React.PureComponent {
@@ -20,7 +21,7 @@ export default class HistoryListItem extends React.PureComponent {
     onKeyUp: PropTypes.func,
     onKeyDown: PropTypes.func,
     rev: PropTypes.string,
-    tooltip: PropTypes.string,
+    tooltip: PropTypes.string.isRequired,
     users: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string,
@@ -34,9 +35,9 @@ export default class HistoryListItem extends React.PureComponent {
   static defaultProps = {
     status: 'unknown',
     title: 'Untitled',
-    onClick: () => {},
-    onKeyUp: () => {},
-    onKeyDown: () => {},
+    onClick: noop,
+    onKeyUp: noop,
+    onKeyDown: noop,
     isCurrentVersion: false,
     isSelected: false,
     users: [],
