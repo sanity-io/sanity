@@ -662,11 +662,11 @@ export default withRouterHOC(
             </Button>
           </Tooltip>
           <div className={styles.publishInfoUndoButton}>
-            {published && (
+            {/* {published && (
               <Button kind="simple" onClick={() => this.setState({showConfirmDiscard: true})}>
                 Discard changes
               </Button>
-            )}
+            )} */}
             {this.state.showConfirmDiscard && (
               <PopOverDialog
                 onClickOutside={this.handleCancelDiscard}

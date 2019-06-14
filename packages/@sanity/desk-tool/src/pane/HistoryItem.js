@@ -18,6 +18,13 @@ function getDateString(date) {
   return format(date, dateFormat)
 }
 
+function getHumanReadableStatus(type) {
+  if (type === 'discardDraft') {
+    return 'Discarded Edits'
+  }
+  return type
+}
+
 export default class HistoryItem extends React.PureComponent {
   static defaultProps = {
     displayDocumentId: undefined,
@@ -33,7 +40,15 @@ export default class HistoryItem extends React.PureComponent {
     onSelectNext: PropTypes.func,
     onSelectPrev: PropTypes.func,
     rev: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
+    type: PropTypes.oneOf([
+      'created',
+      'discardDraft',
+      'edited',
+      'published',
+      'unpublished',
+      'truncated',
+      'unknown'
+    ]).isRequired,
     userIds: PropTypes.arrayOf(PropTypes.string).isRequired
   }
 
@@ -89,7 +104,7 @@ export default class HistoryItem extends React.PureComponent {
     return (
       <HistoryListItem
         isCurrentVersion={isCurrentVersion}
-        status={type}
+        status={getHumanReadableStatus(type)}
         title={getDateString(endTime)}
         tooltip={format(endTime, dateFormat)}
         rev={rev}
