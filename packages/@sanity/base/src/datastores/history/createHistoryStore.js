@@ -45,7 +45,7 @@ const getHistory = (documentIds, options = {}) => {
 const getTransactions = documentIds => {
   const ids = Array.isArray(documentIds) ? documentIds : [documentIds]
   const dataset = client.clientConfig.dataset
-  const url = `/data/history/${dataset}/transactions/${ids.join(',')}`
+  const url = `/data/history/${dataset}/transactions/${ids.join(',')}?excludeContent=true`
   return client.request({url}).then(ndjsonToArray)
 }
 
