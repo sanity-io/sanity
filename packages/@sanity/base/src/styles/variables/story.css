@@ -2,7 +2,7 @@
 
 .colors {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
   grid-gap: 1rem;
 }
 
@@ -19,21 +19,28 @@
 
 .color {
   composes: shadow-1dp from 'part:@sanity/base/theme/shadows-style';
-  display: block;
-  padding: 1rem;
+  display: flex;
+  flex-direction: column;
   text-align: center;
   font-family: var(--font-family-monospace);
 
   @nest &::before {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-weight: 700;
+    padding: 5rem 1rem;
+    flex-basis: 5rem;
   }
 
   @nest &::after {
     display: block;
     font-size: 0.9rem;
-    padding: 1rem;
     white-space: pre-wrap;
+    background-color: white;
+    padding: 1rem;
+    color: black;
+    flex-grow: 1;
   }
 }
 
@@ -203,6 +210,34 @@
   }
 }
 
+.stateSuccessFaded {
+  composes: color;
+  background-color: var(--state-success-color--faded);
+  color: var(--state-success-color--inverted);
+
+  @nest &::before {
+    content: '--state-success-color--faded';
+  }
+
+  @nest &::after {
+    content: "var(--state-success-color--faded)";
+  }
+}
+
+.stateSuccessStrong {
+  composes: color;
+  background-color: var(--state-success-color--strong);
+  color: var(--state-success-color--inverted);
+
+  @nest &::before {
+    content: '--state-success-color--strong';
+  }
+
+  @nest &::after {
+    content: "var(--state-success-color--strong)";
+  }
+}
+
 .stateInfo {
   composes: color;
   background-color: var(--state-info-color);
@@ -214,6 +249,34 @@
 
   @nest &::after {
     content: "var(--state-info-color) \A inverted: var(--state-info-color--inverted)";
+  }
+}
+
+.stateInfoFaded {
+  composes: color;
+  background-color: var(--state-info-color--faded);
+  color: var(--state-info-color--inverted);
+
+  @nest &::before {
+    content: '--state-info-color--faded';
+  }
+
+  @nest &::after {
+    content: "var(--state-info-color--faded)";
+  }
+}
+
+.stateInfoStrong {
+  composes: color;
+  background-color: var(--state-info-color--strong);
+  color: var(--state-info-color--inverted);
+
+  @nest &::before {
+    content: '--state-info-color--strong';
+  }
+
+  @nest &::after {
+    content: "var(--state-info-color--strong)";
   }
 }
 
@@ -231,6 +294,34 @@
   }
 }
 
+.stateWarningFaded {
+  composes: color;
+  background-color: var(--state-warning-color--faded);
+  color: var(--state-warning-color--inverted);
+
+  @nest &::before {
+    content: '--state-warning-color--faded';
+  }
+
+  @nest &::after {
+    content: "var(--state-warning-color--faded)";
+  }
+}
+
+.stateWarningStrong {
+  composes: color;
+  background-color: var(--state-warning-color--strong);
+  color: var(--state-warning-color--inverted);
+
+  @nest &::before {
+    content: '--state-warning-color--strong';
+  }
+
+  @nest &::after {
+    content: "var(--state-warning-color--strong)";
+  }
+}
+
 .stateDanger {
   composes: color;
   background-color: var(--state-danger-color);
@@ -242,5 +333,33 @@
 
   @nest &::after {
     content: "var(--state-danger-color)\A Inverted: var(--state-danger-color--inverted)";
+  }
+}
+
+.stateDangerFaded {
+  composes: color;
+  background-color: var(--state-danger-color--faded);
+  color: var(--state-danger-color--inverted);
+
+  @nest &::before {
+    content: '--state-danger-color--faded';
+  }
+
+  @nest &::after {
+    content: "var(--state-danger-color--faded)";
+  }
+}
+
+.stateDangerStrong {
+  composes: color;
+  background-color: var(--state-danger-color--strong);
+  color: var(--state-danger-color--inverted);
+
+  @nest &::before {
+    content: '--state-danger-color--strong';
+  }
+
+  @nest &::after {
+    content: "var(--state-danger-color--strong)";
   }
 }

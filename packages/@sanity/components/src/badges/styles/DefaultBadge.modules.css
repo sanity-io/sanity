@@ -69,23 +69,23 @@
   border-color: currentColor;
 
   @nest &[data-color="success"] {
-    border-color: var(--state-success-color);
-    color: var(--state-success-color);
+    border-color: var(--state-success-color--faded);
+    color: var(--state-success-color--strong);
   }
 
   @nest &[data-color="info"] {
-    border-color: var(--state-info-color);
-    color: var(--state-info-color);
+    border-color: var(--state-info-color--faded);
+    color: var(--state-info-color--strong);
   }
 
   @nest &[data-color="warning"] {
-    border-color: var(--state-warning-color);
-    color: var(--state-warning-color);
+    border-color: var(--state-warning-color--faded);
+    color: var(--state-warning-color--strong);
   }
 
   @nest &[data-color="danger"] {
-    border-color: var(--state-danger-color);
-    color: var(--state-danger-color);
+    border-color: var(--state-danger-color--faded);
+    color: var(--state-danger-color--strong);
   }
 
   @nest &[data-color="neutral"] {
