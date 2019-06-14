@@ -46,12 +46,6 @@ export default class HistoryListItem extends React.PureComponent {
 
   _rootElement = React.createRef()
 
-  componentDidMount() {
-    if (this.props.isSelected) {
-      this.focus()
-    }
-  }
-
   componentDidUpdate(prevProps) {
     const {isSelected} = this.props
     // Focus the element when it becomes selected
