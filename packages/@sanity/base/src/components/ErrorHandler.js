@@ -1,5 +1,6 @@
 import React from 'react'
 import Snackbar from 'part:@sanity/components/snackbar/default'
+import styles from './styles/ErrorHandler.css'
 
 const SANITY_ERROR_HANDLER = Symbol.for('SANITY_ERROR_HANDLER')
 
@@ -62,7 +63,7 @@ export default class ErrorHandler extends React.PureComponent {
 
     return (
       <Snackbar kind="error" action={{title: 'Close'}} onAction={this.handleClose} timeout={2500}>
-        <div>
+        <div className={styles.errorMessageHeader}>
           <strong>{message}</strong>
         </div>
         <div>Check browser javascript console for details</div>
