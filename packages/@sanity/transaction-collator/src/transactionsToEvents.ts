@@ -98,8 +98,8 @@ export function mutationsToEventType(mutations: Mutation[], transactionIndex: nu
   // Created
   if (
     transactionIndex === 0 &&
-    ((mutations[0].createIfNotExists && mutations[0].createIfNotExists.id.startsWith('drafts.')) ||
-      (mutations[0].create && mutations[0].create.id.startsWith('drafts.')))
+    ((mutations[0].createIfNotExists && mutations[0].createIfNotExists._id.startsWith('drafts.')) ||
+      (mutations[0].create && mutations[0].create._id.startsWith('drafts.')))
   ) {
     return 'created'
   }
@@ -118,8 +118,8 @@ export function mutationsToEventType(mutations: Mutation[], transactionIndex: nu
     withoutPatches.length === 2 &&
     withoutPatches.some(
       mut =>
-        (mut.createIfNotExists && mut.createIfNotExists.id.startsWith('drafts.')) ||
-        (mut.create && mut.create.id.startsWith('drafts.'))
+        (mut.createIfNotExists && mut.createIfNotExists._id.startsWith('drafts.')) ||
+        (mut.create && mut.create._id.startsWith('drafts.'))
     ) &&
     withoutPatches.some(mut => mut.delete && !mut.delete.id.startsWith('drafts.'))
   ) {
@@ -129,9 +129,9 @@ export function mutationsToEventType(mutations: Mutation[], transactionIndex: nu
   // Restored to previous version (return edited for now)
   if (
     mutations.length === 1 &&
-    ((mutations[0].createOrReplace && mutations[0].createOrReplace.id.startsWith('drafts.')) ||
-      (mutations[0].create && mutations[0].create.id.startsWith('drafts.')) ||
-      (mutations[0].createIfNotExists && mutations[0].createIfNotExists.id.startsWith('drafts.')))
+    ((mutations[0].createOrReplace && mutations[0].createOrReplace._id.startsWith('drafts.')) ||
+      (mutations[0].create && mutations[0].create._id.startsWith('drafts.')) ||
+      (mutations[0].createIfNotExists && mutations[0].createIfNotExists._id.startsWith('drafts.')))
   ) {
     return 'edited'
   }
