@@ -1,10 +1,10 @@
 export type Mutation = {
-  create: {_id: string}
-  createIfNotExists: {_id: string}
-  createOrReplace: {_id: string}
-  createSquashed: {_id: string}
-  delete: {id: string}
-  patch: {_id: string}
+  create?: {_id: string}
+  createIfNotExists?: {_id: string}
+  createOrReplace?: {_id: string}
+  createSquashed?: {_id: string}
+  delete?: {id: string}
+  patch?: {_id: string}
 }
 
 export type HistoryEvent = {

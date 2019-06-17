@@ -98,8 +98,9 @@ export function mutationsToEventType(mutations: Mutation[], transactionIndex: nu
   // Created
   if (
     transactionIndex === 0 &&
-    ((mutations[0].createIfNotExists && mutations[0].createIfNotExists._id.startsWith('drafts.')) ||
-      (mutations[0].create && mutations[0].create._id.startsWith('drafts.')))
+    ((mutations[0].createIfNotExists !== undefined &&
+      mutations[0].createIfNotExists._id.startsWith('drafts.')) ||
+      (mutations[0].create !== undefined && mutations[0].create._id.startsWith('drafts.')))
   ) {
     return 'created'
   }
@@ -107,8 +108,9 @@ export function mutationsToEventType(mutations: Mutation[], transactionIndex: nu
   // Published
   if (
     withoutPatches.length === 2 &&
-    (withoutPatches.some(mut => mut.delete) || withoutPatches.some(mut => mut.createOrReplace)) &&
-    withoutPatches.some(mut => mut.delete && mut.delete.id.startsWith('drafts.'))
+    (withoutPatches.some(mut => mut.delete !== undefined) ||
+      withoutPatches.some(mut => mut.createOrReplace !== undefined)) &&
+    withoutPatches.some(mut => mut.delete !== undefined && mut.delete.id.startsWith('drafts.'))
   ) {
     return 'published'
   }
@@ -118,10 +120,10 @@ export function mutationsToEventType(mutations: Mutation[], transactionIndex: nu
     withoutPatches.length === 2 &&
     withoutPatches.some(
       mut =>
-        (mut.createIfNotExists && mut.createIfNotExists._id.startsWith('drafts.')) ||
-        (mut.create && mut.create._id.startsWith('drafts.'))
+        (mut.createIfNotExists !== undefined && mut.createIfNotExists._id.startsWith('drafts.')) ||
+        (mut.create !== undefined && mut.create._id.startsWith('drafts.'))
     ) &&
-    withoutPatches.some(mut => mut.delete && !mut.delete.id.startsWith('drafts.'))
+    withoutPatches.some(mut => mut.delete !== undefined && !mut.delete.id.startsWith('drafts.'))
   ) {
     return 'unpublished'
   }
@@ -150,7 +152,7 @@ export function mutationsToEventType(mutations: Mutation[], transactionIndex: nu
   }
 
   // Edited
-  if (mutations.some(mut => mut.patch)) {
+  if (mutations.some(mut => mut.patch !== undefined)) {
     return 'edited'
   }
 
