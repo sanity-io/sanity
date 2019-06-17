@@ -68,7 +68,7 @@ const getDevicePixelRatio = () => {
     return 1
   }
 
-  return Math.max(1, window.devicePixelRatio)
+  return Math.round(Math.max(1, window.devicePixelRatio))
 }
 
 export default class ImageInput extends React.PureComponent<Props, State> {

@@ -108,7 +108,7 @@ export default class Asset extends React.PureComponent {
     const dpi =
       typeof window === 'undefined' || !window.devicePixelRatio
         ? 1
-        : Math.ceil(window.devicePixelRatio)
+        : Math.round(window.devicePixelRatio)
 
     const imgH = 100 * Math.max(1, dpi)
     const width = get(asset, 'metadata.dimensions.width') || 100
