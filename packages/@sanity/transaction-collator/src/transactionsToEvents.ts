@@ -3,7 +3,6 @@ import {HistoryEvent, Transaction, Mutation} from './types'
 import {ndjsonToArray} from './utils/ndjsonToArray'
 
 const EDIT_EVENT_TIME_TRESHHOLD_MS = 5 * 1000 * 60 * 5 // 5 minutes
-
 export function transactionsToEvents(
   documentIds: string[],
   transactions: string | Buffer | Transaction[]
@@ -19,8 +18,8 @@ export function transactionsToEvents(
       // ensure transactions are sorted by time
       .sort(compareTimestamp)
       // Turn a transaction into a classified HistoryEvent
-      .map(transaction => {
-        return mapToEvents(transaction, documentIds)
+      .map((transaction, index) => {
+        return mapToEvents(transaction, documentIds, index)
       })
       // Chunk and group edit events
       .reduce(reduceEdits, [])
@@ -47,8 +46,12 @@ function findDisplayDocumentId(type: string, documentIds: string[]): string | un
   }
 }
 
-function mapToEvents(transaction: Transaction, documentIds: string[]): HistoryEvent {
-  const type = mutationsToEventType(transaction.mutations)
+function mapToEvents(
+  transaction: Transaction,
+  documentIds: string[],
+  index: number = 0
+): HistoryEvent {
+  const type = mutationsToEventType(transaction.mutations, index)
   const displayDocumentId = findDisplayDocumentId(type, documentIds)
   const timestamp = new Date(transaction.timestamp)
   return {
@@ -89,16 +92,14 @@ function reduceEdits(
   return acc
 }
 
-export function mutationsToEventType(mutations: Mutation[]) {
+export function mutationsToEventType(mutations: Mutation[], transactionIndex: number) {
   const withoutPatches = mutations.filter(mut => mut.patch === undefined)
+
   // Created
   if (
-    mutations[0].createIfNotExists &&
-    mutations[0].createIfNotExists._id.startsWith('drafts.') &&
-    mutations[1] &&
-    mutations[1].patch &&
-    mutations[1].patch.id.startsWith('drafts.') &&
-    mutations[1].patch.set !== undefined
+    transactionIndex === 0 &&
+    ((mutations[0].createIfNotExists && mutations[0].createIfNotExists.id.startsWith('drafts.')) ||
+      (mutations[0].create && mutations[0].create.id.startsWith('drafts.')))
   ) {
     return 'created'
   }
@@ -106,9 +107,8 @@ export function mutationsToEventType(mutations: Mutation[]) {
   // Published
   if (
     withoutPatches.length === 2 &&
-    (withoutPatches.some(patch => patch.delete) ||
-      withoutPatches.some(patch => patch.createOrReplace)) &&
-    withoutPatches.some(patch => patch.delete && patch.delete.id.startsWith('drafts.'))
+    (withoutPatches.some(mut => mut.delete) || withoutPatches.some(mut => mut.createOrReplace)) &&
+    withoutPatches.some(mut => mut.delete && mut.delete.id.startsWith('drafts.'))
   ) {
     return 'published'
   }
@@ -117,11 +117,11 @@ export function mutationsToEventType(mutations: Mutation[]) {
   if (
     withoutPatches.length === 2 &&
     withoutPatches.some(
-      patch =>
-        (patch.createIfNotExists && patch.createIfNotExists._id.startsWith('drafts.')) ||
-        (patch.create && patch.create._id.startsWith('drafts.'))
+      mut =>
+        (mut.createIfNotExists && mut.createIfNotExists.id.startsWith('drafts.')) ||
+        (mut.create && mut.create.id.startsWith('drafts.'))
     ) &&
-    withoutPatches.some(patch => patch.delete && !patch.delete.id.startsWith('drafts.'))
+    withoutPatches.some(mut => mut.delete && !mut.delete.id.startsWith('drafts.'))
   ) {
     return 'unpublished'
   }
@@ -129,14 +129,10 @@ export function mutationsToEventType(mutations: Mutation[]) {
   // Restored to previous version (return edited for now)
   if (
     mutations.length === 1 &&
-    ((mutations[0].createOrReplace && mutations[0].createOrReplace._id.startsWith('drafts.')) ||
-      (mutations[0].create && mutations[0].create._id.startsWith('drafts.')))
+    ((mutations[0].createOrReplace && mutations[0].createOrReplace.id.startsWith('drafts.')) ||
+      (mutations[0].create && mutations[0].create.id.startsWith('drafts.')) ||
+      (mutations[0].createIfNotExists && mutations[0].createIfNotExists.id.startsWith('drafts.')))
   ) {
-    return 'edited'
-  }
-
-  // Edited
-  if (mutations.some(mut => mut.patch)) {
     return 'edited'
   }
 
@@ -151,6 +147,11 @@ export function mutationsToEventType(mutations: Mutation[]) {
 
   if (mutations.length === 1 && mutations[0].createSquashed) {
     return 'truncated'
+  }
+
+  // Edited
+  if (mutations.some(mut => mut.patch)) {
+    return 'edited'
   }
 
   return 'unknown'
