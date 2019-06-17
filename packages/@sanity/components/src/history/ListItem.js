@@ -1,3 +1,4 @@
+import AnchorButton from 'part:@sanity/components/buttons/anchor'
 import PropTypes from 'prop-types'
 import React from 'react'
 import {Tooltip} from 'react-tippy'
@@ -61,6 +62,7 @@ export default class HistoryListItem extends React.PureComponent {
     }
   }
 
+  // eslint-disable-next-line complexity
   render() {
     const {
       status,
@@ -75,15 +77,21 @@ export default class HistoryListItem extends React.PureComponent {
       onKeyDown,
       tooltip
     } = this.props
+    const selectionClassName = isSelected ? styles.selected : styles.unSelected
+    const className = status === 'truncated' ? styles.disabled : selectionClassName
+    const handleClick = evt => {
+      if (status === 'truncated') return
+      onClick(evt)
+    }
 
     return (
       <div
-        className={isSelected ? styles.selected : styles.unSelected}
+        className={className}
         data-status={status}
         data-is-current-version={isCurrentVersion}
         data-rev={rev}
-        onClick={onClick}
-        tabIndex="0"
+        onClick={handleClick}
+        tabIndex={status === 'truncated' ? null : '0'}
         onKeyUp={onKeyUp}
         onKeyDown={onKeyDown}
         title={tooltip}
@@ -93,6 +101,16 @@ export default class HistoryListItem extends React.PureComponent {
         <div className={styles.endLine} aria-hidden="true" />
         <div className={styles.status}>{status}</div>
         <div className={styles.title}>{title}</div>
+        {status === 'truncated' && (
+          <div className={styles.truncatedInfo}>
+            <p>Read about retention times and plans in our documentation.</p>
+            <div>
+              <AnchorButton href="https://www.sanity.io/docs#" target="_blank">
+                Read documentation
+              </AnchorButton>
+            </div>
+          </div>
+        )}
         {users &&
           users.length > 0 && (
             <Tooltip

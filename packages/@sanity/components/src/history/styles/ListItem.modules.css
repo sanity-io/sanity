@@ -25,6 +25,10 @@
   composes: selected from 'part:@sanity/base/theme/layout/selectable-style';
 }
 
+.disabled {
+  composes: root;
+}
+
 .startLine {
   height: calc(var(--small-padding) + var(--history-line-top) - 1px);
   width: 0;
@@ -151,4 +155,13 @@
 
 .children {
   padding: var(--medium-padding) 0;
+}
+
+.truncatedInfo {
+  margin: 0 0 var(--medium-padding);
+
+  @nest & p {
+    font-size: var(--font-size-xsmall, 0.75rem);
+    margin: 0 0 var(--small-padding);
+  }
 }
