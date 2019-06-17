@@ -1,4 +1,4 @@
-@import "part:@sanity/base/theme/variables-style";
+@import 'part:@sanity/base/theme/variables-style';
 
 :root {
   --history-circle-size: calc(0.5em + 1px);
@@ -44,7 +44,9 @@
 }
 
 .endLine {
-  height: calc(100% - var(--small-padding) - var(--history-circle-size) - var(--history-line-top) + 1px);
+  height: calc(
+    100% - var(--small-padding) - var(--history-circle-size) - var(--history-line-top) + 1px
+  );
   width: 0;
   position: absolute;
   top: calc(var(--small-padding) + var(--history-circle-size) + var(--history-line-top) - 1px);
@@ -79,29 +81,29 @@
   opacity: 1;
 }
 
-.root[data-status="published"]::after {
+.root[data-status='published']::after {
   background-color: currentColor;
 }
 
-.root[data-status="published"][data-is-current-version="true"]::after {
+.root[data-status='published'][data-is-current-version='true']::after {
   background-color: var(--state-success-color);
   border-color: var(--state-success-color);
   opacity: 1;
 }
 
-.root[data-status="published"][data-is-current-version="true"].selected::after {
+.root[data-status='published'][data-is-current-version='true'].selected::after {
   border-color: currentColor;
 }
 
-.root[data-status="draft"]::after {
+.root[data-status='draft']::after {
   background-color: transparent;
 }
 
-.root[data-status="created"]::after {
+.root[data-status='created']::after {
   background-color: transparent;
 }
 
-.root[data-status="unpublished"]::after {
+.root[data-status='unpublished']::after {
   background-color: var(--state-danger-color);
   height: calc(var(--history-circle-size) / 3);
   border-radius: 0;
