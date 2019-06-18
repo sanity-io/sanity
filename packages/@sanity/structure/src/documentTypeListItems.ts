@@ -1,5 +1,5 @@
 import memoizeOne from 'memoize-one'
-import {Schema, defaultSchema, SchemaType} from './parts/Schema'
+import {Schema, getDefaultSchema, SchemaType} from './parts/Schema'
 import {dataAspects, DataAspectsResolver} from './parts/DataAspects'
 import {getPlusIcon, getListIcon, getDetailsIcon} from './parts/Icon'
 import {MenuItemBuilder, getOrderingMenuItemsForSchemaType} from './MenuItem'
@@ -24,16 +24,14 @@ function shouldShowIcon(schemaType: SchemaType): boolean {
   return Boolean(preview && (preview.prepare || (preview.select && preview.select.media)))
 }
 
-export function getDocumentTypeListItems(schema: Schema = defaultSchema): ListItemBuilder[] {
-  const resolver = getDataAspectsForSchema(schema)
+export function getDocumentTypeListItems(schema?: Schema): ListItemBuilder[] {
+  const resolver = getDataAspectsForSchema(schema || getDefaultSchema())
   const types = resolver.getDocumentTypes()
   return types.map(typeName => getDocumentTypeListItem(typeName, schema))
 }
 
-export function getDocumentTypeListItem(
-  typeName: string,
-  schema: Schema = defaultSchema
-): ListItemBuilder {
+export function getDocumentTypeListItem(typeName: string, sanitySchema?: Schema): ListItemBuilder {
+  const schema = sanitySchema || getDefaultSchema()
   const type = schema.get(typeName)
   if (!type) {
     throw new Error(`Schema type with name "${typeName}" not found`)
@@ -48,10 +46,8 @@ export function getDocumentTypeListItem(
     .child(getDocumentTypeList(typeName, schema))
 }
 
-export function getDocumentTypeList(
-  typeName: string,
-  schema: Schema = defaultSchema
-): DocumentListBuilder {
+export function getDocumentTypeList(typeName: string, sanitySchema?: Schema): DocumentListBuilder {
+  const schema = sanitySchema || getDefaultSchema()
   const type = schema.get(typeName)
   if (!type) {
     throw new Error(`Schema type with name "${typeName}" not found`)

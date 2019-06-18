@@ -52,6 +52,7 @@ function post() {
     name: 'post',
     title: 'Post',
     type: 'document',
+    icon: () => null,
     fields: [
       {
         name: 'title',
@@ -120,6 +121,9 @@ function post() {
         author: 'author.name',
         media: 'mainImage'
       }
+    },
+    initialValue: {
+      slug: {_type: 'slug', current: 'default-slug'}
     },
     orderings: [
       {

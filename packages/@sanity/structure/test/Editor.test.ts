@@ -1,5 +1,5 @@
 import {StructureBuilder as S} from '../src'
-import {defaultSchema} from '../src/parts/Schema'
+import {getDefaultSchema} from '../src/parts/Schema'
 
 test('builds editor node through constructor', () => {
   expect(
@@ -56,7 +56,7 @@ test('throws on missing document ID', () => {
 test('can construct with schema type instead of schema type name', () => {
   expect(
     S.editor()
-      .schemaType(defaultSchema.get('post'))
+      .schemaType(getDefaultSchema().get('post'))
       .id('yeah')
       .title('Yeah')
       .documentId('wow')
