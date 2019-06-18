@@ -1,5 +1,5 @@
 import {getExtendedProjection} from './util/getExtendedProjection'
-import {SchemaType, defaultSchema} from './parts/Schema'
+import {SchemaType, getDefaultSchema} from './parts/Schema'
 import {getSortIcon} from './parts/Icon'
 import {Intent} from './Intent'
 import {Partial} from './Partial'
@@ -152,7 +152,7 @@ export function getOrderingMenuItem(ordering: Ordering, extendedProjection?: str
 }
 
 export function getOrderingMenuItemsForSchemaType(typeName: SchemaType | string) {
-  const type = typeof typeName === 'string' ? defaultSchema.get(typeName) : typeName
+  const type = typeof typeName === 'string' ? getDefaultSchema().get(typeName) : typeName
 
   return (type.orderings
     ? type.orderings.concat(DEFAULT_ORDERING_OPTIONS)

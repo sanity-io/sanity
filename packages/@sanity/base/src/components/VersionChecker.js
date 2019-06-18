@@ -19,6 +19,8 @@ if (fakeOutdatedModule) {
   }
 }
 
+let hasWarned = false
+
 const onIdle =
   typeof window.requestIdleCallback === 'function'
     ? window.requestIdleCallback
@@ -104,11 +106,12 @@ class VersionChecker extends PureComponent {
       this.setState({result})
     }
 
-    if (__DEV__ && res.result && res.result.outdated) {
+    if (__DEV__ && !res.result && res.result.outdated) {
       const modules = res.result.outdated.map(mod => mod.name).join('\n  - ')
       const instructions = 'Run `sanity upgrade` to update them'
       // eslint-disable-next-line no-console
       console.warn(`The following modules are outdated:\n  - ${modules}\n\n${instructions}`)
+      hasWarned = true
     }
   }
 
@@ -117,6 +120,10 @@ class VersionChecker extends PureComponent {
   }
 
   componentDidMount() {
+    if (hasWarned) {
+      return
+    }
+
     onIdle(() => {
       checkVersions()
         .then(this.onResponse)

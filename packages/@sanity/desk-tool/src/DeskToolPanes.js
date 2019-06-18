@@ -45,7 +45,8 @@ export default class DeskToolPanes extends React.Component {
     panes: PropTypes.arrayOf(
       PropTypes.oneOfType([
         PropTypes.shape({
-          id: PropTypes.string.isRequired
+          id: PropTypes.string.isRequired,
+          params: PropTypes.object
         }),
         PropTypes.symbol
       ])
@@ -61,20 +62,17 @@ export default class DeskToolPanes extends React.Component {
   userCollapsedPanes = []
 
   componentDidUpdate(prevProps) {
-    if (this.props.panes.length != prevProps.panes.length) {
+    if (this.props.panes.length !== prevProps.panes.length) {
       this.userCollapsedPanes = []
       this.handleAutoCollapse(this.state.windowWidth, undefined, this.userCollapsedPanes)
     }
 
-    let paneToForceExpand
-
     // Expand new panes
-    this.props.panes.map((pane, i) => {
-      if (prevProps.panes[i] !== pane) {
-        paneToForceExpand = i
-      }
-    })
-    if (paneToForceExpand) {
+    const paneToForceExpand = this.props.panes.reduce((acc, pane, i) => {
+      return prevProps.panes[i] === pane ? acc : i
+    }, undefined)
+
+    if (typeof paneToForceExpand !== 'undefined') {
       this.handleAutoCollapse(this.state.windowWidth, paneToForceExpand, this.userCollapsedPanes)
     }
   }

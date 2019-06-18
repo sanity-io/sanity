@@ -30,6 +30,7 @@
   "homepage": "https://www.sanity.io/",
   "dependencies": {
     "fs-extra": "^6.0.1",
+    "get-random-values": "^1.2.0",
     "lodash": "^4.17.4",
     "resolve-from": "^4.0.0"
   },

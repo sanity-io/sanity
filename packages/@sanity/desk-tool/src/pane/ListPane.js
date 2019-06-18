@@ -16,7 +16,11 @@ export default withRouterHOC(
       styles: PropTypes.object, // eslint-disable-line react/forbid-prop-types
       router: PropTypes.shape({
         state: PropTypes.shape({
-          panes: PropTypes.arrayOf(PropTypes.string)
+          panes: PropTypes.arrayOf(
+            PropTypes.shape({
+              id: PropTypes.string
+            })
+          )
         })
       }).isRequired,
       defaultLayout: PropTypes.string,
@@ -66,7 +70,7 @@ export default withRouterHOC(
 
     getLinkStateForItem = name => {
       const {router, index} = this.props
-      const panes = (router.state.panes || []).slice(0, index).concat(name)
+      const panes = (router.state.panes || []).slice(0, index).concat({id: name})
       return {panes}
     }
 

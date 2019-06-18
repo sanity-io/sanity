@@ -129,6 +129,13 @@ Object {
         "type": "text",
       },
     ],
+    "icon": [Function],
+    "initialValue": Object {
+      "slug": Object {
+        "_type": "slug",
+        "current": "default-slug",
+      },
+    },
     "name": "post",
     "orderings": Array [
       Object {
@@ -297,6 +304,13 @@ Object {
         "type": "text",
       },
     ],
+    "icon": [Function],
+    "initialValue": Object {
+      "slug": Object {
+        "_type": "slug",
+        "current": "default-slug",
+      },
+    },
     "name": "post",
     "orderings": Array [
       Object {
@@ -413,6 +427,13 @@ Object {
         "type": "text",
       },
     ],
+    "icon": [Function],
+    "initialValue": Object {
+      "slug": Object {
+        "_type": "slug",
+        "current": "default-slug",
+      },
+    },
     "name": "post",
     "orderings": Array [
       Object {

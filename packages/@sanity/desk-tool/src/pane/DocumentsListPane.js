@@ -77,7 +77,12 @@ export default withRouterHOC(
       styles: PropTypes.object, // eslint-disable-line react/forbid-prop-types
       router: PropTypes.shape({
         state: PropTypes.shape({
-          panes: PropTypes.arrayOf(PropTypes.string)
+          panes: PropTypes.arrayOf(
+            PropTypes.shape({
+              id: PropTypes.string,
+              params: PropTypes.object
+            })
+          )
         })
       }).isRequired,
       defaultLayout: PropTypes.string,
@@ -169,13 +174,14 @@ export default withRouterHOC(
 
     itemIsSelected(item) {
       const {router, index} = this.props
-      const selected = (router.state.panes || [])[index] || ''
+      const panes = router.state.panes || []
+      const selected = panes[index] ? panes[index].id : ''
       return getPublishedId(item) === getPublishedId(selected)
     }
 
     getLinkStateForItem = id => {
       const {router, index} = this.props
-      const panes = (router.state.panes || []).slice(0, index).concat(getPublishedId(id))
+      const panes = (router.state.panes || []).slice(0, index).concat({id: getPublishedId(id)})
       return {panes}
     }
 
@@ -318,12 +324,11 @@ export default withRouterHOC(
                           : 'No documents matching this filter found'}
                       </h3>
 
-                      {typeName &&
-                        isActionEnabled(schemaType, 'create') && (
-                          <Button color="primary" icon={PlusIcon} onClick={this.handleCreateNew}>
-                            New {schemaType.title}
-                          </Button>
-                        )}
+                      {typeName && isActionEnabled(schemaType, 'create') && (
+                        <Button color="primary" icon={PlusIcon} onClick={this.handleCreateNew}>
+                          New {schemaType.title}
+                        </Button>
+                      )}
                     </div>
                   </div>
                 )
