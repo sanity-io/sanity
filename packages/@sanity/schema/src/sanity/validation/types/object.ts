@@ -93,6 +93,12 @@ export default (typeDef, visitorContext) => {
     )
   }
 
+  if (typeDef.type !== 'document' && typeof typeDef.initialValue !== 'undefined') {
+    problems.push(
+      error(`The "initialValue" property is only supported for document types currently.`)
+    )
+  }
+
   return {
     ...typeDef,
     fields: (fieldsIsArray ? typeDef.fields : []).map(field => {

@@ -1,5 +1,6 @@
 import traverseSchema from './traverseSchema'
 import object from './validation/types/object'
+import documentVisitor from './validation/types/document'
 import reference from './validation/types/reference'
 import array from './validation/types/array'
 import slug from './validation/types/slug'
@@ -16,7 +17,7 @@ const typeVisitors = {
   file,
   image,
   block,
-  document: object,
+  document: documentVisitor,
   reference: reference
 }
 

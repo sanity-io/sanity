@@ -9,7 +9,7 @@
     "clean": "rimraf lib",
     "example-testbed": "cd examples/testbed && sanity start",
     "start": "npm run example-testbed",
-    "test": "#todo: jest"
+    "test": "jest"
   },
   "keywords": [
     "sanity",
@@ -60,8 +60,21 @@
     "rimraf": "^2.6.2"
   },
   "peerDependencies": {
+    "@sanity/base": "^0.140.35",
     "prop-types": "^15.6 || ^16",
     "react": "^16.3"
+  },
+  "jest": {
+    "verbose": true,
+    "testURL": "http://localhost/",
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^part:@sanity/base/schema$": "<rootDir>/test/mocks/schema.js",
+      "^part:@sanity/base/client$": "<rootDir>/test/mocks/client.js",
+      "^part:@sanity/data-aspects/resolver$": "<rootDir>/test/mocks/dataAspects.js",
+      "^part:@sanity/base/.*?-icon$": "<rootDir>/test/mocks/icon.js",
+      "^part:@sanity/base/util/document-action-utils": "<rootDir>/test/mocks/documentActionUtils.js"
+    }
   },
   "repository": {
     "type": "git",

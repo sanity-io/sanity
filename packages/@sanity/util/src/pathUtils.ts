@@ -1,5 +1,5 @@
 /* eslint-disable */
-
+import getRandomValues from 'get-random-values'
 import {KeyedSegment, Path, PathSegment} from './typedefs/path'
 
 const rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g
@@ -185,4 +185,33 @@ function isKeySegment(segment: any): segment is KeyedSegment {
   }
 
   return segment && segment._key
+}
+
+const getByteHexTable = (() => {
+  let table
+  return () => {
+    if (table) {
+      return table
+    }
+
+    table = []
+    for (let i = 0; i < 256; ++i) {
+      table[i] = (i + 0x100).toString(16).substring(1)
+    }
+    return table
+  }
+})()
+
+// WHATWG crypto RNG - https://w3c.github.io/webcrypto/Overview.html
+function whatwgRNG(length = 16) {
+  const rnds8 = new Uint8Array(length)
+  getRandomValues(rnds8)
+  return rnds8
+}
+
+export function randomKey(length) {
+  const table = getByteHexTable()
+  return whatwgRNG(length)
+    .reduce((str, n) => str + table[n], '')
+    .slice(0, length)
 }

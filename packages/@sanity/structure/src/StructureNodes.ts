@@ -19,6 +19,10 @@ export interface EditorNode extends StructureNode {
   options: {
     id: string
     type?: string
+    template?: string
+  }
+  parameters?: {
+    [key: string]: any
   }
 }
 

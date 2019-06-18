@@ -4,6 +4,7 @@ export interface ChildResolverOptions {
   index: number
   parent: Collection
   parentPath?: SerializePath
+  parameters?: {[key: string]: any}
   serializeOptions?: SerializeOptions
 }
 

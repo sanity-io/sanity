@@ -1,0 +1,57 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getTemplates returns defaults if part is not implemented 1`] = `
+Array [
+  Object {
+    "icon": [Function],
+    "id": "author",
+    "schemaType": "author",
+    "title": "Author",
+    "value": [Function],
+  },
+  Object {
+    "icon": [Function],
+    "id": "post",
+    "schemaType": "post",
+    "title": "Post",
+    "value": Object {
+      "_type": "post",
+    },
+  },
+]
+`;
+
+exports[`getTemplates returns defined templates if part implemented 1`] = `
+Array [
+  Object {
+    "id": "author",
+    "schemaType": "author",
+    "title": "Author",
+    "value": Object {
+      "title": "here",
+    },
+  },
+  Object {
+    "id": "developer",
+    "schemaType": "developer",
+    "title": "Developer",
+    "value": Object {
+      "title": "Foo",
+    },
+  },
+]
+`;
+
+exports[`getTemplates validates that templates has ID 1`] = `"Template \\"Author\\" is missing required properties: id"`;
+
+exports[`getTemplates validates that templates has an object/function value 1`] = `"Template \\"author\\" has an invalid \\"value\\" property; should be a function or an object"`;
+
+exports[`getTemplates validates that templates has id, title, schemaType, value 1`] = `"Template at index 0 is missing required properties: id, title, schemaType, value"`;
+
+exports[`getTemplates validates that templates has schema type 1`] = `"Template \\"author\\" is missing required properties: schemaType"`;
+
+exports[`getTemplates validates that templates has title 1`] = `"Template \\"author\\" is missing required properties: title"`;
+
+exports[`getTemplates validates that templates has unique IDs 1`] = `"Template \\"Developer\\" at index 1 has the same ID (\\"author\\") as template \\"Author\\" at index 0"`;
+
+exports[`getTemplates validates that templates has value 1`] = `"Template \\"author\\" is missing required properties: value"`;

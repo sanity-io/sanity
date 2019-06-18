@@ -1,5 +1,5 @@
 import {StructureBuilder as S} from '../src'
-import {defaultSchema} from '../src/parts/Schema'
+import {getDefaultSchema} from '../src/parts/Schema'
 
 test('builds editor node through constructor', () => {
   expect(
@@ -9,6 +9,9 @@ test('builds editor node through constructor', () => {
       options: {
         id: 'docId',
         type: 'book'
+      },
+      parameters: {
+        foo: 'bar'
       }
     }).serialize()
   ).toMatchSnapshot()
@@ -56,7 +59,7 @@ test('throws on missing document ID', () => {
 test('can construct with schema type instead of schema type name', () => {
   expect(
     S.editor()
-      .schemaType(defaultSchema.get('post'))
+      .schemaType(getDefaultSchema().get('post'))
       .id('yeah')
       .title('Yeah')
       .documentId('wow')
@@ -71,6 +74,7 @@ test('can construct using builder', () => {
       .title('Yeah')
       .documentId('wow')
       .schemaType('book')
+      .parameters({foo: 'bar'})
       .serialize()
   ).toMatchSnapshot()
 })
@@ -82,6 +86,8 @@ test('can construct using builder (alt)', () => {
       .id('yeah')
       .title('Yeah')
       .documentId('wow')
+      .parameters({bar: 'foo'})
+      .template('developer')
       .serialize()
   ).toMatchSnapshot()
 })
@@ -92,6 +98,8 @@ test('builder is immutable', () => {
   expect(original.title('foo')).not.toEqual(original)
   expect(original.documentId('moo')).not.toEqual(original)
   expect(original.schemaType('author')).not.toEqual(original)
+  expect(original.template('developer')).not.toEqual(original)
+  expect(original.parameters({foo: 'bar'})).not.toEqual(original)
 })
 
 test('getters work', () => {
@@ -100,4 +108,6 @@ test('getters work', () => {
   expect(original.title('bar').getTitle()).toEqual('bar')
   expect(original.documentId('moo').getDocumentId()).toEqual('moo')
   expect(original.schemaType('author').getSchemaType()).toEqual('author')
+  expect(original.template('developer').getTemplate()).toEqual('developer')
+  expect(original.parameters({foo: 'bar'}).getParameters()).toEqual({foo: 'bar'})
 })

@@ -1,7 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import schema from 'part:@sanity/base/schema'
+import InitialValueTemplateError from './InitialValueTemplateError'
 import SchemaErrors from './SchemaErrors'
+import {getTemplateErrors} from '@sanity/base/initial-values'
 
 function renderPath(path) {
   return path
@@ -58,6 +60,11 @@ export class SchemaErrorReporter extends React.Component {
 
     if (groupsWithErrors.length > 0) {
       return <SchemaErrors problemGroups={groupsWithErrors} />
+    }
+
+    const templateErrors = getTemplateErrors()
+    if (templateErrors.length > 0) {
+      return <InitialValueTemplateError errors={templateErrors} />
     }
 
     return this.props.children()

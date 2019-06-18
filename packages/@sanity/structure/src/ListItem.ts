@@ -1,6 +1,6 @@
 import {camelCase} from 'lodash'
 import {SerializeOptions, Serializable, Collection, CollectionBuilder} from './StructureNodes'
-import {defaultSchema, SchemaType} from './parts/Schema'
+import {getDefaultSchema, SchemaType} from './parts/Schema'
 import {ChildResolver} from './ChildResolver'
 import {DocumentListBuilder} from './DocumentList'
 import {SerializeError, HELP_URL} from './SerializeError'
@@ -126,7 +126,7 @@ export class ListItemBuilder implements Serializable {
 
     let schemaType = this.spec.schemaType
     if (typeof schemaType === 'string') {
-      const type: SchemaType = defaultSchema.get(schemaType)
+      const type: SchemaType = getDefaultSchema().get(schemaType)
       if (!type) {
         throw new SerializeError(
           `Could not find type "${schemaType}" in schema`,
