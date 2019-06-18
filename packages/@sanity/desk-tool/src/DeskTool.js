@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import {isEqual} from 'lodash'
 import {throwError, interval, defer, of as observableOf} from 'rxjs'
 import {map, concat, switchMap, distinctUntilChanged, debounce} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
@@ -85,7 +86,12 @@ export default withRouterHOC(
       router: PropTypes.shape({
         navigate: PropTypes.func.isRequired,
         state: PropTypes.shape({
-          panes: PropTypes.arrayOf(PropTypes.string),
+          panes: PropTypes.arrayOf(
+            PropTypes.shape({
+              id: PropTypes.string.isRequired,
+              params: PropTypes.object
+            })
+          ),
           editDocumentId: PropTypes.string,
           legacyEditDocumentId: PropTypes.string,
           type: PropTypes.string,
@@ -135,11 +141,14 @@ export default withRouterHOC(
 
     setResolvedPanes = panes => {
       const router = this.props.router
-      const paneIds = router.state.panes || []
+      const paneSegments = router.state.panes || []
       this.setState({panes, isResolving: false})
 
-      if (panes.length < paneIds.length) {
-        router.navigate({...router.state, panes: paneIds.slice(0, panes.length)}, {replace: true})
+      if (panes.length < paneSegments.length) {
+        router.navigate(
+          {...router.state, panes: paneSegments.slice(0, panes.length)},
+          {replace: true}
+        )
       }
     }
 
@@ -163,7 +172,12 @@ export default withRouterHOC(
           distinctUntilChanged(),
           map(maybeSerialize),
           switchMap(structure =>
-            resolvePanes(structure, props.router.state.panes || [], this.state.panes, fromIndex)
+            resolvePanes(
+              structure,
+              (props.router.state.panes || []).map(pane => pane.id),
+              this.state.panes,
+              fromIndex
+            )
           ),
           switchMap(panes => this.maybeAddEditorPane(panes, props)),
           debounce(panes => interval(hasLoading(panes) ? 50 : 0))
@@ -175,7 +189,7 @@ export default withRouterHOC(
       const nextRouterState = nextProps.router.state
       const prevRouterState = this.props.router.state
       return (
-        !shallowEquals(nextRouterState.panes, prevRouterState.panes) ||
+        !isEqual(nextRouterState.panes, prevRouterState.panes) ||
         nextRouterState.editDocumentId !== prevRouterState.editDocumentId ||
         nextRouterState.legacyEditDocumentId !== prevRouterState.legacyEditDocumentId ||
         nextRouterState.type !== prevRouterState.type ||
@@ -189,7 +203,9 @@ export default withRouterHOC(
       if (this.shouldDerivePanes(nextProps)) {
         const prevPanes = this.props.router.state.panes || []
         const nextPanes = nextProps.router.state.panes || []
-        const diffAt = nextPanes.findIndex((id, index) => prevPanes[index] !== id)
+        const diffAt = nextPanes.findIndex(
+          (id, index) => !prevPanes[index] || prevPanes[index].id !== id
+        )
         this.derivePanes(nextProps, diffAt === -1 ? 0 : diffAt)
       }
     }
@@ -215,7 +231,7 @@ export default withRouterHOC(
 
       return (
         !shallowEquals(oldProps, newProps) ||
-        !shallowEquals(oldPanes, newPanes) ||
+        !isEqual(oldPanes, newPanes) ||
         !shallowEquals(oldState, newState)
       )
     }
@@ -224,7 +240,7 @@ export default withRouterHOC(
       const {navigate} = this.props.router
       const {panes, action, legacyEditDocumentId} = this.props.router.state
       if (action === 'edit' && legacyEditDocumentId) {
-        navigate({panes: panes.concat([legacyEditDocumentId])}, {replace: true})
+        navigate({panes: panes.concat([{id: legacyEditDocumentId}])}, {replace: true})
       }
     }
 
@@ -253,7 +269,8 @@ export default withRouterHOC(
         return <StructureError error={error} />
       }
 
-      const keys = this.props.router.state.panes || this.getFallbackKeys()
+      const routerPanes = this.props.router.state.panes || []
+      const keys = routerPanes.map(pane => pane.id) || this.getFallbackKeys()
 
       return (
         <div className={styles.deskTool}>

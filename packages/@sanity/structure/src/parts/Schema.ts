@@ -22,10 +22,13 @@ interface PreviewPreparer {
 
 export interface SchemaType {
   name: string
+  title?: string
+  icon?: Function
   type?: SchemaType
   to?: SchemaField[]
   fields?: SchemaField[]
   orderings?: Ordering[]
+  initialValue?: Function | {[key: string]: any}
   preview?: {
     select?: PreviewFields
     prepare?: PreviewPreparer
@@ -33,9 +36,9 @@ export interface SchemaType {
 }
 
 // We are lazy-loading the part to work around typescript trying to resolve it
-const defaultSchema = ((): Schema => {
+const getDefaultSchema = (): Schema => {
   const schema: Schema = getDefaultModule(require('part:@sanity/base/schema'))
   return schema
-})()
+}
 
-export {Schema, defaultSchema}
+export {Schema, getDefaultSchema}
