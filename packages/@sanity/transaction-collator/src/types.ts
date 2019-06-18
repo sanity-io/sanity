@@ -4,8 +4,10 @@ export type Mutation = {
   createOrReplace?: {_id: string}
   createSquashed?: {_id: string}
   delete?: {id: string}
-  patch?: {_id: string}
+  patch?: {id: string}
 }
+
+export type EventType = 'created' | 'edited' | 'published' | 'unpublished' | 'discardDraft' | 'truncated' | 'unknown'
 
 export type HistoryEvent = {
   displayDocumentId?: string
@@ -13,7 +15,7 @@ export type HistoryEvent = {
   endTime: Date,
   rev: string
   startTime: Date
-  type: 'created' | 'edited' | 'published' | 'unpublished' | 'discardDraft' | 'truncated' | 'unknown'
+  type: EventType
   userIds: string[]
 }
 

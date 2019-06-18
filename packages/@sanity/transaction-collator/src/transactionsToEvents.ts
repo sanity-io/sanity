@@ -1,5 +1,5 @@
 import {isEqual, uniq} from 'lodash'
-import {HistoryEvent, Transaction, Mutation} from './types'
+import {EventType, HistoryEvent, Transaction, Mutation} from './types'
 import {ndjsonToArray} from './utils/ndjsonToArray'
 
 const EDIT_EVENT_TIME_TRESHHOLD_MS = 5 * 1000 * 60 * 5 // 5 minutes
@@ -26,38 +26,17 @@ export function transactionsToEvents(
   )
 }
 
-function findDisplayDocumentId(type: string, documentIds: string[]): string | undefined {
-  const ids = documentIds.filter(Boolean)
-  const publishedId = ids.find(id => !id.startsWith('drafts.'))
-  const draftId = ids.find(id => id.startsWith('drafts.')) || `drafts.${publishedId}`
-  switch (type) {
-    case 'created':
-      return draftId
-    case 'edited':
-      return draftId
-    case 'published':
-      return publishedId
-    case 'unpublished':
-      return draftId
-    case 'discardDraft':
-      return publishedId
-    default:
-      return undefined
-  }
-}
-
 function mapToEvents(
   transaction: Transaction,
   documentIds: string[],
   index: number = 0
 ): HistoryEvent {
-  const type = mutationsToEventType(transaction.mutations, index)
-  const displayDocumentId = findDisplayDocumentId(type, documentIds)
+  const {type, documentId} = mutationsToEventTypeAndDocumentId(transaction.mutations, index)
   const timestamp = new Date(transaction.timestamp)
   return {
     type,
     documentIDs: transaction.documentIDs,
-    displayDocumentId,
+    displayDocumentId: documentId,
     rev: transaction.id,
     userIds: [transaction.author],
     startTime: timestamp,
@@ -92,71 +71,90 @@ function reduceEdits(
   return acc
 }
 
-export function mutationsToEventType(mutations: Mutation[], transactionIndex: number) {
+export function mutationsToEventTypeAndDocumentId(mutations: Mutation[], transactionIndex: number): {type: EventType, documentId?: string} {
   const withoutPatches = mutations.filter(mut => mut.patch === undefined)
+  const createOrReplaceMutation = withoutPatches.find(mut => mut.createOrReplace !== undefined)
+  const createOrReplacePatch = createOrReplaceMutation && createOrReplaceMutation.createOrReplace
+
+  const createMutation = withoutPatches.find(mut => mut.create !== undefined)
+  const createPatch = createMutation && createMutation.create
+
+  const createIfNotExistsMutation = withoutPatches.find(mut => mut.createIfNotExists !== undefined)
+  const createIfNotExistsPatch =
+    createIfNotExistsMutation && createIfNotExistsMutation.createIfNotExists
+
+  const deleteMutation = withoutPatches.find(mut => mut.delete !== undefined)
+  const deletePatch = deleteMutation && deleteMutation.delete
+
+  const squashedMutation = withoutPatches.find(mut => mut.createSquashed !== undefined)
+  const squashedPatch = squashedMutation && squashedMutation.createSquashed
+
+  const createValue = createOrReplacePatch || createPatch || createIfNotExistsPatch
 
   // Created
-  if (
-    transactionIndex === 0 &&
-    ((mutations[0].createIfNotExists !== undefined &&
-      mutations[0].createIfNotExists._id.startsWith('drafts.')) ||
-      (mutations[0].create !== undefined && mutations[0].create._id.startsWith('drafts.')))
-  ) {
-    return 'created'
+  if (transactionIndex === 0) {
+    const type = 'created'
+    if (createOrReplacePatch) {
+      return {type, documentId: createOrReplacePatch._id}
+    }
+    if (createIfNotExistsPatch) {
+      return {type, documentId: createIfNotExistsPatch._id}
+    }
+    if (createPatch) {
+      return {type, documentId: createPatch._id}
+    }
   }
 
   // Published
-  if (
-    withoutPatches.length === 2 &&
-    (withoutPatches.some(mut => mut.delete !== undefined) ||
-      withoutPatches.some(mut => mut.createOrReplace !== undefined)) &&
-    withoutPatches.some(mut => mut.delete !== undefined && mut.delete.id.startsWith('drafts.'))
-  ) {
-    return 'published'
+  if ((createOrReplacePatch || createPatch || createIfNotExistsPatch) && deletePatch && deletePatch.id.startsWith('drafts.')) {
+    return {
+      type: 'published',
+      documentId: createValue && createValue._id
+    }
   }
 
   // Unpublished
   if (
     withoutPatches.length === 2 &&
-    withoutPatches.some(
-      mut =>
-        (mut.createIfNotExists !== undefined && mut.createIfNotExists._id.startsWith('drafts.')) ||
-        (mut.create !== undefined && mut.create._id.startsWith('drafts.'))
-    ) &&
-    withoutPatches.some(mut => mut.delete !== undefined && !mut.delete.id.startsWith('drafts.'))
+    (createIfNotExistsPatch || createPatch) &&
+    deletePatch &&
+    deletePatch.id.startsWith('drafts.')
   ) {
-    return 'unpublished'
+    return {
+      type: 'unpublished',
+      documentId: createValue && createValue._id
+    }
   }
 
   // Restored to previous version (return edited for now)
   if (
-    mutations.length === 1 &&
-    ((mutations[0].createOrReplace && mutations[0].createOrReplace._id.startsWith('drafts.')) ||
-      (mutations[0].create && mutations[0].create._id.startsWith('drafts.')) ||
-      (mutations[0].createIfNotExists && mutations[0].createIfNotExists._id.startsWith('drafts.')))
+    ((createOrReplacePatch && createOrReplacePatch._id.startsWith('drafts.')) ||
+      (createPatch && createPatch._id.startsWith('drafts.')) ||
+      (createIfNotExistsPatch && createIfNotExistsPatch._id.startsWith('drafts.')))
   ) {
-    return 'edited'
+    return {
+      type: 'edited',
+      documentId: createValue && createValue._id
+    }
   }
 
   // Discard drafted changes
-  if (
-    mutations.length === 1 &&
-    mutations[0].delete &&
-    mutations[0].delete.id.startsWith('drafts.')
-  ) {
-    return 'discardDraft'
+  if (mutations.length === 1 && deletePatch && deletePatch.id.startsWith('drafts.')) {
+    return {type: 'discardDraft', documentId: deletePatch.id}
   }
 
-  if (mutations.length === 1 && mutations[0].createSquashed) {
-    return 'truncated'
+  // Truncated history
+  if (mutations.length === 1 && squashedPatch) {
+    return {type: 'truncated', documentId: squashedPatch._id}
   }
 
   // Edited
-  if (mutations.some(mut => mut.patch !== undefined)) {
-    return 'edited'
+  const patchedMutation = mutations.find(mut => mut.patch !== undefined)
+  if (patchedMutation && patchedMutation.patch) {
+    return {type: 'edited', documentId: patchedMutation.patch.id}
   }
 
-  return 'unknown'
+  return {type: 'unknown', documentId: undefined}
 }
 
 function compareTimestamp(a: Transaction, b: Transaction) {
