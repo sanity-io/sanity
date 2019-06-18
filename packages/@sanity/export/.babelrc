@@ -1,3 +1,3 @@
 {
-  "extends": "../../../.babelrc.js"
+  "extends": "../../../.babelrc"
 }

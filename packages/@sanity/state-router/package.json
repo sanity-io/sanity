@@ -44,7 +44,7 @@
     "remon": "^1.0.2",
     "rimraf": "^2.6.2",
     "staticr": "^4.0.2",
-    "tap": "^12.0.1"
+    "tap": "^14.2.2"
   },
   "peerDependencies": {
     "prop-types": "^15.6 || ^16",

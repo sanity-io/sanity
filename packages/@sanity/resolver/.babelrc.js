@@ -1,3 +1,3 @@
 module.exports = {
-  extends: '../../../.babelrc.js'
+  extends: '../../../.babelrc'
 }

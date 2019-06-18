@@ -34,7 +34,7 @@
     "@types/node": "^8.0.0",
     "empty": "^0.10.1",
     "flow-typed": "^2.2.3",
-    "jest": "^23.6.0",
+    "jest": "^24.8.0",
     "recursive-readdir": "^2.1.0",
     "rimraf": "^2.6.2"
   },
