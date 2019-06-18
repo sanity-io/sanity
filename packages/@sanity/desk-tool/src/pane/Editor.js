@@ -787,10 +787,11 @@ export default withRouterHOC(
       )
     }
 
-    handleHistorySelect = event => {
+    handleHistorySelect = (event, index) => {
       this.setState({
-        historyValue: event.value,
-        historyStatus: event.status || undefined
+        historyItemIndex: index,
+        historyValue: index === 0 ? null : event.value,
+        historyStatus: index === 0 ? null : event.status || undefined
       })
     }
 
@@ -826,6 +827,7 @@ export default withRouterHOC(
         filterField,
         showHistory,
         historyValue,
+        historyItemIndex,
         historyStatus
       } = this.state
 
@@ -864,7 +866,7 @@ export default withRouterHOC(
                 onItemSelect={this.handleHistorySelect}
                 currentRev={value && value._rev}
                 lastEdited={value && new Date(value._updatedAt)}
-                publishedRev={published && published._rev}
+                currentIndex={historyItemIndex}
                 published={published}
                 draft={draft}
                 historyValue={historyValue}
@@ -931,7 +933,9 @@ export default withRouterHOC(
                   value={historyValue || draft || published || {_type: type.name}}
                   type={type}
                   filterField={filterField}
-                  readOnly={!!historyValue || isReconnecting || !isActionEnabled(type, 'update')}
+                  readOnly={
+                    historyItemIndex > 0 || isReconnecting || !isActionEnabled(type, 'update')
+                  }
                   onBlur={this.handleBlur}
                   onFocus={this.handleFocus}
                   focusPath={focusPath}

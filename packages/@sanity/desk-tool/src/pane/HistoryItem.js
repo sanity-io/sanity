@@ -62,22 +62,6 @@ export default class HistoryItem extends React.PureComponent {
     })
   }
 
-  handleClick = () => {
-    const {rev, type, displayDocumentId, endTime} = this.props
-    if (displayDocumentId) {
-      return this.props.onClick({
-        rev,
-        type,
-        displayDocumentId,
-        title: getDateString(endTime)
-      })
-    }
-    // eslint-disable-next-line no-console
-    return console.error(
-      `No displayDocumentId tied to the event type '${type}', not doing the click action`
-    )
-  }
-
   handleKeyUp = event => {
     if (event.key === 'Enter') {
       this.handleClick()
@@ -99,7 +83,7 @@ export default class HistoryItem extends React.PureComponent {
   state = {users: []}
 
   render() {
-    const {type, endTime, isSelected, isCurrentVersion, rev} = this.props
+    const {type, endTime, isSelected, isCurrentVersion, rev, onClick} = this.props
     const {users} = this.state
     return (
       <HistoryListItem
@@ -109,7 +93,7 @@ export default class HistoryItem extends React.PureComponent {
         tooltip={format(endTime, dateFormat)}
         rev={rev}
         users={users}
-        onClick={this.handleClick}
+        onClick={onClick}
         onKeyUp={this.handleKeyUp}
         onKeyDown={this.handleKeyDown}
         isSelected={isSelected}

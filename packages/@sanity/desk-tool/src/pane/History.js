@@ -16,7 +16,7 @@ export default class History extends React.PureComponent {
     documentId: PropTypes.string,
     onItemSelect: PropTypes.func,
     currentRev: PropTypes.string,
-    publishedRev: PropTypes.string,
+    currentIndex: PropTypes.number,
     lastEdited: PropTypes.object,
     errorMessage: PropTypes.string,
     draft: PropTypes.object,
@@ -32,11 +32,6 @@ export default class History extends React.PureComponent {
     headerShadowOpacity: 0
   }
   _listElement = React.createRef()
-
-  getDocumentId = () => {
-    const {published, draft} = this.props
-    return (published && published._id) || (draft && draft._id)
-  }
 
   componentDidMount() {
     this._isMounted = true
@@ -81,7 +76,7 @@ export default class History extends React.PureComponent {
     }
   }
 
-  handleSelectEvent = event => {
+  handleSelectEvent = (event, itemIndex) => {
     const {onItemSelect, currentRev} = this.props
     if (!event) {
       return
@@ -93,20 +88,20 @@ export default class History extends React.PureComponent {
     if (onItemSelect) {
       if (currentRev === rev) {
         this.setState({selectedRev: rev})
-        onItemSelect({
-          value: null,
-          status: null
-        })
+        onItemSelect(event, itemIndex)
       } else {
         HistoryStore.getHistory(displayDocumentId, {revision: rev})
           .then(res => {
             const {documents} = res
             if (documents && documents[0]) {
               this.setState({selectedRev: rev})
-              onItemSelect({
-                value: documents[0],
-                status: type
-              })
+              onItemSelect(
+                {
+                  value: documents[0],
+                  status: type
+                },
+                itemIndex
+              )
             } else {
               // eslint-disable-next-line no-console
               console.error(`Got no document for revision ${rev}`, res)
@@ -127,12 +122,13 @@ export default class History extends React.PureComponent {
   }
 
   render() {
-    const {onClose, publishedRev} = this.props
+    const {onClose} = this.props
     const {
       events,
       selectedRev,
       errorMessage,
       loadingError,
+      currentIndex,
       loading,
       headerShadowOpacity
     } = this.state
@@ -163,11 +159,11 @@ export default class History extends React.PureComponent {
               <HistoryItem
                 {...event}
                 key={event.rev}
-                onClick={this.handleItemClick}
+                onClick={() => this.handleSelectEvent(events[i], i)}
                 isSelected={!!selectedRev && event.rev === selectedRev}
-                isCurrentVersion={event.rev === publishedRev}
-                onSelectPrev={() => this.handleSelectEvent(events[i - 1])}
-                onSelectNext={() => this.handleSelectEvent(events[i + 1])}
+                isCurrentVersion={i === 0}
+                onSelectPrev={() => this.handleSelectEvent(events[i - 1], i)}
+                onSelectNext={() => this.handleSelectEvent(events[i + 1], i)}
               />
             ))}
         </div>
