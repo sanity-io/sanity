@@ -33,12 +33,13 @@ function mapToEvents(
 ): HistoryEvent {
   const {type, documentId} = mutationsToEventTypeAndDocumentId(transaction.mutations, index)
   const timestamp = new Date(transaction.timestamp)
+  const userIds = findUserIds(transaction, type)
   return {
     type,
     documentIDs: transaction.documentIDs,
     displayDocumentId: documentId,
     rev: transaction.id,
-    userIds: [transaction.author],
+    userIds,
     startTime: timestamp,
     endTime: timestamp
   }
@@ -118,7 +119,7 @@ export function mutationsToEventTypeAndDocumentId(mutations: Mutation[], transac
     withoutPatches.length === 2 &&
     (createIfNotExistsPatch || createPatch) &&
     deletePatch &&
-    deletePatch.id.startsWith('drafts.')
+    !deletePatch.id.startsWith('drafts.')
   ) {
     return {
       type: 'unpublished',
@@ -155,6 +156,19 @@ export function mutationsToEventTypeAndDocumentId(mutations: Mutation[], transac
   }
 
   return {type: 'unknown', documentId: undefined}
+}
+
+function findUserIds(transaction: Transaction, type: EventType): string[] {
+  // The truncated event is kind of special
+  if (type === 'truncated') {
+    const createSquasedMut = transaction.mutations.find(mut => mut.createSquashed !== undefined)
+    const createSquasedPatch = createSquasedMut && createSquasedMut.createSquashed
+    if (createSquasedPatch) {
+      return createSquasedPatch._authors
+    }
+  }
+  // Default is to return the transaction author
+  return [transaction.author]
 }
 
 function compareTimestamp(a: Transaction, b: Transaction) {
