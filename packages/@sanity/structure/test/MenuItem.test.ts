@@ -1,5 +1,7 @@
 import {StructureBuilder as S} from '../src'
 
+const defaultIcon = () => 'NOPE'
+
 test('builds menu items with only title and action', () => {
   expect(S.menuItem({title: 'Foo', action: 'foo'}).serialize()).toMatchSnapshot()
 })
@@ -87,6 +89,6 @@ test('getters work', () => {
   expect(original.action('doSomething').getAction()).toEqual('doSomething')
   expect(original.intent({type: 'create'}).getIntent()).toEqual({type: 'create'})
   expect(original.group('create').getGroup()).toEqual('create')
-  expect(original.icon(() => 'hei').getIcon()()).toEqual('hei')
+  expect((original.icon(() => 'hei').getIcon() || defaultIcon)()).toEqual('hei')
   expect(original.showAsAction(false).getShowAsAction()).toEqual(false)
 })
