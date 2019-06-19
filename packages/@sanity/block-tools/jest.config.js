@@ -1,6 +1,6 @@
 module.exports = {
-  testRegex: 'test\\/.*\\.test\\.js',
+  testRegex: 'test\\/.*\\.test\\.js$',
   testEnvironment: 'node',
-  setupTestFrameworkScriptFile: './test/setup.js',
+  setupFilesAfterEnv: ['./test/setup.js'],
   collectCoverageFrom: ['src/**.js']
 }
