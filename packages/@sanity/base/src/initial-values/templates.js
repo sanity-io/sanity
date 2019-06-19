@@ -1,5 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import T from '../../template-builder'
+import {validateTemplates} from './validate'
 
 function tryGetTemplates() {
   try {
@@ -38,7 +39,8 @@ function getTemplates(schema) {
     templates = T.defaults(schema)
   }
 
-  return templates.map(maybeSerialize)
+  const serialized = templates.map(maybeSerialize)
+  return validateTemplates(serialized)
 }
 
 export {getTemplates}

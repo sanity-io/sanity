@@ -2,7 +2,47 @@ import {isPlainObject} from 'lodash'
 import oneline from 'oneline'
 import {randomKey, toString as pathToString} from '@sanity/util/paths'
 
-export {validateInitialValue}
+export {validateInitialValue, validateTemplates}
+
+const REQUIRED_TEMPLATE_PROPS = ['id', 'title', 'schemaType', 'value']
+
+function validateTemplates(templates) {
+  const idMap = new Map()
+
+  templates.forEach((template, i) => {
+    const id = templateId(template, i)
+    const missing = REQUIRED_TEMPLATE_PROPS.filter(prop => !template[prop])
+    if (missing.length > 0) {
+      throw new Error(`Template ${id} is missing required properties: ${missing.join(', ')}`)
+    }
+
+    if (typeof template.value !== 'function' && !isPlainObject(template.value)) {
+      throw new Error(
+        `Template ${id} has an invalid "value" property; should be a function or an object`
+      )
+    }
+
+    if (idMap.has(template.id)) {
+      const dupeIndex = idMap.get(template.id)
+      const dupe = `${quote(templates[dupeIndex].title)} at index ${dupeIndex}`
+      throw new Error(
+        `Template "${template.title}" at index ${i} has the same ID ("${template.id}") as template ${dupe}`
+      )
+    }
+
+    idMap.set(template.id, i)
+  })
+
+  return templates
+}
+
+function templateId(template, i) {
+  return quote(template.id || template.title) || (typeof i === 'number' && `at index ${i}`) || ''
+}
+
+function quote(str) {
+  return str && str.length > 0 ? `"${str}"` : str
+}
 
 function validateInitialValue(value, template) {
   const contextError = msg => `Template "${template.id}" initial value: ${msg}`
@@ -21,16 +61,16 @@ function validateInitialValue(value, template) {
   }
 
   try {
-    return validate(value)
+    return validateValue(value)
   } catch (err) {
     err.message = contextError(err.message)
     throw err
   }
 }
 
-function validate(value, path = [], parentIsArray = false) {
+function validateValue(value, path = [], parentIsArray = false) {
   if (Array.isArray(value)) {
-    return value.map((item, i) => validate(item, path.concat(i), true))
+    return value.map((item, i) => validateValue(item, path.concat(i), true))
   }
 
   if (!isPlainObject(value)) {
@@ -52,7 +92,7 @@ function validate(value, path = [], parentIsArray = false) {
 
   // Validate deeply
   return Object.keys(value).reduce((acc, key) => {
-    acc[key] = validate(value[key], path.concat([key]))
+    acc[key] = validateValue(value[key], path.concat([key]))
     return acc
   }, initial)
 }
