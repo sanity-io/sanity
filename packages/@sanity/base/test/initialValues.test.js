@@ -1,5 +1,5 @@
 import {omit} from 'lodash'
-import {resolveInitialValue} from '../src/initial-values/resolve'
+import {resolveInitialValue, getTemplates} from '../src/initial-values'
 import T from '../template-builder'
 
 const example = {
@@ -107,5 +107,31 @@ describe('resolveInitialValue', () => {
     expect(result.meta[0].categories[1]).toHaveProperty('_key')
     expect(result.meta[0].categories[0]._key).toMatch(/^[a-z0-9][a-z0-9-_]{8,30}/i)
     expect(result.meta[0].categories[1]._key).toMatch(/^[a-z0-9][a-z0-9-_]{8,30}/i)
+  })
+})
+
+describe('getTemplates', () => {
+  test('returns defaults if part is not implemented', () => {
+    expect(getTemplates()).toMatchSnapshot()
+  })
+
+  test('returns defined templates if part implemented', () => {
+    jest.mock('part:@sanity/base/initial-value-templates?', () => [
+      {
+        id: 'author',
+        title: 'Author',
+        schemaType: 'author',
+        value: {title: 'here'}
+      },
+      {
+        serialize: () => ({
+          id: 'developer',
+          title: 'Developer',
+          schemaType: 'developer',
+          value: {title: 'Foo'}
+        })
+      }
+    ])
+    expect(getTemplates()).toMatchSnapshot()
   })
 })
