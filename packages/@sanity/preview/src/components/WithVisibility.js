@@ -77,7 +77,8 @@ export default class WithVisibility extends React.Component<Props, State> {
         style: {...STYLE, ...style},
         ...rest
       },
-      children(isVisible)
+      // Render a nonbreaking space here because of https://bugs.chromium.org/p/chromium/issues/detail?id=972196
+      isVisible ? children(isVisible) : '\u00A0' // &nbsp
     )
   }
 }
