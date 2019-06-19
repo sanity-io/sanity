@@ -305,10 +305,11 @@ export default withRouterHOC(
     handleCreateCopy = () => {
       const {router, draft, published, paneIndex} = this.props
       const prevId = getPublishedId((draft || published)._id)
+      const omit = ['_createdAt', '_updatedAt']
 
       const duplicatedDocument = this.isLiveEditEnabled()
-        ? copyDocument(published)
-        : newDraftFrom(copyDocument(draft || published))
+        ? copyDocument(published, {omit})
+        : newDraftFrom(copyDocument(draft || published, {omit}))
 
       this.duplicate$ = documentStore.create(duplicatedDocument).subscribe(copied => {
         const copyDocId = getPublishedId(copied._id)
