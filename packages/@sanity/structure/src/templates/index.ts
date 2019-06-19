@@ -24,9 +24,13 @@ function defaultTemplateForType(
 
 function defaults(sanitySchema?: Schema) {
   const schema = sanitySchema || getDefaultSchema()
-  return schema
-    .getTypeNames()
-    .map(typeName => defaultTemplateForType(schema.get(typeName), sanitySchema))
+  if (!schema) {
+    throw new Error(
+      'Unable to automatically resolve schema. Pass schema explicitly: `defaults(schema)`'
+    )
+  }
+
+  return schema.getTypeNames().map(typeName => defaultTemplateForType(schema.get(typeName), schema))
 }
 
 export default {
