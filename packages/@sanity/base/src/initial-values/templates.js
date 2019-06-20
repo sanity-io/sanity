@@ -23,7 +23,7 @@ function maybeSerialize(template) {
   return template.serialize ? template.serialize() : template
 }
 
-function getTemplates(schema) {
+export function getTemplates(schema) {
   let templates = tryGetTemplates()
 
   // Templates is `null` if the part was implemented but the export doesn't make sense,
@@ -43,4 +43,10 @@ function getTemplates(schema) {
   return validateTemplates(serialized)
 }
 
-export {getTemplates}
+export function getTemplateById(id) {
+  return getTemplates().find(tpl => tpl.id === id)
+}
+
+export function templateExists(id) {
+  return Boolean(getTemplateById(id))
+}
