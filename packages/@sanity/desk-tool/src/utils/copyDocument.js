@@ -47,5 +47,6 @@ function copyAny(value, options) {
 }
 
 export default function copyDocument(doc, options = {}) {
-  return copyAny(omit(doc, '_id'), options)
+  const omitProps = ['_id'].concat(options.omit)
+  return copyAny(omit(doc, omitProps), options)
 }
