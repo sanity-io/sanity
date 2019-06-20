@@ -2,9 +2,13 @@
 import T from '../../template-builder'
 import {validateTemplates} from './validate'
 
-function tryGetTemplates() {
+function loadDefinedTemplatesFromPart() {
   try {
     const templates = require('part:@sanity/base/initial-value-templates?')
+    if (typeof templates === 'undefined') {
+      return undefined
+    }
+
     if (!templates) {
       return null
     }
@@ -19,12 +23,8 @@ function tryGetTemplates() {
   }
 }
 
-function maybeSerialize(template) {
-  return template.serialize ? template.serialize() : template
-}
-
-export function getTemplates(schema) {
-  let templates = tryGetTemplates()
+function loadDefinedTemplates(schema) {
+  let templates = loadDefinedTemplatesFromPart()
 
   // Templates is `null` if the part was implemented but the export doesn't make sense,
   // if it is not found (require failed), the value will be `undefined`
@@ -39,8 +39,39 @@ export function getTemplates(schema) {
     templates = T.defaults(schema)
   }
 
+  return prepareTemplates(templates)
+}
+
+function prepareTemplates(templates) {
   const serialized = templates.map(maybeSerialize)
   return validateTemplates(serialized)
+}
+
+function getDefaultTemplates(schema) {
+  return prepareTemplates(T.defaults(schema))
+}
+
+function maybeSerialize(template) {
+  return template.serialize ? template.serialize() : template
+}
+
+export function getTemplateErrors(schema) {
+  try {
+    loadDefinedTemplates(schema)
+    return []
+  } catch (err) {
+    return [err]
+  }
+}
+
+export function getTemplates(schema) {
+  try {
+    return loadDefinedTemplates(schema)
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.warn('Failed to load defined templates, falling back to defaults:\n%s', err.message)
+    return getDefaultTemplates(schema)
+  }
 }
 
 export function getTemplateById(id) {
