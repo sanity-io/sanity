@@ -313,13 +313,22 @@ export default withRouterHOC(
 
       this.duplicate$ = documentStore.create(duplicatedDocument).subscribe(copied => {
         const copyDocId = getPublishedId(copied._id)
-        const newPanes = router.state.panes.map((prev, i) =>
-          i === paneIndex - 1 && prev === prevId ? copyDocId : prev
-        )
-        router.navigate({
-          ...router.state,
-          panes: newPanes
-        })
+        if (router.state.panes) {
+          const newPanes = router.state.panes.map((prev, i) =>
+            i === paneIndex - 1 && prev === prevId ? copyDocId : prev
+          )
+          router.navigate({
+            ...router.state,
+            panes: newPanes
+          })
+        } else if (router.state.editDocumentId) {
+          router.navigate({
+            ...router.state,
+            editDocumentId: copyDocId
+          })
+        } else {
+          throw new Error('Unknown router state')
+        }
       })
     }
 
