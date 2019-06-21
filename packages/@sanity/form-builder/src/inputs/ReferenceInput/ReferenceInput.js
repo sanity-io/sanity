@@ -227,7 +227,7 @@ export default class ReferenceInput extends React.Component<Props, State> {
             </div>
           )}
           <SearchableSelect
-            placeholder={placeholder}
+            placeholder={readOnly ? '' : placeholder}
             title={
               isMissing && hasRef
                 ? `Document id: ${value._ref || 'unknown'}`
