@@ -6,8 +6,8 @@ import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
 import {LOADING} from './utils/resolvePanes'
 import LoadingPane from './pane/LoadingPane'
 import Pane from './pane/Pane'
-import {Observable, merge} from 'rxjs'
-import {map, share, debounceTime, distinctUntilChanged} from 'rxjs/operators'
+import {Observable, merge, of} from 'rxjs'
+import {map, mapTo, delay, share, debounceTime, distinctUntilChanged} from 'rxjs/operators'
 
 const COLLAPSED_WIDTH = 55
 const BREAKPOINT_SCREEN_MEDIUM = 512
@@ -36,6 +36,33 @@ function getPaneMinSize(pane) {
 
 function getPaneDefaultSize(pane) {
   return pane.type === 'document' ? 672 : 350
+}
+
+function getWaitMessages(path) {
+  const thresholds = [{ms: 300, message: 'Loading…'}, {ms: 5000, message: 'Still loading…'}]
+
+  if (__DEV__) {
+    const message = [
+      'Check console for errors?',
+      'Is your observable/promise resolving?',
+      path.length > 0 ? `Structure path: ${path.join(' ➝ ')}` : ''
+    ]
+
+    thresholds.push({
+      ms: 10000,
+      message: message.join('\n')
+    })
+  }
+
+  const src = of(null)
+  return merge(
+    ...thresholds.map(({ms, message}) =>
+      src.pipe(
+        mapTo(message),
+        delay(ms)
+      )
+    )
+  )
 }
 
 export default class DeskToolPanes extends React.Component {
@@ -154,7 +181,7 @@ export default class DeskToolPanes extends React.Component {
     const path = []
 
     return panes.map((pane, i) => {
-      const isCollapsed = !isMobile && this.state.collapsedPanes[i]
+      const isCollapsed = Boolean(!isMobile && this.state.collapsedPanes[i])
       const paneKey = `${i}-${keys[i - 1] || 'root'}`
 
       // Same pane might appear multiple times, so use index as tiebreaker
@@ -164,7 +191,7 @@ export default class DeskToolPanes extends React.Component {
       return (
         <SplitPaneWrapper
           key={wrapperKey}
-          isCollapsed={!!isCollapsed}
+          isCollapsed={isCollapsed}
           minSize={getPaneMinSize(pane)}
           defaultSize={getPaneDefaultSize(pane)}
         >
@@ -173,9 +200,10 @@ export default class DeskToolPanes extends React.Component {
               key={paneKey} // Use key to force rerendering pane on ID change
               path={path}
               index={i}
+              message={getWaitMessages}
               onExpand={this.handlePaneExpand}
               onCollapse={this.handlePaneCollapse}
-              isCollapsed={!!isCollapsed}
+              isCollapsed={isCollapsed}
               isSelected={i === panes.length - 1}
             />
           ) : (
@@ -185,7 +213,7 @@ export default class DeskToolPanes extends React.Component {
               itemId={keys[i - 1]}
               onExpand={this.handlePaneExpand}
               onCollapse={this.handlePaneCollapse}
-              isCollapsed={!!isCollapsed}
+              isCollapsed={isCollapsed}
               isSelected={i === panes.length - 1}
               {...pane}
             />
