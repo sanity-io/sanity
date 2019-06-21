@@ -9,6 +9,10 @@ export type PartialEditorNode = {
   options?: {
     id?: string
     type?: string
+    template?: string
+  }
+  parameters?: {
+    [key: string]: any
   }
 }
 
@@ -61,6 +65,27 @@ export class EditorBuilder implements Serializable {
     return this.spec.options && this.spec.options.type
   }
 
+  template(templateName: string) {
+    return this.clone({
+      options: {
+        ...(this.spec.options || {}),
+        template: templateName
+      }
+    })
+  }
+
+  getTemplate() {
+    return this.spec.options && this.spec.options.template
+  }
+
+  parameters(params: {[key: string]: any}) {
+    return this.clone({parameters: params})
+  }
+
+  getParameters() {
+    return this.spec.parameters
+  }
+
   serialize({path, index, hint}: SerializeOptions = {path: []}): EditorNode {
     const {id, options} = this.spec
     if (typeof id !== 'string' || !id) {
@@ -82,7 +107,7 @@ export class EditorBuilder implements Serializable {
       ...this.spec,
       id,
       type: 'document',
-      options: {id: options.id, type: options.type}
+      options: {id: options.id, type: options.type, template: options.template}
     }
   }
 

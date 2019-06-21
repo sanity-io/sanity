@@ -5,7 +5,11 @@ Object {
   "id": "foo",
   "options": Object {
     "id": "docId",
+    "template": undefined,
     "type": "book",
+  },
+  "parameters": Object {
+    "foo": "bar",
   },
   "title": "some title",
   "type": "document",
@@ -17,7 +21,11 @@ Object {
   "id": "yeah",
   "options": Object {
     "id": "wow",
+    "template": "developer",
     "type": "book",
+  },
+  "parameters": Object {
+    "bar": "foo",
   },
   "title": "Yeah",
   "type": "document",
@@ -29,7 +37,11 @@ Object {
   "id": "yeah",
   "options": Object {
     "id": "wow",
+    "template": undefined,
     "type": "book",
+  },
+  "parameters": Object {
+    "foo": "bar",
   },
   "title": "Yeah",
   "type": "document",
@@ -41,6 +53,7 @@ Object {
   "id": "yeah",
   "options": Object {
     "id": "wow",
+    "template": undefined,
     "type": "post",
   },
   "title": "Yeah",
