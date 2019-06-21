@@ -44,29 +44,25 @@ export default class BlockExtrasOverlay extends React.Component<Props, State> {
   componentDidMount() {
     window.addEventListener('resize', this.handleResize)
     // Wait for things to get finshed rendered before rendering the aboslute positions
-    this._setVisibleTimer = setTimeout(
-      () =>
-        window.requestAnimationFrame(() => {
+    this._setVisibleTimer = setTimeout(() => {
+      this._setVisibleRequest = window.requestAnimationFrame(() => {
+        this.setState({visible: true})
+        this._setVisibleTimer = setTimeout(() => {
           this.setState({visible: true})
-          this._setVisibleTimer = setTimeout(() => {
-            this.setState({visible: true})
-          }, 200)
-        }),
-      0
-    )
+        }, 200)
+      })
+    }, 0)
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize)
     clearTimeout(this._setVisibleTimer)
+    window.cancelAnimationFrame(this._setVisibleRequest)
   }
 
   // Don't update this while user is writing
   shouldComponentUpdate(nextProps: Props) {
-    if (nextProps.userIsWritingText === true) {
-      return false
-    }
-    return true
+    return !nextProps.userIsWritingText
   }
 
   handleResize = () => {
@@ -146,13 +142,11 @@ export default class BlockExtrasOverlay extends React.Component<Props, State> {
 
   render() {
     const {visible} = this.state
-    if (!visible) {
-      return null
-    }
     const {editorValue} = this.props
-    if (!editorValue) {
+    if (!visible || !editorValue) {
       return null
     }
+
     return <Fragment>{editorValue.document.nodes.map(this.renderBlockExtras)}</Fragment>
   }
 }
