@@ -20,8 +20,10 @@ import {SerializeError} from './SerializeError'
 import {ComponentInput, ComponentBuilder} from './Component'
 import {DocumentListItemBuilder, DocumentListItemInput} from './DocumentListItem'
 import {Ordering} from './Sort'
+import {SchemaType} from './parts/Schema'
 
 const StructureBuilder = {
+  defaults: getDefaultStructure,
   documentTypeList: getDocumentTypeList,
   documentTypeListItem: getDocumentTypeListItem,
   documentTypeListItems: getDocumentTypeListItems,
@@ -46,6 +48,23 @@ const StructureBuilder = {
   },
 
   divider: (): Divider => ({id: uniqueId('__divider__'), type: 'divider'})
+}
+
+function hasIcon(schemaType?: SchemaType | string) {
+  if (!schemaType || typeof schemaType === 'string') {
+    return false
+  }
+
+  return schemaType.icon
+}
+
+function getDefaultStructure(): ListBuilder {
+  const items = getDocumentTypeListItems()
+  return new ListBuilder()
+    .id('__root__')
+    .title('Content')
+    .items(items)
+    .showIcons(items.some(item => hasIcon(item.getSchemaType())))
 }
 
 export {StructureBuilder, SerializeError}
