@@ -92,6 +92,7 @@ export default withRouterHOC(
               params: PropTypes.object
             })
           ),
+          template: PropTypes.string,
           editDocumentId: PropTypes.string,
           legacyEditDocumentId: PropTypes.string,
           type: PropTypes.string,
@@ -172,12 +173,7 @@ export default withRouterHOC(
           distinctUntilChanged(),
           map(maybeSerialize),
           switchMap(structure =>
-            resolvePanes(
-              structure,
-              (props.router.state.panes || []).map(pane => pane.id),
-              this.state.panes,
-              fromIndex
-            )
+            resolvePanes(structure, props.router.state.panes || [], this.state.panes, fromIndex)
           ),
           switchMap(panes => this.maybeAddEditorPane(panes, props)),
           debounce(panes => interval(hasLoading(panes) ? 50 : 0))
@@ -193,7 +189,8 @@ export default withRouterHOC(
         nextRouterState.editDocumentId !== prevRouterState.editDocumentId ||
         nextRouterState.legacyEditDocumentId !== prevRouterState.legacyEditDocumentId ||
         nextRouterState.type !== prevRouterState.type ||
-        nextRouterState.action !== prevRouterState.action
+        nextRouterState.action !== prevRouterState.action ||
+        nextRouterState.template !== prevRouterState.template
       )
     }
 
@@ -269,6 +266,7 @@ export default withRouterHOC(
         return <StructureError error={error} />
       }
 
+      // @todo include params in keys?
       const routerPanes = this.props.router.state.panes || []
       const keys = routerPanes.map(pane => pane.id) || this.getFallbackKeys()
 

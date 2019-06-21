@@ -1,6 +1,7 @@
 /* eslint-disable react/no-multi-comp, complexity */
 import React from 'react'
 import {storiesOf} from 'part:@sanity/storybook'
+import TemplatePreview from 'part:@sanity/components/previews/initial-value-template'
 import DefaultPreview from 'part:@sanity/components/previews/default'
 import DetailPreview from 'part:@sanity/components/previews/detail'
 import InlinePreview from 'part:@sanity/components/previews/inline'
@@ -12,6 +13,7 @@ import {withKnobs, boolean, number, text, select} from 'part:@sanity/storybook/a
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import LinkIcon from 'part:@sanity/base/link-icon'
+import FileIcon from 'part:@sanity/base/file-icon'
 
 const renderMedia = dimensions => {
   return <img src="http://www.fillmurray.com/300/300" alt="test" />
@@ -115,7 +117,6 @@ const centered = function(storyFn) {
     <div style={style}>
       <div
         style={{
-          boxShadow: '0 1px 20px #000',
           width: `${number('width', 300, {range: true, min: 100, max: 2000}, 'test')}px`
         }}
       >
@@ -631,6 +632,22 @@ storiesOf('Previews')
         >
           {boolean('Custom children', false) && renderCustomChildren()}
         </BlockImagePreview>
+      </Sanity>
+    )
+  })
+  .add('Template', () => {
+    return (
+      <Sanity
+        part="part:@sanity/components/previews/initial-value-template"
+        propTables={[TemplatePreview]}
+      >
+        <TemplatePreview
+          // eslint-disable-next-line no-script-url
+          href="javascript://"
+          title={text('title', 'Movie', 'props')}
+          subtitle={text('subtitle', 'Sci-fi', 'props')}
+          icon={FileIcon}
+        />
       </Sanity>
     )
   })

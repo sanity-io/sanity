@@ -36,6 +36,7 @@
     "@sanity/state-router": "0.142.6",
     "@sanity/structure": "0.142.6",
     "@sanity/transaction-collator": "0.142.6",
+    "@sanity/util": "0.142.6",
     "@sanity/validation": "0.142.6",
     "history": "^4.6.3",
     "lodash": "^4.17.4",
