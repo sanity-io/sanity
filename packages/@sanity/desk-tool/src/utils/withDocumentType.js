@@ -5,26 +5,15 @@ import LoadingPane from '../pane/LoadingPane'
 import ErrorPane from '../pane/ErrorPane'
 
 // Resolves the type for a document if not present
-export default function withDocument(Pane) {
+export default function withDocumentType(Pane) {
   return class WithDocumentType extends React.PureComponent {
     static displayName = `withDocumentType(${Pane.displayName || Pane.name})`
 
     static propTypes = {
-      isSelected: PropTypes.bool.isRequired,
-      isCollapsed: PropTypes.bool.isRequired,
-      onExpand: PropTypes.func,
-      onCollapse: PropTypes.func,
-      path: PropTypes.arrayOf(PropTypes.string),
       options: PropTypes.shape({
         id: PropTypes.string.isRequired,
         type: PropTypes.string
       }).isRequired
-    }
-
-    static defaultProps = {
-      path: [],
-      onExpand: undefined,
-      onCollapse: undefined
     }
 
     constructor(props) {
@@ -69,7 +58,7 @@ export default function withDocument(Pane) {
       }
 
       // Undecided, still loading type from server
-      return <LoadingPane {...this.props} />
+      return <LoadingPane {...this.props} message="Resolving document type…" />
     }
   }
 }
