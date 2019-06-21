@@ -367,6 +367,10 @@
       "description": "Default preview item"
     },
     {
+      "name": "part:@sanity/components/previews/initial-value-template",
+      "description": "Preview for select initial value"
+    },
+    {
       "name": "part:@sanity/components/previews/detail",
       "description": "Shows Title, subtitle, description, media and date"
     },
@@ -625,6 +629,10 @@
     {
       "implements": "part:@sanity/components/edititem/fold",
       "path": "edititem/EditItemFoldOut.js"
+    },
+    {
+      "implements": "part:@sanity/components/previews/initial-value-template",
+      "path": "previews/TemplatePreview.js"
     },
     {
       "implements": "part:@sanity/components/previews/default",

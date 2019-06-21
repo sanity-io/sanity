@@ -9,12 +9,13 @@ import {FormBuilder, checkoutPair} from 'part:@sanity/form-builder'
 import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import schema from 'part:@sanity/base/schema'
 import Button from 'part:@sanity/components/buttons/default'
+import historyStore from 'part:@sanity/base/datastore/history'
 import client from 'part:@sanity/base/client'
 import withDocumentType from '../utils/withDocumentType'
 import styles from './styles/EditorWrapper.css'
 import Editor from './Editor'
 import UseState from '../utils/UseState'
-import historyStore from 'part:@sanity/base/datastore/history'
+import withInitialValue from '../utils/withInitialValue'
 
 const INITIAL_DOCUMENT_STATE = {
   isLoading: true,
@@ -90,19 +91,24 @@ function isRecoverable(draft, published) {
   return !exists(draft, published) && (draft.deletedSnapshot || published.deletedSnapshot)
 }
 
-export default withDocumentType(
+const withWrappers = Pane => withInitialValue(withDocumentType(Pane))
+
+export default withWrappers(
   class EditorPane extends React.Component {
     static propTypes = {
       title: PropTypes.string,
       index: PropTypes.number.isRequired,
+      initialValue: PropTypes.object, // eslint-disable-line react/forbid-prop-types
       options: PropTypes.shape({
         id: PropTypes.string.isRequired,
-        type: PropTypes.string.isRequired
+        type: PropTypes.string.isRequired,
+        template: PropTypes.string
       }).isRequired
     }
 
     static defaultProps = {
-      title: null
+      title: null,
+      initialValue: undefined
     }
 
     state = INITIAL_STATE
@@ -390,13 +396,13 @@ export default withDocumentType(
 
     handleChange = event => {
       const {published, draft} = this.state
-      const typeName = this.props.options.type
+      const initialValue = this.getInitialValue()
 
       if (this.isLiveEditEnabled()) {
         // No drafting, patch and commit the published document
         this.published.createIfNotExists({
           _id: this.getPublishedId(),
-          _type: typeName
+          ...initialValue
         })
         this.published.patch(event.patches)
       } else {
@@ -404,7 +410,7 @@ export default withDocumentType(
           this.draft.createIfNotExists({
             ...omit(published.snapshot, '_updatedAt'),
             _id: this.getDraftId(),
-            _type: typeName
+            ...initialValue
           })
         }
         this.draft.patch(event.patches)
@@ -526,7 +532,15 @@ export default withDocumentType(
       )
     }
 
+    getInitialValue() {
+      const {draft, published} = this.state
+      const typeName = this.props.options.type
+      const base = {_type: typeName}
+      return exists(draft, published) ? base : {...base, ...this.props.initialValue}
+    }
+
     render() {
+      const initialValue = this.getInitialValue()
       const {options, index, title} = this.props
       const typeName = options.type
       const schemaType = schema.get(typeName)
@@ -566,6 +580,7 @@ export default withDocumentType(
           published={published.snapshot}
           draft={draft.snapshot}
           markers={markers}
+          initialValue={initialValue}
           validationPending={validationPending}
           isLoading={draft.isLoading || published.isLoading}
           isRestoring={isRestoring}

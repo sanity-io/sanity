@@ -1,4 +1,5 @@
 import memoizeOne from 'memoize-one'
+import {getTemplates} from '@sanity/base/initial-values'
 import {Schema, getDefaultSchema, SchemaType} from './parts/Schema'
 import {dataAspects, DataAspectsResolver} from './parts/DataAspects'
 import {getPlusIcon, getListIcon, getDetailsIcon} from './parts/Icon'
@@ -10,12 +11,24 @@ import {EditorBuilder} from './Editor'
 import {isActionEnabled} from './parts/documentActionUtils'
 import {DocumentTypeListBuilder} from './DocumentTypeList'
 import {IntentChecker} from './Intent'
+import {Template} from './templates/Template'
+import {ChildResolverOptions} from './ChildResolver'
 
 const PlusIcon = getPlusIcon()
 const ListIcon = getListIcon()
 const DetailsIcon = getDetailsIcon()
 
 const getDataAspectsForSchema: (schema: Schema) => DataAspectsResolver = memoizeOne(dataAspects)
+
+const paneCanHandleTemplateCreation = (templateId: string, paneSchemaType: string): boolean => {
+  if (!templateId) {
+    return false
+  }
+
+  const templates = getTemplates() as Template[]
+  const template = templates.find(tpl => tpl.id === templateId)
+  return template ? template.schemaType === paneSchemaType : false
+}
 
 export const DEFAULT_INTENT_HANDLER = Symbol('Document type list canHandleIntent')
 
@@ -58,9 +71,10 @@ export function getDocumentTypeList(typeName: string, sanitySchema?: Schema): Do
   const showIcons = shouldShowIcon(type)
   const canCreate = isActionEnabled(type, 'create')
 
-  const intentChecker: IntentChecker = (intentName, params): boolean =>
-    Boolean(intentName === 'edit' && params && params.id && params.type === typeName) ||
-    Boolean(intentName === 'create' && params && params.type === typeName)
+  const intentChecker: IntentChecker = (intentName, params = {}): boolean =>
+    Boolean(intentName === 'edit' && params.id && params.type === typeName) ||
+    Boolean(intentName === 'create' && params.type === typeName) ||
+    Boolean(intentName === 'create' && paneCanHandleTemplateCreation(params.template, typeName))
 
   intentChecker.identity = DEFAULT_INTENT_HANDLER
 
@@ -77,12 +91,17 @@ export function getDocumentTypeList(typeName: string, sanitySchema?: Schema): Do
       {id: 'layout', title: 'Layout'},
       {id: 'actions', title: 'Actions'}
     ])
-    .child((documentId: string) =>
-      new EditorBuilder()
+    .child((documentId: string, context: ChildResolverOptions) => {
+      const params = context.parameters || {}
+      const {template, ...parameters} = params
+      const editor = new EditorBuilder()
         .id('editor')
         .schemaType(type)
         .documentId(documentId)
-    )
+        .parameters(parameters)
+
+      return typeof template === 'string' ? editor.template(template) : editor
+    })
     .canHandleIntent(intentChecker)
     .menuItems([
       // Create new (from action button)

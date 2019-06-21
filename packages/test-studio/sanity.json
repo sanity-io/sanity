@@ -73,6 +73,10 @@
       "path": "src/deskStructure.js"
     },
     {
+      "name": "part:@sanity/base/initial-value-templates",
+      "path": "src/templates.js"
+    },
+    {
       "name": "part:@sanity/dashboard/widget/test-dummy",
       "implements": "part:@sanity/dashboard/widget",
       "path": "src/widgets/DummyWidget"

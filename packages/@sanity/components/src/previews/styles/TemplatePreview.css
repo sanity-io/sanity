@@ -1,0 +1,57 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  text-decoration: none;
+  background-color: var(--component-bg);
+  color: var(--text-color-secondary);
+  border-radius: var(--border-radius-medium);
+  border: 1px solid var(--hairline-color);
+
+  @nest &:focus {
+    background-color: var(--component-bg);
+    border-color: var(--selectable-item-base) a(50%);
+    box-shadow: 0 0 0 3px color(var(--selectable-item-base) a(50%));
+
+    @nest &:active {
+      background-color: var(--selectable-item-color-active);
+    }
+  }
+}
+
+.heading {
+  min-width: 0;
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.title {
+  composes: ellipsis;
+  font-weight: normal;
+  font-size: var(--font-size-large);
+  padding-left: var(--medium-padding);
+  margin-bottom: 0;
+}
+
+.subtitle {
+  composes: ellipsis;
+  font-weight: normal;
+  font-size: var(--font-size-base);
+  padding-left: var(--medium-padding);
+  margin-top: 0.25em;
+}
+
+.media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--font-size-large) + var(--font-size-base) + 0.25rem);
+  padding: var(--medium-padding);
+}
