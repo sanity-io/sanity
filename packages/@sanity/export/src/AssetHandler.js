@@ -152,12 +152,13 @@ class AssetHandler {
     const contentLength = stream.headers['content-length']
     const remoteSha1 = stream.headers['x-sanity-sha1']
     const remoteMd5 = stream.headers['x-sanity-md5']
+    const hasHash = Boolean(remoteSha1 || remoteMd5)
     const method = md5 ? 'md5' : 'sha1'
 
     let differs = false
-    if (md5) {
+    if (remoteMd5 && md5) {
       differs = remoteMd5 !== md5
-    } else if (remoteSha1) {
+    } else if (remoteSha1 && sha1) {
       differs = remoteSha1 !== sha1
     }
 
@@ -166,13 +167,14 @@ class AssetHandler {
       return this.downloadAsset(assetDoc, dstPath, attemptNum + 1)
     } else if (differs) {
       const details = [
-        method === 'md5'
-          ? `md5 should be ${remoteMd5}, got ${md5}`
-          : `sha1 should be ${remoteSha1}, got ${sha1}`,
+        hasHash &&
+          (method === 'md5'
+            ? `md5 should be ${remoteMd5}, got ${md5}`
+            : `sha1 should be ${remoteSha1}, got ${sha1}`),
 
         contentLength &&
           parseInt(contentLength, 10) !== size &&
-          `Image should be ${contentLength} bytes, got ${size}`,
+          `Asset should be ${contentLength} bytes, got ${size}`,
 
         `Did not succeed after ${attemptNum} attempts.`
       ]
@@ -183,7 +185,7 @@ class AssetHandler {
       this.queue.clear()
 
       const error = new Error(
-        `Failed to download image at ${assetDoc.url}, giving up. ${detailsString}`
+        `Failed to download asset at ${assetDoc.url}, giving up. ${detailsString}`
       )
 
       this.reject(error)
