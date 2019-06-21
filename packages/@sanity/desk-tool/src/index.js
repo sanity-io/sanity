@@ -4,7 +4,6 @@ import {route} from 'part:@sanity/base/router'
 import DeskTool from './DeskTool'
 import {parsePanesSegment} from './utils/parsePanesSegment'
 import UUID from '@sanity/uuid'
-import {templateExists, getTemplateById} from '@sanity/base/initial-values'
 
 function maybeRemapStringSegment(segment) {
   return typeof segment === 'string' ? {id: segment} : segment
@@ -41,12 +40,14 @@ function getIntentState(intentName, params, currentState) {
   const paneSegments = (currentState && currentState.panes) || []
   const activePanes = state.activePanes || []
   const editDocumentId = params.id || UUID()
+  const isTemplate = intentName === 'create' && params.template
 
   // Loop through open panes and see if any of them can handle the intent
   for (let i = activePanes.length - 1; i >= 0; i--) {
     const pane = activePanes[i]
     if (pane.canHandleIntent && pane.canHandleIntent(intentName, params)) {
-      return {panes: paneSegments.slice(0, i).concat({id: editDocumentId})}
+      const paneParams = isTemplate ? {template: params.template} : undefined
+      return {panes: paneSegments.slice(0, i).concat({id: editDocumentId, params: paneParams})}
     }
   }
 
@@ -55,9 +56,10 @@ function getIntentState(intentName, params, currentState) {
 
 function getFallbackIntentState({documentId, intentName, params}) {
   const editDocumentId = documentId
-  const template = intentName === 'create' && params.template && getTemplateById(params.template)
-  return template
-    ? {editDocumentId, type: template.schemaType, template: params.template}
+  const isTemplateCreate = intentName === 'create' && params.template
+
+  return isTemplateCreate
+    ? {editDocumentId, template: params.template}
     : {editDocumentId, type: params.type || '*'}
 }
 
@@ -77,7 +79,7 @@ export default {
     return (
       (intentName === 'edit' && params.id) ||
       (intentName === 'create' && params.type) ||
-      (intentName === 'create' && params.template && templateExists(params.template))
+      (intentName === 'create' && params.template)
     )
   },
   getIntentState,

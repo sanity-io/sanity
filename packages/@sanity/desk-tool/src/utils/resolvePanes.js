@@ -1,16 +1,17 @@
+import {get} from 'lodash'
 import shallowEquals from 'shallow-equals'
 import {Observable, from, of as observableOf} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
-import generateHelpUrl from '@sanity/generate-help-url'
 import isSubscribable from './isSubscribable'
 import validateStructure from './validateStructure'
 import serializeStructure from './serializeStructure'
+import generateHelpUrl from '@sanity/generate-help-url'
 
 export const LOADING = Symbol('LOADING')
-export function resolvePanes(structure, ids, prevStructure, fromIndex) {
+export function resolvePanes(structure, paneSegments, prevStructure, fromIndex) {
   const waitStructure = isSubscribable(structure) ? from(structure) : observableOf(structure)
   return waitStructure.pipe(
-    switchMap(struct => resolveForStructure(struct, ids, prevStructure, fromIndex))
+    switchMap(struct => resolveForStructure(struct, paneSegments, prevStructure, fromIndex))
   )
 }
 
@@ -24,7 +25,7 @@ function getInitialPanes(prevStructure, numPanes, fromIndex) {
   return remains.concat(allLoading.slice(fromIndex))
 }
 
-function resolveForStructure(structure, ids, prevStructure, fromIndex) {
+function resolveForStructure(structure, paneSegments, prevStructure, fromIndex) {
   return Observable.create(subscriber => {
     try {
       validateStructure(structure)
@@ -33,7 +34,7 @@ function resolveForStructure(structure, ids, prevStructure, fromIndex) {
       return unsubscribe
     }
 
-    const paneIds = [structure.id].concat(ids).filter(Boolean)
+    const paneIds = [structure.id].concat(paneSegments.map(seg => seg.id)).filter(Boolean)
     let panes = getInitialPanes(prevStructure, paneIds.length, fromIndex + 1)
     const subscriptions = []
 
@@ -50,9 +51,10 @@ function resolveForStructure(structure, ids, prevStructure, fromIndex) {
         return
       }
 
+      const parameters = get(paneSegments, [index - 1, 'params'])
       const id = paneIds[index]
       const parent = panes[index - 1]
-      const context = {parent, index, path: paneIds.slice(0, index + 1)}
+      const context = {parent, index, path: paneIds.slice(0, index + 1), parameters}
       if (index === 0) {
         subscribeForUpdates(structure, index, context)
         return
