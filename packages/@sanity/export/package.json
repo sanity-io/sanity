@@ -1,6 +1,6 @@
 {
   "name": "@sanity/export",
-  "version": "0.140.36",
+  "version": "0.140.38",
   "description": "Export Sanity documents and assets",
   "main": "lib/export.js",
   "engines": {
