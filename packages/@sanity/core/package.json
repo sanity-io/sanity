@@ -41,7 +41,7 @@
     "debug": "^3.1.0",
     "deep-sort-object": "^1.0.1",
     "es6-promisify": "^6.0.0",
-    "execa": "^0.10.0",
+    "execa": "^1.0.0",
     "filesize": "^3.5.6",
     "fs-extra": "^6.0.1",
     "get-uri": "^2.0.2",
@@ -58,7 +58,7 @@
     "pretty-ms": "^3.2.0",
     "resolve-from": "^4.0.0",
     "rimraf": "^2.6.2",
-    "semver": "^5.5.0",
+    "semver": "^6.1.2",
     "simple-get": "^3.0.2",
     "tar-fs": "^1.16.0",
     "terser": "^3.10.11"
