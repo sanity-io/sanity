@@ -26,6 +26,8 @@
   --default-button-danger-color--inverted: #fff;
   --default-button-success-color: var(--state-success-color);
   --default-button-success-color--inverted: #fff;
+  --default-button-warning-color: var(--state-warning-color);
+  --default-button-warning-color--inverted: var(--state-warning-color--inverted);
 
   /* Shadows */
   --shadow-base: var(--brand-darkest);
@@ -58,4 +60,7 @@
   --block-extras-width: 10rem;
   --block-extras-border-color: #ccc;
   --block-extras-background-color: #eee;
+
+  /* Others */
+  --pane-header-height: 3.4375rem; /* 55px */
 }
