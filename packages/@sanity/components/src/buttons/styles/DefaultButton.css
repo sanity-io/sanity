@@ -5,6 +5,7 @@
   --button-focus-shadow: 0 0 0 3px color(var(--input-border-color-focus) a(50%));
   --button-focus-shadow--danger: 0 0 0 3px color(var(--state-danger-color) a(50%));
   --button-focus-shadow--success: 0 0 0 3px color(var(--state-success-color) a(50%));
+  --button-focus-shadow--warning: 0 0 0 3px color(var(--state-warning-color) a(50%));
 }
 
 @keyframes focused {
@@ -414,6 +415,57 @@ span.content {
     @media (hover: hover) {
       @nest &:not(.disabled):hover {
         background-color: color(var(--state-success-color) a(5%));
+      }
+    }
+  }
+}
+
+.color__warning {
+  border-color: var(--default-button-warning-color);
+  background-color: var(--default-button-warning-color);
+  color: var(--default-button-warning-color--inverted);
+
+  @nest & .spinner {
+    background-color: var(--default-button-warning-color);
+    color: var(--state-warning-color--inverted);
+  }
+
+  @nest &.root:focus {
+    border-color: var(--state-warning-color);
+    box-shadow: var(--button-focus-shadow--warning);
+  }
+
+  @media (hover: hover) {
+    @nest &:not(.disabled):hover {
+      background-color: color(var(--default-button-warning-color) lightness(+ 5%));
+    }
+  }
+
+  @nest &.inverted {
+    border-color: color(var(--state-warning-color) a(50%));
+    background-color: transparent;
+    color: var(--default-button-warning-color);
+
+    @nest & .spinner {
+      background-color: var(--white);
+      color: var(--default-button-warning-color);
+    }
+
+    @media (hover: hover) {
+      @nest &:not(.disabled):hover {
+        background-color: color(var(--state-warning-color) a(5%));
+        border-color: var(--default-button-warning-color);
+      }
+    }
+  }
+
+  @nest &.simple {
+    background-color: transparent;
+    color: var(--state-warning-color);
+
+    @media (hover: hover) {
+      @nest &:not(.disabled):hover {
+        background-color: color(var(--state-warning-color) a(5%));
       }
     }
   }

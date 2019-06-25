@@ -16,7 +16,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
 
     static propTypes = {
       kind: PropTypes.oneOf(['default', 'simple']),
-      color: PropTypes.oneOf(['primary', 'success', 'danger', 'white']),
+      color: PropTypes.oneOf(['primary', 'success', 'danger', 'white', 'warning']),
       onClick: PropTypes.func,
       children: PropTypes.node,
       inverted: PropTypes.bool,
@@ -26,7 +26,7 @@ export default function createButtonLike(Component, {displayName, defaultProps =
       className: PropTypes.string,
       disabled: PropTypes.bool,
       tabIndex: PropTypes.number,
-      padding: PropTypes.oneOf(['default', 'small']),
+      padding: PropTypes.oneOf(['default', 'small', 'none']),
       bleed: PropTypes.bool
     }
 
