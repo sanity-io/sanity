@@ -892,6 +892,14 @@
       "path": "presence/PresenceListItem.js"
     },
     {
+      "name": "part:@sanity/components/history/list-item",
+      "description": "History list item"
+    },
+    {
+      "implements": "part:@sanity/components/history/list-item",
+      "path": "history/ListItem.js"
+    },
+    {
       "implements": "part:@sanity/base/component",
       "path": "buttons/story.js"
     },
@@ -998,6 +1006,10 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "presence/story.js"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "history/story.js"
     },
     {
       "implements": "part:@sanity/base/component",
