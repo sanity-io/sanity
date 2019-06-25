@@ -16,10 +16,11 @@
   --font-size-large: 1.25rem;
   --font-size-small: 0.875rem;
   --font-size-xsmall: 0.75rem;
+  --font-size-xsmall--uppercase: calc(11 / 16 * 1rem); /* 11px when base is 16px */
   --font-size-tiny: 0.625rem;
   --font-size-base--relative: 1em;
   --font-size-large--relative: 1.25em;
-  --font-size-small--relative: 0.875em;
+  --font-size-xsmall--relative-uppercase: calc(11 / 16 * 1em); /* 11px when base is 16px */
   --font-size-xsmall--relative: 0.75em;
   --font-size-tiny--relative: 0.625em;
   --font-size-h1: 2.625rem;

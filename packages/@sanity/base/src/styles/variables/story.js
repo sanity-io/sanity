@@ -21,9 +21,17 @@ storiesOf('Variables')
       <div>
         <div className={styles.colors}>
           <div className={styles.stateDanger} />
+          <div className={styles.stateDangerFaded} />
+          <div className={styles.stateDangerStrong} />
           <div className={styles.stateSuccess} />
+          <div className={styles.stateSuccessFaded} />
+          <div className={styles.stateSuccessStrong} />
           <div className={styles.stateInfo} />
+          <div className={styles.stateInfoFaded} />
+          <div className={styles.stateInfoStrong} />
           <div className={styles.stateWarning} />
+          <div className={styles.stateWarningFaded} />
+          <div className={styles.stateWarningStrong} />
         </div>
       </div>
     )
