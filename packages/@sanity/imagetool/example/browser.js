@@ -1,4 +1,3 @@
-import 'babel-polyfill'
 import Debug from 'debug'
 import PropTypes from 'prop-types'
 import React from 'react'

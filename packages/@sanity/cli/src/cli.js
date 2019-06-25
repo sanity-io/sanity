@@ -1,6 +1,5 @@
 /* eslint-disable no-console, no-process-exit, no-sync */
 // eslint-disable-next-line import/no-unassigned-import
-import 'babel-polyfill'
 import path from 'path'
 import chalk from 'chalk'
 import fse from 'fs-extra'
