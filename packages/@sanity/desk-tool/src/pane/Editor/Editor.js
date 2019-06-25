@@ -1,20 +1,17 @@
-/* eslint-disable complexity */
-import PropTypes from 'prop-types'
+/* eslint-disable complexity, camelcase */
 // Connects the FormBuilder with various sanity roles
 import React from 'react'
+import PropTypes from 'prop-types'
 import {debounce} from 'lodash'
 import {Tooltip} from 'react-tippy'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import {PreviewFields} from 'part:@sanity/base/preview'
 import {getPublishedId, newDraftFrom} from 'part:@sanity/base/util/draft-utils'
-import {resolveEnabledActions, isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
+import historyStore from 'part:@sanity/base/datastore/history'
+import {isActionEnabled, resolveEnabledActions} from 'part:@sanity/base/util/document-action-utils'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import Button from 'part:@sanity/components/buttons/default'
-import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
-import PopOverDialog from 'part:@sanity/components/dialogs/popover'
-import FormBuilder from 'part:@sanity/form-builder'
 import TrashIcon from 'part:@sanity/base/trash-icon'
-import UndoIcon from 'part:@sanity/base/undo-icon'
 import PublicIcon from 'part:@sanity/base/public-icon'
 import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
 import BinaryIcon from 'part:@sanity/base/binary-icon'
@@ -23,31 +20,32 @@ import documentStore from 'part:@sanity/base/datastore/document'
 import schema from 'part:@sanity/base/schema'
 import Pane from 'part:@sanity/components/panes/default'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
-import SyncIcon from 'part:@sanity/base/sync-icon'
-import CheckIcon from 'part:@sanity/base/check-icon'
 import CheckCircleIcon from 'part:@sanity/base/circle-check-icon'
+import HistoryIcon from 'part:@sanity/base/history-icon'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import resolveProductionPreviewUrl from 'part:@sanity/transitional/production-preview/resolve-production-url?'
-import ValidationList from 'part:@sanity/components/validation/list'
-import ChevronDown from 'part:@sanity/base/chevron-down-icon'
 import WarningIcon from 'part:@sanity/base/warning-icon'
-import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import filterFieldFn$ from 'part:@sanity/desk-tool/filter-fields-fn?'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
-import copyDocument from '../utils/copyDocument'
-import ConfirmUnpublish from '../components/ConfirmUnpublish'
-// import ConfirmDiscard from '../components/ConfirmDiscard'
-import ConfirmDelete from '../components/ConfirmDelete'
-import InspectView from '../components/InspectView'
-import DocTitle from '../components/DocTitle'
-import TimeAgo from '../components/TimeAgo'
-import styles from './styles/Editor.css'
+import copyDocument from '../../utils/copyDocument'
+import ConfirmUnpublish from '../../components/ConfirmUnpublish'
+import ConfirmDelete from '../../components/ConfirmDelete'
+import ConfirmDiscard from '../../components/ConfirmDiscard'
+import InspectView from '../../components/InspectView'
+import DocTitle from '../../components/DocTitle'
+import History from '../History'
+import styles from '../styles/Editor.css'
+import Actions from './Actions'
+import RestoreHistoryButton from './RestoreHistoryButton'
+import EditForm from './EditForm'
+import HistoryForm from './HistoryForm'
+import {map} from 'rxjs/operators'
+
+const BREAKPOINT_SCREEN_MEDIUM = 512
 
 function navigateUrl(url) {
   window.open(url)
 }
-
-const preventDefault = ev => ev.preventDefault()
 
 // Want a nicer api for listen/unlisten
 function listen(target, eventType, callback, useCapture = false) {
@@ -63,16 +61,6 @@ const getDuplicateItem = (draft, published) => ({
   icon: ContentCopyIcon,
   isDisabled: !draft && !published
 })
-
-const getDiscardItem = (draft, published, isLiveEditEnabled) =>
-  isLiveEditEnabled
-    ? null
-    : {
-        action: 'discard',
-        title: 'Discard changes…',
-        icon: UndoIcon,
-        isDisabled: !draft || !published
-      }
 
 const getUnpublishItem = (draft, published, isLiveEditEnabled) =>
   isLiveEditEnabled
@@ -92,6 +80,18 @@ const getDeleteItem = (draft, published) => ({
   danger: true,
   isDisabled: !draft && !published
 })
+
+const getHistoryMenuItem = (draft, published) => {
+  if (window && window.innerWidth > BREAKPOINT_SCREEN_MEDIUM) {
+    return {
+      action: 'browseHistory',
+      title: 'Browse history',
+      icon: HistoryIcon,
+      isDisabled: !(draft || published)
+    }
+  }
+  return null
+}
 
 const getInspectItem = (draft, published) => ({
   action: 'inspect',
@@ -144,9 +144,9 @@ const getProductionPreviewItem = (draft, published) => {
 const getMenuItems = (enabledActions, draft, published, isLiveEditEnabled) =>
   [
     getProductionPreviewItem,
-    enabledActions.includes('delete') && getDiscardItem,
     enabledActions.includes('delete') && getUnpublishItem,
     enabledActions.includes('create') && getDuplicateItem,
+    getHistoryMenuItem,
     getInspectItem,
     enabledActions.includes('delete') && getDeleteItem
   ]
@@ -156,16 +156,24 @@ const getMenuItems = (enabledActions, draft, published, isLiveEditEnabled) =>
 
 const isValidationError = marker => marker.type === 'validation' && marker.level === 'error'
 
+const INITIAL_HISTORY_STATE = {
+  isOpen: false,
+  isLoading: true,
+  error: false,
+  events: [],
+  selectedRev: null
+}
+
 const INITIAL_STATE = {
   inspect: false,
   isMenuOpen: false,
   isCreatingDraft: false,
   showSavingStatus: false,
-  showConfirmDiscard: false,
   showConfirmDelete: false,
   showConfirmUnpublish: false,
   showValidationTooltip: false,
   focusPath: [],
+  historyState: INITIAL_HISTORY_STATE,
   filterField: () => true
 }
 
@@ -191,10 +199,9 @@ export default withRouterHOC(
       }).isRequired,
 
       onDelete: PropTypes.func,
-      onCreate: PropTypes.func,
       onChange: PropTypes.func,
-      onDiscardDraft: PropTypes.func,
       onPublish: PropTypes.func,
+      onRestore: PropTypes.func,
       onUnpublish: PropTypes.func,
       transactionResult: PropTypes.shape({type: PropTypes.string}),
       onClearTransactionResult: PropTypes.func,
@@ -204,9 +211,9 @@ export default withRouterHOC(
       isUnpublishing: PropTypes.bool,
       isPublishing: PropTypes.bool,
       isReconnecting: PropTypes.bool,
+      isRestoring: PropTypes.bool,
       isLoading: PropTypes.bool,
-      isSaving: PropTypes.bool,
-      deletedSnapshot: PropTypes.object
+      isSaving: PropTypes.bool
     }
 
     static defaultProps = {
@@ -217,11 +224,10 @@ export default withRouterHOC(
       isUnpublishing: false,
       isPublishing: false,
       isReconnecting: false,
+      isRestoring: false,
       isCreatingDraft: false,
-      deletedSnapshot: null,
       transactionResult: null,
       onDelete() {},
-      onCreate() {},
       onChange() {},
       onClearTransactionResult() {}
     }
@@ -235,7 +241,13 @@ export default withRouterHOC(
           return
         }
 
-        if (event.ctrlKey && event.code === 'KeyI' && event.altKey && !event.shiftKey) {
+        if (
+          !this.state.historyState.isOpen &&
+          event.ctrlKey &&
+          event.code === 'KeyI' &&
+          event.altKey &&
+          !event.shiftKey
+        ) {
           this.setState(prevState => ({inspect: !prevState.inspect}))
           return
         }
@@ -270,10 +282,13 @@ export default withRouterHOC(
       if (this.duplicate$) {
         this.duplicate$.unsubscribe()
       }
+      if (this._historyEventsSubscription) {
+        this._historyEventsSubscription.unsubscribe()
+      }
     }
 
     // @todo move publishing notification out of this component
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
       this.setState({didPublish: this.props.isPublishing && !nextProps.isPublishing})
 
       if (this.props.isSaving && !nextProps.isSaving) {
@@ -345,18 +360,9 @@ export default withRouterHOC(
       onChange(changeEvent)
     }
 
-    handleRestore = () => {
-      const {deletedSnapshot} = this.props
-      this.props.onCreate(deletedSnapshot)
-    }
-
     handleMenuToggle = evt => {
       evt.stopPropagation()
       this.setState(prevState => ({isMenuOpen: !prevState.isMenuOpen}))
-    }
-
-    handleMenuClose = evt => {
-      this.setState({isMenuOpen: false})
     }
 
     handlePublishRequested = () => {
@@ -385,28 +391,32 @@ export default withRouterHOC(
       this.setState({showConfirmDelete: false})
     }
 
-    handleCancelDiscard = () => {
-      this.setState({showConfirmDiscard: false})
-    }
-
     handleConfirmUnpublish = () => {
       const {onUnpublish} = this.props
       onUnpublish()
       this.setState({showConfirmUnpublish: false})
     }
 
-    handleConfirmDiscard = () => {
-      const {onDiscardDraft, draft} = this.props
-      onDiscardDraft(draft)
-      this.setState({showConfirmDiscard: false})
+    handleConfirmHistoryRestore = () => {
+      const {onRestore} = this.props
+      const selectedEvent = this.findSelectedEvent()
+      if (selectedEvent) {
+        historyStore
+          .getDocumentAtRevision(selectedEvent.displayDocumentId, selectedEvent.rev)
+          .then(document => {
+            onRestore(document)
+            this.setHistoryState({
+              selected: null,
+              isOpen: false
+            })
+          })
+      }
     }
 
     handleConfirmDelete = () => {
-      const {onDelete, onDiscardDraft, published} = this.props
+      const {onDelete, published} = this.props
       if (published) {
         onDelete()
-      } else {
-        onDiscardDraft()
       }
       this.setState({showConfirmDelete: false})
     }
@@ -424,10 +434,6 @@ export default withRouterHOC(
         this.setState({showConfirmDelete: true})
       }
 
-      if (item.action === 'discard') {
-        this.setState({showConfirmDiscard: true})
-      }
-
       if (item.action === 'unpublish') {
         this.setState({showConfirmUnpublish: true})
       }
@@ -438,6 +444,10 @@ export default withRouterHOC(
 
       if (item.action === 'inspect') {
         this.setState({inspect: true})
+      }
+
+      if (item.action === 'browseHistory') {
+        this.handleOpenHistory()
       }
 
       this.setState({isMenuOpen: false})
@@ -458,8 +468,19 @@ export default withRouterHOC(
 
     getTitle(value) {
       const {title: paneTitle, type} = this.props
+      const {historyState} = this.state
       if (paneTitle) {
         return <span>{paneTitle}</span>
+      }
+      if (historyState.isOpen) {
+        return (
+          <>
+            History of{' '}
+            <PreviewFields document={value} type={type} fields={['title']}>
+              {({title}) => (title ? <em>{title}</em> : <em>Untitled</em>)}
+            </PreviewFields>
+          </>
+        )
       }
       if (!value) {
         return `Creating new ${type.title || type.name}`
@@ -487,207 +508,203 @@ export default withRouterHOC(
       )
     }
 
-    renderActions = (props, state) => {
+    renderActions = () => {
       const {draft, published, markers, type, isReconnecting} = this.props
-      const {showSavingStatus, showValidationTooltip} = this.state
-
-      const value = draft || published
-
-      const validation = markers.filter(marker => marker.type === 'validation')
-      const errors = validation.filter(marker => marker.level === 'error')
-      const warnings = validation.filter(marker => marker.level === 'warning')
-
+      const {historyState, handleFocus, showSavingStatus, showValidationTooltip} = this.state
+      if (historyState.isOpen) {
+        return null
+      }
       return (
-        <div className={styles.paneFunctions}>
-          {LanguageFilter && <LanguageFilter />}
-          {showSavingStatus && (
-            <Tooltip
-              className={styles.syncStatusSyncing}
-              arrow
-              theme="light"
-              size="small"
-              distance="0"
-              title="Syncing your content with the Sanity cloud"
-            >
-              <span className={styles.syncSpinnerContainer}>
-                <span className={styles.syncSpinner}>
-                  <SyncIcon />
-                </span>
-                &nbsp;Syncing…
-              </span>
-            </Tooltip>
-          )}
-          {isReconnecting && (
-            <Tooltip
-              className={styles.syncStatusReconnecting}
-              arrow
-              theme="light"
-              size="small"
-              distance="0"
-              title="Connection lost. Reconnecting…"
-            >
-              <span className={styles.syncSpinnerContainer}>
-                <span className={styles.syncSpinner}>
-                  <SyncIcon />
-                </span>
-                &nbsp;Reconnecting…
-              </span>
-            </Tooltip>
-          )}
-          {value &&
-            !showSavingStatus &&
-            !isReconnecting && (
-              <Tooltip
-                className={styles.syncStatusSynced}
-                arrow
-                theme="light"
-                size="small"
-                distance="0"
-                title="Synced with the Sanity cloud"
-              >
-                <CheckIcon /> Synced {this.isLiveEditEnabled() && ' (live)'}
-              </Tooltip>
-            )}
-          {(errors.length > 0 || warnings.length > 0) && (
-            <Tooltip
-              arrow
-              theme="light noPadding"
-              trigger="click"
-              position="bottom"
-              interactive
-              duration={100}
-              open={showValidationTooltip}
-              onRequestClose={this.handleCloseValidationResults}
-              html={
-                <ValidationList
-                  truncate
-                  markers={validation}
-                  showLink
-                  isOpen={showValidationTooltip}
-                  documentType={type}
-                  onClose={this.handleCloseValidationResults}
-                  onFocus={this.handleFocus}
-                />
-              }
-            >
-              <Button
-                color="danger"
-                bleed
-                icon={WarningIcon}
-                padding="small"
-                onClick={this.handleToggleValidationResults}
-              >
-                {errors.length}
-                <span style={{paddingLeft: '0.5em', display: 'flex'}}>
-                  <ChevronDown />
-                </span>
-              </Button>
-            </Tooltip>
-          )}
-        </div>
+        <Actions
+          handleFocus={handleFocus}
+          value={draft || published}
+          markers={markers}
+          type={type}
+          isLiveEditEnabled={this.isLiveEditEnabled()}
+          isReconnecting={isReconnecting}
+          showSavingStatus={showSavingStatus}
+          showValidationTooltip={showValidationTooltip}
+          onCloseValidationResults={this.handleCloseValidationResults}
+          onToggleValidationResults={this.handleToggleValidationResults}
+          onFocus={this.handleFocus}
+        />
       )
     }
 
     renderPublishInfo = () => {
       const {
         draft,
-        markers,
-        published,
-        isReconnecting,
         isCreatingDraft,
         isPublishing,
-        isUnpublishing
+        isReconnecting,
+        isRestoring,
+        isUnpublishing,
+        markers,
+        published
       } = this.props
       const validation = markers.filter(marker => marker.type === 'validation')
       const errors = validation.filter(marker => marker.level === 'error')
       return (
         <>
-          {(isCreatingDraft || isPublishing || isUnpublishing) && (
+          {(isCreatingDraft || isPublishing || isUnpublishing || isRestoring) && (
             <div className={styles.spinnerContainer}>
               {isCreatingDraft && <Spinner center message="Making changes…" />}
               {isPublishing && <Spinner center message="Publishing…" />}
               {isUnpublishing && <Spinner center message="Unpublishing…" />}
+              {isRestoring && <Spinner center message="Restoring changes…" />}
             </div>
           )}
-          <div
-            className={
-              draft && !this.isLiveEditEnabled() ? styles.publishInfo : styles.publishInfoHidden
-            }
+          <Tooltip
+            arrow
+            theme="light"
+            disabled={'ontouchstart' in document.documentElement}
+            className={styles.publishButton}
+            html={this.renderPublishButtonTooltip(errors, published)}
           >
-            <Tooltip
-              arrow
-              theme="light"
-              disabled={'ontouchstart' in document.documentElement}
-              className={styles.publishButton}
-              //title={errors.length > 0 ? 'Fix errors before publishing' : 'Publish (Ctrl+Alt+P)'}
-              html={this.renderPublishButtonTooltip(errors, published)}
+            <Button
+              disabled={isReconnecting || !draft || errors.length > 0}
+              onClick={this.handlePublishRequested}
+              color="primary"
             >
-              <Button
-                disabled={isReconnecting || !draft || errors.length > 0}
-                onClick={this.handlePublishRequested}
-                color="primary"
-              >
-                Publish
+              Publish
+            </Button>
+          </Tooltip>
+          <div className={styles.publishInfoUndoButton}>
+            {!published && (
+              <Button kind="simple" onClick={() => this.setState({showConfirmDelete: true})}>
+                Delete document
               </Button>
-            </Tooltip>
-            <div className={styles.publishInfoUndoButton}>
-              {published && (
-                <Button kind="simple" onClick={() => this.setState({showConfirmDiscard: true})}>
-                  Discard changes
-                </Button>
-              )}
-              {this.state.showConfirmDiscard && (
-                <PopOverDialog
-                  onClickOutside={this.handleCancelDiscard}
-                  useOverlay={false}
-                  hasAnimation
-                >
-                  <div>
-                    <div className={styles.popOverText}>
-                      <strong>Are you sure</strong> you want to discard all changes since last published?
-                    </div>
-                    <ButtonGrid>
-                      <Button kind="simple" onClick={this.handleCancelDiscard}>
-                        Cancel
-                      </Button>
-                      <Button color="danger" onClick={this.handleConfirmDiscard}>
-                        Discard
-                      </Button>
-                    </ButtonGrid>
-                  </div>
-                </PopOverDialog>
-              )}
-              {!published && (
-                <Button kind="simple" onClick={() => this.setState({showConfirmDelete: true})}>
-                  Delete document
-                </Button>
-              )}
-            </div>
+            )}
           </div>
         </>
+      )
+    }
+
+    findSelectedEvent() {
+      const {events, selectedRev} = this.state.historyState
+      return events.find(
+        event => event.rev === selectedRev || event.transactionIds.includes(selectedRev)
+      )
+    }
+
+    renderHistoryInfo = () => {
+      const {isReconnecting} = this.props
+      const {historyState} = this.state
+      const selectedEvent = this.findSelectedEvent()
+
+      const isLatestEvent = historyState.events[0] === selectedEvent
+      return (
+        <RestoreHistoryButton
+          disabled={isReconnecting || !historyState.isOpen || isLatestEvent}
+          onRestore={this.handleConfirmHistoryRestore}
+        />
+      )
+    }
+
+    setHistoryState = nextHistoryState => {
+      this.setState(prevState => ({historyState: {...prevState.historyState, ...nextHistoryState}}))
+    }
+
+    handleOpenHistory = () => {
+      if (this.state.historyState.isOpen) {
+        return
+      }
+      const {draft, published} = this.props
+      this.setHistoryState({...INITIAL_HISTORY_STATE, isOpen: true})
+      const events$ = historyStore.historyEventsFor(getPublishedId((draft || published)._id)).pipe(
+        map((events, i) => {
+          if (i === 0) {
+            this.setHistoryState({isLoading: false, selectedRev: events[0].rev})
+          }
+          this.setHistoryState({events: events})
+          return events
+        })
+      )
+
+      this._historyEventsSubscription = events$.subscribe()
+    }
+
+    handleCloseHistory = () => {
+      this._historyEventsSubscription.unsubscribe()
+      this.setHistoryState({
+        isOpen: false,
+        historyEvent: undefined
+      })
+    }
+
+    renderStaticContent = () => {
+      const {draft} = this.props
+      return (
+        <div
+          className={
+            (draft || this.state.historyState.isOpen) && !this.isLiveEditEnabled()
+              ? styles.publishInfo
+              : styles.publishInfoHidden
+          }
+        >
+          {this.state.historyState.isOpen && this.renderHistoryInfo()}
+          {!this.state.historyState.isOpen && draft && this.renderPublishInfo()}
+        </div>
+      )
+    }
+
+    handleHistorySelect = event => {
+      this.setHistoryState({
+        selectedRev: event.rev
+      })
+    }
+
+    renderForm() {
+      const {type, markers, draft, published, patchChannel} = this.props
+      const {historyState, focusPath, filterField, isReconnecting} = this.state
+      const selectedEvent = this.findSelectedEvent()
+
+      return historyState.isOpen && !historyState.isLoading && selectedEvent ? (
+        <HistoryForm
+          isLatest={selectedEvent === historyState.events[0]}
+          event={selectedEvent}
+          schema={schema}
+          type={type}
+        />
+      ) : (
+        <EditForm
+          draft={draft}
+          filterField={filterField}
+          focusPath={focusPath}
+          isLiveEditEnabled={this.isLiveEditEnabled()}
+          markers={markers}
+          onBlur={this.handleBlur}
+          onChange={this.handleChange}
+          onFocus={this.handleFocus}
+          onShowHistory={this.handleOpenHistory}
+          patchChannel={patchChannel}
+          published={published}
+          readOnly={isReconnecting || !isActionEnabled(type, 'update')}
+          schema={schema}
+          type={type}
+          value={draft || published || {_type: type.name}}
+        />
       )
     }
 
     render() {
       const {
         draft,
-        markers,
         published,
         type,
         isLoading,
         isReconnecting,
-        patchChannel,
         transactionResult,
         onClearTransactionResult
       } = this.props
 
       const {
         inspect,
-        focusPath,
         showConfirmDelete,
         showConfirmUnpublish,
+        showConfirmDiscard,
         didPublish,
-        filterField
+        historyState
       } = this.state
 
       const value = draft || published
@@ -715,95 +732,89 @@ export default withRouterHOC(
 
       const enabledActions = resolveEnabledActions(type)
       return (
-        <Pane
-          styles={this.props.paneStyles}
-          index={this.props.index}
-          title={this.getTitle(value)}
-          onAction={this.handleMenuAction}
-          menuItems={getMenuItems(enabledActions, draft, published, this.isLiveEditEnabled())}
-          renderActions={this.renderActions}
-          onMenuToggle={this.handleMenuToggle}
-          isSelected // last pane is always selected for now
-          staticContent={this.renderPublishInfo()}
-          contentMaxWidth={672}
-        >
-          <div className={styles.root}>
-            <div className={styles.top}>
-              {!this.isLiveEditEnabled() && (
-                <>
-                  {published ? (
-                    <strong>
-                      Published <TimeAgo time={published._updatedAt} />
-                    </strong>
-                  ) : (
-                    <strong>Not published</strong>
-                  )}
-                </>
-              )}
-              {value && (
-                <>
-                  {!this.isLiveEditEnabled() && <span> · </span>}
-                  <span>
-                    Edited <TimeAgo time={value._updatedAt} />
-                  </span>
-                </>
-              )}
-            </div>
-            <form
-              className={styles.editor}
-              onSubmit={preventDefault}
-              id="Sanity_Default_DeskTool_Editor_ScrollContainer"
-            >
-              <FormBuilder
-                schema={schema}
-                patchChannel={patchChannel}
-                value={draft || published || {_type: type.name}}
-                type={type}
-                filterField={filterField}
-                readOnly={isReconnecting || !isActionEnabled(type, 'update')}
-                onBlur={this.handleBlur}
-                onFocus={this.handleFocus}
-                focusPath={focusPath}
-                onChange={this.handleChange}
-                markers={markers}
-              />
-            </form>
-            {afterEditorComponents.map((AfterEditorComponent, i) => (
-              <AfterEditorComponent key={i} documentId={published._id} />
-            ))}
+        <div className={historyState.isOpen ? styles.paneWrapperWithHistory : styles.paneWrapper}>
+          {historyState.isOpen && (
+            <History
+              documentId={getPublishedId(value._id)}
+              onClose={this.handleCloseHistory}
+              onItemSelect={this.handleHistorySelect}
+              lastEdited={value && new Date(value._updatedAt)}
+              published={published}
+              draft={draft}
+              events={historyState.events}
+              isLoading={historyState.isLoading}
+              error={historyState.error}
+              selectedEvent={this.findSelectedEvent()}
+            />
+          )}
+          <Pane
+            styles={this.props.paneStyles}
+            index={this.props.index}
+            title={this.getTitle(value)}
+            onAction={this.handleMenuAction}
+            menuItems={
+              historyState.isOpen
+                ? []
+                : getMenuItems(enabledActions, draft, published, this.isLiveEditEnabled())
+            }
+            renderActions={this.renderActions}
+            onMenuToggle={this.handleMenuToggle}
+            isSelected // last pane is always selected for now
+            staticContent={this.renderStaticContent()}
+            contentMaxWidth={672}
+            minSize={historyState.isOpen && 1000}
+          >
+            <div className={styles.pane}>
+              {this.renderForm()}
 
-            {inspect && <InspectView value={value} onClose={this.handleHideInspector} />}
-            {showConfirmDelete && (
-              <ConfirmDelete
-                draft={draft}
-                published={published}
-                onCancel={this.handleCancelDelete}
-                onConfirm={this.handleConfirmDelete}
-              />
-            )}
-            {showConfirmUnpublish && (
-              <ConfirmUnpublish
-                draft={draft}
-                published={published}
-                onCancel={this.handleCancelUnpublish}
-                onConfirm={this.handleConfirmUnpublish}
-              />
-            )}
-            {isReconnecting && (
-              <Snackbar kind="warning">
-                <WarningIcon /> Connection lost. Reconnecting…
-              </Snackbar>
-            )}
-            {didPublish && (
-              <Snackbar kind="success" timeout={4}>
-                <CheckCircleIcon /> You just published{' '}
-                <em>
-                  <DocTitle document={draft || published} />
-                </em>
-              </Snackbar>
-            )}
-            {transactionResult &&
-              transactionResult.type === 'error' && (
+              {afterEditorComponents.map((AfterEditorComponent, i) => (
+                <AfterEditorComponent key={i} documentId={published._id} />
+              ))}
+
+              {inspect && <InspectView value={value} onClose={this.handleHideInspector} />}
+              {showConfirmDelete && (
+                <ConfirmDelete
+                  draft={draft}
+                  published={published}
+                  onCancel={this.handleCancelDelete}
+                  onConfirm={this.handleConfirmDelete}
+                />
+              )}
+              {showConfirmUnpublish && (
+                <ConfirmUnpublish
+                  draft={draft}
+                  published={published}
+                  onCancel={this.handleCancelUnpublish}
+                  onConfirm={this.handleConfirmUnpublish}
+                />
+              )}
+              {showConfirmDiscard && (
+                <ConfirmDiscard
+                  draft={draft}
+                  published={published}
+                  onCancel={this.handleCancelDiscard}
+                  onConfirm={this.handleConfirmDiscard}
+                />
+              )}
+              {isReconnecting && (
+                <Snackbar kind="warning">
+                  <WarningIcon /> Connection lost. Reconnecting…
+                </Snackbar>
+              )}
+              {didPublish && (
+                <Snackbar
+                  kind="success"
+                  timeout={4}
+                  // eslint-disable-next-line react/jsx-no-bind
+                  onHide={() => this.setState({didPublish: false})}
+                >
+                  <CheckCircleIcon /> You just published{' '}
+                  <em>
+                    <DocTitle document={draft || published} />
+                  </em>
+                </Snackbar>
+              )}
+              {transactionResult && transactionResult.type === 'error' && (
                 <Snackbar
                   kind="danger"
                   action={{title: 'Ok, got it'}}
@@ -815,8 +826,9 @@ export default withRouterHOC(
                   </div>
                 </Snackbar>
               )}
-          </div>
-        </Pane>
+            </div>
+          </Pane>
+        </div>
       )
     }
   }
