@@ -39,11 +39,14 @@
     "react-click-outside": "^3.0.0",
     "react-ink": "^6.1.0",
     "react-popper": "^1.0.2",
+    "react-motion": "^0.5.2",
     "react-sortable-hoc": "^0.6.3",
     "react-split-pane": "^0.1.84",
     "react-tippy": "^1.2.3",
     "rxjs": "^6.1.0",
-    "scroll": "^2.0.0"
+    "scroll": "^2.0.0",
+    "string-hash": "^1.1.3",
+    "palx": "^1.0.3"
   },
   "devDependencies": {
     "@sanity/base": "0.140.36",
