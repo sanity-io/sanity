@@ -9,6 +9,7 @@ export default class DefaultSnackbar extends React.PureComponent {
     kind: PropTypes.oneOf(['danger', 'info', 'warning', 'error', 'success']),
     children: PropTypes.node.isRequired,
     timeout: PropTypes.number,
+    onHide: PropTypes.func,
     onAction: PropTypes.func,
     action: PropTypes.shape({
       title: PropTypes.string
@@ -17,7 +18,8 @@ export default class DefaultSnackbar extends React.PureComponent {
 
   static defaultProps = {
     kind: 'info',
-    timeout: 0
+    timeout: 0,
+    onHide: () => {}
   }
 
   constructor(props, context) {
@@ -33,6 +35,7 @@ export default class DefaultSnackbar extends React.PureComponent {
 
   hide = () => {
     this.setState({visible: false})
+    setTimeout(this.props.onHide(), 200)
   }
 
   show = () => {
@@ -59,10 +62,16 @@ export default class DefaultSnackbar extends React.PureComponent {
     if (prevProps.timeout !== this.props.timeout) {
       this.scheduleHide()
     }
+    if (prevProps.children !== this.props.children) {
+      this.scheduleHide()
+    }
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.timeout !== this.props.timeout) {
+      this.show()
+    }
+    if (nextProps.children !== this.props.children) {
       this.show()
     }
   }
