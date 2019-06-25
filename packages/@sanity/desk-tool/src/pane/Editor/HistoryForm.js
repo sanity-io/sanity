@@ -36,7 +36,8 @@ export default class HistoryForm extends React.PureComponent {
   }
   state = {
     isLoading: true,
-    document: null
+    document: null,
+    focusPath: []
   }
 
   componentDidMount() {
@@ -58,9 +59,13 @@ export default class HistoryForm extends React.PureComponent {
     })
   }
 
+  handleFocus = focusPath => {
+    this.setState({focusPath})
+  }
+
   render() {
     const {schema, type, event, isLatest} = this.props
-    const {isLoading, document} = this.state
+    const {isLoading, document, focusPath} = this.state
     return (
       <>
         {isLoading && (
@@ -85,7 +90,8 @@ export default class HistoryForm extends React.PureComponent {
           {document && (
             <FormBuilder
               onBlur={noop}
-              onFocus={noop}
+              onFocus={this.handleFocus}
+              focusPath={focusPath}
               readOnly
               schema={schema}
               type={type}
