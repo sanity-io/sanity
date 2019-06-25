@@ -1,10 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import HistoryListItem from 'part:@sanity/components/history/list-item'
-import UserStore from 'part:@sanity/base/user'
+import {getUsers} from 'part:@sanity/base/user'
 import {format, isYesterday, isToday} from 'date-fns'
-
-const {getUsers} = UserStore
 
 const dateFormat = 'MMM D, YYYY, hh:mm A'
 
@@ -27,13 +25,11 @@ function getHumanReadableStatus(type) {
 
 export default class HistoryItem extends React.PureComponent {
   static defaultProps = {
-    displayDocumentId: undefined,
     isSelected: false,
     userIds: undefined
   }
 
   static propTypes = {
-    displayDocumentId: PropTypes.string,
     endTime: PropTypes.string.isRequired,
     isCurrentVersion: PropTypes.bool.isRequired,
     isSelected: PropTypes.bool,
@@ -54,13 +50,20 @@ export default class HistoryItem extends React.PureComponent {
   }
 
   componentDidMount() {
+    this._isMounted = true
     const {userIds} = this.props
     if (!userIds) {
       return
     }
     getUsers(userIds).then(users => {
-      this.setState({users})
+      if (this._isMounted) {
+        this.setState({users})
+      }
     })
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false
   }
 
   handleKeyUp = event => {
