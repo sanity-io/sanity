@@ -10,7 +10,27 @@
   }
 }
 
-.root {
+.paneWrapper {
+  @media (--screen-medium) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+  }
+}
+
+.paneWrapperWithHistory {
+  composes: paneWrapper;
+
+  @media (--screen-medium) {
+    justify-content: stretch;
+    display: flex;
+  }
+}
+
+.pane {
   display: block;
   position: relative; /* Needed to keep the spinners in place */
 
@@ -41,7 +61,6 @@
 .top {
   margin: 0 var(--medium-padding);
   color: var(--text-color-secondary);
-  font-size: 0.75em;
 }
 
 .publishInfo {
@@ -134,6 +153,7 @@
 .editor {
   padding: var(--medium-padding);
   padding-bottom: 8rem;
+  flex-grow: 1;
 }
 
 .syncStatus {
@@ -213,4 +233,39 @@
     position: absolute;
     height: calc(100vh - 6rem); /* 6rem is aprox the height of the header stuff */
   }
+}
+
+.statusBadges {
+  font-size: var(--font-size-xsmall--uppercase);
+  color: var(--text-muted);
+}
+
+.editedTime {
+  display: inline-block;
+  cursor: default;
+  font-size: var(--font-size-xsmall);
+  pointer-events: none;
+
+  @nest &::first-letter {
+    text-transform: uppercase;
+  }
+}
+
+.editedTimeClickable {
+  composes: editedTime;
+  cursor: pointer;
+
+  @media (--screen-medium) {
+    pointer-events: initial;
+  }
+
+  @media (hover: hover) {
+    @nest &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.statusBadges:not(:empty) + .editedTime {
+  margin-left: 0.5rem;
 }
