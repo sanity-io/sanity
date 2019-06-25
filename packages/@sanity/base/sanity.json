@@ -369,6 +369,10 @@
       "path": "datastores/document"
     },
     {
+      "name": "part:@sanity/base/datastore/history",
+      "path": "datastores/history"
+    },
+    {
       "name": "part:@sanity/base/user",
       "path": "datastores/user"
     },
