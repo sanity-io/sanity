@@ -2,13 +2,14 @@
 // Note: Node 8 compat, please!
 require('hard-rejection/register')
 
-const path = require('path')
+const fs = require('fs')
 const childProcess = require('child_process')
-const gulp = require('gulp')
+const path = require('path')
+const {series, parallel, src, dest, watch} = require('gulp')
 const newer = require('gulp-newer')
 const babel = require('gulp-babel')
-const watch = require('gulp-watch')
 const gutil = require('gulp-util')
+const changed = require('gulp-changed')
 const filter = require('gulp-filter')
 const plumber = require('gulp-plumber')
 const ts = require('gulp-typescript')
@@ -20,11 +21,21 @@ const mergeStream = require('merge-stream')
 const backstop = require('backstopjs')
 const waitPort = require('wait-port')
 const kill = require('kill-port')
+const {promisify} = require('util')
 
+const stat = promisify(fs.stat)
 const isWindows = /^win/.test(process.platform)
 
+const compareModified = async (stream, sourceFile, targetPath) => {
+  const targetStat = await stat(targetPath)
+
+  if (sourceFile.stat && Math.floor(sourceFile.stat.mtimeMs) > Math.floor(targetStat.mtimeMs)) {
+    stream.push(sourceFile)
+  }
+}
+
 const tsPaths = globby.sync(['./packages/@sanity/*/tsconfig.json'])
-const tsProjects = tsPaths.map(conf => ts.createProject(conf))
+const getTsProjects = () => tsPaths.map(conf => ts.createProject(conf))
 const tsScripts = tsPaths.map(proj => `${path.dirname(proj)}/src/**/*.ts`)
 const scripts = [
   './packages/@sanity/*/src/**/*.js',
@@ -74,20 +85,36 @@ const mapToDest = orgPath => {
   return outPath
 }
 
-const dest = 'packages'
-
-gulp.task('default', ['build', 'build-ts'])
-
+const packagesPath = 'packages'
+const fullPackagesPath = path.join(__dirname, packagesPath)
 const pkgPath = (cwd, sourcePath) => path.relative(path.join(cwd, 'packages'), sourcePath)
+const getLogErrorHandler = () => plumber({errorHandler: err => gutil.log(err.stack)})
+const getNoopErrorHandler = () => through.obj((chunk, enc, cb) => cb(null, chunk))
+const buildTypeScript = getTypeScriptBuilder(getNoopErrorHandler)
+const watchTypeScript = series(
+  getTypeScriptBuilder(getLogErrorHandler),
+  function watchTypescriptRebuild() {
+    watch(tsScripts, buildTypeScript)
+  }
+)
 
-gulp.task('build', () => {
+exports.default = parallel(buildJavaScript, buildTypeScript)
+exports.build = parallel(buildJavaScript, buildTypeScript)
+exports.watchTypeScript = watchTypeScript
+exports.watch = parallel(watchJavaScript, watchTypeScript, buildAssets)
+
+function buildJavaScript() {
   const assetFilter = filter(['**/*.js'], {restore: true})
 
-  return gulp
-    .src(assets, srcOpts)
+  return src(assets, srcOpts)
     .pipe(plumber({errorHandler: err => gutil.log(err.stack)}))
-    .pipe(newer({map: mapToDest}))
     .pipe(assetFilter)
+    .pipe(
+      changed(packagesPath, {
+        transformPath: inp => mapToDest(inp),
+        hasChanged: compareModified
+      })
+    )
     .pipe(through.obj(logCompile))
     .pipe(babel())
     .pipe(assetFilter.restore)
@@ -98,12 +125,11 @@ gulp.task('build', () => {
         callback(null, file)
       })
     )
-    .pipe(gulp.dest(dest))
-})
+    .pipe(dest(packagesPath))
+}
 
-gulp.task('watch-js', () => {
-  return gulp
-    .src(scripts, srcOpts)
+function watchJavaScript() {
+  return src(scripts, srcOpts)
     .pipe(plumber({errorHandler: err => gutil.log(err.stack)}))
     .pipe(
       through.obj((file, enc, callback) => {
@@ -112,53 +138,53 @@ gulp.task('watch-js', () => {
         callback(null, file)
       })
     )
-    .pipe(newer(dest))
+    .pipe(newer(packagesPath))
     .pipe(through.obj(logCompile))
     .pipe(babel())
-    .pipe(gulp.dest(dest))
-})
+    .pipe(dest(packagesPath))
+}
 
-// build-ts / watch-ts-build
-;[
-  {name: 'build-ts', params: {throwOnError: true}},
-  {name: 'watch-ts-build', params: {throwOnError: false}}
-].forEach(task => {
-  gulp.task(task.name, () => {
-    const getErrorHandler = () =>
-      task.params.throwOnError
-        ? through.obj((chunk, enc, cb) => cb(null, chunk))
-        : plumber({errorHandler: err => gutil.log(err.stack)})
-
-    const streams = tsProjects.map(project => {
-      const src = project
-        .src()
-        .pipe(getErrorHandler())
-        .pipe(sourcemaps.init())
-        .pipe(project())
-
-      return mergeStream(
-        src.dts
+function getTypeScriptBuilder(getErrorHandler) {
+  return function buildTypescript() {
+    return mergeStream(
+      ...getTsProjects().map(project => {
+        const source = project
+          .src()
           .pipe(getErrorHandler())
-          .pipe(sourcemaps.write('.', {includeContent: false, sourceRoot: './'}))
-          .pipe(gulp.dest(project.options.outDir)),
+          .pipe(sourcemaps.init())
+          .pipe(project())
 
-        src.js
-          .pipe(getErrorHandler())
-          .pipe(through.obj(logCompile))
-          .pipe(sourcemaps.write('.', {includeContent: false, sourceRoot: './'}))
-          .pipe(gulp.dest(project.options.outDir))
-      )
-    })
+        return mergeStream(
+          source.dts
+            .pipe(
+              changed(packagesPath, {
+                transformPath: inp => inp.replace(fullPackagesPath, project.options.outDir),
+                hasChanged: compareModified
+              })
+            )
+            .pipe(getErrorHandler())
+            .pipe(sourcemaps.write('.', {includeContent: false, sourceRoot: './'}))
+            .pipe(dest(project.options.outDir)),
 
-    return mergeStream(...streams)
-  })
-})
+          source.js
+            .pipe(
+              changed(packagesPath, {
+                transformPath: inp => inp.replace(fullPackagesPath, project.options.outDir),
+                hasChanged: compareModified
+              })
+            )
+            .pipe(getErrorHandler())
+            .pipe(through.obj(logCompile))
+            .pipe(sourcemaps.write('.', {includeContent: false, sourceRoot: './'}))
+            .pipe(dest(project.options.outDir))
+        )
+      })
+    )
+  }
+}
 
-gulp.task('watch-ts', ['watch-ts-build'], () => gulp.watch(tsScripts, ['watch-ts-build']))
-
-gulp.task('watch-assets', () => {
-  return gulp
-    .src(assets, srcOpts)
+function buildAssets() {
+  return src(assets, srcOpts)
     .pipe(filter(['**/*.*', '!**/*.js']))
     .pipe(plumber({errorHandler: err => gutil.log(err.stack)}))
     .pipe(
@@ -168,25 +194,15 @@ gulp.task('watch-assets', () => {
         callback(null, file)
       })
     )
-    .pipe(newer(dest))
+    .pipe(newer(packagesPath))
     .pipe(
       through.obj((file, enc, callback) => {
         gutil.log('Copying  ', `'${chalk.green(pkgPath(file.cwd, file._path))}'...`)
         callback(null, file)
       })
     )
-    .pipe(gulp.dest(dest))
-})
-
-gulp.task('watch', ['watch-js', 'watch-ts', 'watch-assets'], callback => {
-  watch(scripts, {debounceDelay: 200}, () => {
-    gulp.start('watch-js')
-  })
-
-  watch(assets, {debounceDelay: 200}, () => {
-    gulp.start('watch-assets')
-  })
-})
+    .pipe(dest(packagesPath))
+}
 
 const STUDIOS = [
   {name: 'test-studio', port: '3333'},
@@ -199,55 +215,43 @@ const STUDIOS = [
 ]
 
 STUDIOS.forEach(studio => {
-  gulp.task(studio.name, ['watch-js', 'watch-ts', 'watch-assets'], cb => {
-    watch(scripts, {debounceDelay: 200}, () => {
-      gulp.start('watch-js')
-    })
+  exports[studio.name] = series(
+    parallel(buildJavaScript, buildTypeScript, buildAssets),
+    parallel(exports.watch, function runStudio(cb) {
+      const projectPath = path.join(__dirname, 'packages', studio.name)
+      const proc = childProcess.spawn(
+        'sanity',
+        ['start', '--host', '0.0.0.0', '--port', studio.port],
+        {
+          shell: isWindows,
+          cwd: projectPath,
+          env: getProjectEnv(projectPath)
+        }
+      )
 
-    watch(assets, {debounceDelay: 200}, () => {
-      gulp.start('watch-assets')
+      proc.stdout.pipe(process.stdout)
+      proc.stderr.pipe(process.stderr)
     })
+  )
+})
 
-    const projectPath = path.join(__dirname, 'packages', studio.name)
-    const proc = childProcess.spawn(
-      'sanity',
-      ['start', '--host', '0.0.0.0', '--port', studio.port],
-      {
-        shell: isWindows,
-        cwd: projectPath,
-        env: getProjectEnv(projectPath)
-      }
-    )
+exports.storybook = series(
+  parallel(buildJavaScript, buildTypeScript, buildAssets),
+  parallel(exports.watch, function runStorybook(cb) {
+    const projectPath = path.join(__dirname, 'packages', 'storybook')
+    const proc = childProcess.spawn('npm', ['start'], {
+      shell: isWindows,
+      cwd: projectPath,
+      env: getProjectEnv(projectPath)
+    })
 
     proc.stdout.pipe(process.stdout)
     proc.stderr.pipe(process.stderr)
   })
-})
+)
 
-gulp.task('storybook', ['watch-js', 'watch-ts', 'watch-assets'], () => {
-  watch(scripts, {debounceDelay: 200}, () => {
-    gulp.start('watch-js')
-  })
-
-  watch(assets, {debounceDelay: 200}, () => {
-    gulp.start('watch-assets')
-  })
-
-  const projectPath = path.join(__dirname, 'packages', 'storybook')
-  const proc = childProcess.spawn('npm', ['start'], {
-    shell: isWindows,
-    cwd: projectPath,
-    env: getProjectEnv(projectPath)
-  })
-
-  proc.stdout.pipe(process.stdout)
-  proc.stderr.pipe(process.stderr)
-})
-
-gulp.task('backstop', cb => {
-  const {exec} = require('child_process')
-
-  exec('docker -v', (err, stdout, stderr) => {
+exports.backstop = function(cb) {
+  childProcess.exec('docker -v', err => {
     if (err) {
       throw new gutil.PluginError({
         plugin: 'backstop',
@@ -256,71 +260,73 @@ gulp.task('backstop', cb => {
     }
   })
 
-  gulp.start('backstop-test-studio')
-
   const params = {
     host: 'localhost',
     port: 5000,
     timeout: 100 * 60 * 10
   }
 
-  waitPort(params)
-    .then(open => {
-      if (open) {
-        backstop('test', {
-          docker: true,
-          config: './test/backstop/backstop.js'
-        })
-          .then(() => {
-            kill(params.port).then(() => {
-              gutil.log(gutil.colors.green('Backstop test success'))
-              // eslint-disable-next-line
-              process.exit(0)
-            })
-          })
-          .catch(() => {
-            kill(params.port)
-            throw new gutil.PluginError({
-              plugin: 'backstop',
-              message: 'Tests failed'
-            })
-          })
-      } else {
-        kill(params.port)
-        throw new gutil.PluginError({
-          plugin: 'backstop',
-          message: 'The backstop-studio did not start'
-        })
-      }
-    })
-    .catch(err => {
+  parallel(exports['backstop-test-studio'], async () => {
+    let open
+    try {
+      open = await waitPort(params)
+    } catch (err) {
       kill(params.port)
       throw new gutil.PluginError({
         plugin: 'backstop',
         message: `An unknown error occured while waiting for the port: ${err}`
       })
-    })
-})
+    }
 
-gulp.task('backstop:approve', cb => {
+    if (!open) {
+      kill(params.port)
+      throw new gutil.PluginError({
+        plugin: 'backstop',
+        message: 'The backstop-studio did not start'
+      })
+    }
+
+    try {
+      await backstop('test', {
+        docker: true,
+        config: './test/backstop/backstop.js'
+      })
+
+      await kill(params.port)
+      gutil.log(gutil.colors.green('Backstop test success'))
+      // eslint-disable-next-line no-process-exit
+      process.exit(0)
+    } catch (err) {
+      kill(params.port)
+      throw new gutil.PluginError({
+        plugin: 'backstop',
+        message: 'Tests failed'
+      })
+    }
+
+    cb()
+  })()
+}
+
+exports['backstop:approve'] = cb => {
   backstop('approve', {
     docker: true,
     config: './test/backstop/backstop.js'
   })
-})
+}
 
-gulp.task('backstop:reference', cb => {
-  backstop('reference', {
-    docker: true,
-    config: './test/backstop/backstop.js'
-  })
-    .then(() => {
-      gutil.log(gutil.colors.green('References created'))
+exports['backstop:reference'] = async cb => {
+  try {
+    await backstop('reference', {
+      docker: true,
+      config: './test/backstop/backstop.js'
     })
-    .catch(() => {
-      throw new gutil.PluginError({
-        plugin: 'backstop',
-        message: 'Making references failed'
-      })
+
+    gutil.log(gutil.colors.green('References created'))
+  } catch (err) {
+    throw new gutil.PluginError({
+      plugin: 'backstop',
+      message: 'Making references failed'
     })
-})
+  }
+}
