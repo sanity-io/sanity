@@ -46,7 +46,7 @@ export default enhanceWithReferringDocuments(
           name: 'confirm',
           title: hasReferringDocuments ? 'Try to unpublish anyway' : 'Unpublish now'
         },
-        {name: 'cancel', title: 'Cancel', kind: 'secondary'}
+        {name: 'cancel', title: 'Cancel', kind: 'simple'}
       ].filter(Boolean)
 
       const title = isCheckingReferringDocuments ? 'Checking…' : 'Confirm unpublish'
