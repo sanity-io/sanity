@@ -75,10 +75,16 @@ const getUser = id => {
   return userCache[id]
 }
 
+// TODO Optimize for getting all users in one query
+const getUsers = ids => {
+  return Promise.all(ids.map(id => getUser(id)))
+}
+
 export default function createUserStore(options = {}) {
   return {
     actions: createActions({logout, retry: fetchInitial}),
     currentUser,
-    getUser
+    getUser,
+    getUsers
   }
 }
