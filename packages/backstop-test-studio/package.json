@@ -1,7 +1,7 @@
 {
   "name": "backstop-test-studio",
   "private": true,
-  "version": "0.141.1",
+  "version": "0.141.2",
   "description": "A bloated, ugly Sanity studio with a contrived schema for edge case testing and development",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
@@ -26,7 +26,7 @@
     "@sanity/core": "0.141.1",
     "@sanity/default-layout": "0.141.1",
     "@sanity/default-login": "0.141.1",
-    "@sanity/desk-tool": "0.141.1",
+    "@sanity/desk-tool": "0.141.2",
     "@sanity/form-builder": "0.141.1",
     "@sanity/google-maps-input": "0.141.1",
     "@sanity/image-url": "0.140.12",
