@@ -30,7 +30,6 @@ import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 import copyDocument from '../../utils/copyDocument'
 import ConfirmUnpublish from '../../components/ConfirmUnpublish'
 import ConfirmDelete from '../../components/ConfirmDelete'
-import ConfirmDiscard from '../../components/ConfirmDiscard'
 import InspectView from '../../components/InspectView'
 import DocTitle from '../../components/DocTitle'
 import History from '../History'
@@ -414,10 +413,8 @@ export default withRouterHOC(
     }
 
     handleConfirmDelete = () => {
-      const {onDelete, published} = this.props
-      if (published) {
-        onDelete()
-      }
+      const {onDelete} = this.props
+      onDelete()
       this.setState({showConfirmDelete: false})
     }
 
@@ -702,7 +699,6 @@ export default withRouterHOC(
         inspect,
         showConfirmDelete,
         showConfirmUnpublish,
-        showConfirmDiscard,
         didPublish,
         historyState
       } = this.state
@@ -786,14 +782,6 @@ export default withRouterHOC(
                   published={published}
                   onCancel={this.handleCancelUnpublish}
                   onConfirm={this.handleConfirmUnpublish}
-                />
-              )}
-              {showConfirmDiscard && (
-                <ConfirmDiscard
-                  draft={draft}
-                  published={published}
-                  onCancel={this.handleCancelDiscard}
-                  onConfirm={this.handleConfirmDiscard}
                 />
               )}
               {isReconnecting && (
