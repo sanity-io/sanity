@@ -15,6 +15,15 @@ export default {
       readOnly: true
     },
     {
+      name: 'slug',
+      type: 'slug',
+      readOnly: true,
+      options: {
+        source: document => document.title,
+        maxLength: 96
+      }
+    },
+    {
       name: 'select',
       type: 'string',
       title: 'Select string',

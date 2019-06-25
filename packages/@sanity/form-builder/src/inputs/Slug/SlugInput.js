@@ -32,6 +32,7 @@ export default withValuePath(
         value: PropTypes.shape({
           current: PropTypes.string
         }),
+        readOnly: PropTypes.bool,
         document: PropTypes.shape({_id: PropTypes.string}).isRequired,
         onChange: PropTypes.func,
         onFocus: PropTypes.func.isRequired,
@@ -45,6 +46,7 @@ export default withValuePath(
 
       static defaultProps = {
         value: {current: undefined},
+        readOnly: false,
         onChange() {},
         markers: []
       }
@@ -139,7 +141,7 @@ export default withValuePath(
       }
 
       render() {
-        const {value, type, level, markers} = this.props
+        const {value, type, level, markers, readOnly} = this.props
         const {loading, inputText} = this.state
 
         const hasSourceField = type.options && type.options.source
@@ -166,13 +168,14 @@ export default withValuePath(
                   onChange={this.handleChange}
                   onFocus={this.handleFocusCurrent}
                   value={typeof inputText === 'string' ? inputText : value.current}
+                  readOnly={readOnly}
                 />
               </div>
               {hasSourceField && (
                 <Button
                   className={styles.button}
                   inverted
-                  disabled={loading || !hasSource}
+                  disabled={readOnly || loading || !hasSource}
                   loading={loading}
                   onClick={this.handleGenerateSlug}
                 >
