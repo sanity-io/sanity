@@ -184,6 +184,17 @@ export default withPatchSubscriber(
       this._changeSubscription.unsubscribe()
     }
 
+    // If the document is in readOnly mode, update the editor value when the props.value is changed
+    // In non-readOnly mode this is taken care of by incoming patches
+    // (it's too costly to build the document all over for each change).
+    componentDidUpdate(prevProps: Props) {
+      const {readOnly} = this.props
+      const changed = prevProps.value !== this.props.value
+      if (readOnly && changed) {
+        this.restoreCurrentValue()
+      }
+    }
+
     handleEditorChange = (editor: SlateEditor, callback?: void => void) => {
       const {operations, value} = editor
       const {selection} = value
