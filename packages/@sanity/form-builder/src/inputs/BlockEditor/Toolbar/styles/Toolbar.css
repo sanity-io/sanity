@@ -52,7 +52,7 @@
   top: 0;
   height: 100%;
   width: 1em;
-  z-index: 10;
+  z-index: 2;
   background: radial-gradient(var(--component-border-color), color(var(--component-border-color) a(0%)) 70%);
   background-position: 0.5em 0;
   background-repeat: no-repeat;
@@ -65,6 +65,29 @@
 
 .primaryInner {
   display: flex;
+  position: relative;
+  padding-right: 1em;
+
+  @media (--screen-medium) {
+    padding-right: 0;
+  }
+}
+
+.primaryInner::after {
+  position: absolute;
+  content: '';
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 2em;
+  z-index: 3;
+  background: linear-gradient(90deg, color(var(--component-bg) a(0%) 0%), var(--component-bg) 40%);
+  background-position: 0.5em 0;
+  background-repeat: no-repeat;
+
+  @media (--screen-medium) {
+    display: none;
+  }
 }
 
 .primaryInnerCollapsed {
