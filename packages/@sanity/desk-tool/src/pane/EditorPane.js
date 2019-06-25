@@ -24,6 +24,7 @@ const INITIAL_DOCUMENT_STATE = {
 const INITIAL_STATE = {
   isSaving: true,
   isReconnecting: false,
+  isRestoring: false,
   isCreatingDraft: false,
   transactionResult: null,
   validationPending: true,
@@ -238,13 +239,6 @@ export default withDocumentType(
       this.draft = null
     }
 
-    handleDiscardDraft = () => {
-      this.draft.delete()
-      this.draft.commit().subscribe(() => {
-        // todo: error handling
-      })
-    }
-
     handleDelete = () => {
       const documentId = this.props.options.id
 
@@ -364,6 +358,40 @@ export default withDocumentType(
           },
           complete: () => {
             this.setStateIfMounted({isPublishing: false})
+          }
+        })
+    }
+
+    handleRestoreRevision = restoredDocument => {
+      const documentId = this.props.options.id
+      this.setState({isRestoring: true})
+      const tx = client.observable.transaction()
+      tx.createOrReplace({
+        ...omit(restoredDocument, '_updatedAt'),
+        _id: getDraftId(documentId)
+      })
+      tx.commit()
+        .pipe(
+          map(result => ({
+            type: 'success',
+            result: result
+          })),
+          catchError(error =>
+            observableOf({
+              type: 'error',
+              message: 'An error occurred while attempting to restore the document',
+              error
+            })
+          )
+        )
+        .subscribe({
+          next: result => {
+            this.setStateIfMounted({
+              transactionResult: result
+            })
+          },
+          complete: () => {
+            this.setStateIfMounted({isRestoring: false})
           }
         })
     }
@@ -518,6 +546,7 @@ export default withDocumentType(
         isUnpublishing,
         transactionResult,
         isPublishing,
+        isRestoring,
         isSaving,
         error,
         validationPending,
@@ -547,6 +576,7 @@ export default withDocumentType(
           markers={markers}
           validationPending={validationPending}
           isLoading={draft.isLoading || published.isLoading}
+          isRestoring={isRestoring}
           isSaving={isSaving}
           isReconnecting={isReconnecting}
           isPublishing={isPublishing}
@@ -555,8 +585,8 @@ export default withDocumentType(
           isCreatingDraft={isCreatingDraft}
           onDelete={this.handleDelete}
           onClearTransactionResult={this.handleClearTransactionResult}
-          onDiscardDraft={this.handleDiscardDraft}
           onPublish={this.handlePublish}
+          onRestore={this.handleRestoreRevision}
           onUnpublish={this.handleUnpublish}
           onChange={this.handleChange}
         />
