@@ -1,0 +1,21 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: block;
+  font-size: var(--font-size-small);
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: var(--small-padding);
+  box-sizing: border-box;
+}
+
+.circle {
+  font-size: 2em;
+  margin-right: 0.5em;
+}

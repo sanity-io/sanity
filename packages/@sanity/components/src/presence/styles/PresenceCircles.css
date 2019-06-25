@@ -1,0 +1,26 @@
+@import "part:@sanity/base/theme/variables-style";
+
+.root {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 1.5em;
+  height: 1em;
+  position: relative;
+}
+
+.item {
+  position: absolute;
+  transform-origin: center center;
+  display: flex;
+  height: 100%;
+}
+
+.extraItems {
+  composes: item;
+  align-items: center;
+  font-size: var(--font-size-xsmall);
+}
+
+.root .item:hover {
+  z-index: 50 !important;
+}
