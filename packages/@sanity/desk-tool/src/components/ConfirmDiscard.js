@@ -1,11 +1,10 @@
 import PropTypes from 'prop-types'
-/* eslint-disable react/no-multi-comp */
 import React from 'react'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
-import DocTitle from './DocTitle'
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
+import DocTitle from './DocTitle'
 
-const CANCEL_ACTION = {name: 'cancel', title: 'Cancel', kind: 'secondary', secondary: true}
+const CANCEL_ACTION = {name: 'cancel', title: 'Cancel', kind: 'simple', secondary: true}
 
 export default class ConfirmDiscard extends React.PureComponent {
   static propTypes = {
@@ -26,7 +25,7 @@ export default class ConfirmDiscard extends React.PureComponent {
   }
 
   render() {
-    const {draft, published, onCancel} = this.props
+    const {draft, published} = this.props
     const confirmAction = {
       name: 'confirm',
       title: `Discard ${published ? 'changes' : 'draft'}`,
@@ -38,7 +37,6 @@ export default class ConfirmDiscard extends React.PureComponent {
         showHeader
         title={`Discard ${published ? 'changes' : 'document'}`}
         centered
-        onClose={onCancel}
         onAction={this.handleAction}
         actions={[confirmAction, CANCEL_ACTION]}
       >
@@ -46,7 +44,8 @@ export default class ConfirmDiscard extends React.PureComponent {
           Are you sure you would like to discard {published ? 'changes in' : 'the document'}{' '}
           <strong>
             <DocTitle document={draft || published} />
-          </strong>?
+          </strong>
+          ?
         </p>
         <p>
           This will{' '}
