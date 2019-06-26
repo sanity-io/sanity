@@ -34,7 +34,10 @@ function mapToEvents(
   documentIds: string[],
   index: number = 0
 ): HistoryEvent {
-  const {type, documentId} = mutationsToEventTypeAndDocumentId(transaction.mutations, index)
+  const {type, documentId} = mutationsToEventTypeAndDocumentId(
+    filterRelevantMutations(transaction.mutations, documentIds),
+    index
+  )
   const timestamp = transaction.timestamp
   const userIds = findUserIds(transaction, type)
   return {
@@ -203,4 +206,12 @@ function findUserIds(transaction: Transaction, type: EventType): string[] {
 
 function compareTimestamp(a: Transaction, b: Transaction) {
   return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+}
+
+function filterRelevantMutations(mutations: Mutation[], documentIds: string[]) {
+  return mutations.filter(mut => {
+    return Object.keys(mut)
+      .map(key => mut[key].id || mut[key]._id)
+      .some(id => documentIds.includes(id))
+  })
 }
