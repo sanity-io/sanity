@@ -180,6 +180,11 @@ export function mutationsToEventTypeAndDocumentId(
     return {type: 'edited', documentId: patchedMutation.patch.id}
   }
 
+  // Edited (createOrReplace)
+  if (createOrReplacePatch) {
+    return {type: 'edited', documentId: createOrReplacePatch._id}
+  }
+
   return {type: 'unknown', documentId: null}
 }
 
