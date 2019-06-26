@@ -2,7 +2,7 @@ import {isEqual, uniq} from 'lodash'
 import {EventType, HistoryEvent, Transaction, Mutation} from './types'
 import {ndjsonToArray} from './utils/ndjsonToArray'
 
-const EDIT_EVENT_TIME_TRESHHOLD_MS = 5 * 1000 * 60 * 5 // 5 minutes
+const EDIT_EVENT_TIME_TRESHHOLD_MS = 1000 * 60 * 5 // 5 minutes
 
 export function transactionsToEvents(
   documentIds: string[],
