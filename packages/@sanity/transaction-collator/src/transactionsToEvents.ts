@@ -2,7 +2,7 @@ import {isEqual, uniq} from 'lodash'
 import {EventType, HistoryEvent, Transaction, Mutation} from './types'
 import {ndjsonToArray} from './utils/ndjsonToArray'
 
-const EDIT_EVENT_TIME_TRESHHOLD_MS = 5 * 1000 * 60 * 5 // 5 minutes
+const EDIT_EVENT_TIME_TRESHHOLD_MS = 1000 * 60 * 5 // 5 minutes
 
 export function transactionsToEvents(
   documentIds: string[],
@@ -211,7 +211,10 @@ function compareTimestamp(a: Transaction, b: Transaction) {
 function filterRelevantMutations(mutations: Mutation[], documentIds: string[]) {
   return mutations.filter(mut => {
     return Object.keys(mut)
-      .map(key => mut[key].id || mut[key]._id)
-      .some(id => documentIds.includes(id))
+      .map(key => {
+        const val = (<any>mut)[key]
+        return val['id'] || val['_id'] || false
+      })
+      .some(id => id && documentIds.includes(id))
   })
 }

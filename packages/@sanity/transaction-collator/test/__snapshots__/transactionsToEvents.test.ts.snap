@@ -122,13 +122,28 @@ Array [
     "documentIDs": Array [
       "drafts.fkaBMrgakwvEbFBu2QkLGy",
     ],
-    "endTime": "2019-06-14T09:53:55.912026Z",
-    "rev": "lejbbu-fxf-sst-lso-hfwdci0f4",
-    "startTime": "2019-06-14T09:53:55.912026Z",
+    "endTime": "2019-06-14T09:47:44.819371Z",
+    "rev": "ha1u6x-mw0-at8-94x-5obrinkvg",
+    "startTime": "2019-06-14T09:47:44.819371Z",
     "transactionIds": Array [
       "plyjv0-jyg-fce-nrp-5vhmm0vik",
       "7akoyb-x2g-ex3-nk0-im4l8pbi6",
       "ha1u6x-mw0-at8-94x-5obrinkvg",
+    ],
+    "type": "edited",
+    "userIds": Array [
+      "pVbf95zEZ",
+    ],
+  },
+  Object {
+    "displayDocumentId": "drafts.fkaBMrgakwvEbFBu2QkLGy",
+    "documentIDs": Array [
+      "drafts.fkaBMrgakwvEbFBu2QkLGy",
+    ],
+    "endTime": "2019-06-14T09:53:55.912026Z",
+    "rev": "lejbbu-fxf-sst-lso-hfwdci0f4",
+    "startTime": "2019-06-14T09:53:54.909028Z",
+    "transactionIds": Array [
       "ftqte0-km8-t0o-3zd-ksubn4ixk",
       "cknlbq-27w-xbz-maw-umpnoo7c3",
       "504mfl-q4y-s1q-kly-npch7slpd",
