@@ -25,7 +25,7 @@ export default function ErrorDialog(props) {
 
 ErrorDialog.propTypes = {
   error: PropTypes.shape({
-    isNetworkError: PropTypes.boolean,
+    isNetworkError: PropTypes.bool,
     message: PropTypes.string.isRequired
   }).isRequired,
   onRetry: PropTypes.func.isRequired
