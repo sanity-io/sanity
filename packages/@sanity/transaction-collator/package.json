@@ -37,6 +37,7 @@
     "rimraf": "^2.6.2",
     "rxjs": "^6.1.0",
     "ts-jest": "^22.4.3",
+    "tslint": "^5.18.0",
     "typescript": "^3.2.2"
   },
   "repository": {
@@ -63,9 +64,13 @@
       "^part:@sanity/base/schema$": "<rootDir>/test/mocks/schema.js",
       "^part:@sanity/base/client$": "<rootDir>/test/mocks/client.js"
     },
+    "testPathIgnorePatterns": [
+      "/lib/"
+    ],
     "coveragePathIgnorePatterns": [
       "/node_modules/",
-      "/test/"
+      "/test/",
+      "/lib/"
     ]
   }
 }
