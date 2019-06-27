@@ -2,6 +2,7 @@ language: node_js
 node_js:
   - '8'
   - '10'
+  - '12'
 
 cache:
   directories:
@@ -16,7 +17,7 @@ before_script:
   - npm run build
 script:
   # Run tests in all packages
-  - npm run test-all
+  - npx lerna run test --concurrency=2 --stream
 
   # Allow running the Sanity CLI tool without specifying absolute path
   - export PATH="${TRAVIS_BUILD_DIR}/packages/@sanity/cli/bin:$PATH"

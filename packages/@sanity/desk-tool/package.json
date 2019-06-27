@@ -53,7 +53,7 @@
     "@sanity/components": "0.141.1",
     "@sanity/core": "0.141.1",
     "history": "^4.6.3",
-    "jest": "^23.6.0",
+    "jest": "^24.8.0",
     "postcss-cssnext": "^3.0.2",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",

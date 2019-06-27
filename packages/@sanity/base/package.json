@@ -52,10 +52,9 @@
     "shallow-equals": "^1.0.0"
   },
   "devDependencies": {
-    "@sanity/check": "0.141.1",
-    "@sanity/plugin-loader": "0.141.1",
-    "babel-jest": "^23.6.0",
-    "jest": "^23.6.0",
+    "@sanity/check": "0.140.34",
+    "@sanity/plugin-loader": "0.140.34",
+    "jest": "^24.8.0",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",

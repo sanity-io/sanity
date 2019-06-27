@@ -1,14 +1,48 @@
-import {from as observableFrom, of as observableOf} from 'rxjs'
+import {from as observableFrom, of as observableOf, Observable, ObservableInput} from 'rxjs'
 import {mergeMap} from 'rxjs/operators'
+import {StructureNode, Builder, CollectionBuilder, Child} from '../../src/StructureNodes'
 
-const isSubscribable = thing => {
-  return thing && (typeof thing.then === 'function' || typeof thing.subscribe === 'function')
+type SerializableStructureNode =
+  | StructureNode
+  | ObservableInput<StructureNode>
+  | StructureResolver
+  | CollectionBuilder
+  | Child
+
+interface StructureResolver {
+  (...args: any[]): SerializableStructureNode
 }
 
-export default function serializeStructure(item, context?, resolverArgs = []) {
+const isSubscribable = (
+  thing: SerializableStructureNode
+): thing is ObservableInput<StructureNode> => {
+  if (!thing) {
+    return false
+  }
+
+  return (
+    typeof (thing as Promise<StructureNode>).then === 'function' ||
+    typeof (thing as Observable<StructureNode>).subscribe === 'function'
+  )
+}
+
+const isSerializable = (thing: SerializableStructureNode): thing is CollectionBuilder => {
+  return thing && typeof (thing as Builder).serialize === 'function'
+}
+
+const isResolver = (thing: SerializableStructureNode): thing is StructureResolver => {
+  return typeof thing === 'function'
+}
+
+export default function serializeStructure(
+  item: SerializableStructureNode,
+  context?: any,
+  resolverArgs: any[] = []
+): Observable<StructureNode> {
   // Lazy
-  if (typeof item === 'function') {
-    return serializeStructure(item(...resolverArgs), context, resolverArgs)
+  if (isResolver(item)) {
+    const [itemId, options] = resolverArgs
+    return serializeStructure(item(itemId, options), context, resolverArgs)
   }
 
   // Promise/observable returning a function, builder or plain JSON structure
@@ -19,10 +53,10 @@ export default function serializeStructure(item, context?, resolverArgs = []) {
   }
 
   // Builder?
-  if (item && typeof item.serialize === 'function') {
+  if (isSerializable(item)) {
     return serializeStructure(item.serialize(context), context, resolverArgs)
   }
 
   // Plain value?
-  return observableOf(item)
+  return observableOf(item as StructureNode)
 }

@@ -3,6 +3,15 @@ import {defaultSchema} from '../src/parts/Schema'
 import {DocumentList} from '../src/DocumentList'
 import serializeStructure from './util/serializeStructure'
 
+const nope = () => 'NOPE'
+const editor = {
+  id: 'editor',
+  options: {
+    type: 'author',
+    id: 'grrm'
+  }
+}
+
 test('generates correct document type list items from global schema', () => {
   expect(S.documentTypeListItems()).toMatchSnapshot()
 })
@@ -24,9 +33,9 @@ test('generated canHandleIntent responds to edit/create on document type', () =>
   expect(listItems[0].child).toHaveProperty('canHandleIntent')
 
   const child = listItems[0].child as DocumentList
-  expect(child.canHandleIntent('create', {type: 'book'})).toBe(false)
-  expect(child.canHandleIntent('create', {type: 'author'})).toBe(true)
-  expect(child.canHandleIntent('edit', {id: 'wow'})).toBe(false)
+  expect((child.canHandleIntent || nope)('create', {type: 'book'})).toBe(false)
+  expect((child.canHandleIntent || nope)('create', {type: 'author'})).toBe(true)
+  expect((child.canHandleIntent || nope)('edit', {id: 'wow'})).toBe(false)
 })
 
 test('generated document panes responds with correct editor child', done => {
@@ -38,13 +47,7 @@ test('generated document panes responds with correct editor child', done => {
   const listItem = listItems[0].child as DocumentList
   const context = {parent: listItem, index: 0}
   serializeStructure(listItem.child, context, ['grrm', context]).subscribe(itemChild => {
-    expect(itemChild).toMatchObject({
-      id: 'editor',
-      options: {
-        type: 'author',
-        id: 'grrm'
-      }
-    })
+    expect(itemChild).toMatchObject(editor)
 
     done()
   })
@@ -56,20 +59,20 @@ test('manually assigned canHandleIntent should not be overriden', () => {
   const modified = list.canHandleIntent(alwaysFalse)
 
   // Test default handler
-  const defHandler = list.getCanHandleIntent()
+  const defHandler = list.getCanHandleIntent() || nope
   expect(defHandler('create', {type: 'author'})).toBe(true)
 
   // Test modified handler
-  const modHandler = modified.getCanHandleIntent()
+  const modHandler = modified.getCanHandleIntent() || nope
   expect(modHandler('create', {type: 'author'})).toBe(false)
 
   // Modifying child for default list _SHOULD_ reset canHandleIntent
-  const diffChild = list.child(() => null)
+  const diffChild = list.child(() => editor)
   const diffHandler = diffChild.getCanHandleIntent()
   expect(diffHandler).toBeUndefined()
 
   // Modifying child for list with custom intent handler should _NOT_ reset canHandleIntent
-  const customChild = modified.child(() => null)
+  const customChild = modified.child(() => editor)
   const customHandler = customChild.getCanHandleIntent()
   expect(customHandler).toEqual(alwaysFalse)
 })

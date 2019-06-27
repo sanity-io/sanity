@@ -25,7 +25,7 @@
     "is-observable": "^1.1.0",
     "rimraf": "^2.6.2",
     "symbol-observable": "^1.2.0",
-    "tap": "^12.0.1",
+    "tap": "^14.2.2",
     "zen-observable": "^0.7.1"
   },
   "repository": {
