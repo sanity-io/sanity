@@ -52,8 +52,8 @@
     "shallow-equals": "^1.0.0"
   },
   "devDependencies": {
-    "@sanity/check": "0.140.34",
-    "@sanity/plugin-loader": "0.140.34",
+    "@sanity/check": "0.141.1",
+    "@sanity/plugin-loader": "0.141.1",
     "jest": "^24.8.0",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
