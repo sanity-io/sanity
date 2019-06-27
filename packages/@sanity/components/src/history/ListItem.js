@@ -11,6 +11,21 @@ import styles from './styles/ListItem.modules.css'
 const noop = () => {} // eslint-disable-line no-empty-function
 const MAX_USERS = 3
 
+const DECIMALS = 2
+const DISTANCE_BETWEEN_POINTS = 5
+const offset = 100
+const radius = 50
+
+function makeClipPath() {
+  let p = ''
+  for (let i = 90; i <= 270; i += DISTANCE_BETWEEN_POINTS) {
+    const x = radius * Math.cos((i * Math.PI) / 180)
+    const y = radius * Math.sin((i * Math.PI) / 180)
+    p += `,${(offset + x).toFixed(DECIMALS)}% ${(50 + y).toFixed(DECIMALS)}%`
+  }
+  return `polygon(0 0,0 100%${p},0 0)`
+}
+
 export default class HistoryListItem extends React.PureComponent {
   static propTypes = {
     status: PropTypes.string,
@@ -138,16 +153,20 @@ export default class HistoryListItem extends React.PureComponent {
             duration={50}
           >
             <div className={styles.users}>
-              {users.slice(0, MAX_USERS).map(user => (
-                <div className={styles.user} key={user.id}>
-                  <PresenceCircle
-                    title={users.length === 1 ? undefined : user.displayName}
-                    showTooltip={false}
-                    imageUrl={user.imageUrl}
-                    color={colorHasher(user.id)}
-                  />
-                </div>
-              ))}
+              <div className={styles.userIcons}>
+                {users.slice(0, MAX_USERS).map((user, i) => (
+                  <div className={styles.user} key={user.id}>
+                    <div className={styles.userInner} style={{clipPath: makeClipPath()}}>
+                      <PresenceCircle
+                        title={users.length === 1 ? undefined : user.displayName}
+                        showTooltip={false}
+                        imageUrl={user.imageUrl}
+                        color={user.imageUrl ? undefined : colorHasher(user.id)}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
               {users.length === 1 && <div className={styles.userName}>{users[0].displayName}</div>}
               {users.length > 1 && (
                 <div className={styles.extraItems}>
