@@ -30,7 +30,7 @@
     "stylelint": "stylelint \"**/*.css\"",
     "stylelint:fix": "stylelint \"**/*.css\" --fix",
     "test": "echo 'Run `npm run test-all` to run `npm test` for every package'",
-    "test-all": "lerna run test --stream",
+    "test-all": "lerna run test --concurrency=2 --stream",
     "test:backstop": "gulp backstop",
     "test:backstop:approve": "gulp backstop:approve",
     "test:backstop:reference": "gulp backstop:reference",
