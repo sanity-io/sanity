@@ -75,8 +75,8 @@ if (path.win32 === path) {
   libFragment = '$1/lib/'
 }
 
-const logCompile = (file, enc, cb) => {
-  gutil.log('Compiling', `'${chalk.cyan(file._path || file.path)}'...`)
+const logCompile = from => (file, enc, cb) => {
+  gutil.log(`[${from}] Compiling`, `'${chalk.cyan(file._path || file.path)}'...`)
   cb(null, file)
 }
 
@@ -91,6 +91,9 @@ const pkgPath = (cwd, sourcePath) => path.relative(path.join(cwd, 'packages'), s
 const getLogErrorHandler = () => plumber({errorHandler: err => gutil.log(err.stack)})
 const getNoopErrorHandler = () => through.obj((chunk, enc, cb) => cb(null, chunk))
 const buildTypeScript = getTypeScriptBuilder(getNoopErrorHandler)
+const watchJavaScript = series(buildJavaScript, function watchJavascriptRebuild() {
+  watch(scripts, watchJavaScriptRebuild)
+})
 const watchTypeScript = series(
   getTypeScriptBuilder(getLogErrorHandler),
   function watchTypescriptRebuild() {
@@ -115,7 +118,7 @@ function buildJavaScript() {
         hasChanged: compareModified
       })
     )
-    .pipe(through.obj(logCompile))
+    .pipe(through.obj(logCompile('JS')))
     .pipe(babel())
     .pipe(assetFilter.restore)
     .pipe(
@@ -128,7 +131,7 @@ function buildJavaScript() {
     .pipe(dest(packagesPath))
 }
 
-function watchJavaScript() {
+function watchJavaScriptRebuild() {
   return src(scripts, srcOpts)
     .pipe(plumber({errorHandler: err => gutil.log(err.stack)}))
     .pipe(
@@ -139,7 +142,7 @@ function watchJavaScript() {
       })
     )
     .pipe(newer(packagesPath))
-    .pipe(through.obj(logCompile))
+    .pipe(through.obj(logCompile('JS')))
     .pipe(babel())
     .pipe(dest(packagesPath))
 }
@@ -174,7 +177,7 @@ function getTypeScriptBuilder(getErrorHandler) {
               })
             )
             .pipe(getErrorHandler())
-            .pipe(through.obj(logCompile))
+            .pipe(through.obj(logCompile('TS')))
             .pipe(sourcemaps.write('.', {includeContent: false, sourceRoot: './'}))
             .pipe(dest(project.options.outDir))
         )
