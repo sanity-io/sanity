@@ -4,7 +4,7 @@ import InspectView from './InspectView'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import historyStore from 'part:@sanity/base/datastore/history'
 
-export default class HistoryForm extends React.PureComponent {
+export default class InspectHistory extends React.PureComponent {
   static propTypes = {
     event: PropTypes.object.isRequired,
     onClose: PropTypes.func
