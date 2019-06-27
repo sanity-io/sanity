@@ -85,7 +85,11 @@ compiler.run((err, stats) => {
   }
 
   const filtered = stats.compilation.warnings.filter(warn => {
-    return !warn.origin || warn.origin.userRequest.indexOf('spawn-sync.js') === -1
+    return (
+      !warn.origin ||
+      (warn.origin.userRequest.indexOf('spawn-sync.js') === -1 &&
+        warn.origin.userRequest.indexOf('write-file-atomic') === -1)
+    )
   })
 
   if (filtered.length > 0) {
