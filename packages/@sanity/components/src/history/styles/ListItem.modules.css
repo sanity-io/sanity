@@ -98,6 +98,10 @@
   position: relative;
 }
 
+.user + .user {
+  margin-left: 1px;
+}
+
 .userInner {
   position: absolute;
   top: 0;
