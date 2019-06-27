@@ -64,8 +64,6 @@ export default class HistoryListItem extends React.PureComponent {
   }
 
   handleClick = evt => {
-    // TODO: removed this when we know which version to view
-    if (this.props.type === 'truncated') return
     this.props.onClick(evt)
   }
 
@@ -85,11 +83,9 @@ export default class HistoryListItem extends React.PureComponent {
       type
     } = this.props
     const selectionClassName = isSelected ? styles.selected : styles.unSelected
-    const className = type === 'truncated' ? styles.disabled : selectionClassName
-
     return (
       <div
-        className={className}
+        className={selectionClassName}
         data-type={type}
         data-is-current-version={isCurrentVersion}
         data-is-selected={isSelected}
