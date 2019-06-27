@@ -28,6 +28,7 @@ storiesOf('Presence')
   .addDecorator(withKnobs)
   .add('Circles', () => {
     const showImage = boolean('show image', true, 'test')
+    const backgroundColor = color('background color', '#ccc', 'test')
     const newMarkers = markers.map(marker => {
       return {
         ...marker,
@@ -38,7 +39,7 @@ storiesOf('Presence')
       }
     })
     return (
-      <div style={{padding: '2em', backgroundColor: '#ccc', position: 'relative'}}>
+      <div style={{padding: '2em', backgroundColor, position: 'relative'}}>
         <PresenceCircles markers={newMarkers.slice(0, number('Number of markers', 10, 'test'))} />
       </div>
     )

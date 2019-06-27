@@ -35,7 +35,6 @@ export default class PresenceCircle extends React.PureComponent {
     const imgStyles = {
       display: 'block',
       backgroundColor: color,
-      borderColor: color,
       backgroundImage: imageUrl && `url(${imageUrl})`
     }
 
@@ -52,9 +51,7 @@ export default class PresenceCircle extends React.PureComponent {
         theme="light"
         distance="10"
         duration={50}
-        className={`${imageUrl ? styles.root : styles.noImage} ${
-          animateOnHover ? styles.animateOnHover : ''
-        }`}
+        className={`${styles.root} ${animateOnHover ? styles.animateOnHover : ''}`}
         style={imgStyles}
       >
         {imageUrl ? '' : <span className={styles.initials}>{text}</span>}
