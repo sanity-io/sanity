@@ -35,8 +35,7 @@ const compareModified = async (stream, sourceFile, targetPath) => {
 }
 
 const tsPaths = globby.sync(['./packages/@sanity/*/tsconfig.json'])
-const getTsProjects = () => tsPaths.map(conf => ts.createProject(conf))
-const tsScripts = tsPaths.map(proj => `${path.dirname(proj)}/src/**/*.ts`)
+const tsProjects = tsPaths.map(conf => ts.createProject(conf))
 const scripts = [
   './packages/@sanity/*/src/**/*.js',
   './packages/sanity-plugin-*/src/**/*.js',
@@ -86,20 +85,25 @@ const mapToDest = orgPath => {
 }
 
 const packagesPath = 'packages'
-const fullPackagesPath = path.join(__dirname, packagesPath)
 const pkgPath = (cwd, sourcePath) => path.relative(path.join(cwd, 'packages'), sourcePath)
 const getLogErrorHandler = () => plumber({errorHandler: err => gutil.log(err.stack)})
-const getNoopErrorHandler = () => through.obj((chunk, enc, cb) => cb(null, chunk))
-const buildTypeScript = getTypeScriptBuilder(getNoopErrorHandler)
-const watchJavaScript = series(buildJavaScript, function watchJavascriptRebuild() {
+const watchJavaScript = series(buildJavaScript, function watchJS() {
   watch(scripts, watchJavaScriptRebuild)
 })
-const watchTypeScript = series(
-  getTypeScriptBuilder(getLogErrorHandler),
-  function watchTypescriptRebuild() {
-    watch(tsScripts, buildTypeScript)
-  }
-)
+
+const watchTypeScript = series(buildTypeScript, function watchTS() {
+  tsProjects.forEach(project => {
+    const builder = function() {
+      return rebuildTypeScriptProject(project)
+    }
+
+    Object.defineProperty(builder, 'name', {
+      value: `buildTypeScript[${path.basename(project.projectDirectory)}]`
+    })
+
+    watch(`${project.projectDirectory}/src/**/*.ts`, builder)
+  })
+})
 
 exports.default = parallel(buildJavaScript, buildTypeScript)
 exports.build = parallel(buildJavaScript, buildTypeScript)
@@ -147,43 +151,35 @@ function watchJavaScriptRebuild() {
     .pipe(dest(packagesPath))
 }
 
-function getTypeScriptBuilder(getErrorHandler) {
-  return function buildTypescript() {
-    return mergeStream(
-      ...getTsProjects().map(project => {
-        const source = project
-          .src()
-          .pipe(getErrorHandler())
-          .pipe(sourcemaps.init())
-          .pipe(project())
+function rebuildTypeScriptProject(project) {
+  return project
+    .src()
+    .pipe(through.obj(logCompile('TS')))
+    .pipe(getLogErrorHandler())
+    .pipe(project())
+    .js.pipe(getLogErrorHandler())
+    .pipe(dest(project.options.outDir))
+}
 
-        return mergeStream(
-          source.dts
-            .pipe(
-              changed(packagesPath, {
-                transformPath: inp => inp.replace(fullPackagesPath, project.options.outDir),
-                hasChanged: compareModified
-              })
-            )
-            .pipe(getErrorHandler())
-            .pipe(sourcemaps.write('.', {includeContent: false, sourceRoot: './'}))
-            .pipe(dest(project.options.outDir)),
+function buildTypeScript() {
+  return mergeStream(
+    ...tsProjects.map(project => {
+      const compilation = project
+        .src()
+        .pipe(through.obj(logCompile('TS')))
+        .pipe(project())
 
-          source.js
-            .pipe(
-              changed(packagesPath, {
-                transformPath: inp => inp.replace(fullPackagesPath, project.options.outDir),
-                hasChanged: compareModified
-              })
-            )
-            .pipe(getErrorHandler())
-            .pipe(through.obj(logCompile('TS')))
-            .pipe(sourcemaps.write('.', {includeContent: false, sourceRoot: './'}))
-            .pipe(dest(project.options.outDir))
-        )
-      })
-    )
-  }
+      return mergeStream(
+        compilation.dts
+          .pipe(sourcemaps.write('.', {includeContent: false, sourceRoot: './'}))
+          .pipe(dest(project.options.outDir)),
+
+        compilation.js
+          .pipe(sourcemaps.write('.', {includeContent: false, sourceRoot: './'}))
+          .pipe(dest(project.options.outDir))
+      )
+    })
+  )
 }
 
 function buildAssets() {
