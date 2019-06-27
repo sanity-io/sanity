@@ -1,6 +1,6 @@
-import sanityClient from '@sanity/client'
 import config from 'config:sanity'
 import configureClient from 'part:@sanity/base/configure-client?'
+import sanityClient from '@sanity/client'
 
 const deprecationMessage = `[deprecation] The Sanity client is now exposed in CommonJS format.
 
@@ -11,7 +11,8 @@ To the following:
   \`const client = require('part:@sanity/base/client')\`
 `
 
-const apiConfig = {...config.api, withCredentials: true, useCdn: false}
+const fallbackConfig = {projectId: 'UNSPECIFIED', dataset: 'UNSPECIFIED'}
+const apiConfig = {...fallbackConfig, ...config.api, withCredentials: true, useCdn: false}
 const client = sanityClient(apiConfig)
 
 const configuredClient = configureClient ? configureClient(sanityClient(apiConfig)) : client
@@ -26,4 +27,5 @@ Object.defineProperty(configuredClient, 'default', {
 })
 
 // Expose as CJS to allow Node scripts to consume it without `.default`
+// eslint-disable-next-line import/no-commonjs
 module.exports = configuredClient
