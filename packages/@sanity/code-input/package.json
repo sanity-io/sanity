@@ -1,6 +1,6 @@
 {
   "name": "@sanity/code-input",
-  "version": "0.141.4",
+  "version": "0.141.5",
   "description": "Ace editor for editing code",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -25,7 +25,7 @@
     "react-icons": "^2.2.7"
   },
   "devDependencies": {
-    "@sanity/check": "0.141.4",
+    "@sanity/check": "0.141.5",
     "rimraf": "^2.6.2"
   },
   "bugs": {
