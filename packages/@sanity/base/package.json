@@ -6,7 +6,6 @@
   "scripts": {
     "clean": "rimraf lib",
     "coverage": "nyc --report=lcov --report=text _mocha -- test/**/*.test.js",
-    "prepublish": "in-publish && sanity-check || not-in-publish",
     "test": "jest"
   },
   "repository": {
@@ -38,7 +37,6 @@
     "@sanity/transaction-collator": "0.141.3",
     "@sanity/validation": "0.141.3",
     "history": "^4.6.3",
-    "in-publish": "^2.0.0",
     "lodash": "^4.17.4",
     "nano-pubsub": "^1.0.2",
     "promise-props": "^1.0.0",
@@ -52,8 +50,6 @@
     "shallow-equals": "^1.0.0"
   },
   "devDependencies": {
-    "@sanity/check": "0.141.3",
-    "@sanity/plugin-loader": "0.141.3",
     "jest": "^24.8.0",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
