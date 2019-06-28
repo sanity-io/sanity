@@ -568,7 +568,15 @@ export default withRouterHOC(
             html={this.renderPublishButtonTooltip(errors, published)}
           >
             <Button
-              disabled={isReconnecting || !draft || errors.length > 0}
+              disabled={
+                isCreatingDraft ||
+                isPublishing ||
+                isReconnecting ||
+                isRestoring ||
+                isUnpublishing ||
+                !draft ||
+                errors.length > 0
+              }
               onClick={this.handlePublishRequested}
               color="primary"
             >
