@@ -4,8 +4,13 @@ function stripDraftId(str) {
   return str.replace(/^drafts\./, '')
 }
 
-export default function resolveProductionUrl(document) {
+export default function resolveProductionUrl(document, rev) {
   const id = stripDraftId(document._id)
+
+  if (rev) {
+    // No support for historic revisions preview in movie frontend
+    return null
+  }
 
   if (document._type === 'movie') {
     return `${SITE_URL}/movie?id=${id}`

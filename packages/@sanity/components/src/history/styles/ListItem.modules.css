@@ -48,9 +48,10 @@
 }
 
 .endLine {
-  height: calc(
-    100% - var(--small-padding) - var(--history-circle-size) - var(--history-line-top) + 1px
-  );
+  height:
+    calc(
+      100% - var(--small-padding) - var(--history-circle-size) - var(--history-line-top) + 1px
+    );
   width: 0;
   position: absolute;
   top: calc(var(--small-padding) + var(--history-circle-size) + var(--history-line-top) - 1px);
@@ -87,17 +88,37 @@
   font-size: var(--font-size-large);
 }
 
+.userIcons {
+  display: flex;
+}
+
 .user {
   width: 0.5em;
   height: 0.5em;
   position: relative;
 }
 
-.user > * {
+.user + .user {
+  margin-left: 1px;
+}
+
+.userInner {
   position: absolute;
   top: 0;
   left: 0;
   transform: translateY(-25%);
+}
+
+.userInner > * {
+  box-sizing: border-box;
+  border-radius: 50%;
+  background-clip: padding-box;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+}
+
+.user:last-child .userInner {
+  clip-path: none !important;
 }
 
 .userName {

@@ -1,4 +1,4 @@
-/* eslint-disable complexity, camelcase */
+/* eslint-disable complexity, camelcase, max-params */
 // Connects the FormBuilder with various sanity roles
 import React from 'react'
 import PropTypes from 'prop-types'
@@ -31,6 +31,7 @@ import copyDocument from '../../utils/copyDocument'
 import ConfirmUnpublish from '../../components/ConfirmUnpublish'
 import ConfirmDelete from '../../components/ConfirmDelete'
 import InspectView from '../../components/InspectView'
+import InspectHistory from '../../components/InspectHistory'
 import DocTitle from '../../components/DocTitle'
 import History from '../History'
 import styles from '../styles/Editor.css'
@@ -54,39 +55,42 @@ function listen(target, eventType, callback, useCapture = false) {
   }
 }
 
-const getDuplicateItem = (draft, published) => ({
+const getDuplicateItem = (draft, published, isLiveEditEnabled, isHistoryEnabled) => ({
   action: 'duplicate',
   title: 'Duplicate',
   icon: ContentCopyIcon,
-  isDisabled: !draft && !published
+  isDisabled: isHistoryEnabled || (!draft && !published)
 })
 
-const getUnpublishItem = (draft, published, isLiveEditEnabled) =>
+const getUnpublishItem = (draft, published, isLiveEditEnabled, isHistoryEnabled) =>
   isLiveEditEnabled
     ? null
     : {
         action: 'unpublish',
         title: 'Unpublish…',
         icon: VisibilityOffIcon,
-        isDisabled: !published
+        isDisabled: isHistoryEnabled || !published
       }
 
-const getDeleteItem = (draft, published) => ({
+const getDeleteItem = (draft, published, isLiveEditEnabled, isHistoryEnabled) => ({
   group: 'danger',
   action: 'delete',
   title: 'Delete…',
   icon: TrashIcon,
   danger: true,
-  isDisabled: !draft && !published
+  isDisabled: isHistoryEnabled || (!draft && !published)
 })
 
-const getHistoryMenuItem = (draft, published) => {
+const getHistoryMenuItem = (draft, published, isLiveEditEnabled, isHistoryEnabled) => {
+  if (isLiveEditEnabled) {
+    return null
+  }
   if (window && window.innerWidth > BREAKPOINT_SCREEN_MEDIUM) {
     return {
       action: 'browseHistory',
       title: 'Browse history',
       icon: HistoryIcon,
-      isDisabled: !(draft || published)
+      isDisabled: isHistoryEnabled || !(draft || published)
     }
   }
   return null
@@ -106,14 +110,20 @@ const getInspectItem = (draft, published) => ({
   isDisabled: !(draft || published)
 })
 
-const getProductionPreviewItem = (draft, published) => {
+const getProductionPreviewItem = (
+  draft,
+  published,
+  liveEditEnable,
+  isHistoryEnabled,
+  selectedEvent
+) => {
   const snapshot = draft || published
   if (!snapshot || !resolveProductionPreviewUrl) {
     return null
   }
   let previewUrl
   try {
-    previewUrl = resolveProductionPreviewUrl(snapshot)
+    previewUrl = resolveProductionPreviewUrl(snapshot, selectedEvent && selectedEvent.rev)
   } catch (error) {
     error.message = `An error was thrown while trying to get production preview url: ${
       error.message
@@ -140,7 +150,14 @@ const getProductionPreviewItem = (draft, published) => {
   )
 }
 
-const getMenuItems = (enabledActions, draft, published, isLiveEditEnabled) =>
+const getMenuItems = (
+  enabledActions,
+  draft,
+  published,
+  isLiveEditEnabled,
+  isHistoryEnabled,
+  selectedEvent
+) =>
   [
     getProductionPreviewItem,
     enabledActions.includes('delete') && getUnpublishItem,
@@ -150,7 +167,7 @@ const getMenuItems = (enabledActions, draft, published, isLiveEditEnabled) =>
     enabledActions.includes('delete') && getDeleteItem
   ]
     .filter(Boolean)
-    .map(fn => fn(draft, published, isLiveEditEnabled))
+    .map(fn => fn(draft, published, isLiveEditEnabled, isHistoryEnabled, selectedEvent))
     .filter(Boolean)
 
 const isValidationError = marker => marker.type === 'validation' && marker.level === 'error'
@@ -194,7 +211,9 @@ export default withRouterHOC(
         })
       ),
       router: PropTypes.shape({
-        state: PropTypes.object
+        state: PropTypes.object,
+        navigate: PropTypes.func,
+        navigateIntent: PropTypes.func
       }).isRequired,
 
       onDelete: PropTypes.func,
@@ -202,7 +221,11 @@ export default withRouterHOC(
       onPublish: PropTypes.func,
       onRestore: PropTypes.func,
       onUnpublish: PropTypes.func,
-      transactionResult: PropTypes.shape({type: PropTypes.string}),
+      transactionResult: PropTypes.shape({
+        type: PropTypes.string,
+        error: PropTypes.object,
+        message: PropTypes.string
+      }),
       onClearTransactionResult: PropTypes.func,
 
       validationPending: PropTypes.bool,
@@ -748,11 +771,14 @@ export default withRouterHOC(
             index={this.props.index}
             title={this.getTitle(value)}
             onAction={this.handleMenuAction}
-            menuItems={
-              historyState.isOpen
-                ? []
-                : getMenuItems(enabledActions, draft, published, this.isLiveEditEnabled())
-            }
+            menuItems={getMenuItems(
+              enabledActions,
+              draft,
+              published,
+              this.isLiveEditEnabled(),
+              historyState.isOpen,
+              historyState.isOpen && this.findSelectedEvent()
+            )}
             renderActions={this.renderActions}
             onMenuToggle={this.handleMenuToggle}
             isSelected // last pane is always selected for now
@@ -767,7 +793,18 @@ export default withRouterHOC(
                 <AfterEditorComponent key={i} documentId={published._id} />
               ))}
 
-              {inspect && <InspectView value={value} onClose={this.handleHideInspector} />}
+              {inspect && historyState.isOpen && (
+                <InspectHistory
+                  id={value._id}
+                  event={this.findSelectedEvent()}
+                  onClose={this.handleHideInspector}
+                />
+              )}
+
+              {inspect && (!historyState || !historyState.isOpen) && (
+                <InspectView value={value} onClose={this.handleHideInspector} />
+              )}
+
               {showConfirmDelete && (
                 <ConfirmDelete
                   draft={draft}

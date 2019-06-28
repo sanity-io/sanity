@@ -5,10 +5,12 @@
   color: var(--selectable-item-color--inverted);
   cursor: default;
 
-  @nest &:hover {
+  @media (hover: hover) {
     @media (--screen-medium) {
-      background-color: var(--selectable-item-color-hover);
-      color: var(--selectable-item-color-hover--inverted);
+      @nest &:hover {
+        background-color: var(--selectable-item-color-hover);
+        color: var(--selectable-item-color-hover--inverted);
+      }
     }
   }
 
