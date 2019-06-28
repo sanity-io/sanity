@@ -13,12 +13,21 @@ const maybe = (val, fn) => val && fn(val)
 
 export default class History extends React.PureComponent {
   static propTypes = {
+    events: PropTypes.arrayOf(PropTypes.object),
     onClose: PropTypes.func,
     documentId: PropTypes.string,
     onItemSelect: PropTypes.func,
+    isLoading: PropTypes.bool,
     lastEdited: PropTypes.object,
     errorMessage: PropTypes.string,
-    selectedEvent: PropTypes.object
+    selectedEvent: PropTypes.object,
+    selectedRev: PropTypes.string,
+    historyValue: PropTypes.object,
+    error: PropTypes.object
+  }
+
+  static defaultProps = {
+    isLoading: true
   }
 
   state = {

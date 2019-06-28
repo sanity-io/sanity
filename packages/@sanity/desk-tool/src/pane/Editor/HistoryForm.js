@@ -45,6 +45,7 @@ export default class HistoryForm extends React.PureComponent {
     this.fetch(displayDocumentId, rev)
   }
 
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.event !== this.props.event) {
       const {displayDocumentId, rev} = nextProps.event

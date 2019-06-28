@@ -1,4 +1,4 @@
-/* eslint-disable complexity, camelcase */
+/* eslint-disable complexity, camelcase, max-params */
 // Connects the FormBuilder with various sanity roles
 import React from 'react'
 import PropTypes from 'prop-types'
@@ -150,7 +150,6 @@ const getProductionPreviewItem = (
   )
 }
 
-// eslint-disable-next-line max-params
 const getMenuItems = (
   enabledActions,
   draft,
@@ -212,7 +211,9 @@ export default withRouterHOC(
         })
       ),
       router: PropTypes.shape({
-        state: PropTypes.object
+        state: PropTypes.object,
+        navigate: PropTypes.func,
+        navigateIntent: PropTypes.func
       }).isRequired,
 
       onDelete: PropTypes.func,
@@ -220,7 +221,11 @@ export default withRouterHOC(
       onPublish: PropTypes.func,
       onRestore: PropTypes.func,
       onUnpublish: PropTypes.func,
-      transactionResult: PropTypes.shape({type: PropTypes.string}),
+      transactionResult: PropTypes.shape({
+        type: PropTypes.string,
+        error: PropTypes.object,
+        message: PropTypes.string
+      }),
       onClearTransactionResult: PropTypes.func,
 
       validationPending: PropTypes.bool,
