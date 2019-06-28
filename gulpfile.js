@@ -45,7 +45,7 @@ const scripts = [
 const assets = [
   './packages/@sanity/*/src/**/*',
   './packages/sanity-plugin-*/src/**/*',
-  './packages/groq/src/**/*.js'
+  './packages/groq/src/**/*'
 ]
 
 const srcOpts = {base: 'packages'}
@@ -91,6 +91,10 @@ const watchJavaScript = series(buildJavaScript, function watchJS() {
   watch(scripts, watchJavaScriptRebuild)
 })
 
+const watchAssets = series(buildAssets, function watchAsset() {
+  watch(assets, buildAssets)
+})
+
 const watchTypeScript = series(buildTypeScript, function watchTS() {
   tsProjects.forEach(project => {
     const builder = function() {
@@ -108,11 +112,10 @@ const watchTypeScript = series(buildTypeScript, function watchTS() {
 exports.default = parallel(buildJavaScript, buildTypeScript)
 exports.build = parallel(buildJavaScript, buildTypeScript)
 exports.watchTypeScript = watchTypeScript
-exports.watch = parallel(watchJavaScript, watchTypeScript, buildAssets)
+exports.watch = parallel(watchJavaScript, watchTypeScript, watchAssets)
 
 function buildJavaScript() {
   const assetFilter = filter(['**/*.js'], {restore: true})
-
   return src(assets, srcOpts)
     .pipe(plumber({errorHandler: err => gutil.log(err.stack)}))
     .pipe(assetFilter)
@@ -184,7 +187,7 @@ function buildTypeScript() {
 
 function buildAssets() {
   return src(assets, srcOpts)
-    .pipe(filter(['**/*.*', '!**/*.js']))
+    .pipe(filter(['**/*.*', '!**/*.js', '!**/*.ts']))
     .pipe(plumber({errorHandler: err => gutil.log(err.stack)}))
     .pipe(
       through.obj((file, enc, callback) => {
