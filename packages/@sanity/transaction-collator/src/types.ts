@@ -2,7 +2,7 @@ export type Mutation = {
   create?: {_id: string}
   createIfNotExists?: {_id: string}
   createOrReplace?: {_id: string}
-  createSquashed?: {_id: string, authors: string[]}
+  createSquashed?: {_id: string, authors: string[], document: {_id: string}}
   delete?: {id: string}
   patch?: {id: string}
 }

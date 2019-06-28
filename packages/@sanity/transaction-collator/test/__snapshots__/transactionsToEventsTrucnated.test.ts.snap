@@ -1,0 +1,84 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`classifies transactions to events  1`] = `
+Array [
+  Object {
+    "displayDocumentId": "team-f0b2a4cf7a936ac478f8ec25d341d1edbd592ab5",
+    "documentIDs": Array [
+      "team-42ee9c1ca3d38337a3c68c296b4c86b863a2eaf3",
+      "team-8673bdc6e014b850ae030e123aa058532271e13e",
+      "team-8eb00df53fb2e43bd19bd7ae09f3e89e5055b8a5",
+      "team-07e85992ace967c0d3b5bb30450781e1d45e313d",
+      "team-7f79e928590566c20a31627936e5f94001f20a07",
+      "team-723c34e02fabd0ce26d65908030f03c5eb3a02ea",
+      "team-32198203519a4c1878d27d6f8021ed310ea88548",
+      "team-83cb86ed745860955d4543de578cef04565aec2f",
+      "team-25cfd85e6e70a7d34920dcb2e460d4e0ea0a189d",
+      "team-64ec68d3bae4d32db7a3f4b074f7f62ca6280341",
+      "team-a97bccb11bd711835301448975228bf6a400b504",
+      "team-6b2720d83daa72a930d58fa3743eb794010590cc",
+      "team-d95b7af9cc70571269d5f7a852b7c14593e9b1df",
+      "team-eadd76229b8bc763cab2d4915fe5dc2b8f997590",
+      "team-673b6c5a941c04243169ce40de69aef331e61892",
+      "team-68a12e49390d1e2084cf22eda67291d666528f7e",
+      "team-be5bee0fce3fd5a0b069d5901fd36b7750cfbd20",
+      "team-c11aacd85858758c2aae5a00be1713d98fc8dda3",
+      "team-00c8a94ab93f5fa977311dc04897ddcfed791193",
+      "team-568be2771a60a817365c290619ee9245875b919e",
+      "team-cff50ae7358ba9938faf05896f5fc4ada4fd06e4",
+      "team-2f4bd42e4112072310acf63a1edf011388ee42a9",
+      "team-beda50c6fc6e9ed24996e21b98877a1071e5f6ec",
+      "team-f0b2a4cf7a936ac478f8ec25d341d1edbd592ab5",
+      "team-8fe8681997c70fa79d6402d73b39d70cf6a02ec3",
+      "team-f45f06759142188d7ffa854a5c4556035e81e7dc",
+      "team-16f40260ed45426dcd43664a66395ecd50b6b9e5",
+      "team-caa8274de32a4cd6f6c1082c5790021888fe350e",
+    ],
+    "endTime": "2018-03-16T17:47:15.108594Z",
+    "rev": "nlwJW0GjnaISO6pLcPcRB2",
+    "startTime": "2018-03-16T17:47:15.108594Z",
+    "transactionIds": Array [
+      "nlwJW0GjnaISO6pLcPcRB2",
+    ],
+    "type": "truncated",
+    "userIds": Array [
+      "pEdMA3tnN",
+    ],
+  },
+  Object {
+    "displayDocumentId": "drafts.team-f0b2a4cf7a936ac478f8ec25d341d1edbd592ab5",
+    "documentIDs": Array [
+      "drafts.team-f0b2a4cf7a936ac478f8ec25d341d1edbd592ab5",
+    ],
+    "endTime": "2018-03-16T18:43:19.078619Z",
+    "rev": "g22lfg-et7-5a5-sje-eayjevqpn",
+    "startTime": "2018-03-16T18:43:19.078619Z",
+    "transactionIds": Array [
+      "g22lfg-et7-5a5-sje-eayjevqpn",
+    ],
+    "type": "edited",
+    "userIds": Array [
+      "pEdMA3tnN",
+    ],
+  },
+  Object {
+    "displayDocumentId": "drafts.team-f0b2a4cf7a936ac478f8ec25d341d1edbd592ab5",
+    "documentIDs": Array [
+      "drafts.team-f0b2a4cf7a936ac478f8ec25d341d1edbd592ab5",
+    ],
+    "endTime": "2019-06-27T12:55:33.470807Z",
+    "rev": "vkjpts-q8n-08d-g88-ez4kmnwg4",
+    "startTime": "2019-06-27T12:55:32.469439Z",
+    "transactionIds": Array [
+      "foa4ka-n7k-zqm-4j3-3u9cpzgi9",
+      "vttnol-c7p-9qu-o0j-jvyldf0fc",
+      "4fzqow-l9h-qt6-96r-nh3pk0cf7",
+      "vkjpts-q8n-08d-g88-ez4kmnwg4",
+    ],
+    "type": "edited",
+    "userIds": Array [
+      "pesMTOkCm",
+    ],
+  },
+]
+`;

@@ -26,6 +26,8 @@ export function transactionsToEvents(
       .filter(event => event.type !== 'discardDraft')
       // Chunk and group edit events
       .reduce(reduceEdits, [])
+      // Manipulate truncation events to be able to restore to published version
+      .reduce(createReduceTruncatedFn(), [])
   )
 }
 
@@ -80,6 +82,33 @@ function reduceEdits(
     acc.push(current)
   }
   return acc
+}
+
+function createReduceTruncatedFn() {
+  let truncated: HistoryEvent[] | undefined
+  return (acc: HistoryEvent[], current: HistoryEvent, index: number, arr: HistoryEvent[]) => {
+    truncated = truncated || arr.filter(event => event.type === 'truncated')
+    if (!truncated.includes(current)) {
+      acc.push(current)
+    }
+    if (index === arr.length - 1) {
+      const draftTruncationEvent = truncated.find(
+        evt => !!evt.displayDocumentId && evt.displayDocumentId.startsWith('drafts.')
+      )
+      const publishedTruncationEvent = truncated.find(
+        evt => !!evt.displayDocumentId && !evt.displayDocumentId.startsWith('drafts.')
+      )
+      if (draftTruncationEvent && publishedTruncationEvent) {
+        acc.unshift({...draftTruncationEvent, type: 'edited'})
+        acc.unshift(publishedTruncationEvent)
+      } else if (publishedTruncationEvent) {
+        acc.unshift(publishedTruncationEvent)
+      } else if (draftTruncationEvent) {
+        acc.unshift(draftTruncationEvent)
+      }
+    }
+    return acc
+  }
 }
 
 export function mutationsToEventTypeAndDocumentId(
@@ -169,7 +198,7 @@ export function mutationsToEventTypeAndDocumentId(
 
   // Truncated history
   if (mutations.length === 1 && squashedPatch) {
-    return {type: 'truncated', documentId: squashedPatch._id}
+    return {type: 'truncated', documentId: squashedPatch.document._id}
   }
 
   // Deleted
@@ -213,7 +242,7 @@ function filterRelevantMutations(mutations: Mutation[], documentIds: string[]) {
     return Object.keys(mut)
       .map(key => {
         const val = (<any>mut)[key]
-        return val['id'] || val['_id'] || false
+        return val['id'] || val['_id'] || (val['document'] && val['document']['_id']) || false
       })
       .some(id => id && documentIds.includes(id))
   })

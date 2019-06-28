@@ -40,6 +40,7 @@ export default class HistoryItem extends React.PureComponent {
     rev: PropTypes.string.isRequired,
     type: PropTypes.oneOf([
       'created',
+      'deleted',
       'edited',
       'published',
       'unpublished',
