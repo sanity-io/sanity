@@ -10,7 +10,7 @@ module.exports = (config, overrides = {}) => {
     headers.Authorization = `Bearer ${token}`
   }
 
-  if (!config.useProjectHostname && config.projectId) {
+  if (!overrides.useGlobalApi && (!config.useProjectHostname && config.projectId)) {
     headers[projectHeader] = config.projectId
   }
 
