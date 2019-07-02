@@ -6,18 +6,18 @@ Options
 
 Examples
   # Invite a new user to the project (prompt for details)
-  sanity user add
+  sanity users invite
 
   # Invite user with email "pippi@sanity.io" to the project, prompt for role
-  snaity user add pippi@sanity.io
+  sanity users invite pippi@sanity.io
 
   # Invite user with email "pippi@sanity.io" to the project, as adminisistrator
-  sanity user add pippi@sanity.io --role administrator
+  sanity users invite pippi@sanity.io --role administrator
 `
 
 export default {
-  name: 'add',
-  group: 'user',
+  name: 'invite',
+  group: 'users',
   signature: '[EMAIL]',
   helpText,
   description: 'Invite a new user to the project',
