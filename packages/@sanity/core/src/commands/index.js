@@ -32,6 +32,9 @@ import deleteCorsOriginCommand from './cors/deleteCorsOriginCommand'
 import graphqlGroup from './graphql/graphqlGroup'
 import deployGraphQLAPICommand from './graphql/deployGraphQLAPICommand'
 import deleteGraphQLAPICommand from './graphql/deleteGraphQLAPICommand'
+import usersGroup from './users/usersGroup'
+import inviteUserCommand from './users/inviteUserCommand'
+import listUsersCommand from './users/listUsersCommand'
 
 export default [
   buildCommand,
@@ -50,6 +53,9 @@ export default [
   listCorsOriginsCommand,
   addCorsOriginCommand,
   deleteCorsOriginCommand,
+  usersGroup,
+  inviteUserCommand,
+  listUsersCommand,
   hookGroup,
   listHooksCommand,
   createHookCommand,
