@@ -34,6 +34,7 @@ import deployGraphQLAPICommand from './graphql/deployGraphQLAPICommand'
 import deleteGraphQLAPICommand from './graphql/deleteGraphQLAPICommand'
 import usersGroup from './users/usersGroup'
 import inviteUserCommand from './users/inviteUserCommand'
+import listUsersCommand from './users/listUsersCommand'
 
 export default [
   buildCommand,
@@ -54,6 +55,7 @@ export default [
   deleteCorsOriginCommand,
   usersGroup,
   inviteUserCommand,
+  listUsersCommand,
   hookGroup,
   listHooksCommand,
   createHookCommand,
