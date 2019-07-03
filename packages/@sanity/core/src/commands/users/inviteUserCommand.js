@@ -8,10 +8,10 @@ Examples
   # Invite a new user to the project (prompt for details)
   sanity users invite
 
-  # Invite user with email "pippi@sanity.io" to the project, prompt for role
+  # Send a new user invite to the email "pippi@sanity.io", prompt for role
   sanity users invite pippi@sanity.io
 
-  # Invite user with email "pippi@sanity.io" to the project, as adminisistrator
+  # Send a new user invite to the email "pippi@sanity.io", as administrator
   sanity users invite pippi@sanity.io --role administrator
 `
 
