@@ -11,7 +11,8 @@ export default class PreviewSubscriber extends React.Component {
     fields: PropTypes.arrayOf(PropTypes.oneOf(['title', 'description', 'imageUrl'])),
     value: PropTypes.any.isRequired,
     ordering: PropTypes.object,
-    children: PropTypes.func
+    children: PropTypes.func,
+    layout: PropTypes.string
   }
 
   renderChild = isVisible => {
@@ -40,6 +41,12 @@ export default class PreviewSubscriber extends React.Component {
   }
 
   render() {
+    // Disable visibility for 'inline' and 'block' types which is used in the block editor (for now)
+    // This led to strange side effects inside the block editor, and needs to be disabled for now.
+    // https://github.com/sanity-io/sanity/pull/1411
+    if (['inline', 'block'].includes(this.props.layout)) {
+      return this.renderChild(true)
+    }
     return <WithVisibility hideDelay={HIDE_DELAY}>{this.renderChild}</WithVisibility>
   }
 }
