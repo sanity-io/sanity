@@ -5,6 +5,7 @@ import ErrorHandler from './ErrorHandler'
 import VersionChecker from './VersionChecker'
 import MissingProjectConfig from './MissingProjectConfig'
 import styles from './styles/SanityRoot.css'
+import SnackbarProvider from 'part:@sanity/components/snackbar/default'
 
 function SanityRoot() {
   const {projectId, dataset} = config.api || {}
@@ -12,11 +13,16 @@ function SanityRoot() {
     return <MissingProjectConfig />
   }
 
+  const options = {
+    // preventDuplicate: true
+  }
+  // TODO: Wrap snackbar provider around app, provide context
   return (
     <div className={styles.root}>
       <ErrorHandler />
       <RootComponent />
       <VersionChecker />
+      <SnackbarProvider options={options}/>
     </div>
   )
 }

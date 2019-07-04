@@ -600,7 +600,7 @@
     },
     {
       "implements": "part:@sanity/components/snackbar/default",
-      "path": "snackbar/DefaultSnackbar.js"
+      "path": "snackbar/SnackbarProvider.js"
     },
     {
       "implements": "part:@sanity/components/edititem/fold",
@@ -764,7 +764,7 @@
     },
     {
       "implements": "part:@sanity/components/snackbar/default-style",
-      "path": "snackbar/styles/DefaultSnackbar.css"
+      "path": "snackbar/styles/SnackbarItem.css"
     },
     {
       "implements": "part:@sanity/components/menus/default",

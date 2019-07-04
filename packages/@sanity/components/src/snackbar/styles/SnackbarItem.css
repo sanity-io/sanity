@@ -1,0 +1,77 @@
+@import "part:@sanity/base/theme/variables-style";
+
+.root {
+  position: fixed;
+  z-index: var(--zindex-modal);
+  bottom: 0;
+  right: 0;
+  transform: translate3d(100vw,0,0);
+  max-width: 100vw;
+  width: 100%;
+  margin: 0;
+  @media (--screen-medium) {
+    transform: translate3d(500px,0,0);
+    max-width: 416px;
+    margin: 0 1rem;
+  }
+}
+
+.inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: var(--medium-padding);
+  border-radius: var(--border-radius-large);
+  composes: shadow-1dp from "part:@sanity/base/theme/shadows-style";
+}
+
+.info {
+  background-color: var(--state-info-color);
+  color: var(--state-info-color--inverted);
+}
+
+.warning {
+  background-color: var(--state-warning-color);
+  color: var(--state-warning-color--inverted);
+}
+
+.success {
+  background-color: var(--state-success-color);
+  color: var(--state-success-color--inverted);
+}
+
+.error {
+  background-color: var(--state-danger-color);
+  color: var(--state-danger-color--inverted);
+}
+
+.danger {
+  background-color: color(var(--state-danger-color) a(90%));
+  color: var(--state-danger-color--inverted);
+}
+
+.SnackbarIcon {
+  font-size: 1rem;
+  margin-right: 1rem;
+}
+
+.SnackbarClose {
+  background: 0;
+  border: 0;
+  font: inherit;
+  margin-left: auto;
+  color: white;
+  cursor: pointer;
+}
+
+.ShowSnack {
+  transform: translate3d(0,0,0);
+}
+
+.HideSnack {
+  transform: translate3d(105vw,0,0);
+  opacity: 0;
+  @media (--screen-medium) {
+    transform: translate3d(500px,0,0);
+  }
+}
