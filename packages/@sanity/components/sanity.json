@@ -296,15 +296,15 @@
     },
     {
       "name": "part:@sanity/components/snackbar/default-style",
-      "description": "Styling for snackbar"
+      "description": "Styling for the old default snackbar"
     },
     {
       "name": "part:@sanity/components/snackbar/provider",
       "description": "Snackbar provider to show messages."
     },
     {
-      "name": "part:@sanity/components/snackbar/provider-style",
-      "description": "Styling for snackbar provider"
+      "name": "part:@sanity/components/snackbar/snackbar-style",
+      "description": "Styling for new snackbars."
     },
     {
       "name": "part:@sanity/components/menus/default",
@@ -779,8 +779,8 @@
       "path": "snackbar/styles/DefaultSnackbar.css"
     },
     {
-      "implements": "part:@sanity/components/snackbar/provider-style",
-      "path": "snackbar/styles/SnackbarProvider.css"
+      "implements": "part:@sanity/components/snackbar/snackbar-style",
+      "path": "snackbar/styles/SnackbarItem.css"
     },
     {
       "implements": "part:@sanity/components/menus/default",
