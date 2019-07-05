@@ -19,7 +19,6 @@
 .inner {
   position: relative;
   display: flex;
-  align-items: center;
   padding: var(--medium-padding);
   border-radius: var(--border-radius-large);
   composes: shadow-1dp from "part:@sanity/base/theme/shadows-style";
@@ -50,16 +49,30 @@
   color: var(--state-danger-color--inverted);
 }
 
-.SnackbarIcon {
-  font-size: 1rem;
-  margin-right: 1rem;
+.SnackbarContent {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
-.SnackbarClose {
+.SnackbarButtons {
+  margin-left: auto;
+}
+
+.SnackbarChildren {
+  flex-basis: 100%;
+  margin: .5rem 0;
+}
+
+.SnackbarIcon {
+  font-size: 1rem;
+  margin-right: .5rem;
+}
+
+.SnackbarAction {
   background: 0;
   border: 0;
   font: inherit;
-  margin-left: auto;
   color: white;
   cursor: pointer;
 }
@@ -68,7 +81,7 @@
   transform: translate3d(0,0,0);
 }
 
-.HideSnack {
+.DismissSnack {
   transform: translate3d(105vw,0,0);
   opacity: 0;
   @media (--screen-medium) {
