@@ -2,29 +2,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import SnackbarItem from './SnackbarItem'
 
-/*
-  TODO:
-
-  Functionality:
-  - Add logic for getting height of snack rather than setting a hardcoded one (in get offsets())
-  - Context
-    - Add children as props, this will be the studio
-    - Add children before the snackbar
-
-  Accessibility fixes:
-  - aria-role
-  - aria-labelledby
-  - focus
-
-  Refactoring:
-  - Add consistent transitions and timeouts
-
-*/
-
 export default class SnackbarProvider extends React.Component {
 
   static propTypes = {
     maxStack: PropTypes.number,
+    preventDuplicate: PropTypes.bool,
     options: PropTypes.object,
     transitionDuration: PropTypes.number,
     children: PropTypes.node.isRequired
@@ -32,7 +14,8 @@ export default class SnackbarProvider extends React.Component {
 
   static defaultProps = {
     maxStack: 3,
-    transitionDuration: 200
+    transitionDuration: 200,
+    preventDuplicate: false
   }
 
   static childContextTypes = {
@@ -111,12 +94,12 @@ export default class SnackbarProvider extends React.Component {
       kind: randomKind.kind,
       icon: randomKind.icon,
       open: true,
-      // persist: randomPersist
+      setFocus: true
     }
   }
 
   addToSnackQueue = (contextSnack) => {
-    const { preventDuplicate } = this.props.options
+    const { preventDuplicate } = this.props
     const { activeSnacks } = this.state
 
     const newSnack = {
@@ -233,12 +216,14 @@ export default class SnackbarProvider extends React.Component {
     const { children, transitionDuration } = this.props
     return (
       <div>
+        <button onClick={() => this.addToSnackQueue(this.generateSnack())}>Add snack</button>
         { children }
         {
           activeSnacks.map((snack, index) => (
             <SnackbarItem
               key={snack.key}
               snack={snack}
+              tabIndex={activeSnacks.length - index}
               offset={this.offsets[index]}
               onClose={(key) => this.handleDismissSnack(key)}
               transitionDuration={transitionDuration}
