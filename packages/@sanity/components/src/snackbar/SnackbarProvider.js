@@ -37,10 +37,7 @@ export default class SnackbarProvider extends React.Component {
     }
   }
 
-  static defaultProps = {
-    maxStack: 3,
-    transitionDuration: 200
-  }
+  snackQueue = []
 
   // The queue of incoming snacks
   queue = []
@@ -114,8 +111,7 @@ export default class SnackbarProvider extends React.Component {
     const { activeSnacks } = this.state
     const newSnack = this.generateSnack()
     if(preventDuplicate) {
-      // TODO: Compare something else than kind?
-      const isInQueue = this.queue.findIndex(snack => snack.kind === newSnack.kind) > -1
+      const isInQueue = this.snackQueue.findIndex(snack => snack.kind === newSnack.kind) > -1
       const isInActive = activeSnacks.findIndex(snack => snack.kind === newSnack.kind) > -1
       
       if (isInQueue || isInActive) {
@@ -123,7 +119,7 @@ export default class SnackbarProvider extends React.Component {
         return null
       }
     }
-    this.queue.push(newSnack)
+    this.snackQueue.push(newSnack)
     this.handleMaxSnackDisplay()
     return newSnack.id
   }
@@ -146,8 +142,8 @@ export default class SnackbarProvider extends React.Component {
     by adding it to the state and activeSnacks
   */
   processSnackQueue = () => {
-    if (this.queue.length > 0) {
-      const newSnack = this.queue.shift()
+    if (this.snackQueue.length > 0) {
+      const newSnack = this.snackQueue.shift()
       this.setState(({ activeSnacks }) => ({
         activeSnacks: [...activeSnacks, newSnack]
       }))
@@ -181,8 +177,7 @@ export default class SnackbarProvider extends React.Component {
       .forEach((snack) => {
         if (!snackHasBeenRemoved && (!snack.persist || ignorePersistStatus)) {
           snackHasBeenRemoved = true
-          // Handle hiding the snack using the ID
-          this.handleHideSnack(snack.key)
+          this.handleDismissSnack(snack.key)
         }
       })
   }
@@ -192,7 +187,7 @@ export default class SnackbarProvider extends React.Component {
     then call to remove it from active snacks in order to
     transition it out
   */
-  handleHideSnack = (key) => {
+  handleDismissSnack = (key) => {
     this.setState(({ activeSnacks }) => ({
       activeSnacks: activeSnacks.map(snack => (
         snack.key === key
@@ -227,7 +222,7 @@ export default class SnackbarProvider extends React.Component {
                 key={snack.key}
                 snack={snack}
                 offset={this.offsets[index]}
-                onClose={(key) => this.handleHideSnack(key)}
+              onClose={(key) => this.handleDismissSnack(key)}
                 transitionDuration={transitionDuration}
               onSetHeight={this.handleSetHeight}
             />

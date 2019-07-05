@@ -37,6 +37,7 @@ export default class SnackbarItem extends React.Component {
     }).isRequired,
     // Handles the closing of the snack
     onClose: PropTypes.func.isRequired,
+    autoDismissTimeout: PropTypes.number,
     onSetHeight: PropTypes.func.isRequired
   }
 
@@ -44,8 +45,7 @@ export default class SnackbarItem extends React.Component {
     snack: {
       kind: 'info'
     },
-    autoHideTimeout: 3000,
-    transitionDuration: 200
+    autoDismissTimeout: 3000
   }
 
   constructor(props, context) {
@@ -65,13 +65,13 @@ export default class SnackbarItem extends React.Component {
 
   handleMouseOver = () => {
    if(!this.props.snack.persist) {
-    this.cancelAutoHideSnack()
+    this.cancelAutoDismissSnack()
    }
   }
 
   handleMouseLeave = () => {
     if(!this.props.snack.persist) {
-      this.handleAutoHideSnack()
+      this.handleAutoDismissSnack()
     }
   }
 
@@ -83,13 +83,19 @@ export default class SnackbarItem extends React.Component {
     this.props.onClose(snack.key)
   }
 
+  cancelAutoDismissSnack = () => {
+    clearTimeout(this._dimissTimer)
+  }
+
   componentDidMount() {
     const { onSetHeight, snack } = this.props
     const height = this._snackRef.current && this._snackRef.current.clientHeight
     onSetHeight(snack.key, height)
+
     if(!this.props.snack.persist) {
-      this.handleAutoHideSnack()
+      this.handleAutoDismissSnack()
     }
+
     setTimeout(() => {
       this.setState({
         enter: false
@@ -103,7 +109,7 @@ export default class SnackbarItem extends React.Component {
     const innerStyles = `${styles.inner} ${styles[snack.kind]}`
     const rootStyles = enter 
       ? `${styles.root}` 
-      : `${styles.root} ${snack.open ? styles.ShowSnack : styles.HideSnack}`
+      : `${styles.root} ${snack.open ? styles.ShowSnack : styles.DismissSnack}`
     const transition = `all ${transitionDuration}ms ease-in-out`
     return (
       <div
