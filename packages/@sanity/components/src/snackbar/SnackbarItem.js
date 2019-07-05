@@ -32,7 +32,8 @@ export default class SnackbarItem extends React.Component {
           PropTypes.number,
       ]).isRequired,
       persist: PropTypes.bool,
-      open: PropTypes.bool
+      onAction: PropTypes.func,
+      actionTitle: PropTypes.string,
     }).isRequired,
     // Handles the closing of the snack
     onClose: PropTypes.func.isRequired,
@@ -74,8 +75,12 @@ export default class SnackbarItem extends React.Component {
     }
   }
 
-  cancelAutoHideSnack = () => {
-    clearTimeout(this._timerId)
+  handleAction = () => {
+    const { snack } = this.props
+    if(snack.onAction) {
+      snack.onAction()
+  }
+    this.props.onClose(snack.key)
   }
 
   componentDidMount() {
@@ -111,9 +116,7 @@ export default class SnackbarItem extends React.Component {
           <div className={styles.SnackbarIcon}>{snack.icon}</div>
           <div className={styles.SnackbarMessage}>{snack.message}</div>
           <button 
-            className={styles.SnackbarClose} 
-            onClick={() => onClose(snack.key)}>
-            x
+                onClick={() => this.handleAction()}>
           </button>
         </div>
       </div>
