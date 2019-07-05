@@ -30,6 +30,16 @@ export default class SnackbarProvider extends React.Component {
     children: PropTypes.node.isRequired
   }
 
+  static defaultProps = {
+    maxStack: 3,
+    transitionDuration: 200
+  }
+
+  static childContextTypes = {
+    addToSnackQueue: PropTypes.func,
+    handleDismissSnack: PropTypes.func
+  }
+
   constructor(props, context) {
     super(props, context)
     this.state = {
@@ -38,9 +48,6 @@ export default class SnackbarProvider extends React.Component {
   }
 
   snackQueue = []
-
-  // The queue of incoming snacks
-  queue = []
 
   get offsets() {
     const { activeSnacks } = this.state
@@ -66,8 +73,10 @@ export default class SnackbarProvider extends React.Component {
       ))
     }))
   }
+
   /* 
     Generate mock snacks of random kinds
+    for test purposes only
   */
   generateSnack = () => {
     const kinds = [
@@ -106,10 +115,16 @@ export default class SnackbarProvider extends React.Component {
     }
   }
 
-  addToSnackQueue = () => {
+  addToSnackQueue = (contextSnack) => {
     const { preventDuplicate } = this.props.options
     const { activeSnacks } = this.state
-    const newSnack = this.generateSnack()
+
+    const newSnack = {
+      key: new Date().getTime() + Math.floor(Math.random()),
+      open: true,
+      ...contextSnack
+    }
+
     if(preventDuplicate) {
       const isInQueue = this.snackQueue.findIndex(snack => snack.kind === newSnack.kind) > -1
       const isInActive = activeSnacks.findIndex(snack => snack.kind === newSnack.kind) > -1
@@ -121,7 +136,7 @@ export default class SnackbarProvider extends React.Component {
     }
     this.snackQueue.push(newSnack)
     this.handleMaxSnackDisplay()
-    return newSnack.id
+    return newSnack.key
   }
 
   /*
@@ -139,7 +154,7 @@ export default class SnackbarProvider extends React.Component {
 
   /*
     Make the next snack in the queue active
-    by adding it to the state and activeSnacks
+    by adding it to activeSnacks
   */
   processSnackQueue = () => {
     if (this.snackQueue.length > 0) {
@@ -162,7 +177,6 @@ export default class SnackbarProvider extends React.Component {
     let ignorePersistStatus
     let snackHasBeenRemoved
 
-    // Count the amount of active persisted snacks
     const persistedSnackCount = this.state.activeSnacks.reduce((count, current) => (
       count + (current.open && current.persist ? 1 : 0)
     ), 0)
@@ -183,8 +197,8 @@ export default class SnackbarProvider extends React.Component {
   }
 
   /*
-    Hide the snack from the view, 
-    then call to remove it from active snacks in order to
+    Dismiss the snack from the view, 
+    then call to remove it from activeSnacks in order to
     transition it out
   */
   handleDismissSnack = (key) => {
@@ -199,8 +213,7 @@ export default class SnackbarProvider extends React.Component {
 
   /*
     Remove the snack from the state
-    TODO: Use timeout ms from a variable
-    The removal should be delayed in order to transition the snack out first
+    The removal is delayed in order to transition the snack out first
   */
   handleRemoveSnack = (key) => {
     setTimeout(() => {
@@ -209,6 +222,11 @@ export default class SnackbarProvider extends React.Component {
       }))
     }, this.props.transitionDuration)
   }
+
+  getChildContext = () => ({
+    addToSnackQueue: this.addToSnackQueue,
+    handleDismissSnack: this.handleDismissSnack
+  })
 
   render() {
     const { activeSnacks } = this.state
@@ -219,11 +237,11 @@ export default class SnackbarProvider extends React.Component {
         {
           activeSnacks.map((snack, index) => (
             <SnackbarItem
-                key={snack.key}
-                snack={snack}
-                offset={this.offsets[index]}
+              key={snack.key}
+              snack={snack}
+              offset={this.offsets[index]}
               onClose={(key) => this.handleDismissSnack(key)}
-                transitionDuration={transitionDuration}
+              transitionDuration={transitionDuration}
               onSetHeight={this.handleSetHeight}
             />
           ))
