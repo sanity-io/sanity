@@ -79,11 +79,10 @@ export default class BlockEditorInput extends React.Component<Props, State> {
   }
 
   focus = () => {
-    const {focusPath, onFocus, readOnly} = this.props
+    const {onFocus, readOnly} = this.props
     const blockEditor = this.blockEditor && this.blockEditor.current
     const editor = blockEditor && blockEditor.getEditor()
-    const shouldSetNewFocus = !focusPath || focusPath.length === 0
-    if (editor && !readOnly && shouldSetNewFocus) {
+    if (editor && !readOnly) {
       editor.command('ensurePlaceHolderBlock')
       editor.focus()
       const key = editor.value.focusBlock
