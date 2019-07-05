@@ -36,8 +36,7 @@ export default class SnackbarItem extends React.Component {
     }).isRequired,
     // Handles the closing of the snack
     onClose: PropTypes.func.isRequired,
-    // Milliseconds to wait before hiding the snack by calling onClose
-    autoHideTimeout: PropTypes.number
+    onSetHeight: PropTypes.func.isRequired
   }
 
   static defaultProps = {
@@ -53,13 +52,14 @@ export default class SnackbarItem extends React.Component {
     this.state = {
       enter: true
     }
+    this._snackRef = React.createRef()
   }
 
-  handleAutoHideSnack = () => {
-    const { snack, onClose, autoHideTimeout } = this.props
-    this._timerId = setTimeout(() => {
+  handleAutoDismissSnack = () => {
+    const { snack, onClose, autoDismissTimeout } = this.props
+    this._dimissTimer = setTimeout(() => {
       onClose(snack.key)
-    }, autoHideTimeout)
+    }, autoDismissTimeout)
   }
 
   handleMouseOver = () => {
@@ -79,6 +79,9 @@ export default class SnackbarItem extends React.Component {
   }
 
   componentDidMount() {
+    const { onSetHeight, snack } = this.props
+    const height = this._snackRef.current && this._snackRef.current.clientHeight
+    onSetHeight(snack.key, height)
     if(!this.props.snack.persist) {
       this.handleAutoHideSnack()
     }
@@ -99,6 +102,7 @@ export default class SnackbarItem extends React.Component {
     const transition = `all ${transitionDuration}ms ease-in-out`
     return (
       <div
+        ref={this._snackRef}
         className={rootStyles} 
         style={{bottom: offset, transition: transition}}
         onMouseOver={() => this.handleMouseOver()}

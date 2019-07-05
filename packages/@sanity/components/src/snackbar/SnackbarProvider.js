@@ -59,6 +59,16 @@ export default class SnackbarProvider extends React.Component {
     })
   }
 
+  /*
+   Set a height for the snackbar to stack them correctly
+  */
+  handleSetHeight = (key, height) => {
+    this.setState(({ activeSnacks }) => ({
+      activeSnacks: activeSnacks.map(snack => (
+        snack.key === key ? { ...snack, height } : { ...snack }
+      ))
+    }))
+  }
   /* 
     Generate mock snacks of random kinds
   */
@@ -219,6 +229,7 @@ export default class SnackbarProvider extends React.Component {
                 offset={this.offsets[index]}
                 onClose={(key) => this.handleHideSnack(key)}
                 transitionDuration={transitionDuration}
+              onSetHeight={this.handleSetHeight}
             />
           ))
         }
