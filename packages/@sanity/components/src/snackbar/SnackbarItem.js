@@ -34,6 +34,7 @@ export default class SnackbarItem extends React.Component {
       persist: PropTypes.bool,
       onAction: PropTypes.func,
       actionTitle: PropTypes.string,
+      children: PropTypes.node
     }).isRequired,
     // Handles the closing of the snack
     onClose: PropTypes.func.isRequired,
@@ -119,11 +120,26 @@ export default class SnackbarItem extends React.Component {
         onMouseOver={() => this.handleMouseOver()}
         onMouseLeave={() => this.handleMouseLeave()}>
         <div className={innerStyles}>
+          {
+            snack.icon &&
           <div className={styles.SnackbarIcon}>{snack.icon}</div>
-          <div className={styles.SnackbarMessage}>{snack.message}</div>
+          }
+          <div className={styles.SnackbarContent}>
+            <div 
+              className={styles.SnackbarMessage} 
+              style={snack.children && {fontWeight: 'bold'}}>{snack.message}</div>
+            {
+              snack.children &&
+              <div className={styles.SnackbarChildren}>{snack.children}</div>
+            }
+            <div className={styles.SnackbarButtons}>
           <button 
+                className={styles.SnackbarAction} 
                 onClick={() => this.handleAction()}>
+                {snack.actionTitle ? snack.actionTitle : 'x'}
           </button>
+        </div>
+      </div>
         </div>
       </div>
     )

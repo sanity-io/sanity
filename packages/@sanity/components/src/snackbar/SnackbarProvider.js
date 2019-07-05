@@ -26,8 +26,8 @@ export default class SnackbarProvider extends React.Component {
   static propTypes = {
     maxStack: PropTypes.number,
     options: PropTypes.object,
-    transitionDuration: PropTypes.number
-    // children: PropTypes.node.isRequired
+    transitionDuration: PropTypes.number,
+    children: PropTypes.node.isRequired
   }
 
   constructor(props, context) {
@@ -212,10 +212,10 @@ export default class SnackbarProvider extends React.Component {
 
   render() {
     const { activeSnacks } = this.state
-    const { transitionDuration } = this.props
+    const { children, transitionDuration } = this.props
     return (
       <div>
-        <button onClick={() => this.addToSnackQueue()}>Add snack</button>
+        { children }
         {
           activeSnacks.map((snack, index) => (
             <SnackbarItem
