@@ -16,7 +16,8 @@ const OVERRIDABLE_FIELDS = [
   '__experimental_search',
   'options',
   'inputComponent',
-  'validation'
+  'validation',
+  'icon'
 ]
 
 const normalizeSearchConfig = configs => {
