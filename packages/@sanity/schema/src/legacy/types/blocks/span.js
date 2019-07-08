@@ -9,7 +9,8 @@ const INHERITED_FIELDS = [
   'jsonType',
   'description',
   'options',
-  'fieldsets'
+  'fieldsets',
+  'icon'
 ]
 
 const SPAN_CORE = {

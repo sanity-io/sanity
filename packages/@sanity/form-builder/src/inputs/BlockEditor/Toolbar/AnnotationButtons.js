@@ -2,6 +2,7 @@
 
 import React from 'react'
 import {Value as SlateValue, Range} from 'slate'
+import {get} from 'lodash'
 import {randomKey} from '@sanity/block-tools'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
@@ -12,7 +13,7 @@ import CustomIcon from './CustomIcon'
 import ToolbarClickAction from './ToolbarClickAction'
 
 import styles from './styles/AnnotationButtons.css'
-import CollapsibleButtonGroup from './CollapsibleButtonGroup';
+import CollapsibleButtonGroup from './CollapsibleButtonGroup'
 
 type AnnotationItem = BlockContentFeature & {
   active: boolean,
@@ -35,6 +36,16 @@ function getIcon(type: string) {
     default:
       return SanityLogoIcon
   }
+}
+
+function getIconFromItem(item: AnnotationItem) {
+  return (
+    item.icon ||
+    get(item, 'blockEditor.icon') ||
+    get(item, 'type.icon') ||
+    get(item, 'type.to.icon') ||
+    get(item, 'type.to[0].icon')
+  )
 }
 
 const NOOP = () => {}
@@ -100,7 +111,7 @@ export default class AnnotationButtons extends React.Component<Props> {
   renderAnnotationButton = (item: AnnotationItem) => {
     const {editor} = this.props
     let Icon
-    const icon = item.blockEditor ? item.blockEditor.icon : null
+    const icon = getIconFromItem(item)
     if (icon) {
       if (typeof icon === 'string') {
         Icon = () => <CustomIcon icon={icon} active={!!item.active} />
@@ -131,7 +142,7 @@ export default class AnnotationButtons extends React.Component<Props> {
     const {collapsed} = this.props
     const items = this.getItems()
     let Icon
-    const icon = items[0].blockEditor ? items[0].blockEditor.icon : null
+    const icon = getIconFromItem(items[0])
     if (icon) {
       if (typeof icon === 'string') {
         Icon = () => <CustomIcon icon={icon} active={!!items[0].active} />

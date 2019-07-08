@@ -169,9 +169,30 @@ export default {
           ],
           lists: [{title: 'Bullet', value: 'bullet'}, {title: 'Numbered', value: 'number'}],
           marks: {
-            decorators: [{title: 'Strong', value: 'strong'}, {title: 'Emphasis', value: 'em'}],
+            decorators: [
+              {title: 'Strong', value: 'strong'},
+              {title: 'Emphasis', value: 'em'},
+              {title: 'Decorator with custom icon', value: 'color', icon: colorIcon}
+            ],
             annotations: [
-              {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}
+              {
+                name: 'Author',
+                title: 'Author',
+                type: 'reference',
+                to: {type: 'author'}
+              },
+              {
+                title: 'Annotation with custom icon',
+                name: 'test',
+                type: 'object',
+                icon: colorIcon,
+                fields: [
+                  {
+                    name: 'testString',
+                    type: 'string'
+                  }
+                ]
+              }
             ]
           },
           of: [

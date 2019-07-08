@@ -47,7 +47,8 @@ function resolveEnabledAnnotationTypes(spanType) {
       blockEditor: annotation.blockEditor,
       title: annotation.title,
       type: annotation,
-      value: annotation.name
+      value: annotation.name,
+      icon: annotation.icon
     }
   })
 }
