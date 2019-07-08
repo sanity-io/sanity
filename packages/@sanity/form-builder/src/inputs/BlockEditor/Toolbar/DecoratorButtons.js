@@ -78,7 +78,7 @@ export default class DecoratorButtons extends React.Component<Props> {
 
   renderDecoratorButton = (item: DecoratorItem) => {
     const {editor} = this.props
-    const icon = item.blockEditor ? item.blockEditor.icon : null
+    const icon = item.icon || (item.blockEditor && item.blockEditor.icon)
     const Icon = icon || getIcon(item.value)
     // We must not do a click-event here, because that messes with the editor focus!
     const onAction = () => {
@@ -109,7 +109,7 @@ export default class DecoratorButtons extends React.Component<Props> {
   render() {
     const {collapsed} = this.props
     const items = this.getItems()
-    const icon = items[0].blockEditor ? items[0].blockEditor.icon : null
+    const icon = items[0].icon || (items[0].blockEditor && items[0].blockEditor.icon)
 
     if (items.length > 0 && collapsed) {
       return (

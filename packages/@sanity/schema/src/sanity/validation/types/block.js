@@ -9,7 +9,7 @@ const quote = str => `"${str}"`
 const allowedKeys = ['type', 'styles', 'marks', 'lists', 'of', 'title', 'name']
 const allowedMarkKeys = ['decorators', 'annotations']
 const allowedStyleKeys = ['title', 'value', 'blockEditor']
-const allowedDecoratorKeys = ['title', 'value', 'blockEditor']
+const allowedDecoratorKeys = ['title', 'value', 'blockEditor', 'icon']
 
 export default function validateBlockType(typeDef, visitorContext) {
   const problems = []
