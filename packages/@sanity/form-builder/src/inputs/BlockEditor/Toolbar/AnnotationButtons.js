@@ -100,7 +100,7 @@ export default class AnnotationButtons extends React.Component<Props> {
   renderAnnotationButton = (item: AnnotationItem) => {
     const {editor} = this.props
     let Icon
-    const icon = item.blockEditor ? item.blockEditor.icon : null
+    const icon = item.icon || (item.blockEditor && item.blockEditor.icon)
     if (icon) {
       if (typeof icon === 'string') {
         Icon = () => <CustomIcon icon={icon} active={!!item.active} />
@@ -131,7 +131,7 @@ export default class AnnotationButtons extends React.Component<Props> {
     const {collapsed} = this.props
     const items = this.getItems()
     let Icon
-    const icon = items[0].blockEditor ? items[0].blockEditor.icon : null
+    const icon = items[0].icon || (items[0].blockEditor && items[0].blockEditor.icon)
     if (icon) {
       if (typeof icon === 'string') {
         Icon = () => <CustomIcon icon={icon} active={!!items[0].active} />
