@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import SnackbarItem from './SnackbarItem'
 
 export default class SnackbarProvider extends React.Component {
-
   static propTypes = {
     maxStack: PropTypes.number,
     preventDuplicate: PropTypes.bool,
@@ -33,9 +32,9 @@ export default class SnackbarProvider extends React.Component {
   snackQueue = []
 
   get offsets() {
-    const { activeSnacks } = this.state
+    const {activeSnacks} = this.state
     return activeSnacks.map((snack, index) => {
-      const { view: viewOffset, snackbar: snackbarOffset } = { view: 5, snackbar: 12 }
+      const {view: viewOffset, snackbar: snackbarOffset} = {view: 5, snackbar: 12}
       let offset = viewOffset
       while (activeSnacks[index - 1]) {
         const snackHeight = activeSnacks[index - 1].height || 60
@@ -50,10 +49,8 @@ export default class SnackbarProvider extends React.Component {
    Set a height for the snackbar to stack them correctly
   */
   handleSetHeight = (key, height) => {
-    this.setState(({ activeSnacks }) => ({
-      activeSnacks: activeSnacks.map(snack => (
-        snack.key === key ? { ...snack, height } : { ...snack }
-      ))
+    this.setState(({activeSnacks}) => ({
+      activeSnacks: activeSnacks.map(snack => (snack.key === key ? {...snack, height} : {...snack}))
     }))
   }
 
@@ -87,20 +84,20 @@ export default class SnackbarProvider extends React.Component {
     const randomKind = kinds[Math.floor(Math.random() * 4)]
     const randomPersist = Math.random() >= 0.5
     const id = new Date().getTime() + Math.floor(Math.random())
-    const an = randomKind.kind === 'info' ||randomKind.kind === 'error'
+    const an = randomKind.kind === 'info' || randomKind.kind === 'error'
     return {
       key: id,
-      message: `This is ${an ? 'an' : 'a'} ${ randomKind.kind } message.`,
+      message: `This is ${an ? 'an' : 'a'} ${randomKind.kind} message.`,
       kind: randomKind.kind,
       icon: randomKind.icon,
-      open: true,
-      setFocus: true
+      open: true
+      // setFocus: true
     }
   }
 
-  addToSnackQueue = (contextSnack) => {
-    const { preventDuplicate } = this.props
-    const { activeSnacks } = this.state
+  addToSnackQueue = contextSnack => {
+    const {preventDuplicate} = this.props
+    const {activeSnacks} = this.state
 
     const newSnack = {
       key: new Date().getTime() + Math.floor(Math.random()),
@@ -108,10 +105,10 @@ export default class SnackbarProvider extends React.Component {
       ...contextSnack
     }
 
-    if(preventDuplicate) {
+    if (preventDuplicate) {
       const isInQueue = this.snackQueue.findIndex(snack => snack.kind === newSnack.kind) > -1
       const isInActive = activeSnacks.findIndex(snack => snack.kind === newSnack.kind) > -1
-      
+
       if (isInQueue || isInActive) {
         console.log('This snack already exists')
         return null
@@ -127,8 +124,8 @@ export default class SnackbarProvider extends React.Component {
     max snack stack
   */
   handleMaxSnackDisplay = () => {
-    const { activeSnacks } = this.state
-    const { maxStack } = this.props
+    const {activeSnacks} = this.state
+    const {maxStack} = this.props
     if (activeSnacks.length >= maxStack) {
       this.handleDismissOldestSnack()
     }
@@ -142,7 +139,7 @@ export default class SnackbarProvider extends React.Component {
   processSnackQueue = () => {
     if (this.snackQueue.length > 0) {
       const newSnack = this.snackQueue.shift()
-      this.setState(({ activeSnacks }) => ({
+      this.setState(({activeSnacks}) => ({
         activeSnacks: [...activeSnacks, newSnack]
       }))
     }
@@ -154,24 +151,25 @@ export default class SnackbarProvider extends React.Component {
     according to persist status
   */
   handleDismissOldestSnack = () => {
-    const { activeSnacks } = this.state
-    const { maxStack } = this.props
+    const {activeSnacks} = this.state
+    const {maxStack} = this.props
 
     let ignorePersistStatus
     let snackHasBeenRemoved
 
-    const persistedSnackCount = this.state.activeSnacks.reduce((count, current) => (
-      count + (current.open && current.persist ? 1 : 0)
-    ), 0)
+    const persistedSnackCount = this.state.activeSnacks.reduce(
+      (count, current) => count + (current.open && current.persist ? 1 : 0),
+      0
+    )
 
-    if(persistedSnackCount === maxStack) {
+    if (persistedSnackCount === maxStack) {
       console.log('All current snacks have persist: true. Will proceed to remove oldest one.')
       ignorePersistStatus = true
     }
     // Find the snack to hide
     this.state.activeSnacks
       .filter(snack => snack.open === true)
-      .forEach((snack) => {
+      .forEach(snack => {
         if (!snackHasBeenRemoved && (!snack.persist || ignorePersistStatus)) {
           snackHasBeenRemoved = true
           this.handleDismissSnack(snack.key)
@@ -184,23 +182,24 @@ export default class SnackbarProvider extends React.Component {
     then call to remove it from activeSnacks in order to
     transition it out
   */
-  handleDismissSnack = (key) => {
-    this.setState(({ activeSnacks }) => ({
-      activeSnacks: activeSnacks.map(snack => (
-        snack.key === key
-          ? { ...snack, open: false}
-          : { ...snack }
-      ))
-    }), () => this.handleRemoveSnack(key))
+  handleDismissSnack = key => {
+    this.setState(
+      ({activeSnacks}) => ({
+        activeSnacks: activeSnacks.map(snack =>
+          snack.key === key ? {...snack, open: false} : {...snack}
+        )
+      }),
+      () => this.handleRemoveSnack(key)
+    )
   }
 
   /*
     Remove the snack from the state
     The removal is delayed in order to transition the snack out first
   */
-  handleRemoveSnack = (key) => {
+  handleRemoveSnack = key => {
     setTimeout(() => {
-      this.setState(({ activeSnacks }) => ({
+      this.setState(({activeSnacks}) => ({
         activeSnacks: activeSnacks.filter(snack => snack.key !== key)
       }))
     }, this.props.transitionDuration)
@@ -212,25 +211,23 @@ export default class SnackbarProvider extends React.Component {
   })
 
   render() {
-    const { activeSnacks } = this.state
-    const { children, transitionDuration } = this.props
+    const {activeSnacks} = this.state
+    const {children, transitionDuration} = this.props
     return (
       <div>
         <button onClick={() => this.addToSnackQueue(this.generateSnack())}>Add snack</button>
-        { children }
-        {
-          activeSnacks.map((snack, index) => (
-            <SnackbarItem
-              key={snack.key}
-              snack={snack}
-              tabIndex={activeSnacks.length - index}
-              offset={this.offsets[index]}
-              onClose={(key) => this.handleDismissSnack(key)}
-              transitionDuration={transitionDuration}
-              onSetHeight={this.handleSetHeight}
-            />
-          ))
-        }
+        {children}
+        {activeSnacks.map((snack, index) => (
+          <SnackbarItem
+            key={snack.key}
+            snack={snack}
+            tabIndex={activeSnacks.length - index}
+            offset={this.offsets[index]}
+            onClose={key => this.handleDismissSnack(key)}
+            transitionDuration={transitionDuration}
+            onSetHeight={this.handleSetHeight}
+          />
+        ))}
       </div>
     )
   }
