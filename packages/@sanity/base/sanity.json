@@ -769,7 +769,7 @@
     },
     {
       "implements": "part:@sanity/base/circle-check-icon",
-      "path": "components/icons/CircleCheck.js"
+      "path": "components/icons/CheckCircle.js"
     },
     {
       "implements": "part:@sanity/base/check-icon",
@@ -830,6 +830,10 @@
     {
       "implements": "part:@sanity/base/warning-icon",
       "path": "components/icons/Warning.js"
+    },
+    {
+      "implements": "part:@sanity/base/danger-icon",
+      "path": "components/icons/Danger.js"
     },
     {
       "implements": "part:@sanity/base/file-icon",

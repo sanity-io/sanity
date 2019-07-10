@@ -1,5 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import CheckCircleIcon from 'part:@sanity/base/circle-check-icon'
+import WarningIcon from 'part:@sanity/base/warning-icon'
+import ErrorIcon from 'part:@sanity/base/error-icon'
+import DangerIcon from 'part:@sanity/base/danger-icon'
 import {Portal} from '../utilities/Portal'
 import styles from './styles/SnackbarItem.css'
 
@@ -39,6 +43,19 @@ export default class SnackbarItem extends React.Component {
     this._snackRef = React.createRef()
   }
 
+  snackIcon = () => {
+    const {snack} = this.props
+    // eslint-disable-next-line no-nested-ternary
+    return snack.kind === 'success' ? (
+      <CheckCircleIcon />
+    ) : snack.kind === 'warning' ? (
+      <WarningIcon />
+    ) : snack.kind === 'danger' ? (
+      <DangerIcon />
+    ) : (
+      <ErrorIcon />
+    )
+  }
   handleAutoDismissSnack = () => {
     const {snack, onClose, autoDismissTimeout} = this.props
     this._dismissTimer = setTimeout(() => {
@@ -129,11 +146,9 @@ export default class SnackbarItem extends React.Component {
           onBlur={() => this.handleMouseLeave()}
         >
           <div className={innerStyles}>
-            {snack.icon && (
-              <div role="img" className={styles.SnackbarIcon}>
-                {snack.icon}
+            <div role="img" aria-label={snack.kind} className={styles.SnackbarIcon}>
+              {snack.icon ? snack.icon : this.snackIcon(snack.kind)}
               </div>
-            )}
             <div className={styles.SnackbarContent}>
               <div
                 id="SnackbarMessage"
