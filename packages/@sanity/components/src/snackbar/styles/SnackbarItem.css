@@ -71,12 +71,15 @@
   margin-right: 0.5rem;
 }
 
-.SnackbarAction {
+.SnackbarButton {
+  display: flex;
   background: 0;
   border: 0;
   font: inherit;
   color: white;
   cursor: pointer;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .ShowSnack {

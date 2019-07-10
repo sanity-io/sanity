@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import CloseIcon from 'part:@sanity/base/close-icon'
 import CheckCircleIcon from 'part:@sanity/base/circle-check-icon'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import ErrorIcon from 'part:@sanity/base/error-icon'
@@ -12,7 +13,7 @@ export default class SnackbarItem extends React.Component {
     offset: PropTypes.number,
     transitionDuration: PropTypes.number.isRequired,
     snack: PropTypes.shape({
-      message: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
+      message: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
       kind: PropTypes.oneOf(['danger', 'info', 'warning', 'error', 'success']).isRequired,
       icon: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
       key: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
@@ -22,17 +23,12 @@ export default class SnackbarItem extends React.Component {
       actionTitle: PropTypes.string,
       onHide: PropTypes.func,
       children: PropTypes.node,
-      setFocus: PropTypes.bool
+      setFocus: PropTypes.bool,
+      autoDismissTimeout: PropTypes.number
     }).isRequired,
-    onClose: PropTypes.func.isRequired,
-    autoDismissTimeout: PropTypes.number,
+    onDismiss: PropTypes.func.isRequired,
     onSetHeight: PropTypes.func.isRequired,
     tabIndex: PropTypes.number.isRequired
-  }
-
-  static defaultProps = {
-    offset: 60,
-    autoDismissTimeout: 4000
   }
 
   constructor(props, context) {
@@ -56,21 +52,22 @@ export default class SnackbarItem extends React.Component {
       <ErrorIcon />
     )
   }
+
   handleAutoDismissSnack = () => {
-    const {snack, onClose, autoDismissTimeout} = this.props
-    this._dismissTimer = setTimeout(() => {
-      onClose(snack.key)
-      if (snack.onHide) {
-        snack.onHide()
-      }
-    }, autoDismissTimeout)
+    const {snack, onDismiss} = this.props
+    const autoDismissTimeout = snack.autoDismissTimeout ? snack.autoDismissTimeout : 4000
+    if (!snack.persist) {
+      this._dismissTimer = setTimeout(() => {
+        if (snack.onHide) {
+          snack.onHide()
+        }
+        onDismiss(snack.key)
+      }, autoDismissTimeout)
+    }
   }
 
   handleMouseOver = () => {
-    const {snack} = this.props
-    if (!snack.persist) {
-      this.cancelAutoDismissSnack()
-    }
+    this.cancelAutoDismissSnack()
   }
 
   handleMouseLeave = () => {
@@ -81,14 +78,16 @@ export default class SnackbarItem extends React.Component {
   }
 
   handleAction = () => {
-    const {snack} = this.props
+    const {snack, onDismiss} = this.props
     if (snack.onAction) {
       snack.onAction()
+      return onDismiss(snack.key)
     }
     if (snack.onHide) {
       snack.onHide()
+      return onDismiss(snack.key)
     }
-    this.props.onClose(snack.key)
+    return onDismiss(snack.key)
   }
 
   cancelAutoDismissSnack = () => {
@@ -105,9 +104,7 @@ export default class SnackbarItem extends React.Component {
     const height = this._snackRef.current && this._snackRef.current.clientHeight
     onSetHeight(snack.key, height)
 
-    if (!snack.persist) {
-      this.handleAutoDismissSnack()
-    }
+    snack.persist ? this.cancelAutoDismissSnack() : this.handleAutoDismissSnack()
 
     if (snack.setFocus) {
       this.cancelAutoDismissSnack()
@@ -148,7 +145,7 @@ export default class SnackbarItem extends React.Component {
           <div className={innerStyles}>
             <div role="img" aria-label={snack.kind} className={styles.SnackbarIcon}>
               {snack.icon ? snack.icon : this.snackIcon(snack.kind)}
-              </div>
+            </div>
             <div className={styles.SnackbarContent}>
               <div
                 id="SnackbarMessage"
@@ -158,18 +155,14 @@ export default class SnackbarItem extends React.Component {
                 {snack.message}
               </div>
               {snack.children && <div className={styles.SnackbarChildren}>{snack.children}</div>}
-              <div className={styles.SnackbarButtons}>
-                <button className={styles.SnackbarAction} onClick={() => this.handleAction()}>
-                  {snack.actionTitle ? (
-                    snack.actionTitle
-                  ) : (
-                    <span aria-label="close" role="img">
-                      x
-                    </span>
-                  )}
-                </button>
-              </div>
             </div>
+            <button
+              aria-label="Close"
+              className={styles.SnackbarButton}
+              onClick={() => this.handleAction()}
+            >
+              {snack.actionTitle ? snack.actionTitle : <CloseIcon />}
+            </button>
           </div>
         </div>
       </Portal>

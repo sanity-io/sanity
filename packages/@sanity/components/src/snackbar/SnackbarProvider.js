@@ -110,7 +110,6 @@ export default class SnackbarProvider extends React.Component {
       const isInActive = activeSnacks.findIndex(snack => snack.kind === newSnack.kind) > -1
 
       if (isInQueue || isInActive) {
-        console.log('This snack already exists')
         return null
       }
     }
@@ -157,17 +156,16 @@ export default class SnackbarProvider extends React.Component {
     let ignorePersistStatus
     let snackHasBeenRemoved
 
-    const persistedSnackCount = this.state.activeSnacks.reduce(
+    const persistedSnackCount = activeSnacks.reduce(
       (count, current) => count + (current.open && current.persist ? 1 : 0),
       0
     )
 
     if (persistedSnackCount === maxStack) {
-      console.log('All current snacks have persist: true. Will proceed to remove oldest one.')
       ignorePersistStatus = true
     }
     // Find the snack to hide
-    this.state.activeSnacks
+    activeSnacks
       .filter(snack => snack.open === true)
       .forEach(snack => {
         if (!snackHasBeenRemoved && (!snack.persist || ignorePersistStatus)) {
@@ -215,7 +213,6 @@ export default class SnackbarProvider extends React.Component {
     const {children, transitionDuration} = this.props
     return (
       <div>
-        <button onClick={() => this.addToSnackQueue(this.generateSnack())}>Add snack</button>
         {children}
         {activeSnacks.map((snack, index) => (
           <SnackbarItem
@@ -223,7 +220,7 @@ export default class SnackbarProvider extends React.Component {
             snack={snack}
             tabIndex={activeSnacks.length - index}
             offset={this.offsets[index]}
-            onClose={key => this.handleDismissSnack(key)}
+            onDismiss={key => this.handleDismissSnack(key)}
             transitionDuration={transitionDuration}
             onSetHeight={this.handleSetHeight}
           />
