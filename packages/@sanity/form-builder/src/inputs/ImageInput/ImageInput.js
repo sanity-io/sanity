@@ -373,6 +373,7 @@ export default class ImageInput extends React.PureComponent<Props, State> {
         {uploadError && (
           <Snackbar
             kind="error"
+            persist
             actionTitle="OK"
             onAction={() => this.setState({uploadError: null})}
             message="Upload error"
