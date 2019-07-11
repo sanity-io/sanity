@@ -284,7 +284,7 @@ export default withRouterHOC(
                 return (
                   <Snackbar
                     kind="danger"
-                    persist
+                    isPersisted
                     actionTitle="Retry"
                     onAction={onRetry}
                     message="An error occurred while loading items:"

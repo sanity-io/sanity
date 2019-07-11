@@ -5,7 +5,7 @@ export default class DefaultSnackbar extends React.PureComponent {
   static propTypes = {
     kind: PropTypes.oneOf(['danger', 'info', 'warning', 'error', 'success']),
     message: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-    persist: PropTypes.bool,
+    isPersisted: PropTypes.bool,
     children: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
     timeout: PropTypes.number,
     onHide: PropTypes.func,
@@ -29,7 +29,7 @@ export default class DefaultSnackbar extends React.PureComponent {
       onHide,
       onAction,
       action,
-      persist,
+      isPersisted,
       actionTitle
     } = this.props
 
@@ -39,7 +39,7 @@ export default class DefaultSnackbar extends React.PureComponent {
       children,
       onHide,
       onAction,
-      persist,
+      isPersisted,
       actionTitle: (action && action.title) || actionTitle,
       autoDismissTimeout: timeout
     })

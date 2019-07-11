@@ -17,8 +17,8 @@ export default class SnackbarItem extends React.Component {
       kind: PropTypes.oneOf(['danger', 'info', 'warning', 'error', 'success']).isRequired,
       icon: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
       key: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      persist: PropTypes.bool,
-      open: PropTypes.bool.isRequired,
+      isPersisted: PropTypes.bool,
+      isOpen: PropTypes.bool.isRequired,
       onAction: PropTypes.func,
       actionTitle: PropTypes.string,
       onHide: PropTypes.func,
@@ -34,7 +34,7 @@ export default class SnackbarItem extends React.Component {
   constructor(props, context) {
     super(props, context)
     this.state = {
-      enter: true
+      isEntering: true
     }
     this._snackRef = React.createRef()
   }
@@ -56,7 +56,7 @@ export default class SnackbarItem extends React.Component {
   handleAutoDismissSnack = () => {
     const {snack, onDismiss} = this.props
     const autoDismissTimeout = snack.autoDismissTimeout ? snack.autoDismissTimeout : 4000
-    if (!snack.persist) {
+    if (!snack.isPersisted) {
       this._dismissTimer = setTimeout(() => {
         if (snack.onHide) {
           snack.onHide()
@@ -72,7 +72,7 @@ export default class SnackbarItem extends React.Component {
 
   handleMouseLeave = () => {
     const {snack} = this.props
-    if (!snack.persist) {
+    if (!snack.isPersisted) {
       this.handleAutoDismissSnack()
     }
   }
@@ -104,7 +104,7 @@ export default class SnackbarItem extends React.Component {
     const height = this._snackRef.current && this._snackRef.current.clientHeight
     onSetHeight(snack.key, height)
 
-    snack.persist ? this.cancelAutoDismissSnack() : this.handleAutoDismissSnack()
+    snack.isPersisted ? this.cancelAutoDismissSnack() : this.handleAutoDismissSnack()
 
     if (snack.setFocus) {
       this.cancelAutoDismissSnack()
@@ -112,7 +112,7 @@ export default class SnackbarItem extends React.Component {
 
     setTimeout(() => {
       this.setState({
-        enter: false
+        isEntering: false
       })
     }, 100)
   }
@@ -120,9 +120,9 @@ export default class SnackbarItem extends React.Component {
   render() {
     const {snack, offset, transitionDuration, tabIndex} = this.props
 
-    const rootStyles = this.state.enter
+    const rootStyles = this.state.isEntering
       ? `${styles.root}`
-      : `${styles.root} ${snack.open ? styles.ShowSnack : styles.DismissSnack}`
+      : `${styles.root} ${snack.isOpen ? styles.ShowSnack : styles.DismissSnack}`
     const innerStyles = `${styles.inner} ${styles[snack.kind]}`
     const transition = `all ${transitionDuration}ms ease-in-out`
 

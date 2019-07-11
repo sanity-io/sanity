@@ -90,7 +90,7 @@ export default class SnackbarProvider extends React.Component {
       message: `This is ${an ? 'an' : 'a'} ${randomKind.kind} message.`,
       kind: randomKind.kind,
       icon: randomKind.icon,
-      open: true
+      isOpen: true
       // setFocus: true
     }
   }
@@ -101,7 +101,7 @@ export default class SnackbarProvider extends React.Component {
 
     const newSnack = {
       key: new Date().getTime() + Math.floor(Math.random()),
-      open: true,
+      isOpen: true,
       ...contextSnack
     }
 
@@ -157,7 +157,7 @@ export default class SnackbarProvider extends React.Component {
     let snackHasBeenRemoved
 
     const persistedSnackCount = activeSnacks.reduce(
-      (count, current) => count + (current.open && current.persist ? 1 : 0),
+      (count, current) => count + (current.isOpen && current.isPersisted ? 1 : 0),
       0
     )
 
@@ -166,9 +166,9 @@ export default class SnackbarProvider extends React.Component {
     }
     // Find the snack to hide
     activeSnacks
-      .filter(snack => snack.open === true)
+      .filter(snack => snack.isOpen === true)
       .forEach(snack => {
-        if (!snackHasBeenRemoved && (!snack.persist || ignorePersistStatus)) {
+        if (!snackHasBeenRemoved && (!snack.isPersisted || ignorePersistStatus)) {
           snackHasBeenRemoved = true
           this.handleDismissSnack(snack.key)
         }
@@ -184,7 +184,7 @@ export default class SnackbarProvider extends React.Component {
     this.setState(
       ({activeSnacks}) => ({
         activeSnacks: activeSnacks.map(snack =>
-          snack.key === key ? {...snack, open: false} : {...snack}
+          snack.key === key ? {...snack, isOpen: false} : {...snack}
         )
       }),
       () => this.handleRemoveSnack(key)

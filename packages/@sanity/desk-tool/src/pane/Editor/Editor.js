@@ -844,7 +844,7 @@ export default withRouterHOC(
                 />
               )}
               {isReconnecting && (
-                <Snackbar kind="warning" persist message="Connection lost. Reconnecting…" />
+                <Snackbar kind="warning" isPersisted message="Connection lost. Reconnecting…" />
               )}
               {didPublish && (
                 <Snackbar

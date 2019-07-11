@@ -310,7 +310,7 @@ export default class FileInput extends React.PureComponent<Props, State> {
         {uploadError && (
           <Snackbar
             kind="error"
-            persist
+            isPersisted
             actionTitle="OK"
             onAction={() => this.setState({uploadError: null})}
             message="Upload error"

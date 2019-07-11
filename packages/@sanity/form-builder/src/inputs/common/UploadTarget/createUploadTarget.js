@@ -246,7 +246,7 @@ export function createUploadTarget(Component) {
           {rejected.length > 0 && (
             <Snackbar
               kind="warning"
-              persist
+              isPersisted
               actionTitle="OK"
               onAction={() => this.setState({rejected: []})}
               message="File(s) not accepted:"
