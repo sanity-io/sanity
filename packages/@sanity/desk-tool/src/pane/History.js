@@ -102,11 +102,7 @@ export default class History extends React.PureComponent {
               />
             ))}
         </div>
-        {error && (
-          <Snackbar kind="danger" timeout={3}>
-            {error}
-          </Snackbar>
-        )}
+        {error && <Snackbar kind="danger" persist message={error} />}
       </div>
     )
   }

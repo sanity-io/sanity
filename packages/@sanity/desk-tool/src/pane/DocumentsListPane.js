@@ -282,8 +282,13 @@ export default withRouterHOC(
             {({result, loading, error, onRetry}) => {
               if (error) {
                 return (
-                  <Snackbar kind="danger" action={{title: 'Retry'}} onAction={onRetry}>
-                    <div>An error occurred while loading items:</div>
+                  <Snackbar
+                    kind="danger"
+                    persist
+                    actionTitle="Retry"
+                    onAction={onRetry}
+                    message="An error occurred while loading items:"
+                  >
                     <div>{error.message}</div>
                   </Snackbar>
                 )

@@ -246,10 +246,11 @@ export function createUploadTarget(Component) {
           {rejected.length > 0 && (
             <Snackbar
               kind="warning"
-              action={{title: 'OK'}}
+              persist
+              actionTitle="OK"
               onAction={() => this.setState({rejected: []})}
+              message="File(s) not accepted:"
             >
-              File(s) not accepted:
               {humanize(rejected.map(task => task.file.name))}
             </Snackbar>
           )}

@@ -62,10 +62,7 @@ export default class ErrorHandler extends React.PureComponent {
     const message = __DEV__ ? `An error occured: ${error.message}` : 'An error occured'
 
     return (
-      <Snackbar kind="error" action={{title: 'Close'}} onAction={this.handleClose} timeout={2500}>
-        <div className={styles.errorMessageHeader}>
-          <strong>{message}</strong>
-        </div>
+      <Snackbar kind="error" onAction={this.handleClose} message={<strong>{message}</strong>}>
         <div>Check browser javascript console for details</div>
       </Snackbar>
     )

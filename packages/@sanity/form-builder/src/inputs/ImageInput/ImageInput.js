@@ -373,10 +373,11 @@ export default class ImageInput extends React.PureComponent<Props, State> {
         {uploadError && (
           <Snackbar
             kind="error"
-            action={{title: 'OK'}}
+            actionTitle="OK"
             onAction={() => this.setState({uploadError: null})}
+            message="Upload error"
           >
-            {"We're"} really sorry, but the upload could not be completed.
+            <div>{"We're"} really sorry, but the upload could not be completed.</div>
           </Snackbar>
         )}
         <div className={styles.content}>
