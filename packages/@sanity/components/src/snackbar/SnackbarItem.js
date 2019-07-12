@@ -10,43 +10,43 @@ import styles from './styles/SnackbarItem.css'
 
 export default class SnackbarItem extends React.Component {
   static propTypes = {
+    actionTitle: PropTypes.string,
+    autoDismissTimeout: PropTypes.number,
+    children: PropTypes.node,
+    icon: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+    isOpen: PropTypes.bool.isRequired,
+    isPersisted: PropTypes.bool,
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    kind: PropTypes.oneOf(['danger', 'info', 'warning', 'error', 'success']),
+    onAction: PropTypes.func,
+    onDismiss: PropTypes.func,
     offset: PropTypes.number,
-    transitionDuration: PropTypes.number.isRequired,
-    snack: PropTypes.shape({
-      message: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-      kind: PropTypes.oneOf(['danger', 'info', 'warning', 'error', 'success']).isRequired,
-      icon: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-      key: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      isPersisted: PropTypes.bool,
-      isOpen: PropTypes.bool.isRequired,
-      onAction: PropTypes.func,
-      actionTitle: PropTypes.string,
-      onHide: PropTypes.func,
-      children: PropTypes.node,
-      setFocus: PropTypes.bool,
-      autoDismissTimeout: PropTypes.number
-    }).isRequired,
-    onDismiss: PropTypes.func.isRequired,
+    onHide: PropTypes.func,
     onSetHeight: PropTypes.func.isRequired,
-    tabIndex: PropTypes.number.isRequired
+    setFocus: PropTypes.bool,
+    tabIndex: PropTypes.number.isRequired,
+    transitionDuration: PropTypes.number.isRequired
   }
 
   constructor(props, context) {
     super(props, context)
     this.state = {
-      isEntering: true
+      kind: 'info',
+      isEntering: true,
+      isPersisted: false,
+      autoDismissTimeout: 4000
     }
     this._snackRef = React.createRef()
   }
 
   snackIcon = () => {
-    const {snack} = this.props
+    const {kind} = this.props
     // eslint-disable-next-line no-nested-ternary
-    return snack.kind === 'success' ? (
+    return kind === 'success' ? (
       <CheckCircleIcon />
-    ) : snack.kind === 'warning' ? (
+    ) : kind === 'warning' ? (
       <WarningIcon />
-    ) : snack.kind === 'danger' ? (
+    ) : kind === 'danger' ? (
       <DangerIcon />
     ) : (
       <ErrorIcon />
@@ -54,14 +54,13 @@ export default class SnackbarItem extends React.Component {
   }
 
   handleAutoDismissSnack = () => {
-    const {snack, onDismiss} = this.props
-    const autoDismissTimeout = snack.autoDismissTimeout ? snack.autoDismissTimeout : 4000
-    if (!snack.isPersisted) {
+    const {autoDismissTimeout, isPersisted, id, onDismiss, onHide} = this.props
+    if (!isPersisted) {
       this._dismissTimer = setTimeout(() => {
-        if (snack.onHide) {
-          snack.onHide()
+        if (onHide) {
+          onHide()
         }
-        onDismiss(snack.key)
+        onDismiss(id)
       }, autoDismissTimeout)
     }
   }
@@ -71,23 +70,23 @@ export default class SnackbarItem extends React.Component {
   }
 
   handleMouseLeave = () => {
-    const {snack} = this.props
-    if (!snack.isPersisted) {
+    const {isPersisted} = this.props
+    if (!isPersisted) {
       this.handleAutoDismissSnack()
     }
   }
 
   handleAction = () => {
-    const {snack, onDismiss} = this.props
-    if (snack.onAction) {
-      snack.onAction()
-      return onDismiss(snack.key)
+    const {id, onAction, onDismiss, onHide} = this.props
+    if (onAction) {
+      onAction()
+      return onDismiss(id)
     }
-    if (snack.onHide) {
-      snack.onHide()
-      return onDismiss(snack.key)
+    if (onHide) {
+      onHide()
+      return onDismiss(id)
     }
-    return onDismiss(snack.key)
+    return onDismiss(id)
   }
 
   cancelAutoDismissSnack = () => {
@@ -95,18 +94,18 @@ export default class SnackbarItem extends React.Component {
   }
 
   componentDidMount() {
-    const {onSetHeight, snack} = this.props
+    const {onSetHeight, id, isPersisted, setFocus} = this.props
 
-    if (snack.setFocus) {
+    if (setFocus) {
       this._snackRef.current.focus()
     }
 
     const height = this._snackRef.current && this._snackRef.current.clientHeight
-    onSetHeight(snack.key, height)
+    onSetHeight(id, height)
 
-    snack.isPersisted ? this.cancelAutoDismissSnack() : this.handleAutoDismissSnack()
+    isPersisted ? this.cancelAutoDismissSnack() : this.handleAutoDismissSnack()
 
-    if (snack.setFocus) {
+    if (setFocus) {
       this.cancelAutoDismissSnack()
     }
 
@@ -118,19 +117,29 @@ export default class SnackbarItem extends React.Component {
   }
 
   render() {
-    const {snack, offset, transitionDuration, tabIndex} = this.props
+    const {
+      actionTitle,
+      children,
+      icon,
+      isOpen,
+      kind,
+      message,
+      offset,
+      tabIndex,
+      transitionDuration
+    } = this.props
 
     const rootStyles = this.state.isEntering
       ? `${styles.root}`
-      : `${styles.root} ${snack.isOpen ? styles.ShowSnack : styles.DismissSnack}`
-    const innerStyles = `${styles.inner} ${styles[snack.kind]}`
+      : `${styles.root} ${isOpen ? styles.ShowSnack : styles.DismissSnack}`
+    const innerStyles = `${styles.inner} ${styles[kind]}`
     const transition = `all ${transitionDuration}ms ease-in-out`
 
     return (
       <Portal>
         <div
           role="alert"
-          aria-label={snack.kind}
+          aria-label={kind}
           aria-describedby="SnackbarMessage"
           aria-live="alert"
           tabIndex={tabIndex}
@@ -143,25 +152,25 @@ export default class SnackbarItem extends React.Component {
           onBlur={() => this.handleMouseLeave()}
         >
           <div className={innerStyles}>
-            <div role="img" aria-label={snack.kind} className={styles.SnackbarIcon}>
-              {snack.icon ? snack.icon : this.snackIcon(snack.kind)}
+            <div role="img" aria-label={kind} className={styles.SnackbarIcon}>
+              {icon ? icon : this.snackIcon(kind)}
             </div>
             <div className={styles.SnackbarContent}>
               <div
                 id="SnackbarMessage"
                 className={styles.SnackbarMessage}
-                style={snack.children && {fontWeight: 'bold'}}
+                style={children && {fontWeight: 'bold'}}
               >
-                {snack.message}
+                {message}
               </div>
-              {snack.children && <div className={styles.SnackbarChildren}>{snack.children}</div>}
+              {children && <div className={styles.SnackbarChildren}>{children}</div>}
             </div>
             <button
               aria-label="Close"
               className={styles.SnackbarButton}
               onClick={() => this.handleAction()}
             >
-              {snack.actionTitle ? snack.actionTitle : <CloseIcon />}
+              {actionTitle ? actionTitle : <CloseIcon />}
             </button>
           </div>
         </div>

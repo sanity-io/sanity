@@ -48,9 +48,9 @@ export default class SnackbarProvider extends React.Component {
   /*
    Set a height for the snackbar to stack them correctly
   */
-  handleSetHeight = (key, height) => {
+  handleSetHeight = (id, height) => {
     this.setState(({activeSnacks}) => ({
-      activeSnacks: activeSnacks.map(snack => (snack.key === key ? {...snack, height} : {...snack}))
+      activeSnacks: activeSnacks.map(snack => (snack.id === id ? {...snack, height} : {...snack}))
     }))
   }
 
@@ -86,7 +86,7 @@ export default class SnackbarProvider extends React.Component {
     const id = new Date().getTime() + Math.floor(Math.random())
     const an = randomKind.kind === 'info' || randomKind.kind === 'error'
     return {
-      key: id,
+      id: id,
       message: `This is ${an ? 'an' : 'a'} ${randomKind.kind} message.`,
       kind: randomKind.kind,
       icon: randomKind.icon,
@@ -100,7 +100,7 @@ export default class SnackbarProvider extends React.Component {
     const {activeSnacks} = this.state
 
     const newSnack = {
-      key: new Date().getTime() + Math.floor(Math.random()),
+      id: new Date().getTime() + Math.floor(Math.random()),
       isOpen: true,
       ...contextSnack
     }
@@ -115,7 +115,7 @@ export default class SnackbarProvider extends React.Component {
     }
     this.snackQueue.push(newSnack)
     this.handleMaxSnackDisplay()
-    return newSnack.key
+    return newSnack.id
   }
 
   /*
@@ -170,7 +170,7 @@ export default class SnackbarProvider extends React.Component {
       .forEach(snack => {
         if (!snackHasBeenRemoved && (!snack.isPersisted || ignorePersistStatus)) {
           snackHasBeenRemoved = true
-          this.handleDismissSnack(snack.key)
+          this.handleDismissSnack(snack.id)
         }
       })
   }
@@ -180,14 +180,14 @@ export default class SnackbarProvider extends React.Component {
     then call to remove it from activeSnacks in order to
     transition it out
   */
-  handleDismissSnack = key => {
+  handleDismissSnack = id => {
     this.setState(
       ({activeSnacks}) => ({
         activeSnacks: activeSnacks.map(snack =>
-          snack.key === key ? {...snack, isOpen: false} : {...snack}
+          snack.id === id ? {...snack, isOpen: false} : {...snack}
         )
       }),
-      () => this.handleRemoveSnack(key)
+      () => this.handleRemoveSnack(id)
     )
   }
 
@@ -195,10 +195,10 @@ export default class SnackbarProvider extends React.Component {
     Remove the snack from the state
     The removal is delayed in order to transition the snack out first
   */
-  handleRemoveSnack = key => {
+  handleRemoveSnack = id => {
     setTimeout(() => {
       this.setState(({activeSnacks}) => ({
-        activeSnacks: activeSnacks.filter(snack => snack.key !== key)
+        activeSnacks: activeSnacks.filter(snack => snack.id !== id)
       }))
     }, this.props.transitionDuration)
   }
@@ -216,11 +216,11 @@ export default class SnackbarProvider extends React.Component {
         {children}
         {activeSnacks.map((snack, index) => (
           <SnackbarItem
-            key={snack.key}
-            snack={snack}
+            key={snack.id}
+            {...snack}
             tabIndex={activeSnacks.length - index}
             offset={this.offsets[index]}
-            onDismiss={key => this.handleDismissSnack(key)}
+            onDismiss={id => this.handleDismissSnack(id)}
             transitionDuration={transitionDuration}
             onSetHeight={this.handleSetHeight}
           />
