@@ -5,7 +5,6 @@ import CheckCircleIcon from 'part:@sanity/base/circle-check-icon'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import ErrorIcon from 'part:@sanity/base/error-icon'
 import DangerIcon from 'part:@sanity/base/danger-icon'
-import {Portal} from '../utilities/Portal'
 import styles from './styles/SnackbarItem.css'
 
 export default class SnackbarItem extends React.Component {
@@ -24,19 +23,21 @@ export default class SnackbarItem extends React.Component {
     onHide: PropTypes.func,
     onSetHeight: PropTypes.func.isRequired,
     setFocus: PropTypes.bool,
-    tabIndex: PropTypes.number.isRequired,
     transitionDuration: PropTypes.number.isRequired
   }
 
   constructor(props, context) {
     super(props, context)
     this.state = {
-      kind: 'info',
-      isEntering: true,
-      isPersisted: false,
-      autoDismissTimeout: 4000
+      isEntering: true
     }
     this._snackRef = React.createRef()
+  }
+
+  static defaultProps = {
+    kind: 'info',
+    isPersisted: false,
+    autoDismissTimeout: 4000
   }
 
   snackIcon = () => {
@@ -94,9 +95,14 @@ export default class SnackbarItem extends React.Component {
   }
 
   componentDidMount() {
-    const {onSetHeight, id, isPersisted, setFocus} = this.props
+    const {kind, onSetHeight, id, isPersisted, setFocus} = this.props
 
     if (setFocus) {
+      this._snackRef.current.focus()
+      this.cancelAutoDismissSnack()
+    }
+
+    if (['success', 'info'].indexOf(kind) >= 0) {
       this._snackRef.current.focus()
     }
 
@@ -104,10 +110,6 @@ export default class SnackbarItem extends React.Component {
     onSetHeight(id, height)
 
     isPersisted ? this.cancelAutoDismissSnack() : this.handleAutoDismissSnack()
-
-    if (setFocus) {
-      this.cancelAutoDismissSnack()
-    }
 
     setTimeout(() => {
       this.setState({
@@ -125,7 +127,6 @@ export default class SnackbarItem extends React.Component {
       kind,
       message,
       offset,
-      tabIndex,
       transitionDuration
     } = this.props
 
@@ -134,47 +135,47 @@ export default class SnackbarItem extends React.Component {
       : `${styles.root} ${isOpen ? styles.ShowSnack : styles.DismissSnack}`
     const innerStyles = `${styles.inner} ${styles[kind]}`
     const transition = `all ${transitionDuration}ms ease-in-out`
-
+    const role = kind => {
+      return kind === 'success' ? 'status' : kind === 'info' ? 'log' : 'alert'
+    }
     return (
-      <Portal>
-        <div
-          role="alert"
-          aria-label={kind}
-          aria-describedby="SnackbarMessage"
-          aria-live="alert"
-          tabIndex={tabIndex}
-          ref={this._snackRef}
-          className={rootStyles}
-          style={{bottom: offset, transition: transition}}
-          onMouseOver={() => this.handleMouseOver()}
-          onMouseLeave={() => this.handleMouseLeave()}
-          onFocus={() => this.handleMouseOver()}
-          onBlur={() => this.handleMouseLeave()}
-        >
-          <div className={innerStyles}>
-            <div role="img" aria-label={kind} className={styles.SnackbarIcon}>
-              {icon ? icon : this.snackIcon(kind)}
-            </div>
-            <div className={styles.SnackbarContent}>
-              <div
-                id="SnackbarMessage"
-                className={styles.SnackbarMessage}
-                style={children && {fontWeight: 'bold'}}
-              >
-                {message}
-              </div>
-              {children && <div className={styles.SnackbarChildren}>{children}</div>}
-            </div>
-            <button
-              aria-label="Close"
-              className={styles.SnackbarButton}
-              onClick={() => this.handleAction()}
-            >
-              {actionTitle ? actionTitle : <CloseIcon />}
-            </button>
+      <div
+        aria-label={kind}
+        aria-describedby="SnackbarMessage"
+        role={role(kind)}
+        ref={this._snackRef}
+        tabIndex="0"
+        className={rootStyles}
+        style={{bottom: offset, transition: transition}}
+        onMouseOver={() => this.handleMouseOver()}
+        onMouseLeave={() => this.handleMouseLeave()}
+        onFocus={() => this.handleMouseOver()}
+        onBlur={() => this.handleMouseLeave()}
+        onKeyDown={e => e.keyCode === 27 && this.handleAction()}
+      >
+        <div className={innerStyles}>
+          <div role="img" aria-hidden className={styles.SnackbarIcon}>
+            {icon ? icon : this.snackIcon(kind)}
           </div>
+          <div className={styles.SnackbarContent}>
+            <div
+              id="SnackbarMessage"
+              className={styles.SnackbarMessage}
+              style={children && {fontWeight: 'bold'}}
+            >
+              {message}
+            </div>
+            {children && <div className={styles.SnackbarChildren}>{children}</div>}
+          </div>
+          <button
+            aria-label={!actionTitle && 'Close'}
+            className={styles.SnackbarButton}
+            onClick={() => this.handleAction()}
+          >
+            {actionTitle ? actionTitle : <CloseIcon />}
+          </button>
         </div>
-      </Portal>
+      </div>
     )
   }
 }

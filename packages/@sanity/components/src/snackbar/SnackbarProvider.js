@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import {Portal} from '../utilities/Portal'
 import SnackbarItem from './SnackbarItem'
 
 export default class SnackbarProvider extends React.Component {
@@ -52,47 +53,6 @@ export default class SnackbarProvider extends React.Component {
     this.setState(({activeSnacks}) => ({
       activeSnacks: activeSnacks.map(snack => (snack.id === id ? {...snack, height} : {...snack}))
     }))
-  }
-
-  /* 
-    Generate mock snacks of random kinds
-    for test purposes only
-  */
-  generateSnack = () => {
-    const kinds = [
-      {
-        kind: 'danger',
-        icon: '❌'
-      },
-      {
-        kind: 'info',
-        icon: '👀'
-      },
-      {
-        kind: 'warning',
-        icon: '⚠️'
-      },
-      {
-        kind: 'error',
-        icon: '👎'
-      },
-      {
-        kind: 'success',
-        icon: '🎉'
-      }
-    ]
-    const randomKind = kinds[Math.floor(Math.random() * 4)]
-    const randomPersist = Math.random() >= 0.5
-    const id = new Date().getTime() + Math.floor(Math.random())
-    const an = randomKind.kind === 'info' || randomKind.kind === 'error'
-    return {
-      id: id,
-      message: `This is ${an ? 'an' : 'a'} ${randomKind.kind} message.`,
-      kind: randomKind.kind,
-      icon: randomKind.icon,
-      isOpen: true
-      // setFocus: true
-    }
   }
 
   addToSnackQueue = contextSnack => {
@@ -204,8 +164,7 @@ export default class SnackbarProvider extends React.Component {
   }
 
   getChildContext = () => ({
-    addToSnackQueue: this.addToSnackQueue,
-    handleDismissSnack: this.handleDismissSnack
+    addToSnackQueue: this.addToSnackQueue
   })
 
   render() {
@@ -214,17 +173,20 @@ export default class SnackbarProvider extends React.Component {
     return (
       <div>
         {children}
+        <Portal>
+          <div role="region" aria-label="notifications">
         {activeSnacks.map((snack, index) => (
           <SnackbarItem
             key={snack.id}
             {...snack}
-            tabIndex={activeSnacks.length - index}
             offset={this.offsets[index]}
             onDismiss={id => this.handleDismissSnack(id)}
             transitionDuration={transitionDuration}
             onSetHeight={this.handleSetHeight}
           />
         ))}
+      </div>
+        </Portal>
       </div>
     )
   }
