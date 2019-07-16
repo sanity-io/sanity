@@ -32,7 +32,7 @@ export default class SnackbarProvider extends React.Component {
   get offsets() {
     const {activeSnacks} = this.state
     return activeSnacks.map((snack, index) => {
-      const {view: viewOffset, snackbar: snackbarOffset} = {view: 5, snackbar: 12}
+      const {view: viewOffset, snackbar: snackbarOffset} = {view: 10, snackbar: 12}
       let offset = viewOffset
       while (activeSnacks[index - 1]) {
         const snackHeight = activeSnacks[index - 1].height || 60

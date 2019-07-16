@@ -1,12 +1,29 @@
+/* eslint-disable react/no-multi-comp */
 import React from 'react'
 import PropTypes from 'prop-types'
-import Snackbar from 'part:@sanity/components/snackbar/default'
-import {storiesOf, action} from 'part:@sanity/storybook'
-import {withKnobs, select, text, number, button} from 'part:@sanity/storybook/addons/knobs'
+import Snackbar from 'part:@sanity/components/snackbar/item'
+import {storiesOf, addDecorator} from 'part:@sanity/storybook'
+import {withKnobs, select, text, button, boolean, number} from 'part:@sanity/storybook/addons/knobs'
 import Sanity from 'part:@sanity/storybook/addons/sanity'
 import SnackbarProvider from 'part:@sanity/components/snackbar/provider'
 
-const getKinds = () => select('Kind', ['success', 'error', 'warning', 'info'], 'success')
+function action(something) {
+  return () => console.log('action:', something)
+}
+const Provider = storyFn => (
+  <Sanity part="part:@sanity/components/snackbar/item" propTables={[Snackbar]}>
+    <SnackbarProvider>{storyFn()}</SnackbarProvider>
+  </Sanity>
+)
+
+const globalDefaults = {
+  offset: 10,
+  isOpen: true,
+  id: new Date().getTime() + Math.floor(Math.random()),
+  setFocus: false,
+  onAction: action('default onAction, calls onDismiss'),
+  onDismiss: action('onDismiss, do nothing onHide')
+}
 
 class SnackQueue extends React.PureComponent {
   static propTypes = {
@@ -18,7 +35,11 @@ class SnackQueue extends React.PureComponent {
 
   addToQueue = () => {
     const {snack} = this.props
-    this.context.addToSnackQueue(snack)
+    const newSnack = {
+      ...snack,
+      id: new Date().getTime() + Math.floor(Math.random())
+    }
+    this.context.addToSnackQueue(newSnack)
   }
 
   render() {
@@ -27,44 +48,80 @@ class SnackQueue extends React.PureComponent {
   }
 }
 
-storiesOf('Snackbar')
-  .addDecorator(withKnobs)
-  .add('Snackbar', () => (
-    <Sanity part="part:@sanity/components/snackbar/default" propTables={[Snackbar]}>
-      <Snackbar kind={getKinds()} timeout={number('timeout after (sec)', 500, 'props')}>
-        {text('content', 'This is the content')}
-      </Snackbar>
-    </Sanity>
+addDecorator(Provider)
+addDecorator(withKnobs)
+storiesOf('Snackbar', module)
+  .add('Default', () => (
+    <Snackbar
+      {...globalDefaults}
+      kind={select('Kind', ['success', 'error', 'danger', 'warning', 'info'], 'info', 'props')}
+      message={text('Message', 'This is a message placeholder', 'props')}
+    />
   ))
-  .add('With action', () => {
-    return (
-      <Sanity part="part:@sanity/components/snackbar/default" propTables={[Snackbar]}>
-        <Snackbar
-          kind={getKinds()}
-          action={{
-            title: text('action title', 'OK, got it')
-          }}
-          onAction={action('onAction')}
-          timeout={number('timeout im ms', 500, 'props')}
-        >
-          {text('children', 'This is the content', 'props')}
-        </Snackbar>
-      </Sanity>
-    )
-  })
-  .add('Queue', () => {
+  .add('With children', () => (
+    <Snackbar
+      {...globalDefaults}
+      kind={select('Kind', ['success', 'error', 'danger', 'warning', 'info'], 'info', 'props')}
+      message={text('Message', 'This is a message placeholder', 'props')}
+    >
+      <div>{text('Children', 'This is the children placeholder', 'props')}</div>
+    </Snackbar>
+  ))
+  .add('Custom icon', () => (
+    <Snackbar
+      {...globalDefaults}
+      kind={select('Kind', ['success', 'error', 'danger', 'warning', 'info'], 'info', 'props')}
+      icon="🐈"
+      message={text('Message', 'This is a message placeholder', 'props')}
+    />
+  ))
+  .add('Custom action', () => (
+    <Snackbar
+      {...globalDefaults}
+      kind={select('Kinds', ['info', 'success', 'warning', 'error', 'danger'], 'info', 'props')}
+      message={text('Message', 'This is a message placeholder', 'props')}
+      actionTitle={text('actionTitle', 'Custom', 'props')}
+      onAction={action(text('onAction', 'Custom onAction', 'props'))}
+    />
+  ))
+  .add('Custom dismiss', () => (
+    <Snackbar
+      {...globalDefaults}
+      kind={select('Kinds', ['info', 'success', 'warning', 'error', 'danger'], 'info', 'props')}
+      message={text('Message', 'This is a message placeholder', 'props')}
+      onDismiss={action(text('onHide', 'Custom onHide', 'props'))}
+    />
+  ))
+  .add('Stacked', () => (
+    <>
+      <Snackbar
+        {...globalDefaults}
+        kind="info"
+        message={text('Message', 'This is a message placeholder', 'props')}
+      />
+      <Snackbar
+        {...globalDefaults}
+        offset={70}
+        kind="warning"
+        message={text('Message', 'This is a message placeholder', 'props')}
+      />
+      <Snackbar
+        {...globalDefaults}
+        offset={130}
+        kind="success"
+        message={text('Message', 'This is a message placeholder', 'props')}
+      />
+    </>
+  ))
+  .add('Transitions', () => {
     const snack = {
-      kind: getKinds(),
-      message: text('message', 'Message', 'props'),
-      children: text('children', 'Children', 'props'),
-      onHide: () => action('onHide'),
-      onAction: () => action('action'),
-      actionTitle: text('actionTitle', 'action', 'props')
+      ...globalDefaults,
+      kind: select('Kinds', ['info', 'success', 'warning', 'error', 'danger'], 'info', 'props'),
+      message: text('Message', 'This is a message placeholder', 'props'),
+      setAutoFocus: boolean('setAutoFocus', false, 'props'),
+      isPersisted: boolean('isPersisted', false, 'props'),
+      transitionDuration: number('transitionDuration (ms)', 200, 'props'),
+      autoDismissTimeout: number('autoDismissTimeout (ms)', 4000, 'props')
     }
-
-    return (
-      <SnackbarProvider>
-        <SnackQueue snack={snack} />
-      </SnackbarProvider>
-    )
+    return <SnackQueue snack={snack} />
   })

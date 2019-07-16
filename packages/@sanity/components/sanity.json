@@ -295,6 +295,10 @@
       "description": "Shows messages with an action and a timeout."
     },
     {
+      "name": "part:@sanity/components/snackbar/item",
+      "description": "Shows messages with an action and a timeout."
+    },
+    {
       "name": "part:@sanity/components/snackbar/default-style",
       "description": "Styling for the old default snackbar"
     },
@@ -609,6 +613,10 @@
     {
       "implements": "part:@sanity/components/snackbar/default",
       "path": "snackbar/DefaultSnackbar.js"
+    },
+    {
+      "implements": "part:@sanity/components/snackbar/item",
+      "path": "snackbar/SnackbarItem.js"
     },
     {
       "implements": "part:@sanity/components/snackbar/provider",
