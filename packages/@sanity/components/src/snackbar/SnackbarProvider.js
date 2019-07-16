@@ -8,19 +8,16 @@ export default class SnackbarProvider extends React.Component {
     maxStack: PropTypes.number,
     preventDuplicate: PropTypes.bool,
     options: PropTypes.object,
-    transitionDuration: PropTypes.number,
     children: PropTypes.node.isRequired
   }
 
   static defaultProps = {
     maxStack: 3,
-    transitionDuration: 200,
     preventDuplicate: false
   }
 
   static childContextTypes = {
-    addToSnackQueue: PropTypes.func,
-    handleDismissSnack: PropTypes.func
+    addToSnackQueue: PropTypes.func
   }
 
   constructor(props, context) {
@@ -141,13 +138,18 @@ export default class SnackbarProvider extends React.Component {
     transition it out
   */
   handleDismissSnack = id => {
+    let transitionDuration
     this.setState(
       ({activeSnacks}) => ({
-        activeSnacks: activeSnacks.map(snack =>
-          snack.id === id ? {...snack, isOpen: false} : {...snack}
-        )
+        activeSnacks: activeSnacks.map(snack => {
+          if (snack.id === id) {
+            transitionDuration = snack.transitionDuration ? snack.transitionDuration : 200
+            return {...snack, isOpen: false}
+          }
+          return {...snack}
+        })
       }),
-      () => this.handleRemoveSnack(id)
+      () => this.handleRemoveSnack(id, transitionDuration)
     )
   }
 
@@ -155,12 +157,12 @@ export default class SnackbarProvider extends React.Component {
     Remove the snack from the state
     The removal is delayed in order to transition the snack out first
   */
-  handleRemoveSnack = id => {
+  handleRemoveSnack = (id, transitionDuration) => {
     setTimeout(() => {
       this.setState(({activeSnacks}) => ({
         activeSnacks: activeSnacks.filter(snack => snack.id !== id)
       }))
-    }, this.props.transitionDuration)
+    }, transitionDuration)
   }
 
   getChildContext = () => ({
@@ -169,23 +171,22 @@ export default class SnackbarProvider extends React.Component {
 
   render() {
     const {activeSnacks} = this.state
-    const {children, transitionDuration} = this.props
+    const {children} = this.props
     return (
       <div>
         {children}
         <Portal>
           <div role="region" aria-label="notifications">
-        {activeSnacks.map((snack, index) => (
-          <SnackbarItem
-            key={snack.id}
-            {...snack}
-            offset={this.offsets[index]}
-            onDismiss={id => this.handleDismissSnack(id)}
-            transitionDuration={transitionDuration}
-            onSetHeight={this.handleSetHeight}
-          />
-        ))}
-      </div>
+            {activeSnacks.map((snack, index) => (
+              <SnackbarItem
+                key={snack.id}
+                {...snack}
+                offset={this.offsets[index]}
+                onDismiss={id => this.handleDismissSnack(id)}
+                onSetHeight={this.handleSetHeight}
+              />
+            ))}
+          </div>
         </Portal>
       </div>
     )

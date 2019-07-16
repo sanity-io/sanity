@@ -17,13 +17,14 @@ export default class SnackbarItem extends React.Component {
     isPersisted: PropTypes.bool,
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     kind: PropTypes.oneOf(['danger', 'info', 'warning', 'error', 'success']),
+    message: PropTypes.string.isRequired,
     onAction: PropTypes.func,
     onDismiss: PropTypes.func,
     offset: PropTypes.number,
     onHide: PropTypes.func,
-    onSetHeight: PropTypes.func.isRequired,
-    setFocus: PropTypes.bool,
-    transitionDuration: PropTypes.number.isRequired
+    onSetHeight: PropTypes.func,
+    setAutoFocus: PropTypes.bool,
+    transitionDuration: PropTypes.number
   }
 
   constructor(props, context) {
@@ -37,7 +38,17 @@ export default class SnackbarItem extends React.Component {
   static defaultProps = {
     kind: 'info',
     isPersisted: false,
-    autoDismissTimeout: 4000
+    icon: null,
+    children: null,
+    offset: null,
+    actionTitle: null,
+    autoDismissTimeout: 4000,
+    transitionDuration: 200,
+    setAutoFocus: false,
+    onAction: () => {},
+    onDismiss: () => {},
+    onHide: () => {},
+    onSetHeight: () => {}
   }
 
   snackIcon = () => {
@@ -95,15 +106,11 @@ export default class SnackbarItem extends React.Component {
   }
 
   componentDidMount() {
-    const {kind, onSetHeight, id, isPersisted, setFocus} = this.props
+    const {onSetHeight, id, isPersisted, setAutoFocus} = this.props
 
-    if (setFocus) {
+    if (setAutoFocus) {
       this._snackRef.current.focus()
       this.cancelAutoDismissSnack()
-    }
-
-    if (['success', 'info'].indexOf(kind) >= 0) {
-      this._snackRef.current.focus()
     }
 
     const height = this._snackRef.current && this._snackRef.current.clientHeight
@@ -135,8 +142,8 @@ export default class SnackbarItem extends React.Component {
       : `${styles.root} ${isOpen ? styles.ShowSnack : styles.DismissSnack}`
     const innerStyles = `${styles.inner} ${styles[kind]}`
     const transition = `all ${transitionDuration}ms ease-in-out`
-    const role = kind => {
-      return kind === 'success' ? 'status' : kind === 'info' ? 'log' : 'alert'
+    const role = snackKind => {
+      return snackKind === 'success' ? 'status' : snackKind === 'info' ? 'log' : 'alert'
     }
     return (
       <div
