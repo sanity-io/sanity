@@ -1,11 +1,11 @@
 import React from 'react'
 import config from 'config:sanity'
 import RootComponent from 'part:@sanity/base/root'
+import SnackbarProvider from 'part:@sanity/components/snackbar/provider'
 import ErrorHandler from './ErrorHandler'
 import VersionChecker from './VersionChecker'
 import MissingProjectConfig from './MissingProjectConfig'
 import styles from './styles/SanityRoot.css'
-import SnackbarProvider from 'part:@sanity/components/snackbar/provider'
 
 function SanityRoot() {
   const {projectId, dataset} = config.api || {}

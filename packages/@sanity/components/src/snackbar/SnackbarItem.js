@@ -36,33 +36,27 @@ export default class SnackbarItem extends React.Component {
   }
 
   static defaultProps = {
-    kind: 'info',
-    isPersisted: false,
-    icon: null,
-    children: null,
-    offset: null,
     actionTitle: null,
     autoDismissTimeout: 4000,
-    transitionDuration: 200,
-    setAutoFocus: false,
+    children: null,
+    icon: null,
+    isPersisted: false,
+    kind: 'info',
+    offset: null,
     onAction: () => {},
     onDismiss: () => {},
     onHide: () => {},
-    onSetHeight: () => {}
+    onSetHeight: () => {},
+    setAutoFocus: false,
+    transitionDuration: 200
   }
 
   snackIcon = () => {
     const {kind} = this.props
-    // eslint-disable-next-line no-nested-ternary
-    return kind === 'success' ? (
-      <CheckCircleIcon />
-    ) : kind === 'warning' ? (
-      <WarningIcon />
-    ) : kind === 'danger' ? (
-      <DangerIcon />
-    ) : (
-      <ErrorIcon />
-    )
+    if (kind === 'success') return <CheckCircleIcon />
+    if (kind === 'warning') return <WarningIcon />
+    if (kind === 'danger') return <DangerIcon />
+    return <ErrorIcon />
   }
 
   handleAutoDismissSnack = () => {
@@ -116,7 +110,8 @@ export default class SnackbarItem extends React.Component {
     const height = this._snackRef.current && this._snackRef.current.clientHeight
     onSetHeight(id, height)
 
-    isPersisted ? this.cancelAutoDismissSnack() : this.handleAutoDismissSnack()
+    if (isPersisted) this.cancelAutoDismissSnack()
+    else this.handleAutoDismissSnack()
 
     setTimeout(() => {
       this.setState({
@@ -142,14 +137,16 @@ export default class SnackbarItem extends React.Component {
       : `${styles.root} ${isOpen ? styles.ShowSnack : styles.DismissSnack}`
     const innerStyles = `${styles.inner} ${styles[kind]}`
     const transition = `all ${transitionDuration}ms ease-in-out`
-    const role = snackKind => {
-      return snackKind === 'success' ? 'status' : snackKind === 'info' ? 'log' : 'alert'
+    const role = () => {
+      if (kind === 'success') return 'status'
+      if (kind === 'info') return 'log'
+      return 'alert'
     }
     return (
       <div
         aria-label={kind}
         aria-describedby="SnackbarMessage"
-        role={role(kind)}
+        role={role()}
         ref={this._snackRef}
         tabIndex="0"
         className={rootStyles}

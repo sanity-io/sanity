@@ -5,15 +5,7 @@ import SnackbarItem from './SnackbarItem'
 
 export default class SnackbarProvider extends React.Component {
   static propTypes = {
-    maxStack: PropTypes.number,
-    preventDuplicate: PropTypes.bool,
-    options: PropTypes.object,
     children: PropTypes.node.isRequired
-  }
-
-  static defaultProps = {
-    maxStack: 3,
-    preventDuplicate: false
   }
 
   static childContextTypes = {
@@ -27,6 +19,7 @@ export default class SnackbarProvider extends React.Component {
     }
   }
 
+  maxStack = 3
   snackQueue = []
 
   get offsets() {
@@ -53,7 +46,6 @@ export default class SnackbarProvider extends React.Component {
   }
 
   addToSnackQueue = contextSnack => {
-    const {preventDuplicate} = this.props
     const {activeSnacks} = this.state
 
     const newSnack = {
@@ -62,7 +54,7 @@ export default class SnackbarProvider extends React.Component {
       ...contextSnack
     }
 
-    if (preventDuplicate) {
+    if (newSnack.preventDuplicate) {
       const isInQueue = this.snackQueue.findIndex(snack => snack.kind === newSnack.kind) > -1
       const isInActive = activeSnacks.findIndex(snack => snack.kind === newSnack.kind) > -1
 
@@ -81,8 +73,7 @@ export default class SnackbarProvider extends React.Component {
   */
   handleMaxSnackDisplay = () => {
     const {activeSnacks} = this.state
-    const {maxStack} = this.props
-    if (activeSnacks.length >= maxStack) {
+    if (activeSnacks.length >= this.maxStack) {
       this.handleDismissOldestSnack()
     }
     this.processSnackQueue()
@@ -108,7 +99,6 @@ export default class SnackbarProvider extends React.Component {
   */
   handleDismissOldestSnack = () => {
     const {activeSnacks} = this.state
-    const {maxStack} = this.props
 
     let ignorePersistStatus
     let snackHasBeenRemoved
@@ -118,7 +108,7 @@ export default class SnackbarProvider extends React.Component {
       0
     )
 
-    if (persistedSnackCount === maxStack) {
+    if (persistedSnackCount === this.maxStack) {
       ignorePersistStatus = true
     }
     // Find the snack to hide
