@@ -6,9 +6,9 @@
   bottom: 0;
   right: 0;
   transform: translate3d(100vw, 0, 0);
-  max-width: 100vw;
+  max-width: calc(100vw - 1rem);
   width: 100%;
-  margin: 0;
+  margin: 0 0.5rem;
 
   @media (--screen-medium) {
     transform: translate3d(500px, 0, 0);
