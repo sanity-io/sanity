@@ -122,6 +122,7 @@ export default class SnackbarItem extends React.Component {
       actionTitle,
       children,
       icon,
+      id,
       isOpen,
       kind,
       message,
@@ -131,7 +132,7 @@ export default class SnackbarItem extends React.Component {
 
     const rootStyles = this.state.isEntering
       ? `${styles.root}`
-      : `${styles.root} ${isOpen ? styles.ShowSnack : styles.DismissSnack}`
+      : `${styles.root} ${isOpen ? styles.showSnack : styles.dismissSnack}`
     const innerStyles = `${styles.inner} ${styles[kind]}`
     const transition = `all ${transitionDuration}ms ease-in-out`
     const role = () => {
@@ -142,7 +143,7 @@ export default class SnackbarItem extends React.Component {
     return (
       <div
         aria-label={kind}
-        aria-describedby="SnackbarMessage"
+        aria-describedby={`snackbarMessage-${kind}-${id}`}
         role={role()}
         ref={this._snackRef}
         tabIndex="0"
@@ -155,22 +156,18 @@ export default class SnackbarItem extends React.Component {
         onKeyDown={e => e.keyCode === 27 && this.handleAction()}
       >
         <div className={innerStyles}>
-          <div role="img" aria-hidden className={styles.SnackbarIcon}>
+          <div role="img" aria-hidden className={styles.snackbarIcon}>
             {icon ? icon : this.snackIcon(kind)}
           </div>
-          <div className={styles.SnackbarContent}>
-            <div
-              id="SnackbarMessage"
-              className={styles.SnackbarMessage}
-              style={children && {fontWeight: 'bold'}}
-            >
+          <div className={styles.snackbarContent}>
+            <div id={`snackbarMessage-${kind}-${id}`} style={children && {fontWeight: 'bold'}}>
               {message}
             </div>
-            {children && <div className={styles.SnackbarChildren}>{children}</div>}
+            {children && <div className={styles.snackbarChildren}>{children}</div>}
           </div>
           <button
             aria-label={!actionTitle && 'Close'}
-            className={styles.SnackbarButton}
+            className={styles.snackbarButton}
             onClick={() => this.handleAction()}
           >
             {actionTitle ? actionTitle : <CloseIcon />}

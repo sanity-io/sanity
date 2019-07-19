@@ -50,30 +50,30 @@
   color: var(--state-danger-color--inverted);
 }
 
-.SnackbarContent {
+.snackbarContent {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   flex-grow: 1;
 }
 
-.SnackbarButtons {
+.snackbarButtons {
   margin-left: auto;
 }
 
-.SnackbarChildren {
+.snackbarChildren {
   flex-basis: 100%;
   margin: 0.5rem 0;
 }
 
-.SnackbarIcon {
+.snackbarIcon {
   display: flex;
   align-items: center;
   font-size: 1.2rem;
   margin-right: 0.5rem;
 }
 
-.SnackbarButton {
+.snackbarButton {
   display: flex;
   background: 0;
   border: 0;
@@ -84,11 +84,11 @@
   flex-shrink: 0;
 }
 
-.ShowSnack {
+.showSnack {
   transform: translate3d(0, 0, 0);
 }
 
-.DismissSnack {
+.dismissSnack {
   transform: translate3d(100vw, 0, 0);
   opacity: 0;
 

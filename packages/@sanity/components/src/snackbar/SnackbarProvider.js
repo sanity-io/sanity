@@ -49,7 +49,7 @@ export default class SnackbarProvider extends React.Component {
     const {activeSnacks} = this.state
 
     const newSnack = {
-      id: new Date().getTime() + Math.floor(Math.random()),
+      id: new Date().getTime() + Math.floor(Math.random() * 10000),
       isOpen: true,
       ...contextSnack
     }
