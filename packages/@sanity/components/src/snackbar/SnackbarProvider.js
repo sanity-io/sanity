@@ -148,11 +148,15 @@ export default class SnackbarProvider extends React.Component {
     The removal is delayed in order to transition the snack out first
   */
   handleRemoveSnack = (id, transitionDuration) => {
-    setTimeout(() => {
+    this._removeTimer = setTimeout(() => {
       this.setState(({activeSnacks}) => ({
         activeSnacks: activeSnacks.filter(snack => snack.id !== id)
       }))
     }, transitionDuration)
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this._removeTimer)
   }
 
   getChildContext = () => ({

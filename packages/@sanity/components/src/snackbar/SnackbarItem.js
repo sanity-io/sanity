@@ -105,11 +105,16 @@ export default class SnackbarItem extends React.Component {
     if (isPersisted) this.cancelAutoDismissSnack()
     else this.handleAutoDismissSnack()
 
-    setTimeout(() => {
+    this._enterTimer = setTimeout(() => {
       this.setState({
         isEntering: false
       })
     }, 100)
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this._dismissTimer)
+    clearTimeout(this._enterTimer)
   }
 
   render() {
