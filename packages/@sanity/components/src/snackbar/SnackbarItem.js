@@ -43,9 +43,9 @@ export default class SnackbarItem extends React.Component {
     isPersisted: false,
     kind: 'info',
     offset: null,
-    onAction: () => {},
+    onAction: null,
     onDismiss: () => {},
-    onHide: () => {},
+    onHide: null,
     onSetHeight: () => {},
     setAutoFocus: false,
     transitionDuration: 200
@@ -63,9 +63,7 @@ export default class SnackbarItem extends React.Component {
     const {autoDismissTimeout, isPersisted, id, onDismiss, onHide} = this.props
     if (!isPersisted) {
       this._dismissTimer = setTimeout(() => {
-        if (onHide) {
-          onHide()
-        }
+        if (onHide) onHide()
         onDismiss(id)
       }, autoDismissTimeout)
     }
@@ -84,14 +82,8 @@ export default class SnackbarItem extends React.Component {
 
   handleAction = () => {
     const {id, onAction, onDismiss, onHide} = this.props
-    if (onAction) {
-      onAction()
-      return onDismiss(id)
-    }
-    if (onHide) {
-      onHide()
-      return onDismiss(id)
-    }
+    if (onAction) onAction()
+    if (onHide) onHide()
     return onDismiss(id)
   }
 
