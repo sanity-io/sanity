@@ -17,7 +17,7 @@ export default class SnackbarItem extends React.Component {
     isPersisted: PropTypes.bool,
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     kind: PropTypes.oneOf(['danger', 'info', 'warning', 'error', 'success']),
-    message: PropTypes.string.isRequired,
+    message: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
     onAction: PropTypes.func,
     onDismiss: PropTypes.func,
     offset: PropTypes.number,
