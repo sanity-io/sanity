@@ -1,8 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {from} from 'rxjs'
+import {IntentLink} from 'part:@sanity/base/router'
 import LoadingPane from '../pane/LoadingPane'
-import {templateExists, getTemplateById, resolveInitialValue} from '@sanity/base/initial-values'
+import {
+  templateExists,
+  getTemplateById,
+  getTemplatesBySchemaType,
+  resolveInitialValue
+} from '@sanity/base/initial-values'
 
 // Resolves the initial value for a given template, if possible
 export default function withInitialValue(Pane) {
@@ -12,6 +18,7 @@ export default function withInitialValue(Pane) {
     static propTypes = {
       parameters: PropTypes.object, // eslint-disable-line react/forbid-prop-types
       options: PropTypes.shape({
+        type: PropTypes.string,
         template: PropTypes.string
       }).isRequired
     }
@@ -23,12 +30,24 @@ export default function withInitialValue(Pane) {
     constructor(props) {
       super(props)
 
-      const shouldResolve = Boolean(this.props.options.template)
+      const {options} = props
+      const {template, type} = options
 
-      this.state = {isResolving: shouldResolve}
+      let templateName = template
+      let templateChoices = !template && getTemplatesBySchemaType(type)
+
+      // If we have not specified a specific template, and we only have a single
+      // template available for a schema type, use it
+      if (!template && templateChoices && templateChoices.length === 1) {
+        templateName = templateChoices[0].id
+        templateChoices = null
+      }
+
+      const shouldResolve = Boolean(templateName)
+      this.state = {isResolving: shouldResolve, templateChoices}
 
       if (shouldResolve) {
-        this.subscription = from(this.resolveInitialValue()).subscribe(initialValue => {
+        this.subscription = from(this.resolveInitialValue(templateName)).subscribe(initialValue => {
           this.setState({isResolving: false, initialValue})
         })
       }
@@ -40,9 +59,8 @@ export default function withInitialValue(Pane) {
       }
     }
 
-    resolveInitialValue() {
+    resolveInitialValue(template) {
       const {parameters} = this.props
-      const {template} = this.props.options
       if (!template) {
         return Promise.resolve(undefined)
       }
@@ -57,7 +75,24 @@ export default function withInitialValue(Pane) {
     }
 
     render() {
-      const {isResolving, initialValue} = this.state
+      const {isResolving, initialValue, templateChoices} = this.state
+
+      if (templateChoices && templateChoices.length > 0) {
+        return (
+          <div>
+            <ul>
+              {templateChoices.map(choice => (
+                <li key={choice.id}>
+                  <IntentLink intent="create" params={{template: choice.id}}>
+                    {choice.title}
+                  </IntentLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+
       return isResolving ? (
         <LoadingPane {...this.props} message="Resolving initial value…" />
       ) : (
