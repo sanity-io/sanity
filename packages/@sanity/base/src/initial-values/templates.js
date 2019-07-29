@@ -74,6 +74,10 @@ export function getTemplates(schema) {
   }
 }
 
+export function getTemplatesBySchemaType(schemaType) {
+  return getTemplates().filter(tpl => tpl.schemaType === schemaType)
+}
+
 export function getTemplateById(id) {
   return getTemplates().find(tpl => tpl.id === id)
 }
