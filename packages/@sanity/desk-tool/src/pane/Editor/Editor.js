@@ -712,6 +712,7 @@ export default withRouterHOC(
           draft={draft}
           filterField={filterField}
           focusPath={focusPath}
+          initialValue={initialValue}
           isLiveEditEnabled={this.isLiveEditEnabled()}
           markers={markers}
           onBlur={this.handleBlur}
@@ -723,7 +724,6 @@ export default withRouterHOC(
           readOnly={isReconnecting || !isActionEnabled(type, 'update')}
           schema={schema}
           type={type}
-          value={draft || published || initialValue || {_type: type.name}}
         />
       )
     }

@@ -25,6 +25,7 @@ export default class EditForm extends React.PureComponent {
     onShowHistory: PropTypes.func.isRequired,
     patchChannel: PropTypes.object.isRequired,
     published: PropTypes.object,
+    initialValue: PropTypes.object,
     readOnly: PropTypes.bool.isRequired,
     schema: PropTypes.object.isRequired,
     type: PropTypes.object.isRequired
@@ -35,6 +36,7 @@ export default class EditForm extends React.PureComponent {
       published,
       filterField,
       focusPath,
+      initialValue,
       isLiveEditEnabled,
       markers,
       onBlur,
@@ -46,7 +48,7 @@ export default class EditForm extends React.PureComponent {
       schema,
       type
     } = this.props
-    const value = draft || published
+    const value = draft || published || initialValue
     return (
       <>
         <div className={styles.top}>
