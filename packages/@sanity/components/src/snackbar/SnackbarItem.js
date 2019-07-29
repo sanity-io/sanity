@@ -4,7 +4,6 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import CheckCircleIcon from 'part:@sanity/base/circle-check-icon'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import ErrorIcon from 'part:@sanity/base/error-icon'
-import DangerIcon from 'part:@sanity/base/danger-icon'
 import styles from './styles/SnackbarItem.css'
 
 export default class SnackbarItem extends React.Component {
@@ -16,7 +15,7 @@ export default class SnackbarItem extends React.Component {
     isOpen: PropTypes.bool.isRequired,
     isPersisted: PropTypes.bool,
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    kind: PropTypes.oneOf(['danger', 'info', 'warning', 'error', 'success']),
+    kind: PropTypes.oneOf(['info', 'warning', 'error', 'success']),
     message: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
     onAction: PropTypes.func,
     onDismiss: PropTypes.func,

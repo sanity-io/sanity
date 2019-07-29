@@ -54,14 +54,14 @@ storiesOf('Snackbar', module)
   .add('Default', () => (
     <Snackbar
       {...globalDefaults}
-      kind={select('Kind', ['success', 'error', 'danger', 'warning', 'info'], 'info', 'props')}
+      kind={select('Kind', ['success', 'error', 'warning', 'info'], 'info', 'props')}
       message={text('Message', 'This is a message placeholder', 'props')}
     />
   ))
   .add('With children', () => (
     <Snackbar
       {...globalDefaults}
-      kind={select('Kind', ['success', 'error', 'danger', 'warning', 'info'], 'info', 'props')}
+      kind={select('Kind', ['success', 'error', 'warning', 'info'], 'info', 'props')}
       message={text('Message', 'This is a message placeholder', 'props')}
     >
       <div>{text('Children', 'This is the children placeholder', 'props')}</div>
@@ -70,7 +70,7 @@ storiesOf('Snackbar', module)
   .add('Custom icon', () => (
     <Snackbar
       {...globalDefaults}
-      kind={select('Kind', ['success', 'error', 'danger', 'warning', 'info'], 'info', 'props')}
+      kind={select('Kind', ['success', 'error', 'warning', 'info'], 'info', 'props')}
       icon="🐈"
       message={text('Message', 'This is a message placeholder', 'props')}
     />
@@ -78,7 +78,7 @@ storiesOf('Snackbar', module)
   .add('Custom action', () => (
     <Snackbar
       {...globalDefaults}
-      kind={select('Kinds', ['info', 'success', 'warning', 'error', 'danger'], 'info', 'props')}
+      kind={select('Kinds', ['info', 'success', 'warning', 'error'], 'info', 'props')}
       message={text('Message', 'This is a message placeholder', 'props')}
       actionTitle={text('actionTitle', 'Custom', 'props')}
       onAction={action(text('onAction', 'Custom onAction', 'props'))}
@@ -87,7 +87,7 @@ storiesOf('Snackbar', module)
   .add('Custom dismiss', () => (
     <Snackbar
       {...globalDefaults}
-      kind={select('Kinds', ['info', 'success', 'warning', 'error', 'danger'], 'info', 'props')}
+      kind={select('Kinds', ['info', 'success', 'warning', 'error'], 'info', 'props')}
       message={text('Message', 'This is a message placeholder', 'props')}
       onDismiss={action(text('onHide', 'Custom onHide', 'props'))}
     />
@@ -116,7 +116,7 @@ storiesOf('Snackbar', module)
   .add('Transitions', () => {
     const snack = {
       ...globalDefaults,
-      kind: select('Kinds', ['info', 'success', 'warning', 'error', 'danger'], 'info', 'props'),
+      kind: select('Kinds', ['info', 'success', 'warning', 'error'], 'info', 'props'),
       message: text('Message', 'This is a message placeholder', 'props'),
       setAutoFocus: boolean('setAutoFocus', false, 'props'),
       isPersisted: boolean('isPersisted', false, 'props'),

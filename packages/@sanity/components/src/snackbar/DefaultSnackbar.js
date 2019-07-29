@@ -3,7 +3,7 @@ import React from 'react'
 
 export default class DefaultSnackbar extends React.PureComponent {
   static propTypes = {
-    kind: PropTypes.oneOf(['danger', 'info', 'warning', 'error', 'success']),
+    kind: PropTypes.oneOf(['info', 'warning', 'error', 'success']),
     message: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
     isPersisted: PropTypes.bool,
     children: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
