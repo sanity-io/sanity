@@ -9,7 +9,8 @@ export default class SnackbarProvider extends React.Component {
   }
 
   static childContextTypes = {
-    addToSnackQueue: PropTypes.func
+    addToSnackQueue: PropTypes.func,
+    handleDismissSnack: PropTypes.func
   }
 
   constructor(props, context) {
@@ -160,7 +161,8 @@ export default class SnackbarProvider extends React.Component {
   }
 
   getChildContext = () => ({
-    addToSnackQueue: this.addToSnackQueue
+    addToSnackQueue: this.addToSnackQueue,
+    handleDismissSnack: this.handleDismissSnack
   })
 
   render() {

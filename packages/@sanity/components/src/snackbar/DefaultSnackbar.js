@@ -17,7 +17,8 @@ export default class DefaultSnackbar extends React.PureComponent {
   }
 
   static contextTypes = {
-    addToSnackQueue: PropTypes.func
+    addToSnackQueue: PropTypes.func,
+    handleDismissSnack: PropTypes.func
   }
 
   componentDidMount() {
@@ -33,7 +34,7 @@ export default class DefaultSnackbar extends React.PureComponent {
       actionTitle
     } = this.props
 
-    this.context.addToSnackQueue({
+    this.snackId = this.context.addToSnackQueue({
       kind,
       message,
       children,
@@ -43,6 +44,10 @@ export default class DefaultSnackbar extends React.PureComponent {
       actionTitle: (action && action.title) || actionTitle,
       autoDismissTimeout: timeout
     })
+  }
+
+  componentWillUnmount() {
+    this.context.handleDismissSnack(this.snackId)
   }
 
   render() {
