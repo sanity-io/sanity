@@ -84,7 +84,17 @@ export default function withInitialValue(Pane) {
         return (
           <DefaultPane title={title}>
             <div className={styles.root}>
-              <CreateDocumentList templateChoices={templateChoices} />
+              <CreateDocumentList
+                items={templateChoices.map(choice => {
+                  return {
+                    ...choice,
+                    key: choice.id,
+                    params: {
+                      template: choice.id
+                    }
+                  }
+                })}
+              />
             </div>
           </DefaultPane>
         )

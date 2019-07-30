@@ -33,14 +33,7 @@
   padding: var(--medium-padding);
 }
 
-.ellipsis {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .title {
-  composes: ellipsis;
   font-weight: normal;
   font-size: var(--font-size-large);
   padding: 0;
@@ -48,7 +41,6 @@
 }
 
 .subtitle {
-  composes: ellipsis;
   font-weight: normal;
   font-size: var(--font-size-base);
   padding-top: 0.25em;

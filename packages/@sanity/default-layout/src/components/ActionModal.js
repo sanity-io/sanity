@@ -9,17 +9,18 @@ import CreateDocumentList from 'part:@sanity/components/lists/create-document'
 function ActionModal(props) {
   const {title, actions, onClose} = props
   return (
-    <Dialog className={styles.modal} onClose={props.onClose} isOpen padding="none">
+    <Dialog className={styles.modal} onClose={onClose} isOpen padding="none">
       <div className={styles.contentWrapper}>
         <DialogContent size="auto" padding="medium">
           <h1 className={styles.title}>{title}</h1>
           <div className={styles.listContainer}>
             <CreateDocumentList
-              onClick={onClose}
-              templateChoices={actions.map(action => {
+              items={actions.map((action, i) => {
                 return {
                   ...action,
-                  icon: action.icon || FileIcon
+                  key: `actionModal_${i}`,
+                  icon: action.icon || FileIcon,
+                  onClick: onClose
                 }
               })}
             />
