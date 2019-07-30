@@ -6,6 +6,7 @@ import styles from './styles/LoadingPane.css'
 
 export default class LoadingPane extends React.PureComponent {
   static propTypes = {
+    title: PropTypes.string,
     isSelected: PropTypes.bool.isRequired,
     isCollapsed: PropTypes.bool.isRequired,
     onExpand: PropTypes.func,
@@ -18,6 +19,7 @@ export default class LoadingPane extends React.PureComponent {
   static defaultProps = {
     message: 'Loading…',
     path: [],
+    title: '\u00a0',
     index: undefined,
     onExpand: undefined,
     onCollapse: undefined
@@ -53,12 +55,12 @@ export default class LoadingPane extends React.PureComponent {
   }
 
   render() {
-    const {isSelected, isCollapsed, onCollapse, onExpand} = this.props
+    const {isSelected, isCollapsed, onCollapse, onExpand, title} = this.props
     const {currentMessage} = this.state
 
     return (
       <DefaultPane
-        title={'\u00a0'} // Non-breaking space
+        title={title}
         isScrollable={false}
         isSelected={isSelected}
         isCollapsed={isCollapsed}
