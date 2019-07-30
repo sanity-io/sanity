@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {from} from 'rxjs'
-import {IntentLink} from 'part:@sanity/base/router'
+import DefaultPane from 'part:@sanity/components/panes/default'
 import LoadingPane from '../pane/LoadingPane'
 import {
   templateExists,
@@ -9,6 +9,8 @@ import {
   getTemplatesBySchemaType,
   resolveInitialValue
 } from '@sanity/base/initial-values'
+import CreateDocumentList from 'part:@sanity/components/lists/create-document'
+import styles from './styles/withInitialValue.css'
 
 // Resolves the initial value for a given template, if possible
 export default function withInitialValue(Pane) {
@@ -76,25 +78,20 @@ export default function withInitialValue(Pane) {
 
     render() {
       const {isResolving, initialValue, templateChoices} = this.state
-
+      const {options} = this.props
+      const title = options && options.type && `Creating new ${options.type}`
       if (templateChoices && templateChoices.length > 0) {
         return (
-          <div>
-            <ul>
-              {templateChoices.map(choice => (
-                <li key={choice.id}>
-                  <IntentLink intent="create" params={{template: choice.id}}>
-                    {choice.title}
-                  </IntentLink>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <DefaultPane title={title}>
+            <div className={styles.root}>
+              <CreateDocumentList templateChoices={templateChoices} />
+            </div>
+          </DefaultPane>
         )
       }
 
       return isResolving ? (
-        <LoadingPane {...this.props} message="Resolving initial value…" />
+        <LoadingPane {...this.props} title={title} message="Resolving initial value…" />
       ) : (
         <Pane {...this.props} initialValue={initialValue} />
       )

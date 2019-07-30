@@ -6,10 +6,13 @@
   flex-direction: row-reverse;
   justify-content: space-between;
   text-decoration: none;
+  position: relative;
   background-color: var(--component-bg);
   color: var(--text-color-secondary);
   border-radius: var(--border-radius-medium);
   border: 1px solid var(--hairline-color);
+  height: 100%;
+  box-sizing: border-box;
 
   @nest &:focus {
     background-color: var(--component-bg);
@@ -24,6 +27,10 @@
 
 .heading {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--medium-padding);
 }
 
 .ellipsis {
@@ -36,22 +43,22 @@
   composes: ellipsis;
   font-weight: normal;
   font-size: var(--font-size-large);
-  padding-left: var(--medium-padding);
-  margin-bottom: 0;
+  padding: 0;
+  margin: 0;
 }
 
 .subtitle {
   composes: ellipsis;
   font-weight: normal;
   font-size: var(--font-size-base);
-  padding-left: var(--medium-padding);
-  margin-top: 0.25em;
+  padding-top: 0.25em;
+  margin: 0;
 }
 
 .media {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(var(--font-size-large) + var(--font-size-base) + 0.25rem);
+  font-size: calc(var(--font-size-large) + var(--font-size-base));
   padding: var(--medium-padding);
 }
