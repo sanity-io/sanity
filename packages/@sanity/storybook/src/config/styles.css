@@ -1,7 +1,10 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 :global(#root) {
-  padding: 1rem;
+  -webkit-font-smoothing: antialiased;
+  font-family: var(--font-family-base);
+  line-height: 1.5;
+  padding: var(--medium-padding);
   background-color: var(--body-bg);
   color: var(--text-color);
   min-height: 100vh;
