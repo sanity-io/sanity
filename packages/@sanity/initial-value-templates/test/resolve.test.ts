@@ -1,6 +1,6 @@
 import {omit} from 'lodash'
-import {resolveInitialValue, getTemplates} from '../src/initial-values'
-import T from '../template-builder'
+import {resolveInitialValue, TemplateBuilder as T} from '../src'
+import {Template} from '../src/Template'
 
 beforeEach(() => {
   jest.resetModules()
@@ -23,7 +23,7 @@ describe('resolveInitialValue', () => {
   })
 
   test('throws on missing template `value` prop', () => {
-    expect(resolveInitialValue(omit(example, ['value']))).rejects.toMatchObject({
+    expect(resolveInitialValue(omit(example, ['value']) as Template)).rejects.toMatchObject({
       message: 'Template "author" has invalid "value" property'
     })
   })
@@ -111,116 +111,5 @@ describe('resolveInitialValue', () => {
     expect(result.meta[0].categories[1]).toHaveProperty('_key')
     expect(result.meta[0].categories[0]._key).toMatch(/^[a-z0-9][a-z0-9-_]{8,30}/i)
     expect(result.meta[0].categories[1]._key).toMatch(/^[a-z0-9][a-z0-9-_]{8,30}/i)
-  })
-})
-
-describe('getTemplates', () => {
-  test('returns defaults if part is not implemented', () => {
-    expect(getTemplates()).toMatchSnapshot()
-  })
-
-  test('returns defined templates if part implemented', () => {
-    jest.mock('part:@sanity/base/initial-value-templates?', () => [
-      {
-        id: 'author',
-        title: 'Author',
-        schemaType: 'author',
-        value: {title: 'here'}
-      },
-      {
-        serialize: () => ({
-          id: 'developer',
-          title: 'Developer',
-          schemaType: 'developer',
-          value: {title: 'Foo'}
-        })
-      }
-    ])
-    expect(getTemplates()).toMatchSnapshot()
-  })
-
-  test('validates that templates has ID', () => {
-    jest.mock('part:@sanity/base/initial-value-templates?', () => [
-      {
-        title: 'Author',
-        schemaType: 'author',
-        value: {title: 'here'}
-      }
-    ])
-
-    expect(() => getTemplates()).toThrowErrorMatchingSnapshot()
-  })
-
-  test('validates that templates has title', () => {
-    jest.mock('part:@sanity/base/initial-value-templates?', () => [
-      {
-        id: 'author',
-        schemaType: 'author',
-        value: {title: 'here'}
-      }
-    ])
-
-    expect(() => getTemplates()).toThrowErrorMatchingSnapshot()
-  })
-
-  test('validates that templates has schema type', () => {
-    jest.mock('part:@sanity/base/initial-value-templates?', () => [
-      {
-        id: 'author',
-        title: 'Author',
-        value: {title: 'here'}
-      }
-    ])
-
-    expect(() => getTemplates()).toThrowErrorMatchingSnapshot()
-  })
-
-  test('validates that templates has value', () => {
-    jest.mock('part:@sanity/base/initial-value-templates?', () => [
-      {
-        id: 'author',
-        title: 'Author',
-        schemaType: 'author'
-      }
-    ])
-
-    expect(() => getTemplates()).toThrowErrorMatchingSnapshot()
-  })
-
-  test('validates that templates has id, title, schemaType, value', () => {
-    jest.mock('part:@sanity/base/initial-value-templates?', () => [{}])
-    expect(() => getTemplates()).toThrowErrorMatchingSnapshot()
-  })
-
-  test('validates that templates has an object/function value', () => {
-    jest.mock('part:@sanity/base/initial-value-templates?', () => [
-      {
-        id: 'author',
-        title: 'Author',
-        schemaType: 'author',
-        value: []
-      }
-    ])
-
-    expect(() => getTemplates()).toThrowErrorMatchingSnapshot()
-  })
-
-  test('validates that templates has unique IDs', () => {
-    jest.mock('part:@sanity/base/initial-value-templates?', () => [
-      {
-        id: 'author',
-        title: 'Author',
-        schemaType: 'author',
-        value: {name: 'Gunnar'}
-      },
-      {
-        id: 'author',
-        title: 'Developer',
-        schemaType: 'author',
-        value: {role: 'developer'}
-      }
-    ])
-
-    expect(() => getTemplates()).toThrowErrorMatchingSnapshot()
   })
 })

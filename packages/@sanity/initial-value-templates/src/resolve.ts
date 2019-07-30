@@ -1,9 +1,17 @@
 import {isPlainObject} from 'lodash'
+import {Template, TemplateBuilder} from './Template'
 import {validateInitialValue} from './validate'
 
-async function resolveInitialValue(template, params = {}) {
+export function isBuilder(template: Template | TemplateBuilder): template is TemplateBuilder {
+  return typeof (template as TemplateBuilder).serialize === 'function'
+}
+
+async function resolveInitialValue(
+  template: Template | TemplateBuilder,
+  params: {[key: string]: any} = {}
+): Promise<{[key: string]: any}> {
   // Template builder?
-  if (typeof template.serialize === 'function') {
+  if (isBuilder(template)) {
     return resolveInitialValue(template.serialize(), params)
   }
 
