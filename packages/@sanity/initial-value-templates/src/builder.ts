@@ -1,5 +1,5 @@
 import {Template, TemplateBuilder} from './Template'
-import {Schema, SchemaType, getDefaultSchema} from '../parts/Schema'
+import {Schema, SchemaType, getDefaultSchema} from './parts/Schema'
 
 function defaultTemplateForType(
   schemaType: string | SchemaType,

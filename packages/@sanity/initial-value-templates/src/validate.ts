@@ -1,12 +1,13 @@
-import {isPlainObject} from 'lodash'
 import oneline from 'oneline'
+import {isPlainObject} from 'lodash'
 import {randomKey, toString as pathToString} from '@sanity/util/paths'
+import {Template} from './Template'
 
 export {validateInitialValue, validateTemplates}
 
-const REQUIRED_TEMPLATE_PROPS = ['id', 'title', 'schemaType', 'value']
+const REQUIRED_TEMPLATE_PROPS: (keyof Template)[] = ['id', 'title', 'schemaType', 'value']
 
-function validateTemplates(templates) {
+function validateTemplates(templates: Template[]) {
   const idMap = new Map()
 
   templates.forEach((template, i) => {
@@ -36,16 +37,16 @@ function validateTemplates(templates) {
   return templates
 }
 
-function templateId(template, i) {
+function templateId(template: Template, i: number) {
   return quote(template.id || template.title) || (typeof i === 'number' && `at index ${i}`) || ''
 }
 
-function quote(str) {
+function quote(str: string) {
   return str && str.length > 0 ? `"${str}"` : str
 }
 
-function validateInitialValue(value, template) {
-  const contextError = msg => `Template "${template.id}" initial value: ${msg}`
+function validateInitialValue(value: {[key: string]: any}, template: Template) {
+  const contextError = (msg: string) => `Template "${template.id}" initial value: ${msg}`
 
   if (!isPlainObject(value)) {
     throw new Error(contextError(`resolved to a non-object`))
@@ -68,7 +69,7 @@ function validateInitialValue(value, template) {
   }
 }
 
-function validateValue(value, path = [], parentIsArray = false) {
+function validateValue(value: any, path: (string | number)[] = [], parentIsArray = false): any {
   if (Array.isArray(value)) {
     return value.map((item, i) => validateValue(item, path.concat(i), true))
   }
@@ -78,7 +79,7 @@ function validateValue(value, path = [], parentIsArray = false) {
   }
 
   // Apply missing keys is the parent is an array
-  const initial = parentIsArray && !value._key ? {_key: randomKey()} : {}
+  const initial: {[key: string]: any} = parentIsArray && !value._key ? {_key: randomKey()} : {}
 
   // Ensure non-root objects have _type
   if (path.length > 0 && !value._type) {

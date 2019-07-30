@@ -1,0 +1,93 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`T.defaultTemplateForType() generates correct representation of type with initial value 1`] = `
+Object {
+  "icon": [Function],
+  "id": "post",
+  "schemaType": "post",
+  "title": "Post",
+  "value": Object {
+    "_type": "post",
+  },
+}
+`;
+
+exports[`T.defaultTemplateForType() generates correct representation of type without initial value 1`] = `
+Object {
+  "icon": [Function],
+  "id": "author",
+  "schemaType": "author",
+  "title": "Author",
+  "value": [Function],
+}
+`;
+
+exports[`T.defaults() generates array of all schema type templates 1`] = `
+Array [
+  TemplateBuilder {
+    "spec": Object {
+      "icon": [Function],
+      "id": "author",
+      "schemaType": "author",
+      "title": "Author",
+      "value": [Function],
+    },
+  },
+  TemplateBuilder {
+    "spec": Object {
+      "icon": [Function],
+      "id": "post",
+      "schemaType": "post",
+      "title": "Post",
+      "value": Object {
+        "_type": "post",
+      },
+    },
+  },
+]
+`;
+
+exports[`T.defaults() generates array of all schema type templates 2`] = `
+Array [
+  Object {
+    "icon": [Function],
+    "id": "author",
+    "schemaType": "author",
+    "title": "Author",
+    "value": [Function],
+  },
+  Object {
+    "icon": [Function],
+    "id": "post",
+    "schemaType": "post",
+    "title": "Post",
+    "value": Object {
+      "_type": "post",
+    },
+  },
+]
+`;
+
+exports[`T.template() builds template through constructor 1`] = `
+Object {
+  "icon": [Function],
+  "id": "foo",
+  "schemaType": "author",
+  "title": "some title",
+  "value": Object {
+    "name": "Default name!",
+  },
+}
+`;
+
+exports[`T.template() can construct using builder 1`] = `
+Object {
+  "icon": [Function],
+  "id": "yeah",
+  "schemaType": "author",
+  "title": "Yeah",
+  "value": Object {
+    "name": "bar",
+  },
+}
+`;

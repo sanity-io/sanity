@@ -1,4 +1,4 @@
-import T from '@sanity/base/template-builder'
+import T from '@sanity/base/initial-values-template-builder'
 
 export default [
   ...T.defaults(),

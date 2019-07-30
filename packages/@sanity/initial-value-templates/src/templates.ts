@@ -1,10 +1,27 @@
 /* eslint-disable import/prefer-default-export */
-import T from '../../template-builder'
+import T from './builder'
 import {validateTemplates} from './validate'
+import {Template, TemplateBuilder} from './Template'
+import {Schema} from './parts/Schema'
+import {isBuilder} from './resolve'
+
+interface CommonJsEsStub {
+  __esModule: boolean
+  default: (Template | TemplateBuilder)[]
+}
+
+function isCommonJsEsStub(mod: any): mod is CommonJsEsStub {
+  const stub = mod as CommonJsEsStub
+  return stub.__esModule && 'default' in stub
+}
 
 function loadDefinedTemplatesFromPart() {
   try {
-    const templates = require('part:@sanity/base/initial-value-templates?')
+    const templates:
+      | undefined
+      | (Template | TemplateBuilder)[]
+      | CommonJsEsStub = require('part:@sanity/base/initial-value-templates?')
+
     if (typeof templates === 'undefined') {
       return undefined
     }
@@ -13,7 +30,7 @@ function loadDefinedTemplatesFromPart() {
       return null
     }
 
-    if (templates.__esModule && 'default' in templates) {
+    if (isCommonJsEsStub(templates)) {
       return templates.default
     }
 
@@ -23,7 +40,7 @@ function loadDefinedTemplatesFromPart() {
   }
 }
 
-function loadDefinedTemplates(schema) {
+function loadDefinedTemplates(schema?: Schema) {
   let templates = loadDefinedTemplatesFromPart()
 
   // Templates is `null` if the part was implemented but the export doesn't make sense,
@@ -42,20 +59,20 @@ function loadDefinedTemplates(schema) {
   return prepareTemplates(templates)
 }
 
-function prepareTemplates(templates) {
+function prepareTemplates(templates: (Template | TemplateBuilder)[]) {
   const serialized = templates.map(maybeSerialize)
   return validateTemplates(serialized)
 }
 
-function getDefaultTemplates(schema) {
+function getDefaultTemplates(schema?: Schema) {
   return prepareTemplates(T.defaults(schema))
 }
 
-function maybeSerialize(template) {
-  return template.serialize ? template.serialize() : template
+function maybeSerialize(template: Template | TemplateBuilder) {
+  return isBuilder(template) ? template.serialize() : template
 }
 
-export function getTemplateErrors(schema) {
+export function getTemplateErrors(schema: Schema) {
   try {
     loadDefinedTemplates(schema)
     return []
@@ -64,7 +81,7 @@ export function getTemplateErrors(schema) {
   }
 }
 
-export function getTemplates(schema) {
+export function getTemplates(schema?: Schema) {
   try {
     return loadDefinedTemplates(schema)
   } catch (err) {
@@ -74,14 +91,14 @@ export function getTemplates(schema) {
   }
 }
 
-export function getTemplatesBySchemaType(schemaType) {
+export function getTemplatesBySchemaType(schemaType: string) {
   return getTemplates().filter(tpl => tpl.schemaType === schemaType)
 }
 
-export function getTemplateById(id) {
+export function getTemplateById(id: string) {
   return getTemplates().find(tpl => tpl.id === id)
 }
 
-export function templateExists(id) {
+export function templateExists(id: string) {
   return Boolean(getTemplateById(id))
 }

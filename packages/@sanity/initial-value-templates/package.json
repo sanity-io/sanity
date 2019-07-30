@@ -1,7 +1,7 @@
 {
-  "name": "@sanity/structure",
-  "version": "0.142.6",
-  "description": "Build a navigation structure programatically",
+  "name": "@sanity/initial-value-templates",
+  "version": "0.142.0",
+  "description": "Build templates for initial values",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "author": "Sanity.io <hello@sanity.io>",
@@ -20,27 +20,28 @@
     "headless",
     "realtime",
     "content",
-    "structure",
+    "initial-values",
     "check"
   ],
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
-    "@sanity/initial-value-templates": "0.142.0",
+    "@sanity/util": "^0.141.5",
     "@types/lodash": "^4.14.116",
     "@types/memoize-one": "^3.1.1",
     "@types/node": "^8.0.0",
     "lodash": "^4.17.4",
-    "memoize-one": "^3.1.1"
+    "memoize-one": "^3.1.1",
+    "oneline": "^1.0.3"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.18",
-    "jest": "^24.9.0",
+    "@types/jest": "^24.0.16",
+    "jest": "^24.8.0",
     "rimraf": "^2.6.2",
-    "rxjs": "^6.5.2",
+    "rxjs": "^6.1.0",
     "ts-jest": "^24.0.2",
-    "typescript": "^3.6.2"
+    "typescript": "^3.2.2"
   },
   "repository": {
     "type": "git",
@@ -64,10 +65,7 @@
     ],
     "moduleNameMapper": {
       "^part:@sanity/base/schema$": "<rootDir>/test/mocks/schema.js",
-      "^part:@sanity/base/client$": "<rootDir>/test/mocks/client.js",
-      "^part:@sanity/data-aspects/resolver$": "<rootDir>/test/mocks/dataAspects.js",
-      "^part:@sanity/base/.*?-icon$": "<rootDir>/test/mocks/icon.js",
-      "^part:@sanity/base/util/document-action-utils": "<rootDir>/test/mocks/documentActionUtils.js"
+      "^part:@sanity/base/initial-value-templates?": "<rootDir>/test/mocks/templates.js"
     },
     "coveragePathIgnorePatterns": [
       "/node_modules/",
