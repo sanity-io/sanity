@@ -17,6 +17,7 @@ class CreateDocumentPreview extends React.PureComponent {
     params: PropTypes.shape({
       template: PropTypes.string
     }),
+    onClick: PropTypes.func,
     mediaDimensions: PropTypes.shape({
       width: PropTypes.number,
       height: PropTypes.number,
@@ -62,6 +63,7 @@ class CreateDocumentPreview extends React.PureComponent {
         params={params}
         className={styles.root}
         title={subtitle ? `Create new ${title} (${subtitle})` : `Create new ${title}`}
+        onClick={this.props.onClick}
       >
         {media !== false && (
           <div className={styles.media}>

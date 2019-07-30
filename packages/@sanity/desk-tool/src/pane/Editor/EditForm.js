@@ -65,7 +65,7 @@ export default class EditForm extends React.PureComponent {
               }
             />
           </span>
-          {value && (
+          {value && value._updatedAt && (
             <span className={styles.editedTimeClickable} onClick={onShowHistory}>
               {'Updated '}
               <TimeAgo time={value._updatedAt} />
