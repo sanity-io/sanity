@@ -57,7 +57,7 @@
   align-items: center;
   flex-wrap: wrap;
   flex-grow: 1;
-  margin: var(--medium-padding) var(--small-padding);
+  margin: var(--medium-padding) calc(var(--medium-padding) / 2) var(--medium-padding) calc(var(--small-padding) / 4);
 }
 
 .snackbarButtons {
@@ -73,6 +73,7 @@
   display: flex;
   font-size: calc(var(--font-size-large) + 5px);
   margin-top: calc(var(--medium-padding) - 2px);
+  margin-right: 6px;
 }
 
 .snackbarButton {
