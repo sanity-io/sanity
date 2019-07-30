@@ -21,6 +21,7 @@
 .inner {
   position: relative;
   display: flex;
+  align-items: flex-start;
   padding: var(--medium-padding);
   border-radius: var(--border-radius-large);
   composes: shadow-1dp from "part:@sanity/base/theme/shadows-style";
@@ -69,7 +70,6 @@
 
 .snackbarIcon {
   display: flex;
-  align-items: center;
   font-size: 1.2rem;
   margin-right: 0.5rem;
 }
