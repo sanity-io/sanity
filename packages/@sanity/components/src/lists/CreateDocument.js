@@ -4,16 +4,18 @@ import styles from './styles/CreateDocument.css'
 import CreateDocumentPreview from 'part:@sanity/components/previews/create-document'
 
 function CreateDocumentList(props) {
-  const {templateChoices = []} = props
+  const {items = []} = props
   return (
     <ul className={styles.root}>
-      {templateChoices.map(choice => (
-        <li key={choice.id} className={styles.item}>
+      {items.map(choice => (
+        <li key={choice.key} className={styles.item}>
           <CreateDocumentPreview
             title={choice.title}
-            params={{template: choice.id}}
+            params={choice.params}
             subtitle={choice.subtitle}
             icon={choice.icon}
+            // eslint-disable-next-line react/jsx-handler-names
+            onClick={choice.onClick}
           />
         </li>
       ))}
@@ -22,12 +24,13 @@ function CreateDocumentList(props) {
 }
 
 CreateDocumentList.propTypes = {
-  templateChoices: PropTypes.arrayOf(
+  items: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.string.isRequired,
+      key: PropTypes.string.isRequired,
       title: PropTypes.string,
       subtitle: PropTypes.string,
-      icon: PropTypes.func
+      icon: PropTypes.func,
+      onClick: PropTypes.func
     })
   )
 }
