@@ -4,6 +4,7 @@ import CloseIcon from 'part:@sanity/base/close-icon'
 import CheckCircleIcon from 'part:@sanity/base/circle-check-icon'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import ErrorIcon from 'part:@sanity/base/error-icon'
+import InfoIcon from 'part:@sanity/base/info-icon'
 import styles from './styles/SnackbarItem.css'
 
 export default class SnackbarItem extends React.Component {
@@ -11,7 +12,7 @@ export default class SnackbarItem extends React.Component {
     actionTitle: PropTypes.string,
     autoDismissTimeout: PropTypes.number,
     children: PropTypes.node,
-    icon: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+    icon: PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.bool]),
     isOpen: PropTypes.bool.isRequired,
     isPersisted: PropTypes.bool,
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
@@ -50,12 +51,18 @@ export default class SnackbarItem extends React.Component {
     transitionDuration: 200
   }
 
+  DEFAULT_ICONS = {
+    info: <InfoIcon />,
+    success: <CheckCircleIcon />,
+    warning: <WarningIcon />,
+    error: <ErrorIcon />
+  }
+
   snackIcon = () => {
-    const {kind} = this.props
-    if (kind === 'success') return <CheckCircleIcon />
-    if (kind === 'warning') return <WarningIcon />
-    if (kind === 'danger') return <DangerIcon />
-    return <ErrorIcon />
+    const {icon, kind} = this.props
+    if (typeof icon === 'boolean' && icon) return this.DEFAULT_ICONS[kind]
+    if (typeof icon === 'object' || typeof icon === 'string') return icon
+    return undefined
   }
 
   handleAutoDismissSnack = () => {
@@ -155,9 +162,9 @@ export default class SnackbarItem extends React.Component {
         onKeyDown={e => e.keyCode === 27 && this.handleAction()}
       >
         <div className={innerStyles}>
-          <div role="img" aria-hidden className={styles.snackbarIcon}>
-            {icon ? icon : this.snackIcon(kind)}
-          </div>
+         { icon &&  <div role="img" aria-hidden className={styles.snackbarIcon}>
+            {this.snackIcon()}
+          </div>}
           <div className={styles.snackbarContent}>
             <div id={`snackbarMessage-${kind}-${id}`} style={children && {fontWeight: 'bold'}}>
               {message}
