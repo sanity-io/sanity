@@ -58,20 +58,19 @@ storiesOf('Snackbar', module)
       message={text('Message', 'This is a message placeholder', 'props')}
     />
   ))
-  .add('With children', () => (
+  .add('With icons', () => (
     <Snackbar
       {...globalDefaults}
       kind={select('Kind', ['success', 'error', 'warning', 'info'], 'info', 'props')}
+      icon={true}
       message={text('Message', 'This is a message placeholder', 'props')}
-    >
-      <div>{text('Children', 'This is the children placeholder', 'props')}</div>
-    </Snackbar>
+    />
   ))
   .add('Custom icon', () => (
     <Snackbar
       {...globalDefaults}
       kind={select('Kind', ['success', 'error', 'warning', 'info'], 'info', 'props')}
-      icon="🐈"
+      icon={text('Icon', '🐈', 'props')}
       message={text('Message', 'This is a message placeholder', 'props')}
     />
   ))
@@ -112,6 +111,15 @@ storiesOf('Snackbar', module)
         message={text('Message', 'This is a message placeholder', 'props')}
       />
     </>
+  ))
+  .add('With children', () => (
+    <Snackbar
+      {...globalDefaults}
+      kind={select('Kind', ['success', 'error', 'warning', 'info'], 'info', 'props')}
+      message={text('Message', 'This is a message placeholder', 'props')}
+    >
+      <div>{text('Children', 'This is the children placeholder', 'props')}</div>
+    </Snackbar>
   ))
   .add('Transitions', () => {
     const snack = {
