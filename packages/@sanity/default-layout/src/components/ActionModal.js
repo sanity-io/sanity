@@ -1,37 +1,29 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import {IntentLink} from 'part:@sanity/base/router'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import FileIcon from 'part:@sanity/base/file-icon'
 import styles from './styles/ActionModal.css'
 import DialogContent from 'part:@sanity/components/dialogs/content'
-import Ink from 'react-ink'
+import CreateDocumentList from 'part:@sanity/components/lists/create-document'
 
 function ActionModal(props) {
+  const {title, actions, onClose} = props
   return (
     <Dialog className={styles.modal} onClose={props.onClose} isOpen padding="none">
       <div className={styles.contentWrapper}>
-        <DialogContent size="large" padding="medium">
-          <h1 className={styles.title}>Create new</h1>
-          <ul className={styles.list}>
-            {props.actions.map(action => {
-              const Icon = action.icon
-              return (
-                <li className={styles.listItem} key={action.title}>
-                  <IntentLink
-                    onClick={props.onClose}
-                    className={styles.actionLink}
-                    intent="create"
-                    params={action.params}
-                  >
-                    <span className={styles.icon}>{Icon ? <Icon /> : <FileIcon />}</span>
-                    <span>{action.title}</span>
-                    <Ink duration={1000} opacity={0.1} radius={200} />
-                  </IntentLink>
-                </li>
-              )
-            })}
-          </ul>
+        <DialogContent size="auto" padding="medium">
+          <h1 className={styles.title}>{title}</h1>
+          <div className={styles.listContainer}>
+            <CreateDocumentList
+              onClick={onClose}
+              templateChoices={actions.map(action => {
+                return {
+                  ...action,
+                  icon: action.icon || FileIcon
+                }
+              })}
+            />
+          </div>
         </DialogContent>
       </div>
     </Dialog>
@@ -39,7 +31,7 @@ function ActionModal(props) {
 }
 
 ActionModal.defaultProps = {
-  title: 'Create',
+  title: 'Create new',
   actions: []
 }
 
