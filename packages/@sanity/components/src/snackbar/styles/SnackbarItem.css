@@ -6,15 +6,15 @@
   bottom: 0;
   right: 0;
   transform: translate3d(100vw, 0, 0);
-  max-width: calc(100vw - 1rem);
+  max-width: calc(100vw - var(--medium-padding));
   width: 100%;
-  margin: 0 0.5rem;
+  line-height: 1.3125;
   outline: 0;
 
   @media (--screen-medium) {
     transform: translate3d(500px, 0, 0);
     max-width: 416px;
-    margin: 0 1rem;
+    margin: 0 var(--medium-padding);
   }
 }
 
@@ -22,9 +22,9 @@
   position: relative;
   display: flex;
   align-items: flex-start;
-  padding: var(--medium-padding);
   border-radius: var(--border-radius-large);
   composes: shadow-1dp from "part:@sanity/base/theme/shadows-style";
+  padding: 0 calc(var(--medium-padding) - 2px);
 }
 
 .info {
@@ -57,6 +57,7 @@
   align-items: center;
   flex-wrap: wrap;
   flex-grow: 1;
+  margin: var(--medium-padding) var(--small-padding);
 }
 
 .snackbarButtons {
@@ -65,13 +66,13 @@
 
 .snackbarChildren {
   flex-basis: 100%;
-  margin: 0.5rem 0;
+  margin: var(--small-padding) 0;
 }
 
 .snackbarIcon {
   display: flex;
-  font-size: 1.2rem;
-  margin-right: 0.5rem;
+  font-size: calc(var(--font-size-large) + 5px);
+  margin-top: calc(var(--medium-padding) - 2px);
 }
 
 .snackbarButton {
@@ -79,10 +80,13 @@
   background: 0;
   border: 0;
   font: inherit;
+  font-size: calc(var(--font-size-large) + 5px);
   color: currentColor;
   cursor: pointer;
+  margin-top: calc(var(--medium-padding) - 2px);
   margin-left: auto;
   flex-shrink: 0;
+  padding: 0;
 }
 
 .showSnack {

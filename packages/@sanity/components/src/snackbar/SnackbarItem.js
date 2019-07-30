@@ -166,7 +166,7 @@ export default class SnackbarItem extends React.Component {
             {this.snackIcon()}
           </div>}
           <div className={styles.snackbarContent}>
-            <div id={`snackbarMessage-${kind}-${id}`} style={children && {fontWeight: 'bold'}}>
+            <div id={`snackbarMessage-${kind}-${id}`}>
               {message}
             </div>
             {children && <div className={styles.snackbarChildren}>{children}</div>}
