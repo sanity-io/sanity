@@ -12,11 +12,12 @@ import {
 import {arrayMove} from 'react-sortable-hoc'
 import {range, random} from 'lodash'
 import Chance from 'chance'
+import {withKnobs, number} from 'part:@sanity/storybook/addons/knobs'
+import Sanity from 'part:@sanity/storybook/addons/sanity'
+import CreateDocumentList from 'part:@sanity/components/lists/create-document'
+import FileIcon from 'part:@sanity/base/file-icon'
 
 const chance = new Chance()
-
-import {withKnobs, boolean, select, number} from 'part:@sanity/storybook/addons/knobs'
-import Sanity from 'part:@sanity/storybook/addons/sanity'
 
 const containerStyle = {
   width: '90%',
@@ -92,6 +93,26 @@ storiesOf('List')
         <div style={containerStyle}>
           <SortableTester items={defaultItems} />
         </div>
+      </Sanity>
+    )
+  })
+  .add('Create document', () => {
+    const templateChoices = range(number('# Choices', 5, 'test')).map((choice, i) => {
+      return {
+        id: `${i}`,
+        title: chance.animal(),
+        subtitle: 'test',
+        template: 'test',
+        icon: FileIcon
+      }
+    })
+
+    return (
+      <Sanity
+        part="part:@sanity/components/lists/create-document"
+        propTables={[CreateDocumentList]}
+      >
+        <CreateDocumentList templateChoices={templateChoices} />
       </Sanity>
     )
   })

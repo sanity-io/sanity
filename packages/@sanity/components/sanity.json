@@ -339,6 +339,10 @@
       "description": "Default list style"
     },
     {
+      "name": "part:@sanity/components/lists/create-document",
+      "description": "List of create document previews"
+    },
+    {
       "implements": "part:@sanity/components/lists/default-style",
       "path": "lists/styles/DefaultList.css"
     },
@@ -367,8 +371,8 @@
       "description": "Default preview item"
     },
     {
-      "name": "part:@sanity/components/previews/initial-value-template",
-      "description": "Preview for select initial value"
+      "name": "part:@sanity/components/previews/create-document",
+      "description": "Preview for creating a document"
     },
     {
       "name": "part:@sanity/components/previews/detail",
@@ -631,8 +635,8 @@
       "path": "edititem/EditItemFoldOut.js"
     },
     {
-      "implements": "part:@sanity/components/previews/initial-value-template",
-      "path": "previews/TemplatePreview.js"
+      "implements": "part:@sanity/components/previews/create-document",
+      "path": "previews/CreateDocumentPreview.js"
     },
     {
       "implements": "part:@sanity/components/previews/default",
@@ -826,6 +830,10 @@
     {
       "implements": "part:@sanity/components/lists/sortable-grid",
       "path": "lists/sortable-grid"
+    },
+    {
+      "implements": "part:@sanity/components/lists/create-document",
+      "path": "lists/CreateDocument.js"
     },
     {
       "implements": "part:@sanity/components/edititem/fold-style",

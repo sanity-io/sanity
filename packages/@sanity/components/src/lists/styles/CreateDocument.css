@@ -1,0 +1,19 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  grid-gap: var(--medium-padding);
+  margin: 0;
+  padding: 0;
+
+  @media (--screen-medium) {
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  }
+}
+
+.item {
+  display: block;
+  padding: 0;
+  margin: 0;
+}
