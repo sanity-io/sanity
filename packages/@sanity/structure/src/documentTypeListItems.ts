@@ -1,5 +1,5 @@
 import memoizeOne from 'memoize-one'
-import {getTemplates} from '@sanity/base/initial-values'
+import {getTemplateById} from '@sanity/initial-value-templates'
 import {Schema, getDefaultSchema, SchemaType} from './parts/Schema'
 import {dataAspects, DataAspectsResolver} from './parts/DataAspects'
 import {getPlusIcon, getListIcon, getDetailsIcon} from './parts/Icon'
@@ -11,7 +11,6 @@ import {EditorBuilder} from './Editor'
 import {isActionEnabled} from './parts/documentActionUtils'
 import {DocumentTypeListBuilder} from './DocumentTypeList'
 import {IntentChecker} from './Intent'
-import {Template} from './templates/Template'
 import {ChildResolverOptions} from './ChildResolver'
 
 const PlusIcon = getPlusIcon()
@@ -25,8 +24,7 @@ const paneCanHandleTemplateCreation = (templateId: string, paneSchemaType: strin
     return false
   }
 
-  const templates = getTemplates() as Template[]
-  const template = templates.find(tpl => tpl.id === templateId)
+  const template = getTemplateById(templateId)
   return template ? template.schemaType === paneSchemaType : false
 }
 

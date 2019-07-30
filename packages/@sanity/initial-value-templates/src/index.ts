@@ -1,8 +1,9 @@
-export {resolveInitialValue} from './resolve'
+export {default as TemplateBuilder} from './builder'
+export {resolveInitialValue, isBuilder} from './resolve'
 export {validateTemplates} from './validate'
 export {
-  getTemplates,
   templateExists,
+  getTemplates,
   getTemplateById,
   getTemplatesBySchemaType,
   getTemplateErrors
