@@ -172,7 +172,7 @@ export default class SnackbarProvider extends React.Component {
       <div>
         {children}
         <Portal>
-          <div role="region" aria-label="notifications">
+          <div role="region" aria-label="notifications" tabIndex="-1">
             {activeSnacks.map((snack, index) => (
               <SnackbarItem
                 key={snack.id}

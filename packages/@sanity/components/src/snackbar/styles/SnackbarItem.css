@@ -9,6 +9,7 @@
   max-width: calc(100vw - 1rem);
   width: 100%;
   margin: 0 0.5rem;
+  outline: 0;
 
   @media (--screen-medium) {
     transform: translate3d(500px, 0, 0);
