@@ -1,7 +1,7 @@
 /* eslint-disable react/no-multi-comp, complexity */
 import React from 'react'
 import {storiesOf} from 'part:@sanity/storybook'
-import TemplatePreview from 'part:@sanity/components/previews/initial-value-template'
+import CreateDocumentPreview from 'part:@sanity/components/previews/create-document'
 import DefaultPreview from 'part:@sanity/components/previews/default'
 import DetailPreview from 'part:@sanity/components/previews/detail'
 import InlinePreview from 'part:@sanity/components/previews/inline'
@@ -635,15 +635,15 @@ storiesOf('Previews')
       </Sanity>
     )
   })
-  .add('Template', () => {
+  .add('Create document', () => {
     return (
       <Sanity
-        part="part:@sanity/components/previews/initial-value-template"
-        propTables={[TemplatePreview]}
+        part="part:@sanity/components/previews/create-document"
+        propTables={[CreateDocumentPreview]}
       >
-        <TemplatePreview
+        <CreateDocumentPreview
           // eslint-disable-next-line no-script-url
-          href="javascript://"
+          params={{intent: 'create', type: 'test'}}
           title={text('title', 'Movie', 'props')}
           subtitle={text('subtitle', 'Sci-fi', 'props')}
           icon={FileIcon}
