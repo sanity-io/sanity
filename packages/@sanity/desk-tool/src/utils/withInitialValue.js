@@ -94,10 +94,10 @@ export default function withInitialValue(Pane) {
             }
 
             const {isResolving, initialValue, templateChoices} = this.state
-            const title = options && options.type && `Creating new ${options.type}`
+            const title = options && options.type && `New ${options.type}`
             if (templateChoices && templateChoices.length > 0) {
               return (
-                <DefaultPane title={title}>
+                <DefaultPane {...this.props} title={title}>
                   <div className={styles.root}>
                     <CreateDocumentList
                       items={templateChoices.map(choice => ({
