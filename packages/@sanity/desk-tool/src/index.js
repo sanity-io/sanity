@@ -4,6 +4,7 @@ import {route} from 'part:@sanity/base/router'
 import DeskTool from './DeskTool'
 import {parsePanesSegment} from './utils/parsePanesSegment'
 import UUID from '@sanity/uuid'
+import {getTemplateById} from '@sanity/base/initial-value-templates'
 
 function maybeRemapStringSegment(segment) {
   return typeof segment === 'string' ? {id: segment} : segment
@@ -24,6 +25,19 @@ function toPath(panes) {
     .map(encodeSegment)
     .map(encodeURIComponent)
     .join(';')
+}
+
+function paramsToState(params) {
+  try {
+    return JSON.parse(decodeURIComponent(params))
+  } catch (err) {
+    console.warn('Failed to parse parameters')
+    return {}
+  }
+}
+
+function paramsToPath(params) {
+  return JSON.stringify(params)
 }
 
 const state = {activePanes: []}
@@ -57,15 +71,18 @@ function getIntentState(intentName, params, currentState) {
 function getFallbackIntentState({documentId, intentName, params}) {
   const editDocumentId = documentId
   const isTemplateCreate = intentName === 'create' && params.template
+  const template = isTemplateCreate && getTemplateById(params.template)
 
   return isTemplateCreate
-    ? {editDocumentId, template: params.template}
+    ? {editDocumentId, type: template.schemaType, params: {template: params.template}}
     : {editDocumentId, type: params.type || '*'}
 }
 
 export default {
   router: route('/', [
-    route('/edit/:type/:editDocumentId'),
+    route('/edit/:type/:editDocumentId', [
+      route({path: '/:params', transform: {params: {toState: paramsToState, toPath: paramsToPath}}})
+    ]),
     route({
       path: '/:panes',
       // Legacy URLs, used to handle redirects

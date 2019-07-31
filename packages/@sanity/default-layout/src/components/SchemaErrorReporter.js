@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import schema from 'part:@sanity/base/schema'
 import InitialValueTemplateError from './InitialValueTemplateError'
 import SchemaErrors from './SchemaErrors'
-import {getTemplateErrors} from '@sanity/base/initial-values'
+import {getTemplateErrors} from '@sanity/base/initial-value-templates'
 
 function renderPath(path) {
   return path

@@ -15,14 +15,12 @@ function ActionModal(props) {
           <h1 className={styles.title}>{title}</h1>
           <div className={styles.listContainer}>
             <CreateDocumentList
-              items={actions.map((action, i) => {
-                return {
-                  ...action,
-                  key: `actionModal_${i}`,
-                  icon: action.icon || FileIcon,
-                  onClick: onClose
-                }
-              })}
+              items={actions.map((action, i) => ({
+                ...action,
+                key: `actionModal_${i}`,
+                icon: action.icon || FileIcon,
+                onClick: onClose
+              }))}
             />
           </div>
         </DialogContent>

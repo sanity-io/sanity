@@ -102,7 +102,7 @@ export default {
 
   initialValue: () =>
     new Promise(resolve =>
-      setTimeout(resolve, 10000, {
+      setTimeout(resolve, 2500, {
         name: 'Foo',
         bestFriend: {_type: 'reference', _ref: 'foo-bar'},
         image: {

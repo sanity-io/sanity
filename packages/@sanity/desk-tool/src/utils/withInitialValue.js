@@ -11,7 +11,7 @@ import {
   getTemplateById,
   getTemplatesBySchemaType,
   resolveInitialValue
-} from '@sanity/base/initial-values'
+} from '@sanity/base/initial-value-templates'
 
 // Resolves the initial value for a given template, if possible
 export default function withInitialValue(Pane) {
