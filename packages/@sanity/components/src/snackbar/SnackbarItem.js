@@ -47,8 +47,7 @@ export default class SnackbarItem extends React.Component {
     onDismiss: () => {},
     onHide: null,
     onSetHeight: () => {},
-    setAutoFocus: false,
-    transitionDuration: 200
+    setAutoFocus: false
   }
 
   DEFAULT_ICONS = {
@@ -132,15 +131,14 @@ export default class SnackbarItem extends React.Component {
       isOpen,
       kind,
       message,
-      offset,
-      transitionDuration
+      offset
     } = this.props
 
     const rootStyles = this.state.isEntering
       ? `${styles.root}`
       : `${styles.root} ${isOpen ? styles.showSnack : styles.dismissSnack}`
     const innerStyles = `${styles.inner} ${styles[kind]}`
-    const transition = `all ${transitionDuration}ms ease-in-out`
+    const transition = `all 200ms ease-in-out`
     const role = () => {
       if (kind === 'success') return 'status'
       if (kind === 'info') return 'log'

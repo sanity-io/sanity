@@ -128,8 +128,7 @@ storiesOf('Snackbar', module)
       message: text('Message', 'This is a message placeholder', 'props'),
       setAutoFocus: boolean('setAutoFocus', false, 'props'),
       isPersisted: boolean('isPersisted', false, 'props'),
-      transitionDuration: number('transitionDuration (ms)', 200, 'props'),
-      autoDismissTimeout: number('autoDismissTimeout (ms)', 4000, 'props')
+      autoDismissTimeout: number('autoDismissTimeout (ms)', 4000, 'props'),
     }
     return <SnackQueue snack={snack} />
   })
