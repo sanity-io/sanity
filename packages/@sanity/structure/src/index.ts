@@ -50,7 +50,7 @@ const StructureBuilder = {
   divider: (): Divider => ({id: uniqueId('__divider__'), type: 'divider'})
 }
 
-function hasIcon(schemaType?: SchemaType | string): Boolean {
+function hasIcon(schemaType?: SchemaType | string): boolean {
   if (!schemaType || typeof schemaType === 'string') {
     return false
   }
