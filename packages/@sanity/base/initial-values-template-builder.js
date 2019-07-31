@@ -1,2 +1,2 @@
 // eslint-disable-next-line import/no-commonjs
-module.exports = require('@sanity/structure/lib/templates').default
+module.exports = require('@sanity/initial-value-templates').TemplateBuilder
