@@ -3,34 +3,31 @@ import React from 'react'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import FileIcon from 'part:@sanity/base/file-icon'
 import styles from './styles/ActionModal.css'
-import DialogContent from 'part:@sanity/components/dialogs/content'
 import CreateDocumentList from 'part:@sanity/components/lists/create-document'
 
 function ActionModal(props) {
   const {title, actions, onClose} = props
   return (
-    <Dialog className={styles.modal} onClose={onClose} isOpen padding="none">
-      <div className={styles.contentWrapper}>
-        <DialogContent size="auto" padding="medium">
-          <h1 className={styles.title}>{title}</h1>
-          <div className={styles.listContainer}>
-            <CreateDocumentList
-              items={actions.map((action, i) => ({
-                ...action,
-                key: `actionModal_${i}`,
-                icon: action.icon || FileIcon,
-                onClick: onClose
-              }))}
-            />
-          </div>
-        </DialogContent>
+    <Dialog className={styles.modal} onClose={onClose} isOpen>
+      <h1 className={styles.title}>{title}</h1>
+      <div className={styles.listContainer}>
+        <CreateDocumentList
+          items={actions.map((action, i) => ({
+            ...action,
+            title: action.title,
+            subtitle: action.params.type,
+            key: `actionModal_${i}`,
+            icon: action.icon || FileIcon,
+            onClick: onClose
+          }))}
+        />
       </div>
     </Dialog>
   )
 }
 
 ActionModal.defaultProps = {
-  title: 'Create new',
+  title: 'New document',
   actions: []
 }
 

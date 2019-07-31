@@ -4,13 +4,7 @@
   display: flex;
 }
 
-.contentWrapper {
-  width: 100vw;
-  display: flex;
-  justify-content: center;
-}
-
 .listContainer {
   width: 100vw;
-  max-width: 70rem;
+  max-width: 100%;
 }
