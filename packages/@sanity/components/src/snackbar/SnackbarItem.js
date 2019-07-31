@@ -176,6 +176,7 @@ export default class SnackbarItem extends React.Component {
                 onClick={() => this.handleAction()}
                 bleed
                 kind="simple"
+                style={{lineHeight: 'inherit'}}
               >
                 {action.title}
               </Button>
@@ -190,6 +191,7 @@ export default class SnackbarItem extends React.Component {
                 bleed
                 kind="simple"
                 icon={CloseIcon}
+                padding="none"
               />
             </div>
           )}

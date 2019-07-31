@@ -55,10 +55,6 @@
   padding: var(--medium-padding);
 }
 
-.snackbarButtons {
-  margin-left: auto;
-}
-
 .children {
   flex-basis: 100%;
   margin: var(--small-padding) 0;
@@ -73,6 +69,14 @@
 .buttonContainer {
   display: flex;
   max-height: calc(57 / 16) rem;
+
+  @media (hover: hover) {
+    opacity: 0.7;
+
+    @nest &:hover {
+      opacity: 1;
+    }
+  }
 }
 
 .actionButtonContainer {
@@ -81,7 +85,7 @@
 
 .closeButtonContainer {
   composes: buttonContainer;
-  font-size: 1.3em;
+  font-size: calc(var(--font-size-large) + 5px);
 }
 
 .icon ~ .content {
