@@ -50,12 +50,12 @@ const StructureBuilder = {
   divider: (): Divider => ({id: uniqueId('__divider__'), type: 'divider'})
 }
 
-function hasIcon(schemaType?: SchemaType | string) {
+function hasIcon(schemaType?: SchemaType | string): boolean {
   if (!schemaType || typeof schemaType === 'string') {
     return false
   }
 
-  return schemaType.icon
+  return Boolean(schemaType.icon)
 }
 
 function getDefaultStructure(): ListBuilder {
