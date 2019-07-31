@@ -152,7 +152,7 @@ export default class SnackbarItem extends React.Component {
         aria-describedby={`snackbarMessage-${kind}-${id}`}
         role={role()}
         ref={this._snackRef}
-        tabIndex="0"
+        tabIndex="-1"
         className={rootStyles}
         style={{bottom: offset, transition: transition}}
         onMouseOver={() => this.handleMouseOver()}
