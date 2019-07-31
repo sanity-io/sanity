@@ -852,7 +852,7 @@ export default withRouterHOC(
                   message="You just published:"
                   timeout={3000}
                   // eslint-disable-next-line react/jsx-no-bind
-                  onHide={() => this.setState({didPublish: false})}
+                  onClose={() => this.setState({didPublish: false})}
                 >
                   <em>
                     <DocTitle document={draft || published} />
@@ -862,7 +862,7 @@ export default withRouterHOC(
               {transactionResult && transactionResult.type === 'error' && (
                 <Snackbar
                   kind="danger"
-                  actionTitle="OK, got it"
+                  actionTitle="OK"
                   onAction={onClearTransactionResult}
                   message={transactionResult.message}
                 >

@@ -21,8 +21,8 @@ const globalDefaults = {
   isOpen: true,
   id: new Date().getTime() + Math.floor(Math.random()),
   setFocus: false,
-  onAction: action('default onAction, calls onDismiss'),
-  onDismiss: action('onDismiss, do nothing onHide')
+  onClose: action('onClose(), callback: onDismiss'),
+  onDismiss: action('onDismiss()')
 }
 
 class SnackQueue extends React.PureComponent {
@@ -56,14 +56,16 @@ storiesOf('Snackbar', module)
       {...globalDefaults}
       kind={select('Kind', ['success', 'error', 'warning', 'info'], 'info', 'props')}
       message={text('Message', 'This is a message placeholder', 'props')}
+      isCloseable={boolean('isCloseable', false, 'props')}
     />
   ))
   .add('With icons', () => (
     <Snackbar
       {...globalDefaults}
       kind={select('Kind', ['success', 'error', 'warning', 'info'], 'info', 'props')}
-      icon={true}
+      icon
       message={text('Message', 'This is a message placeholder', 'props')}
+      isCloseable={boolean('isCloseable', false, 'props')}
     />
   ))
   .add('Custom icon', () => (
@@ -72,23 +74,26 @@ storiesOf('Snackbar', module)
       kind={select('Kind', ['success', 'error', 'warning', 'info'], 'info', 'props')}
       icon={text('Icon', '🐈', 'props')}
       message={text('Message', 'This is a message placeholder', 'props')}
+      isCloseable={boolean('isCloseable', false, 'props')}
     />
   ))
-  .add('Custom action', () => (
+
+  .add('With action', () => (
     <Snackbar
       {...globalDefaults}
       kind={select('Kinds', ['info', 'success', 'warning', 'error'], 'info', 'props')}
       message={text('Message', 'This is a message placeholder', 'props')}
-      actionTitle={text('actionTitle', 'Custom', 'props')}
-      onAction={action(text('onAction', 'Custom onAction', 'props'))}
+      action={{title: text('Action title', 'Action'), callback: action('action.callback()')}}
+      isCloseable={boolean('isCloseable', true, 'props')}
     />
   ))
-  .add('Custom dismiss', () => (
+  .add('Custom onClose', () => (
     <Snackbar
       {...globalDefaults}
       kind={select('Kinds', ['info', 'success', 'warning', 'error'], 'info', 'props')}
       message={text('Message', 'This is a message placeholder', 'props')}
-      onDismiss={action(text('onHide', 'Custom onHide', 'props'))}
+      onClose={action(text('onClose', 'Custom onClose', 'props'))}
+      isCloseable={boolean('isCloseable', true, 'props')}
     />
   ))
   .add('Stacked', () => (
@@ -97,18 +102,23 @@ storiesOf('Snackbar', module)
         {...globalDefaults}
         kind="info"
         message={text('Message', 'This is a message placeholder', 'props')}
+        isCloseable={boolean('isCloseable', true, 'props')}
+        icon
       />
       <Snackbar
         {...globalDefaults}
-        offset={70}
+        offset={75}
         kind="warning"
         message={text('Message', 'This is a message placeholder', 'props')}
+        isCloseable={boolean('isCloseable', true, 'props')}
+        icon
       />
       <Snackbar
         {...globalDefaults}
-        offset={130}
+        offset={140}
         kind="success"
         message={text('Message', 'This is a message placeholder', 'props')}
+        isCloseable={boolean('onClose', true, 'props')}
       />
     </>
   ))
@@ -129,6 +139,7 @@ storiesOf('Snackbar', module)
       setAutoFocus: boolean('setAutoFocus', false, 'props'),
       isPersisted: boolean('isPersisted', false, 'props'),
       autoDismissTimeout: number('autoDismissTimeout (ms)', 4000, 'props'),
+      icon: boolean('Icon', false, 'props')
     }
     return <SnackQueue snack={snack} />
   })

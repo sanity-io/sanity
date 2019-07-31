@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import React from 'react'
 import PropTypes from 'prop-types'
 import CloseIcon from 'part:@sanity/base/close-icon'
@@ -6,22 +7,27 @@ import WarningIcon from 'part:@sanity/base/warning-icon'
 import ErrorIcon from 'part:@sanity/base/error-icon'
 import InfoIcon from 'part:@sanity/base/info-icon'
 import styles from './styles/SnackbarItem.css'
+import Button from 'part:@sanity/components/buttons/default'
 
 export default class SnackbarItem extends React.Component {
   static propTypes = {
-    actionTitle: PropTypes.string,
+    action: PropTypes.shape({
+      title: PropTypes.string,
+      icon: PropTypes.func,
+      callback: PropTypes.func
+    }),
     autoDismissTimeout: PropTypes.number,
     children: PropTypes.node,
     icon: PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.bool]),
+    isCloseable: PropTypes.bool,
     isOpen: PropTypes.bool.isRequired,
     isPersisted: PropTypes.bool,
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     kind: PropTypes.oneOf(['info', 'warning', 'error', 'success']),
     message: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-    onAction: PropTypes.func,
     onDismiss: PropTypes.func,
     offset: PropTypes.number,
-    onHide: PropTypes.func,
+    onClose: PropTypes.func,
     onSetHeight: PropTypes.func,
     setAutoFocus: PropTypes.bool
   }
@@ -35,16 +41,15 @@ export default class SnackbarItem extends React.Component {
   }
 
   static defaultProps = {
-    actionTitle: null,
+    action: undefined,
     autoDismissTimeout: 4000,
     children: null,
     icon: null,
+    isCloseable: true,
     isPersisted: false,
     kind: 'info',
     offset: null,
-    onAction: null,
     onDismiss: () => {},
-    onHide: null,
     onSetHeight: () => {},
     setAutoFocus: false
   }
@@ -64,10 +69,10 @@ export default class SnackbarItem extends React.Component {
   }
 
   handleAutoDismissSnack = () => {
-    const {autoDismissTimeout, isPersisted, id, onDismiss, onHide} = this.props
+    const {autoDismissTimeout, isPersisted, id, onDismiss, onClose} = this.props
     if (!isPersisted) {
       this._dismissTimer = setTimeout(() => {
-        if (onHide) onHide()
+        if (onClose) onClose()
         onDismiss(id)
       }, autoDismissTimeout)
     }
@@ -85,9 +90,14 @@ export default class SnackbarItem extends React.Component {
   }
 
   handleAction = () => {
-    const {id, onAction, onDismiss, onHide} = this.props
-    if (onAction) onAction()
-    if (onHide) onHide()
+    const {action, id, onDismiss} = this.props
+    if (action && action.callback) action.callback()
+    return onDismiss(id)
+  }
+
+  handleClose = () => {
+    const {id, onClose, onDismiss} = this.props
+    if (onClose) onClose()
     return onDismiss(id)
   }
 
@@ -122,21 +132,11 @@ export default class SnackbarItem extends React.Component {
   }
 
   render() {
-    const {
-      actionTitle,
-      children,
-      icon,
-      id,
-      isOpen,
-      kind,
-      message,
-      offset
-    } = this.props
+    const {action, children, icon, id, isCloseable, isOpen, kind, message, offset} = this.props
 
     const rootStyles = this.state.isEntering
       ? `${styles.root}`
       : `${styles.root} ${isOpen ? styles.showSnack : styles.dismissSnack}`
-    const innerStyles = `${styles.inner} ${styles[kind]}`
     const transition = `all 200ms ease-in-out`
     const role = () => {
       if (kind === 'success') return 'status'
@@ -156,25 +156,43 @@ export default class SnackbarItem extends React.Component {
         onMouseLeave={() => this.handleMouseLeave()}
         onFocus={() => this.handleMouseOver()}
         onBlur={() => this.handleMouseLeave()}
-        onKeyDown={e => e.keyCode === 27 && this.handleAction()}
+        onKeyDown={e => e.key === 'escape' && this.handleAction()}
+        data-kind={kind}
       >
-        <div className={innerStyles}>
-         { icon &&  <div role="img" aria-hidden className={styles.snackbarIcon}>
-            {this.snackIcon()}
-          </div>}
-          <div className={styles.snackbarContent}>
-            <div id={`snackbarMessage-${kind}-${id}`}>
-              {message}
+        <div className={styles.inner}>
+          {icon && (
+            <div role="img" aria-hidden className={styles.icon}>
+              {this.snackIcon()}
             </div>
-            {children && <div className={styles.snackbarChildren}>{children}</div>}
+          )}
+          <div className={styles.content}>
+            <div id={`snackbarMessage-${kind}-${id}`}>{message}</div>
+            {children && <div className={styles.children}>{children}</div>}
           </div>
-          <button
-            aria-label={!actionTitle && 'Close'}
-            className={styles.snackbarButton}
-            onClick={() => this.handleAction()}
-          >
-            {actionTitle ? actionTitle : <CloseIcon />}
-          </button>
+          {action && (
+            <div className={styles.actionButtonContainer}>
+              <Button
+                // eslint-disable-next-line react/jsx-handler-names
+                onClick={() => this.handleAction()}
+                bleed
+                kind="simple"
+              >
+                {action.title}
+              </Button>
+            </div>
+          )}
+          {isCloseable && (
+            <div className={styles.closeButtonContainer}>
+              <Button
+                aria-label="Close"
+                className={styles.closeButton}
+                onClick={this.handleClose}
+                bleed
+                kind="simple"
+                icon={CloseIcon}
+              />
+            </div>
+          )}
         </div>
       </div>
     )

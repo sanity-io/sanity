@@ -7,13 +7,16 @@ export default class DefaultSnackbar extends React.PureComponent {
     message: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
     isPersisted: PropTypes.bool,
     children: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-    timeout: PropTypes.number,
-    onHide: PropTypes.func,
-    onAction: PropTypes.func,
+    onClose: PropTypes.func,
     action: PropTypes.shape({
-      title: PropTypes.string
+      // Title is also a legacy prop
+      title: PropTypes.string,
+      callback: PropTypes.func
     }),
-    actionTitle: PropTypes.string
+    // Legacy props
+    onAction: PropTypes.func,
+    actionTitle: PropTypes.string,
+    timeout: PropTypes.number
   }
 
   static contextTypes = {
@@ -23,25 +26,27 @@ export default class DefaultSnackbar extends React.PureComponent {
 
   componentDidMount() {
     const {
+      action,
+      actionTitle,
       kind,
       message,
       timeout,
       children,
-      onHide,
+      onClose,
       onAction,
-      action,
-      isPersisted,
-      actionTitle
+      isPersisted
     } = this.props
 
     this.snackId = this.context.addToSnackQueue({
       kind,
       message,
       children,
-      onHide,
-      onAction,
+      onClose,
+      action: {
+        title: actionTitle || action.title,
+        callback: onAction || action.callback
+      },
       isPersisted,
-      actionTitle: (action && action.title) || actionTitle,
       autoDismissTimeout: timeout
     })
   }
