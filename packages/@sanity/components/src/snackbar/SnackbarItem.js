@@ -23,8 +23,7 @@ export default class SnackbarItem extends React.Component {
     offset: PropTypes.number,
     onHide: PropTypes.func,
     onSetHeight: PropTypes.func,
-    setAutoFocus: PropTypes.bool,
-    transitionDuration: PropTypes.number
+    setAutoFocus: PropTypes.bool
   }
 
   constructor(props, context) {
