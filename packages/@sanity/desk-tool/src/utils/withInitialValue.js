@@ -2,15 +2,16 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {from} from 'rxjs'
 import DefaultPane from 'part:@sanity/components/panes/default'
+import CreateDocumentList from 'part:@sanity/components/lists/create-document'
 import LoadingPane from '../pane/LoadingPane'
+import DocumentSnapshots from '../components/DocumentSnapshots'
+import styles from './styles/withInitialValue.css'
 import {
   templateExists,
   getTemplateById,
   getTemplatesBySchemaType,
   resolveInitialValue
 } from '@sanity/base/initial-values'
-import CreateDocumentList from 'part:@sanity/components/lists/create-document'
-import styles from './styles/withInitialValue.css'
 
 // Resolves the initial value for a given template, if possible
 export default function withInitialValue(Pane) {
@@ -20,6 +21,7 @@ export default function withInitialValue(Pane) {
     static propTypes = {
       parameters: PropTypes.object, // eslint-disable-line react/forbid-prop-types
       options: PropTypes.shape({
+        id: PropTypes.string,
         type: PropTypes.string,
         template: PropTypes.string
       }).isRequired
@@ -77,33 +79,47 @@ export default function withInitialValue(Pane) {
     }
 
     render() {
-      const {isResolving, initialValue, templateChoices} = this.state
       const {options} = this.props
-      const title = options && options.type && `Creating new ${options.type}`
-      if (templateChoices && templateChoices.length > 0) {
-        return (
-          <DefaultPane title={title}>
-            <div className={styles.root}>
-              <CreateDocumentList
-                items={templateChoices.map(choice => {
-                  return {
-                    ...choice,
-                    key: choice.id,
-                    params: {
-                      template: choice.id
-                    }
-                  }
-                })}
-              />
-            </div>
-          </DefaultPane>
-        )
+      const {id, type} = options
+      if (!id || !type) {
+        return <Pane {...this.props} initialValue={this.state.initialValue} />
       }
 
-      return isResolving ? (
-        <LoadingPane {...this.props} title={title} message="Resolving initial value…" />
-      ) : (
-        <Pane {...this.props} initialValue={initialValue} />
+      return (
+        <DocumentSnapshots id={id} paths={['_createdAt']}>
+          {({draft, published}) => {
+            const exists = Boolean(draft || published)
+            if (exists) {
+              return <Pane {...this.props} />
+            }
+
+            const {isResolving, initialValue, templateChoices} = this.state
+            const title = options && options.type && `Creating new ${options.type}`
+            if (templateChoices && templateChoices.length > 0) {
+              return (
+                <DefaultPane title={title}>
+                  <div className={styles.root}>
+                    <CreateDocumentList
+                      items={templateChoices.map(choice => ({
+                        ...choice,
+                        key: choice.id,
+                        params: {
+                          template: choice.id
+                        }
+                      }))}
+                    />
+                  </div>
+                </DefaultPane>
+              )
+            }
+
+            return isResolving ? (
+              <LoadingPane {...this.props} title={title} message="Resolving initial value…" />
+            ) : (
+              <Pane {...this.props} initialValue={initialValue} />
+            )
+          }}
+        </DocumentSnapshots>
       )
     }
   }
