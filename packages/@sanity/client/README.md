@@ -68,7 +68,7 @@ const subscription = client.listen(query, params)
   .subscribe(comment => {
     console.log(`${comment.author} commented: ${comment.text}`)
   })
-  
+
 // to unsubscribe later on
 subscription.unsubscribe()
 ```
@@ -202,7 +202,7 @@ client
 
 ### Adding elements to an array
 
-The patch opereration `insert` takes a location (`before`, `after` or `replace`), a path selector and an array of elements to insert.
+The patch operation `insert` takes a location (`before`, `after` or `replace`), a path selector and an array of elements to insert.
 
 ```js
 const nanoid = require('nanoid')
