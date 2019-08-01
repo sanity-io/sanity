@@ -144,8 +144,13 @@ export default withRouterHOC(
           return actions.concat(
             templates.map(tpl => ({
               title: tpl.title,
+              subtitle: type.title === tpl.title ? undefined : type.title,
+              key: tpl.id,
               icon: tpl.icon || type.icon,
-              params: {template: tpl.id, type: tpl.schemaType}
+              params: {
+                template: tpl.id,
+                type: tpl.schemaType
+              }
             }))
           )
         }, [])

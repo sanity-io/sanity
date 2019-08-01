@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import {from} from 'rxjs'
 import DefaultPane from 'part:@sanity/components/panes/default'
 import CreateDocumentList from 'part:@sanity/components/lists/create-document'
+import schema from 'part:@sanity/base/schema'
 import LoadingPane from '../pane/LoadingPane'
 import DocumentSnapshots from '../components/DocumentSnapshots'
 import styles from './styles/withInitialValue.css'
@@ -38,7 +39,15 @@ export default function withInitialValue(Pane) {
       const {template, type} = options
 
       let templateName = template
-      let templateChoices = !template && getTemplatesBySchemaType(type)
+      let templateChoices =
+        !template &&
+        getTemplatesBySchemaType(type).map(t => {
+          return {
+            ...t,
+            typeTitle: type.title,
+            icon: t.icon || type.icon
+          }
+        })
 
       // If we have not specified a specific template, and we only have a single
       // template available for a schema type, use it
@@ -94,7 +103,9 @@ export default function withInitialValue(Pane) {
             }
 
             const {isResolving, initialValue, templateChoices} = this.state
-            const title = options && options.type && `New ${options.type}`
+            const title =
+              options && options.type && `New ${schema.get(options.type).title || options.type}`
+
             if (templateChoices && templateChoices.length > 0) {
               return (
                 <DefaultPane {...this.props} title={title}>
@@ -102,6 +113,11 @@ export default function withInitialValue(Pane) {
                     <CreateDocumentList
                       items={templateChoices.map(choice => ({
                         ...choice,
+                        title:
+                          choice.title === schema.get(choice.schemaType).title
+                            ? 'Default'
+                            : choice.title,
+                        icon: choice.icon || schema.get(choice.schemaType).icon,
                         key: choice.id,
                         params: {
                           template: choice.id
