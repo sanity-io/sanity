@@ -33,6 +33,7 @@ function SideMenu(props) {
               className={styles.userProfileImage}
               src={user.profileImage}
               alt={`${user.name}'s profile image`}
+              data-initials={user.name ? user.name.charAt(0) : user.email.charAt(0)}
             />
           ) : (
             <div className={styles.userProfileImageMissing}>

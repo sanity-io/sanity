@@ -49,6 +49,18 @@
   height: 2.0625em;
   width: 2.0625em;
   border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--preview-placeholder-color);
+
+  @nest &:before {
+    content: attr(data-initials);
+    text-align: center;
+    display: block;
+    line-height: 2em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    background-color: var(--preview-placeholder-color);
+  }
 }
 
 .userImageMissing {
