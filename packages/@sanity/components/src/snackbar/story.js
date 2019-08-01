@@ -56,54 +56,34 @@ storiesOf('Snackbar', module)
       {...globalDefaults}
       kind={select('Kind', ['success', 'error', 'warning', 'info'], 'info', 'props')}
       title={text('Title', 'This is a title placeholder', 'props')}
-      isCloseable={boolean('isCloseable', false, 'props')}
-    />
-  ))
-  .add('Subtitle', () => (
-    <Snackbar
-      {...globalDefaults}
-      kind={select('Kind', ['success', 'error', 'warning', 'info'], 'info', 'props')}
-      title={text('Title', 'This is a title placeholder', 'props')}
+      subtitle={text('Subtitle', '', 'props')}
       icon={boolean('With icons', false)}
-      subtitle={text('Subtitle', 'This is a subtitle placeholder.', 'props')}
       isCloseable={boolean('isCloseable', false, 'props')}
-    />
-  ))
-  .add('Icon', () => (
-    <Snackbar
-      {...globalDefaults}
-      kind={select('Kind', ['success', 'error', 'warning', 'info'], 'info', 'props')}
-      icon
-      title={text('title', 'This is a title placeholder', 'props')}
-      isCloseable={boolean('isCloseable', false, 'props')}
+      action={{title: text('Action title', ''), callback: action('')}}
+      children={text('children', '', 'props')}
     />
   ))
   .add('Custom icon', () => (
     <Snackbar
       {...globalDefaults}
       kind={select('Kind', ['success', 'error', 'warning', 'info'], 'info', 'props')}
+      title={text('Title', 'This is a title placeholder', 'props')}
+      subtitle={text('Subtitle', '', 'props')}
       icon={text('Icon', '🐈', 'props')}
-      title={text('title', 'This is a title placeholder', 'props')}
       isCloseable={boolean('isCloseable', false, 'props')}
-    />
-  ))
-
-  .add('Action', () => (
-    <Snackbar
-      {...globalDefaults}
-      kind={select('Kinds', ['info', 'success', 'warning', 'error'], 'info', 'props')}
-      title={text('title', 'This is a title placeholder', 'props')}
-      action={{title: text('Action title', 'Action'), callback: action('action.callback()')}}
-      isCloseable={boolean('isCloseable', true, 'props')}
+      action={{title: text('Action title', ''), callback: action('')}}
     />
   ))
   .add('Custom onClose', () => (
     <Snackbar
       {...globalDefaults}
-      kind={select('Kinds', ['info', 'success', 'warning', 'error'], 'info', 'props')}
-      title={text('title', 'This is a title placeholder', 'props')}
-      onClose={action(text('onClose', 'Custom onClose', 'props'))}
+      kind={select('Kind', ['success', 'error', 'warning', 'info'], 'info', 'props')}
+      title={text('Title', 'This is a title placeholder', 'props')}
+      subtitle={text('Subtitle', '', 'props')}
+      icon={text('Icon', false, 'props')}
       isCloseable={boolean('isCloseable', true, 'props')}
+      action={{title: text('Action title', ''), callback: action('')}}
+      onClose={action(text('onClose', 'Custom onClose', 'props'))}
     />
   ))
   .add('Stacked', () => (
@@ -136,8 +116,12 @@ storiesOf('Snackbar', module)
     <Snackbar
       {...globalDefaults}
       kind={select('Kind', ['success', 'error', 'warning', 'info'], 'info', 'props')}
-      title={text('title', 'This is a title placeholder', 'props')}
-      subtitle={text('Subtitle', 'This is a subtitle placeholder.', 'props')}
+      title={text('Title', 'This is a title placeholder', 'props')}
+      subtitle={text('Subtitle', '', 'props')}
+      icon={boolean('Icon', false, 'props')}
+      isCloseable={boolean('isCloseable', true, 'props')}
+      action={{title: text('Action title', ''), callback: action('')}}
+      onClose={action(text('onClose', 'Custom onClose', 'props'))}
     >
       <div>{text('Children', 'This is the children placeholder', 'props')}</div>
     </Snackbar>
@@ -146,11 +130,15 @@ storiesOf('Snackbar', module)
     const snack = {
       ...globalDefaults,
       kind: select('Kinds', ['info', 'success', 'warning', 'error'], 'info', 'props'),
-      title: text('title', 'This is a title placeholder', 'props'),
+      title: text('Title', 'This is a title placeholder', 'props'),
+      subtitle: text('Subtitle', 'This is a subtitle placeholder', 'props'),
       setAutoFocus: boolean('setAutoFocus', false, 'props'),
       isPersisted: boolean('isPersisted', false, 'props'),
       autoDismissTimeout: number('autoDismissTimeout (ms)', 4000, 'props'),
-      icon: boolean('Icon', false, 'props')
+      icon: boolean('Icon', false, 'props'),
+      isCloseable: boolean('isCloseable', false, 'props'),
+      onClose: action(text('onClose', 'Custom onClose', 'props')),
+      children: text('children', 'This is a children placeholder', 'props')
     }
     return <SnackQueue snack={snack} />
   })
