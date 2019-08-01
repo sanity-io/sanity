@@ -35,6 +35,17 @@ export default {
       name: 'publicationYear',
       title: 'Year of publication',
       type: 'number'
+    },
+    {
+      name: 'relatedWork',
+      title: 'Related work',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          to: [{type: 'thesis'}]
+        }
+      ]
     }
   ],
   preview: {

@@ -14,6 +14,8 @@ import withDocumentType from '../utils/withDocumentType'
 import styles from './styles/EditorWrapper.css'
 import Editor from './Editor'
 import UseState from '../utils/UseState'
+import {referencedPaths} from '../utils/referencedPaths'
+import {arrayToJSONMatchPath} from '@sanity/mutator'
 import historyStore from 'part:@sanity/base/datastore/history'
 
 const INITIAL_DOCUMENT_STATE = {
@@ -88,6 +90,17 @@ function exists(draft, published) {
 
 function isRecoverable(draft, published) {
   return !exists(draft, published) && (draft.deletedSnapshot || published.deletedSnapshot)
+}
+
+function getUpdateReferrerPatchesWithPublishedId(draftId) {
+  return referrers =>
+    referrers.map(referrer => ({
+      id: referrer.document._id,
+      set: referrer.refs.reduce((set, ref) => {
+        set[arrayToJSONMatchPath([...ref.path, '_ref'])] = getPublishedId(draftId)
+        return set
+      }, {})
+    }))
 }
 
 export default withDocumentType(
@@ -334,10 +347,25 @@ export default withDocumentType(
         })
       }
 
-      tx.delete(getDraftId(documentId))
+      const updateReferrerPatches$ = referencedPaths(getDraftId(documentId)).pipe(
+        map(getUpdateReferrerPatchesWithPublishedId(documentId))
+      )
 
       // @todo add error handling for revision mismatch
-      tx.commit()
+      updateReferrerPatches$
+        .pipe(
+          take(1),
+          map(updateReferrerPatches =>
+            // todo:
+            //  need to handle the case where the referrer is the same document as the one receiving the
+            //  patch (e.g. a document referencing itself)
+            updateReferrerPatches.reduce((trx, patch) => trx.patch(patch.id, {set: patch.set}), tx)
+          ),
+          mergeMap(trx => {
+            trx.delete(getDraftId(documentId))
+            return trx.commit()
+          })
+        )
         .pipe(
           map(result => ({
             type: 'success',
