@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {partition} from 'lodash'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import schema from 'part:@sanity/base/schema'
 import PlusIcon from 'part:@sanity/base/plus-icon'
@@ -9,12 +8,7 @@ import DefaultPane from 'part:@sanity/components/panes/default'
 import QueryContainer from 'part:@sanity/base/query-container'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
-import {
-  getPublishedId,
-  isDraftId,
-  isPublishedId,
-  getDraftId
-} from 'part:@sanity/base/util/draft-utils'
+import {collate, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
 
 import {combineLatest} from 'rxjs'
@@ -28,15 +22,14 @@ import {map, tap} from 'rxjs/operators'
 const DEFAULT_ORDERING = [{field: '_createdAt', direction: 'desc'}]
 
 function removePublishedWithDrafts(documents) {
-  const [draftIds, publishedIds] = partition(documents.map(doc => doc._id), isDraftId)
-
-  return documents
-    .map(doc => ({
+  return collate(documents).map(entry => {
+    const doc = entry.draft || entry.published
+    return {
       ...doc,
-      hasPublished: publishedIds.includes(getPublishedId(doc._id)),
-      hasDraft: draftIds.includes(getDraftId(doc._id))
-    }))
-    .filter(doc => !(isPublishedId(doc._id) && doc.hasDraft))
+      hasPublished: !!entry.published,
+      hasDraft: !!entry.draft
+    }
+  })
 }
 
 function getDocumentKey(document) {
