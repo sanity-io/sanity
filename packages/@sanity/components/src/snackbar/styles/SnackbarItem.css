@@ -20,7 +20,7 @@
 
 .inner {
   position: relative;
-  display: flex;
+ /*  display: flex; */
   border-radius: var(--border-radius-large);
   composes: shadow-1dp from "part:@sanity/base/theme/shadows-style";
   line-height: 1.3125;
@@ -46,15 +46,9 @@
   color: var(--state-danger-color--inverted);
 }
 
-.content {
-  display: flex;
-  flex-wrap: wrap;
-  flex: 1;
-  margin: var(--medium-padding) var(--small-padding);
-  margin-left: calc(var(--medium-padding) - 2px);
-}
 
 .icon {
+  float: left;
   display: flex;
   align-items: center;
   align-self: flex-start;
@@ -63,14 +57,21 @@
   margin-right: var(--small-padding);
 }
 
+.content {
+  padding: var(--medium-padding) var(--small-padding);
+  padding-left: var(--medium-padding);
+}
+
 .subtitle,
 .children {
   flex-basis: 100%;
 }
 
 .buttonContainer {
+  float: right;
   display: flex;
-  max-height: 3.5rem;
+  align-items: center;
+  max-height: 3.3rem;
 
   @media (hover: hover) {
     opacity: 0.7;
@@ -98,8 +99,12 @@
   padding: calc(var(--medium-padding) - 2px);
 }
 
+.actionButtonContainer:first-child [class*=inner] {
+  padding: var(--medium-padding) calc(var(--medium-padding) - 2px);
+}
+
 .icon ~ .content {
-  margin-left: 0;
+  padding-left: calc(((var(--medium-padding) - 4px) * 2) + var(--font-size-large) + 5px);
 }
 
 .showSnack {

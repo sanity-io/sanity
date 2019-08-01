@@ -172,16 +172,18 @@ export default class SnackbarItem extends React.Component {
         data-kind={kind}
       >
         <div className={styles.inner}>
-          {icon && (
-            <div role="img" aria-hidden className={styles.icon}>
-              {this.snackIcon()}
+          {isCloseable && (
+            <div className={styles.closeButtonContainer}>
+              <Button
+                aria-label="Close"
+                onClick={this.handleClose}
+                bleed
+                kind="simple"
+                icon={CloseIcon}
+                padding="none"
+              />
             </div>
           )}
-          <div className={styles.content}>
-            <div id={`snackbarTitle-${kind}-${id}`} className={styles.title}>{title}</div>
-            {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
-            {children && <div className={styles.children}>{children}</div>}
-          </div>
           {action && (
             <div className={styles.actionButtonContainer}>
               <Button
@@ -196,18 +198,18 @@ export default class SnackbarItem extends React.Component {
               </Button>
             </div>
           )}
-          {isCloseable && (
-            <div className={styles.closeButtonContainer}>
-              <Button
-                aria-label="Close"
-                onClick={this.handleClose}
-                bleed
-                kind="simple"
-                icon={CloseIcon}
-                padding="none"
-              />
+          {icon && (
+            <div role="img" aria-hidden className={styles.icon}>
+              {this.snackIcon()}
             </div>
           )}
+          <div className={styles.content}>
+            <div id={`snackbarTitle-${kind}-${id}`} className={styles.title}>
+              {title}
+            </div>
+            {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
+            {children && <div className={styles.children}>{children}</div>}
+          </div>
         </div>
       </div>
     )

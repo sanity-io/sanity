@@ -136,6 +136,7 @@ storiesOf('Snackbar', module)
       isPersisted: boolean('isPersisted', false, 'props'),
       autoDismissTimeout: number('autoDismissTimeout (ms)', 4000, 'props'),
       icon: boolean('Icon', false, 'props'),
+      action: {title: text('Action title', ''), callback: action('')},
       isCloseable: boolean('isCloseable', false, 'props'),
       onClose: action(text('onClose', 'Custom onClose', 'props')),
       children: text('children', 'This is a children placeholder', 'props')
