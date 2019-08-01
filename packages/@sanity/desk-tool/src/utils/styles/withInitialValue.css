@@ -2,4 +2,5 @@
 
 .root {
   padding: var(--medium-padding);
+  max-width: 42rem;
 }

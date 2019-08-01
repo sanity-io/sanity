@@ -26,6 +26,7 @@
     "@sanity/form-builder": "0.142.7",
     "@sanity/generate-help-url": "0.142.0",
     "@sanity/mutator": "0.142.6",
+    "@sanity/schema": "0.142.6",
     "@sanity/structure": "0.142.6",
     "@sanity/uuid": "0.142.0",
     "@sanity/validation": "0.142.6",

@@ -506,7 +506,7 @@ export default withRouterHOC(
         )
       }
       if (!value) {
-        return `Creating new ${type.title || type.name}`
+        return `New ${type.title || type.name}`
       }
       return (
         <PreviewFields document={value} type={type} fields={['title']}>
