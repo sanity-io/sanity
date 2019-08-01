@@ -230,7 +230,7 @@ export default class ReferenceInput extends React.Component<Props, State> {
             placeholder={readOnly ? '' : placeholder}
             title={
               isMissing && hasRef
-                ? `Document id: ${value._ref || 'unknown'}`
+                ? `Referencing nonexistent document (id: ${value._ref || 'unknown'})`
                 : previewSnapshot && previewSnapshot.description
             }
             customValidity={errors.length > 0 ? errors[0].item.message : ''}
@@ -241,7 +241,7 @@ export default class ReferenceInput extends React.Component<Props, State> {
             onClear={this.handleClear}
             openItemElement={this.renderOpenItemElement}
             value={valueFromHit || value}
-            inputValue={isMissing ? '<Unpublished or missing document>' : inputValue}
+            inputValue={isMissing ? '<nonexistent reference>' : inputValue}
             renderItem={this.renderHit}
             isLoading={isFetching || isLoadingSnapshot}
             items={hits}
