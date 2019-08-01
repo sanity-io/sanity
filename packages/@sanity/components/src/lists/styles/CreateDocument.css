@@ -3,14 +3,10 @@
 .root {
   display: grid;
   width: 100%;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
   grid-gap: var(--medium-padding);
   margin: 0;
   padding: 0;
-
-  @media (--screen-medium) {
-    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
-  }
 }
 
 .item {

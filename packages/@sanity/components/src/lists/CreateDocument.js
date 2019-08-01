@@ -10,10 +10,7 @@ function CreateDocumentList(props) {
       {items.map(choice => (
         <li key={choice.key} className={styles.item}>
           <CreateDocumentPreview
-            title={choice.title}
-            params={choice.params}
-            subtitle={choice.subtitle}
-            icon={choice.icon}
+            {...choice}
             // eslint-disable-next-line react/jsx-handler-names
             onClick={choice.onClick}
           />
