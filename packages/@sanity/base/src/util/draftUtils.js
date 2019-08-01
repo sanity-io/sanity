@@ -42,15 +42,19 @@ export function createPublishedFrom(document) {
   }
 }
 
+// Takes a list of documents and collates draft/published pairs into single entries
+// {id: <published id>, draft?: <draft document>, published?: <published document>}
+export function collate(documents) {
+  const byId = documents.reduce((res, doc) => {
+    const id = getPublishedId(doc._id)
+    const entry = res[id] || (res[id] = {id})
+    entry[id === doc._id ? 'published' : 'draft'] = doc
+    return res
+  }, Object.create(null))
+  return Object.values(byId)
+}
+
 // Removes published documents that also has a draft
 export function removeDupes(documents) {
-  const drafts = documents.map(doc => doc._id).filter(isDraftId)
-
-  return documents.filter(doc => {
-    const draftId = getDraftId(doc._id)
-    const publishedId = getPublishedId(doc._id)
-    const hasDraft = drafts.includes(draftId)
-    const isPublished = doc._id === publishedId
-    return isPublished ? !hasDraft : true
-  })
+  return collate(documents).map(entry => entry.draft || entry.published)
 }
