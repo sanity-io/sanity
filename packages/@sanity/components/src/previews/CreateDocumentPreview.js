@@ -11,6 +11,7 @@ class CreateDocumentPreview extends React.PureComponent {
   static propTypes = {
     title: fieldProp,
     subtitle: fieldProp,
+    description: fieldProp,
     media: fieldProp,
     icon: PropTypes.func,
     isPlaceholder: PropTypes.bool,
@@ -42,6 +43,7 @@ class CreateDocumentPreview extends React.PureComponent {
       media = this.props.icon,
       isPlaceholder,
       mediaDimensions,
+      description,
       params
     } = this.props
 
@@ -72,17 +74,16 @@ class CreateDocumentPreview extends React.PureComponent {
             {React.isValidElement(media) && media}
           </div>
         )}
-        <div className={styles.heading}>
-          <h2 className={styles.title}>
-            {typeof title !== 'function' && title}
-            {typeof title === 'function' && title({layout: 'default'})}
-          </h2>
-          {subtitle && (
-            <h3 className={styles.subtitle}>
-              {(typeof subtitle === 'function' && subtitle({layout: 'default'})) || subtitle}
-            </h3>
-          )}
-        </div>
+        <h2 className={styles.title}>
+          {typeof title !== 'function' && title}
+          {typeof title === 'function' && title({layout: 'default'})}
+        </h2>
+        {subtitle && (
+          <h3 className={styles.subtitle}>
+            {(typeof subtitle === 'function' && subtitle({layout: 'default'})) || subtitle}
+          </h3>
+        )}
+        {description && <p className={styles.description}>{description}</p>}
         <Ink duration={1000} opacity={0.1} radius={200} />
       </IntentLink>
     )

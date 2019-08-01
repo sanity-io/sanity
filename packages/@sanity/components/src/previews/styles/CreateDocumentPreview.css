@@ -2,9 +2,7 @@
 
 .root {
   composes: item from 'part:@sanity/base/theme/layout/selectable-style';
-  display: flex;
-  flex-direction: row-reverse;
-  justify-content: space-between;
+  display: block;
   text-decoration: none;
   position: relative;
   background-color: var(--component-bg);
@@ -13,6 +11,7 @@
   border: 1px solid var(--hairline-color);
   height: 100%;
   box-sizing: border-box;
+  padding: var(--medium-padding);
 
   @nest &:focus {
     background-color: var(--component-bg);
@@ -49,9 +48,21 @@
 }
 
 .media {
+  float: right;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
   font-size: var(--icon-size);
-  padding: var(--medium-padding);
+  padding: 0 0 0 var(--medium-padding);
+}
+
+.description {
+  composes: subtitle;
+}
+
+.root .description {
+  margin-top: 1em;
+}
+
+.description:empty {
+  display: none;
 }
