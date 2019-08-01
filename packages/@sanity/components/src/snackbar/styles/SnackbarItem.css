@@ -20,7 +20,6 @@
 
 .inner {
   position: relative;
- /*  display: flex; */
   border-radius: var(--border-radius-large);
   composes: shadow-1dp from "part:@sanity/base/theme/shadows-style";
   line-height: 1.3125;
@@ -46,7 +45,6 @@
   color: var(--state-danger-color--inverted);
 }
 
-
 .icon {
   float: left;
   display: flex;
@@ -58,20 +56,22 @@
 }
 
 .content {
-  padding: var(--medium-padding) var(--small-padding);
-  padding-left: var(--medium-padding);
+  padding: var(--medium-padding) calc(var(--medium-padding) - 2px) var(--medium-padding);
 }
 
-.subtitle,
-.children {
-  flex-basis: 100%;
+.buttonsWrapper {
+  display: flex;
+  align-items: center;
+  float: right;
+  max-height: 3.3rem;
+}
+
+.buttonsWrapper:empty {
+  display: none;
 }
 
 .buttonContainer {
-  float: right;
-  display: flex;
-  align-items: center;
-  max-height: 3.3rem;
+  max-height: 100%;
 
   @media (hover: hover) {
     opacity: 0.7;
@@ -91,11 +91,17 @@
   font-size: calc(var(--font-size-large) + 5px);
 }
 
-.actionButtonContainer [class*=inner] {
+@media (hover: hover) {
+  .buttonContainer [class^="DefaultButton_root"]:hover {
+    background-color: transparent !important;
+  }
+}
+
+.actionButtonContainer [class^="DefaultButton_inner"] {
   padding: var(--medium-padding) var(--small-padding);
 }
 
-.closeButtonContainer [class*=inner] {
+.closeButtonContainer [class^="DefaultButton_inner"] {
   padding: calc(var(--medium-padding) - 2px);
 }
 
@@ -109,6 +115,10 @@
 
 .showSnack {
   transform: translate3d(0, 0, 0);
+}
+
+.children:not(:empty) {
+  padding-top: 0.5em;
 }
 
 .dismissSnack {

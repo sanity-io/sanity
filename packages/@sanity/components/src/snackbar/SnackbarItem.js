@@ -172,32 +172,36 @@ export default class SnackbarItem extends React.Component {
         data-kind={kind}
       >
         <div className={styles.inner}>
-          {isCloseable && (
-            <div className={styles.closeButtonContainer}>
-              <Button
-                aria-label="Close"
-                onClick={this.handleClose}
-                bleed
-                kind="simple"
-                icon={CloseIcon}
-                padding="none"
-              />
-            </div>
-          )}
-          {action && (
-            <div className={styles.actionButtonContainer}>
-              <Button
-                // eslint-disable-next-line react/jsx-handler-names
-                onClick={() => this.handleAction()}
-                bleed
-                kind="simple"
-                style={{lineHeight: 'inherit'}}
-                padding="none"
-              >
-                {action.title}
-              </Button>
-            </div>
-          )}
+          <div className={styles.buttonsWrapper}>
+            {action && (
+              <div className={styles.actionButtonContainer}>
+                <Button
+                  // eslint-disable-next-line react/jsx-handler-names
+                  onClick={() => this.handleAction()}
+                  bleed
+                  kind="simple"
+                  style={{lineHeight: 'inherit'}}
+                  padding="none"
+                  ripple={false}
+                >
+                  {action.title}
+                </Button>
+              </div>
+            )}
+            {isCloseable && (
+              <div className={styles.closeButtonContainer}>
+                <Button
+                  aria-label="Close"
+                  onClick={this.handleClose}
+                  bleed
+                  kind="simple"
+                  icon={CloseIcon}
+                  padding="none"
+                  ripple={false}
+                />
+              </div>
+            )}
+          </div>
           {icon && (
             <div role="img" aria-hidden className={styles.icon}>
               {this.snackIcon()}
