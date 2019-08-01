@@ -55,16 +55,26 @@ storiesOf('Snackbar', module)
     <Snackbar
       {...globalDefaults}
       kind={select('Kind', ['success', 'error', 'warning', 'info'], 'info', 'props')}
-      message={text('Message', 'This is a message placeholder', 'props')}
+      title={text('Title', 'This is a title placeholder', 'props')}
       isCloseable={boolean('isCloseable', false, 'props')}
     />
   ))
-  .add('With icons', () => (
+  .add('Subtitle', () => (
+    <Snackbar
+      {...globalDefaults}
+      kind={select('Kind', ['success', 'error', 'warning', 'info'], 'info', 'props')}
+      title={text('Title', 'This is a title placeholder', 'props')}
+      icon={boolean('With icons', false)}
+      subtitle={text('Subtitle', 'This is a subtitle placeholder.', 'props')}
+      isCloseable={boolean('isCloseable', false, 'props')}
+    />
+  ))
+  .add('Icon', () => (
     <Snackbar
       {...globalDefaults}
       kind={select('Kind', ['success', 'error', 'warning', 'info'], 'info', 'props')}
       icon
-      message={text('Message', 'This is a message placeholder', 'props')}
+      title={text('title', 'This is a title placeholder', 'props')}
       isCloseable={boolean('isCloseable', false, 'props')}
     />
   ))
@@ -73,16 +83,16 @@ storiesOf('Snackbar', module)
       {...globalDefaults}
       kind={select('Kind', ['success', 'error', 'warning', 'info'], 'info', 'props')}
       icon={text('Icon', '🐈', 'props')}
-      message={text('Message', 'This is a message placeholder', 'props')}
+      title={text('title', 'This is a title placeholder', 'props')}
       isCloseable={boolean('isCloseable', false, 'props')}
     />
   ))
 
-  .add('With action', () => (
+  .add('Action', () => (
     <Snackbar
       {...globalDefaults}
       kind={select('Kinds', ['info', 'success', 'warning', 'error'], 'info', 'props')}
-      message={text('Message', 'This is a message placeholder', 'props')}
+      title={text('title', 'This is a title placeholder', 'props')}
       action={{title: text('Action title', 'Action'), callback: action('action.callback()')}}
       isCloseable={boolean('isCloseable', true, 'props')}
     />
@@ -91,7 +101,7 @@ storiesOf('Snackbar', module)
     <Snackbar
       {...globalDefaults}
       kind={select('Kinds', ['info', 'success', 'warning', 'error'], 'info', 'props')}
-      message={text('Message', 'This is a message placeholder', 'props')}
+      title={text('title', 'This is a title placeholder', 'props')}
       onClose={action(text('onClose', 'Custom onClose', 'props'))}
       isCloseable={boolean('isCloseable', true, 'props')}
     />
@@ -101,7 +111,7 @@ storiesOf('Snackbar', module)
       <Snackbar
         {...globalDefaults}
         kind="info"
-        message={text('Message', 'This is a message placeholder', 'props')}
+        title={text('title', 'This is a title placeholder', 'props')}
         isCloseable={boolean('isCloseable', true, 'props')}
         icon
       />
@@ -109,7 +119,7 @@ storiesOf('Snackbar', module)
         {...globalDefaults}
         offset={75}
         kind="warning"
-        message={text('Message', 'This is a message placeholder', 'props')}
+        title={text('title', 'This is a title placeholder', 'props')}
         isCloseable={boolean('isCloseable', true, 'props')}
         icon
       />
@@ -117,7 +127,7 @@ storiesOf('Snackbar', module)
         {...globalDefaults}
         offset={140}
         kind="success"
-        message={text('Message', 'This is a message placeholder', 'props')}
+        title={text('title', 'This is a title placeholder', 'props')}
         isCloseable={boolean('onClose', true, 'props')}
       />
     </>
@@ -126,7 +136,8 @@ storiesOf('Snackbar', module)
     <Snackbar
       {...globalDefaults}
       kind={select('Kind', ['success', 'error', 'warning', 'info'], 'info', 'props')}
-      message={text('Message', 'This is a message placeholder', 'props')}
+      title={text('title', 'This is a title placeholder', 'props')}
+      subtitle={text('Subtitle', 'This is a subtitle placeholder.', 'props')}
     >
       <div>{text('Children', 'This is the children placeholder', 'props')}</div>
     </Snackbar>
@@ -135,7 +146,7 @@ storiesOf('Snackbar', module)
     const snack = {
       ...globalDefaults,
       kind: select('Kinds', ['info', 'success', 'warning', 'error'], 'info', 'props'),
-      message: text('Message', 'This is a message placeholder', 'props'),
+      title: text('title', 'This is a title placeholder', 'props'),
       setAutoFocus: boolean('setAutoFocus', false, 'props'),
       isPersisted: boolean('isPersisted', false, 'props'),
       autoDismissTimeout: number('autoDismissTimeout (ms)', 4000, 'props'),
