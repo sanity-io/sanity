@@ -287,10 +287,9 @@ export default withRouterHOC(
                     isPersisted
                     actionTitle="Retry"
                     onAction={onRetry}
-                    message="An error occurred while loading items:"
-                  >
-                    <div>{error.message}</div>
-                  </Snackbar>
+                    title="An error occurred while loading items:"
+                    subtitle={<div>{error.message}</div>}
+                  />
                 )
               }
 

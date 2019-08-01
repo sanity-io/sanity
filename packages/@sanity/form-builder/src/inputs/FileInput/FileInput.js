@@ -313,10 +313,9 @@ export default class FileInput extends React.PureComponent<Props, State> {
             isPersisted
             actionTitle="OK"
             onAction={() => this.setState({uploadError: null})}
-            message="Upload error"
-          >
-            <div>{"We're"} really sorry, but the upload could not be completed.</div>
-          </Snackbar>
+            title="Upload error"
+            subtitle={<div>{"We're"} really sorry, but the upload could not be completed.</div>}
+          />
         )}
         <div className={styles.content}>
           <div className={styles.assetWrapper}>

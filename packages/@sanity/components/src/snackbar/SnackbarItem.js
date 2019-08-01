@@ -24,7 +24,8 @@ export default class SnackbarItem extends React.Component {
     isPersisted: PropTypes.bool,
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     kind: PropTypes.oneOf(['info', 'warning', 'error', 'success']),
-    message: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+    title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+    subtitle: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
     onDismiss: PropTypes.func,
     offset: PropTypes.number,
     onClose: PropTypes.func,
@@ -132,7 +133,18 @@ export default class SnackbarItem extends React.Component {
   }
 
   render() {
-    const {action, children, icon, id, isCloseable, isOpen, kind, message, offset} = this.props
+    const {
+      action,
+      children,
+      icon,
+      id,
+      isCloseable,
+      isOpen,
+      kind,
+      title,
+      subtitle,
+      offset
+    } = this.props
 
     const rootStyles = this.state.isEntering
       ? `${styles.root}`
@@ -166,7 +178,8 @@ export default class SnackbarItem extends React.Component {
             </div>
           )}
           <div className={styles.content}>
-            <div id={`snackbarMessage-${kind}-${id}`}>{message}</div>
+            <div id={`snackbarTitle-${kind}-${id}`} className={styles.title}>{title}</div>
+            {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
             {children && <div className={styles.children}>{children}</div>}
           </div>
           {action && (
@@ -177,6 +190,7 @@ export default class SnackbarItem extends React.Component {
                 bleed
                 kind="simple"
                 style={{lineHeight: 'inherit'}}
+                padding="none"
               >
                 {action.title}
               </Button>
@@ -186,7 +200,6 @@ export default class SnackbarItem extends React.Component {
             <div className={styles.closeButtonContainer}>
               <Button
                 aria-label="Close"
-                className={styles.closeButton}
                 onClick={this.handleClose}
                 bleed
                 kind="simple"

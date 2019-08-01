@@ -844,30 +844,30 @@ export default withRouterHOC(
                 />
               )}
               {isReconnecting && (
-                <Snackbar kind="warning" isPersisted message="Connection lost. Reconnecting…" />
+                <Snackbar kind="warning" isPersisted title="Connection lost. Reconnecting…" />
               )}
               {didPublish && (
                 <Snackbar
                   kind="success"
-                  message="You just published:"
+                  title="You just published:"
                   timeout={3000}
                   // eslint-disable-next-line react/jsx-no-bind
                   onClose={() => this.setState({didPublish: false})}
-                >
-                  <em>
-                    <DocTitle document={draft || published} />
-                  </em>
-                </Snackbar>
+                  subtitle={
+                    <em>
+                      <DocTitle document={draft || published} />
+                    </em>
+                  }
+                />
               )}
               {transactionResult && transactionResult.type === 'error' && (
                 <Snackbar
                   kind="danger"
                   actionTitle="OK"
                   onAction={onClearTransactionResult}
-                  message={transactionResult.message}
-                >
-                    <details>{transactionResult.error.message}</details>
-                </Snackbar>
+                  title={transactionResult.message}
+                  subtitle={<details>{transactionResult.error.message}</details>}
+                />
               )}
             </div>
           </Pane>

@@ -4,7 +4,8 @@ import React from 'react'
 export default class DefaultSnackbar extends React.PureComponent {
   static propTypes = {
     kind: PropTypes.oneOf(['info', 'warning', 'error', 'success']),
-    message: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+    title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+    subtitle: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
     isPersisted: PropTypes.bool,
     children: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
     onClose: PropTypes.func,
@@ -29,7 +30,8 @@ export default class DefaultSnackbar extends React.PureComponent {
       action,
       actionTitle,
       kind,
-      message,
+      title,
+      subtitle,
       timeout,
       children,
       onClose,
@@ -39,7 +41,8 @@ export default class DefaultSnackbar extends React.PureComponent {
 
     this.snackId = this.context.addToSnackQueue({
       kind,
-      message,
+      title,
+      subtitle,
       children,
       onClose,
       action: {
