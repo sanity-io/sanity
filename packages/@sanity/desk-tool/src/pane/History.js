@@ -41,7 +41,7 @@ export default class History extends React.PureComponent {
     }
   }
 
-  componentDidUnmount() {
+  componentWillUnmount() {
     if (this._listElement && this._listElement.current) {
       this._listElement.current.removeEventListener('scroll', this.handleListScroll)
     }
