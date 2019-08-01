@@ -43,8 +43,8 @@
 .subtitle {
   color: var(--text-color-secondary);
   font-weight: normal;
-  font-size: var(--font-size-small);
-  padding-top: 0.25em;
+  font-size: var(--font-size-xsmall);
+  padding: 0;
   margin: 0;
 }
 

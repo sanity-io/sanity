@@ -5,7 +5,7 @@ export default [
 
   T.template({
     id: 'author-developer',
-    title: 'Developer (author)',
+    title: 'Developer',
     schemaType: 'author',
     value: {
       role: 'developer'

@@ -14,9 +14,6 @@ function ActionModal(props) {
         <CreateDocumentList
           items={actions.map((action, i) => ({
             ...action,
-            title: action.title,
-            subtitle: action.params.type,
-            key: `actionModal_${i}`,
             icon: action.icon || FileIcon,
             onClick: onClose
           }))}
