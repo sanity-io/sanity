@@ -646,6 +646,11 @@ storiesOf('Previews')
           params={{intent: 'create', type: 'test'}}
           title={text('title', 'Movie', 'props')}
           subtitle={text('subtitle', 'Sci-fi', 'props')}
+          description={text(
+            'description',
+            'Science fiction is a genre of speculative fiction that has been called the "literature of ideas". It typically deals with imaginative and futuristic concepts such as advanced science and technology, time travel, parallel universes, fictional worlds, space exploration, and extraterrestrial life.',
+            'props'
+          )}
           icon={FileIcon}
         />
       </Sanity>
