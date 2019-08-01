@@ -49,26 +49,31 @@
 
 .content {
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
-  flex-grow: 1;
-  padding: var(--medium-padding);
-}
-
-.children {
-  flex-basis: 100%;
-  margin: var(--small-padding) 0;
+  flex: 1;
+  margin: var(--medium-padding) var(--small-padding);
+  margin-left: calc(var(--medium-padding) - 2px);
 }
 
 .icon {
   display: flex;
+  align-items: center;
+  align-self: flex-start;
   font-size: calc(var(--font-size-large) + 5px);
-  margin: var(--medium-padding) var(--small-padding) var(--medium-padding) var(--medium-padding);
+  margin: calc(var(--medium-padding) - 2px);
+  margin-right: var(--small-padding);
+}
+
+.subtitle,
+.children {
+  flex-basis: 100%;
 }
 
 .buttonContainer {
   display: flex;
-  max-height: calc(57 / 16) rem;
+  align-items: center;
+  align-self: flex-start;
+  max-height: calc(var(--font-size-large) + 5px);
 
   @media (hover: hover) {
     opacity: 0.7;
@@ -81,15 +86,17 @@
 
 .actionButtonContainer {
   composes: buttonContainer;
+  margin: var(--medium-padding) var(--small-padding);
 }
 
 .closeButtonContainer {
   composes: buttonContainer;
   font-size: calc(var(--font-size-large) + 5px);
+  margin: calc(var(--medium-padding) - 2px);
 }
 
 .icon ~ .content {
-  padding-left: 0;
+  margin-left: 0;
 }
 
 .showSnack {

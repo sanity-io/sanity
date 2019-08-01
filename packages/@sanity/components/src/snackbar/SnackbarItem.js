@@ -158,7 +158,7 @@ export default class SnackbarItem extends React.Component {
     return (
       <div
         aria-label={kind}
-        aria-describedby={`snackbarMessage-${kind}-${id}`}
+        aria-describedby={`snackbarTitle-${kind}-${id}`}
         role={role()}
         ref={this._snackRef}
         tabIndex="-1"
