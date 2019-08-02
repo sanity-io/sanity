@@ -540,26 +540,11 @@ export default withRouterHOC(
     }
 
     renderPublishInfo = () => {
-      const {
-        draft,
-        isCreatingDraft,
-        isPublishing,
-        isReconnecting,
-        isUnpublishing,
-        markers,
-        published
-      } = this.props
+      const {draft, isReconnecting, markers, published} = this.props
       const validation = markers.filter(marker => marker.type === 'validation')
       const errors = validation.filter(marker => marker.level === 'error')
       return (
         <>
-          {(isCreatingDraft || isPublishing || isUnpublishing) && (
-            <div className={styles.spinnerContainer}>
-              {isCreatingDraft && <Spinner center message="Making changes…" />}
-              {isPublishing && <Spinner center message="Publishing…" />}
-              {isUnpublishing && <Spinner center message="Unpublishing…" />}
-            </div>
-          )}
           <Tooltip
             arrow
             theme="light"
@@ -655,18 +640,28 @@ export default withRouterHOC(
     }
 
     renderStaticContent = () => {
-      const {draft} = this.props
+      const {draft, isCreatingDraft, isPublishing, isUnpublishing, isRestoring} = this.props
       return (
-        <div
-          className={
-            (draft || this.state.historyState.isOpen) && !this.isLiveEditEnabled()
-              ? styles.publishInfo
-              : styles.publishInfoHidden
-          }
-        >
-          {this.state.historyState.isOpen && this.renderHistoryInfo()}
-          {!this.state.historyState.isOpen && draft && this.renderPublishInfo()}
-        </div>
+        <>
+          {(isCreatingDraft || isPublishing || isUnpublishing || isRestoring) && (
+            <div className={styles.spinnerContainer}>
+              {isCreatingDraft && <Spinner center message="Making changes…" />}
+              {isPublishing && <Spinner center message="Publishing…" />}
+              {isUnpublishing && <Spinner center message="Unpublishing…" />}
+              {isRestoring && <Spinner center message="Restoring changes…" />}
+            </div>
+          )}
+          <div
+            className={
+              (draft || this.state.historyState.isOpen) && !this.isLiveEditEnabled()
+                ? styles.publishInfo
+                : styles.publishInfoHidden
+            }
+          >
+            {this.state.historyState.isOpen && this.renderHistoryInfo()}
+            {!this.state.historyState.isOpen && draft && this.renderPublishInfo()}
+          </div>
+        </>
       )
     }
 
