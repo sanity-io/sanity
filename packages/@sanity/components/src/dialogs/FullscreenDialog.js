@@ -95,7 +95,7 @@ export default class FullScreenDialog extends React.PureComponent {
                 </button>
               )}
               <div className={styles[`padding_${padding}`]}>
-                <h1 className={styles.heading}>{title}</h1>
+                {title && <h1 className={styles.title}>{title}</h1>}
                 <div className={styles.content}>
                   {this.props.children}
                   <div className={styles.actionsWrapper}>{this.renderActions(actions)}</div>
