@@ -191,6 +191,10 @@
       "description": "A utility component that takes a document id and calls its child render prop with a list of documents referring to it"
     },
     {
+      "name": "part:@sanity/base/listen-query",
+      "description": "A utility function that can be used to listen for a query"
+    },
+    {
       "name": "part:@sanity/base/theme/layout/resets-style",
       "description": "Provides resets for resetting browser styling"
     },
@@ -410,6 +414,10 @@
     {
       "implements": "part:@sanity/base/with-referring-documents",
       "path": "components/WithReferringDocuments"
+    },
+    {
+      "implements": "part:@sanity/base/listen-query",
+      "path": "util/listenQuery"
     },
     {
       "implements": "part:@sanity/base/locale/formatters",
