@@ -110,14 +110,13 @@
   composes: publishInfo;
   transform: translateY(100%);
   box-shadow: 0 0 0 var(--shadow-base);
-
 }
 
 .publishButton {
   display: block;
   grid-area: publishButton;
   justify-self: stretch;
-  width: -webkit-fill-available;
+  width: stretch;
 
   @nest & > * {
     display: flex;
