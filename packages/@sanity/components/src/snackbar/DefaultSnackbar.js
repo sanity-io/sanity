@@ -46,8 +46,8 @@ export default class DefaultSnackbar extends React.PureComponent {
       children,
       onClose,
       action: {
-        title: actionTitle || action.title,
-        callback: onAction || action.callback
+        title: actionTitle || (action && action.title),
+        callback: onAction || (action && action.callback)
       },
       isPersisted,
       autoDismissTimeout: timeout
