@@ -1,21 +1,23 @@
 import React from 'react'
-import EditIcon from 'part:@sanity/base/edit-icon'
 import {Tooltip} from 'react-tippy'
 import styles from './styles/ItemStatus.css'
+import Badge from 'part:@sanity/components/badges/default'
 
 const DraftStatus = () => (
   <Tooltip
     className={styles.itemStatus}
-    title="Has changes not yet published"
+    title="There are unpublished edits"
     arrow
     theme="light"
     distance="2"
     sticky
     size="small"
   >
-    <i>
-      <EditIcon />
-    </i>
+    <div className={styles.draftBadge}>
+      <Badge inverted faded>
+        Draft
+      </Badge>
+    </div>
   </Tooltip>
 )
 

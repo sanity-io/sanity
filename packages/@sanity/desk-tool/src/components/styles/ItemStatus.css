@@ -20,3 +20,8 @@
     align-items: center;
   }
 }
+
+.draftBadge {
+  font-size: var(--font-size-tiny--relative);
+  opacity: 0.75;
+}
