@@ -8,8 +8,7 @@ import CreateDocumentList from 'part:@sanity/components/lists/create-document'
 function ActionModal(props) {
   const {title, actions, onClose} = props
   return (
-    <Dialog className={styles.modal} onClose={onClose} isOpen>
-      <h1 className={styles.title}>{title}</h1>
+    <Dialog className={styles.modal} onClose={onClose} title={title} isOpen>
       <div className={styles.listContainer}>
         <CreateDocumentList
           items={actions.map((action, i) => ({

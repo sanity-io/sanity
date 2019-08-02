@@ -18,11 +18,15 @@
   composes: flexCenter from 'part:@sanity/base/theme/layout/positioning-style';
 }
 
-.heading {
-  font-size: var(--font-size-h1);
+.title {
+  font-size: var(--font-size-h2);
   margin: 0;
-  margin-bottom: 0.5em;
-  line-height: 1em;
+  padding: 0 0 var(--large-padding) 0;
+  line-height: 1;
+}
+
+.title:empty {
+  display: none;
 }
 
 .content {
