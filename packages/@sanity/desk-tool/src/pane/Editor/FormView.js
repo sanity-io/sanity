@@ -8,6 +8,7 @@ import filterFieldFn$ from 'part:@sanity/desk-tool/filter-fields-fn?'
 import styles from '../styles/Editor.css'
 import EditForm from './EditForm'
 import HistoryForm from './HistoryForm'
+import {IncomingLinks} from '../IncomingLinks'
 
 const noop = () => undefined
 
@@ -118,21 +119,29 @@ export default class FormView extends React.PureComponent {
         {history.isOpen ? (
           <HistoryForm document={displayed} schema={schema} schemaType={schemaType} />
         ) : (
-          <EditForm
-            draft={draft}
-            filterField={filterField}
-            focusPath={focusPath}
-            initialValue={initialValue}
-            markers={markers}
-            onBlur={this.handleBlur}
-            onChange={readOnly ? noop : this.props.onChange}
-            onFocus={this.handleFocus}
-            patchChannel={patchChannel}
-            published={published}
-            readOnly={readOnly}
-            schema={schema}
-            type={schemaType}
-          />
+          <>
+            {value && (
+              <div className={styles.top}>
+                <IncomingLinks id={value._id} />
+              </div>
+            )}
+
+            <EditForm
+              draft={draft}
+              filterField={filterField}
+              focusPath={focusPath}
+              initialValue={initialValue}
+              markers={markers}
+              onBlur={this.handleBlur}
+              onChange={readOnly ? noop : this.props.onChange}
+              onFocus={this.handleFocus}
+              patchChannel={patchChannel}
+              published={published}
+              readOnly={readOnly}
+              schema={schema}
+              type={schemaType}
+            />
+          </>
         )}
 
         {afterEditorComponents.map((AfterEditorComponent, i) => (
