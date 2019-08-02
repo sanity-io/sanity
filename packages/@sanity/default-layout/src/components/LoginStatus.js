@@ -64,7 +64,7 @@ class LoginStatus extends React.PureComponent {
                 src={user.profileImage}
                 className={styles.userImage}
                 alt={`${user.name}'s profile image`}
-                data-initials={user.name ? user.name.charAt(0) : user.email.charAt(0)}
+                data-initials={(user.name || user.email || '?').charAt(0)}
               />
             ) : (
               <div className={styles.userImageMissing}>
