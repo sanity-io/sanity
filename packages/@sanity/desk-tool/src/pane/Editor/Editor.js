@@ -193,6 +193,22 @@ const INITIAL_STATE = {
   filterField: () => true
 }
 
+const getSpinnerMessage = ({isCreatingDraft, isPublishing, isUnpublishing, isRestoring}) => {
+  if (isCreatingDraft) {
+    return 'Making changes…'
+  }
+  if (isPublishing) {
+    return 'Publishing…'
+  }
+  if (isUnpublishing) {
+    return 'Unpublishing…'
+  }
+  if (isRestoring) {
+    return 'Restoring revision…'
+  }
+  return null
+}
+
 export default withRouterHOC(
   // eslint-disable-next-line
   class Editor extends React.PureComponent {
@@ -553,13 +569,6 @@ export default withRouterHOC(
       const errors = validation.filter(marker => marker.level === 'error')
       return (
         <>
-          {(isCreatingDraft || isPublishing || isUnpublishing) && (
-            <div className={styles.spinnerContainer}>
-              {isCreatingDraft && <Spinner center message="Making changes…" />}
-              {isPublishing && <Spinner center message="Publishing…" />}
-              {isUnpublishing && <Spinner center message="Unpublishing…" />}
-            </div>
-          )}
           <Tooltip
             arrow
             theme="light"
@@ -656,17 +665,28 @@ export default withRouterHOC(
 
     renderStaticContent = () => {
       const {draft} = this.props
+      const {historyState} = this.state
+
+      const spinnerMessage = getSpinnerMessage(this.props)
+
       return (
-        <div
-          className={
-            (draft || this.state.historyState.isOpen) && !this.isLiveEditEnabled()
-              ? styles.publishInfo
-              : styles.publishInfoHidden
-          }
-        >
-          {this.state.historyState.isOpen && this.renderHistoryInfo()}
-          {!this.state.historyState.isOpen && draft && this.renderPublishInfo()}
-        </div>
+        <>
+          {spinnerMessage && (
+            <div className={styles.spinnerContainer}>
+              <Spinner center message={spinnerMessage} />
+            </div>
+          )}
+          <div
+            className={
+              (draft || historyState.isOpen) && !this.isLiveEditEnabled()
+                ? styles.publishInfo
+                : styles.publishInfoHidden
+            }
+          >
+            {historyState.isOpen && this.renderHistoryInfo()}
+            {!historyState.isOpen && draft && this.renderPublishInfo()}
+          </div>
+        </>
       )
     }
 
