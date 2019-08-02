@@ -64,7 +64,7 @@
 }
 
 .publishInfo {
-  display: grid;
+  display: flex;
   box-sizing: border-box;
   color: var(--text-color-secondary);
   position: fixed;
@@ -76,13 +76,10 @@
   z-index: var(--zindex-pane);
   transform: translateY(0);
   transition: transform 0.3s ease-in, box-shadow 0.2s ease-in;
-  grid-template-areas: 'publishButton publishInfoUndoButton';
-  grid-template-columns: auto auto;
-  grid-template-rows: 2.5em;
+  justify-items: stretch;
   justify-content: stretch;
   align-items: center;
   font-size: 1rem;
-  grid-gap: 0.5em;
   box-shadow: 0 0 2px color(var(--shadow-base) a(20%));
   padding: var(--small-padding) var(--medium-padding);
 
@@ -101,7 +98,10 @@
 
   @media (--screen-medium) {
     position: absolute;
+    grid-template-areas: 'publishButton publishInfoUndoButton';
+    grid-template-rows: 2.5em;
     grid-template-columns: 10em 10em;
+    grid-gap: 0.5em;
     padding: var(--small-padding) var(--medium-padding);
   }
 }
@@ -110,11 +110,14 @@
   composes: publishInfo;
   transform: translateY(100%);
   box-shadow: 0 0 0 var(--shadow-base);
+
 }
 
 .publishButton {
+  display: block;
   grid-area: publishButton;
   justify-self: stretch;
+  width: -webkit-fill-available;
 
   @nest & > * {
     display: flex;
@@ -125,6 +128,7 @@
 .publishInfoUndoButton {
   position: relative;
   grid-area: publishInfoUndoButton;
+  min-width: fit-content;
 
   @nest & > * {
     display: flex;
