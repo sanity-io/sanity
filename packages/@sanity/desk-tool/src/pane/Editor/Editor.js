@@ -175,7 +175,7 @@ const isValidationError = marker => marker.type === 'validation' && marker.level
 const INITIAL_HISTORY_STATE = {
   isOpen: false,
   isLoading: true,
-  error: false,
+  error: null,
   events: [],
   selectedRev: null
 }
@@ -313,6 +313,10 @@ export default withRouterHOC(
     UNSAFE_componentWillReceiveProps(nextProps) {
       this.setState({didPublish: this.props.isPublishing && !nextProps.isPublishing})
 
+      if (this.props.isRestoring && !nextProps.isRestoring) {
+        this.setHistoryState(INITIAL_HISTORY_STATE)
+      }
+
       if (this.props.isSaving && !nextProps.isSaving) {
         this.setState({
           showSavingStatus: true
@@ -417,22 +421,6 @@ export default withRouterHOC(
       const {onUnpublish} = this.props
       onUnpublish()
       this.setState({showConfirmUnpublish: false})
-    }
-
-    handleConfirmHistoryRestore = () => {
-      const {onRestore} = this.props
-      const selectedEvent = this.findSelectedEvent()
-      if (selectedEvent) {
-        historyStore
-          .getDocumentAtRevision(selectedEvent.displayDocumentId, selectedEvent.rev)
-          .then(document => {
-            onRestore(document)
-            this.setHistoryState({
-              selected: null,
-              isOpen: false
-            })
-          })
-      }
     }
 
     handleConfirmDelete = () => {
@@ -557,7 +545,6 @@ export default withRouterHOC(
         isCreatingDraft,
         isPublishing,
         isReconnecting,
-        isRestoring,
         isUnpublishing,
         markers,
         published
@@ -566,12 +553,11 @@ export default withRouterHOC(
       const errors = validation.filter(marker => marker.level === 'error')
       return (
         <>
-          {(isCreatingDraft || isPublishing || isUnpublishing || isRestoring) && (
+          {(isCreatingDraft || isPublishing || isUnpublishing) && (
             <div className={styles.spinnerContainer}>
               {isCreatingDraft && <Spinner center message="Making changes…" />}
               {isPublishing && <Spinner center message="Publishing…" />}
               {isUnpublishing && <Spinner center message="Unpublishing…" />}
-              {isRestoring && <Spinner center message="Restoring changes…" />}
             </div>
           )}
           <Tooltip
@@ -608,16 +594,25 @@ export default withRouterHOC(
     }
 
     renderHistoryInfo = () => {
-      const {isReconnecting} = this.props
+      const {isReconnecting, isRestoring, onRestore} = this.props
       const {historyState} = this.state
       const selectedEvent = this.findSelectedEvent()
 
       const isLatestEvent = historyState.events[0] === selectedEvent
       return (
-        <RestoreHistoryButton
-          disabled={isReconnecting || !historyState.isOpen || isLatestEvent}
-          onRestore={this.handleConfirmHistoryRestore}
-        />
+        <>
+          {isRestoring && (
+            <div className={styles.spinnerContainer}>
+              <Spinner center message="Restoring revision…" />
+            </div>
+          )}
+          <RestoreHistoryButton
+            disabled={isRestoring || isReconnecting || isLatestEvent}
+            onRestore={() =>
+              onRestore({id: selectedEvent.displayDocumentId, rev: selectedEvent.rev})
+            }
+          />
+        </>
       )
     }
 

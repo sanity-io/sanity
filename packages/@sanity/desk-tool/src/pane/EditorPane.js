@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import promiseLatest from 'promise-latest'
-import {merge, timer, of as observableOf} from 'rxjs'
-import {catchError, switchMap, map, mapTo, tap} from 'rxjs/operators'
+import {merge, concat, timer, of as observableOf} from 'rxjs'
+import {catchError, take, mergeMap, switchMap, map, mapTo, tap} from 'rxjs/operators'
 import {validateDocument} from '@sanity/validation'
 import {omit, throttle, debounce} from 'lodash'
 import {FormBuilder, checkoutPair} from 'part:@sanity/form-builder'
@@ -14,6 +14,7 @@ import withDocumentType from '../utils/withDocumentType'
 import styles from './styles/EditorWrapper.css'
 import Editor from './Editor'
 import UseState from '../utils/UseState'
+import historyStore from 'part:@sanity/base/datastore/history'
 
 const INITIAL_DOCUMENT_STATE = {
   isLoading: true,
@@ -362,38 +363,29 @@ export default withDocumentType(
         })
     }
 
-    handleRestoreRevision = restoredDocument => {
-      const documentId = this.props.options.id
-      this.setState({isRestoring: true})
-      const tx = client.observable.transaction()
-      tx.createOrReplace({
-        ...omit(restoredDocument, '_updatedAt'),
-        _id: getDraftId(documentId)
+    handleRestoreRevision = ({id, rev}) => {
+      const transactionResult$ = historyStore.restore(id, rev).pipe(
+        map(result => ({
+          type: 'success',
+          result: result
+        })),
+        catchError(error =>
+          observableOf({
+            type: 'error',
+            message: 'An error occurred while attempting to restore the document',
+            error
+          })
+        ),
+        map(transactionResult => ({transactionResult}))
+      )
+
+      concat(
+        observableOf({isRestoring: true}),
+        transactionResult$,
+        observableOf({isRestoring: false})
+      ).subscribe(nextState => {
+        this.setStateIfMounted(nextState)
       })
-      tx.commit()
-        .pipe(
-          map(result => ({
-            type: 'success',
-            result: result
-          })),
-          catchError(error =>
-            observableOf({
-              type: 'error',
-              message: 'An error occurred while attempting to restore the document',
-              error
-            })
-          )
-        )
-        .subscribe({
-          next: result => {
-            this.setStateIfMounted({
-              transactionResult: result
-            })
-          },
-          complete: () => {
-            this.setStateIfMounted({isRestoring: false})
-          }
-        })
     }
 
     handleChange = event => {

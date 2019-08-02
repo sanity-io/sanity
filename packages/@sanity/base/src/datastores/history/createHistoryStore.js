@@ -3,6 +3,8 @@ import {from, merge} from 'rxjs'
 import {transactionsToEvents} from '@sanity/transaction-collator'
 import {map, mergeMap, reduce, scan} from 'rxjs/operators'
 import {getDraftId, getPublishedId} from '../../util/draftUtils'
+import {omit} from 'lodash'
+import jsonReduce from 'json-reduce'
 
 const documentRevisionCache = Object.create(null)
 
@@ -101,11 +103,76 @@ function historyEventsFor(documentId) {
   )
 }
 
+const getAllRefIds = doc =>
+  jsonReduce(
+    doc,
+    (acc, node) =>
+      node && typeof node === 'object' && '_ref' in node && !acc.includes(node._ref)
+        ? [...acc, node._ref]
+        : acc,
+    []
+  )
+
+function jsonMap(value, mapFn) {
+  if (Array.isArray(value)) {
+    return mapFn(value.map(item => map(item, mapFn)))
+  }
+  if (value && typeof value === 'object') {
+    return mapFn(
+      Object.keys(value).reduce((res, key) => {
+        res[key] = jsonMap(value[key], mapFn)
+        return res
+      }, {})
+    )
+  }
+  return mapFn(value)
+}
+
+const mapRefNodes = (doc, mapFn) =>
+  jsonMap(doc, node => {
+    return typeof node && typeof node === 'object' && typeof node._ref === 'string'
+      ? mapFn(node)
+      : node
+  })
+
+function restore(id, rev) {
+  return from(getDocumentAtRevision(id, rev)).pipe(
+    mergeMap(documentAtRevision => {
+      const existingIdsQuery = getAllRefIds(documentAtRevision)
+        .map(refId => `"${refId}": defined(*[_id=="${refId}"]._id)`)
+        .join(',')
+
+      return client.observable.fetch(`{${existingIdsQuery}}`).pipe(
+        map(existingIds =>
+          mapRefNodes(documentAtRevision, refNode => {
+            const documentExists = existingIds[refNode._ref]
+            return documentExists ? refNode : undefined
+          })
+        )
+      )
+    }),
+    map(documentAtRevision =>
+      // Remove _updatedAt and create a new draft from the document at given revision
+      ({
+        ...omit(documentAtRevision, '_updatedAt'),
+        _id: getDraftId(id)
+      })
+    ),
+    mergeMap(restoredDraft =>
+      client.observable
+        .transaction()
+        .createOrReplace(restoredDraft)
+        .commit()
+    )
+  )
+}
+
 export default function createHistoryStore() {
   return {
     getDocumentAtRevision,
     getHistory,
     getTransactions,
-    historyEventsFor
+    historyEventsFor,
+    restore
   }
 }
