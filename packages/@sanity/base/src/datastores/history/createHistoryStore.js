@@ -1,10 +1,10 @@
 import client from 'part:@sanity/base/client'
 import {from, merge} from 'rxjs'
-import {transactionsToEvents} from '@sanity/transaction-collator'
 import {map, mergeMap, reduce, scan} from 'rxjs/operators'
-import {getDraftId, getPublishedId} from '../../util/draftUtils'
-import {omit} from 'lodash'
+import {omit, uniq} from 'lodash'
 import jsonReduce from 'json-reduce'
+import {getDraftId, getPublishedId, isDraftId} from '../../util/draftUtils'
+import {transactionsToEvents} from '@sanity/transaction-collator'
 
 const documentRevisionCache = Object.create(null)
 
@@ -138,17 +138,40 @@ const mapRefNodes = (doc, mapFn) =>
 function restore(id, rev) {
   return from(getDocumentAtRevision(id, rev)).pipe(
     mergeMap(documentAtRevision => {
-      const existingIdsQuery = getAllRefIds(documentAtRevision)
-        .map(refId => `"${refId}": defined(*[_id=="${refId}"]._id)`)
-        .join(',')
+      const allRefIdPairs = uniq(
+        getAllRefIds(documentAtRevision).flatMap(refId => [
+          getDraftId(refId),
+          getPublishedId(refId)
+        ])
+      )
 
-      return client.observable.fetch(`{${existingIdsQuery}}`).pipe(
-        map(existingIds =>
-          mapRefNodes(documentAtRevision, refNode => {
-            const documentExists = existingIds[refNode._ref]
-            return documentExists ? refNode : undefined
+      const query = allRefIdPairs.map(_id => `"${_id}": defined(*[_id=="${_id}"]._id)`).join(',')
+
+      return client.observable.fetch(`{${query}}`).pipe(
+        map(result => {
+          return mapRefNodes(documentAtRevision, refNode => {
+            const draftExists = result[getDraftId(refNode._ref)]
+            const publishedExists = result[getPublishedId(refNode._ref)]
+            const refIsDraft = isDraftId(refNode._ref)
+
+            if (refIsDraft) {
+              if (draftExists) {
+                return refNode
+              }
+              if (publishedExists) {
+                return {...refNode, _ref: getPublishedId(refNode._ref)}
+              }
+            }
+            // ref is published
+            if (publishedExists) {
+              return refNode
+            }
+            if (draftExists) {
+              return {...refNode, _ref: getDraftId(refNode._ref)}
+            }
+            return undefined
           })
-        )
+        })
       )
     }),
     map(documentAtRevision =>

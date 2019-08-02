@@ -21,6 +21,17 @@ export default {
       title: 'Title'
     },
     {
+      name: 'arrayOfObjectsWithRefs',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          name: 'inline',
+          fields: [{name: 'someRef', type: 'reference', to: {type: 'referenceTest'}}]
+        }
+      ]
+    },
+    {
       name: 'myself',
       title: 'This field is of my enclosing type',
       type: 'recursiveDocument',
