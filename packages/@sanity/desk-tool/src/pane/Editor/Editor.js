@@ -572,7 +572,6 @@ export default withRouterHOC(
                 isCreatingDraft ||
                 isPublishing ||
                 isReconnecting ||
-                isRestoring ||
                 isUnpublishing ||
                 !draft ||
                 errors.length > 0

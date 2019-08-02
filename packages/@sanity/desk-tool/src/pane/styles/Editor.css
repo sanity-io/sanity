@@ -98,6 +98,7 @@
 
   @media (--screen-medium) {
     position: absolute;
+    display: grid;
     grid-template-areas: 'publishButton publishInfoUndoButton';
     grid-template-rows: 2.5em;
     grid-template-columns: 10em 10em;
