@@ -193,6 +193,22 @@ const INITIAL_STATE = {
   filterField: () => true
 }
 
+const getSpinnerMessage = ({isCreatingDraft, isPublishing, isUnpublishing, isRestoring}) => {
+  if (isCreatingDraft) {
+    return 'Making changes…'
+  }
+  if (isPublishing) {
+    return 'Publishing…'
+  }
+  if (isUnpublishing) {
+    return 'Unpublishing…'
+  }
+  if (isRestoring) {
+    return 'Restoring revision…'
+  }
+  return null
+}
+
 export default withRouterHOC(
   // eslint-disable-next-line
   class Editor extends React.PureComponent {
@@ -540,7 +556,15 @@ export default withRouterHOC(
     }
 
     renderPublishInfo = () => {
-      const {draft, isReconnecting, markers, published} = this.props
+      const {
+        draft,
+        isCreatingDraft,
+        isPublishing,
+        isReconnecting,
+        isUnpublishing,
+        markers,
+        published
+      } = this.props
       const validation = markers.filter(marker => marker.type === 'validation')
       const errors = validation.filter(marker => marker.level === 'error')
       return (
@@ -640,26 +664,27 @@ export default withRouterHOC(
     }
 
     renderStaticContent = () => {
-      const {draft, isCreatingDraft, isPublishing, isUnpublishing, isRestoring} = this.props
+      const {draft} = this.props
+      const {historyState} = this.state
+
+      const spinnerMessage = getSpinnerMessage(this.props)
+
       return (
         <>
-          {(isCreatingDraft || isPublishing || isUnpublishing || isRestoring) && (
+          {spinnerMessage && (
             <div className={styles.spinnerContainer}>
-              {isCreatingDraft && <Spinner center message="Making changes…" />}
-              {isPublishing && <Spinner center message="Publishing…" />}
-              {isUnpublishing && <Spinner center message="Unpublishing…" />}
-              {isRestoring && <Spinner center message="Restoring changes…" />}
+              <Spinner center message={spinnerMessage} />
             </div>
           )}
           <div
             className={
-              (draft || this.state.historyState.isOpen) && !this.isLiveEditEnabled()
+              (draft || historyState.isOpen) && !this.isLiveEditEnabled()
                 ? styles.publishInfo
                 : styles.publishInfoHidden
             }
           >
-            {this.state.historyState.isOpen && this.renderHistoryInfo()}
-            {!this.state.historyState.isOpen && draft && this.renderPublishInfo()}
+            {historyState.isOpen && this.renderHistoryInfo()}
+            {!historyState.isOpen && draft && this.renderPublishInfo()}
           </div>
         </>
       )
