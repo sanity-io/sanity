@@ -6,7 +6,7 @@ import Badge from 'part:@sanity/components/badges/default'
 const DraftStatus = () => (
   <Tooltip
     className={styles.itemStatus}
-    title="Has changes not yet published"
+    title="There are unpublished edits"
     arrow
     theme="light"
     distance="2"
