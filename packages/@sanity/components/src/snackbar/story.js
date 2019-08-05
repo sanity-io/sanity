@@ -21,7 +21,7 @@ const globalDefaults = {
   isOpen: true,
   id: new Date().getTime() + Math.floor(Math.random()),
   setFocus: false,
-  onClose: action('onClose(), callback: onDismiss'),
+  onClose: action('onClose()'),
   onDismiss: action('onDismiss()')
 }
 
@@ -59,7 +59,7 @@ storiesOf('Snackbar', module)
       subtitle={text('Subtitle', '', 'props')}
       icon={boolean('With icons', false)}
       isCloseable={boolean('isCloseable', false, 'props')}
-      action={{title: text('Action title', ''), callback: action('')}}
+      action={{title: text('Action title', 'Action'), callback: action('callback()')}}
       children={text('children', '', 'props')}
     />
   ))
@@ -71,7 +71,7 @@ storiesOf('Snackbar', module)
       subtitle={text('Subtitle', '', 'props')}
       icon={text('Icon', '🐈', 'props')}
       isCloseable={boolean('isCloseable', false, 'props')}
-      action={{title: text('Action title', ''), callback: action('')}}
+      action={{title: text('Action title', 'Action'), callback: action('callback()')}}
     />
   ))
   .add('Custom onClose', () => (
@@ -82,7 +82,7 @@ storiesOf('Snackbar', module)
       subtitle={text('Subtitle', '', 'props')}
       icon={text('Icon', false, 'props')}
       isCloseable={boolean('isCloseable', true, 'props')}
-      action={{title: text('Action title', ''), callback: action('')}}
+      action={{title: text('Action title', 'Action'), callback: action('callback()')}}
       onClose={action(text('onClose', 'Custom onClose', 'props'))}
     />
   ))
@@ -120,7 +120,7 @@ storiesOf('Snackbar', module)
       subtitle={text('Subtitle', '', 'props')}
       icon={boolean('Icon', false, 'props')}
       isCloseable={boolean('isCloseable', true, 'props')}
-      action={{title: text('Action title', ''), callback: action('')}}
+      action={{title: text('Action title', 'Action'), callback: action('callback()')}}
       onClose={action(text('onClose', 'Custom onClose', 'props'))}
     >
       <div>{text('Children', 'This is the children placeholder', 'props')}</div>
@@ -136,7 +136,7 @@ storiesOf('Snackbar', module)
       isPersisted: boolean('isPersisted', false, 'props'),
       autoDismissTimeout: number('autoDismissTimeout (ms)', 4000, 'props'),
       icon: boolean('Icon', false, 'props'),
-      action: {title: text('Action title', ''), callback: action('')},
+      action: {title: text('Action title', ''), callback: action('callback()')},
       isCloseable: boolean('isCloseable', false, 'props'),
       onClose: action(text('onClose', 'Custom onClose', 'props')),
       children: text('children', 'This is a children placeholder', 'props')

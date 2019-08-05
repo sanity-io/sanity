@@ -292,7 +292,7 @@
     },
     {
       "name": "part:@sanity/components/snackbar/default",
-      "description": "Shows messages with an action and a timeout."
+      "description": "Deprecated snackbar."
     },
     {
       "name": "part:@sanity/components/snackbar/item",
@@ -300,7 +300,7 @@
     },
     {
       "name": "part:@sanity/components/snackbar/default-style",
-      "description": "Styling for the old default snackbar"
+      "description": "Styling for the deprecated default snackbar"
     },
     {
       "name": "part:@sanity/components/snackbar/provider",

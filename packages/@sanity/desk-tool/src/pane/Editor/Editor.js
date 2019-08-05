@@ -853,11 +853,7 @@ export default withRouterHOC(
                   timeout={3000}
                   // eslint-disable-next-line react/jsx-no-bind
                   onClose={() => this.setState({didPublish: false})}
-                  subtitle={
-                    <em>
-                      <DocTitle document={draft || published} />
-                    </em>
-                  }
+                  subtitle={<DocTitle document={draft || published} />}
                 />
               )}
               {transactionResult && transactionResult.type === 'error' && (

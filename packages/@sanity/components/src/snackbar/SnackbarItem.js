@@ -90,6 +90,17 @@ export default class SnackbarItem extends React.Component {
     }
   }
 
+  handleFocus = () => {
+    this.cancelAutoDismissSnack()
+  }
+
+  handleBlur = () => {
+    const {isPersisted} = this.props
+    if (!isPersisted) {
+      this.handleAutoDismissSnack()
+    }
+  }
+
   handleAction = () => {
     const {action, id, onDismiss} = this.props
     if (action && action.callback) action.callback()
@@ -166,8 +177,8 @@ export default class SnackbarItem extends React.Component {
         style={{bottom: offset, transition: transition}}
         onMouseOver={() => this.handleMouseOver()}
         onMouseLeave={() => this.handleMouseLeave()}
-        onFocus={() => this.handleMouseOver()}
-        onBlur={() => this.handleMouseLeave()}
+        onFocus={() => this.handleFocus()}
+        onBlur={() => this.handleBlur()}
         onKeyDown={e => e.key === 'escape' && this.handleAction()}
         data-kind={kind}
       >
