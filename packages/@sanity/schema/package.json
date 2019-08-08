@@ -24,7 +24,7 @@
     "@sanity/generate-help-url": "0.147.0",
     "arrify": "^1.0.1",
     "humanize-list": "^1.0.1",
-    "json-reduce": "^1.0.0",
+    "json-reduce": "^2.0.0",
     "leven": "^2.1.0",
     "lodash": "^4.17.15",
     "object-inspect": "^1.6.0"
