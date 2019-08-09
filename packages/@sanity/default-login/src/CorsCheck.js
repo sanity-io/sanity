@@ -75,7 +75,7 @@ class CorsCheck extends PureComponent {
           <div>
             <p>{response.body.message || response.statusCode}</p>
             <p>
-              Double-check that your <code>sanity.json</code> points to the right project ID?
+              Double-check that your <code>sanity.json</code> points to the right project ID!
             </p>
           </div>
         )
@@ -85,13 +85,14 @@ class CorsCheck extends PureComponent {
     if (result.isCorsError) {
       return this.renderWrapper(
         <p>
-          It seems the error could be caused by the current origin (<code>{origin}</code>) not being
-          an allowed origin for this project. If you are an administrator or developer of the
-          project, you can head to{' '}
+          It looks like the error is being caused by the current origin (<code>{origin}</code>) not
+          being allowed for this project. If you are a project administrator or developer, you can
+          head to{' '}
           <a rel={linkRel} target="_blank" href={corsUrl}>
             the project management
           </a>{' '}
-          interface and add the origin under the <em>CORS Origins</em> section.
+          interface. Add the origin under the <a href="https://www.sanity.io/docs/front-ends/cors" target="_blank" rel="noopener noreferrer"><em>CORS Origins</em></a> section. Do remember to{' '}
+          <code>allow credentials</code>!
         </p>
       )
     }
@@ -99,20 +100,18 @@ class CorsCheck extends PureComponent {
     if (result.pingResponded) {
       return this.renderWrapper(
         <p>
-          The cause of this error is a little uncertain. It could be a temporary glitch, in which
-          case you might want to try hitting the <strong>Retry</strong> button below. If you are the
-          developer of this project, you could take a look at the browsers developer console and see
-          if any issues are reported there.
+          Our diagnostics cannot quite determine why this happened. If it was a network glitch you
+          could try hitting the <strong>Retry</strong> button below. If you are working as a
+          developer on this project, you could also have a look at the browser's dev console and see
+          if any issues are listed there.
         </p>
       )
     }
 
     return this.renderWrapper(
       <p>
-        It might be that your internet connection is unstable or down, or it <em>might</em> be the
-        Sanity API is having some issues, in which case it should hopefully be back up soon! You
-        could also try hitting the <strong>Retry</strong> button and see if it was just a temporary
-        glitch.
+        It might be that your internet connection is unstable or down. You could try hitting the{' '}
+        <strong>Retry</strong> button to see if it was just a temporary glitch.
       </p>
     )
   }
