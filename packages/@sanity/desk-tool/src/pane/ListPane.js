@@ -65,7 +65,8 @@ export default withRouterHOC(
     itemIsSelected(item) {
       const {router, index} = this.props
       const selected = (router.state.panes || [])[index]
-      return item.id === selected
+      const selectedId = selected ? selected.id : undefined
+      return item.id === selectedId
     }
 
     getLinkStateForItem = name => {
