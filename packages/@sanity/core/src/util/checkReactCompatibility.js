@@ -4,8 +4,8 @@ const resolveFrom = require('resolve-from')
 const generateHelpUrl = require('@sanity/generate-help-url')
 
 const supported = {
-  react: '^16.2',
-  'react-dom': '^16.2'
+  react: '^16.3',
+  'react-dom': '^16.3'
 }
 
 const deprecated = {
