@@ -1,4 +1,6 @@
-const {get} = require('lodash')
+const {get, memoize} = require('lodash')
+
+const memoizedWarnOnArraySlug = memoize(warnOnArraySlug)
 
 function getDocumentIds(id) {
   const isDraft = id.indexOf('drafts.') === 0
@@ -20,10 +22,14 @@ function serializePath(path) {
 
 const defaultIsUnique = (slug, options) => {
   const client = require('part:@sanity/base/client')
-  const {document, path} = options
+  const {document, path, disableArrayWarning} = options
   const {published, draft} = getDocumentIds(document._id)
   const docType = document._type
   const atPath = serializePath(path.concat('current'))
+
+  if (!disableArrayWarning && atPath.includes('[]')) {
+    memoizedWarnOnArraySlug(serializePath(path))
+  }
 
   const constraints = [
     '_type == $docType',
@@ -32,6 +38,18 @@ const defaultIsUnique = (slug, options) => {
   ].join(' && ')
 
   return client.fetch(`!defined(*[${constraints}][0]._id)`, {docType, draft, published, slug})
+}
+
+function warnOnArraySlug(path) {
+  /* eslint-disable no-console */
+  console.warn(
+    [
+      `Slug field at path ${path} is within an array and cannot be automatically checked for uniqueness`,
+      `If you need to check for uniqueness, provide your own "isUnique" method`,
+      `To disable this message, set \`disableArrayWarning: true\` on the slug \`options\` field`
+    ].join('\n')
+  )
+  /* eslint-enable no-console */
 }
 
 export const slugValidator = (value, options) => {
