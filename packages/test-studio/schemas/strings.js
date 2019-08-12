@@ -1,4 +1,5 @@
 import icon from 'react-icons/lib/md/text-format'
+import {HooksBasedStringInput} from '../src/components/HooksBasedStringInput'
 
 export default {
   name: 'stringsTest',
@@ -11,6 +12,13 @@ export default {
       type: 'string',
       title: 'Title',
       description: 'This is a basic string field'
+    },
+    {
+      name: 'hooksBasedInput',
+      type: 'string',
+      title: 'Hooks based input',
+      description: 'A string field with a custom input (using react hooks)',
+      inputComponent: HooksBasedStringInput
     },
     {
       name: 'readonlyField',
