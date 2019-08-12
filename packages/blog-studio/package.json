@@ -27,8 +27,8 @@
     "@sanity/desk-tool": "0.141.6",
     "@sanity/google-maps-input": "0.141.6",
     "@sanity/vision": "0.141.6",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0"
+    "react": "^16.3.0",
+    "react-dom": "^16.3.0"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
