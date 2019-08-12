@@ -292,11 +292,23 @@
     },
     {
       "name": "part:@sanity/components/snackbar/default",
+      "description": "Deprecated snackbar."
+    },
+    {
+      "name": "part:@sanity/components/snackbar/item",
       "description": "Shows messages with an action and a timeout."
     },
     {
       "name": "part:@sanity/components/snackbar/default-style",
-      "description": "Styling for snackbar"
+      "description": "Styling for the deprecated default snackbar"
+    },
+    {
+      "name": "part:@sanity/components/snackbar/provider",
+      "description": "Snackbar provider to show messages."
+    },
+    {
+      "name": "part:@sanity/components/snackbar/snackbar-style",
+      "description": "Styling for new snackbars."
     },
     {
       "name": "part:@sanity/components/menus/default",
@@ -603,6 +615,14 @@
       "path": "snackbar/DefaultSnackbar.js"
     },
     {
+      "implements": "part:@sanity/components/snackbar/item",
+      "path": "snackbar/SnackbarItem.js"
+    },
+    {
+      "implements": "part:@sanity/components/snackbar/provider",
+      "path": "snackbar/SnackbarProvider.js"
+    },
+    {
       "implements": "part:@sanity/components/edititem/fold",
       "path": "edititem/EditItemFoldOut.js"
     },
@@ -765,6 +785,10 @@
     {
       "implements": "part:@sanity/components/snackbar/default-style",
       "path": "snackbar/styles/DefaultSnackbar.css"
+    },
+    {
+      "implements": "part:@sanity/components/snackbar/snackbar-style",
+      "path": "snackbar/styles/SnackbarItem.css"
     },
     {
       "implements": "part:@sanity/components/menus/default",

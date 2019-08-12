@@ -1,6 +1,7 @@
 import React from 'react'
 import config from 'config:sanity'
 import RootComponent from 'part:@sanity/base/root'
+import SnackbarProvider from 'part:@sanity/components/snackbar/provider'
 import ErrorHandler from './ErrorHandler'
 import VersionChecker from './VersionChecker'
 import MissingProjectConfig from './MissingProjectConfig'
@@ -14,9 +15,11 @@ function SanityRoot() {
 
   return (
     <div className={styles.root}>
-      <ErrorHandler />
-      <RootComponent />
-      <VersionChecker />
+      <SnackbarProvider>
+        <ErrorHandler />
+        <RootComponent />
+        <VersionChecker />
+      </SnackbarProvider>
     </div>
   )
 }

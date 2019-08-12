@@ -5,7 +5,7 @@ import ArrowKeyNavigation from 'boundless-arrow-key-navigation/build'
 import styles from 'part:@sanity/components/selects/style-style'
 import ArrowIcon from 'part:@sanity/base/angle-down-icon'
 import CircleThinIcon from 'part:@sanity/base/circle-thin-icon'
-import CircleCheckIcon from 'part:@sanity/base/circle-check-icon'
+import CheckCircleIcon from 'part:@sanity/base/circle-check-icon'
 import {List} from 'part:@sanity/components/lists/default'
 import Poppable from 'part:@sanity/components/utilities/poppable'
 
@@ -195,7 +195,7 @@ class StyleSelect extends React.PureComponent {
                         ref={index === 0 && this.firstItemElement}
                       >
                         <div className={styles.itemIcon}>
-                          {isSelected && <CircleCheckIcon />}
+                          {isSelected && <CheckCircleIcon />}
                           {isSemiSelected && <CircleThinIcon />}
                         </div>
                         <div className={styles.itemContent}>{renderItem(item)}</div>

@@ -175,6 +175,10 @@ span.content {
   }
 }
 
+.padding_none.bleed.onlyIcon .content {
+  margin: 0 !important;
+}
+
 .default {
   composes: root;
   background-color: var(--default-button-color);
