@@ -60,7 +60,6 @@ export default (config = {}) => {
   return {
     entry: {
       app: [
-        !isProd && resolve('react-hot-loader/patch'),
         resolve('normalize.css'),
         path.join(__dirname, '..', 'browser', isProd ? 'entry.js' : 'entry-dev.js')
       ].filter(Boolean),
@@ -74,8 +73,7 @@ export default (config = {}) => {
     resolve: {
       alias: {
         react: path.dirname(reactPath),
-        'react-dom': path.dirname(reactDomPath),
-        'react-hot-loader': path.dirname(resolve('react-hot-loader')),
+        'react-dom': '@hot-loader/react-dom',
         moment$: 'moment/moment.js',
         ...rxPaths()
       }
@@ -94,7 +92,6 @@ export default (config = {}) => {
               ],
               plugins: [
                 resolve('@babel/plugin-proposal-class-properties'),
-                !isProd && resolve('react-hot-loader/babel')
               ].filter(Boolean),
               cacheDirectory: true
             }
