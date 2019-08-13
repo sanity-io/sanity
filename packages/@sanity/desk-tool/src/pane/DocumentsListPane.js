@@ -283,7 +283,7 @@ export default withRouterHOC(
               if (error) {
                 return (
                   <Snackbar
-                    kind="danger"
+                    kind="error"
                     isPersisted
                     actionTitle="Retry"
                     onAction={onRetry}

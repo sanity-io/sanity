@@ -13,7 +13,7 @@ export default class SnackbarItem extends React.Component {
   static propTypes = {
     action: PropTypes.shape({
       title: PropTypes.string,
-      icon: PropTypes.func,
+      icon: PropTypes.node,
       callback: PropTypes.func
     }),
     autoDismissTimeout: PropTypes.number,

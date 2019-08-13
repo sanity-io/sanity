@@ -858,7 +858,7 @@ export default withRouterHOC(
               )}
               {transactionResult && transactionResult.type === 'error' && (
                 <Snackbar
-                  kind="danger"
+                  kind="error"
                   actionTitle="OK"
                   onAction={onClearTransactionResult}
                   title={transactionResult.message}
