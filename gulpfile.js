@@ -18,9 +18,6 @@ const through = require('through2')
 const chalk = require('chalk')
 const globby = require('globby')
 const mergeStream = require('merge-stream')
-const backstop = require('backstopjs')
-const waitPort = require('wait-port')
-const kill = require('kill-port')
 const {promisify} = require('util')
 
 const stat = promisify(fs.stat)
@@ -212,8 +209,7 @@ const STUDIOS = [
   {name: 'example-studio', port: '3335'},
   {name: 'blog-studio', port: '3336'},
   {name: 'ecommerce-studio', port: '3337'},
-  {name: 'clean-studio', port: '3338'},
-  {name: 'backstop-test-studio', port: '5000'}
+  {name: 'clean-studio', port: '3338'}
 ]
 
 STUDIOS.forEach(studio => {
@@ -251,84 +247,3 @@ exports.storybook = series(
     proc.stderr.pipe(process.stderr)
   })
 )
-
-exports.backstop = function(cb) {
-  childProcess.exec('docker -v', err => {
-    if (err) {
-      throw new gutil.PluginError({
-        plugin: 'backstop',
-        message: gutil.colors.red('Please install Docker on your computer. https://www.docker.com/')
-      })
-    }
-  })
-
-  const params = {
-    host: 'localhost',
-    port: 5000,
-    timeout: 100 * 60 * 10
-  }
-
-  parallel(exports['backstop-test-studio'], async () => {
-    let open
-    try {
-      open = await waitPort(params)
-    } catch (err) {
-      kill(params.port)
-      throw new gutil.PluginError({
-        plugin: 'backstop',
-        message: `An unknown error occured while waiting for the port: ${err}`
-      })
-    }
-
-    if (!open) {
-      kill(params.port)
-      throw new gutil.PluginError({
-        plugin: 'backstop',
-        message: 'The backstop-studio did not start'
-      })
-    }
-
-    try {
-      await backstop('test', {
-        docker: true,
-        config: './test/backstop/backstop.js'
-      })
-
-      await kill(params.port)
-      gutil.log(gutil.colors.green('Backstop test success'))
-      // eslint-disable-next-line no-process-exit
-      process.exit(0)
-    } catch (err) {
-      kill(params.port)
-      throw new gutil.PluginError({
-        plugin: 'backstop',
-        message: 'Tests failed'
-      })
-    }
-
-    cb()
-  })()
-}
-
-exports['backstop:approve'] = cb => {
-  backstop('approve', {
-    docker: true,
-    config: './test/backstop/backstop.js'
-  })
-}
-
-exports['backstop:reference'] = async cb => {
-  try {
-    await backstop('reference', {
-      docker: true,
-      config: './test/backstop/backstop.js'
-    })
-
-    gutil.log(gutil.colors.green('References created'))
-  } catch (err) {
-    throw new gutil.PluginError({
-      plugin: 'backstop',
-      message: 'Making references failed'
-    })
-  }
-}

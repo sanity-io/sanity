@@ -4,7 +4,6 @@
   "ci": false,
   "packages": [
     "packages/@sanity/*",
-    "packages/backstop-test-studio",
     "packages/blog-studio",
     "packages/clean-studio",
     "packages/create-sanity",
