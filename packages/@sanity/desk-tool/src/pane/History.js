@@ -102,7 +102,7 @@ export default class History extends React.PureComponent {
               />
             ))}
         </div>
-        {error && <Snackbar kind="danger" isPersisted title={error} />}
+        {error && <Snackbar kind="error" isPersisted title={error} />}
       </div>
     )
   }
