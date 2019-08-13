@@ -58,7 +58,7 @@ export default class Stacked extends React.Component {
       this.setState(() => ({top}))
     })
   }
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const {stack} = this.props
     stack.push(this)
   }

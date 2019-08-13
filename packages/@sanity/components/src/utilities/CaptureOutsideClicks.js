@@ -12,7 +12,7 @@ export default class CaptureOutsideClicks extends React.Component {
 
   hadMouseDown = false
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     document.addEventListener('mouseup', this.handleDocumentClick)
     document.addEventListener('mousedown', this.handleMouseDown)
   }

@@ -55,7 +55,7 @@ export default class DefaultTextArea extends React.Component {
     this._input.setCustomValidity(this.props.customValidity)
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.customValidity !== this.props.customValidity) {
       this._input.setCustomValidity(nextProps.customValidity)
     }

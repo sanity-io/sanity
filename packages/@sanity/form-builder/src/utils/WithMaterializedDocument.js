@@ -24,7 +24,7 @@ export default class WithMaterializedDocument extends React.Component<Props, Sta
     this.setDocId(this.props.documentId)
   }
 
-  componentWillReceiveProps(nextProps: Props) {
+  UNSAFE_componentWillReceiveProps(nextProps: Props) {
     if (this.props.documentId !== nextProps.documentId) {
       this.setDocId(nextProps.documentId)
     }

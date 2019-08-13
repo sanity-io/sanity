@@ -80,7 +80,7 @@ export default withValuePath(
         return Promise.resolve(slugify(sourceValue, type))
       }
 
-      componentWillReceiveProps(nextProps) {
+      UNSAFE_componentWillReceiveProps(nextProps) {
         const {document} = nextProps
 
         // Reset state if document is changed

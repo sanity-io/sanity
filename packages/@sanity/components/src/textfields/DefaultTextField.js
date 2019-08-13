@@ -40,7 +40,7 @@ export default class DefaultTextField extends React.Component {
     this.props.onClear()
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this._inputId = this.props.id || uniqueId('DefaultTextField')
   }
 

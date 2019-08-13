@@ -49,7 +49,7 @@ export default class ValidationListItem extends React.PureComponent {
     }, 200)
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.hasFocus) {
       this.focus()
     }

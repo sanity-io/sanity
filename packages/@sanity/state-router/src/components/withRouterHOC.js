@@ -48,7 +48,7 @@ export default function withRouter<Props: {}>(
       }
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
       const __internalRouter = this.context.__internalRouter
       if (!__internalRouter) {
         return
@@ -75,5 +75,5 @@ export default function withRouter<Props: {}>(
 
       return <Component {...this.props} router={router} />
     }
-  }
+  };
 }

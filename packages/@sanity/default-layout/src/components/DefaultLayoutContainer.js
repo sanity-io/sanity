@@ -13,7 +13,7 @@ const handleNavigate = urlStateStore.navigate
 export default class DefaultLayoutContainer extends React.PureComponent {
   state = {}
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     maybeRedirectToBase()
 
     this.urlStateSubscription = urlStateStore.state.subscribe({

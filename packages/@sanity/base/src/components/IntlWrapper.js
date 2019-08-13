@@ -13,11 +13,11 @@ export class IntlWrapper extends React.Component {
     children: PropTypes.node.isRequired
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     intl = this.context.intl
   }
 
-  componentWillUpdate() {
+  UNSAFE_componentWillUpdate() {
     intl = this.context.intl
   }
 

@@ -51,7 +51,7 @@ export default withRouterHOC(
       loaded: false
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
       this.userSubscription = userStore.currentUser.subscribe(event =>
         this.setState({user: event.user})
       )

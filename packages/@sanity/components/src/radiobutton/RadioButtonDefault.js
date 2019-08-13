@@ -22,7 +22,7 @@ export default class RadioButton extends React.Component {
     onBlur() {}
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this._inputId = uniqueId('RadioSelect')
   }
 

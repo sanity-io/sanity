@@ -32,7 +32,7 @@ class CookieTest extends PureComponent {
     this.state = {isLoading: true}
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     checkCookies().then(res =>
       this.setState({
         result: res,

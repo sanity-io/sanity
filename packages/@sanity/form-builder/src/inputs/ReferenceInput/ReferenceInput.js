@@ -68,7 +68,7 @@ export default class ReferenceInput extends React.Component<Props, State> {
     this.getPreviewSnapshot(this.props.value)
   }
 
-  componentWillReceiveProps(nextProps: Props) {
+  UNSAFE_componentWillReceiveProps(nextProps: Props) {
     if (nextProps.value !== this.props.value) {
       this.setState(getInitialState())
       this.getPreviewSnapshot(nextProps.value)

@@ -51,7 +51,7 @@ export default class TimeAgo extends React.PureComponent {
     this.stop()
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (!shallowEquals(this.props, nextProps)) {
       this.stop()
       this.start()

@@ -85,7 +85,7 @@ export default class ImageToolInput extends React.Component<Props, State> {
     this.setState({value: nextValue})
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.setState({value: nextProps.value})
   }
 

@@ -44,7 +44,7 @@ export default class SearchableSelect extends React.PureComponent {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.items != this.props.items) {
       this.setState({
         searchResult: this.props.items
