@@ -55,7 +55,6 @@
 }
 
 .popper {
-  position: relative;
   z-index: var(--zindex-portal);
 }
 
@@ -85,6 +84,7 @@
   position: absolute;
   width: 100%;
   opacity: 1;
+  box-sizing: border-box;
   padding: var(--medium-padding);
   transition: opacity 100ms ease-out;
   transition-delay: 100ms;
