@@ -68,7 +68,7 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
     }
   }
 
-  componentWillReceiveProps(nextProps: Props) {
+  UNSAFE_componentWillReceiveProps(nextProps: Props) {
     const willHaveFocus = PathUtils.hasFocus(nextProps.focusPath, nextProps.path)
     const hasFocus = PathUtils.hasFocus(this.props.focusPath, this.props.path)
     if (willHaveFocus && !hasFocus) {

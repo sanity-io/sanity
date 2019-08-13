@@ -38,7 +38,7 @@ export default class Escapable extends React.Component {
     children: undefined
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.removeListener = onKeypress(this.handleKeyPress)
   }
 

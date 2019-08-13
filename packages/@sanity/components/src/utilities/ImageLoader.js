@@ -13,7 +13,7 @@ export default class ImageLoader extends React.PureComponent {
     error: null
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.loadImage(this.props.src)
   }
 
@@ -35,7 +35,7 @@ export default class ImageLoader extends React.PureComponent {
     })
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.src !== this.props.src) {
       this.loadImage(nextProps.src)
     }

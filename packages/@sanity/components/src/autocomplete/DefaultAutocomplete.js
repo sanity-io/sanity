@@ -57,7 +57,7 @@ export default class DefaultAutocomplete extends React.Component {
     this.props.onChange(event)
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this._inputId = this.props.id || uniqueId('Autocomplete')
   }
 

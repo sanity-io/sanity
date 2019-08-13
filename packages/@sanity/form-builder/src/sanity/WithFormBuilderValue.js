@@ -95,11 +95,11 @@ export default class WithFormBuilderValue extends React.PureComponent<Props, Sta
     this.subscriptions.unsubscribeAll()
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.checkoutDocument(this.props.documentId)
   }
 
-  componentWillReceiveProps(nextProps: Props) {
+  UNSAFE_componentWillReceiveProps(nextProps: Props) {
     if (nextProps.documentId !== this.props.documentId) {
       this.setState(getInitialState())
       this.checkoutDocument(nextProps.documentId)

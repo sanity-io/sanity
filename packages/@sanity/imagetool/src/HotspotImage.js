@@ -69,7 +69,7 @@ export default class HotspotImage extends React.PureComponent {
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize)
   }
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.aspectRatio !== this.props.aspectRatio) {
       this.updateContainerAspect(nextProps)
     }

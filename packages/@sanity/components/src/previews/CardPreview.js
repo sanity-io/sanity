@@ -53,7 +53,7 @@ export default class CardPreview extends React.PureComponent {
     emWidth: 10
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.isPlaceholder && this.dateElement) {
       this._elementResizeDetector.uninstall(this.dateElement)
     }

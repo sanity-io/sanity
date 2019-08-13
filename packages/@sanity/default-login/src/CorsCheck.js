@@ -24,7 +24,7 @@ class CorsCheck extends PureComponent {
     this.state = {isLoading: true}
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     checkCors().then(res =>
       this.setState({
         result: res,
