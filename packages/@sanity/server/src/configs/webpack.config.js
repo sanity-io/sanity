@@ -73,7 +73,7 @@ export default (config = {}) => {
     resolve: {
       alias: {
         react: path.dirname(reactPath),
-        'react-dom': '@hot-loader/react-dom',
+        'react-dom': path.dirname(reactDomPath),
         moment$: 'moment/moment.js',
         ...rxPaths()
       }
@@ -90,9 +90,7 @@ export default (config = {}) => {
                 resolve('@babel/preset-react'),
                 [resolve('@babel/preset-env'), require('./babel-env-config')]
               ],
-              plugins: [
-                resolve('@babel/plugin-proposal-class-properties'),
-              ].filter(Boolean),
+              plugins: [resolve('@babel/plugin-proposal-class-properties')].filter(Boolean),
               cacheDirectory: true
             }
           }

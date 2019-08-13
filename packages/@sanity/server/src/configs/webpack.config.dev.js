@@ -16,6 +16,7 @@ export default config => {
     }),
     resolve: {
       alias: Object.assign({}, baseConfig.resolve.alias, {
+        'react-dom': require.resolve('@hot-loader/react-dom'),
         'webpack-hot-middleware/client': require.resolve('webpack-hot-middleware/client')
       })
     },
