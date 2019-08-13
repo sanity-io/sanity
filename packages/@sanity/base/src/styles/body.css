@@ -2,6 +2,10 @@
 @import 'part:@sanity/base/theme/variables/fonts-style';
 @import './layout/tippy.css';
 
+:global(html, body) {
+  font-size: var(--font-size-base);
+}
+
 :global(a) {
   color: var(--link-color);
 }
