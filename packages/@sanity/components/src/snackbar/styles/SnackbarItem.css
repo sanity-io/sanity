@@ -1,7 +1,7 @@
 @import "part:@sanity/base/theme/variables-style";
 
 .root {
-  position: absolute;
+  position: fixed;
   z-index: var(--zindex-modal);
   bottom: 0;
   right: 0;
