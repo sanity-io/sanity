@@ -100,10 +100,10 @@ class CookieTest extends PureComponent {
           </div>
 
           <div className={styles.title}>
-            <h3>Cookie from api.sanity.io</h3>
+            <h3>We couldn{"'"}t log you in</h3>
           </div>
           <div className={styles.description}>
-            <p>The cookie keeps you securely logged into the studio as your user.</p>
+            <p>Your browser wouldn{"'"}t accept our cookie.</p>
           </div>
           <div className={styles.button}>
             <Button
@@ -112,7 +112,7 @@ class CookieTest extends PureComponent {
               type="submit"
               onClick={this.handleAcceptCookieButtonClicked}
             >
-              ACCEPT COOKIE
+              Try Again
             </Button>
           </div>
         </div>
