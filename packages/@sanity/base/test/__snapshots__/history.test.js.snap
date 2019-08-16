@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`removeMissingReferences removes references to missing docs, deeply 1`] = `
+Object {
+  "_id": "foo",
+  "_type": "test",
+  "arrayOfObjects": Array [
+    Object {
+      "_type": "foo",
+      "prop": "yes",
+    },
+    Object {
+      "_type": "foo",
+      "prop": "no",
+    },
+  ],
+  "arrayOfStrings": Array [
+    "a",
+    "b",
+    "c",
+  ],
+  "bool": true,
+  "number": 123,
+  "string": "value",
+  "subObject": Object {
+    "_type": "sub",
+    "nested": Object {
+      "array": Array [
+        "contents",
+        Object {
+          "_ref": "abc123",
+          "_type": "reference",
+        },
+        Object {
+          "_type": "nonref",
+          "someProp": "yes-it-exists",
+        },
+      ],
+      "prop": true,
+    },
+  },
+}
+`;

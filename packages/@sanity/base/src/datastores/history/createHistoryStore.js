@@ -3,7 +3,7 @@ import {from, merge} from 'rxjs'
 import {transactionsToEvents} from '@sanity/transaction-collator'
 import {map, mergeMap, reduce, scan} from 'rxjs/operators'
 import {getDraftId, getPublishedId} from '../../util/draftUtils'
-import {omit} from 'lodash'
+import {omit, isUndefined} from 'lodash'
 import jsonReduce from 'json-reduce'
 
 const documentRevisionCache = Object.create(null)
@@ -115,16 +115,22 @@ const getAllRefIds = doc =>
 
 function jsonMap(value, mapFn) {
   if (Array.isArray(value)) {
-    return mapFn(value.map(item => map(item, mapFn)))
+    return mapFn(value.map(item => jsonMap(item, mapFn)).filter(item => !isUndefined(item)))
   }
+
   if (value && typeof value === 'object') {
     return mapFn(
       Object.keys(value).reduce((res, key) => {
-        res[key] = jsonMap(value[key], mapFn)
+        const mappedValue = jsonMap(value[key], mapFn)
+        if (!isUndefined(mappedValue)) {
+          res[key] = mappedValue
+        }
+
         return res
       }, {})
     )
   }
+
   return mapFn(value)
 }
 
@@ -135,6 +141,12 @@ const mapRefNodes = (doc, mapFn) =>
       : node
   })
 
+export const removeMissingReferences = (doc, existingIds) =>
+  mapRefNodes(doc, refNode => {
+    const documentExists = existingIds[refNode._ref]
+    return documentExists ? refNode : undefined
+  })
+
 function restore(id, rev) {
   return from(getDocumentAtRevision(id, rev)).pipe(
     mergeMap(documentAtRevision => {
@@ -142,14 +154,9 @@ function restore(id, rev) {
         .map(refId => `"${refId}": defined(*[_id=="${refId}"]._id)`)
         .join(',')
 
-      return client.observable.fetch(`{${existingIdsQuery}}`).pipe(
-        map(existingIds =>
-          mapRefNodes(documentAtRevision, refNode => {
-            const documentExists = existingIds[refNode._ref]
-            return documentExists ? refNode : undefined
-          })
-        )
-      )
+      return client.observable
+        .fetch(`{${existingIdsQuery}}`)
+        .pipe(map(existingIds => removeMissingReferences(documentAtRevision, existingIds)))
     }),
     map(documentAtRevision =>
       // Remove _updatedAt and create a new draft from the document at given revision
