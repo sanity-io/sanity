@@ -61,7 +61,7 @@ function isDeprecatedBlockValue(value: ?(FormBuilderValue[])) {
   if (!value || !Array.isArray(value)) {
     return false
   }
-  const block = value.find(item => item._type === 'block')
+  const block = value.find(item => item && item._type === 'block')
   if (block && Object.keys(block).includes('spans')) {
     return true
   }
