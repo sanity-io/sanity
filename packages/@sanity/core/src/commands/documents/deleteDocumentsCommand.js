@@ -1,3 +1,5 @@
+import pluralize from 'pluralize'
+
 const helpText = `
 Delete a document from the projects configured dataset
 
@@ -10,20 +12,26 @@ Example
 
   # ID wrapped in double or single quote works equally well
   sanity documents delete 'myDocId'
+
+  # Delete document with ID "someDocId" from dataset "blog"
+  sanity documents delete --dataset=blog someDocId
+
+  # Delete the document with ID "doc1" and "doc2"
+  sanity documents delete doc1 doc2
 `
 
 export default {
   name: 'delete',
   group: 'documents',
-  signature: '[ID]',
+  signature: '[ID] [...IDS]',
   helpText,
   description: 'Delete a document by ID',
   action: async (args, context) => {
     const {apiClient, output, chalk} = context
     const {dataset} = args.extOptions
-    const [id] = args.argsWithoutOptions.map(str => `${str}`)
+    const ids = args.argsWithoutOptions.map(str => `${str}`)
 
-    if (!id) {
+    if (!ids.length) {
       throw new Error('Document ID must be specified')
     }
 
@@ -33,15 +41,22 @@ export default {
           .config({dataset})
       : apiClient()
 
+    const transaction = ids.reduce((trx, id) => trx.delete(id), client.transaction())
     try {
-      const {results} = await client.delete(id)
-      if (results.length > 0 && results[0].operation === 'delete') {
-        output.print('Document deleted')
-      } else {
-        output.error(chalk.red(`Document with ID "${id}" not found`))
+      const {results} = await transaction.commit()
+      const deleted = results.filter(res => res.operation === 'delete').map(res => res.id)
+      const notFound = ids.filter(id => !deleted.includes(id))
+      if (deleted.length > 0) {
+        output.print(`Deleted ${deleted.length} ${pluralize('document', deleted.length)}`)
+      }
+
+      if (notFound.length > 0) {
+        output.error(
+          chalk.red(`${pluralize('Document', notFound.length)} not found: ${notFound.join(', ')}`)
+        )
       }
     } catch (err) {
-      throw new Error(`Failed to delete document:\n${err.message}`)
+      throw new Error(`Failed to delete ${pluralize('document', ids.length)}:\n${err.message}`)
     }
   }
 }
