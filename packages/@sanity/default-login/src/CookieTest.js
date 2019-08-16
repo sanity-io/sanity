@@ -5,7 +5,11 @@ import config from 'config:sanity'
 import Button from 'part:@sanity/components/buttons/default'
 import BrandLogo from 'part:@sanity/base/brand-logo?'
 import Spinner from 'part:@sanity/components/loading/spinner'
+import {of} from 'rxjs'
+import {mapTo, catchError, finalize} from 'rxjs/operators'
 import styles from './styles/CookieTest.css'
+
+import {openCenteredPopup} from './util/openWindow'
 
 const projectName = (config.project && config.project.name) || ''
 
@@ -18,35 +22,63 @@ const checkCookies = () => {
         .then(() => true)
         .catch(() => false)
     })
-    .then(result => ({isCookieError: !result}))
     .catch(error => ({error}))
 }
+
+const hostname = client.clientConfig.url
+// const hostname = 'http://localhost:5000/v1'
 
 class CookieTest extends PureComponent {
   static propTypes = {
     children: PropTypes.node.isRequired
   }
 
-  constructor(...args) {
-    super(...args)
+  constructor(props) {
+    super(props)
     this.state = {isLoading: true}
-  }
-
-  UNSAFE_componentWillMount() {
-    checkCookies().then(res =>
+    checkCookies().then(isCookieError => {
       this.setState({
-        result: res,
+        isCookieError: !isCookieError,
         isLoading: false
       })
-    )
+    })
+    this.redirectToUrl = null
+    this.popupSubscription = null
   }
 
-  renderWhiteListForm() {
-    // eslint-disable-line class-methods-use-this
-    const {SanityLogo, sanityLogo} = this.props
-    const redirectTo = `${client.clientConfig.url}/auth/whitelist?redirectTo=${encodeURIComponent(
+  componentDidMount() {
+    this.popupUrl = `${hostname}/auth/views/cookie/interact?redirectTo=${encodeURIComponent(
       window.location.toString()
     )}`
+  }
+
+  componentWillUnmount() {
+    if (this.popupSubscription) {
+      this.popupSubscription.unsubscribe()
+    }
+  }
+
+  handleAcceptCookieButtonClicked = () => {
+    this.openPopup()
+  }
+
+  openPopup = () => {
+    openCenteredPopup(this.popupUrl, {
+      height: 380,
+      width: 640,
+      name
+    })
+      .pipe(
+        mapTo(`Successfully performed the cookie whitelisting routine`),
+        finalize(() => window.location.reload()),
+        catchError(error => of(error.message))
+      )
+      .subscribe(console.log) // eslint-disable-line no-console
+  }
+
+  renderCookieAcceptContent() {
+    // eslint-disable-line class-methods-use-this
+    const {SanityLogo, sanityLogo} = this.props
     return (
       <div className={styles.root}>
         <div className={styles.inner}>
@@ -68,40 +100,35 @@ class CookieTest extends PureComponent {
           </div>
 
           <div className={styles.title}>
-            <h2>Accept the Cookie</h2>
+            <h3>We couldn{"'"}t log you in</h3>
           </div>
           <div className={styles.description}>
-            <p>
-              Your browser didn&apos;t accept our cookie so we&apos;re having trouble logging you
-              in.
-            </p>
-            <p>You can explicitly accept it though by clicking below.</p>
+            <p>Your browser wouldn{"'"}t accept our cookie.</p>
           </div>
-          <form
-            method="post"
-            className={styles.acceptCookieForm}
-            action={`${client.clientConfig.url}/auth/testCookie`}
-            encType="application/x-www-form-urlencoded"
-          >
-            <input type="hidden" name="redirectTo" value={redirectTo} />
-            <Button color="success" inverted type="submit">
-              ACCEPT COOKIE
+          <div className={styles.button}>
+            <Button
+              color="success"
+              inverted
+              type="submit"
+              onClick={this.handleAcceptCookieButtonClicked}
+            >
+              Try Again
             </Button>
-          </form>
+          </div>
         </div>
       </div>
     )
   }
 
   render() {
-    const {isLoading, result} = this.state
+    const {isLoading, isCookieError} = this.state
 
     if (isLoading) {
       return <Spinner fullscreen center />
     }
 
-    if (result.isCookieError) {
-      return this.renderWhiteListForm()
+    if (isCookieError) {
+      return this.renderCookieAcceptContent()
     }
 
     return <div>{this.props.children}</div>

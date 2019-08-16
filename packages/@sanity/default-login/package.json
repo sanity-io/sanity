@@ -22,7 +22,8 @@
   "dependencies": {
     "@sanity/generate-help-url": "0.142.0",
     "in-publish": "^2.0.0",
-    "prop-types": "^15.6.0"
+    "prop-types": "^15.6.0",
+    "rxjs": "^6.5.2"
   },
   "devDependencies": {
     "@sanity/check": "0.142.0",
