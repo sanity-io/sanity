@@ -204,7 +204,17 @@ export default async function initSanity(args, context) {
     }
 
     // Make sure we have the required configs
-    const coreCommands = dynamicRequire(resolveFrom.silent(outputPath, '@sanity/core')).commands
+    const corePath = resolveFrom.silent(outputPath, '@sanity/core')
+
+    debug('@sanity/core path resolved to %s', corePath || 'null')
+    debug('(from %s)', outputPath)
+    const coreModule = dynamicRequire(corePath)
+    const coreCommands = coreModule && coreModule.commands
+
+    if (!Array.isArray(coreCommands)) {
+      throw new Error('@sanity/core module failed to be resolved')
+    }
+
     const configCheckCmd = coreCommands.find(cmd => cmd.name === 'configcheck')
     await configCheckCmd.action(
       {extOptions: {quiet: true}},
@@ -215,10 +225,14 @@ export default async function initSanity(args, context) {
 
     // Prompt for dataset import (if a dataset is defined)
     if (shouldImport) {
-      await doDatasetImport()
-    }
+      await doDatasetImport({
+        outputPath,
+        coreCommands,
+        template,
+        datasetName,
+        context
+      })
 
-    if (shouldImport) {
       print('')
       print('If you want to delete the imported data, use')
       print(`\t${chalk.cyan(`sanity dataset delete ${datasetName}`)}`)
@@ -308,13 +322,13 @@ export default async function initSanity(args, context) {
       }
     }
 
-    const isFirstProject = projects.length === 0
-    if (isFirstProject) {
+    const isUsersFirstProject = projects.length === 0
+    if (isUsersFirstProject) {
       debug('No projects found for user, prompting for name')
       const projectName = await prompt.single({message: 'Project name'})
       return createProject(apiClient, {displayName: projectName}).then(response => ({
         ...response,
-        isFirstProject
+        isFirstProject: isUsersFirstProject
       }))
     }
 
@@ -343,7 +357,7 @@ export default async function initSanity(args, context) {
         })
       }).then(response => ({
         ...response,
-        isFirstProject
+        isFirstProject: isUsersFirstProject
       }))
     }
 
@@ -351,7 +365,7 @@ export default async function initSanity(args, context) {
     return {
       projectId: selected,
       displayName: projects.find(proj => proj.id === selected).displayName,
-      isFirstProject
+      isFirstProject: isUsersFirstProject
     }
   }
 
@@ -477,22 +491,6 @@ export default async function initSanity(args, context) {
         }
       ]
     })
-  }
-
-  async function doDatasetImport() {
-    const manifestPath = path.join(outputPath, 'sanity.json')
-    const baseManifest = await loadJson(manifestPath)
-    const manifest = reduceConfig(baseManifest || {}, environment)
-
-    const importCmd = coreCommands.find(cmd => cmd.name === 'import' && cmd.group === 'dataset')
-    return importCmd.action(
-      {argsWithoutOptions: [template.datasetUrl, datasetName], extOptions: {}},
-      Object.assign({}, context, {
-        apiClient: clientWrapper(manifest, manifestPath),
-        workDir: outputPath,
-        fromInitCommand: true
-      })
-    )
   }
 
   async function getProjectInfo() {
@@ -648,4 +646,21 @@ async function promptForAclMode(prompt, output) {
   }
 
   return mode
+}
+
+async function doDatasetImport(options) {
+  const {outputPath, coreCommands, template, datasetName, context} = options
+  const manifestPath = path.join(outputPath, 'sanity.json')
+  const baseManifest = await loadJson(manifestPath)
+  const manifest = reduceConfig(baseManifest || {}, environment)
+
+  const importCmd = coreCommands.find(cmd => cmd.name === 'import' && cmd.group === 'dataset')
+  return importCmd.action(
+    {argsWithoutOptions: [template.datasetUrl, datasetName], extOptions: {}},
+    Object.assign({}, context, {
+      apiClient: clientWrapper(manifest, manifestPath),
+      workDir: outputPath,
+      fromInitCommand: true
+    })
+  )
 }
