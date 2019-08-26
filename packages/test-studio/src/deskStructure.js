@@ -106,6 +106,21 @@ export default () =>
             ])
         ),
 
+      S.listItem({
+        id: 'books-by-author',
+        title: 'Books by author',
+        schemaType: 'book',
+        child: () =>
+          S.documentTypeList('author').child(authorId =>
+            S.documentTypeList('book')
+              .title('Books by author')
+              .filter('_type == $type && author._ref == $authorId')
+              .params({type: 'book', authorId})
+              .child(S.editorWithInitialValueTemplate('book-by-author', {authorId}))
+              .canHandleIntent(S.documentTypeList('book').getCanHandleIntent())
+          )
+      }),
+
       S.divider(),
 
       ...S.documentTypeListItems()
