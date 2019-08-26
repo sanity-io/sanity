@@ -5,7 +5,7 @@ import styles from './styles/ErrorPane.css'
 
 export default function ErrorPane(props) {
   return (
-    <DefaultPane title="Error" isSelected={false} isCollapsed={false}>
+    <DefaultPane title="Error" isSelected={false} isCollapsed={false} isScrollable={false}>
       <div className={styles.root}>
         <div className={styles.message}>{props.children}</div>
       </div>
