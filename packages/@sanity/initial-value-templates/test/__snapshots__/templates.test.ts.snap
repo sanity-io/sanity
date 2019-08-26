@@ -3,15 +3,19 @@
 exports[`getTemplates returns defaults if part is not implemented 1`] = `
 Array [
   Object {
+    "description": undefined,
     "icon": [Function],
     "id": "author",
+    "parameters": undefined,
     "schemaType": "author",
     "title": "Author",
     "value": [Function],
   },
   Object {
+    "description": undefined,
     "icon": [Function],
     "id": "post",
+    "parameters": undefined,
     "schemaType": "post",
     "title": "Post",
     "value": Object {
@@ -45,15 +49,19 @@ Array [
 exports[`getTemplates validates that templates has ID 1`] = `
 Array [
   Object {
+    "description": undefined,
     "icon": [Function],
     "id": "author",
+    "parameters": undefined,
     "schemaType": "author",
     "title": "Author",
     "value": [Function],
   },
   Object {
+    "description": undefined,
     "icon": [Function],
     "id": "post",
+    "parameters": undefined,
     "schemaType": "post",
     "title": "Post",
     "value": Object {
@@ -71,15 +79,19 @@ Template \\"Author\\" is missing required properties: id"
 exports[`getTemplates validates that templates has an object/function value 1`] = `
 Array [
   Object {
+    "description": undefined,
     "icon": [Function],
     "id": "author",
+    "parameters": undefined,
     "schemaType": "author",
     "title": "Author",
     "value": [Function],
   },
   Object {
+    "description": undefined,
     "icon": [Function],
     "id": "post",
+    "parameters": undefined,
     "schemaType": "post",
     "title": "Post",
     "value": Object {
@@ -97,15 +109,19 @@ Template \\"author\\" has an invalid \\"value\\" property; should be a function 
 exports[`getTemplates validates that templates has id, title, schemaType, value 1`] = `
 Array [
   Object {
+    "description": undefined,
     "icon": [Function],
     "id": "author",
+    "parameters": undefined,
     "schemaType": "author",
     "title": "Author",
     "value": [Function],
   },
   Object {
+    "description": undefined,
     "icon": [Function],
     "id": "post",
+    "parameters": undefined,
     "schemaType": "post",
     "title": "Post",
     "value": Object {
@@ -123,15 +139,19 @@ Template at index 0 is missing required properties: id, title, schemaType, value
 exports[`getTemplates validates that templates has schema type 1`] = `
 Array [
   Object {
+    "description": undefined,
     "icon": [Function],
     "id": "author",
+    "parameters": undefined,
     "schemaType": "author",
     "title": "Author",
     "value": [Function],
   },
   Object {
+    "description": undefined,
     "icon": [Function],
     "id": "post",
+    "parameters": undefined,
     "schemaType": "post",
     "title": "Post",
     "value": Object {
@@ -149,15 +169,19 @@ Template \\"author\\" is missing required properties: schemaType"
 exports[`getTemplates validates that templates has title 1`] = `
 Array [
   Object {
+    "description": undefined,
     "icon": [Function],
     "id": "author",
+    "parameters": undefined,
     "schemaType": "author",
     "title": "Author",
     "value": [Function],
   },
   Object {
+    "description": undefined,
     "icon": [Function],
     "id": "post",
+    "parameters": undefined,
     "schemaType": "post",
     "title": "Post",
     "value": Object {
@@ -175,15 +199,19 @@ Template \\"author\\" is missing required properties: title"
 exports[`getTemplates validates that templates has unique IDs 1`] = `
 Array [
   Object {
+    "description": undefined,
     "icon": [Function],
     "id": "author",
+    "parameters": undefined,
     "schemaType": "author",
     "title": "Author",
     "value": [Function],
   },
   Object {
+    "description": undefined,
     "icon": [Function],
     "id": "post",
+    "parameters": undefined,
     "schemaType": "post",
     "title": "Post",
     "value": Object {
@@ -201,15 +229,19 @@ Template \\"Developer\\" at index 1 has the same ID (\\"author\\") as template \
 exports[`getTemplates validates that templates has value 1`] = `
 Array [
   Object {
+    "description": undefined,
     "icon": [Function],
     "id": "author",
+    "parameters": undefined,
     "schemaType": "author",
     "title": "Author",
     "value": [Function],
   },
   Object {
+    "description": undefined,
     "icon": [Function],
     "id": "post",
+    "parameters": undefined,
     "schemaType": "post",
     "title": "Post",
     "value": Object {

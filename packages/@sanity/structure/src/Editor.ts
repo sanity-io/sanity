@@ -88,11 +88,11 @@ export class EditorBuilder implements Serializable {
     return this.spec.initialValueTemplates
   }
 
-  serialize({path, index, hint}: SerializeOptions = {path: []}): EditorNode {
+  serialize({path = [], index, hint}: SerializeOptions = {path: []}): EditorNode {
     const urlId = path[index || path.length - 1]
 
     // Try to grab document ID / editor ID from URL if not defined
-    const id = this.spec.id || `${urlId}`
+    const id = this.spec.id || (urlId && `${urlId}`)
     const options = {id, type: undefined, template: undefined, ...this.spec.options}
 
     if (typeof id !== 'string' || !id) {

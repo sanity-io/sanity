@@ -27,7 +27,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@sanity/util": "^0.141.5",
+    "@sanity/util": "0.142.0",
     "@types/lodash": "^4.14.116",
     "@types/memoize-one": "^3.1.1",
     "@types/node": "^8.0.0",
