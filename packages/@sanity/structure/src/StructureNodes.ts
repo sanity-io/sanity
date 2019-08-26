@@ -24,6 +24,12 @@ export interface EditorNode extends StructureNode {
   parameters?: {
     [key: string]: any
   }
+  initialValueTemplates?: InitialValueTemplateConfig[]
+}
+
+export type InitialValueTemplateConfig = {
+  id: string
+  parameters?: {[key: string]: any}
 }
 
 export interface Divider {
