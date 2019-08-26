@@ -4,6 +4,7 @@ import {from} from 'rxjs'
 import DefaultPane from 'part:@sanity/components/panes/default'
 import CreateDocumentList from 'part:@sanity/components/lists/create-document'
 import schema from 'part:@sanity/base/schema'
+import ErrorPane from '../pane/ErrorPane'
 import LoadingPane from '../pane/LoadingPane'
 import DocumentSnapshots from '../components/DocumentSnapshots'
 import styles from './styles/withInitialValue.css'
@@ -13,6 +14,21 @@ import {
   getTemplatesBySchemaType,
   resolveInitialValue
 } from '@sanity/base/initial-value-templates'
+
+async function resolveInitialValueWithParameters(template, parameters) {
+  if (!template) {
+    return undefined
+  }
+
+  if (!templateExists(template)) {
+    // eslint-disable-next-line no-console
+    console.warn('Template "%s" not defined, using empty initial value', template)
+    return undefined
+  }
+
+  const value = await resolveInitialValue(getTemplateById(template), parameters)
+  return value
+}
 
 // Resolves the initial value for a given template, if possible
 export default function withInitialValue(Pane) {
@@ -25,45 +41,105 @@ export default function withInitialValue(Pane) {
         id: PropTypes.string,
         type: PropTypes.string,
         template: PropTypes.string
-      }).isRequired
+      }).isRequired,
+      initialValueTemplates: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.string.isRequired,
+          parameters: PropTypes.object
+        })
+      ),
+      urlParameters: PropTypes.shape({
+        template: PropTypes.string
+      })
     }
 
     static defaultProps = {
-      parameters: undefined
+      parameters: undefined,
+      initialValueTemplates: undefined,
+      urlParameters: {}
     }
 
     constructor(props) {
       super(props)
 
-      const {options} = props
-      const {template, type} = options
+      const {options, urlParameters} = props
 
+      if (
+        urlParameters.template &&
+        options.template &&
+        options.template !== urlParameters.template
+      ) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `Conflicting templates: URL says "${urlParameters.template}", structure node says "${options.template}". Using "${options.template}".`
+        )
+      }
+
+      const {templateChoices, templateName, parameters} = this.resolveTemplateChoices()
+      const shouldResolve = Boolean(templateName)
+      this.state = {isResolving: shouldResolve, templateChoices}
+
+      if (shouldResolve) {
+        this.subscription = from(
+          resolveInitialValueWithParameters(templateName, parameters)
+        ).subscribe(
+          initialValue => {
+            this.setState({isResolving: false, initialValue})
+          },
+          resolveError => {
+            /* eslint-disable no-console */
+            console.group('Failed to resolve initial value')
+            console.error(resolveError)
+            console.error('Template ID: %s', templateName)
+            console.error('Parameters: %o', parameters || {})
+            console.groupEnd()
+            /* eslint-enable no-console */
+
+            this.setState({isResolving: false, resolveError})
+          }
+        )
+      }
+    }
+
+    resolveTemplateChoices() {
+      const {options, urlParameters, initialValueTemplates} = this.props
+      const template = options.template || urlParameters.template
+      const type = options.type
+
+      let parameters = this.props.parameters
       let templateName = template
-      let templateChoices =
-        !template &&
-        getTemplatesBySchemaType(type).map(t => {
+      let templateChoices
+
+      if (!template && initialValueTemplates) {
+        templateChoices = initialValueTemplates.map(spec => {
+          const tpl = getTemplateById(spec.id)
+          const schemaType = schema.get(tpl.schemaType)
           return {
-            ...t,
-            typeTitle: type.title,
-            icon: t.icon || type.icon
+            ...tpl,
+            typeTitle: schemaType.title,
+            icon: tpl.icon || schemaType.title,
+            parameters: spec.parameters
           }
         })
+      } else if (!template) {
+        templateChoices = getTemplatesBySchemaType(type)
+          .filter(tpl => !tpl.parameters || !tpl.parameters.length)
+          .map(tpl => ({
+            ...tpl,
+            typeTitle: type.title,
+            icon: tpl.icon || type.icon
+          }))
+      }
 
       // If we have not specified a specific template, and we only have a single
       // template available for a schema type, use it
       if (!template && templateChoices && templateChoices.length === 1) {
         templateName = templateChoices[0].id
+        parameters = {...templateChoices[0].parameters, ...parameters}
         templateChoices = null
       }
 
-      const shouldResolve = Boolean(templateName)
-      this.state = {isResolving: shouldResolve, templateChoices}
-
-      if (shouldResolve) {
-        this.subscription = from(this.resolveInitialValue(templateName)).subscribe(initialValue => {
-          this.setState({isResolving: false, initialValue})
-        })
-      }
+      return {templateChoices, templateName, parameters}
     }
 
     componentWillUnmount() {
@@ -72,26 +148,21 @@ export default function withInitialValue(Pane) {
       }
     }
 
-    resolveInitialValue(template) {
-      const {parameters} = this.props
-      if (!template) {
-        return Promise.resolve(undefined)
-      }
-
-      if (!templateExists(template)) {
-        // eslint-disable-next-line no-console
-        console.warn('Template "%s" not defined, using empty initial value', template)
-        return Promise.resolve(undefined)
-      }
-
-      return resolveInitialValue(getTemplateById(template), parameters)
-    }
-
     render() {
       const {options} = this.props
       const {id, type} = options
       if (!id || !type) {
         return <Pane {...this.props} initialValue={this.state.initialValue} />
+      }
+
+      const {resolveError} = this.state
+      if (resolveError) {
+        return (
+          <ErrorPane>
+            <h2>Failed to resolve initial value</h2>
+            <p>Check developer console for details</p>
+          </ErrorPane>
+        )
       }
 
       return (
