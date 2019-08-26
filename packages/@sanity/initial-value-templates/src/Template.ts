@@ -1,3 +1,5 @@
+import {TemplateParameter} from './TemplateParameters'
+
 export interface Template {
   id: string
   title: string
@@ -5,6 +7,7 @@ export interface Template {
   schemaType: string
   icon?: Function
   value: {[key: string]: any}
+  parameters?: TemplateParameter[]
 }
 
 export class TemplateBuilder {
@@ -63,7 +66,7 @@ export class TemplateBuilder {
   }
 
   serialize(): Template {
-    const {id, title, description, schemaType, value, icon} = this.spec
+    const {id, title, description, schemaType, value, icon, parameters} = this.spec
     if (!id) {
       throw new Error('Template is missing required "id"')
     }
@@ -80,7 +83,7 @@ export class TemplateBuilder {
       throw new Error(`Template with ID "${id}" is missing required "value"`)
     }
 
-    return {id, title, description, schemaType, value, icon}
+    return {id, title, description, schemaType, value, icon, parameters}
   }
 
   clone(withSpec?: Partial<Template>) {
