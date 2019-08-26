@@ -66,7 +66,8 @@ export default class ErrorHandler extends React.PureComponent {
         kind="error"
         onAction={this.handleClose}
         title={<strong>{message}</strong>}
-        subtitle={<div>Check browser javascript console for details</div>}
+        timeout={8000}
+        subtitle="Check your browser's JavaScript console for details."
       />
     )
   }

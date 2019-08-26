@@ -43,7 +43,7 @@ export default class SnackbarItem extends React.Component {
 
   static defaultProps = {
     action: undefined,
-    autoDismissTimeout: 4000,
+    autoDismissTimeout: 5000,
     children: null,
     icon: null,
     isCloseable: true,
