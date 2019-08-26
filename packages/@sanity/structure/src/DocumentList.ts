@@ -24,9 +24,7 @@ const validateFilter = (spec: PartialDocumentList, options: SerializeOptions) =>
 
   if (['*', '{'].includes(filter[0])) {
     throw new SerializeError(
-      `\`filter\` cannot start with \`${
-        filter[0]
-      }\` - looks like you are providing a query, not a filter`,
+      `\`filter\` cannot start with \`${filter[0]}\` - looks like you are providing a query, not a filter`,
       options.path,
       spec.id,
       spec.title
@@ -41,7 +39,8 @@ const resolveEditorChildForItem: ChildResolver = (
   options: ChildResolverOptions
 ): ItemChild | Promise<ItemChild> | undefined => {
   const parentItem = options.parent as DocumentList
-  return Promise.resolve(parentItem.schemaTypeName || resolveTypeForDocument(itemId)).then(type =>
+  const schemaType = parentItem.schemaTypeName || resolveTypeForDocument(itemId)
+  return Promise.resolve(schemaType).then(type =>
     new EditorBuilder()
       .id('editor')
       .documentId(itemId)
