@@ -68,10 +68,18 @@ function resolveForStructure(structure, paneSegments, prevStructure, fromIndex) 
       subscribeForUpdates(parent.child, index, context, [id, context])
     }
 
+    function withUrlParameters(result, urlParameters) {
+      return urlParameters ? {...result, urlParameters} : result
+    }
+
     function subscribeForUpdates(pane, index, context, resolverArgs) {
+      const {parameters} = context
       const source = serializeStructure(pane, context, resolverArgs)
       subscriptions.push(
-        source.subscribe(result => emit(result, index), error => subscriber.error(error))
+        source.subscribe(
+          result => emit(withUrlParameters(result, parameters), index),
+          error => subscriber.error(error)
+        )
       )
     }
 
