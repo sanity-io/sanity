@@ -11,7 +11,6 @@ import {EditorBuilder} from './Editor'
 import {isActionEnabled} from './parts/documentActionUtils'
 import {DocumentTypeListBuilder} from './DocumentTypeList'
 import {IntentChecker} from './Intent'
-import {ChildResolverOptions} from './ChildResolver'
 
 const PlusIcon = getPlusIcon()
 const ListIcon = getListIcon()
@@ -89,17 +88,12 @@ export function getDocumentTypeList(typeName: string, sanitySchema?: Schema): Do
       {id: 'layout', title: 'Layout'},
       {id: 'actions', title: 'Actions'}
     ])
-    .child((documentId: string, context: ChildResolverOptions) => {
-      const params = context.parameters || {}
-      const {template, ...parameters} = params
-      const editor = new EditorBuilder()
+    .child((documentId: string) =>
+      new EditorBuilder()
         .id('editor')
         .schemaType(type)
         .documentId(documentId)
-        .parameters(parameters)
-
-      return typeof template === 'string' ? editor.template(template) : editor
-    })
+    )
     .canHandleIntent(intentChecker)
     .menuItems([
       // Create new (from action button)
