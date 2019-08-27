@@ -2,8 +2,10 @@
 
 exports[`T.defaultTemplateForType() generates correct representation of type with initial value 1`] = `
 Object {
+  "description": undefined,
   "icon": [Function],
   "id": "post",
+  "parameters": undefined,
   "schemaType": "post",
   "title": "Post",
   "value": Object {
@@ -14,8 +16,10 @@ Object {
 
 exports[`T.defaultTemplateForType() generates correct representation of type without initial value 1`] = `
 Object {
+  "description": undefined,
   "icon": [Function],
   "id": "author",
+  "parameters": undefined,
   "schemaType": "author",
   "title": "Author",
   "value": [Function],
@@ -50,15 +54,19 @@ Array [
 exports[`T.defaults() generates array of all schema type templates 2`] = `
 Array [
   Object {
+    "description": undefined,
     "icon": [Function],
     "id": "author",
+    "parameters": undefined,
     "schemaType": "author",
     "title": "Author",
     "value": [Function],
   },
   Object {
+    "description": undefined,
     "icon": [Function],
     "id": "post",
+    "parameters": undefined,
     "schemaType": "post",
     "title": "Post",
     "value": Object {
@@ -70,8 +78,10 @@ Array [
 
 exports[`T.template() builds template through constructor 1`] = `
 Object {
+  "description": undefined,
   "icon": [Function],
   "id": "foo",
+  "parameters": undefined,
   "schemaType": "author",
   "title": "some title",
   "value": Object {
@@ -82,8 +92,10 @@ Object {
 
 exports[`T.template() can construct using builder 1`] = `
 Object {
+  "description": undefined,
   "icon": [Function],
   "id": "yeah",
+  "parameters": undefined,
   "schemaType": "author",
   "title": "Yeah",
   "value": Object {
