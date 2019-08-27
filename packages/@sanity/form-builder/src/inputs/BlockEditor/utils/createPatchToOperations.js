@@ -185,8 +185,21 @@ export default function createPatchesToChange(
     }
     // Deal with patches unsetting something inside
     const lastKey = findLastKey(patch.path)
-    if (lastKey && editor.value.document.getDescendant(lastKey)) {
+    const editorNode = editor.value.document.getDescendant(lastKey)
+    const isDirectlyTargeted =
+      patch.path.findIndex(part => part._key && part._key === lastKey) === patch.path.length - 1
+    // If it is targeting a node in our document directly, just remove that node
+    if (isDirectlyTargeted && lastKey && editorNode) {
       editor.removeNodeByKey(lastKey)
+    }
+    // If it is targeting a data value inside some node's data,
+    // patch that data value and update the containing node
+    if (!isDirectlyTargeted && lastKey && editorNode) {
+      const data = editorNode.data.toObject()
+      const _patch = {...patch, path: patch.path.slice(patch.path.indexOf({_key: lastKey}))}
+      const newValue = data.value ? applyAll(data.value, [_patch]) : data.value
+      data.value = newValue
+      editor.setNodeByKey(editorNode.key, {data})
     }
     return editor.operations
   }
