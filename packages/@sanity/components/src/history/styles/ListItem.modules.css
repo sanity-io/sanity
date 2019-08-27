@@ -143,4 +143,8 @@
     font-size: var(--font-size-xsmall, 0.75rem);
     margin: 0 0 var(--small-padding);
   }
+
+  @nest .selected & a {
+    color: inherit;
+  }
 }
