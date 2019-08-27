@@ -1,6 +1,6 @@
 {
   "name": "@sanity/components",
-  "version": "0.142.1",
+  "version": "0.142.2",
   "description": "Basic UX components",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -25,10 +25,10 @@
     "attr-accept": "^1.1.0",
     "boundless-arrow-key-navigation": "^1.1.0",
     "chance": "^1.0.4",
+    "chroma-js": "^2.0.4",
     "circular-at": "^1.0.3",
     "classnames": "^2.2.5",
     "date-fns": "^1.29.0",
-    "chroma-js": "^2.0.4",
     "dom-scroll-into-view": "^1.2.1",
     "element-resize-detector": "^1.1.14",
     "exif-component": "^1.0.1",
@@ -50,9 +50,9 @@
     "string-hash": "^1.1.3"
   },
   "devDependencies": {
-    "@sanity/base": "0.142.1",
+    "@sanity/base": "0.142.2",
     "@sanity/check": "0.142.0",
-    "@sanity/core": "0.142.1",
+    "@sanity/core": "0.142.2",
     "pre-commit": "^1.2.2",
     "prop-types": "^15.6.0",
     "react": "^16.3.0",
