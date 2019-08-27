@@ -9,6 +9,12 @@ export default {
   icon,
   fields: [
     {
+      name: 'first',
+      title: 'Block array as first field',
+      type: 'array',
+      of: [{type: 'block'}]
+    },
+    {
       name: 'title',
       title: 'Title',
       type: 'string'

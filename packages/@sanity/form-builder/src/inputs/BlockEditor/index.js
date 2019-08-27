@@ -8,10 +8,11 @@ import SyncWrapper from './SyncWrapper'
 const keyGenerator = () => randomKey(12)
 KeyUtils.setGenerator(keyGenerator)
 
-const FormBuilderRoot = props => (
-  <FormBuilderErrorBoundary>
-    <SyncWrapper {...props} />
-  </FormBuilderErrorBoundary>
-)
-
-export default FormBuilderRoot
+// eslint-disable-next-line react/display-name
+export default React.forwardRef(function BlockEditorRoot(props, ref) {
+  return (
+    <FormBuilderErrorBoundary>
+      <SyncWrapper {...props} ref={ref} />
+    </FormBuilderErrorBoundary>
+  )
+})
