@@ -107,7 +107,7 @@
 
 .datepicker {
   composes: shadow-12dp from 'part:@sanity/base/theme/shadows-style';
-  font-family: var(--font-family-sans-serif);
+  font-family: var(--font-family-base);
   border: 0;
 
   @nest & :global(.react-datepicker__current-month) {
