@@ -91,7 +91,7 @@ class CorsCheck extends PureComponent {
           <a rel={linkRel} target="_blank" href={corsUrl}>
             the project management
           </a>{' '}
-          interface. Add the origin under the <em>CORS Origins</em> section. Do remember to{' '}
+          interface. Add the origin under the <a href="https://www.sanity.io/docs/front-ends/cors" target="_blank" rel="noopener noreferrer"><em>CORS Origins</em></a> section. Do remember to{' '}
           <code>allow credentials</code>!
         </p>
       )
