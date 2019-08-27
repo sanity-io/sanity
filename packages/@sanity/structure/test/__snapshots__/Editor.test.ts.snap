@@ -21,11 +21,8 @@ Object {
   "id": "yeah",
   "options": Object {
     "id": "wow",
-    "template": "developer",
+    "template": undefined,
     "type": "book",
-  },
-  "parameters": Object {
-    "bar": "foo",
   },
   "title": "Yeah",
   "type": "document",
@@ -39,9 +36,6 @@ Object {
     "id": "wow",
     "template": undefined,
     "type": "book",
-  },
-  "parameters": Object {
-    "foo": "bar",
   },
   "title": "Yeah",
   "type": "document",

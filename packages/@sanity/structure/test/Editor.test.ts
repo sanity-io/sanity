@@ -20,7 +20,6 @@ test('builds editor node through constructor', () => {
 test('throws on missing id', () => {
   expect(() =>
     S.editor()
-      .documentId('docId')
       .schemaType('book')
       .serialize()
   ).toThrowError(/`id` is required/)
@@ -46,14 +45,17 @@ test('infers ID from title if not specified', () => {
   ).toEqual('blah')
 })
 
-test('throws on missing document ID', () => {
-  expect(() =>
+test('reuses editor ID if document ID is not set', () => {
+  expect(
     S.editor()
       .id('id')
       .title('title')
       .schemaType('book')
       .serialize()
-  ).toThrowError(/document id/)
+  ).toMatchObject({
+    id: 'id',
+    options: {id: 'id'}
+  })
 })
 
 test('can construct with schema type instead of schema type name', () => {
@@ -74,7 +76,6 @@ test('can construct using builder', () => {
       .title('Yeah')
       .documentId('wow')
       .schemaType('book')
-      .parameters({foo: 'bar'})
       .serialize()
   ).toMatchSnapshot()
 })
@@ -86,8 +87,6 @@ test('can construct using builder (alt)', () => {
       .id('yeah')
       .title('Yeah')
       .documentId('wow')
-      .parameters({bar: 'foo'})
-      .template('developer')
       .serialize()
   ).toMatchSnapshot()
 })
@@ -98,8 +97,6 @@ test('builder is immutable', () => {
   expect(original.title('foo')).not.toEqual(original)
   expect(original.documentId('moo')).not.toEqual(original)
   expect(original.schemaType('author')).not.toEqual(original)
-  expect(original.template('developer')).not.toEqual(original)
-  expect(original.parameters({foo: 'bar'})).not.toEqual(original)
 })
 
 test('getters work', () => {
@@ -108,6 +105,4 @@ test('getters work', () => {
   expect(original.title('bar').getTitle()).toEqual('bar')
   expect(original.documentId('moo').getDocumentId()).toEqual('moo')
   expect(original.schemaType('author').getSchemaType()).toEqual('author')
-  expect(original.template('developer').getTemplate()).toEqual('developer')
-  expect(original.parameters({foo: 'bar'}).getParameters()).toEqual({foo: 'bar'})
 })
