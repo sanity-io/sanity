@@ -1,6 +1,5 @@
 // @flow
 
-import {editorValueToBlocks} from '@sanity/block-tools'
 import {Operation, Range} from 'slate'
 import {get, isEqual} from 'lodash'
 import type {
@@ -13,6 +12,7 @@ import type {
   Type
 } from '../typeDefs'
 import {unset, set, insert, setIfMissing} from '../../../PatchEvent'
+import {editorValueToBlocks} from '@sanity/block-tools'
 
 export const VALUE_TO_JSON_OPTS = {
   preserveData: true,
@@ -138,7 +138,7 @@ export default function createOperationToPatches(
           focus: point
         })
       )
-      .map(m => m.type)
+      .map(mark => mark.type)
       .toArray()
     if (!isEqual(textMarks, span.marks)) {
       return [set(span, targetPath.slice(0, -1))]
@@ -213,7 +213,7 @@ export default function createOperationToPatches(
   function splitNodePatch(
     operation: Operation,
     afterValue: SlateValue,
-    formBuilderValue: FormBuilderValue
+    formBuilderValue: ?(FormBuilderValue[])
   ) {
     // Value is undefined
     if (!formBuilderValue) {
@@ -240,7 +240,7 @@ export default function createOperationToPatches(
   function mergeNodePatch(
     operation: Operation,
     afterValue: SlateValue,
-    formBuilderValue: FormBuilderValue
+    formBuilderValue: ?(FormBuilderValue[])
   ) {
     const patches = []
     // Value is undefined

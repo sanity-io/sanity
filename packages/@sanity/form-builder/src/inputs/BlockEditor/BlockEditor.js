@@ -80,12 +80,14 @@ function findEditNode(focusPath: Path, editorValue) {
     if (!block) {
       return null
     }
-    const span = block.filterDescendants(desc => desc.type === 'span').find(node => {
-      const annotations = node.data.get('annotations') || {}
-      return Object.keys(annotations).find(
-        aKey => annotations[aKey] && annotations[aKey]._key === markDefKey
-      )
-    })
+    const span = block
+      .filterDescendants(desc => desc.type === 'span')
+      .find(node => {
+        const annotations = node.data.get('annotations') || {}
+        return Object.keys(annotations).find(
+          aKey => annotations[aKey] && annotations[aKey]._key === markDefKey
+        )
+      })
     return span
   } else if (focusInlineKey) {
     key = focusInlineKey
