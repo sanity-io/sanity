@@ -190,42 +190,40 @@ export default class Editor extends React.Component<Props> {
     this.trackFocusPath()
   }
 
-  // Select the block according to the focusPath and scroll there
+  // Select the editor document element according to the focusPath and scroll there
+  // (unless it is a single block, then Slate will deal with it)
   // eslint-disable-next-line complexity
   trackFocusPath() {
     const {focusPath, editorValue} = this.props
     const editor = this.getEditor()
-    if (!(editor && focusPath)) {
+    if (!(editor && focusPath && editorValue)) {
       return
     }
     const focusPathIsSingleBlock =
       editorValue.focusBlock && isEqual(focusPath, [{_key: editorValue.focusBlock.key}])
-    const block = editorValue.document.getDescendant(focusPath[0]._key)
+    const firstKey = focusPath[0] && focusPath[0]._key
+    const block = firstKey && editorValue.document.getDescendant(firstKey)
+    const isRootVoidBlock = block && editor.query('isVoid', block)
     let inline
-    if (!focusPathIsSingleBlock) {
-      if (focusPath[1] && focusPath[1] === 'children' && focusPath[2]) {
-        // Inline object
-        inline = editorValue.document.getDescendant(focusPath[2]._key)
-        // eslint-disable-next-line max-depth
-        if (!inline) {
-          throw new Error(
-            `Could not find a inline with key ${focusPath[2]._key}, something is amiss.`
-          )
-        }
-        scrollIntoView(inline)
-      } else if (
-        // Annotation
+    // Something inside a non-void root block is selected
+    if (!focusPathIsSingleBlock && !isRootVoidBlock) {
+      // Inline object
+      const inlineKey = focusPath[2] && focusPath[2]._key
+      inline = inlineKey && editorValue.document.getDescendant(inlineKey)
+      if (
+        inline &&
         focusPath[1] &&
-        focusPath[1] === 'markDefs' &&
-        focusPath[2] &&
-        (inline = findInlineByAnnotationKey(focusPath[2]._key, block))
+        (focusPath[1] === 'children' || focusPath[1] === 'markDefs') &&
+        focusPath[2]
       ) {
         scrollIntoView(inline)
-      } else if (block) {
-        // Regular block
+      }
+      // (void) Block
+      else if (block) {
         scrollIntoView(block)
       }
     }
+    // The rest should be handled by Slate
   }
 
   // When user changes the selection in the editor, update focusPath accordingly.
