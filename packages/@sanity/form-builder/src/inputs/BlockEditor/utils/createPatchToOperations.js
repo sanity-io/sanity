@@ -1,6 +1,5 @@
 // @flow
 
-import {blocksToEditorValue} from '@sanity/block-tools'
 import {Selection, Text, Mark} from 'slate'
 import {isEqual, isString} from 'lodash'
 
@@ -27,6 +26,7 @@ import createSelectionOperation from './createSelectionOperation'
 import createEditorController from './createEditorController'
 import buildEditorSchema from './buildEditorSchema'
 import createEmptyBlock from './createEmptyBlock'
+import {blocksToEditorValue} from '@sanity/block-tools'
 
 type JSONValue = number | string | boolean | {[string]: JSONValue} | JSONValue[]
 

@@ -103,7 +103,10 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
   }
 
   static defaultProps = {
-    readOnly: false
+    readOnly: false,
+    onPaste: undefined,
+    renderBlockActions: undefined,
+    renderCustomMarkers: undefined
   }
   scrollContainer: ElementRef<any> = React.createRef()
   editor: ElementRef<any> = React.createRef()

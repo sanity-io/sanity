@@ -25,6 +25,7 @@ export type Type = {
   title: string,
   options?: Object,
   of?: [],
+  icon?: any,
   readOnly?: boolean,
   annotations?: {title: string, name: string}[]
 }

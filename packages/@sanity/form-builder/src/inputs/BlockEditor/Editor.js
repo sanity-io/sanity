@@ -113,9 +113,9 @@ function scrollIntoView(node: SlateNode, opts = {}) {
 export default class Editor extends React.Component<Props> {
   static defaultProps = {
     readOnly: false,
-    onPaste: null,
-    renderCustomMarkers: null,
-    renderBlockActions: null
+    onPaste: undefined,
+    renderCustomMarkers: undefined,
+    renderBlockActions: undefined
   }
   blockDragMarker: ?HTMLDivElement
   editorSchema: SlateSchema
