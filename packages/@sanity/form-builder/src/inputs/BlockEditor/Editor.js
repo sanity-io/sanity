@@ -7,7 +7,6 @@ import SoftBreakPlugin from 'slate-soft-break'
 import {findDOMNode, Editor as SlateReactEditor, getEventTransfer} from 'slate-react'
 import {isEqual} from 'lodash'
 import {isKeyHotkey} from 'is-hotkey'
-import {EDITOR_DEFAULT_BLOCK_TYPE, editorValueToBlocks} from '@sanity/block-tools'
 import insertBlockOnEnter from 'slate-insert-block-on-enter'
 
 import onPasteFromPart from 'part:@sanity/form-builder/input/block-editor/on-paste?'
@@ -33,7 +32,6 @@ import type {
 
 import {VALUE_TO_JSON_OPTS} from './utils/createOperationToPatches'
 import buildEditorSchema from './utils/buildEditorSchema'
-import findInlineByAnnotationKey from './utils/findInlineByAnnotationKey'
 
 import ExpandToWordPlugin from './plugins/ExpandToWordPlugin'
 import EnsurePlaceHolderBlockPlugin from './plugins/EnsurePlaceHolderBlockPlugin'
@@ -66,6 +64,7 @@ import InlineObject from './nodes/InlineObject'
 import Span from './nodes/Span'
 
 import styles from './styles/Editor.css'
+import {EDITOR_DEFAULT_BLOCK_TYPE, editorValueToBlocks} from '@sanity/block-tools'
 
 type PasteProgressResult = {status: string | null, error?: Error}
 type OnPasteResult = ?({insert?: FormBuilderValue[], path?: []} | Error)
