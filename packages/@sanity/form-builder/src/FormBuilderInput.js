@@ -90,26 +90,37 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
     this._input = component
   }
 
-  _withInputDisplayName(cb: (str: string) => void) {
-    cb(getDisplayName(this.resolveInputComponent(this.props.type)))
-  }
-
   focus() {
-    if (!this._input) {
-      // should never happen
-      throw new Error('Attempted to set focus on a missing input component')
+    const {type} = this.props
+
+    if (this._input && typeof this._input.focus === 'function') {
+      this._input.focus()
+      return
     }
-    if (typeof this._input.focus !== 'function') {
-      this._withInputDisplayName(displayName =>
-        console.warn(
-          'Missing a required ".focus()" method on input component. Please check the implementation of %s. Read more at %s',
-          displayName,
-          generateHelpUrl('input-component-missing-required-method')
-        )
+
+    const inputComponent = this.resolveInputComponent(type)
+    const inputDisplayName = getDisplayName(inputComponent)
+
+    // no ref
+    if (!this._input) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'The input component for type "%s" has no associated ref element. Please check the implementation of "%s" [%O]. If this is a function component, it must be wrapped in React.forwardRef(). Read more at %s',
+        type.name,
+        inputDisplayName,
+        inputComponent,
+        generateHelpUrl('input-component-no-ref')
       )
       return
     }
-    this._input.focus()
+    // eslint-disable-next-line no-console
+    console.warn(
+      'The input component for type "%s" is missing a required ".focus()" method. Please check the implementation of "%s" [%O]. Read more at %s',
+      type.name,
+      inputDisplayName,
+      inputComponent,
+      generateHelpUrl('input-component-missing-required-method')
+    )
   }
 
   handleChange = patchEvent => {
@@ -124,8 +135,8 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
     const {path, onFocus, focusPath} = this.props
 
     if (!onFocus) {
+      // eslint-disable-next-line no-console
       console.warn(
-        // eslint-disable-line no-console
         'FormBuilderInput was used without passing a required onFocus prop. Read more at %s.',
         generateHelpUrl('form-builder-input-missing-required-prop')
       )
@@ -145,18 +156,14 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
   handleBlur = () => {
     const {onBlur} = this.props
     if (!onBlur) {
+      // eslint-disable-next-line no-console
       console.warn(
-        // eslint-disable-line no-console
         'FormBuilderInput was used without passing a required onBlur prop. Read more at %s.',
         generateHelpUrl('form-builder-input-missing-required-prop')
       )
       return
     }
     onBlur()
-  }
-
-  setElement = (el: ?HTMLDivElement) => {
-    this._element = el
   }
 
   getChildFocusPath() {
@@ -183,7 +190,11 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
     const InputComponent = this.resolveInputComponent(type)
 
     if (!InputComponent) {
-      return <div>No input resolved for type {JSON.stringify(type.name)}</div>
+      return (
+        <div tabIndex={0} ref={this.setInput}>
+          No input resolved for type {type.name ? JSON.stringify(type.name) : '<unknown type>'}
+        </div>
+      )
     }
 
     const rootProps = isRoot ? {isRoot} : {}
@@ -204,7 +215,7 @@ export const FormBuilderInput = class FormBuilderInput extends React.PureCompone
     const leafProps = isLeaf ? {} : {focusPath: childFocusPath}
 
     return (
-      <div ref={this.setElement} data-focus-path={PathUtils.toString(path)}>
+      <div data-focus-path={PathUtils.toString(path)}>
         <InputComponent
           {...rest}
           {...rootProps}
