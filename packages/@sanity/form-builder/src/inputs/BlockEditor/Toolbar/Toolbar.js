@@ -1,4 +1,5 @@
 // @flow
+import type {ElementRef} from 'react'
 
 /* eslint-disable complexity */
 
@@ -15,7 +16,7 @@ import WarningIcon from 'part:@sanity/base/warning-icon'
 import Poppable from 'part:@sanity/components/utilities/poppable'
 import {debounce, xor} from 'lodash'
 
-import type {BlockContentFeatures, SlateValue, Path, SlateEditor, Type} from '../typeDefs'
+import type {BlockContentFeatures, SlateValue, Path, SlateEditor, Type, Marker} from '../typeDefs'
 
 import IS_MAC from '../utils/isMac'
 import PrimaryGroup from './PrimaryGroup'
@@ -30,9 +31,8 @@ type Props = {
   editorValue: SlateValue,
   fullscreen: boolean,
   onFocus: Path => void,
-  onToggleFullScreen: void => void,
-  markers: [],
-  style: {},
+  onToggleFullScreen: (event: SyntheticEvent<*>) => void,
+  markers: Marker[],
   type: Type,
   userIsWritingText: boolean
 }
@@ -56,11 +56,12 @@ class Toolbar extends React.PureComponent<Props, State> {
     isMobile: false
   }
 
-  _primaryToolbar = React.createRef()
+  _primaryToolbar: ElementRef<any> = React.createRef()
 
-  componentDidMount() {
+  constructor(props: Props) {
+    super(props)
     if (window) {
-      this.setState({isMobile: window.innerWidth < BREAKPOINT_SCREEN_MEDIUM})
+      this.state = {...this.state, isMobile: window.innerWidth < BREAKPOINT_SCREEN_MEDIUM}
     }
   }
 
@@ -134,15 +135,7 @@ class Toolbar extends React.PureComponent<Props, State> {
   }, 50)
 
   render() {
-    const {
-      blockContentFeatures,
-      editor,
-      fullscreen,
-      markers,
-      onToggleFullScreen,
-      style,
-      type
-    } = this.props
+    const {blockContentFeatures, editor, fullscreen, markers, onToggleFullScreen, type} = this.props
 
     if (!editor) {
       return null
@@ -165,7 +158,6 @@ class Toolbar extends React.PureComponent<Props, State> {
         {({measureRef}) => (
           <div
             ref={measureRef}
-            style={style}
             className={`
               ${styles.root}
               ${fullscreen ? ` ${styles.fullscreen}` : ''}

@@ -2,11 +2,10 @@
 
 import React from 'react'
 import {Subject} from 'rxjs'
-import {getBlockContentFeatures} from '@sanity/block-tools'
-import generateHelpUrl from '@sanity/generate-help-url'
 import {debounce, flatten, isEqual} from 'lodash'
 import {List} from 'immutable'
 import FormField from 'part:@sanity/components/formfields/default'
+import {merge} from 'rxjs/operators'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {PatchEvent} from '../../PatchEvent'
 import InvalidValueInput from '../InvalidValueInput'
@@ -38,7 +37,8 @@ import isWritingTextOperationsOnly from './utils/isWritingTextOperation'
 
 import styles from './styles/SyncWrapper.css'
 
-import {merge} from 'rxjs/operators'
+import {getBlockContentFeatures} from '@sanity/block-tools'
+import generateHelpUrl from '@sanity/generate-help-url'
 
 function findBlockType(type: Type) {
   return type.of && type.of.find(ofType => ofType.name === 'block')
@@ -92,8 +92,8 @@ type Props = {
   }) => {insert?: FormBuilderValue[], path?: []},
   level: number,
   readOnly?: boolean,
-  renderBlockActions?: RenderCustomMarkers,
-  renderCustomMarkers?: RenderBlockActions,
+  renderBlockActions?: RenderBlockActions,
+  renderCustomMarkers?: RenderCustomMarkers,
   subscribe: (() => void) => void,
   type: BlockArrayType,
   value: ?(FormBuilderValue[])
@@ -112,11 +112,14 @@ type State = {
 export default withPatchSubscriber(
   class SyncWrapper extends React.Component<Props, State> {
     static defaultProps = {
-      markers: []
+      readOnly: false,
+      onPaste: undefined,
+      renderBlockActions: undefined,
+      renderCustomMarkers: undefined
     }
 
     _unsubscribePatches: void => void
-    _changeSubscription: void => void
+    _changeSubscription: {unsubscribe: void => void}
     _input: ?Input = null
     _undoRedoStack: UndoRedoStack = {undo: [], redo: []}
     _controller: SlateEditor
@@ -181,7 +184,9 @@ export default withPatchSubscriber(
 
     componentWillUnmount() {
       this._unsubscribePatches()
-      this._changeSubscription.unsubscribe()
+      if (this._changeSubscription) {
+        this._changeSubscription.unsubscribe()
+      }
     }
 
     // If the document is in readOnly mode, update the editor value when the props.value is changed
