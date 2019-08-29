@@ -69,11 +69,23 @@ type State = {
   preventScroll: boolean
 }
 
-function findEditNode(focusPath: Path, editorValue) {
-  const focusBlockKey = focusPath[0]._key
+// eslint-disable-next-line complexity
+function findEditNode(focusPath: Path, editorValue: SlateValue, editor: SlateEditor) {
+  const focusBlockKey = focusPath[0] && focusPath[0]._key
+  const isVoidRootBlock =
+    focusBlockKey &&
+    editorValue &&
+    editorValue.document &&
+    editorValue.document.size > 0 &&
+    editor.query('isVoid', editorValue.document.getDescendant(focusBlockKey))
   const focusInlineKey =
-    focusPath[1] && focusPath[1] === 'children' && focusPath[2] && focusPath[2]._key
-  const markDefKey = focusPath[2] && focusPath[1] === 'markDefs' && focusPath[2]._key
+    !isVoidRootBlock &&
+    focusPath[1] &&
+    focusPath[1] === 'children' &&
+    focusPath[2] &&
+    focusPath[2]._key
+  const markDefKey =
+    !isVoidRootBlock && focusPath[2] && focusPath[1] === 'markDefs' && focusPath[2]._key
   let key
   if (markDefKey) {
     const block = editorValue.document.getDescendant(focusBlockKey)
@@ -118,7 +130,7 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
 
   renderNodeEditor() {
     const {blockContentFeatures, editorValue, focusPath} = this.props
-    const slateNode = findEditNode(focusPath, editorValue)
+    const slateNode = findEditNode(focusPath, editorValue, this.getEditor())
     if (!slateNode || slateNode.type === 'contentBlock') {
       return null
     }
