@@ -19,7 +19,6 @@ type Props = {
 
 export default class BlockExtras extends React.PureComponent<Props> {
   static defaultProps = {
-    markers: [],
     blockActions: null,
     renderCustomMarkers: null
   }
@@ -27,14 +26,12 @@ export default class BlockExtras extends React.PureComponent<Props> {
   getValidationMarkers() {
     const {markers} = this.props
     const validation = markers.filter(mrkr => mrkr.type === 'validation')
-    return validation.map(mrkr => {
+    return validation.map<any>(mrkr => {
       if (mrkr.path.length <= 1) {
         return mrkr
       }
       const level = mrkr.level === 'error' ? 'errors' : 'warnings'
-      return Object.assign({}, mrkr, {
-        item: mrkr.item.cloneWithMessage(`Contains ${level}`)
-      })
+      return {...mrkr, item: mrkr.item.cloneWithMessage(`Contains ${level}`)}
     })
   }
 

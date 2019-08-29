@@ -1,5 +1,7 @@
 // @flow
 
+import type {ElementRef} from 'react'
+
 import {uniqueId} from 'lodash'
 
 import React from 'react'
@@ -60,12 +62,13 @@ type State = {
 
 export default class BlockEditorInput extends React.Component<Props, State> {
   static defaultProps = {
-    renderBlockActions: null,
-    renderCustomMarkers: null,
-    readOnly: false
+    readOnly: false,
+    renderBlockActions: undefined,
+    renderCustomMarkers: undefined,
+    onPaste: undefined
   }
   inputId = uniqueId('BlockEditor')
-  blockEditor = React.createRef()
+  blockEditor: ElementRef<any> = React.createRef()
 
   state = {
     fullscreen: false

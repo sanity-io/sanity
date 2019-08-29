@@ -69,23 +69,37 @@ type State = {
   preventScroll: boolean
 }
 
-function findEditNode(focusPath: Path, editorValue) {
-  const focusBlockKey = focusPath[0]._key
+// eslint-disable-next-line complexity
+function findEditNode(focusPath: Path, editorValue: SlateValue, editor: SlateEditor) {
+  const focusBlockKey = focusPath[0] && focusPath[0]._key
+  const isVoidRootBlock =
+    focusBlockKey &&
+    editorValue &&
+    editorValue.document &&
+    editorValue.document.size > 0 &&
+    editor.query('isVoid', editorValue.document.getDescendant(focusBlockKey))
   const focusInlineKey =
-    focusPath[1] && focusPath[1] === 'children' && focusPath[2] && focusPath[2]._key
-  const markDefKey = focusPath[2] && focusPath[1] === 'markDefs' && focusPath[2]._key
+    !isVoidRootBlock &&
+    focusPath[1] &&
+    focusPath[1] === 'children' &&
+    focusPath[2] &&
+    focusPath[2]._key
+  const markDefKey =
+    !isVoidRootBlock && focusPath[2] && focusPath[1] === 'markDefs' && focusPath[2]._key
   let key
   if (markDefKey) {
     const block = editorValue.document.getDescendant(focusBlockKey)
     if (!block) {
       return null
     }
-    const span = block.filterDescendants(desc => desc.type === 'span').find(node => {
-      const annotations = node.data.get('annotations') || {}
-      return Object.keys(annotations).find(
-        aKey => annotations[aKey] && annotations[aKey]._key === markDefKey
-      )
-    })
+    const span = block
+      .filterDescendants(desc => desc.type === 'span')
+      .find(node => {
+        const annotations = node.data.get('annotations') || {}
+        return Object.keys(annotations).find(
+          aKey => annotations[aKey] && annotations[aKey]._key === markDefKey
+        )
+      })
     return span
   } else if (focusInlineKey) {
     key = focusInlineKey
@@ -101,7 +115,10 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
   }
 
   static defaultProps = {
-    readOnly: false
+    readOnly: false,
+    onPaste: undefined,
+    renderBlockActions: undefined,
+    renderCustomMarkers: undefined
   }
   scrollContainer: ElementRef<any> = React.createRef()
   editor: ElementRef<any> = React.createRef()
@@ -113,7 +130,7 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
 
   renderNodeEditor() {
     const {blockContentFeatures, editorValue, focusPath} = this.props
-    const slateNode = findEditNode(focusPath, editorValue)
+    const slateNode = findEditNode(focusPath, editorValue, this.getEditor())
     if (!slateNode || slateNode.type === 'contentBlock') {
       return null
     }

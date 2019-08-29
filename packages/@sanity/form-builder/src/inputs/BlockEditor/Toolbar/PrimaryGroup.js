@@ -18,13 +18,12 @@ type Props = {
   editor: SlateEditor,
   editorValue: SlateValue,
   onFocus: Path => void,
-  style: {},
   type: Type,
   userIsWritingText: boolean,
-  collapsedGroups: array,
-  insertItems: array,
-  isPopped: boolean,
-  isMobile: boolean
+  collapsedGroups: [],
+  insertItems: any[],
+  isPopped?: boolean,
+  isMobile?: boolean
 }
 
 type State = {
@@ -36,6 +35,11 @@ type State = {
 }
 
 export default class PrimaryGroup extends React.PureComponent<Props, State> {
+  static defaultProps = {
+    isPopped: false,
+    isMobile: false
+  }
+
   render() {
     const {
       blockContentFeatures,

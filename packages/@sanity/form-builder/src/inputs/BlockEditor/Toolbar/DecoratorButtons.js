@@ -15,9 +15,9 @@ import {keyMaps} from '../plugins/SetMarksOnKeyComboPlugin'
 import ToolbarClickAction from './ToolbarClickAction'
 
 import styles from './styles/DecoratorButtons.css'
-import CollapsibleButtonGroup from './CollapsibleButtonGroup';
+import CollapsibleButtonGroup from './CollapsibleButtonGroup'
 
-type DecoratorItem = BlockContentFeature & {active: boolean, disabled: boolean}
+type DecoratorItem = BlockContentFeature & {active: boolean, disabled: boolean, icon: any}
 
 type Props = {
   blockContentFeatures: BlockContentFeatures,
@@ -26,7 +26,7 @@ type Props = {
   collapsed: boolean
 }
 
-function getIcon(type: string) {
+function getIcon(type: string, schemaIcon: any) {
   switch (type) {
     case 'strong':
       return FormatBoldIcon
@@ -39,7 +39,7 @@ function getIcon(type: string) {
     case 'code':
       return FormatCodeIcon
     default:
-      return SanityLogoIcon
+      return schemaIcon || SanityLogoIcon
   }
 }
 
@@ -62,13 +62,12 @@ export default class DecoratorButtons extends React.Component<Props> {
     const {editor, blockContentFeatures} = this.props
     const {focusBlock} = editor.value
     const disabled = focusBlock ? editor.query('isVoid', focusBlock) : false
-    return blockContentFeatures.decorators.map((decorator: BlockContentFeature) => {
-      return {
-        ...decorator,
-        active: editor.query('hasMark', decorator.value),
-        disabled
-      }
-    })
+    return blockContentFeatures.decorators.map<DecoratorItem>(decorator => ({
+      ...decorator,
+      icon: getIcon(decorator.value, decorator.blockEditor && decorator.blockEditor.icon),
+      active: editor.query('hasMark', decorator.value),
+      disabled
+    }))
   }
 
   handleClick = (item: DecoratorItem) => {

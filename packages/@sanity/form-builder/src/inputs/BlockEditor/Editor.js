@@ -7,7 +7,6 @@ import SoftBreakPlugin from 'slate-soft-break'
 import {findDOMNode, Editor as SlateReactEditor, getEventTransfer} from 'slate-react'
 import {isEqual} from 'lodash'
 import {isKeyHotkey} from 'is-hotkey'
-import {EDITOR_DEFAULT_BLOCK_TYPE, editorValueToBlocks} from '@sanity/block-tools'
 import insertBlockOnEnter from 'slate-insert-block-on-enter'
 
 import onPasteFromPart from 'part:@sanity/form-builder/input/block-editor/on-paste?'
@@ -33,7 +32,6 @@ import type {
 
 import {VALUE_TO_JSON_OPTS} from './utils/createOperationToPatches'
 import buildEditorSchema from './utils/buildEditorSchema'
-import findInlineByAnnotationKey from './utils/findInlineByAnnotationKey'
 
 import ExpandToWordPlugin from './plugins/ExpandToWordPlugin'
 import EnsurePlaceHolderBlockPlugin from './plugins/EnsurePlaceHolderBlockPlugin'
@@ -66,6 +64,7 @@ import InlineObject from './nodes/InlineObject'
 import Span from './nodes/Span'
 
 import styles from './styles/Editor.css'
+import {EDITOR_DEFAULT_BLOCK_TYPE, editorValueToBlocks} from '@sanity/block-tools'
 
 type PasteProgressResult = {status: string | null, error?: Error}
 type OnPasteResult = ?({insert?: FormBuilderValue[], path?: []} | Error)
@@ -80,13 +79,13 @@ type OnPasteFn = ({
 type Props = {
   blockContentFeatures: BlockContentFeatures,
   editorValue: SlateValue,
-  fullscreen: boolean,
   focusPath: Path,
+  fullscreen: boolean,
   markers: Marker[],
   onBlur: (nextPath: []) => void,
   onChange: (editor: SlateEditor, callback?: (void) => void) => void,
-  onLoading: (props: {}) => void,
   onFocus: Path => void,
+  onLoading: (props: {}) => void,
   onLoading: (props: {}) => void,
   onPaste?: OnPasteFn,
   onPatch: (event: PatchEvent) => void,
@@ -114,9 +113,9 @@ function scrollIntoView(node: SlateNode, opts = {}) {
 export default class Editor extends React.Component<Props> {
   static defaultProps = {
     readOnly: false,
-    onPaste: null,
-    renderCustomMarkers: null,
-    renderBlockActions: null
+    onPaste: undefined,
+    renderCustomMarkers: undefined,
+    renderBlockActions: undefined
   }
   blockDragMarker: ?HTMLDivElement
   editorSchema: SlateSchema
@@ -191,42 +190,40 @@ export default class Editor extends React.Component<Props> {
     this.trackFocusPath()
   }
 
-  // Select the block according to the focusPath and scroll there
+  // Select the editor document element according to the focusPath and scroll there
+  // (unless it is a single block, then Slate will deal with it)
   // eslint-disable-next-line complexity
   trackFocusPath() {
     const {focusPath, editorValue} = this.props
     const editor = this.getEditor()
-    if (!(editor && focusPath)) {
+    if (!(editor && focusPath && editorValue)) {
       return
     }
     const focusPathIsSingleBlock =
       editorValue.focusBlock && isEqual(focusPath, [{_key: editorValue.focusBlock.key}])
-    const block = editorValue.document.getDescendant(focusPath[0]._key)
+    const firstKey = focusPath[0] && focusPath[0]._key
+    const block = firstKey && editorValue.document.getDescendant(firstKey)
+    const isRootVoidBlock = block && editor.query('isVoid', block)
     let inline
-    if (!focusPathIsSingleBlock) {
-      if (focusPath[1] && focusPath[1] === 'children' && focusPath[2]) {
-        // Inline object
-        inline = editorValue.document.getDescendant(focusPath[2]._key)
-        // eslint-disable-next-line max-depth
-        if (!inline) {
-          throw new Error(
-            `Could not find a inline with key ${focusPath[2]._key}, something is amiss.`
-          )
-        }
-        scrollIntoView(inline)
-      } else if (
-        // Annotation
+    // Something inside a non-void root block is selected
+    if (!focusPathIsSingleBlock && !isRootVoidBlock) {
+      // Inline object
+      const inlineKey = focusPath[2] && focusPath[2]._key
+      inline = inlineKey && editorValue.document.getDescendant(inlineKey)
+      if (
+        inline &&
         focusPath[1] &&
-        focusPath[1] === 'markDefs' &&
-        focusPath[2] &&
-        (inline = findInlineByAnnotationKey(focusPath[2]._key, block))
+        (focusPath[1] === 'children' || focusPath[1] === 'markDefs') &&
+        focusPath[2]
       ) {
         scrollIntoView(inline)
-      } else if (block) {
-        // Regular block
+      }
+      // (void) Block
+      else if (block) {
         scrollIntoView(block)
       }
     }
+    // The rest should be handled by Slate
   }
 
   // When user changes the selection in the editor, update focusPath accordingly.

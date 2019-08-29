@@ -1,6 +1,5 @@
 // @flow
 
-import {blocksToEditorValue} from '@sanity/block-tools'
 import {Selection, Text, Mark} from 'slate'
 import {isEqual, isString} from 'lodash'
 
@@ -27,6 +26,7 @@ import createSelectionOperation from './createSelectionOperation'
 import createEditorController from './createEditorController'
 import buildEditorSchema from './buildEditorSchema'
 import createEmptyBlock from './createEmptyBlock'
+import {blocksToEditorValue} from '@sanity/block-tools'
 
 type JSONValue = number | string | boolean | {[string]: JSONValue} | JSONValue[]
 
@@ -185,8 +185,21 @@ export default function createPatchesToChange(
     }
     // Deal with patches unsetting something inside
     const lastKey = findLastKey(patch.path)
-    if (lastKey && editor.value.document.getDescendant(lastKey)) {
+    const editorNode = editor.value.document.getDescendant(lastKey)
+    const isDirectlyTargeted =
+      patch.path.findIndex(part => part._key && part._key === lastKey) === patch.path.length - 1
+    // If it is targeting a node in our document directly, just remove that node
+    if (isDirectlyTargeted && lastKey && editorNode) {
       editor.removeNodeByKey(lastKey)
+    }
+    // If it is targeting a data value inside some node's data,
+    // patch that data value and update the containing node
+    if (!isDirectlyTargeted && lastKey && editorNode) {
+      const data = editorNode.data.toObject()
+      const _patch = {...patch, path: patch.path.slice(patch.path.indexOf({_key: lastKey}))}
+      const newValue = data.value ? applyAll(data.value, [_patch]) : data.value
+      data.value = newValue
+      editor.setNodeByKey(editorNode.key, {data})
     }
     return editor.operations
   }
@@ -251,7 +264,7 @@ export default function createPatchesToChange(
     return editor.operations
   }
 
-  function patchBlockData(patch: Patch, editor: SlateEditor) {
+  function patchVoidBlockData(patch: Patch, editor: SlateEditor) {
     const doc = editor.value.document
     const blockKey = patch.path[0]._key
     const block = doc.nodes.find(node => node.key === blockKey)
@@ -404,36 +417,53 @@ export default function createPatchesToChange(
       return rebasePatch(patch, controller)
     }
 
-    // Patches working on markDefs or deep inside blocks needs some special care
+    const firstKey = patch.path[0] && patch.path[0]._key
+    const isVoidRootBlock =
+      firstKey &&
+      editorValue &&
+      editorValue.document &&
+      editorValue.document.size > 0 &&
+      controller.query('isVoid', editorValue.document.getDescendant(firstKey))
+
+    const rootBlock = firstKey && editorValue.document.getDescendant(firstKey)
+
+    const isContentBlockChildrenPatches =
+      !isVoidRootBlock && patch.path[1] === 'children' && patch.path.length >= 3
+    const isMarkDefPatches = !isVoidRootBlock && patch.path[1] === 'markDefs'
+
+    // Patches working inside blocks needs to be treated a bit special,
+    // because Slate's model diversity
     if (patch.path.length > 1) {
-      if (patch.path[1] === 'markDefs') {
+      if (isMarkDefPatches) {
+        // Annotations are a bit special because they come from .markDefs on the block root
         return patchAnnotationData(patch, controller)
-      } else if (patch.path[1] === 'children' && patch.path.length >= 3) {
-        const rootBlockNode = controller.value.document.getNode(patch.path[0]._key)
-        const node = findLastKnownEditorNodeInPath(rootBlockNode, patch.path)
-        const isVoid = controller.query('isVoid', node)
+      } else if (isContentBlockChildrenPatches) {
         // If it is a unset patch, just remove the node normally and return
         // eslint-disable-next-line max-depth
         if (patch.type === 'unset') {
           return unsetPatch(patch, controller)
         }
-        // If it is void, it's a inline object, and it's data should be patched
+        // If it is void and inline data should be patched
+        const node = findLastKnownEditorNodeInPath(rootBlock, patch.path)
         // eslint-disable-next-line max-depth
-        if (isVoid) {
+        const isVoid = controller.query('isVoid', node)
+        // eslint-disable-next-line max-depth
+        if (isVoid && node && node.object === 'inline') {
           return patchInlineData(patch, controller, node)
         }
+        // Everything else is patching of spans
         // eslint-disable-next-line max-depth
         if (patch.type === 'insert' || patch.type === 'set' || patch.type === 'diffMatchPatch') {
           return patchSpanText(
             patch,
             controller,
-            findTextNodeFromPathKey(rootBlockNode, findLastKey(patch.path)),
-            rootBlockNode
+            findTextNodeFromPathKey(rootBlock, findLastKey(patch.path)),
+            rootBlock
           )
         }
       }
       // Everything else is patching of custom block data
-      return patchBlockData(patch, controller)
+      return patchVoidBlockData(patch, controller)
     }
     // Patches working on whole blocks or document
     switch (patch.type) {

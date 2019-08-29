@@ -1,4 +1,5 @@
 // @flow
+import type {Node as ReactNode, Element as ReactElement} from 'react'
 
 import React from 'react'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
@@ -9,8 +10,8 @@ import {Tooltip} from 'react-tippy'
 import {get} from 'lodash'
 
 import type {Type, SlateValue, SlateEditor, Path} from '../typeDefs'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import styles from './styles/InsertMenu.css'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 
 type Props = {
   blockTypes: Type[],
@@ -26,6 +27,7 @@ type BlockItem = {
   title: string,
   value: Type,
   icon: any,
+  key: string,
   isInline: boolean,
   isDisabled: boolean
 }
@@ -54,7 +56,7 @@ export default class InsertMenu extends React.Component<Props> {
     )
   }
 
-  renderButton = (item: BlockItem) => {
+  renderButton = (item: BlockItem): ReactElement<Tooltip> => {
     const {showLabels} = this.props
     return (
       <Tooltip
@@ -77,28 +79,35 @@ export default class InsertMenu extends React.Component<Props> {
     )
   }
 
-  getIcon = (type, fallbackIcon) => {
+  getIcon = (type: Type, fallbackIcon: any) => {
     const referenceIcon = get(type, 'to[0].icon')
     return type.icon || (type.type && type.type.icon) || referenceIcon || fallbackIcon
   }
 
-  getItems() {
+  getItems(): BlockItem[] {
     const {editor} = this.props
     const {focusBlock} = editor.value
-    const blockItems = this.props.blockTypes.map(type => ({
-      title: type.title,
-      value: type,
-      icon: this.getIcon(type, BlockObjectIcon),
-      isInline: false,
-      isDisabled: false
-    }))
-    const inlineItems = this.props.inlineTypes.map(type => ({
-      title: type.title,
-      icon: this.getIcon(type, InlineObjectIcon),
-      value: type,
-      isInline: true,
-      isDisabled: focusBlock ? editor.query('isVoid', focusBlock) : true
-    }))
+    let keyCount = 0
+    const blockItems = this.props.blockTypes.map(
+      (type, index): BlockItem => ({
+        title: type.title,
+        value: type,
+        key: (keyCount++).toString(),
+        icon: this.getIcon(type, BlockObjectIcon),
+        isInline: false,
+        isDisabled: false
+      })
+    )
+    const inlineItems = this.props.inlineTypes.map(
+      (type, index): BlockItem => ({
+        title: type.title,
+        icon: this.getIcon(type, InlineObjectIcon),
+        value: type,
+        key: (keyCount++).toString(),
+        isInline: true,
+        isDisabled: focusBlock ? editor.query('isVoid', focusBlock) : true
+      })
+    )
     return blockItems.concat(inlineItems)
   }
 
@@ -125,7 +134,7 @@ export default class InsertMenu extends React.Component<Props> {
     const items = this.getItems()
 
     if (!collapsed) {
-      return items.map((item, key) => ({...item, key})).map(this.renderButton)
+      return items.map<ReactNode>(this.renderButton)
     }
 
     return (
