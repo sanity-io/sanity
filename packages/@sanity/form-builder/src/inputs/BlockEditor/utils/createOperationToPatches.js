@@ -33,6 +33,17 @@ function findSpanTargetPath(
   const nodeInEditorValueParent = editorValue.document.getParent(nodeInEditorValue.key)
   let count = 0
   let targetKey
+  // If the parent is an inline, we must calculate a new start count,
+  // as inlines are not modelled in Portable Text, and the count will be off
+  if (nodeInEditorValueParent.object === 'inline') {
+    const texts = editorValue.document.getParent(nodeInEditorValueParent.key).getTexts()
+    const previousNumberOfTexts = texts.findIndex(node => node.key === nodeInEditorValue.key)
+    const previousTexts = texts.slice(0, previousNumberOfTexts)
+    const leavesCount = previousTexts.reduce((acc, current) => {
+      return acc + current.leaves.size
+    }, 0)
+    count = leavesCount
+  }
   // Note: do 'some' here so we can short circuit it when we reach our target
   // and don't have to loop through everything
   nodeInEditorValueParent.nodes.some(node => {
