@@ -327,10 +327,12 @@ export default function createPatchesToChange(
     node: SlateNode,
     blockNode: SlateNode
   ) {
-    const textPath = editor.value.document.assertPath(node.key)
     const blockKey = patch.path[0]._key
     const childKey = findLastKey(patch.path)
-    const workTextNode = node.toJSON({preserveKeys: true})
+    const textNode = node.getFirstText()
+    const textPath = editor.value.document.assertPath(textNode.key)
+
+    let workTextNode = textNode.toJSON({preserveKeys: true})
     const blockIndex = getBlockTextIndex(blockNode, node)
     const leafIndex = workTextNode.leaves.findIndex(
       (leaf, index) => `${blockKey}${blockIndex + index}` === childKey
@@ -368,11 +370,11 @@ export default function createPatchesToChange(
       const valueIsString = isString(patch.value)
       const patchText = valueIsString ? patch.value : patch.value.text
       // If single leaf, we can just replace the text with the current marks
-      if (node.leaves.size === 1) {
+      if (textNode.leaves.size === 1) {
         let marks
         // eslint-disable-next-line max-depth
         if (valueIsString) {
-          marks = node.leaves.map(leaf => leaf.marks).get(0)
+          marks = textNode.leaves.map(leaf => leaf.marks).get(0)
         } else {
           marks = Mark.createSet(patch.value.marks.map(mark => ({type: mark})))
         }
