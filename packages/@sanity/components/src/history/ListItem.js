@@ -97,6 +97,7 @@ export default class HistoryListItem extends React.PureComponent {
       tooltip,
       type
     } = this.props
+    const availableUsers = users.filter(Boolean)
     const selectionClassName = isSelected ? styles.selected : styles.unSelected
     return (
       <div
@@ -130,11 +131,11 @@ export default class HistoryListItem extends React.PureComponent {
             </p>
           </div>
         )}
-        {users && users.length > 0 && (
+        {availableUsers && availableUsers.length > 0 && (
           <Tooltip
             html={
               <PresenceList
-                markers={users.map(user => ({
+                markers={availableUsers.map(user => ({
                   type: 'presence',
                   identity: user.id,
                   color: colorHasher(user.id),
@@ -142,7 +143,7 @@ export default class HistoryListItem extends React.PureComponent {
                 }))}
               />
             }
-            disabled={users.length < 2}
+            disabled={availableUsers.length < 2}
             interactive
             position="top"
             trigger="mouseenter"
@@ -154,7 +155,7 @@ export default class HistoryListItem extends React.PureComponent {
           >
             <div className={styles.users}>
               <div className={styles.userIcons}>
-                {users.slice(0, MAX_USERS).map((user, i) => (
+                {availableUsers.slice(0, MAX_USERS).map((user, i) => (
                   <div className={styles.user} key={user.id}>
                     <div className={styles.userInner} style={{clipPath: makeClipPath()}}>
                       <PresenceCircle
@@ -167,10 +168,10 @@ export default class HistoryListItem extends React.PureComponent {
                   </div>
                 ))}
               </div>
-              {users.length === 1 && <div className={styles.userName}>{users[0].displayName}</div>}
-              {users.length > 1 && (
+              {availableUsers.length === 1 && <div className={styles.userName}>{availableUsers[0].displayName}</div>}
+              {availableUsers.length > 1 && (
                 <div className={styles.extraItems}>
-                  <div className={styles.userName}>{users.length} people</div>
+                  <div className={styles.userName}>{availableUsers.length} people</div>
                 </div>
               )}
             </div>
