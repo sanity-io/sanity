@@ -23,8 +23,10 @@ export default function FocusNoScrollPlugin(scrollContainer: ElementRef<any>) {
         scrollContainer.current.addEventListener('scroll', preventScrollFn)
         editor.focus()
         setTimeout(() => {
-          scrollContainer.current.scrollTop = originalScroll
-          scrollContainer.current.removeEventListener('scroll', preventScrollFn)
+          if (scrollContainer && scrollContainer.current) {
+            scrollContainer.current.scrollTop = originalScroll
+            scrollContainer.current.removeEventListener('scroll', preventScrollFn)
+          }
         }, 300)
         return editor
       }
