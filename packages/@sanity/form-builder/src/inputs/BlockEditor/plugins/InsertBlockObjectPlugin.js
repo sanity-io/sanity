@@ -33,6 +33,16 @@ export default function InsertBlockObjectPlugin() {
         editor.replaceNodeByKey(focusBlock.key, block).moveTo(block.key, 0)
         return editor
       }
+      // Seems like a bug in Slate, where insertBlock doesn't account for a missing selection
+      // when the document is empty
+      if (editor.value.document.nodes.size === 0) {
+        editor.applyOperation({
+          type: 'insert_node',
+          path: [0],
+          node: block
+        })
+        return editor
+      }
       editor.insertBlock(block).moveToEndOfBlock()
       return editor
     }

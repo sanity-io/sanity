@@ -113,20 +113,22 @@ export default class InsertMenu extends React.Component<Props> {
 
   handleOnAction = (item: BlockItem) => {
     const {onFocus, editor} = this.props
-    let focusPath
     if (item.isInline) {
       editor.command('insertInlineObject', {objectType: item.value})
-      focusPath = [
-        {_key: editor.value.focusBlock.key},
-        'children',
-        {_key: editor.value.focusInline.key},
-        FOCUS_TERMINATOR
-      ]
+      setTimeout(
+        () =>
+          onFocus([
+            {_key: editor.value.focusBlock.key},
+            'children',
+            {_key: editor.value.focusInline.key},
+            FOCUS_TERMINATOR
+          ]),
+        200
+      )
     } else {
       editor.command('insertBlockObject', {objectType: item.value})
-      focusPath = [{_key: editor.value.focusBlock.key}, FOCUS_TERMINATOR]
+      setTimeout(() => onFocus([{_key: editor.value.focusBlock.key}, FOCUS_TERMINATOR]), 200)
     }
-    setTimeout(() => onFocus(focusPath), 200)
   }
 
   render() {
