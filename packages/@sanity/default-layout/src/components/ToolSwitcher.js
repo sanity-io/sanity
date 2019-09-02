@@ -35,6 +35,7 @@ class ToolSwitcher extends React.PureComponent {
 
   render() {
     const {tools} = this.props
+    if (!tools || tools.length <= 1) return null
     return <ToolSwitcherWidget {...this.props} renderItem={this.renderItem} tools={tools} />
   }
 }
