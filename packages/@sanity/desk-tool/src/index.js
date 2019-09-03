@@ -31,7 +31,8 @@ function paramsToState(params) {
   try {
     return JSON.parse(decodeURIComponent(params))
   } catch (err) {
-    console.warn('Failed to parse parameters')
+    // eslint-disable-next-line no-console
+    console.warn('Failed to parse JSON parameters')
     return {}
   }
 }
@@ -50,7 +51,7 @@ function DeskToolPaneStateSyncer(props) {
   return <DeskTool {...props} onPaneChange={setActivePanes} />
 }
 
-function getIntentState(intentName, params, currentState) {
+function getIntentState(intentName, params, currentState, jsonParams = {}) {
   const paneSegments = (currentState && currentState.panes) || []
   const activePanes = state.activePanes || []
   const editDocumentId = params.id || UUID()
@@ -60,29 +61,35 @@ function getIntentState(intentName, params, currentState) {
   for (let i = activePanes.length - 1; i >= 0; i--) {
     const pane = activePanes[i]
     if (pane.canHandleIntent && pane.canHandleIntent(intentName, params)) {
-      const paneParams = isTemplate ? {template: params.template} : undefined
+      const paneParams = isTemplate ? {template: params.template, ...jsonParams} : undefined
       return {panes: paneSegments.slice(0, i).concat({id: editDocumentId, params: paneParams})}
     }
   }
 
-  return getFallbackIntentState({documentId: editDocumentId, intentName, params})
+  return getFallbackIntentState({documentId: editDocumentId, intentName, params, jsonParams})
 }
 
-function getFallbackIntentState({documentId, intentName, params}) {
+function getFallbackIntentState({documentId, intentName, params, jsonParams = {}}) {
   const editDocumentId = documentId
   const isTemplateCreate = intentName === 'create' && params.template
   const template = isTemplateCreate && getTemplateById(params.template)
 
   return isTemplateCreate
-    ? {editDocumentId, type: template.schemaType, params: {template: params.template}}
+    ? {
+        editDocumentId,
+        type: template.schemaType,
+        params: {template: params.template, ...jsonParams}
+      }
     : {editDocumentId, type: params.type || '*'}
 }
 
 export default {
   router: route('/', [
+    // Fallback route if no panes can handle intent
     route('/edit/:type/:editDocumentId', [
       route({path: '/:params', transform: {params: {toState: paramsToState, toPath: paramsToPath}}})
     ]),
+    // The regular path - when the intent can be resolved to a specific pane
     route({
       path: '/:panes',
       // Legacy URLs, used to handle redirects

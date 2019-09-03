@@ -1,11 +1,11 @@
 import React from 'react'
 import Link from './Link'
-import {RouterProviderContext} from './types'
+import {RouterProviderContext, IntentParameters} from './types'
 import internalRouterContextTypeCheck from './internalRouterContextTypeCheck'
 
 type Props = {
   intent: string
-  params?: Object
+  params?: IntentParameters
   children: React.ReactNode
   className?: string
 }
@@ -31,7 +31,7 @@ export default class IntentLink extends React.PureComponent<Props> {
     }
   }
 
-  resolveIntentLink(intent: string, params?: Object) {
+  resolveIntentLink(intent: string, params?: IntentParameters) {
     if (!this.context.__internalRouter) {
       return `javascript://intent@${JSON.stringify({intent, params})}`
     }

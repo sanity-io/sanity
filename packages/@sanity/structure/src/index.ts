@@ -15,12 +15,16 @@ import {ListItemBuilder, ListItemInput} from './ListItem'
 import {MenuItemGroup, MenuItemGroupBuilder} from './MenuItemGroup'
 import {DocumentListBuilder, DocumentListInput} from './DocumentList'
 import {EditorBuilder, editorWithInitialValueTemplate} from './Editor'
-import {EditorNode, Divider, InitialValueTemplateConfig} from './StructureNodes'
+import {EditorNode, Divider} from './StructureNodes'
 import {SerializeError} from './SerializeError'
 import {ComponentInput, ComponentBuilder} from './Component'
 import {DocumentListItemBuilder, DocumentListItemInput} from './DocumentListItem'
 import {Ordering} from './Sort'
 import {SchemaType} from './parts/Schema'
+import {
+  InitialValueTemplateItemBuilder,
+  defaultInitialValueTemplateItems
+} from './InitialValueTemplateItem'
 
 const StructureBuilder = {
   defaults: getDefaultStructure,
@@ -43,10 +47,16 @@ const StructureBuilder = {
   editor: (spec?: EditorNode) => new EditorBuilder(spec),
   editorWithInitialValueTemplate,
 
-  initialValueTemplateById: (
-    id: string,
+  defaultInitialValueTemplateItems,
+  initialValueTemplateItem: (
+    templateId: string,
     parameters?: {[key: string]: any}
-  ): InitialValueTemplateConfig => ({id, parameters}),
+  ): InitialValueTemplateItemBuilder =>
+    new InitialValueTemplateItemBuilder({
+      id: templateId,
+      parameters,
+      templateId
+    }),
 
   component: (spec?: ComponentInput | Function) => {
     return typeof spec === 'function'

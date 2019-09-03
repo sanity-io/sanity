@@ -65,6 +65,14 @@ export class TemplateBuilder {
     return this.spec.value
   }
 
+  parameters(parameters: TemplateParameter[]) {
+    return this.clone({parameters})
+  }
+
+  getParameters() {
+    return this.spec.parameters
+  }
+
   serialize(): Template {
     const {id, title, description, schemaType, value, icon, parameters} = this.spec
     if (!id) {

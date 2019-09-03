@@ -4,9 +4,11 @@ import {from} from 'rxjs'
 import DefaultPane from 'part:@sanity/components/panes/default'
 import CreateDocumentList from 'part:@sanity/components/lists/create-document'
 import schema from 'part:@sanity/base/schema'
+import shallowEquals from 'shallow-equals'
 import ErrorPane from '../pane/ErrorPane'
 import LoadingPane from '../pane/LoadingPane'
 import DocumentSnapshots from '../components/DocumentSnapshots'
+import BrokenReferences from '../components/BrokenReferences'
 import styles from './styles/withInitialValue.css'
 import {
   templateExists,
@@ -62,16 +64,13 @@ export default function withInitialValue(Pane) {
     constructor(props) {
       super(props)
 
-      const {options, urlParameters} = props
+      const {template: definedTemplate} = props.options
+      const {template: urlTemplate, ...urlParameters} = props.urlParameters
 
-      if (
-        urlParameters.template &&
-        options.template &&
-        options.template !== urlParameters.template
-      ) {
+      if (urlTemplate && definedTemplate && definedTemplate !== urlTemplate) {
         // eslint-disable-next-line no-console
         console.warn(
-          `Conflicting templates: URL says "${urlParameters.template}", structure node says "${options.template}". Using "${options.template}".`
+          `Conflicting templates: URL says "${urlParameters.template}", structure node says "${definedTemplate}". Using "${definedTemplate}".`
         )
       }
 
@@ -80,33 +79,29 @@ export default function withInitialValue(Pane) {
       this.state = {isResolving: shouldResolve, templateChoices}
 
       if (shouldResolve) {
-        this.subscription = from(
-          resolveInitialValueWithParameters(templateName, parameters)
-        ).subscribe(
-          initialValue => {
-            this.setState({isResolving: false, initialValue})
-          },
-          resolveError => {
-            /* eslint-disable no-console */
-            console.group('Failed to resolve initial value')
-            console.error(resolveError)
-            console.error('Template ID: %s', templateName)
-            console.error('Parameters: %o', parameters || {})
-            console.groupEnd()
-            /* eslint-enable no-console */
+        this.resolveInitialValue(templateName, parameters)
+      }
+    }
 
-            this.setState({isResolving: false, resolveError})
-          }
-        )
+    componentDidUpdate(prevProps) {
+      if (
+        prevProps.options.template !== this.props.options.template ||
+        !shallowEquals(prevProps.parameters, this.props.parameters)
+      ) {
+        const {templateName, parameters} = this.resolveTemplateChoices()
+        if (templateName) {
+          this.resolveInitialValue(templateName, parameters)
+        }
       }
     }
 
     resolveTemplateChoices() {
-      const {options, urlParameters, initialValueTemplates} = this.props
-      const template = options.template || urlParameters.template
+      const {template: urlTemplate, ...urlParameters} = this.props.urlParameters
+      const {options, initialValueTemplates} = this.props
+      const template = options.template || urlTemplate
       const type = options.type
 
-      let parameters = this.props.parameters
+      let parameters = {...this.props.parameters, ...urlParameters}
       let templateName = template
       let templateChoices
 
@@ -140,6 +135,27 @@ export default function withInitialValue(Pane) {
       }
 
       return {templateChoices, templateName, parameters}
+    }
+
+    resolveInitialValue(templateName, parameters) {
+      this.subscription = from(
+        resolveInitialValueWithParameters(templateName, parameters)
+      ).subscribe(
+        initialValue => {
+          this.setState({isResolving: false, initialValue, templateChoices: null})
+        },
+        resolveError => {
+          /* eslint-disable no-console */
+          console.group('Failed to resolve initial value')
+          console.error(resolveError)
+          console.error('Template ID: %s', templateName)
+          console.error('Parameters: %o', parameters || {})
+          console.groupEnd()
+          /* eslint-enable no-console */
+
+          this.setState({isResolving: false, resolveError})
+        }
+      )
     }
 
     componentWillUnmount() {
@@ -203,7 +219,9 @@ export default function withInitialValue(Pane) {
             return isResolving ? (
               <LoadingPane {...this.props} title={title} message="Resolving initial value…" />
             ) : (
-              <Pane {...this.props} initialValue={initialValue} />
+              <BrokenReferences document={initialValue}>
+                <Pane {...this.props} initialValue={initialValue} />
+              </BrokenReferences>
             )
           }}
         </DocumentSnapshots>
