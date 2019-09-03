@@ -5,8 +5,8 @@
   align-items: center;
 
   @nest & span {
-    font-size: 14px;
-    line-height: 25px;
+    font-size: var(--font-size-small);
+    line-height: calc(25 / 14);
   }
 
   @nest & span > svg {
@@ -48,18 +48,42 @@
   padding: 0.75em;
 }
 
-.notice {
-  /* empty */
+.hasUpdates {
+  display: flex;
+  align-items: center;
 }
 
-.low {
-  color: #6cb8ff;
+.updateIcon {
+  position: relative;
 }
 
-.medium {
-  color: var(--state-warning-color);
+.updateIndicator {
+  position: absolute;
+  top: 0.2em;
+  right: 0.15em;
+  height: 0.5em;
+  width: 0.5em;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  box-sizing: border-box;
 }
 
-.high {
-  color: var(--state-danger-color);
+.updateIndicator[data-severity="notice"] {
+  background: currentColor;
+}
+
+.updateIndicator[data-severity="low"] {
+  background: currentColor;
+}
+
+.updateIndicator[data-severity="medium"] {
+  background: var(--state-warning-color);
+}
+
+.updateIndicator[data-severity="high"] {
+  background: var(--state-danger-color);
+}
+
+.updateLabel {
+  margin-left: 0.25em;
 }

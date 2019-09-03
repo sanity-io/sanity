@@ -24,11 +24,10 @@ export default function SanityStatus(props) {
   } = props
   const currentLevel = outdated.length ? level : 'notice'
   const severity = isSupported ? currentLevel : 'high'
-  const className = `${styles.root} ${styles[severity]}`
   const Dialog = isUpToDate ? CurrentVersionsDialog : UpdateNotifierDialog
 
   return (
-    <div className={className}>
+    <div className={styles.root}>
       {showDialog && (
         <Dialog
           severity={severity}
@@ -42,9 +41,16 @@ export default function SanityStatus(props) {
           {isUpToDate ? (
             <span>Up to date</span>
           ) : (
-            <span>
-              <PackageIcon /> {formatUpdateLabel(outdated.length)}
-            </span>
+            <div className={styles.hasUpdates}>
+              <span className={styles.updateIcon}>
+                <div
+                  className={styles.updateIndicator}
+                  data-severity={severity}
+                  aria-label={`${severity} severity level.`} />
+                <PackageIcon />
+              </span>
+              <span className={styles.updateLabel}>{formatUpdateLabel(outdated.length)}</span>
+            </div>
           )}
         </div>
       </button>
