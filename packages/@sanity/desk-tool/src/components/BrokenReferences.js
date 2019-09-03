@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {streamingComponent} from 'react-props-stream'
-import {merge, from} from 'rxjs'
+import {merge, from, of} from 'rxjs'
 import {map, switchMap, scan, filter, mergeMap} from 'rxjs/operators'
 import {uniq, uniqBy} from 'lodash'
 import DefaultPane from 'part:@sanity/components/panes/default'
@@ -79,6 +79,11 @@ const BrokenReferences = streamingComponent(props$ =>
   props$.pipe(
     switchMap(props => {
       const ids = findReferences(props.document)
+
+      if (!ids.length) {
+        return of(props.children)
+      }
+
       return from(ids).pipe(
         mergeMap(checkExistance),
         scan((prev, curr) => uniqBy([curr, ...prev], 'id'), []),
