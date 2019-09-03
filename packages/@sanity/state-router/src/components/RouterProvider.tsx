@@ -2,7 +2,13 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import pubsub from 'nano-pubsub'
 import {Router} from '../types'
-import {InternalRouter, NavigateOptions, RouterProviderContext, RouterState} from './types'
+import {
+  InternalRouter,
+  NavigateOptions,
+  RouterProviderContext,
+  RouterState,
+  IntentParameters
+} from './types'
 
 type Props = {
   onNavigate: (nextPath: string, options?: NavigateOptions) => void
@@ -38,22 +44,27 @@ export default class RouterProvider extends React.Component<Props> {
     onNavigate(url, options)
   }
 
-  navigateState = (nextState: Object, options: NavigateOptions = {}): void => {
+  navigateState = (nextState: Record<string, any>, options: NavigateOptions = {}): void => {
     this.navigateUrl(this.resolvePathFromState(nextState), options)
-  }
-
-  navigateIntent = (intentName: string, params?: Object, options: NavigateOptions = {}): void => {
-    this.navigateUrl(this.resolveIntentLink(intentName, params), options)
   }
 
   getState = () => this._state
 
-  resolvePathFromState = (state: Object): string => {
+  resolvePathFromState = (state: Record<string, any>): string => {
     return this.props.router.encode(state)
   }
 
-  resolveIntentLink = (intentName: string, params?: Object): string => {
-    return this.props.router.encode({intent: intentName, params})
+  navigateIntent = (
+    intentName: string,
+    params?: IntentParameters,
+    options: NavigateOptions = {}
+  ): void => {
+    this.navigateUrl(this.resolveIntentLink(intentName, params), options)
+  }
+
+  resolveIntentLink = (intentName: string, parameters?: IntentParameters): string => {
+    const [params, jsonParams] = Array.isArray(parameters) ? parameters : [parameters]
+    return this.props.router.encode({intent: intentName, params, jsonParams})
   }
 
   getChildContext(): RouterProviderContext {

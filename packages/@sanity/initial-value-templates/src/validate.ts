@@ -2,6 +2,8 @@ import oneline from 'oneline'
 import {isPlainObject} from 'lodash'
 import {randomKey, toString as pathToString} from '@sanity/util/paths'
 import {Template} from './Template'
+import {TemplateParameter} from './TemplateParameters'
+import {getDefaultSchema} from './parts/Schema'
 
 export {validateInitialValue, validateTemplates}
 
@@ -21,6 +23,14 @@ function validateTemplates(templates: Template[]) {
       throw new Error(
         `Template ${id} has an invalid "value" property; should be a function or an object`
       )
+    }
+
+    if (typeof template.parameters !== 'undefined') {
+      if (Array.isArray(template.parameters)) {
+        template.parameters.forEach((param, i) => validateParameter(param, template, i))
+      } else {
+        throw new Error(`Template ${id} has an invalid "parameters" property; must be an array`)
+      }
     }
 
     if (idMap.has(template.id)) {
@@ -96,4 +106,27 @@ function validateValue(value: any, path: (string | number)[] = [], parentIsArray
     acc[key] = validateValue(value[key], path.concat([key]))
     return acc
   }, initial)
+}
+
+function validateParameter(parameter: TemplateParameter, template: Template, index: number) {
+  const schema = getDefaultSchema()
+
+  if (!parameter.name) {
+    throw new Error(
+      `Template ${template.id} has a parameter at index ${index} that is missing its "name"-property`
+    )
+  }
+
+  // I know, this is a weird one
+  if (parameter.name === 'template') {
+    throw new Error(
+      `Template parameters cannot be named "template", see parameter #${index} for template ${template.id}`
+    )
+  }
+
+  if (!schema.get(parameter.type)) {
+    throw new Error(
+      `Template parameter "${parameter.name}" has an invalid/unknown type: "${parameter.type}"`
+    )
+  }
 }
