@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "0.142.2",
+  "version": "0.142.3",
   "description": "React-based data management tool for Sanity projects",
   "main": "lib/SanityVision.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -34,8 +34,8 @@
     "@sanity/base": "0.142.2",
     "@sanity/check": "0.142.0",
     "@sanity/client": "0.142.0",
-    "@sanity/components": "0.142.2",
-    "@sanity/default-layout": "0.142.2",
+    "@sanity/components": "0.142.3",
+    "@sanity/default-layout": "0.142.3",
     "prop-types": "^15.6.0",
     "react": "^16.3.0",
     "react-dom": "^16.3.0"

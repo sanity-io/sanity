@@ -1,6 +1,6 @@
 {
   "name": "@sanity/form-builder",
-  "version": "0.142.2",
+  "version": "0.142.3",
   "description": "Sanity form builder",
   "main": "lib/index.js",
   "scripts": {
@@ -14,7 +14,9 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "setupFilesAfterEnv": ["./test/setup.js"],
+    "setupFilesAfterEnv": [
+      "./test/setup.js"
+    ],
     "collectCoverageFrom": [
       "src/**.js"
     ]
@@ -75,7 +77,7 @@
     "@sanity/base": "0.142.2",
     "@sanity/check": "0.142.0",
     "@sanity/cli": "0.142.2",
-    "@sanity/components": "0.142.2",
+    "@sanity/components": "0.142.3",
     "@sanity/core": "0.142.2",
     "@sanity/plugin-loader": "0.142.0",
     "@sanity/server": "0.142.2",
