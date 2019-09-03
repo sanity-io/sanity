@@ -2,9 +2,9 @@
 /* eslint-disable react/jsx-no-bind */
 
 import React from 'react'
-import Ink from 'react-ink'
+import {Tooltip} from 'react-tippy'
 import {storiesOf} from 'part:@sanity/storybook'
-import {withKnobs, text, boolean, number} from 'part:@sanity/storybook/addons/knobs'
+import {withKnobs, text, boolean, number, select} from 'part:@sanity/storybook/addons/knobs'
 import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
 import PlusIcon from 'part:@sanity/base/plus-icon'
 import PluginIcon from 'part:@sanity/base/plugin-icon'
@@ -13,6 +13,7 @@ import Branding from './components/Branding'
 import ToolSwitcherWidget from './components/ToolSwitcherWidget'
 import NotFound from './components/NotFound'
 import LoginStatus from './components/LoginStatus'
+import SanityStatus from './components/SanityStatus'
 import SearchField from './components/SearchField'
 import SearchResults from './components/SearchResults'
 import ToolSwitcherItem from './components/ToolSwitcherItem'
@@ -20,18 +21,28 @@ import ToolSwitcherItem from './components/ToolSwitcherItem'
 import NavBarStyles from './components/styles/NavBar.css'
 import DefaultLayoutStyles from './components/styles/DefaultLayout.css'
 
+const noop = () => undefined
+
 storiesOf('[tool] Default layout')
   .addDecorator(withKnobs)
   .add('Example', () => {
     const menuIsOpen = boolean('menuIsOpen', false, 'props')
     const searchIsOpen = boolean('searchIsOpen', false, 'props')
+    // 'notice' | 'low' | 'medium' | 'high'
+    // const sanityStatusLevel = 'high'
+    const sanityStatusIsUpToDate = boolean('sanityStatusIsUpToDate', true, 'props')
+    const sanityStatusLevel = select('sanityStatusLevel', ['notice', 'low', 'medium', 'high'], 'notice', 'props')
+    const sanityStatusNumberOfUpdates = number('sanityStatusNumberOfUpdates', 0, 'props')
+    const sanityStatusVersions = {}
+    // const sanityStatusIsUpToDate = sanityStatusLevel === 'notice'
+    const sanityStatusOutdated = Array.from(new Array(sanityStatusNumberOfUpdates)).map(() => ({}))
     const isOverlayVisible = menuIsOpen || searchIsOpen
     let className = DefaultLayoutStyles.root
     if (isOverlayVisible) className += ` ${DefaultLayoutStyles.isOverlayVisible}`
     return (
       <div className={className}>
         <div className={DefaultLayoutStyles.navBar}>
-          <div className={NavBarStyles.root}>
+          <div className={`${NavBarStyles.root} ${NavBarStyles.withToolSwitcher}`}>
             <div className={NavBarStyles.hamburger}>
               <button
                 className={NavBarStyles.hamburgerButton}
@@ -45,13 +56,25 @@ storiesOf('[tool] Default layout')
             <a className={NavBarStyles.branding} href="#" onClick={evt => evt.preventDefault()}>
               <Branding />
             </a>
-            <a className={NavBarStyles.createButton} onClick={() => console.log('onClick()')}>
-              <span className={NavBarStyles.createButtonIcon}>
-                <PlusIcon />
-              </span>
-              <span className={NavBarStyles.createButtonText}>New</span>
-              <Ink duration={200} opacity={0.1} radius={200} />
-            </a>
+            <button className={NavBarStyles.createButton} onClick={noop} type="button">
+              <Tooltip
+                disabled={'ontouchstart' in document.documentElement}
+                title="Create new document"
+                arrow
+                inertia
+                theme="dark"
+                distance="7"
+                sticky
+                size="small"
+              >
+                <div className={NavBarStyles.createButtonInner} tabIndex={-1}>
+                  <div className={NavBarStyles.createButtonIcon}>
+                    <PlusIcon />
+                  </div>
+                  <span className={NavBarStyles.createButtonText}>New</span>
+                </div>
+              </Tooltip>
+            </button>
             <div className={NavBarStyles.search}>
               <SearchField
                 hotkeys={['F']}
@@ -74,6 +97,7 @@ storiesOf('[tool] Default layout')
                 onChange={() => console.log('change')}
               />
             </div>
+            {/* spaceSwitcher */}
             <div className={NavBarStyles.toolSwitcher}>
               <ToolSwitcherWidget
                 onSwitchTool={event => console.log('onSwitchTool()', event)}
@@ -94,6 +118,17 @@ storiesOf('[tool] Default layout')
                 renderItem={tool => <ToolSwitcherItem title={tool.name} icon={tool.icon} />}
               />
             </div>
+            <div className={NavBarStyles.sanityStatus}>
+              <SanityStatus
+                isSupported
+                isUpToDate={sanityStatusIsUpToDate}
+                level={sanityStatusLevel}
+                onHideDialog={noop}
+                onShowDialog={noop}
+                outdated={sanityStatusOutdated}
+                versions={sanityStatusVersions}
+              />
+            </div>
             <div className={NavBarStyles.loginStatus}>
               <LoginStatus
                 user={{
@@ -103,6 +138,7 @@ storiesOf('[tool] Default layout')
                 onLogout={() => console.log('logout')}
               />
             </div>
+            {/* searchButton */}
           </div>
         </div>
       </div>
