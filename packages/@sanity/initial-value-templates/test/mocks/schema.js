@@ -24,5 +24,5 @@ const schema = {
 
 module.exports = {
   getTypeNames: () => Object.keys(schema),
-  get: name => schema[name]
+  get: name => ({...schema[name], type: {name: schema[name].type}})
 }

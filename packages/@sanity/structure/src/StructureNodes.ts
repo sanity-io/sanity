@@ -8,6 +8,7 @@ import {Component, ComponentBuilder} from './Component'
 import {DocumentListItemBuilder} from './DocumentListItem'
 import {ChildResolver} from './ChildResolver'
 import {DocumentTypeListBuilder} from './DocumentTypeList'
+import {InitialValueTemplateItem, InitialValueTemplateItemBuilder} from './InitialValueTemplateItem'
 
 export interface StructureNode {
   id: string
@@ -24,12 +25,7 @@ export interface EditorNode extends StructureNode {
   parameters?: {
     [key: string]: any
   }
-  initialValueTemplates?: InitialValueTemplateConfig[]
-}
-
-export type InitialValueTemplateConfig = {
-  id: string
-  parameters?: {[key: string]: any}
+  initialValueTemplates?: InitialValueTemplateItem[]
 }
 
 export interface Divider {
@@ -68,3 +64,4 @@ export type Builder =
   | ListItemBuilder
   | MenuItemBuilder
   | MenuItemGroupBuilder
+  | InitialValueTemplateItemBuilder

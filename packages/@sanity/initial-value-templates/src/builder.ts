@@ -30,7 +30,15 @@ function defaults(sanitySchema?: Schema) {
     )
   }
 
-  return schema.getTypeNames().map(typeName => defaultTemplateForType(schema.get(typeName), schema))
+  return schema
+    .getTypeNames()
+    .filter(typeName => isDocumentSchemaType(typeName, schema))
+    .map(typeName => defaultTemplateForType(schema.get(typeName), schema))
+}
+
+function isDocumentSchemaType(typeName: string, schema: Schema) {
+  const schemaType = schema.get(typeName)
+  return schemaType.type && schemaType.type.name === 'document'
 }
 
 export default {
