@@ -6,7 +6,7 @@
 
   @nest & span {
     font-size: var(--font-size-small);
-    line-height: 25px;
+    line-height: calc(25 / 14);
   }
 
   @nest & span > svg {
@@ -64,16 +64,16 @@
   height: 0.5em;
   width: 0.5em;
   border-radius: 50%;
-  border: 1px solid var(--main-navigation-color--inverted);
+  border: 1px solid currentColor;
   box-sizing: border-box;
 }
 
 .updateIndicator[data-severity="notice"] {
-  background: var(--main-navigation-color--inverted);
+  background: currentColor;
 }
 
 .updateIndicator[data-severity="low"] {
-  background: #6cb8ff;
+  background: currentColor;
 }
 
 .updateIndicator[data-severity="medium"] {
