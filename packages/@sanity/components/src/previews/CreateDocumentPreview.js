@@ -18,6 +18,7 @@ class CreateDocumentPreview extends React.PureComponent {
     params: PropTypes.shape({
       template: PropTypes.string
     }),
+    templateParams: PropTypes.object,
     onClick: PropTypes.func,
     mediaDimensions: PropTypes.shape({
       width: PropTypes.number,
@@ -44,7 +45,8 @@ class CreateDocumentPreview extends React.PureComponent {
       isPlaceholder,
       mediaDimensions,
       description,
-      params
+      params,
+      templateParams
     } = this.props
 
     if (isPlaceholder || !params) {
@@ -62,7 +64,7 @@ class CreateDocumentPreview extends React.PureComponent {
     return (
       <IntentLink
         intent="create"
-        params={params}
+        params={[params, templateParams]}
         className={styles.root}
         title={subtitle ? `Create new ${title} (${subtitle})` : `Create new ${title}`}
         onClick={this.props.onClick}

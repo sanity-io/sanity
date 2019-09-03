@@ -1,25 +1,16 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import schema from 'part:@sanity/base/schema'
 import AppLoadingScreen from 'part:@sanity/base/app-loading-screen'
 import {RouteScope, withRouterHOC} from 'part:@sanity/base/router'
 import absolutes from 'all:part:@sanity/base/absolutes'
-import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
 import userStore from 'part:@sanity/base/user'
+import getNewDocumentModalActions from '../util/getNewDocumentModalActions'
 import styles from './styles/DefaultLayout.css'
 import SideMenu from './SideMenu'
 import RenderTool from './RenderTool'
 import ActionModal from './ActionModal'
 import NavBarContainer from './NavBarContainer'
 import {SchemaErrorReporter} from './SchemaErrorReporter'
-import {getTemplatesBySchemaType} from '@sanity/base/initial-value-templates'
-
-function getDocumentTypeNames() {
-  return schema.getTypeNames().filter(typeName => {
-    const schemaType = schema.get(typeName)
-    return schemaType.type && schemaType.type.name === 'document'
-  })
-}
 
 export default withRouterHOC(
   class DefaultLayout extends React.Component {
@@ -136,25 +127,6 @@ export default withRouterHOC(
       const {tools, router} = this.props
       const {createMenuIsOpen, menuIsOpen, searchIsOpen} = this.state
 
-      const modalActions = getDocumentTypeNames()
-        .map(typeName => schema.get(typeName))
-        .filter(type => isActionEnabled(type, 'create'))
-        .reduce((actions, type) => {
-          const templates = getTemplatesBySchemaType(type.name)
-          return actions.concat(
-            templates.map(tpl => ({
-              ...tpl,
-              subtitle: type.title === tpl.title ? undefined : type.title,
-              key: tpl.id,
-              icon: tpl.icon || type.icon,
-              params: {
-                template: tpl.id,
-                type: tpl.schemaType
-              }
-            }))
-          )
-        }, [])
-
       const isOverlayVisible = menuIsOpen || searchIsOpen
       let className = styles.root
       if (isOverlayVisible) className += ` ${styles.isOverlayVisible}`
@@ -212,7 +184,10 @@ export default withRouterHOC(
           </div>
 
           {createMenuIsOpen && (
-            <ActionModal onClose={this.handleActionModalClose} actions={modalActions} />
+            <ActionModal
+              onClose={this.handleActionModalClose}
+              actions={getNewDocumentModalActions()}
+            />
           )}
           {absolutes.map((Abs, i) => (
             <Abs key={i} />
