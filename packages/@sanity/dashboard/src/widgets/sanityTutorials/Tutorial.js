@@ -20,7 +20,7 @@ class Tutorial extends React.PureComponent {
     const {title, posterURL, showPlayIcon, href, presenterName, presenterSubtitle} = this.props
 
     return (
-      <a className={styles.root} href={href}>
+      <a className={styles.root} href={href} target="_blank" rel="noopener noreferrer">
         <div className={styles.posterContainer}>
           <img className={styles.poster} src={posterURL} />
           {showPlayIcon && (
