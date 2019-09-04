@@ -7,7 +7,7 @@ import {getDevServer} from '@sanity/server'
 import getConfig from '@sanity/util/lib/getConfig'
 import chooseDatasetPrompt from '../dataset/chooseDatasetPrompt'
 import {tryInitializePluginConfigs} from '../../actions/config/reinitializePluginConfigs'
-import checkReactCompatibility from '../../util/checkReactCompatibility'
+import checkStudioDependencyVersions from '../../util/checkStudioDependencyVersions'
 import debug from '../../debug'
 import {formatMessage, isLikelyASyntaxError} from './formatMessage'
 
@@ -32,7 +32,7 @@ export default async (args, context) => {
     project: sanityConfig.get('project')
   }
 
-  checkReactCompatibility(workDir)
+  checkStudioDependencyVersions(workDir)
 
   let compileSpinner
   const configSpinner = output.spinner('Checking configuration files...')
