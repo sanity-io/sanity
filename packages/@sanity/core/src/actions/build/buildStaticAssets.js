@@ -6,7 +6,7 @@ import {promisify} from 'es6-promisify'
 import getConfig from '@sanity/util/lib/getConfig'
 import {getWebpackCompiler, getDocumentElement, ReactDOM} from '@sanity/server'
 import sortModulesBySize from '../../stats/sortModulesBySize'
-import checkReactCompatibility from '../../util/checkReactCompatibility'
+import checkStudioDependencyVersions from '../../util/checkStudioDependencyVersions'
 import {tryInitializePluginConfigs} from '../config/reinitializePluginConfigs'
 import compressJavascript from './compressJavascript'
 
@@ -38,7 +38,7 @@ export default async (args, context) => {
 
   await tryInitializePluginConfigs({workDir, output})
 
-  checkReactCompatibility(workDir)
+  checkStudioDependencyVersions(workDir)
 
   const compiler = getWebpackCompiler(compilationConfig)
   const compile = promisify(compiler.run.bind(compiler))
