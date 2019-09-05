@@ -81,8 +81,11 @@ export default async function initSanity(args, context) {
     print(`You're setting up a new project!`)
     print(`We'll make sure you have an account with Sanity.io. Then we'll`)
     print('install an open-source JS content editor that connects to')
-    print('the real-time hosted API on Sanity.io. Hang on.')
+    print('the real-time hosted API on Sanity.io. Hang on.\n')
     print('Press ctrl + C at any time to quit.\n')
+    print('Prefer web interfaces to terminals?')
+    print('You can also set up best practice Sanity projects with')
+    print('your favorite frontends on https://sanity.io/create\n')
   }
 
   // If the user isn't already authenticated, make it so
