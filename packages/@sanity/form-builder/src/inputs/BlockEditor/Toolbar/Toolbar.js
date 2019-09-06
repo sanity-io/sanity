@@ -34,6 +34,7 @@ type Props = {
   onToggleFullScreen: (event: SyntheticEvent<*>) => void,
   markers: Marker[],
   type: Type,
+  isDragging: boolean,
   userIsWritingText: boolean
 }
 
@@ -135,7 +136,15 @@ class Toolbar extends React.PureComponent<Props, State> {
   }, 50)
 
   render() {
-    const {blockContentFeatures, editor, fullscreen, markers, onToggleFullScreen, type} = this.props
+    const {
+      blockContentFeatures,
+      editor,
+      fullscreen,
+      isDragging,
+      markers,
+      onToggleFullScreen,
+      type
+    } = this.props
 
     if (!editor) {
       return null
@@ -162,6 +171,7 @@ class Toolbar extends React.PureComponent<Props, State> {
               ${styles.root}
               ${fullscreen ? ` ${styles.fullscreen}` : ''}
             `}
+            style={{pointerEvents: isDragging ? 'none' : 'unset'}}
           >
             <div className={styles.primary} ref={this._primaryToolbar}>
               {collapsePrimary && (
