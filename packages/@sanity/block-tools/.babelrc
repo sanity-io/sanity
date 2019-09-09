@@ -1,6 +1,6 @@
 {
   "extends": "../../../.babelrc",
-  "presets": ["@babel/react", "@babel/flow"],
+  "presets": ["@babel/react"],
   "env": {
     "test": {
       "plugins": ["transform-es2015-modules-commonjs", "@babel/plugin-proposal-class-properties"]

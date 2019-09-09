@@ -1,4 +1,3 @@
-// @flow
 import parse from './parse'
 import ImmutableAccessor from './ImmutableAccessor'
 import {Matcher} from '../jsonpath'

@@ -1,4 +1,4 @@
 module.exports = {
   extends: '../../../.babelrc',
-  presets: ['@babel/react', '@babel/flow']
+  presets: ['@babel/react']
 }
