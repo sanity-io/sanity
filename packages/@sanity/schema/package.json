@@ -8,8 +8,7 @@
     "compile": "babel src --copy-files --out-dir lib",
     "compile:watch": "npm run compile -- --watch",
     "test": "jest",
-    "test:watch": "jest --watchAll",
-    "typecheck": "flow check"
+    "test:watch": "jest --watchAll"
   },
   "keywords": [
     "sanity",
@@ -33,7 +32,6 @@
   "devDependencies": {
     "@types/node": "^8.0.0",
     "empty": "^0.10.1",
-    "flow-typed": "^2.2.3",
     "jest": "^24.9.0",
     "recursive-readdir": "^2.1.0",
     "rimraf": "^2.6.2"

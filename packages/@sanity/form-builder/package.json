@@ -5,7 +5,6 @@
   "main": "lib/index.js",
   "scripts": {
     "clean": "rimraf lib",
-    "typecheck": "flow check",
     "test": "NODE_ENV=test jest",
     "start": "npm run example-testbed",
     "example-testbed": "cd examples/schema-testbed && sanity start",
@@ -79,7 +78,6 @@
     "@sanity/plugin-loader": "0.142.0",
     "@sanity/server": "0.142.2",
     "assert": "^1.4.1",
-    "flow-typed": "^2.2.3",
     "in-publish": "^2.0.0",
     "jest": "^24.9.0",
     "json-markup": "^1.1.0",
