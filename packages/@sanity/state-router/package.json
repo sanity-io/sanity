@@ -4,12 +4,9 @@
   "description": "A path pattern => state object bidirectional mapper",
   "main": "lib/index.js",
   "scripts": {
-    "start": "remon --require @babel/register demo-server/app.js",
-    "test": "tap test/*.test.js --node-arg --require --node-arg @babel/register",
-    "test:lib:compile": "babel . -q --ignore node_modules,demo-server,perf --out-dir test-compiled",
-    "test:lib": "npm run test:lib:compile && cd test-compiled && tap test/**.test.js && cd - && npm run test:lib:clean",
-    "test:lib:clean": "rimraf test-compiled",
-    "compile": "npm run clean && babel --out-dir lib/ src/",
+    "start": "remon --require ts-node/register demo-server/app.ts",
+    "test": "jest",
+    "compile": "tsc",
     "compile:watch": "babel --watch --out-dir lib/ src/",
     "benchmark": "npm run compile && node --prof --logfile=benchmarks.log perf/benchmark.js",
     "clean": "rimraf lib"
@@ -29,6 +26,8 @@
     "nano-pubsub": "^1.0.2"
   },
   "devDependencies": {
+    "@types/react": "^16.3",
+    "@types/jest": "^24.0.18",
     "browserify": "^14.3.0",
     "error-capture-middleware": "0.0.2",
     "express": "^4.16.1",
@@ -44,10 +43,11 @@
     "remon": "^1.0.2",
     "rimraf": "^2.6.2",
     "staticr": "^4.0.2",
-    "tap": "^14.6.1"
+    "ts-jest": "^24.0.2",
+    "ts-node": "^8.3.0",
+    "tsify": "^4.0.1"
   },
   "peerDependencies": {
-    "prop-types": "^15.6",
     "react": "^16.3",
     "react-dom": "^16.3"
   },
