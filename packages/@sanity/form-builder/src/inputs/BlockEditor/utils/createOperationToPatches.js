@@ -320,12 +320,6 @@ export default function createOperationToPatches(
   function removeNodePatch(operation: Operation, beforeValue: SlateValue, afterValue: SlateValue) {
     const patches = []
     const block = toBlock(beforeValue, operation.path.get(0))
-    const oldNode = beforeValue.document.getNode(operation.path)
-    const isPlaceholder = oldNode && oldNode.data && oldNode.data.get('placeholder')
-    // Don't create any patches if this is a placeholder block that is removed.
-    if (isPlaceholder) {
-      return []
-    }
     if (operation.path.size === 1) {
       patches.push(unset([{_key: block._key}]))
     }
