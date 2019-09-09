@@ -1,4 +1,4 @@
 {
   "extends": "../../../.babelrc",
-  "presets": ["@babel/flow", "@babel/react"]
+  "presets": ["@babel/react"]
 }
