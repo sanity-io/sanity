@@ -131,6 +131,10 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
     this.checkScrollHeight()
   }
 
+  componentWillUnmount() {
+    this.handleOnDragLeave.cancel()
+  }
+
   renderNodeEditor() {
     const {blockContentFeatures, editorValue, focusPath} = this.props
     const slateNode = findEditNode(focusPath, editorValue, this.getEditor())
