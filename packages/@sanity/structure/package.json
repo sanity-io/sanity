@@ -39,7 +39,7 @@
     "rimraf": "^2.6.2",
     "rxjs": "^6.5.2",
     "ts-jest": "^24.0.2",
-    "typescript": "^3.2.2"
+    "typescript": "^3.6.2"
   },
   "repository": {
     "type": "git",
