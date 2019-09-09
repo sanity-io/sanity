@@ -172,11 +172,18 @@ export default class BlockObject extends React.Component<Props, State> {
       event.preventDefault()
       event.stopPropagation()
 
-      const {node} = this.props
+      const {node, editor} = this.props
       let targetDOMNode
       if (event.target instanceof HTMLElement) {
         const keyNodes = event.target.querySelectorAll('[data-key]')
-        targetDOMNode = keyNodes.item(0)
+        for (let i = 0; i < keyNodes.length; i++) {
+          const key = keyNodes[i].getAttribute('data-key')
+          const closestBlock = editor.value.document.getClosestBlock(key)
+          // eslint-disable-next-line max-depth
+          if (!targetDOMNode && closestBlock) {
+            targetDOMNode = findDOMNode(closestBlock)
+          }
+        }
       }
 
       // As the event is registered on the editor parent node
@@ -189,8 +196,6 @@ export default class BlockObject extends React.Component<Props, State> {
       if (event.dataTransfer) {
         event.dataTransfer.dropEffect = 'move'
       }
-
-      const {editor} = this.props
 
       const targetNode = findNode(targetDOMNode, editor)
       if (!targetNode) {
@@ -235,7 +240,6 @@ export default class BlockObject extends React.Component<Props, State> {
     event.preventDefault()
     event.dataTransfer.dropEffect = 'move'
     this.setState({isDragging: false})
-
     const target = this._dropTarget
     this.removeDragHandlers()
     this.resetDropTarget()
@@ -249,10 +253,19 @@ export default class BlockObject extends React.Component<Props, State> {
     if (!target || target.node.key === node.key) {
       return
     }
+    const targetIndex = target && target.node && editor.value.document.nodes.indexOf(target.node)
+    const nodeIndex = editor.value.document.nodes.indexOf(node)
+    let newIndex = target.position === 'before' ? targetIndex : targetIndex + 1
+    if (targetIndex > nodeIndex) {
+      newIndex--
+    }
     editor
       .removeNodeByKey(node.key)
-      [target.position === 'before' ? 'moveToStartOfNode' : 'moveToEndOfNode'](target.node)
-      .insertBlock(node)
+      .applyOperation({
+        type: 'insert_node',
+        path: [newIndex],
+        node: node
+      })
       .moveToEndOfNode(node)
       .focus()
   }
