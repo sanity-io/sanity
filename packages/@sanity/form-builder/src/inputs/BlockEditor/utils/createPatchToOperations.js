@@ -420,12 +420,13 @@ export default function createPatchesToChange(
     }
 
     const firstKey = patch.path[0] && patch.path[0]._key
+    const decendant = firstKey && editorValue.document.getDescendant(firstKey)
     const isVoidRootBlock =
-      firstKey &&
+      decendant &&
       editorValue &&
       editorValue.document &&
       editorValue.document.size > 0 &&
-      controller.query('isVoid', editorValue.document.getDescendant(firstKey))
+      controller.query('isVoid', decendant)
 
     const rootBlock = firstKey && editorValue.document.getDescendant(firstKey)
 
