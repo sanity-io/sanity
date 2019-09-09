@@ -1,6 +1,7 @@
 // @flow
 import type {Element as ReactElement, ElementRef} from 'react'
 import React from 'react'
+import {debounce} from 'lodash'
 
 import {PatchEvent} from 'part:@sanity/form-builder/patch-event'
 
@@ -66,7 +67,8 @@ type Props = {
 }
 
 type State = {
-  preventScroll: boolean
+  preventScroll: boolean,
+  isDragging: boolean
 }
 
 // eslint-disable-next-line complexity
@@ -111,7 +113,8 @@ function findEditNode(focusPath: Path, editorValue: SlateValue, editor: SlateEdi
 
 export default class BlockEditor extends React.PureComponent<Props, State> {
   state = {
-    preventScroll: false
+    preventScroll: false,
+    isDragging: false
   }
 
   static defaultProps = {
@@ -126,6 +129,10 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
 
   componentDidUpdate() {
     this.checkScrollHeight()
+  }
+
+  componentWillUnmount() {
+    this.handleOnDragLeave.cancel()
   }
 
   renderNodeEditor() {
@@ -225,6 +232,14 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
     }
     return null
   }
+
+  handleOnDragEnter = (event: SyntheticDragEvent<>) => {
+    this.setState({isDragging: true})
+  }
+
+  handleOnDragLeave = debounce((event: SyntheticDragEvent<>) => {
+    this.setState({isDragging: false})
+  }, 1500)
 
   renderEditor(): ReactElement<typeof Editor> {
     const {
@@ -335,6 +350,7 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
             markers={markers}
             onFocus={onFocus}
             onToggleFullScreen={this.handleToggleFullscreen}
+            isDragging={this.state.isDragging}
             type={type}
             userIsWritingText={userIsWritingText}
           />
@@ -394,7 +410,11 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
         {fullscreen && (
           <Portal>
             <StackedEscapeable onEscape={this.handleToggleFullscreen}>
-              <div className={styles.fullscreen}>
+              <div
+                className={styles.fullscreen}
+                onDragLeave={this.handleOnDragLeave}
+                onDragEnter={this.handleOnDragEnter}
+              >
                 {this.renderReadOnlyFullscreenButton()}
                 {this.renderBlockEditor()}
               </div>
