@@ -1,4 +1,4 @@
-import path from 'path'
+import * as path from 'path'
 import {get, merge} from 'lodash'
 import {loadJsonSync} from './safeJson'
 import reduceConfig from './reduceConfig'

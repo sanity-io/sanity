@@ -1,6 +1,6 @@
 import fse from 'fs-extra'
-import path from 'path'
-import os from 'os'
+import * as path from 'path'
+import * as os from 'os'
 
 export async function pathIsEmpty(dir) {
   try {
@@ -16,8 +16,14 @@ export async function pathIsEmpty(dir) {
 }
 
 export function expandHome(filePath) {
-  if (filePath.charCodeAt(0) === 126 /* ~ */) {
-    if (filePath.charCodeAt(1) === 43 /* + */) {
+  if (
+    filePath.charCodeAt(0) === 126
+    /* ~ */
+  ) {
+    if (
+      filePath.charCodeAt(1) === 43
+      /* + */
+    ) {
       return path.join(process.cwd(), filePath.slice(2))
     }
 
