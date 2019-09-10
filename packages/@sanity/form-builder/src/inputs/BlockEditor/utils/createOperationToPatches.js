@@ -216,7 +216,7 @@ export default function createOperationToPatches(
       } else {
         positionPath = [{_key: beforeValue.document.nodes.get(operation.path.get(0) - 1).key}]
       }
-      return [insert([block], position, positionPath)]
+      return [setIfMissing([]), insert([block], position, positionPath)]
     }
     return [set(block, [{_key: block._key}])]
   }
@@ -331,7 +331,7 @@ export default function createOperationToPatches(
       const changedBlock = toBlock(afterValue, operation.path.get(0))
       patches.push(set(changedBlock, [{_key: changedBlock._key}]))
     }
-    // If this is the last node in the document, send a patch taht completely removes the value
+    // If this is the last node in the document, send a patch that completely removes the value
     // (don't let it be left as an empty array)
     if (afterValue.document.nodes.size === 0) {
       patches.push(unset([]))
