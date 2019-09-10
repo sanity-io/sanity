@@ -1,4 +1,5 @@
 import * as types from './types'
+import {SchemaDef} from '../sanity/typedefs'
 
 function compileRegistry(schemaDef) {
   const registry = Object.assign(Object.create(null), types)
@@ -37,6 +38,8 @@ function compileRegistry(schemaDef) {
 }
 
 export default class Schema {
+  _original: SchemaDef
+  _registry: {[typeName: string]: any}
   static compile(schemaDef) {
     return new Schema(schemaDef)
   }

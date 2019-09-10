@@ -1,4 +1,3 @@
-// @flow
 import {omit, isPlainObject} from 'lodash'
 import humanizeList from 'humanize-list'
 import {error, warning} from '../createValidationResult'
@@ -187,9 +186,7 @@ function validateAnnotations(annotations, visitorContext, problems) {
     if (targetType && !isJSONTypeOf(targetType, 'object', visitorContext)) {
       _problems.push(
         error(
-          `Annotation cannot have type "${
-            annotation.type
-          }" - annotation types must inherit from object`
+          `Annotation cannot have type "${annotation.type}" - annotation types must inherit from object`
         )
       )
     }

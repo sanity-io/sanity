@@ -1,18 +1,20 @@
-// @flow
 import {getDupes} from '../sanity/validation/utils/getDupes'
 import {flatten, uniq} from 'lodash'
 
-type SchemaType = Object
-type SchemaTypeDef = Object
+type SchemaType = Record<string, any>
+type SchemaTypeDef = Record<string, any>
 
 type VisitContext = {
-  // eslint-disable-next-line no-use-before-define
-  visit: Visitor,
-  getType: (typeName: string) => null | SchemaType,
+  isRoot: boolean
+  isReserved: (typeName: string) => boolean
+  visit: Visitor
+  index: number
+  isDuplicate: (typeName: string) => boolean
+  getType: (typeName: string) => null | SchemaType
   getTypeNames: () => Array<string>
 }
 
-type Visitor = (typeDef: SchemaTypeDef, VisitContext) => SchemaType
+type Visitor = (typeDef: SchemaTypeDef, arg1: VisitContext) => SchemaType
 
 const NOOP_VISITOR: Visitor = typeDef => typeDef
 

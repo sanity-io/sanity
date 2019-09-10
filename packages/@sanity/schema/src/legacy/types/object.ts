@@ -1,8 +1,8 @@
 import {pick, toPath, keyBy, startCase, isPlainObject} from 'lodash'
-import {lazyGetter} from './utils'
 import createPreviewGetter from '../preview/createPreviewGetter'
 import guessOrderingConfig from '../ordering/guessOrderingConfig'
 import resolveSearchConfig from '../resolveSearchConfig'
+import {lazyGetter} from './utils'
 
 const OVERRIDABLE_FIELDS = [
   'jsonType',

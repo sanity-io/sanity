@@ -1,12 +1,7 @@
-import {pick} from 'lodash'
-import {lazyGetter} from './utils'
+import {pick, startCase} from 'lodash'
 import createPreviewGetter from '../preview/createPreviewGetter'
-
-export const ASSET_FIELD = {
-  name: 'asset',
-  type: 'reference',
-  to: {type: 'sanity.fileAsset'}
-}
+import {lazyGetter} from './utils'
+import {ASSET_FIELD, HOTSPOT_FIELD, CROP_FIELD} from './image/fieldDefs'
 
 const OVERRIDABLE_FIELDS = [
   'jsonType',
@@ -19,27 +14,31 @@ const OVERRIDABLE_FIELDS = [
   'validation'
 ]
 
-const FILE_CORE = {
-  name: 'file',
+const IMAGE_CORE = {
+  name: 'image',
   type: null,
   jsonType: 'object'
 }
 
-const DEFAULT_OPTIONS = {
-  accept: ''
-}
+const DEFAULT_OPTIONS = {}
 
-export const FileType = {
+export const ImageType = {
   get() {
-    return FILE_CORE
+    return IMAGE_CORE
   },
   extend(subTypeDef, extendMember) {
     const options = {...(subTypeDef.options || DEFAULT_OPTIONS)}
 
-    const fields = (subTypeDef.fields || []).concat([ASSET_FIELD]).filter(Boolean)
+    let hotspotFields = [HOTSPOT_FIELD, CROP_FIELD]
+    if (!options.hotspot) {
+      hotspotFields = hotspotFields.map(field => ({...field, hidden: true}))
+    }
 
-    const parsed = Object.assign(pick(FILE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
-      type: FILE_CORE,
+    const fields = (subTypeDef.fields || []).concat(ASSET_FIELD).concat(hotspotFields)
+
+    const parsed = Object.assign(pick(IMAGE_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
+      type: IMAGE_CORE,
+      title: subTypeDef.title || startCase(subTypeDef.name || subTypeDef.type || ''),
       options: options,
       isCustomized: Boolean(subTypeDef.fields)
     })
@@ -65,7 +64,7 @@ export const FileType = {
         },
         extend: extensionDef => {
           if (extensionDef.fields) {
-            throw new Error('Cannot override `fields` of subtypes of "file"')
+            throw new Error('Cannot override `fields` of subtypes of "image"')
           }
           const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
             type: parent
