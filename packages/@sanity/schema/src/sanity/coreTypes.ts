@@ -1,5 +1,3 @@
-// @flow
-
 export default [
   {name: 'array', jsonType: 'array'},
   {name: 'block', jsonType: 'object'},

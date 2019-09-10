@@ -34,9 +34,7 @@ export default (typeDef, visitorContext) => {
     ofIsArray
       ? getDupes(typeDef.of, t => `${t.name};${t.type}`).map(dupes =>
           error(
-            `Found ${dupes.length} members with same type, but not unique names "${
-              dupes[0].type
-            }" in array. This makes it impossible to tell their values apart and you should consider naming them`,
+            `Found ${dupes.length} members with same type, but not unique names "${dupes[0].type}" in array. This makes it impossible to tell their values apart and you should consider naming them`,
             HELP_IDS.ARRAY_OF_NOT_UNIQUE
           )
         )

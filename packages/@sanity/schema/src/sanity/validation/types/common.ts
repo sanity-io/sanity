@@ -1,4 +1,3 @@
-// @flow
 import {warning} from '../createValidationResult'
 import {validateTypeName} from '../utils/validateTypeName'
 

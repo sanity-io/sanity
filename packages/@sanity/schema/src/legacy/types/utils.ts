@@ -1,4 +1,8 @@
-export function lazyGetter(target, key, getter, config = {}) {
+interface Config {
+  enumerable?: boolean
+  writable?: boolean
+}
+export function lazyGetter(target, key, getter, config: Config = {}) {
   Object.defineProperty(target, key, {
     configurable: true,
     enumerable: config.enumerable !== false,
