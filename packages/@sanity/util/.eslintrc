@@ -1,6 +1,3 @@
 {
-  "env": {
-    "browser": false,
-    "node": true
-  }
+  "extends": ["../../../.eslintrc-ts.js"]
 }

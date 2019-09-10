@@ -1,4 +1,4 @@
-type KeyedSegment = {
+export type KeyedSegment = {
   _key: string
 }
 

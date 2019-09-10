@@ -1,6 +1,6 @@
-/* eslint-disable max-depth */
-// @flow
-import type {Path, PathSegment} from '../typedefs/path'
+/* eslint-disable */
+
+import {KeyedSegment, Path, PathSegment} from './typedefs/path'
 
 const rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g
 const reKeySegment = /_key\s*==\s*['"](.*)['"]/
@@ -8,7 +8,7 @@ const reKeySegment = /_key\s*==\s*['"](.*)['"]/
 export const FOCUS_TERMINATOR = '$'
 
 // eslint-disable-next-line complexity
-export function get(obj: mixed, path: Path | string, defaultVal: mixed) {
+export function get(obj: any, path: Path | string, defaultVal?: unknown) {
   const select = typeof path === 'string' ? fromString(path) : path
   if (!Array.isArray(select)) {
     throw new Error('Path must be an array or a string')
@@ -64,7 +64,7 @@ export function isSegmentEqual(pathSegment: PathSegment, otherPathSegment: PathS
   if (!pathSegment || !otherPathSegment) {
     return false
   }
-  return pathSegment._key === otherPathSegment._key
+  return (pathSegment as KeyedSegment)._key === (otherPathSegment as KeyedSegment)._key
 }
 
 export function hasFocus(focusPath: Path, path: Path): boolean {
@@ -73,7 +73,7 @@ export function hasFocus(focusPath: Path, path: Path): boolean {
   return isEqual(_withoutFirst, path)
 }
 
-export function hasItemFocus(focusPath: Path, item: Path): boolean {
+export function hasItemFocus(focusPath: Path, item: PathSegment): boolean {
   return focusPath.length === 1 && isSegmentEqual(focusPath[0], item)
 }
 
@@ -122,7 +122,7 @@ export function toString(path: Path): string {
     throw new Error('Path is not an array')
   }
 
-  return path.reduce((target, segment, i) => {
+  return path.reduce<string>((target, segment, i) => {
     const segmentType = typeof segment
     if (segmentType === 'number') {
       return `${target}[${segment}]`
@@ -133,7 +133,7 @@ export function toString(path: Path): string {
       return `${target}${separator}${segment}`
     }
 
-    if (segment._key) {
+    if (isKeySegment(segment) && segment._key) {
       return `${target}[_key=="${segment._key}"]`
     }
 
@@ -175,11 +175,11 @@ function normalizeKeySegment(segment: string): PathSegment {
   return {_key: segments[1]}
 }
 
-function isIndexSegment(segment: string | number): boolean {
+function isIndexSegment(segment: any): segment is number {
   return typeof segment === 'number' || /^\[\d+\]$/.test(segment)
 }
 
-function isKeySegment(segment: PathSegment): boolean {
+function isKeySegment(segment: any): segment is KeyedSegment {
   if (typeof segment === 'string') {
     return reKeySegment.test(segment.trim())
   }

@@ -1,4 +1,4 @@
-/* eslint-disable max-nested-callbacks */
+/* eslint-disable max-nested-callbacks,@typescript-eslint/ban-ts-ignore */
 import {test} from 'tap'
 import {fromString, toString, get} from '../src/pathUtils'
 
@@ -14,9 +14,12 @@ const srcObject = {
 }
 
 test('fromString: throws if not a string', t => {
+  // @ts-ignore
   t.throws(() => fromString(), 'Path is not a string')
+  // @ts-ignore
   t.throws(() => fromString(13), 'Path is not a string')
   t.throws(() => fromString(null), 'Path is not a string')
+  // @ts-ignore
   t.throws(() => fromString(false), 'Path is not a string')
   t.end()
 })
@@ -71,9 +74,12 @@ test('fromString: handles deep key segments', t => {
 })
 
 test('toString: throws if not an array', t => {
+  // @ts-ignore
   t.throws(() => toString(), 'Path is not an array')
+  // @ts-ignore
   t.throws(() => toString(13), 'Path is not an array')
   t.throws(() => toString(null), 'Path is not an array')
+  // @ts-ignore
   t.throws(() => toString(false), 'Path is not an array')
   t.end()
 })
@@ -124,14 +130,20 @@ test('toString: handles deep key segments', t => {
 })
 
 test('toString: throws on unrecognized segment types', t => {
+  // @ts-ignore
   t.throws(() => toString([{foo: 'bar'}]), 'Unsupported path segment `{"foo":"bar"}`')
   t.end()
 })
 
 test('get: throws on non-array/non-string path', t => {
+  // @ts-ignore
   t.throws(() => get(srcObject, null), 'Path must be an array or a string')
+  // @ts-ignore
   t.throws(() => get(srcObject, 13), 'Path must be an array or a string')
+
+  // @ts-ignore
   t.throws(() => get(srcObject, false), 'Path must be an array or a string')
+  // @ts-ignore
   t.throws(() => get(srcObject, true), 'Path must be an array or a string')
   t.end()
 })

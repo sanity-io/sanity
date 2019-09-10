@@ -1,5 +1,5 @@
 import fse from 'fs-extra'
-import path from 'path'
+import * as path from 'path'
 
 async function readLocalManifest(dirName, fileName = 'package.json') {
   try {
