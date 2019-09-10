@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "clean": "rimraf lib",
-    "test": "tap -j1 --flow"
+    "test": "tap -j1"
   },
   "engines": {
     "node": ">=8.0.0"

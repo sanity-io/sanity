@@ -1,6 +1,6 @@
 import fse from 'fs-extra'
 
-export function loadJsonSync(file, defaultVal) {
+export function loadJsonSync(file, defaultVal?) {
   // eslint-disable-next-line no-sync
   return fse.readJsonSync(file, {throws: false}) || defaultVal
 }

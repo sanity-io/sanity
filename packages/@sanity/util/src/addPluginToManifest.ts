@@ -1,4 +1,4 @@
-import path from 'path'
+import * as path from 'path'
 import fse from 'fs-extra'
 import readLocalManifest from './readLocalManifest'
 
