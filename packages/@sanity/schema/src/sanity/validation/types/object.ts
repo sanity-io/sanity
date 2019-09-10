@@ -1,9 +1,11 @@
-// @flow
 import {error, HELP_IDS, warning} from '../createValidationResult'
 import inspect from '../../inspect'
 
 const VALID_FIELD_RE = /^[A-Za-z]+[0-9A-Za-z_]*$/
 const CONVENTIONAL_FIELD_RE = /^[A-Za-z_]+[0-9A-Za-z_]*$/
+interface Field {
+  name: string
+}
 
 function validateFieldName(name): Array<any> {
   if (typeof name !== 'string') {
@@ -53,7 +55,7 @@ function validateField(field, visitorContext) {
 }
 
 function getDuplicateFields(array: Array<Field>): Array<Array<Field>> {
-  const dupes: {[string]: Array<Field>} = {}
+  const dupes: {[name: string]: Array<Field>} = {}
   array.forEach(field => {
     if (!dupes[field.name]) {
       dupes[field.name] = []

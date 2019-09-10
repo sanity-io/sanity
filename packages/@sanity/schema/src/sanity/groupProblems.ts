@@ -1,5 +1,6 @@
-import {get, flatten} from 'lodash'
+import {flatten, get} from 'lodash'
 import {error} from './validation/createValidationResult'
+import {TypeWithProblems} from './typedefs'
 
 function createTypeWithMembersProblemsAccessor(
   memberPropertyName,
@@ -38,12 +39,12 @@ const getArrayProblems = createTypeWithMembersProblemsAccessor('of')
 const getReferenceProblems = createTypeWithMembersProblemsAccessor('to', type => arrify(type.to))
 const getBlockAnnotationProblems = createTypeWithMembersProblemsAccessor('marks.annotations')
 const getBlockMemberProblems = createTypeWithMembersProblemsAccessor('of')
-const getBlockProblems = (...args) => [
-  ...getBlockAnnotationProblems(...args),
-  ...getBlockMemberProblems(...args)
+const getBlockProblems = (type, problems) => [
+  ...getBlockAnnotationProblems(type, problems),
+  ...getBlockMemberProblems(type, problems)
 ]
 
-function getDefaultProblems(type, path = []) {
+function getDefaultProblems(type, path = []): TypeWithProblems[] {
   return [
     {
       path: [...path, {kind: 'type', type: type.type, name: type.name}],
@@ -52,7 +53,7 @@ function getDefaultProblems(type, path = []) {
   ]
 }
 
-export function getTypeProblems(type, path = []) {
+export function getTypeProblems(type, path = []): TypeWithProblems[] {
   switch (type.type) {
     case 'object': {
       return getObjectProblems(type, path)
@@ -76,5 +77,7 @@ export function getTypeProblems(type, path = []) {
 }
 
 export default function groupProblems(types) {
-  return flatten(types.map(type => getTypeProblems(type))).filter(type => type.problems.length > 0)
+  return flatten<TypeWithProblems>(types.map(type => getTypeProblems(type))).filter(
+    type => type.problems.length > 0
+  )
 }

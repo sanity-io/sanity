@@ -1,4 +1,5 @@
 module.exports = {
-  testRegex: 'test\\/.*\\.test\\.js',
-  testURL: 'http://localhost/'
+  testRegex: 'test\\/.*\\.test\\.ts',
+  preset: 'ts-jest',
+  testEnvironment: 'node'
 }

@@ -1,4 +1,3 @@
-//@flow
 import generateHelpUrl from '@sanity/generate-help-url'
 
 export function createHelpfulError(message: string, slug: string) {

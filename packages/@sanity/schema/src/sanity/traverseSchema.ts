@@ -1,4 +1,3 @@
-// @flow
 import traverseSchema from '../core/traverseSchema'
 import coreTypes from './coreTypes'
 

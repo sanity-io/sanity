@@ -1,4 +1,5 @@
 import {uniqBy} from 'lodash'
+
 const stringFieldsSymbol = Symbol('__cachedStringFields')
 
 const isReference = type => type.type && type.type.name === 'reference'

@@ -46,7 +46,10 @@ function _stringify(value, options, depth) {
   return asString === '' ? '""' : asString
 }
 
-export default function stringify(value, options = {}) {
+export default function stringify(
+  value,
+  options: {maxDepth?: number; maxBreadth?: number; ignoreKeys?: string[]} = {}
+) {
   const opts = {
     maxDepth: 'maxDepth' in options ? options.maxDepth : 2,
     maxBreadth: 'maxBreadth' in options ? options.maxBreadth : 2,

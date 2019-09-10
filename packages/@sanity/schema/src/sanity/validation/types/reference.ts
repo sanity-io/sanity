@@ -17,9 +17,7 @@ export default (typeDef, visitorContext) => {
     isValidTo
       ? getDupes(normalizedTo, t => `${t.name};${t.type}`).map(dupes =>
           error(
-            `Found ${dupes.length} members with same type, but not unique names "${
-              dupes[0].type
-            }" in reference. This makes it impossible to tell their values apart and you should consider naming them`,
+            `Found ${dupes.length} members with same type, but not unique names "${dupes[0].type}" in reference. This makes it impossible to tell their values apart and you should consider naming them`,
             HELP_IDS.REFERENCE_TO_INVALID
           )
         )

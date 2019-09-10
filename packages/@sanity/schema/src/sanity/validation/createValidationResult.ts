@@ -1,5 +1,4 @@
-// @flow
-import type {Severity, ValidationResult} from '../typedefs'
+import {Severity, ValidationResult} from '../typedefs'
 
 // Temporary solution to ensure we have a central registry over used helpIds
 export const HELP_IDS = {
@@ -24,7 +23,7 @@ export const HELP_IDS = {
 function createValidationResult(
   severity: Severity,
   message: string,
-  helpId: ?string
+  helpId: string | null
 ): ValidationResult {
   if (helpId && !Object.keys(HELP_IDS).some(id => HELP_IDS[id] === helpId)) {
     throw new Error(
@@ -38,11 +37,11 @@ function createValidationResult(
   }
 }
 
-export const error = (message: string, helpId: ?string, path: ?(string[])) =>
+export const error = (message: string, helpId?: string | null) =>
   createValidationResult('error', message, helpId)
 
-export const warning = (message: string, helpId: ?string, path: ?(string[])) =>
+export const warning = (message: string, helpId?: string | null) =>
   createValidationResult('warning', message, helpId)
 
-export const info = (message: string, helpId: ?string, path: ?(string[])) =>
+export const info = (message: string, helpId?: string | null) =>
   createValidationResult('info', message, helpId)
