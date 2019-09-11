@@ -1,4 +1,3 @@
-// @flow
 import React from 'react'
 import DragBarsIcon from 'part:@sanity/base/bars-icon'
 import {createDragHandle} from '../sortable-factories'
