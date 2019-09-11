@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "bootstrap": "lerna bootstrap && npm run package-yarn",
+    "rebuild": "gulp",
     "build": "lerna run clean && gulp && npm run package",
     "clean": "lerna run clean && lerna clean",
     "publish": "npm run build && lerna publish --exact",
