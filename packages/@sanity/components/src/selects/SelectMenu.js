@@ -1,17 +1,17 @@
-// @flow
 import React from 'react'
+import PropTypes from 'prop-types'
 import cx from 'classnames'
 import {List, Item} from 'part:@sanity/components/lists/default'
 import styles from './styles/SelectMenu.css'
 import scrollIntoView from 'dom-scroll-into-view'
 
 export default class SelectMenu extends React.Component {
-  props: {
-    items: Array<any>,
-    renderItem: (item: any) => Element,
-    value: any,
-    highlightIndex: number,
-    onSelect: (item: any) => void
+  static propTypes = {
+    items: PropTypes.array,
+    renderItem: PropTypes.func, // (item: T) => Element,
+    value: PropTypes.any,
+    highlightIndex: PropTypes.number,
+    onSelect: PropTypes.func // (item: T) => void
   }
 
   handleItemClick = event => {
