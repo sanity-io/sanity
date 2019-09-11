@@ -1,12 +1,11 @@
-// @flow
 import {identity, sortBy, values} from 'lodash'
-import type {FieldName, Id, Selection} from '../types'
-import {INCLUDE_FIELDS_QUERY} from '../constants'
 import {escapeField, fieldNeedsEscape} from 'part:@sanity/base/util/search-utils'
+import {FieldName, Id, Selection} from '../types'
+import {INCLUDE_FIELDS_QUERY} from '../constants'
 
 type CombinedSelection = {
-  ids: Id[],
-  fields: FieldName[],
+  ids: Id[]
+  fields: FieldName[]
   map: number[]
 }
 
@@ -18,8 +17,8 @@ type Result = Doc[]
 
 export function combineSelections(selections: Selection[]): CombinedSelection[] {
   return values(
-    selections.reduce((output, [id, fields], index) => {
-      const key = sortBy(fields.join(','), identity)
+    selections.reduce((output: {[key: string]: any}, [id, fields], index) => {
+      const key = sortBy(fields.join(','), identity).join('.')
       if (!output[key]) {
         output[key] = {fields: fields, ids: [], map: []}
       }

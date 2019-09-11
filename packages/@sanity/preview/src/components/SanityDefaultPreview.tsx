@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import imageUrlBuilder from '@sanity/image-url'
 import assetUrlBuilder from 'part:@sanity/base/asset-url-builder'
@@ -29,14 +28,14 @@ function extractUploadState(value) {
   return {_upload, value: rest}
 }
 
-export default class SanityDefaultPreview extends React.PureComponent {
-  static propTypes = {
-    _renderAsBlockImage: PropTypes.bool,
-    layout: PropTypes.oneOf(Object.keys(previewComponentMap)),
-    value: PropTypes.object,
-    icon: PropTypes.oneOfType([PropTypes.func, PropTypes.bool])
-  }
+type Props = {
+  _renderAsBlockImage: boolean
+  layout: keyof typeof previewComponentMap
+  value: any
+  icon: any
+}
 
+export default class SanityDefaultPreview extends React.PureComponent<Props> {
   renderMedia = options => {
     const imageBuilder = imageUrlBuilder(sanityClient)
 

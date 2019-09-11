@@ -1,8 +1,6 @@
 import React from 'react'
-import {defer, concat, of as observableOf} from 'rxjs'
+import {defer, concat, of as observableOf, Subscription} from 'rxjs'
 
-import intersectionObservableFor from '../streams/intersectionObservableFor'
-import visibilityChange$ from '../streams/visibilityChange'
 import {
   map,
   tap,
@@ -12,13 +10,17 @@ import {
   publishReplay,
   delay
 } from 'rxjs/operators'
+import intersectionObservableFor from '../streams/intersectionObservableFor'
+import visibilityChange$ from '../streams/visibilityChange'
 
-const isVisible$ = visibilityChange$.pipe(map(event => !event.target.hidden))
+const isVisible$ = visibilityChange$.pipe(map((event: Event) => !(event.target as any).hidden))
 
-const STYLE = {minHeight: 1, minWidth: 1}
+const STYLE = {
+  minHeight: 1,
+  minWidth: 1 // A stream of booleans to signal whether preview component should keep
+  // subscriptions active or not
+}
 
-// A stream of booleans to signal whether preview component should keep
-// subscriptions active or not
 const documentVisibility$ = concat(defer(() => observableOf(!document.hidden)), isVisible$).pipe(
   distinctUntilChanged(),
   publishReplay(1),
@@ -27,10 +29,10 @@ const documentVisibility$ = concat(defer(() => observableOf(!document.hidden)), 
 
 type Props = {
   // How long to wait before signalling hide
-  hideDelay: Number,
-  element: string,
-  style: {},
-  children: (isVisible: boolean) => React.Element<*>
+  hideDelay: number
+  element?: string
+  style?: {}
+  children: (isVisible: boolean) => React.ReactNode
 }
 
 type State = {
@@ -38,8 +40,8 @@ type State = {
 }
 
 export default class WithVisibility extends React.Component<Props, State> {
-  element = React.createRef()
-
+  element: React.RefObject<HTMLElement> = React.createRef()
+  subscription: Subscription
   state = {isVisible: null}
 
   componentDidMount() {
@@ -51,8 +53,8 @@ export default class WithVisibility extends React.Component<Props, State> {
     this.subscription = documentVisibility$
       .pipe(
         switchMap(isVisible => (isVisible ? inViewport$ : observableOf(false))),
-        switchMap(
-          isVisible => (isVisible ? observableOf(true) : observableOf(false).pipe(delay(hideDelay)))
+        switchMap(isVisible =>
+          isVisible ? observableOf(true) : observableOf(false).pipe(delay(hideDelay))
         ),
         distinctUntilChanged(),
         tap(isVisible => {
@@ -76,8 +78,7 @@ export default class WithVisibility extends React.Component<Props, State> {
         ref: this.element,
         style: {...STYLE, ...style},
         ...rest
-      },
-      // Render a nonbreaking space here because of https://bugs.chromium.org/p/chromium/issues/detail?id=972196
+      }, // Render a nonbreaking space here because of https://bugs.chromium.org/p/chromium/issues/detail?id=972196
       isVisible ? children(isVisible) : '\u00A0' // &nbsp
     )
   }

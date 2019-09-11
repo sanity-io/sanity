@@ -29,12 +29,16 @@ function isIntersectionObserverSupported() {
   return false
 }
 
-export default (isIntersectionObserverSupported()
-  ? createIntersectionObserverBased()
-  : createLegacyBased())
+type IntersectionEvent = {isIntersecting: boolean}
 
-function createIntersectionObserverBased() {
-  const intersectionObserverEntries$$ = new Subject()
+export default isIntersectionObserverSupported()
+  ? createIntersectionObserverBased()
+  : createLegacyBased()
+
+type IntersectionObservableFor = (element: Element) => Observable<IntersectionEvent>
+
+function createIntersectionObserverBased(): IntersectionObservableFor {
+  const intersectionObserverEntries$$ = new Subject<IntersectionObserverEntry>()
   const intersectionObserver = new IntersectionObserver(callback, {
     threshold: 0,
     rootMargin: `${ROOT_MARGIN_PX}px`
@@ -53,7 +57,10 @@ function createIntersectionObserverBased() {
       return () => intersectionObserver.unobserve(element)
     }).pipe(
       mergeMap(() => intersectionObserverEntries$$.asObservable()),
-      filter(event => event.target === element)
+      filter((entry: IntersectionObserverEntry) => entry.target === element),
+      map(ev => ({
+        isIntersecting: ev.isIntersecting
+      }))
     )
   }
 }
@@ -82,11 +89,10 @@ function createLegacyBased() {
     return () => intersects(element.getBoundingClientRect(), getViewport(), ROOT_MARGIN_PX)
   }
 
-  return function intersectionObservableFor(element) {
+  return function intersectionObservableFor(element): Observable<IntersectionEvent> {
     const isElementInViewport = inViewport(element)
     return merge(observableOf(isElementInViewport()), resize$, scroll$, orientationChange$).pipe(
-      map(isElementInViewport),
-      // todo: consider "faking" more of the IntersectionObserverEntry api if possible
+      map(isElementInViewport), // todo: consider "faking" more of the IntersectionObserverEntry api if possible
       map(isIntersecting => ({isIntersecting}))
     )
   }

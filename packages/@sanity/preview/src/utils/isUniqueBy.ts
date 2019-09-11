@@ -1,4 +1,3 @@
-// @flow
 const id = value => value
 
 type ItemSelector<T> = (element: T) => any

@@ -15,7 +15,7 @@ let supportsPassive = () => {
   return supportsPassive()
 }
 
-export default function fromEvent(target, eventType, options) {
+export default function fromEvent(target, eventType, options?) {
   if (typeof options === 'boolean') {
     throw new TypeError(
       'The third argument to fromEvent(..) should be an EventListenerOptions object, not a boolean'

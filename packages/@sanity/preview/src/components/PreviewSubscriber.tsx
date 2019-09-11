@@ -1,25 +1,26 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import WithVisibility from './WithVisibility'
 import ObserveForPreview from './ObserveForPreview'
+import {Type} from '../types'
 
 const HIDE_DELAY = 20 * 1000
 
-export default class PreviewSubscriber extends React.Component {
-  static propTypes = {
-    type: PropTypes.object.isRequired,
-    fields: PropTypes.arrayOf(PropTypes.oneOf(['title', 'description', 'imageUrl'])),
-    value: PropTypes.any.isRequired,
-    ordering: PropTypes.object,
-    children: PropTypes.func,
-    layout: PropTypes.string
-  }
+interface Props {
+  type: Type
+  fields: string[]
+  value: any
+  ordering?: {}
+  children: (props: any) => React.ReactElement
+  layout?: string
+}
 
+export default class PreviewSubscriber extends React.Component<Props> {
   renderChild = isVisible => {
-    const {children, type, value, ordering, ...props} = this.props
+    const {children, type, value, ordering, fields, ...props} = this.props
     // isVisible may be null which means undetermined
     return isVisible === null ? null : (
       <ObserveForPreview
+        fields={fields}
         isActive={isVisible === true}
         type={type}
         value={value}

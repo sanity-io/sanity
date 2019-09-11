@@ -1,20 +1,19 @@
-// @flow
 import {isObject, uniq} from 'lodash'
 import {of as observableOf} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
 import props from './utils/props'
 
-import type {FieldName, Id, Path, Reference, Document, Value} from './types'
+import {FieldName, Id, Path, Reference, Document, Value} from './types'
 
-function isReference(value: Reference | Document | Object) {
+function isReference(value: Reference | Document | Record<string, any>): value is Reference {
   return '_ref' in value
 }
 
-function isDocument(value: Reference | Document | Object) {
+function isDocument(value: Reference | Document | Record<string, any>): value is Document {
   return '_id' in value
 }
 
-function createEmpty(fields: FieldName[]): Object {
+function createEmpty(fields: FieldName[]): Record<string, any> {
   return fields.reduce((result, field) => {
     result[field] = undefined
     return result
@@ -37,11 +36,11 @@ function observePaths(value: Value, paths: Path[], observeFields: ObserveFieldsF
     // Reached a node that is either a document (with _id), or a reference (with _ref) that
     // needs to be "materialized"
 
-    const nextHeads = uniq(pathsWithMissingHeads.map(path => path[0]))
+    const nextHeads: string[] = uniq(pathsWithMissingHeads.map(path => path[0]))
 
     const isRef = isReference(value)
     if (isReference(value) || isDocument(value)) {
-      const id = isRef ? value._ref : value._id
+      const id = isRef ? (value as Reference)._ref : (value as Document)._id
       return observeFields(id, nextHeads).pipe(
         switchMap(snapshot => {
           if (snapshot === null) {
@@ -92,7 +91,8 @@ function observePaths(value: Value, paths: Path[], observeFields: ObserveFieldsF
 // - [['propA', 'propB'], ['propA', 'propC']]
 
 function normalizePaths(path: FieldName[] | Path[]): Path[] {
-  return path.map(segment => (typeof segment === 'string' ? segment.split('.') : segment))
+  // @ts-ignore (not sure why this happens)
+  return path.map((segment: any) => (typeof segment === 'string' ? segment.split('.') : segment))
 }
 
 // Supports passing either an id or a value (document/reference/object)
