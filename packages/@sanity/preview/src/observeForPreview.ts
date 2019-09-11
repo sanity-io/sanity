@@ -1,13 +1,17 @@
-// @flow
-import resolveRefType from './resolveRefType'
-import prepareForPreview, {invokePrepare} from './prepareForPreview'
-import {of as observableOf} from 'rxjs'
+import {of as observableOf, Observable} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
+import resolveRefType from './resolveRefType'
+import prepareForPreview, {invokePrepare, PrepareInvocationResult} from './prepareForPreview'
 import observePaths from './observePaths'
-import type {FieldName, Type, ViewOptions} from './types'
+import {FieldName, Type, ViewOptions} from './types'
 
 function is(typeName: string, type: Type) {
   return type.name === typeName || (type.type && is(typeName, type.type))
+}
+
+interface PreviewValue {
+  type?: Type
+  snapshot: null | PrepareInvocationResult
 }
 
 // Takes a value and its type and prepares a snapshot for it that can be passed to a preview component
@@ -16,7 +20,7 @@ export default function observeForPreview(
   type: Type,
   fields: FieldName[],
   viewOptions?: ViewOptions
-) {
+): Observable<PreviewValue> {
   if (is('reference', type)) {
     // if the value is of type reference, but has no _ref property, we cannot prepare any value for the preview
     // and the most sane thing to do is to return `null` for snapshot
@@ -27,14 +31,13 @@ export default function observeForPreview(
     // and preview using the preview config of its type
     // todo: We need a way of knowing the type of the referenced value by looking at the reference record alone
     return resolveRefType(value, type).pipe(
-      switchMap(
-        refType =>
-          refType
-            ? observeForPreview(value, refType, fields)
-            : observableOf({
-                type: type,
-                snapshot: null
-              })
+      switchMap(refType =>
+        refType
+          ? observeForPreview(value, refType, fields)
+          : observableOf({
+              type: type,
+              snapshot: null
+            })
       )
     )
   }

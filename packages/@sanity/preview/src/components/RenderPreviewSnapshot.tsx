@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import customResolver from 'part:@sanity/base/preview-resolver?'
 import {get} from 'lodash'
 import SanityDefaultPreview from './SanityDefaultPreview'
+import {Type} from '../types'
 
 // Set this to true for debugging preview subscriptions
 const DEBUG = false
@@ -16,7 +16,13 @@ function resolvePreview(type) {
   return custom || SanityDefaultPreview
 }
 
-export default function RenderPreviewSnapshot(props) {
+type Props = {
+  snapshot: object
+  type: Type
+  isLive: boolean
+  layout: string
+}
+export default function RenderPreviewSnapshot(props: Props) {
   const {snapshot, type, isLive, layout, ...rest} = props
   const PreviewComponent = resolvePreview(type)
 
@@ -24,8 +30,7 @@ export default function RenderPreviewSnapshot(props) {
   const renderAsBlockImage = layout === 'block' && type && type.name === 'image'
 
   const preview = (
-    <PreviewComponent
-      // Render media always until we have schema functionality for determining if there is media
+    <PreviewComponent // Render media always until we have schema functionality for determining if there is media
       media={() => undefined}
       {...rest}
       value={snapshot}
@@ -46,11 +51,4 @@ export default function RenderPreviewSnapshot(props) {
   }
 
   return preview
-}
-
-RenderPreviewSnapshot.propTypes = {
-  snapshot: PropTypes.object,
-  type: PropTypes.object,
-  isLive: PropTypes.bool,
-  layout: PropTypes.string
 }

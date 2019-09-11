@@ -33,7 +33,8 @@
   },
   "devDependencies": {
     "empty": "^0.10.1",
-    "jest": "^24.9.0"
+    "jest": "^24.9.0",
+    "typescript-plugin-css-modules": "^1.2.1"
   },
   "publishConfig": {
     "access": "public"

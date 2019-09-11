@@ -9,7 +9,7 @@ function setKey(source, key, value) {
   }
 }
 
-export default function props(options = {}) {
+export default function props(options: {wait?: boolean} = {}) {
   return source => {
     return new Observable(observer => source.subscribe(observer)).pipe(
       switchMap(object => {

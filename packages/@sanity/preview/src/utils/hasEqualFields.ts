@@ -1,6 +1,5 @@
-// @flow
 export default function hasEqualFields(fields: string[]) {
-  return (object: ?Object, otherObject: ?Object) => {
+  return (object: Record<string, any> | null, otherObject: Record<string, any> | null) => {
     if (object === otherObject) {
       return true
     }

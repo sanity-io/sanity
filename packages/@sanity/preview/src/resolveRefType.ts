@@ -1,7 +1,7 @@
 import client from 'part:@sanity/base/client'
 import {from as observableFrom} from 'rxjs'
 import {map} from 'rxjs/operators'
-import type {Reference, Type} from './types'
+import {Reference, Type} from './types'
 
 const CACHE = {} // todo: use a LRU cache instead (e.g. hashlru or quick-lru)
 
