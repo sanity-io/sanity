@@ -1,27 +1,26 @@
-// @flow
 import React from 'react'
+import PropTypes from 'prop-types'
 import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc'
 
-type ValidAxis = 'x' | 'y' | 'xy'
+const ValidAxis = PropTypes.oneOf(['x', 'y', 'xy'])
 
-type ListProps = {
-  className: string,
-  movingItemClass: string,
-  useDragHandle: boolean,
-  onSortEnd: ({oldIndex: number, newIndex: number}) => void,
-  onSortStart: () => void,
-  distance: number,
-  lockToContainerEdges: boolean,
-  transitionDuration: number,
-  axis: ValidAxis,
-  lockAxis: ValidAxis
-}
-
-export function createSortableList(element: Element) {
+export function createSortableList(element) {
   // Delegate to SortableContainer from react-sortable-hoc
   const Sortable = SortableContainer(element)
 
-  return class SortableList extends React.Component<ListProps> {
+  return class SortableList extends React.Component {
+    static propTypes = {
+      className: PropTypes.string,
+      movingItemClass: PropTypes.string,
+      useDragHandle: PropTypes.bool,
+      onSortEnd: PropTypes.func, //(event: {oldIndex: number; newIndex: number}) => void
+      onSortStart: PropTypes.func, //() => void
+      distance: PropTypes.number,
+      lockToContainerEdges: PropTypes.bool,
+      transitionDuration: PropTypes.number,
+      axis: ValidAxis,
+      lockAxis: ValidAxis
+    }
     handleSortStart = (_ignore /*{node, index, collection}*/, event) => {
       const {onSortStart} = this.props
       event.preventDefault()
@@ -77,24 +76,28 @@ export function createSortableList(element: Element) {
   }
 }
 
-type ItemProps = {
-  index: number
-}
-
-export function createSortableItem(element: Element) {
+export function createSortableItem(element) {
   const Sortable = SortableElement(element)
   // Delegate to SortableElement from react-sortable-hoc
-  return function SortableItem(props: ItemProps) {
+  function SortableItem(props) {
     const {
+      /* eslint-disable react/prop-types */
+      // omit to avoid {...rest} leakage
       collection,
-      disabled, // omit to avoid {...rest} leakage
+      disabled,
       index,
+      /* eslint-disable react/prop-types */
       ...rest
     } = props
     return <Sortable index={index} {...rest} />
   }
+  SortableItem.proTypes = {
+    collection: PropTypes.number,
+    disabled: PropTypes.boolean
+  }
+  return SortableItem
 }
 
-export function createDragHandle(element: Element) {
+export function createDragHandle(element) {
   return SortableHandle(element)
 }

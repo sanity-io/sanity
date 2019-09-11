@@ -1,17 +1,17 @@
-// @flow
+import PropTypes from 'prop-types'
 import React from 'react'
 import List from '../default/List'
 import {createSortableList} from '../sortable-factories'
 
 const Sortable = createSortableList(List)
 
-type Props = {
-  className: string,
-  movingItemClass: string,
-  onSortStart: () => void,
-  onSortEnd: ({oldIndex: number, newIndex: number}) => void
+export default function SortableList(props) {
+  return <Sortable {...props} lockToContainerEdges axis="y" lockAxis="y" />
 }
 
-export default function SortableList(props: Props) {
-  return <Sortable {...props} lockToContainerEdges axis="y" lockAxis="y" />
+SortableList.propTypes = {
+  className: PropTypes.string,
+  movingItemClass: PropTypes.string,
+  onSortStart: PropTypes.func, // () => void,
+  onSortEnd: PropTypes.func // ({oldIndex: number, newIndex: number}) => void
 }
