@@ -2,7 +2,6 @@
 import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash'
 import {INVALID_PREVIEW_CONFIG} from './constants'
 
-const identity = v => v
 const PRESERVE_KEYS = ['_id', '_type', '_upload']
 const EMPTY = []
 
@@ -11,26 +10,26 @@ type ViewOptions = {}
 type SelectedValue = {}
 
 type PreparedValue = {
-  title: string,
-  subtitle: string,
+  title: string
+  subtitle: string
   description: string
 }
 
 type PreviewConfig = {
-  select: {[string]: string},
+  select: {[key: string]: string}
   prepare?: (SelectedValue, ViewOptions) => PreparedValue
 }
 
 type Type = {
-  name: string,
+  name: string
   preview: PreviewConfig
 }
 
-type PrepareInvocationResult = {|
-  selectedValue: SelectedValue,
-  returnValue: PreparedValue,
-  errors: Error[]
-|}
+export type PrepareInvocationResult = {
+  selectedValue?: SelectedValue
+  returnValue: null | PreparedValue | SelectedValue
+  errors?: Error[]
+}
 
 const errorCollector = (() => {
   let errorsByType = {}
@@ -57,7 +56,7 @@ const reportErrors = debounce(() => {
   const uniqueErrors = flatten(
     Object.keys(errorsByType).map(typeName => {
       const entries = errorsByType[typeName]
-      return uniqBy(entries, entry => entry.error.message)
+      return uniqBy(entries, (entry: any) => entry.error.message)
     })
   )
   const errorCount = uniqueErrors.length
@@ -76,8 +75,8 @@ const reportErrors = debounce(() => {
     const entries = errorsByType[typeName]
     const first = entries[0]
     console.group(`Check the preview config for schema type "${typeName}": %o`, first.type.preview)
-    const uniqued = uniqBy(entries, entry => entry.error.message)
-    uniqued.forEach(entry => {
+    const uniqued = uniqBy(entries, (entry: any) => entry.error.message)
+    uniqued.forEach((entry: any) => {
       if (entry.error.type === 'returnValueError') {
         const hasPrepare = typeof entry.type.preview.prepare === 'function'
         const {value, error} = entry
@@ -166,7 +165,7 @@ function assignType(type, error) {
   return Object.assign(error, {type})
 }
 
-function validatePreparedValue(preparedValue: PreparedValue) {
+function validatePreparedValue(preparedValue: any) {
   if (!isPlainObject(preparedValue)) {
     return [
       assignType(
@@ -179,7 +178,7 @@ function validatePreparedValue(preparedValue: PreparedValue) {
       )
     ]
   }
-  return Object.keys(preparedValue).reduce((acc, fieldName) => {
+  return Object.keys(preparedValue).reduce((acc: any, fieldName) => {
     return [...acc, ...validateFieldValue(fieldName, preparedValue[fieldName])]
   }, EMPTY)
 }
@@ -187,7 +186,7 @@ function validatePreparedValue(preparedValue: PreparedValue) {
 function validateReturnedPreview(result: PrepareInvocationResult) {
   return {
     ...result,
-    errors: [...result.errors, ...validatePreparedValue(result.returnValue)]
+    errors: [...(result.errors || []), ...validatePreparedValue(result.returnValue)]
   }
 }
 
@@ -217,7 +216,7 @@ function withErrors(result, type, selectedValue) {
   return INVALID_PREVIEW_CONFIG
 }
 
-export default function prepareForPreview(rawValue, type, viewOptions): PreparedValue {
+export default function prepareForPreview(rawValue, type, viewOptions): symbol | PreparedValue {
   const selection = type.preview.select
   const targetKeys = Object.keys(selection)
 
@@ -234,5 +233,5 @@ export default function prepareForPreview(rawValue, type, viewOptions): Prepared
   const returnValueResult = validateReturnedPreview(invokePrepare(type, selectedValue, viewOptions))
   return returnValueResult.errors.length > 0
     ? withErrors(returnValueResult, type, selectedValue)
-    : {...pick(rawValue, PRESERVE_KEYS), ...prepareResult.returnValue}
+    : ({...pick(rawValue, PRESERVE_KEYS), ...prepareResult.returnValue} as PreparedValue)
 }

@@ -18,7 +18,6 @@
     "declarationMap": true,
     "lib": ["dom", "es2016"],
     "moduleResolution": "node",
-    "sourceMap": true,
-    "plugins": [{"name": "typescript-plugin-css-modules"}]
+    "sourceMap": true
   }
 }

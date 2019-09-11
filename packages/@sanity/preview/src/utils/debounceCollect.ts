@@ -30,8 +30,7 @@ export default function debounceCollect(fn, wait) {
     const currentlyFlushingQueue = queue
     queue = {}
 
-    const queueItemIds = Object.keys(currentlyFlushingQueue)
-      // Todo: use debug
+    const queueItemIds = Object.keys(currentlyFlushingQueue) // Todo: use debug
       // .map(id => {
       //   if (currentlyFlushingQueue[id].completed) {
       //     console.log('Dropped', currentlyFlushingQueue[id].args)

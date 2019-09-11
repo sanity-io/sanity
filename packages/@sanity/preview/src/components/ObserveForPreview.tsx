@@ -1,6 +1,5 @@
 import React from 'react'
 import WarningIcon from 'part:@sanity/base/warning-icon'
-import observeForPreview from '../observeForPreview'
 import {withPropsStream} from 'react-props-stream'
 import shallowEquals from 'shallow-equals'
 import {
@@ -12,8 +11,10 @@ import {
   switchMap,
   tap
 } from 'rxjs/operators'
-import {concat, of} from 'rxjs'
+import {concat, of, Observable} from 'rxjs'
+import observeForPreview from '../observeForPreview'
 import {INVALID_PREVIEW_CONFIG} from '../constants'
+import {FieldName, Type} from '../types'
 
 const INVALID_PREVIEW_FALLBACK = {
   title: <span style={{fontStyle: 'italic'}}>Invalid preview config</span>,
@@ -33,8 +34,15 @@ const memoizeBy = isActive$ => producer$ => {
     )
   )
 }
-
-const connect = props$ => {
+type OuterProps = {
+  isActive: boolean
+  value: any
+  type: Type
+  children: (props: any) => React.ReactElement
+  fields: FieldName[]
+  ordering: any
+}
+const connect = (props$: Observable<OuterProps>): Observable<ReceivedProps> => {
   const sharedProps$ = props$.pipe(
     publishReplay(1),
     refCount()
@@ -64,8 +72,15 @@ const connect = props$ => {
     memoizeBy(isActive$)
   )
 }
-// eslint-disable-next-line prefer-arrow-callback
-export default withPropsStream(connect, function ObserveForPreview(props) {
+
+type ReceivedProps = {
+  snapshot: any
+  error?: Error
+  isLoading: boolean
+  type: Type
+  children: (props: any) => React.ReactElement
+}
+export default withPropsStream(connect, function ObserveForPreview(props: ReceivedProps) {
   const {snapshot, type, error, isLoading, children} = props
   return children({
     error,

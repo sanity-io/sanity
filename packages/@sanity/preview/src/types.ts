@@ -11,7 +11,17 @@ export type Path = FieldName[]
 export type Selection = [Id, FieldName[]]
 export type ViewOptions = {}
 
+export type PreviewConfig = {
+  select: {
+    title: string
+    subtitle: string
+    description: string
+  }
+}
 export type Type = {
-  type: ?Type,
+  preview: PreviewConfig
+  type: Type | null
+  icon: any
   name: string
+  to: any // todo fixme
 }
