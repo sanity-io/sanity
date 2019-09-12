@@ -1,6 +1,6 @@
-import assert from 'assert'
-import fs from 'fs'
-import path from 'path'
+import * as fs from 'fs'
+import * as assert from 'assert'
+import * as path from 'path'
 import {JSDOM} from 'jsdom'
 import blockTools from '../../../src'
 
@@ -13,8 +13,8 @@ describe('HtmlDeserializer', () => {
     it(test, () => {
       const dir = path.resolve(__dirname, test)
       const input = fs.readFileSync(path.resolve(dir, 'input.html')).toString()
-      const expected = JSON.parse(fs.readFileSync(path.resolve(dir, 'output.json')))
-      const fn = require(path.resolve(dir)).default // eslint-disable-line import/no-dynamic-require
+      const expected = JSON.parse(fs.readFileSync(path.resolve(dir, 'output.json'), 'utf-8'))
+      const fn = require(path.resolve(dir)).default
       const commonOptions = {
         parseHtml: html => new JSDOM(html).window.document
       }

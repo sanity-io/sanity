@@ -64,7 +64,7 @@ function getBlockStyle(el, enabledBlockStyles) {
   return block.style
 }
 
-export default function createGDocsRules(blockContentType, options = {}) {
+export default function createGDocsRules(blockContentType, options: any = {}) {
   return [
     {
       deserialize(el, next) {

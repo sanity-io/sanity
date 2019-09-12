@@ -34,9 +34,9 @@ export default (html, doc) => {
     MsoSubtitle: ['h5'],
     MsoSubtleEmphasis: ['span', 'em'],
     MsoIntenseEmphasis: ['span', 'em', 'strong']
+    // Remove cruft
   }
 
-  // Remove cruft
   const unwantedNodes = doc.evaluate(
     unwantedPaths.join('|'),
     doc,

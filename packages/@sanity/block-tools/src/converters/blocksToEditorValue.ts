@@ -74,7 +74,11 @@ function sanitySpanToRawSlateBlockNode(span, sanityBlock, blockContentFeatures, 
     marks: uniq(decorators.concat(annotationKeys).filter(Boolean)).map(toRawMark)
   }
   if (!annotations) {
-    return {object: 'text', leaves: [leaf], key: `${sanityBlock._key}${childIndex()}`}
+    return {
+      object: 'text',
+      leaves: [leaf],
+      key: `${sanityBlock._key}${childIndex()}`
+    }
   }
 
   const spanKey = `${sanityBlock._key}${childIndex()}`
@@ -90,15 +94,16 @@ function sanitySpanToRawSlateBlockNode(span, sanityBlock, blockContentFeatures, 
 }
 
 // Block type object
-function sanityBlockToRawNode(sanityBlock, blockContentFeatures, options = {}) {
+function sanityBlockToRawNode(sanityBlock, blockContentFeatures, options: any = {}) {
   const {children, _type, markDefs, ...rest} = sanityBlock
   if (!sanityBlock._key) {
     sanityBlock._key = randomKey(12)
   }
-  let restData = {}
+  let restData: any = {}
   if (hasKeys(rest)) {
-    restData = {data: {_type, _key: sanityBlock._key, ...rest}}
-    // Check if we should allow listItem if present
+    restData = {
+      data: {_type, _key: sanityBlock._key, ...rest} // Check if we should allow listItem if present
+    }
     const {listItem} = restData.data
     if (listItem && !blockContentFeatures.lists.find(list => list.value === listItem)) {
       delete restData.data.listItem
@@ -160,7 +165,7 @@ function sanityBlockItemToRawNode(blockItem, type, blockContentFeatures, options
 
   return blockItemType === 'block'
     ? sanityBlockToRawNode(blockItem, blockContentFeatures, options)
-    : sanityBlockItemToRaw(blockItem, blockContentFeatures, options)
+    : sanityBlockItemToRaw(blockItem, blockContentFeatures)
 }
 
 function sanityBlocksArrayToRawNodes(blockArray, type, blockContentFeatures, options = {}) {
