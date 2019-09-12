@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@sanity/eventsource": "0.142.0",
-    "rxjs": "^6.1.0"
+    "rxjs": "^6.5.2"
   },
   "publishConfig": {
     "access": "public"

@@ -34,7 +34,7 @@
   "devDependencies": {
     "@sanity/client": "0.142.0",
     "decompress": "^4.2.0",
-    "jest": "^24.8.0",
+    "jest": "^24.9.0",
     "rimraf": "^2.6.2",
     "string-to-stream": "^1.1.0"
   },
