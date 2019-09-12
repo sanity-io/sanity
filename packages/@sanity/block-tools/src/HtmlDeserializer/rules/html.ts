@@ -26,7 +26,7 @@ export function resolveListItem(listNodeTagName) {
   return listStyle
 }
 
-export default function createHTMLRules(blockContentType, options = {}) {
+export default function createHTMLRules(blockContentType, options: any = {}) {
   return [
     // Text nodes
     {
@@ -41,9 +41,7 @@ export default function createHTMLRules(blockContentType, options = {}) {
         }
         return undefined
       }
-    },
-
-    // Blockquote element
+    }, // Blockquote element
     {
       deserialize(el, next) {
         if (tagName(el) !== 'blockquote') {
@@ -75,9 +73,7 @@ export default function createHTMLRules(blockContentType, options = {}) {
           children: next(children)
         }
       }
-    },
-
-    // Block elements
+    }, // Block elements
     {
       deserialize(el, next) {
         const blocks = {...HTML_BLOCK_TAGS, ...HTML_HEADER_TAGS}
@@ -98,9 +94,7 @@ export default function createHTMLRules(blockContentType, options = {}) {
           children: next(el.childNodes)
         }
       }
-    },
-
-    // Ignore span tags
+    }, // Ignore span tags
     {
       deserialize(el, next) {
         const span = HTML_SPAN_TAGS[tagName(el)]
@@ -109,9 +103,7 @@ export default function createHTMLRules(blockContentType, options = {}) {
         }
         return next(el.childNodes)
       }
-    },
-
-    // Ignore div tags
+    }, // Ignore div tags
     {
       deserialize(el, next) {
         const div = tagName(el) === 'div'
@@ -120,9 +112,7 @@ export default function createHTMLRules(blockContentType, options = {}) {
         }
         return next(el.childNodes)
       }
-    },
-
-    // Ignore list containers
+    }, // Ignore list containers
     {
       deserialize(el, next) {
         const listContainer = HTML_LIST_CONTAINER_TAGS[tagName(el)]
@@ -131,9 +121,7 @@ export default function createHTMLRules(blockContentType, options = {}) {
         }
         return next(el.childNodes)
       }
-    },
-
-    // Deal with br's
+    }, // Deal with br's
     {
       deserialize(el, next) {
         if (tagName(el) === 'br') {
@@ -144,9 +132,7 @@ export default function createHTMLRules(blockContentType, options = {}) {
         }
         return undefined
       }
-    },
-
-    // Deal with list items
+    }, // Deal with list items
     {
       deserialize(el, next) {
         const listItem = HTML_LIST_ITEM_TAGS[tagName(el)]
@@ -159,9 +145,7 @@ export default function createHTMLRules(blockContentType, options = {}) {
           children: next(el.childNodes)
         }
       }
-    },
-
-    // Deal with decorators
+    }, // Deal with decorators
     {
       deserialize(el, next) {
         const decorator = HTML_DECORATOR_TAGS[tagName(el)]
@@ -174,9 +158,7 @@ export default function createHTMLRules(blockContentType, options = {}) {
           children: next(el.childNodes)
         }
       }
-    },
-
-    // Special case for hyperlinks, add annotation (if allowed by schema),
+    }, // Special case for hyperlinks, add annotation (if allowed by schema),
     // If not supported just write out the link text and href in plain text.
     {
       deserialize(el, next) {

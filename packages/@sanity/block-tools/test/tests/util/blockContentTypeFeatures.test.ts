@@ -1,4 +1,4 @@
-import assert from 'assert'
+import * as assert from 'assert'
 import blockContentTypeFeatures from '../../../src/util/blockContentTypeFeatures'
 import customSchema from '../../fixtures/customSchema'
 import defaultSchema from '../../fixtures/defaultSchema'
@@ -8,6 +8,7 @@ describe('blockContentTypeFeatures', () => {
     const blockContentType = defaultSchema
       .get('blogPost')
       .fields.find(field => field.name === 'body').type
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const expected = require('../../fixtures/defaultFeatures.json')
     assert.deepEqual(
       JSON.parse(JSON.stringify(blockContentTypeFeatures(blockContentType))),

@@ -3,7 +3,11 @@ import Schema from '@sanity/schema'
 export default Schema.compile({
   name: 'withCustomBlockType',
   types: [
-    {type: 'document', name: 'author', fields: [{type: 'string', name: 'name', title: 'Name'}]},
+    {
+      type: 'document',
+      name: 'author',
+      fields: [{type: 'string', name: 'name', title: 'Name'}]
+    },
     {
       type: 'object',
       name: 'blogPost',
@@ -33,7 +37,12 @@ export default Schema.compile({
                 decorators: [{title: 'Strong', value: 'strong'}, {title: 'Emphasis', value: 'em'}],
                 // Support annotating text with a reference to an author
                 annotations: [
-                  {name: 'author', title: 'Author', type: 'reference', to: {type: 'author'}}
+                  {
+                    name: 'author',
+                    title: 'Author',
+                    type: 'reference',
+                    to: {type: 'author'}
+                  }
                 ]
               }
             }

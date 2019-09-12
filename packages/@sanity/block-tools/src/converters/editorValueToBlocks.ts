@@ -93,7 +93,7 @@ function toSanityBlock(block, blockContentFeatures, options = {}) {
         toSanitySpan(node, sanityBlock, spanIndex, blockContentFeatures, options)
       )
     )
-    sanityBlock.markDefs = uniqBy(sanityBlock.markDefs, def => def._key)
+    sanityBlock.markDefs = uniqBy(sanityBlock.markDefs, def => (def as any)._key)
     return sanityBlock
   }
 
@@ -105,7 +105,10 @@ function toSanityBlock(block, blockContentFeatures, options = {}) {
   // Put the right type back on the block if marked as __unknown from blocksToEditorValue
   if (block.type === '__unknown') {
     block.type = block.data.value._type
-    return createCustomBlockFromData({...block, type: block.data.value._type})
+    return createCustomBlockFromData({
+      ...block,
+      type: block.data.value._type
+    })
   }
 
   // A block that is not in the schema, so we don't know what to do with it
