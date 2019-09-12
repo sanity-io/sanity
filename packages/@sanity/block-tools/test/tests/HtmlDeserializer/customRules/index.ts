@@ -42,7 +42,7 @@ const rules = [
       if (el.tagName.toLowerCase() !== 'img') {
         return undefined
       }
-      const result = [
+      const result: any[] = [
         {
           _type: 'image',
           src: el.getAttribute('src')

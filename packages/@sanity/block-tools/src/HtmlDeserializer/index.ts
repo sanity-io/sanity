@@ -1,4 +1,5 @@
 import {flatten} from 'lodash'
+import resolveJsType from '../util/resolveJsType'
 import {
   createRuleOptions,
   defaultParseHtml,
@@ -9,7 +10,6 @@ import {
   tagName
 } from './helpers'
 import createRules from './rules'
-import resolveJsType from '../util/resolveJsType'
 
 /**
  * A internal variable to keep track of annotation mark definitions
@@ -21,8 +21,9 @@ let _markDefs = []
  * HTML Deserializer
  *
  */
-
 export default class HtmlDeserializer {
+  rules: any[]
+  parseHtml: (html: string) => any
   /**
    * Create a new serializer respecting a Sanity block content type's schema
    *
@@ -35,7 +36,7 @@ export default class HtmlDeserializer {
    *      API compatible model as returned from DOMParser for using server side.
    */
 
-  constructor(blockContentType, options = {}) {
+  constructor(blockContentType, options: any = {}) {
     const {rules = []} = options
     if (!blockContentType) {
       throw new Error("Parameter 'blockContentType' is required")
@@ -55,7 +56,6 @@ export default class HtmlDeserializer {
    * @param {String} html
    * @return {Array}
    */
-
   deserialize = html => {
     _markDefs = []
     const {parseHtml} = this
@@ -65,14 +65,16 @@ export default class HtmlDeserializer {
       flattenNestedBlocks(ensureRootIsBlocks(this.deserializeElements(children)))
     )
     if (_markDefs.length > 0) {
-      blocks.filter(block => block._type === 'block').forEach(block => {
-        block.markDefs = block.markDefs || []
-        block.markDefs = block.markDefs.concat(
-          _markDefs.filter(def => {
-            return flatten(block.children.map(child => child.marks || [])).includes(def._key)
-          })
-        )
-      })
+      blocks
+        .filter(block => block._type === 'block')
+        .forEach(block => {
+          block.markDefs = block.markDefs || []
+          block.markDefs = block.markDefs.concat(
+            _markDefs.filter(def => {
+              return flatten(block.children.map(child => child.marks || [])).includes(def._key)
+            })
+          )
+        })
     }
     // Ensure that there are no blocks within blocks, and trim whitespace
     return blocks
@@ -84,7 +86,6 @@ export default class HtmlDeserializer {
    * @param {Array} elements
    * @return {Array}
    */
-
   deserializeElements = (elements = []) => {
     let nodes = []
     elements.forEach((element, index) => {
@@ -109,7 +110,6 @@ export default class HtmlDeserializer {
    * @param {Object} element
    * @return {Any}
    */
-
   // eslint-disable-next-line complexity
   deserializeElement = element => {
     let node
@@ -197,7 +197,6 @@ export default class HtmlDeserializer {
    * @param {Object} decorator
    * @return {Array}
    */
-
   deserializeDecorator = decorator => {
     const {name} = decorator
     const applyDecorator = node => {
@@ -231,7 +230,6 @@ export default class HtmlDeserializer {
    * @param {Object} annotation
    * @return {Array}
    */
-
   deserializeAnnotation = annotation => {
     const {markDef} = annotation
     _markDefs.push(markDef)

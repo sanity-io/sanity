@@ -1,6 +1,6 @@
-import assert from 'assert'
-import fs from 'fs'
-import path from 'path'
+import * as fs from 'fs'
+import * as assert from 'assert'
+import * as path from 'path'
 import blockTools from '../../../../src'
 
 describe('slateStateToBlocks', () => {
@@ -11,9 +11,9 @@ describe('slateStateToBlocks', () => {
     }
     it(test, () => {
       const dir = path.resolve(__dirname, test)
-      const input = JSON.parse(fs.readFileSync(path.resolve(dir, 'input.json')))
-      const expected = JSON.parse(fs.readFileSync(path.resolve(dir, 'output.json')))
-      const fn = require(path.resolve(dir)).default // eslint-disable-line import/no-dynamic-require
+      const input = JSON.parse(fs.readFileSync(path.resolve(dir, 'input.json'), 'utf-8'))
+      const expected = JSON.parse(fs.readFileSync(path.resolve(dir, 'output.json'), 'utf-8'))
+      const fn = require(path.resolve(dir)).default
       const output = fn(blockTools.editorValueToBlocks, input)
       assert.deepEqual(output, expected)
     })

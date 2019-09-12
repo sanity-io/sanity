@@ -1,6 +1,7 @@
 module.exports = {
-  testRegex: 'test\\/.*\\.test\\.js$',
+  preset: 'ts-jest',
+  testRegex: 'test\\/.*\\.test\\.ts$',
   testEnvironment: 'node',
-  setupFilesAfterEnv: ['./test/setup.js'],
-  collectCoverageFrom: ['src/**.js']
+  setupFilesAfterEnv: ['./test/setup.ts'],
+  collectCoverageFrom: ['src/**.ts']
 }
