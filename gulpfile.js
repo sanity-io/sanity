@@ -34,9 +34,9 @@ const compareModified = async (stream, sourceFile, targetPath) => {
 const tsPaths = globby.sync(['./packages/@sanity/*/tsconfig.json'])
 const tsProjects = tsPaths.map(conf => ts.createProject(conf))
 const scripts = [
-  './packages/@sanity/*/src/**/*.js',
-  './packages/sanity-plugin-*/src/**/*.js',
-  './packages/groq/src/**/*.js'
+  './packages/@sanity/*/src/**/*.{js,ts,tsx}',
+  './packages/sanity-plugin-*/src/**/*.{js,ts,tsx}',
+  './packages/groq/src/**/*.{js,ts,tsx}'
 ]
 
 const assets = [
@@ -102,7 +102,7 @@ const watchTypeScript = series(buildTypeScript, function watchTS() {
       value: `buildTypeScript[${path.basename(project.projectDirectory)}]`
     })
 
-    watch(`${project.projectDirectory}/src/**/*.ts`, builder)
+    watch(`${project.projectDirectory}/src/**/*.{ts,tsx}`, builder)
   })
 })
 
@@ -112,7 +112,7 @@ exports.watchTypeScript = watchTypeScript
 exports.watch = parallel(watchJavaScript, watchTypeScript, watchAssets)
 
 function buildJavaScript() {
-  const assetFilter = filter(['**/*.js'], {restore: true})
+  const assetFilter = filter(['**/*.{js,ts,tsx}'], {restore: true})
   return src(assets, srcOpts)
     .pipe(plumber({errorHandler: err => gutil.log(err.stack)}))
     .pipe(assetFilter)
@@ -166,25 +166,18 @@ function buildTypeScript() {
     ...tsProjects.map(project => {
       const compilation = project
         .src()
-        .pipe(through.obj(logCompile('TS')))
+        .pipe(through.obj(logCompile('D.TS')))
         .pipe(project())
-
-      return mergeStream(
-        compilation.dts
-          .pipe(sourcemaps.write('.', {includeContent: false, sourceRoot: './'}))
-          .pipe(dest(project.options.outDir)),
-
-        compilation.js
-          .pipe(sourcemaps.write('.', {includeContent: false, sourceRoot: './'}))
-          .pipe(dest(project.options.outDir))
-      )
+      return compilation.dts
+        .pipe(sourcemaps.write('.', {includeContent: false, sourceRoot: './'}))
+        .pipe(dest(project.options.outDir))
     })
   )
 }
 
 function buildAssets() {
   return src(assets, srcOpts)
-    .pipe(filter(['**/*.*', '!**/*.js', '!**/*.ts']))
+    .pipe(filter(['**/*.*', '!**/*.js', '!**/*.ts', '!**/*.tsx']))
     .pipe(plumber({errorHandler: err => gutil.log(err.stack)}))
     .pipe(
       through.obj((file, enc, callback) => {
