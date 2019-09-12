@@ -45,8 +45,7 @@
     "react-sortable-hoc": "^0.6.3",
     "react-split-pane": "^0.1.84",
     "react-tippy": "^1.2.3",
-    "rxjs": "^6.1.0",
-    "scroll": "^2.0.0",
+    "rxjs": "^6.5.2",
     "string-hash": "^1.1.3"
   },
   "devDependencies": {
@@ -55,7 +54,7 @@
     "@sanity/core": "0.142.5",
     "pre-commit": "^1.2.2",
     "prop-types": "^15.6.0",
-    "react": "^16.3.0",
+    "react": "16.3.1",
     "react-styleguidist": "^2.3.1",
     "rimraf": "^2.6.2"
   },

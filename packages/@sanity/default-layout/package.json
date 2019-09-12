@@ -36,7 +36,7 @@
     "react-ink": "^6.1.0",
     "react-props-stream": "^1.0.0",
     "react-tippy": "^1.2.3",
-    "rxjs": "^6.1.0"
+    "rxjs": "^6.5.2"
   },
   "devDependencies": {
     "@sanity/base": "0.142.2",

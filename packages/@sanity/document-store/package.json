@@ -21,7 +21,7 @@
     "@sanity/mutator": "0.142.0",
     "lodash": "^4.17.4",
     "nano-pubsub": "^1.0.2",
-    "rxjs": "^6.1.0"
+    "rxjs": "^6.5.2"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
