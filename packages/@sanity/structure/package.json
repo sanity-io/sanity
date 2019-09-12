@@ -34,10 +34,10 @@
     "memoize-one": "^3.1.1"
   },
   "devDependencies": {
-    "@types/jest": "^22.0.0",
-    "jest": "^24.8.0",
+    "@types/jest": "^24.0.18",
+    "jest": "^24.9.0",
     "rimraf": "^2.6.2",
-    "rxjs": "^6.1.0",
+    "rxjs": "^6.5.2",
     "ts-jest": "^24.0.2",
     "typescript": "^3.2.2"
   },

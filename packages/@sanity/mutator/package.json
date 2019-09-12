@@ -27,7 +27,7 @@
   "devDependencies": {
     "@babel/preset-flow": "^7.0.0",
     "rimraf": "^2.6.2",
-    "tap": "^14.2.2"
+    "tap": "^14.6.1"
   },
   "repository": {
     "type": "git",
