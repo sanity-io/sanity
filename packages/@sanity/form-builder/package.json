@@ -7,18 +7,10 @@
     "clean": "rimraf lib",
     "test": "NODE_ENV=test jest",
     "start": "npm run example-testbed",
+    "build": "tsc",
     "example-testbed": "cd examples/schema-testbed && sanity start",
     "example-undo": "cd examples/undo && sanity start",
     "example-quickstart": "cd examples/quickstart && sanity start"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "setupFilesAfterEnv": [
-      "./test/setup.js"
-    ],
-    "collectCoverageFrom": [
-      "src/**.js"
-    ]
   },
   "keywords": [
     "sanity",
@@ -77,6 +69,7 @@
     "@sanity/core": "0.142.5",
     "@sanity/plugin-loader": "0.142.0",
     "@sanity/server": "0.142.2",
+    "@types/moment": "^2.13.0",
     "assert": "^1.4.1",
     "in-publish": "^2.0.0",
     "jest": "^24.9.0",
@@ -87,7 +80,8 @@
     "react-enroute": "^1.0.0",
     "rimraf": "^2.6.2",
     "tap": "^14.6.1",
-    "zen-observable": "^0.7.1"
+    "zen-observable": "^0.7.1",
+    "typescript-plugin-css-modules": "^1.2.1"
   },
   "peerDependencies": {
     "prop-types": "^15.6 || ^16",

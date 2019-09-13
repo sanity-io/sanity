@@ -1,4 +1,4 @@
-@import "part:@sanity/base/theme/variables-style";
+@import 'part:@sanity/base/theme/variables-style';
 
 .root {
   position: relative;
@@ -53,7 +53,10 @@
   height: 100%;
   width: 1em;
   z-index: 2;
-  background: radial-gradient(var(--component-border-color), color(var(--component-border-color) a(0%)) 70%);
+  background: radial-gradient(
+    var(--component-border-color),
+    color(var(--component-border-color) a(0%)) 70%
+  );
   background-position: 0.5em 0;
   background-repeat: no-repeat;
   border-right: 1px solid color(var(--component-border-color) a(5%));
