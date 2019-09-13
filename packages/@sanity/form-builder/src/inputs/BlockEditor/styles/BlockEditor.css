@@ -1,4 +1,4 @@
-@import "part:@sanity/base/theme/variables-style";
+@import 'part:@sanity/base/theme/variables-style';
 
 .root {
   display: block;
@@ -16,7 +16,7 @@
 }
 
 .scrollContainer {
-  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
+  composes: scrollY from 'part:@sanity/base/theme/layout/scrolling-style';
   display: block;
   height: 15rem;
   padding-bottom: 2rem;

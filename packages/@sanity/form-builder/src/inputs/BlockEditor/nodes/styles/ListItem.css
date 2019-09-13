@@ -174,62 +174,62 @@
 
   @nest &.level-2 > .item {
     @nest &:before {
-      content: counter(listItemAlpha, lower-alpha) ". ";
+      content: counter(listItemAlpha, lower-alpha) '. ';
     }
   }
 
   @nest &.level-3 > .item {
     @nest &:before {
-      content: counter(listItemRoman, lower-roman) ". ";
+      content: counter(listItemRoman, lower-roman) '. ';
     }
   }
 
   @nest &.level-4 > .item {
     @nest &:before {
-      content: counter(listItemNumberNext) ". ";
+      content: counter(listItemNumberNext) '. ';
     }
   }
 
   @nest &.level-5 > .item {
     @nest &:before {
-      content: counter(listItemLetterNext, lower-alpha) ". ";
+      content: counter(listItemLetterNext, lower-alpha) '. ';
     }
   }
 
   @nest &.level-6 > .item {
     @nest &:before {
-      content: counter(listItemRomanNext, lower-roman) ". ";
+      content: counter(listItemRomanNext, lower-roman) '. ';
     }
   }
 
   @nest &.level-7 > .item {
     @nest &:before {
-      content: counter(listItemNumberNextNext) ". ";
+      content: counter(listItemNumberNextNext) '. ';
     }
   }
 
   @nest &.level-8 > .item {
     @nest &:before {
-      content: counter(listItemAlphaNextNext, lower-alpha) ". ";
+      content: counter(listItemAlphaNextNext, lower-alpha) '. ';
     }
   }
 
   @nest &.level-9 > .item {
     @nest &:before {
-      content: counter(listItemRomanNextNext, lower-roman) ". ";
+      content: counter(listItemRomanNextNext, lower-roman) '. ';
     }
   }
 
   @nest &.level-10 > .item {
     @nest &:before {
-      content: counter(listItemNumberNextNextNext) ". ";
+      content: counter(listItemNumberNextNextNext) '. ';
     }
   }
 }
 
 .number > .item {
   @nest &:before {
-    min-width: 1.6em;  /* Make sure space between number and text never shrinks */
-    content: counter(listItemNumber) ". ";
+    min-width: 1.6em; /* Make sure space between number and text never shrinks */
+    content: counter(listItemNumber) '. ';
   }
 }
