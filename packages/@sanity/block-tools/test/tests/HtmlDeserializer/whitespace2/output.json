@@ -76,5 +76,20 @@
       { "_type": "span", "marks": [], "text": "." },
       { "_type": "span", "marks": [], "text": "\n" }
     ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [
+      { "_key": "randomKey2", "_type": "link", "href": "#lala" },
+      { "_key": "randomKey3", "_type": "link", "href": "#lala" }
+    ],
+    "style": "normal",
+    "children": [
+      { "_type": "span", "marks": [], "text": "I should have a space between " },
+      { "_type": "span", "marks": ["randomKey2"], "text": "these" },
+      { "_type": "span", "marks": [], "text": " " },
+      { "_type": "span", "marks": ["randomKey3"], "text": "two" },
+      { "_type": "span", "marks": [], "text": " links." }
+    ]
   }
 ]
