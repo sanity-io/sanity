@@ -1,5 +1,5 @@
-@import "part:@sanity/base/theme/shadows-style";
-@import "part:@sanity/base/theme/variables-style";
+@import 'part:@sanity/base/theme/shadows-style';
+@import 'part:@sanity/base/theme/variables-style';
 
 .selectButton {
   font-size: 0.75rem;
@@ -79,7 +79,7 @@
 }
 
 .portal {
-  composes: frosted from "part:@sanity/base/theme/layout/backgrounds-style";
+  composes: frosted from 'part:@sanity/base/theme/layout/backgrounds-style';
   z-index: var(--zindex-portal);
   position: fixed;
   top: 0;
@@ -96,7 +96,7 @@
 .popper {
   background-color: transparent;
 
-  @nest &[data-placement^="bottom"] :global(.react-datepicker__triangle) {
+  @nest &[data-placement^='bottom'] :global(.react-datepicker__triangle) {
     border-bottom-color: var(--main-navigation-color) !important;
 
     @nest &::before {
@@ -129,9 +129,7 @@
     border-color: var(--main-navigation-color);
   }
 
-  @nest
-  & :global(.react-datepicker__header--time),
-  & :global(.react-datepicker__time-container) {
+  @nest & :global(.react-datepicker__header--time), & :global(.react-datepicker__time-container) {
     background-color: var(--main-navigation-color);
     border-top-left-radius: 0 !important;
     border-top-right-radius: var(--border-radius-base) !important;
@@ -151,9 +149,8 @@
     line-height: 2em !important;
   }
 
-  @nest
-  & :global(.react-datepicker__month-dropdown-container),
-  & :global(.react-datepicker__year-dropdown-container) {
+  @nest & :global(.react-datepicker__month-dropdown-container),
+    & :global(.react-datepicker__year-dropdown-container) {
     position: relative;
 
     @nest &::before {
@@ -172,9 +169,7 @@
     }
   }
 
-  @nest
-  & :global(.react-datepicker__month-select),
-  & :global(.react-datepicker__year-select) {
+  @nest & :global(.react-datepicker__month-select), & :global(.react-datepicker__year-select) {
     position: relative;
     appearance: none;
     padding: 0.5em;

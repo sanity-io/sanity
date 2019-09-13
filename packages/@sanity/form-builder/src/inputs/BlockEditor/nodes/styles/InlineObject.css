@@ -1,4 +1,4 @@
-@import "part:@sanity/base/theme/variables/forms-style";
+@import 'part:@sanity/base/theme/variables/forms-style';
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
@@ -46,8 +46,11 @@
 
 .root.selected.hasErrors > .previewContainer {
   box-shadow: none;
-  border: 1px solid color(var(--state-danger-color) blend(var(--form-builder-block-background-selected) 70%));
-  background-color: color(var(--state-danger-color) blend(var(--form-builder-block-background-selected) 70%));
+  border: 1px solid
+    color(var(--state-danger-color) blend(var(--form-builder-block-background-selected) 70%));
+  background-color: color(
+    var(--state-danger-color) blend(var(--form-builder-block-background-selected) 70%)
+  );
 }
 
 .root.focused.hasErrors > .previewContainer {
