@@ -1,3 +1,4 @@
+import {getParameterlessTemplatesBySchemaType} from '@sanity/initial-value-templates'
 import {SchemaType} from './parts/Schema'
 import {client} from './parts/Client'
 import {SortItem} from './Sort'
@@ -5,6 +6,7 @@ import {EditorBuilder} from './Editor'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {SerializeOptions, Child} from './StructureNodes'
 import {ChildResolver, ChildResolverOptions, ItemChild} from './ChildResolver'
+import {InitialValueTemplateItem} from './InitialValueTemplateItem'
 import {
   GenericListBuilder,
   BuildableGenericList,
@@ -89,7 +91,8 @@ export class DocumentListBuilder extends GenericListBuilder<
   }
 
   schemaType(type: SchemaType | string): DocumentListBuilder {
-    return this.clone({schemaTypeName: typeof type === 'string' ? type : type.name})
+    const schemaTypeName = typeof type === 'string' ? type : type.name
+    return this.clone({schemaTypeName})
   }
 
   getSchemaType() {
@@ -152,6 +155,48 @@ export class DocumentListBuilder extends GenericListBuilder<
   clone(withSpec?: PartialDocumentList): DocumentListBuilder {
     const builder = new DocumentListBuilder()
     builder.spec = {...this.spec, ...(withSpec || {})}
+
+    if (!builder.spec.initialValueTemplates) {
+      builder.spec.initialValueTemplates = inferInitialValueTemplates(builder.spec)
+    }
+
     return builder
   }
+
+  getSpec() {
+    return this.spec
+  }
+}
+
+function inferInitialValueTemplates(
+  spec: PartialDocumentList
+): InitialValueTemplateItem[] | undefined {
+  const {schemaTypeName, options} = spec
+  const {filter, params} = options || {filter: '', params: {}}
+  const typeName = schemaTypeName || getTypeNameFromSingleTypeFilter(filter, params)
+
+  if (!typeName) {
+    return undefined
+  }
+
+  return getParameterlessTemplatesBySchemaType(typeName).map(tpl => ({
+    type: 'initialValueTemplateItem',
+    id: tpl.id,
+    templateId: tpl.id
+  }))
+}
+
+export function getTypeNameFromSingleTypeFilter(
+  filter: string,
+  params: {[key: string]: any} = {}
+): string | null {
+  const pattern = /\b_type\s*==\s*(['"].*?['"]|\$.*?(?:\s|$))|\B(['"].*?['"]|\$.*?(?:\s|$))\s*==\s*_type\b/
+  const matches = filter.match(pattern)
+  if (!matches) {
+    return null
+  }
+
+  const match = (matches[1] || matches[2]).trim().replace(/^["']|["']$/g, '')
+  const typeName = match[0] === '$' ? params[match.slice(1)] : match
+  return typeName || null
 }

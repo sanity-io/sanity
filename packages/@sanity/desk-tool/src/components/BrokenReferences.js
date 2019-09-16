@@ -148,7 +148,7 @@ function extractStrongReferences(value) {
 }
 
 function dedupeReferences(refs) {
-  return uniq(refs.map(ref => ref.replace(/^drafts\./, '')))
+  return uniq(refs.map(ref => (ref || '').replace(/^drafts\./, '')))
 }
 
 export default BrokenReferences

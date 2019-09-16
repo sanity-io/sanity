@@ -126,7 +126,7 @@ export class ListItemBuilder implements Serializable {
 
     let schemaType = this.spec.schemaType
     if (typeof schemaType === 'string') {
-      const type: SchemaType = getDefaultSchema().get(schemaType)
+      const type = getDefaultSchema().get(schemaType)
       if (!type) {
         throw new SerializeError(
           `Could not find type "${schemaType}" in schema`,

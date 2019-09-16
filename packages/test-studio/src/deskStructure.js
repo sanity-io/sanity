@@ -107,6 +107,17 @@ export default () =>
         ),
 
       S.listItem({
+        id: 'developers',
+        title: 'Developers',
+        schemaType: 'author',
+        child: () =>
+          S.documentTypeList('author')
+            .filter('_type == $type && role == $role')
+            .params({type: 'author', role: 'developer'})
+            .initialValueTemplates(S.initialValueTemplateItem('author-developer'))
+      }),
+
+      S.listItem({
         id: 'books-by-author',
         title: 'Books by author',
         schemaType: 'book',
@@ -116,8 +127,7 @@ export default () =>
               .title('Books by author')
               .filter('_type == $type && author._ref == $authorId')
               .params({type: 'book', authorId})
-              .child(S.editorWithInitialValueTemplate('book-by-author', {authorId}))
-              .canHandleIntent(S.documentTypeList('book').getCanHandleIntent())
+              .initialValueTemplates([S.initialValueTemplateItem('book-by-author', {authorId})])
           )
       }),
 

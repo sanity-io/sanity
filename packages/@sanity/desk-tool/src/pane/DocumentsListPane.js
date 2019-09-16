@@ -36,11 +36,6 @@ function getDocumentKey(document) {
   return getPublishedId(document._id)
 }
 
-function noActionFn() {
-  // eslint-disable-next-line no-console
-  console.warn('No handler defined for action')
-}
-
 function getTypeNameFromSingleTypeFilter(filter, params = {}) {
   const pattern = /\b_type\s*==\s*(['"].*?['"]|\$.*?(?:\s|$))|\B(['"].*?['"]|\$.*?(?:\s|$))\s*==\s*_type\b/
   const matches = filter.match(pattern)
@@ -106,6 +101,12 @@ export default withRouterHOC(
           id: PropTypes.string.isRequired
         })
       ),
+      initialValueTemplates: PropTypes.arrayOf(
+        PropTypes.shape({
+          templateId: PropTypes.string,
+          parameters: PropTypes.object // eslint-disable-line react/forbid-prop-types
+        })
+      ),
       displayOptions: PropTypes.shape({
         showIcons: PropTypes.bool
       }),
@@ -123,7 +124,8 @@ export default withRouterHOC(
       displayOptions: {},
       onExpand: undefined,
       onCollapse: undefined,
-      defaultLayout: undefined
+      defaultLayout: undefined,
+      initialValueTemplates: undefined
     }
 
     actionHandlers = {
@@ -199,11 +201,14 @@ export default withRouterHOC(
 
     handleAction = item => {
       const handler =
-        typeof item.action === 'function'
-          ? item.action
-          : this.actionHandlers[item.action] || noActionFn
+        typeof item.action === 'function' ? item.action : this.actionHandlers[item.action]
+
+      if (!handler) {
+        return false
+      }
 
       handler(item.params, this)
+      return true
     }
 
     handleCreateNew = () => {
@@ -258,7 +263,8 @@ export default withRouterHOC(
         onExpand,
         defaultLayout,
         menuItems,
-        menuItemGroups
+        menuItemGroups,
+        initialValueTemplates
       } = this.props
 
       const {filter, params} = options
@@ -277,6 +283,7 @@ export default withRouterHOC(
           scrollTop={this.state.scrollTop}
           menuItems={menuItems}
           menuItemGroups={menuItemGroups}
+          initialValueTemplates={initialValueTemplates}
           isSelected={isSelected}
           isCollapsed={isCollapsed}
           onCollapse={onCollapse}

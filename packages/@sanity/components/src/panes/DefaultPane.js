@@ -3,6 +3,7 @@ import React from 'react'
 import {negate} from 'lodash'
 import shallowEquals from 'shallow-equals'
 import classNames from 'classnames'
+import S from '@sanity/base/structure-builder'
 import Menu from 'part:@sanity/components/menus/default'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import {IntentLink} from 'part:@sanity/base/router'
@@ -12,6 +13,11 @@ import defaultStyles from './styles/DefaultPane.css'
 
 function getActionKey(action, index) {
   return (typeof action.action === 'string' ? action.action + action.title : action.title) || index
+}
+
+function noActionFn() {
+  // eslint-disable-next-line no-console
+  console.warn('No handler defined for action')
 }
 
 // This is the height of the global navigation bar
@@ -93,6 +99,12 @@ class Pane extends React.Component {
         title: PropTypes.string
       })
     ),
+    initialValueTemplates: PropTypes.arrayOf(
+      PropTypes.shape({
+        templateId: PropTypes.string,
+        parameters: PropTypes.object // eslint-disable-line react/forbid-prop-types
+      })
+    ),
     index: PropTypes.number,
     staticContent: PropTypes.node,
     contentMaxWidth: PropTypes.number,
@@ -110,11 +122,13 @@ class Pane extends React.Component {
     children: <div />,
     onAction: noop,
     menuItems: [],
-    menuItemGroups: []
+    menuItemGroups: [],
+    initialValueTemplates: []
   }
 
   state = {
     menuIsOpen: false,
+    templateSelectionIsOpen: false,
     headerStyleRatio: -1,
     headerStyle: {
       boxShadow: 'none'
@@ -122,13 +136,25 @@ class Pane extends React.Component {
     scrollTop: 0
   }
 
+  actionHandlers = {
+    toggleTemplateSelectionMenu: () => {
+      this.setState(prevState => ({
+        templateSelectionIsOpen: !prevState.templateSelectionIsOpen
+      }))
+    }
+  }
+
   scrollFrameId = null
 
   constructor(props) {
     super(props)
 
-    // Passed to rendered <Menu>. This prevents the "click outside" functionality
-    // from kicking in when pressing the toggle menu button
+    // Passed to rendered <Menu> components. This prevents the "click outside"
+    // functionality from kicking in when pressing the toggle menu button
+    this.templateMenuId = Math.random()
+      .toString(36)
+      .substr(2, 6)
+
     this.paneMenuId = Math.random()
       .toString(36)
       .substr(2, 6)
@@ -210,6 +236,11 @@ class Pane extends React.Component {
     this.setState(prev => ({menuIsOpen: !prev.menuIsOpen}))
   }
 
+  // Triggered by clicking "outside" of the menu when open, or after triggering action
+  handleCloseTemplateSelection = () => {
+    this.setState({templateSelectionIsOpen: false})
+  }
+
   handleRootClick = event => {
     const {onExpand, isCollapsed, index} = this.props
     if (isCollapsed && onExpand) {
@@ -235,7 +266,13 @@ class Pane extends React.Component {
       return
     }
 
-    this.props.onAction(item)
+    const actionHandled = this.props.onAction(item)
+    if (actionHandled) {
+      return
+    }
+
+    const handler = this.actionHandlers[item.action] || noActionFn
+    handler(item.params, this)
   }
 
   renderIntentAction = (action, i) => {
@@ -263,13 +300,15 @@ class Pane extends React.Component {
       return this.renderIntentAction(action, i)
     }
 
-    const {styles} = this.props
+    const {templateSelectionIsOpen} = this.state
+    const {styles, isCollapsed, initialValueTemplates} = this.props
     const Icon = action.icon
 
     return (
-      <div className={styles.buttonWrapper} key={getActionKey(action, i)}>
+      <div className={styles.menuWrapper} key={getActionKey(action, i)}>
         <button
           className={styles.actionButton}
+          data-menu-button-id={this.templateMenuId}
           type="button"
           title={action.title}
           // eslint-disable-next-line react/jsx-no-bind
@@ -279,6 +318,18 @@ class Pane extends React.Component {
             <Icon />
           </div>
         </button>
+        <div className={styles.menuContainer}>
+          {action.action === 'toggleTemplateSelectionMenu' && templateSelectionIsOpen && (
+            <Menu
+              id={this.templateMenuId}
+              items={S.menuItemsFromInitialValueTemplateItems(initialValueTemplates)}
+              origin={isCollapsed ? 'top-left' : 'top-right'}
+              onAction={this.handleMenuAction}
+              onClose={this.handleCloseTemplateSelection}
+              onClickOutside={this.handleCloseTemplateSelection}
+            />
+          )}
+        </div>
       </div>
     )
   }
