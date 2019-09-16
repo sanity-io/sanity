@@ -2,6 +2,8 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styles from '../styles/GeopointSelect.css'
 
+const fallbackLatLng = {lat: 40.7058254, lng: -74.1180863}
+
 class GeopointSelect extends React.Component {
   static propTypes = {
     onChange: PropTypes.func.isRequired,
@@ -13,6 +15,7 @@ class GeopointSelect extends React.Component {
       Map: PropTypes.func.isRequired,
       Circle: PropTypes.func.isRequired,
       Marker: PropTypes.func.isRequired,
+      LatLng: PropTypes.func.isRequired,
       places: PropTypes.shape({Autocomplete: PropTypes.func.isRequired}),
       event: PropTypes.shape({addListener: PropTypes.func.isRequired})
     }).isRequired,
@@ -61,10 +64,9 @@ class GeopointSelect extends React.Component {
   }
 
   getValueLatLng() {
-    const {api, value, defaultLocation} = this.props
-    return value
-      ? new api.LatLng(value.lat, value.lng)
-      : new api.LatLng(defaultLocation.lat, defaultLocation.lng)
+    const {api, value = {}, defaultLocation = {}} = this.props
+    const point = {...fallbackLatLng, ...defaultLocation, ...value}
+    return new api.LatLng(point.lat, point.lng)
   }
 
   declareMarker() {
