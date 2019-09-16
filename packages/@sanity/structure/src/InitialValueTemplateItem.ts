@@ -1,9 +1,13 @@
-import {getTemplates} from '@sanity/initial-value-templates'
+import {pickBy} from 'lodash'
+import {getTemplates, getTemplateById} from '@sanity/initial-value-templates'
 import {isActionEnabled} from './parts/documentActionUtils'
 import {getDefaultSchema, Schema} from './parts/Schema'
 import {HELP_URL} from './SerializeError'
-import {Serializable, SerializeOptions} from './StructureNodes'
+import {Serializable, SerializeOptions, SerializePath} from './StructureNodes'
 import {SerializeError, StructureBuilder} from '.'
+import {MenuItemBuilder, MenuItem} from './MenuItem'
+import {getPlusIcon} from './parts/Icon'
+import {IntentParams} from './Intent'
 
 export type InitialValueTemplateItem = {
   id: string
@@ -109,4 +113,32 @@ export function defaultInitialValueTemplateItems(
 
   // Create actual template items out of the templates
   return ordered.map(tpl => StructureBuilder.initialValueTemplateItem(tpl.id))
+}
+
+export function maybeSerializeInitialValueTemplateItem(
+  item: InitialValueTemplateItem | InitialValueTemplateItemBuilder,
+  index: number,
+  path: SerializePath
+): InitialValueTemplateItem {
+  return item instanceof InitialValueTemplateItemBuilder ? item.serialize({path, index}) : item
+}
+
+export function menuItemsFromInitialValueTemplateItems(
+  templateItems: InitialValueTemplateItem[]
+): MenuItem[] {
+  return templateItems.map(item => {
+    const tpl = getTemplateById(item.templateId)
+    const title = item.title || (tpl && tpl.title) || 'Create new'
+    const params = pickBy({type: tpl && tpl.schemaType, template: item.templateId}, Boolean)
+    const intentParams: IntentParams = item.parameters ? [params, item.parameters] : params
+
+    return new MenuItemBuilder()
+      .title(title)
+      .icon(getPlusIcon())
+      .intent({
+        type: 'create',
+        params: intentParams
+      })
+      .serialize()
+  })
 }

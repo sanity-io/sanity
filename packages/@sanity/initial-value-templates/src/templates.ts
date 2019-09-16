@@ -91,6 +91,12 @@ export function getTemplates(schema?: Schema) {
   }
 }
 
+export function getParameterlessTemplatesBySchemaType(schemaType: string) {
+  return getTemplatesBySchemaType(schemaType).filter(
+    tpl => !tpl.parameters || !tpl.parameters.length
+  )
+}
+
 export function getTemplatesBySchemaType(schemaType: string) {
   return getTemplates().filter(tpl => tpl.schemaType === schemaType)
 }

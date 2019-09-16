@@ -1,10 +1,17 @@
-import {camelCase} from 'lodash'
-import {StructureNode, SerializeOptions, Serializable, Child} from './StructureNodes'
+import {getTemplateById} from '@sanity/initial-value-templates'
+import {camelCase, pickBy} from 'lodash'
+import {getPlusIcon} from './parts/Icon'
+import {StructureNode, SerializeOptions, Serializable, Child, SerializePath} from './StructureNodes'
 import {Layout, layoutOptions} from './Layout'
 import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
 import {MenuItemGroup, MenuItemGroupBuilder, maybeSerializeMenuItemGroup} from './MenuItemGroup'
-import {IntentChecker} from './Intent'
+import {IntentChecker, Intent, IntentParams} from './Intent'
 import {SerializeError} from './SerializeError'
+import {
+  InitialValueTemplateItem,
+  InitialValueTemplateItemBuilder,
+  maybeSerializeInitialValueTemplateItem
+} from './InitialValueTemplateItem'
 
 function noChildResolver() {
   return undefined
@@ -19,6 +26,7 @@ export interface BaseGenericList extends StructureNode {
   canHandleIntent?: IntentChecker
   displayOptions?: ListDisplayOptions
   child: Child
+  initialValueTemplates?: (InitialValueTemplateItem | InitialValueTemplateItemBuilder)[]
 }
 
 // "POJO"/verbatim-version - end result
@@ -115,6 +123,14 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
     return this.spec.displayOptions ? this.spec.displayOptions.showIcons : undefined
   }
 
+  initialValueTemplates(templates: InitialValueTemplateItem | InitialValueTemplateItem[]) {
+    return this.clone({initialValueTemplates: Array.isArray(templates) ? templates : [templates]})
+  }
+
+  getInitialValueTemplates() {
+    return this.spec.initialValueTemplates
+  }
+
   serialize(options: SerializeOptions = {path: []}): GenericList {
     const id = this.spec.id || ''
     const path = options.path
@@ -129,6 +145,10 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
       )
     }
 
+    const initialValueTemplates = (this.spec.initialValueTemplates || []).map((item, i) =>
+      maybeSerializeInitialValueTemplateItem(item, i, path)
+    )
+
     return {
       id,
       title: this.spec.title,
@@ -137,9 +157,8 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
       child: this.spec.child || noChildResolver,
       canHandleIntent: this.spec.canHandleIntent,
       displayOptions: this.spec.displayOptions,
-      menuItems: (this.spec.menuItems || []).map((item, i) =>
-        maybeSerializeMenuItem(item, i, path)
-      ),
+      initialValueTemplates,
+      menuItems: menuItemsWithCreateIntents(this.spec, {path, initialValueTemplates}),
       menuItemGroups: (this.spec.menuItemGroups || []).map((item, i) =>
         maybeSerializeMenuItemGroup(item, i, path)
       )
@@ -149,5 +168,76 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
   clone(withSpec?: object) {
     const builder = new (this.constructor as {new (): ConcreteImpl})()
     return builder
+  }
+}
+
+function menuItemsWithCreateIntents(
+  list: BuildableGenericList,
+  options: {path: SerializePath; initialValueTemplates?: InitialValueTemplateItem[]}
+): MenuItem[] {
+  const {path, initialValueTemplates = []} = options
+  const items = (list.menuItems || []).map((item, i) => maybeSerializeMenuItem(item, i, path))
+  const hasCreate = items.some(menuItem => menuItem.intent && menuItem.intent.type === 'create')
+  const hasTemplates = initialValueTemplates.length > 0
+  if (hasCreate || !hasTemplates) {
+    return items
+  }
+
+  const PlusIcon = getPlusIcon()
+
+  const loneTemplate =
+    initialValueTemplates.length === 1 &&
+    maybeSerializeInitialValueTemplateItem(initialValueTemplates[0], 0, path)
+
+  const actionButton = new MenuItemBuilder()
+    .title('Create new')
+    .icon(PlusIcon)
+    .showAsAction({whenCollapsed: true})
+
+  if (loneTemplate) {
+    // If we have a single create item, link to that template directly.
+    // Otherwise we'll want to select from a menu
+
+    // Action button
+    const template = getTemplateById(loneTemplate.templateId)
+    const templateTitle = template && template.title
+    items.unshift(
+      actionButton
+        .title(`Create new ${loneTemplate.title || templateTitle || ''}`)
+        .intent(getCreateIntent(loneTemplate))
+        .serialize()
+    )
+  } else {
+    // More than one item, so we'll want that dropdown of choices
+    items.unshift(actionButton.action('toggleTemplateSelectionMenu').serialize())
+  }
+
+  // Menu buttons
+  initialValueTemplates.forEach(tpl => {
+    const template = getTemplateById(tpl.templateId)
+    const templateTitle = tpl.title || (template && template.title)
+    items.push(
+      new MenuItemBuilder()
+        .title(`Create new ${templateTitle}`)
+        .icon(PlusIcon)
+        .intent(getCreateIntent(tpl))
+        .group('create-new')
+        .serialize()
+    )
+  })
+
+  return items
+}
+
+function getCreateIntent(templateItem: InitialValueTemplateItem): Intent {
+  const tpl = getTemplateById(templateItem.templateId)
+  const params = pickBy({type: tpl && tpl.schemaType, template: templateItem.templateId}, Boolean)
+  const intentParams: IntentParams = templateItem.parameters
+    ? [params, templateItem.parameters]
+    : params
+
+  return {
+    type: 'create',
+    params: intentParams
   }
 }
