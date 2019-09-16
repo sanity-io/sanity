@@ -60,7 +60,7 @@ function getIntentState(intentName, params, currentState, jsonParams = {}) {
   // Loop through open panes and see if any of them can handle the intent
   for (let i = activePanes.length - 1; i >= 0; i--) {
     const pane = activePanes[i]
-    if (pane.canHandleIntent && pane.canHandleIntent(intentName, params)) {
+    if (pane.canHandleIntent && pane.canHandleIntent(intentName, params, {pane})) {
       const paneParams = isTemplate ? {template: params.template, ...jsonParams} : undefined
       return {panes: paneSegments.slice(0, i).concat({id: editDocumentId, params: paneParams})}
     }

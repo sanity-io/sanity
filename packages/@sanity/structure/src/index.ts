@@ -23,7 +23,8 @@ import {Ordering} from './Sort'
 import {SchemaType} from './parts/Schema'
 import {
   InitialValueTemplateItemBuilder,
-  defaultInitialValueTemplateItems
+  defaultInitialValueTemplateItems,
+  menuItemsFromInitialValueTemplateItems
 } from './InitialValueTemplateItem'
 
 const StructureBuilder = {
@@ -37,6 +38,7 @@ const StructureBuilder = {
 
   menuItem: (spec?: MenuItem) => new MenuItemBuilder(spec),
   menuItemGroup: (spec?: MenuItemGroup) => new MenuItemGroupBuilder(spec),
+  menuItemsFromInitialValueTemplateItems,
 
   documentList: (spec?: DocumentListInput) => new DocumentListBuilder(spec),
   documentListItem: (spec?: DocumentListItemInput) => new DocumentListItemBuilder(spec),

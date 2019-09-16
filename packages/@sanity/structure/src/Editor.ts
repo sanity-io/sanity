@@ -1,9 +1,8 @@
 import {camelCase} from 'lodash'
-import {EditorNode, SerializeOptions, Serializable, StructureNode} from './StructureNodes'
+import {EditorNode, SerializeOptions, Serializable} from './StructureNodes'
 import {getTemplateById} from '@sanity/initial-value-templates'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {SchemaType} from './parts/Schema'
-import {InitialValueTemplateItem, InitialValueTemplateItemBuilder} from './InitialValueTemplateItem'
 
 export type PartialEditorNode = {
   id?: string
@@ -12,11 +11,10 @@ export type PartialEditorNode = {
     id?: string
     type?: string
     template?: string
+    templateParameters?: {
+      [key: string]: any
+    }
   }
-  parameters?: {
-    [key: string]: any
-  }
-  initialValueTemplates?: (InitialValueTemplateItem | InitialValueTemplateItemBuilder)[]
 }
 
 export class EditorBuilder implements Serializable {
@@ -71,26 +69,36 @@ export class EditorBuilder implements Serializable {
     return this.spec.options && this.spec.options.type
   }
 
-  initialValueTemplates(templates: InitialValueTemplateItem[]) {
+  initialValueTemplate(templateId: string, parameters?: {[key: string]: any}) {
     return this.clone({
       options: {
-        ...(this.spec.options || {})
-      },
-      initialValueTemplates: templates
+        ...(this.spec.options || {}),
+        template: templateId,
+        templateParameters: parameters
+      }
     })
   }
 
-  getInitialValueTemplates() {
-    return this.spec.initialValueTemplates
+  getInitalValueTemplate() {
+    return this.spec.options && this.spec.options.template
+  }
+
+  getInitialValueTemplateParameters() {
+    return this.spec.options && this.spec.options.templateParameters
   }
 
   serialize({path = [], index, hint}: SerializeOptions = {path: []}): EditorNode {
     const urlId = path[index || path.length - 1]
-    const {initialValueTemplates} = this.spec
 
     // Try to grab document ID / editor ID from URL if not defined
     const id = this.spec.id || (urlId && `${urlId}`)
-    const options = {id, type: undefined, template: undefined, ...this.spec.options}
+    const options = {
+      id,
+      type: undefined,
+      template: undefined,
+      templateParameters: undefined,
+      ...this.spec.options
+    }
 
     if (typeof id !== 'string' || !id) {
       throw new SerializeError('`id` is required for editor nodes', path, index, hint).withHelpUrl(
@@ -111,10 +119,12 @@ export class EditorBuilder implements Serializable {
       ...this.spec,
       id,
       type: 'document',
-      options: {id: options.id, type: options.type, template: options.template},
-      initialValueTemplates:
-        initialValueTemplates &&
-        initialValueTemplates.map(item => (isBuilder(item) ? item.serialize() : item))
+      options: {
+        id: options.id,
+        type: options.type,
+        template: options.template,
+        templateParameters: options.templateParameters
+      }
     }
   }
 
@@ -124,10 +134,6 @@ export class EditorBuilder implements Serializable {
     builder.spec = {...this.spec, ...withSpec, options}
     return builder
   }
-}
-
-function isBuilder(item: Serializable | StructureNode): item is Serializable {
-  return typeof (item as Serializable).serialize === 'function'
 }
 
 export function editorWithInitialValueTemplate(
@@ -141,7 +147,5 @@ export function editorWithInitialValueTemplate(
 
   return new EditorBuilder()
     .schemaType(template.schemaType)
-    .initialValueTemplates([
-      {id: templateId, templateId, parameters, type: 'initialValueTemplateItem'}
-    ])
+    .initialValueTemplate(templateId, parameters)
 }

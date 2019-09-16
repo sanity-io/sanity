@@ -153,6 +153,9 @@ export function getOrderingMenuItem(ordering: Ordering, extendedProjection?: str
 
 export function getOrderingMenuItemsForSchemaType(typeName: SchemaType | string) {
   const type = typeof typeName === 'string' ? getDefaultSchema().get(typeName) : typeName
+  if (!type) {
+    return []
+  }
 
   return (type.orderings
     ? type.orderings.concat(DEFAULT_ORDERING_OPTIONS)

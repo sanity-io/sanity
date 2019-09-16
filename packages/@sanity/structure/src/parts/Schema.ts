@@ -3,7 +3,7 @@ import {Ordering} from '../Sort'
 
 interface Schema {
   name: string
-  get(typeName: string): any
+  get(typeName: string): SchemaType | undefined
   getTypeNames(): string[]
 }
 

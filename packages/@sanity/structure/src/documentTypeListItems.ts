@@ -1,33 +1,19 @@
 import memoizeOne from 'memoize-one'
-import {getTemplateById} from '@sanity/initial-value-templates'
 import {Schema, getDefaultSchema, SchemaType} from './parts/Schema'
 import {dataAspects, DataAspectsResolver} from './parts/DataAspects'
-import {getPlusIcon, getListIcon, getDetailsIcon} from './parts/Icon'
+import {getListIcon, getDetailsIcon} from './parts/Icon'
 import {MenuItemBuilder, getOrderingMenuItemsForSchemaType} from './MenuItem'
 import {DEFAULT_SELECTED_ORDERING_OPTION} from './Sort'
 import {DocumentListBuilder} from './DocumentList'
 import {ListItemBuilder} from './ListItem'
 import {EditorBuilder} from './Editor'
-import {isActionEnabled} from './parts/documentActionUtils'
 import {DocumentTypeListBuilder} from './DocumentTypeList'
-import {IntentChecker} from './Intent'
+import {defaultIntentChecker} from './Intent'
 
-const PlusIcon = getPlusIcon()
 const ListIcon = getListIcon()
 const DetailsIcon = getDetailsIcon()
 
 const getDataAspectsForSchema: (schema: Schema) => DataAspectsResolver = memoizeOne(dataAspects)
-
-const paneCanHandleTemplateCreation = (templateId: string, paneSchemaType: string): boolean => {
-  if (!templateId) {
-    return false
-  }
-
-  const template = getTemplateById(templateId)
-  return template ? template.schemaType === paneSchemaType : false
-}
-
-export const DEFAULT_INTENT_HANDLER = Symbol('Document type list canHandleIntent')
 
 function shouldShowIcon(schemaType: SchemaType): boolean {
   const preview = schemaType.preview
@@ -66,14 +52,6 @@ export function getDocumentTypeList(typeName: string, sanitySchema?: Schema): Do
   const resolver = getDataAspectsForSchema(schema)
   const title = resolver.getDisplayName(typeName)
   const showIcons = shouldShowIcon(type)
-  const canCreate = isActionEnabled(type, 'create')
-
-  const intentChecker: IntentChecker = (intentName, params = {}): boolean =>
-    Boolean(intentName === 'edit' && params.id && params.type === typeName) ||
-    Boolean(intentName === 'create' && params.type === typeName) ||
-    Boolean(intentName === 'create' && paneCanHandleTemplateCreation(params.template, typeName))
-
-  intentChecker.identity = DEFAULT_INTENT_HANDLER
 
   return new DocumentTypeListBuilder()
     .id(typeName)
@@ -94,18 +72,9 @@ export function getDocumentTypeList(typeName: string, sanitySchema?: Schema): Do
         .schemaType(type)
         .documentId(documentId)
     )
-    .canHandleIntent(intentChecker)
+    .canHandleIntent(defaultIntentChecker)
     .menuItems([
-      // Create new (from action button)
-      ...(canCreate
-        ? [
-            new MenuItemBuilder()
-              .title(`Create new ${title}`)
-              .icon(PlusIcon)
-              .intent({type: 'create', params: {type: typeName}})
-              .showAsAction({whenCollapsed: true})
-          ]
-        : []),
+      // Create new (from action button) will be added in serialization step of GenericList
 
       // Sort by <Y>
       ...getOrderingMenuItemsForSchemaType(type),
@@ -123,17 +92,8 @@ export function getDocumentTypeList(typeName: string, sanitySchema?: Schema): Do
         .title('Details')
         .icon(DetailsIcon)
         .action('setLayout')
-        .params({layout: 'detail'}),
+        .params({layout: 'detail'})
 
-      // Create new (from menu)
-      ...(canCreate
-        ? [
-            new MenuItemBuilder()
-              .group('actions')
-              .title('Create new…')
-              .icon(PlusIcon)
-              .intent({type: 'create', params: {type: typeName}})
-          ]
-        : [])
+      // Create new (from menu) will be added in serialization step of GenericList
     ])
 }

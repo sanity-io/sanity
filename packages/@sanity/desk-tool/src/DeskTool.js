@@ -121,8 +121,7 @@ export default withRouterHOC(
       const editor = {
         id: 'editor',
         type: 'document',
-        options: {id: editDocumentId, type, template},
-        parameters: templateParams
+        options: {id: editDocumentId, type, template, templateParameters: templateParams}
       }
 
       if (type !== '*') {
