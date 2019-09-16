@@ -53,7 +53,7 @@ function isReference(typeDef) {
 }
 
 function extractFromSanitySchema(sanitySchema) {
-  let unionRecursionGuard = null
+  const unionRecursionGuards = []
   const hasErrors =
     sanitySchema._validation &&
     sanitySchema._validation.some(group =>
@@ -162,11 +162,10 @@ function extractFromSanitySchema(sanitySchema) {
       name,
       type: 'Object',
       description: getDescription(def),
-      fields: fields.map(
-        field =>
-          isArrayOfBlocks(field)
-            ? buildRawField(field, name)
-            : convertType(field, name, {fieldName: field.name})
+      fields: fields.map(field =>
+        isArrayOfBlocks(field)
+          ? buildRawField(field, name)
+          : convertType(field, name, {fieldName: field.name})
       )
     }
   }
@@ -255,12 +254,12 @@ function extractFromSanitySchema(sanitySchema) {
   function getUnionDefinition(candidates, parent, options = {}) {
     // #1482: When creating union definition do not get caught in recursion loop
     // for types that reference themselves
-    if (parent === unionRecursionGuard) {
+    if (unionRecursionGuards.includes(parent)) {
       return {}
     }
 
     try {
-      unionRecursionGuard = parent
+      unionRecursionGuards.push(parent)
 
       candidates.forEach((def, i) => {
         if (typeNeedsHoisting(def)) {
@@ -307,7 +306,10 @@ function extractFromSanitySchema(sanitySchema) {
       const references = refs.length > 0 ? refs : undefined
       return {type: name, references}
     } finally {
-      unionRecursionGuard = null
+      const parentIndex = unionRecursionGuards.indexOf(parent)
+      if (parentIndex !== -1) {
+        unionRecursionGuards.splice(parentIndex, 1)
+      }
     }
   }
 
