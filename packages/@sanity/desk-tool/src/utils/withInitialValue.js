@@ -38,26 +38,18 @@ export default function withInitialValue(Pane) {
     static displayName = `WithInitialValue(${Pane.displayName || Pane.name})`
 
     static propTypes = {
-      parameters: PropTypes.object, // eslint-disable-line react/forbid-prop-types
       options: PropTypes.shape({
         id: PropTypes.string,
         type: PropTypes.string,
-        template: PropTypes.string
+        template: PropTypes.string,
+        templateParameters: PropTypes.object // eslint-disable-line react/forbid-prop-types
       }).isRequired,
-      initialValueTemplates: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          parameters: PropTypes.object
-        })
-      ),
       urlParameters: PropTypes.shape({
         template: PropTypes.string
       })
     }
 
     static defaultProps = {
-      parameters: undefined,
-      initialValueTemplates: undefined,
       urlParameters: {}
     }
 
@@ -86,7 +78,7 @@ export default function withInitialValue(Pane) {
     componentDidUpdate(prevProps) {
       if (
         prevProps.options.template !== this.props.options.template ||
-        !shallowEquals(prevProps.parameters, this.props.parameters)
+        !shallowEquals(prevProps.options.templateParameters, this.props.options.templateParameters)
       ) {
         const {templateName, parameters} = this.resolveTemplateChoices()
         if (templateName) {
@@ -97,14 +89,16 @@ export default function withInitialValue(Pane) {
 
     resolveTemplateChoices() {
       const {template: urlTemplate, ...urlParameters} = this.props.urlParameters
-      const {options, initialValueTemplates} = this.props
+      const {options = {}} = this.props
       const template = options.template || urlTemplate
       const type = options.type
 
-      let parameters = {...this.props.parameters, ...urlParameters}
+      let parameters = {...options.templateParameters, ...urlParameters}
       let templateName = template
       let templateChoices
 
+      // @todo grab from parent
+      const initialValueTemplates = []
       if (!template && initialValueTemplates) {
         templateChoices = initialValueTemplates.map(spec => {
           const tpl = getTemplateById(spec.id)

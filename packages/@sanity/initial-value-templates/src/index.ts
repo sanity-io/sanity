@@ -6,5 +6,6 @@ export {
   getTemplates,
   getTemplateById,
   getTemplatesBySchemaType,
+  getParameterlessTemplatesBySchemaType,
   getTemplateErrors
 } from './templates'
