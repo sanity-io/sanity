@@ -221,6 +221,12 @@ export default {
       ]
     },
     {
+      name: 'withGeopoint',
+      title: 'With geopoints',
+      type: 'array',
+      of: [{type: 'block'}, {type: 'geopoint'}]
+    },
+    {
       name: 'deep',
       title: 'Blocks deep down',
       type: 'object',
