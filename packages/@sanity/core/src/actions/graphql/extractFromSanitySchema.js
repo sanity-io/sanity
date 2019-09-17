@@ -53,6 +53,7 @@ function isReference(typeDef) {
 }
 
 function extractFromSanitySchema(sanitySchema) {
+  const unionRecursionGuards = []
   const hasErrors =
     sanitySchema._validation &&
     sanitySchema._validation.some(group =>
@@ -161,11 +162,10 @@ function extractFromSanitySchema(sanitySchema) {
       name,
       type: 'Object',
       description: getDescription(def),
-      fields: fields.map(
-        field =>
-          isArrayOfBlocks(field)
-            ? buildRawField(field, name)
-            : convertType(field, name, {fieldName: field.name})
+      fields: fields.map(field =>
+        isArrayOfBlocks(field)
+          ? buildRawField(field, name)
+          : convertType(field, name, {fieldName: field.name})
       )
     }
   }
@@ -252,50 +252,65 @@ function extractFromSanitySchema(sanitySchema) {
   }
 
   function getUnionDefinition(candidates, parent, options = {}) {
-    candidates.forEach((def, i) => {
-      if (typeNeedsHoisting(def)) {
-        throw createLiftTypeArrayError(
-          i,
-          parent.name,
-          def.type ? def.type.name : def.name,
-          options.grandParent
-        )
-      }
-    })
-
-    const converted = candidates.map(def => convertType(def))
-
-    // We might end up with union types being returned - these needs to be flattened
-    // so that an ImageOr(PersonOrPet) becomes ImageOrPersonOrPet
-    const flattened = converted.reduce((acc, candidate) => {
-      const union = unionTypes.find(item => item.name === candidate.type)
-      return union
-        ? acc.concat(union.types.map(type => ({type, isReference: candidate.isReference})))
-        : acc.concat(candidate)
-    }, [])
-
-    const allCandidatesAreDocuments = flattened.every(def => {
-      const typeDef = sanityTypes.find(type => type.name === (def.type.name || def.type))
-      return typeDef && typeDef.type === 'document'
-    })
-
-    const interfaces = allCandidatesAreDocuments ? ['Document'] : undefined
-    const refs = flattened.filter(type => type.isReference).map(ref => ref.type)
-    const possibleTypes = flattened.map(type => (type.isReference ? type.type : type.name)).sort()
-
-    const name = possibleTypes.join('Or')
-
-    if (!unionTypes.some(item => item.name === name)) {
-      unionTypes.push({
-        kind: 'Union',
-        name,
-        types: possibleTypes,
-        interfaces
-      })
+    // #1482: When creating union definition do not get caught in recursion loop
+    // for types that reference themselves
+    if (unionRecursionGuards.includes(parent)) {
+      return {}
     }
 
-    const references = refs.length > 0 ? refs : undefined
-    return {type: name, references}
+    try {
+      unionRecursionGuards.push(parent)
+
+      candidates.forEach((def, i) => {
+        if (typeNeedsHoisting(def)) {
+          throw createLiftTypeArrayError(
+            i,
+            parent.name,
+            def.type ? def.type.name : def.name,
+            options.grandParent
+          )
+        }
+      })
+
+      const converted = candidates.map(def => convertType(def))
+
+      // We might end up with union types being returned - these needs to be flattened
+      // so that an ImageOr(PersonOrPet) becomes ImageOrPersonOrPet
+      const flattened = converted.reduce((acc, candidate) => {
+        const union = unionTypes.find(item => item.name === candidate.type)
+        return union
+          ? acc.concat(union.types.map(type => ({type, isReference: candidate.isReference})))
+          : acc.concat(candidate)
+      }, [])
+
+      const allCandidatesAreDocuments = flattened.every(def => {
+        const typeDef = sanityTypes.find(type => type.name === (def.type.name || def.type))
+        return typeDef && typeDef.type === 'document'
+      })
+
+      const interfaces = allCandidatesAreDocuments ? ['Document'] : undefined
+      const refs = flattened.filter(type => type.isReference).map(ref => ref.type)
+      const possibleTypes = flattened.map(type => (type.isReference ? type.type : type.name)).sort()
+
+      const name = possibleTypes.join('Or')
+
+      if (!unionTypes.some(item => item.name === name)) {
+        unionTypes.push({
+          kind: 'Union',
+          name,
+          types: possibleTypes,
+          interfaces
+        })
+      }
+
+      const references = refs.length > 0 ? refs : undefined
+      return {type: name, references}
+    } finally {
+      const parentIndex = unionRecursionGuards.indexOf(parent)
+      if (parentIndex !== -1) {
+        unionRecursionGuards.splice(parentIndex, 1)
+      }
+    }
   }
 
   function getDocumentDefinition(def) {
