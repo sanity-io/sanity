@@ -1,5 +1,0 @@
-[include]
-./src
-
-[options]
-module.name_mapper='.*:.*' -> 'empty/object'

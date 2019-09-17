@@ -1,4 +1,4 @@
-@import "part:@sanity/base/theme/variables-style";
+@import 'part:@sanity/base/theme/variables-style';
 
 /*
   The flex alignment here is to stretch the editor to
@@ -38,7 +38,7 @@
 }
 
 /* less spacing on block objects / non-text objects */
-.editor div[data-slate-void="true"] + div[data-slate-void="true"] {
+.editor div[data-slate-void='true'] + div[data-slate-void='true'] {
   padding-top: var(--small-padding);
 }
 

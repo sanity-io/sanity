@@ -9,8 +9,7 @@
     "./packages/eslint-config-sanity/react.js",
     "./packages/eslint-config-sanity/import.js",
     "prettier",
-    "prettier/react",
-    "prettier/flowtype"
+    "prettier/react"
   ],
   "rules": {
     "newline-per-chained-call": 0,
@@ -25,8 +24,6 @@
     ],
     "prettier/prettier": "error",
     "import/no-extraneous-dependencies": "off",
-    "flowtype/define-flow-type": 1,
-    "flowtype/use-flow-type": 1,
     "import/unambiguous": "off"
   },
   "globals": {
@@ -41,7 +38,6 @@
     ]
   },
   "plugins": [
-    "flowtype",
     "import",
     "prettier",
     "react"

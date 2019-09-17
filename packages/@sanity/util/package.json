@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "clean": "rimraf lib",
-    "test": "tap -j1 --flow"
+    "test": "tap -j1"
   },
   "engines": {
     "node": ">=8.0.0"
@@ -34,8 +34,7 @@
     "resolve-from": "^4.0.0"
   },
   "devDependencies": {
-    "@babel/preset-flow": "^7.0.0",
     "rimraf": "^2.6.2",
-    "tap": "^14.2.2"
+    "tap": "^14.6.1"
   }
 }

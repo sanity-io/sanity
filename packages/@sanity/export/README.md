@@ -20,8 +20,8 @@ exportDataset({
   // Name of dataset to export
   dataset: 'myDataset',
 
-  // Path to write zip-file to, or `-` for stdout
-  outputPath: '/home/your-user/myDataset.zip',
+  // Path to write tar.gz-archive file to, or `-` for stdout
+  outputPath: '/home/your-user/myDataset.tar.gz',
 
   // Whether or not to export assets. Note that this operation is currently slightly lossy;
   // metadata stored on the asset document itself (original filename, for instance) might be lost

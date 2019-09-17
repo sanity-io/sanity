@@ -1,6 +1,6 @@
 {
   "name": "@sanity/core",
-  "version": "0.142.4",
+  "version": "0.142.5",
   "description": "Sanity core bundle, containing required packages for the development and build process",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -20,12 +20,12 @@
     "core"
   ],
   "dependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.4.4",
-    "@babel/preset-env": "^7.4.5",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-env": "^7.6.0",
     "@babel/preset-react": "^7.0.0",
-    "@babel/register": "^7.4.4",
+    "@babel/register": "^7.6.0",
     "@sanity/check": "0.142.0",
-    "@sanity/export": "0.142.0",
+    "@sanity/export": "0.142.5",
     "@sanity/generate-help-url": "0.142.0",
     "@sanity/import": "0.142.0",
     "@sanity/mutator": "0.142.0",

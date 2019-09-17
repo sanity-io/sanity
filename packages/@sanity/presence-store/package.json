@@ -17,7 +17,7 @@
   "dependencies": {
     "@sanity/uuid": "0.142.0",
     "deep-equal": "^1.0.1",
-    "rxjs": "^6.1.0"
+    "rxjs": "^6.5.2"
   },
   "publishConfig": {
     "access": "public"

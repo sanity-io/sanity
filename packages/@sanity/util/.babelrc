@@ -1,4 +1,4 @@
 {
   "extends": "../../../.babelrc",
-  "presets": ["@babel/preset-flow"]
+  "presets": ["@babel/typescript"]
 }

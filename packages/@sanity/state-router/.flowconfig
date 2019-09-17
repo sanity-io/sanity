@@ -1,5 +1,0 @@
-[ignore]
-# Todo: flow ignore is broken. Flow check currently fails in a file in fbjs.
-# Would be better to ignore the whole node_modules folder, but alas, then flow wont find
-# type defs for dependencies.
-.*/node_modules/fbjs/.*
