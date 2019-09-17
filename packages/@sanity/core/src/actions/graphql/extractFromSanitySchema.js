@@ -9,6 +9,7 @@ const Schema = schemaCompiler.default || schemaCompiler
 const skipTypes = ['document', 'reference']
 const allowedJsonTypes = ['object', 'array']
 const disallowedCustomizedMembers = ['object', 'array', 'image', 'file', 'block']
+const scalars = ['string', 'number', 'boolean']
 
 function getBaseType(baseSchema, typeName) {
   return Schema.compile({
@@ -82,6 +83,13 @@ function extractFromSanitySchema(sanitySchema) {
   function mapFieldType(field, name) {
     if (!field.type) {
       throw new Error('Field has no type!')
+    }
+
+    const isScalar = scalars.includes(field.jsonType)
+    if (isScalar && field.jsonType === 'number') {
+      return hasValidationFlag(field, 'integer') ? 'Int' : 'Float'
+    } else if (isScalar) {
+      return getTypeName(field.jsonType)
     }
 
     const type = field.type.type || field.type
@@ -226,9 +234,16 @@ function extractFromSanitySchema(sanitySchema) {
       throw createLiftTypeError(child.name, arrayDef.name)
     }
 
-    return isReference(child)
-      ? getReferenceDefinition(child, arrayDef)
-      : {type: getTypeName(child.name)}
+    if (isReference(child)) {
+      return getReferenceDefinition(child, arrayDef)
+    }
+
+    // In the case of nested scalars, recurse (markdown -> longText -> text -> string)
+    if (scalars.includes(child.jsonType) && !scalars.includes(child.name)) {
+      return {type: mapFieldType(child)}
+    }
+
+    return {type: getTypeName(child.name)}
   }
 
   function typeNeedsHoisting(type) {
