@@ -1,6 +1,17 @@
+import React from 'react'
 import icon from 'react-icons/lib/md/rate-review'
 import imageIcon from 'react-icons/lib/md/photo-library'
 import colorIcon from 'react-icons/lib/md/format-color-fill'
+import {BlockEditor} from 'part:@sanity/form-builder'
+
+const CustomEditor = props => {
+  const {markers, value} = props
+  const newMarkers = markers.concat([
+    {type: 'customMarkerTest', path: value && value[0] ? [{_key: value[0]._key}] : []}
+  ])
+  return <BlockEditor {...props} markers={newMarkers} />
+}
+CustomEditor.propTypes = BlockEditor.propTypes // eslint-disable-line react/forbid-foreign-prop-types
 
 export default {
   name: 'blocksTest',
@@ -225,6 +236,13 @@ export default {
       title: 'With geopoints',
       type: 'array',
       of: [{type: 'block'}, {type: 'geopoint'}]
+    },
+    {
+      name: 'withMarkers',
+      title: 'With markers',
+      type: 'array',
+      inputComponent: CustomEditor,
+      of: [{type: 'block'}]
     },
     {
       name: 'deep',
