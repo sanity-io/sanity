@@ -61,7 +61,7 @@ export default withValuePath(
       updateCurrent(current) {
         const {onChange, type} = this.props
         if (!current) {
-          onChange(PatchEvent.from(unset(['current'])))
+          onChange(PatchEvent.from(unset([])))
           return
         }
         onChange(PatchEvent.from(setIfMissing({_type: type.name}), set(current, ['current'])))

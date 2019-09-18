@@ -26,7 +26,6 @@ const defaultIsUnique = (slug, options) => {
   const {published, draft} = getDocumentIds(document._id)
   const docType = document._type
   const atPath = serializePath(path.concat('current'))
-  const controlSlug = slug === undefined ? '' : slug
 
   if (!disableArrayWarning && atPath.includes('[]')) {
     memoizedWarnOnArraySlug(serializePath(path))
@@ -35,14 +34,14 @@ const defaultIsUnique = (slug, options) => {
   const constraints = [
     '_type == $docType',
     `!(_id in [$draft, $published])`,
-    `${atPath} == $controlSlug`
+    `${atPath} == $slug`
   ].join(' && ')
 
   return client.fetch(`!defined(*[${constraints}][0]._id)`, {
     docType,
     draft,
     published,
-    controlSlug
+    slug
   })
 }
 
@@ -61,6 +60,10 @@ function warnOnArraySlug(path) {
 export const slugValidator = (value, options) => {
   if (!value) {
     return true
+  }
+
+  if (!value.current) {
+    return 'Slug must have a value'
   }
 
   const errorMessage = 'Slug is already in use'
