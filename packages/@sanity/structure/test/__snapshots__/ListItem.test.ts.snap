@@ -18,6 +18,7 @@ Object {
     "defaultLayout": undefined,
     "displayOptions": undefined,
     "id": "asoiaf-books",
+    "initialValueTemplates": Array [],
     "menuItemGroups": Array [],
     "menuItems": Array [],
     "options": Object {
