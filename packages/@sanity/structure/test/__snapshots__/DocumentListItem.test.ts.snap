@@ -54,6 +54,7 @@ Object {
     "defaultLayout": undefined,
     "displayOptions": undefined,
     "id": "asoiaf-posts",
+    "initialValueTemplates": Array [],
     "menuItemGroups": Array [],
     "menuItems": Array [],
     "options": Object {

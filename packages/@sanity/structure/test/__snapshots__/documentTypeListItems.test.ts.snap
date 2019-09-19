@@ -11,6 +11,7 @@ ListItemBuilder {
           "showIcons": true,
         },
         "id": "author",
+        "initialValueTemplates": Array [],
         "menuItemGroups": Array [
           Object {
             "id": "sorting",
@@ -26,21 +27,6 @@ ListItemBuilder {
           },
         ],
         "menuItems": Array [
-          MenuItemBuilder {
-            "spec": Object {
-              "icon": [Function],
-              "intent": Object {
-                "params": Object {
-                  "type": "author",
-                },
-                "type": "create",
-              },
-              "showAsAction": Object {
-                "whenCollapsed": true,
-              },
-              "title": "Create new Author",
-            },
-          },
           MenuItemBuilder {
             "spec": Object {
               "action": "setSortOrder",
@@ -95,19 +81,6 @@ ListItemBuilder {
                 "layout": "detail",
               },
               "title": "Details",
-            },
-          },
-          MenuItemBuilder {
-            "spec": Object {
-              "group": "actions",
-              "icon": [Function],
-              "intent": Object {
-                "params": Object {
-                  "type": "author",
-                },
-                "type": "create",
-              },
-              "title": "Create new…",
             },
           },
         ],
@@ -179,6 +152,7 @@ ListItemBuilder {
           "showIcons": true,
         },
         "id": "author",
+        "initialValueTemplates": Array [],
         "menuItemGroups": Array [
           Object {
             "id": "sorting",
@@ -194,21 +168,6 @@ ListItemBuilder {
           },
         ],
         "menuItems": Array [
-          MenuItemBuilder {
-            "spec": Object {
-              "icon": [Function],
-              "intent": Object {
-                "params": Object {
-                  "type": "author",
-                },
-                "type": "create",
-              },
-              "showAsAction": Object {
-                "whenCollapsed": true,
-              },
-              "title": "Create new Author",
-            },
-          },
           MenuItemBuilder {
             "spec": Object {
               "action": "setSortOrder",
@@ -263,19 +222,6 @@ ListItemBuilder {
                 "layout": "detail",
               },
               "title": "Details",
-            },
-          },
-          MenuItemBuilder {
-            "spec": Object {
-              "group": "actions",
-              "icon": [Function],
-              "intent": Object {
-                "params": Object {
-                  "type": "author",
-                },
-                "type": "create",
-              },
-              "title": "Create new…",
             },
           },
         ],
@@ -348,6 +294,7 @@ Array [
             "showIcons": true,
           },
           "id": "author",
+          "initialValueTemplates": Array [],
           "menuItemGroups": Array [
             Object {
               "id": "sorting",
@@ -363,21 +310,6 @@ Array [
             },
           ],
           "menuItems": Array [
-            MenuItemBuilder {
-              "spec": Object {
-                "icon": [Function],
-                "intent": Object {
-                  "params": Object {
-                    "type": "author",
-                  },
-                  "type": "create",
-                },
-                "showAsAction": Object {
-                  "whenCollapsed": true,
-                },
-                "title": "Create new Author",
-              },
-            },
             MenuItemBuilder {
               "spec": Object {
                 "action": "setSortOrder",
@@ -432,19 +364,6 @@ Array [
                   "layout": "detail",
                 },
                 "title": "Details",
-              },
-            },
-            MenuItemBuilder {
-              "spec": Object {
-                "group": "actions",
-                "icon": [Function],
-                "intent": Object {
-                  "params": Object {
-                    "type": "author",
-                  },
-                  "type": "create",
-                },
-                "title": "Create new…",
               },
             },
           ],
@@ -513,6 +432,7 @@ Array [
             "showIcons": true,
           },
           "id": "post",
+          "initialValueTemplates": Array [],
           "menuItemGroups": Array [
             Object {
               "id": "sorting",
@@ -528,21 +448,6 @@ Array [
             },
           ],
           "menuItems": Array [
-            MenuItemBuilder {
-              "spec": Object {
-                "icon": [Function],
-                "intent": Object {
-                  "params": Object {
-                    "type": "post",
-                  },
-                  "type": "create",
-                },
-                "showAsAction": Object {
-                  "whenCollapsed": true,
-                },
-                "title": "Create new Post",
-              },
-            },
             MenuItemBuilder {
               "spec": Object {
                 "action": "setSortOrder",
@@ -639,19 +544,6 @@ Array [
                   "layout": "detail",
                 },
                 "title": "Details",
-              },
-            },
-            MenuItemBuilder {
-              "spec": Object {
-                "group": "actions",
-                "icon": [Function],
-                "intent": Object {
-                  "params": Object {
-                    "type": "post",
-                  },
-                  "type": "create",
-                },
-                "title": "Create new…",
               },
             },
           ],
@@ -803,6 +695,7 @@ Array [
             "showIcons": true,
           },
           "id": "author",
+          "initialValueTemplates": Array [],
           "menuItemGroups": Array [
             Object {
               "id": "sorting",
@@ -818,21 +711,6 @@ Array [
             },
           ],
           "menuItems": Array [
-            MenuItemBuilder {
-              "spec": Object {
-                "icon": [Function],
-                "intent": Object {
-                  "params": Object {
-                    "type": "author",
-                  },
-                  "type": "create",
-                },
-                "showAsAction": Object {
-                  "whenCollapsed": true,
-                },
-                "title": "Create new Author",
-              },
-            },
             MenuItemBuilder {
               "spec": Object {
                 "action": "setSortOrder",
@@ -887,19 +765,6 @@ Array [
                   "layout": "detail",
                 },
                 "title": "Details",
-              },
-            },
-            MenuItemBuilder {
-              "spec": Object {
-                "group": "actions",
-                "icon": [Function],
-                "intent": Object {
-                  "params": Object {
-                    "type": "author",
-                  },
-                  "type": "create",
-                },
-                "title": "Create new…",
               },
             },
           ],
@@ -968,6 +833,7 @@ Array [
             "showIcons": true,
           },
           "id": "post",
+          "initialValueTemplates": Array [],
           "menuItemGroups": Array [
             Object {
               "id": "sorting",
@@ -983,21 +849,6 @@ Array [
             },
           ],
           "menuItems": Array [
-            MenuItemBuilder {
-              "spec": Object {
-                "icon": [Function],
-                "intent": Object {
-                  "params": Object {
-                    "type": "post",
-                  },
-                  "type": "create",
-                },
-                "showAsAction": Object {
-                  "whenCollapsed": true,
-                },
-                "title": "Create new Post",
-              },
-            },
             MenuItemBuilder {
               "spec": Object {
                 "action": "setSortOrder",
@@ -1094,19 +945,6 @@ Array [
                   "layout": "detail",
                 },
                 "title": "Details",
-              },
-            },
-            MenuItemBuilder {
-              "spec": Object {
-                "group": "actions",
-                "icon": [Function],
-                "intent": Object {
-                  "params": Object {
-                    "type": "post",
-                  },
-                  "type": "create",
-                },
-                "title": "Create new…",
               },
             },
           ],

@@ -19,7 +19,7 @@
   "parts": [
     {
       "name": "part:@sanity/base/schema",
-      "path": "./schemas/schema.js"
+      "path": "./schema.js"
     },
     {
       "implements": "part:@sanity/base/root",
