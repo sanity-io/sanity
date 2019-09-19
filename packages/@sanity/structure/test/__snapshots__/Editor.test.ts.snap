@@ -3,14 +3,12 @@
 exports[`builds editor node through constructor 1`] = `
 Object {
   "id": "foo",
-  "initialValueTemplates": undefined,
   "options": Object {
     "id": "docId",
-    "template": undefined,
+    "templateParameters": Object {
+      "foo": "bar",
+    },
     "type": "book",
-  },
-  "parameters": Object {
-    "foo": "bar",
   },
   "title": "some title",
   "type": "document",
@@ -20,10 +18,8 @@ Object {
 exports[`can construct using builder (alt) 1`] = `
 Object {
   "id": "yeah",
-  "initialValueTemplates": undefined,
   "options": Object {
     "id": "wow",
-    "template": undefined,
     "type": "book",
   },
   "title": "Yeah",
@@ -34,10 +30,8 @@ Object {
 exports[`can construct using builder 1`] = `
 Object {
   "id": "yeah",
-  "initialValueTemplates": undefined,
   "options": Object {
     "id": "wow",
-    "template": undefined,
     "type": "book",
   },
   "title": "Yeah",
@@ -48,10 +42,8 @@ Object {
 exports[`can construct with schema type instead of schema type name 1`] = `
 Object {
   "id": "yeah",
-  "initialValueTemplates": undefined,
   "options": Object {
     "id": "wow",
-    "template": undefined,
     "type": "post",
   },
   "title": "Yeah",

@@ -7,6 +7,7 @@ Object {
   "defaultLayout": undefined,
   "displayOptions": undefined,
   "id": "books",
+  "initialValueTemplates": Array [],
   "items": Array [
     Object {
       "child": undefined,
@@ -30,6 +31,7 @@ Object {
   "defaultLayout": undefined,
   "displayOptions": undefined,
   "id": "authors",
+  "initialValueTemplates": Array [],
   "items": Array [],
   "menuItemGroups": Array [],
   "menuItems": Array [],
@@ -45,6 +47,7 @@ Object {
   "defaultLayout": "card",
   "displayOptions": undefined,
   "id": "books",
+  "initialValueTemplates": Array [],
   "items": Array [],
   "menuItemGroups": Array [],
   "menuItems": Array [],
@@ -60,6 +63,7 @@ Object {
   "defaultLayout": undefined,
   "displayOptions": undefined,
   "id": "foo",
+  "initialValueTemplates": Array [],
   "items": Array [],
   "menuItemGroups": Array [],
   "menuItems": Array [],
@@ -75,6 +79,7 @@ Object {
   "defaultLayout": undefined,
   "displayOptions": undefined,
   "id": "books",
+  "initialValueTemplates": Array [],
   "items": Array [
     Object {
       "id": "asoiaf-wow",
@@ -96,6 +101,7 @@ Object {
   "defaultLayout": undefined,
   "displayOptions": undefined,
   "id": "yeah",
+  "initialValueTemplates": Array [],
   "items": Array [],
   "menuItemGroups": Array [
     Object {
@@ -122,6 +128,7 @@ Object {
   "defaultLayout": undefined,
   "displayOptions": undefined,
   "id": "yeah",
+  "initialValueTemplates": Array [],
   "items": Array [],
   "menuItemGroups": Array [],
   "menuItems": Array [
@@ -142,6 +149,7 @@ Object {
   "defaultLayout": undefined,
   "displayOptions": undefined,
   "id": "yeah",
+  "initialValueTemplates": Array [],
   "items": Array [],
   "menuItemGroups": Array [
     Object {
@@ -168,6 +176,7 @@ Object {
   "defaultLayout": undefined,
   "displayOptions": undefined,
   "id": "yeah",
+  "initialValueTemplates": Array [],
   "items": Array [],
   "menuItemGroups": Array [],
   "menuItems": Array [
