@@ -4,17 +4,19 @@ import {getTemplateById} from '@sanity/initial-value-templates'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {SchemaType} from './parts/Schema'
 
+interface EditorOptions {
+  id: string
+  type: string
+  template?: string
+  templateParameters?: {
+    [key: string]: any
+  }
+}
+
 export type PartialEditorNode = {
   id?: string
   title?: string
-  options?: {
-    id?: string
-    type?: string
-    template?: string
-    templateParameters?: {
-      [key: string]: any
-    }
-  }
+  options?: Partial<EditorOptions>
 }
 
 export class EditorBuilder implements Serializable {
@@ -91,8 +93,8 @@ export class EditorBuilder implements Serializable {
     const urlId = path[index || path.length - 1]
 
     // Try to grab document ID / editor ID from URL if not defined
-    const id = this.spec.id || (urlId && `${urlId}`)
-    const options = {
+    const id = this.spec.id || (urlId && `${urlId}`) || ''
+    const options: Partial<EditorOptions> = {
       id,
       type: undefined,
       template: undefined,
@@ -119,12 +121,7 @@ export class EditorBuilder implements Serializable {
       ...this.spec,
       id,
       type: 'document',
-      options: {
-        id: options.id,
-        type: options.type,
-        template: options.template,
-        templateParameters: options.templateParameters
-      }
+      options: getEditorOptions(options)
     }
   }
 
@@ -134,6 +131,23 @@ export class EditorBuilder implements Serializable {
     builder.spec = {...this.spec, ...withSpec, options}
     return builder
   }
+}
+
+function getEditorOptions(spec: Partial<EditorOptions>): EditorOptions {
+  const opts: EditorOptions = {
+    id: spec.id || '',
+    type: spec.type || '*'
+  }
+
+  if (spec.template) {
+    opts.template = spec.template
+  }
+
+  if (spec.templateParameters) {
+    opts.templateParameters = spec.templateParameters
+  }
+
+  return opts
 }
 
 export function editorWithInitialValueTemplate(

@@ -1,5 +1,5 @@
 import {StructureBuilder as S} from '../src'
-import {getDefaultSchema} from '../src/parts/Schema'
+import {getDefaultSchema, SchemaType} from '../src/parts/Schema'
 
 test('builds editor node through constructor', () => {
   expect(
@@ -8,10 +8,10 @@ test('builds editor node through constructor', () => {
       title: 'some title',
       options: {
         id: 'docId',
-        type: 'book'
-      },
-      parameters: {
-        foo: 'bar'
+        type: 'book',
+        templateParameters: {
+          foo: 'bar'
+        }
       }
     }).serialize()
   ).toMatchSnapshot()
@@ -61,7 +61,7 @@ test('reuses editor ID if document ID is not set', () => {
 test('can construct with schema type instead of schema type name', () => {
   expect(
     S.editor()
-      .schemaType(getDefaultSchema().get('post'))
+      .schemaType(getDefaultSchema().get('post') as SchemaType)
       .id('yeah')
       .title('Yeah')
       .documentId('wow')

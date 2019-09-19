@@ -34,9 +34,10 @@ test('generated canHandleIntent responds to edit/create on document type', () =>
   expect(listItems[0].child).toHaveProperty('canHandleIntent')
 
   const child = listItems[0].child as DocumentList
-  expect((child.canHandleIntent || nope)('create', {type: 'book'})).toBe(false)
-  expect((child.canHandleIntent || nope)('create', {type: 'author'})).toBe(true)
-  expect((child.canHandleIntent || nope)('edit', {id: 'wow'})).toBe(false)
+  const ctx = {pane: child}
+  expect((child.canHandleIntent || nope)('create', {type: 'book'}, ctx)).toBe(false)
+  expect((child.canHandleIntent || nope)('create', {type: 'author'}, ctx)).toBe(true)
+  expect((child.canHandleIntent || nope)('edit', {id: 'wow'}, ctx)).toBe(false)
 })
 
 test('generated document panes responds with correct editor child', done => {
@@ -58,14 +59,15 @@ test('manually assigned canHandleIntent should not be overriden', () => {
   const alwaysFalse = () => false
   const list = S.documentTypeList('author')
   const modified = list.canHandleIntent(alwaysFalse)
+  const ctx = {pane: list.serialize()}
 
   // Test default handler
   const defHandler = list.getCanHandleIntent() || nope
-  expect(defHandler('create', {type: 'author'})).toBe(true)
+  expect(defHandler('create', {type: 'author'}, ctx)).toBe(true)
 
   // Test modified handler
   const modHandler = modified.getCanHandleIntent() || nope
-  expect(modHandler('create', {type: 'author'})).toBe(false)
+  expect(modHandler('create', {type: 'author'}, ctx)).toBe(false)
 
   // Modifying child for default list _SHOULD_ reset canHandleIntent
   const diffChild = list.child(() => editor)

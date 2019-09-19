@@ -33,6 +33,20 @@ function getWebpackConfig(baseConfig, env) {
   config.module.rules = config.module.rules.filter(skipCssLoader)
   config.module.rules.unshift(sanityWpConfig.module.rules.find(isCssLoader))
 
+  const jsonLoaderAt = config.module.rules.findIndex(rule =>
+    (rule.loader || '').includes('json-loader')
+  )
+
+  const jsonHackLoader = {
+    test: /\.json$/,
+    resourceQuery: /sanityPart=/,
+    loader: require.resolve('./jsonHackLoader.js')
+  }
+
+  if (jsonLoaderAt !== -1) {
+    config.module.rules.splice(jsonLoaderAt + 1, 0, jsonHackLoader)
+  }
+
   config.resolve = Object.assign({}, config.resolve, sanityWpConfig.resolve, {
     alias: Object.assign({}, config.resolve.alias || {}, sanityWpConfig.resolve.alias || {})
   })
