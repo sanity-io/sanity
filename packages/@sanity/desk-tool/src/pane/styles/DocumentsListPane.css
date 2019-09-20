@@ -107,3 +107,14 @@
     color: var(--selected-item-color--inverted);
   }
 }
+
+.templateMenuContainer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+
+  @nest & > div {
+    position: absolute;
+    right: var(--extra-large-padding);
+  }
+}
