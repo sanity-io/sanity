@@ -1,9 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import {getTemplateById} from '@sanity/base/initial-value-templates'
+import S from '@sanity/base/structure-builder'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import schema from 'part:@sanity/base/schema'
 import PlusIcon from 'part:@sanity/base/plus-icon'
+import Menu from 'part:@sanity/components/menus/default'
 import Button from 'part:@sanity/components/buttons/default'
+import IntentButton from 'part:@sanity/components/buttons/intent'
 import DefaultPane from 'part:@sanity/components/panes/default'
 import QueryContainer from 'part:@sanity/base/query-container'
 import Snackbar from 'part:@sanity/components/snackbar/default'
@@ -19,6 +23,7 @@ import InfiniteList from './InfiniteList'
 import PaneItem from './PaneItem'
 import {map, tap} from 'rxjs/operators'
 
+const noop = () => null
 const DEFAULT_ORDERING = [{field: '_createdAt', direction: 'desc'}]
 
 function removePublishedWithDrafts(documents) {
@@ -137,7 +142,7 @@ export default withRouterHOC(
       }
     }
 
-    state = {scrollTop: 0, sortOrder: null, layout: null}
+    state = {scrollTop: 0, sortOrder: null, layout: null, templateSelectionIsOpen: false}
 
     constructor(props) {
       super()
@@ -146,6 +151,12 @@ export default withRouterHOC(
       const settingsNamespace = settings.forNamespace(typeName)
       this.sortOrderSetting = settingsNamespace.forKey('sortOrder')
       this.layoutSetting = settingsNamespace.forKey('layout')
+
+      // Passed to rendered <Menu> components. This prevents the "click outside"
+      // functionality from kicking in when pressing the toggle menu button
+      this.templateMenuId = Math.random()
+        .toString(36)
+        .substr(2, 6)
 
       let sync = true
       this.settingsSubscription = combineLatest(
@@ -211,11 +222,15 @@ export default withRouterHOC(
       return true
     }
 
-    handleCreateNew = () => {
-      const {options, router} = this.props
-      const {filter, params} = options
-      const typeName = getTypeNameFromSingleTypeFilter(filter, params)
-      router.navigateIntent('create', {type: typeName})
+    handleSelectInitialValueTemplate = () => {
+      this.setState(prevState => ({
+        templateSelectionIsOpen: !prevState.templateSelectionIsOpen
+      }))
+    }
+
+    // Triggered by clicking "outside" of the menu when open, or after triggering action
+    handleCloseTemplateSelection = () => {
+      this.setState({templateSelectionIsOpen: false})
     }
 
     handleScroll = scrollTop => {
@@ -252,6 +267,72 @@ export default withRouterHOC(
       return `*[${filter}] | order(${toOrderClause(sort)}) [0...50000] {${finalProjection}}`
     }
 
+    renderNewDocumentButton() {
+      const {templateSelectionIsOpen} = this.state
+      const {options, initialValueTemplates} = this.props
+      const {filter, params} = options
+      const typeName = getTypeNameFromSingleTypeFilter(filter, params)
+      const schemaType = schema.get(typeName)
+
+      if (initialValueTemplates.length === 1) {
+        const templateItem = initialValueTemplates[0]
+        const template = getTemplateById(templateItem.templateId)
+        return (
+          <IntentButton
+            intent="create"
+            params={[
+              {
+                type: typeName,
+                template: templateItem.templateId
+              },
+              templateItem.parameters
+            ]}
+            color="primary"
+            icon={PlusIcon}
+          >
+            New {template.title}
+          </IntentButton>
+        )
+      }
+
+      if (initialValueTemplates.length > 1) {
+        return (
+          <>
+            <Button
+              color="primary"
+              icon={PlusIcon}
+              onClick={this.handleSelectInitialValueTemplate}
+              data-menu-button-id={this.templateMenuId} // Makes menu component ignore clicks on button (prevents double-toggling)
+            >
+              New document
+            </Button>
+            <div className={styles.templateMenuContainer}>
+              {templateSelectionIsOpen && (
+                <Menu
+                  id={this.templateMenuId}
+                  items={S.menuItemsFromInitialValueTemplateItems(initialValueTemplates)}
+                  origin="top-right"
+                  onAction={noop} // All items are intents, thus this is not needed
+                  onClose={this.handleCloseTemplateSelection}
+                  onClickOutside={this.handleCloseTemplateSelection}
+                />
+              )}
+            </div>
+          </>
+        )
+      }
+
+      if (!typeName || !isActionEnabled(schemaType, 'create')) {
+        return null
+      }
+
+      return (
+        <IntentButton intent="create" params={{type: typeName}} color="primary" icon={PlusIcon}>
+          New {schemaType.title}
+        </IntentButton>
+      )
+    }
+
     render() {
       const {
         title,
@@ -269,7 +350,6 @@ export default withRouterHOC(
 
       const {filter, params} = options
       const layout = this.state.layout || defaultLayout || 'default'
-      const typeName = getTypeNameFromSingleTypeFilter(filter, params)
       const filterIsSimpleTypeContraint = isSimpleTypeFilter(filter)
       const hasItems = items => items && items.length > 0
       const query = this.buildListQuery()
@@ -321,7 +401,6 @@ export default withRouterHOC(
               const items = removePublishedWithDrafts(result ? result.documents : [])
 
               if (!hasItems(items)) {
-                const schemaType = schema.get(typeName)
                 return (
                   <div className={styles.empty}>
                     <div>
@@ -331,11 +410,7 @@ export default withRouterHOC(
                           : 'No documents matching this filter found'}
                       </h3>
 
-                      {typeName && isActionEnabled(schemaType, 'create') && (
-                        <Button color="primary" icon={PlusIcon} onClick={this.handleCreateNew}>
-                          New {schemaType.title}
-                        </Button>
-                      )}
+                      {this.renderNewDocumentButton()}
                     </div>
                   </div>
                 )
