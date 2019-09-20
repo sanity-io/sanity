@@ -32,10 +32,18 @@ const client = sanityClient({
 
 Initializes a new Sanity Client. Required options are `projectId` and `dataset`.
 
-### Fetch a single document
+### Fetch an entire single document
 
 ```js
 client.getDocument('bike-123').then(bike => {
+  console.log(`${bike.name} (${bike.seats} seats)`)
+})
+```
+
+### Fetch multiple entire documents in one go
+
+```js
+client.getDocuments(['bike123', 'bike345']).then(([bike123, bike345]) => {
   console.log(`${bike.name} (${bike.seats} seats)`)
 })
 ```
