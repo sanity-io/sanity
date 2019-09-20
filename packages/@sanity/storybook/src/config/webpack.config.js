@@ -39,10 +39,13 @@ function getWebpackConfig(baseConfig, env) {
 
   const jsonHackLoader = {
     test: /\.json$/,
+    resourceQuery: /sanityPart=/,
     loader: require.resolve('./jsonHackLoader.js')
   }
 
-  config.module.rules.splice(jsonLoaderAt + 1, 0, jsonHackLoader)
+  if (jsonLoaderAt !== -1) {
+    config.module.rules.splice(jsonLoaderAt + 1, 0, jsonHackLoader)
+  }
 
   config.resolve = Object.assign({}, config.resolve, sanityWpConfig.resolve, {
     alias: Object.assign({}, config.resolve.alias || {}, sanityWpConfig.resolve.alias || {})
