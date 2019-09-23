@@ -172,7 +172,7 @@ export function ensureRootIsBlocks(blocks) {
       return memo
     }
 
-    if (i > 0 && original[i - 1]._type !== 'block') {
+    if (i > 0 && original[i - 1]._type !== 'block' && original[i - 1]._type !== '__block') {
       const block = memo[memo.length - 1]
       block.children.push(node)
       return memo
