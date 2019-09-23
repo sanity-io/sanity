@@ -381,20 +381,20 @@ test('can query for multiple documents', t => {
     .then(t.end)
 })
 
-
 test('preserves the position of requested documents', t => {
   nock(projectHost())
-    .get('/v1/data/doc/foo/abc123,abc321')
+    .get('/v1/data/doc/foo/abc123,abc321,abc456')
     .reply(200, {
       ms: 123,
-      documents: [{_id: 'abc321', mood: 'tense'}]
+      documents: [{_id: 'abc456', mood: 'neutral'}, {_id: 'abc321', mood: 'tense'}]
     })
 
   getClient()
-    .getDocuments(['abc123', 'abc321'])
-    .then(([abc123, abc321]) => {
+    .getDocuments(['abc123', 'abc321', 'abc456'])
+    .then(([abc123, abc321, abc456]) => {
       t.equal(abc123, null, 'first item should be null')
       t.equal(abc321.mood, 'tense', 'data should match')
+      t.equal(abc456.mood, 'neutral', 'data should match')
     })
     .catch(t.ifError)
     .then(t.end)
