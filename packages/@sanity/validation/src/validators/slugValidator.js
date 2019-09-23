@@ -37,7 +37,12 @@ const defaultIsUnique = (slug, options) => {
     `${atPath} == $slug`
   ].join(' && ')
 
-  return client.fetch(`!defined(*[${constraints}][0]._id)`, {docType, draft, published, slug})
+  return client.fetch(`!defined(*[${constraints}][0]._id)`, {
+    docType,
+    draft,
+    published,
+    slug
+  })
 }
 
 function warnOnArraySlug(path) {
