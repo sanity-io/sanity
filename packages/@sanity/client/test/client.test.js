@@ -363,6 +363,43 @@ test('can query for single document', t => {
     .then(t.end)
 })
 
+test('can query for multiple documents', t => {
+  nock(projectHost())
+    .get('/v1/data/doc/foo/abc123,abc321')
+    .reply(200, {
+      ms: 123,
+      documents: [{_id: 'abc123', mood: 'lax'}, {_id: 'abc321', mood: 'tense'}]
+    })
+
+  getClient()
+    .getDocuments(['abc123', 'abc321'])
+    .then(([abc123, abc321]) => {
+      t.equal(abc123.mood, 'lax', 'data should match')
+      t.equal(abc321.mood, 'tense', 'data should match')
+    })
+    .catch(t.ifError)
+    .then(t.end)
+})
+
+test('preserves the position of requested documents', t => {
+  nock(projectHost())
+    .get('/v1/data/doc/foo/abc123,abc321,abc456')
+    .reply(200, {
+      ms: 123,
+      documents: [{_id: 'abc456', mood: 'neutral'}, {_id: 'abc321', mood: 'tense'}]
+    })
+
+  getClient()
+    .getDocuments(['abc123', 'abc321', 'abc456'])
+    .then(([abc123, abc321, abc456]) => {
+      t.equal(abc123, null, 'first item should be null')
+      t.equal(abc321.mood, 'tense', 'data should match')
+      t.equal(abc456.mood, 'neutral', 'data should match')
+    })
+    .catch(t.ifError)
+    .then(t.end)
+})
+
 test('gives http statuscode as error if no body is present on errors', t => {
   nock(projectHost())
     .get('/v1/data/doc/foo/abc123')

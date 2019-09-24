@@ -24,6 +24,12 @@ const getMutationQuery = (options = {}) => {
 const isResponse = event => event.type === 'response'
 const getBody = event => event.body
 
+const indexBy = (docs, attr) =>
+  docs.reduce((indexed, doc) => {
+    indexed[attr(doc)] = doc
+    return indexed
+  }, Object.create(null))
+
 const toPromise = observable => observable.toPromise()
 
 const getQuerySizeLimit = 11264
@@ -51,6 +57,19 @@ module.exports = {
     const observable = this._requestObservable(options).pipe(
       filter(isResponse),
       map(event => event.body.documents && event.body.documents[0])
+    )
+
+    return this.isPromiseAPI() ? toPromise(observable) : observable
+  },
+
+  getDocuments(ids) {
+    const options = {uri: this.getDataUrl('doc', ids.join(',')), json: true}
+    const observable = this._requestObservable(options).pipe(
+      filter(isResponse),
+      map(event => {
+        const indexed = indexBy(event.body.documents || [], doc => doc._id)
+        return ids.map(id => indexed[id] || null)
+      })
     )
 
     return this.isPromiseAPI() ? toPromise(observable) : observable

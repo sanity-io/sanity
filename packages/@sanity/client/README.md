@@ -32,14 +32,6 @@ const client = sanityClient({
 
 Initializes a new Sanity Client. Required options are `projectId` and `dataset`.
 
-### Fetch a single document
-
-```js
-client.getDocument('bike-123').then(bike => {
-  console.log(`${bike.name} (${bike.seats} seats)`)
-})
-```
-
 ### Performing queries
 
 ```js
@@ -82,6 +74,35 @@ The update events which are emitted always contain `mutation`, which is an objec
 By default, the emitted update event will also contain a `result` property, which contains the document with the mutation applied to it. In case of a delete mutation, this property will not be present, however. You can also tell the client not to return the document (to save bandwidth, or in cases where the mutation or the document ID is the only relevant factor) by setting the `includeResult` property to `false` in the options.
 
 Likewise, you can also have the client return the document *before* the mutation was applied, by setting`includePreviousRevision` to `true` in the options, which will include a `previous` property in each emitted object.
+
+### Fetch a single document
+This will fetch a document from the [DOC endpoint](https://www.sanity.io/docs/http-query#the-doc-endpoint). Should be used sparingly and performing a query is usually a better option.
+
+```js
+client.getDocument('bike-123').then(bike => {
+  console.log(`${bike.name} (${bike.seats} seats)`)
+})
+```
+
+### Fetch multiple documents in one go
+This will fetch multiple documents in one request from the [DOC endpoint](https://www.sanity.io/docs/http-query#the-doc-endpoint). Should be used sparingly and performing a query is usually a better option.
+
+```js
+client.getDocuments(['bike123', 'bike345']).then(([bike123, bike345]) => {
+  console.log(`Bike 123: ${bike123.name} (${bike123.seats} seats)`)
+  console.log(`Bike 345: ${bike345.name} (${bike345.seats} seats)`)
+})
+```
+
+Note: Unlike in the HTTP API, the order/position of documents is _preserved_ based on the original array of IDs. If a any of the documents are missing, they will be replaced by a `null` entry in the returned array:
+
+```js
+const ids = ['bike123', 'nonexistent-document', 'bike345']
+client.getDocuments(ids).then(docs => {
+  // the docs array will be:
+  // [{_id: 'bike123', ...}, null, {_id: 'bike345', ...}]
+})
+```
 
 ### Creating documents
 
