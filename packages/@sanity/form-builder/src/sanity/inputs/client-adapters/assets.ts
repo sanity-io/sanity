@@ -7,7 +7,7 @@ import {UploadOptions} from '../../uploads/typedefs'
 
 const MAX_CONCURRENT_UPLOADS = 4
 
-function uploadSanityAsset(assetType, file, options: UploadOptions) {
+function uploadSanityAsset(assetType, file, options: UploadOptions = {}) {
   const extract = options.metadata
   const preserveFilename = options.storeOriginalFilename
   return observableFrom(hashFile(file)).pipe(
