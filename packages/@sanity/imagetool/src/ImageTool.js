@@ -32,7 +32,7 @@ function checkCropBoundaries(value, delta) {
 }
 
 function limitToBoundaries(value, delta) {
-  const {top, right, bottom, left} = value.crop
+  const {top, right, bottom, left} = value.crop || DEFAULT_CROP
 
   const newValue = {...value}
 
