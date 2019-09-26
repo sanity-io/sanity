@@ -3,7 +3,7 @@
 .root {
   min-width: 260px;
   max-width: 320px;
-  background-color: var(--gray-lightest);
+  background-color: color(var(--component-bg) shade(2%));
   height: 100%;
   width: 100%;
   z-index: 1;
