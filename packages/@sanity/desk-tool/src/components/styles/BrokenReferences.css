@@ -1,0 +1,19 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.editor {
+  padding: 0 var(--medium-padding);
+}
+
+.tagList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
+
+.tagItem {
+  margin-right: var(--small-padding);
+  padding: var(--extra-small-padding) var(--small-padding);
+  background: color(var(--state-danger-color) shade(15%));
+  border-radius: var(--border-radius-base);
+}
