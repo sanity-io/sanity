@@ -93,6 +93,48 @@ export default {
       ]
     },
     {
+      name: 'nestedWithDualColumnCTA',
+      title: 'Nested, with dual column CTA',
+      type: 'array',
+      of: [
+        {
+          name: 'localeRichtext',
+          type: 'object',
+          fields: [
+            {
+              title: 'English',
+              name: 'en',
+              type: 'array',
+              of: [
+                {type: 'block'},
+                {type: 'image'},
+                {
+                  name: 'twoColCTA',
+                  type: 'object',
+                  title: 'Two Column CTA',
+                  description: 'Inserts two content blocks.',
+                  fields: [
+                    {
+                      name: 'columnone',
+                      title: 'Column One',
+                      type: 'array',
+                      of: [{type: 'richTextObject'}]
+                    },
+                    {
+                      name: 'columntwo',
+                      title: 'Column Two',
+                      type: 'array',
+                      of: [{type: 'richTextObject'}]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       name: 'readOnlyWithDefaults',
       title: 'Read only with defaults',
       description: 'This is read only',

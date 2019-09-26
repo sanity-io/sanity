@@ -46,6 +46,8 @@ import date from './date'
 import invalidPreviews from './invalidPreviews'
 import actions from './actions'
 import reservedFieldNames from './reservedFieldNames'
+import button from './button'
+import richTextObject from './richTextObject'
 
 export default createSchema({
   name: 'test-examples',
@@ -98,6 +100,8 @@ export default createSchema({
     previewMediaTest,
     invalidPreviews,
     readOnly,
-    empty
+    empty,
+    richTextObject,
+    button
   ])
 })
