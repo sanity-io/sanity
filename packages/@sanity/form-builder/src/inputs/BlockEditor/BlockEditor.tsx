@@ -303,10 +303,17 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
       onFocus,
       setFocus,
       readOnly,
+      renderBlockActions,
       type,
       userIsWritingText
     } = this.props
+    const hasMarkers = markers.filter(marker => marker.path.length > 0).length > 0
     const isEditingNode = (focusPath || []).length > 1
+    const scrollContainerClassNames = [
+      styles.scrollContainer,
+      renderBlockActions || hasMarkers ? styles.hasBlockExtras : null
+    ]
+
     return (
       <div>
         {!readOnly && (
@@ -353,7 +360,7 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
           }
           onActivate={setFocus}
         >
-          <div className={styles.scrollContainer} ref={this.scrollContainer}>
+          <div className={scrollContainerClassNames.join(' ')} ref={this.scrollContainer}>
             <div className={styles.editorWrapper} ref={this.editorWrapper}>
               {this.renderEditor()}
               {isEditingNode && fullscreen && this.renderNodeEditor()}
@@ -371,7 +378,8 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {fullscreen} = this.props
+    const {focusPath, fullscreen, readOnly} = this.props
+    const isFocused = (focusPath || []).length
     return (
       <div className={styles.root}>
         {fullscreen && (
@@ -389,7 +397,7 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
           </Portal>
         )}
         {!fullscreen && (
-          <div>
+          <div className={isFocused && !readOnly ? styles.focus : ''}>
             {this.renderReadOnlyFullscreenButton()}
             {this.renderBlockEditor()}
           </div>
