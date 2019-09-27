@@ -151,8 +151,11 @@ class Toolbar extends React.PureComponent<Props, ToolbarState> {
       <Measure offset scroll onResize={this.handleResize}>
         {({measureRef}) => (
           <div
+            className={`
+              ${styles.root}
+              ${fullscreen ? ` ${styles.fullscreen}` : ''}
+            `}
             ref={measureRef}
-            className={styles.root}
             style={{pointerEvents: isDragging ? 'none' : 'unset'}}
           >
             <div className={styles.primary} ref={this._primaryToolbar}>
