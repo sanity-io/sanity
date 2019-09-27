@@ -329,6 +329,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       type.fields.filter(field => !HIDDEN_FIELDS.includes(field.name)),
       'type.options.isHighlighted'
     )
+    const accept = get(type, 'options.accept', 'image/*')
     const hasAsset = value && value.asset
     const showAdvancedEditButton =
       value && (otherFields.length > 0 || (hasAsset && this.isImageToolEnabled()))
@@ -377,7 +378,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                 icon={UploadIcon}
                 inverted
                 onSelect={this.handleSelectFile}
-                accept={''}
+                accept={accept}
               >
                 Upload
               </FileInputButton>

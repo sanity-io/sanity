@@ -275,6 +275,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       type.fields.filter(field => !HIDDEN_FIELDS.includes(field.name)),
       'type.options.isHighlighted'
     )
+    const accept = get(type, 'options.accept', '')
     const hasAsset = value && value.asset
     return (
       <UploadTargetFieldset
@@ -311,7 +312,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         </div>
         <div className={styles.functions}>
           {!readOnly && (
-            <FileInputButton icon={UploadIcon} onSelect={this.handleSelectFile} accept={''}>
+            <FileInputButton icon={UploadIcon} onSelect={this.handleSelectFile} accept={accept}>
               Upload
             </FileInputButton>
           )}
