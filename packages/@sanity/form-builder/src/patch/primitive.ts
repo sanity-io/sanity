@@ -34,7 +34,9 @@ export default function apply(value, patch) {
     throw new Error(
       `Cannot apply deep operations on primitive values. Received patch with type "${
         patch.type
-      }" and path "${patch.path.join('.')} that targeted the value "${JSON.stringify(value)}"`
+      }" and path "${patch.path
+        .map(path => JSON.stringify(path))
+        .join('.')} that targeted the value "${JSON.stringify(value)}"`
     )
   }
 
