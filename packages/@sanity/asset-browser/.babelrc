@@ -1,0 +1,5 @@
+{
+  "extends": "../../../.babelrc",
+  "presets": ["@babel/react"],
+  "plugins": ["babel-plugin-idx"]
+}

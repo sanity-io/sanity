@@ -1,0 +1,45 @@
+{
+  "name": "@sanity/asset-browser",
+  "version": "0.144.0",
+  "description": "Asset browser used in sanity",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rimraf lib"
+  },
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "dependencies": {
+    "idx": "2.5.6",
+    "immer": "4.0.2",
+    "pluralize": "8.0.0",
+    "react-redux": "7.1.1",
+    "redux": "4.0.4",
+    "redux-observable": "1.2.0",
+    "rxjs": "^6.5.2"
+  },
+  "devDependencies": {
+    "babel-plugin-idx": "2.4.0",
+    "prop-types": "^15.6.0",
+    "redux-devtools-extension": "2.13.8",
+    "rimraf": "^2.6.2"
+  },
+  "peerDependencies": {
+    "react": "^16.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/",
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "asset-browser"
+  ]
+}

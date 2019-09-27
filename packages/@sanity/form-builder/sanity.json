@@ -122,6 +122,10 @@
       "name": "part:@sanity/form-builder/input/block-editor/block-markers-custom-default",
       "implements": "part:@sanity/form-builder/input/block-editor/block-markers-custom",
       "path": "inputs/BlockEditor/nodes/CustomMarkers.js"
+    },
+    {
+      "name": "part:@sanity/form-builder/preview",
+      "path": "Preview"
     }
   ]
 }

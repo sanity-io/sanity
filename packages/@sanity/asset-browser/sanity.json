@@ -1,0 +1,24 @@
+{
+  "paths": {
+    "source": "./src",
+    "compiled": "./lib"
+  },
+  "parts": [
+    {
+      "name": "part:@sanity/asset-browser/context/dispatch",
+      "description": "Asset browser context for dispatching actions"
+    },
+    {
+      "name": "part:@sanity/asset-browser/context/state",
+      "description": "Asset browser context for retrieving state"
+    },
+    {
+      "implements": "part:@sanity/asset-browser/context/dispatch",
+      "path": "contexts/AssetBrowserDispatchContext.js"
+    },
+    {
+      "implements": "part:@sanity/asset-browser/context/state",
+      "path": "contexts/AssetBrowserStateContext.js"
+    }
+  ]
+}

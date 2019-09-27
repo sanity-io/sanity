@@ -1,5 +1,12 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+.checkboxContainer {
+  position: absolute;
+  z-index: 10;
+  top: -0.7em;
+  left: 0.4em;
+}
+
 .image {
   position: absolute;
   top: 0;
@@ -7,8 +14,7 @@
   vertical-align: bottom;
   box-sizing: border-box;
   background-color: var(--body-bg);
-  background-image:
-    linear-gradient(45deg, var(--checkerboard-color) 25%, transparent 25%),
+  background-image: linear-gradient(45deg, var(--checkerboard-color) 25%, transparent 25%),
     linear-gradient(-45deg, var(--checkerboard-color) 25%, transparent 25%),
     linear-gradient(45deg, transparent 75%, var(--checkerboard-color) 75%),
     linear-gradient(-45deg, transparent 75%, var(--checkerboard-color) 75%);
@@ -25,10 +31,6 @@
   overflow: hidden;
   cursor: default;
   flex-wrap: nowrap;
-}
-
-.padder {
-  display: block;
 }
 
 .menuContainer {
@@ -53,17 +55,6 @@
   }
 }
 
-.spinnerContainer {
-  position: absolute;
-  z-index: 9;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: color(var(--component-bg) a(50%));
-  color: var(--text-color);
-}
-
 .menuItem {
   display: flex;
   align-items: center;
@@ -74,35 +65,17 @@
   color: var(--state-danger-color);
 }
 
-.intentLink {
-  color: inherit;
-  text-decoration: inherit;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: var(--small-padding);
+.padder {
+  display: block;
 }
 
-.dialogContent {
-  display: grid;
-  grid-gap: var(--medium-padding);
-
-  @media (--screen-medium) {
-    grid-template-columns: max-content 1fr;
-  }
-}
-
-.dialogSubtitle {
-  margin: 0;
-  padding: 0;
-}
-
-.referringDocumentsDescription {
-  composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
-  margin-bottom: var(--medium-padding);
-}
-
-.openDocLink {
-  font-size: var(--font-size-small);
-  white-space: nowrap;
+.spinnerContainer {
+  position: absolute;
+  z-index: 9;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: color(var(--component-bg) a(50%));
+  color: var(--text-color);
 }

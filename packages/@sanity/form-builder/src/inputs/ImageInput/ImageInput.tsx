@@ -17,12 +17,12 @@ import {ResolvedUploader, Uploader, UploaderResolver} from '../../sanity/uploads
 import WithMaterializedReference from '../../utils/WithMaterializedReference'
 import ImageToolInput from '../ImageToolInput'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
-import SelectAsset from './SelectAsset'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import ImageTool from '@sanity/imagetool'
+import AssetBrowser from '@sanity/asset-browser'
 import {Observable} from 'rxjs'
 import {Path} from '../../typedefs/path'
 
@@ -330,6 +330,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       'type.options.isHighlighted'
     )
     const accept = get(type, 'options.accept', 'image/*')
+
     const hasAsset = value && value.asset
     const showAdvancedEditButton =
       value && (otherFields.length > 0 || (hasAsset && this.isImageToolEnabled()))
@@ -409,10 +410,13 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           <div className={styles.fieldsWrapper}>{this.renderFields(highlightedFields)}</div>
         )}
         {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
+
         {isSelectAssetOpen && (
-          <Dialog title="Select image" onClose={this.handleCloseSelectAsset} isOpen>
-            <SelectAsset onSelect={this.handleSelectAsset} />
-          </Dialog>
+          <AssetBrowser
+            customAssetSelect={type.assetSelectComponent}
+            onClose={this.handleCloseSelectAsset}
+            onSelect={this.handleSelectAsset}
+          />
         )}
       </UploadTargetFieldset>
     )

@@ -23,6 +23,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
+    "@sanity/asset-browser": "0.144.0",
     "@sanity/block-tools": "0.144.0",
     "@sanity/generate-help-url": "0.144.0",
     "@sanity/image-url": "0.140.15",
