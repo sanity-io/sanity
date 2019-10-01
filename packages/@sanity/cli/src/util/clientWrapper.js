@@ -36,8 +36,8 @@ const authErrors = () => ({
     cfg.delete('authType')
     cfg.delete('authToken')
 
-    // @todo Trigger re-authentication?
-    return err
+    // @todo trigger reauthentication automatically?
+    return new Error('You\'ve been logged out. Log back in again with "sanity login"')
   }
 })
 
