@@ -1,7 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {getTemplateById} from '@sanity/base/initial-value-templates'
-import S from '@sanity/base/structure-builder'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import schema from 'part:@sanity/base/schema'
 import PlusIcon from 'part:@sanity/base/plus-icon'
@@ -16,12 +14,14 @@ import {collate, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
 
 import {combineLatest} from 'rxjs'
+import {map, tap} from 'rxjs/operators'
 import settings from '../settings'
 import styles from './styles/DocumentsListPane.css'
 import listStyles from './styles/ListView.css'
 import InfiniteList from './InfiniteList'
 import PaneItem from './PaneItem'
-import {map, tap} from 'rxjs/operators'
+import S from '@sanity/base/structure-builder'
+import {getTemplateById} from '@sanity/base/initial-value-templates'
 
 const noop = () => null
 const DEFAULT_ORDERING = [{field: '_createdAt', direction: 'desc'}]
@@ -267,72 +267,6 @@ export default withRouterHOC(
       return `*[${filter}] | order(${toOrderClause(sort)}) [0...50000] {${finalProjection}}`
     }
 
-    renderNewDocumentButton() {
-      const {templateSelectionIsOpen} = this.state
-      const {options, initialValueTemplates} = this.props
-      const {filter, params} = options
-      const typeName = getTypeNameFromSingleTypeFilter(filter, params)
-      const schemaType = schema.get(typeName)
-
-      if (initialValueTemplates.length === 1) {
-        const templateItem = initialValueTemplates[0]
-        const template = getTemplateById(templateItem.templateId)
-        return (
-          <IntentButton
-            intent="create"
-            params={[
-              {
-                type: typeName,
-                template: templateItem.templateId
-              },
-              templateItem.parameters
-            ]}
-            color="primary"
-            icon={PlusIcon}
-          >
-            New {template.title}
-          </IntentButton>
-        )
-      }
-
-      if (initialValueTemplates.length > 1) {
-        return (
-          <>
-            <Button
-              color="primary"
-              icon={PlusIcon}
-              onClick={this.handleSelectInitialValueTemplate}
-              data-menu-button-id={this.templateMenuId} // Makes menu component ignore clicks on button (prevents double-toggling)
-            >
-              New document
-            </Button>
-            <div className={styles.templateMenuContainer}>
-              {templateSelectionIsOpen && (
-                <Menu
-                  id={this.templateMenuId}
-                  items={S.menuItemsFromInitialValueTemplateItems(initialValueTemplates)}
-                  origin="top-right"
-                  onAction={noop} // All items are intents, thus this is not needed
-                  onClose={this.handleCloseTemplateSelection}
-                  onClickOutside={this.handleCloseTemplateSelection}
-                />
-              )}
-            </div>
-          </>
-        )
-      }
-
-      if (!typeName || !isActionEnabled(schemaType, 'create')) {
-        return null
-      }
-
-      return (
-        <IntentButton intent="create" params={{type: typeName}} color="primary" icon={PlusIcon}>
-          New {schemaType.title}
-        </IntentButton>
-      )
-    }
-
     render() {
       const {
         title,
@@ -353,7 +287,6 @@ export default withRouterHOC(
       const filterIsSimpleTypeContraint = isSimpleTypeFilter(filter)
       const hasItems = items => items && items.length > 0
       const query = this.buildListQuery()
-
       return (
         <DefaultPane
           title={title}
