@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import {negate, get} from 'lodash'
+import {negate} from 'lodash'
 import shallowEquals from 'shallow-equals'
 import classNames from 'classnames'
 import Menu from 'part:@sanity/components/menus/default'
@@ -8,7 +8,6 @@ import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import {IntentLink} from 'part:@sanity/base/router'
 import ScrollContainer from 'part:@sanity/components/utilities/scroll-container'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
-import DefaultPreview from 'part:@sanity/components/previews/default'
 import Styleable from '../utilities/Styleable'
 import defaultStyles from './styles/DefaultPane.css'
 import S from '@sanity/base/structure-builder'
@@ -303,8 +302,7 @@ class Pane extends React.Component {
       return null
     }
     const params = item.intent.params
-    const schemaType = S.documentTypeListItem(params.type).spec.schemaType
-    const icon = schemaType.icon
+    const Icon = item.icon
     return (
       <IntentLink
         className={styles.initialValueTemplateDropDownItem}
@@ -315,7 +313,9 @@ class Pane extends React.Component {
           <div>{item.title}</div>
           <div className={styles.initialValueTemplateSubtitle}>{params.type}</div>
         </div>
-        <div className={styles.initialValueTemplateDropDownItemIcon}>{icon()}</div>
+        <div className={styles.initialValueTemplateDropDownItemIcon}>
+          <Icon />
+        </div>
       </IntentLink>
     )
   }
@@ -328,10 +328,9 @@ class Pane extends React.Component {
     const {styles, initialValueTemplates} = this.props
     const items = S.menuItemsFromInitialValueTemplateItems(initialValueTemplates)
     const Icon = action.icon
-
     return (
       <div className={styles.menuWrapper} key={getActionKey(action, i)}>
-        {action.action != 'toggleTemplateSelectionMenu' && (
+        {action.action !== 'toggleTemplateSelectionMenu' && (
           <button
             className={styles.actionButton}
             data-menu-button-id={this.templateMenuId}
