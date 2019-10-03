@@ -1,9 +1,7 @@
-/* eslint-disable complexity */
 import React from 'react'
 import PropTypes from 'prop-types'
 import CheckCircleIcon from 'part:@sanity/base/circle-check-icon'
 import WarningIcon from 'part:@sanity/base/warning-icon'
-import ErrorIcon from 'part:@sanity/base/error-icon'
 import InfoIcon from 'part:@sanity/base/info-icon'
 import classNames from 'classnames'
 import styles from './styles/PanePopover.css'
@@ -11,9 +9,9 @@ import styles from './styles/PanePopover.css'
 export default class PanePopover extends React.PureComponent {
   static propTypes = {
     children: PropTypes.node,
-    icon: PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.bool]),
+    icon: PropTypes.oneOfType([PropTypes.node, PropTypes.bool]),
     kind: PropTypes.oneOf(['info', 'warning', 'error', 'success', 'neutral']),
-    title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+    title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
     subtitle: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
   }
@@ -21,9 +19,7 @@ export default class PanePopover extends React.PureComponent {
   static defaultProps = {
     children: null,
     icon: null,
-    kind: 'info',
-    title: 'Pane Popover',
-    subtitle: 'Popover content'
+    kind: 'info'
   }
 
   DEFAULT_ICONS = {
@@ -33,34 +29,30 @@ export default class PanePopover extends React.PureComponent {
     error: <WarningIcon />
   }
 
-  snackIcon = () => {
+  iconKind = () => {
     const {icon, kind} = this.props
     if (typeof icon === 'boolean' && icon) return this.DEFAULT_ICONS[kind]
-    if (typeof icon === 'object' || typeof icon === 'string') return icon
+    if (typeof icon === 'object') return icon
     return undefined
   }
 
   render() {
     const {children, icon, id, kind, title, subtitle} = this.props
+    const Icon = this.iconKind()
 
-    const role = () => {
-      if (kind === 'success') return 'status'
-      if (kind === 'info') return 'log'
-      return 'alert'
-    }
     return (
       <div
         aria-label={kind}
-        aria-describedby={`snackbarTitle-${kind}-${id}`}
+        aria-describedby={`popoverTitle-${kind}-${id}`}
         className={classNames([styles.root, styles.dialog])}
         data-kind={kind}
       >
         <div className={styles.inner}>
           <div className={styles.content}>
-            <div id={`snackbarTitle-${kind}-${id}`} className={styles.title}>
+            <div id={`popoverTitle-${kind}-${id}`} className={styles.title}>
               {icon && (
                 <div role="img" aria-hidden className={styles.icon}>
-                  {this.snackIcon()}
+                  {Icon}
                 </div>
               )}
               {title}
