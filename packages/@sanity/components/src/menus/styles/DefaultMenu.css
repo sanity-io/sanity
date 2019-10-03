@@ -38,11 +38,14 @@
 }
 
 .iconContainer {
+  display: flex;
+  align-items: center;
   margin-right: 0.5em;
 }
 
 .link {
-  display: block;
+  display: flex;
+  align-items: center;
   position: relative;
   line-height: 3em;
   padding: 0 1em;
