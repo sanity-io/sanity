@@ -12,7 +12,6 @@ import PanePopover from 'part:@sanity/components/dialogs/pane-popover'
 import styles from './styles/BrokenReferences.css'
 import ReferringDocumentsList from './ReferringDocumentsList'
 
-// @todo get some designers to pretty this up (and reword it)
 function BrokenRefs(props) {
   const {documents, type, schema} = props
   const schemaType = schema.get(type)
@@ -106,9 +105,7 @@ const BrokenReferences = streamingComponent(props$ =>
         map(docs => docs.filter(isMissingPublished)),
         map(broken =>
           broken.length > 0 ? (
-            <BrokenRefs documents={broken} type={type} schema={schema}>
-              eek
-            </BrokenRefs>
+            <BrokenRefs documents={broken} type={type} schema={schema} />
           ) : (
             props.children
           )
