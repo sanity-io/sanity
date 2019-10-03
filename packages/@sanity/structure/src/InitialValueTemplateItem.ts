@@ -131,10 +131,10 @@ export function menuItemsFromInitialValueTemplateItems(
     const title = item.title || (tpl && tpl.title) || 'Create new'
     const params = pickBy({type: tpl && tpl.schemaType, template: item.templateId}, Boolean)
     const intentParams: IntentParams = item.parameters ? [params, item.parameters] : params
-
+    
     return new MenuItemBuilder()
       .title(title)
-      .icon(getPlusIcon())
+      .icon((tpl && tpl.icon) || getPlusIcon())
       .intent({
         type: 'create',
         params: intentParams
