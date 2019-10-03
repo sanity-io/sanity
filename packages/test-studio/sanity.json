@@ -40,7 +40,8 @@
     "@sanity/production-preview",
     "dashboard-widget-cats",
     "dashboard-widget-document-count",
-    "dashboard-widget-document-list"
+    "dashboard-widget-document-list",
+    "mux-input"
   ],
   "parts": [
     {

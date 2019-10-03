@@ -48,6 +48,7 @@ import actions from './actions'
 import reservedFieldNames from './reservedFieldNames'
 import button from './button'
 import richTextObject from './richTextObject'
+import mux from './mux'
 
 export default createSchema({
   name: 'test-examples',
@@ -102,6 +103,7 @@ export default createSchema({
     readOnly,
     empty,
     richTextObject,
-    button
+    button,
+    mux
   ])
 })
