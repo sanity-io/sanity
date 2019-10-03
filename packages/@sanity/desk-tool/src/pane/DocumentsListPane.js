@@ -2,17 +2,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import schema from 'part:@sanity/base/schema'
-import PlusIcon from 'part:@sanity/base/plus-icon'
-import Menu from 'part:@sanity/components/menus/default'
-import Button from 'part:@sanity/components/buttons/default'
-import IntentButton from 'part:@sanity/components/buttons/intent'
 import DefaultPane from 'part:@sanity/components/panes/default'
 import QueryContainer from 'part:@sanity/base/query-container'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import {collate, getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
-
 import {combineLatest} from 'rxjs'
 import {map, tap} from 'rxjs/operators'
 import settings from '../settings'
@@ -20,8 +14,6 @@ import styles from './styles/DocumentsListPane.css'
 import listStyles from './styles/ListView.css'
 import InfiniteList from './InfiniteList'
 import PaneItem from './PaneItem'
-import S from '@sanity/base/structure-builder'
-import {getTemplateById} from '@sanity/base/initial-value-templates'
 
 const noop = () => null
 const DEFAULT_ORDERING = [{field: '_createdAt', direction: 'desc'}]
@@ -342,8 +334,6 @@ export default withRouterHOC(
                           ? 'No documents of this type found'
                           : 'No documents matching this filter found'}
                       </h3>
-
-                      {this.renderNewDocumentButton()}
                     </div>
                   </div>
                 )
