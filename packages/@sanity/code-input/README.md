@@ -32,9 +32,10 @@ Note that the above only works if you import and use the `all:part:@sanity/base/
 
 ## Options
 
-- `language` - Default language for this coe field
+- `language` - Default language for this code field
 - `languageAlternatives` - Array of languages that should be available
 - `theme` - Name of the theme to use. Possible values: `['github', 'monokai', 'terminal', 'tomorrow']`
+- `withFilename` - Boolean option to display input field for filename
 
 ```js
 // ...fields...
