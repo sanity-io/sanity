@@ -17,7 +17,7 @@ export function generateCommandsDocumentation(commandGroups, group = 'default') 
   const prefix = group === 'default' ? '' : ` ${group}`
 
   const rows = [
-    `usage: sanity${prefix} [-v|--version] [-d|--debug] [-h|--help] <command> [<args>]`,
+    `usage: sanity${prefix} [--default] [-v|--version] [-d|--debug] [-h|--help] <command> [<args>]`,
     '',
     'Commands:'
   ]
