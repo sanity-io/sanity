@@ -32,6 +32,7 @@ export default async function initSanity(args, context) {
   const print = unattended ? noop : output.print
   const specifiedOutputPath = cliFlags['output-path']
   let reconfigure = cliFlags.reconfigure
+  let defaultSetup
 
   // Check if we have a project manifest already
   const manifestPath = path.join(workDir, 'sanity.json')
@@ -118,7 +119,8 @@ export default async function initSanity(args, context) {
       projectId,
       displayName,
       dataset: flags.dataset,
-      aclMode: flags.visibility
+      aclMode: flags.visibility,
+      default: flags.default
     },
     context
   )
@@ -355,6 +357,14 @@ export default async function initSanity(args, context) {
       ]
     })
 
+    if (!flags.default) {
+      debug('Prompt for default setup')
+      output.print(
+        'We can configure your project with a default dataset name (production) and visibility mode (public).\nSee docs for more info: https://sanity.io/docs/datasets.'
+      )
+      defaultSetup = await promptDefaultSetup(prompt)
+    }
+
     if (selected === 'new') {
       debug('User wants to create a new project, prompting for name')
       return createProject(apiClient, {
@@ -377,6 +387,9 @@ export default async function initSanity(args, context) {
   }
 
   async function getOrCreateDataset(opts) {
+    if (unattended || defaultSetup || opts.default) {
+      return {datasetName: 'production'}
+    }
     if (opts.dataset && isCI) {
       return {datasetName: opts.dataset}
     }
@@ -398,6 +411,10 @@ export default async function initSanity(args, context) {
     const getAclMode = () => {
       if (opts.aclMode) {
         return opts.aclMode
+      }
+
+      if (defaultSetup || opts.default) {
+        return 'public'
       }
 
       if (unattended || !privateDatasetsAllowed) {
@@ -589,6 +606,14 @@ export default async function initSanity(args, context) {
 
     return cliFlags
   }
+}
+
+function promptDefaultSetup(prompt) {
+  return prompt.single({
+    type: 'confirm',
+    message: 'Want a default configuration?',
+    default: true
+  })
 }
 
 function promptImplicitReconfigure(prompt) {
