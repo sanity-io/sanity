@@ -120,7 +120,8 @@ export function createSanityManifest(data, opts) {
         '@sanity/components',
         '@sanity/default-layout',
         '@sanity/default-login',
-        '@sanity/desk-tool'
+        '@sanity/desk-tool',
+        '@sanity/vision'
       ],
 
       parts: [
