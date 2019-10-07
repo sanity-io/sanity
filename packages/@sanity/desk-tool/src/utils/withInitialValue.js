@@ -161,7 +161,11 @@ export default function withInitialValue(Pane) {
             return isResolving ? (
               <LoadingPane {...this.props} title={title} message="Resolving initial value…" />
             ) : (
-              <BrokenReferences document={initialValue}>
+              <BrokenReferences
+                document={initialValue}
+                type={this.props.options.type}
+                schema={schema}
+              >
                 <Pane {...this.props} initialValue={initialValue} />
               </BrokenReferences>
             )
