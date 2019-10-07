@@ -113,12 +113,15 @@ export default async function initSanity(args, context) {
 
   // Now let's pick or create a dataset
   debug('Prompting user to select or create a dataset')
-  const {datasetName} = await getOrCreateDataset({
+  const {datasetName} = await getOrCreateDataset(
+    {
     projectId,
     displayName,
     dataset: flags.dataset,
     aclMode: flags.visibility
-  })
+    },
+    context
+  )
 
   debug(`Dataset with name ${datasetName} selected`)
 
@@ -426,7 +429,9 @@ export default async function initSanity(args, context) {
       })
 
       const aclMode = await getAclMode()
+      const spinner = context.output.spinner('Creating dataset...').start()
       await client.datasets.create(name, {aclMode})
+      spinner.succeed()
       return {datasetName: name}
     }
 
