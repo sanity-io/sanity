@@ -7,12 +7,14 @@ import {uniq, uniqBy} from 'lodash'
 import DefaultPane from 'part:@sanity/components/panes/default'
 import {observePaths} from 'part:@sanity/base/preview'
 import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
+import FormBuilder from 'part:@sanity/form-builder'
+import PanePopover from 'part:@sanity/components/dialogs/pane-popover'
+import styles from './styles/BrokenReferences.css'
 import ReferringDocumentsList from './ReferringDocumentsList'
 
-// @todo get some designers to pretty this up (and reword it)
 function BrokenRefs(props) {
-  const {documents} = props
-
+  const {documents, type, schema} = props
+  const schemaType = schema.get(type)
   const {unpublished, nonExistent} = documents.reduce(
     (groups, doc) => {
       const group = doc.hasDraft ? groups.unpublished : groups.nonExistent
@@ -22,50 +24,62 @@ function BrokenRefs(props) {
     {unpublished: [], nonExistent: []}
   )
 
-  const isMultiDoc = documents.length > 1
-  const documentsText = isMultiDoc ? 'other documents' : 'another document'
-  const actionDocText = isMultiDoc ? 'these other documents' : 'the other document'
-  let missingText = 'do not exist'
-  let actionText = 'must be created'
-  if (unpublished.length > 0 && nonExistent.length > 0) {
-    missingText = 'do not exist and/or are not published'
-    actionText = 'must first be created and published'
-  } else if (unpublished.length > 0) {
-    missingText = `${isMultiDoc ? 'are' : 'is'} not published`
-    actionText = 'must first be published'
-  }
-
+  const renderNonExisting = nonExistent.length > 0
+  const renderUnpublished = !renderNonExisting
   return (
-    <DefaultPane title="Broken references">
-      <p>
-        The initial value for this document references {documentsText} that {missingText}. In order
-        to create <em>this</em> document, {actionDocText} {actionText}.
-      </p>
-
-      {unpublished.length > 0 && (
-        <>
-          <h2>Unpublished documents:</h2>
-          <ReferringDocumentsList
-            documents={unpublished.map(({id, type}) => ({_id: `drafts.${id}`, _type: type}))}
-          />
-        </>
-      )}
-
-      {nonExistent.length > 0 && (
-        <>
-          <h2>Non-existent document IDs:</h2>
-          <ul>
-            {nonExistent.map(doc => (
-              <li key={doc.id}>{doc.id}</li>
-            ))}
-          </ul>
-        </>
-      )}
+    <DefaultPane title={`New ${type}`} contentMaxWidth={672} isScrollable={false}>
+      <div className={styles.brokenReferences}>
+        {renderNonExisting && (
+          <PanePopover
+            icon
+            kind="error"
+            id="missing-references"
+            title="Missing references"
+            subtitle={`The new document can only reference existing documents. ${
+              nonExistent.length === 1 ? 'A document' : 'Documents'
+            } with the following ID${nonExistent.length === 1 ? ' was' : 's were'} not found:`}
+          >
+            <ul className={styles.tagList}>
+              {nonExistent.map(doc => (
+                <li className={styles.tagItem} key={doc.id}>
+                  {doc.id}
+                </li>
+              ))}
+            </ul>
+          </PanePopover>
+        )}
+        {renderUnpublished && (
+          <PanePopover
+            icon
+            kind="warning"
+            id="unpublished-documents"
+            title="Unpublished references"
+            subtitle={`A document can only refer to published documents. Publish the following ${
+              unpublished.length === 1 ? 'draft' : 'drafts'
+            } before creating
+            a new document.`}
+          >
+            <ReferringDocumentsList
+              documents={unpublished.map(({id, type, hasDraft}) => ({
+                _id: `drafts.${id}`,
+                _type: type,
+                _hasDraft: hasDraft
+              }))}
+            />
+          </PanePopover>
+        )}
+      </div>
+      <form className={styles.editor}>
+        <FormBuilder readOnly type={schemaType} schema={schema} />
+      </form>
     </DefaultPane>
   )
 }
 
 BrokenRefs.propTypes = {
+  schema: PropTypes.any,
+  type: PropTypes.any,
+  document: PropTypes.any,
   documents: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
@@ -79,7 +93,7 @@ const BrokenReferences = streamingComponent(props$ =>
   props$.pipe(
     switchMap(props => {
       const ids = findReferences(props.document)
-
+      const {type, schema} = props
       if (!ids.length) {
         return of(props.children)
       }
@@ -90,7 +104,11 @@ const BrokenReferences = streamingComponent(props$ =>
         filter(docs => docs.length === ids.length),
         map(docs => docs.filter(isMissingPublished)),
         map(broken =>
-          broken.length > 0 ? <BrokenRefs documents={broken}>eek</BrokenRefs> : props.children
+          broken.length > 0 ? (
+            <BrokenRefs documents={broken} type={type} schema={schema} />
+          ) : (
+            props.children
+          )
         )
       )
     })

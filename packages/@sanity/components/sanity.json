@@ -291,6 +291,10 @@
       "description": "Popover styling"
     },
     {
+      "name": "part:@sanity/components/dialogs/pane-popover",
+      "description": "A pane popover dialog"
+    },
+    {
       "name": "part:@sanity/components/snackbar/default",
       "description": "Deprecated snackbar."
     },
@@ -511,35 +515,35 @@
       "path": "radiobutton/RadioButtonDefault.js"
     },
     {
-      "implements":  "part:@sanity/components/toggles/button",
+      "implements": "part:@sanity/components/toggles/button",
       "path": "toggles/ToggleButton.js"
     },
     {
-      "implements":  "part:@sanity/components/formfields/default",
+      "implements": "part:@sanity/components/formfields/default",
       "path": "formfields/DefaultFormField.js"
     },
     {
-      "implements":  "part:@sanity/components/labels/default",
+      "implements": "part:@sanity/components/labels/default",
       "path": "labels/DefaultLabel.js"
     },
     {
-      "implements":  "part:@sanity/components/textareas/default",
+      "implements": "part:@sanity/components/textareas/default",
       "path": "textareas/DefaultTextArea.js"
     },
     {
-      "implements":  "part:@sanity/components/textinputs/default",
+      "implements": "part:@sanity/components/textinputs/default",
       "path": "textinputs/DefaultTextInput.js"
     },
     {
-      "implements":  "part:@sanity/components/textfields/default",
+      "implements": "part:@sanity/components/textfields/default",
       "path": "textfields/DefaultTextField.js"
     },
     {
-      "implements":  "part:@sanity/components/textfields/search",
+      "implements": "part:@sanity/components/textfields/search",
       "path": "textfields/SearchField.js"
     },
     {
-      "implements":  "part:@sanity/components/tags/textfield",
+      "implements": "part:@sanity/components/tags/textfield",
       "path": "tags/TextField.js"
     },
     {
@@ -591,29 +595,34 @@
       "path": "selects/styles/StyleSelect.css"
     },
     {
-      "implements":  "part:@sanity/components/dialogs/default",
+      "implements": "part:@sanity/components/dialogs/default",
       "path": "dialogs/DefaultDialog.js"
     },
     {
-      "implements":  "part:@sanity/components/dialogs/content",
+      "implements": "part:@sanity/components/dialogs/content",
       "path": "dialogs/DialogContent.js"
     },
     {
-      "implements":  "part:@sanity/components/dialogs/confirm",
+      "implements": "part:@sanity/components/dialogs/confirm",
       "path": "dialogs/ConfirmDialog.js"
     },
     {
-      "implements":  "part:@sanity/components/dialogs/fullscreen",
+      "implements": "part:@sanity/components/dialogs/fullscreen",
       "path": "dialogs/FullscreenDialog.js"
     },
     {
-      "implements":  "part:@sanity/components/dialogs/popover",
+      "implements": "part:@sanity/components/dialogs/popover",
       "path": "dialogs/PopOver.js"
     },
     {
-      "implements":  "part:@sanity/components/dialogs/popover-style",
+      "implements": "part:@sanity/components/dialogs/pane-popover",
+      "path": "dialogs/PanePopover.js"
+    },
+    {
+      "implements": "part:@sanity/components/dialogs/popover-style",
       "path": "dialogs/styles/PopOver.css"
     },
+
     {
       "implements": "part:@sanity/components/fieldsets/default",
       "path": "fieldsets/DefaultFieldset.js"
@@ -625,6 +634,10 @@
     {
       "implements": "part:@sanity/components/snackbar/item",
       "path": "snackbar/SnackbarItem.js"
+    },
+    {
+      "implements": "part:@sanity/components/snackbar/dialog",
+      "path": "snackbar/SnackbarDialog.js"
     },
     {
       "implements": "part:@sanity/components/snackbar/provider",
@@ -779,15 +792,15 @@
       "path": "tags/styles/TextField.css"
     },
     {
-      "implements":  "part:@sanity/components/dialogs/fullscreen-style",
+      "implements": "part:@sanity/components/dialogs/fullscreen-style",
       "path": "dialogs/styles/FullscreenDialog.css"
     },
     {
-      "implements":  "part:@sanity/components/dialogs/default-style",
+      "implements": "part:@sanity/components/dialogs/default-style",
       "path": "dialogs/styles/DefaultDialog.css"
     },
     {
-      "implements":  "part:@sanity/components/dialogs/content-style",
+      "implements": "part:@sanity/components/dialogs/content-style",
       "path": "dialogs/styles/DialogContent.css"
     },
     {

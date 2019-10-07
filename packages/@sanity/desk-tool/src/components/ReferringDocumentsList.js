@@ -1,10 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {List as DefaultList, Item as DefaultItem} from 'part:@sanity/components/lists/default'
-import styles from './styles/ReferringDocumentsList.css'
 import Preview from 'part:@sanity/base/preview'
 import {IntentLink} from 'part:@sanity/base/router'
 import schema from 'part:@sanity/base/schema'
+import styles from './styles/ReferringDocumentsList.css'
+import DraftStatus from './DraftStatus'
 
 export default function ReferringDocumentsList(props) {
   const {documents} = props
@@ -21,6 +22,7 @@ export default function ReferringDocumentsList(props) {
                 params={{id: document._id, type: document._type}}
               >
                 <Preview value={document} type={schemaType} />
+                {document._hasDraft && <DraftStatus />}
               </IntentLink>
             ) : (
               <div>

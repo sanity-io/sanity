@@ -1,3 +1,4 @@
+@import 'part:@sanity/base/theme/variables-style';
 
 .root {
   composes: root from 'part:@sanity/components/lists/default-style';
@@ -5,9 +6,17 @@
 
 .item {
   composes: lineBetween from 'part:@sanity/components/lists/default-item-style';
-  padding: 1px 0;
+  background: var(--white);
+  padding: var(--medium-padding);
+  border-radius: var(--border-radius-base);
+  color: inherit;
+  margin-bottom: var(--medium-padding);
 }
 
 .link {
   color: inherit;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
