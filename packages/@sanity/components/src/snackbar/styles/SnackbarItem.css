@@ -1,4 +1,4 @@
-@import "part:@sanity/base/theme/variables-style";
+@import 'part:@sanity/base/theme/variables-style';
 
 .root {
   position: fixed;
@@ -21,26 +21,26 @@
 .inner {
   position: relative;
   border-radius: var(--border-radius-large);
-  composes: shadow-1dp from "part:@sanity/base/theme/shadows-style";
+  composes: shadow-1dp from 'part:@sanity/base/theme/shadows-style';
   line-height: 1.3125;
 }
 
-.root[data-kind="info"] .inner {
+.root[data-kind='info'] .inner {
   background-color: var(--state-info-color);
   color: var(--state-info-color--inverted);
 }
 
-.root[data-kind="warning"] .inner {
+.root[data-kind='warning'] .inner {
   background-color: var(--state-warning-color);
   color: var(--state-warning-color--inverted);
 }
 
-.root[data-kind="success"] .inner {
+.root[data-kind='success'] .inner {
   background-color: var(--state-success-color);
   color: var(--state-success-color--inverted);
 }
 
-.root[data-kind="error"] .inner {
+.root[data-kind='error'] .inner {
   background-color: var(--state-danger-color);
   color: var(--state-danger-color--inverted);
 }
@@ -92,20 +92,20 @@
 }
 
 @media (hover: hover) {
-  .buttonContainer [class^="DefaultButton_root"]:hover {
+  .buttonContainer [class^='DefaultButton_root']:hover {
     background-color: transparent !important;
   }
 }
 
-.actionButtonContainer [class^="DefaultButton_inner"] {
+.actionButtonContainer [class^='DefaultButton_inner'] {
   padding: var(--medium-padding) var(--small-padding);
 }
 
-.closeButtonContainer [class^="DefaultButton_inner"] {
+.closeButtonContainer [class^='DefaultButton_inner'] {
   padding: calc(var(--medium-padding) - 2px);
 }
 
-.actionButtonContainer:first-child [class*=inner] {
+.actionButtonContainer:first-child [class*='inner'] {
   padding: var(--medium-padding) calc(var(--medium-padding) - 2px);
 }
 
