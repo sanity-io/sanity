@@ -11,7 +11,8 @@ export const SUPPORTED_LANGUAGES = [
   {title: 'PHP', value: 'php'},
   {title: 'Python', value: 'python'},
   {title: 'sh', value: 'sh'},
-  {title: 'Plain text', value: 'text'}
+  {title: 'Plain text', value: 'text'},
+  {title: 'GROQ', value: 'groq'}
 ]
 
 export const LANGUAGE_ALIASES = {js: 'javascript'}

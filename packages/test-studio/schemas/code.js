@@ -24,7 +24,9 @@ export default {
           {title: 'text', value: 'text'},
           {title: 'Python', value: 'python'},
           {title: 'SASS', value: 'sass'},
-          {title: 'SCSS', value: 'scss'}
+          {title: 'SCSS', value: 'scss'},
+          {title: 'GROQ', value: 'groq'},
+          {title: 'My super custom language', value: 'custom'}
         ]
       }
     },
