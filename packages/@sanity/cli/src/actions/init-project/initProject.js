@@ -382,7 +382,7 @@ export default async function initSanity(args, context) {
   async function getOrCreateDataset(opts) {
     if (showDefaultConfigPrompt) {
       output.print(
-        'Your content will be stored in a dataset that can be public or private, depending on\nwhether you want to query your content with or without authentication.\nThe default configuration has a public dataset named production.'
+        'Your content will be stored in a dataset that can be public or private, depending on\nwhether you want to query your content with or without authentication.\nThe default configuration has a public dataset named "production".'
       )
       defaultConfig = await promptForDefaultConfig(prompt)
     }
