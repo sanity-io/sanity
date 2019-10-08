@@ -213,7 +213,7 @@ export default class CodeInput extends PureComponent {
       if (!SUPPORTED_LANGUAGES.find(lang => lang.value === value)) {
         // eslint-disable-next-line no-console
         console.warn(
-          `'options.languageAlternatives' lists a language which is not supported: "%s", Syntax highlighting will be disabled.`,
+          `'options.languageAlternatives' lists a language which is not supported: "%s", syntax highlighting will be disabled.`,
           value
         )
       }
