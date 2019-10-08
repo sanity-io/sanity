@@ -20,8 +20,8 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@sanity/date-input": "0.142.6",
-    "@sanity/imagetool": "0.142.6",
+    "@sanity/date-input": "0.142.7",
+    "@sanity/imagetool": "0.142.7",
     "attr-accept": "^1.1.0",
     "boundless-arrow-key-navigation": "^1.1.0",
     "chance": "^1.0.4",

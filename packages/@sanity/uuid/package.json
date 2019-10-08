@@ -1,6 +1,6 @@
 {
   "name": "@sanity/uuid",
-  "version": "0.142.0",
+  "version": "0.142.7",
   "description": "Simple generation of sanity document IDs",
   "main": "index.js",
   "keywords": [
