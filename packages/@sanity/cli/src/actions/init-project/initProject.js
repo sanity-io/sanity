@@ -32,7 +32,8 @@ export default async function initSanity(args, context) {
   const print = unattended ? noop : output.print
   const specifiedOutputPath = cliFlags['output-path']
   let reconfigure = cliFlags.reconfigure
-  let defaultSetup
+  let defaultConfig = cliFlags.default
+  let showDefaultConfigPrompt = !defaultConfig
 
   // Check if we have a project manifest already
   const manifestPath = path.join(workDir, 'sanity.json')
@@ -120,7 +121,7 @@ export default async function initSanity(args, context) {
       displayName,
       dataset: flags.dataset,
       aclMode: flags.visibility,
-      default: flags.default
+      defaultConfig: flags.default
     },
     context
   )
@@ -357,14 +358,6 @@ export default async function initSanity(args, context) {
       ]
     })
 
-    if (!flags.default) {
-      debug('Prompt for default setup')
-      output.print(
-        'We can configure your project with a default dataset name (production) and visibility mode (public).\nSee docs for more info: https://sanity.io/docs/datasets.'
-      )
-      defaultSetup = await promptDefaultSetup(prompt)
-    }
-
     if (selected === 'new') {
       debug('User wants to create a new project, prompting for name')
       return createProject(apiClient, {
@@ -373,8 +366,8 @@ export default async function initSanity(args, context) {
           default: 'My Sanity Project'
         })
       }).then(response => ({
-        ...response,
-        isFirstProject: isUsersFirstProject
+          ...response,
+          isFirstProject: isUsersFirstProject
       }))
     }
 
@@ -387,9 +380,13 @@ export default async function initSanity(args, context) {
   }
 
   async function getOrCreateDataset(opts) {
-    if (unattended || defaultSetup || opts.default) {
-      return {datasetName: 'production'}
+    if (showDefaultConfigPrompt) {
+      output.print(
+        'Your content will be stored in a dataset that can be public or private, depending on\nwhether you want to query your content with or without authentication.\nThe default configuration has a public dataset named production.'
+      )
+      defaultConfig = await promptForDefaultConfig(prompt)
     }
+
     if (opts.dataset && isCI) {
       return {datasetName: opts.dataset}
     }
@@ -413,16 +410,9 @@ export default async function initSanity(args, context) {
         return opts.aclMode
       }
 
-      if (defaultSetup || opts.default) {
-        return 'public'
-      }
-
-      if (unattended || !privateDatasetsAllowed) {
+      if (unattended || !privateDatasetsAllowed || defaultConfig) {
         return 'public'
       } else if (privateDatasetsAllowed) {
-        output.print(
-          'A dataset can be public or private, depending on if you want to query content with or without authentication.\nSee docs for more info: https://sanity.io/docs/data-store/keeping-your-data-safe'
-        )
         return promptForAclMode(prompt, output)
       }
 
@@ -436,7 +426,9 @@ export default async function initSanity(args, context) {
       if (!existing) {
         debug('Specified dataset not found, creating it')
         const aclMode = await getAclMode()
+        const spinner = context.output.spinner('Creating dataset').start()
         await client.datasets.create(opts.dataset, {aclMode})
+        spinner.succeed()
       }
 
       return {datasetName: opts.dataset}
@@ -444,13 +436,14 @@ export default async function initSanity(args, context) {
 
     if (datasets.length === 0) {
       debug('No datasets found for project, prompting for name')
-      const name = await promptForDatasetName(prompt, {
-        message: 'Name of your first dataset:',
-        default: 'production'
-      })
-
+      const name = defaultConfig
+        ? 'production'
+        : await promptForDatasetName(prompt, {
+            message: 'Name of your first dataset:',
+            default: 'production'
+          })
       const aclMode = await getAclMode()
-      const spinner = context.output.spinner('Creating dataset...').start()
+      const spinner = context.output.spinner('Creating dataset').start()
       await client.datasets.create(name, {aclMode})
       spinner.succeed()
       return {datasetName: name}
@@ -471,15 +464,16 @@ export default async function initSanity(args, context) {
 
     if (selected === 'new') {
       debug('User wants to create a new dataset, prompting for name')
-      output.print(
-        'Your content will be stored in a dataset. We name your first \ndataset "production" by default, but you are free to rename it.'
-      )
-      const newDatasetName = await promptForDatasetName(prompt, {
+      const newDatasetName = defaultConfig
+        ? 'production'
+        : await promptForDatasetName(prompt, {
         message: 'Name your dataset:',
         default: 'production'
       })
       const aclMode = await getAclMode()
+      const spinner = context.output.spinner('Creating dataset').start()
       await client.datasets.create(newDatasetName, {aclMode})
+      spinner.succeed()
       return {datasetName: newDatasetName}
     }
 
@@ -555,6 +549,10 @@ export default async function initSanity(args, context) {
 
   async function prepareFlags() {
     const createProjectName = cliFlags['create-project']
+    if (cliFlags.dataset || cliFlags.visibility || cliFlags.default || unattended) {
+      showDefaultConfigPrompt = false
+    }
+
     if (cliFlags.project && createProjectName) {
       throw new Error(
         'Both `--project` and `--create-project` specified, only a single is supported'
@@ -595,7 +593,9 @@ export default async function initSanity(args, context) {
       if (cliFlags.dataset) {
         debug('--dataset specified, creating dataset (%s)', cliFlags.dataset)
         const client = apiClient({api: {projectId: createdProject.projectId}})
+        const spinner = context.output.spinner('Creating dataset').start()
         await client.datasets.create(cliFlags.dataset)
+        spinner.succeed()
       }
 
       const newFlags = Object.assign({}, cliFlags, {project: createdProject.projectId})
@@ -608,10 +608,10 @@ export default async function initSanity(args, context) {
   }
 }
 
-function promptDefaultSetup(prompt) {
+function promptForDefaultConfig(prompt) {
   return prompt.single({
     type: 'confirm',
-    message: 'Want a default configuration?',
+    message: 'Use the default configuration?',
     default: true
   })
 }
