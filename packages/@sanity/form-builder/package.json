@@ -62,6 +62,7 @@
     "speakingurl": "^13.0.0"
   },
   "devDependencies": {
+<<<<<<< HEAD
     "@sanity/base": "0.142.10",
     "@sanity/check": "0.142.6",
     "@sanity/cli": "0.142.9",
@@ -69,6 +70,15 @@
     "@sanity/core": "0.142.9",
     "@sanity/plugin-loader": "0.142.6",
     "@sanity/server": "0.142.6",
+=======
+    "@sanity/base": "0.142.7",
+    "@sanity/check": "0.142.7",
+    "@sanity/cli": "0.142.7",
+    "@sanity/components": "0.142.7",
+    "@sanity/core": "0.142.7",
+    "@sanity/plugin-loader": "0.142.7",
+    "@sanity/server": "0.142.7",
+>>>>>>> [chore] Bring version numbers in line with next
     "@types/moment": "^2.13.0",
     "assert": "^1.4.1",
     "in-publish": "^2.0.0",
