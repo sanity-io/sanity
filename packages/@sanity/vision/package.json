@@ -31,10 +31,10 @@
     "react-split-pane": "^0.1.84"
   },
   "devDependencies": {
-    "@sanity/base": "0.142.6",
-    "@sanity/check": "0.142.6",
-    "@sanity/client": "0.142.6",
-    "@sanity/components": "0.142.6",
+    "@sanity/base": "0.142.7",
+    "@sanity/check": "0.142.7",
+    "@sanity/client": "0.142.7",
+    "@sanity/components": "0.142.7",
     "@sanity/default-layout": "0.142.7",
     "prop-types": "^15.6.0",
     "react": "16.3.1",

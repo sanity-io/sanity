@@ -19,12 +19,12 @@
     "ecommerce-studio"
   ],
   "dependencies": {
-    "@sanity/base": "0.142.6",
+    "@sanity/base": "0.142.7",
     "@sanity/cli": "0.142.7",
-    "@sanity/components": "0.142.6",
-    "@sanity/core": "0.142.6",
+    "@sanity/components": "0.142.7",
+    "@sanity/core": "0.142.7",
     "@sanity/default-layout": "0.142.7",
-    "@sanity/default-login": "0.142.6",
+    "@sanity/default-login": "0.142.7",
     "@sanity/desk-tool": "0.142.7",
     "@sanity/vision": "0.142.7",
     "react": "16.3.1",

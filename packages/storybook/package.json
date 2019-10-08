@@ -10,15 +10,15 @@
     "start": "sanity start --port=9002"
   },
   "dependencies": {
-    "@sanity/base": "0.142.6",
-    "@sanity/components": "0.142.6",
-    "@sanity/core": "0.142.6",
+    "@sanity/base": "0.142.7",
+    "@sanity/components": "0.142.7",
+    "@sanity/core": "0.142.7",
     "@sanity/default-layout": "0.142.7",
-    "@sanity/default-login": "0.142.6",
+    "@sanity/default-login": "0.142.7",
     "@sanity/desk-tool": "0.142.7",
     "@sanity/google-maps-input": "0.142.7",
-    "@sanity/server": "0.142.6",
-    "@sanity/storybook": "0.142.6",
+    "@sanity/server": "0.142.7",
+    "@sanity/storybook": "0.142.7",
     "prop-types": "^15.6.0",
     "react": "16.3.1",
     "react-dom": "16.3.1"
