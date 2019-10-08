@@ -212,10 +212,9 @@ export default class CodeInput extends PureComponent {
       if (!SUPPORTED_LANGUAGES.find(lang => lang.value === value)) {
         // eslint-disable-next-line no-console
         console.warn(
-          `'options.languageAlternatives' lists a language which is not supported: "%s", ignoring it.`,
+          `'options.languageAlternatives' lists a language which is not supported: "%s", Syntax highlighting will be disabled.`,
           value
         )
-        return acc
       }
 
       return acc.concat({title, value})
@@ -265,9 +264,8 @@ export default class CodeInput extends PureComponent {
       )
     }
 
-    const isSupported = isSupportedLanguage(value && value.language)
     const selectedLanguage =
-      value && value.language ? languages.find(item => item.value === isSupported) : undefined
+      value && value.language ? languages.find(item => item.value === value.language) : undefined
 
     if (!selectedLanguage) {
       languages.unshift({title: 'Select language'})
