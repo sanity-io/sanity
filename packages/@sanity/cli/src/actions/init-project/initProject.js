@@ -113,12 +113,15 @@ export default async function initSanity(args, context) {
 
   // Now let's pick or create a dataset
   debug('Prompting user to select or create a dataset')
-  const {datasetName} = await getOrCreateDataset({
-    projectId,
-    displayName,
-    dataset: flags.dataset,
-    aclMode: flags.visibility
-  })
+  const {datasetName} = await getOrCreateDataset(
+    {
+      projectId,
+      displayName,
+      dataset: flags.dataset,
+      aclMode: flags.visibility
+    },
+    context
+  )
 
   debug(`Dataset with name ${datasetName} selected`)
 
@@ -356,7 +359,8 @@ export default async function initSanity(args, context) {
       debug('User wants to create a new project, prompting for name')
       return createProject(apiClient, {
         displayName: await prompt.single({
-          message: 'Informal name for your project'
+          message: 'Your project name:',
+          default: 'My Sanity Project'
         })
       }).then(response => ({
         ...response,
@@ -399,6 +403,9 @@ export default async function initSanity(args, context) {
       if (unattended || !privateDatasetsAllowed) {
         return 'public'
       } else if (privateDatasetsAllowed) {
+        output.print(
+          'A dataset can be public or private, depending on if you want to query content with or without authentication.\nSee docs for more info: https://sanity.io/docs/data-store/keeping-your-data-safe'
+        )
         return promptForAclMode(prompt, output)
       }
 
@@ -426,7 +433,9 @@ export default async function initSanity(args, context) {
       })
 
       const aclMode = await getAclMode()
+      const spinner = context.output.spinner('Creating dataset...').start()
       await client.datasets.create(name, {aclMode})
+      spinner.succeed()
       return {datasetName: name}
     }
 
@@ -445,6 +454,9 @@ export default async function initSanity(args, context) {
 
     if (selected === 'new') {
       debug('User wants to create a new dataset, prompting for name')
+      output.print(
+        'Your content will be stored in a dataset. We name your first \ndataset "production" by default, but you are free to rename it.'
+      )
       const newDatasetName = await promptForDatasetName(prompt, {
         message: 'Name your dataset:',
         default: 'production'
@@ -516,7 +528,7 @@ export default async function initSanity(args, context) {
         specifiedPath ||
         (await prompt.single({
           type: 'input',
-          message: 'Output path:',
+          message: 'Project output path:',
           default: workDirIsEmpty ? workDir : path.join(workDir, sluggedName),
           validate: validateEmptyPath,
           filter: absolutify
@@ -637,7 +649,7 @@ async function promptForAclMode(prompt, output) {
       },
       {
         value: 'private',
-        name: 'Private (Authenticated user or token needed for API requests)'
+        name: 'Private (authenticated requests only)'
       }
     ]
   })
