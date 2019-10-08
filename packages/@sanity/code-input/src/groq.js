@@ -564,14 +564,14 @@ ace.define(
     const oop = acequire('../lib/oop')
     const TextHighlightRules = acequire('./text_highlight_rules').TextHighlightRules
 
-    const QroqHighlightRules = function() {
+    const GroqHighlightRules = function() {
       this.$rules = rules
       this.normalizeRules()
     }
 
-    oop.inherits(QroqHighlightRules, TextHighlightRules)
+    oop.inherits(GroqHighlightRules, TextHighlightRules)
 
-    exports.QroqHighlightRules = QroqHighlightRules
+    exports.GroqHighlightRules = GroqHighlightRules
   }
 )
 
@@ -593,11 +593,11 @@ ace.define(
     const oop = acequire('../lib/oop')
     const TextMode = acequire('./text').Mode
     const Tokenizer = acequire('../tokenizer').Tokenizer
-    const QroqHighlightRules = acequire('./groq_highlight_rules').QroqHighlightRules
+    const GroqHighlightRules = acequire('./groq_highlight_rules').GroqHighlightRules
     const FoldMode = acequire('./folding/cstyle').FoldMode
 
     const Mode = function() {
-      const highlighter = new QroqHighlightRules()
+      const highlighter = new GroqHighlightRules()
       this.foldingRules = new FoldMode()
       this.$tokenizer = new Tokenizer(highlighter.getRules())
       this.$keywordList = highlighter.$keywordList
