@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+// Grammar from https://github.com/sanity-io/vscode-sanity
 const rules = {
   start: [
     {
