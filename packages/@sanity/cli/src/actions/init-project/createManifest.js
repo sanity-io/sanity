@@ -123,6 +123,12 @@ export function createSanityManifest(data, opts) {
         '@sanity/desk-tool'
       ],
 
+      env: {
+        development: {
+          plugins: ['@sanity/vision']
+        }
+      },
+
       parts: [
         {
           name: 'part:@sanity/base/schema',
