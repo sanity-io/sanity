@@ -151,7 +151,13 @@ export default function withInitialValue(Pane) {
           {({draft, published}) => {
             const exists = Boolean(draft || published)
             if (exists) {
-              return <Pane {...this.props} />
+              // Wrap in broken references component to prevent "reload"
+              // when going from missing document to a document that exists
+              return (
+                <BrokenReferences document={{}} type={this.props.options.type} schema={schema}>
+                  <Pane {...this.props} />
+                </BrokenReferences>
+              )
             }
 
             const {isResolving, initialValue} = this.state
