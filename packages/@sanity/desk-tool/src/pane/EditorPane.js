@@ -11,7 +11,6 @@ import schema from 'part:@sanity/base/schema'
 import Button from 'part:@sanity/components/buttons/default'
 import historyStore from 'part:@sanity/base/datastore/history'
 import client from 'part:@sanity/base/client'
-import withDocumentType from '../utils/withDocumentType'
 import styles from './styles/EditorWrapper.css'
 import Editor from './Editor'
 import UseState from '../utils/UseState'
@@ -91,9 +90,7 @@ function isRecoverable(draft, published) {
   return !exists(draft, published) && (draft.deletedSnapshot || published.deletedSnapshot)
 }
 
-const withWrappers = Pane => withInitialValue(withDocumentType(Pane))
-
-export default withWrappers(
+export default withInitialValue(
   class EditorPane extends React.Component {
     static propTypes = {
       title: PropTypes.string,
