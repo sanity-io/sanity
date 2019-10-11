@@ -76,8 +76,21 @@ const logCompile = from => (file, enc, cb) => {
   cb(null, file)
 }
 
+const mapToDefinitionPath = baseDir => {
+  const packagesRoot = path.join(__dirname, 'packages')
+  return orgPath => {
+    return path
+      .join(baseDir, 'lib', orgPath.replace(packagesRoot, ''))
+      .replace(/\.d\.d\.tsx?$/, '.d.ts')
+  }
+}
+
 const mapToDest = orgPath => {
-  const outPath = orgPath.replace(srcEx, libFragment).replace(srcRootEx, libFragment)
+  const outPath = orgPath
+    .replace(srcEx, libFragment)
+    .replace(srcRootEx, libFragment)
+    .replace(/\.tsx?$/, '.js')
+
   return outPath
 }
 
@@ -118,7 +131,7 @@ function buildJavaScript() {
     .pipe(assetFilter)
     .pipe(
       changed(packagesPath, {
-        transformPath: inp => mapToDest(inp),
+        transformPath: mapToDest,
         hasChanged: compareModified
       })
     )
@@ -166,6 +179,13 @@ function buildTypeScript() {
     ...tsProjects.map(project => {
       const compilation = project
         .src()
+        .pipe(
+          changed(packagesPath, {
+            transformPath: mapToDefinitionPath(project.projectDirectory),
+            hasChanged: compareModified,
+            extension: '.d.ts'
+          })
+        )
         .pipe(through.obj(logCompile('D.TS')))
         .pipe(project())
       return compilation.dts
