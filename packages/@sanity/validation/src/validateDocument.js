@@ -139,7 +139,9 @@ function validatePrimitive(item, type, path, options) {
 }
 
 function resolveTypeForArrayItem(item, candidates) {
-  const primitive = !item || (!item._type && Type.string(item).toLowerCase())
+  const primitive =
+    typeof item === 'undefined' || item === null || (!item._type && Type.string(item).toLowerCase())
+
   if (primitive) {
     return candidates.find(candidate => candidate.jsonType === primitive)
   }
