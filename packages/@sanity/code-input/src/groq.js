@@ -44,7 +44,7 @@ const rules = {
   '#comparison': [
     {
       token: 'keyword.operator.comparison.groq',
-      regex: /==|!=|>=|<=|(?<!=)>|</
+      regex: /==|!=|>=|<=|<!=>|<|>/
     }
   ],
   '#operator': [
