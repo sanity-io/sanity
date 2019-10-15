@@ -8,11 +8,21 @@ export default function getNewDocumentModalActions() {
   let structure = newDocumentStructure
   if (structure && !Array.isArray(structure)) {
     // eslint-disable-next-line no-console
-    console.warn(
-      `Invalid action modal configuration: "part:@sanity/base/new-document-structure" should return an array of items`
+    console.error(
+      `Invalid "new document" configuration: "part:@sanity/base/new-document-structure" should return an array of items. Falling back to default structure.`
     )
     structure = S.defaultInitialValueTemplateItems()
-  } else if (!structure) {
+  } else if (structure) {
+    try {
+      validateNewDocumentStructure(structure)
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `Invalid "new document" configuration: ${err.message}. Falling back to default structure.`
+      )
+      structure = S.defaultInitialValueTemplateItems()
+    }
+  } else {
     // No structure defined, use default
     structure = S.defaultInitialValueTemplateItems()
   }
@@ -72,7 +82,7 @@ function canCreateTemplateItem(item) {
   const canCreate = isActionEnabled(schema.get(type), 'create')
   if (!canCreate) {
     // eslint-disable-next-line no-console
-    console.warn(
+    console.error(
       `Template with ID "${template}" has schema type "${type}", where the "create" action is disabled and will not be included in the "new document"-dialog.`
     )
   }
@@ -85,10 +95,39 @@ function hasRequiredParameters(item) {
   const hasMissingParams = !templateParameters && item.template.parameters
   if (hasMissingParams) {
     // eslint-disable-next-line no-console
-    console.warn(
+    console.error(
       `Template with ID "${template}" requires a set of parameters, but none were given. Skipping.`
     )
   }
 
   return !hasMissingParams
+}
+
+function validateNewDocumentStructure(structureItems) {
+  const items = structureItems.map(item =>
+    item && typeof item.serialize === 'function' ? item.serialize() : item
+  )
+
+  const idMap = new Map()
+  items.forEach((templateItem, i) => {
+    // Make sure we're working with serialized definitions
+    let item = templateItem
+    if (item && typeof item.serialize === 'function') {
+      item = item.serialize()
+    }
+
+    if (idMap.has(item.id)) {
+      const dupeIndex = idMap.get(item.id)
+      const dupe = `${quote(items[dupeIndex].title)} at index ${dupeIndex}`
+      throw new Error(
+        `Template item "${item.title}" at index ${i} has the same ID ("${item.id}") as template ${dupe}`
+      )
+    }
+
+    idMap.set(item.id, i)
+  })
+}
+
+function quote(str) {
+  return str && str.length > 0 ? `"${str}"` : str
 }
