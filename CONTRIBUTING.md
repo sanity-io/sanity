@@ -23,7 +23,7 @@ npm start
 - Anything in the `next` branch is scheduled for the next release
 - To work on something new, create a descriptively named branch off of `next` (ie: feature/new-oauth2-scopes)
 - Commit to that branch locally and regularly push your work to the same named branch on the server.
-- Rebase your feature branch regularily against `next`. Make sure its even with `next` before merging.
+- Rebase your feature branch regularly against `next`. Make sure its even with `next` before merging.
 - Once its done, open a pull request to merge your feature branch into `next`
 - After someone else has reviewed and signed off on the pull request, you can merge it into `next`.
 - Everything except minor *trivial* changes should go through pull-requests. If you're unsure whether it's a trivial change or not, submit a pull request just to be sure.
@@ -44,7 +44,7 @@ Prefer squash + merge. If it makes sense to keep individual commits (e.g. differ
 When `next` is ready for release, run `npm run publish` and select version. After a successful release, remember to rebase `next` against `master`.
 
 ## Publishing a hotfix release from `master`
-If we need to publish hotfix, a patch release should be done by running `npm run publish` from the project root, selecting "Patch" from the menu. Remember to rebase `next` against `master` after the release is completed.
+If we need to publish a hotfix, a patch release should be done by running `npm run publish` from the project root, selecting "Patch" from the menu. Remember to rebase `next` against `master` after the release is completed.
 
 ## Publishing _prerelease_ versions from `next`
 This is done by running `npm run publish` from the project root, selecting "Prerelease" from the menu and choosing a _Prerelease identifier_ (e.g. **alpha**, **beta** or **rc**). A prerelease can be tested in the studio by running e.g. `sanity upgrade --tag=beta --save-exact`
@@ -64,7 +64,7 @@ If the answer to either of those two questions are "yes", then you're probably d
 
 ## How to report a bug
 
-When filing an issue, make sure to answer these five questions:
+When filing an issue, make sure to answer these six questions:
 
 - Which versions of Sanity are you using (`sanity versions`)?
 - What operating system are you using?
