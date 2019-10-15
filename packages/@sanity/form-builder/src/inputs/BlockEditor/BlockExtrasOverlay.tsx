@@ -4,6 +4,7 @@ import BlockExtras from 'part:@sanity/form-builder/input/block-editor/block-extr
 import PatchEvent from '../../../PatchEvent'
 import createBlockActionPatchFn from './utils/createBlockActionPatchFn'
 import {
+  BlockContentFeatures,
   Marker,
   FormBuilderValue,
   SlateEditor,
@@ -15,6 +16,7 @@ import {
 import {Path} from '../../typedefs/path'
 import {getKey} from './utils/getKey'
 type Props = {
+  blockContentFeatures: BlockContentFeatures
   editor: SlateEditor | null
   editorValue: SlateValue | null
   fullscreen: boolean
@@ -59,6 +61,7 @@ export default class BlockExtrasOverlay extends React.Component<Props, State> {
   // eslint-disable-next-line complexity
   renderBlockExtras = (node: SlateNode) => {
     const {
+      blockContentFeatures,
       onFocus,
       renderCustomMarkers,
       renderBlockActions,
@@ -89,9 +92,9 @@ export default class BlockExtrasOverlay extends React.Component<Props, State> {
           <RenderComponent
             block={block}
             value={value}
-            set={createBlockActionPatchFn('set', block, onPatch)}
-            unset={createBlockActionPatchFn('unset', block, onPatch)}
-            insert={createBlockActionPatchFn('insert', block, onPatch)}
+            set={createBlockActionPatchFn('set', block, onPatch, blockContentFeatures)}
+            unset={createBlockActionPatchFn('unset', block, onPatch, blockContentFeatures)}
+            insert={createBlockActionPatchFn('insert', block, onPatch, blockContentFeatures)}
           />
         )
       }

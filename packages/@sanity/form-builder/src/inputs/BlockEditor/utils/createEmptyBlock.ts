@@ -21,5 +21,6 @@ export default function createEmptyBlock(blockContentFeatures, options: Opts = {
     ],
     style: options.style || 'normal'
   }
-  return deserialize([normalizeBlock(raw)], blockContentFeatures.types.block).document.nodes.first()
+  const decorators = blockContentFeatures.decorators.map(item => item.value)
+  return deserialize([normalizeBlock(raw, {decorators})], blockContentFeatures.types.block).document.nodes.first()
 }
