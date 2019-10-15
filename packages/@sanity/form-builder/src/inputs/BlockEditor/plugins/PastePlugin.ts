@@ -41,13 +41,15 @@ function handleHTML(html, editor, blockContentType, onProgress, pasteController)
     onProgress({status: 'blocks'})
     const value = deserialize(blocks, blockContentType)
     pasteController.setValue(value)
-    editor.insertFragment(pasteController.value.document)
     // Remove placeholder status of first block
     const firstBlock = editor.value.document.nodes.first()
     if (firstBlock.type === 'contentBlock' && firstBlock.data.get('placeholder')) {
       const newData = firstBlock.data.toObject()
       delete newData.placeholder
       editor.setNodeByKey(firstBlock.key, {data: newData})
+      editor.insertFragment(pasteController.value.document)
+    } else {
+      editor.insertFragment(pasteController.value.document)
     }
     pasteController.setValue(deserialize(null, blockContentType))
     onProgress({status: null})
