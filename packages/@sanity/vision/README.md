@@ -2,7 +2,7 @@
 Vision is a plugin for Sanity Studio for testing GROQ queries. It features: 
 
 * GROQ syntax highlighting so that the query is easier to read. 
-* Parsed response so that it is more convenient to navigate and explore.
+* Parsed response that's more convenient to navigate and explore.
 * Switch between datasets
 * Listening for real-time updates
 
