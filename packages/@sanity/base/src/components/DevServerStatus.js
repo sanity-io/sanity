@@ -7,15 +7,16 @@ const EventSource = isWindowEventSource
   ? window.EventSource // Native browser EventSource
   : polyfilledEventSource // Node.js, IE, Edge etc
 
-const STATE_CLOSED = 0
+const STATE_CONNECTING = 0
 const STATE_OPEN = 1
+const STATE_CLOSED = 2
 
 class DevServerStatus extends PureComponent {
   constructor(...args) {
     super(...args)
     this.enabled = __DEV__ && EventSource
     this.state = {
-      connectionState: STATE_CLOSED,
+      connectionState: STATE_OPEN,
       hasHadConnection: false
     }
   }
@@ -65,8 +66,11 @@ class DevServerStatus extends PureComponent {
       return null
     }
 
-    // We are disconnected, show snackbar
-    if (this.state.connectionState === STATE_CLOSED) {
+    // We are disconnected
+    if (
+      this.state.connectionState === STATE_CLOSED ||
+      this.state.connectionState === STATE_CONNECTING
+    ) {
       return (
         <Snackbar
           id="__dev-server-status"
@@ -76,8 +80,10 @@ class DevServerStatus extends PureComponent {
           title={<strong>Disconnected from the dev server!</strong>}
           subtitle={
             <div>
-              To see your latest changes, restart the Studio with <code>sanity start</code> from
-              your project folder.
+              {this.state.connectionState === STATE_CLOSED
+                ? 'To see your latest changes,'
+                : 'We are trying to reconnect you, but you can also'}{' '}
+              restart the Studio with <code>sanity start</code> in your project folder.
             </div>
           }
         />
