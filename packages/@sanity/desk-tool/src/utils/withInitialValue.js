@@ -102,7 +102,7 @@ function getInitialValueProps(document, props) {
   }
 
   const {template: definedTemplate} = props.options
-  const {template: urlTemplate, ...urlParameters} = props.urlParameters
+  const {template: urlTemplate, ...urlParameters} = props.urlParameters || {}
 
   if (urlTemplate && definedTemplate && definedTemplate !== urlTemplate) {
     // eslint-disable-next-line no-console
