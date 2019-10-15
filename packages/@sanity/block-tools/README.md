@@ -149,7 +149,7 @@ blockTools.htmlToBlocks(
 
 ```
 
-### ``normalizeBlock(block, [decoratorMarks])``
+### ``normalizeBlock(block, [options={}])``
 Normalize a block object structure to make sure it has what it needs.
 
 ```js
@@ -164,7 +164,7 @@ const partialBlock = {
     }
   ]
 }
-normalizeBlock(partialBlock, ['strong'])
+normalizeBlock(partialBlock, {decorators: ['strong']})
 ```
 Will produce
 ```
