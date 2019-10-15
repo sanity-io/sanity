@@ -62,6 +62,7 @@ function createModalAction(templateItem) {
   const title = item.title || tpl.title
   return {
     ...tpl,
+    title,
     // Don't show the type name as subtitle if it's the same as the template name
     subtitle: type.title === title ? undefined : type.title,
     key: item.id,
