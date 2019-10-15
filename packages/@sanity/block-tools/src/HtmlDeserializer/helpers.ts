@@ -86,6 +86,10 @@ export function flattenNestedBlocks(blocks) {
         depth++
         traverse(node.children)
       }
+      if (node._type === '__block') {
+        toRemove.push(node)
+        flattened.push(node.block)
+      }
     })
     toRemove.forEach(node => {
       _nodes.splice(_nodes.indexOf(node), 1)
@@ -172,7 +176,7 @@ export function ensureRootIsBlocks(blocks) {
       return memo
     }
 
-    if (i > 0 && original[i - 1]._type !== 'block') {
+    if (i > 0 && original[i - 1]._type !== 'block' && memo[memo.length - 1]._type === 'block') {
       const block = memo[memo.length - 1]
       block.children.push(node)
       return memo
