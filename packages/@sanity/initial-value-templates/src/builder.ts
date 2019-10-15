@@ -32,6 +32,7 @@ function defaults(sanitySchema?: Schema) {
 
   return schema
     .getTypeNames()
+    .filter(typeName => !/^sanity\./.test(typeName))
     .filter(typeName => isDocumentSchemaType(typeName, schema))
     .map(typeName => defaultTemplateForType(schema.get(typeName), schema))
 }
