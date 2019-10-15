@@ -1,0 +1,16 @@
+[
+  {
+    "_key": "randomKey0",
+    "_type": "block",
+    "children": [
+      {
+        "_key": "randomKey00",
+        "_type": "span",
+        "marks": [],
+        "text": "This is a link test"
+      }
+    ],
+    "markDefs": [],
+    "style": "h1"
+  }
+]
