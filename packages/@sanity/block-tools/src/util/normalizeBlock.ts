@@ -29,9 +29,10 @@ export default function normalizeBlock(block) {
     ]
     return block
   }
+  let usedMarkDefs = []
   block.children = block.children
-    .filter((child, index) => {
-      const previousChild = block.children[index - 1]
+    .reduce((acc, child) => {
+      const previousChild = acc.slice(-1)[0]
       if (
         previousChild &&
         child._type === 'span' &&
@@ -39,19 +40,23 @@ export default function normalizeBlock(block) {
         isEqual(previousChild.marks, child.marks)
       ) {
         if (lastChild && lastChild === child && child.text === '' && block.children.length > 1) {
-          return false
+          return acc
         }
         previousChild.text += child.text
-        return false
+        return acc
       }
-      return child
-    })
+      acc.push(child)
+      return acc
+    }, [])
     .map(child => {
       child._key = `${block._key}${newIndex++}`
       if (child._type === 'span' && !child.marks) {
         child.marks = []
       }
+      usedMarkDefs = usedMarkDefs.concat(child.marks)
       return child
     })
+  // Remove leftover markDefs
+  block.markDefs = block.markDefs.filter(markDef => usedMarkDefs.includes(markDef._key))
   return block
 }

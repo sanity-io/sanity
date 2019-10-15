@@ -6,6 +6,8 @@ export default (html, doc) => {
     '/html/text()',
     '/html/head/text()',
     '/html/body/text()',
+    '/html/body/ul/text()',
+    '/html/body/ol/text()',
     '//comment()',
     '//style',
     '//xml',
@@ -25,6 +27,5 @@ export default (html, doc) => {
     const unwanted = unwantedNodes.snapshotItem(i)
     unwanted.parentNode.removeChild(unwanted)
   }
-
   return doc
 }

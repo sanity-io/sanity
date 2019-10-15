@@ -10,6 +10,7 @@
         "text": "strong"
       },
       { "_type": "span", "marks": ["randomKey0"], "text": " link" },
+      { "_type": "span", "marks": [], "text": " " },
       { "_type": "span", "marks": ["em"], "text": "and " },
       {
         "_type": "span",
