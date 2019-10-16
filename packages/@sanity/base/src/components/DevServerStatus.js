@@ -16,7 +16,7 @@ class DevServerStatus extends PureComponent {
     super(...args)
     this.enabled = __DEV__ && EventSource
     this.state = {
-      connectionState: STATE_OPEN,
+      connectionState: STATE_CONNECTING,
       hasHadConnection: false
     }
   }
@@ -67,10 +67,7 @@ class DevServerStatus extends PureComponent {
     }
 
     // We are disconnected
-    if (
-      this.state.connectionState === STATE_CLOSED ||
-      this.state.connectionState === STATE_CONNECTING
-    ) {
+    if (this.state.hasHadConnection) {
       return (
         <Snackbar
           id="__dev-server-status"
@@ -80,10 +77,8 @@ class DevServerStatus extends PureComponent {
           title={<strong>Disconnected from the dev server!</strong>}
           subtitle={
             <div>
-              {this.state.connectionState === STATE_CLOSED
-                ? 'To see your latest changes,'
-                : 'We are trying to reconnect you, but you can also'}{' '}
-              restart the Studio with <code>sanity start</code> in your project folder.
+              To see your latest changes, restart the Studio with <code>sanity start</code> in your
+              project folder.
             </div>
           }
         />
