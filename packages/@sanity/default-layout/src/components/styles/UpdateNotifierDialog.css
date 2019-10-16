@@ -1,15 +1,15 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.content {
-  text-align: center;
-  margin: var(--large-padding);
+.dialogHeading {
+  margin: 0;
 }
 
 .versionsTable {
   border-collapse: collapse;
   border-bottom: 1px solid #ccc;
-  margin: 0 auto;
-  margin-bottom: calc(var(--large-padding) * 2);
+  margin: 0;
+  width: 100%;
+  margin-top: var(--medium-padding);
 }
 
 .versionsTable td,
@@ -22,12 +22,37 @@
   border-top: 1px solid #ccc;
 }
 
+.details {
+  margin-bottom: var(--medium-padding);
+
+  @nest & .versionsTable {
+    margin-top: 0;
+  }
+}
+
+.summary {
+  transition: all 0.3s linear;
+}
+
+.summary:focus {
+  outline: 0;
+  font-weight: bold;
+}
+
 .upgradeText {
-  margin-bottom: calc(var(--large-padding) * 2);
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--medium-padding);
+  @nest & p {
+    margin-bottom: 0;
+  }
 }
 
 .code {
+  align-self: center;
   background: #333;
   color: #fff;
-  padding: 0.5rem;
+  margin-top: var(--medium-padding);
+  padding: var(--small-padding);
+  border-radius: var(--border-radius-base);
 }
