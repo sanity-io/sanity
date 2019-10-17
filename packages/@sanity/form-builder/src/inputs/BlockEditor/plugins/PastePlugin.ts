@@ -41,20 +41,22 @@ function handleHTML(html, editor, blockContentType, onProgress, pasteController)
     onProgress({status: 'blocks'})
     const value = deserialize(blocks, blockContentType)
     pasteController.setValue(value)
-    // Remove placeholder status of first block
-    const firstBlock = editor.value.document.nodes.first()
-    if (firstBlock.type === 'contentBlock' && firstBlock.data.get('placeholder')) {
-      const newData = firstBlock.data.toObject()
-      delete newData.placeholder
-      editor.setNodeByKey(firstBlock.key, {data: newData})
-      editor.insertFragment(pasteController.value.document)
-    } else {
-      editor.insertFragment(pasteController.value.document)
-    }
+    ensureNoPlaceholder(editor)
+    editor.insertFragment(pasteController.value.document)
     pasteController.setValue(deserialize(null, blockContentType))
     onProgress({status: null})
     return editor
   })
+}
+
+function ensureNoPlaceholder(editor: any) {
+  const firstBlock = editor.value.document.nodes.first()
+  if (firstBlock.type === 'contentBlock' && firstBlock.data.get('placeholder')) {
+    const newData = firstBlock.data.toObject()
+    delete newData.placeholder
+    editor.setNodeByKey(firstBlock.key, {data: newData})
+  }
+  return editor
 }
 
 export default function PastePlugin(options: any = {}) {
@@ -91,6 +93,7 @@ export default function PastePlugin(options: any = {}) {
         .map(node => node.type)
         .every(nodeType => allSchemaBlockTypes.includes(nodeType))
       if (allBlocksHasSchemaDef) {
+        ensureNoPlaceholder(editor)
         const {focusBlock} = editor.value
         const newNodesList = Block.createList(fragment.nodes.map(node => processNode(node, editor)))
         const newDoc = new Document({
