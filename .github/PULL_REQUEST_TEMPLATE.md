@@ -1,4 +1,4 @@
-<!-- Thank you for contributing to Sanity. Please read our [Code of Conduct](https://github.com/sanity-io/sanity/blob/next/CODE_OF_CONDUCT.md) and [Contributing Guidelines](/sanity-io/sanity/blob/next/CONTRIBUTING.md) before submitting a PR.
+<!-- Thank you for contributing to Sanity. Please read our [Code of Conduct](https://github.com/sanity-io/sanity/blob/next/CODE_OF_CONDUCT.md) and [Contributing Guidelines](https://github.com/sanity-io/sanity/blob/next/CONTRIBUTING.md) before submitting a PR.
 
 To help us review your Pull Request, please make sure you follow the steps and guidelines below.
 
@@ -30,7 +30,7 @@ Do not delete the instructional comments. -->
 
 **Note for release**
 
-<!-- Please include a high level summary of the changes this PR introduce. The intended audience is both editors and developers. If a new feature, remember to link to docs/blogpost, if bugfix please describe the bug in non-techincal terms (e.g. how a user/developer may have experienced it).
+<!-- Please include a high level summary of the changes this PR introduce. The intended audience is both editors and developers. If it's introducing a new feature, remember to link to docs/blogpost, if it's a bugfix, please describe the bug in non-technical terms (e.g. how a user/developer may have experienced it).
 For inspiration, check out the release notes from an earlier release: https://github.com/sanity-io/sanity/releases/tag/v0.142.0 -->
 
 **Checklist** 
