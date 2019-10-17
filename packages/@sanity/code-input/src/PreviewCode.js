@@ -22,15 +22,29 @@ import 'brace/theme/github'
 import 'brace/theme/monokai'
 import 'brace/theme/terminal'
 import 'brace/theme/tomorrow'
+import './groq'
 /* eslint-enable import/no-unassigned-import */
 
-import {SUPPORTED_LANGUAGES, ACE_EDITOR_PROPS, ACE_SET_OPTIONS} from './config'
+import {SUPPORTED_LANGUAGES, LANGUAGE_ALIASES, ACE_EDITOR_PROPS, ACE_SET_OPTIONS} from './config'
 import createHighlightMarkers from './createHighlightMarkers'
+
+function isSupportedLanguage(mode) {
+  const alias = LANGUAGE_ALIASES[mode]
+  if (alias) {
+    return alias
+  }
+
+  const isSupported = SUPPORTED_LANGUAGES.find(lang => lang.value === mode)
+  if (isSupported) {
+    return mode
+  }
+
+  return false
+}
 
 export default class PreviewCode extends PureComponent {
   static propTypes = {
     type: PropTypes.object,
-    layout: PropTypes.string,
     value: PropTypes.shape({
       _type: PropTypes.string,
       code: PropTypes.string,
@@ -53,14 +67,17 @@ export default class PreviewCode extends PureComponent {
   render() {
     const {value, type} = this.props
     const fixedLanguage = get(type, 'options.language')
+    const mode = isSupportedLanguage((value && value.language) || fixedLanguage) || 'text'
     return (
       <div className={styles.root}>
         <div className={styles.aceWrapper}>
           <AceEditor
             ref={this.ace}
-            mode={(value && value.language) || fixedLanguage || 'text'}
+            focus={false}
+            mode={mode}
             theme="monokai"
             width="100%"
+            onChange={() => undefined}
             height={null}
             maxLines={200}
             readOnly

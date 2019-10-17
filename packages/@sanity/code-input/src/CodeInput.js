@@ -3,12 +3,13 @@ import PropTypes from 'prop-types'
 import AceEditor from 'react-ace'
 import {get, has} from 'lodash'
 import {PatchEvent, set, insert, unset, setIfMissing} from 'part:@sanity/form-builder/patch-event'
-import styles from './CodeInput.css'
 import FormField from 'part:@sanity/components/formfields/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import DefaultSelect from 'part:@sanity/components/selects/default'
 import TextInput from 'part:@sanity/components/textinputs/default'
 import createHighlightMarkers from './createHighlightMarkers'
+import styles from './CodeInput.css'
+
 import {
   LANGUAGE_ALIASES,
   ACE_EDITOR_PROPS,
@@ -84,7 +85,8 @@ export default class CodeInput extends PureComponent {
   }
 
   static defaultProps = {
-    onChange() {}
+    onChange() {},
+    value: undefined
   }
 
   focus() {
@@ -232,11 +234,11 @@ export default class CodeInput extends PureComponent {
   renderEditor = () => {
     const {value, type} = this.props
     const fixedLanguage = get(type, 'options.language')
-    const language = isSupportedLanguage((value && value.language) || fixedLanguage) || 'text'
+    const mode = isSupportedLanguage((value && value.language) || fixedLanguage) || 'text'
     return (
       <AceEditor
         className={styles.aceEditor}
-        mode={language}
+        mode={mode}
         theme={this.getTheme()}
         width="100%"
         onChange={this.handleCodeChange}

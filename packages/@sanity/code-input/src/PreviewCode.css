@@ -12,6 +12,7 @@
   cursor: default;
   background-color: #272822;
   padding: 1rem;
+  pointer-events: none;
 }
 
 .aceWrapper :global(.ace_content) {
