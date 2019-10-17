@@ -1,7 +1,7 @@
 {
   "name": "example-studio",
   "private": true,
-  "version": "0.142.7",
+  "version": "0.142.8",
   "description": "A sanity studio with instructional examples and useful patterns",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
@@ -19,7 +19,7 @@
   ],
   "dependencies": {
     "@sanity/base": "0.142.6",
-    "@sanity/block-tools": "0.142.6",
+    "@sanity/block-tools": "0.142.8",
     "@sanity/cli": "0.142.7",
     "@sanity/code-input": "0.142.6",
     "@sanity/components": "0.142.6",
@@ -27,8 +27,8 @@
     "@sanity/date-input": "0.142.6",
     "@sanity/default-layout": "0.142.7",
     "@sanity/default-login": "0.142.6",
-    "@sanity/desk-tool": "0.142.7",
-    "@sanity/form-builder": "0.142.7",
+    "@sanity/desk-tool": "0.142.8",
+    "@sanity/form-builder": "0.142.8",
     "@sanity/language-filter": "0.142.6",
     "@sanity/storybook": "0.142.6",
     "@sanity/vision": "0.142.7",

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/form-builder",
-  "version": "0.142.7",
+  "version": "0.142.8",
   "description": "Sanity form builder",
   "main": "lib/index.js",
   "scripts": {
@@ -23,7 +23,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
-    "@sanity/block-tools": "0.142.6",
+    "@sanity/block-tools": "0.142.8",
     "@sanity/generate-help-url": "0.142.0",
     "@sanity/image-url": "0.140.12",
     "@sanity/imagetool": "0.142.6",
