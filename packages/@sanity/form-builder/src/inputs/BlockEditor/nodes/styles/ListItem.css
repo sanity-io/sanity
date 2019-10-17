@@ -18,35 +18,35 @@
 }
 
 .level-3 {
-  left: 6em;
+  left: 4.5em;
 }
 
 .level-4 {
-  left: 9em;
+  left: 6em;
 }
 
 .level-5 {
-  left: 12em;
+  left: 7.5em;
 }
 
 .level-6 {
-  left: 16em;
+  left: 9em;
 }
 
 .level-7 {
-  left: 18em;
+  left: 10.5em;
 }
 
 .level-8 {
-  left: 21em;
+  left: 12em;
 }
 
 .level-9 {
-  left: 24em;
+  left: 13.5em;
 }
 
 .level-10 {
-  left: 27em;
+  left: 15em;
 }
 
 .root > .item {
@@ -70,49 +70,42 @@
   composes: root;
 
   @nest & > .item:before {
-    content: '\25CF '; /* BLACK CIRCLE */
+    content: '  \25CF'; /* BLACK CIRCLE */
+    font-size: 0.4375rem; /* 7px */
+    line-height: 1.5rem; /* Same as body text */
+    /* Optical alignment */
+    position: relative;
+    top: 1px;
   }
 
-  @nest &.level-2 > .item {
-    @nest &:before {
-      content: '\25CB '; /* WHITE CIRCLE */
-    }
+  @nest &.level-2 > .item:before {
+    content: '  \25CB'; /* WHITE CIRCLE */
   }
 
-  @nest &.level-3 > .item {
-    @nest &:before {
-      content: '\25A0 '; /* BIG BLACK SQUARE */
-    }
+  @nest &.level-3 > .item:before {
+    content: '  \25A0'; /* BIG BLACK SQUARE */
   }
 
-  @nest &.level-5 > .item {
-    @nest &:before {
-      content: '\25CB '; /* WHITE CIRCLE */
-    }
+  @nest &.level-5 > .item:before {
+    content: '  \25CB'; /* WHITE CIRCLE */
   }
 
-  @nest &.level-6 > .item {
-    @nest &:before {
-      content: '\25A0 '; /* BIG BLACK SQUARE */
-    }
+  @nest &.level-6 > .item:before {
+    content: '  \25A0'; /* BIG BLACK SQUARE */
   }
 
-  @nest &.level-8 > .item {
-    @nest &:before {
-      content: '\25CB '; /* WHITE CIRCLE */
-    }
+  @nest &.level-8 > .item:before {
+    content: '  \25CB'; /* WHITE CIRCLE */
   }
 
-  @nest &.level-9 > .item {
-    @nest &:before {
-      content: '\25A0 '; /* BIG BLACK SQUARE */
-    }
+  @nest &.level-9 > .item:before {
+    content: '  \25A0'; /* BIG BLACK SQUARE */
   }
 }
 
 .bullet > .item {
   @nest &:before {
-    min-width: 1.5em; /* Make sure space between bullet and text never shrinks */
+    min-width: 1.5rem; /* Make sure space between bullet and text never shrinks */
   }
 }
 
@@ -229,7 +222,7 @@
 
 .number > .item {
   @nest &:before {
-    min-width: 1.6em; /* Make sure space between number and text never shrinks */
+    min-width: 1.5em; /* Make sure space between number and text never shrinks */
     content: counter(listItemNumber) '. ';
   }
 }
