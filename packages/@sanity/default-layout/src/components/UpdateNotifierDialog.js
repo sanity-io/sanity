@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
+import DialogContent from 'part:@sanity/components/dialogs/content'
 import styles from './styles/UpdateNotifierDialog.css'
 
 const upperFirst = str => `${str.slice(0, 1).toUpperCase()}${str.slice(1)}`
@@ -47,11 +47,13 @@ class UpdateNotifierDialog extends Component {
             ))}
           </tbody>
         </table>
-
-        <p className={styles.upgradeText}>
-          To upgrade, run the Sanity CLI command <code className={styles.code}>sanity upgrade</code>{' '}
-          in your project folder.
-        </p>
+        <div className={styles.upgradeText}>
+          <p>
+            To upgrade, run the <a href="https://www.sanity.io/docs/reference/cli">Sanity CLI</a>{' '}
+            upgrade command in your project folder from a terminal.
+          </p>
+          <code className={styles.code}>sanity upgrade</code>
+        </div>
       </div>
     )
   }
@@ -60,16 +62,15 @@ class UpdateNotifierDialog extends Component {
     const {severity} = this.props
     return (
       <div>
-        <p>You are running an outdated studio.</p>
+        <p>
+          This Studio is now outdated.{' '}
+          {severity === 'high'
+            ? 'Please get in touch with your developers and ask them to upgrade it for you.'
+            : 'Consider getting in touch with your developers and ask them to upgrade it for you.'}
+        </p>
 
-        {severity === 'high' ? (
-          <p>Please get in touch with your developers and ask them to upgrade it for you.</p>
-        ) : (
-          <p>Consider getting in touch with your developers and ask them to upgrade it for you.</p>
-        )}
-
-        <details>
-          <summary>Developer info</summary>
+        <details className={styles.details}>
+          <summary className={styles.summary}>Developer info</summary>
           {this.renderTable()}
         </details>
       </div>
@@ -80,15 +81,18 @@ class UpdateNotifierDialog extends Component {
     const {severity, onClose} = this.props
     return (
       <Dialog isOpen onClose={onClose} onClickOutside={onClose}>
-        <div className={styles.content}>
-          <div>
-            <h2>{severity === 'low' ? 'New versions available' : 'Studio is outdated'}</h2>
-            {__DEV__ ? this.renderTable() : this.renderContactDeveloper()}
-            <Button color="primary" onClick={onClose}>
-              Close
-            </Button>
-          </div>
-        </div>
+        <DialogContent size="medium" padding="large">
+          <h2 className={styles.dialogHeading}>
+            {severity === 'low' ? 'Upgrades available' : 'Studio is outdated'}
+          </h2>
+          {__DEV__ && (
+            <p>
+              This Studio is no longer up to date{' '}
+              {severity === 'high' ? 'and should be upgraded.' : 'and can be upgraded.'}
+            </p>
+          )}
+          {__DEV__ ? this.renderTable() : this.renderContactDeveloper()}
+        </DialogContent>
       </Dialog>
     )
   }
