@@ -164,7 +164,7 @@ const partialBlock = {
     }
   ]
 }
-normalizeBlock(partialBlock, {decorators: ['strong']})
+normalizeBlock(partialBlock, {alowedDecorators: ['strong']})
 ```
 Will produce
 ```

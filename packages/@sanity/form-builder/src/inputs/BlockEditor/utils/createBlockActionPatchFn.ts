@@ -10,14 +10,14 @@ export default function createBlockActionPatchFn(
 ) {
   let toInsert
   return (givenBlock: Block) => {
-    const decorators = blockContentFeatures.decorators.map(item => item.value)
+    const allowedDecorators = blockContentFeatures.decorators.map(item => item.value)
     switch (type) {
       case 'set':
         return onPatch(
           PatchEvent.from(
             set(
               normalizeBlock(givenBlock, {
-                decorators
+                allowedDecorators
               }),
               [{_key: block._key}]
             )
@@ -29,7 +29,7 @@ export default function createBlockActionPatchFn(
         toInsert = Array.isArray(givenBlock) ? givenBlock : [givenBlock]
         toInsert = toInsert.map(blk =>
           normalizeBlock(blk, {
-            decorators
+            allowedDecorators
           })
         )
         return onPatch(PatchEvent.from(insert(toInsert, 'after', [{_key: block._key}])))

@@ -30,7 +30,7 @@ describe('normalizeBlock', () => {
       ],
       markDefs: []
     })
-    assert.deepEqual(normalizeBlock(block, {decorators: ['strong']}), {
+    assert.deepEqual(normalizeBlock(block, {allowedDecorators: ['strong']}), {
       _key: 'randomKey0',
       _type: 'block',
       children: [

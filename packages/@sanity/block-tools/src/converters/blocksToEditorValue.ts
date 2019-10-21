@@ -135,7 +135,7 @@ function sanityBlockToRawNode(sanityBlock, blockContentFeatures, options: any = 
   }
   if (options.normalize) {
     return normalizeBlock(block, {
-      decorators: blockContentFeatures.decorators.map(decorator => decorator.value)
+      allowedDecorators: blockContentFeatures.decorators.map(decorator => decorator.value)
     })
   }
   return block

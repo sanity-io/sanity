@@ -126,7 +126,7 @@ export default function editorValueToBlocks(value, type, options = {}) {
     .filter(Boolean)
     .map(block =>
       normalizeBlock(block, {
-        decorators: blockContentFeatures.decorators.map(decorator => decorator.value)
+        allowedDecorators: blockContentFeatures.decorators.map(decorator => decorator.value)
       })
     )
 }
