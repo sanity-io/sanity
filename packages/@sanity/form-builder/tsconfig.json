@@ -1,7 +1,7 @@
 {
   "extends": "../../../tsconfig",
-  "include": ["./src/**/*.ts", "./src/**/*.tsx"],
-  "exclude": ["./test/**/*.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["test/**/*.ts"],
   "compilerOptions": {
     "strict": false,
     "jsx": "react",
