@@ -326,7 +326,9 @@ export default withRouterHOC(
 
     // @todo move publishing notification out of this component
     UNSAFE_componentWillReceiveProps(nextProps) {
-      this.setState({didPublish: this.props.isPublishing && !nextProps.isPublishing})
+      this.setState(currentState => ({
+        didPublish: currentState.didPublish || (this.props.isPublishing && !nextProps.isPublishing)
+      }))
 
       if (this.props.isRestoring && !nextProps.isRestoring) {
         this.setHistoryState(INITIAL_HISTORY_STATE)
