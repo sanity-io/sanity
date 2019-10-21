@@ -15,7 +15,7 @@ function Branding(props) {
         </div>
       )}
       {!Logo && (
-        <div>
+        <div className={styles.projectNameContainer}>
           <h1 className={styles.projectName}>{projectName}</h1>
         </div>
       )}

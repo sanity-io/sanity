@@ -62,5 +62,6 @@
   --block-extras-background-color: #eee;
 
   /* Others */
-  --pane-header-height: 3.4375rem; /* 55px */
+  --pane-header-height: 3.4375rem;
+  --nav-bar-box: 3.0625em; /* 55px */
 }
