@@ -60,9 +60,11 @@ function createModalAction(templateItem) {
   // Build up an item suited for the "action modal" dialog
   const type = schema.get(tpl.schemaType)
   const title = item.title || tpl.title
+  const description = item.description || tpl.description
   return {
     ...tpl,
     title,
+    description,
     // Don't show the type name as subtitle if it's the same as the template name
     subtitle: type.title === title ? undefined : type.title,
     key: item.id,
@@ -92,12 +94,12 @@ function canCreateTemplateItem(item) {
 
 // Don't include templates that have defined parameters but no parameters are provided for the template item
 function hasRequiredParameters(item) {
-  const {template, templateParameters} = item.params
-  const hasMissingParams = !templateParameters && item.template.parameters
+  const {template, templateParams} = item
+  const hasMissingParams = !templateParams && template.parameters && template.parameters.length > 0
   if (hasMissingParams) {
     // eslint-disable-next-line no-console
     console.error(
-      `Template with ID "${template}" requires a set of parameters, but none were given. Skipping.`
+      `Template with ID "${template.id}" requires a set of parameters, but none were given. Skipping.`
     )
   }
 
