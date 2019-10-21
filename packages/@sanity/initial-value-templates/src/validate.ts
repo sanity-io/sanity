@@ -7,6 +7,7 @@ import {getDefaultSchema} from './parts/Schema'
 
 export {validateInitialValue, validateTemplates}
 
+const ALLOWED_REF_PROPS = ['_key', '_ref', '_weak', '_type']
 const REQUIRED_TEMPLATE_PROPS: (keyof Template)[] = ['id', 'title', 'schemaType', 'value']
 
 function validateTemplates(templates: Template[]) {
@@ -81,7 +82,15 @@ function validateInitialValue(value: {[key: string]: any}, template: Template) {
 
 function validateValue(value: any, path: (string | number)[] = [], parentIsArray = false): any {
   if (Array.isArray(value)) {
-    return value.map((item, i) => validateValue(item, path.concat(i), true))
+    return value.map((item, i) => {
+      if (Array.isArray(item)) {
+        throw new Error(
+          `multidimensional arrays are not supported (at path "${pathToString(path)}")`
+        )
+      }
+
+      return validateValue(item, path.concat(i), true)
+    })
   }
 
   if (!isPlainObject(value)) {
@@ -99,6 +108,10 @@ function validateValue(value: any, path: (string | number)[] = [], parentIsArray
     } else {
       throw new Error(`missing "_type" property at path "${pathToString(path)}"`)
     }
+  }
+
+  if (value._ref) {
+    validateReference(value, path)
   }
 
   // Validate deeply
@@ -127,6 +140,24 @@ function validateParameter(parameter: TemplateParameter, template: Template, ind
   if (!schema.get(parameter.type)) {
     throw new Error(
       `Template parameter "${parameter.name}" has an invalid/unknown type: "${parameter.type}"`
+    )
+  }
+}
+
+function validateReference(value, path: (string | number)[] = []) {
+  if (!value._type && value.type) {
+    throw new Error(
+      `Reference is missing "_type", but has a "type" property at path "${pathToString(path)}"`
+    )
+  }
+
+  const disallowed = Object.keys(value).filter(key => !ALLOWED_REF_PROPS.includes(key))
+  if (disallowed.length > 0) {
+    const plural = disallowed.length > 1 ? 'properties' : 'property'
+    throw new Error(
+      `Disallowed ${plural} found in reference: ${disallowed
+        .map(quote)
+        .join(', ')} at path "${pathToString(path)}"`
     )
   }
 }
