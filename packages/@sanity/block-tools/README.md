@@ -149,7 +149,7 @@ blockTools.htmlToBlocks(
 
 ```
 
-### ``normalizeBlock(block)``
+### ``normalizeBlock(block, [options={}])``
 Normalize a block object structure to make sure it has what it needs.
 
 ```js
@@ -159,11 +159,12 @@ const partialBlock = {
   children: [
     {
       _type: 'span',
-      text: 'Foobar'
+      text: 'Foobar',
+      marks: ['strong', 'df324e2qwe']
     }
   ]
 }
-normalizeBlock(partialBlock)
+normalizeBlock(partialBlock, {alowedDecorators: ['strong']})
 ```
 Will produce
 ```
@@ -174,7 +175,7 @@ Will produce
     {
       _key: 'randomKey00',
       _type: 'span',
-      marks: [],
+      marks: ['strong'],
       text: 'Foobar'
     }
   ],

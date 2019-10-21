@@ -2,7 +2,7 @@ import {isEqual} from 'lodash'
 import randomKey from './randomKey'
 
 // For a block with _type 'block' (text), join spans where possible
-export default function normalizeBlock(block) {
+export default function normalizeBlock(block, options: {allowedDecorators?: string[]} = {}) {
   let newIndex = 0
   if (!block._key) {
     block._key = randomKey(12)
@@ -30,6 +30,10 @@ export default function normalizeBlock(block) {
     return block
   }
   let usedMarkDefs = []
+  const allowedDecorators =
+    options.allowedDecorators &&
+    Array.isArray(options.allowedDecorators) &&
+    options.allowedDecorators
   block.children = block.children
     .reduce((acc, child) => {
       const previousChild = acc.slice(-1)[0]
@@ -52,6 +56,11 @@ export default function normalizeBlock(block) {
       child._key = `${block._key}${newIndex++}`
       if (child._type === 'span' && !child.marks) {
         child.marks = []
+      }
+      if (allowedDecorators && child._type === 'span') {
+        child.marks = child.marks.filter(
+          mark => allowedDecorators.includes(mark) || block.markDefs.find(def => def._key)
+        )
       }
       usedMarkDefs = usedMarkDefs.concat(child.marks)
       return child

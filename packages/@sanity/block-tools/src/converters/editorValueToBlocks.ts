@@ -124,5 +124,9 @@ export default function editorValueToBlocks(value, type, options = {}) {
   return nodes
     .map(node => toSanityBlock(node, blockContentFeatures, options))
     .filter(Boolean)
-    .map(normalizeBlock)
+    .map(block =>
+      normalizeBlock(block, {
+        allowedDecorators: blockContentFeatures.decorators.map(decorator => decorator.value)
+      })
+    )
 }

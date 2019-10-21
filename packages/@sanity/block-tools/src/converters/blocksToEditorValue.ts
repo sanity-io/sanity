@@ -134,7 +134,9 @@ function sanityBlockToRawNode(sanityBlock, blockContentFeatures, options: any = 
         : [EMPTY_TEXT_NODE]
   }
   if (options.normalize) {
-    return normalizeBlock(block)
+    return normalizeBlock(block, {
+      allowedDecorators: blockContentFeatures.decorators.map(decorator => decorator.value)
+    })
   }
   return block
 }
