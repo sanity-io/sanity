@@ -4,13 +4,17 @@ import object from './object'
 
 export default (typeDefinition, visitorContext) => {
   const typeDef = object(typeDefinition, visitorContext)
-  const {initialValue} = typeDef
+  const {initialValue, initialValues} = typeDef
 
-  const hasInitialValue = typeof initialValue !== 'undefined'
-  if (hasInitialValue && !isPlainObject(initialValue) && typeof initialValue !== 'function') {
+  const hasInitialValues = typeof initialValues !== 'undefined'
+  if (hasInitialValues && !isPlainObject(initialValues) && typeof initialValues !== 'function') {
     typeDef._problems.push(
-      error(`The "initialValue" property must be either a plain object or a function`)
+      error(`The "initialValues" property must be either a plain object or a function`)
     )
+  }
+
+  if (typeof initialValue !== 'undefined') {
+    typeDef._problems.push(error(`Found property "initialValue" - did you mean "initialValues"?`))
   }
 
   return typeDef

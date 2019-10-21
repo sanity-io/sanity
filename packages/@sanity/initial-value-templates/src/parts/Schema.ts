@@ -40,7 +40,7 @@ export interface SchemaType {
   to?: SchemaField[]
   fields?: SchemaField[]
   orderings?: Ordering[]
-  initialValue?: Function | {[key: string]: any}
+  initialValues?: Function | {[key: string]: any}
   preview?: {
     select?: PreviewFields
     prepare?: PreviewPreparer

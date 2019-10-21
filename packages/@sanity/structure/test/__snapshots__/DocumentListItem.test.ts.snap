@@ -131,7 +131,7 @@ Object {
       },
     ],
     "icon": [Function],
-    "initialValue": Object {
+    "initialValues": Object {
       "slug": Object {
         "_type": "slug",
         "current": "default-slug",
@@ -306,7 +306,7 @@ Object {
       },
     ],
     "icon": [Function],
-    "initialValue": Object {
+    "initialValues": Object {
       "slug": Object {
         "_type": "slug",
         "current": "default-slug",
@@ -429,7 +429,7 @@ Object {
       },
     ],
     "icon": [Function],
-    "initialValue": Object {
+    "initialValues": Object {
       "slug": Object {
         "_type": "slug",
         "current": "default-slug",
