@@ -13,6 +13,7 @@ export type InitialValueTemplateItem = {
   id: string
   templateId: string
   title?: string
+  description?: string
   parameters?: {[key: string]: any}
   type: 'initialValueTemplateItem'
 }
@@ -38,6 +39,14 @@ export class InitialValueTemplateItemBuilder implements Serializable {
 
   getTitle() {
     return this.spec.title
+  }
+
+  description(description: string) {
+    return this.clone({description})
+  }
+
+  getDescription() {
+    return this.spec.description
   }
 
   templateId(templateId: string): InitialValueTemplateItemBuilder {
