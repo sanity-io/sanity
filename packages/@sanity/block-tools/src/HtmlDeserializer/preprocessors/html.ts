@@ -1,20 +1,40 @@
 import {_XPathResult} from './index'
-
+// Remove this cruft from the document
+const unwantedWordDocumentPaths = [
+  '/html/text()',
+  '/html/head/text()',
+  '/html/body/text()',
+  '/html/body/ul/text()',
+  '/html/body/ol/text()',
+  '//comment()',
+  '//style',
+  '//xml',
+  '//script',
+  '//meta',
+  '//link'
+]
 export default (html, doc) => {
-  // Remove this cruft from the document
-  const unwantedWordDocumentPaths = [
-    '/html/text()',
-    '/html/head/text()',
+  // Make sure text directly on the body is wrapped in spans.
+  // This mimics what the browser does before putting html on the clipboard,
+  // when used in a script context with JSDOM
+  const bodyTextNodes = doc.evaluate(
     '/html/body/text()',
-    '/html/body/ul/text()',
-    '/html/body/ol/text()',
-    '//comment()',
-    '//style',
-    '//xml',
-    '//script',
-    '//meta',
-    '//link'
-  ]
+    doc,
+    null,
+    _XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
+    null
+  )
+  for (let i = bodyTextNodes.snapshotLength - 1; i >= 0; i--) {
+    const node = bodyTextNodes.snapshotItem(i)
+    const text = node.textContent
+    if (text.replace(/[^\S\n]+$/g, '')) {
+      const newNode = doc.createElement('span')
+      newNode.appendChild(doc.createTextNode(text))
+      node.parentNode.replaceChild(newNode, node)
+    } else {
+      node.parentNode.removeChild(node)
+    }
+  }
 
   const unwantedNodes = doc.evaluate(
     unwantedWordDocumentPaths.join('|'),
