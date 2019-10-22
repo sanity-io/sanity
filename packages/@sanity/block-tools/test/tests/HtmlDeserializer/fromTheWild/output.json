@@ -13,16 +13,25 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Asylsøkere, flyktninger og familiegjenforente har samme rett til helsetjenester som den øvrige befolkningen. Retten til helsehjelp for asylsøkere gjelder fra de kommer til Norge for å søke beskyttelse. Flyktninger og familiegjenforente har også fulle rettigheter til helsehjelp fra de ankommer landet. For definisjoner av asylsøker, flyktningen, familiegjenforent og person med avslag på søknad om beskyttelse se "
+        "text": "Asylsøkere, flyktninger og familiegjenforente har samme rett til helsetjenester som den øvrige befolkningen. Retten til helsehjelp for asylsøkere gjelder fra de kommer til Norge for å søke beskyttelse. Flyktninger og familiegjenforente har også fulle rettigheter til helsehjelp fra de ankommer landet. For definisjoner av asylsøker, flyktningen, familiegjenforent og person med avslag på søknad om beskyttelse se "
       },
       {
         "_type": "span",
-        "marks": ["randomKey0"],
+        "marks": [
+          "randomKey0"
+        ],
         "text": "UDIs hjemmeside Ord og begreper"
       },
-      { "_type": "span", "marks": [], "text": "." },
-      { "_type": "span", "marks": [], "text": "\n" }
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "."
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "\n"
+      }
     ]
   },
   {
@@ -39,14 +48,14 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Rettighetene omfatter både somatisk og psykisk helsehjelp fra kommune- og spesialisthelsetjeneste, inkludert hjelp for rusmiddelproblemer, men voksne asylsøkere har ikke rett til omsorgstjenester fra kommunen. "
+        "text": "Rettighetene omfatter både somatisk og psykisk helsehjelp fra kommune- og spesialisthelsetjeneste, inkludert hjelp for rusmiddelproblemer, men voksne asylsøkere har ikke rett til omsorgstjenester fra kommunen. "
       },
       {
         "_type": "span",
-        "marks": ["randomKey1"],
-        "text":
-          "Se forskrift om rett til helse- og omsorgstjenester til personer uten fast opphold i riket § 6"
+        "marks": [
+          "randomKey1"
+        ],
+        "text": "Se forskrift om rett til helse- og omsorgstjenester til personer uten fast opphold i riket § 6"
       }
     ]
   },
@@ -58,8 +67,7 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Voksne asylsøkere med særskilte behov skal gis et tilrettelagt botilbud av UDI. Enkelte asylsøkere har imidlertid så store pleie- og omsorgsbehov at de ikke kan bo i asylmottak. For å sikre dem et forsvarlig botilbud, har UDI inngått rammeavtale om plass i private eller kommunale helse- og omsorgsinstitusjoner."
+        "text": "Voksne asylsøkere med særskilte behov skal gis et tilrettelagt botilbud av UDI. Enkelte asylsøkere har imidlertid så store pleie- og omsorgsbehov at de ikke kan bo i asylmottak. For å sikre dem et forsvarlig botilbud, har UDI inngått rammeavtale om plass i private eller kommunale helse- og omsorgsinstitusjoner."
       }
     ]
   },
@@ -71,8 +79,7 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Alle barn under 18 år som oppholder seg i Norge har rett til både helse- og omsorgstjenester."
+        "text": "Alle barn under 18 år som oppholder seg i Norge har rett til både helse- og omsorgstjenester."
       }
     ]
   },
@@ -84,8 +91,7 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Personer med endelig avslag på søknaden om beskyttelse (asyl) og personer uten lovlig opphold i landet har rett til øyeblikkelig helsehjelp og helsehjelp som er helt nødvendig og ikke kan vente."
+        "text": "Personer med endelig avslag på søknaden om beskyttelse (asyl) og personer uten lovlig opphold i landet har rett til øyeblikkelig helsehjelp og helsehjelp som er helt nødvendig og ikke kan vente."
       }
     ]
   },
@@ -97,8 +103,7 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Kommunen har ansvaret for at de som oppholder seg i kommunen får helsehjelp. Asylsøkere har fulle rettigheter til helsehjelp fra kommunen."
+        "text": "Ansvar for å yte helsehjelp"
       }
     ]
   },
@@ -110,8 +115,7 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Ved behov kan kommunene be om råd og støtte fra spesialisthelsetjenesten"
+        "text": "Kommunen har ansvaret for at de som oppholder seg i kommunen får helsehjelp. Asylsøkere har fulle rettigheter til helsehjelp fra kommunen."
       }
     ]
   },
@@ -123,8 +127,7 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Staten har det overordnede ansvaret for at befolkningen gis nødvendig spesialisthelsetjenester. De fire regionale helseforetakene skal sørge for at det tilbys spesialisthelsetjenester, som sykehustjenester, medisinske laboratorietjenester og radiologiske tjenester."
+        "text": "Ved behov kan kommunene be om råd og støtte fra spesialisthelsetjenesten"
       }
     ]
   },
@@ -136,8 +139,7 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "UDI har ansvar for at kommunen får melding om asylsøkere som oppholder seg i kommunen, slik at kommunen kan sørge for helsetjenestene de har krav på."
+        "text": "Staten har det overordnede ansvaret for at befolkningen gis nødvendig spesialisthelsetjenester. De fire regionale helseforetakene skal sørge for at det tilbys spesialisthelsetjenester, som sykehustjenester, medisinske laboratorietjenester og radiologiske tjenester."
       }
     ]
   },
@@ -149,18 +151,33 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Fylkeskommunen skal etter lov om tannhelsetjenesten sørge for at nødvendig tannhelsehjelp er tilgjengelig for alle som bor eller midlertidig oppholder seg i fylket, herunder flyktninger, personer med opphold på humanitært grunnlag, asylsøkere som bor eller oppholder seg i asyl mottak og familiegjenforente. Rettighetene gjelder uavhengig av om asylsøkeren bor privat eller i asylmottak. Tannhelsetjenesten bør tilstrebe et godt samarbeid med lokale mottak."
+        "text": "UDI har ansvar for at kommunen får melding om asylsøkere som oppholder seg i kommunen, slik at kommunen kan sørge for helsetjenestene de har krav på."
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "Fylkeskommunen skal etter lov om tannhelsetjenesten sørge for at nødvendig tannhelsehjelp er tilgjengelig for alle som bor eller midlertidig oppholder seg i fylket, herunder flyktninger, personer med opphold på humanitært grunnlag, asylsøkere som bor eller oppholder seg i asyl mottak og familiegjenforente. Rettighetene gjelder uavhengig av om asylsøkeren bor privat eller i asylmottak. Tannhelsetjenesten bør tilstrebe et godt samarbeid med lokale mottak."
       },
-      { "_type": "span", "marks": [], "text": "\n" },
-      { "_type": "span", "marks": ["em"], "text": "Foobar" }
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "\n"
+      },
+      {
+        "_type": "span",
+        "marks": [
+          "em"
+        ],
+        "text": "Foobar"
+      }
     ]
-  },
-  {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
-    "children": [{ "_type": "span", "marks": [], "text": "\n" }]
   },
   {
     "_type": "block",
@@ -170,8 +187,24 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Helsepersonell har ansvar for å vurdere behovet for å bestille kvalifisert tolk i møte med pasient med begrensede norskkunnskaper. Helsepersonell kan trenge tolk for å utøve informasjons- og veiledningsplikten. Samarbeid med kvalifisert tolk kan være en forutsetning for å sikre pasientens rett til blant annet å få forståelig informasjon og å kunne gi informert samtykke til helsehjelp, jf. blant annet pasient- og brukerrettighetsloven §§3-5 og 4-1. Familiemedlemmer bør ikke brukes som tolk. Barn skal aldri brukes som tolk. Unntak kan gjøres når det er nødvendig for å unngå tap av liv eller alvorlig helseskade, eller det er nødvendig i andre nødssituasjoner."
+        "text": "Ansvar for å sikre god informasjon og kommunikasjon"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "\n"
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "Helsepersonell har ansvar for å vurdere behovet for å bestille kvalifisert tolk i møte med pasient med begrensede norskkunnskaper. Helsepersonell kan trenge tolk for å utøve informasjons- og veiledningsplikten. Samarbeid med kvalifisert tolk kan være en forutsetning for å sikre pasientens rett til blant annet å få forståelig informasjon og å kunne gi informert samtykke til helsehjelp, jf. blant annet pasient- og brukerrettighetsloven §§3-5 og 4-1. Familiemedlemmer bør ikke brukes som tolk. Barn skal aldri brukes som tolk. Unntak kan gjøres når det er nødvendig for å unngå tap av liv eller alvorlig helseskade, eller det er nødvendig i andre nødssituasjoner."
       }
     ]
   },
@@ -181,17 +214,17 @@
       {
         "_key": "randomKey2",
         "_type": "link",
-        "href":
-          "https://helsedirektoratet.no/asylsokere-flyktninger-og-innvandrere/helsepersonells-ansvar-for-god-kommunikasjon-via-tolk"
+        "href": "https://helsedirektoratet.no/asylsokere-flyktninger-og-innvandrere/helsepersonells-ansvar-for-god-kommunikasjon-via-tolk"
       }
     ],
     "style": "normal",
     "children": [
       {
         "_type": "span",
-        "marks": ["randomKey2"],
-        "text":
-          "Se temasiden: Helsepersonells ansvar for god kommunikasjon via tolk"
+        "marks": [
+          "randomKey2"
+        ],
+        "text": "Se temasiden: Helsepersonells ansvar for god kommunikasjon via tolk"
       }
     ]
   },
@@ -201,17 +234,17 @@
       {
         "_key": "randomKey3",
         "_type": "link",
-        "href":
-          "https://helsedirektoratet.no/retningslinjer/veileder-om-kommunikasjon-via-tolk-for-ledere-og-personell-i-helse-og-omsorgstjenestene"
+        "href": "https://helsedirektoratet.no/retningslinjer/veileder-om-kommunikasjon-via-tolk-for-ledere-og-personell-i-helse-og-omsorgstjenestene"
       }
     ],
     "style": "normal",
     "children": [
       {
         "_type": "span",
-        "marks": ["randomKey3"],
-        "text":
-          "Se veileder om kommunikasjon via tolk for ledere og personell i helse- og omsorgstjenestene"
+        "marks": [
+          "randomKey3"
+        ],
+        "text": "Se veileder om kommunikasjon via tolk for ledere og personell i helse- og omsorgstjenestene"
       }
     ]
   },
@@ -228,7 +261,9 @@
     "children": [
       {
         "_type": "span",
-        "marks": ["randomKey4"],
+        "marks": [
+          "randomKey4"
+        ],
         "text": "Se Tolkeportalen/IMDI"
       }
     ]
@@ -241,8 +276,7 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Kommunen står fritt i organiseringen av helsetjenestene, jf. helse- og omsorgstjenesteloven § 3-1."
+        "text": "Organisering av helsetjenestene i kommunen"
       }
     ]
   },
@@ -254,8 +288,7 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Det er viktig at pasientene informeres på en forståelig måte om fastlegeordningen, samtykke, taushetsplikt, rett og plikt som pasient, mv. Det bør gis god orientering om hvordan helsetjenesten er organisert og fungerer i Norge."
+        "text": "Kommunen står fritt i organiseringen av helsetjenestene, jf. helse- og omsorgstjenesteloven § 3-1."
       }
     ]
   },
@@ -267,8 +300,7 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Helsetjenestene bør tilstrebe et godt samarbeid med det lokale mottaket slik at beboerne sikres nødvendig og forståelig informasjon om rettigheter og helsetjenestetilbud i Norge og lokalt."
+        "text": "Det er viktig at pasientene informeres på en forståelig måte om fastlegeordningen, samtykke, taushetsplikt, rett og plikt som pasient, mv. Det bør gis god orientering om hvordan helsetjenesten er organisert og fungerer i Norge."
       }
     ]
   },
@@ -280,8 +312,7 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Pasienter skal ha tilgang til legekonsultasjon uavhengig av om vedkommende har fått tildelt såkalt D-nummer. D-nummer er en forutsetning for å kunne stå på liste hos en fastlege, men manglende D-nummer må ikke hindre at pasient får konsultasjon med lege. Det er viktig å planlegge konsultasjoner med rom for å bruke tolk og tilstrekkelig med tid."
+        "text": "Helsetjenestene bør tilstrebe et godt samarbeid med det lokale mottaket slik at beboerne sikres nødvendig og forståelig informasjon om rettigheter og helsetjenestetilbud i Norge og lokalt."
       }
     ]
   },
@@ -293,43 +324,24 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Helsedirektoratet anbefaler at kommunen sikrer tilgang til helsepersonell på asylmottaket."
+        "text": "Pasienter skal ha tilgang til legekonsultasjon uavhengig av om vedkommende har fått tildelt såkalt D-nummer. D-nummer er en forutsetning for å kunne stå på liste hos en fastlege, men manglende D-nummer må ikke hindre at pasient får konsultasjon med lege. Det er viktig å planlegge konsultasjoner med rom for å bruke tolk og tilstrekkelig med tid."
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "Helsedirektoratet anbefaler at kommunen sikrer tilgang til helsepersonell på asylmottaket."
       },
-      { "_type": "span", "marks": [], "text": "\n" }
-    ]
-  },
-  {
-    "_type": "block",
-    "markDefs": [],
-    "style": "h3",
-    "children": [
-      { "_type": "span", "marks": [], "text": "Tverrfaglige helseteam" }
-    ]
-  },
-  {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
-    "children": [
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Kommuner og helseforetak bør avsette fagressurser til å arbeide spesielt med likeverdige helsetjenester til asylsøker, flyktninger og familiegjenforente, og det bør etableres tverrfaglige fagmiljøer eller team som opparbeider seg kompetanse på feltet. Dette er ikke minst viktig med tanke på å styrke samarbeidet mellom primær- og spesialisthelsetjenesten."
-      }
-    ]
-  },
-  {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
-    "children": [
-      {
-        "_type": "span",
-        "marks": [],
-        "text":
-          "Mange kommuner har gode erfaringer med tverrfaglige flyktningehelseteam, der deler av eller hele stillinger er øremerket arbeidet med asylsøkere og flyktninger eller generell migrasjonshelse. Dette gjør det lettere å få oversikt over arbeidsfeltet. Det er viktig at teamene er en integrert del av den samlede helse- og omsorgstjenesten i kommunen, slik at kompetansen som opparbeides ikke blir for personavhengig."
+        "text": "\n"
       }
     ]
   },
@@ -338,7 +350,11 @@
     "markDefs": [],
     "style": "h3",
     "children": [
-      { "_type": "span", "marks": [], "text": "Interkommunalt samarbeid" }
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "Tverrfaglige helseteam"
+      }
     ]
   },
   {
@@ -349,10 +365,61 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Interkommunalt samarbeid kan for enkelte kommuner være hensiktsmessig. Mange kommuner samarbeider allerede om blant annet introduksjonsprogrammet, og samarbeid om helsetjenestetilbudet er en tilsvarende mulighet."
+        "text": "Kommuner og helseforetak bør avsette fagressurser til å arbeide spesielt med likeverdige helsetjenester til asylsøker, flyktninger og familiegjenforente, og det bør etableres tverrfaglige fagmiljøer eller team som opparbeider seg kompetanse på feltet. Dette er ikke minst viktig med tanke på å styrke samarbeidet mellom primær- og spesialisthelsetjenesten."
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "Mange kommuner har gode erfaringer med tverrfaglige flyktningehelseteam, der deler av eller hele stillinger er øremerket arbeidet med asylsøkere og flyktninger eller generell migrasjonshelse. Dette gjør det lettere å få oversikt over arbeidsfeltet. Det er viktig at teamene er en integrert del av den samlede helse- og omsorgstjenesten i kommunen, slik at kompetansen som opparbeides ikke blir for personavhengig."
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "h3",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "Interkommunalt samarbeid"
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "Interkommunalt samarbeid kan for enkelte kommuner være hensiktsmessig. Mange kommuner samarbeider allerede om blant annet introduksjonsprogrammet, og samarbeid om helsetjenestetilbudet er en tilsvarende mulighet."
       },
-      { "_type": "span", "marks": [], "text": "\n" }
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "\n"
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "Miljørettet helsevern"
+      }
     ]
   },
   {
@@ -374,17 +441,32 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Miljørettet helsevern omfatter alle grupper i befolkningen, jamfør "
+        "text": "Miljørettet helsevern omfatter alle grupper i befolkningen, jamfør "
       },
-      { "_type": "span", "marks": ["randomKey5"], "text": "folkehelseloven" },
-      { "_type": "span", "marks": [], "text": " og " },
       {
         "_type": "span",
-        "marks": ["randomKey6"],
+        "marks": [
+          "randomKey5"
+        ],
+        "text": "folkehelseloven"
+      },
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " og "
+      },
+      {
+        "_type": "span",
+        "marks": [
+          "randomKey6"
+        ],
         "text": "forskrift om miljørettet helsevern (lovdata.no)"
       },
-      { "_type": "span", "marks": [], "text": "." }
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "."
+      }
     ]
   },
   {
@@ -401,12 +483,13 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Kommunen skal føre tilsyn slik at det er mulig å avdekke blant annet dårlig inneklima eller utilfredsstillende sikring i forhold til å hindre ulykker ("
+        "text": "Kommunen skal føre tilsyn slik at det er mulig å avdekke blant annet dårlig inneklima eller utilfredsstillende sikring i forhold til å hindre ulykker ("
       },
       {
         "_type": "span",
-        "marks": ["randomKey7"],
+        "marks": [
+          "randomKey7"
+        ],
         "text": "jf. § 10 i forskrift om miljørettet helsevern)"
       },
       {
@@ -424,8 +507,7 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Utlendingsdirektoratet (UDI) inngår kontrakter med driftsoperatører om drift av asylmottak, der UDI spesifiserer i kontrakten hvilke krav som settes til driften av mottaket. Driftsoperatørene skal sikre at:"
+        "text": "Utlendingsdirektoratet (UDI) inngår kontrakter med driftsoperatører om drift av asylmottak, der UDI spesifiserer i kontrakten hvilke krav som settes til driften av mottaket. Driftsoperatørene skal sikre at:"
       }
     ]
   },
@@ -453,8 +535,7 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "at det fysiske og psykososiale miljøet er tilfredsstillende for beboernes helse"
+        "text": "at det fysiske og psykososiale miljøet er tilfredsstillende for beboernes helse"
       }
     ]
   },
@@ -487,10 +568,16 @@
     "children": [
       {
         "_type": "span",
-        "marks": ["randomKey8"],
+        "marks": [
+          "randomKey8"
+        ],
         "text": "kravene til tilgjengelighet og universell utforming"
       },
-      { "_type": "span", "marks": [], "text": " overholdes" }
+      {
+        "_type": "span",
+        "marks": [],
+        "text": " overholdes"
+      }
     ]
   },
   {
@@ -501,8 +588,7 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "UDI har overordnet ansvar for å kontrollere at driftsoperatørene leverer det tilbudet de har forpliktet seg til i henhold til kontrakten. Driftsoperatørene står for organisering og drift av mottakene, og forutsettes å ha søkt råd hos lokale myndigheter når det gjelder forhold av helsemessig eller hygienisk betydning ved planlegging og etablering av mottak. Normalt vil UDI også innhente informasjon fra kommunen i forbindelse med kontraktsoppfølging. UDI kan pålegge driftsoperatør å forbedre eventuelle utilfredsstillende forhold."
+        "text": "UDI har overordnet ansvar for å kontrollere at driftsoperatørene leverer det tilbudet de har forpliktet seg til i henhold til kontrakten. Driftsoperatørene står for organisering og drift av mottakene, og forutsettes å ha søkt råd hos lokale myndigheter når det gjelder forhold av helsemessig eller hygienisk betydning ved planlegging og etablering av mottak. Normalt vil UDI også innhente informasjon fra kommunen i forbindelse med kontraktsoppfølging. UDI kan pålegge driftsoperatør å forbedre eventuelle utilfredsstillende forhold."
       }
     ]
   },
@@ -517,8 +603,7 @@
       {
         "_key": "randomKey10",
         "_type": "link",
-        "href":
-          "https://helsedirektoratet.no/retningslinjer/veileder-i-miljorettet-helsevern"
+        "href": "https://helsedirektoratet.no/retningslinjer/veileder-i-miljorettet-helsevern"
       }
     ],
     "style": "normal",
@@ -526,38 +611,31 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Det er et krav om at driftsoperatør skal sende melding til kommunen før oppstart og ved vesentlige utvidelser eller endringer i virksomheten. ("
+        "text": "Det er et krav om at driftsoperatør skal sende melding til kommunen før oppstart og ved vesentlige utvidelser eller endringer i virksomheten. ("
       },
       {
         "_type": "span",
-        "marks": ["randomKey9"],
+        "marks": [
+          "randomKey9"
+        ],
         "text": "jf. § 14 i forskrift om miljørettet helsevern"
       },
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "). Meldingen skal inneholde en kortfattet oversikt over positive og negative miljøforhold ved virksomheten som kan ha innvirkning på helsen. "
+        "text": "). Meldingen skal inneholde en kortfattet oversikt over positive og negative miljøforhold ved virksomheten som kan ha innvirkning på helsen. "
       },
       {
         "_type": "span",
-        "marks": ["randomKey10"],
+        "marks": [
+          "randomKey10"
+        ],
         "text": "Se veileder i miljørettet helsevern"
       },
-      { "_type": "span", "marks": [], "text": "." }
-    ]
-  },
-  {
-    "_type": "block",
-    "markDefs": [],
-    "style": "normal",
-    "children": [
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Kommunen skal ha tilsyn med de faktorer i miljøet som kan ha innvirkning på helse og trivsel."
+        "text": "."
       }
     ]
   },
@@ -569,8 +647,7 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Dersom det foreligger forhold ved et asylmottak som er i strid med kravene til tilfredsstillende helsemessig drift, vil kommunen, eventuelt den instans som ivaretar kommunens oppgaver innen miljørettet helsevern, kunne gi pålegg til driftsoperatør etter folkehelseloven."
+        "text": "Kommunen skal ha tilsyn med de faktorer i miljøet som kan ha innvirkning på helse og trivsel."
       }
     ]
   },
@@ -582,8 +659,7 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Eksempel på forhold som kan være av grunnleggende betydning for helse og sikkerhet ved asylmottak er:"
+        "text": "Dersom det foreligger forhold ved et asylmottak som er i strid med kravene til tilfredsstillende helsemessig drift, vil kommunen, eventuelt den instans som ivaretar kommunens oppgaver innen miljørettet helsevern, kunne gi pålegg til driftsoperatør etter folkehelseloven."
       }
     ]
   },
@@ -591,14 +667,11 @@
     "_type": "block",
     "markDefs": [],
     "style": "normal",
-    "level": 1,
-    "listItem": "bullet",
     "children": [
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "I rom for varig opphold (bl.a. soverom) må det finnes minst ett vindu eller dør som kan åpnes mot det fri."
+        "text": "Eksempel på forhold som kan være av grunnleggende betydning for helse og sikkerhet ved asylmottak er:"
       }
     ]
   },
@@ -612,8 +685,21 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Det skal finnes sanitærutstyr (dusjer, toaletter, håndvasker osv.) som er dimensjonert for det antall personer som har opphold på stedet."
+        "text": "I rom for varig opphold (bl.a. soverom) må det finnes minst ett vindu eller dør som kan åpnes mot det fri."
+      }
+    ]
+  },
+  {
+    "_type": "block",
+    "markDefs": [],
+    "style": "normal",
+    "level": 1,
+    "listItem": "bullet",
+    "children": [
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "Det skal finnes sanitærutstyr (dusjer, toaletter, håndvasker osv.) som er dimensjonert for det antall personer som har opphold på stedet."
       }
     ]
   },
@@ -641,8 +727,7 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Virksomheten må kunne drives slik at skader, ulykker og smittsomme sykdommer forebygges."
+        "text": "Virksomheten må kunne drives slik at skader, ulykker og smittsomme sykdommer forebygges."
       }
     ]
   },
@@ -654,10 +739,13 @@
       {
         "_type": "span",
         "marks": [],
-        "text":
-          "Dersom det forekommer tilfeller av trusler og vold i mottak, vil det naturligvis påvirke den volds- eller trusselutsatte sin fysiske og psykiske helse, men kan også påvirke øvrige beboeres helsetilstand psykisk. Det påhviler kommunen å sikre helsefremmende og trygge miljøer også for personer bosatt i mottak."
+        "text": "Dersom det forekommer tilfeller av trusler og vold i mottak, vil det naturligvis påvirke den volds- eller trusselutsatte sin fysiske og psykiske helse, men kan også påvirke øvrige beboeres helsetilstand psykisk. Det påhviler kommunen å sikre helsefremmende og trygge miljøer også for personer bosatt i mottak."
       },
-      { "_type": "span", "marks": [], "text": "\n" }
+      {
+        "_type": "span",
+        "marks": [],
+        "text": "\n"
+      }
     ]
   }
 ]
