@@ -25,11 +25,11 @@ export default class Markers extends React.Component<Props, {}> {
     return (
       <Tooltip
         title={text}
-        trigger="mouseenter focus"
-        animation="scale"
+        trigger="mouseenter"
+        animation="fade scale"
         arrow
         theme="light"
-        distance="2"
+        distance={2}
         duration={50}
       >
         <CommentIcon onClick={this.handleCustomMarkerClick} />

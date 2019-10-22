@@ -215,7 +215,7 @@ class Toolbar extends React.PureComponent<Props, ToolbarState> {
                   open={showValidationTooltip}
                   position="bottom"
                   style={{padding: 0}}
-                  theme="light noPadding"
+                  theme="light"
                   trigger="click"
                 >
                   <Button
