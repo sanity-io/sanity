@@ -5,8 +5,8 @@ const helpText = `
 Options
   -y, --yes Use unattended mode, accepting defaults and using only flags for choices
   --project <projectId> Project ID to use for the studio
-  --default Set up a project with a default dataset name and visibility mode
   --dataset <dataset> Dataset name for the studio
+  --dataset-default Set up a project with a public dataset named "production"
   --output-path <path> Path to write studio project to
   --template <template> Project template to use [default: "clean"]
   --visibility <mode> Visibility mode for dataset (public/private)
@@ -20,8 +20,8 @@ Examples
   # Initialize a new plugin
   sanity init plugin
 
-  # Initialize a new project with a default dataset name (production) and visibility mode (public)
-  sanity init --default
+  # Initialize a new project with a public dataset named "production"
+  sanity init --dataset-default
 
   # Initialize a project with the given project ID and dataset to the given path
   sanity init -y --project abc123 --dataset production --output-path ~/myproj

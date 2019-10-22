@@ -32,7 +32,7 @@ export default async function initSanity(args, context) {
   const print = unattended ? noop : output.print
   const specifiedOutputPath = cliFlags['output-path']
   let reconfigure = cliFlags.reconfigure
-  let defaultConfig = cliFlags.default
+  let defaultConfig = cliFlags['dataset-default']
   let showDefaultConfigPrompt = !defaultConfig
 
   // Check if we have a project manifest already
@@ -121,7 +121,7 @@ export default async function initSanity(args, context) {
       displayName,
       dataset: flags.dataset,
       aclMode: flags.visibility,
-      defaultConfig: flags.default
+      defaultConfig: flags['dataset-default']
     },
     context
   )
@@ -382,7 +382,7 @@ export default async function initSanity(args, context) {
   async function getOrCreateDataset(opts) {
     if (showDefaultConfigPrompt) {
       output.print(
-        'Your content will be stored in a dataset that can be public or private, depending on\nwhether you want to query your content with or without authentication.\nThe default configuration has a public dataset named "production".'
+        'Your content will be stored in a dataset that can be public or private, depending on\nwhether you want to query your content with or without authentication.\nThe default dataset configuration has a public dataset named "production".'
       )
       defaultConfig = await promptForDefaultConfig(prompt)
     }
@@ -549,7 +549,7 @@ export default async function initSanity(args, context) {
 
   async function prepareFlags() {
     const createProjectName = cliFlags['create-project']
-    if (cliFlags.dataset || cliFlags.visibility || cliFlags.default || unattended) {
+    if (cliFlags.dataset || cliFlags.visibility || cliFlags['dataset-default'] || unattended) {
       showDefaultConfigPrompt = false
     }
 
@@ -611,7 +611,7 @@ export default async function initSanity(args, context) {
 function promptForDefaultConfig(prompt) {
   return prompt.single({
     type: 'confirm',
-    message: 'Use the default configuration?',
+    message: 'Use the default dataset configuration?',
     default: true
   })
 }
