@@ -29,6 +29,7 @@
   "dependencies": {
     "@sanity/client": "0.143.0",
     "@sanity/document-store": "0.143.0",
+    "@sanity/eventsource": "0.143.0",
     "@sanity/image-url": "0.140.15",
     "@sanity/initial-value-templates": "0.143.0",
     "@sanity/observable": "0.143.0",

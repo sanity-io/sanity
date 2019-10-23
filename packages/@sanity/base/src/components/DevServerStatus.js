@@ -9,7 +9,6 @@ const EventSource = isWindowEventSource
 
 const STATE_CONNECTING = 0
 const STATE_OPEN = 1
-const STATE_CLOSED = 2
 
 class DevServerStatus extends PureComponent {
   constructor(...args) {
