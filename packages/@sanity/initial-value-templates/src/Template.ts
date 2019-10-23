@@ -1,12 +1,14 @@
 import {TemplateParameter} from './TemplateParameters'
 
+type ValueResolver = (parameters: {[key: string]: any}) => {[key: string]: any}
+
 export interface Template {
   id: string
   title: string
   description?: string
   schemaType: string
   icon?: Function
-  value: {[key: string]: any}
+  value: ValueResolver | {[key: string]: any}
   parameters?: TemplateParameter[]
 }
 
@@ -57,7 +59,7 @@ export class TemplateBuilder {
     return this.spec.icon
   }
 
-  value(value: {[key: string]: any}) {
+  value(value: ValueResolver | {[key: string]: any}) {
     return this.clone({value})
   }
 
