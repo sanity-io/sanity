@@ -1,6 +1,6 @@
-import DMP from 'diff-match-patch'
+import * as DMP from 'diff-match-patch'
 
-const dmp = new DMP()
+const dmp = new DMP.diff_match_patch()
 
 const OPERATIONS = {
   replace(currentValue, nextValue) {
