@@ -1,18 +1,26 @@
 export const SUPPORTED_LANGUAGES = [
   {title: 'Batch file', value: 'batchfile'},
   {title: 'CSS', value: 'css'},
-  {title: 'SASS', value: 'sass'},
-  {title: 'SCSS', value: 'scss'},
+  {title: 'CSarp', value: 'csharp'},
+  {title: 'GROQ', value: 'groq'},
+  {title: 'GoLang', value: 'golang'},
   {title: 'HTML', value: 'html'},
   {title: 'JavaScript', value: 'javascript'},
+  {title: 'Java', value: 'java'},
   {title: 'JSON', value: 'json'},
   {title: 'JSX', value: 'jsx'},
   {title: 'Markdown', value: 'markdown'},
+  {title: 'MySQL', value: 'mysql'},
   {title: 'PHP', value: 'php'},
-  {title: 'Python', value: 'python'},
-  {title: 'sh', value: 'sh'},
   {title: 'Plain text', value: 'text'},
-  {title: 'GROQ', value: 'groq'}
+  {title: 'Python', value: 'python'},
+  {title: 'Ruby', value: 'ruby'},
+  {title: 'SASS', value: 'sass'},
+  {title: 'SCSS', value: 'scss'},
+  {title: 'sh', value: 'sh'},
+  {title: 'TypeScript', value: 'typescript'},
+  {title: 'TSX', value: 'tsx'},
+  {title: 'XML', value: 'xml'},
 ]
 
 export const LANGUAGE_ALIASES = {js: 'javascript'}
