@@ -50,9 +50,12 @@ import button from './button'
 import richTextObject from './richTextObject'
 import mux from './mux'
 
+import withWidget from './withWidget'
+
 export default createSchema({
   name: 'test-examples',
   types: schemaTypes.concat([
+    withWidget,
     book,
     author,
     species,

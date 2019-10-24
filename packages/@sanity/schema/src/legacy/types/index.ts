@@ -1,5 +1,6 @@
 export {AnyType as any} from './any'
 export {StringType as string} from './string'
+export {WidgetType as widget} from './widget'
 export {TextType as text} from './text'
 export {DateTimeType as datetime} from './datetime'
 export {DateType as date} from './date'
@@ -15,3 +16,4 @@ export {DocumentType as document} from './document'
 export {ArrayType as array} from './array'
 export {BlockType as block} from './blocks/block'
 export {SpanType as span} from './blocks/span'
+

@@ -4,6 +4,7 @@ import * as is from '../../utils/is'
 import resolveReferenceInput from './resolveReferenceInput'
 import resolveArrayInput from './resolveArrayInput'
 import resolveStringInput from './resolveStringInput'
+import SanityWidget from '../inputs/SanityWidget'
 
 function getExport(obj) {
   return obj && obj.__esModule ? obj.default : obj
@@ -25,6 +26,11 @@ function resolveTypeVariants(type) {
 
   if (is.type('reference', type)) {
     return resolveReferenceInput(type)
+  }
+
+  // Widget
+  if (is.type('widget', type)) {
+    return SanityWidget
   }
 
   // String input with a select

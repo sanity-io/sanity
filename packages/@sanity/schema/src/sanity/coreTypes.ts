@@ -16,5 +16,6 @@ export default [
   {name: 'string', jsonType: 'string'},
   {name: 'telephone', jsonType: 'string'},
   {name: 'text', jsonType: 'string'},
-  {name: 'url', jsonType: 'string'}
+  {name: 'url', jsonType: 'string'},
+  {name: 'widget', jsonType: 'object'}
 ].map(t => ({...t, type: 'type'}))
