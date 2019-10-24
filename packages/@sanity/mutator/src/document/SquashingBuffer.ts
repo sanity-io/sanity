@@ -1,4 +1,4 @@
-import DiffMatchPatch from 'diff-match-patch'
+import * as DiffMatchPatch from 'diff-match-patch'
 import extractWithPath from '../jsonpath/extractWithPath'
 import arrayToJSONMatchPath from '../jsonpath/arrayToJSONMatchPath'
 import Mutation from './Mutation'
@@ -20,7 +20,7 @@ export default class SquashingBuffer {
   // any older set operations. Only set-operations assigning plain values to plain values gets optimized like this.
   setOperations: Object
   staged: Array<any>
-  dmp: DiffMatchPatch
+  dmp: DiffMatchPatch.diff_match_patch
 
   constructor(doc: Doc) {
     if (doc) {
@@ -32,7 +32,7 @@ export default class SquashingBuffer {
     this.setOperations = {}
     this.BASIS = doc
     this.PRESTAGE = doc
-    this.dmp = new DiffMatchPatch()
+    this.dmp = new DiffMatchPatch.diff_match_patch()
   }
 
   add(mut: Mutation) {

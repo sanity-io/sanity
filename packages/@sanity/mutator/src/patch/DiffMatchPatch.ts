@@ -1,10 +1,10 @@
-import DMP from 'diff-match-patch'
+import * as DMP from 'diff-match-patch'
 
-const dmp = new DMP()
+const dmp = new DMP.diff_match_patch()
 
 export default class DiffMatchPatch {
   path: string
-  dmpPatch: string
+  dmpPatch: DMP.patch_obj[]
   id: string
   constructor(id: string, path: string, dmpPatchSrc: string) {
     this.id = id

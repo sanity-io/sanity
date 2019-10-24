@@ -69,6 +69,7 @@
     "@sanity/core": "0.143.0",
     "@sanity/plugin-loader": "0.143.0",
     "@sanity/server": "0.143.0",
+    "@types/diff-match-patch": "^1.0.32",
     "@types/moment": "^2.13.0",
     "assert": "^1.4.1",
     "in-publish": "^2.0.0",
