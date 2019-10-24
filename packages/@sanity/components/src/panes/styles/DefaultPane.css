@@ -1,4 +1,4 @@
-@import "part:@sanity/base/theme/variables-style";
+@import 'part:@sanity/base/theme/variables-style';
 
 :root {
   --nav-bar-box: 3.0625em; /* 49px */
@@ -44,12 +44,7 @@
     padding: 0;
     flex-direction: row;
     transition: box-shadow var(--pane-animation-time) var(--pane-animation-time) linear;
-    background-image:
-      linear-gradient(
-        90deg,
-        transparent,
-        color(var(--text-color) a(10%))
-      );
+    background-image: linear-gradient(90deg, transparent, color(var(--text-color) a(10%)));
     background-size: 0.8rem 100%;
     background-repeat: no-repeat;
     background-position: right;
@@ -258,7 +253,7 @@
   box-sizing: border-box;
 
   @media (--screen-medium) {
-    composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
+    composes: scrollY from 'part:@sanity/base/theme/layout/scrolling-style';
     position: absolute;
     top: 0;
     left: 0;
@@ -322,4 +317,35 @@
   @nest .isCollapsed & {
     display: none;
   }
+}
+
+.initialValueTemplateDropDownMenuButton {
+  @nest & [class^='DropDownButton'] {
+    width: 2.1875rem;
+  }
+
+  @nest & [class^='DropDownButton']:hover {
+    background-color: transparent;
+  }
+}
+
+.initialValueTemplateDropDownItem {
+  color: inherit;
+  text-decoration: none;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 var(--small-padding);
+}
+
+.initialValueTemplateSubtitle {
+  font-size: 0.7em;
+  font-weight: 300;
+  text-transform: capitalize;
+}
+
+.initialValueTemplateDropDownItemIcon {
+  display: flex;
+  align-items: center;
+  font-size: var(--font-size-large);
+  margin-left: var(--large-padding);
 }

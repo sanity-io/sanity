@@ -5,6 +5,9 @@ Object {
   "id": "foo",
   "options": Object {
     "id": "docId",
+    "templateParameters": Object {
+      "foo": "bar",
+    },
     "type": "book",
   },
   "title": "some title",

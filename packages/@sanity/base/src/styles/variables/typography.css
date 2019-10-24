@@ -42,4 +42,5 @@
   --page-header-border-color: var(--gray-lighter);
   --hr-border: var(--gray-lighter);
   --preview-placeholder-text-color: color(var(--gray-light) a(50%));
+  --icon-size: 1.5625rem; /* 25px based on 16px */
 }

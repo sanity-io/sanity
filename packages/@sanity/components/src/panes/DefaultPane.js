@@ -7,11 +7,18 @@ import Menu from 'part:@sanity/components/menus/default'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import {IntentLink} from 'part:@sanity/base/router'
 import ScrollContainer from 'part:@sanity/components/utilities/scroll-container'
+import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import Styleable from '../utilities/Styleable'
 import defaultStyles from './styles/DefaultPane.css'
+import S from '@sanity/base/structure-builder'
 
 function getActionKey(action, index) {
   return (typeof action.action === 'string' ? action.action + action.title : action.title) || index
+}
+
+function noActionFn() {
+  // eslint-disable-next-line no-console
+  console.warn('No handler defined for action')
 }
 
 // This is the height of the global navigation bar
@@ -93,6 +100,12 @@ class Pane extends React.Component {
         title: PropTypes.string
       })
     ),
+    initialValueTemplates: PropTypes.arrayOf(
+      PropTypes.shape({
+        templateId: PropTypes.string,
+        parameters: PropTypes.object // eslint-disable-line react/forbid-prop-types
+      })
+    ),
     index: PropTypes.number,
     staticContent: PropTypes.node,
     contentMaxWidth: PropTypes.number,
@@ -110,11 +123,13 @@ class Pane extends React.Component {
     children: <div />,
     onAction: noop,
     menuItems: [],
-    menuItemGroups: []
+    menuItemGroups: [],
+    initialValueTemplates: []
   }
 
   state = {
     menuIsOpen: false,
+    templateSelectionIsOpen: false,
     headerStyleRatio: -1,
     headerStyle: {
       boxShadow: 'none'
@@ -122,13 +137,25 @@ class Pane extends React.Component {
     scrollTop: 0
   }
 
+  actionHandlers = {
+    toggleTemplateSelectionMenu: () => {
+      this.setState(prevState => ({
+        templateSelectionIsOpen: !prevState.templateSelectionIsOpen
+      }))
+    }
+  }
+
   scrollFrameId = null
 
   constructor(props) {
     super(props)
 
-    // Passed to rendered <Menu>. This prevents the "click outside" functionality
-    // from kicking in when pressing the toggle menu button
+    // Passed to rendered <Menu> components. This prevents the "click outside"
+    // functionality from kicking in when pressing the toggle menu button
+    this.templateMenuId = Math.random()
+      .toString(36)
+      .substr(2, 6)
+
     this.paneMenuId = Math.random()
       .toString(36)
       .substr(2, 6)
@@ -210,6 +237,11 @@ class Pane extends React.Component {
     this.setState(prev => ({menuIsOpen: !prev.menuIsOpen}))
   }
 
+  // Triggered by clicking "outside" of the menu when open, or after triggering action
+  handleCloseTemplateSelection = () => {
+    this.setState({templateSelectionIsOpen: false})
+  }
+
   handleRootClick = event => {
     const {onExpand, isCollapsed, index} = this.props
     if (isCollapsed && onExpand) {
@@ -235,7 +267,13 @@ class Pane extends React.Component {
       return
     }
 
-    this.props.onAction(item)
+    const actionHandled = this.props.onAction(item)
+    if (actionHandled) {
+      return
+    }
+
+    const handler = this.actionHandlers[item.action] || noActionFn
+    handler(item.params, this)
   }
 
   renderIntentAction = (action, i) => {
@@ -258,27 +296,78 @@ class Pane extends React.Component {
     )
   }
 
+  renderActionMenuItem = item => {
+    const {styles} = this.props
+    if (!item) {
+      return null
+    }
+    const params = item.intent.params
+    const Icon = item.icon
+    return (
+      <IntentLink
+        className={styles.initialValueTemplateDropDownItem}
+        intent="create"
+        params={params}
+      >
+        <div>
+          <div>{item.title}</div>
+          <div className={styles.initialValueTemplateSubtitle}>{params.type}</div>
+        </div>
+        <div className={styles.initialValueTemplateDropDownItemIcon}>
+          <Icon />
+        </div>
+      </IntentLink>
+    )
+  }
+
   renderAction = (action, i) => {
     if (action.intent) {
       return this.renderIntentAction(action, i)
     }
 
-    const {styles} = this.props
+    const {styles, initialValueTemplates} = this.props
+    const items = S.menuItemsFromInitialValueTemplateItems(initialValueTemplates)
     const Icon = action.icon
-
     return (
-      <div className={styles.buttonWrapper} key={getActionKey(action, i)}>
-        <button
-          className={styles.actionButton}
-          type="button"
-          title={action.title}
-          // eslint-disable-next-line react/jsx-no-bind
-          onClick={this.handleMenuAction.bind(this, action)}
-        >
-          <div className={styles.actionButtonInner} tabIndex={-1}>
-            <Icon />
+      <div className={styles.menuWrapper} key={getActionKey(action, i)}>
+        {action.action !== 'toggleTemplateSelectionMenu' && (
+          <button
+            className={styles.actionButton}
+            data-menu-button-id={this.templateMenuId}
+            type="button"
+            title={action.title}
+            // eslint-disable-next-line react/jsx-no-bind
+            onClick={this.handleMenuAction.bind(this, action)}
+          >
+            <div className={styles.actionButtonInner} tabIndex={-1}>
+              <Icon />
+            </div>
+          </button>
+        )}
+        {action.action === 'toggleTemplateSelectionMenu' && (
+          <div className={styles.initialValueTemplateDropDownMenuButton}>
+            <DropDownButton
+              bleed
+              className={styles.initialValueTemplateDropDownMenu}
+              items={items}
+              renderItem={this.renderActionMenuItem}
+              // eslint-disable-next-line react/jsx-no-bind
+              onAction={this.handleMenuAction.bind(this, action)}
+              kind="simple"
+              showArrow={false}
+              ripple={false}
+              placement="bottom-end"
+            >
+              <div className={styles.buttonWrapper}>
+                <div className={styles.actionButton}>
+                  <div className={styles.actionButtonInner}>
+                    <Icon />
+                  </div>
+                </div>
+              </div>
+            </DropDownButton>
           </div>
-        </button>
+        )}
       </div>
     )
   }

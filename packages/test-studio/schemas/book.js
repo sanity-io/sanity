@@ -105,5 +105,8 @@ export default {
         subtitle: formatSubtitle(book)
       })
     }
+  },
+  initialValue: {
+    title: 'Foo'
   }
 }

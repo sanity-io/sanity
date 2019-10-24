@@ -2,23 +2,20 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import schema from 'part:@sanity/base/schema'
-import PlusIcon from 'part:@sanity/base/plus-icon'
-import Button from 'part:@sanity/components/buttons/default'
 import DefaultPane from 'part:@sanity/components/panes/default'
 import QueryContainer from 'part:@sanity/base/query-container'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import {collate, getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
-
 import {combineLatest} from 'rxjs'
+import {map, tap} from 'rxjs/operators'
 import settings from '../settings'
 import styles from './styles/DocumentsListPane.css'
 import listStyles from './styles/ListView.css'
 import InfiniteList from './InfiniteList'
 import PaneItem from './PaneItem'
-import {map, tap} from 'rxjs/operators'
 
+const noop = () => null
 const DEFAULT_ORDERING = [{field: '_createdAt', direction: 'desc'}]
 
 function removePublishedWithDrafts(documents) {
@@ -34,11 +31,6 @@ function removePublishedWithDrafts(documents) {
 
 function getDocumentKey(document) {
   return getPublishedId(document._id)
-}
-
-function noActionFn() {
-  // eslint-disable-next-line no-console
-  console.warn('No handler defined for action')
 }
 
 function getTypeNameFromSingleTypeFilter(filter, params = {}) {
@@ -77,7 +69,12 @@ export default withRouterHOC(
       styles: PropTypes.object, // eslint-disable-line react/forbid-prop-types
       router: PropTypes.shape({
         state: PropTypes.shape({
-          panes: PropTypes.arrayOf(PropTypes.string)
+          panes: PropTypes.arrayOf(
+            PropTypes.shape({
+              id: PropTypes.string,
+              params: PropTypes.object
+            })
+          )
         })
       }).isRequired,
       defaultLayout: PropTypes.string,
@@ -101,6 +98,12 @@ export default withRouterHOC(
           id: PropTypes.string.isRequired
         })
       ),
+      initialValueTemplates: PropTypes.arrayOf(
+        PropTypes.shape({
+          templateId: PropTypes.string,
+          parameters: PropTypes.object // eslint-disable-line react/forbid-prop-types
+        })
+      ),
       displayOptions: PropTypes.shape({
         showIcons: PropTypes.bool
       }),
@@ -118,7 +121,8 @@ export default withRouterHOC(
       displayOptions: {},
       onExpand: undefined,
       onCollapse: undefined,
-      defaultLayout: undefined
+      defaultLayout: undefined,
+      initialValueTemplates: undefined
     }
 
     actionHandlers = {
@@ -130,7 +134,7 @@ export default withRouterHOC(
       }
     }
 
-    state = {scrollTop: 0, sortOrder: null, layout: null}
+    state = {scrollTop: 0, sortOrder: null, layout: null, templateSelectionIsOpen: false}
 
     constructor(props) {
       super()
@@ -139,6 +143,12 @@ export default withRouterHOC(
       const settingsNamespace = settings.forNamespace(typeName)
       this.sortOrderSetting = settingsNamespace.forKey('sortOrder')
       this.layoutSetting = settingsNamespace.forKey('layout')
+
+      // Passed to rendered <Menu> components. This prevents the "click outside"
+      // functionality from kicking in when pressing the toggle menu button
+      this.templateMenuId = Math.random()
+        .toString(36)
+        .substr(2, 6)
 
       let sync = true
       this.settingsSubscription = combineLatest(
@@ -169,13 +179,14 @@ export default withRouterHOC(
 
     itemIsSelected(item) {
       const {router, index} = this.props
-      const selected = (router.state.panes || [])[index] || ''
+      const panes = router.state.panes || []
+      const selected = panes[index] ? panes[index].id : ''
       return getPublishedId(item) === getPublishedId(selected)
     }
 
     getLinkStateForItem = id => {
       const {router, index} = this.props
-      const panes = (router.state.panes || []).slice(0, index).concat(getPublishedId(id))
+      const panes = (router.state.panes || []).slice(0, index).concat({id: getPublishedId(id)})
       return {panes}
     }
 
@@ -193,18 +204,25 @@ export default withRouterHOC(
 
     handleAction = item => {
       const handler =
-        typeof item.action === 'function'
-          ? item.action
-          : this.actionHandlers[item.action] || noActionFn
+        typeof item.action === 'function' ? item.action : this.actionHandlers[item.action]
+
+      if (!handler) {
+        return false
+      }
 
       handler(item.params, this)
+      return true
     }
 
-    handleCreateNew = () => {
-      const {options, router} = this.props
-      const {filter, params} = options
-      const typeName = getTypeNameFromSingleTypeFilter(filter, params)
-      router.navigateIntent('create', {type: typeName})
+    handleSelectInitialValueTemplate = () => {
+      this.setState(prevState => ({
+        templateSelectionIsOpen: !prevState.templateSelectionIsOpen
+      }))
+    }
+
+    // Triggered by clicking "outside" of the menu when open, or after triggering action
+    handleCloseTemplateSelection = () => {
+      this.setState({templateSelectionIsOpen: false})
     }
 
     handleScroll = scrollTop => {
@@ -252,16 +270,15 @@ export default withRouterHOC(
         onExpand,
         defaultLayout,
         menuItems,
-        menuItemGroups
+        menuItemGroups,
+        initialValueTemplates
       } = this.props
 
       const {filter, params} = options
       const layout = this.state.layout || defaultLayout || 'default'
-      const typeName = getTypeNameFromSingleTypeFilter(filter, params)
       const filterIsSimpleTypeContraint = isSimpleTypeFilter(filter)
       const hasItems = items => items && items.length > 0
       const query = this.buildListQuery()
-
       return (
         <DefaultPane
           title={title}
@@ -271,6 +288,7 @@ export default withRouterHOC(
           scrollTop={this.state.scrollTop}
           menuItems={menuItems}
           menuItemGroups={menuItemGroups}
+          initialValueTemplates={initialValueTemplates}
           isSelected={isSelected}
           isCollapsed={isCollapsed}
           onCollapse={onCollapse}
@@ -308,7 +326,6 @@ export default withRouterHOC(
               const items = removePublishedWithDrafts(result ? result.documents : [])
 
               if (!hasItems(items)) {
-                const schemaType = schema.get(typeName)
                 return (
                   <div className={styles.empty}>
                     <div>
@@ -317,13 +334,6 @@ export default withRouterHOC(
                           ? 'No documents of this type found'
                           : 'No documents matching this filter found'}
                       </h3>
-
-                      {typeName &&
-                        isActionEnabled(schemaType, 'create') && (
-                          <Button color="primary" icon={PlusIcon} onClick={this.handleCreateNew}>
-                            New {schemaType.title}
-                          </Button>
-                        )}
                     </div>
                   </div>
                 )

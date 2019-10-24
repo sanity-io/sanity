@@ -125,9 +125,7 @@ const getProductionPreviewItem = (
   try {
     previewUrl = resolveProductionPreviewUrl(snapshot, selectedEvent && selectedEvent.rev)
   } catch (error) {
-    error.message = `An error was thrown while trying to get production preview url: ${
-      error.message
-    }`
+    error.message = `An error was thrown while trying to get production preview url: ${error.message}`
     // eslint-disable-next-line no-console
     console.error(error)
     return null
@@ -220,6 +218,7 @@ export default withRouterHOC(
       patchChannel: PropTypes.object,
       draft: PropTypes.object,
       published: PropTypes.object,
+      initialValue: PropTypes.object,
       type: PropTypes.object.isRequired,
       markers: PropTypes.arrayOf(
         PropTypes.shape({
@@ -327,7 +326,9 @@ export default withRouterHOC(
 
     // @todo move publishing notification out of this component
     UNSAFE_componentWillReceiveProps(nextProps) {
-      this.setState({didPublish: this.props.isPublishing && !nextProps.isPublishing})
+      this.setState(currentState => ({
+        didPublish: currentState.didPublish || (this.props.isPublishing && !nextProps.isPublishing)
+      }))
 
       if (this.props.isRestoring && !nextProps.isRestoring) {
         this.setHistoryState(INITIAL_HISTORY_STATE)
@@ -507,7 +508,7 @@ export default withRouterHOC(
         )
       }
       if (!value) {
-        return `Creating new ${type.title || type.name}`
+        return `New ${type.title || type.name}`
       }
       return (
         <PreviewFields document={value} type={type} fields={['title']}>
@@ -697,7 +698,7 @@ export default withRouterHOC(
     }
 
     renderForm() {
-      const {type, markers, draft, published, patchChannel} = this.props
+      const {type, markers, draft, published, patchChannel, initialValue} = this.props
       const {historyState, focusPath, filterField, isReconnecting} = this.state
       const selectedEvent = this.findSelectedEvent()
 
@@ -713,6 +714,7 @@ export default withRouterHOC(
           draft={draft}
           filterField={filterField}
           focusPath={focusPath}
+          initialValue={initialValue}
           isLiveEditEnabled={this.isLiveEditEnabled()}
           markers={markers}
           onBlur={this.handleBlur}
@@ -724,7 +726,6 @@ export default withRouterHOC(
           readOnly={isReconnecting || !isActionEnabled(type, 'update')}
           schema={schema}
           type={type}
-          value={draft || published || {_type: type.name}}
         />
       )
     }
