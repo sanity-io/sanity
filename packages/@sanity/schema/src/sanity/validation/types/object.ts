@@ -95,7 +95,7 @@ export default (typeDef, visitorContext) => {
 
   if (typeDef.type !== 'document' && typeof typeDef.initialValue !== 'undefined') {
     problems.push(
-      error(`The "initialValue" property is only supported for document types currently.`)
+      error(`The "initialValue" property is currently only supported for document types.`)
     )
   }
 
