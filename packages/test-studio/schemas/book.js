@@ -106,7 +106,7 @@ export default {
       })
     }
   },
-  initialValues: {
+  initialValue: {
     title: 'Foo'
   }
 }

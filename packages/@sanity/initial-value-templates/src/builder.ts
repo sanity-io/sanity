@@ -18,7 +18,7 @@ function defaultTemplateForType(
     schemaType: type.name,
     title: type.title || type.name,
     icon: type.icon,
-    value: type.initialValues || {_type: type.name}
+    value: type.initialValue || {_type: type.name}
   })
 }
 
