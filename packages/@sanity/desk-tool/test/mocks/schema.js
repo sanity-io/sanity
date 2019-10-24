@@ -122,7 +122,7 @@ function post() {
         media: 'mainImage'
       }
     },
-    initialValues: {
+    initialValue: {
       slug: {_type: 'slug', current: 'default-slug'}
     },
     orderings: [

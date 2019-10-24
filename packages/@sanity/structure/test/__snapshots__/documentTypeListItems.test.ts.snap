@@ -630,7 +630,7 @@ Array [
           },
         ],
         "icon": [Function],
-        "initialValues": Object {
+        "initialValue": Object {
           "slug": Object {
             "_type": "slug",
             "current": "default-slug",
@@ -1031,7 +1031,7 @@ Array [
           },
         ],
         "icon": [Function],
-        "initialValues": Object {
+        "initialValue": Object {
           "slug": Object {
             "_type": "slug",
             "current": "default-slug",

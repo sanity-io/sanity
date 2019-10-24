@@ -100,7 +100,7 @@ export default {
     }
   ],
 
-  initialValues: () =>
+  initialValue: () =>
     new Promise(resolve =>
       setTimeout(resolve, 2500, {
         name: 'Foo',

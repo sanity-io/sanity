@@ -8,7 +8,7 @@ const schema = {
     type: 'document',
     icon: Icon,
     fields: [],
-    initialValues: () => ({
+    initialValue: () => ({
       role: 'Developer'
     })
   },
