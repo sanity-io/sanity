@@ -15,6 +15,11 @@ function validateTemplates(templates: Template[]) {
 
   templates.forEach((template, i) => {
     const id = templateId(template, i)
+
+    if (typeof (template as {[key: string]: any}).values !== 'undefined' && !template.value) {
+      throw new Error(`Template ${id} is missing "value" property, but contained "values". Typo?`)
+    }
+
     const missing = REQUIRED_TEMPLATE_PROPS.filter(prop => !template[prop])
     if (missing.length > 0) {
       throw new Error(`Template ${id} is missing required properties: ${missing.join(', ')}`)
