@@ -87,6 +87,7 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
   constructor(spec?: ListInput) {
     super()
     this.spec = spec ? spec : {}
+    this.initialValueTemplatesSpecified = Boolean(spec && spec.initialValueTemplates)
   }
 
   items(items: (ListItemBuilder | ListItem | Divider)[]): ListBuilder {

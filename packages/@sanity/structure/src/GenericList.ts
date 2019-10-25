@@ -48,6 +48,7 @@ export interface GenericListInput extends StructureNode {
   title: string
   menuItems?: (MenuItem | MenuItemBuilder)[]
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
+  initialValueTemplates?: (InitialValueTemplateItem | InitialValueTemplateItemBuilder)[]
   defaultLayout?: Layout
   canHandleIntent?: IntentChecker
   child?: Child
@@ -55,6 +56,7 @@ export interface GenericListInput extends StructureNode {
 
 export abstract class GenericListBuilder<L extends BuildableGenericList, ConcreteImpl>
   implements Serializable {
+  protected initialValueTemplatesSpecified = false
   protected spec: L = {} as L
 
   id(id: string) {
@@ -124,6 +126,7 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
   }
 
   initialValueTemplates(templates: InitialValueTemplateItem | InitialValueTemplateItem[]) {
+    this.initialValueTemplatesSpecified = true
     return this.clone({initialValueTemplates: Array.isArray(templates) ? templates : [templates]})
   }
 

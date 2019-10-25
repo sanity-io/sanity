@@ -80,6 +80,7 @@ export class DocumentListBuilder extends GenericListBuilder<
   constructor(spec?: DocumentListInput) {
     super()
     this.spec = spec ? spec : {}
+    this.initialValueTemplatesSpecified = Boolean(spec && spec.initialValueTemplates)
   }
 
   filter(filter: string): DocumentListBuilder {
@@ -100,7 +101,9 @@ export class DocumentListBuilder extends GenericListBuilder<
   }
 
   params(params: {}): DocumentListBuilder {
-    return this.clone({options: {...(this.spec.options || {filter: ''}), params}})
+    return this.clone({
+      options: {...(this.spec.options || {filter: ''}), params}
+    })
   }
 
   getParams() {
@@ -156,7 +159,7 @@ export class DocumentListBuilder extends GenericListBuilder<
     const builder = new DocumentListBuilder()
     builder.spec = {...this.spec, ...(withSpec || {})}
 
-    if (!builder.spec.initialValueTemplates) {
+    if (!this.initialValueTemplatesSpecified) {
       builder.spec.initialValueTemplates = inferInitialValueTemplates(builder.spec)
     }
 
@@ -173,30 +176,74 @@ function inferInitialValueTemplates(
 ): InitialValueTemplateItem[] | undefined {
   const {schemaTypeName, options} = spec
   const {filter, params} = options || {filter: '', params: {}}
-  const typeName = schemaTypeName || getTypeNameFromSingleTypeFilter(filter, params)
+  const typeNames = schemaTypeName ? [schemaTypeName] : getTypeNamesFromFilter(filter, params)
 
-  if (!typeName) {
+  if (typeNames.length === 0) {
     return undefined
   }
 
-  return getParameterlessTemplatesBySchemaType(typeName).map(tpl => ({
-    type: 'initialValueTemplateItem',
-    id: tpl.id,
-    templateId: tpl.id
-  }))
+  let templateItems: InitialValueTemplateItem[] = []
+  return typeNames.reduce((items, typeName) => {
+    return items.concat(
+      getParameterlessTemplatesBySchemaType(typeName).map(
+        (tpl): InitialValueTemplateItem => ({
+          type: 'initialValueTemplateItem',
+          id: tpl.id,
+          templateId: tpl.id
+        })
+      )
+    )
+  }, templateItems)
 }
 
-export function getTypeNameFromSingleTypeFilter(
+export function getTypeNamesFromFilter(
   filter: string,
   params: {[key: string]: any} = {}
-): string | null {
-  const pattern = /\b_type\s*==\s*(['"].*?['"]|\$.*?(?:\s|$))|\B(['"].*?['"]|\$.*?(?:\s|$))\s*==\s*_type\b/
-  const matches = filter.match(pattern)
-  if (!matches) {
-    return null
+): string[] {
+  let typeNames = getTypeNamesFromEqualityFilter(filter, params)
+
+  if (typeNames.length === 0) {
+    typeNames = getTypeNamesFromInTypesFilter(filter, params)
   }
 
-  const match = (matches[1] || matches[2]).trim().replace(/^["']|["']$/g, '')
-  const typeName = match[0] === '$' ? params[match.slice(1)] : match
-  return typeName || null
+  return typeNames
+}
+
+// From _type == "movie" || _type == $otherType
+function getTypeNamesFromEqualityFilter(
+  filter: string,
+  params: {[key: string]: any} = {}
+): string[] {
+  const pattern = /\b_type\s*==\s*(['"].*?['"]|\$.*?(?:\s|$))|\B(['"].*?['"]|\$.*?(?:\s|$))\s*==\s*_type/g
+  const matches: string[] = []
+  let match
+  while ((match = pattern.exec(filter)) !== null) {
+    matches.push(match[1] || match[2])
+  }
+
+  return matches
+    .map(candidate => {
+      const typeName = candidate[0] === '$' ? params[candidate.slice(1)] : candidate
+      const normalized = (typeName || '').trim().replace(/^["']|["']$/g, '')
+      return normalized
+    })
+    .filter(Boolean)
+}
+
+// From _type in ["dog", "cat", $otherSpecies]
+function getTypeNamesFromInTypesFilter(
+  filter: string,
+  params: {[key: string]: any} = {}
+): string[] {
+  const pattern = /\b_type\s+in\s+\[(.*?)\]/
+  const matches = filter.match(pattern)
+  if (!matches) {
+    return []
+  }
+
+  return matches[1]
+    .split(/,\s*/)
+    .map(match => match.trim().replace(/^["']+|["']+$/g, ''))
+    .map(item => (item[0] === '$' ? params[item.slice(1)] : item))
+    .filter(Boolean)
 }
