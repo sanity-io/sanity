@@ -7,7 +7,6 @@ import ArrowIcon from 'part:@sanity/base/angle-down-icon'
 import {List, Item} from 'part:@sanity/components/lists/default'
 import {omit, get} from 'lodash'
 import Poppable from 'part:@sanity/components/utilities/poppable'
-// import ArrowKeyNavigation from 'part:@sanity/components/utilities/arrow-key-navigation'
 import ArrowKeyNavigation from 'boundless-arrow-key-navigation/build'
 
 const modifiers = {
@@ -25,6 +24,17 @@ const modifiers = {
       return data
     }
   }
+}
+
+function parentButtonIsMenuButton(node, id) {
+  let el = node
+  do {
+    if (el.tagName === 'BUTTON' && el.dataset.menuButtonId === id) {
+      return true
+    }
+  } while ((el = el.parentNode))
+
+  return false
 }
 
 export default class DropDownButton extends React.PureComponent {
@@ -64,10 +74,25 @@ export default class DropDownButton extends React.PureComponent {
   state = {
     menuOpened: false
   }
+
   menuHasKeyboardFocus = false
   keyboardNavigation = false
 
-  handleClose = () => {
+  constructor(props) {
+    super(props)
+
+    this.menuId = Math.random()
+      .toString(36)
+      .substr(2, 6)
+  }
+
+  handleClose = evt => {
+    if (evt && parentButtonIsMenuButton(evt.target, this.menuId)) {
+      // Don't treat clicks on the open menu button as "outside" clicks -
+      // prevents us from double-toggling a menu as open/closed
+      return
+    }
+
     this.setState({menuOpened: false})
   }
 
@@ -76,9 +101,9 @@ export default class DropDownButton extends React.PureComponent {
   }
 
   handleOnClick = event => {
-    this.setState({
-      menuOpened: true
-    })
+    this.setState(({menuOpened}) => ({
+      menuOpened: !menuOpened
+    }))
     // Checks if the onClick comes from pressing the keyboard
     this.keyboardNavigation = event.detail == 0
   }
@@ -87,17 +112,6 @@ export default class DropDownButton extends React.PureComponent {
     if (this.state.menuOpened && !this.menuHasKeyboardFocus && this.keyboardNavigation) {
       this.handleClose()
     }
-  }
-
-  handleClickOutside = event => {
-    if (event && this._rootElement && this._rootElement.contains(event.target)) {
-      // Stop the open button from being clicked
-      event.stopPropagation()
-      this.handleClose()
-    } else {
-      this.handleClose()
-    }
-    this.buttonElement.current.focus()
   }
 
   handleItemClick = (event, item) => {
@@ -132,7 +146,10 @@ export default class DropDownButton extends React.PureComponent {
   }
 
   render() {
-    const {items, renderItem, children, kind, className, placement, showArrow, ...rest} = omit(this.props, 'onAction')
+    const {items, renderItem, children, kind, className, placement, showArrow, ...rest} = omit(
+      this.props,
+      'onAction'
+    )
     const {menuOpened} = this.state
 
     const buttonElement =
@@ -141,6 +158,7 @@ export default class DropDownButton extends React.PureComponent {
     return (
       <Button
         {...rest}
+        data-menu-button-id={this.menuId}
         className={styles.button}
         onClick={this.handleOnClick}
         kind={kind}
