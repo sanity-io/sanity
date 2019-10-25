@@ -30,7 +30,7 @@ export default function StructureError(props) {
 
   return (
     <div className={styles.root}>
-      <h2 className={styles.title}>Hmm… encountered an error while reading structure</h2>
+      <h2 className={styles.title}>Encountered an error while reading structure</h2>
 
       <div className={styles.body}>
         <h2 className={styles.path}>
