@@ -10,7 +10,7 @@ import MissingSchemaType from '../components/MissingSchemaType'
 import PaneItemWrapper from './PaneItemWrapper'
 
 export default function PaneItem(props) {
-  const {id, getLinkState, isSelected, schemaType, layout, icon, value} = props
+  const {id, isSelected, schemaType, layout, icon, value} = props
   const useGrid = layout === 'card' || layout === 'media'
 
   const hasSchemaType = schemaType && schemaType.name && schema.get(schemaType.name)
@@ -38,12 +38,7 @@ export default function PaneItem(props) {
   }
 
   return (
-    <PaneItemWrapper
-      linkState={getLinkState(id)}
-      isSelected={isSelected}
-      layout={layout}
-      useGrid={useGrid}
-    >
+    <PaneItemWrapper id={id} isSelected={isSelected} layout={layout} useGrid={useGrid}>
       {preview}
     </PaneItemWrapper>
   )
@@ -51,7 +46,6 @@ export default function PaneItem(props) {
 
 PaneItem.propTypes = {
   id: PropTypes.string.isRequired,
-  getLinkState: PropTypes.func.isRequired,
   layout: PropTypes.string,
   isSelected: PropTypes.bool,
   icon: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),

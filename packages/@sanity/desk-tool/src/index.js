@@ -1,114 +1,39 @@
 import React from 'react'
-import Icon from 'part:@sanity/base/view-column-icon'
-import {route} from 'part:@sanity/base/router'
-import DeskTool from './DeskTool'
-import {parsePanesSegment} from './utils/parsePanesSegment'
-import UUID from '@sanity/uuid'
-import {getTemplateById} from '@sanity/base/initial-value-templates'
 
-function maybeRemapStringSegment(segment) {
-  return typeof segment === 'string' ? {id: segment} : segment
+export const LOADING_PANE = Symbol('LOADING_PANE')
+
+const missingContext = () => {
+  throw new Error('Pane is missing router context')
 }
 
-function encodeSegment({id, params}) {
-  const parts = params ? [id, JSON.stringify(params)] : [id]
-  return parts.join(',')
-}
+export const PaneRouterContext = React.createContext({
+  // Zero-based index (position) of pane
+  index: 0,
 
-function toState(pathSegment) {
-  return parsePanesSegment(decodeURIComponent(pathSegment))
-}
+  // Zero-based index of pane within sibling group
+  groupIndex: 0,
 
-function toPath(panes) {
-  return panes
-    .map(maybeRemapStringSegment)
-    .map(encodeSegment)
-    .map(encodeURIComponent)
-    .join(';')
-}
+  // Returns the current router state for the whole desk tool
+  getCurrentRouterState: missingContext,
 
-function paramsToState(params) {
-  try {
-    return JSON.parse(decodeURIComponent(params))
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.warn('Failed to parse JSON parameters')
-    return {}
-  }
-}
+  // Curried StateLink that passes the correct state automatically
+  ChildLink: ({childId, childParameters, ...props}) => missingContext(),
 
-function paramsToPath(params) {
-  return JSON.stringify(params)
-}
+  // Get the current pane ID and parameters
+  getCurrentPane: missingContext,
 
-const state = {activePanes: []}
+  // Replaces the current pane with a new one
+  replaceCurrentPane: (itemId, params) => missingContext(),
 
-function setActivePanes(panes) {
-  state.activePanes = panes
-}
+  // Replace or create a child pane with the given id and parameters
+  replaceChildPane: (itemId, params) => missingContext(),
 
-function DeskToolPaneStateSyncer(props) {
-  return <DeskTool {...props} onPaneChange={setActivePanes} />
-}
+  // Duplicate the current pane, with optional overrides for item ID and parameters
+  duplicateCurrentPane: (itemId, params) => missingContext(),
 
-function getIntentState(intentName, params, currentState, jsonParams = {}) {
-  const paneSegments = (currentState && currentState.panes) || []
-  const activePanes = state.activePanes || []
-  const editDocumentId = params.id || UUID()
-  const isTemplate = intentName === 'create' && params.template
+  // Set the current "view" for the pane
+  setPaneView: viewId => missingContext(),
 
-  // Loop through open panes and see if any of them can handle the intent
-  for (let i = activePanes.length - 1; i >= 0; i--) {
-    const pane = activePanes[i]
-    if (pane.canHandleIntent && pane.canHandleIntent(intentName, params, {pane})) {
-      const paneParams = isTemplate ? {template: params.template, ...jsonParams} : undefined
-      return {panes: paneSegments.slice(0, i).concat({id: editDocumentId, params: paneParams})}
-    }
-  }
-
-  return getFallbackIntentState({documentId: editDocumentId, intentName, params, jsonParams})
-}
-
-function getFallbackIntentState({documentId, intentName, params, jsonParams = {}}) {
-  const editDocumentId = documentId
-  const isTemplateCreate = intentName === 'create' && params.template
-  const template = isTemplateCreate && getTemplateById(params.template)
-
-  return isTemplateCreate
-    ? {
-        editDocumentId,
-        type: template.schemaType,
-        params: {template: params.template, ...jsonParams}
-      }
-    : {editDocumentId, type: params.type || '*'}
-}
-
-export default {
-  router: route('/', [
-    // Fallback route if no panes can handle intent
-    route('/edit/:type/:editDocumentId', [
-      route({path: '/:params', transform: {params: {toState: paramsToState, toPath: paramsToPath}}})
-    ]),
-    // The regular path - when the intent can be resolved to a specific pane
-    route({
-      path: '/:panes',
-      // Legacy URLs, used to handle redirects
-      children: [route('/:action', route('/:legacyEditDocumentId'))],
-      transform: {
-        panes: {toState, toPath}
-      }
-    })
-  ]),
-  canHandleIntent(intentName, params) {
-    return (
-      (intentName === 'edit' && params.id) ||
-      (intentName === 'create' && params.type) ||
-      (intentName === 'create' && params.template)
-    )
-  },
-  getIntentState,
-  title: 'Desk',
-  name: 'desk',
-  icon: Icon,
-  component: DeskToolPaneStateSyncer
-}
+  // Proxied navigation to a given intent. Consider just exposing `router` instead?
+  navigateIntent: (intentName, params, options = {}) => missingContext()
+})
