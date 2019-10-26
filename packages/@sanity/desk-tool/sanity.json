@@ -9,12 +9,11 @@
   "parts": [
     {
       "implements": "part:@sanity/base/tool",
-      "path": "index.js"
+      "path": "tool.js"
     },
     {
       "name": "part:@sanity/desk-tool/after-editor-component",
-      "description":
-        "[DEPRECATED] Components to render directly after the editor form. Will be removed in future release."
+      "description": "[DEPRECATED] Components to render directly after the editor form. Will be removed in future release."
     },
     {
       "name": "part:@sanity/desk-tool/language-select-component",

@@ -8,9 +8,13 @@ import CheckIcon from 'part:@sanity/base/check-icon'
 import ValidationList from 'part:@sanity/components/validation/list'
 import ChevronDown from 'part:@sanity/base/chevron-down-icon'
 import WarningIcon from 'part:@sanity/base/warning-icon'
+import SplitIcon from 'part:@sanity/base/bars-icon'
+import {PaneRouterContext} from '../../index'
 import styles from '../styles/Editor.css'
 
 export default class Actions extends React.PureComponent {
+  static contextType = PaneRouterContext
+
   static propTypes = {
     isLiveEditEnabled: PropTypes.bool.isRequired,
     isReconnecting: PropTypes.bool.isRequired,
@@ -86,6 +90,34 @@ export default class Actions extends React.PureComponent {
     )
   }
 
+  renderSplitPaneButton() {
+    return (
+      <button type="button" onClick={this.handleSplitPane} title="Split pane">
+        <div tabIndex={-1}>
+          <SplitIcon />
+        </div>
+      </button>
+    )
+  }
+
+  renderViewButton() {
+    return (
+      <button type="button" onClick={this.handleToggleViewButton} title="Toggle view">
+        <div tabIndex={-1}>
+          <WarningIcon />
+        </div>
+      </button>
+    )
+  }
+
+  handleSplitPane = () => {
+    this.context.duplicateCurrentPane()
+  }
+
+  handleToggleViewButton = () => {
+    this.context.setPaneView('someView')
+  }
+
   renderErrors() {
     const {
       onCloseValidationResults,
@@ -149,6 +181,8 @@ export default class Actions extends React.PureComponent {
         {isReconnecting && this.renderReconnecting()}
         {value && !showSavingStatus && !isReconnecting && this.renderSyncedStatus()}
         {this.renderErrors()}
+        {this.renderSplitPaneButton()}
+        {this.renderViewButton()}
       </div>
     )
   }

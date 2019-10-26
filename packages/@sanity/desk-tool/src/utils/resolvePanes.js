@@ -1,22 +1,22 @@
-import {get} from 'lodash'
 import shallowEquals from 'shallow-equals'
 import {Observable, from, of as observableOf} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
+import {LOADING_PANE} from '../index'
 import isSubscribable from './isSubscribable'
 import validateStructure from './validateStructure'
 import serializeStructure from './serializeStructure'
 import generateHelpUrl from '@sanity/generate-help-url'
 
-export const LOADING = Symbol('LOADING')
-export function resolvePanes(structure, paneSegments, prevStructure, fromIndex) {
+// eslint-disable-next-line import/prefer-default-export
+export function resolvePanes(structure, paneGroups, prevStructure, fromIndex) {
   const waitStructure = isSubscribable(structure) ? from(structure) : observableOf(structure)
   return waitStructure.pipe(
-    switchMap(struct => resolveForStructure(struct, paneSegments, prevStructure, fromIndex))
+    switchMap(struct => resolveForStructure(struct, paneGroups, prevStructure, fromIndex))
   )
 }
 
 function getInitialPanes(prevStructure, numPanes, fromIndex) {
-  const allLoading = new Array(numPanes).fill(LOADING)
+  const allLoading = new Array(numPanes).fill(LOADING_PANE)
   if (!prevStructure) {
     return allLoading
   }
@@ -25,7 +25,11 @@ function getInitialPanes(prevStructure, numPanes, fromIndex) {
   return remains.concat(allLoading.slice(fromIndex))
 }
 
-function resolveForStructure(structure, paneSegments, prevStructure, fromIndex) {
+function sumPaneSegments(paneGroups) {
+  return paneGroups.reduce((count, curr) => count + curr.length, 0)
+}
+
+function resolveForStructure(structure, paneGroups, prevStructure, fromIndex) {
   return Observable.create(subscriber => {
     try {
       validateStructure(structure)
@@ -34,79 +38,130 @@ function resolveForStructure(structure, paneSegments, prevStructure, fromIndex) 
       return unsubscribe
     }
 
-    const paneIds = [structure.id].concat(paneSegments.map(seg => seg.id)).filter(Boolean)
-    let panes = getInitialPanes(prevStructure, paneIds.length, fromIndex + 1)
+    const paneSegments = [[{id: structure.id}]]
+      .concat(paneGroups)
+      .filter(pair => pair && pair.length > 0)
+
+    const totalPanes = sumPaneSegments(paneSegments)
+    const [fromRootIndex, fromSplitIndex] = fromIndex
+    let panes = getInitialPanes(prevStructure, totalPanes, fromRootIndex + 1 + fromSplitIndex)
     const subscriptions = []
 
     // Start with all-loading (or previous structure) state
     subscriber.next(panes)
 
+    const resolveFrom = Math.max(0, panes.indexOf(LOADING_PANE))
+    const resolveFromIndex = findSegmentGroupIndexForPaneAtIndex(resolveFrom)
+
     // Start resolving pane-by-pane
-    resolve(Math.max(0, panes.indexOf(LOADING)))
+    resolve(resolveFromIndex, fromSplitIndex || 0)
 
     return unsubscribe
 
-    function resolve(index) {
-      if (index > paneIds.length - 1) {
+    function resolve(index, splitIndex) {
+      if (index > paneSegments.length - 1) {
         return
       }
 
-      const parameters = get(paneSegments, [index - 1, 'params'])
-      const id = paneIds[index]
-      const parent = panes[index - 1]
-      const context = {parent, index, path: paneIds.slice(0, index + 1), parameters}
+      const parent = index === 0 ? null : findParentForSegmentIndex(index - 1)
+      const context = {parent, index, path: paneSegments.slice(0, index + 1)}
       if (index === 0) {
-        subscribeForUpdates(structure, index, context)
+        subscribeForUpdates(structure, index, 0, context)
         return
       }
 
       if (!parent || !parent.child) {
-        subscriber.complete()
         return
       }
 
-      subscribeForUpdates(parent.child, index, context, [id, context])
+      const siblings = paneSegments[index]
+      for (let i = splitIndex; i < siblings.length; i++) {
+        subscribeForUpdates(parent.child, index, i, context, [siblings[i].id, context])
+      }
     }
 
-    function withUrlParameters(result, urlParameters) {
-      return urlParameters ? {...result, urlParameters} : result
-    }
-
-    function subscribeForUpdates(pane, index, context, resolverArgs) {
-      const {parameters} = context
+    function subscribeForUpdates(pane, index, splitIndex, context, resolverArgs) {
       const source = serializeStructure(pane, context, resolverArgs)
       subscriptions.push(
         source.subscribe(
-          result => emit(withUrlParameters(result, parameters), index),
+          result => emit(result, index, splitIndex),
           error => subscriber.error(error)
         )
       )
     }
 
-    function emit(pane, index) {
+    function findSegmentGroupIndexForPaneAtIndex(index) {
+      for (let i = 0, pane = 0; i < paneSegments.length; i++) {
+        for (let x = 0; x < paneSegments[i].length; x++) {
+          // eslint-disable-next-line max-depth
+          if (pane === index) {
+            return i
+          }
+
+          pane++
+        }
+      }
+
+      return null
+    }
+
+    function findFlatIndexForPane(index, splitIndex) {
+      if (index === 0) {
+        return splitIndex
+      }
+
+      let flatIndex = 0
+      for (let i = 0; index < paneSegments.length && i <= index; i++) {
+        if (i === index) {
+          return flatIndex + splitIndex
+        }
+
+        flatIndex += paneSegments[i].length
+      }
+
+      return null
+    }
+
+    function findParentForSegmentIndex(index) {
+      const parentGroupIndex = findSegmentGroupIndexForPaneAtIndex(index)
+      return parentGroupIndex === null ? null : panes[parentGroupIndex]
+    }
+
+    function emit(pane, index, splitIndex) {
       if (typeof pane === 'undefined') {
         // eslint-disable-next-line no-console
         console.warn(
-          'Pane at index %d returned no child - see %s',
+          'Pane at index %d returned no child %s - see %s',
           index,
+          splitIndex ? `for split pane index ${splitIndex}` : '',
           generateHelpUrl('structure-item-returned-no-child')
         )
       }
 
-      if (replacePane(pane, index)) {
+      if (maybeReplacePane(pane, index, splitIndex)) {
         subscriber.next(panes) // eslint-disable-line callback-return
       }
 
-      resolve(index + 1)
+      if (splitIndex === 0) {
+        resolve(index + 1, splitIndex)
+      }
     }
 
-    function replacePane(pane, index) {
-      if (panes[index] === pane || shallowEquals(panes[index], pane)) {
-        return undefined
+    function maybeReplacePane(pane, index, splitIndex) {
+      // `panes` are flat: so we need to figure out the correct index based on the groups
+      const flatIndex = findFlatIndexForPane(index, splitIndex)
+      if (panes[flatIndex] === pane || shallowEquals(panes[flatIndex], pane)) {
+        return false
       }
 
       panes = panes.slice()
-      return pane ? panes.splice(index, 1, pane) : panes.splice(index)
+      if (pane) {
+        panes.splice(flatIndex, 1, pane)
+      } else {
+        panes.splice(flatIndex)
+      }
+
+      return true
     }
 
     function unsubscribe() {

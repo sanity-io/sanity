@@ -8,6 +8,7 @@ import {Partial} from './Partial'
 import {ListBuilder} from './List'
 import {EditorBuilder} from './Editor'
 import {ComponentBuilder} from './Component'
+import {validateId} from './util/validateId'
 
 type UnserializedListItemChild = Collection | CollectionBuilder | ChildResolver
 
@@ -156,7 +157,14 @@ export class ListItemBuilder implements Serializable {
       }
     }
 
-    return {...this.spec, schemaType, child: listChild, id, title, type: 'listItem'}
+    return {
+      ...this.spec,
+      id: validateId(id, options.path, options.index),
+      schemaType,
+      child: listChild,
+      title,
+      type: 'listItem'
+    }
   }
 
   clone(withSpec?: PartialListItem): ListItemBuilder {

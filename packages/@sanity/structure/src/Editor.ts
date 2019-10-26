@@ -3,6 +3,7 @@ import {EditorNode, SerializeOptions, Serializable} from './StructureNodes'
 import {getTemplateById} from '@sanity/initial-value-templates'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {SchemaType} from './parts/Schema'
+import {validateId} from './util/validateId'
 
 interface EditorOptions {
   id: string
@@ -119,7 +120,7 @@ export class EditorBuilder implements Serializable {
 
     return {
       ...this.spec,
-      id,
+      id: validateId(id, path, index),
       type: 'document',
       options: getEditorOptions(options)
     }

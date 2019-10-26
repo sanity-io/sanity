@@ -6,16 +6,17 @@ import {map, concat, switchMap, distinctUntilChanged, debounce} from 'rxjs/opera
 import shallowEquals from 'shallow-equals'
 import client from 'part:@sanity/base/client'
 import {withRouterHOC} from 'part:@sanity/base/router'
-import {resolvePanes, LOADING} from './utils/resolvePanes'
+import {resolvePanes} from './utils/resolvePanes'
 import styles from './styles/DeskTool.css'
 import DeskToolPanes from './DeskToolPanes'
 import StructureError from './components/StructureError'
 import serializeStructure from './utils/serializeStructure'
 import defaultStructure from './defaultStructure'
+import {LOADING_PANE} from './index'
 
 const EMPTY_PANE_KEYS = []
 
-const hasLoading = panes => panes.some(item => item === LOADING)
+const hasLoading = panes => panes.some(item => item === LOADING_PANE)
 
 const isStructure = structure => {
   return (
@@ -87,10 +88,12 @@ export default withRouterHOC(
         navigate: PropTypes.func.isRequired,
         state: PropTypes.shape({
           panes: PropTypes.arrayOf(
-            PropTypes.shape({
-              id: PropTypes.string.isRequired,
-              params: PropTypes.object
-            })
+            PropTypes.arrayOf(
+              PropTypes.shape({
+                id: PropTypes.string.isRequired,
+                params: PropTypes.object
+              })
+            )
           ),
           editDocumentId: PropTypes.string,
           legacyEditDocumentId: PropTypes.string,
@@ -128,7 +131,7 @@ export default withRouterHOC(
         return observableOf(panes.concat(editor))
       }
 
-      return observableOf(panes.concat(LOADING)).pipe(
+      return observableOf(panes.concat(LOADING_PANE)).pipe(
         concat(
           client.observable.fetch('*[_id == $id][0]._type', {id: editDocumentId}).pipe(
             map(typeName => {
@@ -145,6 +148,7 @@ export default withRouterHOC(
       const paneSegments = router.state.panes || []
       this.setState({panes, isResolving: false})
 
+      // @todo with split panes, is this enough? should we count items inside of segment?
       if (panes.length < paneSegments.length) {
         router.navigate(
           {...router.state, panes: paneSegments.slice(0, panes.length)},
@@ -162,7 +166,7 @@ export default withRouterHOC(
       this.setState({error, isResolving: false})
     }
 
-    derivePanes(props, fromIndex = 0) {
+    derivePanes(props, fromIndex = [0, 0]) {
       if (this.paneDeriver) {
         this.paneDeriver.unsubscribe()
       }
@@ -199,10 +203,20 @@ export default withRouterHOC(
       if (this.shouldDerivePanes(nextProps)) {
         const prevPanes = this.props.router.state.panes || []
         const nextPanes = nextProps.router.state.panes || []
-        const diffAt = nextPanes.findIndex(
-          (id, index) => !prevPanes[index] || prevPanes[index].id !== id
+        const diffAt = nextPanes.reduce(
+          (diff, ids, index) => {
+            const splitDiff = ids.findIndex(
+              (item, splitIndex) =>
+                !prevPanes[index] ||
+                !prevPanes[index][splitIndex] ||
+                prevPanes[index][splitIndex].id !== item.id
+            )
+            return splitDiff === -1 ? diff : [index, splitDiff]
+          },
+          [0, 0]
         )
-        this.derivePanes(nextProps, diffAt === -1 ? 0 : diffAt)
+
+        this.derivePanes(nextProps, diffAt)
       }
     }
 
@@ -260,18 +274,24 @@ export default withRouterHOC(
     }
 
     render() {
+      const {router} = this.props
       const {panes, error} = this.state
       if (error) {
         return <StructureError error={error} />
       }
 
       // @todo include params in keys?
-      const routerPanes = this.props.router.state.panes || []
-      const keys = routerPanes.map(pane => pane.id) || this.getFallbackKeys()
+      const keys =
+        (router.state.panes || []).reduce(
+          (ids, group) => ids.concat(group.map(sibling => sibling.id)),
+          []
+        ) || this.getFallbackKeys()
 
       return (
         <div className={styles.deskTool}>
-          {panes && <DeskToolPanes panes={this.state.panes} keys={keys} autoCollapse />}
+          {panes && (
+            <DeskToolPanes router={router} panes={this.state.panes} keys={keys} autoCollapse />
+          )}
         </div>
       )
     }

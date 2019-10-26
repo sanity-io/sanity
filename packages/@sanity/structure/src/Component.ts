@@ -3,6 +3,7 @@ import {SerializeOptions, StructureNode, Serializable} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
 import {MenuItemGroup, MenuItemGroupBuilder, maybeSerializeMenuItemGroup} from './MenuItemGroup'
+import {validateId} from './util/validateId'
 
 export interface Component extends StructureNode {
   component: Function
@@ -96,7 +97,7 @@ export class ComponentBuilder implements Serializable {
     }
 
     return {
-      id,
+      id: validateId(id, options.path, options.index),
       title,
       type: 'component',
       component,
