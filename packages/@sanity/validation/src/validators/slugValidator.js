@@ -22,7 +22,8 @@ function serializePath(path) {
 
 const defaultIsUnique = (slug, options) => {
   const client = require('part:@sanity/base/client')
-  const {document, path, disableArrayWarning} = options
+  const {document, path, type} = options
+  const {disableArrayWarning} = type.options
   const {published, draft} = getDocumentIds(document._id)
   const docType = document._type
   const atPath = serializePath(path.concat('current'))
