@@ -17,6 +17,7 @@ export interface StructureNode {
 }
 
 export interface EditorNode extends StructureNode {
+  child?: Child
   options: {
     id: string
     type?: string
