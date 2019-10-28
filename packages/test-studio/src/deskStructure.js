@@ -115,6 +115,34 @@ export default () =>
             .filter('_type == $type && role == $role')
             .params({type: 'author', role: 'developer'})
             .initialValueTemplates(S.initialValueTemplateItem('author-developer'))
+            .child(documentId =>
+              S.editor()
+                .documentId(documentId)
+                .schemaType('author')
+                .child(childId => {
+                  if (childId === 'preview') {
+                    // It's preview time!
+                    return S.component()
+                      .title('Preview')
+                      .component(props => {
+                        console.log('props', props)
+                        return (
+                          <pre>
+                            <code>{JSON.stringify(props, null, 2)}</code>
+                          </pre>
+                        )
+                      })
+                  }
+                  // Not preview, but something else
+                  return S.component()
+                    .title(childId)
+                    .component(props => (
+                      <pre>
+                        <code>{JSON.stringify(props, null, 2)}</code>
+                      </pre>
+                    ))
+                })
+            )
       }),
 
       S.listItem({

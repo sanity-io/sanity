@@ -111,7 +111,7 @@ const getInspectItem = (draft, published) => ({
 const getProductionPreviewItem = (
   draft,
   published,
-  liveEditEnable,
+  liveEditEnabled,
   isHistoryEnabled,
   selectedEvent
 ) => {
@@ -129,21 +129,56 @@ const getProductionPreviewItem = (
     return null
   }
 
-  return (
-    previewUrl && {
-      action: 'production-preview',
-      title: (
-        <span className={styles.menuItem}>
-          Open preview
-          <span className={styles.hotkey}>
-            <Hotkeys keys={['Ctrl', 'Alt', 'O']} />
-          </span>
+  if (!previewUrl) {
+    return null
+  }
+
+  return {
+    action: 'production-preview',
+    title: (
+      <span className={styles.menuItem}>
+        Open preview
+        <span className={styles.hotkey}>
+          <Hotkeys keys={['Ctrl', 'Alt', 'O']} />
         </span>
-      ),
-      icon: PublicIcon,
-      url: previewUrl
-    }
-  )
+      </span>
+    ),
+    icon: PublicIcon,
+    url: previewUrl
+  }
+}
+
+// @todo refactor
+const getTemporaryPreviewItem = (
+  draft,
+  published,
+  liveEditEnabled,
+  isHistoryEnabled,
+  selectedEvent
+) => {
+  const snapshot = draft || published
+  if (!snapshot || !resolveProductionPreviewUrl) {
+    return null
+  }
+  let previewUrl
+  try {
+    previewUrl = resolveProductionPreviewUrl(snapshot, selectedEvent && selectedEvent.rev)
+  } catch (error) {
+    error.message = `An error was thrown while trying to get production preview url: ${error.message}`
+    // eslint-disable-next-line no-console
+    console.error(error)
+    return null
+  }
+
+  if (!previewUrl) {
+    return null
+  }
+
+  return {
+    action: 'contextual-preview',
+    title: 'Open contextual preview',
+    icon: PublicIcon
+  }
 }
 
 const getMenuItems = (
@@ -156,6 +191,7 @@ const getMenuItems = (
 ) =>
   [
     getProductionPreviewItem,
+    getTemporaryPreviewItem,
     enabledActions.includes('delete') && getUnpublishItem,
     enabledActions.includes('create') && getDuplicateItem,
     getHistoryMenuItem,
@@ -437,26 +473,37 @@ export default class Editor extends React.PureComponent {
   handleMenuAction = item => {
     if (item.action === 'production-preview') {
       navigateUrl(item.url)
+      return true
+    }
+
+    if (item.action === 'contextual-preview') {
+      this.context.replaceChildPane('preview')
+      return true
     }
 
     if (item.action === 'delete') {
       this.setState({showConfirmDelete: true})
+      return true
     }
 
     if (item.action === 'unpublish') {
       this.setState({showConfirmUnpublish: true})
+      return true
     }
 
     if (item.action === 'duplicate') {
       this.handleCreateCopy()
+      return true
     }
 
     if (item.action === 'inspect') {
       this.setState({inspect: true})
+      return true
     }
 
     if (item.action === 'browseHistory') {
       this.handleOpenHistory()
+      return true
     }
 
     this.setState({isMenuOpen: false})

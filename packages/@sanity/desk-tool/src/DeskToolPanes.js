@@ -176,6 +176,7 @@ export default class DeskToolPanes extends React.Component {
       replaceChildPane: (itemId, params) => {
         const {router} = this.props
         const {editDocumentId, panes} = router.state
+        console.log('replaceChildPane', itemId, params, editDocumentId, panes)
 
         if (editDocumentId) {
           router.navigate({...router.state, editDocumentId: itemId})

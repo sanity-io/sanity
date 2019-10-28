@@ -5,7 +5,9 @@ import Button from 'part:@sanity/components/buttons/default'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import SyncIcon from 'part:@sanity/base/sync-icon'
 import CheckIcon from 'part:@sanity/base/check-icon'
+import EyeIcon from 'part:@sanity/base/eye-icon'
 import ValidationList from 'part:@sanity/components/validation/list'
+import resolveContextualPreviews from 'part:@sanity/base/resolve-contextual-previews?'
 import ChevronDown from 'part:@sanity/base/chevron-down-icon'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import SplitIcon from 'part:@sanity/base/bars-icon'
@@ -100,6 +102,26 @@ export default class Actions extends React.PureComponent {
     )
   }
 
+  renderShowConextualPreviewsPane() {
+    if (!resolveContextualPreviews) {
+      return null
+    }
+    const currentDoc = this.props.value
+    const previews = resolveContextualPreviews(currentDoc)
+    const options = {stuff: 'other stuff', myId: currentDoc._id}
+    return (
+      <button
+        type="button"
+        onClick={this.handleShowContextualPreview(options)}
+        title="Contextual Previews pane"
+      >
+        <div tabIndex={-1}>
+          <EyeIcon />
+        </div>
+      </button>
+    )
+  }
+
   renderViewButton() {
     return (
       <button type="button" onClick={this.handleToggleViewButton} title="Toggle view">
@@ -108,6 +130,10 @@ export default class Actions extends React.PureComponent {
         </div>
       </button>
     )
+  }
+
+  handleShowContextualPreview = params => {
+    return () => this.context.replaceChildPane('preview', params)
   }
 
   handleSplitPane = () => {
@@ -183,6 +209,7 @@ export default class Actions extends React.PureComponent {
         {this.renderErrors()}
         {this.renderSplitPaneButton()}
         {this.renderViewButton()}
+        {this.renderShowConextualPreviewsPane()}
       </div>
     )
   }
