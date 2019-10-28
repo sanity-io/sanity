@@ -1,5 +1,5 @@
 import {camelCase} from 'lodash'
-import {EditorNode, SerializeOptions, Serializable} from './StructureNodes'
+import {EditorNode, SerializeOptions, Serializable, Child} from './StructureNodes'
 import {getTemplateById} from '@sanity/initial-value-templates'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {SchemaType} from './parts/Schema'
@@ -17,6 +17,7 @@ interface EditorOptions {
 export type PartialEditorNode = {
   id?: string
   title?: string
+  child?: Child
   options?: Partial<EditorOptions>
 }
 
@@ -41,6 +42,14 @@ export class EditorBuilder implements Serializable {
 
   getTitle() {
     return this.spec.title
+  }
+
+  child(child: Child) {
+    return this.clone({child})
+  }
+
+  getChild() {
+    return this.spec.child
   }
 
   documentId(documentId: string): EditorBuilder {
@@ -120,6 +129,7 @@ export class EditorBuilder implements Serializable {
 
     return {
       ...this.spec,
+      child: this.spec.child,
       id: validateId(id, path, index),
       type: 'document',
       options: getEditorOptions(options)

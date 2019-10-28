@@ -1,11 +1,14 @@
 import {StructureBuilder as S} from '../src'
 import {getDefaultSchema, SchemaType} from '../src/parts/Schema'
 
+const childResolver = () => undefined
+
 test('builds editor node through constructor', () => {
   expect(
     S.editor({
       id: 'foo',
       title: 'some title',
+      child: childResolver,
       options: {
         id: 'docId',
         type: 'book',
@@ -76,6 +79,7 @@ test('can construct using builder', () => {
       .title('Yeah')
       .documentId('wow')
       .schemaType('book')
+      .child(childResolver)
       .serialize()
   ).toMatchSnapshot()
 })
@@ -87,6 +91,7 @@ test('can construct using builder (alt)', () => {
       .id('yeah')
       .title('Yeah')
       .documentId('wow')
+      .child(childResolver)
       .serialize()
   ).toMatchSnapshot()
 })
@@ -97,6 +102,7 @@ test('builder is immutable', () => {
   expect(original.title('foo')).not.toEqual(original)
   expect(original.documentId('moo')).not.toEqual(original)
   expect(original.schemaType('author')).not.toEqual(original)
+  expect(original.child(childResolver)).not.toEqual(original)
 })
 
 test('getters work', () => {
@@ -105,4 +111,5 @@ test('getters work', () => {
   expect(original.title('bar').getTitle()).toEqual('bar')
   expect(original.documentId('moo').getDocumentId()).toEqual('moo')
   expect(original.schemaType('author').getSchemaType()).toEqual('author')
+  expect(original.child(childResolver).getChild()).toEqual(childResolver)
 })
