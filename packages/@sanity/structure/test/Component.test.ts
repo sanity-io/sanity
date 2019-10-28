@@ -2,12 +2,14 @@ import {StructureBuilder as S} from '../src'
 
 const noop = () => null
 const component = () => null
+const childResolver = () => undefined
 
 test('builds component node through constructor', () => {
   expect(
     S.component({
       id: 'foo',
       title: 'some title',
+      child: childResolver,
       component
     }).serialize()
   ).toMatchSnapshot()
@@ -17,6 +19,7 @@ test('builds component node through alt. constructor', () => {
   expect(
     S.component(component)
       .id('foo')
+      .child(childResolver)
       .serialize()
   ).toMatchSnapshot()
 })
@@ -81,6 +84,7 @@ test('can construct using builder', () => {
       .id('yeah')
       .title('Yeah')
       .component(component)
+      .child(childResolver)
       .serialize()
   ).toMatchSnapshot()
 })
@@ -145,6 +149,7 @@ test('builder is immutable', () => {
   expect(original.id('foo')).not.toEqual(original)
   expect(original.title('foo')).not.toEqual(original)
   expect(original.component(component)).not.toEqual(original)
+  expect(original.child(childResolver)).not.toEqual(original)
   expect(original.menuItems([])).not.toEqual(original)
   expect(original.menuItemGroups([])).not.toEqual(original)
 })
@@ -156,4 +161,5 @@ test('getters work', () => {
   expect(original.component(component).getComponent()).toEqual(component)
   expect(original.menuItems([]).getMenuItems()).toEqual([])
   expect(original.menuItemGroups([]).getMenuItemGroups()).toEqual([])
+  expect(original.child(childResolver).getChild()).toEqual(childResolver)
 })

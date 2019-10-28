@@ -1,5 +1,5 @@
 import {camelCase} from 'lodash'
-import {SerializeOptions, StructureNode, Serializable} from './StructureNodes'
+import {SerializeOptions, StructureNode, Serializable, Child} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
 import {MenuItemGroup, MenuItemGroupBuilder, maybeSerializeMenuItemGroup} from './MenuItemGroup'
@@ -7,18 +7,21 @@ import {validateId} from './util/validateId'
 
 export interface Component extends StructureNode {
   component: Function
+  child?: Child
   menuItems: MenuItem[]
   menuItemGroups: MenuItemGroup[]
 }
 
 export interface ComponentInput extends StructureNode {
   component: Function
+  child?: Child
   menuItems?: (MenuItem | MenuItemBuilder)[]
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
 }
 
 export interface BuildableComponent extends Partial<StructureNode> {
   component?: Function
+  child?: Child
   menuItems?: (MenuItem | MenuItemBuilder)[]
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
 }
@@ -54,6 +57,14 @@ export class ComponentBuilder implements Serializable {
     return this.spec.title
   }
 
+  child(child: Child) {
+    return this.clone({child})
+  }
+
+  getChild() {
+    return this.spec.child
+  }
+
   component(component: Function) {
     return this.clone({component, id: this.spec.id || getFunctionName(component)})
   }
@@ -79,7 +90,7 @@ export class ComponentBuilder implements Serializable {
   }
 
   serialize(options: SerializeOptions = {path: []}): Component {
-    const {id, title, component} = this.spec
+    const {id, title, child, component} = this.spec
     if (!id) {
       throw new SerializeError(
         '`id` is required for `component` structure item',
@@ -100,6 +111,7 @@ export class ComponentBuilder implements Serializable {
       id: validateId(id, options.path, options.index),
       title,
       type: 'component',
+      child,
       component,
       menuItems: (this.spec.menuItems || []).map((item, i) =>
         maybeSerializeMenuItem(item, i, options.path)
