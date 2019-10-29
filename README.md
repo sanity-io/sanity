@@ -129,7 +129,7 @@ We are grateful for all who dedicate their time making stuff for the Sanity.io c
 ### Stay up to date
 
 - Follow **@sanity_io** on [twitter](https://twitter.com/sanity_io)
-– Subscribe to [our blog by RSS](https://www.sanity.io/feed/rss)
+- Subscribe to [our blog by RSS](https://www.sanity.io/feed/rss)
 - Subscribe to our [newsletter](http://eepurl.com/b2yaDz)
 
 ### Documentation
