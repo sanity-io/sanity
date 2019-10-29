@@ -14,13 +14,13 @@ import {ResolvedUploader, UploaderResolver} from '../../sanity/uploads/typedefs'
 import WithMaterializedReference from '../../utils/WithMaterializedReference'
 import ImageToolInput from '../ImageToolInput'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
-import SelectAsset from './SelectAsset'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import ImageTool from '@sanity/imagetool'
 import {Observable} from 'rxjs'
 import {Path} from '../../typedefs/path'
+import SourceBrowser from './SourceBrowser'
 
 type FieldT = {
   name: string
@@ -288,7 +288,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
         {isSelectAssetOpen && (
           <Dialog title="Select image" onClose={this.handleCloseSelectAsset} isOpen>
-            <SelectAsset onSelect={this.handleSelectAsset} />
+            <SourceBrowser onSelect={this.handleSelectAsset} />
           </Dialog>
         )}
       </Fieldset>

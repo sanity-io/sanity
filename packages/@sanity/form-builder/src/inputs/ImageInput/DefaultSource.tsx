@@ -26,7 +26,7 @@ type State = {
   isLoading: boolean
 }
 
-export default class SelectAsset extends React.Component<Props, State> {
+class DefaultSource extends React.Component<Props, State> {
   state = {
     assets: [],
     isLastPage: false,
@@ -100,4 +100,10 @@ export default class SelectAsset extends React.Component<Props, State> {
       </div>
     )
   }
+}
+
+export default {
+  name: 'sanity-default',
+  title: 'Sanity',
+  component: DefaultSource
 }
