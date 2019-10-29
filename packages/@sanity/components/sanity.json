@@ -636,10 +636,6 @@
       "path": "snackbar/SnackbarItem.js"
     },
     {
-      "implements": "part:@sanity/components/snackbar/dialog",
-      "path": "snackbar/SnackbarDialog.js"
-    },
-    {
       "implements": "part:@sanity/components/snackbar/provider",
       "path": "snackbar/SnackbarProvider.js"
     },
