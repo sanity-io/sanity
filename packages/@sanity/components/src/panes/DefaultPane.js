@@ -11,6 +11,9 @@ import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import Styleable from '../utilities/Styleable'
 import defaultStyles from './styles/DefaultPane.css'
 import S from '@sanity/base/structure-builder'
+import BarsIcon from 'part:@sanity/base/bars-icon'
+import CloseIcon from 'part:@sanity/base/close-icon'
+import EyeIcon from 'part:@sanity/base/eye-icon'
 
 function getActionKey(action, index) {
   return (typeof action.action === 'string' ? action.action + action.title : action.title) || index
@@ -412,6 +415,22 @@ class Pane extends React.Component {
     )
   }
 
+  renderShowConextualPreviewsPane() {
+    const {onShowContextualPreview} = this.props
+    if (!onShowContextualPreview) return null
+    return (
+      <button
+        type="button"
+        onClick={onShowContextualPreview}
+        title="Contextual Previews pane"
+      >
+        <div tabIndex={-1}>
+          <EyeIcon />
+        </div>
+      </button>
+    )
+  }
+
   render() {
     const {
       title,
@@ -420,12 +439,13 @@ class Pane extends React.Component {
       isCollapsed,
       isScrollable,
       menuItems,
+      onSplitPane,
+      onToggleViewButton,
       styles,
       renderActions,
       staticContent,
       contentMaxWidth
     } = this.props
-    const headerStyle = isCollapsed ? {} : this.state.headerStyle
     const actions = menuItems.filter(
       act => act.showAsAction && (!isCollapsed || act.showAsAction.whenCollapsed)
     )
@@ -438,7 +458,7 @@ class Pane extends React.Component {
         ])}
         onClick={this.handleRootClick}
       >
-        <div className={styles.header} style={{boxShadow: headerStyle.boxShadow}}>
+        <div className={styles.header}>
           <div
             className={styles.headerContent}
             style={contentMaxWidth ? {maxWidth: `${contentMaxWidth}px`} : {}}
@@ -451,7 +471,24 @@ class Pane extends React.Component {
               {this.renderMenu()}
             </div>
           </div>
+          <div className={styles.headerViewMenu}>
+            <div className={styles.headerTabsContainer}>[Tabs]</div>
+            <div className={styles.headerPaneActions}>
+              <button type="button" onClick={onSplitPane} title="Split pane">
+                <div tabIndex={-1}>
+                  <BarsIcon />
+                </div>
+              </button>
+              <button type="button" onClick={onToggleViewButton} title="Toggle view">
+                <div tabIndex={-1}>
+                  <CloseIcon />
+                </div>
+              </button>
+              {this.renderShowConextualPreviewsPane()}
+            </div>
+          </div>
         </div>
+
         <div className={styles.main}>
           {isScrollable ? (
             <ScrollContainer className={styles.scrollContainer} onScroll={this.handleContentScroll}>
@@ -462,8 +499,9 @@ class Pane extends React.Component {
           ) : (
             <div className={styles.notScrollable}>{children}</div>
           )}
-          {staticContent}
         </div>
+
+        {staticContent && <div className={styles.footer}>{staticContent}</div>}
       </div>
     )
   }

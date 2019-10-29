@@ -5,18 +5,12 @@ import Button from 'part:@sanity/components/buttons/default'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
 import SyncIcon from 'part:@sanity/base/sync-icon'
 import CheckIcon from 'part:@sanity/base/check-icon'
-import EyeIcon from 'part:@sanity/base/eye-icon'
 import ValidationList from 'part:@sanity/components/validation/list'
-import resolveContextualPreviews from 'part:@sanity/base/resolve-contextual-previews?'
 import ChevronDown from 'part:@sanity/base/chevron-down-icon'
 import WarningIcon from 'part:@sanity/base/warning-icon'
-import SplitIcon from 'part:@sanity/base/bars-icon'
-import {PaneRouterContext} from '../../index'
 import styles from '../styles/Editor.css'
 
 export default class Actions extends React.PureComponent {
-  static contextType = PaneRouterContext
-
   static propTypes = {
     isLiveEditEnabled: PropTypes.bool.isRequired,
     isReconnecting: PropTypes.bool.isRequired,
@@ -92,57 +86,6 @@ export default class Actions extends React.PureComponent {
     )
   }
 
-  renderSplitPaneButton() {
-    return (
-      <button type="button" onClick={this.handleSplitPane} title="Split pane">
-        <div tabIndex={-1}>
-          <SplitIcon />
-        </div>
-      </button>
-    )
-  }
-
-  renderShowConextualPreviewsPane() {
-    if (!resolveContextualPreviews) {
-      return null
-    }
-
-    return (
-      <button
-        type="button"
-        onClick={this.handleShowContextualPreview}
-        title="Contextual Previews pane"
-      >
-        <div tabIndex={-1}>
-          <EyeIcon />
-        </div>
-      </button>
-    )
-  }
-
-  renderViewButton() {
-    return (
-      <button type="button" onClick={this.handleToggleViewButton} title="Toggle view">
-        <div tabIndex={-1}>
-          <WarningIcon />
-        </div>
-      </button>
-    )
-  }
-
-  handleShowContextualPreview = () => {
-    const {_id, _rev} = this.props.value
-    return this.context.replaceChildPane('preview', {_id, _rev})
-  }
-
-  handleSplitPane = () => {
-    this.context.duplicateCurrentPane()
-  }
-
-  handleToggleViewButton = () => {
-    this.context.setPaneView('someView')
-  }
-
   renderErrors() {
     const {
       onCloseValidationResults,
@@ -206,9 +149,6 @@ export default class Actions extends React.PureComponent {
         {isReconnecting && this.renderReconnecting()}
         {value && !showSavingStatus && !isReconnecting && this.renderSyncedStatus()}
         {this.renderErrors()}
-        {this.renderSplitPaneButton()}
-        {this.renderViewButton()}
-        {this.renderShowConextualPreviewsPane()}
       </div>
     )
   }
