@@ -106,13 +106,11 @@ export default class Actions extends React.PureComponent {
     if (!resolveContextualPreviews) {
       return null
     }
-    const currentDoc = this.props.value
-    const previews = resolveContextualPreviews(currentDoc)
-    const options = {stuff: 'other stuff', myId: currentDoc._id}
+
     return (
       <button
         type="button"
-        onClick={this.handleShowContextualPreview(options)}
+        onClick={this.handleShowContextualPreview}
         title="Contextual Previews pane"
       >
         <div tabIndex={-1}>
@@ -132,8 +130,9 @@ export default class Actions extends React.PureComponent {
     )
   }
 
-  handleShowContextualPreview = params => {
-    return () => this.context.replaceChildPane('preview', params)
+  handleShowContextualPreview = () => {
+    const {_id, _rev} = this.props.value
+    return this.context.replaceChildPane('preview', {_id, _rev})
   }
 
   handleSplitPane = () => {

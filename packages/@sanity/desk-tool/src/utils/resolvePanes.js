@@ -63,10 +63,14 @@ function resolveForStructure(structure, paneGroups, prevStructure, fromIndex) {
         return
       }
 
+      // @todo Path is incorrect (array of groups vs ids), is it being used anywhere?
+      const path = paneSegments.slice(0, index + 1)
       const parent = index === 0 ? null : findParentForSegmentIndex(index - 1)
-      const context = {parent, index, path: paneSegments.slice(0, index + 1)}
+
       if (index === 0) {
-        subscribeForUpdates(structure, index, 0, context)
+        const {id, params, payload} = paneSegments[index][splitIndex]
+        const context = {parent, index, splitIndex, path, params, payload}
+        subscribeForUpdates(structure, index, 0, context, [id, context])
         return
       }
 
@@ -76,7 +80,17 @@ function resolveForStructure(structure, paneGroups, prevStructure, fromIndex) {
 
       const siblings = paneSegments[index]
       for (let i = splitIndex; i < siblings.length; i++) {
-        subscribeForUpdates(parent.child, index, i, context, [siblings[i].id, context])
+        // @todo add split index to path?
+        const {id, params, payload} = siblings[i]
+        const context = {
+          parent,
+          index,
+          splitIndex: i,
+          path,
+          params,
+          payload
+        }
+        subscribeForUpdates(parent.child, index, i, context, [id, context])
       }
     }
 

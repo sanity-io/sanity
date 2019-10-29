@@ -148,39 +148,6 @@ const getProductionPreviewItem = (
   }
 }
 
-// @todo refactor
-const getTemporaryPreviewItem = (
-  draft,
-  published,
-  liveEditEnabled,
-  isHistoryEnabled,
-  selectedEvent
-) => {
-  const snapshot = draft || published
-  if (!snapshot || !resolveProductionPreviewUrl) {
-    return null
-  }
-  let previewUrl
-  try {
-    previewUrl = resolveProductionPreviewUrl(snapshot, selectedEvent && selectedEvent.rev)
-  } catch (error) {
-    error.message = `An error was thrown while trying to get production preview url: ${error.message}`
-    // eslint-disable-next-line no-console
-    console.error(error)
-    return null
-  }
-
-  if (!previewUrl) {
-    return null
-  }
-
-  return {
-    action: 'contextual-preview',
-    title: 'Open contextual preview',
-    icon: PublicIcon
-  }
-}
-
 const getMenuItems = (
   enabledActions,
   draft,
@@ -191,7 +158,6 @@ const getMenuItems = (
 ) =>
   [
     getProductionPreviewItem,
-    getTemporaryPreviewItem,
     enabledActions.includes('delete') && getUnpublishItem,
     enabledActions.includes('create') && getDuplicateItem,
     getHistoryMenuItem,
@@ -246,7 +212,6 @@ export default class Editor extends React.PureComponent {
 
   static propTypes = {
     title: PropTypes.string,
-    paneIndex: PropTypes.number.isRequired,
     index: PropTypes.number,
     paneStyles: PropTypes.object,
     patchChannel: PropTypes.object,
@@ -477,7 +442,7 @@ export default class Editor extends React.PureComponent {
     }
 
     if (item.action === 'contextual-preview') {
-      this.context.replaceChildPane('preview')
+      this.context.replaceChildPane('preview', item.params)
       return true
     }
 
@@ -507,6 +472,7 @@ export default class Editor extends React.PureComponent {
     }
 
     this.setState({isMenuOpen: false})
+    return false
   }
 
   handleCloseValidationResults = () => {

@@ -3,10 +3,10 @@
 // old: authors;knut,{"template":"diaryEntry"}
 // new: authors;knut,view=diff,eyJyZXYxIjoiYWJjMTIzIiwicmV2MiI6ImRlZjQ1NiJ9|latest-posts
 
-const reservedParams = ['id', 'params']
-const isKeyValue = str => /^[a-z0-9]+=[^=]+/i.test(str)
-const isBase64 = str => /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(str)
 const panePattern = /^([a-z0-9_-]+),?({.*?})?(?:(;|$))/i
+const isParam = str => /^[a-z0-9]+=[^=]+/i.test(str)
+const isPayload = str =>
+  /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(str)
 
 export function parsePanesSegment(str) {
   if (str.indexOf(',{') !== -1) {
@@ -23,12 +23,12 @@ export function parsePanesSegment(str) {
           const [id, ...chunks] = segment.split(',')
           return chunks.reduce(
             (pane, chunk) => {
-              if (isKeyValue(chunk)) {
+              if (isParam(chunk)) {
                 const key = chunk.slice(0, chunk.indexOf('='))
                 const value = chunk.slice(key.length + 1)
-                pane[reservedParams.includes(key) ? `_${key}` : key] = value
-              } else if (isBase64(chunk)) {
-                pane.params = tryParseBase64Params(chunk)
+                pane.params[key] = value
+              } else if (isPayload(chunk)) {
+                pane.payload = tryParseBase64Payload(chunk)
               } else {
                 // eslint-disable-next-line no-console
                 console.warn('Unknown pane segment: %s - skipping', segment)
@@ -36,7 +36,7 @@ export function parsePanesSegment(str) {
 
               return pane
             },
-            {id}
+            {id, params: {}, payload: undefined}
           )
         })
     )
@@ -47,14 +47,16 @@ export function encodePanesSegment(panes = []) {
   return panes
     .map(group => {
       return group
-        .map(({id, params, ...rest}) => {
-          const encodedParams = params ? btoa(JSON.stringify(params)) : undefined
-          const keyValuePairs = Object.keys(rest).reduce(
-            (pairs, key) => [...pairs, `${key}=${rest[key]}`],
+        .map(({id, params = {}, payload}) => {
+          const encodedPayload =
+            typeof payload === 'undefined' ? undefined : btoa(JSON.stringify(payload))
+
+          const encodedParams = Object.keys(params).reduce(
+            (pairs, key) => [...pairs, `${key}=${params[key]}`],
             []
           )
 
-          return [id, keyValuePairs.length > 0 && keyValuePairs, encodedParams]
+          return [id, encodedParams.length > 0 && encodedParams, encodedPayload]
             .filter(Boolean)
             .join(',')
         })
@@ -69,14 +71,14 @@ export function parseOldPanesSegment(str) {
 
   let buffer = str
   while (buffer.length) {
-    const [match, id, paramsChunk] = buffer.match(panePattern) || []
+    const [match, id, payloadChunk] = buffer.match(panePattern) || []
     if (!match) {
       buffer = buffer.slice(1)
       continue
     }
 
-    const params = paramsChunk && tryParseParams(paramsChunk)
-    chunks.push({id, params})
+    const payload = payloadChunk && tryParsePayload(payloadChunk)
+    chunks.push({id, payload})
 
     buffer = buffer.slice(match.length)
   }
@@ -84,7 +86,7 @@ export function parseOldPanesSegment(str) {
   return chunks
 }
 
-function tryParseParams(json) {
+function tryParsePayload(json) {
   try {
     return JSON.parse(json)
   } catch (err) {
@@ -94,6 +96,6 @@ function tryParseParams(json) {
   }
 }
 
-function tryParseBase64Params(data) {
-  return tryParseParams(atob(data))
+function tryParseBase64Payload(data) {
+  return tryParsePayload(atob(data))
 }
