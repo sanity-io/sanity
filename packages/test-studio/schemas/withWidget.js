@@ -1,52 +1,81 @@
 import React from 'react'
+import MyGaComponent from '../components/MyGaComponent'
+import { withDocument } from 'part:@sanity/form-builder'
 
-const SimpleWidget = props => {
-  const {value = {}} = props
+const SimpleWidget = withDocument(props => {
+  const {document = {}} = props
   return (
-    <div>
-      <div>This is the test widget</div>
-      <div>I know about the document, like the title <em>{value.title}</em></div>
-    </div>
+    <div>I know about the document, like the title <b>{document.title}</b></div>
   )
-}
+})
 
 export default {
   name: 'withWidgetTest',
   type: 'document',
   title: 'With widget test',
-  fieldsets: [{name: 'statistics', title: 'Statistics', options: {collapsable: true}}],
   fields: [
     {
+      title: 'Title',
       name: 'title',
-      type: 'string',
-      title: 'Title'
+      type: 'string'
     },
     {
-      name: 'stats',
-      type: 'widget',
-      title: 'Stats from google analytics',
-      description: 'Custom widget',
-      select: {
-        title: 'title'
-      },
-      component: SimpleWidget
-    },
-    {
-      name: 'slug',
-      type: 'string',
       title: 'Slug',
-      fieldset: 'statistics'
+      name: 'slug',
+      type: 'slug'
     },
     {
-      name: 'statsdf',
+      title: 'Bounce rate last 30 days',
+      name: 'bounceWidget',
       type: 'widget',
-      title: 'Stats from google analytics',
-      description: 'Custom widget',
-      select: {
-        title: 'title'
-      },
-      component: SimpleWidget,
-      fieldset: 'statistics'
+      component: MyGaComponent,
+      options: {
+        gaConfig: doc => doc && ({
+          reportType: 'ga',
+          query: {
+            dimensions: 'ga:date',
+            metrics: 'ga:bounceRate, ga:bounces',
+            'start-date': '30daysAgo',
+            'end-date': 'yesterday',
+            filters: `ga:pagePath==/${doc.slug && doc.slug.current || ''}`
+          },
+          chart: {
+            type: 'LINE',
+            options: {
+              width: '100%'
+            }
+          }
+        })
+      }
+    },
+    {
+      title: 'Page views last 30 days',
+      name: 'pageViewsWidget',
+      type: 'widget',
+      component: MyGaComponent,
+      options: {
+        gaConfig: doc => doc && ({
+          reportType: 'ga',
+          query: {
+            dimensions: 'ga:date',
+            metrics: 'ga:pageviews',
+            'start-date': '30daysAgo',
+            'end-date': 'yesterday',
+            filters: `ga:pagePath==/${doc.slug && doc.slug.current || ''}`
+          },
+          chart: {
+            type: 'LINE',
+            options: {
+              width: '100%'
+            }
+          }
+        })
+      }
+    },
+    {
+      name: 'sampleWigdet',
+      type: 'widget',
+      component: SimpleWidget
     }
   ]
 }
