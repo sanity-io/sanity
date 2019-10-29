@@ -2,6 +2,7 @@ import React from 'react'
 import S from '@sanity/desk-tool/structure-builder'
 import RefreshIcon from 'part:@sanity/base/sync-icon'
 import JsonDocumentDump from './components/JsonDocumentDump'
+import {PaneRouterContext} from '@sanity/desk-tool'
 
 // For testing. Bump the timeout to introduce som lag
 const delay = val => new Promise(resolve => setTimeout(resolve, 10, val))
@@ -124,14 +125,15 @@ export default () =>
                     // It's preview time!
                     return S.component()
                       .title('Preview')
-                      .component(props => {
-                        console.log('props', props)
-                        return (
-                          <pre>
-                            <code>{JSON.stringify(props, null, 2)}</code>
-                          </pre>
-                        )
-                      })
+                      .component(() => (
+                        <PaneRouterContext.Consumer>
+                          {context => (
+                            <pre>
+                              <code>{JSON.stringify(context.getPayload(), null, 2)}</code>
+                            </pre>
+                          )}
+                        </PaneRouterContext.Consumer>
+                      ))
                   }
                   // Not preview, but something else
                   return S.component()

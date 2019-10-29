@@ -117,7 +117,7 @@ export default class DeskToolPanes extends React.Component {
       return this.paneRouterContexts.get(index)
     }
 
-    const getCurrentPaneUrlParams = () => {
+    const getCurrentRouterState = () => {
       const panes = this.props.router.state.panes || []
       const paneIndex = index - 1
 
@@ -142,24 +142,26 @@ export default class DeskToolPanes extends React.Component {
       // @todo Zero-based index of pane within sibling group
       groupIndex: 0,
 
+      getPayload: () => getCurrentRouterState().payload,
+
       // Returns the current router state for the active panes
       getCurrentRouterState: () => this.props.router.state.panes || [],
 
       // Curried StateLink that passes the correct state automatically
-      ChildLink: ({childId, childParameters, ...props}) => {
+      ChildLink: ({childId, childPayload, ...props}) => {
         const oldPanes = this.props.router.state.panes || []
-        const panes = oldPanes.slice(0, index).concat([[{id: childId, params: childParameters}]])
+        const panes = oldPanes.slice(0, index).concat([[{id: childId, payload: childPayload}]])
         return <StateLink {...props} state={{panes}} />
       },
 
       // Get the current pane ID and parameters
       getCurrentPane: () => {
-        const {id, siblings} = getCurrentPaneUrlParams()
+        const {id, siblings} = getCurrentRouterState()
         return {pane: this.props.panes[index], id, siblings}
       },
 
       // Replaces the current pane with a new one
-      replaceCurrentPane: (itemId, params) => {
+      replaceCurrentPane: (itemId, payload) => {
         const {router} = this.props
         const {editDocumentId, panes} = router.state
 
@@ -167,42 +169,41 @@ export default class DeskToolPanes extends React.Component {
           router.navigate({...router.state, editDocumentId: itemId})
         } else {
           const newPanes = panes.slice()
-          newPanes.splice(index, 1, [{id: itemId, params}])
+          newPanes.splice(index, 1, [{id: itemId, payload}])
           router.navigate({...router.state, panes: newPanes})
         }
       },
 
       // Replace or create a child pane with the given id and parameters
-      replaceChildPane: (itemId, params) => {
+      replaceChildPane: (itemId, payload) => {
         const {router} = this.props
         const {editDocumentId, panes} = router.state
-        console.log('replaceChildPane', itemId, params, editDocumentId, panes)
 
         if (editDocumentId) {
           router.navigate({...router.state, editDocumentId: itemId})
         } else {
           const newPanes = panes.slice()
-          newPanes.splice(index + 1, 1, [{id: itemId, params}])
+          newPanes.splice(index + 1, 1, [{id: itemId, payload}])
           router.navigate({...router.state, panes: newPanes})
         }
       },
 
       // Duplicate the current pane, with optional overrides for item ID and parameters
-      duplicateCurrentPane: (itemId, params) => {
-        const {id, siblings, ...rest} = getCurrentPaneUrlParams()
+      duplicateCurrentPane: (itemId, payload) => {
+        const {id, siblings, ...rest} = getCurrentRouterState()
         const {router} = this.props
 
         const newPanes = (router.state.panes || []).slice()
         newPanes.splice(newPanes.indexOf(siblings), 1, [
           ...siblings,
-          {...rest, id: itemId || id, params: params || rest.params}
+          {...rest, id: itemId || id, payload: payload || rest.payload}
         ])
 
         router.navigate({...router.state, panes: newPanes})
       },
 
       setPaneView: viewId => {
-        const {id, siblings, ...rest} = getCurrentPaneUrlParams()
+        const {id, siblings, ...rest} = getCurrentRouterState()
         const {router} = this.props
         const {editDocumentId, panes} = router.state
 
@@ -211,7 +212,7 @@ export default class DeskToolPanes extends React.Component {
           throw new Error('not implemented for fallback pane')
         } else {
           const newPanes = panes.slice()
-          newPanes.splice(index - 1, 1, [{id, ...rest, view: viewId}])
+          newPanes.splice(index - 1, 1, [{id, ...rest, params: {view: viewId}}])
           router.navigate({...router.state, panes: newPanes})
         }
       },

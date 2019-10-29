@@ -16,6 +16,9 @@ export const PaneRouterContext = React.createContext({
   // Returns the current router state for the whole desk tool
   getCurrentRouterState: missingContext,
 
+  // Returns the payload for the current pane
+  getPayload: () => missingContext(),
+
   // Curried StateLink that passes the correct state automatically
   ChildLink: ({childId, childParameters, ...props}) => missingContext(),
 
