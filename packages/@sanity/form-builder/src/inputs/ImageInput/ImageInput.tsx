@@ -2,10 +2,7 @@
 
 import React from 'react'
 import Button from 'part:@sanity/components/buttons/default'
-import FileInputButton from 'part:@sanity/components/fileinput/button'
-import ProgressCircle from 'part:@sanity/components/progress/circle'
 import EditIcon from 'part:@sanity/base/edit-icon'
-import UploadIcon from 'part:@sanity/base/upload-icon'
 import VisibilityIcon from 'part:@sanity/base/visibility-icon'
 import {get, partition} from 'lodash'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
@@ -13,15 +10,14 @@ import styles from './styles/ImageInput.css'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import {Marker, Reference, Type} from '../../typedefs'
-import {ResolvedUploader, Uploader, UploaderResolver} from '../../sanity/uploads/typedefs'
+import {ResolvedUploader, UploaderResolver} from '../../sanity/uploads/typedefs'
 import WithMaterializedReference from '../../utils/WithMaterializedReference'
 import ImageToolInput from '../ImageToolInput'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
 import SelectAsset from './SelectAsset'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import UploadPlaceholder from '../common/UploadPlaceholder'
-import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
-import Snackbar from 'part:@sanity/components/snackbar/default'
+import Fieldset from 'part:@sanity/components/fieldsets/default'
 import ImageTool from '@sanity/imagetool'
 import {Observable} from 'rxjs'
 import {Path} from '../../typedefs/path'
@@ -80,76 +76,13 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     this.props.onChange(PatchEvent.from(unset(['asset'])))
   }
 
-  clearUploadStatus() {
-    this.props.onChange(PatchEvent.from([unset(['_upload'])])) // todo: this is kind of hackish
-  }
-
-  cancelUpload() {
-    if (this.uploadSubscription) {
-      this.uploadSubscription.unsubscribe()
-      this.clearUploadStatus()
-    }
-  }
-
-  handleCancelUpload = () => {
-    this.cancelUpload()
-  }
-  handleSelectFile = (files: FileList) => {
-    this.uploadFirstAccepted(files)
-  }
-
-  uploadFirstAccepted(fileList: FileList) {
-    const {resolveUploader, type} = this.props
-    let match: {
-      uploader: Uploader
-      file: File
-    } | null
-    Array.from(fileList).some(file => {
-      const uploader = resolveUploader(type, file)
-      if (uploader) {
-        match = {file, uploader}
-        return true
-      }
-      return false
-    })
-    if (match) {
-      this.uploadWith(match.uploader, match.file)
-    }
-  }
-
-  uploadWith(uploader: Uploader, file: File) {
-    const {type, onChange} = this.props
-    const options = {
-      metadata: get(type, 'options.metadata'),
-      storeOriginalFilename: get(type, 'options.storeOriginalFilename')
-    }
-    this.cancelUpload()
-    this.setState({isUploading: true})
-    onChange(PatchEvent.from([setIfMissing({_type: type.name})]))
-    this.uploadSubscription = uploader.upload(file, type, options).subscribe({
-      next: uploadEvent => {
-        if (uploadEvent.patches) {
-          onChange(PatchEvent.from(uploadEvent.patches))
-        }
-      },
-      error: err => {
-        console.error(err)
-        this.setState({uploadError: err})
-        this.clearUploadStatus()
-      },
-      complete: () => {
-        onChange(PatchEvent.from([unset(['hotspot']), unset(['crop'])]))
-        this.setState({isUploading: false})
-      }
-    })
-  }
-
   getConstrainedImageSrc = (assetDocument: Record<string, any>): string => {
     const materializedSize = ImageTool.maxWidth || 1000
     const maxSize = materializedSize * getDevicePixelRatio()
     const constrainedSrc = `${assetDocument.url}?w=${maxSize}&h=${maxSize}&fit=max`
     return constrainedSrc
   }
+
   renderMaterializedAsset = (assetDocument: Record<string, any>) => {
     const {value = {}} = this.props
     const constrainedSrc = this.getConstrainedImageSrc(assetDocument)
@@ -162,32 +95,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         hotspot={value.hotspot}
         crop={value.crop}
       />
-    )
-  }
-
-  renderUploadState(uploadState: any) {
-    const {isUploading} = this.state
-    const isComplete =
-      uploadState.progress === 100 && !!(this.props.value && this.props.value.asset)
-    return (
-      <div className={styles.progress}>
-        <div>
-          <div>
-            <ProgressCircle
-              percent={status === 'complete' ? 100 : uploadState.progress}
-              text={isComplete ? 'Please wait…' : 'Uploading…'}
-              completed={isComplete}
-              showPercent
-              animation
-            />
-          </div>
-          {isUploading && (
-            <Button kind="simple" color="danger" onClick={this.handleCancelUpload}>
-              Cancel
-            </Button>
-          )}
-        </div>
-      </div>
     )
   }
 
@@ -318,48 +225,28 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const uploader = resolveUploader && resolveUploader(type, file)
     return uploader ? [{type: type, uploader}] : []
   }
-  handleUpload = ({file, uploader}) => {
-    this.uploadWith(uploader, file)
-  }
 
   render() {
     const {type, value, level, materialize, markers, readOnly} = this.props
-    const {isAdvancedEditOpen, isSelectAssetOpen, uploadError, hasFocus} = this.state
+    const {isAdvancedEditOpen, isSelectAssetOpen, hasFocus} = this.state
     const [highlightedFields, otherFields] = partition(
       type.fields.filter(field => !HIDDEN_FIELDS.includes(field.name)),
       'type.options.isHighlighted'
     )
-    const accept = get(type, 'options.accept', 'image/*')
     const hasAsset = value && value.asset
     const showAdvancedEditButton =
       value && (otherFields.length > 0 || (hasAsset && this.isImageToolEnabled()))
     return (
-      <UploadTargetFieldset
-        markers={markers}
+      <Fieldset
         legend={type.title}
         description={type.description}
         level={level}
+        tabIndex={0}
         onFocus={this.handleFocus}
-        onBlur={this.handleBlur}
-        onUpload={this.handleUpload}
-        getUploadOptions={this.getUploadOptions}
-        ref={this.setFocusArea}
+        markers={markers}
       >
-        {uploadError && (
-          <Snackbar
-            kind="error"
-            isPersisted
-            actionTitle="OK"
-            onAction={() => this.setState({uploadError: null})}
-            title="Upload error"
-            subtitle={<div>{"We're"} really sorry, but the upload could not be completed.</div>}
-          />
-        )}
         <div className={styles.content}>
           <div className={styles.assetWrapper}>
-            {value && value._upload && (
-              <div className={styles.uploadState}>{this.renderUploadState(value._upload)}</div>
-            )}
             {hasAsset ? (
               <WithMaterializedReference reference={value.asset} materialize={materialize}>
                 {this.renderMaterializedAsset}
@@ -374,18 +261,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         <div className={styles.functions}>
           <ButtonGrid>
             {!readOnly && (
-              <FileInputButton
-                icon={UploadIcon}
-                inverted
-                onSelect={this.handleSelectFile}
-                accept={accept}
-              >
-                Upload
-              </FileInputButton>
-            )}
-            {!readOnly && (
               <Button onClick={this.handleOpenSelectAsset} inverted>
-                Browse
+                Select
               </Button>
             )}
             {showAdvancedEditButton && (
@@ -414,7 +291,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
             <SelectAsset onSelect={this.handleSelectAsset} />
           </Dialog>
         )}
-      </UploadTargetFieldset>
+      </Fieldset>
     )
   }
 }
