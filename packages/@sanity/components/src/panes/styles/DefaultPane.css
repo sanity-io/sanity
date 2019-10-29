@@ -56,16 +56,10 @@
 .header {
   position: sticky;
   top: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: stretch;
-  box-sizing: border-box;
-  line-height: var(--pane-header-height);
-  width: 100%;
-  height: var(--pane-header-height);
   user-select: none;
   background-color: inherit;
   z-index: 10;
+  border-bottom: 1px solid #ccc;
 
   @nest .isCollapsed & {
     background-color: transparent;
@@ -82,8 +76,6 @@
   align-items: stretch;
   align-self: flex-end;
   box-sizing: border-box;
-  height: 3.4375rem;
-  padding-left: var(--medium-padding);
   width: 100%;
 
   @nest .isCollapsed & {
@@ -193,12 +185,9 @@
 
 .title {
   box-sizing: border-box;
-  position: relative;
-  z-index: -1;
-  display: block;
   margin: 0;
-  padding: 0 0.25em 0 0;
-  font-size: 1.25rem;
+  padding: 0.75em 1em 0.25em;
+  font-size: 1rem;
   font-weight: 700;
   user-select: none;
   cursor: default;
@@ -208,13 +197,32 @@
   width: stretch;
   text-overflow: ellipsis;
   margin-right: auto;
-  transform-origin: 0.5em 1.5em;
+  transform-origin: 1.5em 1.5em;
   transform: rotate(0deg);
   transition: transform var(--pane-animation-time) linear;
 
   @nest .isCollapsed & {
     transform: rotate(90deg);
   }
+}
+
+.headerViewMenu {
+  display: flex;
+  max-width: 640px;
+  padding: 0 1em;
+
+  @nest .isCollapsed & {
+    display: none;
+  }
+}
+
+.headerTabsContainer {
+  flex: 1;
+  padding: 0.25em 0;
+}
+
+.headerPaneActions {
+  outline: 1px solid red;
 }
 
 .functions {
@@ -275,6 +283,10 @@
   @nest .isCollapsed & {
     display: none;
   }
+}
+
+.scrollWrapper {
+  margin: 0 auto;
 }
 
 .notScrollable {
@@ -348,4 +360,31 @@
   align-items: center;
   font-size: var(--font-size-large);
   margin-left: var(--large-padding);
+}
+
+.footer {
+  box-sizing: border-box;
+  background-color: var(--component-bg);
+  color: var(--text-color-secondary);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: var(--zindex-pane);
+  padding: var(--small-padding) var(--medium-padding);
+  border-top: 1px solid #ccc;
+
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    padding-bottom: calc(var(--small-padding) + env(safe-area-inset-bottom));
+  }
+
+  /* NOTE: Work-around for hiding the snack bar when the keyboard is visible on small screens */
+  @media (max-height: 32em) {
+    position: relative;
+  }
+
+  @media (--screen-medium) {
+    position: static;
+  }
 }

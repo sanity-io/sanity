@@ -58,59 +58,18 @@
   opacity: 0.5;
 }
 
-.top {
-  margin: 0 var(--medium-padding);
+.footer {
+  display: flex;
+  max-width: 640px;
+}
+
+.footerStatus {
+  flex: 1;
   color: var(--text-color-secondary);
 }
 
 .publishInfo {
-  display: flex;
-  box-sizing: border-box;
-  color: var(--text-color-secondary);
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  background-color: var(--component-bg);
-  z-index: var(--zindex-pane);
-  transform: translateY(0);
-  transition: transform 0.3s ease-in, box-shadow 0.2s ease-in;
-  justify-items: stretch;
-  justify-content: stretch;
-  align-items: center;
-  font-size: 1rem;
-  box-shadow: 0 0 2px color(var(--shadow-base) a(20%));
-  padding: var(--small-padding) var(--medium-padding);
-
-  @supports (padding-bottom: env(safe-area-inset-bottom)) {
-    padding-bottom: calc(var(--small-padding) + env(safe-area-inset-bottom));
-  }
-
-  /* NOTE: Work-around for hiding the snack bar when the keyboard is visible on small screens */
-  @media (max-height: 32em) {
-    position: relative;
-  }
-
-  @media (min-width: 375px) {
-    grid-template-columns: 50% 50%;
-  }
-
-  @media (--screen-medium) {
-    position: absolute;
-    display: grid;
-    grid-template-areas: 'publishButton publishInfoUndoButton';
-    grid-template-rows: 2.5em;
-    grid-template-columns: 10em 10em;
-    grid-gap: 0.5em;
-    padding: var(--small-padding) var(--medium-padding);
-  }
-}
-
-.publishInfoHidden {
-  composes: publishInfo;
-  transform: translateY(100%);
-  box-shadow: 0 0 0 var(--shadow-base);
+  background: #fed;
 }
 
 .publishButton {
