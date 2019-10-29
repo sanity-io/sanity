@@ -46,10 +46,12 @@
     "react": "16.3.1",
     "react-dom": "16.3.1",
     "react-icons": "^2.2.7",
+    "react-debounce-render": "^5.0.0",
     "sanity-plugin-dashboard-widget-cats": "0.0.2",
     "sanity-plugin-dashboard-widget-document-count": "0.0.1",
     "sanity-plugin-dashboard-widget-document-list": "0.0.3",
-    "sanity-plugin-mux-input": "^0.1.11"
+    "sanity-plugin-mux-input": "^0.1.11",
+    "react-analytics-widget": "^1.2.0"
   },
   "devDependencies": {
     "rimraf": "^2.6.2"
