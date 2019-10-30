@@ -1,6 +1,8 @@
-# ![Sanity logo](https://cdn.sanity.io/images/3do82whm/next/51af00784c5addcf63ae7f0c416756acca7e63ac-353x71.svg?w=180&fm=png&fit=max) – Build with Structured Content
+# ![Sanity logo](https://cdn.sanity.io/images/3do82whm/next/51af00784c5addcf63ae7f0c416756acca7e63ac-353x71.svg?w=180&fm=png&fit=max)
 
-> **Sanity.io is the platform for structured content, that comes with an open-souce editing environment called Sanity Studio that you can customize with JavaScript, and a hosted real-time data store.**
+## Build with Structured Content
+
+> **Sanity.io is the platform for structured content. It comes with an open-source editing environment called Sanity Studio that you can customize with JavaScript and a real-time hosted data store. Sanity has generous included quotas – so [getting started](https://www.sanity.io/create) is free.**
 
 ![npm](https://img.shields.io/npm/v/@sanity/base) ![Downloads](https://img.shields.io/npm/dm/@sanity/client) [![](https://slack.sanity.io/badge.svg)](https://slack.sanity.io/) ![Follow on twitter](https://img.shields.io/twitter/follow/sanity_io?style=flat&color=blue)
 
@@ -16,6 +18,7 @@ Or go to [sanity.io/create](https://www.sanity.io/create) to get started from th
 
 - Watch the [getting started video on YouTube](https://www.youtube.com/watch?v=2ceM_tSus_M&lc=z224vtt5nqq1cbcf2acdp43aylzlb5jhft1kmuafltxw03c010c).
 - [Read the introduction](https://www.sanity.io/docs/a-short-introduction-to-sanity-io) in the documentation.
+- Check out our [guides](https://www.sanity.io/guides) and [plugins](https://www.sanity.io/plugins) and start building.
 
 ## Table of contents
 
@@ -63,7 +66,7 @@ Or go to [sanity.io/create](https://www.sanity.io/create) to get started from th
 - Unlock programmatic approaches to workflows and design.
 - [Upload images and transform them on demand](https://www.sanity.io/docs/asset-pipeline).
 - Query images for metadata like dominant colors, sizes, geo-location, and EXIF metadata.
-- [Markup agnostic queryable rich text with Portable Text](https://www.sanity.io/guides/introduction-to-portable-text).
+- [Rich text that can be serialized into any markup language](https://www.sanity.io/guides/introduction-to-portable-text).
 
 ## Stay up to date
 
