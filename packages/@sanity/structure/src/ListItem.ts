@@ -7,6 +7,7 @@ import {SerializeError, HELP_URL} from './SerializeError'
 import {Partial} from './Partial'
 import {ListBuilder} from './List'
 import {EditorBuilder} from './Editor'
+import {DocumentBuilder} from './Document'
 import {ComponentBuilder} from './Component'
 import {validateId} from './util/validateId'
 
@@ -143,6 +144,7 @@ export class ListItemBuilder implements Serializable {
     let listChild =
       child instanceof ComponentBuilder ||
       child instanceof DocumentListBuilder ||
+      child instanceof DocumentBuilder ||
       child instanceof ListBuilder ||
       child instanceof EditorBuilder
         ? child.serialize(serializeOptions)
