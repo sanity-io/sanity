@@ -31,14 +31,17 @@ const normalizeSearchConfig = configs => {
       return conf
     }
     if (!isPlainObject(conf)) {
-      throw new Error('Search config must be an object of {path: string, weight: number}')
+      throw new Error('Search config must be an object of {path: string, weight: number, type?: string}')
     }
     if (typeof conf.path !== 'string') {
       throw new Error('The path property of the search field declaration must be a string')
     }
     return {
       weight: 'weight' in conf ? conf.weight : 1,
-      path: toPath(conf.path)
+      path: toPath(conf.path),
+      // TODO: Warn-guard against unsupported types.
+      // TODO: Automagically infer type for path from schema?
+      type: conf.type || 'string'
     }
   })
 }

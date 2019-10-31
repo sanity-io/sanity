@@ -1,3 +1,5 @@
+import { compact, difference } from 'lodash'
+
 const GROQ_KEYWORDS = ['match', 'in', 'asc', 'desc', 'true', 'false', 'null']
 const VALID_FIELD = /^[a-zA-Z_][a-zA-Z0-9_]*$/
 
@@ -21,3 +23,30 @@ export const joinPath = pathArray =>
     }
     return isFirst ? pathSegment : `${prev}.${pathSegment}`
   }, '')
+
+export const getMatchingOperatorForType = type => {
+  switch (type) {
+    case 'number':
+      return '=='
+
+    default:
+      return 'match'
+  }
+}
+
+export const getTypedTermValue = (value, type) => {
+  switch (type) {
+    case 'number':
+      return parseFloat(value)
+
+    default:
+      return `${value}*`
+  }
+}
+
+export const getUsedTermTypes = (terms, types) => {
+  return terms.reduce((accumulation, term) => {
+    accumulation[term] = compact(types.map(type => !!getTypedTermValue(term, type) && type))
+    return accumulation
+  }, {})
+}
