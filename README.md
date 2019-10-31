@@ -1,155 +1,80 @@
-<h1>
-  <a href="https://www.sanity.io">
-    <img width="40%" alt="Sanity Logo" src="https://www.sanity.io/static/images/logo_red.svg?v=2"/>
-  </a>
-</h1>
+# ![Sanity logo](https://cdn.sanity.io/images/3do82whm/next/51af00784c5addcf63ae7f0c416756acca7e63ac-353x71.svg?w=180&fm=png&fit=max)
 
-<h4>
-  <a href="https://www.sanity.io">Sanity</a> is a real-time content infrastructure. The editor, built in JavaScript and React.js, lives in this repo. It connects to a scalable, hosted backend featuring a Graph Oriented Query Language (GROQ), asset pipelines and fast edge caches.
-</h4>
+## Build with Structured Content
 
-<p>
-  <a href="https://slack.sanity.io/"><img src="https://slack.sanity.io/badge.svg"></a>
-</p>
+> **Sanity.io is the platform for structured content. It comes with an open-source editing environment called Sanity Studio that you can customize with JavaScript and a real-time hosted data store. Sanity has generous included quotas – so [getting started](https://www.sanity.io/create) is free.**
+
+![npm](https://img.shields.io/npm/v/@sanity/base) ![Downloads](https://img.shields.io/npm/dm/@sanity/client) [![](https://slack.sanity.io/badge.svg)](https://slack.sanity.io/) ![Follow on twitter](https://img.shields.io/twitter/follow/sanity_io?style=flat&color=blue)
+
+## Quickstart
+
+Get started from the command line (Not running Node? Have a look at [this](https://www.sanity.io/help/a5f6caba-53c9-4a9f-96ef-1bd1ae8f5c10).):
+
+```bash
+npm i -g @sanity/cli && sanity init
+```
+
+Or go to [sanity.io/create](https://www.sanity.io/create) to get started from the browser in minutes.
+
+- Watch the [getting started video on YouTube](https://www.youtube.com/watch?v=2ceM_tSus_M&lc=z224vtt5nqq1cbcf2acdp43aylzlb5jhft1kmuafltxw03c010c).
+- [Read the introduction](https://www.sanity.io/docs/a-short-introduction-to-sanity-io) in the documentation.
+- Check out our [guides](https://www.sanity.io/guides) and [plugins](https://www.sanity.io/plugins) and start building.
 
 ## Table of contents
 
+- [Quickstart](#quickstart)
 - [Table of contents](#table-of-contents)
-- [Getting started](#getting-started)
 - [Key Features](#key-features)
-- [Plugins and tooling](#plugins-and-tooling)
-- [Useful links and resources](#useful-links-and-resources)
+  - [Sanity Studio](#sanity-studio)
+  - [Developer experience](#developer-experience)
+  - [Structured Content](#structured-content)
+- [Stay up to date](#stay-up-to-date)
 - [Code of Conduct](#code-of-conduct)
 - [Want to contribute?](#want-to-contribute)
 - [License](#license)
 
-[![Content Studio, Backend and Content Interfaces](https://public.sanity.io/modell_@2x.png)](https://www.sanity.io)
-
-## Getting started
-
-If you are running Node the commands below install the Sanity CLI tooling and boostraps a new project for you. Not running Node? Have a look at [this](https://www.sanity.io/help/a5f6caba-53c9-4a9f-96ef-1bd1ae8f5c10).
-
-```
-npm install -g @sanity/cli
-sanity init
-```
-
-Watch [Getting started with Sanity](https://www.youtube.com/watch?v=2ceM_tSus_M) on YouTube.
-
-Check out the [schema documentation](https://www.sanity.io/docs/content-studio/the-schema) and customize your data structure. When you're happy, just `sanity deploy` to host the editor with us and head over to [sanity.io](https://www.sanity.io/manage) to invite editors.
-
-As they're merrily content managing you can start setting up a front-end to render your data based on one of the [demos](#sample-frontends) we have available.
-
-Feel totally free to ping us on [Slack](https://slack.sanity.io) for a chat should you have questions along the way!
-
 ## Key Features
 
-#### [Content Studio](https://www.sanity.io/content-studio) 🖋
+![Sanity Studio](https://cdn.sanity.io/images/3do82whm/next/c52560979929878cd96412ca7d14a7fa0b02aee0-3200x2400.png?w=1200&fit=max&auto=format)
 
-- Efficient editing
-- Open source, MIT license
-- Real-time
-- Plug-in architecture
-- Block editor for structured content
+### [Sanity Studio](https://www.sanity.io/studio)
 
-#### [Hosted Backend](https://www.sanity.io/hosted-backend) ☁️
+[Sanity Studio](https://www.sanity.io/studio) is an open source headless real-time CMS, that you can customize with JavaScript and React.
 
-- Secure, scalable and GDPR compliant
-- Zero config Graph Oriented Query Language (GROQ)
-- Hard references for integrity
-- API & asset CDNs
-- Capable image pipeline
+- Efficient editing, instant UI for complex fields.
+- Responsive, works on small screens.
+- [Plug-in architecture](https://www.sanity.io/plugins) and [custom input components](https://www.sanity.io/guides/how-to-make-a-custom-input-component).
+- [Style with your own branding](https://www.sanity.io/guides/how-to-brand-your-studio).
+- [Advanced block editor for structured content](https://www.sanity.io/docs/block-content).
+- Use JavaScript to add [field validations](https://www.sanity.io/docs/validation), [organize documents](https://www.sanity.io/docs/overview-structure-builder), and set [initial values](https://www.sanity.io/guides/getting-started-with-initial-values-for-new-documents).
 
-## Plugins and tooling
+![Developer Experience](https://cdn.sanity.io/images/3do82whm/next/a41b3d9056d5354aa648d83f764e7415849f91f6-5760x3840.png?w=1200&fit=max&auto=format)
 
-### Content Studio plugins
+### [Developer experience](https://www.sanity.io/developer-experience)
 
-Check out [our plugin page](https://www.sanity.io/plugins)
+- [Bring your own frontend, or whatever else you might need](https://www.sanity.io/docs/build-with-sanity).
+- [Sweet APIs for reading, writing, importing, exporting, go back in time, and listening for updates](https://www.sanity.io/docs/datastore).
+- [Secure, scalable and GDPR compliant](https://www.sanity.io/security).
+- [Zero config Graph Oriented Query Language (GROQ)](https://www.sanity.io/docs/how-queries-work), and [GraphQL API](https://www.sanity.io/docs/graphql).
+- [Helpful and friendly developer community](https://slack.sanity.io).
 
-#### Input types
+![Structured content](https://cdn.sanity.io/images/3do82whm/next/746588538438b2ab05895aeb9e2436fd381e1562-5760x3840.png?w=1200&fit=max&auto=format)
 
-- [Google Maps](https://www.sanity.io/docs/schema-types/geopoint-type) (`sanity install @sanity/google-maps-input`)
-- [Color](https://www.npmjs.com/package/@sanity/color-input) (`sanity install @sanity/color-input`)
-- [Code (syntax highlighted blocks)](https://www.npmjs.com/package/@sanity/code-input) (`sanity install @sanity/code-input`)
-- [Data table](https://www.npmjs.com/package/sanity-plugin-datatable) (`sanity install datatable`)
-- [LaText](https://www.npmjs.com/package/sanity-plugin-latex-input) (`sanity install latex-input`)
-- [Mux Video](https://www.npmjs.com/package/sanity-plugin-mux-input) (`sanity install mux-input`)
-- [Markdown](https://www.npmjs.com/package/sanity-plugin-markdown) (`sanity install markdown`)
-- [Table](https://www.npmjs.com/package/sanity-plugin-table) (`sanity install table`)
-– [URL Metadata](https://www.npmjs.com/package/sanity-plugin-url-metadata-input) (`sanity install url-metadata-input`)
+### [Structured Content](https://www.sanity.io/structured-content)
 
-#### Tools
+- Distribute from a single source of thruth, in real-time.
+- Unlock programmatic approaches to workflows and design.
+- [Upload images and transform them on demand](https://www.sanity.io/docs/asset-pipeline).
+- Query images for metadata like dominant colors, sizes, geo-location, and EXIF metadata.
+- [Rich text that can be serialized into any markup language](https://www.sanity.io/guides/introduction-to-portable-text).
 
-- [Vision - GROQ sandbox tool](https://www.npmjs.com/package/@sanity/vision) (`sanity install @sanity/vision`)
-
-### Schema plugins
-
-- [Podcast schema](https://www.npmjs.com/package/sanity-plugin-podcast#get-the-podcast-on-the-ether-headphones) (`sanity install podcast`)
-
-### Migration tools
-
-- [Tools for processing Portable Text](https://www.npmjs.com/package/@sanity/block-tools) (`npm i @sanity/block-tools`)
-- [Convert Portable Text into a generic tree](https://www.npmjs.com/package/@sanity/block-content-to-tree) (`npm i @sanity/block-content-to-tree`)
-- [Migrate from Contentful to Sanity](https://github.com/sanity-io/contentful-to-sanity) (`npm install -g contentful-to-sanity`)
-- [Migrate from podcast RSS feed to Sanity](https://github.com/sanity-io/podcast-to-sanity) (`npm install -g podcast-to-sanity`)
-
-### API Clients
-
-- [JavaScript](https://www.npmjs.com/package/@sanity/client)
-- [PHP](https://packagist.org/packages/sanity/sanity-php)
-
-### Sample frontends
-
-- Next.js: [Movie Studio](https://github.com/sanity-io/example-frontend-next-js) | [Blog](https://github.com/sanity-io/tutorial-sanity-blog-react-next)
-- Gatsby.js: [Company Website](https://github.com/sanity-io/example-company-website-gatsby-sanity-combo)
-- React Native: [Movie Studio](https://github.com/sanity-io/example-app-react-native)
-- Vue.js: [Movie Studio](https://github.com/sanity-io/example-frontend-vue-js) | [Ecommerce](https://github.com/sanity-io/example-ecommerce-snipcart-vue)
-- Silex + Twig: [Movie Studio](https://github.com/sanity-io/example-frontend-silex-twig)
-
-### Frontend rendering
-
-- [Block content to HTML](https://www.npmjs.com/package/@sanity/block-content-to-html) (`npm i @sanity/block-content-to-html`)
-- [Block content to Hyperscript](https://www.npmjs.com/package/@sanity/block-content-to-hyperscript) (`npm i @sanity/block-content-to-hyperscript`)
-- [Block content to Markdown](https://github.com/sanity-io/block-content-to-markdown) (`npm i @sanity/block-content-to-markdown`)
-- [Block content to React](https://www.npmjs.com/package/@sanity/block-content-to-react) (`npm i @sanity/block-content-to-react`)
-- [Block content to Vue](https://github.com/rdunk/sanity-blocks-vue-component) (Thanks [@rdunk](https://github.com/rdunk)!)
-- [Quickly generate image urls from Sanity image records](https://www.npmjs.com/package/@sanity/image-url) (`npm i @sanity/image-url`)
-
-### Community contributed plugins
-
-We are grateful for all who dedicate their time making stuff for the Sanity.io community ❤️. These are to the best of our knowledge ready for use. If you encounter any problems with these packages, please file an issue in their respective GitHub repositories, and remember to be nice and constructive.
-
-- [C# /.NET client](https://github.com/onybo/sanity-client) (Thanks [@onybo](https://github.com/onybo)!)
-- [.NET client](https://github.com/oslofjord/sanity-linq) (Thanks [@oslofjord](https://github.com/oslofjord/)!)
-- [Laravel (PHP) client](https://github.com/eastslopestudio/laravel-sanity) (Thanks [@eastslopestudio](https://github.com/eastslopestudio)!)
-- [Sanity Query Helper](https://github.com/staccx/sanity-query-helper) (Thanks [@staccx](https://github.com/staccx/)!)
-
-## Useful links and resources
-
-### Stay up to date
+## Stay up to date
 
 - Follow **@sanity_io** on [twitter](https://twitter.com/sanity_io)
 - Subscribe to [our blog by RSS](https://www.sanity.io/feed/rss)
 - Subscribe to our [newsletter](http://eepurl.com/b2yaDz)
+- Join the [developer community on Slack](https://slack.sanity.io)
 
-### Documentation
-
-The [documentation](https://www.sanity.io/docs/introduction/getting-started) covers [how to work with content in Sanity](https://www.sanity.io/docs/introduction/the-sanity-way), [schema types](https://www.sanity.io/docs/reference/schema-types), [extending the content studio](https://www.sanity.io/docs/content-studio/extending), how to [query the API](https://www.sanity.io/docs/data-store/how-queries-work), [importing data](https://www.sanity.io/docs/data-store/importing-data) and [useful tips for presenting your content in a frontend](https://www.sanity.io/docs/front-ends).
-
-### Blogs, tutorials and other reads
-
-- [The Sanity.io blog](https://sanity.io/blog)
-– [Tutorial: How to quickly set up a Gatsby.js JAMstack website with a headless CMS](https://www.sanity.io/blog/how-to-quickly-set-up-a-gatsby-js-jamstack-website-with-a-headless-cms)
-- [Tutorial: A Sanity backed blog with React and Next.js](https://www.sanity.io/blog/build-your-own-blog-with-sanity-and-next-js)
-- [Headless in Love with Sanity](https://hackernoon.com/headless-in-love-with-sanity-689960571dc)
-- [Sanity with serverless Webtask and Google's Dialogflow ](https://hackernoon.com/put-your-chatbot-where-your-headless-cms-is-15cf174774c6)
-- [
-  Design with real content: How to connect Sanity with Sketch using Craft’s InVision plugin](https://www.sanity.io/blog/design-with-real-content-how-to-connect-sanity-with-sketch-using-craft-s-invision-plugin)
-- [Five interesting ways to use Sanity.io for image art direction](https://css-tricks.com/five-interesting-ways-to-use-sanity-io-for-image-art-direction/)
-- [Build an Angular E-Commerce App on Top of Sanity's Headless CMS
-  ](https://snipcart.com/blog/headless-angular-ecommerce-app)
-
-![Content spread throughout the urban scape](https://public.sanity.io/modell_followup_1_@2x.png)
 
 ## Code of Conduct
 
@@ -157,10 +82,10 @@ We aim to be an inclusive, welcoming community for everyone. To make that explic
 
 ## Want to contribute?
 
-Found a bug, or want to contribute code? Pull requests and issues are most welcome. You might want to take a look at our [Contributing guidelines](https://github.com/sanity-io/sanity/blob/master/CONTRIBUTING.md) also.
+Found a bug, or want to contribute code? Pull requests and issues are most welcome. Read our [contributing guidelines](https://github.com/sanity-io/sanity/blob/master/CONTRIBUTING.md) to learn how.
 
 ## License
 
-The Sanity Content Studio is available under the [_MIT License_](https://github.com/sanity-io/sanity/blob/master/LICENSE)
+Sanity Studio is available under the [_MIT License_](https://github.com/sanity-io/sanity/blob/master/LICENSE)
 
-![](https://cdn.sanity.io/images/3do82whm/production/iFi4bnMdiVHd37lfdaRV6lZQ-1600x800.png?w=1000&h=350&fit=max)
+![Hands collaborating](https://cdn.sanity.io/images/3do82whm/next/7f0f7283fb8080cd5e39afe074474aa292d73dbf-2578x1448.png?w=1200&fit=max&auto=format)
