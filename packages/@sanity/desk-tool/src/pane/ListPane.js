@@ -55,8 +55,8 @@ export default class ListPane extends React.PureComponent {
 
   itemIsSelected(item) {
     const {getCurrentPane} = this.context
-    const {id} = getCurrentPane()
-    return id === item.id
+    const {child} = getCurrentPane()
+    return child && child.id === item.id
   }
 
   shouldShowIconForItem = item => {

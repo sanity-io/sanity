@@ -287,10 +287,21 @@ export default withRouterHOC(
           []
         ) || this.getFallbackKeys()
 
+      const groupIndexes = (router.state.panes || []).reduce(
+        (ids, group) => ids.concat(group.map((sibling, groupIndex) => groupIndex)),
+        []
+      )
+
       return (
         <div className={styles.deskTool}>
           {panes && (
-            <DeskToolPanes router={router} panes={this.state.panes} keys={keys} autoCollapse />
+            <DeskToolPanes
+              router={router}
+              panes={this.state.panes}
+              keys={keys}
+              groupIndexes={groupIndexes}
+              autoCollapse
+            />
           )}
         </div>
       )

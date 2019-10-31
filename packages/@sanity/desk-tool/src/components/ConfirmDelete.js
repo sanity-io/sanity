@@ -30,12 +30,7 @@ export default enhanceWithReferringDocuments(
     }
 
     render() {
-      const {
-        isCheckingReferringDocuments,
-        referringDocuments,
-        draft,
-        published,
-      } = this.props
+      const {isCheckingReferringDocuments, referringDocuments, draft, published} = this.props
 
       const hasReferringDocuments = referringDocuments.length > 0
 
@@ -84,17 +79,19 @@ export default enhanceWithReferringDocuments(
               <ReferringDocumentsList documents={referringDocuments} />
             </div>
           )}
-          {!isCheckingReferringDocuments &&
-            !hasReferringDocuments && (
-              <Fragment>
-                <h3>
-                  Are you sure you would like to permanently delete the document
-                  <strong>
-                    &nbsp;&ldquo;<DocTitle document={draft || published} />&rdquo;
-                  </strong>?
-                </h3>
-              </Fragment>
-            )}
+          {!isCheckingReferringDocuments && !hasReferringDocuments && (
+            <Fragment>
+              <h3>
+                Are you sure you would like to permanently delete the document
+                <strong>
+                  &nbsp;&ldquo;
+                  <DocTitle document={draft || published} />
+                  &rdquo;
+                </strong>
+                ?
+              </h3>
+            </Fragment>
+          )}
         </Dialog>
       )
     }
