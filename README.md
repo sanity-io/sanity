@@ -8,7 +8,7 @@
 
 ## Quickstart
 
-Get started from the command line (Not running Node? Have a look at [this](https://www.sanity.io/help/a5f6caba-53c9-4a9f-96ef-1bd1ae8f5c10).):
+Get started from the command line:
 
 ```bash
 npm i -g @sanity/cli && sanity init
