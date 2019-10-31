@@ -169,8 +169,8 @@ export default class DocumentsListPane extends React.PureComponent {
 
   itemIsSelected(item) {
     const {getCurrentPane} = this.context
-    const {siblings} = getCurrentPane()
-    return siblings.map(sib => getPublishedId(sib.id)).includes(getPublishedId(item._id))
+    const {child} = getCurrentPane()
+    return child && getPublishedId(child.id) === getPublishedId(item._id)
   }
 
   renderItem = item => (

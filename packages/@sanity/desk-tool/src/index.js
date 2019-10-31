@@ -7,14 +7,14 @@ const missingContext = () => {
 }
 
 export const PaneRouterContext = React.createContext({
-  // Zero-based index (position) of pane
+  // Zero-based index (position) of pane, visually
   index: 0,
 
-  // Zero-based index of pane within sibling group
+  // Zero-based index of pane group (within URL structure)
   groupIndex: 0,
 
-  // Returns the current router state for the whole desk tool
-  getCurrentRouterState: missingContext,
+  // Zero-based index of pane within sibling group
+  siblingIndex: 0,
 
   // Returns the payload for the current pane
   getPayload: () => missingContext(),

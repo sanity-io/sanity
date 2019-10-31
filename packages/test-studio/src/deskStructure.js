@@ -7,6 +7,12 @@ import {PaneRouterContext} from '@sanity/desk-tool'
 // For testing. Bump the timeout to introduce som lag
 const delay = val => new Promise(resolve => setTimeout(resolve, 10, val))
 
+const ViewComponent = props => (
+  <pre>
+    <code>{JSON.stringify(props, null, 2)}</code>
+  </pre>
+)
+
 export default () =>
   S.list()
     .id('root')
@@ -117,9 +123,10 @@ export default () =>
             .params({type: 'author', role: 'developer'})
             .initialValueTemplates(S.initialValueTemplateItem('author-developer'))
             .child(documentId =>
-              S.editor()
+              S.document()
                 .documentId(documentId)
                 .schemaType('author')
+                .views([S.view.form(), S.view.component(ViewComponent)])
                 .child(childId => {
                   if (childId === 'preview') {
                     // It's preview time!

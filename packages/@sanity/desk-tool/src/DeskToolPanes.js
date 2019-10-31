@@ -70,6 +70,7 @@ function getWaitMessages(path) {
 export default class DeskToolPanes extends React.Component {
   static propTypes = {
     keys: PropTypes.arrayOf(PropTypes.string).isRequired,
+    groupIndexes: PropTypes.arrayOf(PropTypes.number).isRequired,
     autoCollapse: PropTypes.bool,
     panes: PropTypes.arrayOf(
       PropTypes.oneOfType([
@@ -112,66 +113,74 @@ export default class DeskToolPanes extends React.Component {
   // Memoized copy of contexts
   paneRouterContexts = new Map()
 
-  getPaneRouterContext = index => {
-    if (this.paneRouterContexts.has(index)) {
-      return this.paneRouterContexts.get(index)
+  getPaneRouterContext = (groupIndex, siblingIndex, flatIndex) => {
+    const key = `${flatIndex}-${groupIndex}[${siblingIndex}]`
+    if (this.paneRouterContexts.has(key)) {
+      return this.paneRouterContexts.get(key)
     }
 
-    const getCurrentRouterState = () => {
-      const panes = this.props.router.state.panes || []
-      const paneIndex = index - 1
+    const modifyCurrentGroup = modifier => {
+      const {router} = this.props
+      const newPanes = (router.state.panes || []).slice()
+      const group = newPanes[groupIndex].slice()
+      newPanes.splice(groupIndex, 1, modifier(group, group[siblingIndex]))
 
-      for (let i = 0, pane = 0; i < panes.length; i++) {
-        for (let x = 0; x < panes[i].length; x++) {
-          // eslint-disable-next-line max-depth
-          if (pane === paneIndex) {
-            return {...panes[i][x], siblings: panes[i]}
-          }
-
-          pane++
-        }
-      }
-
-      return {id: undefined, siblings: []}
+      const newRouterState = {...router.state, panes: newPanes}
+      router.navigate(newRouterState)
+      return newRouterState
     }
 
     const ctx = {
-      // Zero-based index (position) of pane
-      index,
+      // Zero-based index (position) of pane, visually
+      index: flatIndex,
 
-      // @todo Zero-based index of pane within sibling group
-      groupIndex: 0,
+      // Zero-based index of pane group (within URL structure)
+      groupIndex,
 
-      getPayload: () => getCurrentRouterState().payload,
+      // Zero-based index of pane within sibling group
+      siblingIndex,
 
-      // Returns the current router state for the active panes
-      getCurrentRouterState: () => this.props.router.state.panes || [],
+      getPayload: () => (this.props.router.state.panes || [])[groupIndex][siblingIndex].payload,
 
       // Curried StateLink that passes the correct state automatically
       ChildLink: ({childId, childPayload, ...props}) => {
         const oldPanes = this.props.router.state.panes || []
-        const panes = oldPanes.slice(0, index).concat([[{id: childId, payload: childPayload}]])
+        const panes = oldPanes
+          .slice(0, groupIndex + 1)
+          .concat([[{id: childId, payload: childPayload}]])
+
         return <StateLink {...props} state={{panes}} />
       },
 
       // Get the current pane ID and parameters
       getCurrentPane: () => {
-        const {id, siblings} = getCurrentRouterState()
-        return {pane: this.props.panes[index], id, siblings}
+        const routerGroups = this.props.router.state.panes || []
+        const routerGroup = routerGroups[groupIndex]
+        const routerPane = routerGroup && routerGroup[siblingIndex]
+        const childGroup = routerGroups[groupIndex + 1] || []
+
+        return {
+          pane: this.props.panes[flatIndex],
+          router: routerPane,
+          child: childGroup[0],
+          siblings: routerGroup
+        }
       },
 
       // Replaces the current pane with a new one
       replaceCurrentPane: (itemId, payload) => {
         const {router} = this.props
-        const {editDocumentId, panes} = router.state
-
+        const {editDocumentId} = router.state
         if (editDocumentId) {
           router.navigate({...router.state, editDocumentId: itemId})
         } else {
-          const newPanes = panes.slice()
-          newPanes.splice(index, 1, [{id: itemId, payload}])
-          router.navigate({...router.state, panes: newPanes})
+          modifyCurrentGroup(() => [{id: itemId, payload}])
         }
+      },
+
+      // Removes the current pane from the group
+      closeCurrentPane: () => {
+        modifyCurrentGroup((siblings, item) => siblings.filter(sibling => sibling !== item))
       },
 
       // Replace or create a child pane with the given id and parameters
@@ -183,45 +192,47 @@ export default class DeskToolPanes extends React.Component {
           router.navigate({...router.state, editDocumentId: itemId})
         } else {
           const newPanes = panes.slice()
-          newPanes.splice(index + 1, 1, [{id: itemId, payload}])
+          newPanes.splice(groupIndex + 1, 1, [{id: itemId, payload}])
           router.navigate({...router.state, panes: newPanes})
         }
       },
 
       // Duplicate the current pane, with optional overrides for item ID and parameters
-      duplicateCurrentPane: (itemId, payload) => {
-        const {id, siblings, ...rest} = getCurrentRouterState()
-        const {router} = this.props
-
-        const newPanes = (router.state.panes || []).slice()
-        newPanes.splice(newPanes.indexOf(siblings), 1, [
+      duplicateCurrentPane: (itemId, payload, params) => {
+        modifyCurrentGroup((siblings, item) => [
           ...siblings,
-          {...rest, id: itemId || id, payload: payload || rest.payload}
-        ])
 
-        router.navigate({...router.state, panes: newPanes})
+          {
+            ...item,
+            id: itemId || item.id,
+            payload: payload || item.payload,
+            params: params || item.params
+          }
+        ])
       },
 
       setPaneView: viewId => {
-        const {id, siblings, ...rest} = getCurrentRouterState()
-        const {router} = this.props
-        const {editDocumentId, panes} = router.state
+        modifyCurrentGroup((siblings, item) => {
+          const newGroup = siblings.slice()
+          const newItem = {...item, params: viewId ? {view: viewId} : {}}
+          newGroup.splice(siblingIndex, 1, newItem)
+          return newGroup
+        })
+      },
 
-        if (editDocumentId) {
-          // @todo implement i guess
-          throw new Error('not implemented for fallback pane')
-        } else {
-          const newPanes = panes.slice()
-          newPanes.splice(index - 1, 1, [{id, ...rest, params: {view: viewId}}])
-          router.navigate({...router.state, panes: newPanes})
-        }
+      getPaneView: () => {
+        const panes = this.props.router.state.panes || []
+        const group = panes[groupIndex] || []
+        const pane = group[siblingIndex]
+        const params = pane.params || {}
+        return params.view
       },
 
       // Proxied navigation to a given intent. Consider just exposing `router` instead?
       navigateIntent: this.props.router.navigateIntent
     }
 
-    this.paneRouterContexts.set(index, ctx)
+    this.paneRouterContexts.set(key, ctx)
     return ctx
   }
 
@@ -313,53 +324,64 @@ export default class DeskToolPanes extends React.Component {
   }
 
   renderPanes() {
-    const {panes, keys} = this.props
+    const {panes, groupIndexes, keys} = this.props
     const {isMobile} = this.state
     const path = []
 
-    return panes.map((pane, i) => {
-      const isCollapsed = Boolean(!isMobile && this.state.collapsedPanes[i])
-      const paneKey = `${i}-${keys[i - 1] || 'root'}`
+    const paneGroups = [['']].concat(this.props.router.state.panes || [])
 
-      // Same pane might appear multiple times, so use index as tiebreaker
-      const wrapperKey = pane === LOADING_PANE ? `loading-${i}` : `${i}-${pane.id}`
-      path.push(pane.id || `[${i}]`)
+    let i = -1
+    return paneGroups.reduce((components, group, index) => {
+      return components.concat(
+        group.map((paneId, siblingIndex) => {
+          const pane = panes[++i]
+          const isCollapsed = Boolean(!isMobile && this.state.collapsedPanes[i])
+          const paneKey = `${i}-${keys[i - 1] || 'root'}-${groupIndexes[i - 1]}`
 
-      return (
-        <SplitPaneWrapper
-          key={wrapperKey}
-          isCollapsed={isCollapsed}
-          minSize={getPaneMinSize(pane)}
-          defaultSize={getPaneDefaultSize(pane)}
-        >
-          <PaneRouterContext.Provider value={this.getPaneRouterContext(i)}>
-            {pane === LOADING_PANE ? (
-              <LoadingPane
-                key={paneKey} // Use key to force rerendering pane on ID change
-                path={path}
-                index={i}
-                message={getWaitMessages}
-                onExpand={this.handlePaneExpand}
-                onCollapse={this.handlePaneCollapse}
-                isCollapsed={isCollapsed}
-                isSelected={i === panes.length - 1}
-              />
-            ) : (
-              <Pane
-                key={paneKey} // Use key to force rerendering pane on ID change
-                index={i}
-                itemId={keys[i - 1]}
-                onExpand={this.handlePaneExpand}
-                onCollapse={this.handlePaneCollapse}
-                isCollapsed={isCollapsed}
-                isSelected={i === panes.length - 1}
-                {...pane}
-              />
-            )}
-          </PaneRouterContext.Provider>
-        </SplitPaneWrapper>
+          // Same pane might appear multiple times, so use index as tiebreaker
+          const wrapperKey = pane === LOADING_PANE ? `loading-${i}` : `${i}-${pane.id}`
+          path.push(pane.id || `[${i}]`)
+
+          return (
+            <SplitPaneWrapper
+              key={wrapperKey}
+              isCollapsed={isCollapsed}
+              minSize={getPaneMinSize(pane)}
+              defaultSize={getPaneDefaultSize(pane)}
+            >
+              <PaneRouterContext.Provider
+                value={this.getPaneRouterContext(index - 1, siblingIndex, i)}
+              >
+                {pane === LOADING_PANE ? (
+                  <LoadingPane
+                    key={paneKey} // Use key to force rerendering pane on ID change
+                    path={path}
+                    index={i}
+                    message={getWaitMessages}
+                    onExpand={this.handlePaneExpand}
+                    onCollapse={this.handlePaneCollapse}
+                    isCollapsed={isCollapsed}
+                    isSelected={i === panes.length - 1}
+                  />
+                ) : (
+                  <Pane
+                    key={paneKey} // Use key to force rerendering pane on ID change
+                    index={i}
+                    itemId={keys[i]}
+                    onExpand={this.handlePaneExpand}
+                    onCollapse={this.handlePaneCollapse}
+                    isCollapsed={isCollapsed}
+                    isSelected={i === panes.length - 1}
+                    isClosable={siblingIndex > 0}
+                    {...pane}
+                  />
+                )}
+              </PaneRouterContext.Provider>
+            </SplitPaneWrapper>
+          )
+        })
       )
-    })
+    }, [])
   }
 
   render() {

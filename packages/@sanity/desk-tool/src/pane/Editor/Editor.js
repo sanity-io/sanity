@@ -43,7 +43,7 @@ import EditorStatusBadge from '../EditorStatusBadge'
 import TimeAgo from '../../components/TimeAgo'
 import resolveContextualPreviews from 'part:@sanity/base/resolve-contextual-previews?'
 
-const BREAKPOINT_SCREEN_MEDIUM = 512
+export const BREAKPOINT_SCREEN_MEDIUM = 512
 
 function navigateUrl(url) {
   window.open(url)
@@ -672,11 +672,7 @@ export default class Editor extends React.PureComponent {
     const isLiveEditEnabled = this.isLiveEditEnabled()
 
     if (historyState.isOpen) {
-      return (
-        <div className={styles.footer}>
-          {this.renderHistoryFooter()}
-        </div>
-      )
+      return <div className={styles.footer}>{this.renderHistoryFooter()}</div>
     }
 
     return (
