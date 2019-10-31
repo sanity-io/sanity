@@ -1,4 +1,5 @@
 import {uniqueId} from 'lodash'
+import {SchemaType} from './parts/Schema'
 import {ListBuilder, ListInput} from './List'
 import {
   getDocumentTypeListItems,
@@ -17,10 +18,11 @@ import {DocumentListBuilder, DocumentListInput} from './DocumentList'
 import {EditorBuilder, editorWithInitialValueTemplate} from './Editor'
 import {EditorNode, Divider} from './StructureNodes'
 import {SerializeError} from './SerializeError'
+import {DocumentBuilder, PartialDocumentNode} from './Document'
 import {ComponentInput, ComponentBuilder} from './Component'
 import {DocumentListItemBuilder, DocumentListItemInput} from './DocumentListItem'
 import {Ordering} from './Sort'
-import {SchemaType} from './parts/Schema'
+import * as views from './views'
 import {
   InitialValueTemplateItemBuilder,
   defaultInitialValueTemplateItems,
@@ -32,6 +34,7 @@ const StructureBuilder = {
   documentTypeList: getDocumentTypeList,
   documentTypeListItem: getDocumentTypeListItem,
   documentTypeListItems: getDocumentTypeListItems,
+  document: (spec?: PartialDocumentNode) => new DocumentBuilder(spec),
 
   list: (spec?: ListInput) => new ListBuilder(spec),
   listItem: (spec?: ListItemInput) => new ListItemBuilder(spec),
@@ -66,7 +69,9 @@ const StructureBuilder = {
       : new ComponentBuilder(spec)
   },
 
-  divider: (): Divider => ({id: uniqueId('__divider__'), type: 'divider'})
+  divider: (): Divider => ({id: uniqueId('__divider__'), type: 'divider'}),
+
+  view: views
 }
 
 function hasIcon(schemaType?: SchemaType | string): boolean {
