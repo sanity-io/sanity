@@ -15,7 +15,6 @@ import listStyles from './styles/ListView.css'
 import InfiniteList from './InfiniteList'
 import PaneItem from './PaneItem'
 
-const noop = () => null
 const DEFAULT_ORDERING = [{field: '_createdAt', direction: 'desc'}]
 
 function removePublishedWithDrafts(documents) {
