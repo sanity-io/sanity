@@ -9,13 +9,12 @@ import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import styles from './styles/ImageInput.css'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
+import ProgressCircle from 'part:@sanity/components/progress/circle'
 import {Marker, Reference, Type} from '../../typedefs'
-import {ResolvedUploader, UploaderResolver} from '../../sanity/uploads/typedefs'
 import WithMaterializedReference from '../../utils/WithMaterializedReference'
 import ImageToolInput from '../ImageToolInput'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
 import {FormBuilderInput} from '../../FormBuilderInput'
-import UploadPlaceholder from '../common/UploadPlaceholder'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import ImageTool from '@sanity/imagetool'
 import {Observable} from 'rxjs'
@@ -25,6 +24,11 @@ import SourceBrowser from './SourceBrowser'
 type FieldT = {
   name: string
   type: Type
+}
+
+type AssetFromSource = {
+  kind: 'assetDocumentId' | 'binary'
+  value: string
 }
 
 interface Value {
@@ -39,7 +43,6 @@ export type Props = {
   type: Type
   level: number
   onChange: (arg0: PatchEvent) => void
-  resolveUploader: UploaderResolver
   materialize: (arg0: string) => Observable<Record<string, any>>
   onBlur: () => void
   onFocus: (path: Path) => void
@@ -59,8 +62,7 @@ type ImageInputState = {
   isUploading: boolean
   uploadError: Error | null
   isAdvancedEditOpen: boolean
-  isSelectAssetOpen: boolean
-  hasFocus: boolean
+  isSourceBrowserOpen: boolean
 }
 export default class ImageInput extends React.PureComponent<Props, ImageInputState> {
   _focusArea: any
@@ -69,8 +71,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     isUploading: false,
     uploadError: null,
     isAdvancedEditOpen: false,
-    isSelectAssetOpen: false,
-    hasFocus: false
+    isSourceBrowserOpen: false
   }
   handleRemoveButtonClick = (event: React.SyntheticEvent<any>) => {
     this.props.onChange(PatchEvent.from(unset(['asset'])))
@@ -114,15 +115,31 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   handleStopAdvancedEdit = () => {
     this.setState({isAdvancedEditOpen: false})
   }
-  handleOpenSelectAsset = () => {
+  handleOpenSourceBrowser = () => {
     this.setState({
-      isSelectAssetOpen: true
+      isSourceBrowserOpen: true
     })
   }
-  handleCloseSelectAsset = () => {
+  handleCloseSourceBrowser = () => {
     this.setState({
-      isSelectAssetOpen: false
+      isSourceBrowserOpen: false
     })
+  }
+  handleSelectAssetFromSource = (assetFromSource: AssetFromSource) => {
+    if (!assetFromSource) {
+      throw new Error('No asset given')
+    }
+    switch (assetFromSource.kind) {
+      case 'assetDocumentId':
+        this.handleSelectAsset({_id: assetFromSource.value})
+        break
+      case 'binary':
+        // Upload
+        break
+      default: {
+        throw new Error('Invalid value returned from asset source plugin')
+      }
+    }
   }
   handleSelectAsset = (asset: Record<string, any>) => {
     const {onChange, type} = this.props
@@ -143,7 +160,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       ])
     )
     this.setState({
-      isSelectAssetOpen: false
+      isSourceBrowserOpen: false
     })
   }
 
@@ -204,31 +221,50 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       this._focusArea.focus()
     }
   }
-
-  handleFocus = (path: Path) => {
-    this.setState({
-      hasFocus: true
-    })
-    this.props.onFocus(path)
+  clearUploadStatus() {
+    this.props.onChange(PatchEvent.from([unset(['_upload'])])) // todo: this is kind of hackish
   }
-  handleBlur = event => {
-    this.props.onBlur()
-    this.setState({
-      hasFocus: false
-    })
+  cancelUpload() {
+    if (this.uploadSubscription) {
+      this.uploadSubscription.unsubscribe()
+      this.clearUploadStatus()
+    }
+  }
+  handleCancelUpload = () => {
+    this.cancelUpload()
   }
   setFocusArea = (el: any | null) => {
     this._focusArea = el
   }
-  getUploadOptions = (file: File): Array<ResolvedUploader> => {
-    const {type, resolveUploader} = this.props
-    const uploader = resolveUploader && resolveUploader(type, file)
-    return uploader ? [{type: type, uploader}] : []
+  renderUploadState(uploadState: any) {
+    const {isUploading} = this.state
+    const isComplete =
+      uploadState.progress === 100 && !!(this.props.value && this.props.value.asset)
+    return (
+      <div className={styles.progress}>
+        <div>
+          <div>
+            <ProgressCircle
+              percent={status === 'complete' ? 100 : uploadState.progress}
+              text={isComplete ? 'Please wait…' : 'Uploading…'}
+              completed={isComplete}
+              showPercent
+              animation
+            />
+          </div>
+          {isUploading && (
+            <Button kind="simple" color="danger" onClick={this.handleCancelUpload}>
+              Cancel
+            </Button>
+          )}
+        </div>
+      </div>
+    )
   }
 
   render() {
     const {type, value, level, materialize, markers, readOnly} = this.props
-    const {isAdvancedEditOpen, isSelectAssetOpen, hasFocus} = this.state
+    const {isAdvancedEditOpen, isSourceBrowserOpen} = this.state
     const [highlightedFields, otherFields] = partition(
       type.fields.filter(field => !HIDDEN_FIELDS.includes(field.name)),
       'type.options.isHighlighted'
@@ -242,8 +278,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         description={type.description}
         level={level}
         tabIndex={0}
-        onFocus={this.handleFocus}
         markers={markers}
+        onFocus={() => {}}
       >
         <div className={styles.content}>
           <div className={styles.assetWrapper}>
@@ -251,17 +287,15 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
               <WithMaterializedReference reference={value.asset} materialize={materialize}>
                 {this.renderMaterializedAsset}
               </WithMaterializedReference>
-            ) : readOnly ? (
-              <span>Field is read only</span>
             ) : (
-              <UploadPlaceholder hasFocus={hasFocus} />
+              readOnly && <span>Field is read only</span>
             )}
           </div>
         </div>
         <div className={styles.functions}>
           <ButtonGrid>
             {!readOnly && (
-              <Button onClick={this.handleOpenSelectAsset} inverted>
+              <Button onClick={this.handleOpenSourceBrowser} inverted>
                 Select
               </Button>
             )}
@@ -286,9 +320,9 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           <div className={styles.fieldsWrapper}>{this.renderFields(highlightedFields)}</div>
         )}
         {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
-        {isSelectAssetOpen && (
-          <Dialog title="Select image" onClose={this.handleCloseSelectAsset} isOpen>
-            <SourceBrowser onSelect={this.handleSelectAsset} />
+        {isSourceBrowserOpen && (
+          <Dialog title="Select image" onClose={this.handleCloseSourceBrowser} isOpen>
+            <SourceBrowser type={type} onSelect={this.handleSelectAssetFromSource} />
           </Dialog>
         )}
       </Fieldset>

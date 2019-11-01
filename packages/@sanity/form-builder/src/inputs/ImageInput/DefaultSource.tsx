@@ -9,7 +9,7 @@ type Asset = {
   url: string
 }
 type Props = {
-  onSelect: (arg0: Asset) => void
+  onSelect: (arg0: {kind: 'assetDocumentId' | 'binary', value: string}) => void
 }
 function createQuery(start = 0, end = PER_PAGE) {
   return `
@@ -56,7 +56,7 @@ class DefaultSource extends React.Component<Props, State> {
   select(id) {
     const selected = this.state.assets.find(doc => doc._id === id)
     if (selected) {
-      this.props.onSelect(selected)
+      this.props.onSelect({kind: 'assetDocumentId', value: id})
     }
   }
   handleItemClick = (event: React.SyntheticEvent<any>) => {
