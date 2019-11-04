@@ -70,7 +70,7 @@ export default class Tab extends React.PureComponent {
         tabIndex={isActive ? 0 : -1}
         type="button"
       >
-        {label}
+        <div tabIndex={-1}>{label}</div>
       </button>
     )
   }

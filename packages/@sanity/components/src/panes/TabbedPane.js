@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import BarsIcon from 'part:@sanity/base/bars-icon'
+import SplitHorizontalIcon from 'part:@sanity/base/split-horizontal-icon'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import Tab from 'part:@sanity/components/tab'
 import TabList from 'part:@sanity/components/tab-list'
@@ -55,11 +55,11 @@ class TabbedPane extends React.Component {
         <div className={styles.headerPaneActions}>
           <button type="button" onClick={onSplitPane} title="Split pane right">
             <div tabIndex={-1}>
-              <BarsIcon />
+              <SplitHorizontalIcon />
             </div>
           </button>
           {isClosable && (
-            <button type="button" onClick={onCloseView} title="Toggle view">
+            <button type="button" onClick={onCloseView} title="Close pane">
               <div tabIndex={-1}>
                 <CloseIcon />
               </div>

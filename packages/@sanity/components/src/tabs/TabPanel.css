@@ -1,8 +1,10 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .root {
   outline: none;
 
   @nest &:focus {
-    outline: 2px solid #09f;
+    outline: 2px solid var(--focus-color);
     outline-offset: -2px;
   }
 }
