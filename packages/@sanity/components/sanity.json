@@ -909,6 +909,10 @@
       "path": "panes/DefaultPane.js"
     },
     {
+      "implements": "part:@sanity/components/panes/tabbed",
+      "path": "panes/TabbedPane.js"
+    },
+    {
       "name": "part:@sanity/components/panes/split-controller",
       "description": "Resizeable split controller for panes"
     },
