@@ -1,19 +1,61 @@
+/* eslint-disable react/jsx-no-bind */
+
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from './TabList.css'
 
-export default function TabList(props) {
-  return (
-    <div className={styles.root} role="tablist">
-      {props.children}
-    </div>
-  )
-}
+export default class TabList extends React.PureComponent {
+  constructor(props) {
+    super(props)
+    this.state = {
+      focusedTabIdx: -1
+    }
+  }
 
-TabList.defaultProps = {
-  children: null
-}
+  static defaultProps = {
+    children: null
+  }
 
-TabList.propTypes = {
-  children: PropTypes.node
+  static propTypes = {
+    children: PropTypes.node
+  }
+
+  handleTabFocus = tabIdx => {
+    this.setState({focusedTabIdx: tabIdx})
+  }
+
+  handleKeyDown = evt => {
+    const numTabs = this.props.children.length
+
+    if (evt.key === 'ArrowLeft') {
+      this.setState(state => {
+        const focusedTabIdx = state.focusedTabIdx < 1 ? numTabs - 1 : state.focusedTabIdx - 1
+        return {focusedTabIdx}
+      })
+    }
+
+    if (evt.key === 'ArrowRight') {
+      this.setState(state => {
+        const focusedTabIdx = (state.focusedTabIdx + 1) % numTabs
+        return {focusedTabIdx}
+      })
+    }
+  }
+
+  render() {
+    const {focusedTabIdx} = this.state
+
+    const children = this.props.children.map((child, idx) => {
+      return React.cloneElement(child, {
+        isFocused: focusedTabIdx === idx,
+        onFocus: () => this.handleTabFocus(idx)
+      })
+    })
+
+    return (
+      <div className={styles.root} onKeyDown={this.handleKeyDown} role="tablist">
+        {children}
+      </div>
+    )
+  }
 }
