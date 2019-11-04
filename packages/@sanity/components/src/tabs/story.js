@@ -2,9 +2,9 @@
 /* eslint-disable react/jsx-no-bind */
 
 import React from 'react'
-import Tab from 'part:@sanity/components/tab'
-import TabPanel from 'part:@sanity/components/tab-panel'
-import TabList from 'part:@sanity/components/tab-list'
+import Tab from 'part:@sanity/components/tabs/tab'
+import TabPanel from 'part:@sanity/components/tabs/tab-panel'
+import TabList from 'part:@sanity/components/tabs/tab-list'
 import {storiesOf} from 'part:@sanity/storybook'
 import {select, withKnobs} from 'part:@sanity/storybook/addons/knobs'
 
