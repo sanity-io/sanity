@@ -88,6 +88,7 @@ class TabbedPane extends React.Component {
               isActive={activeView === view.id}
               key={view.id}
               label={<>{view.title}</>}
+              icon={view.icon}
               // eslint-disable-next-line react/jsx-no-bind
               onClick={() => onSetActiveView(index === 0 ? null : view.id)}
               aria-controls={tabPanelId}
