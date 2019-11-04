@@ -208,8 +208,7 @@
 
 .headerViewMenu {
   display: flex;
-  max-width: 640px;
-  padding: 0 1em;
+  max-width: 672px;
 
   @nest .isCollapsed & {
     display: none;
@@ -223,6 +222,7 @@
 
 .headerPaneActions {
   outline: 1px solid red;
+  padding: 0 1em 0 0;
 }
 
 .functions {

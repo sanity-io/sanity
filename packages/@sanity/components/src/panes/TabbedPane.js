@@ -2,6 +2,8 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import BarsIcon from 'part:@sanity/base/bars-icon'
 import CloseIcon from 'part:@sanity/base/close-icon'
+import Tab from 'part:@sanity/components/tab'
+import TabList from 'part:@sanity/components/tab-list'
 import Styleable from '../utilities/Styleable'
 import defaultStyles from './styles/DefaultPane.css'
 import DefaultPane from './DefaultPane'
@@ -13,6 +15,7 @@ const noop = () => {
 // eslint-disable-next-line
 class TabbedPane extends React.Component {
   static propTypes = {
+    idPrefix: PropTypes.string.isRequired,
     styles: PropTypes.shape({
       headerTabsContainer: PropTypes.string,
       headerPaneActions: PropTypes.string,
@@ -43,14 +46,14 @@ class TabbedPane extends React.Component {
 
   state = {}
 
-  renderHeaderView = () => {
+  renderHeaderViewMenu = () => {
     const {styles, onSplitPane, onCloseView, isClosable} = this.props
 
     return (
       <div className={styles.headerViewMenu}>
         {this.renderTabs()}
         <div className={styles.headerPaneActions}>
-          <button type="button" onClick={onSplitPane} title="Split pane">
+          <button type="button" onClick={onSplitPane} title="Split pane right">
             <div tabIndex={-1}>
               <BarsIcon />
             </div>
@@ -68,32 +71,54 @@ class TabbedPane extends React.Component {
   }
 
   renderTabs() {
-    const {views = [], activeView, styles, onSetActiveView} = this.props
+    const {idPrefix, views = [], activeView, styles, onSetActiveView} = this.props
+
     if (views.length <= 1) {
       return null
     }
 
+    const tabPanelId = `${idPrefix}tabpanel`
+
     return (
       <div className={styles.headerTabsContainer}>
-        {views.map((view, index) => (
-          // eslint-disable-next-line react/jsx-no-bind
-          <button
-            key={view.id}
-            type="button"
-            className={activeView === view.id ? styles.activeTab : styles.tab}
-            onClick={() => onSetActiveView(index === 0 ? null : view.id)}
-          >
-            {view.title}
-          </button>
-        ))}
+        <TabList>
+          {views.map((view, index) => (
+            <Tab
+              id={`${idPrefix}tab-${view.id}`}
+              isActive={activeView === view.id}
+              key={view.id}
+              label={<>{view.title}</>}
+              // eslint-disable-next-line react/jsx-no-bind
+              onClick={() => onSetActiveView(index === 0 ? null : view.id)}
+              aria-controls={tabPanelId}
+            />
+          ))}
+        </TabList>
       </div>
     )
   }
 
   render() {
-    const {views, onSetActiveView, onSplitPane, onCloseView, ...rest} = this.props
+    const {
+      activeView,
+      idPrefix,
+      views = [],
+      onSetActiveView,
+      onSplitPane,
+      onCloseView,
+      ...rest
+    } = this.props
+    const hasTabs = views.length > 1
 
-    return <DefaultPane renderHeaderView={this.renderHeaderView} {...rest} />
+    return (
+      <DefaultPane
+        hasTabs={hasTabs}
+        renderHeaderViewMenu={this.renderHeaderViewMenu}
+        tabIdPrefix={idPrefix}
+        viewId={activeView}
+        {...rest}
+      />
+    )
   }
 }
 

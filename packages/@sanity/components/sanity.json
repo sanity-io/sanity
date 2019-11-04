@@ -1067,6 +1067,22 @@
     {
       "implements": "part:@sanity/components/badges/default",
       "path": "badges/DefaultBadge.js"
+    },
+    {
+      "name": "part:@sanity/components/tab",
+      "description": "A tab"
+    },
+    {
+      "implements": "part:@sanity/components/tab",
+      "path": "tabs/Tab.js"
+    },
+    {
+      "name": "part:@sanity/components/tab-list",
+      "description": "List of tabs"
+    },
+    {
+      "implements": "part:@sanity/components/tab-list",
+      "path": "tabs/TabList.js"
     }
   ]
 }
