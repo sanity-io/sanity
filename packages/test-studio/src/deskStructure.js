@@ -127,6 +127,7 @@ export default () =>
         schemaType: 'author',
         child: () =>
           S.documentTypeList('author')
+            .title('Developers')
             .filter('_type == $type && role == $role')
             .params({type: 'author', role: 'developer'})
             .initialValueTemplates(S.initialValueTemplateItem('author-developer'))
