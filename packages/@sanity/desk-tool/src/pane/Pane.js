@@ -5,14 +5,12 @@ import DocumentsListPane from './DocumentsListPane'
 import UserComponentPane from './UserComponentPane'
 import UnknownPaneType from './UnknownPaneType'
 import DocumentPane from './DocumentPane'
-import EditorPane from './EditorPane'
 import ListPane from './ListPane'
 
 const paneMap = {
   list: ListPane,
   documentList: DocumentsListPane,
   document: DocumentPane,
-  editor: EditorPane,
   component: UserComponentPane
 }
 
