@@ -5,7 +5,7 @@ import {StructureNode, SerializeOptions, Serializable, Child, SerializePath} fro
 import {Layout, layoutOptions} from './Layout'
 import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
 import {MenuItemGroup, MenuItemGroupBuilder, maybeSerializeMenuItemGroup} from './MenuItemGroup'
-import {IntentChecker, Intent, IntentParams} from './Intent'
+import {IntentChecker, Intent, IntentParams, defaultIntentChecker} from './Intent'
 import {SerializeError} from './SerializeError'
 import {
   InitialValueTemplateItem,
@@ -16,6 +16,10 @@ import {validateId} from './util/validateId'
 
 function noChildResolver() {
   return undefined
+}
+
+const shallowIntentChecker: IntentChecker = (intentName, params, {pane, index}): boolean => {
+  return index <= 1 && defaultIntentChecker(intentName, params, {pane, index})
 }
 
 export interface ListDisplayOptions {
@@ -159,7 +163,7 @@ export abstract class GenericListBuilder<L extends BuildableGenericList, Concret
       type: 'genericList',
       defaultLayout,
       child: this.spec.child || noChildResolver,
-      canHandleIntent: this.spec.canHandleIntent,
+      canHandleIntent: this.spec.canHandleIntent || shallowIntentChecker,
       displayOptions: this.spec.displayOptions,
       initialValueTemplates,
       menuItems: menuItemsWithCreateIntents(this.spec, {path, initialValueTemplates}),
