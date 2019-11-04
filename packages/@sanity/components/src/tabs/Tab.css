@@ -11,6 +11,10 @@
   line-height: calc(17 / 14);
   font-weight: 500;
   padding: 0.25rem 0.5rem;
+
+  @nest &:focus {
+    background: #def;
+  }
 }
 
 .isActive {

@@ -1,0 +1,8 @@
+.root {
+  outline: none;
+
+  @nest &:focus {
+    outline: 2px solid #09f;
+    outline-offset: -2px;
+  }
+}

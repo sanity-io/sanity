@@ -1069,6 +1069,10 @@
       "path": "badges/DefaultBadge.js"
     },
     {
+      "implements": "part:@sanity/base/component",
+      "path": "tabs/story.js"
+    },
+    {
       "name": "part:@sanity/components/tab",
       "description": "A tab"
     },
@@ -1083,6 +1087,14 @@
     {
       "implements": "part:@sanity/components/tab-list",
       "path": "tabs/TabList.js"
+    },
+    {
+      "name": "part:@sanity/components/tab-panel",
+      "description": "Panel that wrap tab content"
+    },
+    {
+      "implements": "part:@sanity/components/tab-panel",
+      "path": "tabs/TabPanel.js"
     }
   ]
 }
