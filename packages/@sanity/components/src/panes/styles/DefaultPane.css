@@ -442,4 +442,12 @@
     top: -1px;
     border-top: 1px solid var(--hairline-color);
   }
+
+  @media (hover: hover) {
+    visibility: hidden;
+
+    @nest .root:hover & {
+      visibility: visible;
+    }
+  }
 }
