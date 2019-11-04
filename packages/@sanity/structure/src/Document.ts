@@ -1,8 +1,10 @@
-import {SerializeOptions, Serializable, Child, DocumentNode} from './StructureNodes'
+import {SerializeOptions, Serializable, Child, DocumentNode, EditorNode} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {SchemaType} from './parts/Schema'
 import {validateId} from './util/validateId'
 import {View, ViewBuilder, maybeSerializeView} from './views/View'
+import {form} from './views'
+import {getTemplateById} from '@sanity/initial-value-templates'
 
 interface DocumentOptions {
   id: string
@@ -129,7 +131,7 @@ export class DocumentBuilder implements Serializable {
       ).withHelpUrl(HELP_URL.DOCUMENT_ID_REQUIRED)
     }
 
-    const views = (this.spec.views || []).map((item, i) => maybeSerializeView(item, i, path))
+    const views = (this.spec.views || [form()]).map((item, i) => maybeSerializeView(item, i, path))
 
     return {
       ...this.spec,
@@ -164,4 +166,42 @@ function getDocumentOptions(spec: Partial<DocumentOptions>): DocumentOptions {
   }
 
   return opts
+}
+
+export function documentFromEditor(spec?: EditorNode) {
+  let doc = new DocumentBuilder()
+
+  if (spec) {
+    const {id, type, template, templateParameters} = spec.options
+
+    doc = doc.id(spec.id).documentId(id)
+
+    if (type) {
+      doc = doc.schemaType(type)
+    }
+
+    if (template) {
+      doc = doc.initialValueTemplate(template, templateParameters)
+    }
+
+    if (spec.child) {
+      doc = doc.child(spec.child)
+    }
+  }
+
+  return doc
+}
+
+export function documentFromEditorWithInitialValue(
+  templateId: string,
+  parameters?: {[key: string]: any}
+) {
+  const template = getTemplateById(templateId)
+  if (!template) {
+    throw new Error(`Template with ID "${templateId}" not defined`)
+  }
+
+  return documentFromEditor()
+    .schemaType(template.schemaType)
+    .initialValueTemplate(templateId, parameters)
 }

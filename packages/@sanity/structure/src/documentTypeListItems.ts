@@ -6,9 +6,9 @@ import {MenuItemBuilder, getOrderingMenuItemsForSchemaType} from './MenuItem'
 import {DEFAULT_SELECTED_ORDERING_OPTION} from './Sort'
 import {DocumentListBuilder} from './DocumentList'
 import {ListItemBuilder} from './ListItem'
-import {EditorBuilder} from './Editor'
 import {DocumentTypeListBuilder} from './DocumentTypeList'
 import {defaultIntentChecker} from './Intent'
+import {DocumentBuilder} from './Document'
 
 const ListIcon = getListIcon()
 const DetailsIcon = getDetailsIcon()
@@ -67,7 +67,7 @@ export function getDocumentTypeList(typeName: string, sanitySchema?: Schema): Do
       {id: 'actions', title: 'Actions'}
     ])
     .child((documentId: string) =>
-      new EditorBuilder()
+      new DocumentBuilder()
         .id('editor')
         .schemaType(type)
         .documentId(documentId)
