@@ -1,5 +1,4 @@
 import {DocumentListBuilder, DocumentList} from './DocumentList'
-import {EditorBuilder} from './Editor'
 import {ListItemBuilder} from './ListItem'
 import {ListBuilder, List} from './List'
 import {MenuItemBuilder} from './MenuItem'
@@ -62,7 +61,6 @@ export type CollectionBuilder =
   | ListBuilder
   | DocumentListBuilder
   | DocumentTypeListBuilder
-  | EditorBuilder
   | DocumentBuilder
   | ComponentBuilder
 
@@ -72,7 +70,6 @@ export type Builder =
   | CollectionBuilder
   | ComponentBuilder
   | DocumentBuilder
-  | EditorBuilder
   | DocumentListBuilder
   | DocumentListItemBuilder
   | ListItemBuilder

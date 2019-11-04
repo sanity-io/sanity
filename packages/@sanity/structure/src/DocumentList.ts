@@ -2,7 +2,6 @@ import {getParameterlessTemplatesBySchemaType} from '@sanity/initial-value-templ
 import {SchemaType} from './parts/Schema'
 import {client} from './parts/Client'
 import {SortItem} from './Sort'
-import {EditorBuilder} from './Editor'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {SerializeOptions, Child} from './StructureNodes'
 import {ChildResolver, ChildResolverOptions, ItemChild} from './ChildResolver'
@@ -13,6 +12,7 @@ import {
   GenericList,
   GenericListInput
 } from './GenericList'
+import {DocumentBuilder} from './Document'
 
 const resolveTypeForDocument = (id: string): Promise<string | undefined> => {
   const query = '*[_id in [$documentId, $draftId]]._type'
@@ -36,14 +36,14 @@ const validateFilter = (spec: PartialDocumentList, options: SerializeOptions) =>
   return filter
 }
 
-const resolveEditorChildForItem: ChildResolver = (
+const resolveDocumentChildForItem: ChildResolver = (
   itemId: string,
   options: ChildResolverOptions
 ): ItemChild | Promise<ItemChild> | undefined => {
   const parentItem = options.parent as DocumentList
   const schemaType = parentItem.schemaTypeName || resolveTypeForDocument(itemId)
   return Promise.resolve(schemaType).then(type =>
-    new EditorBuilder()
+    new DocumentBuilder()
       .id('editor')
       .documentId(itemId)
       .schemaType(type || '')
@@ -147,7 +147,7 @@ export class DocumentListBuilder extends GenericListBuilder<
       ...super.serialize(options),
       type: 'documentList',
       schemaTypeName: this.spec.schemaTypeName,
-      child: this.spec.child || resolveEditorChildForItem,
+      child: this.spec.child || resolveDocumentChildForItem,
       options: {
         ...this.spec.options,
         filter: validateFilter(this.spec, options)
