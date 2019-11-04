@@ -40,7 +40,7 @@
   @media (--screen-medium) {
     composes: root;
     margin-right: 0;
-    border-color: #ccc;
+    border-color: var(--hairline-color);
     padding: 0;
     flex-direction: row;
     transition: box-shadow var(--pane-animation-time) var(--pane-animation-time) linear;
@@ -54,15 +54,25 @@
 }
 
 .header {
+  position: relative;
   position: sticky;
   top: 0;
   user-select: none;
   background-color: inherit;
   z-index: 10;
-  border-bottom: 1px solid #ccc;
 
   @nest .isCollapsed & {
     background-color: transparent;
+  }
+
+  @nest &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    border-bottom: 1px solid var(--hairline-color);
   }
 }
 
@@ -186,8 +196,9 @@
 .title {
   box-sizing: border-box;
   margin: 0;
-  padding: 0.75em 1em 0.25em;
+  padding: 1em;
   font-size: 1rem;
+  line-height: calc(21 / 16);
   font-weight: 700;
   user-select: none;
   cursor: default;
@@ -207,8 +218,11 @@
 }
 
 .headerViewMenu {
+  position: relative;
   display: flex;
   max-width: 672px;
+  margin-top: -0.5em;
+  z-index: 2;
 
   @nest .isCollapsed & {
     display: none;
@@ -404,8 +418,7 @@
   right: 0;
   width: 100%;
   z-index: var(--zindex-pane);
-  padding: var(--small-padding) var(--medium-padding);
-  border-top: 1px solid #ccc;
+  padding: 0.75em var(--medium-padding);
 
   @supports (padding-bottom: env(safe-area-inset-bottom)) {
     padding-bottom: calc(var(--small-padding) + env(safe-area-inset-bottom));
@@ -417,6 +430,16 @@
   }
 
   @media (--screen-medium) {
-    position: static;
+    position: relative;
+  }
+
+  @nest &:before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -1px;
+    border-top: 1px solid var(--hairline-color);
   }
 }
