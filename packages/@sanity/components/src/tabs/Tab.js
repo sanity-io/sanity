@@ -7,6 +7,7 @@ export default class Tab extends React.PureComponent {
   static propTypes = {
     'aria-controls': PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
+    icon: PropTypes.func,
     isActive: PropTypes.bool,
     isFocused: PropTypes.bool,
     label: PropTypes.node.isRequired,
@@ -15,6 +16,7 @@ export default class Tab extends React.PureComponent {
   }
 
   static defaultProps = {
+    icon: undefined,
     isActive: false,
     isFocused: false,
     onFocus: undefined
@@ -31,11 +33,15 @@ export default class Tab extends React.PureComponent {
   componentDidUpdate(prevProps) {
     if (!prevProps.isFocused && this.props.isFocused) {
       if (!this.state.isDOMFocused) {
-        setTimeout(() => {
+        this.focusTimeout = setTimeout(() => {
           this.element.focus()
         }, 0)
       }
     }
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.focusTimeout)
   }
 
   handleBlur = () => {
@@ -54,7 +60,7 @@ export default class Tab extends React.PureComponent {
   }
 
   render() {
-    const {id, isActive, label, onClick} = this.props
+    const {id, isActive, label, onClick, icon: Icon} = this.props
 
     return (
       <button
@@ -70,7 +76,9 @@ export default class Tab extends React.PureComponent {
         tabIndex={isActive ? 0 : -1}
         type="button"
       >
-        <div tabIndex={-1}>{label}</div>
+        <div tabIndex={-1}>
+          {Icon && <Icon />} {label}
+        </div>
       </button>
     )
   }
