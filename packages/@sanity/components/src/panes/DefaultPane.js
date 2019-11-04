@@ -8,6 +8,7 @@ import IconMoreVert from 'part:@sanity/base/more-vert-icon'
 import {IntentLink} from 'part:@sanity/base/router'
 import ScrollContainer from 'part:@sanity/components/utilities/scroll-container'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
+import TabPanel from 'part:@sanity/components/tab-panel'
 import Styleable from '../utilities/Styleable'
 import defaultStyles from './styles/DefaultPane.css'
 import S from '@sanity/base/structure-builder'
@@ -420,6 +421,7 @@ class Pane extends React.Component {
     )
   }
 
+  // eslint-disable-next-line complexity
   render() {
     const {
       title,
@@ -440,14 +442,17 @@ class Pane extends React.Component {
       act => act.showAsAction && (!isCollapsed || act.showAsAction.whenCollapsed)
     )
 
-    // Build props for main view
-    const mainProps = {}
-    if (hasTabs) {
-      mainProps['aria-labelledby'] = `${tabIdPrefix}tab-${viewId}`
-      mainProps.id = `${tabIdPrefix}tabpanel`
-      mainProps.role = 'tabpanel'
-      mainProps.tabIndex = '0'
-    }
+    const mainChildren = (
+      <>
+        {isScrollable ? (
+          <ScrollContainer className={styles.scrollContainer} onScroll={this.handleContentScroll}>
+            <div style={contentMaxWidth ? {maxWidth: `${contentMaxWidth}px`} : {}}>{children}</div>
+          </ScrollContainer>
+        ) : (
+          <div className={styles.notScrollable}>{children}</div>
+        )}
+      </>
+    )
 
     return (
       <div
@@ -473,17 +478,19 @@ class Pane extends React.Component {
           {this.props.renderHeaderViewMenu()}
         </div>
 
-        <div className={styles.main} {...mainProps}>
-          {isScrollable ? (
-            <ScrollContainer className={styles.scrollContainer} onScroll={this.handleContentScroll}>
-              <div style={contentMaxWidth ? {maxWidth: `${contentMaxWidth}px`} : {}}>
-                {children}
-              </div>
-            </ScrollContainer>
-          ) : (
-            <div className={styles.notScrollable}>{children}</div>
-          )}
-        </div>
+        {hasTabs ? (
+          <TabPanel
+            aria-labelledby={`${tabIdPrefix}tab-${viewId}`}
+            className={styles.main}
+            id={`${tabIdPrefix}tabpanel`}
+            role="tabpanel"
+            tabIndex="0"
+          >
+            {mainChildren}
+          </TabPanel>
+        ) : (
+          <div className={styles.main}>{mainChildren}</div>
+        )}
 
         {staticContent && <div className={styles.footer}>{staticContent}</div>}
       </div>
