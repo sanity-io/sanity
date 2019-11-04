@@ -2,18 +2,31 @@
 
 .root {
   -webkit-appearance: none;
-  -webkit-font-smoothing: antialiased;
+  -webkit-font-smoothing: inherit;
   border: 0;
   color: var(--text-muted);
-  outline: none;
   font-family: inherit;
   font-size: 0.875em;
   line-height: calc(17 / 14);
   font-weight: 500;
-  padding: 0.25rem 0.5rem;
+  padding: 0;
+  border-radius: 2px;
+  outline: none;
+
+  /* Clickable focus container */
+  & > div {
+    padding: calc(0.25rem - 1px) 0.5rem calc(0.25rem + 1px);
+    outline: none;
+  }
 
   @nest &:focus {
-    background: #def;
+    background: var(--selectable-item-color-hover);
+  }
+
+  @media (hover: hover) {
+    @nest &:hover {
+      color: inherit;
+    }
   }
 }
 
