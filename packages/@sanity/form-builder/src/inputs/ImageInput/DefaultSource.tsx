@@ -1,6 +1,7 @@
 import React from 'react'
 import client from 'part:@sanity/base/client'
 import Button from 'part:@sanity/components/buttons/default'
+import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import styles from './styles/SelectAsset.css'
 import AssetWidget from './Asset'
 const PER_PAGE = 200
@@ -9,7 +10,10 @@ type Asset = {
   url: string
 }
 type Props = {
-  onSelect: (arg0: {kind: 'assetDocumentId' | 'binary', value: string}) => void
+  onSelect: (arg0: {kind: 'assetDocumentId' | 'binary'; value: string}) => void
+  onClose: () => void
+  selectedAssets: Asset[],
+  selectionType: boolean
 }
 function createQuery(start = 0, end = PER_PAGE) {
   return `
@@ -69,35 +73,45 @@ class DefaultSource extends React.Component<Props, State> {
       this.select(event.currentTarget.getAttribute('data-id'))
     }
   }
+  handleClose = () => {
+    if (this.props.onClose) {
+      this.props.onClose()
+    }
+  }
   handleFetchNextPage = () => {
     this.fetchPage(++this.pageNo)
   }
   render() {
+    const {selectedAssets} = this.props
     const {assets, isLastPage, isLoading} = this.state
     return (
-      <div className={styles.root}>
-        <div className={styles.imageList}>
-          {assets.map(asset => (
-            <AssetWidget
-              key={asset._id}
-              asset={asset}
-              onClick={this.handleItemClick}
-              onKeyPress={this.handleItemKeyPress}
-              onDeleteFinished={this.handleDeleteFinished}
-            />
-          ))}
-        </div>
-        {!isLoading && assets.length === 0 && (
-          <div className={styles.noAssets}>No images found</div>
-        )}
-        <div className={styles.loadMore}>
-          {!isLastPage && (
-            <Button onClick={this.handleFetchNextPage} loading={isLoading}>
-              Load more
-            </Button>
+      <Dialog title="Select image" onClose={this.handleClose} isOpen>
+        <div className={styles.root}>
+          <div className={styles.imageList}>
+            {assets
+              .map(asset => (
+                <AssetWidget
+                  key={asset._id}
+                  asset={asset}
+                  isSelected={selectedAssets.some(selected => selected._id === asset._id)}
+                  onClick={this.handleItemClick}
+                  onKeyPress={this.handleItemKeyPress}
+                  onDeleteFinished={this.handleDeleteFinished}
+                />
+              ))}
+          </div>
+          {!isLoading && assets.length === 0 && (
+            <div className={styles.noAssets}>No images found</div>
           )}
+          <div className={styles.loadMore}>
+            {!isLastPage && (
+              <Button onClick={this.handleFetchNextPage} loading={isLoading}>
+                Load more
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
+      </Dialog>
     )
   }
 }
