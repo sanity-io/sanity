@@ -1195,6 +1195,7 @@ export default withInitialValue(
           )}
           <TabbedPane
             key="pane"
+            idPrefix={`${getPublishedId(value._id)}-`}
             title={this.getTitle(value)}
             views={views}
             activeView={activeViewId}
