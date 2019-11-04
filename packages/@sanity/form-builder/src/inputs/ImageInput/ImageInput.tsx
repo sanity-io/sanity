@@ -1,10 +1,19 @@
 /* eslint-disable complexity */
 
 import React from 'react'
+import {get, partition} from 'lodash'
+import {Observable} from 'rxjs'
+import ImageTool from '@sanity/imagetool'
+
+import ImageIcon from 'react-icons/lib/md/image'
 import Button from 'part:@sanity/components/buttons/default'
+import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import VisibilityIcon from 'part:@sanity/base/visibility-icon'
-import {get, partition} from 'lodash'
+// TODO: investigate why 'all:part' doesn't work with TS, when just 'part:' works.
+// @ts-ignore
+import assetSources from 'all:part:@sanity/form-builder/input/asset-source'
+import userDefinedAssetSources from 'part:@sanity/form-builder/input/asset-sources?'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import styles from './styles/ImageInput.css'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
@@ -16,10 +25,7 @@ import ImageToolInput from '../ImageToolInput'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
 import {FormBuilderInput} from '../../FormBuilderInput'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import ImageTool from '@sanity/imagetool'
-import {Observable} from 'rxjs'
 import {Path} from '../../typedefs/path'
-import SourceBrowser from './SourceBrowser'
 
 type FieldT = {
   name: string
@@ -31,7 +37,7 @@ type AssetFromSource = {
   value: string
 }
 
-interface Value {
+export interface Value {
   _upload?: any
   asset?: Reference
   hotspot?: any
@@ -62,8 +68,10 @@ type ImageInputState = {
   isUploading: boolean
   uploadError: Error | null
   isAdvancedEditOpen: boolean
-  isSourceBrowserOpen: boolean
+  selectedAssetSource?: any
 }
+const globalAssetSources = userDefinedAssetSources ? userDefinedAssetSources : assetSources
+
 export default class ImageInput extends React.PureComponent<Props, ImageInputState> {
   _focusArea: any
   uploadSubscription: any
@@ -71,8 +79,21 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     isUploading: false,
     uploadError: null,
     isAdvancedEditOpen: false,
-    isSourceBrowserOpen: false
+    selectedAssetSource: null
   }
+  assetSources = globalAssetSources
+
+  constructor(props: Props) {
+    super(props)
+    // Allow overriding sources set directly on type.options
+    const sourcesFromType = get(props.type, 'options.sources')
+    if (Array.isArray(sourcesFromType) && sourcesFromType.length > 0) {
+      this.assetSources = sourcesFromType
+    } else if (sourcesFromType) {
+      this.assetSources = null
+    }
+  }
+
   handleRemoveButtonClick = (event: React.SyntheticEvent<any>) => {
     this.props.onChange(PatchEvent.from(unset(['asset'])))
   }
@@ -115,16 +136,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   handleStopAdvancedEdit = () => {
     this.setState({isAdvancedEditOpen: false})
   }
-  handleOpenSourceBrowser = () => {
-    this.setState({
-      isSourceBrowserOpen: true
-    })
-  }
-  handleCloseSourceBrowser = () => {
-    this.setState({
-      isSourceBrowserOpen: false
-    })
-  }
   handleSelectAssetFromSource = (assetFromSource: AssetFromSource) => {
     if (!assetFromSource) {
       throw new Error('No asset given')
@@ -140,7 +151,9 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         throw new Error('Invalid value returned from asset source plugin')
       }
     }
+    this.setState({selectedAssetSource: null})
   }
+
   handleSelectAsset = (asset: Record<string, any>) => {
     const {onChange, type} = this.props
     onChange(
@@ -159,9 +172,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         )
       ])
     )
-    this.setState({
-      isSourceBrowserOpen: false
-    })
   }
 
   isImageToolEnabled() {
@@ -262,9 +272,93 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     )
   }
 
+  renderDropDownMenuItem = item => {
+    if (!item) {
+      return null
+    }
+    const Icon = item.icon || ImageIcon
+    return (
+      <div className={styles.selectDropDownAssetSourceItem}>
+        <div className={styles.selectDropDownAssetSourceIcon}>
+          <Icon />
+        </div>
+        <div>{item.title}</div>
+      </div>
+    )
+  }
+
+  handleSelectImageFromAssetSource = source => {
+    this.setState({selectedAssetSource: source})
+  }
+
+  handleAssetSourceClosed = () => {
+    this.setState({selectedAssetSource: null})
+  }
+
+  renderSelectImageButton() {
+    // If there are multiple asset sources render a dropdown
+    if (this.assetSources.length > 1) {
+      return (
+        <DropDownButton
+          items={this.assetSources}
+          renderItem={this.renderDropDownMenuItem}
+          onAction={this.handleSelectImageFromAssetSource}
+          kind="default"
+          inverted
+          showArrow
+          ripple={false}
+        >
+          Select
+        </DropDownButton>
+      )
+    }
+    // Single asset source (just a normal button)
+    return (
+      <Button
+        onClick={this.handleSelectImageFromAssetSource.bind(this, this.assetSources[0])}
+        inverted
+      >
+        Select
+      </Button>
+    )
+  }
+
+  renderAssetSource() {
+    const {selectedAssetSource} = this.state
+    const {value, materialize} = this.props
+    if (!selectedAssetSource) {
+      return null
+    }
+    const Component = selectedAssetSource.component
+    if (value.asset) {
+      return (
+        <WithMaterializedReference materialize={materialize} reference={value.asset}>
+          {imageAsset => {
+            return (
+              <Component
+                selectedAssets={[imageAsset]}
+                selectionType="single"
+                onClose={this.handleAssetSourceClosed}
+                onSelect={this.handleSelectAssetFromSource}
+              />
+            )
+          }}
+        </WithMaterializedReference>
+      )
+    }
+    return (
+      <Component
+        selectedAssets={[]}
+        selectionType="single"
+        onClose={this.handleAssetSourceClosed}
+        onSelect={this.handleSelectAssetFromSource}
+      />
+    )
+  }
+
   render() {
     const {type, value, level, materialize, markers, readOnly} = this.props
-    const {isAdvancedEditOpen, isSourceBrowserOpen} = this.state
+    const {isAdvancedEditOpen, selectedAssetSource} = this.state
     const [highlightedFields, otherFields] = partition(
       type.fields.filter(field => !HIDDEN_FIELDS.includes(field.name)),
       'type.options.isHighlighted'
@@ -294,11 +388,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         </div>
         <div className={styles.functions}>
           <ButtonGrid>
-            {!readOnly && (
-              <Button onClick={this.handleOpenSourceBrowser} inverted>
-                Select
-              </Button>
-            )}
+            {!readOnly && this.renderSelectImageButton()}
             {showAdvancedEditButton && (
               <Button
                 icon={readOnly ? VisibilityIcon : EditIcon}
@@ -320,11 +410,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           <div className={styles.fieldsWrapper}>{this.renderFields(highlightedFields)}</div>
         )}
         {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
-        {isSourceBrowserOpen && (
-          <Dialog title="Select image" onClose={this.handleCloseSourceBrowser} isOpen>
-            <SourceBrowser type={type} onSelect={this.handleSelectAssetFromSource} />
-          </Dialog>
-        )}
+        {selectedAssetSource && this.renderAssetSource()}
       </Fieldset>
     )
   }
