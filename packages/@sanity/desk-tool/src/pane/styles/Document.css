@@ -52,10 +52,11 @@
 .footerStatus {
   flex: 1;
   color: var(--text-color-secondary);
+  line-height: 1;
 }
 
 .publishInfo {
-  background: #fed;
+  /* display: block; */
 }
 
 .publishButton {
