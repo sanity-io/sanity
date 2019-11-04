@@ -11,9 +11,6 @@ import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import Styleable from '../utilities/Styleable'
 import defaultStyles from './styles/DefaultPane.css'
 import S from '@sanity/base/structure-builder'
-import BarsIcon from 'part:@sanity/base/bars-icon'
-import CloseIcon from 'part:@sanity/base/close-icon'
-import EyeIcon from 'part:@sanity/base/eye-icon'
 
 function getActionKey(action, index) {
   return (typeof action.action === 'string' ? action.action + action.title : action.title) || index
@@ -112,6 +109,7 @@ class Pane extends React.Component {
     index: PropTypes.number,
     staticContent: PropTypes.node,
     contentMaxWidth: PropTypes.number,
+    renderHeaderView: PropTypes.func,
     styles: PropTypes.object // eslint-disable-line react/forbid-prop-types
   }
 
@@ -127,7 +125,8 @@ class Pane extends React.Component {
     onAction: noop,
     menuItems: [],
     menuItemGroups: [],
-    initialValueTemplates: []
+    initialValueTemplates: [],
+    renderHeaderView: () => null
   }
 
   state = {
@@ -415,22 +414,6 @@ class Pane extends React.Component {
     )
   }
 
-  renderShowConextualPreviewsPane() {
-    const {onShowContextualPreview} = this.props
-    if (!onShowContextualPreview) return null
-    return (
-      <button
-        type="button"
-        onClick={onShowContextualPreview}
-        title="Contextual Previews pane"
-      >
-        <div tabIndex={-1}>
-          <EyeIcon />
-        </div>
-      </button>
-    )
-  }
-
   render() {
     const {
       title,
@@ -439,8 +422,6 @@ class Pane extends React.Component {
       isCollapsed,
       isScrollable,
       menuItems,
-      onSplitPane,
-      onToggleViewButton,
       styles,
       renderActions,
       staticContent,
@@ -471,22 +452,7 @@ class Pane extends React.Component {
               {this.renderMenu()}
             </div>
           </div>
-          <div className={styles.headerViewMenu}>
-            <div className={styles.headerTabsContainer}>[Tabs]</div>
-            <div className={styles.headerPaneActions}>
-              <button type="button" onClick={onSplitPane} title="Split pane">
-                <div tabIndex={-1}>
-                  <BarsIcon />
-                </div>
-              </button>
-              <button type="button" onClick={onToggleViewButton} title="Toggle view">
-                <div tabIndex={-1}>
-                  <CloseIcon />
-                </div>
-              </button>
-              {this.renderShowConextualPreviewsPane()}
-            </div>
-          </div>
+          {this.props.renderHeaderView()}
         </div>
 
         <div className={styles.main}>
