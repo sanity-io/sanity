@@ -1073,27 +1073,27 @@
       "path": "tabs/story.js"
     },
     {
-      "name": "part:@sanity/components/tab",
-      "description": "A tab"
+      "name": "part:@sanity/components/tabs/tab",
+      "description": "Tab"
     },
     {
-      "implements": "part:@sanity/components/tab",
+      "implements": "part:@sanity/components/tabs/tab",
       "path": "tabs/Tab.js"
     },
     {
-      "name": "part:@sanity/components/tab-list",
+      "name": "part:@sanity/components/tabs/tab-list",
       "description": "List of tabs"
     },
     {
-      "implements": "part:@sanity/components/tab-list",
+      "implements": "part:@sanity/components/tabs/tab-list",
       "path": "tabs/TabList.js"
     },
     {
-      "name": "part:@sanity/components/tab-panel",
-      "description": "Panel that wrap tab content"
+      "name": "part:@sanity/components/tabs/tab-panel",
+      "description": "Panel that wraps tab content"
     },
     {
-      "implements": "part:@sanity/components/tab-panel",
+      "implements": "part:@sanity/components/tabs/tab-panel",
       "path": "tabs/TabPanel.js"
     }
   ]
