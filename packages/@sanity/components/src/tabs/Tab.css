@@ -1,0 +1,19 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  -webkit-appearance: none;
+  -webkit-font-smoothing: antialiased;
+  border: 0;
+  color: var(--text-muted);
+  outline: none;
+  font-family: inherit;
+  font-size: 0.875em;
+  line-height: calc(17 / 14);
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+}
+
+.isActive {
+  composes: root;
+  color: var(--text-color);
+}

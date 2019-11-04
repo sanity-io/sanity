@@ -76,6 +76,9 @@ const isMenuButton = negate(isActionButton)
 // eslint-disable-next-line
 class Pane extends React.Component {
   static propTypes = {
+    hasTabs: PropTypes.bool,
+    tabIdPrefix: PropTypes.string,
+    viewId: PropTypes.string,
     title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
     isCollapsed: PropTypes.bool,
     onExpand: PropTypes.func,
@@ -109,11 +112,14 @@ class Pane extends React.Component {
     index: PropTypes.number,
     staticContent: PropTypes.node,
     contentMaxWidth: PropTypes.number,
-    renderHeaderView: PropTypes.func,
+    renderHeaderViewMenu: PropTypes.func,
     styles: PropTypes.object // eslint-disable-line react/forbid-prop-types
   }
 
   static defaultProps = {
+    hasTabs: false,
+    tabIdPrefix: undefined,
+    viewId: undefined,
     title: 'Untitled',
     isCollapsed: false,
     isSelected: false,
@@ -126,7 +132,7 @@ class Pane extends React.Component {
     menuItems: [],
     menuItemGroups: [],
     initialValueTemplates: [],
-    renderHeaderView: () => null
+    renderHeaderViewMenu: () => null
   }
 
   state = {
@@ -418,6 +424,7 @@ class Pane extends React.Component {
     const {
       title,
       children,
+      hasTabs,
       isSelected,
       isCollapsed,
       isScrollable,
@@ -425,11 +432,22 @@ class Pane extends React.Component {
       styles,
       renderActions,
       staticContent,
-      contentMaxWidth
+      contentMaxWidth,
+      tabIdPrefix,
+      viewId
     } = this.props
     const actions = menuItems.filter(
       act => act.showAsAction && (!isCollapsed || act.showAsAction.whenCollapsed)
     )
+
+    // Build props for main view
+    const mainProps = {}
+    if (hasTabs) {
+      mainProps['aria-labelledby'] = `${tabIdPrefix}tab-${viewId}`
+      mainProps.id = `${tabIdPrefix}tabpanel`
+      mainProps.role = 'tabpanel'
+      mainProps.tabIndex = '0'
+    }
 
     return (
       <div
@@ -452,10 +470,10 @@ class Pane extends React.Component {
               {this.renderMenu()}
             </div>
           </div>
-          {this.props.renderHeaderView()}
+          {this.props.renderHeaderViewMenu()}
         </div>
 
-        <div className={styles.main}>
+        <div className={styles.main} {...mainProps}>
           {isScrollable ? (
             <ScrollContainer className={styles.scrollContainer} onScroll={this.handleContentScroll}>
               <div style={contentMaxWidth ? {maxWidth: `${contentMaxWidth}px`} : {}}>
