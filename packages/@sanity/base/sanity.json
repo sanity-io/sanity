@@ -608,6 +608,10 @@
       "description": "Plus icon"
     },
     {
+      "name": "part:@sanity/base/split-horizontal-icon",
+      "description": "Split horizontal icon"
+    },
+    {
       "name": "part:@sanity/base/plus-circle-icon",
       "description": "Plus circle icon"
     },
@@ -754,6 +758,10 @@
     {
       "implements": "part:@sanity/base/plus-icon",
       "path": "components/icons/Plus.js"
+    },
+    {
+      "implements": "part:@sanity/base/split-horizontal-icon",
+      "path": "components/icons/SplitHorizontal.js"
     },
     {
       "implements": "part:@sanity/base/plus-circle-icon",

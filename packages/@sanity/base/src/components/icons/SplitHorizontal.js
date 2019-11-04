@@ -2,7 +2,7 @@ import React from 'react'
 
 const strokeStyle = {vectorEffect: 'non-scaling-stroke'}
 
-const CloseIcon = () => (
+const SplitHorizontalIcon = () => (
   <svg
     viewBox="0 0 25 25"
     fill="none"
@@ -11,8 +11,9 @@ const CloseIcon = () => (
     width="1em"
     height="1em"
   >
-    <path d="M18 7L7 18M7 7L18 18" stroke="currentColor" style={strokeStyle} />
+    <rect x="3.5" y="4.5" width="18" height="16" stroke="currentColor" style={strokeStyle} />
+    <line x1="12.5" y1="5" x2="12.5" y2="20" stroke="currentColor" style={strokeStyle} />
   </svg>
 )
 
-export default CloseIcon
+export default SplitHorizontalIcon
