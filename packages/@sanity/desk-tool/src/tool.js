@@ -38,7 +38,7 @@ function DeskToolPaneStateSyncer(props) {
   return <DeskTool {...props} onPaneChange={setActivePanes} />
 }
 
-function getIntentState(intentName, params, currentState, jsonParams = {}) {
+function getIntentState(intentName, params, currentState, payload) {
   const paneSegments = (currentState && currentState.panes) || []
   const activePanes = state.activePanes || []
   const editDocumentId = params.id || UUID()
@@ -48,15 +48,19 @@ function getIntentState(intentName, params, currentState, jsonParams = {}) {
   for (let i = activePanes.length - 1; i >= 0; i--) {
     const pane = activePanes[i]
     if (pane.canHandleIntent && pane.canHandleIntent(intentName, params, {pane})) {
-      const paneParams = isTemplate ? {template: params.template, ...jsonParams} : undefined
-      return {panes: paneSegments.slice(0, i).concat([{id: editDocumentId, params: paneParams}])}
+      const paneParams = isTemplate ? {template: params.template} : {}
+      return {
+        panes: paneSegments
+          .slice(0, i)
+          .concat([[{id: editDocumentId, params: paneParams, payload}]])
+      }
     }
   }
 
-  return getFallbackIntentState({documentId: editDocumentId, intentName, params, jsonParams})
+  return getFallbackIntentState({documentId: editDocumentId, intentName, params, payload})
 }
 
-function getFallbackIntentState({documentId, intentName, params, jsonParams = {}}) {
+function getFallbackIntentState({documentId, intentName, params, payload}) {
   const editDocumentId = documentId
   const isTemplateCreate = intentName === 'create' && params.template
   const template = isTemplateCreate && getTemplateById(params.template)
@@ -65,7 +69,7 @@ function getFallbackIntentState({documentId, intentName, params, jsonParams = {}
     ? {
         editDocumentId,
         type: template.schemaType,
-        params: {template: params.template, ...jsonParams}
+        params: {template: params.template, templateParameters: payload}
       }
     : {editDocumentId, type: params.type || '*'}
 }

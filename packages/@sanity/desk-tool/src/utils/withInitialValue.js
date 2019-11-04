@@ -6,6 +6,7 @@ import {map, switchMap, scan, filter, distinctUntilChanged, catchError} from 'rx
 import schema from 'part:@sanity/base/schema'
 import {observePaths} from 'part:@sanity/base/preview'
 import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
+import {PaneRouterContext} from '../../'
 import ErrorPane from '../pane/ErrorPane'
 import LoadingPane from '../pane/LoadingPane'
 import BrokenReferences from '../components/BrokenReferences'
@@ -16,11 +17,11 @@ import {
   resolveInitialValue
 } from '@sanity/base/initial-value-templates'
 
-const withInitialValue = Pane =>
-  streamingComponent(props$ =>
+const withInitialValue = Pane => {
+  const WithInitialValueStream = streamingComponent(props$ =>
     props$.pipe(
       switchMap(props => {
-        const {options} = props
+        const {options, ...paneProps} = props
         // See if the document ID has a draft or a published document
         return merge(
           observePaths(getDraftId(options.id), ['_type']).pipe(map(draft => ({draft}))),
@@ -45,7 +46,7 @@ const withInitialValue = Pane =>
               // when going from missing document to a document that exists
               return of(
                 <BrokenReferences document={{}} type={documentType} schema={schema}>
-                  <Pane {...props} options={paneOptions} />
+                  <Pane {...paneProps} options={paneOptions} />
                 </BrokenReferences>
               )
             }
@@ -84,7 +85,7 @@ const withInitialValue = Pane =>
                     <LoadingPane {...props} title={title} message="Resolving initial value…" />
                   ) : (
                     <BrokenReferences document={initialValue} type={documentType} schema={schema}>
-                      <Pane {...props} initialValue={initialValue} options={paneOptions} />
+                      <Pane {...paneProps} initialValue={initialValue} options={paneOptions} />
                     </BrokenReferences>
                   )
                 )
@@ -96,18 +97,28 @@ const withInitialValue = Pane =>
     )
   )
 
+  const WithInitialValueWrapper = props => (
+    <PaneRouterContext.Consumer>
+      {context => <WithInitialValueStream {...props} paneApi={context} />}
+    </PaneRouterContext.Consumer>
+  )
+
+  return WithInitialValueWrapper
+}
+
 function getInitialValueProps(document, props) {
   if (document) {
     return {}
   }
 
-  const {template: definedTemplate} = props.options
-  const {template: urlTemplate, ...urlParameters} = props.urlParameters || {}
+  const payload = props.paneApi.getPayload() || {}
+  const urlTemplate = props.paneApi.getPaneParameters().template
+  const definedTemplate = props.options.template
 
   if (urlTemplate && definedTemplate && definedTemplate !== urlTemplate) {
     // eslint-disable-next-line no-console
     console.warn(
-      `Conflicting templates: URL says "${urlParameters.template}", structure node says "${definedTemplate}". Using "${definedTemplate}".`
+      `Conflicting templates: URL says "${urlTemplate}", structure node says "${definedTemplate}". Using "${definedTemplate}".`
     )
   }
 
@@ -115,7 +126,7 @@ function getInitialValueProps(document, props) {
   const template = options.template || urlTemplate
   const typeTemplates = getTemplatesBySchemaType(options.type)
 
-  const parameters = {...options.templateParameters, ...urlParameters}
+  const parameters = {...options.templateParameters, ...payload}
   let templateName = template
 
   // If we have not specified a specific template, and we only have a single

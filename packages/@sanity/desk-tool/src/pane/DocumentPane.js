@@ -1161,7 +1161,6 @@ export default withInitialValue(
           selectedIsLatest: this.findSelectedEvent() === historyState.events[0]
         },
         onDelete: this.handleDelete,
-        onClearTransactionResult: this.handleClearTransactionResult,
         onPublish: this.handlePublish,
         onRestore: this.handleRestoreRevision,
         onUnpublish: this.handleUnpublish,

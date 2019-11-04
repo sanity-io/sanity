@@ -130,6 +130,13 @@ export default class DeskToolPanes extends React.Component {
       return newRouterState
     }
 
+    const getPaneParameters = () => {
+      const panes = this.props.router.state.panes || []
+      const group = panes[groupIndex] || []
+      const pane = group[siblingIndex]
+      return pane.params || {}
+    }
+
     const ctx = {
       // Zero-based index (position) of pane, visually
       index: flatIndex,
@@ -220,13 +227,8 @@ export default class DeskToolPanes extends React.Component {
         })
       },
 
-      getPaneView: () => {
-        const panes = this.props.router.state.panes || []
-        const group = panes[groupIndex] || []
-        const pane = group[siblingIndex]
-        const params = pane.params || {}
-        return params.view
-      },
+      getPaneParameters,
+      getPaneView: () => getPaneParameters().view,
 
       // Proxied navigation to a given intent. Consider just exposing `router` instead?
       navigateIntent: this.props.router.navigateIntent
