@@ -821,7 +821,7 @@ export default withInitialValue(
       const {options} = this.props
       const {draft, published} = this.getDocumentSnapshots()
       const typeName = options.type
-      const doc = draft.snapshot || published.snapshot
+      const doc = draft || published
       return (
         <div className={documentStyles.unknownSchemaType}>
           <div className={documentStyles.unknownSchemaTypeInner}>
