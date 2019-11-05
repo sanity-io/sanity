@@ -333,6 +333,7 @@ export default class DeskToolPanes extends React.Component {
 
           const isCollapsed = Boolean(!isMobile && this.state.collapsedPanes[i])
           const paneKey = `${i}-${keys[i - 1] || 'root'}-${groupIndexes[i - 1]}`
+          const itemId = keys[Math.max(0, i - 1)]
 
           // Same pane might appear multiple times, so use index as tiebreaker
           const wrapperKey = pane === LOADING_PANE ? `loading-${i}` : `${i}-${pane.id}`
@@ -368,7 +369,7 @@ export default class DeskToolPanes extends React.Component {
                     key={paneKey} // Use key to force rerendering pane on ID change
                     paneKey={paneKey}
                     index={i}
-                    itemId={keys[i]}
+                    itemId={itemId}
                     onExpand={this.handlePaneExpand}
                     onCollapse={this.handlePaneCollapse}
                     isCollapsed={isCollapsed}

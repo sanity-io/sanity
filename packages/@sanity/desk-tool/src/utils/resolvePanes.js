@@ -64,8 +64,8 @@ function resolveForStructure(structure, paneGroups, prevStructure, fromIndex) {
       }
 
       // @todo Path is incorrect (array of groups vs ids), is it being used anywhere?
-      const path = paneSegments.slice(0, index + 1)
       const parent = index === 0 ? null : findParentForSegmentIndex(index - 1)
+      const path = paneSegments.slice(0, index + 1).map(segment => segment[0].id)
 
       if (index === 0) {
         const {id, params, payload} = paneSegments[index][splitIndex]
