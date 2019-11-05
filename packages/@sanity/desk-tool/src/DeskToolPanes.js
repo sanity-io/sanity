@@ -3,12 +3,11 @@ import PropTypes from 'prop-types'
 import {sumBy} from 'lodash'
 import {Observable, merge, of} from 'rxjs'
 import {map, mapTo, delay, share, debounceTime, distinctUntilChanged} from 'rxjs/operators'
-import {StateLink} from 'part:@sanity/base/router'
 import SplitController from 'part:@sanity/components/panes/split-controller'
 import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
 import LoadingPane from './pane/LoadingPane'
 import Pane from './pane/Pane'
-import {PaneRouterContext, LOADING_PANE} from './index'
+import {PaneRouterContext, getPaneRouterContextFactory, LOADING_PANE} from './index'
 
 const COLLAPSED_WIDTH = 55
 const BREAKPOINT_SCREEN_MEDIUM = 512
@@ -111,121 +110,7 @@ export default class DeskToolPanes extends React.Component {
 
   userCollapsedPanes = []
 
-  // Memoized copy of contexts
-  paneRouterContexts = new Map()
-
-  getPaneRouterContext = ({groupIndex, siblingIndex, flatIndex}) => {
-    const key = `${flatIndex}-${groupIndex}[${siblingIndex}]`
-    if (this.paneRouterContexts.has(key)) {
-      return this.paneRouterContexts.get(key)
-    }
-
-    const modifyCurrentGroup = modifier => {
-      const {router} = this.props
-      const newPanes = (router.state.panes || []).slice()
-      const group = newPanes[groupIndex].slice()
-      newPanes.splice(groupIndex, 1, modifier(group, group[siblingIndex]))
-
-      const newRouterState = {...router.state, panes: newPanes}
-      router.navigate(newRouterState)
-      return newRouterState
-    }
-
-    const getRouterPane = () => {
-      const {panes} = this.props.router.state
-      const routerPanes = panes || []
-      const group = routerPanes[groupIndex] || []
-      return group[siblingIndex] || {}
-    }
-
-    const ctx = {
-      // Zero-based index (position) of pane, visually
-      index: flatIndex,
-
-      // Zero-based index of pane group (within URL structure)
-      groupIndex,
-
-      // Zero-based index of pane within sibling group
-      siblingIndex,
-
-      // Curried StateLink that passes the correct state automatically
-      ChildLink: ({childId, childPayload, ...props}) => {
-        const oldPanes = this.props.router.state.panes || []
-        const panes = oldPanes
-          .slice(0, groupIndex + 1)
-          .concat([[{id: childId, payload: childPayload}]])
-
-        return <StateLink {...props} state={{panes}} />
-      },
-
-      // Get the current pane ID and parameters
-      getCurrentPane: () => {
-        const routerGroups = this.props.router.state.panes || []
-        const routerGroup = routerGroups[groupIndex]
-        const routerPane = routerGroup && routerGroup[siblingIndex]
-        const childGroup = routerGroups[groupIndex + 1] || []
-
-        return {
-          pane: this.props.panes[flatIndex],
-          router: routerPane,
-          child: childGroup[0],
-          siblings: routerGroup
-        }
-      },
-
-      // Replaces the current pane with a new one
-      replaceCurrentPane: (itemId, payload) => {
-        modifyCurrentGroup(() => [{id: itemId, payload}])
-      },
-
-      // Removes the current pane from the group
-      closeCurrentPane: () => {
-        modifyCurrentGroup((siblings, item) => siblings.filter(sibling => sibling !== item))
-      },
-
-      // Replace or create a child pane with the given id and parameters
-      replaceChildPane: (itemId, payload) => {
-        const {router} = this.props
-        const {panes} = router.state
-        const newPanes = panes.slice()
-        newPanes.splice(groupIndex + 1, 1, [{id: itemId, payload}])
-        router.navigate({...router.state, panes: newPanes})
-      },
-
-      // Duplicate the current pane, with optional overrides for item ID and parameters
-      duplicateCurrentPane: (itemId, payload, params) => {
-        modifyCurrentGroup((siblings, item) => [
-          ...siblings,
-
-          {
-            ...item,
-            id: itemId || item.id,
-            payload: payload || item.payload,
-            params: params || item.params
-          }
-        ])
-      },
-
-      setPaneView: viewId => {
-        modifyCurrentGroup((siblings, item) => {
-          const newGroup = siblings.slice()
-          const newItem = {...item, params: viewId ? {view: viewId} : {}}
-          newGroup.splice(siblingIndex, 1, newItem)
-          return newGroup
-        })
-      },
-
-      getPaneParameters: () => getRouterPane().params || {},
-      getPanePayload: () => getRouterPane().payload,
-      getPaneView: () => (getRouterPane().params || {}).view,
-
-      // Proxied navigation to a given intent. Consider just exposing `router` instead?
-      navigateIntent: this.props.router.navigateIntent
-    }
-
-    this.paneRouterContexts.set(key, ctx)
-    return ctx
-  }
+  getPaneRouterContext = getPaneRouterContextFactory(this)
 
   componentDidUpdate(prevProps) {
     if (this.props.panes.length !== prevProps.panes.length) {
