@@ -205,6 +205,7 @@ export default class DeskToolPanes extends React.Component {
     const {isMobile} = this.state
     const path = []
 
+    const paneKeys = ['root'].concat(keys)
     const paneGroups = [[{id: 'root'}]].concat(routerPanes || [])
 
     let i = -1
@@ -217,8 +218,10 @@ export default class DeskToolPanes extends React.Component {
           }
 
           const isCollapsed = Boolean(!isMobile && this.state.collapsedPanes[i])
-          const paneKey = `${i}-${keys[i - 1] || 'root'}-${groupIndexes[i - 1]}`
-          const itemId = keys[Math.max(0, i - 1)]
+          const paneKey = `${i}-${paneKeys[i] || 'root'}-${groupIndexes[i - 1]}`
+
+          const itemId = paneKeys[i]
+          const childItemId = paneKeys[i + 1]
 
           // Same pane might appear multiple times, so use index as tiebreaker
           const wrapperKey = pane === LOADING_PANE ? `loading-${i}` : `${i}-${pane.id}`
@@ -255,6 +258,7 @@ export default class DeskToolPanes extends React.Component {
                     paneKey={paneKey}
                     index={i}
                     itemId={itemId}
+                    childItemId={childItemId}
                     onExpand={this.handlePaneExpand}
                     onCollapse={this.handlePaneCollapse}
                     isCollapsed={isCollapsed}
