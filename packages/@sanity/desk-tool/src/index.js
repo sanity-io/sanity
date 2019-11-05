@@ -16,9 +16,6 @@ export const PaneRouterContext = React.createContext({
   // Zero-based index of pane within sibling group
   siblingIndex: 0,
 
-  // Returns the payload for the current pane
-  getPayload: () => missingContext(),
-
   // Curried StateLink that passes the correct state automatically
   ChildLink: ({childId, childParameters, ...props}) => missingContext(),
 
@@ -36,6 +33,9 @@ export const PaneRouterContext = React.createContext({
 
   // Set the current "view" for the pane
   setPaneView: viewId => missingContext(),
+
+  // Returns the payload for the current pane
+  getPanePayload: () => missingContext(),
 
   // Proxied navigation to a given intent. Consider just exposing `router` instead?
   navigateIntent: (intentName, params, options = {}) => missingContext()

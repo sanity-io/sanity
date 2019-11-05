@@ -1128,8 +1128,8 @@ export default withInitialValue(
         )
       }
 
-      const activeViewId = this.context.getPaneView() || views[0].id
-      const activeView = views.find(view => view.id === activeViewId) || views[0]
+      const activeViewId = this.context.getPaneView() || (views[0] && views[0].id)
+      const activeView = views.find(view => view.id === activeViewId) || views[0] || {type: 'form'}
       const enabledActions = resolveEnabledActions(schemaType)
       const menuItems = getMenuItems({
         enabledActions,
