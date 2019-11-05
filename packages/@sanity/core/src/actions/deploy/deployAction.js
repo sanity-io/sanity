@@ -12,6 +12,31 @@ export default async (args, context) => {
     args.argsWithoutOptions[0] || path.join(workDir, 'dist')
   )
 
+  if (args.argsWithoutOptions[0] === 'graphql') {
+    throw new Error('Did you mean `sanity graphql deploy`?')
+  } else if (args.argsWithoutOptions[0]) {
+    let relativeOutput = path.relative(process.cwd(), sourceDir)
+    if (relativeOutput[0] !== '.') {
+      relativeOutput = `./${relativeOutput}`
+    }
+
+    const isEmpty = await dirIsEmptyOrNonExistent(sourceDir)
+    const shouldProceed =
+      isEmpty ||
+      (await prompt.single({
+        type: 'confirm',
+        message: `"${relativeOutput}" is not empty, do you want to proceed?`,
+        default: false
+      }))
+
+    if (!shouldProceed) {
+      output.print('Cancelled.')
+      return
+    }
+
+    output.print(`Building to ${relativeOutput}\n`)
+  }
+
   const client = apiClient({
     requireUser: true,
     requireProject: true
@@ -41,7 +66,8 @@ export default async (args, context) => {
   if (shouldBuild) {
     const overrides = {project: {basePath: undefined}}
     const buildStaticAssets = lazyRequire(require.resolve('../build/buildStaticAssets'))
-    await buildStaticAssets({extOptions: flags, argsWithoutOptions: [], overrides}, context)
+    const buildArgs = [args.argsWithoutOptions[0]].filter(Boolean)
+    await buildStaticAssets({extOptions: flags, argsWithoutOptions: buildArgs, overrides}, context)
   }
 
   // Ensure that the directory exists, is a directory and seems to have valid content
@@ -76,6 +102,24 @@ export default async (args, context) => {
     spinner.fail()
     throw err
   }
+}
+
+async function dirIsEmptyOrNonExistent(sourceDir) {
+  try {
+    const stats = await fse.stat(sourceDir)
+    if (!stats.isDirectory()) {
+      throw new Error(`Directory ${sourceDir} is not a directory`)
+    }
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      return true
+    }
+
+    throw err
+  }
+
+  const content = await fse.readdir(sourceDir)
+  return content.length === 0
 }
 
 async function checkDir(sourceDir) {
