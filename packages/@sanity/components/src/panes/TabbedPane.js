@@ -47,17 +47,19 @@ class TabbedPane extends React.Component {
   state = {}
 
   renderHeaderViewMenu = () => {
-    const {styles, onSplitPane, onCloseView, isClosable} = this.props
+    const {styles, views = [], onSplitPane, onCloseView, isClosable} = this.props
 
     return (
       <div className={styles.headerViewMenu}>
         {this.renderTabs()}
         <div className={styles.headerPaneActions}>
-          <button type="button" onClick={onSplitPane} title="Split pane right">
-            <div tabIndex={-1}>
-              <SplitHorizontalIcon />
-            </div>
-          </button>
+          {views.length > 1 && (
+            <button type="button" onClick={onSplitPane} title="Split pane right">
+              <div tabIndex={-1}>
+                <SplitHorizontalIcon />
+              </div>
+            </button>
+          )}
           {isClosable && (
             <button type="button" onClick={onCloseView} title="Close pane">
               <div tabIndex={-1}>
