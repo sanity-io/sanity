@@ -137,16 +137,16 @@ export function getPaneRouterContextFactory(instance) {
 
       // Duplicate the current pane, with optional overrides for item ID and parameters
       duplicateCurrentPane: (itemId, payload, params) => {
-        modifyCurrentGroup((siblings, item) => [
-          ...siblings,
-
-          {
+        modifyCurrentGroup((siblings, item) => {
+          const newGroup = siblings.slice()
+          newGroup.splice(siblingIndex + 1, 0, {
             ...item,
             id: itemId || item.id,
             payload: payload || item.payload,
             params: params || item.params
-          }
-        ])
+          })
+          return newGroup
+        })
       },
 
       setPaneView: viewId => {
