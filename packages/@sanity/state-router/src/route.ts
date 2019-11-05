@@ -83,9 +83,9 @@ route.intents = function intents(base) {
         }
       },
       [
-        route(':jsonParams', {
+        route(':payload', {
           transform: {
-            jsonParams: {
+            payload: {
               toState: decodeJsonParams,
               toPath: encodeJsonParams
             }

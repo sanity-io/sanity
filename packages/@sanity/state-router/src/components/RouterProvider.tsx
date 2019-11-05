@@ -63,8 +63,8 @@ export default class RouterProvider extends React.Component<Props> {
   }
 
   resolveIntentLink = (intentName: string, parameters?: IntentParameters): string => {
-    const [params, jsonParams] = Array.isArray(parameters) ? parameters : [parameters]
-    return this.props.router.encode({intent: intentName, params, jsonParams})
+    const [params, payload] = Array.isArray(parameters) ? parameters : [parameters]
+    return this.props.router.encode({intent: intentName, params, payload})
   }
 
   getChildContext(): RouterProviderContext {
