@@ -93,7 +93,8 @@ export default class DeskToolPanes extends React.Component {
             })
           )
         ),
-        editDocumentId: PropTypes.string
+        payload: PropTypes.object,
+        params: PropTypes.object
       })
     }).isRequired
   }
@@ -113,7 +114,7 @@ export default class DeskToolPanes extends React.Component {
   // Memoized copy of contexts
   paneRouterContexts = new Map()
 
-  getPaneRouterContext = (groupIndex, siblingIndex, flatIndex) => {
+  getPaneRouterContext = ({groupIndex, siblingIndex, flatIndex}) => {
     const key = `${flatIndex}-${groupIndex}[${siblingIndex}]`
     if (this.paneRouterContexts.has(key)) {
       return this.paneRouterContexts.get(key)
@@ -130,11 +131,11 @@ export default class DeskToolPanes extends React.Component {
       return newRouterState
     }
 
-    const getPaneParameters = () => {
-      const panes = this.props.router.state.panes || []
-      const group = panes[groupIndex] || []
-      const pane = group[siblingIndex]
-      return pane.params || {}
+    const getRouterPane = () => {
+      const {panes} = this.props.router.state
+      const routerPanes = panes || []
+      const group = routerPanes[groupIndex] || []
+      return group[siblingIndex] || {}
     }
 
     const ctx = {
@@ -146,8 +147,6 @@ export default class DeskToolPanes extends React.Component {
 
       // Zero-based index of pane within sibling group
       siblingIndex,
-
-      getPayload: () => (this.props.router.state.panes || [])[groupIndex][siblingIndex].payload,
 
       // Curried StateLink that passes the correct state automatically
       ChildLink: ({childId, childPayload, ...props}) => {
@@ -176,13 +175,7 @@ export default class DeskToolPanes extends React.Component {
 
       // Replaces the current pane with a new one
       replaceCurrentPane: (itemId, payload) => {
-        const {router} = this.props
-        const {editDocumentId} = router.state
-        if (editDocumentId) {
-          router.navigate({...router.state, editDocumentId: itemId})
-        } else {
-          modifyCurrentGroup(() => [{id: itemId, payload}])
-        }
+        modifyCurrentGroup(() => [{id: itemId, payload}])
       },
 
       // Removes the current pane from the group
@@ -193,15 +186,10 @@ export default class DeskToolPanes extends React.Component {
       // Replace or create a child pane with the given id and parameters
       replaceChildPane: (itemId, payload) => {
         const {router} = this.props
-        const {editDocumentId, panes} = router.state
-
-        if (editDocumentId) {
-          router.navigate({...router.state, editDocumentId: itemId})
-        } else {
-          const newPanes = panes.slice()
-          newPanes.splice(groupIndex + 1, 1, [{id: itemId, payload}])
-          router.navigate({...router.state, panes: newPanes})
-        }
+        const {panes} = router.state
+        const newPanes = panes.slice()
+        newPanes.splice(groupIndex + 1, 1, [{id: itemId, payload}])
+        router.navigate({...router.state, panes: newPanes})
       },
 
       // Duplicate the current pane, with optional overrides for item ID and parameters
@@ -227,8 +215,9 @@ export default class DeskToolPanes extends React.Component {
         })
       },
 
-      getPaneParameters,
-      getPaneView: () => getPaneParameters().view,
+      getPaneParameters: () => getRouterPane().params || {},
+      getPanePayload: () => getRouterPane().payload,
+      getPaneView: () => (getRouterPane().params || {}).view,
 
       // Proxied navigation to a given intent. Consider just exposing `router` instead?
       navigateIntent: this.props.router.navigateIntent
@@ -326,17 +315,22 @@ export default class DeskToolPanes extends React.Component {
   }
 
   renderPanes() {
-    const {panes, groupIndexes, keys} = this.props
+    const {panes, groupIndexes, keys, router} = this.props
+    const {panes: routerPanes} = router.state
     const {isMobile} = this.state
     const path = []
 
-    const paneGroups = [['']].concat(this.props.router.state.panes || [])
+    const paneGroups = [[{id: 'root'}]].concat(routerPanes || [])
 
     let i = -1
     return paneGroups.reduce((components, group, index) => {
       return components.concat(
-        group.map((paneId, siblingIndex) => {
+        group.map((sibling, siblingIndex) => {
           const pane = panes[++i]
+          if (!pane) {
+            return null
+          }
+
           const isCollapsed = Boolean(!isMobile && this.state.collapsedPanes[i])
           const paneKey = `${i}-${keys[i - 1] || 'root'}-${groupIndexes[i - 1]}`
 
@@ -352,7 +346,11 @@ export default class DeskToolPanes extends React.Component {
               defaultSize={getPaneDefaultSize(pane)}
             >
               <PaneRouterContext.Provider
-                value={this.getPaneRouterContext(index - 1, siblingIndex, i)}
+                value={this.getPaneRouterContext({
+                  groupIndex: index - 1,
+                  siblingIndex,
+                  flatIndex: i
+                })}
               >
                 {pane === LOADING_PANE ? (
                   <LoadingPane

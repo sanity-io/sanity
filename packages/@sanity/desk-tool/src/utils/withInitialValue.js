@@ -111,7 +111,7 @@ function getInitialValueProps(document, props) {
     return {}
   }
 
-  const payload = props.paneApi.getPayload() || {}
+  const payload = props.paneApi.getPanePayload() || {}
   const urlTemplate = props.paneApi.getPaneParameters().template
   const definedTemplate = props.options.template
 

@@ -1,10 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {isEqual} from 'lodash'
-import {throwError, interval, defer, of as observableOf} from 'rxjs'
-import {map, concat, switchMap, distinctUntilChanged, debounce} from 'rxjs/operators'
+import {throwError, interval, defer} from 'rxjs'
+import {map, switchMap, distinctUntilChanged, debounce} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
-import client from 'part:@sanity/base/client'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import {resolvePanes} from './utils/resolvePanes'
 import styles from './styles/DeskTool.css'
@@ -95,7 +94,6 @@ export default withRouterHOC(
               })
             )
           ),
-          editDocumentId: PropTypes.string,
           legacyEditDocumentId: PropTypes.string,
           type: PropTypes.string,
           action: PropTypes.string
@@ -110,37 +108,6 @@ export default withRouterHOC(
       super(props)
 
       props.onPaneChange([])
-    }
-
-    maybeAddEditorPane = (panes, props) => {
-      const router = props.router
-      const {editDocumentId, type, params = {}} = router.state
-      const {template, ...templateParams} = params
-
-      if (!editDocumentId) {
-        return observableOf(panes)
-      }
-
-      const editor = {
-        id: 'editor',
-        type: 'document',
-        options: {id: editDocumentId, type, template, templateParameters: templateParams}
-      }
-
-      if (type !== '*') {
-        return observableOf(panes.concat(editor))
-      }
-
-      return observableOf(panes.concat(LOADING_PANE)).pipe(
-        concat(
-          client.observable.fetch('*[_id == $id][0]._type', {id: editDocumentId}).pipe(
-            map(typeName => {
-              router.navigate({...router.state, type: typeName}, {replace: true})
-              return panes.concat({...editor, options: {...editor.options, type: typeName}})
-            })
-          )
-        )
-      )
     }
 
     setResolvedPanes = panes => {
@@ -179,7 +146,6 @@ export default withRouterHOC(
           switchMap(structure =>
             resolvePanes(structure, props.router.state.panes || [], this.state.panes, fromIndex)
           ),
-          switchMap(panes => this.maybeAddEditorPane(panes, props)),
           debounce(panes => interval(hasLoading(panes) ? 50 : 0))
         )
         .subscribe(this.setResolvedPanes, this.setResolveError)
@@ -190,7 +156,6 @@ export default withRouterHOC(
       const prevRouterState = this.props.router.state
       return (
         !isEqual(nextRouterState.panes, prevRouterState.panes) ||
-        nextRouterState.editDocumentId !== prevRouterState.editDocumentId ||
         nextRouterState.legacyEditDocumentId !== prevRouterState.legacyEditDocumentId ||
         nextRouterState.type !== prevRouterState.type ||
         nextRouterState.action !== prevRouterState.action
@@ -266,13 +231,6 @@ export default withRouterHOC(
       }
     }
 
-    getFallbackKeys() {
-      const routerState = this.props.router.state
-      return routerState.type && routerState.editDocumentId
-        ? [`${routerState.type}-${routerState.editDocumentId}`]
-        : EMPTY_PANE_KEYS
-    }
-
     render() {
       const {router} = this.props
       const {panes, error} = this.state
@@ -285,7 +243,7 @@ export default withRouterHOC(
         (router.state.panes || []).reduce(
           (ids, group) => ids.concat(group.map(sibling => sibling.id)),
           []
-        ) || this.getFallbackKeys()
+        ) || EMPTY_PANE_KEYS
 
       const groupIndexes = (router.state.panes || []).reduce(
         (ids, group) => ids.concat(group.map((sibling, groupIndex) => groupIndex)),

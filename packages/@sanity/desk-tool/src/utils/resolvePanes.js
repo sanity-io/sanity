@@ -90,7 +90,10 @@ function resolveForStructure(structure, paneGroups, prevStructure, fromIndex) {
           params,
           payload
         }
-        subscribeForUpdates(parent.child, index, i, context, [id, context])
+
+        const isFallbackEditor = index === 1 && id === '__edit__'
+        const child = isFallbackEditor ? resolveFallbackEditor : parent.child
+        subscribeForUpdates(child, index, i, context, [id, context])
       }
     }
 
@@ -176,6 +179,17 @@ function resolveForStructure(structure, paneGroups, prevStructure, fromIndex) {
       }
 
       return true
+    }
+
+    function resolveFallbackEditor(nodeId, context) {
+      const {params, payload} = context
+      const {id, template, type} = params
+
+      return {
+        id: 'editor',
+        type: 'document',
+        options: {id, template, type, templateParameters: payload}
+      }
     }
 
     function unsubscribe() {
