@@ -47,7 +47,7 @@ function getIntentState(intentName, params, currentState, payload) {
   // Loop through open panes and see if any of them can handle the intent
   for (let i = activePanes.length - 1; i >= 0; i--) {
     const pane = activePanes[i]
-    if (pane.canHandleIntent && pane.canHandleIntent(intentName, params, {pane})) {
+    if (pane.canHandleIntent && pane.canHandleIntent(intentName, params, {pane, index: i})) {
       const paneParams = isTemplate ? {template: params.template} : {}
       return {
         panes: paneSegments
