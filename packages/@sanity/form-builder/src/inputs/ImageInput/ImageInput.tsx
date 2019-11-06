@@ -220,7 +220,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       throw new Error('Returned value must be an array with at least one item (asset)')
     }
     const firstAsset = assetFromSource[0]
-    console.log(firstAsset)
     // Try to grab filename from metadata
     const filename = get(firstAsset, 'metadata.filename')
     switch (firstAsset.kind) {
@@ -438,7 +437,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       return null
     }
     const Component = selectedAssetSource.component
-    if (value.asset) {
+    if (value && value.asset) {
       return (
         <WithMaterializedReference materialize={materialize} reference={value.asset}>
           {imageAsset => {
