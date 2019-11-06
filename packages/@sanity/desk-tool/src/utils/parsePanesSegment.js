@@ -8,7 +8,7 @@ const isParam = str => /^[a-z0-9]+=[^=]+/i.test(str)
 const isPayload = str =>
   /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(str)
 
-export function parseChunks(chunks, initial = {}) {
+function parseChunks(chunks, initial = {}) {
   return chunks.reduce(
     (pane, chunk) => {
       if (isParam(chunk)) {
@@ -28,8 +28,9 @@ export function parseChunks(chunks, initial = {}) {
   )
 }
 
-export function encodeChunks(input) {
-  const {payload, params = {}, id} = input
+function encodeChunks(pane, i, group) {
+  const {payload, params = {}, id} = pane
+  const sameAsFirst = i !== 0 && id === group[0].id
   const encodedPayload = typeof payload === 'undefined' ? undefined : btoa(JSON.stringify(payload))
 
   const encodedParams = Object.keys(params).reduce(
@@ -37,7 +38,11 @@ export function encodeChunks(input) {
     []
   )
 
-  return [id, encodedParams.length > 0 && encodedParams, encodedPayload].filter(Boolean).join(',')
+  return (
+    [sameAsFirst ? '' : id]
+      .concat([encodedParams.length > 0 && encodedParams, encodedPayload].filter(Boolean))
+      .join(',') || ','
+  )
 }
 
 export function parsePanesSegment(str) {
@@ -50,10 +55,22 @@ export function parsePanesSegment(str) {
     .map(group =>
       group
         .split('|')
-        .filter(Boolean)
         .map(segment => {
           const [id, ...chunks] = segment.split(',')
           return parseChunks(chunks, {id})
+        })
+        .map((pane, i, siblings) => {
+          if (pane.id) {
+            return pane
+          }
+
+          // Duplicate/inherit from group root
+          const root = siblings[0]
+          return {
+            ...root,
+            params: {...root.params, ...pane.params},
+            payload: pane.payload || root.payload
+          }
         })
     )
     .filter(group => group.length > 0)
@@ -61,9 +78,7 @@ export function parsePanesSegment(str) {
 
 export function encodePanesSegment(panes = []) {
   return panes
-    .map(group => {
-      return group.map(encodeChunks).join('|')
-    })
+    .map(group => group.map(encodeChunks).join('|'))
     .map(encodeURIComponent)
     .join(';')
 }
@@ -99,5 +114,5 @@ function tryParsePayload(json) {
 }
 
 function tryParseBase64Payload(data) {
-  return tryParsePayload(atob(data))
+  return data ? tryParsePayload(atob(data)) : undefined
 }

@@ -36,7 +36,7 @@ export const PaneRouterContext = React.createContext({
   // Replace or create a child pane with the given id and parameters
   replaceChild: (itemId, params) => missingContext(),
 
-  // Duplicate the current pane, with optional overrides for item ID and parameters
+  // Duplicate the current pane, with optional overrides for payload, parameters
   duplicateCurrent: (itemId, params) => missingContext(),
 
   // Set the current "view" for the pane
@@ -132,13 +132,12 @@ export function getPaneRouterContextFactory(instance) {
         router.navigate({...router.state, panes: newPanes})
       },
 
-      // Duplicate the current pane, with optional overrides for item ID and parameters
-      duplicateCurrent: (itemId, payload, params) => {
+      // Duplicate the current pane, with optional overrides for payload, parameters
+      duplicateCurrent: (payload, params) => {
         modifyCurrentGroup((siblings, item) => {
           const newGroup = siblings.slice()
           newGroup.splice(siblingIndex + 1, 0, {
             ...item,
-            id: itemId || item.id,
             payload: payload || item.payload,
             params: params || item.params
           })
