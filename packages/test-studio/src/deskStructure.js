@@ -7,7 +7,7 @@ import S from '@sanity/desk-tool/structure-builder'
 import {PaneRouterContext} from '@sanity/desk-tool'
 
 // For testing. Bump the timeout to introduce som lag
-const delay = val => new Promise(resolve => setTimeout(resolve, 10, val))
+const delay = (val, ms = 10) => new Promise(resolve => setTimeout(resolve, ms, val))
 
 function Preview(props) {
   return (
