@@ -1,5 +1,8 @@
 import React from 'react'
+import {isEqual} from 'lodash'
 import {StateLink} from 'part:@sanity/base/router'
+
+const contextCache = new WeakMap()
 
 const missingContext = () => {
   throw new Error('Pane is missing router context')
@@ -50,14 +53,28 @@ export const PaneRouterContext = React.createContext({
 })
 
 export function getPaneRouterContextFactory(instance) {
-  if (!instance.PaneRouterContexts) {
-    instance.PaneRouterContexts = new Map()
+  let contexts = contextCache.get(instance)
+  if (!contexts) {
+    contexts = new Map()
+    contextCache.set(instance, contexts)
   }
 
   return ({groupIndex, siblingIndex, flatIndex}) => {
+    const getRouterPane = () => {
+      const {panes} = instance.props.router.state
+      const routerPanes = panes || []
+      const group = routerPanes[groupIndex] || []
+      return group[siblingIndex] || {}
+    }
+
     const key = `${flatIndex}-${groupIndex}[${siblingIndex}]`
-    if (instance.PaneRouterContexts.has(key)) {
-      return instance.PaneRouterContexts.get(key)
+    if (contexts.has(key)) {
+      const existing = contexts.get(key)
+      const payloadEqual = isEqual(existing.payload, getRouterPane().payload)
+      const paramsEqual = existing.params === getRouterPane().params
+      if (paramsEqual && payloadEqual) {
+        return existing
+      }
     }
 
     const modifyCurrentGroup = modifier => {
@@ -71,13 +88,6 @@ export function getPaneRouterContextFactory(instance) {
       return newRouterState
     }
 
-    const getRouterPane = () => {
-      const {panes} = instance.props.router.state
-      const routerPanes = panes || []
-      const group = routerPanes[groupIndex] || []
-      return group[siblingIndex] || {}
-    }
-
     const ctx = {
       // Zero-based index (position) of pane, visually
       index: flatIndex,
@@ -87,6 +97,9 @@ export function getPaneRouterContextFactory(instance) {
 
       // Zero-based index of pane within sibling group
       siblingIndex,
+
+      payload: getRouterPane().payload,
+      params: getRouterPane().params,
 
       // Curried StateLink that passes the correct state automatically
       // eslint-disable-next-line react/prop-types
@@ -115,8 +128,8 @@ export function getPaneRouterContextFactory(instance) {
       },
 
       // Replaces the current pane with a new one
-      replaceCurrentPane: (itemId, payload) => {
-        modifyCurrentGroup(() => [{id: itemId, payload}])
+      replaceCurrentPane: (itemId, payload, params) => {
+        modifyCurrentGroup(() => [{id: itemId, payload, params}])
       },
 
       // Removes the current pane from the group
@@ -166,7 +179,7 @@ export function getPaneRouterContextFactory(instance) {
       navigateIntent: instance.props.router.navigateIntent
     }
 
-    instance.PaneRouterContexts.set(key, ctx)
+    contexts.set(key, ctx)
     return ctx
   }
 }

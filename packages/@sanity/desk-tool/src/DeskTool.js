@@ -151,11 +151,45 @@ export default withRouterHOC(
         .subscribe(this.setResolvedPanes, this.setResolveError)
     }
 
+    calcPanesEquality = (prev, next) => {
+      if (prev === next) {
+        return {ids: true, params: true}
+      }
+
+      if (prev.length !== next.length) {
+        return {ids: false, params: false}
+      }
+
+      let paramsDiffer = false
+      const idsEqual = prev.every((prevGroup, index) => {
+        const nextGroup = next[index]
+        if (prevGroup.length !== nextGroup.length) {
+          return false
+        }
+
+        return prevGroup.every((prevPane, paneIndex) => {
+          const nextPane = nextGroup[paneIndex]
+
+          paramsDiffer =
+            paramsDiffer ||
+            !isEqual(nextPane.params, prevPane.params) ||
+            !isEqual(nextPane.payload, prevPane.payload)
+
+          return nextPane.id === prevPane.id
+        })
+      })
+
+      return {ids: idsEqual, params: !paramsDiffer}
+    }
+
+    panesAreEqual = (prev, next) => this.calcPanesEquality(prev, next).ids
+
     shouldDerivePanes = nextProps => {
       const nextRouterState = nextProps.router.state
       const prevRouterState = this.props.router.state
+
       return (
-        !isEqual(nextRouterState.panes, prevRouterState.panes) ||
+        !this.panesAreEqual(prevRouterState.panes, nextRouterState.panes) ||
         nextRouterState.legacyEditDocumentId !== prevRouterState.legacyEditDocumentId ||
         nextRouterState.type !== prevRouterState.type ||
         nextRouterState.action !== prevRouterState.action
@@ -195,7 +229,12 @@ export default withRouterHOC(
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-      if (this.shouldDerivePanes(nextProps)) {
+      const prevPanes = this.props.router.state.panes || []
+      const nextPanes = nextProps.router.state.panes || []
+      const panesEqual = this.calcPanesEquality(prevPanes, nextPanes)
+
+      if (!panesEqual.ids) {
+        // Will trigger a re-resolving of panes, thus will trigger new state shortly
         return false
       }
 
@@ -204,11 +243,13 @@ export default withRouterHOC(
       const {panes: oldPanes, ...oldState} = this.state
       const {panes: newPanes, ...newState} = nextState
 
-      return (
+      const shouldUpdate =
+        !panesEqual.params ||
         !shallowEquals(oldProps, newProps) ||
         !isEqual(oldPanes, newPanes) ||
         !shallowEquals(oldState, newState)
-      )
+
+      return shouldUpdate
     }
 
     maybeHandleOldUrl() {
