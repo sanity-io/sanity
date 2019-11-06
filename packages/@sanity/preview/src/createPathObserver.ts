@@ -42,7 +42,7 @@ function observePaths(value: Value, paths: Path[], observeFields: ObserveFieldsF
     if (isReference(value) || isDocument(value)) {
       const id = isRef ? (value as Reference)._ref : (value as Document)._id
       return observeFields(id, nextHeads).pipe(
-        switchMap(snapshot => {
+        switchMap((snapshot: object | null) => {
           if (snapshot === null) {
             return observableOf(null)
           }
