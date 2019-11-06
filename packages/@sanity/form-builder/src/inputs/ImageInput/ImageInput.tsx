@@ -1,39 +1,41 @@
-/* eslint-disable complexity */
-
-import React from 'react'
+// Modules
 import {get, partition} from 'lodash'
 import {Observable} from 'rxjs'
-import ImageTool from '@sanity/imagetool'
+import HotspotImage from '@sanity/imagetool/HotspotImage'
 import ImageIcon from 'react-icons/lib/md/image'
+import ImageTool from '@sanity/imagetool'
+import React from 'react'
 
+// Parts
+import assetSources from 'all:part:@sanity/form-builder/input/image/asset-source'
 import Button from 'part:@sanity/components/buttons/default'
+import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
+import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import EditIcon from 'part:@sanity/base/edit-icon'
-import VisibilityIcon from 'part:@sanity/base/visibility-icon'
-import FileInputButton from 'part:@sanity/components/fileinput/button'
-import UploadIcon from 'part:@sanity/base/upload-icon'
-import assetSources from 'all:part:@sanity/form-builder/input/image/asset-source'
-import userDefinedAssetSources from 'part:@sanity/form-builder/input/image/asset-sources?'
-import formBuilderConfig from 'config:@sanity/form-builder'
-import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
-import styles from './styles/ImageInput.css'
-import Dialog from 'part:@sanity/components/dialogs/fullscreen'
-import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
-import ProgressCircle from 'part:@sanity/components/progress/circle'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
-import {ResolvedUploader, Uploader, UploaderResolver} from '../../sanity/uploads/typedefs'
-import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
-import Snackbar from 'part:@sanity/components/snackbar/default'
-import {Marker, Reference, Type} from '../../typedefs'
-import WithMaterializedReference from '../../utils/WithMaterializedReference'
-import ImageToolInput from '../ImageToolInput'
-import HotspotImage from '@sanity/imagetool/HotspotImage'
-import {FormBuilderInput} from '../../FormBuilderInput'
-import UploadPlaceholder from '../common/UploadPlaceholder'
-import {Path} from '../../typedefs/path'
-import {urlToFile, base64ToFile} from './utils/image'
+import FileInputButton from 'part:@sanity/components/fileinput/button'
+import formBuilderConfig from 'config:@sanity/form-builder'
+import ProgressCircle from 'part:@sanity/components/progress/circle'
+import UploadIcon from 'part:@sanity/base/upload-icon'
+import userDefinedAssetSources from 'part:@sanity/form-builder/input/image/asset-sources?'
+import VisibilityIcon from 'part:@sanity/base/visibility-icon'
 
-const supportsUploads = get(formBuilderConfig, 'images.directUploads')
+// Package files
+import {FormBuilderInput} from '../../FormBuilderInput'
+import {Marker, Reference, Type} from '../../typedefs'
+import {Path} from '../../typedefs/path'
+import {ResolvedUploader, Uploader, UploaderResolver} from '../../sanity/uploads/typedefs'
+import {urlToFile, base64ToFile} from './utils/image'
+import ImageToolInput from '../ImageToolInput'
+import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
+import Snackbar from 'part:@sanity/components/snackbar/default'
+import styles from './styles/ImageInput.css'
+import UploadPlaceholder from '../common/UploadPlaceholder'
+import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
+import WithMaterializedReference from '../../utils/WithMaterializedReference'
+
+const SUPPORT_DIRECT_UPLOADS = get(formBuilderConfig, 'images.directUploads')
 
 type FieldT = {
   name: string
@@ -105,8 +107,18 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     }
   }
 
-  handleRemoveButtonClick = (event: React.SyntheticEvent<any>) => {
-    this.props.onChange(PatchEvent.from(unset(['asset'])))
+  focus() {
+    if (this._focusArea) {
+      this._focusArea.focus()
+    }
+  }
+
+  setFocusArea = (el: any | null) => {
+    this._focusArea = el
+  }
+
+  isImageToolEnabled() {
+    return get(this.props.type, 'options.hotspot') === true
   }
 
   getConstrainedImageSrc = (assetDocument: Record<string, any>): string => {
@@ -116,19 +128,71 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     return constrainedSrc
   }
 
-  renderMaterializedAsset = (assetDocument: Record<string, any>) => {
-    const {value = {}} = this.props
-    const constrainedSrc = this.getConstrainedImageSrc(assetDocument)
-    const srcAspectRatio = get(assetDocument, 'metadata.dimensions.aspectRatio')
-    return typeof srcAspectRatio === 'undefined' ? null : (
-      <HotspotImage
-        aspectRatio="auto"
-        src={constrainedSrc}
-        srcAspectRatio={srcAspectRatio}
-        hotspot={value.hotspot}
-        crop={value.crop}
-      />
-    )
+  clearUploadStatus() {
+    this.props.onChange(PatchEvent.from([unset(['_upload'])])) // todo: this is kind of hackish
+  }
+
+  cancelUpload() {
+    if (this.uploadSubscription) {
+      this.uploadSubscription.unsubscribe()
+      this.clearUploadStatus()
+    }
+  }
+
+  getUploadOptions = (file: File): Array<ResolvedUploader> => {
+    const {type, resolveUploader} = this.props
+    const uploader = resolveUploader && resolveUploader(type, file)
+    return uploader ? [{type: type, uploader}] : []
+  }
+
+  uploadFirstAccepted(fileList: FileList) {
+    const {resolveUploader, type} = this.props
+    let match: {
+      uploader: Uploader
+      file: File
+    } | null
+    Array.from(fileList).some(file => {
+      const uploader = resolveUploader(type, file)
+      if (uploader) {
+        match = {file, uploader}
+        return true
+      }
+      return false
+    })
+    if (match) {
+      this.uploadWith(match.uploader, match.file)
+    }
+  }
+
+  uploadWith(uploader: Uploader, file: File) {
+    const {type, onChange} = this.props
+    const options = {
+      metadata: get(type, 'options.metadata'),
+      storeOriginalFilename: get(type, 'options.storeOriginalFilename')
+    }
+    this.cancelUpload()
+    this.setState({isUploading: true})
+    onChange(PatchEvent.from([setIfMissing({_type: type.name})]))
+    this.uploadSubscription = uploader.upload(file, type, options).subscribe({
+      next: uploadEvent => {
+        if (uploadEvent.patches) {
+          onChange(PatchEvent.from(uploadEvent.patches))
+        }
+      },
+      error: err => {
+        console.error(err)
+        this.setState({uploadError: err})
+        this.clearUploadStatus()
+      },
+      complete: () => {
+        onChange(PatchEvent.from([unset(['hotspot']), unset(['crop'])]))
+        this.setState({isUploading: false})
+      }
+    })
+  }
+
+  handleRemoveButtonClick = (event: React.SyntheticEvent<any>) => {
+    this.props.onChange(PatchEvent.from(unset(['asset'])))
   }
 
   handleFieldChange = (event: PatchEvent, field: FieldT) => {
@@ -201,8 +265,38 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     this.setState({selectedAssetSource: null})
   }
 
-  isImageToolEnabled() {
-    return get(this.props.type, 'options.hotspot') === true
+  handleFocus = (path: Path) => {
+    this.setState({
+      hasFocus: true
+    })
+    this.props.onFocus(path)
+  }
+
+  handleBlur = event => {
+    this.props.onBlur()
+    this.setState({
+      hasFocus: false
+    })
+  }
+
+  handleCancelUpload = () => {
+    this.cancelUpload()
+  }
+
+  handleSelectFile = (files: FileList) => {
+    this.uploadFirstAccepted(files)
+  }
+
+  handleUpload = ({file, uploader}) => {
+    this.uploadWith(uploader, file)
+  }
+
+  handleSelectImageFromAssetSource = source => {
+    this.setState({selectedAssetSource: source})
+  }
+
+  handleAssetSourceClosed = () => {
+    this.setState({selectedAssetSource: null})
   }
 
   renderAdvancedEdit(fields: Array<FieldT>) {
@@ -229,6 +323,21 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     )
   }
 
+  renderMaterializedAsset = (assetDocument: Record<string, any>) => {
+    const {value = {}} = this.props
+    const constrainedSrc = this.getConstrainedImageSrc(assetDocument)
+    const srcAspectRatio = get(assetDocument, 'metadata.dimensions.aspectRatio')
+    return typeof srcAspectRatio === 'undefined' ? null : (
+      <HotspotImage
+        aspectRatio="auto"
+        src={constrainedSrc}
+        srcAspectRatio={srcAspectRatio}
+        hotspot={value.hotspot}
+        crop={value.crop}
+      />
+    )
+  }
+
   renderFields(fields: Array<FieldT>) {
     return fields.map(field => this.renderField(field))
   }
@@ -251,105 +360,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         />
       </div>
     )
-  }
-
-  focus() {
-    if (this._focusArea) {
-      this._focusArea.focus()
-    }
-  }
-
-  handleFocus = (path: Path) => {
-    this.setState({
-      hasFocus: true
-    })
-    this.props.onFocus(path)
-  }
-
-  handleBlur = event => {
-    this.props.onBlur()
-    this.setState({
-      hasFocus: false
-    })
-  }
-
-  clearUploadStatus() {
-    this.props.onChange(PatchEvent.from([unset(['_upload'])])) // todo: this is kind of hackish
-  }
-
-  cancelUpload() {
-    if (this.uploadSubscription) {
-      this.uploadSubscription.unsubscribe()
-      this.clearUploadStatus()
-    }
-  }
-
-  handleCancelUpload = () => {
-    this.cancelUpload()
-  }
-
-  handleSelectFile = (files: FileList) => {
-    this.uploadFirstAccepted(files)
-  }
-
-  uploadFirstAccepted(fileList: FileList) {
-    const {resolveUploader, type} = this.props
-    let match: {
-      uploader: Uploader
-      file: File
-    } | null
-    Array.from(fileList).some(file => {
-      const uploader = resolveUploader(type, file)
-      if (uploader) {
-        match = {file, uploader}
-        return true
-      }
-      return false
-    })
-    if (match) {
-      this.uploadWith(match.uploader, match.file)
-    }
-  }
-
-  uploadWith(uploader: Uploader, file: File) {
-    const {type, onChange} = this.props
-    const options = {
-      metadata: get(type, 'options.metadata'),
-      storeOriginalFilename: get(type, 'options.storeOriginalFilename')
-    }
-    this.cancelUpload()
-    this.setState({isUploading: true})
-    onChange(PatchEvent.from([setIfMissing({_type: type.name})]))
-    this.uploadSubscription = uploader.upload(file, type, options).subscribe({
-      next: uploadEvent => {
-        if (uploadEvent.patches) {
-          onChange(PatchEvent.from(uploadEvent.patches))
-        }
-      },
-      error: err => {
-        console.error(err)
-        this.setState({uploadError: err})
-        this.clearUploadStatus()
-      },
-      complete: () => {
-        onChange(PatchEvent.from([unset(['hotspot']), unset(['crop'])]))
-        this.setState({isUploading: false})
-      }
-    })
-  }
-
-  setFocusArea = (el: any | null) => {
-    this._focusArea = el
-  }
-
-  getUploadOptions = (file: File): Array<ResolvedUploader> => {
-    const {type, resolveUploader} = this.props
-    const uploader = resolveUploader && resolveUploader(type, file)
-    return uploader ? [{type: type, uploader}] : []
-  }
-
-  handleUpload = ({file, uploader}) => {
-    this.uploadWith(uploader, file)
   }
 
   renderUploadState(uploadState: any) {
@@ -391,14 +401,6 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         <div>{item.title}</div>
       </div>
     )
-  }
-
-  handleSelectImageFromAssetSource = source => {
-    this.setState({selectedAssetSource: source})
-  }
-
-  handleAssetSourceClosed = () => {
-    this.setState({selectedAssetSource: null})
   }
 
   renderSelectImageButton() {
@@ -473,7 +475,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const hasAsset = value && value.asset
     const showAdvancedEditButton =
       value && (otherFields.length > 0 || (hasAsset && this.isImageToolEnabled()))
-    const FieldSetComponent = supportsUploads ? UploadTargetFieldset : Fieldset
+    const FieldSetComponent = SUPPORT_DIRECT_UPLOADS ? UploadTargetFieldset : Fieldset
     return (
       <FieldSetComponent
         markers={markers}
@@ -508,13 +510,13 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
             ) : readOnly ? (
               <span>Field is read only</span>
             ) : (
-              supportsUploads && <UploadPlaceholder hasFocus={hasFocus} />
+              SUPPORT_DIRECT_UPLOADS && <UploadPlaceholder hasFocus={hasFocus} />
             )}
           </div>
         </div>
         <div className={styles.functions}>
           <ButtonGrid>
-            {!readOnly && supportsUploads && (
+            {!readOnly && SUPPORT_DIRECT_UPLOADS && (
               <FileInputButton
                 icon={UploadIcon}
                 inverted
