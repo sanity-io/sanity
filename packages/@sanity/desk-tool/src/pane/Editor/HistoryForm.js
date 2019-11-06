@@ -9,6 +9,7 @@ import Delay from '../../utils/Delay'
 import styles from '../styles/Editor.css'
 
 const noop = () => null
+const noopPatchChannel = {onPatch: () => noop, receivePatches: noop}
 
 const dateFormat = 'MMM D, YYYY, hh:mm A'
 
@@ -96,6 +97,7 @@ export default class HistoryForm extends React.PureComponent {
               schema={schema}
               type={type}
               value={document}
+              patchChannel={noopPatchChannel}
             />
           )}
         </form>
