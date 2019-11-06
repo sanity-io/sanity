@@ -4,36 +4,44 @@ import React from 'react'
 import {get, partition} from 'lodash'
 import {Observable} from 'rxjs'
 import ImageTool from '@sanity/imagetool'
-
 import ImageIcon from 'react-icons/lib/md/image'
+
 import Button from 'part:@sanity/components/buttons/default'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import VisibilityIcon from 'part:@sanity/base/visibility-icon'
-// TODO: investigate why 'all:part' doesn't work with TS, when just 'part:' works.
-// @ts-ignore
-import assetSources from 'all:part:@sanity/form-builder/input/asset-source'
-import userDefinedAssetSources from 'part:@sanity/form-builder/input/asset-sources?'
+import FileInputButton from 'part:@sanity/components/fileinput/button'
+import UploadIcon from 'part:@sanity/base/upload-icon'
+import assetSources from 'all:part:@sanity/form-builder/input/image/asset-source'
+import userDefinedAssetSources from 'part:@sanity/form-builder/input/image/asset-sources?'
+import formBuilderConfig from 'config:@sanity/form-builder'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import styles from './styles/ImageInput.css'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import ProgressCircle from 'part:@sanity/components/progress/circle'
+import Fieldset from 'part:@sanity/components/fieldsets/default'
+import {ResolvedUploader, Uploader, UploaderResolver} from '../../sanity/uploads/typedefs'
+import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
+import Snackbar from 'part:@sanity/components/snackbar/default'
 import {Marker, Reference, Type} from '../../typedefs'
 import WithMaterializedReference from '../../utils/WithMaterializedReference'
 import ImageToolInput from '../ImageToolInput'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
 import {FormBuilderInput} from '../../FormBuilderInput'
-import Fieldset from 'part:@sanity/components/fieldsets/default'
+import UploadPlaceholder from '../common/UploadPlaceholder'
 import {Path} from '../../typedefs/path'
+import {urlToFile, base64ToFile} from './utils/image'
+
+const supportsUploads = get(formBuilderConfig, 'images.directUploads')
 
 type FieldT = {
   name: string
   type: Type
 }
 
-type AssetFromSource = {
-  kind: 'assetDocumentId' | 'binary'
+export type AssetFromSource = {
+  kind: 'assetDocumentId' | 'file' | 'base64' | 'url'
   value: string
 }
 
@@ -49,6 +57,7 @@ export type Props = {
   type: Type
   level: number
   onChange: (arg0: PatchEvent) => void
+  resolveUploader: UploaderResolver
   materialize: (arg0: string) => Observable<Record<string, any>>
   onBlur: () => void
   onFocus: (path: Path) => void
@@ -69,6 +78,7 @@ type ImageInputState = {
   uploadError: Error | null
   isAdvancedEditOpen: boolean
   selectedAssetSource?: any
+  hasFocus: boolean
 }
 const globalAssetSources = userDefinedAssetSources ? userDefinedAssetSources : assetSources
 
@@ -79,7 +89,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     isUploading: false,
     uploadError: null,
     isAdvancedEditOpen: false,
-    selectedAssetSource: null
+    selectedAssetSource: null,
+    hasFocus: false
   }
   assetSources = globalAssetSources
 
@@ -137,41 +148,57 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     this.setState({isAdvancedEditOpen: false})
   }
   handleSelectAssetFromSource = (assetFromSource: AssetFromSource) => {
+    const {onChange, type, resolveUploader} = this.props
     if (!assetFromSource) {
       throw new Error('No asset given')
     }
-    switch (assetFromSource.kind) {
+    if (!Array.isArray(assetFromSource) || assetFromSource.length === 0) {
+      throw new Error('Returned value must be an array with at least one item (asset)')
+    }
+    const firstAsset = assetFromSource[0]
+    console.log(firstAsset)
+    // Try to grab filename from metadata
+    const filename = get(firstAsset, 'metadata.filename')
+    switch (firstAsset.kind) {
       case 'assetDocumentId':
-        this.handleSelectAsset({_id: assetFromSource.value})
+        onChange(
+          PatchEvent.from([
+            setIfMissing({
+              _type: type.name
+            }),
+            unset(['hotspot']),
+            unset(['crop']),
+            set(
+              {
+                _type: 'reference',
+                _ref: firstAsset.value
+              },
+              ['asset']
+            )
+          ])
+        )
         break
-      case 'binary':
-        // Upload
+      case 'file':
+          const uploader = resolveUploader(type, firstAsset.value)
+          this.uploadWith(uploader, firstAsset.value)
+          break;
+      case 'base64':
+        base64ToFile(firstAsset.value, filename).then(file => {
+          const uploader = resolveUploader(type, file)
+          this.uploadWith(uploader, file)
+        })
+        break
+      case 'url':
+        urlToFile(firstAsset.value, filename).then(file => {
+          const uploader = resolveUploader(type, file)
+          this.uploadWith(uploader, file)
+        })
         break
       default: {
         throw new Error('Invalid value returned from asset source plugin')
       }
     }
     this.setState({selectedAssetSource: null})
-  }
-
-  handleSelectAsset = (asset: Record<string, any>) => {
-    const {onChange, type} = this.props
-    onChange(
-      PatchEvent.from([
-        setIfMissing({
-          _type: type.name
-        }),
-        unset(['hotspot']),
-        unset(['crop']),
-        set(
-          {
-            _type: 'reference',
-            _ref: asset._id
-          },
-          ['asset']
-        )
-      ])
-    )
   }
 
   isImageToolEnabled() {
@@ -231,21 +258,100 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       this._focusArea.focus()
     }
   }
+
+  handleFocus = (path: Path) => {
+    this.setState({
+      hasFocus: true
+    })
+    this.props.onFocus(path)
+  }
+
+  handleBlur = event => {
+    this.props.onBlur()
+    this.setState({
+      hasFocus: false
+    })
+  }
+
   clearUploadStatus() {
     this.props.onChange(PatchEvent.from([unset(['_upload'])])) // todo: this is kind of hackish
   }
+
   cancelUpload() {
     if (this.uploadSubscription) {
       this.uploadSubscription.unsubscribe()
       this.clearUploadStatus()
     }
   }
+
   handleCancelUpload = () => {
     this.cancelUpload()
   }
+
+  handleSelectFile = (files: FileList) => {
+    this.uploadFirstAccepted(files)
+  }
+
+  uploadFirstAccepted(fileList: FileList) {
+    const {resolveUploader, type} = this.props
+    let match: {
+      uploader: Uploader
+      file: File
+    } | null
+    Array.from(fileList).some(file => {
+      const uploader = resolveUploader(type, file)
+      if (uploader) {
+        match = {file, uploader}
+        return true
+      }
+      return false
+    })
+    if (match) {
+      this.uploadWith(match.uploader, match.file)
+    }
+  }
+
+  uploadWith(uploader: Uploader, file: File) {
+    const {type, onChange} = this.props
+    const options = {
+      metadata: get(type, 'options.metadata'),
+      storeOriginalFilename: get(type, 'options.storeOriginalFilename')
+    }
+    this.cancelUpload()
+    this.setState({isUploading: true})
+    onChange(PatchEvent.from([setIfMissing({_type: type.name})]))
+    this.uploadSubscription = uploader.upload(file, type, options).subscribe({
+      next: uploadEvent => {
+        if (uploadEvent.patches) {
+          onChange(PatchEvent.from(uploadEvent.patches))
+        }
+      },
+      error: err => {
+        console.error(err)
+        this.setState({uploadError: err})
+        this.clearUploadStatus()
+      },
+      complete: () => {
+        onChange(PatchEvent.from([unset(['hotspot']), unset(['crop'])]))
+        this.setState({isUploading: false})
+      }
+    })
+  }
+
   setFocusArea = (el: any | null) => {
     this._focusArea = el
   }
+
+  getUploadOptions = (file: File): Array<ResolvedUploader> => {
+    const {type, resolveUploader} = this.props
+    const uploader = resolveUploader && resolveUploader(type, file)
+    return uploader ? [{type: type, uploader}] : []
+  }
+
+  handleUpload = ({file, uploader}) => {
+    this.uploadWith(uploader, file)
+  }
+
   renderUploadState(uploadState: any) {
     const {isUploading} = this.state
     const isComplete =
@@ -358,36 +464,66 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   render() {
     const {type, value, level, materialize, markers, readOnly} = this.props
-    const {isAdvancedEditOpen, selectedAssetSource} = this.state
+    const {isAdvancedEditOpen, selectedAssetSource, uploadError, hasFocus} = this.state
     const [highlightedFields, otherFields] = partition(
       type.fields.filter(field => !HIDDEN_FIELDS.includes(field.name)),
       'type.options.isHighlighted'
     )
+    const accept = get(type, 'options.accept', 'image/*')
     const hasAsset = value && value.asset
     const showAdvancedEditButton =
       value && (otherFields.length > 0 || (hasAsset && this.isImageToolEnabled()))
+    const FieldSetComponent = supportsUploads ? UploadTargetFieldset : Fieldset
     return (
-      <Fieldset
+      <FieldSetComponent
+        markers={markers}
         legend={type.title}
         description={type.description}
         level={level}
-        tabIndex={0}
-        markers={markers}
-        onFocus={() => {}}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
+        onUpload={this.handleUpload}
+        getUploadOptions={this.getUploadOptions}
+        ref={this.setFocusArea}
       >
+        {uploadError && (
+          <Snackbar
+            kind="error"
+            isPersisted
+            actionTitle="OK"
+            onAction={() => this.setState({uploadError: null})}
+            title="Upload error"
+            subtitle={<div>{"We're"} really sorry, but the upload could not be completed.</div>}
+          />
+        )}
         <div className={styles.content}>
           <div className={styles.assetWrapper}>
+            {value && value._upload && (
+              <div className={styles.uploadState}>{this.renderUploadState(value._upload)}</div>
+            )}
             {hasAsset ? (
               <WithMaterializedReference reference={value.asset} materialize={materialize}>
                 {this.renderMaterializedAsset}
               </WithMaterializedReference>
+            ) : readOnly ? (
+              <span>Field is read only</span>
             ) : (
-              readOnly && <span>Field is read only</span>
+              supportsUploads && <UploadPlaceholder hasFocus={hasFocus} />
             )}
           </div>
         </div>
         <div className={styles.functions}>
           <ButtonGrid>
+            {!readOnly && supportsUploads && (
+              <FileInputButton
+                icon={UploadIcon}
+                inverted
+                onSelect={this.handleSelectFile}
+                accept={accept}
+              >
+                Upload
+              </FileInputButton>
+            )}
             {!readOnly && this.renderSelectImageButton()}
             {showAdvancedEditButton && (
               <Button
@@ -411,7 +547,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         )}
         {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
         {selectedAssetSource && this.renderAssetSource()}
-      </Fieldset>
+      </FieldSetComponent>
     )
   }
 }
