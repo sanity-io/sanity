@@ -124,8 +124,8 @@
       "path": "inputs/BlockEditor/nodes/CustomMarkers.js"
     },
     {
-      "name": "part:@sanity/form-builder/input/asset-source-default",
-      "implements": "part:@sanity/form-builder/input/asset-source",
+      "name": "part:@sanity/form-builder/input/image/asset-source-default",
+      "implements": "part:@sanity/form-builder/input/image/asset-source",
       "path": "inputs/ImageInput/DefaultSource.js"
     }
   ]
