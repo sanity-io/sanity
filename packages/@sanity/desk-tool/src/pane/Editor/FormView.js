@@ -5,7 +5,6 @@ import Button from 'part:@sanity/components/buttons/default'
 import schema from 'part:@sanity/base/schema'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
 import filterFieldFn$ from 'part:@sanity/desk-tool/filter-fields-fn?'
-import {PaneRouterContext} from '../../index'
 import styles from '../styles/Editor.css'
 import EditForm from './EditForm'
 import HistoryForm from './HistoryForm'
@@ -16,8 +15,6 @@ const INITIAL_STATE = {
 }
 
 export default class FormView extends React.PureComponent {
-  static contextType = PaneRouterContext
-
   static propTypes = {
     patchChannel: PropTypes.object,
     draft: PropTypes.shape({_id: PropTypes.string, _type: PropTypes.string}),
@@ -76,14 +73,6 @@ export default class FormView extends React.PureComponent {
   isLiveEditEnabled() {
     const selectedSchemaType = schema.get(this.props.type.name)
     return selectedSchemaType.liveEdit === true
-  }
-
-  handleSplitPane = () => {
-    this.context.duplicateCurrentPane()
-  }
-
-  handleToggleViewButton = () => {
-    this.context.setPaneView('someView')
   }
 
   render() {
