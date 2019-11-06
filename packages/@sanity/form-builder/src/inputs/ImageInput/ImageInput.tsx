@@ -476,6 +476,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const showAdvancedEditButton =
       value && (otherFields.length > 0 || (hasAsset && this.isImageToolEnabled()))
     const FieldSetComponent = SUPPORT_DIRECT_UPLOADS ? UploadTargetFieldset : Fieldset
+    const uploadProps = SUPPORT_DIRECT_UPLOADS ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload} : {}
     return (
       <FieldSetComponent
         markers={markers}
@@ -484,9 +485,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         level={level}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
-        onUpload={this.handleUpload}
-        getUploadOptions={this.getUploadOptions}
         ref={this.setFocusArea}
+        {...uploadProps}
       >
         {uploadError && (
           <Snackbar
