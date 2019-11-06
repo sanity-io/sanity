@@ -1,13 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import InspectView from './InspectView'
+import {from} from 'rxjs'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import historyStore from 'part:@sanity/base/datastore/history'
+import InspectView from './InspectView'
 
 export default class InspectHistory extends React.PureComponent {
   static propTypes = {
-    event: PropTypes.object.isRequired,
-    onClose: PropTypes.func
+    event: PropTypes.shape({
+      displayDocumentId: PropTypes.string.isRequired,
+      rev: PropTypes.string.isRequired
+    }).isRequired,
+    onClose: PropTypes.func.isRequired
   }
 
   state = {
@@ -19,23 +23,36 @@ export default class InspectHistory extends React.PureComponent {
     this.fetch(displayDocumentId, rev)
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.event !== this.props.event) {
-      const {displayDocumentId, rev} = nextProps.event
+  componentWillUnmount() {
+    this.dispose()
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.event !== this.props.event) {
+      const {displayDocumentId, rev} = this.props.event
       this.fetch(displayDocumentId, rev)
     }
   }
 
+  dispose() {
+    if (this.subscription) {
+      this.subscription.unsubscribe()
+    }
+  }
+
   fetch(id, rev) {
-    historyStore.getDocumentAtRevision(id, rev).then(document => {
+    this.dispose()
+
+    this.subscription = from(historyStore.getDocumentAtRevision(id, rev)).subscribe(document => {
       this.setState({document})
     })
   }
 
   render() {
-    if (this.state.document) {
-      return <InspectView value={this.state.document} onClose={this.props.onClose} />
-    }
-    return <Spinner />
+    return this.state.document ? (
+      <InspectView value={this.state.document} onClose={this.props.onClose} />
+    ) : (
+      <Spinner />
+    )
   }
 }
