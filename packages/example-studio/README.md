@@ -1,3 +1,3 @@
 # Example Studio
 
-A sanity studio with instructional examples and useful patterns
+A Sanity studio with instructional examples and useful patterns

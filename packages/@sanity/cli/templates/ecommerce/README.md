@@ -1,6 +1,6 @@
-# Sanity Ecommerce Content Studio
+# Sanity Studio for E-commerce
 
-Congratulations, you have now installed the Sanity Content Studio, an open source real-time content editing environment connected to the Sanity backend.
+Congratulations, you have now installed Sanity Studio, an open source real-time content editing environment connected to the Sanity backend.
 
 Now you can do the following things:
 

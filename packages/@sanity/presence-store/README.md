@@ -22,7 +22,7 @@ presenceStore.presence.subscribe(allTheirStates => {
 // Report my state to the other clients on the channel
 presenceStore.reportMyState({
   location: "/fnah",  // The format of state reports is app-specific, can be any JSON'able object, but keep it
-  activity: "editing" // short and sweet. At the time of writing we don't know how the Sanity studio will use it.
+  activity: "editing" // short and sweet. At the time of writing we don't know how the Sanity Studio will use it.
 })
 
 // Do this to allow the presence store to notify the others that we left. Uses

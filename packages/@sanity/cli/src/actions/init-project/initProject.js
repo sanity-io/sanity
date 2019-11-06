@@ -366,8 +366,8 @@ export default async function initSanity(args, context) {
           default: 'My Sanity Project'
         })
       }).then(response => ({
-          ...response,
-          isFirstProject: isUsersFirstProject
+        ...response,
+        isFirstProject: isUsersFirstProject
       }))
     }
 
@@ -467,9 +467,9 @@ export default async function initSanity(args, context) {
       const newDatasetName = defaultConfig
         ? 'production'
         : await promptForDatasetName(prompt, {
-        message: 'Name your dataset:',
-        default: 'production'
-      })
+            message: 'Name your dataset:',
+            default: 'production'
+          })
       const aclMode = await getAclMode()
       const spinner = context.output.spinner('Creating dataset').start()
       await client.datasets.create(newDatasetName, {aclMode})
@@ -620,7 +620,7 @@ function promptImplicitReconfigure(prompt) {
   return prompt.single({
     type: 'confirm',
     message:
-      'The current folder contains a configured Sanity studio. Would you like to reconfigure it?',
+      'The current folder contains a configured Sanity Studio. Would you like to reconfigure it?',
     default: true
   })
 }

@@ -8,7 +8,7 @@ Upgrade the Command Line Interface (CLI) with
 
     npm install --global @sanity/cli
 
-Upgrade the Content Studio with:
+Upgrade Sanity Studio with:
 
     sanity upgrade
 

@@ -514,7 +514,7 @@ export default withInitialValue(
             <h3>Unknown schema type</h3>
             <p>
               This document has the schema type <code>{typeName}</code>, which is not defined as a
-              type in the local content studio schema.
+              type in the local studio schema.
             </p>
             {__DEV__ && doc && (
               <div>

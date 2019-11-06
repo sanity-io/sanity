@@ -72,7 +72,7 @@ export default async (args, context) => {
 
     if (!hasErrors && !hasWarnings) {
       output.print(
-        chalk.green(`Content Studio successfully compiled! Go to http://${httpHost}:${httpPort}`) // eslint-disable-line max-len
+        chalk.green(`Sanity Studio successfully compiled! Go to http://${httpHost}:${httpPort}`) // eslint-disable-line max-len
       )
       return
     }
@@ -88,7 +88,7 @@ export default async (args, context) => {
       printWarnings(output, warnings)
     }
 
-    output.print(chalk.green(`Content Studio listening on http://${httpHost}:${httpPort}`))
+    output.print(chalk.green(`Sanity Studio listening on http://${httpHost}:${httpPort}`))
   })
 
   function resetSpinner() {
@@ -182,7 +182,7 @@ function gracefulDeath(httpHost, config, err) {
         : `do you have access to listen to the given host (${httpHost})?`
 
     throw new Error(
-      `The Content Studio server does not have access to listen to given port - ${help}`
+      `The Sanity Studio server does not have access to listen to given port - ${help}`
     ) // eslint-disable-line max-len
   }
 

@@ -1,6 +1,6 @@
 # blog-studio
 
-Content studio running with schema from the blog init template
+Sanity Studio running with schema from the blog init template
 
 Start from project root directory with
 

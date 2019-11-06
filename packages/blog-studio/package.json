@@ -2,7 +2,7 @@
   "name": "blog-studio",
   "private": true,
   "version": "0.144.2",
-  "description": "Content studio running with schema from the blog init template",
+  "description": "Sanity Studio running with schema from the blog init template",
   "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",

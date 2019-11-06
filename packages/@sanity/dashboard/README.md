@@ -1,12 +1,12 @@
 # Dashboard
 
-Dashboard is a Sanity Content Studio Tool which picks up and renders any widgets which implement `part:@sanity/dashboard/widget`. Install this plugin in your Studio to display stats about your project, recently edited documents, etc.
+Dashboard is a tool for Sanity Studio which picks up and renders any widgets which implement `part:@sanity/dashboard/widget`. Install this plugin in your Studio to display stats about your project, recently edited documents, etc.
 
 The Dashboard tool has been designed to be as generic as possible, making few assumptions about its widgets. The Dashboard itself is mostly concerned about the layout of the configured widgets.
 
 ## Install
 
-- `cd` to your Content Studio
+- `cd` to your Sanity Studio
 - Type `sanity install @sanity/dashboard`. This will cause two things happen:
   1. The Dashboard tool gets installed to `./node_modules` in your Studio
   2. `@sanity/dashboard` is appended to the `plugins` array in the `sanity.json` file of your Studio

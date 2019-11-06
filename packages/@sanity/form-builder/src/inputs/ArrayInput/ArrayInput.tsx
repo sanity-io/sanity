@@ -277,8 +277,8 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
               <Button onClick={this.handleRemoveNonObjectValues}>Remove non-object values</Button>
             </div>
             <Details title={<b>Why is this happening?</b>}>
-              This usually happens when items are created through an API client from outside the
-              Content Studio and sets invalid data, or a custom input component have inserted
+              This usually happens when items are created through an API client from outside
+              Sanity Studio and sets invalid data, or a custom input component have inserted
               incorrect values into the list.
             </Details>
           </div>
@@ -304,8 +304,8 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
               <Button onClick={this.handleFixMissingKeys}>Fix missing keys</Button>
             </div>
             <Details title={<b>Why is this happening?</b>}>
-              This usually happens when items are created through the API client from outside the
-              Content Studio and someone forgets to set the <code>_key</code>-property of list
+              This usually happens when items are created through the API client from outside
+              Sanity Studio and someone forgets to set the <code>_key</code>-property of list
               items.
               <p>
                 The value of the <code>_key</code> can be any <b>string</b> as long as it is{' '}

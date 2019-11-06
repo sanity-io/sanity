@@ -4,7 +4,7 @@ Sanity plugin which controls how your data is presented.
 
 ## HOWEVER
 
-We'll re-design how control of data presentation is handed over to a sanity studio maintainer. Hang on for snake tornado.
+We'll re-design how control of data presentation is handed over to a Sanity Studio maintainer. Hang on for snake tornado.
 
 
 ## Usage

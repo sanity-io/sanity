@@ -48,7 +48,7 @@ export default class AppLoadingScreen extends React.PureComponent {
   }
 
   static defaultProps = {
-    text: 'Loading Content Studio'
+    text: 'Loading Sanity Studio'
   }
 
   render() {

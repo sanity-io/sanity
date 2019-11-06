@@ -2,7 +2,7 @@
   "name": "example-studio",
   "private": true,
   "version": "0.144.2",
-  "description": "A sanity studio with instructional examples and useful patterns",
+  "description": "A Sanity studio with instructional examples and useful patterns",
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "scripts": {
