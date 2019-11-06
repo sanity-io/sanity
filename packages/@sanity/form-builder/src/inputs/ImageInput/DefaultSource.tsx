@@ -4,15 +4,17 @@ import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import styles from './styles/SelectAsset.css'
 import AssetWidget from './Asset'
+import {AssetFromSource} from './ImageInput'
+
 const PER_PAGE = 200
 type Asset = {
   _id: string
   url: string
 }
 type Props = {
-  onSelect: (arg0: {kind: 'assetDocumentId' | 'binary'; value: string}) => void
+  onSelect: (arg0: AssetFromSource[]) => void
   onClose: () => void
-  selectedAssets: Asset[],
+  selectedAssets: Asset[]
   selectionType: boolean
 }
 function createQuery(start = 0, end = PER_PAGE) {
@@ -60,7 +62,7 @@ class DefaultSource extends React.Component<Props, State> {
   select(id) {
     const selected = this.state.assets.find(doc => doc._id === id)
     if (selected) {
-      this.props.onSelect({kind: 'assetDocumentId', value: id})
+      this.props.onSelect([{kind: 'assetDocumentId', value: id}])
     }
   }
   handleItemClick = (event: React.SyntheticEvent<any>) => {
@@ -88,17 +90,16 @@ class DefaultSource extends React.Component<Props, State> {
       <Dialog title="Select image" onClose={this.handleClose} isOpen>
         <div className={styles.root}>
           <div className={styles.imageList}>
-            {assets
-              .map(asset => (
-                <AssetWidget
-                  key={asset._id}
-                  asset={asset}
-                  isSelected={selectedAssets.some(selected => selected._id === asset._id)}
-                  onClick={this.handleItemClick}
-                  onKeyPress={this.handleItemKeyPress}
-                  onDeleteFinished={this.handleDeleteFinished}
-                />
-              ))}
+            {assets.map(asset => (
+              <AssetWidget
+                key={asset._id}
+                asset={asset}
+                isSelected={selectedAssets.some(selected => selected._id === asset._id)}
+                onClick={this.handleItemClick}
+                onKeyPress={this.handleItemKeyPress}
+                onDeleteFinished={this.handleDeleteFinished}
+              />
+            ))}
           </div>
           {!isLoading && assets.length === 0 && (
             <div className={styles.noAssets}>No images found</div>
