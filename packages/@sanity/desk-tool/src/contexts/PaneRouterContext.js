@@ -150,7 +150,8 @@ export function getPaneRouterContextFactory(instance) {
       setView: viewId => {
         modifyCurrentGroup((siblings, item) => {
           const newGroup = siblings.slice()
-          const newItem = {...item, params: viewId ? {view: viewId} : {}}
+          const {view: oldView, ...params} = item.params || {}
+          const newItem = {...item, params: viewId ? {...params, view: viewId} : params}
           newGroup.splice(siblingIndex, 1, newItem)
           return newGroup
         })
