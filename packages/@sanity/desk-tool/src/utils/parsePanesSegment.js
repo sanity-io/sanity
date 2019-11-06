@@ -1,4 +1,4 @@
-/* eslint-disable import/prefer-default-export */
+import {EMPTY_PARAMS} from '../'
 
 // old: authors;knut,{"template":"diaryEntry"}
 // new: authors;knut,view=diff,eyJyZXYxIjoiYWJjMTIzIiwicmV2MiI6ImRlZjQ1NiJ9|latest-posts
@@ -14,7 +14,7 @@ export function parseChunks(chunks, initial = {}) {
       if (isParam(chunk)) {
         const key = chunk.slice(0, chunk.indexOf('='))
         const value = chunk.slice(key.length + 1)
-        pane.params[key] = value
+        pane.params = {...pane.params, [key]: value}
       } else if (isPayload(chunk)) {
         pane.payload = tryParseBase64Payload(chunk)
       } else {
@@ -24,7 +24,7 @@ export function parseChunks(chunks, initial = {}) {
 
       return pane
     },
-    {...initial, params: {}, payload: undefined}
+    {...initial, params: EMPTY_PARAMS, payload: undefined}
   )
 }
 

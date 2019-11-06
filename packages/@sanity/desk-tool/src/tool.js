@@ -3,13 +3,9 @@ import UUID from '@sanity/uuid'
 import {getTemplateById} from '@sanity/base/initial-value-templates'
 import Icon from 'part:@sanity/base/view-column-icon'
 import {route} from 'part:@sanity/base/router'
-import {
-  parseChunks,
-  encodeChunks,
-  parsePanesSegment,
-  encodePanesSegment
-} from './utils/parsePanesSegment'
+import {parsePanesSegment, encodePanesSegment} from './utils/parsePanesSegment'
 import DeskTool from './DeskTool'
+import {EMPTY_PARAMS} from './'
 
 function toState(pathSegment) {
   return parsePanesSegment(decodeURIComponent(pathSegment))
@@ -17,15 +13,6 @@ function toState(pathSegment) {
 
 function toPath(panes) {
   return encodePanesSegment(panes)
-}
-
-function optionsToState(optionsString) {
-  const chunks = optionsString.split(',')
-  return parseChunks(chunks)
-}
-
-function optionsToPath(options) {
-  return encodeChunks(options)
 }
 
 const state = {activePanes: []}
@@ -49,7 +36,7 @@ function getIntentState(intentName, params, currentState, payload) {
   for (let i = activePanes.length - 1; i >= 0; i--) {
     const pane = activePanes[i]
     if (pane.canHandleIntent && pane.canHandleIntent(intentName, params, {pane, index: i})) {
-      const paneParams = isTemplate ? {template: params.template} : {}
+      const paneParams = isTemplate ? {template: params.template} : EMPTY_PARAMS
       return {
         panes: paneSegments
           .slice(0, i)
