@@ -8,7 +8,6 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 import {collate, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import {combineLatest} from 'rxjs'
 import {map, tap} from 'rxjs/operators'
-import {PaneRouterContext} from '../index'
 import settings from '../settings'
 import styles from './styles/DocumentsListPane.css'
 import listStyles from './styles/ListView.css'
@@ -63,6 +62,7 @@ export default class DocumentsListPane extends React.PureComponent {
   static propTypes = {
     index: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
+    childItemId: PropTypes.string.isRequired,
     className: PropTypes.string,
     styles: PropTypes.object, // eslint-disable-line react/forbid-prop-types
     defaultLayout: PropTypes.string,
@@ -112,8 +112,6 @@ export default class DocumentsListPane extends React.PureComponent {
     defaultLayout: undefined,
     initialValueTemplates: undefined
   }
-
-  static contextType = PaneRouterContext
 
   actionHandlers = {
     setLayout: ({layout}) => {
@@ -168,9 +166,7 @@ export default class DocumentsListPane extends React.PureComponent {
   }
 
   itemIsSelected(item) {
-    const {getCurrentPane} = this.context
-    const {child} = getCurrentPane()
-    return child && getPublishedId(child.id) === getPublishedId(item._id)
+    return this.props.childItemId === getPublishedId(item._id)
   }
 
   renderItem = item => (

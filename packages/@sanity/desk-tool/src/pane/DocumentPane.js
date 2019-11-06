@@ -179,6 +179,7 @@ export default withInitialValue(
     static propTypes = {
       styles: PropTypes.object, // eslint-disable-line react/forbid-prop-types
       title: PropTypes.string,
+      itemId: PropTypes.string.isRequired,
       paneKey: PropTypes.string.isRequired,
       type: PropTypes.string.isRequired,
       isSelected: PropTypes.bool.isRequired,
@@ -502,10 +503,9 @@ export default withInitialValue(
       this.setHistoryState({...INITIAL_HISTORY_STATE, isOpen: true})
       const events$ = historyStore.historyEventsFor(getPublishedId((draft || published)._id)).pipe(
         map((events, i) => {
-          if (i === 0) {
-            this.setHistoryState({isLoading: false, selectedRev: events[0].rev})
-          }
-          this.setHistoryState({events: events})
+          this.setHistoryState(
+            i === 0 ? {isLoading: false, selectedRev: events[0].rev, events} : {events}
+          )
           return events
         })
       )
@@ -517,7 +517,7 @@ export default withInitialValue(
       this._historyEventsSubscription.unsubscribe()
       this.setHistoryState({
         isOpen: false,
-        historyEvent: undefined
+        selectedRev: null
       })
     }
 
@@ -695,7 +695,7 @@ export default withInitialValue(
     }
 
     handleCreateCopy = () => {
-      const {replaceCurrentPane} = this.context
+      const paneContext = this.context
       const {draft, published} = this.getDocumentSnapshots()
       const omitProps = ['_createdAt', '_updatedAt']
 
@@ -705,7 +705,7 @@ export default withInitialValue(
 
       this.duplicate$ = documentStore
         .create(duplicatedDocument)
-        .subscribe(copied => replaceCurrentPane(getPublishedId(copied._id)))
+        .subscribe(copied => paneContext.replaceCurrent(getPublishedId(copied._id)))
     }
 
     handleMenuToggle = evt => {
@@ -714,9 +714,9 @@ export default withInitialValue(
     }
 
     handleEditAsActualType = () => {
-      const {navigateIntent} = this.context
+      const paneContext = this.context
       const {draft, published} = this.getDocumentSnapshots()
-      navigateIntent('edit', {
+      paneContext.navigateIntent('edit', {
         id: getPublishedId((draft || published)._id),
         type: draft._type || published._type
       })
@@ -1036,17 +1036,23 @@ export default withInitialValue(
     }
 
     handleHistorySelect = event => {
+      const {itemId} = this.props
+      const paneContext = this.context
+      paneContext.replaceCurrent(itemId, paneContext.payload, {
+        ...paneContext.params,
+        rev: event.rev
+      })
       this.setHistoryState({
         selectedRev: event.rev
       })
     }
 
     handleSplitPane = () => {
-      this.context.duplicateCurrentPane()
+      this.context.duplicateCurrent()
     }
 
     handleSetActiveView = (...args) => {
-      this.context.setPaneView(...args)
+      this.context.setView(...args)
     }
 
     handleShowConfirmDelete = () => {
@@ -1054,7 +1060,7 @@ export default withInitialValue(
     }
 
     handleClosePane = () => {
-      this.context.closeCurrentPane()
+      this.context.closeCurrent()
     }
 
     getDocumentSnapshots() {
@@ -1128,7 +1134,7 @@ export default withInitialValue(
         )
       }
 
-      const activeViewId = this.context.getPaneView() || (views[0] && views[0].id)
+      const activeViewId = this.context.params.view || (views[0] && views[0].id)
       const activeView = views.find(view => view.id === activeViewId) || views[0] || {type: 'form'}
       const enabledActions = resolveEnabledActions(schemaType)
       const menuItems = getMenuItems({

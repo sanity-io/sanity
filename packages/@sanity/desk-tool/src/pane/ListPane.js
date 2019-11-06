@@ -12,6 +12,7 @@ export default class ListPane extends React.PureComponent {
   static propTypes = {
     index: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
+    childItemId: PropTypes.string.isRequired,
     className: PropTypes.string,
     styles: PropTypes.object, // eslint-disable-line react/forbid-prop-types
     defaultLayout: PropTypes.string,
@@ -54,9 +55,7 @@ export default class ListPane extends React.PureComponent {
   }
 
   itemIsSelected(item) {
-    const {getCurrentPane} = this.context
-    const {child} = getCurrentPane()
-    return child && child.id === item.id
+    return this.props.childItemId === item.id
   }
 
   shouldShowIconForItem = item => {
