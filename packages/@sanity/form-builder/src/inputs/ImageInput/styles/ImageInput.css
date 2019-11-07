@@ -77,12 +77,13 @@
   color: inherit;
   text-decoration: none;
   display: flex;
-  padding: 0 var(--small-padding);
 }
 
 .selectDropDownAssetSourceIcon {
   display: flex;
   align-items: left;
+  justify-content: center;
+  align-self: center;
   font-size: var(--font-size-large);
   margin-right: var(--small-padding);
 }
