@@ -1,7 +1,15 @@
 import {Selection, Text, Mark} from 'slate'
 import {isEqual, isString} from 'lodash'
 
-import {BlockContentFeatures, SlateEditor, SlateNode, SlateValue, Type} from '../typeDefs'
+import {
+  BlockContentFeatures,
+  SlateEditor,
+  SlateNode,
+  SlateValue,
+  Type,
+  Block,
+  Span
+} from '../typeDefs'
 import {
   Patch,
   SetPatch,
@@ -300,8 +308,8 @@ export default function createPatchesToChange(
     const anchorPath = editor.value.document.assertPath(anchorBlockKey)
     const oldFocusBlockIndex = focusPath.get(0)
     const oldAnchorBlockIndex = anchorPath.get(0)
-    const newFocusBlockIndex = patch.value.findIndex(blk => blk._key === focusBlockKey)
-    const newAnchorBlockIndex = patch.value.findIndex(blk => blk._key === anchorBlockKey)
+    const newFocusBlockIndex = patch.value.findIndex((blk: Block) => blk._key === focusBlockKey)
+    const newAnchorBlockIndex = patch.value.findIndex((blk: Block) => blk._key === anchorBlockKey)
     if (newFocusBlockIndex !== oldFocusBlockIndex || newAnchorBlockIndex !== oldAnchorBlockIndex) {
       // console.log('Modifying selection and replacing value')
       const selection = editor.value.selection.toJSON()
@@ -343,7 +351,7 @@ export default function createPatchesToChange(
       workTextNode.leaves.forEach((leaf, index) => {
         if (targetIndex === index) {
           newLeaves.push(leaf)
-          patch.items.forEach(item => {
+          patch.items.forEach((item: Span) => {
             const newLeaf = {
               text: item.text,
               marks: Mark.createSet(item.marks.map(mark => ({type: mark})))
@@ -363,7 +371,8 @@ export default function createPatchesToChange(
     // Set patches patching either string values or span objects
     if (patch.type === 'set') {
       const valueIsString = isString(patch.value)
-      const patchText = valueIsString ? patch.value : patch.value.text
+      const patchSpan = valueIsString ? null : (patch.value as Span)
+      const patchText = valueIsString ? patch.value : patchSpan.text
       // If single leaf, we can just replace the text with the current marks
       if (textNode.leaves.size === 1) {
         let marks
@@ -371,7 +380,7 @@ export default function createPatchesToChange(
         if (valueIsString) {
           marks = textNode.leaves.map(leaf => leaf.marks).get(0)
         } else {
-          marks = Mark.createSet(patch.value.marks.map(mark => ({type: mark})))
+          marks = Mark.createSet(patchSpan.marks.map(mark => ({type: mark})))
         }
         editor.replaceNodeByPath(textPath, Text.create({text: patchText, marks}))
         return editor.operations
@@ -383,7 +392,7 @@ export default function createPatchesToChange(
         text: patchText,
         marks: valueIsString
           ? node.leaves.get(leafIndex).marks
-          : Mark.createSet(patch.value.marks.map(mark => ({type: mark})))
+          : Mark.createSet(patchSpan.marks.map(mark => ({type: mark})))
       }
       // Replace it
       editor.replaceNodeByPath(textPath, Text.fromJSON(workTextNode))
