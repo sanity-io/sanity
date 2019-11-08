@@ -211,7 +211,10 @@ export default class DeskToolPanes extends React.Component {
     let i = -1
     return paneGroups.reduce((components, group, index) => {
       return components.concat(
+        // eslint-disable-next-line complexity
         group.map((sibling, siblingIndex) => {
+          const groupRoot = group[0]
+          const isDuplicate = siblingIndex > 0 && sibling.id === groupRoot.id
           const pane = panes[++i]
           if (!pane) {
             return null
@@ -221,11 +224,23 @@ export default class DeskToolPanes extends React.Component {
           const paneKey = `${i}-${paneKeys[i] || 'root'}-${groupIndexes[i - 1]}`
 
           const itemId = paneKeys[i]
-          const childItemId = paneKeys[i + 1]
+          const childItemId = paneKeys[i + 1] || ''
 
           // Same pane might appear multiple times, so use index as tiebreaker
           const wrapperKey = pane === LOADING_PANE ? `loading-${i}` : `${i}-${pane.id}`
           path.push(pane.id || `[${i}]`)
+
+          const {view: rootView, ...rootParams} = groupRoot.params || {}
+          const params = isDuplicate ? {...rootParams, ...sibling.params} : sibling.params
+          const payload = isDuplicate ? sibling.payload || groupRoot.payload : sibling.payload
+
+          const paneRouterContext = this.getPaneRouterContext({
+            groupIndex: index - 1,
+            siblingIndex,
+            flatIndex: i,
+            params,
+            payload
+          })
 
           return (
             <SplitPaneWrapper
@@ -234,13 +249,7 @@ export default class DeskToolPanes extends React.Component {
               minSize={getPaneMinSize(pane)}
               defaultSize={getPaneDefaultSize(pane)}
             >
-              <PaneRouterContext.Provider
-                value={this.getPaneRouterContext({
-                  groupIndex: index - 1,
-                  siblingIndex,
-                  flatIndex: i
-                })}
-              >
+              <PaneRouterContext.Provider value={paneRouterContext}>
                 {pane === LOADING_PANE ? (
                   <LoadingPane
                     key={paneKey} // Use key to force rerendering pane on ID change
@@ -258,6 +267,7 @@ export default class DeskToolPanes extends React.Component {
                     paneKey={paneKey}
                     index={i}
                     itemId={itemId}
+                    urlParams={params}
                     childItemId={childItemId}
                     onExpand={this.handlePaneExpand}
                     onCollapse={this.handlePaneCollapse}

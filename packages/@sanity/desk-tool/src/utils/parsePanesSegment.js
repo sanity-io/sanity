@@ -1,4 +1,5 @@
 import {EMPTY_PARAMS} from '../'
+import {exclusiveParams} from '../contexts/PaneRouterContext'
 
 // old: authors;knut,{"template":"diaryEntry"}
 // new: authors;knut,view=diff,eyJyZXYxIjoiYWJjMTIzIiwicmV2MiI6ImRlZjQ1NiJ9|latest-posts
@@ -33,10 +34,18 @@ function encodeChunks(pane, i, group) {
   const sameAsFirst = i !== 0 && id === group[0].id
   const encodedPayload = typeof payload === 'undefined' ? undefined : btoa(JSON.stringify(payload))
 
-  const encodedParams = Object.keys(params).reduce(
-    (pairs, key) => [...pairs, `${key}=${params[key]}`],
-    []
-  )
+  const encodedParams = Object.keys(params).reduce((pairs, key) => {
+    if (
+      sameAsFirst &&
+      i !== 0 &&
+      !exclusiveParams.includes(key) &&
+      group[0].params[key] === params[key]
+    ) {
+      return pairs
+    }
+
+    return [...pairs, `${key}=${params[key]}`]
+  }, [])
 
   return (
     [sameAsFirst ? '' : id]
@@ -59,25 +68,13 @@ export function parsePanesSegment(str) {
           const [id, ...chunks] = segment.split(',')
           return parseChunks(chunks, {id})
         })
-        .map((pane, i, siblings) => {
-          if (pane.id) {
-            return pane
-          }
-
-          // Duplicate/inherit from group root
-          const root = siblings[0]
-          return {
-            ...root,
-            params: {...root.params, ...pane.params},
-            payload: pane.payload || root.payload
-          }
-        })
+        .map((pane, i, siblings) => (pane.id ? pane : {...pane, id: siblings[0].id}))
     )
     .filter(group => group.length > 0)
 }
 
-export function encodePanesSegment(panes = []) {
-  return panes
+export function encodePanesSegment(panes) {
+  return (panes || [])
     .map(group => group.map(encodeChunks).join('|'))
     .map(encodeURIComponent)
     .join(';')

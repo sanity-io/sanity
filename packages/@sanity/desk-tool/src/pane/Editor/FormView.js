@@ -21,7 +21,6 @@ export default class FormView extends React.PureComponent {
     published: PropTypes.shape({_id: PropTypes.string, _type: PropTypes.string}),
     initialValue: PropTypes.object,
     isReconnecting: PropTypes.bool,
-    isLoading: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     type: PropTypes.shape({name: PropTypes.string, title: PropTypes.string}).isRequired,
     markers: PropTypes.arrayOf(
@@ -31,10 +30,14 @@ export default class FormView extends React.PureComponent {
     ),
 
     history: PropTypes.shape({
-      isLoading: PropTypes.bool.isRequired,
+      isLoadingEvents: PropTypes.bool.isRequired,
       isOpen: PropTypes.bool.isRequired,
       selectedEvent: PropTypes.object,
-      selectedIsLatest: PropTypes.bool.isRequired
+      selectedIsLatest: PropTypes.bool.isRequired,
+      document: PropTypes.shape({
+        isLoading: PropTypes.bool.isRequired,
+        snapshot: PropTypes.shape({_type: PropTypes.string})
+      })
     }).isRequired
   }
 
@@ -42,7 +45,6 @@ export default class FormView extends React.PureComponent {
     markers: [],
     draft: undefined,
     published: undefined,
-    isLoading: false,
     isReconnecting: false
   }
 
@@ -86,6 +88,7 @@ export default class FormView extends React.PureComponent {
       initialValue,
       isReconnecting
     } = this.props
+
     const {focusPath, filterField} = this.state
     const value = draft || published
 
@@ -104,8 +107,9 @@ export default class FormView extends React.PureComponent {
 
     return (
       <>
-        {history.isOpen && !history.isLoading && history.selectedEvent ? (
+        {history.isOpen ? (
           <HistoryForm
+            document={history.document}
             isLatest={history.selectedIsLatest}
             event={history.selectedEvent}
             schema={schema}

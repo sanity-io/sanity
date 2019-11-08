@@ -9,8 +9,6 @@ import HistoryItem from './HistoryItem'
 
 import styles from './styles/History.css'
 
-const maybe = (val, fn) => val && fn(val)
-
 export default class History extends React.PureComponent {
   static propTypes = {
     events: PropTypes.arrayOf(PropTypes.object),
@@ -67,6 +65,24 @@ export default class History extends React.PureComponent {
     }
   }
 
+  handleSelectNext = () => {
+    const {events, selectedEvent, onItemSelect} = this.props
+    const i = events.indexOf(selectedEvent)
+    const newSelection = i === -1 ? null : events[i + 1]
+    if (newSelection) {
+      onItemSelect(newSelection)
+    }
+  }
+
+  handleSelectPrev = () => {
+    const {events, selectedEvent, onItemSelect} = this.props
+    const i = events.indexOf(selectedEvent)
+    const newSelection = i === -1 ? null : events[i - 1]
+    if (newSelection) {
+      onItemSelect(newSelection)
+    }
+  }
+
   render() {
     const {onClose, events, onItemSelect, selectedEvent, isLoading, error} = this.props
     const {headerShadowOpacity} = this.state
@@ -94,11 +110,11 @@ export default class History extends React.PureComponent {
               <HistoryItem
                 {...event}
                 key={event.rev}
-                onClick={() => onItemSelect(events[i])}
                 isSelected={event === selectedEvent}
                 isCurrentVersion={i === 0}
-                onSelectPrev={() => maybe(events[i - 1], onItemSelect)}
-                onSelectNext={() => maybe(events[i + 1], onItemSelect)}
+                onClick={() => onItemSelect(event)}
+                onSelectPrev={this.handleSelectPrev}
+                onSelectNext={this.handleSelectNext}
               />
             ))}
         </div>

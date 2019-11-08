@@ -151,7 +151,7 @@ export default withRouterHOC(
         .subscribe(this.setResolvedPanes, this.setResolveError)
     }
 
-    calcPanesEquality = (prev, next) => {
+    calcPanesEquality = (prev = [], next = []) => {
       if (prev === next) {
         return {ids: true, params: true}
       }

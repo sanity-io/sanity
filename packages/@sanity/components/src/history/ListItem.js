@@ -33,9 +33,10 @@ export default class HistoryListItem extends React.PureComponent {
     children: PropTypes.node,
     isCurrentVersion: PropTypes.bool,
     isSelected: PropTypes.bool,
-    onClick: PropTypes.func,
-    onKeyUp: PropTypes.func,
-    onKeyDown: PropTypes.func,
+    onSelect: PropTypes.func,
+    onEnterKey: PropTypes.func,
+    onArrowUpKey: PropTypes.func,
+    onArrowDownKey: PropTypes.func,
     rev: PropTypes.string,
     tooltip: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
@@ -46,28 +47,35 @@ export default class HistoryListItem extends React.PureComponent {
         imageUrl: PropTypes.string,
         id: PropTypes.string
       })
-    )
+    ),
+    // eslint-disable-next-line react/forbid-prop-types
+    linkParams: PropTypes.object,
+    linkComponent: PropTypes.elementType
   }
 
   static defaultProps = {
     status: 'Edited',
     title: undefined,
-    onClick: noop,
-    onKeyUp: noop,
-    onKeyDown: noop,
+    onSelect: noop,
+    onEnterKey: noop,
+    onArrowUpKey: noop,
+    onArrowDownKey: noop,
     isCurrentVersion: false,
     isSelected: false,
     users: [],
     children: undefined,
-    rev: undefined
+    rev: undefined,
+    linkParams: undefined,
+    linkComponent: undefined
   }
 
   _rootElement = React.createRef()
 
   componentDidUpdate(prevProps) {
     const {isSelected} = this.props
+
     // Focus the element when it becomes selected
-    if (isSelected && (!prevProps || !prevProps.isSelected)) {
+    if (isSelected && !prevProps.isSelected) {
       this.focus()
     }
   }
@@ -78,13 +86,34 @@ export default class HistoryListItem extends React.PureComponent {
     }
   }
 
-  handleClick = evt => {
-    this.props.onClick(evt)
+  handleKeyUp = event => {
+    const {onEnterKey} = this.props
+    if (event.key === 'Enter') {
+      onEnterKey()
+    }
+  }
+
+  handleKeyDown = event => {
+    // Prevent arrow keypress scrolling
+    const {onArrowUpKey, onArrowDownKey} = this.props
+    if (event.key === 'ArrowDown') {
+      onArrowDownKey()
+      event.preventDefault()
+    } else if (event.key === 'ArrowUp') {
+      onArrowUpKey()
+      event.preventDefault()
+    }
+  }
+
+  handleSelect = evt => {
+    this.props.onSelect(evt)
   }
 
   // eslint-disable-next-line complexity
   render() {
     const {
+      linkComponent,
+      linkParams,
       status,
       isSelected,
       title,
@@ -92,27 +121,14 @@ export default class HistoryListItem extends React.PureComponent {
       children,
       isCurrentVersion,
       rev,
-      onKeyUp,
-      onKeyDown,
       tooltip,
       type
     } = this.props
     const availableUsers = users.filter(Boolean)
     const selectionClassName = isSelected ? styles.selected : styles.unSelected
-    return (
-      <div
-        className={selectionClassName}
-        data-type={type}
-        data-is-current-version={isCurrentVersion}
-        data-is-selected={isSelected}
-        data-rev={rev}
-        onClick={this.handleClick}
-        tabIndex={type === 'truncated' ? null : '0'}
-        onKeyUp={onKeyUp}
-        onKeyDown={onKeyDown}
-        title={tooltip}
-        ref={this._rootElement}
-      >
+
+    const content = (
+      <>
         <EventIcon className={styles.icon} type={type} />
         <div className={styles.startLine} aria-hidden="true" />
         <div className={styles.endLine} aria-hidden="true" />
@@ -168,7 +184,9 @@ export default class HistoryListItem extends React.PureComponent {
                   </div>
                 ))}
               </div>
-              {availableUsers.length === 1 && <div className={styles.userName}>{availableUsers[0].displayName}</div>}
+              {availableUsers.length === 1 && (
+                <div className={styles.userName}>{availableUsers[0].displayName}</div>
+              )}
               {availableUsers.length > 1 && (
                 <div className={styles.extraItems}>
                   <div className={styles.userName}>{availableUsers.length} people</div>
@@ -178,6 +196,31 @@ export default class HistoryListItem extends React.PureComponent {
           </Tooltip>
         )}
         {children && <div className={styles.children}>{children}</div>}
+      </>
+    )
+
+    const rootProps = {
+      className: selectionClassName,
+      'data-type': type,
+      'data-is-current-version': isCurrentVersion,
+      'data-is-selected': isSelected,
+      'data-rev': rev,
+      tabIndex: type === 'truncated' ? null : '0',
+      onKeyUp: this.handleKeyUp,
+      onKeyDown: this.handleKeyDown,
+      title: tooltip,
+      ref: this._rootElement
+    }
+
+    const ParameterizedLink = linkComponent
+
+    return ParameterizedLink ? (
+      <ParameterizedLink params={{...linkParams, rev}} {...rootProps}>
+        {content}
+      </ParameterizedLink>
+    ) : (
+      <div {...rootProps} onClick={this.handleSelect}>
+        {content}
       </div>
     )
   }

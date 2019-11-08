@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {format, isToday, isYesterday} from 'date-fns'
 import FormBuilder from 'part:@sanity/form-builder'
-import historyStore from 'part:@sanity/base/datastore/history'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import TimeAgo from '../../components/TimeAgo'
 import Delay from '../../utils/Delay'
@@ -27,37 +26,29 @@ export default class HistoryForm extends React.PureComponent {
   static propTypes = {
     schema: PropTypes.object.isRequired,
     type: PropTypes.object.isRequired,
+    isLatest: PropTypes.bool.isRequired,
     event: PropTypes.shape({
       displayDocumentId: PropTypes.string,
       rev: PropTypes.string,
       endTime: PropTypes.string
     }),
-    isLatest: PropTypes.bool
+    document: PropTypes.shape({
+      isLoading: PropTypes.bool.isRequired,
+      snapshot: PropTypes.shape({_type: PropTypes.string})
+    }).isRequired
   }
+
+  static defaultProps = {
+    event: undefined
+  }
+
+  // Prevent re-rendering flicker when transitioning between snapshots
+  static getDerivedStateFromProps(newProps, currentState) {
+    return {prevSnapshot: newProps.document.snapshot || currentState.prevSnapshot}
+  }
+
   state = {
-    isLoading: true,
-    document: null,
     focusPath: []
-  }
-
-  componentDidMount() {
-    const {displayDocumentId, rev} = this.props.event
-    this.fetch(displayDocumentId, rev)
-  }
-
-  // eslint-disable-next-line camelcase
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.event !== this.props.event) {
-      const {displayDocumentId, rev} = nextProps.event
-      this.fetch(displayDocumentId, rev)
-    }
-  }
-
-  fetch(id, rev) {
-    this.setState({isLoading: true})
-    historyStore.getDocumentAtRevision(id, rev).then(res => {
-      this.setState({document: res, isLoading: false})
-    })
   }
 
   handleFocus = focusPath => {
@@ -65,8 +56,22 @@ export default class HistoryForm extends React.PureComponent {
   }
 
   render() {
-    const {schema, type, event, isLatest} = this.props
-    const {isLoading, document, focusPath} = this.state
+    const {schema, type, event, isLatest, document} = this.props
+    const {snapshot, isLoading: isLoadingSnapshot} = document
+    const {focusPath, prevSnapshot} = this.state
+    const usedSnapshot = snapshot || prevSnapshot
+    const isLoading = isLoadingSnapshot
+
+    if (!isLoadingSnapshot && !event) {
+      return (
+        <Delay ms={600}>
+          <div className={styles.spinnerContainer}>
+            <Spinner center message="Loading revision" />
+          </div>
+        </Delay>
+      )
+    }
+
     return (
       <>
         {isLoading && (
@@ -77,7 +82,7 @@ export default class HistoryForm extends React.PureComponent {
           </Delay>
         )}
         <div className={styles.top}>
-          {document && (
+          {usedSnapshot && (
             <span className={styles.editedTime}>
               {'Changed '}
               <TimeAgo time={event.endTime} />
@@ -87,8 +92,10 @@ export default class HistoryForm extends React.PureComponent {
         </div>
 
         <form className={styles.editor} id="Sanity_Default_DeskTool_Editor_ScrollContainer">
-          {!isLoading && !document && <p>There is no data associated with this history event.</p>}
-          {document && (
+          {!isLoading && !usedSnapshot && (
+            <p>There is no data associated with this history event.</p>
+          )}
+          {usedSnapshot && (
             <FormBuilder
               onBlur={noop}
               onFocus={this.handleFocus}
@@ -96,7 +103,7 @@ export default class HistoryForm extends React.PureComponent {
               readOnly
               schema={schema}
               type={type}
-              value={document}
+              value={usedSnapshot}
               patchChannel={noopPatchChannel}
             />
           )}

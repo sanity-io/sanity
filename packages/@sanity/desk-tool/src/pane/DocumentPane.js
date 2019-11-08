@@ -2,10 +2,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import promiseLatest from 'promise-latest'
-import {omit, throttle, debounce} from 'lodash'
+import {omit, noop, get, throttle, debounce} from 'lodash'
 import {distanceInWordsToNow} from 'date-fns'
 import {Tooltip} from 'react-tippy'
-import {merge, concat, timer, of as observableOf} from 'rxjs'
+import {from, merge, concat, timer, of as observableOf} from 'rxjs'
 import {catchError, switchMap, map, mapTo, tap} from 'rxjs/operators'
 import {resolveEnabledActions} from 'part:@sanity/base/util/document-action-utils'
 import schema from 'part:@sanity/base/schema'
@@ -84,12 +84,18 @@ const INITIAL_DOCUMENT_STATE = {
   snapshot: null
 }
 
+const INITIAL_HISTORICAL_DOCUMENT_STATE = {
+  isLoading: false,
+  snapshot: null
+}
+
 const INITIAL_HISTORY_STATE = {
   isOpen: false,
   isLoading: true,
   error: null,
   events: [],
-  selectedRev: null
+  selectedRev: null,
+  selectedRevDocument: null
 }
 
 const INITIAL_STATE = {
@@ -110,8 +116,11 @@ const INITIAL_STATE = {
   showConfirmDelete: false,
   showConfirmUnpublish: false,
   showValidationTooltip: false,
+
   draft: INITIAL_DOCUMENT_STATE,
   published: INITIAL_DOCUMENT_STATE,
+  historical: INITIAL_HISTORICAL_DOCUMENT_STATE,
+
   historyState: INITIAL_HISTORY_STATE
 }
 
@@ -208,6 +217,10 @@ export default withInitialValue(
         id: PropTypes.string.isRequired,
         type: PropTypes.string.isRequired,
         template: PropTypes.string
+      }).isRequired,
+      urlParams: PropTypes.shape({
+        view: PropTypes.string,
+        rev: PropTypes.string
       }).isRequired
     }
 
@@ -229,6 +242,16 @@ export default withInitialValue(
     constructor(props) {
       super(props)
       this.setup(props.options.id)
+
+      // Open history to selected revision if present in URL
+      const rev = props.urlParams.rev
+      if (rev) {
+        this.state.historyState = {
+          ...this.state.historyState,
+          isOpen: true,
+          selectedRev: rev
+        }
+      }
     }
 
     setup(documentId) {
@@ -240,6 +263,10 @@ export default withInitialValue(
       this.published = published
       this.draft = draft
       this.validateLatestDocument = debounce(promiseLatest(this.validateDocument, 300))
+
+      if (this.props.urlParams.rev) {
+        this.handleFetchHistoricalDocument()
+      }
 
       const published$ = this.published.events
       const draft$ = this.draft.events.pipe(tap(this.receiveDraftEvent))
@@ -314,10 +341,93 @@ export default withInitialValue(
       return getPublishedId(this.props.options.id)
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps, prevState) {
       if (prevProps.options.id !== this.props.options.id) {
         this.setup(this.props.options.id)
       }
+
+      this.handleHistoryTransition(prevProps, prevState)
+    }
+
+    handleHistoryTransition(prevProps, prevState) {
+      const {isLoading: isLoadingSnapshot} = this.state.historical
+      const {selectedRev, isOpen, events} = this.state.historyState
+      const next = this.props.urlParams
+      const prev = prevProps.urlParams
+      const revChanged = next.rev !== prev.rev
+
+      const documentsAreLoaded = !this.state.draft.isLoading && !this.state.published.isLoading
+      const wasNotLoaded = prevState.draft.isLoading || prevState.published.isLoading
+      const shouldLoadHistoricalDoc = !isLoadingSnapshot && selectedRev && revChanged
+      const shouldLoadHistory =
+        documentsAreLoaded && !wasNotLoaded && events.length === 0 && selectedRev
+
+      if (shouldLoadHistory) {
+        this.handleFetchHistoryEvents()
+      }
+
+      const {rev, ...params} = next
+
+      if (!rev && prev.rev) {
+        this.setHistoryState(INITIAL_HISTORY_STATE)
+        this.setState({historical: INITIAL_HISTORICAL_DOCUMENT_STATE})
+        return
+      }
+
+      if (rev && prevProps.options.id !== this.props.options.id) {
+        // Tear out the revision from the URL, as well as the selected revision
+        this.setHistoryState({selectedRev: null, isOpen: false})
+        this.context.setParams(params, {recurseIfInherited: true})
+        return
+      }
+
+      if (revChanged && rev && rev !== selectedRev) {
+        this.setHistoryState({selectedRev: rev, isOpen: true})
+        this.handleFetchHistoricalDocument(rev)
+      } else if (shouldLoadHistoricalDoc) {
+        this.handleFetchHistoricalDocument(rev)
+      }
+
+      if (revChanged && !rev && isOpen) {
+        this.setState({historical: INITIAL_HISTORICAL_DOCUMENT_STATE})
+        this.setHistoryState(INITIAL_HISTORY_STATE)
+      }
+    }
+
+    handleFetchHistoricalDocument(atRev) {
+      const event = atRev ? this.findHistoryEventByRev(atRev) : this.findSelectedHistoryEvent()
+      if (!event) {
+        return
+      }
+
+      if (this._historyFetchDocSubscription) {
+        this._historyFetchDocSubscription.unsubscribe()
+      }
+
+      this.setState(({historical}) => ({
+        historical: {...historical, snapshot: null, isLoading: true}
+      }))
+
+      const {displayDocumentId: id, rev} = event
+
+      this._historyFetchDocSubscription = from(
+        historyStore.getDocumentAtRevision(id, rev)
+      ).subscribe(snapshot => {
+        this.setState(
+          ({historical}) => ({
+            historical: {...historical, isLoading: false, snapshot}
+          }),
+          () => {
+            const {rev: urlRev, ...otherParams} = this.context.params
+            if (urlRev && snapshot && snapshot._rev !== urlRev) {
+              this.context.setParams(
+                {...otherParams, rev: snapshot._rev},
+                {recurseIfInherited: true}
+              )
+            }
+          }
+        )
+      })
     }
 
     componentDidMount() {
@@ -375,6 +485,10 @@ export default withInitialValue(
 
       if (this._historyEventsSubscription) {
         this._historyEventsSubscription.unsubscribe()
+      }
+
+      if (this._historyFetchDocSubscription) {
+        this._historyFetchDocSubscription.unsubscribe()
       }
 
       this.published = null
@@ -491,34 +605,79 @@ export default withInitialValue(
       this.setState(prevState => ({showValidationTooltip: !prevState.showValidationTooltip}))
     }
 
-    setHistoryState = nextHistoryState => {
-      this.setState(prevState => ({historyState: {...prevState.historyState, ...nextHistoryState}}))
+    setHistoryState = (nextHistoryState, cb = noop) => {
+      const transitionHistoryState =
+        typeof nextHistoryState === 'function'
+          ? nextHistoryState
+          : prevState => ({...prevState, ...nextHistoryState})
+
+      this.setState(
+        prevState => ({historyState: transitionHistoryState(prevState.historyState)}),
+        cb
+      )
+    }
+
+    handleFetchHistoryEvents() {
+      const {draft, published} = this.getDocumentSnapshots()
+
+      this._historyEventsSubscription = historyStore
+        .historyEventsFor(getPublishedId((draft || published)._id))
+        .pipe(
+          map((events, i) => {
+            const selectedRev = this.state.historyState.selectedRev
+            const eventsHasSelected =
+              selectedRev &&
+              events.find(
+                event => event.rev === selectedRev || event.transactionIds.includes(selectedRev)
+              )
+
+            let newState = {events}
+            if (i === 0) {
+              newState = {
+                ...newState,
+                isLoading: false,
+                selectedRev: eventsHasSelected ? selectedRev : events[0].rev
+              }
+            }
+
+            this.setHistoryState(newState, () => this.handleFetchHistoricalDocument())
+            return events
+          })
+        )
+        .subscribe()
     }
 
     handleOpenHistory = () => {
-      if (this.state.historyState.isOpen) {
+      if (!this.canShowHistoryList() || this.state.historyState.isOpen) {
         return
       }
-      const {draft, published} = this.getDocumentSnapshots()
-      this.setHistoryState({...INITIAL_HISTORY_STATE, isOpen: true})
-      const events$ = historyStore.historyEventsFor(getPublishedId((draft || published)._id)).pipe(
-        map((events, i) => {
-          this.setHistoryState(
-            i === 0 ? {isLoading: false, selectedRev: events[0].rev, events} : {events}
-          )
-          return events
-        })
-      )
 
-      this._historyEventsSubscription = events$.subscribe()
+      this.setHistoryState(prevState => ({
+        ...INITIAL_HISTORY_STATE,
+        selectedRev: prevState.selectedRev,
+        isOpen: true
+      }))
+
+      this.handleFetchHistoryEvents()
     }
 
     handleCloseHistory = () => {
-      this._historyEventsSubscription.unsubscribe()
-      this.setHistoryState({
-        isOpen: false,
-        selectedRev: null
-      })
+      if (this._historyEventsSubscription) {
+        this._historyEventsSubscription.unsubscribe()
+      }
+
+      const {rev, ...params} = this.context.params
+      if (rev) {
+        // If there is a revision in the URL, remove it and let componentDidUpdate handle closing transition
+        this.context.setParams(params, {recurseIfInherited: true})
+      } else {
+        // If there is no revision in the URL (first item is selected), manually close it
+        this.setState({historical: INITIAL_HISTORICAL_DOCUMENT_STATE})
+        this.setHistoryState({
+          isOpen: false,
+          selectedRev: null
+        })
+      }
     }
 
     handleDelete = () => {
@@ -667,6 +826,13 @@ export default withInitialValue(
       ).subscribe(nextState => {
         this.setStateIfMounted(nextState)
         this.setHistoryState(INITIAL_HISTORY_STATE)
+
+        const {rev: oldRev, ...params} = this.context.params
+        const newRevision = get(nextState, 'transactionResult.result.transactionId')
+        if (newRevision && oldRev) {
+          // If there is a revision in the URL, replace it with the new one
+          this.context.setParams({...params, rev: newRevision}, {recurseIfInherited: true})
+        }
       })
     }
 
@@ -952,17 +1118,20 @@ export default withInitialValue(
       )
     }
 
-    findSelectedEvent() {
-      const {events, selectedRev} = this.state.historyState
-      return events.find(
-        event => event.rev === selectedRev || event.transactionIds.includes(selectedRev)
-      )
+    findSelectedHistoryEvent() {
+      const {selectedRev} = this.state.historyState
+      return this.findHistoryEventByRev(selectedRev)
+    }
+
+    findHistoryEventByRev(rev) {
+      const {events} = this.state.historyState
+      return events.find(event => event.rev === rev || event.transactionIds.includes(rev))
     }
 
     renderHistoryFooter = () => {
       const {isReconnecting, isRestoring} = this.state
       const {historyState} = this.state
-      const selectedEvent = this.findSelectedEvent()
+      const selectedEvent = this.findSelectedHistoryEvent()
 
       const isLatestEvent = historyState.events[0] === selectedEvent
       return (
@@ -975,7 +1144,10 @@ export default withInitialValue(
           <RestoreHistoryButton
             disabled={isRestoring || isReconnecting || isLatestEvent}
             onRestore={() =>
-              this.handleRestore({id: selectedEvent.displayDocumentId, rev: selectedEvent.rev})
+              this.handleRestoreRevision({
+                id: selectedEvent.displayDocumentId,
+                rev: selectedEvent.rev
+              })
             }
           />
         </>
@@ -990,6 +1162,7 @@ export default withInitialValue(
       const onShowHistory = this.handleOpenHistory
       const spinnerMessage = getSpinnerMessage(this.props)
       const isLiveEditEnabled = this.isLiveEditEnabled()
+      const canShowHistory = this.canShowHistoryList()
 
       if (historyState.isOpen) {
         return <div className={documentStyles.footer}>{this.renderHistoryFooter()}</div>
@@ -1014,7 +1187,12 @@ export default withInitialValue(
 
             {value && value._updatedAt && (
               <div>
-                <span className={documentStyles.editedTimeClickable} onClick={onShowHistory}>
+                <span
+                  className={
+                    canShowHistory ? documentStyles.editedTimeClickable : documentStyles.editedTime
+                  }
+                  onClick={onShowHistory}
+                >
                   {'Updated '}
                   <TimeAgo time={value._updatedAt} />
                 </span>
@@ -1036,15 +1214,9 @@ export default withInitialValue(
     }
 
     handleHistorySelect = event => {
-      const {itemId} = this.props
       const paneContext = this.context
-      paneContext.replaceCurrent(itemId, paneContext.payload, {
-        ...paneContext.params,
-        rev: event.rev
-      })
-      this.setHistoryState({
-        selectedRev: event.rev
-      })
+
+      paneContext.setParams({...paneContext.params, rev: event.rev}, {recurseIfInherited: true})
     }
 
     handleSplitPane = () => {
@@ -1075,6 +1247,10 @@ export default withInitialValue(
       return exists(draft, published) ? base : {...base, ...this.props.initialValue}
     }
 
+    canShowHistoryList() {
+      return this.context.siblingIndex === 0
+    }
+
     // eslint-disable-next-line complexity
     render() {
       const initialValue = this.getInitialValue()
@@ -1093,6 +1269,7 @@ export default withInitialValue(
       const {
         draft,
         published,
+        historical,
         markers,
         isCreatingDraft,
         isUnpublishing,
@@ -1134,6 +1311,7 @@ export default withInitialValue(
         )
       }
 
+      const selectedHistoryEvent = this.findSelectedHistoryEvent()
       const activeViewId = this.context.params.view || (views[0] && views[0].id)
       const activeView = views.find(view => view.id === activeViewId) || views[0] || {type: 'form'}
       const enabledActions = resolveEnabledActions(schemaType)
@@ -1143,14 +1321,17 @@ export default withInitialValue(
         published: published.snapshot,
         isLiveEditEnabled: this.isLiveEditEnabled(),
         isHistoryEnabled: historyState.isOpen,
-        selectedEvent: historyState.isOpen && this.findSelectedEvent()
+        selectedEvent: historyState.isOpen && selectedHistoryEvent,
+        canShowHistoryList: this.canShowHistoryList()
       })
 
       const documentProps = {
         patchChannel: this.patchChannel,
         type: schemaType,
+
         published: published.snapshot,
         draft: draft.snapshot,
+
         markers: markers || [],
         initialValue,
         validationPending,
@@ -1162,9 +1343,11 @@ export default withInitialValue(
         isCreatingDraft,
         history: {
           isOpen: historyState.isOpen,
-          isLoading: historyState.isLoading,
-          selectedEvent: this.findSelectedEvent(),
-          selectedIsLatest: this.findSelectedEvent() === historyState.events[0]
+          selectedEvent: selectedHistoryEvent,
+          selectedIsLatest: selectedHistoryEvent === historyState.events[0],
+          isLoadingEvents: historyState.isLoading,
+          isLoadingSnapshot: historical.isLoading,
+          document: historical
         },
         onDelete: this.handleDelete,
         onPublish: this.handlePublish,
@@ -1181,7 +1364,7 @@ export default withInitialValue(
             historyState.isOpen ? documentStyles.paneWrapperWithHistory : documentStyles.paneWrapper
           }
         >
-          {historyState.isOpen && (
+          {historyState.isOpen && this.canShowHistoryList() && (
             <History
               key="history"
               documentId={getPublishedId(value._id)}
@@ -1193,7 +1376,7 @@ export default withInitialValue(
               events={historyState.events}
               isLoading={historyState.isLoading}
               error={historyState.error}
-              selectedEvent={this.findSelectedEvent()}
+              selectedEvent={selectedHistoryEvent}
             />
           )}
           <TabbedPane
@@ -1222,7 +1405,8 @@ export default withInitialValue(
             {inspect && historyState.isOpen && (
               <InspectHistory
                 id={value._id}
-                event={this.findSelectedEvent()}
+                event={selectedHistoryEvent}
+                document={historical}
                 onClose={this.handleHideInspector}
               />
             )}
