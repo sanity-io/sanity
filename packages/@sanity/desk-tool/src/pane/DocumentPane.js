@@ -1403,12 +1403,7 @@ export default withInitialValue(
             {activeView.type === 'form' && <FormView ref={this.formRef} {...documentProps} />}
             {activeView.type === 'component' && <activeView.component {...documentProps} />}
             {inspect && historyState.isOpen && (
-              <InspectHistory
-                id={value._id}
-                event={selectedHistoryEvent}
-                document={historical}
-                onClose={this.handleHideInspector}
-              />
+              <InspectHistory document={historical} onClose={this.handleHideInspector} />
             )}
             {inspect && (!historyState || !historyState.isOpen) && (
               <InspectView value={value} onClose={this.handleHideInspector} />
