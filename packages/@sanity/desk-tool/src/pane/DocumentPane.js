@@ -871,7 +871,7 @@ export default withInitialValue(
 
       this.duplicate$ = documentStore
         .create(duplicatedDocument)
-        .subscribe(copied => paneContext.replaceCurrent(getPublishedId(copied._id)))
+        .subscribe(copied => paneContext.replaceCurrent({id: getPublishedId(copied._id)}))
     }
 
     handleMenuToggle = evt => {
