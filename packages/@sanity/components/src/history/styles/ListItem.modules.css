@@ -7,6 +7,9 @@
 }
 
 .root {
+  display: block;
+  text-decoration: none;
+
   position: relative;
   padding: var(--medium-padding);
   padding-top: calc(var(--small-padding) * 1.75);
@@ -48,10 +51,9 @@
 }
 
 .endLine {
-  height:
-    calc(
-      100% - var(--small-padding) - var(--history-circle-size) - var(--history-line-top) + 1px
-    );
+  height: calc(
+    100% - var(--small-padding) - var(--history-circle-size) - var(--history-line-top) + 1px
+  );
   width: 0;
   position: absolute;
   top: calc(var(--small-padding) + var(--history-circle-size) + var(--history-line-top) - 1px);

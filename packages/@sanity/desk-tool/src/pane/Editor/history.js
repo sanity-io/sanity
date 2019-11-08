@@ -1,3 +1,4 @@
-import {BREAKPOINT_SCREEN_MEDIUM} from './Editor'
+const BREAKPOINT_SCREEN_MEDIUM = 512
 
+export const HISTORY_LOADING = Symbol.for('HISTORY_LOADING')
 export const historyIsEnabled = () => window && window.innerWidth > BREAKPOINT_SCREEN_MEDIUM

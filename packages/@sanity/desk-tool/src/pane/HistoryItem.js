@@ -1,10 +1,12 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import {from} from 'rxjs'
 import HistoryListItem from 'part:@sanity/components/history/list-item'
-import userstore from 'part:@sanity/base/user'
+import historyStore from 'part:@sanity/base/user'
 import {format, isYesterday, isToday} from 'date-fns'
+import {PaneRouterContext} from '../'
 
-const {getUsers} = userstore
+const EMPTY_PARAMS = {}
 const dateFormat = 'MMM D, YYYY, hh:mm A'
 
 function getDateString(date) {
@@ -25,6 +27,8 @@ function getHumanReadableStatus(type) {
 }
 
 export default class HistoryItem extends React.PureComponent {
+  static contextType = PaneRouterContext
+
   static defaultProps = {
     isSelected: false,
     userIds: undefined
@@ -51,48 +55,45 @@ export default class HistoryItem extends React.PureComponent {
   }
 
   componentDidMount() {
-    this._isMounted = true
     const {userIds} = this.props
     if (!userIds) {
       return
     }
-    getUsers(userIds).then(users => {
-      if (this._isMounted) {
-        this.setState({users})
-      }
+
+    this.usersSubscription = from(historyStore.getUsers(userIds)).subscribe(users => {
+      this.setState({users})
     })
   }
 
   componentWillUnmount() {
-    this._isMounted = false
-  }
-
-  handleKeyUp = event => {
-    const {onClick} = this.props
-    if (event.key === 'Enter') {
-      onClick()
+    if (this.usersSubscription) {
+      this.usersSubscription.unsubscribe()
     }
   }
 
-  handleKeyDown = event => {
-    // Prevent arrow keypress scrolling
-    const {onSelectPrev, onSelectNext} = this.props
-    if (event.key === 'ArrowDown') {
-      onSelectNext()
-      event.preventDefault()
-    } else if (event.key === 'ArrowUp') {
-      onSelectPrev()
-      event.preventDefault()
-    }
+  handleEnterKey = event => {
+    this.props.onClick()
+  }
+
+  handleArrowDownKey = () => {
+    this.props.onSelectNext()
+  }
+
+  handleArrowUpKey = () => {
+    this.props.onSelectPrev()
   }
 
   state = {users: []}
 
   render() {
+    const {ParameterizedLink, params} = this.context
     const {type, endTime, isSelected, isCurrentVersion, rev, onClick} = this.props
     const {users} = this.state
+    const {rev: oldRev, ...linkParams} = params
     return (
       <HistoryListItem
+        linkComponent={ParameterizedLink}
+        linkParams={Object.keys(linkParams).length === 0 ? EMPTY_PARAMS : linkParams}
         isCurrentVersion={isCurrentVersion}
         status={getHumanReadableStatus(type)}
         type={type}
@@ -100,9 +101,10 @@ export default class HistoryItem extends React.PureComponent {
         tooltip={format(endTime, dateFormat)}
         rev={rev}
         users={users}
-        onClick={onClick}
-        onKeyUp={this.handleKeyUp}
-        onKeyDown={this.handleKeyDown}
+        onSelect={onClick}
+        onEnterKey={this.handleEnterKey}
+        onArrowUpKey={this.handleArrowUpKey}
+        onArrowDownKey={this.handleArrowDownKey}
         isSelected={isSelected}
       />
     )

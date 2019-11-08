@@ -36,10 +36,17 @@ const getDeleteItem = ({draft, published, isHistoryEnabled}) => ({
   isDisabled: isHistoryEnabled || (!draft && !published)
 })
 
-const getHistoryMenuItem = ({draft, published, isLiveEditEnabled, isHistoryEnabled}) => {
-  if (isLiveEditEnabled) {
+const getHistoryMenuItem = ({
+  draft,
+  published,
+  isLiveEditEnabled,
+  isHistoryEnabled,
+  canShowHistoryList
+}) => {
+  if (isLiveEditEnabled || !canShowHistoryList) {
     return null
   }
+
   if (historyIsEnabled()) {
     return {
       action: 'browseHistory',
@@ -106,7 +113,8 @@ export const getMenuItems = ({
   published,
   isLiveEditEnabled,
   isHistoryEnabled,
-  selectedEvent
+  selectedEvent,
+  canShowHistoryList
 }) =>
   [
     getProductionPreviewItem,
@@ -117,5 +125,7 @@ export const getMenuItems = ({
     enabledActions.includes('delete') && getDeleteItem
   ]
     .filter(Boolean)
-    .map(fn => fn({draft, published, isLiveEditEnabled, isHistoryEnabled, selectedEvent}))
+    .map(fn =>
+      fn({draft, published, isLiveEditEnabled, isHistoryEnabled, selectedEvent, canShowHistoryList})
+    )
     .filter(Boolean)
