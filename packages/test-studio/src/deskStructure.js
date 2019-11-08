@@ -20,7 +20,13 @@ function Preview(props) {
     return <Spinner center message="Loading document" />
   }
 
-  return <JSONPretty data={historical || draft || published} theme={monikai} />
+  return (
+    <JSONPretty
+      data={historical || draft || published}
+      theme={monikai}
+      mainStyle="white-space: pre-wrap"
+    />
+  )
 }
 
 export default () =>
