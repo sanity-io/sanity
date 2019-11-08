@@ -4,7 +4,7 @@
 
 > **Sanity.io is the platform for structured content. It comes with an open-source editing environment called Sanity Studio that you can customize with JavaScript and a real-time hosted data store. Sanity has generous included quotas – so [getting started](https://www.sanity.io/create) is free.**
 
-![npm](https://img.shields.io/npm/v/@sanity/base) ![Downloads](https://img.shields.io/npm/dm/@sanity/client) [![](https://slack.sanity.io/badge.svg)](https://slack.sanity.io/) ![Follow on twitter](https://img.shields.io/twitter/follow/sanity_io?style=flat&color=blue)
+![npm](https://img.shields.io/npm/v/@sanity/base) ![Downloads](https://img.shields.io/npm/dm/@sanity/client) [![Join us on Slack](https://slack.sanity.io/badge.svg)](https://slack.sanity.io/) [![Follow on twitter](https://img.shields.io/twitter/follow/sanity_io?style=flat&color=blue)](https://twitter.com/sanity_io)
 
 ## Quickstart
 
