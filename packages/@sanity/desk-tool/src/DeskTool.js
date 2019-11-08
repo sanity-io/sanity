@@ -279,7 +279,6 @@ export default withRouterHOC(
         return <StructureError error={error} />
       }
 
-      // @todo include params in keys?
       const keys =
         (router.state.panes || []).reduce(
           (ids, group) => ids.concat(group.map(sibling => sibling.id)),

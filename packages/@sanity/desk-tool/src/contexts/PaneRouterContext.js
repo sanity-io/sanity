@@ -84,16 +84,13 @@ export const PaneRouterContext = React.createContext({
   ParameterizedLink: ({params, payload, ...props}) => missingContext(),
 
   // Replaces the current pane with a new one
-  replaceCurrent: (itemId, params) => missingContext(),
+  replaceCurrent: ({id, payload, params} = {}) => missingContext(),
 
   // Removes the current pane from the group
   closeCurrent: () => missingContext(),
 
-  // Replace or create a child pane with the given id and parameters
-  replaceChild: (itemId, params) => missingContext(),
-
   // Duplicate the current pane, with optional overrides for item ID and parameters
-  duplicateCurrent: (itemId, params) => missingContext(),
+  duplicateCurrent: ({payload, params} = {}) => missingContext(),
 
   // Set the current "view" for the pane
   setView: viewId => missingContext(),
@@ -209,8 +206,8 @@ export function getPaneRouterContextFactory(instance) {
       ParameterizedLink,
 
       // Replaces the current pane with a new one
-      replaceCurrent: (itemId, payload, params) => {
-        modifyCurrentGroup(() => [{id: itemId, payload, params}])
+      replaceCurrent: ({id, payload, params} = {}) => {
+        modifyCurrentGroup(() => [{id, payload, params}])
       },
 
       // Removes the current pane from the group
@@ -220,17 +217,8 @@ export function getPaneRouterContextFactory(instance) {
         )
       },
 
-      // Replace or create a child pane with the given id and parameters
-      replaceChild: (itemId, payload) => {
-        const {router} = instance.props
-        const {panes} = router.state
-        const newPanes = panes.slice()
-        newPanes.splice(groupIndex + 1, 1, [{id: itemId, payload}])
-        router.navigate({...router.state, panes: newPanes})
-      },
-
       // Duplicate the current pane, with optional overrides for payload, parameters
-      duplicateCurrent: (payload, params) => {
+      duplicateCurrent: ({payload, params} = {}) => {
         modifyCurrentGroup((siblings, item) => {
           const newGroup = siblings.slice()
           newGroup.splice(siblingIndex + 1, 0, {
