@@ -44,7 +44,8 @@ type FieldT = {
 
 export type AssetFromSource = {
   kind: 'assetDocumentId' | 'file' | 'base64' | 'url'
-  value: string
+  value: string | File,
+  options?: {originalFilename?: string, label?: string}
 }
 
 export interface Value {
@@ -164,11 +165,12 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     }
   }
 
-  uploadWith(uploader: Uploader, file: File) {
+  uploadWith(uploader: Uploader, file: File, label?: string) {
     const {type, onChange} = this.props
     const options = {
       metadata: get(type, 'options.metadata'),
-      storeOriginalFilename: get(type, 'options.storeOriginalFilename')
+      storeOriginalFilename: get(type, 'options.storeOriginalFilename'),
+      label
     }
     this.cancelUpload()
     this.setState({isUploading: true})
@@ -220,8 +222,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       throw new Error('Returned value must be an array with at least one item (asset)')
     }
     const firstAsset = assetFromSource[0]
-    // Try to grab filename from metadata
-    const filename = get(firstAsset, 'metadata.filename')
+    const originalFilename = get(firstAsset, 'options.originalFilename')
+    const label = get(firstAsset, 'options.label')
     switch (firstAsset.kind) {
       case 'assetDocumentId':
         onChange(
@@ -243,18 +245,18 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         break
       case 'file':
           const uploader = resolveUploader(type, firstAsset.value)
-          this.uploadWith(uploader, firstAsset.value)
+          this.uploadWith(uploader, firstAsset.value, label)
           break;
       case 'base64':
-        base64ToFile(firstAsset.value, filename).then(file => {
+        base64ToFile(firstAsset.value, originalFilename).then(file => {
           const uploader = resolveUploader(type, file)
-          this.uploadWith(uploader, file)
+          this.uploadWith(uploader, file, label)
         })
         break
       case 'url':
-        urlToFile(firstAsset.value, filename).then(file => {
+        urlToFile(firstAsset.value, originalFilename).then(file => {
           const uploader = resolveUploader(type, file)
-          this.uploadWith(uploader, file)
+          this.uploadWith(uploader, file, label)
         })
         break
       default: {
