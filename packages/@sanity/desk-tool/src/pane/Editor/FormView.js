@@ -33,7 +33,6 @@ export default class FormView extends React.PureComponent {
       isLoadingEvents: PropTypes.bool.isRequired,
       isOpen: PropTypes.bool.isRequired,
       selectedEvent: PropTypes.object,
-      selectedIsLatest: PropTypes.bool.isRequired,
       document: PropTypes.shape({
         isLoading: PropTypes.bool.isRequired,
         snapshot: PropTypes.shape({_type: PropTypes.string})
@@ -110,7 +109,6 @@ export default class FormView extends React.PureComponent {
         {history.isOpen ? (
           <HistoryForm
             document={history.document}
-            isLatest={history.selectedIsLatest}
             event={history.selectedEvent}
             schema={schema}
             type={type}

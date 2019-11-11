@@ -1,22 +1,25 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
+  display: inline-block;
+  vertical-align: top;
   -webkit-appearance: none;
   -webkit-font-smoothing: inherit;
   border: 0;
+  background: none;
   color: var(--text-muted);
-  font-family: inherit;
-  font-size: 0.875em;
-  line-height: calc(17 / 14);
-  font-weight: 500;
+  font: inherit;
+  line-height: 1;
+  font-weight: 600;
   padding: 0;
   border-radius: 2px;
   outline: none;
 
   /* Clickable focus container */
-  & > div {
-    padding: calc(0.25rem - 1px) 0.5rem calc(0.25rem + 1px);
+  @nest & > div {
+    padding: 0.25rem 0.5rem;
     outline: none;
+    display: flex;
   }
 
   @nest &:focus {
@@ -33,4 +36,27 @@
 .isActive {
   composes: root;
   color: var(--text-color);
+}
+
+.icon {
+  display: block;
+  padding: 1px;
+  height: calc(15 / 16 * 1em);
+
+  @nest & > svg {
+    display: block;
+    font-size: calc(15 / 16 * 1em);
+    line-height: 1;
+  }
+}
+
+.label {
+  display: block;
+  font-size: calc(13 / 16 * 1em);
+  line-height: calc(17 / 13);
+  height: calc(17 / 13 * 1em);
+
+  @nest .icon + & {
+    margin-left: 0.25rem;
+  }
 }

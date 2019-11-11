@@ -4,7 +4,6 @@ import PropTypes from 'prop-types'
 import promiseLatest from 'promise-latest'
 import {omit, noop, get, throttle, debounce} from 'lodash'
 import {distanceInWordsToNow} from 'date-fns'
-import {Tooltip} from 'react-tippy'
 import {from, merge, concat, timer, of as observableOf} from 'rxjs'
 import {catchError, switchMap, map, mapTo, tap} from 'rxjs/operators'
 import {resolveEnabledActions} from 'part:@sanity/base/util/document-action-utils'
@@ -30,14 +29,14 @@ import InspectView from '../components/InspectView'
 import InspectHistory from '../components/InspectHistory'
 import DocTitle from '../components/DocTitle'
 import TimeAgo from '../components/TimeAgo'
-import RestoreHistoryButton from './Editor/RestoreHistoryButton'
+import DocumentStatusBar from '../components/DocumentStatusBar/index'
 import History from './History'
-import documentStyles from './styles/Document.css'
+import documentPaneStyles from './styles/DocumentPane.css'
 import FormView from './Editor/FormView'
 import Actions from './Editor/Actions'
 import menuItemStyles from './styles/documentPaneMenuItems.css'
-import EditorStatusBadge from './EditorStatusBadge'
-import {getProductionPreviewItem, getMenuItems} from './documentPaneMenuItems'
+import {getDocumentPaneFooterActions} from './documentPaneFooterActions'
+import {/*getProductionPreviewItem,*/ getMenuItems} from './documentPaneMenuItems'
 import {validateDocument} from '@sanity/validation'
 
 // Want a nicer api for listen/unlisten
@@ -48,35 +47,18 @@ function listen(target, eventType, callback, useCapture = false) {
   }
 }
 
-function isInspectHotkey(event) {
-  return event.ctrlKey && event.code === 'KeyI' && event.altKey && !event.shiftKey
-}
-
-function isPublishHotkey(event) {
-  return event.ctrlKey && event.code === 'KeyP' && event.altKey && !event.shiftKey
-}
-
-function isPreviewHotkey(event) {
-  return event.ctrlKey && event.code === 'KeyO' && event.altKey && !event.shiftKey
-}
+// TODO: restore this logic when the active editor is known
+// function isInspectHotkey(event) {
+//   return event.ctrlKey && event.code === 'KeyI' && event.altKey && !event.shiftKey
+// }
+// function isPublishHotkey(event) {
+//   return event.ctrlKey && event.code === 'KeyP' && event.altKey && !event.shiftKey
+// }
+// function isPreviewHotkey(event) {
+//   return event.ctrlKey && event.code === 'KeyO' && event.altKey && !event.shiftKey
+// }
 
 const isValidationError = marker => marker.type === 'validation' && marker.level === 'error'
-
-const getSpinnerMessage = ({isCreatingDraft, isPublishing, isUnpublishing, isRestoring}) => {
-  if (isCreatingDraft) {
-    return 'Making changes…'
-  }
-  if (isPublishing) {
-    return 'Publishing…'
-  }
-  if (isUnpublishing) {
-    return 'Unpublishing…'
-  }
-  if (isRestoring) {
-    return 'Restoring revision…'
-  }
-  return null
-}
 
 const INITIAL_DOCUMENT_STATE = {
   isLoading: true,
@@ -504,20 +486,18 @@ export default withInitialValue(
         return this.setState({showValidationTooltip: false})
       }
 
-      if (isInspectHotkey(event) && !this.state.historyState.isOpen) {
-        return this.handleToggleInspect()
-      }
-
-      if (isPublishHotkey(event)) {
-        return this.handlePublishRequested()
-      }
-
-      if (isPreviewHotkey(event)) {
-        const {draft, published} = this.getDocumentSnapshots()
-        const item = getProductionPreviewItem({draft, published})
-        return item && item.url && window.open(item.url)
-      }
-
+      // TODO: enable hotkeys when there's a way to know which editor we're listening to
+      // if (isInspectHotkey(event) && !this.state.historyState.isOpen) {
+      //   return this.handleToggleInspect()
+      // }
+      // if (isPublishHotkey(event)) {
+      //   return this.handlePublishRequested()
+      // }
+      // if (isPreviewHotkey(event)) {
+      //   const {draft, published} = this.getDocumentSnapshots()
+      //   const item = getProductionPreviewItem({draft, published})
+      //   return item && item.url && window.open(item.url)
+      // }
       return null
     }
 
@@ -944,8 +924,8 @@ export default withInitialValue(
 
     renderDeleted() {
       return (
-        <div className={documentStyles.deletedDocument}>
-          <div className={documentStyles.deletedDocumentInner}>
+        <div className={documentPaneStyles.deletedDocument}>
+          <div className={documentPaneStyles.deletedDocumentInner}>
             <h3>This document just got deleted</h3>
             <p>You can undo deleting it until you close this window/tab</p>
             <Button onClick={this.handleRestoreDeleted}>Undo delete</Button>
@@ -956,8 +936,8 @@ export default withInitialValue(
 
     renderError(error) {
       return (
-        <div className={documentStyles.error}>
-          <div className={documentStyles.errorInner}>
+        <div className={documentPaneStyles.error}>
+          <div className={documentPaneStyles.errorInner}>
             <h3>We’re sorry, but your changes could not be applied.</h3>
             <UseState startWith={false}>
               {([isExpanded, setExpanded]) => (
@@ -969,7 +949,7 @@ export default withInitialValue(
                   <div>
                     {isExpanded && (
                       <textarea
-                        className={documentStyles.errorDetails}
+                        className={documentPaneStyles.errorDetails}
                         onFocus={e => e.currentTarget.select()}
                         value={error.stack}
                       />
@@ -989,8 +969,8 @@ export default withInitialValue(
       const typeName = options.type
       const doc = draft || published
       return (
-        <div className={documentStyles.unknownSchemaType}>
-          <div className={documentStyles.unknownSchemaTypeInner}>
+        <div className={documentPaneStyles.unknownSchemaType}>
+          <div className={documentPaneStyles.unknownSchemaTypeInner}>
             <h3>Unknown schema type</h3>
             <p>
               This document has the schema type <code>{typeName}</code>, which is not defined as a
@@ -999,7 +979,7 @@ export default withInitialValue(
             {__DEV__ && doc && (
               <div>
                 <h4>Here is the JSON representation of the document:</h4>
-                <pre className={documentStyles.jsonDump}>
+                <pre className={documentPaneStyles.jsonDump}>
                   <code>{JSON.stringify(doc, null, 2)}</code>
                 </pre>
               </div>
@@ -1055,10 +1035,10 @@ export default withInitialValue(
 
     renderActions = () => {
       const {draft, published} = this.getDocumentSnapshots()
-      const {markers, isReconnecting} = this.state
+      const {markers} = this.state
       const typeName = this.props.options.type
       const schemaType = schema.get(typeName)
-      const {historyState, showSavingStatus, showValidationTooltip} = this.state
+      const {historyState, showValidationTooltip} = this.state
       if (historyState.isOpen) {
         return null
       }
@@ -1068,53 +1048,11 @@ export default withInitialValue(
           markers={markers}
           type={schemaType}
           isLiveEditEnabled={this.isLiveEditEnabled()}
-          isReconnecting={isReconnecting}
-          showSavingStatus={showSavingStatus}
           showValidationTooltip={showValidationTooltip}
           onCloseValidationResults={this.handleCloseValidationResults}
           onToggleValidationResults={this.handleToggleValidationResults}
           onFocus={this.handleSetFocus}
         />
-      )
-    }
-
-    renderWorkflowButtons = () => {
-      const {draft, published} = this.getDocumentSnapshots()
-      const {isCreatingDraft, isPublishing, isReconnecting, isUnpublishing, markers} = this.state
-      const validation = markers.filter(marker => marker.type === 'validation')
-      const errors = validation.filter(marker => marker.level === 'error')
-      return (
-        <>
-          <Tooltip
-            arrow
-            theme="light"
-            disabled={'ontouchstart' in document.documentElement}
-            className={documentStyles.publishButton}
-            html={this.renderPublishButtonTooltip(errors, published)}
-          >
-            <Button
-              disabled={
-                isCreatingDraft ||
-                isPublishing ||
-                isReconnecting ||
-                isUnpublishing ||
-                !draft ||
-                errors.length > 0
-              }
-              onClick={this.handlePublishRequested}
-              color="primary"
-            >
-              Publish
-            </Button>
-          </Tooltip>
-          <div className={documentStyles.publishInfoUndoButton}>
-            {!published && (
-              <Button kind="simple" onClick={this.handleShowConfirmDelete}>
-                Delete document
-              </Button>
-            )}
-          </div>
-        </>
       )
     }
 
@@ -1129,86 +1067,123 @@ export default withInitialValue(
     }
 
     renderHistoryFooter = () => {
-      const {isReconnecting, isRestoring} = this.state
-      const {historyState} = this.state
       const selectedEvent = this.findSelectedHistoryEvent()
-
+      const {paneKey} = this.props
+      const {historyState, isReconnecting, isRestoring} = this.state
       const isLatestEvent = historyState.events[0] === selectedEvent
-      return (
+      const historyStatus = selectedEvent ? (
         <>
-          {isRestoring && (
-            <div className={documentStyles.spinnerContainer}>
-              <Spinner center message="Restoring revision…" />
-            </div>
-          )}
-          <RestoreHistoryButton
-            disabled={isRestoring || isReconnecting || isLatestEvent}
-            onRestore={() =>
+          Changed <TimeAgo time={selectedEvent.endTime} /> {isLatestEvent && <> (latest)</>}
+        </>
+      ) : null
+
+      const documentStatusProps = {
+        actions: [
+          {
+            color: 'primary',
+            disabled: isRestoring || isReconnecting || isLatestEvent,
+            id: 'restore',
+            label: 'Restore',
+            handleClick: () => {
               this.handleRestoreRevision({
                 id: selectedEvent.displayDocumentId,
                 rev: selectedEvent.rev
               })
             }
-          />
-        </>
+          }
+        ],
+        historyStatus,
+        idPrefix: paneKey,
+        isSyncing: isRestoring
+      }
+
+      return (
+        <div className={documentPaneStyles.footer}>
+          <DocumentStatusBar {...documentStatusProps} />
+        </div>
       )
     }
 
     renderFooter = () => {
       const {draft, published} = this.getDocumentSnapshots()
-      const {initialValue} = this.props
+      const {initialValue, options, paneKey} = this.props
       const value = draft || published || initialValue
-      const {historyState} = this.state
+      const {
+        isCreatingDraft,
+        isPublishing,
+        isReconnecting,
+        isUnpublishing,
+        markers,
+        showSavingStatus
+      } = this.state
+
+      const validation = markers.filter(marker => marker.type === 'validation')
+      const errors = validation.filter(marker => marker.level === 'error')
       const onShowHistory = this.handleOpenHistory
-      const spinnerMessage = getSpinnerMessage(this.props)
       const isLiveEditEnabled = this.isLiveEditEnabled()
       const canShowHistory = this.canShowHistoryList()
 
-      if (historyState.isOpen) {
-        return <div className={documentStyles.footer}>{this.renderHistoryFooter()}</div>
+      // get enabled actions value
+      const typeName = options.type
+      const schemaType = schema.get(typeName)
+      const enabledActions = resolveEnabledActions(schemaType)
+
+      const badges = [
+        !isLiveEditEnabled &&
+          published && {
+            id: 'published',
+            label: 'Published',
+            color: 'success',
+            title: `Published ${distanceInWordsToNow(published._updatedAt, {
+              addSuffix: true
+            })}`
+          },
+        !isLiveEditEnabled && draft && {id: 'draft', label: 'Draft', color: 'warning'},
+        isLiveEditEnabled && {id: 'live', label: 'Live', color: 'danger'}
+      ].filter(Boolean)
+
+      const actions = getDocumentPaneFooterActions({
+        draft,
+        enabledActions,
+        errors,
+        handlers: {
+          // TODO: discardChanges: ...,
+          publish: this.handlePublishRequested,
+          unpublish: this.handleShowConfirmUnpublish,
+          duplicate: this.handleCreateCopy,
+          delete: this.handleShowConfirmDelete
+        },
+        isCreatingDraft,
+        isLiveEditEnabled,
+        isPublishing,
+        isReconnecting,
+        isUnpublishing,
+        published
+      })
+
+      const historyStatus =
+        value && value._updatedAt ? (
+          <>
+            Updated <TimeAgo time={value._updatedAt} />
+          </>
+        ) : (
+          <>Empty</>
+        )
+
+      const documentStatusProps = {
+        badges,
+        actions,
+        historyStatus,
+        idPrefix: paneKey,
+        isDisconnected: isReconnecting,
+        isHistoryAvailable: canShowHistory,
+        isSyncing: showSavingStatus,
+        onHistoryStatusClick: onShowHistory
       }
 
       return (
-        <div className={documentStyles.footer}>
-          <div className={documentStyles.footerStatus}>
-            <div className={documentStyles.statusBadges}>
-              <EditorStatusBadge
-                liveEdit={isLiveEditEnabled}
-                isDraft={!!draft}
-                isPublished={!!published}
-                title={
-                  published &&
-                  `Published ${distanceInWordsToNow(published._updatedAt, {
-                    addSuffix: true
-                  })}`
-                }
-              />
-            </div>
-
-            {value && value._updatedAt && (
-              <div>
-                <span
-                  className={
-                    canShowHistory ? documentStyles.editedTimeClickable : documentStyles.editedTime
-                  }
-                  onClick={onShowHistory}
-                >
-                  {'Updated '}
-                  <TimeAgo time={value._updatedAt} />
-                </span>
-              </div>
-            )}
-          </div>
-
-          {spinnerMessage && (
-            <div className={documentStyles.spinnerContainer}>
-              <Spinner center message={spinnerMessage} />
-            </div>
-          )}
-
-          <div className={documentStyles.publishInfo}>
-            {!historyState.isOpen && draft && this.renderWorkflowButtons()}
-          </div>
+        <div className={documentPaneStyles.footer}>
+          <DocumentStatusBar {...documentStatusProps} />
         </div>
       )
     }
@@ -1229,6 +1204,10 @@ export default withInitialValue(
 
     handleShowConfirmDelete = () => {
       this.setState({showConfirmDelete: true})
+    }
+
+    handleShowConfirmUnpublish = () => {
+      this.setState({showConfirmUnpublish: true})
     }
 
     handleClosePane = () => {
@@ -1305,7 +1284,7 @@ export default withInitialValue(
 
       if (isLoading) {
         return (
-          <div className={documentStyles.loading}>
+          <div className={documentPaneStyles.loading}>
             <Spinner center message={`Loading ${schemaType.title}…`} delay={600} />
           </div>
         )
@@ -1344,7 +1323,6 @@ export default withInitialValue(
         history: {
           isOpen: historyState.isOpen,
           selectedEvent: selectedHistoryEvent,
-          selectedIsLatest: selectedHistoryEvent === historyState.events[0],
           isLoadingEvents: historyState.isLoading,
           isLoadingSnapshot: historical.isLoading,
           document: historical
@@ -1361,7 +1339,9 @@ export default withInitialValue(
       return (
         <div
           className={
-            historyState.isOpen ? documentStyles.paneWrapperWithHistory : documentStyles.paneWrapper
+            historyState.isOpen
+              ? documentPaneStyles.paneWrapperWithHistory
+              : documentPaneStyles.paneWrapper
           }
         >
           {historyState.isOpen && this.canShowHistoryList() && (
@@ -1395,7 +1375,7 @@ export default withInitialValue(
             onExpand={onExpand}
             onAction={this.handleMenuAction}
             menuItems={menuItems}
-            staticContent={this.renderFooter()}
+            staticContent={historyState.isOpen ? this.renderHistoryFooter() : this.renderFooter()}
             renderActions={this.renderActions}
             isClosable={isClosable}
             contentMaxWidth={672}

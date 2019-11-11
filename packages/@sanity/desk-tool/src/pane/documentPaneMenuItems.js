@@ -1,40 +1,40 @@
 import React from 'react'
-import TrashIcon from 'part:@sanity/base/trash-icon'
+// import TrashIcon from 'part:@sanity/base/trash-icon'
 import PublicIcon from 'part:@sanity/base/public-icon'
-import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
+// import VisibilityOffIcon from 'part:@sanity/base/visibility-off-icon'
 import BinaryIcon from 'part:@sanity/base/binary-icon'
-import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
+// import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 import HistoryIcon from 'part:@sanity/base/history-icon'
 import resolveProductionPreviewUrl from 'part:@sanity/transitional/production-preview/resolve-production-url?'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 import {historyIsEnabled} from './Editor/history'
 import styles from './styles/documentPaneMenuItems.css'
 
-const getDuplicateItem = ({draft, published, isHistoryEnabled}) => ({
-  action: 'duplicate',
-  title: 'Duplicate',
-  icon: ContentCopyIcon,
-  isDisabled: isHistoryEnabled || (!draft && !published)
-})
+// const getDuplicateItem = ({draft, published, isHistoryEnabled}) => ({
+//   action: 'duplicate',
+//   title: 'Duplicate',
+//   icon: ContentCopyIcon,
+//   isDisabled: isHistoryEnabled || (!draft && !published)
+// })
 
-const getUnpublishItem = ({published, isLiveEditEnabled, isHistoryEnabled}) =>
-  isLiveEditEnabled
-    ? null
-    : {
-        action: 'unpublish',
-        title: 'Unpublish…',
-        icon: VisibilityOffIcon,
-        isDisabled: isHistoryEnabled || !published
-      }
+// const getUnpublishItem = ({published, isLiveEditEnabled, isHistoryEnabled}) =>
+//   isLiveEditEnabled
+//     ? null
+//     : {
+//         action: 'unpublish',
+//         title: 'Unpublish…',
+//         icon: VisibilityOffIcon,
+//         isDisabled: isHistoryEnabled || !published
+//       }
 
-const getDeleteItem = ({draft, published, isHistoryEnabled}) => ({
-  group: 'danger',
-  action: 'delete',
-  title: 'Delete…',
-  icon: TrashIcon,
-  danger: true,
-  isDisabled: isHistoryEnabled || (!draft && !published)
-})
+// const getDeleteItem = ({draft, published, isHistoryEnabled}) => ({
+//   group: 'danger',
+//   action: 'delete',
+//   title: 'Delete…',
+//   icon: TrashIcon,
+//   danger: true,
+//   isDisabled: isHistoryEnabled || (!draft && !published)
+// })
 
 const getHistoryMenuItem = ({
   draft,
@@ -118,11 +118,11 @@ export const getMenuItems = ({
 }) =>
   [
     getProductionPreviewItem,
-    enabledActions.includes('delete') && getUnpublishItem,
-    enabledActions.includes('create') && getDuplicateItem,
+    // enabledActions.includes('delete') && getUnpublishItem,
+    // enabledActions.includes('create') && getDuplicateItem,
     getHistoryMenuItem,
-    getInspectItem,
-    enabledActions.includes('delete') && getDeleteItem
+    getInspectItem
+    // enabledActions.includes('delete') && getDeleteItem
   ]
     .filter(Boolean)
     .map(fn =>

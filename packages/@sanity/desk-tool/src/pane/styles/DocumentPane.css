@@ -45,30 +45,7 @@
 }
 
 .footer {
-  display: flex;
-  max-width: 640px;
-}
-
-.footerStatus {
-  flex: 1;
-  color: var(--text-color-secondary);
-  line-height: 1;
-}
-
-.publishInfo {
-  /* display: block; */
-}
-
-.publishButton {
-  display: block;
-  grid-area: publishButton;
-  justify-self: stretch;
-  width: stretch;
-
-  @nest & > * {
-    display: flex;
-    width: 100%;
-  }
+  max-width: 672px;
 }
 
 .publishInfoUndoButton {
@@ -106,28 +83,6 @@
   flex-grow: 1;
 }
 
-.syncStatus {
-  display: block;
-  opacity: 1;
-  font-size: var(--font-size-xsmall);
-  padding: 0 var(--small-padding);
-  white-space: nowrap;
-}
-
-.syncStatusSynced {
-  composes: syncStatus;
-}
-
-.syncStatusReconnecting {
-  composes: syncStatus;
-  color: var(--state-danger-color);
-}
-
-.syncStatusSyncing {
-  composes: syncStatus;
-  color: var(--state-success-color);
-}
-
 .overlay {
   position: absolute;
   background-color: rgba(255, 255, 255, 0.8);
@@ -151,25 +106,6 @@
   }
 }
 
-.syncSpinnerContainer {
-  display: flex;
-  position: relative;
-  align-items: center;
-}
-
-.syncSpinner {
-  display: block;
-
-  @nest & > svg {
-    display: block;
-    transform-origin: center center;
-    animation-name: spin;
-    animation-duration: 2s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-  }
-}
-
 .spinnerContainer {
   position: fixed;
   top: 0;
@@ -183,39 +119,4 @@
     position: absolute;
     height: calc(100vh - 6rem); /* 6rem is aprox the height of the header stuff */
   }
-}
-
-.statusBadges {
-  font-size: var(--font-size-xsmall--uppercase);
-  color: var(--text-muted);
-}
-
-.editedTime {
-  display: inline-block;
-  cursor: default;
-  font-size: var(--font-size-xsmall);
-  pointer-events: none;
-
-  @nest &::first-letter {
-    text-transform: uppercase;
-  }
-}
-
-.editedTimeClickable {
-  composes: editedTime;
-  cursor: pointer;
-
-  @media (--screen-medium) {
-    pointer-events: initial;
-  }
-
-  @media (hover: hover) {
-    @nest &:hover {
-      text-decoration: underline;
-    }
-  }
-}
-
-.statusBadges:not(:empty) + .editedTime {
-  margin-left: 0.5rem;
 }

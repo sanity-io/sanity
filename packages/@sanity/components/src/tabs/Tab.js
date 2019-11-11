@@ -60,7 +60,7 @@ export default class Tab extends React.PureComponent {
   }
 
   render() {
-    const {id, isActive, label, onClick, icon: Icon} = this.props
+    const {id, isActive, label, onClick, icon} = this.props
 
     return (
       <button
@@ -77,7 +77,8 @@ export default class Tab extends React.PureComponent {
         type="button"
       >
         <div tabIndex={-1}>
-          {Icon && <Icon />} {label}
+          {icon && <span className={styles.icon}>{React.createElement(icon)}</span>}{' '}
+          <span className={styles.label}>{label}</span>
         </div>
       </button>
     )
