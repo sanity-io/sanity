@@ -10,6 +10,7 @@ const MAX_CONCURRENT_UPLOADS = 4
 function uploadSanityAsset(assetType, file, options: UploadOptions = {}) {
   const extract = options.metadata
   const preserveFilename = options.storeOriginalFilename
+  const label = options.label
   return observableFrom(hashFile(file)).pipe(
     catchError((
       error // ignore if hashing fails for some reason
@@ -24,7 +25,7 @@ function uploadSanityAsset(assetType, file, options: UploadOptions = {}) {
           asset: existing
         })
       }
-      return client.observable.assets.upload(assetType, file, {extract, preserveFilename}).pipe(
+      return client.observable.assets.upload(assetType, file, {extract, preserveFilename, label}).pipe(
         map((event: any) =>
           event.type === 'response'
             ? {
@@ -46,7 +47,7 @@ export const uploadImageAsset = (file, options) => uploadAsset('image', file, op
 export const uploadFileAsset = (file, options) => uploadAsset('file', file, options)
 
 export function materializeReference(id) {
-  return observePaths(id, ['originalFilename', 'url', 'metadata'])
+  return observePaths(id, ['originalFilename', 'url', 'metadata', 'label'])
 }
 
 function fetchExisting(type, hash) {
