@@ -1,0 +1,116 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  position: relative;
+  display: flex;
+}
+
+.isMenuOpen {
+  composes: root;
+}
+
+.mainAction {
+  flex: 1;
+}
+
+.mainActionButton {
+  width: 100%;
+}
+
+.mainActionButtonWithMoreActions {
+  composes: mainActionButton;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.actionsDropDown {
+  margin-left: 1px;
+}
+
+.actionsDropDownButton {
+  vertical-align: top;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.menuContainer {
+  position: absolute;
+  top: -0.5em; /* 8px */
+  right: 0;
+  display: none;
+
+  @nest .isMenuOpen & {
+    display: block;
+  }
+}
+
+.menu {
+  list-style: none;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: var(--component-bg);
+  color: var(--text-color);
+  composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
+  user-select: none;
+  text-align: left;
+  overflow: auto;
+  overflow-x: hidden;
+  margin: 0;
+  padding: calc(var(--small-padding) / 2) 0;
+  border-radius: var(--border-radius-medium);
+}
+
+.menuItem {
+  white-space: nowrap;
+}
+
+.menuItemButton {
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
+  -webkit-appearance: none;
+  -webkit-font-smoothing: inherit;
+  font: inherit;
+  line-height: calc(25 / 16);
+  color: inherit;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+
+  @nest &[disabled] {
+    opacity: 0.25;
+
+    @media (hover: hover) {
+      @nest &:hover {
+        color: inherit;
+        background: none;
+      }
+    }
+  }
+
+  @nest & > div {
+    outline: none;
+    padding: 0.5em 0.75em;
+  }
+}
+
+.menuItemIcon {
+  display: inline-block;
+  vertical-align: top;
+  width: 1em;
+  margin: 0 0.5em 0 0;
+
+  @nest & svg {
+    display: block;
+    margin: 0.25em 0;
+  }
+}
+
+.menuItemLabel {
+  display: inline-block;
+  vertical-align: top;
+}

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import {format, isToday, isYesterday} from 'date-fns'
 import FormBuilder from 'part:@sanity/form-builder'
 import Spinner from 'part:@sanity/components/loading/spinner'
-import TimeAgo from '../../components/TimeAgo'
 import Delay from '../../utils/Delay'
 import styles from '../styles/Editor.css'
 
@@ -26,7 +25,6 @@ export default class HistoryForm extends React.PureComponent {
   static propTypes = {
     schema: PropTypes.object.isRequired,
     type: PropTypes.object.isRequired,
-    isLatest: PropTypes.bool.isRequired,
     event: PropTypes.shape({
       displayDocumentId: PropTypes.string,
       rev: PropTypes.string,
@@ -55,8 +53,9 @@ export default class HistoryForm extends React.PureComponent {
     this.setState({focusPath})
   }
 
+  // eslint-disable-next-line complexity
   render() {
-    const {schema, type, event, isLatest, document} = this.props
+    const {schema, type, event, document} = this.props
     const {snapshot, isLoading: isLoadingSnapshot} = document
     const {focusPath, prevSnapshot} = this.state
     const usedSnapshot = snapshot || prevSnapshot
@@ -81,15 +80,6 @@ export default class HistoryForm extends React.PureComponent {
             </div>
           </Delay>
         )}
-        <div className={styles.top}>
-          {usedSnapshot && (
-            <span className={styles.editedTime}>
-              {'Changed '}
-              <TimeAgo time={event.endTime} />
-              {isLatest && <span> - Latest version</span>}
-            </span>
-          )}
-        </div>
 
         <form className={styles.editor} id="Sanity_Default_DeskTool_Editor_ScrollContainer">
           {!isLoading && !usedSnapshot && (

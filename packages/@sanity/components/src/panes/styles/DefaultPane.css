@@ -118,7 +118,7 @@
   justify-content: stretch;
   outline: none;
 
-  &:focus {
+  @nest &:focus {
     background-color: color(var(--brand-primary) a(20%));
   }
 }
@@ -198,8 +198,8 @@
   margin: 0;
   padding: 1em;
   font-size: 1rem;
-  line-height: calc(21 / 16);
-  font-weight: 700;
+  line-height: 1;
+  font-weight: 800;
   user-select: none;
   cursor: default;
   white-space: nowrap;
@@ -416,13 +416,12 @@
   right: 0;
   width: 100%;
   z-index: var(--zindex-pane);
-  padding: 0.75em var(--medium-padding);
 
   @supports (padding-bottom: env(safe-area-inset-bottom)) {
-    padding-bottom: calc(var(--small-padding) + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
-  /* NOTE: Work-around for hiding the snack bar when the keyboard is visible on small screens */
+  /* NOTE: Workaround for hiding the footer when the keyboard is visible on small screens */
   @media (max-height: 32em) {
     position: relative;
   }
@@ -439,13 +438,5 @@
     right: 0;
     top: -1px;
     border-top: 1px solid var(--hairline-color);
-  }
-
-  @media (hover: hover) {
-    visibility: hidden;
-
-    @nest .root:hover & {
-      visibility: visible;
-    }
   }
 }
