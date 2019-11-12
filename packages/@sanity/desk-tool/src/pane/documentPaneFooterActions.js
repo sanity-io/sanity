@@ -33,12 +33,14 @@ export function getDocumentPaneFooterActions(props) {
       label: 'Publish',
       handleClick: handlers.publish
     },
-    !isLiveEditEnabled && {
-      id: 'discardChanges',
-      label: 'Discard changes',
-      icon: CloseIcon,
-      handleClick: handlers.discardChanges
-    },
+    enabledActions.includes('delete') &&
+      !isLiveEditEnabled && {
+        id: 'discardChanges',
+        label: 'Discard changes',
+        icon: CloseIcon,
+        handleClick: handlers.discardChanges,
+        disabled: !draft || !published
+      },
     enabledActions.includes('delete') &&
       !isLiveEditEnabled && {
         disabled: !published,

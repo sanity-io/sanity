@@ -105,6 +105,7 @@ const INITIAL_STATE = {
   showConfirmDelete: false,
   showConfirmUnpublish: false,
   showValidationTooltip: false,
+  showConfirmDiscardDraft: false,
 
   draft: INITIAL_DOCUMENT_STATE,
   published: INITIAL_DOCUMENT_STATE,
@@ -519,6 +520,23 @@ export default withInitialValue(
       return null
     }
 
+    handleDiscardDraft = () => {
+      this.setState({showConfirmDiscardDraft: true})
+    }
+
+    handleConfirmDiscardDraft = () => {
+      this.setState({showConfirmDiscardDraft: false})
+
+      this.draft.delete()
+      this.draft.commit().subscribe(() => {
+        // todo: error handling
+      })
+    }
+
+    handleCancelDiscardDraft = () => {
+      this.setState({showConfirmDiscardDraft: false})
+    }
+
     handlePublishRequested = () => {
       const {markers, validationPending, draft} = this.state
       if (!draft.snapshot) {
@@ -643,7 +661,7 @@ export default withInitialValue(
     }
 
     handleCloseHistory = ctx => {
-      const context = ctx || this.context
+      const context = this.context || ctx
       if (this._historyEventsSubscription) {
         this._historyEventsSubscription.unsubscribe()
       }
@@ -1114,7 +1132,8 @@ export default withInitialValue(
         isReconnecting,
         isUnpublishing,
         markers,
-        showSavingStatus
+        showSavingStatus,
+        showConfirmDiscardDraft
       } = this.state
 
       const validation = markers.filter(marker => marker.type === 'validation')
@@ -1147,7 +1166,7 @@ export default withInitialValue(
         enabledActions,
         errors,
         handlers: {
-          // TODO: discardChanges: ...,
+          discardChanges: this.handleDiscardDraft,
           publish: this.handlePublishRequested,
           unpublish: this.handleShowConfirmUnpublish,
           duplicate: this.handleCreateCopy,
@@ -1170,6 +1189,20 @@ export default withInitialValue(
           <>Empty</>
         )
 
+      let confirmationDialog
+      if (showConfirmDiscardDraft) {
+        confirmationDialog = {
+          message: (
+            <>
+              <strong>Are you sure</strong> you want to discard all changes since last published?
+            </>
+          ),
+          confirmText: 'Discard',
+          handleConfirm: this.handleConfirmDiscardDraft,
+          handleCancel: this.handleCancelDiscardDraft
+        }
+      }
+
       const documentStatusProps = {
         badges,
         actions,
@@ -1178,7 +1211,8 @@ export default withInitialValue(
         isDisconnected: isReconnecting,
         isHistoryAvailable: canShowHistory,
         isSyncing: showSavingStatus,
-        onHistoryStatusClick: onShowHistory
+        onHistoryStatusClick: onShowHistory,
+        confirmationDialog
       }
 
       return (
