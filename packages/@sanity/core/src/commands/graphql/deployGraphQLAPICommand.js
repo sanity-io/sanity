@@ -18,6 +18,5 @@ export default {
   group: 'graphql',
   description: 'Deploy a GraphQL API from the current Sanity schema',
   action: lazyRequire(require.resolve('../../actions/graphql/deployApiAction')),
-  helpText,
-  hideFromHelp: true
+  helpText
 }
