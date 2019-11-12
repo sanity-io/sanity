@@ -19,6 +19,22 @@ Array [
     ],
   },
   Object {
+    "displayDocumentId": "fkaBMrgakwvEbFBu2QkLGy",
+    "documentIDs": Array [
+      "drafts.fkaBMrgakwvEbFBu2QkLGy",
+    ],
+    "endTime": "2019-03-25T15:41:29.637992Z",
+    "rev": "eo1x8g-vrd-g8e-ffa-s8i0v3gb1",
+    "startTime": "2019-03-25T15:41:29.637992Z",
+    "transactionIds": Array [
+      "eo1x8g-vrd-g8e-ffa-s8i0v3gb1",
+    ],
+    "type": "discardDraft",
+    "userIds": Array [
+      "pVbf95zEZ",
+    ],
+  },
+  Object {
     "displayDocumentId": "drafts.fkaBMrgakwvEbFBu2QkLGy",
     "documentIDs": Array [
       "drafts.fkaBMrgakwvEbFBu2QkLGy",
