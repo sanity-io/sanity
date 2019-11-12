@@ -4,7 +4,7 @@ import {SidecarLayout, isSidecarEnabled} from 'part:@sanity/default-layout/sidec
 import {isSidecarOpenSetting} from 'part:@sanity/default-layout/sidecar-datastore'
 import styles from './styles/Sidecar.css'
 
-const StudioLayout = StudioHintsComponents.StudioHintsLayout
+const StudioHints = StudioHintsComponents.StudioHintsLayout
 
 class Sidecar extends React.PureComponent {
   state = {

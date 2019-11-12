@@ -25,7 +25,6 @@ import HintsCard from './components/HintsCard'
 const styles = {}
 
 function StudioHintsLayout() {
-  console.log('Studio Hints phoning home', studioHintsConfig)
   if (!studioHintsConfig) {
     return null
   }

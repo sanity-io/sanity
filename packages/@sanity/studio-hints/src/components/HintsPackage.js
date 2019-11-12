@@ -113,6 +113,7 @@ export default class HintsPackage extends React.PureComponent {
     return -1
   }
 
+<<<<<<< HEAD
   */
 
   renderError(title, message) {
@@ -127,6 +128,10 @@ export default class HintsPackage extends React.PureComponent {
         </div>
       </div>
     )
+=======
+  componentDidMount = () => {
+    this.fetchHintsPackage(this.props.slug)
+>>>>>>> 64a9b21a1... add missing fetch param, add hints projection
   }
 
   render() {
