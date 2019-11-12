@@ -1,5 +1,10 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+.root {
+  max-width: calc(640px + var(--medium-padding) + var(--medium-padding));
+  flex-grow: 1;
+}
+
 .error,
 .deletedDocument,
 .unknownSchemaType {
@@ -132,7 +137,6 @@
 .editor {
   padding: var(--medium-padding);
   padding-bottom: 8rem;
-  flex-grow: 1;
 }
 
 .syncStatus {

@@ -105,7 +105,7 @@ export default class FormView extends React.PureComponent {
     }
 
     return (
-      <>
+      <div className={styles.root}>
         {history.isOpen ? (
           <HistoryForm
             document={history.document}
@@ -134,7 +134,7 @@ export default class FormView extends React.PureComponent {
         {afterEditorComponents.map((AfterEditorComponent, i) => (
           <AfterEditorComponent key={i} documentId={published._id} />
         ))}
-      </>
+      </div>
     )
   }
 }
