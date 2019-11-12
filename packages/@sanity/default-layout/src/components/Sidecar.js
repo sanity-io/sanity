@@ -5,27 +5,13 @@ import StudioHintsComponents from 'part:@sanity/studio-hints/components'
 import styles from './styles/Sidecar.css'
 
 const StudioHints = StudioHintsComponents.StudioHintsLayout
-
+// TODO: Open/close logic?
 class Sidecar extends React.PureComponent {
-  static propTypes = {
-    isOpen: PropTypes.bool
-  }
-
-  static defaultProps = {
-    isOpen: true
-  }
-
   render() {
     if (!studioHintsConfig) {
       return null
     }
-    const {isOpen} = this.props
-    return (
-      <div className={styles.root}>
-        <p>I'm a sidecar</p>
-        {StudioHints()}
-      </div>
-    )
+    return <div className={styles.root}>{StudioHints()}</div>
   }
 }
 

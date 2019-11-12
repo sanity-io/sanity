@@ -1,9 +1,14 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 :root {
   --nav-bar-box: 3.0625em; /* 49px */
 }
 
 .root {
-  background: red;
+  display: flex;
+  flex-direction: column;
   min-height: calc(100vh - var(--nav-bar-box));
-  min-width: 400px;
+  max-height: calc(100vh - var(--nav-bar-box));
+  max-width: 420px;
+  width: 100%;
 }

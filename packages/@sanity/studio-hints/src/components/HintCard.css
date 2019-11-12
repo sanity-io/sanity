@@ -1,0 +1,25 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: flex;
+  justify-content: stretch;
+  padding: var(--medium-padding) var(--small-padding);
+  border-radius: var(--border-radius-medium);
+  border: 1px solid var(--gray);
+  margin-bottom: var(--medium-padding);
+}
+
+.link {
+  color: inherit;
+  display: block;
+  width: 100%;
+}
+
+.cardTitle {
+  font-size: var(--font-size-h4);
+  margin: 0;
+}
+
+.cardSummary {
+  margin: 0;
+}
