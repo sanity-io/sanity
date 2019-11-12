@@ -1,0 +1,9 @@
+:root {
+  --nav-bar-box: 3.0625em; /* 49px */
+}
+
+.root {
+  background: red;
+  min-height: calc(100vh - var(--nav-bar-box));
+  min-width: 400px;
+}

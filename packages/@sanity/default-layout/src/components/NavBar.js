@@ -15,6 +15,12 @@ import SearchContainer from './SearchContainer'
 import SpaceSwitcher from './SpaceSwitcher'
 import styles from './styles/NavBar.css'
 
+// TODO:
+// - 1. Hints tray part exists -> yes? 2. no? 4.
+// - 2. Local store says to show hints mode? yes? 3. No? 4.
+// - 3. render sidecarStatus button
+// - 4. Don't render sidecar button at all
+
 function NavBar(props) {
   const {
     searchIsOpen,
@@ -103,6 +109,7 @@ function NavBar(props) {
       <div className={styles.loginStatus} ref={onSetLoginStatusElement}>
         <LoginStatus onLogout={onUserLogout} user={user} />
       </div>
+      <div className={styles.sidecarStatus}>?</div>
       <button className={styles.searchButton} onClick={onSearchOpen} type="button">
         <div className={styles.searchButtonInner} tabIndex={-1}>
           <span className={styles.searchButtonIcon}>
