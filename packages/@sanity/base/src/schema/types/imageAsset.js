@@ -74,6 +74,20 @@ export default {
       name: 'metadata',
       type: 'sanity.imageMetadata',
       title: 'Metadata'
+    },
+    {
+      name: 'source',
+      type: 'string',
+      title: 'Source',
+      readOnly: true,
+      fieldset: 'system'
+    },
+    {
+      name: 'sourceId',
+      type: 'string',
+      title: 'Source ID',
+      readOnly: true,
+      fieldset: 'system'
     }
   ],
   preview: {
