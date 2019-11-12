@@ -4,10 +4,9 @@ import studioHintsConfig from 'part:@sanity/studio-hints/config?'
 import StudioHintsComponents from 'part:@sanity/studio-hints/components'
 import styles from './styles/Sidecar.css'
 
-const StudioLayout = StudioHintsComponents.StudioHintsLayout
+const StudioHints = StudioHintsComponents.StudioHintsLayout
 
 class Sidecar extends React.PureComponent {
-  // What else does this need to do?
   static propTypes = {
     isOpen: PropTypes.bool
   }
@@ -17,9 +16,6 @@ class Sidecar extends React.PureComponent {
   }
 
   render() {
-    console.log('studioHintsConfig', studioHintsConfig)
-    console.log('StudioHintsComponents', StudioHintsComponents)
-
     if (!studioHintsConfig) {
       return null
     }
@@ -27,8 +23,7 @@ class Sidecar extends React.PureComponent {
     return (
       <div className={styles.root}>
         <p>I'm a sidecar</p>
-        {isOpen && <p>I'm showing hints!</p>}
-        {StudioLayout()}
+        {StudioHints()}
       </div>
     )
   }

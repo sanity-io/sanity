@@ -10,7 +10,7 @@ const docsStudioSanityClient = new SanityClient({
 
 class HintsPackage extends React.PureComponent {
   static props = {
-    slug: PropTypes.string
+    slug: PropTypes.string.isRequired
   }
 
   state = {
@@ -20,7 +20,10 @@ class HintsPackage extends React.PureComponent {
 
   fetchHintsPackage(slug) {
     docsStudioSanityClient
-      .fetch('*[_type == "hintsPackage" && slug.current == $slug][0]', {slug})
+      .fetch(
+        '*[_type == "hintsPackage" && slug.current == $slug][0]{_id, title, slug, links, hints[]->{_id, title, summary, body}}',
+        {slug}
+      )
       .then(hintsPackage => {
         this.setState({hintsPackage})
       })
@@ -28,7 +31,7 @@ class HintsPackage extends React.PureComponent {
   }
 
   componentDidMount = () => {
-    this.fetchHintsPackage()
+    this.fetchHintsPackage(this.props.slug)
   }
 
   render() {
