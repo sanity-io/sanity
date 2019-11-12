@@ -13,7 +13,7 @@ Object {
 exports[`builds list items with child defined through builder 1`] = `
 Object {
   "child": Object {
-    "canHandleIntent": undefined,
+    "canHandleIntent": [Function],
     "child": [Function],
     "defaultLayout": undefined,
     "displayOptions": undefined,

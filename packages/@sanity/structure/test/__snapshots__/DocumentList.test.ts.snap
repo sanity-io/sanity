@@ -2,7 +2,7 @@
 
 exports[`builds document lists through setters (alt order #2) 1`] = `
 Object {
-  "canHandleIntent": undefined,
+  "canHandleIntent": [Function],
   "child": [Function],
   "defaultLayout": undefined,
   "displayOptions": undefined,
@@ -30,7 +30,7 @@ Object {
 
 exports[`builds document lists through setters (alt order) 1`] = `
 Object {
-  "canHandleIntent": undefined,
+  "canHandleIntent": [Function],
   "child": [Function],
   "defaultLayout": undefined,
   "displayOptions": undefined,
@@ -58,7 +58,7 @@ Object {
 
 exports[`builds document lists through setters 1`] = `
 Object {
-  "canHandleIntent": undefined,
+  "canHandleIntent": [Function],
   "child": [Function],
   "defaultLayout": "card",
   "displayOptions": undefined,
@@ -86,7 +86,7 @@ Object {
 
 exports[`builds document lists with only required properties 1`] = `
 Object {
-  "canHandleIntent": undefined,
+  "canHandleIntent": [Function],
   "child": [Function],
   "defaultLayout": undefined,
   "displayOptions": undefined,
