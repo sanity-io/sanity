@@ -1,33 +1,13 @@
-/* eslint-disable react/prop-types */
 import React from 'react'
 import RefreshIcon from 'part:@sanity/base/sync-icon'
 import EyeIcon from 'part:@sanity/base/eye-icon'
 import EditIcon from 'part:@sanity/base/edit-icon'
-import Spinner from 'part:@sanity/components/loading/spinner'
-import JSONPretty from 'react-json-pretty'
-import monikai from 'react-json-pretty/dist/monikai'
 import JsonDocumentDump from './components/JsonDocumentDump'
+import {DeveloperPreview} from './previews/developer'
 import S from '@sanity/desk-tool/structure-builder'
 
 // For testing. Bump the timeout to introduce som lag
 const delay = (val, ms = 10) => new Promise(resolve => setTimeout(resolve, ms, val))
-
-function Preview(props) {
-  const {history, draft, published} = props
-  const {snapshot: historical, isLoading} = history.document
-
-  if (!historical && isLoading) {
-    return <Spinner center message="Loading document" />
-  }
-
-  return (
-    <JSONPretty
-      data={historical || draft || published}
-      theme={monikai}
-      mainStyle="white-space: pre-wrap"
-    />
-  )
-}
 
 export default () =>
   S.list()
@@ -143,7 +123,13 @@ export default () =>
               S.document()
                 .documentId(documentId)
                 .schemaType('author')
-                .views([S.view.form().icon(EditIcon), S.view.component(Preview).icon(EyeIcon)])
+                .views([
+                  S.view.form().icon(EditIcon),
+                  S.view
+                    .component(DeveloperPreview)
+                    .icon(EyeIcon)
+                    .title('Preview')
+                ])
             )
       }),
 
