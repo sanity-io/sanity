@@ -49,6 +49,9 @@ class TabbedPane extends React.Component {
   renderHeaderViewMenu = () => {
     const {styles, views = [], onSplitPane, onCloseView, isClosable} = this.props
 
+    // Do not render view menu when there are only 1 view
+    if (views.length <= 1) return null
+
     return (
       <div className={styles.headerViewMenu}>
         {this.renderTabs()}
