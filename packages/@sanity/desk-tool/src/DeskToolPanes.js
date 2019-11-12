@@ -1,34 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {sumBy} from 'lodash'
-import {Observable, merge, of} from 'rxjs'
-import {map, mapTo, delay, share, debounceTime, distinctUntilChanged} from 'rxjs/operators'
+import {merge, of} from 'rxjs'
+import {mapTo, delay, distinctUntilChanged} from 'rxjs/operators'
 import SplitController from 'part:@sanity/components/panes/split-controller'
 import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
 import LoadingPane from './pane/LoadingPane'
 import Pane from './pane/Pane'
+import windowWidth$ from './utils/windowWidth'
 import {PaneRouterContext, getPaneRouterContextFactory, LOADING_PANE} from './index'
 
 const COLLAPSED_WIDTH = 55
 const BREAKPOINT_SCREEN_MEDIUM = 512
-
-const fromWindowEvent = eventName =>
-  new Observable(subscriber => {
-    const handler = event => subscriber.next(event)
-    window.addEventListener(eventName, handler)
-    return () => {
-      window.removeEventListener(eventName, handler)
-    }
-  })
-
-const orientationChange$ = fromWindowEvent('orientationchange')
-const resize$ = fromWindowEvent('resize')
-
-const windowWidth$ = merge(orientationChange$, resize$).pipe(
-  share(),
-  debounceTime(50),
-  map(() => window.innerWidth)
-)
 
 function getPaneMinSize(pane) {
   return pane.type === 'document' ? 500 : 320
