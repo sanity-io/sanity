@@ -57,7 +57,8 @@ const query = '*[_type == "comment" && authorId != $ownerId]'
 const params = {ownerId: 'bikeOwnerUserId'}
 
 const subscription = client.listen(query, params)
-  .subscribe(comment => {
+  .subscribe(update => {
+    const comment = update.result
     console.log(`${comment.author} commented: ${comment.text}`)
   })
 
