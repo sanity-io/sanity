@@ -21,8 +21,7 @@ import React from 'react'
 import studioHintsConfig from 'part:@sanity/studio-hints/config?'
 import HintsPackage from './components/HintsPackage'
 import HintsCard from './components/HintsCard'
-
-const styles = {}
+import styles from './StudioHints.css'
 
 function StudioHintsLayout() {
   if (!studioHintsConfig) {

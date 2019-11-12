@@ -4,8 +4,7 @@ import {isEmpty} from 'lodash'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import studioHintsConfig from 'part:@sanity/default-layout/studio-hints-config'
 import WarningIcon from 'part:@sanity/base/warning-icon'
-import {locationSetting, updateLocation} from '../datastore'
-import client from '../client'
+import {locationSetting, getHints, updateLocation} from '../datastore'
 import {resolveUrl} from './utils'
 import LinksList from './LinksList'
 // import HintPage from './HintPage'
@@ -25,36 +24,7 @@ export default class HintsPackage extends React.PureComponent {
   subscription = null
 
   fetchHintsPackage(repoId) {
-    const query = `//groq
-      *[_type == "starterTemplate" && repoId == $repoId && !(_id in path('drafts.**'))][0]{
-        hintsPackage->{
-          _id, title, slug, links, hintsTitle, linksTitle,
-          hints[]{
-            ...,
-            hint->{
-              _type, _id, title, summary, slug, description,
-              body[]{
-                ...,
-                markDefs[] {
-                  ...,
-                  _type == 'internalLink' => {
-                    ...(@->) {
-                      slug,
-                      "type": ^._type
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "sidebarRemovalInstructions": *[_type == "article" && slug.current == $removeHintsArticleSlug && !(_id in path('drafts.**'))][0]{
-          _type, _id, slug
-        }
-      }`
-
-    client
-      .fetch(query, {repoId, removeHintsArticleSlug})
+    getHints(repoId, removeHintsArticleSlug)
       .then(result => {
         const {hintsPackage, sidebarRemovalInstructions} = result
         this.setState({hintsPackage, sidebarRemovalInstructions, isLoading: false})
@@ -113,7 +83,6 @@ export default class HintsPackage extends React.PureComponent {
     return -1
   }
 
-<<<<<<< HEAD
   */
 
   renderError(title, message) {
@@ -128,10 +97,6 @@ export default class HintsPackage extends React.PureComponent {
         </div>
       </div>
     )
-=======
-  componentDidMount = () => {
-    this.fetchHintsPackage(this.props.slug)
->>>>>>> 64a9b21a1... add missing fetch param, add hints projection
   }
 
   render() {

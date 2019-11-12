@@ -5,7 +5,7 @@ import {isSidecarOpenSetting} from 'part:@sanity/default-layout/sidecar-datastor
 import styles from './styles/Sidecar.css'
 
 const StudioHints = StudioHintsComponents.StudioHintsLayout
-
+// TODO: Open/close logic?
 class Sidecar extends React.PureComponent {
   state = {
     isOpen: true,
