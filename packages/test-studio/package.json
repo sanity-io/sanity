@@ -34,6 +34,7 @@
     "@sanity/production-preview": "0.147.0",
     "@sanity/rich-date-input": "0.147.0",
     "@sanity/storybook": "0.147.0",
+    "@sanity/studio-hints": "0.147.0",
     "@sanity/vision": "0.147.2",
     "@turf/helpers": "^6.0.1",
     "@turf/points-within-polygon": "^5.1.5",

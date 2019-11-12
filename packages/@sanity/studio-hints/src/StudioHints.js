@@ -1,10 +1,12 @@
 import React from 'react'
 import studioHintsConfig from 'part:@sanity/studio-hints/config?'
 import HintsPackage from './components/HintsPackage'
+import HintsCard from './components/HintsCard'
 
 const styles = {}
 
-function StudioHints() {
+function StudioHintsLayout() {
+  console.log('Studio Hints phoning home', studioHintsConfig)
   if (!studioHintsConfig) {
     return null
   }
@@ -18,4 +20,7 @@ function StudioHints() {
   )
 }
 
-export default StudioHints
+export default {
+  HintsCard: HintsCard,
+  StudioHintsLayout: StudioHintsLayout
+}

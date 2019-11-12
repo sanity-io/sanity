@@ -38,6 +38,7 @@
     "@sanity/google-maps-input",
     "@sanity/vision",
     "@sanity/production-preview",
+    "@sanity/studio-hints",
     "dashboard-widget-cats",
     "dashboard-widget-document-count",
     "dashboard-widget-document-list",
@@ -71,6 +72,10 @@
     {
       "name": "part:@sanity/desk-tool/structure",
       "path": "src/deskStructure.js"
+    },
+    {
+      "implements": "part:@sanity/studio-hints/config",
+      "path": "src/studioHintsConfig.js"
     },
     {
       "name": "part:@sanity/base/initial-value-templates",
