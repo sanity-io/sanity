@@ -10,7 +10,8 @@ export default class SnackbarProvider extends React.Component {
 
   static childContextTypes = {
     addToSnackQueue: PropTypes.func,
-    handleDismissSnack: PropTypes.func
+    handleDismissSnack: PropTypes.func,
+    updateSnack: PropTypes.func
   }
 
   constructor(props, context) {
@@ -66,6 +67,19 @@ export default class SnackbarProvider extends React.Component {
     this.snackQueue.push(newSnack)
     this.handleMaxSnackDisplay()
     return newSnack.id
+  }
+
+  updateSnack = (snackId, contextSnack) => {
+    const indexInQueue = this.snackQueue.findIndex(snack => snack.id === snackId)
+    if (indexInQueue > -1) {
+      this.snackQueue[indexInQueue] = {...this.snackQueue[indexInQueue], ...contextSnack}
+    } else {
+      this.setState(({activeSnacks}) => ({
+        activeSnacks: activeSnacks.map(snack =>
+          snack.id === snackId ? {...snack, ...contextSnack} : snack
+        )
+      }))
+    }
   }
 
   /*
@@ -124,7 +138,7 @@ export default class SnackbarProvider extends React.Component {
   }
 
   /*
-    Dismiss the snack from the view, 
+    Dismiss the snack from the view,
     then call to remove it from activeSnacks in order to
     transition it out
   */
@@ -144,7 +158,7 @@ export default class SnackbarProvider extends React.Component {
     Remove the snack from the state
     The removal is delayed in order to transition the snack out first
   */
-  handleRemoveSnack = (id) => {
+  handleRemoveSnack = id => {
     this._removeTimer = setTimeout(() => {
       this.setState(({activeSnacks}) => ({
         activeSnacks: activeSnacks.filter(snack => snack.id !== id)
@@ -158,14 +172,15 @@ export default class SnackbarProvider extends React.Component {
 
   getChildContext = () => ({
     addToSnackQueue: this.addToSnackQueue,
-    handleDismissSnack: this.handleDismissSnack
+    handleDismissSnack: this.handleDismissSnack,
+    updateSnack: this.updateSnack
   })
 
   render() {
     const {activeSnacks} = this.state
     const {children} = this.props
     return (
-      <div>
+      <>
         {children}
         <Portal>
           <div role="region" aria-label="notifications" tabIndex="-1">
@@ -180,7 +195,7 @@ export default class SnackbarProvider extends React.Component {
             ))}
           </div>
         </Portal>
-      </div>
+      </>
     )
   }
 }

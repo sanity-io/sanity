@@ -7,6 +7,7 @@ export default class DefaultSnackbar extends React.PureComponent {
     title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
     subtitle: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
     isPersisted: PropTypes.bool,
+    isCloseable: PropTypes.bool,
     children: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
     onClose: PropTypes.func,
     action: PropTypes.shape({
@@ -22,10 +23,15 @@ export default class DefaultSnackbar extends React.PureComponent {
 
   static contextTypes = {
     addToSnackQueue: PropTypes.func,
-    handleDismissSnack: PropTypes.func
+    handleDismissSnack: PropTypes.func,
+    updateSnack: PropTypes.func
   }
 
   componentDidMount() {
+    this.snackId = this.context.addToSnackQueue(this.getSnackOptions())
+  }
+
+  getSnackOptions() {
     const {
       action,
       actionTitle,
@@ -36,10 +42,11 @@ export default class DefaultSnackbar extends React.PureComponent {
       children,
       onClose,
       onAction,
-      isPersisted
+      isPersisted,
+      isCloseable
     } = this.props
 
-    this.snackId = this.context.addToSnackQueue({
+    return {
       kind,
       title,
       subtitle,
@@ -50,15 +57,20 @@ export default class DefaultSnackbar extends React.PureComponent {
         callback: onAction || (action && action.callback)
       },
       isPersisted,
+      isCloseable,
       autoDismissTimeout: timeout
-    })
+    }
   }
 
   componentWillUnmount() {
     this.context.handleDismissSnack(this.snackId)
   }
 
+  componentDidUpdate() {
+    this.context.updateSnack(this.snackId, this.getSnackOptions())
+  }
+
   render() {
-    return <div />
+    return null
   }
 }
