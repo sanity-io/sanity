@@ -19,11 +19,7 @@ export function transactionsToEvents(
       // ensure transactions are sorted by time
       .sort(compareTimestamp)
       // Turn a transaction into a classified HistoryEvent
-      .map((transaction, index) => {
-        return mapToEvents(transaction, documentIds, index)
-      })
-      // Filter out discardDraft (no longer possible in the history studio release)
-      .filter(event => event.type !== 'discardDraft')
+      .map((transaction, index) => mapToEvents(transaction, documentIds, index))
       // Chunk and group edit events
       .reduce(reduceEdits, [])
       // Manipulate truncation events to be able to restore to published version
