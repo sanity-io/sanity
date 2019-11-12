@@ -1214,7 +1214,7 @@ export default withInitialValue(
     }
 
     canShowHistoryList() {
-      return this.context.siblingIndex === 0
+      return this.context.siblingIndex === 0 && !this.props.isCollapsed
     }
 
     // eslint-disable-next-line complexity
