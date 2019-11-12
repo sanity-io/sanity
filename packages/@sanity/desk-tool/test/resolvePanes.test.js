@@ -1,5 +1,7 @@
 import {of as observableOf} from 'rxjs'
-import {resolvePanes, LOADING} from '../src/utils/resolvePanes'
+import {takeWhile, concatMap, reduce} from 'rxjs/operators'
+import {LOADING_PANE} from '../src'
+import {resolvePanes} from '../src/utils/resolvePanes'
 import singleStatsStructure from './fixtures/structures/singleStatsStructure'
 import singletonStructure from './fixtures/structures/singletonStructure'
 import recursiveStructure from './fixtures/structures/recursiveStructure'
@@ -7,9 +9,8 @@ import asyncSingletonStructure from './fixtures/structures/asyncSingletonStructu
 import typeDocumentStructure from './fixtures/structures/typeDocumentStructure'
 import fullyAsyncStructure from './fixtures/structures/fullyAsyncStructure'
 import failStructure from './fixtures/structures/failStructure'
-import {takeWhile, concatMap, reduce} from 'rxjs/operators'
 
-const isLoading = panes => panes.some(pane => pane === LOADING)
+const isLoading = panes => panes.some(pane => pane === LOADING_PANE)
 
 const collectUntilDone = source =>
   source
@@ -46,8 +47,8 @@ describe.skip('resolvePanes', () => {
 
   test('can resolve singleton structure asyncronously', () =>
     expect(collectUntilDone(resolvePanes(asyncSingletonStructure, ['b']))).resolves.toMatchObject([
-      [LOADING, LOADING],
-      [asyncSingletonStructure, LOADING],
+      [LOADING_PANE, LOADING_PANE],
+      [asyncSingletonStructure, LOADING_PANE],
       [
         asyncSingletonStructure,
         {
