@@ -107,7 +107,7 @@ DocumentStatusBar.propTypes = {
   isDisconnected: PropTypes.bool,
   isHistoryAvailable: PropTypes.bool,
   isSyncing: PropTypes.bool,
-  onHistoryStatusClick: PropTypes.func.isRequired
+  onHistoryStatusClick: PropTypes.func
 }
 
 DocumentStatusBar.defaultProps = {
@@ -116,7 +116,8 @@ DocumentStatusBar.defaultProps = {
   historyStatus: undefined,
   isDisconnected: false,
   isHistoryAvailable: false,
-  isSyncing: false
+  isSyncing: false,
+  onHistoryStatusClick: undefined
 }
 
 export default DocumentStatusBar
