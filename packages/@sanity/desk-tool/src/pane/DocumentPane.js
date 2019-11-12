@@ -5,7 +5,7 @@ import promiseLatest from 'promise-latest'
 import {omit, noop, get, throttle, debounce} from 'lodash'
 import {distanceInWordsToNow} from 'date-fns'
 import {from, merge, concat, timer, of as observableOf} from 'rxjs'
-import {catchError, switchMap, map, mapTo, tap} from 'rxjs/operators'
+import {catchError, switchMap, map, mapTo, tap, distinctUntilChanged} from 'rxjs/operators'
 import {resolveEnabledActions} from 'part:@sanity/base/util/document-action-utils'
 import schema from 'part:@sanity/base/schema'
 import Button from 'part:@sanity/components/buttons/default'
@@ -30,10 +30,12 @@ import InspectHistory from '../components/InspectHistory'
 import DocTitle from '../components/DocTitle'
 import TimeAgo from '../components/TimeAgo'
 import DocumentStatusBar from '../components/DocumentStatusBar/index'
+import windowWidth$ from '../utils/windowWidth'
 import History from './History'
 import documentPaneStyles from './styles/DocumentPane.css'
 import FormView from './Editor/FormView'
 import Actions from './Editor/Actions'
+import {historyIsEnabled} from './Editor/history'
 import menuItemStyles from './styles/documentPaneMenuItems.css'
 import {getDocumentPaneFooterActions} from './documentPaneFooterActions'
 import {getProductionPreviewItem, getMenuItems} from './documentPaneMenuItems'
@@ -79,6 +81,7 @@ const INITIAL_HISTORICAL_DOCUMENT_STATE = {
 }
 
 const INITIAL_HISTORY_STATE = {
+  isEnabled: historyIsEnabled(),
   isLoading: true,
   error: null,
   events: []
@@ -225,12 +228,12 @@ export default withInitialValue(
     patchChannel = FormBuilder.createPatchChannel()
     formRef = React.createRef()
 
-    constructor(props) {
+    constructor(props, context) {
       super(props)
-      this.setup(props.options.id)
+      this.setup(props.options.id, context)
     }
 
-    setup(documentId) {
+    setup(documentId, context) {
       this.dispose()
       const publishedId = getPublishedId(documentId)
       const draftId = getDraftId(documentId)
@@ -241,7 +244,11 @@ export default withInitialValue(
       this.validateLatestDocument = debounce(promiseLatest(this.validateDocument, 300))
 
       if (this.props.urlParams.rev) {
-        this.handleFetchHistoricalDocument()
+        if (historyIsEnabled()) {
+          this.handleFetchHistoricalDocument()
+        } else {
+          this.handleCloseHistory(context)
+        }
       }
 
       const published$ = this.published.events
@@ -344,6 +351,10 @@ export default withInitialValue(
         documentsAreLoaded && !wasNotLoaded && historyEvents.length === 0 && selectedRev
       )
 
+      if (prevState.historyState.isEnabled && !this.state.historyState.isEnabled) {
+        this.handleCloseHistory()
+      }
+
       if (shouldLoadHistory) {
         debugHistory('Fetch history events')
         this.handleFetchHistoryEvents()
@@ -407,6 +418,13 @@ export default withInitialValue(
 
     componentDidMount() {
       this._isMounted = true
+
+      this.resizeSubscriber = windowWidth$.pipe(distinctUntilChanged()).subscribe(() => {
+        const historyEnabled = historyIsEnabled()
+        if (this.state.historyState.isEnabled !== historyEnabled) {
+          this.setHistoryState({isEnabled: historyEnabled})
+        }
+      })
     }
 
     componentWillUnmount() {
@@ -421,6 +439,10 @@ export default withInitialValue(
       })
 
       this.setSavingStatus.cancel()
+
+      if (this.resizeSubscriber) {
+        this.resizeSubscriber.unsubscribe()
+      }
 
       this.dispose()
     }
@@ -620,15 +642,16 @@ export default withInitialValue(
       )
     }
 
-    handleCloseHistory = () => {
+    handleCloseHistory = ctx => {
+      const context = ctx || this.context
       if (this._historyEventsSubscription) {
         this._historyEventsSubscription.unsubscribe()
       }
 
-      const {rev, ...params} = this.context.params
+      const {rev, ...params} = context.params
       if (rev) {
         // If there is a revision in the URL, remove it and let componentDidUpdate handle closing transition
-        this.context.setParams(params, {recurseIfInherited: true})
+        context.setParams(params, {recurseIfInherited: true})
       }
     }
 
@@ -1209,7 +1232,11 @@ export default withInitialValue(
     }
 
     canShowHistoryList() {
-      return this.context.siblingIndex === 0 && !this.props.isCollapsed
+      return (
+        this.context.siblingIndex === 0 &&
+        !this.props.isCollapsed &&
+        this.state.historyState.isEnabled
+      )
     }
 
     // eslint-disable-next-line complexity
