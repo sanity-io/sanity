@@ -20,7 +20,6 @@
     top: initial;
     left: initial;
     min-height: initial;
-    overflow: hidden; /* Cuts off the shadow on header */
   }
 }
 
@@ -329,10 +328,6 @@
   }
 }
 
-.scrollWrapper {
-  margin: 0 auto;
-}
-
 .notScrollable {
   display: block;
   box-sizing: border-box;
@@ -410,15 +405,18 @@
   box-sizing: border-box;
   background-color: var(--component-bg);
   color: var(--text-color-secondary);
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
   z-index: var(--zindex-pane);
 
   @supports (padding-bottom: env(safe-area-inset-bottom)) {
     padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  @media (--max-screen-medium) {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
   }
 
   /* NOTE: Workaround for hiding the footer when the keyboard is visible on small screens */
