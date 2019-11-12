@@ -89,12 +89,21 @@ test('default child resolver resolves to editor', done => {
   const context = {parent: list, index: 1}
   serializeStructure(list.child, context, ['asoiaf-wow', context]).subscribe(child => {
     expect(child).toEqual({
+      child: undefined,
       id: 'editor',
       type: 'document',
       options: {
         id: 'asoiaf-wow',
         type: 'book'
-      }
+      },
+      views: [
+        {
+          id: 'editor',
+          title: 'Editor',
+          type: 'form',
+          icon: undefined
+        }
+      ]
     })
     done()
   })

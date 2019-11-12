@@ -34,7 +34,7 @@ test('generated canHandleIntent responds to edit/create on document type', () =>
   expect(listItems[0].child).toHaveProperty('canHandleIntent')
 
   const child = listItems[0].child as DocumentList
-  const ctx = {pane: child}
+  const ctx = {pane: child, index: 0}
   expect((child.canHandleIntent || nope)('create', {type: 'book'}, ctx)).toBe(false)
   expect((child.canHandleIntent || nope)('create', {type: 'author'}, ctx)).toBe(true)
   expect((child.canHandleIntent || nope)('edit', {id: 'wow'}, ctx)).toBe(false)
@@ -59,7 +59,7 @@ test('manually assigned canHandleIntent should not be overriden', () => {
   const alwaysFalse = () => false
   const list = S.documentTypeList('author')
   const modified = list.canHandleIntent(alwaysFalse)
-  const ctx = {pane: list.serialize()}
+  const ctx = {pane: list.serialize(), index: 0}
 
   // Test default handler
   const defHandler = list.getCanHandleIntent() || nope
