@@ -40,7 +40,7 @@ class DocumentStatusBarActions extends React.PureComponent {
 
   componentWillUnmount() {
     // NOTE: used to capture clicks outside menu
-    window.addEventListener('click', this.handleWindowClick)
+    window.removeEventListener('click', this.handleWindowClick)
   }
 
   handleDropDownButtonClick = event => {

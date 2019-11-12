@@ -4,6 +4,9 @@ import Badge from 'part:@sanity/components/badges/default'
 import CheckIcon from 'part:@sanity/base/check-icon'
 import SyncIcon from 'part:@sanity/base/sync-icon'
 import DocumentStatusBarActions from './DocumentStatusBarActions'
+import Button from 'part:@sanity/components/buttons/default'
+import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
+import PopOverDialog from 'part:@sanity/components/dialogs/popover'
 
 import styles from './DocumentStatusBar.css'
 
@@ -80,6 +83,30 @@ function DocumentStatusBar(props) {
           />
         )}
       </div>
+
+      {props.confirmationDialog && (
+        <PopOverDialog
+          onClickOutside={props.confirmationDialog.handleCancel}
+          placement="auto-end"
+          useOverlay={false}
+          hasAnimation
+        >
+          <div>
+            <div className={styles.popOverText}>{props.confirmationDialog.message}</div>
+            <ButtonGrid>
+              <Button onClick={props.confirmationDialog.handleCancel} kind="simple">
+                {props.confirmationDialog.cancelText || 'Cancel'}
+              </Button>
+              <Button
+                onClick={props.confirmationDialog.handleConfirm}
+                color={props.confirmationDialog.confirmColor || 'danger'}
+              >
+                {props.confirmationDialog.confirmText || 'Confirm'}
+              </Button>
+            </ButtonGrid>
+          </div>
+        </PopOverDialog>
+      )}
     </div>
   )
 }
@@ -102,6 +129,14 @@ DocumentStatusBar.propTypes = {
       title: PropTypes.string
     })
   ),
+  confirmationDialog: PropTypes.shape({
+    message: PropTypes.node.isRequired,
+    handleConfirm: PropTypes.func.isRequired,
+    handleCancel: PropTypes.func.isRequired,
+    confirmText: PropTypes.string,
+    cancelText: PropTypes.string,
+    confirmColor: PropTypes.string
+  }),
   historyStatus: PropTypes.node,
   idPrefix: PropTypes.string.isRequired,
   isDisconnected: PropTypes.bool,
@@ -114,6 +149,7 @@ DocumentStatusBar.defaultProps = {
   actions: undefined,
   badges: undefined,
   historyStatus: undefined,
+  confirmationDialog: undefined,
   isDisconnected: false,
   isHistoryAvailable: false,
   isSyncing: false,
