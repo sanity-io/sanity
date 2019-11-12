@@ -31,12 +31,15 @@ export default class History extends React.PureComponent {
   state = {
     headerShadowOpacity: 0
   }
+
   _listElement = React.createRef()
 
   componentDidMount() {
     if (this._listElement && this._listElement.current) {
       this._listElement.current.addEventListener('scroll', this.handleListScroll, {passive: true})
     }
+
+    this.handleScrollToSelected()
   }
 
   componentWillUnmount() {
@@ -53,15 +56,31 @@ export default class History extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    const {selectedRev, events, historyValue} = this.props
+    const {selectedRev, events, historyValue, isLoading} = this.props
     if (prevProps.historyValue && !historyValue && events[0].rev === selectedRev) {
       this.handleNewCurrentEvent()
+    }
+
+    if (prevProps.isLoading && !isLoading) {
+      this.handleScrollToSelected()
     }
   }
 
   handleNewCurrentEvent = () => {
     if (this._listElement && this._listElement.current) {
       scroll.top(this._listElement.current, 0)
+    }
+  }
+
+  handleScrollToSelected = () => {
+    const {events, selectedEvent} = this.props
+    const selectedIndex = events.indexOf(selectedEvent)
+
+    if (selectedIndex > 0 && this._listElement && this._listElement.current) {
+      const listElement = this._listElement.current.childNodes[selectedIndex]
+      // Leave a bit of room at the top if possible, to indicate that we've scrolled
+      const scrollTo = Math.max(0, listElement.getBoundingClientRect().top - 250)
+      scroll.top(this._listElement.current, scrollTo)
     }
   }
 
