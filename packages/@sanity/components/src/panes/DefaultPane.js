@@ -330,16 +330,10 @@ class Pane extends React.PureComponent {
       act => act.showAsAction && (!isCollapsed || act.showAsAction.whenCollapsed)
     )
 
-    const mainChildren = (
-      <>
-        {isScrollable ? (
-          <ScrollContainer className={styles.scrollContainer}>
-            <div style={contentMaxWidth ? {maxWidth: `${contentMaxWidth}px`} : {}}>{children}</div>
-          </ScrollContainer>
-        ) : (
-          <div className={styles.notScrollable}>{children}</div>
-        )}
-      </>
+    const mainChildren = isScrollable ? (
+      <ScrollContainer className={styles.scrollContainer}>{children}</ScrollContainer>
+    ) : (
+      <div className={styles.notScrollable}>{children}</div>
     )
 
     return (
