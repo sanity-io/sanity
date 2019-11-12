@@ -39,6 +39,17 @@ import {getDocumentPaneFooterActions} from './documentPaneFooterActions'
 import {/*getProductionPreviewItem,*/ getMenuItems} from './documentPaneMenuItems'
 import {validateDocument} from '@sanity/validation'
 
+const DEBUG_HISTORY_TRANSITION = false
+const CURRENT_REVISION_FLAG = '-'
+
+function debugHistory(...args) {
+  if (DEBUG_HISTORY_TRANSITION) {
+    const logLine = typeof args[0] === 'string' ? `[HISTORY] ${args[0]}` : '[HISTORY] '
+    // eslint-disable-next-line no-console
+    console.log(logLine, ...args.slice(1))
+  }
+}
+
 // Want a nicer api for listen/unlisten
 function listen(target, eventType, callback, useCapture = false) {
   target.addEventListener(eventType, callback, useCapture)
@@ -72,12 +83,9 @@ const INITIAL_HISTORICAL_DOCUMENT_STATE = {
 }
 
 const INITIAL_HISTORY_STATE = {
-  isOpen: false,
   isLoading: true,
   error: null,
-  events: [],
-  selectedRev: null,
-  selectedRevDocument: null
+  events: []
 }
 
 const INITIAL_STATE = {
@@ -224,16 +232,6 @@ export default withInitialValue(
     constructor(props) {
       super(props)
       this.setup(props.options.id)
-
-      // Open history to selected revision if present in URL
-      const rev = props.urlParams.rev
-      if (rev) {
-        this.state.historyState = {
-          ...this.state.historyState,
-          isOpen: true,
-          selectedRev: rev
-        }
-      }
     }
 
     setup(documentId) {
@@ -332,53 +330,62 @@ export default withInitialValue(
     }
 
     handleHistoryTransition(prevProps, prevState) {
-      const {isLoading: isLoadingSnapshot} = this.state.historical
-      const {selectedRev, isOpen, events} = this.state.historyState
       const next = this.props.urlParams
       const prev = prevProps.urlParams
+      const selectedRev = next.rev
       const revChanged = next.rev !== prev.rev
+      const {rev, ...params} = next
 
+      const historyEvents = this.state.historyState.events
       const documentsAreLoaded = !this.state.draft.isLoading && !this.state.published.isLoading
       const wasNotLoaded = prevState.draft.isLoading || prevState.published.isLoading
-      const shouldLoadHistoricalDoc = !isLoadingSnapshot && selectedRev && revChanged
-      const shouldLoadHistory =
-        documentsAreLoaded && !wasNotLoaded && events.length === 0 && selectedRev
+      const historicalSnapshot = this.state.historical.snapshot
+      const isLoadingSnapshot = this.state.historical.isLoading
+      const shouldLoadHistoricalSnapshot =
+        revChanged || (!isLoadingSnapshot && selectedRev && !historicalSnapshot)
+
+      const shouldLoadHistory = Boolean(
+        documentsAreLoaded && !wasNotLoaded && historyEvents.length === 0 && selectedRev
+      )
 
       if (shouldLoadHistory) {
+        debugHistory('Fetch history events')
         this.handleFetchHistoryEvents()
       }
 
-      const {rev, ...params} = next
-
-      if (!rev && prev.rev) {
-        this.setHistoryState(INITIAL_HISTORY_STATE)
-        this.setState({historical: INITIAL_HISTORICAL_DOCUMENT_STATE})
-        return
+      // A new revision was selected, and we're not currently loading the snapshot
+      if (shouldLoadHistoricalSnapshot) {
+        this.handleFetchHistoricalDocument(rev)
       }
 
+      // Transitioned to a different document
       if (rev && prevProps.options.id !== this.props.options.id) {
+        debugHistory('Document ID changed, remove revision from URL')
         // Tear out the revision from the URL, as well as the selected revision
-        this.setHistoryState({selectedRev: null, isOpen: false})
         this.context.setParams(params, {recurseIfInherited: true})
         return
       }
 
-      if (revChanged && rev && rev !== selectedRev) {
-        this.setHistoryState({selectedRev: rev, isOpen: true})
-        this.handleFetchHistoricalDocument(rev)
-      } else if (shouldLoadHistoricalDoc) {
-        this.handleFetchHistoricalDocument(rev)
-      }
-
-      if (revChanged && !rev && isOpen) {
-        this.setState({historical: INITIAL_HISTORICAL_DOCUMENT_STATE})
+      // History was closed
+      if (!rev && prev.rev) {
+        debugHistory('History closed, reset history state')
         this.setHistoryState(INITIAL_HISTORY_STATE)
+        this.setState({historical: INITIAL_HISTORICAL_DOCUMENT_STATE})
       }
     }
 
     handleFetchHistoricalDocument(atRev) {
+      const isCurrent = atRev === CURRENT_REVISION_FLAG
+      if (isCurrent) {
+        return
+      }
+
       const event = atRev ? this.findHistoryEventByRev(atRev) : this.findSelectedHistoryEvent()
       if (!event) {
+        debugHistory(
+          'Could not find history event %s',
+          atRev ? `for revision ${atRev}` : ' (selected)'
+        )
         return
       }
 
@@ -392,23 +399,13 @@ export default withInitialValue(
 
       const {displayDocumentId: id, rev} = event
 
+      debugHistory('Fetch historical document for rev %s', atRev)
       this._historyFetchDocSubscription = from(
         historyStore.getDocumentAtRevision(id, rev)
-      ).subscribe(snapshot => {
-        this.setState(
-          ({historical}) => ({
-            historical: {...historical, isLoading: false, snapshot}
-          }),
-          () => {
-            const {rev: urlRev, ...otherParams} = this.context.params
-            if (urlRev && snapshot && snapshot._rev !== urlRev) {
-              this.context.setParams(
-                {...otherParams, rev: snapshot._rev},
-                {recurseIfInherited: true}
-              )
-            }
-          }
-        )
+      ).subscribe(newSnapshot => {
+        this.setState(({historical}) => ({
+          historical: {...historical, isLoading: false, snapshot: newSnapshot}
+        }))
       })
     }
 
@@ -450,6 +447,10 @@ export default withInitialValue(
       return selectedSchemaType.liveEdit === true
     }
 
+    historyIsOpen() {
+      return Boolean(this.props.urlParams.rev)
+    }
+
     dispose() {
       if (this.subscription) {
         this.subscription.unsubscribe()
@@ -487,7 +488,7 @@ export default withInitialValue(
       }
 
       // TODO: enable hotkeys when there's a way to know which editor we're listening to
-      // if (isInspectHotkey(event) && !this.state.historyState.isOpen) {
+      // if (isInspectHotkey(event) && !this.historyIsOpen()) {
       //   return this.handleToggleInspect()
       // }
       // if (isPublishHotkey(event)) {
@@ -586,13 +587,10 @@ export default withInitialValue(
     }
 
     setHistoryState = (nextHistoryState, cb = noop) => {
-      const transitionHistoryState =
-        typeof nextHistoryState === 'function'
-          ? nextHistoryState
-          : prevState => ({...prevState, ...nextHistoryState})
-
       this.setState(
-        prevState => ({historyState: transitionHistoryState(prevState.historyState)}),
+        ({historyState: currentHistoryState}) => ({
+          historyState: {...currentHistoryState, ...nextHistoryState}
+        }),
         cb
       )
     }
@@ -600,27 +598,16 @@ export default withInitialValue(
     handleFetchHistoryEvents() {
       const {draft, published} = this.getDocumentSnapshots()
 
+      if (this._historyEventsSubscription) {
+        this._historyEventsSubscription.unsubscribe()
+      }
+
       this._historyEventsSubscription = historyStore
         .historyEventsFor(getPublishedId((draft || published)._id))
         .pipe(
           map((events, i) => {
-            const selectedRev = this.state.historyState.selectedRev
-            const eventsHasSelected =
-              selectedRev &&
-              events.find(
-                event => event.rev === selectedRev || event.transactionIds.includes(selectedRev)
-              )
-
-            let newState = {events}
-            if (i === 0) {
-              newState = {
-                ...newState,
-                isLoading: false,
-                selectedRev: eventsHasSelected ? selectedRev : events[0].rev
-              }
-            }
-
-            this.setHistoryState(newState, () => this.handleFetchHistoricalDocument())
+            const newState = i === 0 ? {events, isLoading: false} : {events}
+            this.setHistoryState(newState)
             return events
           })
         )
@@ -628,17 +615,14 @@ export default withInitialValue(
     }
 
     handleOpenHistory = () => {
-      if (!this.canShowHistoryList() || this.state.historyState.isOpen) {
+      if (!this.canShowHistoryList() || this.historyIsOpen()) {
         return
       }
 
-      this.setHistoryState(prevState => ({
-        ...INITIAL_HISTORY_STATE,
-        selectedRev: prevState.selectedRev,
-        isOpen: true
-      }))
-
-      this.handleFetchHistoryEvents()
+      this.context.setParams(
+        {...this.context.params, rev: CURRENT_REVISION_FLAG},
+        {recurseIfInherited: true}
+      )
     }
 
     handleCloseHistory = () => {
@@ -650,13 +634,6 @@ export default withInitialValue(
       if (rev) {
         // If there is a revision in the URL, remove it and let componentDidUpdate handle closing transition
         this.context.setParams(params, {recurseIfInherited: true})
-      } else {
-        // If there is no revision in the URL (first item is selected), manually close it
-        this.setState({historical: INITIAL_HISTORICAL_DOCUMENT_STATE})
-        this.setHistoryState({
-          isOpen: false,
-          selectedRev: null
-        })
       }
     }
 
@@ -993,11 +970,11 @@ export default withInitialValue(
       const {title: paneTitle, options} = this.props
       const typeName = options.type
       const type = schema.get(typeName)
-      const {historyState} = this.state
       if (paneTitle) {
         return <span>{paneTitle}</span>
       }
-      if (historyState.isOpen) {
+
+      if (this.historyIsOpen()) {
         return (
           <>
             History of{' '}
@@ -1007,9 +984,11 @@ export default withInitialValue(
           </>
         )
       }
+
       if (!value) {
         return `New ${type.title || type.name}`
       }
+
       return (
         <PreviewFields document={value} type={type} fields={['title']}>
           {({title}) => (title ? <span>{title}</span> : <em>Untitled</em>)}
@@ -1038,10 +1017,11 @@ export default withInitialValue(
       const {markers} = this.state
       const typeName = this.props.options.type
       const schemaType = schema.get(typeName)
-      const {historyState, showValidationTooltip} = this.state
-      if (historyState.isOpen) {
+      const {showValidationTooltip} = this.state
+      if (this.historyIsOpen()) {
         return null
       }
+
       return (
         <Actions
           value={draft || published}
@@ -1057,13 +1037,15 @@ export default withInitialValue(
     }
 
     findSelectedHistoryEvent() {
-      const {selectedRev} = this.state.historyState
+      const selectedRev = this.props.urlParams.rev
       return this.findHistoryEventByRev(selectedRev)
     }
 
     findHistoryEventByRev(rev) {
       const {events} = this.state.historyState
-      return events.find(event => event.rev === rev || event.transactionIds.includes(rev))
+      return rev === CURRENT_REVISION_FLAG
+        ? events[0]
+        : events.find(event => event.rev === rev || event.transactionIds.includes(rev))
     }
 
     renderHistoryFooter = () => {
@@ -1191,7 +1173,12 @@ export default withInitialValue(
     handleHistorySelect = event => {
       const paneContext = this.context
 
-      paneContext.setParams({...paneContext.params, rev: event.rev}, {recurseIfInherited: true})
+      const eventisCurrent = this.state.history.events[0] === event
+
+      paneContext.setParams(
+        {...paneContext.params, rev: eventisCurrent ? CURRENT_REVISION_FLAG : event.rev},
+        {recurseIfInherited: true}
+      )
     }
 
     handleSplitPane = () => {
@@ -1242,6 +1229,7 @@ export default withInitialValue(
         menuItemGroups,
         views,
         options,
+        urlParams,
         paneKey
       } = this.props
 
@@ -1294,15 +1282,19 @@ export default withInitialValue(
       const activeViewId = this.context.params.view || (views[0] && views[0].id)
       const activeView = views.find(view => view.id === activeViewId) || views[0] || {type: 'form'}
       const enabledActions = resolveEnabledActions(schemaType)
+      const historyIsOpen = this.historyIsOpen()
       const menuItems = getMenuItems({
         enabledActions,
         draft: draft.snapshot,
         published: published.snapshot,
         isLiveEditEnabled: this.isLiveEditEnabled(),
-        isHistoryEnabled: historyState.isOpen,
-        selectedEvent: historyState.isOpen && selectedHistoryEvent,
+        isHistoryEnabled: historyIsOpen,
+        selectedEvent: historyIsOpen && selectedHistoryEvent,
         canShowHistoryList: this.canShowHistoryList()
       })
+
+      const selectedIsLatest =
+        urlParams.rev === CURRENT_REVISION_FLAG || selectedHistoryEvent === historyState.events[0]
 
       const documentProps = {
         patchChannel: this.patchChannel,
@@ -1321,11 +1313,16 @@ export default withInitialValue(
         isUnpublishing,
         isCreatingDraft,
         history: {
-          isOpen: historyState.isOpen,
+          isOpen: this.historyIsOpen(),
           selectedEvent: selectedHistoryEvent,
           isLoadingEvents: historyState.isLoading,
           isLoadingSnapshot: historical.isLoading,
-          document: historical
+          document: selectedIsLatest
+            ? {
+                isLoading: !selectedHistoryEvent,
+                snapshot: draft.snapshot || published.snapshot
+              }
+            : historical
         },
         onDelete: this.handleDelete,
         onPublish: this.handlePublish,
@@ -1339,12 +1336,12 @@ export default withInitialValue(
       return (
         <div
           className={
-            historyState.isOpen
+            this.historyIsOpen()
               ? documentPaneStyles.paneWrapperWithHistory
               : documentPaneStyles.paneWrapper
           }
         >
-          {historyState.isOpen && this.canShowHistoryList() && (
+          {this.historyIsOpen() && this.canShowHistoryList() && (
             <History
               key="history"
               documentId={getPublishedId(value._id)}
@@ -1382,10 +1379,10 @@ export default withInitialValue(
           >
             {activeView.type === 'form' && <FormView ref={this.formRef} {...documentProps} />}
             {activeView.type === 'component' && <activeView.component {...documentProps} />}
-            {inspect && historyState.isOpen && (
+            {inspect && this.historyIsOpen() && (
               <InspectHistory document={historical} onClose={this.handleHideInspector} />
             )}
-            {inspect && (!historyState || !historyState.isOpen) && (
+            {inspect && !this.historyIsOpen() && (
               <InspectView value={value} onClose={this.handleHideInspector} />
             )}
             {showConfirmDelete && (

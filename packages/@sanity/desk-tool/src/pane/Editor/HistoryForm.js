@@ -56,12 +56,11 @@ export default class HistoryForm extends React.PureComponent {
   // eslint-disable-next-line complexity
   render() {
     const {schema, type, event, document} = this.props
-    const {snapshot, isLoading: isLoadingSnapshot} = document
+    const {snapshot, isLoading} = document
     const {focusPath, prevSnapshot} = this.state
-    const usedSnapshot = snapshot || prevSnapshot
-    const isLoading = isLoadingSnapshot
+    const usedSnapshot = isLoading ? null : snapshot || prevSnapshot
 
-    if (!isLoadingSnapshot && !event) {
+    if (!usedSnapshot) {
       return (
         <Delay ms={600}>
           <div className={styles.spinnerContainer}>
