@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* eslint-disable react/no-multi-comp */
 import React from 'react'
 import studioHintsConfig from 'part:@sanity/default-layout/studio-hints-config?'
@@ -15,10 +16,36 @@ export const SidecarLayout = () => {
   return (
     <div className={styles.root}>
       <HintsPackage />
+=======
+import React from 'react'
+import studioHintsConfig from 'part:@sanity/studio-hints/config?'
+import HintsPackage from './components/HintsPackage'
+import HintsCard from './components/HintsCard'
+
+const styles = {}
+
+function StudioHintsLayout() {
+  console.log('Studio Hints phoning home', studioHintsConfig)
+  if (!studioHintsConfig) {
+    return null
+  }
+
+  const slug = studioHintsConfig.hintsPackageSlug
+
+  return (
+    <div className={styles.root}>
+      <HintsPackage slug={slug} />
+>>>>>>> f1c01c628... [studio-hints] Attempt at rendering hints
     </div>
   )
 }
 
+<<<<<<< HEAD
 export const SidecarToggleButton = () => {
   return <ToggleSidecarButton />
+=======
+export default {
+  HintsCard: HintsCard,
+  StudioHintsLayout: StudioHintsLayout
+>>>>>>> f1c01c628... [studio-hints] Attempt at rendering hints
 }
