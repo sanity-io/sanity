@@ -1372,7 +1372,7 @@ export default withInitialValue(
             onExpand={onExpand}
             onAction={this.handleMenuAction}
             menuItems={menuItems}
-            staticContent={this.historyIsOpen() ? this.renderHistoryFooter() : this.renderFooter()}
+            footer={this.historyIsOpen() ? this.renderHistoryFooter() : this.renderFooter()}
             renderActions={this.renderActions}
             isClosable={isClosable}
             contentMaxWidth={672}

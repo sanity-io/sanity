@@ -111,7 +111,7 @@ class Pane extends React.Component {
       })
     ),
     index: PropTypes.number,
-    staticContent: PropTypes.node,
+    footer: PropTypes.node,
     contentMaxWidth: PropTypes.number,
     renderHeaderViewMenu: PropTypes.func,
     styles: PropTypes.object // eslint-disable-line react/forbid-prop-types
@@ -433,7 +433,7 @@ class Pane extends React.Component {
       menuItems,
       styles,
       renderActions,
-      staticContent,
+      footer,
       contentMaxWidth,
       tabIdPrefix,
       viewId
@@ -492,7 +492,7 @@ class Pane extends React.Component {
           <div className={styles.main}>{mainChildren}</div>
         )}
 
-        {staticContent && <div className={styles.footer}>{staticContent}</div>}
+        {footer && <div className={styles.footer}>{footer}</div>}
       </div>
     )
   }
