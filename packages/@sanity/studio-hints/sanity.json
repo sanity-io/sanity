@@ -1,0 +1,20 @@
+{
+  "paths": {
+    "source": "./src",
+    "compiled": "./lib"
+  },
+  "parts": [
+    {
+      "name": "part:@sanity/studio-hints/config",
+      "description": "Plugin for rendering hints in the Studio"
+    },
+    {
+      "name": "part:@sanity/studio-hints/layout",
+      "description": "Component where the hints are rendered"
+    },
+    {
+      "implements": "part:@sanity/studio-hints/layout",
+      "path": "HintsLayout.js"
+    }
+  ]
+}
