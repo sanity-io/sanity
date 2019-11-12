@@ -36,11 +36,14 @@ import FormView from './Editor/FormView'
 import Actions from './Editor/Actions'
 import menuItemStyles from './styles/documentPaneMenuItems.css'
 import {getDocumentPaneFooterActions} from './documentPaneFooterActions'
-import {/*getProductionPreviewItem,*/ getMenuItems} from './documentPaneMenuItems'
+import {getProductionPreviewItem, getMenuItems} from './documentPaneMenuItems'
 import {validateDocument} from '@sanity/validation'
 
 const DEBUG_HISTORY_TRANSITION = false
 const CURRENT_REVISION_FLAG = '-'
+const KEY_I = 73
+const KEY_O = 79
+const KEY_P = 80
 
 function debugHistory(...args) {
   if (DEBUG_HISTORY_TRANSITION) {
@@ -50,24 +53,17 @@ function debugHistory(...args) {
   }
 }
 
-// Want a nicer api for listen/unlisten
-function listen(target, eventType, callback, useCapture = false) {
-  target.addEventListener(eventType, callback, useCapture)
-  return function unlisten() {
-    target.removeEventListener(eventType, callback, useCapture)
-  }
+function isInspectHotkey(event) {
+  return event.ctrlKey && event.keyCode === KEY_I && event.altKey && !event.shiftKey
 }
 
-// TODO: restore this logic when the active editor is known
-// function isInspectHotkey(event) {
-//   return event.ctrlKey && event.code === 'KeyI' && event.altKey && !event.shiftKey
-// }
-// function isPublishHotkey(event) {
-//   return event.ctrlKey && event.code === 'KeyP' && event.altKey && !event.shiftKey
-// }
-// function isPreviewHotkey(event) {
-//   return event.ctrlKey && event.code === 'KeyO' && event.altKey && !event.shiftKey
-// }
+function isPublishHotkey(event) {
+  return event.ctrlKey && event.keyCode === KEY_P && event.altKey && !event.shiftKey
+}
+
+function isPreviewHotkey(event) {
+  return event.ctrlKey && event.keyCode === KEY_O && event.altKey && !event.shiftKey
+}
 
 const isValidationError = marker => marker.type === 'validation' && marker.level === 'error'
 
@@ -411,12 +407,9 @@ export default withInitialValue(
 
     componentDidMount() {
       this._isMounted = true
-      this.unlistenForKeyUp = listen(window, 'keyup', this.handleKeyUp)
     }
 
     componentWillUnmount() {
-      this.unlistenForKeyUp()
-
       this._isMounted = false
 
       // Cancel throttled commit since draft will be nulled on unmount
@@ -483,22 +476,24 @@ export default withInitialValue(
     }
 
     handleKeyUp = event => {
-      if (event.code === 'Escape' && this.state.showValidationTooltip) {
+      if (event.keyCode === 'Escape' && this.state.showValidationTooltip) {
         return this.setState({showValidationTooltip: false})
       }
 
-      // TODO: enable hotkeys when there's a way to know which editor we're listening to
-      // if (isInspectHotkey(event) && !this.historyIsOpen()) {
-      //   return this.handleToggleInspect()
-      // }
-      // if (isPublishHotkey(event)) {
-      //   return this.handlePublishRequested()
-      // }
-      // if (isPreviewHotkey(event)) {
-      //   const {draft, published} = this.getDocumentSnapshots()
-      //   const item = getProductionPreviewItem({draft, published})
-      //   return item && item.url && window.open(item.url)
-      // }
+      if (isInspectHotkey(event) && !this.historyIsOpen()) {
+        return this.handleToggleInspect()
+      }
+
+      if (isPublishHotkey(event)) {
+        return this.handlePublishRequested()
+      }
+
+      if (isPreviewHotkey(event)) {
+        const {draft, published} = this.getDocumentSnapshots()
+        const item = getProductionPreviewItem({draft, published})
+        return item && item.url && window.open(item.url)
+      }
+
       return null
     }
 
@@ -1335,6 +1330,7 @@ export default withInitialValue(
 
       return (
         <div
+          onKeyUp={this.handleKeyUp}
           className={
             this.historyIsOpen()
               ? documentPaneStyles.paneWrapperWithHistory
