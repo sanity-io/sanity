@@ -25,6 +25,10 @@
   padding: 2px 4px;
 }
 
+.hasSidecar {
+  display: flex;
+}
+
 .root {
   display: flex;
   padding: 0;

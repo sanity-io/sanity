@@ -32,7 +32,9 @@ export default withRouterHOC(
       menuIsOpen: false,
       showLoadingScreen: true,
       searchIsOpen: false,
-      loaded: false
+      loaded: false,
+      hasSidecar: true,
+      sidecarIsOpen: true
     }
 
     UNSAFE_componentWillMount() {
@@ -45,6 +47,14 @@ export default withRouterHOC(
       if (this._loadingScreenElement && this.state.showLoadingScreen) {
         this._loadingScreenElement.addEventListener('animationend', this.handleAnimationEnd, false)
       }
+
+      // Decide if sidecar should be present
+      // this.setState({
+      //   hasSidecar: true
+      // })
+
+      // if hints tray part exists
+      localStorage.setItem('showHintsTray', 'true')
     }
 
     componentWillUnmount() {
@@ -124,27 +134,57 @@ export default withRouterHOC(
       this._loadingScreenElement = element
     }
 
+    renderSidecar = () => {
+      const json = localStorage.getItem('showHintsTray')
+      const sidecarStatus = JSON.parse(json)
+      if (sidecarStatus) {
+        return <Sidecar isOpen={sidecarStatus} />
+      }
+      return null
+    }
+
     renderContent = () => {
       const {tools, router} = this.props
-      const {createMenuIsOpen, menuIsOpen, searchIsOpen} = this.state
+      const {createMenuIsOpen, menuIsOpen, searchIsOpen, hasSidecar} = this.state
 
       const isOverlayVisible = menuIsOpen || searchIsOpen
       let className = styles.root
       if (isOverlayVisible) className += ` ${styles.isOverlayVisible}`
 
       return (
-        <div className={className} onClickCapture={this.handleClickCapture}>
-          {this.state.showLoadingScreen && (
-            <div
-              className={
-                this.state.loaded || document.visibilityState == 'hidden'
-                  ? styles.loadingScreenLoaded
-                  : styles.loadingScreen
-              }
-              ref={this.setLoadingScreenElement}
-            >
-              <AppLoadingScreen text="Restoring Sanity" />
+        <div
+          className={hasSidecar ? styles.hasSidecar : ''}
+          onClickCapture={this.handleClickCapture}
+        >
+          <div className={className}>
+            {this.state.showLoadingScreen && (
+              <div
+                className={
+                  this.state.loaded || document.visibilityState == 'hidden'
+                    ? styles.loadingScreenLoaded
+                    : styles.loadingScreen
+                }
+                ref={this.setLoadingScreenElement}
+              >
+                <AppLoadingScreen text="Restoring Sanity" />
+              </div>
+            )}
+            <div className={styles.navBar}>
+              <NavBarContainer
+                tools={tools}
+                onCreateButtonClick={this.handleCreateButtonClick}
+                onToggleMenu={this.handleToggleMenu}
+                onSwitchTool={this.handleSwitchTool}
+                router={router}
+                user={this.state.user}
+                searchIsOpen={searchIsOpen}
+                /* eslint-disable-next-line react/jsx-handler-names */
+                onUserLogout={userStore.actions.logout}
+                onSearchOpen={this.handleSearchOpen}
+                onSearchClose={this.handleSearchClose}
+              />
             </div>
+<<<<<<< HEAD
           )}
           <div className={styles.navBar}>
             <NavBarContainer
@@ -190,6 +230,38 @@ export default withRouterHOC(
           {absolutes.map((Abs, i) => (
             <Abs key={i} />
           ))}
+=======
+            <div className={styles.sideMenuContainer}>
+              <SideMenu
+                activeToolName={router.state.tool}
+                isOpen={menuIsOpen}
+                onClose={this.handleToggleMenu}
+                /* eslint-disable-next-line react/jsx-handler-names */
+                onSignOut={userStore.actions.logout}
+                onSwitchTool={this.handleSwitchTool}
+                tools={this.props.tools}
+                user={this.state.user}
+              />
+            </div>
+            <div className={styles.mainArea}>
+              <div className={styles.toolContainer}>
+                <RouteScope scope={router.state.tool}>
+                  <RenderTool tool={router.state.tool} />
+                </RouteScope>
+              </div>
+            </div>
+            {createMenuIsOpen && (
+              <ActionModal
+                onClose={this.handleActionModalClose}
+                actions={getNewDocumentModalActions()}
+              />
+            )}
+            {absolutes.map((Abs, i) => (
+              <Abs key={i} />
+            ))}
+          </div>
+          {this.renderSidecar()}
+>>>>>>> 92d6c0dbe... start hints mode
         </div>
       )
     }
