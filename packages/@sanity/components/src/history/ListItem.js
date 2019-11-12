@@ -213,9 +213,10 @@ export default class HistoryListItem extends React.PureComponent {
     }
 
     const ParameterizedLink = linkComponent
+    const linkRev = isCurrentVersion ? '-' : rev
 
     return ParameterizedLink ? (
-      <ParameterizedLink params={{...linkParams, rev}} {...rootProps}>
+      <ParameterizedLink params={{...linkParams, rev: linkRev}} {...rootProps}>
         {content}
       </ParameterizedLink>
     ) : (
