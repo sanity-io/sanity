@@ -51,6 +51,9 @@ assign(AssetsClient.prototype, {
    * @param  {String}  opts.contentType Mime type of the file
    * @param  {Array}   opts.extract Array of metadata parts to extract from image.
    *                                 Possible values: `location`, `exif`, `image`, `palette`
+   * @param  {String}  opts.label Label
+   * @param  {String}  opts.source Source the asset is from
+   * @param  {String}  opts.sourceId The id of the asset in the source
    * @return {Promise} Resolves with the created asset document
    */
   upload(assetType, body, opts = {}) {
@@ -65,8 +68,8 @@ assign(AssetsClient.prototype, {
     const dataset = validators.hasDataset(this.client.clientConfig)
     const assetEndpoint = assetType === 'image' ? 'images' : 'files'
     const options = optionsFromFile(opts, body)
-    const {label, filename} = options
-    const query = {label, filename, meta}
+    const {label, filename, source, sourceId} = options
+    const query = {label, filename, meta, source, sourceId}
 
     const observable = this.client._requestObservable({
       method: 'POST',
