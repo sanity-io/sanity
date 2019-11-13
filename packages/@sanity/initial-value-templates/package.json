@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@sanity/util": "0.144.0",
-    "@types/lodash": "^4.14.116",
+    "@types/lodash": "^4.14.144",
     "@types/memoize-one": "^3.1.1",
     "@types/node": "^8.0.0",
     "lodash": "^4.17.4",

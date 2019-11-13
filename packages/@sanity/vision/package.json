@@ -37,13 +37,13 @@
     "@sanity/components": "0.144.2",
     "@sanity/default-layout": "0.144.2",
     "prop-types": "^15.6.0",
-    "react": "16.3.1",
-    "react-dom": "16.3.1"
+    "react": "16.9.0",
+    "react-dom": "^16.9.0"
   },
   "peerDependencies": {
     "prop-types": "^15.6 || ^16",
-    "react": "^16.3",
-    "react-dom": "^16.3"
+    "react": "^16.9",
+    "react-dom": "^16.9"
   },
   "repository": {
     "type": "git",

@@ -29,8 +29,8 @@
     "@sanity/google-maps-input": "0.144.2",
     "@sanity/production-preview": "0.144.0",
     "@sanity/vision": "0.144.2",
-    "react": "16.3.1",
-    "react-dom": "16.3.1",
+    "react": "16.9.0",
+    "react-dom": "^16.9.0",
     "react-icons": "^2.2.7"
   },
   "bugs": {
