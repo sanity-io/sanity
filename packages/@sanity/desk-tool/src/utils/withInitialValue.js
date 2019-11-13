@@ -21,7 +21,7 @@ const withInitialValue = Pane => {
   const WithInitialValueStream = streamingComponent(props$ =>
     props$.pipe(
       switchMap(props => {
-        const {options, ...paneProps} = props
+        const {options, paneContext, ...paneProps} = props
         // See if the document ID has a draft or a published document
         return merge(
           observePaths(getDraftId(options.id), ['_type']).pipe(map(draft => ({draft}))),
@@ -34,7 +34,7 @@ const withInitialValue = Pane => {
           // Only update if we didn't previously have a document but we now do
           distinctUntilChanged((prev, next) => Boolean(prev) !== Boolean(next)),
           switchMap(document => {
-            const {templateName, parameters} = getInitialValueProps(document, props)
+            const {templateName, parameters} = getInitialValueProps(document, props, paneContext)
             const shouldResolve = Boolean(templateName)
             const documentType = options.type || (document && document._type)
 
@@ -99,20 +99,20 @@ const withInitialValue = Pane => {
 
   const WithInitialValueWrapper = props => (
     <PaneRouterContext.Consumer>
-      {context => <WithInitialValueStream {...props} paneApi={context} />}
+      {context => <WithInitialValueStream {...props} paneContext={context} />}
     </PaneRouterContext.Consumer>
   )
 
   return WithInitialValueWrapper
 }
 
-function getInitialValueProps(document, props) {
+function getInitialValueProps(document, props, paneContext) {
   if (document) {
     return {}
   }
 
-  const payload = props.paneApi.payload || {}
-  const urlTemplate = (props.paneApi.params || {}).template
+  const payload = paneContext.payload || {}
+  const urlTemplate = (paneContext.params || {}).template
   const definedTemplate = props.options.template
 
   if (urlTemplate && definedTemplate && definedTemplate !== urlTemplate) {
