@@ -1115,11 +1115,7 @@ export default withInitialValue(
         isSyncing: isRestoring
       }
 
-      return (
-        <div className={documentPaneStyles.footer}>
-          <DocumentStatusBar {...documentStatusProps} />
-        </div>
-      )
+      return <DocumentStatusBar {...documentStatusProps} />
     }
 
     renderFooter = () => {
@@ -1215,11 +1211,7 @@ export default withInitialValue(
         confirmationDialog
       }
 
-      return (
-        <div className={documentPaneStyles.footer}>
-          <DocumentStatusBar {...documentStatusProps} />
-        </div>
-      )
+      return <DocumentStatusBar {...documentStatusProps} />
     }
 
     handleHistorySelect = event => {
@@ -1432,7 +1424,6 @@ export default withInitialValue(
             footer={this.historyIsOpen() ? this.renderHistoryFooter() : this.renderFooter()}
             renderActions={this.renderActions}
             isClosable={isClosable}
-            contentMaxWidth={672}
           >
             {activeView.type === 'form' && <FormView ref={this.formRef} {...documentProps} />}
             {activeView.type === 'component' && <activeView.component {...documentProps} />}

@@ -61,15 +61,14 @@ storiesOf('[tool] Desk tool', module)
             List of documents
           </div>
         )}
-        {!isCheckingReferringDocuments &&
-          !hasReferringDocuments && (
-            <Fragment>
-              <h3>
-                Are you sure you would like to permanently delete the document
-                <strong>&nbsp;&ldquo;Test document&rdquo;</strong>?
-              </h3>
-            </Fragment>
-          )}
+        {!isCheckingReferringDocuments && !hasReferringDocuments && (
+          <Fragment>
+            <h3>
+              Are you sure you would like to permanently delete the document
+              <strong>&nbsp;&ldquo;Test document&rdquo;</strong>?
+            </h3>
+          </Fragment>
+        )}
       </Dialog>
     )
   })
@@ -121,20 +120,18 @@ storiesOf('[tool] Desk tool', module)
             List of documents
           </div>
         )}
-        {!isCheckingReferringDocuments &&
-          !hasReferringDocuments && (
-            <div>
-              <p>
-                Are you sure you would like to unpublish the document{' '}
-                <strong>Document title</strong>?
-              </p>
-              <h2>Careful!</h2>
-              <p>
-                If you unpublish, this document will no longer be available for the public, but it
-                will not be deleted and can be published again later if you change your mind.
-              </p>
-            </div>
-          )}
+        {!isCheckingReferringDocuments && !hasReferringDocuments && (
+          <div>
+            <p>
+              Are you sure you would like to unpublish the document <strong>Document title</strong>?
+            </p>
+            <h2>Careful!</h2>
+            <p>
+              If you unpublish, this document will no longer be available for the public, but it
+              will not be deleted and can be published again later if you change your mind.
+            </p>
+          </div>
+        )}
       </Dialog>
     )
   })
@@ -198,7 +195,6 @@ storiesOf('[tool] Desk tool', module)
       background: '#ddd',
       display: 'flex',
       flexDirection: 'column',
-      maxWidth: '672px',
       height: 'calc(100vh - 2em)',
       margin: '0 auto'
     }
@@ -229,7 +225,6 @@ storiesOf('[tool] Desk tool', module)
       background: '#ddd',
       display: 'flex',
       flexDirection: 'column',
-      maxWidth: '672px',
       height: 'calc(100vh - 2em)',
       margin: '0 auto'
     }

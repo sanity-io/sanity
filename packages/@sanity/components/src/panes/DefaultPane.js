@@ -66,7 +66,6 @@ class Pane extends React.PureComponent {
     ),
     index: PropTypes.number,
     footer: PropTypes.node,
-    contentMaxWidth: PropTypes.number,
     renderHeaderViewMenu: PropTypes.func,
     styles: PropTypes.object // eslint-disable-line react/forbid-prop-types
   }
@@ -322,7 +321,6 @@ class Pane extends React.PureComponent {
       styles,
       renderActions,
       footer,
-      contentMaxWidth,
       tabIdPrefix,
       viewId
     } = this.props
@@ -345,10 +343,7 @@ class Pane extends React.PureComponent {
         onClick={this.handleRootClick}
       >
         <div className={styles.header}>
-          <div
-            className={styles.headerContent}
-            style={contentMaxWidth ? {maxWidth: `${contentMaxWidth}px`} : {}}
-          >
+          <div className={styles.headerContent}>
             <h2 className={styles.title} onClick={this.handleTitleClick}>
               {title}
             </h2>

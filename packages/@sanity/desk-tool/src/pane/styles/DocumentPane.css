@@ -44,10 +44,6 @@
   min-height: 100%;
 }
 
-.footer {
-  max-width: 672px;
-}
-
 .publishInfoUndoButton {
   position: relative;
   grid-area: publishInfoUndoButton;

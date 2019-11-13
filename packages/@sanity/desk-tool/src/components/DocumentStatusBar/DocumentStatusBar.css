@@ -105,7 +105,13 @@
 }
 
 .actions {
-  /* position: relative; */
+  /* grid unit */
+}
+
+.actionsWrapper {
+  position: relative;
+  max-width: 15em;
+  margin-left: auto;
 }
 
 .popOverText {

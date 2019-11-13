@@ -218,7 +218,6 @@
 
 .headerViewMenu {
   display: flex;
-  max-width: 672px;
   margin-top: -0.5em;
 
   @nest .isCollapsed & {
