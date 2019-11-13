@@ -11,10 +11,16 @@
   border: none;
   text-transform: uppercase;
   font-weight: 600;
+  padding: 0;
   @nest & svg {
     transform: rotate(-180deg);
-    margin-right: 0.5em;
+    padding-left: 0.5em;
   }
+}
+
+.blockHeading {
+  composes: heading2 from 'part:@sanity/base/theme/typography/headings-style';
+  padding: 0;
 }
 
 .blockContent {
