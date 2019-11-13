@@ -1,15 +1,15 @@
 /* eslint-disable max-nested-callbacks */
 import React from 'react'
 import {streamingComponent} from 'react-props-stream'
-import {merge, from, of} from 'rxjs'
+import {merge, concat, of} from 'rxjs'
 import {
-  map,
-  switchMap,
-  scan,
-  filter,
-  distinctUntilChanged,
   catchError,
-  debounceTime
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  scan,
+  switchMap
 } from 'rxjs/operators'
 import schema from 'part:@sanity/base/schema'
 import {observePaths} from 'part:@sanity/base/preview'
@@ -22,7 +22,8 @@ import {
   templateExists,
   getTemplateById,
   getTemplatesBySchemaType,
-  resolveInitialValue
+  resolveInitialValue,
+  isProgressEvent
 } from '@sanity/base/initial-value-templates'
 
 const withInitialValue = Pane => {
@@ -59,8 +60,8 @@ const withInitialValue = Pane => {
               )
             }
 
-            return merge(
-              of({isResolving: true}),
+            return concat(
+              of({isResolving: true, resolveMessage: 'Resolving initial value…'}),
               resolveInitialValueWithParameters(templateName, parameters).pipe(
                 catchError(resolveError => {
                   /* eslint-disable no-console */
@@ -75,7 +76,7 @@ const withInitialValue = Pane => {
                 })
               )
             ).pipe(
-              switchMap(({isResolving, initialValue, resolveError}) => {
+              switchMap(({isResolving, resolveMessage, initialValue, resolveError}) => {
                 if (resolveError) {
                   return of(
                     <ErrorPane>
@@ -90,7 +91,7 @@ const withInitialValue = Pane => {
 
                 return of(
                   isResolving ? (
-                    <LoadingPane {...props} title={title} message="Resolving initial value…" />
+                    <LoadingPane {...props} title={title} message={resolveMessage} />
                   ) : (
                     <BrokenReferences document={initialValue} type={documentType} schema={schema}>
                       <Pane {...paneProps} initialValue={initialValue} options={paneOptions} />
@@ -153,8 +154,13 @@ function resolveInitialValueWithParameters(templateName, parameters) {
     return of({isResolving: false, initialValue: undefined})
   }
 
-  return from(resolveInitialValue(getTemplateById(templateName), parameters)).pipe(
-    map(initialValue => ({isResolving: false, initialValue}))
+  return resolveInitialValue(getTemplateById(templateName), parameters).pipe(
+    map(evt => {
+      const isResolving = isProgressEvent(evt)
+      const initialValue = isResolving ? undefined : evt.value
+      const resolveMessage = isResolving ? evt.message : undefined
+      return {isResolving, resolveMessage, initialValue}
+    })
   )
 }
 

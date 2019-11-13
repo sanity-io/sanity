@@ -1,15 +1,50 @@
+import {Observable, from, of} from 'rxjs'
+import {map} from 'rxjs/operators'
 import {isPlainObject} from 'lodash'
 import {Template, TemplateBuilder} from './Template'
 import {validateInitialValue} from './validate'
+
+type ProgressEvent = {
+  type: Symbol
+  message: string
+}
+
+type CompleteEvent = {
+  type: Symbol
+  value: InitialValue
+}
+
+type InitialValue = {
+  [key: string]: any
+}
+
+type ResolveEvent = ProgressEvent | CompleteEvent
+
+export const PROGRESS_EVENT = Symbol.for('RESOLVE_PROGRESS_EVENT')
+export const COMPLETE_EVENT = Symbol.for('RESOLVE_COMPLETE_EVENT')
+
+export function isProgressEvent(event: ResolveEvent | InitialValue): event is ProgressEvent {
+  return event.type === PROGRESS_EVENT
+}
 
 export function isBuilder(template: Template | TemplateBuilder): template is TemplateBuilder {
   return typeof (template as TemplateBuilder).serialize === 'function'
 }
 
-async function resolveInitialValue(
+export const createProgressEvent = (message: string): ProgressEvent => ({
+  type: PROGRESS_EVENT,
+  message
+})
+
+export const createCompleteEvent = (value: InitialValue): CompleteEvent => ({
+  type: COMPLETE_EVENT,
+  value
+})
+
+export function resolveInitialValue(
   template: Template | TemplateBuilder,
   params: {[key: string]: any} = {}
-): Promise<{[key: string]: any}> {
+): Observable<ProgressEvent | InitialValue> {
   // Template builder?
   if (isBuilder(template)) {
     return resolveInitialValue(template.serialize(), params)
@@ -22,7 +57,7 @@ async function resolveInitialValue(
 
   // Static value?
   if (isPlainObject(value)) {
-    return validateInitialValue(value, template)
+    return of(validateInitialValue(value, template))
   }
 
   // Not an object, so should be a function
@@ -32,8 +67,29 @@ async function resolveInitialValue(
     )
   }
 
-  const resolved = await value(params)
-  return validateInitialValue(resolved, template)
+  const initial = value(params)
+  const subscribable = isSubscribable(initial) ? from(initial) : of(initial)
+
+  return subscribable.pipe(
+    map(event => {
+      if (isProgressEvent(event)) {
+        return event
+      }
+
+      const value = validateInitialValue(event, template)
+      return createCompleteEvent(value)
+    })
+  )
 }
 
-export {resolveInitialValue}
+function isPromise(thing: Promise<any>): thing is Promise<any> {
+  return thing ? typeof thing.then === 'function' : false
+}
+
+function isObservable(thing: Observable<any>): thing is Observable<any> {
+  return thing ? typeof thing.subscribe === 'function' : false
+}
+
+function isSubscribable(thing: any) {
+  return isPromise(thing as Promise<any>) || isObservable(thing as Observable<any>)
+}

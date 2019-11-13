@@ -1,5 +1,5 @@
 export {default as TemplateBuilder} from './builder'
-export {resolveInitialValue, isBuilder} from './resolve'
+export {resolveInitialValue, isBuilder, isProgressEvent, createProgressEvent} from './resolve'
 export {validateTemplates} from './validate'
 export {
   templateExists,
