@@ -16,7 +16,7 @@
 
     {
       "name": "part:@sanity/studio-hints/datastore",
-      "description": "Component where the hints are rendered"
+      "description": "Helpers to get and set hints state"
     },
     {
       "implements": "part:@sanity/studio-hints/datastore",
