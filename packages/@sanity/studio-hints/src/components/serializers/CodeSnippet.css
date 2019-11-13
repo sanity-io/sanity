@@ -1,0 +1,72 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  background: color(var(--gray-base) lightness(+ 50%) a(30%));
+  position: relative;
+  box-sizing: content-box !important;
+  overflow: auto;
+  border-radius: var(--border-radius-medium);
+
+  @nest & pre {
+    margin: 0;
+  }
+
+  @nest & code[class*='language-'], & pre[class*='language-'] {
+    font-family: var(--font-family-monospace);
+    color: inherit;
+    direction: ltr;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    tab-size: 2;
+  }
+
+  @nest & pre {
+    font-family: var(--font-family-monospace);
+  }
+}
+
+.copyPasteButton {
+  position: absolute;
+  appearance: none;
+  background-color: transparent;
+  bottom: 0;
+  right: 0;
+  color: inherit;
+  padding: 1rem;
+  border: none;
+  font-family: inherit;
+  font-size: 1rem;
+
+  @nest &:hover {
+    cursor: pointer;
+  }
+
+  @nest &:active, &:focus {
+    border: none;
+    outline: none;
+  }
+
+  @nest &:active {
+    color: var(--state-success-color);
+  }
+}
+
+.code {
+  font-family: var(--font-family-monospace);
+  position: relative;
+  padding: 1.25rem 1.5rem 3rem;
+}
+
+.copyPasteIcon {
+  height: 1rem;
+  display: block;
+}
+
+.copiedCheck {
+  display: block;
+  color: var(--state-success-color);
+  font-size: 1.5rem;
+  transform: translateY(0.4rem);
+}
