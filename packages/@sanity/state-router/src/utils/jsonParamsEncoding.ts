@@ -7,6 +7,12 @@ export function decodeJsonParams(pathsegment = '') {
   try {
     return JSON.parse(atob(segment))
   } catch (err) {
+    // Maybe try the old format (non-base64 encoded)
+  }
+
+  try {
+    return JSON.parse(segment)
+  } catch (err) {
     // eslint-disable-next-line no-console
     console.warn('Failed to parse JSON parameters')
   }
