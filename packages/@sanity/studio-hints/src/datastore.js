@@ -7,11 +7,11 @@ const defaultSettings = {
 
 function loadSettings() {
   const settings = localStorage.getItem(key)
-  if (!settings) {
-    storeSettings(defaultSettings)
-    return defaultSettings
+  if (settings) {
+    return JSON.parse(settings)
   }
-  return settings ? JSON.parse(settings) : {}
+  storeSettings(defaultSettings)
+  return defaultSettings
 }
 
 function storeSettings(settingsObject) {

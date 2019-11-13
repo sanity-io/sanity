@@ -9,7 +9,6 @@ import {isTrayOpen} from 'part:@sanity/studio-hints/datastore'
 import styles from './styles/Sidecar.css'
 
 const StudioHints = StudioHintsComponents.StudioHintsLayout
-// TODO: Open/close logic?
 
 class Sidecar extends React.PureComponent {
   state = {
@@ -25,12 +24,12 @@ class Sidecar extends React.PureComponent {
 
   componentDidMount = () => {
     console.log('listener added')
-    window.addEventListener('storage', this.onStorageChange, {passive: true})
+    window.addEventListener('storage', this.onStorageChange, false)
   }
 
   componentWillUnmount = () => {
     console.log('listener removed')
-    window.removeEventListener('storage', this.onStorageChange, {passive: true})
+    window.removeEventListener('storage', this.onStorageChange, false)
   }
 
   render() {
