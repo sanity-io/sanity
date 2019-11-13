@@ -1,7 +1,7 @@
 import React from 'react'
 import studioHintsConfig from 'part:@sanity/studio-hints/config?'
 import HintsPackage from './components/HintsPackage'
-import HintsCard from './components/HintsCard'
+import HintCard from './components/HintCard'
 import styles from './StudioHints.css'
 
 function StudioHintsLayout() {
@@ -19,6 +19,6 @@ function StudioHintsLayout() {
 }
 
 export default {
-  HintsCard: HintsCard,
+  HintCard: HintCard,
   StudioHintsLayout: StudioHintsLayout
 }
