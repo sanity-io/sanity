@@ -20,7 +20,7 @@ export const SidecarLayout = () => {
 import React from 'react'
 import studioHintsConfig from 'part:@sanity/studio-hints/config?'
 import HintsPackage from './components/HintsPackage'
-import HintsCard from './components/HintsCard'
+import HintCard from './components/HintCard'
 import styles from './StudioHints.css'
 
 function StudioHintsLayout() {
@@ -43,7 +43,7 @@ export const SidecarToggleButton = () => {
   return <ToggleSidecarButton />
 =======
 export default {
-  HintsCard: HintsCard,
+  HintCard: HintCard,
   StudioHintsLayout: StudioHintsLayout
 >>>>>>> f1c01c628... [studio-hints] Attempt at rendering hints
 }
