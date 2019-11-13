@@ -4,7 +4,7 @@ import {exclusiveParams} from '../contexts/PaneRouterContext'
 // old: authors;knut,{"template":"diaryEntry"}
 // new: authors;knut,view=diff,eyJyZXYxIjoiYWJjMTIzIiwicmV2MiI6ImRlZjQ1NiJ9|latest-posts
 
-const panePattern = /^([a-z0-9_-]+),?({.*?})?(?:(;|$))/i
+const panePattern = /^([.a-z0-9_-]+),?({.*?})?(?:(;|$))/i
 const isParam = str => /^[a-z0-9]+=[^=]+/i.test(str)
 const isPayload = str =>
   /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(str)
