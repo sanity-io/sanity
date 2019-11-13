@@ -2,6 +2,7 @@ import React from 'react'
 import RefreshIcon from 'part:@sanity/base/sync-icon'
 import EyeIcon from 'part:@sanity/base/eye-icon'
 import EditIcon from 'part:@sanity/base/edit-icon'
+import MdImage from 'react-icons/lib/md/image'
 import JsonDocumentDump from './components/JsonDocumentDump'
 import {DeveloperPreview} from './previews/developer'
 import S from '@sanity/desk-tool/structure-builder'
@@ -149,5 +150,9 @@ export default () =>
 
       S.divider(),
 
-      ...S.documentTypeListItems()
+      ...S.documentTypeListItems(),
+
+      S.documentTypeListItem('sanity.imageAsset')
+        .title('Images')
+        .icon(MdImage)
     ])
