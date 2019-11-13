@@ -12,6 +12,7 @@
   text-transform: uppercase;
   font-weight: 600;
   padding: 0;
+  cursor: pointer;
   @nest & svg {
     transform: rotate(-180deg);
     padding-left: 0.5em;
