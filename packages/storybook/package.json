@@ -20,8 +20,8 @@
     "@sanity/server": "0.144.0",
     "@sanity/storybook": "0.144.0",
     "prop-types": "^15.6.0",
-    "react": "16.3.1",
-    "react-dom": "16.3.1"
+    "react": "16.9.0",
+    "react-dom": "^16.9.0"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
