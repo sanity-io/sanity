@@ -40,6 +40,11 @@
   }
 }
 
+.blockHeading {
+  composes: heading2 from 'part:@sanity/base/theme/typography/headings-style';
+  padding: 0;
+}
+
 .blockContent {
   padding: var(--medium-padding);
   font-weight: 500;
