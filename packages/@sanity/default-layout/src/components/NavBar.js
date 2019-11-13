@@ -7,6 +7,7 @@ import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
 import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import {StateLink} from 'part:@sanity/base/router'
+import {toggleTrayOpenState} from 'part:@sanity/studio-hints/datastore'
 import {HAS_SPACES} from '../util/spaces'
 import Branding from './Branding'
 import LoginStatus from './LoginStatus'
@@ -20,6 +21,10 @@ import styles from './styles/NavBar.css'
 // - 2. Local store says to show hints mode? yes? 3. No? 4.
 // - 3. render sidecarStatus button
 // - 4. Don't render sidecar button at all
+
+function onSidecarButtonClick(event) {
+  toggleTrayOpenState()
+}
 
 function NavBar(props) {
   const {
@@ -109,7 +114,11 @@ function NavBar(props) {
       <div className={styles.loginStatus} ref={onSetLoginStatusElement}>
         <LoginStatus onLogout={onUserLogout} user={user} />
       </div>
-      <div className={styles.sidecarStatus}>?</div>
+      <div className={styles.sidecarStatus}>
+        <button onClick={onSidecarButtonClick} type="button">
+          ???
+        </button>
+      </div>
       <button className={styles.searchButton} onClick={onSearchOpen} type="button">
         <div className={styles.searchButtonInner} tabIndex={-1}>
           <span className={styles.searchButtonIcon}>
