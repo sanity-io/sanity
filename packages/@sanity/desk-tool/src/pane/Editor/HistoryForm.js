@@ -11,7 +11,12 @@ const noopPatchChannel = {onPatch: () => noop, receivePatches: noop}
 
 const dateFormat = 'MMM D, YYYY, hh:mm A'
 
-export function getDateString(date) {
+export function getDateString(event) {
+  const date = event && event.endTime
+  if (!date) {
+    return ''
+  }
+
   if (isToday(date)) {
     return `Today, ${format(date, 'hh:mm A')}`
   }
@@ -58,9 +63,9 @@ export default class HistoryForm extends React.PureComponent {
     const {schema, type, event, document} = this.props
     const {snapshot, isLoading} = document
     const {focusPath, prevSnapshot} = this.state
-    const usedSnapshot = isLoading ? null : snapshot || prevSnapshot
+    const usedSnapshot = snapshot || prevSnapshot
 
-    if (!usedSnapshot) {
+    if (isLoading && !prevSnapshot) {
       return (
         <Delay ms={600}>
           <div className={styles.spinnerContainer}>
@@ -70,12 +75,16 @@ export default class HistoryForm extends React.PureComponent {
       )
     }
 
+    const eventDate = getDateString(event)
     return (
       <>
         {isLoading && (
           <Delay ms={600}>
             <div className={styles.spinnerContainer}>
-              <Spinner center message={`Loading revision from ${getDateString(event.endTime)}…`} />
+              <Spinner
+                center
+                message={`Loading revision${eventDate ? ` from ${eventDate}` : ''}…`}
+              />
             </div>
           </Delay>
         )}
