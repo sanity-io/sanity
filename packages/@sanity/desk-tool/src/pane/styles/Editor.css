@@ -3,6 +3,7 @@
 .root {
   max-width: calc(640px + var(--medium-padding) + var(--medium-padding));
   flex-grow: 1;
+  margin: 0 auto;
 }
 
 .error,

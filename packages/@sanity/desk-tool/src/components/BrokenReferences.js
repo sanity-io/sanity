@@ -27,7 +27,7 @@ function BrokenRefs(props) {
   const renderNonExisting = nonExistent.length > 0
   const renderUnpublished = !renderNonExisting
   return (
-    <DefaultPane title={`New ${type}`} contentMaxWidth={672} isScrollable={false}>
+    <DefaultPane title={`New ${type}`} isScrollable={false}>
       <div className={styles.brokenReferences}>
         {renderNonExisting && (
           <PanePopover
