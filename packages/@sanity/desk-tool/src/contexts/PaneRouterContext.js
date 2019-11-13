@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp, react/prop-types */
-import React from 'react'
+import React, {useContext} from 'react'
 import {isEqual, pick, omit} from 'lodash'
 import {StateLink} from 'part:@sanity/base/router'
 
@@ -14,49 +14,6 @@ const missingContext = () => {
 }
 
 export const exclusiveParams = ['view']
-
-const ChildLink = React.forwardRef(function ChildLink({childId, childPayload, ...props}, ref) {
-  return (
-    <PaneRouterContext.Consumer>
-      {({routerPanesState, groupIndex}) => {
-        const panes = routerPanesState
-          .slice(0, groupIndex + 1)
-          .concat([[{id: childId, payload: childPayload}]])
-
-        return <StateLink ref={ref} {...props} state={{panes}} />
-      }}
-    </PaneRouterContext.Consumer>
-  )
-})
-
-const ParameterizedLink = React.forwardRef(function ParameterizedLink(
-  {params: newParams, payload: newPayload, ...props},
-  ref
-) {
-  return (
-    <PaneRouterContext.Consumer>
-      {({routerPanesState}) => {
-        const panes = routerPanesState.map((group, i) => {
-          if (i !== routerPanesState.length - 1) {
-            return group
-          }
-
-          const pane = group[0]
-          return [
-            {
-              ...pane,
-              params: newParams || pane.params,
-              payload: newPayload || pane.payload
-            },
-            ...group.slice(1)
-          ]
-        })
-
-        return <StateLink ref={ref} {...props} state={{panes}} />
-      }}
-    </PaneRouterContext.Consumer>
-  )
-})
 
 export const PaneRouterContext = React.createContext({
   // Zero-based index (position) of pane, visually
@@ -100,6 +57,40 @@ export const PaneRouterContext = React.createContext({
 
   // Proxied navigation to a given intent. Consider just exposing `router` instead?
   navigateIntent: (intentName, params, options = {}) => missingContext()
+})
+
+const ChildLink = React.forwardRef(function ChildLink({childId, childPayload, ...props}, ref) {
+  const {routerPanesState, groupIndex} = useContext(PaneRouterContext)
+  const panes = routerPanesState
+    .slice(0, groupIndex + 1)
+    .concat([[{id: childId, payload: childPayload}]])
+
+  return <StateLink ref={ref} {...props} state={{panes}} />
+})
+
+const ParameterizedLink = React.forwardRef(function ParameterizedLink(
+  {params: newParams, payload: newPayload, ...props},
+  ref
+) {
+  const {routerPanesState} = useContext(PaneRouterContext)
+
+  const panes = routerPanesState.map((group, i) => {
+    if (i !== routerPanesState.length - 1) {
+      return group
+    }
+
+    const pane = group[0]
+    return [
+      {
+        ...pane,
+        params: newParams || pane.params,
+        payload: newPayload || pane.payload
+      },
+      ...group.slice(1)
+    ]
+  })
+
+  return <StateLink ref={ref} {...props} state={{panes}} />
 })
 
 export function getPaneRouterContextFactory(instance) {
