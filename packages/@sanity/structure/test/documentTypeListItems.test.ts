@@ -1,7 +1,8 @@
 import {StructureBuilder as S} from '../src'
 import {getDefaultSchema} from '../src/parts/Schema'
-import {DocumentList} from '../src/DocumentList'
 import serializeStructure from './util/serializeStructure'
+import {ChildResolver} from '../src/ChildResolver'
+import {DocumentTypeListBuilder} from '../src/DocumentTypeList'
 
 const nope = () => 'NOPE'
 const editor = {
@@ -31,9 +32,19 @@ test('generated canHandleIntent responds to edit/create on document type', () =>
   expect(listItems).toHaveLength(2)
   expect(listItems[0]).toMatchObject({id: 'author', title: 'Author'})
   expect(listItems[0]).toHaveProperty('child')
-  expect(listItems[0].child).toHaveProperty('canHandleIntent')
 
-  const child = listItems[0].child as DocumentList
+  const childResolver = listItems[0].child as ChildResolver
+  const childBuilder = childResolver('author', {
+    index: 0,
+    parent: S.list()
+      .id('foo')
+      .items(listItems)
+      .serialize()
+  }) as DocumentTypeListBuilder
+
+  const child = childBuilder.serialize()
+  expect(child).toHaveProperty('canHandleIntent')
+
   const ctx = {pane: child, index: 0}
   expect((child.canHandleIntent || nope)('create', {type: 'book'}, ctx)).toBe(false)
   expect((child.canHandleIntent || nope)('create', {type: 'author'}, ctx)).toBe(true)
@@ -46,9 +57,20 @@ test('generated document panes responds with correct editor child', done => {
   expect(listItems[0]).toMatchObject({id: 'author', title: 'Author'})
   expect(listItems[0]).toHaveProperty('child')
 
-  const listItem = listItems[0].child as DocumentList
-  const context = {parent: listItem, index: 0}
-  serializeStructure(listItem.child, context, ['grrm', context]).subscribe(itemChild => {
+  const childResolver = listItems[0].child as ChildResolver
+  const childBuilder = childResolver('author', {
+    index: 0,
+    parent: S.list()
+      .id('foo')
+      .items(listItems)
+      .serialize()
+  }) as DocumentTypeListBuilder
+
+  const authorsList = childBuilder.serialize()
+  expect(authorsList).toHaveProperty('canHandleIntent')
+
+  const context = {parent: listItems[0], index: 0}
+  serializeStructure(authorsList.child, context, ['grrm', context]).subscribe(itemChild => {
     expect(itemChild).toMatchObject(editor)
 
     done()
