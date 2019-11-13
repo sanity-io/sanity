@@ -1,7 +1,7 @@
 import {createProgressEvent} from '@sanity/base/initial-value-templates'
 import T from '@sanity/base/initial-value-template-builder'
-import {of, from, concat} from 'rxjs'
-import {delay, concatMap} from 'rxjs/operators'
+import {of, from, concat, timer} from 'rxjs'
+import {map, delay, concatMap} from 'rxjs/operators'
 
 export default [
   ...T.defaults(),
@@ -43,5 +43,13 @@ export default [
         ),
         of({title: 'Wow, that took a while.'})
       )
+  }),
+
+  T.template({
+    id: 'changing-color',
+    title: 'Changing color (observable)',
+    schemaType: 'colorTest',
+    value: () =>
+      timer(0, 1000).pipe(map((_, num) => ({title: `First resolved ${num} seconds ago`})))
   })
 ]

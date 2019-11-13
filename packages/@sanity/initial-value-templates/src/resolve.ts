@@ -1,5 +1,5 @@
 import {Observable, from, of} from 'rxjs'
-import {map} from 'rxjs/operators'
+import {map, takeWhile} from 'rxjs/operators'
 import {isPlainObject} from 'lodash'
 import {Template, TemplateBuilder} from './Template'
 import {validateInitialValue} from './validate'
@@ -71,14 +71,10 @@ export function resolveInitialValue(
   const subscribable = isSubscribable(initial) ? from(initial) : of(initial)
 
   return subscribable.pipe(
-    map(event => {
-      if (isProgressEvent(event)) {
-        return event
-      }
-
-      const value = validateInitialValue(event, template)
-      return createCompleteEvent(value)
-    })
+    takeWhile(event => isProgressEvent(event), true),
+    map(event =>
+      isProgressEvent(event) ? event : createCompleteEvent(validateInitialValue(event, template))
+    )
   )
 }
 
