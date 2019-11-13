@@ -11,14 +11,12 @@ export default class LoadingPane extends React.PureComponent {
     isCollapsed: PropTypes.bool.isRequired,
     onExpand: PropTypes.func,
     onCollapse: PropTypes.func,
-    path: PropTypes.arrayOf(PropTypes.string),
     index: PropTypes.number,
     message: PropTypes.oneOfType([PropTypes.string, PropTypes.func])
   }
 
   static defaultProps = {
     message: 'Loading…',
-    path: [],
     title: '\u00a0',
     index: undefined,
     onExpand: undefined,
@@ -27,25 +25,48 @@ export default class LoadingPane extends React.PureComponent {
 
   constructor(props) {
     super(props)
+    this.calculateMessage(props)
+  }
 
+  calculateMessage(props) {
     const isGetter = typeof props.message === 'function'
-    const currentMessage = isGetter ? props.message(props.path) : props.message
+    const currentMessage = isGetter ? props.message(props.path || []) : props.message
     const isObservable = typeof currentMessage.subscribe === 'function'
     const state = {currentMessage: isObservable ? LoadingPane.defaultProps.message : currentMessage}
 
     if (isObservable) {
-      let isSync = true
+      let isSync = !this.hasBeenMounted
       this.subscription = currentMessage.subscribe(message => {
         if (isSync) {
           state.currentMessage = message
+          this.state = state // eslint-disable-line react/no-direct-mutation-state
         } else {
           this.setState({currentMessage: message})
         }
       })
       isSync = false
+      return
     }
 
-    this.state = state
+    if (this.hasBeenMounted) {
+      this.setState(state)
+    } else {
+      this.state = state // eslint-disable-line react/no-direct-mutation-state
+    }
+  }
+
+  componentDidMount() {
+    this.hasBeenMounted = true
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.message !== this.props.message) {
+      if (this.subscription) {
+        this.subscription.unsubscribe()
+      }
+
+      this.calculateMessage(this.props)
+    }
   }
 
   componentWillUnmount() {
