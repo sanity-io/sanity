@@ -2,12 +2,22 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import BlockContent from '@sanity/block-content-to-react'
 import ArrowRight from 'part:@sanity/base/arrow-right'
+import dynamic from 'next/dynamic'
 import styles from './HintPage.css'
-import Image from './serializers/Image'
-import CodeSnippet from './serializers/CodeSnippet'
+
+const YouTube = dynamic(() => import('./serializers/Video'))
+const Image = dynamic(() => import('./serializers/Image'))
+const CodeSnippet = dynamic(() => import('./serializers/CodeSnippet'))
 
 const serializers = {
   types: {
+    youtube: ({node: {url}}) => {
+      return (
+        <div className={styles.youtubeContainer}>
+          <YouTube url={url} containerClassName={styles.youtube} className={styles.youtubeIframe} />
+        </div>
+      )
+    },
     image: props => {
       return <Image {...props} />
     },

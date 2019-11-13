@@ -22,10 +22,13 @@
   "dependencies": {
     "@sanity/block-content-to-react": "^2.0.7",
     "lodash": "^4.17.4",
+    "next": "^9.1.3",
     "react-copy-to-clipboard": "^5.0.2",
     "react-icons": "^2.2.7",
     "react-refractor": "^1.0.1",
-    "refractor": "^2.10.0"
+    "react-youtube": "^7.9.0",
+    "refractor": "^2.10.0",
+    "url-parse": "^1.4.7"
   },
   "devDependencies": {
     "@sanity/base": "0.144.1",

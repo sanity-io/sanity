@@ -26,3 +26,22 @@
 .blockContent {
   padding-top: var(--nav-bar-box);
 }
+
+.youtubeContainer {
+  width: 100%;
+}
+
+.youtube {
+  position: relative;
+  display: block;
+  padding-top: calc(100% / (16 / 9));
+}
+
+.youtubeIframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  max-width: 100%;
+}
