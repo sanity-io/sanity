@@ -8,9 +8,19 @@
       "name": "part:@sanity/default-layout/studio-hints-config",
       "description": "Studio hints config. If implemented in a Studio, sidecar will render hints"
     },
+
     {
       "implements": "part:@sanity/default-layout/sidecar",
       "path": "StudioHints.js"
+    },
+
+    {
+      "name": "part:@sanity/studio-hints/datastore",
+      "description": "Component where the hints are rendered"
+    },
+    {
+      "implements": "part:@sanity/studio-hints/datastore",
+      "path": "datastore.js"
     }
   ]
 }
