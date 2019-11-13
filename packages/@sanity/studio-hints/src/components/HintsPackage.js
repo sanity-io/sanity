@@ -1,15 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import SanityClient from '@sanity/client'
-import ArrowRight from 'part:@sanity/base/arrow-right'
-import styles from './HintsPackage.css'
+import client from '../client'
+import Links from './Links'
+import HintPage from './HintPage'
 import HintCard from './HintCard'
-
-const docsStudioSanityClient = new SanityClient({
-  projectId: '3do82whm',
-  dataset: 'next',
-  useCdn: false // switch this to true when we're out of dev mode
-})
+import styles from './HintsPackage.css'
 
 class HintsPackage extends React.PureComponent {
   static props = {
@@ -18,11 +13,12 @@ class HintsPackage extends React.PureComponent {
 
   state = {
     error: null,
-    hintsPackage: null
+    hintsPackage: null,
+    activePage: null
   }
 
   fetchHintsPackage(slug) {
-    docsStudioSanityClient
+    client
       .fetch(
         '*[_type == "hintsPackage" && slug.current == $slug][0]{_id, title, slug, links, hintsTitle, hints[]->{_id, title, summary, body}}',
         {slug}
@@ -33,16 +29,32 @@ class HintsPackage extends React.PureComponent {
       .catch(error => this.setState({error}))
   }
 
+  handleCardClick = id => {
+    // TODO: update locale store
+    this.setState({
+      activePage: id
+    })
+  }
+
+  handleBackClick = () => {
+    // TODO: update locale store
+    this.setState({
+      activePage: null
+    })
+  }
+
+  activeHint = () => {
+    const {activePage, hintsPackage} = this.state
+    return activePage ? hintsPackage.hints.find(hint => hint._id === activePage) : null
+  }
+
   componentDidMount() {
     this.fetchHintsPackage(this.props.slug)
   }
 
   render() {
-    const {hintsPackage, error} = this.state
+    const {hintsPackage, error, activePage} = this.state
 
-    const hints = hintsPackage && hintsPackage.hints
-    const links = hintsPackage && hintsPackage.links
-    console.log(hintsPackage)
     if (error) {
       return (
         <div>
@@ -53,33 +65,21 @@ class HintsPackage extends React.PureComponent {
     if (!hintsPackage) {
       return null
     }
+
     return (
-      <div className={styles.root}>
-        <div className={styles.linksWrapper}>
-          {links.map(link => {
-            return (
-              <h3 className={styles.linkHeading} key={link.title}>
-                <a
-                  className={styles.link}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {link.title}
-                  <span className={styles.linkIcon}>
-                    <ArrowRight />
-                  </span>
-                </a>
-              </h3>
-            )
-          })}
-        </div>
-        <div className={styles.hintsWrapper}>
-          <h2 className={styles.hintsListHeading}>{hintsPackage.hintsTitle}</h2>
-          {hints.map(hint => {
-            return <HintCard key={hint._id} title={hint.title} summary={hint.summary} />
-          })}
-        </div>
+      <div>
+        {!activePage && (
+          <>
+            <Links links={hintsPackage.links} />
+            <div className={styles.cardsList}>
+              <h2 className={styles.cardsTitle}>{hintsPackage.hintsTitle}</h2>
+              {hintsPackage.hints.map(hint => {
+                return <HintCard key={hint._id} card={hint} onCardClick={this.handleCardClick} />
+              })}
+            </div>
+          </>
+        )}
+        {activePage && <HintPage hint={this.activeHint()} onBackClick={this.handleBackClick} />}
       </div>
     )
   }

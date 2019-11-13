@@ -8,24 +8,7 @@
   padding-top: var(--nav-bar-box);
 }
 
-.icon {
-  transform: rotate(-45deg);
-}
-
-.cardsList {
-  margin: var(--extra-large-padding) 0;
-}
-
-.cardsTitle {
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-family: var(--font-family-monospace);
-  font-size: var(--font-size-small);
-  font-weight: 100;
-  margin-bottom: var(--medium-padding);
-}
-
-.linkHeading {
+.heading {
   font-size: var(--font-size-h4);
   margin: 0;
   padding: var(--small-padding) 0;
@@ -37,4 +20,8 @@
   justify-content: space-between;
   text-decoration: none;
   color: inherit;
+}
+
+.icon {
+  transform: rotate(-45deg);
 }

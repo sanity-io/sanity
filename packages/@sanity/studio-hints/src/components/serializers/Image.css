@@ -1,0 +1,18 @@
+.figure {
+  width: 100%;
+  margin: 0;
+
+  @nest & img {
+    width: 100%;
+    vertical-align: top;
+  }
+}
+
+.imageContainer {
+  width: 100%;
+}
+
+.figcaption {
+  font-size: calc(1rem / 16 * 14);
+  margin: 0.75rem 0 0;
+}

@@ -2,11 +2,13 @@
 
 .root {
   display: flex;
+  flex-direction: column;
   justify-content: stretch;
   padding: var(--medium-padding) var(--small-padding);
   border-radius: var(--border-radius-medium);
   border: 1px solid var(--gray);
   margin-bottom: var(--medium-padding);
+  cursor: pointer;
 }
 
 .link {
