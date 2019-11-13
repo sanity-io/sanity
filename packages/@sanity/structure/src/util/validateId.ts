@@ -2,7 +2,7 @@ import {SerializeError} from '../SerializeError'
 import {SerializePath} from '../StructureNodes'
 
 const disallowedIds = ['__edit__']
-const disallowedPattern = /([^A-Za-z0-9-_])/
+const disallowedPattern = /([^A-Za-z0-9-_.])/
 
 export function validateId(
   id: string,
