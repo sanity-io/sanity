@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import {locationSetting, updateLocation} from 'part:@sanity/studio-hints/datastore'
 import client from '../client'
 import Links from './Links'
 import HintPage from './HintPage'
@@ -17,6 +18,8 @@ class HintsPackage extends React.PureComponent {
     activePage: null
   }
 
+  subscription = null
+
   fetchHintsPackage(slug) {
     client
       .fetch(
@@ -29,27 +32,32 @@ class HintsPackage extends React.PureComponent {
       .catch(error => this.setState({error}))
   }
 
-  handleCardClick = id => {
-    // TODO: update locale store
-    this.setState({
-      activePage: id
+  componentDidMount() {
+    this.fetchHintsPackage(this.props.slug)
+
+    this.subscription = locationSetting.listen().subscribe(currentLocation => {
+      this.setState({activePage: currentLocation ? JSON.parse(currentLocation).id : null})
     })
   }
 
+  componentWillUnmount() {
+    if (this.subscription) {
+      this.subscription.unsubscribe()
+    }
+  }
+
+  handleCardClick = id => {
+    const locationObject = {type: 'hint', id}
+    updateLocation(locationObject)
+  }
+
   handleBackClick = () => {
-    // TODO: update locale store
-    this.setState({
-      activePage: null
-    })
+    updateLocation(null)
   }
 
   activeHint = () => {
     const {activePage, hintsPackage} = this.state
     return activePage ? hintsPackage.hints.find(hint => hint._id === activePage) : null
-  }
-
-  componentDidMount() {
-    this.fetchHintsPackage(this.props.slug)
   }
 
   render() {

@@ -12,15 +12,14 @@ export function toggleTrayOpenState() {
     .listen(false)
     .pipe(take(1))
     .subscribe(isOpen => {
-      isTrayOpenSetting.set(!isOpen)
+      const newState = !isOpen
+      isTrayOpenSetting.set(newState)
     })
 }
 
-export function setLocation(locationObject) {
-  locationSetting
-    .listen()
-    .pipe(take(1))
-    .subscribe(isOpen => {
-      locationSetting.set(JSON.stringify(locationObject))
-    })
+// The shape of locationObject is
+// {type: 'hint', id: '123lkhlkh-234kwe3-45'} || null
+// It's only set if the user has "drilled down" to a specific object
+export function updateLocation(locationObject) {
+  locationSetting.set(locationObject ? JSON.stringify(locationObject) : undefined)
 }

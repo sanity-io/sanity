@@ -30,7 +30,6 @@ class Sidecar extends React.PureComponent {
 
   render() {
     const {isOpen} = this.state
-    console.log('isOpen', isOpen)
 
     if (studioHintsConfig && isOpen) {
       return <div className={styles.root}>{StudioHints()}</div>
