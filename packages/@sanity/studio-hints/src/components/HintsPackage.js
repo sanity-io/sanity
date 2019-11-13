@@ -32,6 +32,25 @@ export default class HintsPackage extends React.PureComponent {
       .catch(error => this.setState({error, isLoading: false}))
   }
 
+  handleCardClick = id => {
+    // TODO: update locale store
+    this.setState({
+      activePage: id
+    })
+  }
+
+  handleBackClick = () => {
+    // TODO: update locale store
+    this.setState({
+      activePage: null
+    })
+  }
+
+  activeHint = () => {
+    const {activePage, hintsPackage} = this.state
+    return activePage ? hintsPackage.hints.find(hint => hint._id === activePage) : null
+  }
+
   componentDidMount() {
     const repoId = studioHintsConfig.templateRepoId
     this.fetchHintsPackage(repoId)
