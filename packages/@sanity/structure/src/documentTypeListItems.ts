@@ -5,10 +5,11 @@ import {getListIcon, getDetailsIcon} from './parts/Icon'
 import {MenuItemBuilder, getOrderingMenuItemsForSchemaType} from './MenuItem'
 import {DEFAULT_SELECTED_ORDERING_OPTION} from './Sort'
 import {DocumentListBuilder} from './DocumentList'
-import {ListItemBuilder} from './ListItem'
+import {ListItemBuilder, ListItem} from './ListItem'
 import {DocumentTypeListBuilder} from './DocumentTypeList'
 import {defaultIntentChecker} from './Intent'
 import {DocumentBuilder} from './Document'
+import {isList} from './List'
 
 const ListIcon = getListIcon()
 const DetailsIcon = getDetailsIcon()
@@ -39,7 +40,18 @@ export function getDocumentTypeListItem(typeName: string, sanitySchema?: Schema)
     .id(typeName)
     .title(title)
     .schemaType(type)
-    .child(getDocumentTypeList(typeName, schema))
+    .child((id, {parent}) => {
+      const parentItem = isList(parent)
+        ? (parent.items.find(item => item.id === id) as ListItem)
+        : null
+
+      let list = getDocumentTypeList(typeName, schema)
+      if (parentItem && parentItem.title) {
+        list = list.title(parentItem.title)
+      }
+
+      return list
+    })
 }
 
 export function getDocumentTypeList(typeName: string, sanitySchema?: Schema): DocumentListBuilder {

@@ -1,5 +1,5 @@
 import {find} from 'lodash'
-import {SerializePath, SerializeOptions, Divider} from './StructureNodes'
+import {SerializePath, SerializeOptions, Divider, Collection} from './StructureNodes'
 import {ChildResolverOptions, ChildResolver} from './ChildResolver'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {ListItem, ListItemBuilder} from './ListItem'
@@ -79,6 +79,10 @@ export interface ListInput extends GenericListInput {
 
 export interface BuildableList extends BuildableGenericList {
   items?: (ListItem | ListItemBuilder | Divider)[]
+}
+
+export function isList(list: Collection): list is List {
+  return list.type === 'list'
 }
 
 export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> {
