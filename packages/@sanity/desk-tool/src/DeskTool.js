@@ -115,7 +115,6 @@ export default withRouterHOC(
       const paneSegments = router.state.panes || []
       this.setState({panes, isResolving: false})
 
-      // @todo with split panes, is this enough? should we count items inside of segment?
       if (panes.length < paneSegments.length) {
         router.navigate(
           {...router.state, panes: paneSegments.slice(0, panes.length)},
@@ -184,9 +183,9 @@ export default withRouterHOC(
 
     panesAreEqual = (prev, next) => this.calcPanesEquality(prev, next).ids
 
-    shouldDerivePanes = nextProps => {
-      const nextRouterState = nextProps.router.state
-      const prevRouterState = this.props.router.state
+    shouldDerivePanes = prevProps => {
+      const nextRouterState = this.props.router.state
+      const prevRouterState = prevProps.router.state
 
       return (
         !this.panesAreEqual(prevRouterState.panes, nextRouterState.panes) ||
@@ -196,35 +195,22 @@ export default withRouterHOC(
       )
     }
 
-    // @todo move this out of cWRP - it's deprecated
-    // eslint-disable-next-line camelcase
-    UNSAFE_componentWillReceiveProps(nextProps) {
-      if (this.shouldDerivePanes(nextProps)) {
-        const prevPanes = this.props.router.state.panes || []
-        const nextPanes = nextProps.router.state.panes || []
-        const diffAt = nextPanes.reduce(
-          (diff, ids, index) => {
-            const splitDiff = ids.findIndex(
-              (item, splitIndex) =>
-                !prevPanes[index] ||
-                !prevPanes[index][splitIndex] ||
-                prevPanes[index][splitIndex].id !== item.id
-            )
-            return splitDiff === -1 ? diff : [index, splitDiff]
-          },
-          [0, 0]
-        )
-
-        this.derivePanes(nextProps, diffAt)
-      }
-    }
-
     componentDidUpdate(prevProps, prevState) {
       if (
         prevProps.onPaneChange !== this.props.onPaneChange ||
         prevState.panes !== this.state.panes
       ) {
         this.props.onPaneChange(this.state.panes || [])
+      }
+
+      if (this.shouldDerivePanes(prevProps)) {
+        const prevPanes = prevProps.router.state.panes || []
+        const nextPanes = this.props.router.state.panes || []
+        const diffAt = getPaneDiffIndex(nextPanes, prevPanes)
+
+        if (diffAt) {
+          this.derivePanes(this.props, diffAt)
+        }
       }
     }
 
@@ -233,11 +219,6 @@ export default withRouterHOC(
       const nextPanes = nextProps.router.state.panes || []
       const panesEqual = this.calcPanesEquality(prevPanes, nextPanes)
 
-      if (!panesEqual.ids) {
-        // Will trigger a re-resolving of panes, thus will trigger new state shortly
-        return false
-      }
-
       const {router: oldRouter, ...oldProps} = this.props
       const {router: newRouter, ...newProps} = nextProps
       const {panes: oldPanes, ...oldState} = this.state
@@ -245,6 +226,7 @@ export default withRouterHOC(
 
       const shouldUpdate =
         !panesEqual.params ||
+        !panesEqual.ids ||
         !shallowEquals(oldProps, newProps) ||
         !isEqual(oldPanes, newPanes) ||
         !shallowEquals(oldState, newState)
@@ -306,6 +288,39 @@ export default withRouterHOC(
     }
   }
 )
+
+function getPaneDiffIndex(nextPanes, prevPanes) {
+  for (let index = 0; index < nextPanes.length; index++) {
+    const nextGroup = nextPanes[index]
+    const prevGroup = prevPanes[index]
+
+    // Whole group is now invalid
+    if (!prevGroup) {
+      return [index, 0]
+    }
+
+    /* eslint-disable max-depth */
+    // Iterate over siblings
+    for (let splitIndex = 0; splitIndex < nextGroup.length; splitIndex++) {
+      const nextSibling = nextGroup[splitIndex]
+      const prevSibling = prevGroup[splitIndex]
+
+      // Didn't have a sibling here previously, diff from here!
+      if (!prevSibling) {
+        return [index, splitIndex]
+      }
+
+      // Does the ID differ from the previous?
+      if (nextSibling.id !== prevSibling.id) {
+        return [index, splitIndex]
+      }
+    }
+    /* eslint-enable max-depth */
+  }
+
+  // "No diff"
+  return undefined
+}
 
 if (__DEV__) {
   if (module.hot) {
