@@ -1,43 +1,26 @@
-const key = 'studioHints'
+import {take} from 'rxjs/operators'
+import settings from 'part:@sanity/base/settings'
 
-const defaultSettings = {
-  isTrayOpen: true, // tray state
-  selectedHint: null // set if the user has "drilled down" to a specific hint
-}
+const storageKey = 'studio-hints'
+const studioHintsSettings = settings.forNamespace(storageKey)
 
-function loadSettings() {
-  const settings = localStorage.getItem(key)
-  if (settings) {
-    return JSON.parse(settings)
-  }
-  storeSettings(defaultSettings)
-  return defaultSettings
-}
-
-function storeSettings(settingsObject) {
-  localStorage.setItem(key, JSON.stringify(settingsObject))
-}
-
-export function isTrayOpen() {
-  const settings = loadSettings()
-  return settings.isTrayOpen !== false // true or unset means the tray is open
-}
+export const isTrayOpenSetting = studioHintsSettings.forKey('isTrayOpen')
+export const locationSetting = studioHintsSettings.forKey('location')
 
 export function toggleTrayOpenState() {
-  const settings = loadSettings()
-  const updatedSettings = {...settings, isTrayOpen: !isTrayOpen()}
-  console.log('toggleTrayOpenState.updatedSettings', updatedSettings)
-  storeSettings(updatedSettings)
+  isTrayOpenSetting
+    .listen(false)
+    .pipe(take(1))
+    .subscribe(isOpen => {
+      isTrayOpenSetting.set(!isOpen)
+    })
 }
 
-export function getSelectedHint() {
-  const settings = loadSettings()
-  return settings.selectedHint
-}
-
-export function setSelectedHint(hintId) {
-  const settings = loadSettings()
-  const updatedSettings = {...settings, selectedHint: hintId}
-  console.log('setSelectedHint.updatedSettings', updatedSettings)
-  storeSettings(updatedSettings)
+export function setLocation(locationObject) {
+  locationSetting
+    .listen()
+    .pipe(take(1))
+    .subscribe(isOpen => {
+      locationSetting.set(JSON.stringify(locationObject))
+    })
 }

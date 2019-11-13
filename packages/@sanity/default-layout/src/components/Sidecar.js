@@ -1,10 +1,9 @@
 /* eslint-disable no-console */
 /* eslint-disable prefer-template */
-import PropTypes from 'prop-types'
 import React from 'react'
 import studioHintsConfig from 'part:@sanity/studio-hints/config?'
 import StudioHintsComponents from 'part:@sanity/studio-hints/components'
-import {isTrayOpen} from 'part:@sanity/studio-hints/datastore'
+import {isTrayOpenSetting} from 'part:@sanity/studio-hints/datastore'
 
 import styles from './styles/Sidecar.css'
 
@@ -12,34 +11,32 @@ const StudioHints = StudioHintsComponents.StudioHintsLayout
 
 class Sidecar extends React.PureComponent {
   state = {
-    isOpen: true //isTrayOpen()
+    isOpen: false
   }
 
-  onStorageChange = event => {
-    console.log('onStorageChange', event)
-    if (event.storageArea === localStorage) {
-      console.log('  localStorage, in fact')
+  subscription = null
+
+  componentDidMount() {
+    this.subscription = isTrayOpenSetting.listen().subscribe(isOpen => {
+      this.setState({isOpen})
+    })
+  }
+
+  componentWillUnmount() {
+    if (this.subscription) {
+      this.subscription.unsubscribe()
     }
-  }
-
-  componentDidMount = () => {
-    console.log('listener added')
-    window.addEventListener('storage', this.onStorageChange, false)
-  }
-
-  componentWillUnmount = () => {
-    console.log('listener removed')
-    window.removeEventListener('storage', this.onStorageChange, false)
   }
 
   render() {
     const {isOpen} = this.state
     console.log('isOpen', isOpen)
 
-    if (!studioHintsConfig) {
-      return null
+    if (studioHintsConfig && isOpen) {
+      return <div className={styles.root}>{StudioHints()}</div>
     }
-    return <div className={styles.root}>{StudioHints()}</div>
+
+    return null
   }
 }
 
