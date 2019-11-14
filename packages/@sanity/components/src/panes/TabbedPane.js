@@ -40,7 +40,7 @@ class TabbedPane extends React.Component {
     activeView: undefined,
     isClosable: false,
     onSetActiveView: noop,
-    onSplitPane: noop,
+    onSplitPane: undefined,
     onCloseView: noop
   }
 
@@ -48,6 +48,7 @@ class TabbedPane extends React.Component {
 
   renderHeaderViewMenu = () => {
     const {styles, views = [], onSplitPane, onCloseView, isClosable} = this.props
+    const isSplittable = Boolean(onSplitPane)
 
     // Do not render view menu when there are only 1 view
     if (views.length <= 1) return null
@@ -56,14 +57,14 @@ class TabbedPane extends React.Component {
       <div className={styles.headerViewMenu}>
         {this.renderTabs()}
         <div className={styles.headerPaneActions}>
-          {views.length > 1 && (
+          {isSplittable && views.length > 1 && (
             <button type="button" onClick={onSplitPane} title="Split pane right">
               <div tabIndex={-1}>
                 <SplitHorizontalIcon />
               </div>
             </button>
           )}
-          {isClosable && (
+          {isSplittable && isClosable && (
             <button type="button" onClick={onCloseView} title="Close pane">
               <div tabIndex={-1}>
                 <CloseIcon />
