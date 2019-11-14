@@ -64,3 +64,7 @@
   border-radius: var(--border-radius-medium);
   text-decoration: none;
 }
+
+.errorMessage {
+  color: var(--state-danger-color);
+}
