@@ -54,7 +54,7 @@ export default class TabList extends React.PureComponent {
 
     return (
       <div className={styles.root} onKeyDown={this.handleKeyDown} role="tablist">
-        {children}
+        <div>{children}</div>
       </div>
     )
   }
