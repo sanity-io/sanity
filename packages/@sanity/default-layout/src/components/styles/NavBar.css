@@ -152,6 +152,21 @@ a.branding {
 
 .sidecarStatus {
   grid-area: sidecarStatus;
+  display: none;
+  align-items: stretch;
+
+  @nest & .sidecarButton {
+    background: 0;
+    border: 0;
+    color: inherit;
+  }
+
+  @media (--screen-medium) {
+    @nest .withToolSwitcher & {
+      display: flex;
+    }
+  }
+
 }
 
 .extras {

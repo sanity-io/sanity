@@ -528,6 +528,10 @@
       "description": "Logo for the branding"
     },
     {
+      "name": "part:@sanity/base/lightbulb-icon",
+      "description": "Lightbulb icon"
+    },
+    {
       "name": "part:@sanity/base/link-icon",
       "description": "Link icon"
     },
@@ -702,6 +706,10 @@
     {
       "implements": "part:@sanity/base/sign-out-icon",
       "path": "components/icons/SignOut.js"
+    },
+    {
+      "implements": "part:@sanity/base/lightbulb-icon",
+      "path": "components/icons/Lightbulb.js"
     },
     {
       "implements": "part:@sanity/base/link-icon",

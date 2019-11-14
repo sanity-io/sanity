@@ -4,6 +4,7 @@ import {Tooltip} from 'react-tippy'
 import config from 'config:sanity'
 import PlusIcon from 'part:@sanity/base/plus-icon'
 import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
+import Lightbulb from 'part:@sanity/base/lightbulb-icon'
 import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import {StateLink} from 'part:@sanity/base/router'
@@ -115,8 +116,8 @@ function NavBar(props) {
         <LoginStatus onLogout={onUserLogout} user={user} />
       </div>
       <div className={styles.sidecarStatus}>
-        <button onClick={onSidecarButtonClick} type="button">
-          ???
+        <button className={styles.sidecarButton} onClick={onSidecarButtonClick} type="button">
+          <Lightbulb />
         </button>
       </div>
       <button className={styles.searchButton} onClick={onSearchOpen} type="button">
