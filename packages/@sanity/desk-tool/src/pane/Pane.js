@@ -10,7 +10,7 @@ import ListPane from './ListPane'
 const paneMap = {
   list: ListPane,
   documentList: DocumentsListPane,
-  document: EditorPane,
+  document: props => <EditorPane key={props.options.id} {...props} />,
   component: UserComponentPane
 }
 
