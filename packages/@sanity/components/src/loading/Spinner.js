@@ -10,15 +10,17 @@ export default class Spinner extends React.PureComponent {
     message: PropTypes.string,
     fullscreen: PropTypes.bool,
     center: PropTypes.bool,
+    children: PropTypes.node,
     delay: PropTypes.number // delay in ms
   }
 
   static defaultProps = {
-    delay: 300
+    delay: 300,
+    children: null
   }
 
   renderSpinner() {
-    const {inline, message, fullscreen, center, delay} = this.props
+    const {inline, message, fullscreen, center, delay, children} = this.props
     return (
       <div
         style={{animationDelay: `${delay}ms`}}
@@ -32,7 +34,8 @@ export default class Spinner extends React.PureComponent {
           <span className={styles.icon}>
             <SpinnerIcon />
           </span>
-          {message && <div className={styles.message}>{message}</div>}
+          {children}
+          {!children && message && <div className={styles.message}>{message}</div>}
         </div>
       </div>
     )
