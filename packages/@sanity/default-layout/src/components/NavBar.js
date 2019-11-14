@@ -9,6 +9,7 @@ import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import {StateLink} from 'part:@sanity/base/router'
 import {toggleTrayOpenState} from 'part:@sanity/studio-hints/datastore'
+import studioHintsConfig from 'part:@sanity/studio-hints/config?'
 import {HAS_SPACES} from '../util/spaces'
 import Branding from './Branding'
 import LoginStatus from './LoginStatus'
@@ -16,12 +17,6 @@ import SanityStatusContainer from './SanityStatusContainer'
 import SearchContainer from './SearchContainer'
 import SpaceSwitcher from './SpaceSwitcher'
 import styles from './styles/NavBar.css'
-
-// TODO:
-// - 1. Hints tray part exists -> yes? 2. no? 4.
-// - 2. Local store says to show hints mode? yes? 3. No? 4.
-// - 3. render sidecarStatus button
-// - 4. Don't render sidecar button at all
 
 function onSidecarButtonClick(event) {
   toggleTrayOpenState()
@@ -48,6 +43,7 @@ function NavBar(props) {
   if (searchIsOpen) searchClassName += ` ${styles.searchIsOpen}`
   let className = styles.root
   if (showToolSwitcher) className += ` ${styles.withToolSwitcher}`
+
   return (
     <div className={className} data-search-open={searchIsOpen}>
       <div className={styles.hamburger}>
@@ -115,11 +111,13 @@ function NavBar(props) {
       <div className={styles.loginStatus} ref={onSetLoginStatusElement}>
         <LoginStatus onLogout={onUserLogout} user={user} />
       </div>
-      <div className={styles.sidecarStatus}>
-        <button className={styles.sidecarButton} onClick={onSidecarButtonClick} type="button">
-          <Lightbulb />
-        </button>
-      </div>
+      {studioHintsConfig && (
+        <div className={styles.sidecarStatus}>
+          <button className={styles.sidecarButton} onClick={onSidecarButtonClick} type="button">
+            <Lightbulb />
+          </button>
+        </div>
+      )}
       <button className={styles.searchButton} onClick={onSearchOpen} type="button">
         <div className={styles.searchButtonInner} tabIndex={-1}>
           <span className={styles.searchButtonIcon}>
