@@ -52,8 +52,16 @@ assign(AssetsClient.prototype, {
    * @param  {Array}   opts.extract Array of metadata parts to extract from image.
    *                                 Possible values: `location`, `exif`, `image`, `palette`
    * @param  {String}  opts.label Label
-   * @param  {String}  opts.source Source the asset is from
-   * @param  {String}  opts.sourceId The id of the asset in the source
+   * @param  {String}  opts.title Title
+   * @param  {String}  opts.description Description
+   * @param  {String}  opts.creditLine The credit to person(s) and/or organisation(s) required by the supplier of the image to be used when published
+   * @param  {Object}  opts.source Source data (when the asset is from an external service)
+   * @param  {String}  opts.source.id The (u)id of the asset within the source, i.e. 'i-f323r1E'
+   *                                  Required if source is defined
+   * @param  {String}  opts.source.name The name of the source, i.e. 'unsplash'
+   *                                  Required if source is defined
+   * @param  {String}  opts.source.url A url to where to find the asset, or get more info about it in the source
+   *                                  Optional
    * @return {Promise} Resolves with the created asset document
    */
   upload(assetType, body, opts = {}) {
@@ -68,9 +76,20 @@ assign(AssetsClient.prototype, {
     const dataset = validators.hasDataset(this.client.clientConfig)
     const assetEndpoint = assetType === 'image' ? 'images' : 'files'
     const options = optionsFromFile(opts, body)
-    const {label, filename, source, sourceId} = options
-    const query = {label, filename, meta, source, sourceId}
-
+    const {label, title, description, creditLine, filename, source} = options
+    const query = {
+      label,
+      title,
+      description,
+      filename,
+      meta,
+      creditLine
+    }
+    if (source) {
+      query.sourceId = source.id
+      query.sourceName = source.name
+      query.sourceUrl = source.url
+    }
     const observable = this.client._requestObservable({
       method: 'POST',
       timeout: options.timeout || 0,
