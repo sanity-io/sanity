@@ -13,6 +13,7 @@ import {
   takeUntil,
   tap
 } from 'rxjs/operators'
+import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import {IntentLink} from 'part:@sanity/base/router'
 import search from 'part:@sanity/base/search'
 import Ink from 'react-ink'
@@ -211,7 +212,7 @@ class SearchContainer extends React.Component {
       <IntentLink
         className={className}
         intent="edit"
-        params={{id: hit._id, type: type.name}}
+        params={{id: getPublishedId(hit._id), type: type.name}}
         data-hit-index={index}
         onMouseDown={this.handleHitMouseDown}
         onClick={this.handleHitClick}
