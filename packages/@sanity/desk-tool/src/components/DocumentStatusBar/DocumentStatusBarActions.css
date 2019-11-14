@@ -114,3 +114,24 @@
   display: inline-block;
   vertical-align: top;
 }
+
+.menuItemHotkeys {
+  display: inline-block;
+  color: var(--text-muted);
+  font-size: 0.75em;
+  vertical-align: middle;
+  margin-left: 1em;
+  padding: 0 0 0.25em;
+}
+
+.tooltip {
+  display: block !important;
+}
+
+.tooltipHotkeys {
+  display: inline-block;
+  color: var(--text-muted);
+  font-size: 0.75em;
+  vertical-align: middle;
+  padding: 0 0 0.25em;
+}
