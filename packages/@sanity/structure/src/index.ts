@@ -39,6 +39,7 @@ const StructureBuilder = {
   documentTypeListItem: getDocumentTypeListItem,
   documentTypeListItems: getDocumentTypeListItems,
   document: (spec?: PartialDocumentNode) => new DocumentBuilder(spec),
+  documentWithInitialValueTemplate: documentFromEditorWithInitialValue,
 
   list: (spec?: ListInput) => new ListBuilder(spec),
   listItem: (spec?: ListItemInput) => new ListItemBuilder(spec),

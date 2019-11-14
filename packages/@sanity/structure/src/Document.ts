@@ -131,7 +131,9 @@ export class DocumentBuilder implements Serializable {
       ).withHelpUrl(HELP_URL.DOCUMENT_ID_REQUIRED)
     }
 
-    const views = (this.spec.views || [form()]).map((item, i) => maybeSerializeView(item, i, path))
+    const views = (this.spec.views && this.spec.views.length > 0 ? this.spec.views : [form()]).map(
+      (item, i) => maybeSerializeView(item, i, path)
+    )
 
     return {
       ...this.spec,
