@@ -42,11 +42,22 @@ type FieldT = {
   type: Type
 }
 
-export type AssetDocumentProps = {originalFilename?: string, label?: string, source?: string, sourceId?: string}
+export type AssetDocumentProps = {
+  originalFilename?: string
+  label?: string
+  title?: string
+  description?: string
+  creditLine?: string
+  source?: {
+    id: string
+    name: string
+    url?: string
+  }
+}
 
 export type AssetFromSource = {
   kind: 'assetDocumentId' | 'file' | 'base64' | 'url'
-  value: string | File,
+  value: string | File
   assetDocumentProps?: AssetDocumentProps
 }
 
@@ -167,15 +178,21 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     }
   }
 
-  uploadWith(uploader: Uploader, file: File, assetDocumentProps: {label?: string, source?: string, sourceId?: string}={}) {
+  uploadWith(
+    uploader: Uploader,
+    file: File,
+    assetDocumentProps: AssetDocumentProps = {}
+  ) {
     const {type, onChange} = this.props
-    const {label, source, sourceId} = assetDocumentProps
+    const {label, title, description, creditLine, source} = assetDocumentProps
     const options = {
       metadata: get(type, 'options.metadata'),
       storeOriginalFilename: get(type, 'options.storeOriginalFilename'),
       label,
-      source,
-      sourceId
+      title,
+      description,
+      creditLine,
+      source
     }
     this.cancelUpload()
     this.setState({isUploading: true})
@@ -229,8 +246,10 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const firstAsset = assetFromSource[0]
     const originalFilename = get(firstAsset, 'assetDocumentProps.originalFilename')
     const label = get(firstAsset, 'assetDocumentProps.label')
+    const title = get(firstAsset, 'assetDocumentProps.title')
+    const description = get(firstAsset, 'assetDocumentProps.description')
+    const creditLine = get(firstAsset, 'assetDocumentProps.creditLine')
     const source = get(firstAsset, 'assetDocumentProps.source')
-    const sourceId = get(firstAsset, 'assetDocumentProps.sourceId')
     switch (firstAsset.kind) {
       case 'assetDocumentId':
         onChange(
@@ -251,19 +270,19 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         )
         break
       case 'file':
-          const uploader = resolveUploader(type, firstAsset.value)
-          this.uploadWith(uploader, firstAsset.value, {label, source, sourceId})
-          break;
+        const uploader = resolveUploader(type, firstAsset.value)
+        this.uploadWith(uploader, firstAsset.value, {label, title, description, creditLine, source})
+        break
       case 'base64':
         base64ToFile(firstAsset.value, originalFilename).then(file => {
           const uploader = resolveUploader(type, file)
-          this.uploadWith(uploader, file, {label, source, sourceId})
+          this.uploadWith(uploader, file, {label, title, description, creditLine, source})
         })
         break
       case 'url':
         urlToFile(firstAsset.value, originalFilename).then(file => {
           const uploader = resolveUploader(type, file)
-          this.uploadWith(uploader, file, {label, source, sourceId})
+          this.uploadWith(uploader, file, {label, title, description, creditLine, source})
         })
         break
       default: {
@@ -484,7 +503,9 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const showAdvancedEditButton =
       value && (otherFields.length > 0 || (hasAsset && this.isImageToolEnabled()))
     const FieldSetComponent = SUPPORT_DIRECT_UPLOADS ? UploadTargetFieldset : Fieldset
-    const uploadProps = SUPPORT_DIRECT_UPLOADS ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload} : {}
+    const uploadProps = SUPPORT_DIRECT_UPLOADS
+      ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload}
+      : {}
     return (
       <FieldSetComponent
         markers={markers}
