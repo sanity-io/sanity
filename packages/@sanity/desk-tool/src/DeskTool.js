@@ -299,6 +299,11 @@ function getPaneDiffIndex(nextPanes, prevPanes) {
       return [index, 0]
     }
 
+    // Less panes than previously? Resolve whole group
+    if (prevGroup.length > nextGroup.length) {
+      return [index, 0]
+    }
+
     /* eslint-disable max-depth */
     // Iterate over siblings
     for (let splitIndex = 0; splitIndex < nextGroup.length; splitIndex++) {
