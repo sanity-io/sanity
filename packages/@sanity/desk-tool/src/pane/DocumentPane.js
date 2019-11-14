@@ -5,7 +5,7 @@ import promiseLatest from 'promise-latest'
 import {omit, noop, get, throttle, debounce} from 'lodash'
 import {distanceInWordsToNow, format, isToday, isYesterday} from 'date-fns'
 import {from, merge, concat, timer, of as observableOf} from 'rxjs'
-import {catchError, switchMap, map, mapTo, tap, distinctUntilChanged} from 'rxjs/operators'
+import {catchError, switchMap, map, mapTo, tap} from 'rxjs/operators'
 import {resolveEnabledActions} from 'part:@sanity/base/util/document-action-utils'
 import schema from 'part:@sanity/base/schema'
 import Button from 'part:@sanity/components/buttons/default'
@@ -31,6 +31,7 @@ import DocTitle from '../components/DocTitle'
 import TimeAgo from '../components/TimeAgo'
 import DocumentStatusBar from '../components/DocumentStatusBar/index'
 import Delay from '../utils/Delay'
+import isNarrowScreen from '../utils/isNarrowScreen'
 import windowWidth$ from '../utils/windowWidth'
 import History from './History'
 import documentPaneStyles from './styles/DocumentPane.css'
@@ -99,6 +100,7 @@ const INITIAL_STATE = {
   isRestoring: false,
   isSaving: false,
   isUnpublishing: false,
+  hasNarrowScreen: isNarrowScreen(),
 
   transactionResult: null,
   validationPending: true,
@@ -226,7 +228,7 @@ export default withInitialValue(
       initialValue: undefined
     }
 
-    state = INITIAL_STATE
+    state = {...INITIAL_STATE, hasNarrowScreen: isNarrowScreen()}
     patchChannel = FormBuilder.createPatchChannel()
     formRef = React.createRef()
 
@@ -482,10 +484,15 @@ export default withInitialValue(
     componentDidMount() {
       this._isMounted = true
 
-      this.resizeSubscriber = windowWidth$.pipe(distinctUntilChanged()).subscribe(() => {
+      this.resizeSubscriber = windowWidth$.subscribe(() => {
         const historyEnabled = historyIsEnabled()
+        const hasNarrowScreen = isNarrowScreen()
         if (this.state.historyState.isEnabled !== historyEnabled) {
           this.setHistoryState({isEnabled: historyEnabled})
+        }
+
+        if (this.state.hasNarrowScreen !== hasNarrowScreen) {
+          this.setState({hasNarrowScreen})
         }
       })
     }
@@ -1419,6 +1426,7 @@ export default withInitialValue(
         historical,
         transactionResult,
         error,
+        hasNarrowScreen,
         isReconnecting,
         inspect,
         showConfirmDelete,
@@ -1497,7 +1505,7 @@ export default withInitialValue(
             views={views}
             activeView={this.getActiveViewId()}
             onSetActiveView={this.handleSetActiveView}
-            onSplitPane={this.handleSplitPane}
+            onSplitPane={hasNarrowScreen ? undefined : this.handleSplitPane}
             onCloseView={this.handleClosePane}
             menuItemGroups={menuItemGroups}
             isSelected={isSelected}
