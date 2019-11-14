@@ -11,13 +11,13 @@ export default config => {
     entry: Object.assign({}, baseConfig.entry, {
       vendor: [
         require.resolve('eventsource-polyfill'),
-        require.resolve('webpack-hot-middleware/client')
+        require.resolve('../browser/hot-client')
       ].concat(baseConfig.entry.vendor)
     }),
     resolve: {
       alias: Object.assign({}, baseConfig.resolve.alias, {
         'react-dom': require.resolve('@hot-loader/react-dom'),
-        'webpack-hot-middleware/client': require.resolve('webpack-hot-middleware/client')
+        'webpack-hot-middleware/client': require.resolve('../browser/hot-client')
       })
     },
     plugins: (baseConfig.plugins || []).concat([

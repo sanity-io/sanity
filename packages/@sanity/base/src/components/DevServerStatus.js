@@ -1,22 +1,24 @@
 import React, {PureComponent} from 'react'
-import polyfilledEventSource from '@sanity/eventsource'
 import Snackbar from 'part:@sanity/components/snackbar/default'
+import Spinner from 'part:@sanity/components/loading/spinner'
+import spinnerStyles from 'part:@sanity/components/loading/spinner-style'
 
-const isWindowEventSource = Boolean(typeof window !== 'undefined' && window.EventSource)
-const EventSource = isWindowEventSource
-  ? window.EventSource // Native browser EventSource
-  : polyfilledEventSource // Node.js, IE, Edge etc
+const eventBus = window.__webpack_hot_middleware_eventbus__
+const events = eventBus ? eventBus.eventTypes : {}
 
 const STATE_CONNECTING = 0
 const STATE_OPEN = 1
+const STATE_CLOSED = 2
 
 class DevServerStatus extends PureComponent {
   constructor(...args) {
     super(...args)
-    this.enabled = __DEV__ && EventSource
+    this.enabled = __DEV__ && eventBus
     this.state = {
       connectionState: STATE_CONNECTING,
-      hasHadConnection: false
+      hasHadConnection: false,
+      buildState: events.EVENT_UP_TO_DATE,
+      reloadRequired: false
     }
   }
 
@@ -25,19 +27,41 @@ class DevServerStatus extends PureComponent {
       return
     }
 
-    this.es = new EventSource('/__webpack_hmr')
-    this.es.onerror = this.handleReadyChange
-    this.es.onopen = this.handleOpen
+    this.hmrUnsubscribe = eventBus.subscribe(this.handleEvent)
   }
 
   componentWillUnmount() {
-    if (this.es) {
-      this.es.close()
+    if (this.hmrUnsubscribe) {
+      this.hmrUnsubscribe()
     }
   }
 
-  handleOpen = () => {
-    this.handleReadyChange()
+  handleEvent = evt => {
+    switch (evt.type) {
+      case events.EVENT_DISCONNECTED:
+        return this.setState({connectionState: STATE_CLOSED})
+      case events.EVENT_CONNECTING:
+        return this.setState({connectionState: STATE_CONNECTING})
+      case events.EVENT_CONNECTED:
+        return this.handleConnected()
+      case events.EVENT_BUILT:
+      case events.EVENT_BUILDING:
+      case events.EVENT_UP_TO_DATE:
+        return this.setState(({reloadRequired: reloadWasRequired}) => ({
+          buildState: evt.type,
+          reloadRequired: reloadWasRequired || evt.requiresReload || false
+        }))
+      default:
+        if (evt.requiresReload && !this.state.reloadRequired) {
+          this.setState({buildState: events.EVENT_BUILT, reloadRequired: true})
+        }
+    }
+
+    return null
+  }
+
+  handleConnected = () => {
+    this.setState({connectionState: STATE_OPEN})
 
     if (this.state.hasHadConnection) {
       // We reconnected after being disconnected.
@@ -50,23 +74,54 @@ class DevServerStatus extends PureComponent {
     }
   }
 
-  handleReadyChange = () => {
-    this.setState({connectionState: this.es.readyState})
+  renderBuildStatus() {
+    const {reloadRequired, buildState} = this.state
+    if (reloadRequired) {
+      return (
+        <Snackbar
+          id="__dev-server-status"
+          kind="warning"
+          isPersisted
+          isCloseable={false}
+          title={<strong>Reload required!</strong>}
+          subtitle={<div>To see your latest changes, you need to reload the browser window.</div>}
+          action={{title: 'Reload', callback: () => window.location.reload()}}
+        />
+      )
+    }
+
+    if (buildState === events.EVENT_BUILDING) {
+      return (
+        <Snackbar
+          id="__dev-server-status"
+          kind="warning"
+          isPersisted
+          isCloseable={false}
+          title={
+            <Spinner inline>
+              <div className={spinnerStyles.message}>
+                <strong>Rebuilding bundle…</strong>
+              </div>
+            </Spinner>
+          }
+        />
+      )
+    }
+
+    return null
   }
 
   render() {
-    // We're in production, or eventsource is not supported by the browser (Edge)
+    // We're in production or missing the HMR event bus
     if (!this.enabled) {
       return null
     }
 
-    // We're connected, don't show anything
-    if (this.state.connectionState === STATE_OPEN) {
-      return null
-    }
+    const {connectionState, hasHadConnection} = this.state
+    const isDisconnected = connectionState === STATE_CONNECTING || connectionState === STATE_CLOSED
 
     // We are disconnected
-    if (this.state.hasHadConnection) {
+    if (isDisconnected && hasHadConnection) {
       return (
         <Snackbar
           id="__dev-server-status"
@@ -83,7 +138,14 @@ class DevServerStatus extends PureComponent {
         />
       )
     }
-    return null
+
+    // We're still trying to connect for the first time
+    if (!hasHadConnection) {
+      return null
+    }
+
+    // We're connected, show build status if we have anything worthwhile
+    return this.renderBuildStatus()
   }
 }
 
