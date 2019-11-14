@@ -284,12 +284,14 @@
 }
 
 .main {
-  flex-grow: 1;
-  display: block;
-  position: relative;
   /* NOTE: animation is disabled because it breaks tab navigation */
   /* opacity: 1; */
   /* transition: opacity var(--pane-animation-time) var(--pane-animation-time) linear; */
+
+  position: relative;
+  flex-grow: 1;
+  display: flex;
+  align-items: stretch;
 
   @nest .isCollapsed & {
     /* NOTE: animation is disabled because it breaks tab navigation */
