@@ -14,12 +14,12 @@ class Sidecar extends React.PureComponent {
     isOpen: true
   }
 
-  subscription = null
-
   componentDidMount() {
-    this.subscription = isTrayOpenSetting.listen().subscribe(isOpen => {
-      this.setState({isOpen: isOpen !== false})
-    })
+    if (studioHintsConfig) {
+      this.subscription = isTrayOpenSetting.listen().subscribe(isOpen => {
+        this.setState({isOpen: isOpen !== false})
+      })
+    }
   }
 
   componentWillUnmount() {

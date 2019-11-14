@@ -9,7 +9,7 @@ export const locationSetting = studioHintsSettings.forKey('location')
 
 export function toggleTrayOpenState() {
   isTrayOpenSetting
-    .listen(false)
+    .listen()
     .pipe(take(1))
     .subscribe(isOpen => {
       const newState = !isOpen
