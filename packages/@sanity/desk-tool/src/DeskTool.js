@@ -10,8 +10,10 @@ import styles from './styles/DeskTool.css'
 import DeskToolPanes from './DeskToolPanes'
 import StructureError from './components/StructureError'
 import serializeStructure from './utils/serializeStructure'
+import windowWidth$ from './utils/windowWidth'
 import defaultStructure from './defaultStructure'
 import {LOADING_PANE} from './index'
+import isNarrowScreen from './utils/isNarrowScreen'
 
 const EMPTY_PANE_KEYS = []
 
@@ -102,7 +104,7 @@ export default withRouterHOC(
       onPaneChange: PropTypes.func.isRequired
     }
 
-    state = {isResolving: true, panes: null}
+    state = {isResolving: true, hasNarrowScreen: isNarrowScreen(), panes: null}
 
     constructor(props) {
       super(props)
@@ -242,7 +244,32 @@ export default withRouterHOC(
       }
     }
 
+    maybeCutSiblingPanes() {
+      const {hasNarrowScreen} = this.state
+      if (!hasNarrowScreen) {
+        return
+      }
+
+      const {navigate} = this.props.router
+      const panes = this.props.router.state.panes || []
+      const hasSiblings = panes.some(group => group.length > 1)
+      if (!hasSiblings) {
+        return
+      }
+
+      const withoutSiblings = panes.map(group => [group[0]])
+      navigate({panes: withoutSiblings}, {replace: true})
+    }
+
     componentDidMount() {
+      this.resizeSubscriber = windowWidth$.subscribe(() => {
+        const hasNarrowScreen = isNarrowScreen()
+        if (this.state.hasNarrowScreen !== hasNarrowScreen) {
+          this.setState({hasNarrowScreen: isNarrowScreen()}, this.maybeCutSiblingPanes)
+        }
+      })
+
+      this.maybeCutSiblingPanes()
       this.maybeHandleOldUrl()
       this.derivePanes(this.props)
       this.props.onPaneChange(this.state.panes || [])
@@ -251,6 +278,10 @@ export default withRouterHOC(
     componentWillUnmount() {
       if (this.paneDeriver) {
         this.paneDeriver.unsubscribe()
+      }
+
+      if (this.resizeSubscriber) {
+        this.resizeSubscriber.unsubscribe()
       }
     }
 

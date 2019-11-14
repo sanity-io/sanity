@@ -8,10 +8,10 @@ import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
 import LoadingPane from './pane/LoadingPane'
 import Pane from './pane/Pane'
 import windowWidth$ from './utils/windowWidth'
+import isNarrowScreen from './utils/isNarrowScreen'
 import {PaneRouterContext, getPaneRouterContextFactory, LOADING_PANE} from './index'
 
 const COLLAPSED_WIDTH = 55
-const BREAKPOINT_SCREEN_MEDIUM = 512
 
 function getPaneMinSize(pane) {
   return pane.type === 'document' ? 500 : 320
@@ -88,7 +88,7 @@ export default class DeskToolPanes extends React.Component {
   state = {
     collapsedPanes: [],
     windowWidth: typeof window === 'undefined' ? 1000 : window.innerWidth,
-    isMobile: typeof window !== 'undefined' && window.innerWidth < BREAKPOINT_SCREEN_MEDIUM
+    hasNarrowScreen: isNarrowScreen()
   }
 
   userCollapsedPanes = []
@@ -117,7 +117,7 @@ export default class DeskToolPanes extends React.Component {
       this.resizeSubscriber = windowWidth$.pipe(distinctUntilChanged()).subscribe(windowWidth => {
         this.setState({
           windowWidth,
-          isMobile: windowWidth < BREAKPOINT_SCREEN_MEDIUM
+          hasNarrowScreen: isNarrowScreen()
         })
         this.handleAutoCollapse(windowWidth, undefined, this.userCollapsedPanes)
       })
@@ -134,7 +134,7 @@ export default class DeskToolPanes extends React.Component {
   }
 
   handlePaneCollapse = index => {
-    if (this.state.isMobile || this.props.panes.length === 1) {
+    if (this.state.hasNarrowScreen || this.props.panes.length === 1) {
       return
     }
     this.userCollapsedPanes[index] = true
@@ -142,7 +142,7 @@ export default class DeskToolPanes extends React.Component {
   }
 
   handlePaneExpand = index => {
-    if (this.state.isMobile || this.props.panes.length === 1) {
+    if (this.state.hasNarrowScreen || this.props.panes.length === 1) {
       return
     }
     this.userCollapsedPanes[index] = false
@@ -151,9 +151,9 @@ export default class DeskToolPanes extends React.Component {
 
   handleAutoCollapse = (windowWidth, paneWantExpand, userCollapsedPanes = []) => {
     const {autoCollapse, panes} = this.props
-    const {isMobile} = this.state
+    const {hasNarrowScreen} = this.state
     const paneToForceExpand = typeof paneWantExpand === 'number' ? paneWantExpand : panes.length - 1
-    if (isMobile || !autoCollapse || !panes || panes.length === 0) {
+    if (hasNarrowScreen || !autoCollapse || !panes || panes.length === 0) {
       return
     }
 
@@ -185,7 +185,7 @@ export default class DeskToolPanes extends React.Component {
   renderPanes() {
     const {panes, groupIndexes, keys, router} = this.props
     const {panes: routerPanes} = router.state
-    const {isMobile} = this.state
+    const {hasNarrowScreen} = this.state
     const path = []
 
     const paneKeys = ['root'].concat(keys)
@@ -203,7 +203,7 @@ export default class DeskToolPanes extends React.Component {
             return null
           }
 
-          const isCollapsed = Boolean(!isMobile && this.state.collapsedPanes[i])
+          const isCollapsed = Boolean(!hasNarrowScreen && this.state.collapsedPanes[i])
           const paneKey = `${i}-${paneKeys[i] || 'root'}-${groupIndexes[i - 1]}`
 
           const itemId = paneKeys[i]
@@ -269,10 +269,10 @@ export default class DeskToolPanes extends React.Component {
   }
 
   render() {
-    const {isMobile} = this.state
+    const {hasNarrowScreen} = this.state
     return (
       <SplitController
-        isMobile={isMobile}
+        isMobile={hasNarrowScreen}
         autoCollapse={this.props.autoCollapse}
         collapsedWidth={COLLAPSED_WIDTH}
         onCheckCollapse={this.handleCheckCollapse}
