@@ -49,6 +49,7 @@ export default class HistoryItem extends React.PureComponent {
       'published',
       'unpublished',
       'truncated',
+      'discardDraft',
       'unknown'
     ]).isRequired,
     userIds: PropTypes.arrayOf(PropTypes.string)

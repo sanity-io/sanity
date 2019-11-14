@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import promiseLatest from 'promise-latest'
 import {omit, noop, get, throttle, debounce} from 'lodash'
-import {distanceInWordsToNow} from 'date-fns'
+import {distanceInWordsToNow, format, isToday, isYesterday} from 'date-fns'
 import {from, merge, concat, timer, of as observableOf} from 'rxjs'
 import {catchError, switchMap, map, mapTo, tap, distinctUntilChanged} from 'rxjs/operators'
 import {resolveEnabledActions} from 'part:@sanity/base/util/document-action-utils'
@@ -30,6 +30,7 @@ import InspectHistory from '../components/InspectHistory'
 import DocTitle from '../components/DocTitle'
 import TimeAgo from '../components/TimeAgo'
 import DocumentStatusBar from '../components/DocumentStatusBar/index'
+import Delay from '../utils/Delay'
 import windowWidth$ from '../utils/windowWidth'
 import History from './History'
 import documentPaneStyles from './styles/DocumentPane.css'
@@ -77,7 +78,8 @@ const INITIAL_DOCUMENT_STATE = {
 
 const INITIAL_HISTORICAL_DOCUMENT_STATE = {
   isLoading: false,
-  snapshot: null
+  snapshot: null,
+  prevSnapshot: null
 }
 
 const INITIAL_HISTORY_STATE = {
@@ -178,7 +180,6 @@ export default withInitialValue(
     static propTypes = {
       styles: PropTypes.object, // eslint-disable-line react/forbid-prop-types
       title: PropTypes.string,
-      itemId: PropTypes.string.isRequired,
       paneKey: PropTypes.string.isRequired,
       type: PropTypes.string.isRequired,
       isSelected: PropTypes.bool.isRequired,
@@ -317,6 +318,11 @@ export default withInitialValue(
       })
     }
 
+    getActiveViewId() {
+      const views = this.props.views
+      return this.context.params.view || (views[0] && views[0].id)
+    }
+
     getDraftId() {
       return getDraftId(this.props.options.id)
     }
@@ -402,7 +408,12 @@ export default withInitialValue(
       }
 
       this.setState(({historical}) => ({
-        historical: {...historical, snapshot: null, isLoading: true}
+        historical: {
+          ...historical,
+          snapshot: null,
+          prevSnapshot: historical.snapshot || historical.prevSnapshot,
+          isLoading: true
+        }
       }))
 
       const {displayDocumentId: id, rev} = event
@@ -412,9 +423,60 @@ export default withInitialValue(
         historyStore.getDocumentAtRevision(id, rev)
       ).subscribe(newSnapshot => {
         this.setState(({historical}) => ({
-          historical: {...historical, isLoading: false, snapshot: newSnapshot}
+          historical: {...historical, isLoading: false, snapshot: newSnapshot, prevSnapshot: null}
         }))
       })
+    }
+
+    handleHistorySelect = event => {
+      const paneContext = this.context
+
+      const eventisCurrent = this.state.history.events[0] === event
+
+      paneContext.setParams(
+        {...paneContext.params, rev: eventisCurrent ? CURRENT_REVISION_FLAG : event.rev},
+        {recurseIfInherited: true}
+      )
+    }
+
+    handleSplitPane = () => {
+      this.context.duplicateCurrent()
+    }
+
+    handleSetActiveView = (...args) => {
+      this.context.setView(...args)
+    }
+
+    handleShowConfirmDelete = () => {
+      this.setState({showConfirmDelete: true})
+    }
+
+    handleShowConfirmUnpublish = () => {
+      this.setState({showConfirmUnpublish: true})
+    }
+
+    handleClosePane = () => {
+      this.context.closeCurrent()
+    }
+
+    getDocumentSnapshots() {
+      const {draft, published} = this.state
+      return {draft: draft.snapshot, published: published.snapshot}
+    }
+
+    getInitialValue() {
+      const {draft, published} = this.state
+      const typeName = this.props.options.type
+      const base = {_type: typeName}
+      return exists(draft, published) ? base : {...base, ...this.props.initialValue}
+    }
+
+    canShowHistoryList() {
+      return (
+        this.context.siblingIndex === 0 &&
+        !this.props.isCollapsed &&
+        this.state.historyState.isEnabled
+      )
     }
 
     componentDidMount() {
@@ -1214,60 +1276,131 @@ export default withInitialValue(
       return <DocumentStatusBar {...documentStatusProps} />
     }
 
-    handleHistorySelect = event => {
-      const paneContext = this.context
+    getHistoryEventDateString() {
+      const event = this.findSelectedHistoryEvent()
+      const dateFormat = 'MMM D, YYYY, hh:mm A'
+      const date = event && event.endTime
+      if (!date) {
+        return ''
+      }
 
-      const eventisCurrent = this.state.history.events[0] === event
-
-      paneContext.setParams(
-        {...paneContext.params, rev: eventisCurrent ? CURRENT_REVISION_FLAG : event.rev},
-        {recurseIfInherited: true}
-      )
+      if (isToday(date)) {
+        return `Today, ${format(date, 'hh:mm A')}`
+      }
+      if (isYesterday(date)) {
+        return `Yesterday, ${format(date, 'hh:mm A')}`
+      }
+      return format(date, dateFormat)
     }
 
-    handleSplitPane = () => {
-      this.context.duplicateCurrent()
-    }
+    renderHistorySpinner() {
+      const isLoading = this.state.historical.isLoading
+      if (!isLoading) {
+        return null
+      }
 
-    handleSetActiveView = (...args) => {
-      this.context.setView(...args)
-    }
-
-    handleShowConfirmDelete = () => {
-      this.setState({showConfirmDelete: true})
-    }
-
-    handleShowConfirmUnpublish = () => {
-      this.setState({showConfirmUnpublish: true})
-    }
-
-    handleClosePane = () => {
-      this.context.closeCurrent()
-    }
-
-    getDocumentSnapshots() {
-      const {draft, published} = this.state
-      return {draft: draft.snapshot, published: published.snapshot}
-    }
-
-    getInitialValue() {
-      const {draft, published} = this.state
-      const typeName = this.props.options.type
-      const base = {_type: typeName}
-      return exists(draft, published) ? base : {...base, ...this.props.initialValue}
-    }
-
-    canShowHistoryList() {
+      const eventDate = this.getHistoryEventDateString()
       return (
-        this.context.siblingIndex === 0 &&
-        !this.props.isCollapsed &&
-        this.state.historyState.isEnabled
+        <Delay ms={600}>
+          <div className={documentPaneStyles.spinnerContainer}>
+            <Spinner center message={`Loading revision${eventDate ? ` from ${eventDate}` : ''}…`} />
+          </div>
+        </Delay>
       )
+    }
+
+    renderCurrentView() {
+      const initialValue = this.getInitialValue()
+      const {views, options, urlParams} = this.props
+      const {
+        draft,
+        published,
+        historical,
+        markers,
+        isCreatingDraft,
+        isUnpublishing,
+        isPublishing,
+        isRestoring,
+        isSaving,
+        validationPending,
+        isReconnecting,
+        historyState
+      } = this.state
+
+      const selectedHistoryEvent = this.findSelectedHistoryEvent()
+
+      const typeName = options.type
+      const schemaType = schema.get(typeName)
+
+      const activeViewId = this.getActiveViewId()
+      const activeView = views.find(view => view.id === activeViewId) || views[0] || {type: 'form'}
+
+      const selectedIsLatest =
+        urlParams.rev === CURRENT_REVISION_FLAG && selectedHistoryEvent === historyState.events[0]
+
+      // Should be null if not displaying a historical revision
+      const historicalSnapshot = selectedIsLatest
+        ? draft.snapshot || published.snapshot
+        : historical.snapshot || historical.prevSnapshot
+
+      const viewProps = {
+        // "Documents"
+        document: {
+          published: published.snapshot,
+          draft: draft.snapshot,
+          historical: historicalSnapshot,
+          displayed: historicalSnapshot || draft.snapshot || published.snapshot || initialValue
+        },
+
+        // Other stuff
+        documentId: this.getPublishedId(),
+        schemaType,
+        markers: markers || []
+      }
+
+      const formProps = {
+        ...viewProps,
+
+        patchChannel: this.patchChannel,
+        initialValue,
+        validationPending,
+        isRestoring,
+        isSaving,
+        isReconnecting,
+        isPublishing,
+        isUnpublishing,
+        isCreatingDraft,
+        history: {
+          isOpen: this.historyIsOpen(),
+          selectedEvent: selectedHistoryEvent,
+          isLoadingEvents: historyState.isLoading,
+          isLoadingSnapshot: historical.isLoading,
+          document: selectedIsLatest
+            ? {
+                isLoading: !selectedHistoryEvent,
+                snapshot: draft.snapshot || published.snapshot
+              }
+            : historical
+        },
+        onDelete: this.handleDelete,
+        onPublish: this.handlePublish,
+        onRestore: this.handleRestoreRevision,
+        onUnpublish: this.handleUnpublish,
+        onChange: this.handleChange
+      }
+
+      switch (activeView.type) {
+        case 'form':
+          return <FormView ref={this.formRef} {...formProps} />
+        case 'component':
+          return <activeView.component {...viewProps} />
+        default:
+          return null
+      }
     }
 
     // eslint-disable-next-line complexity
     render() {
-      const initialValue = this.getInitialValue()
       const {
         isSelected,
         isCollapsed,
@@ -1277,7 +1410,6 @@ export default withInitialValue(
         menuItemGroups,
         views,
         options,
-        urlParams,
         paneKey
       } = this.props
 
@@ -1285,15 +1417,8 @@ export default withInitialValue(
         draft,
         published,
         historical,
-        markers,
-        isCreatingDraft,
-        isUnpublishing,
         transactionResult,
-        isPublishing,
-        isRestoring,
-        isSaving,
         error,
-        validationPending,
         isReconnecting,
         inspect,
         showConfirmDelete,
@@ -1327,8 +1452,6 @@ export default withInitialValue(
       }
 
       const selectedHistoryEvent = this.findSelectedHistoryEvent()
-      const activeViewId = this.context.params.view || (views[0] && views[0].id)
-      const activeView = views.find(view => view.id === activeViewId) || views[0] || {type: 'form'}
       const enabledActions = resolveEnabledActions(schemaType)
       const historyIsOpen = this.historyIsOpen()
       const menuItems = getMenuItems({
@@ -1340,44 +1463,6 @@ export default withInitialValue(
         selectedEvent: historyIsOpen && selectedHistoryEvent,
         canShowHistoryList: this.canShowHistoryList()
       })
-
-      const selectedIsLatest =
-        urlParams.rev === CURRENT_REVISION_FLAG || selectedHistoryEvent === historyState.events[0]
-
-      const documentProps = {
-        patchChannel: this.patchChannel,
-        type: schemaType,
-
-        published: published.snapshot,
-        draft: draft.snapshot,
-
-        markers: markers || [],
-        initialValue,
-        validationPending,
-        isRestoring,
-        isSaving,
-        isReconnecting,
-        isPublishing,
-        isUnpublishing,
-        isCreatingDraft,
-        history: {
-          isOpen: this.historyIsOpen(),
-          selectedEvent: selectedHistoryEvent,
-          isLoadingEvents: historyState.isLoading,
-          isLoadingSnapshot: historical.isLoading,
-          document: selectedIsLatest
-            ? {
-                isLoading: !selectedHistoryEvent,
-                snapshot: draft.snapshot || published.snapshot
-              }
-            : historical
-        },
-        onDelete: this.handleDelete,
-        onPublish: this.handlePublish,
-        onRestore: this.handleRestoreRevision,
-        onUnpublish: this.handleUnpublish,
-        onChange: this.handleChange
-      }
 
       const value = draft.snapshot || published.snapshot
 
@@ -1410,7 +1495,7 @@ export default withInitialValue(
             idPrefix={paneKey}
             title={this.getTitle(value)}
             views={views}
-            activeView={activeViewId}
+            activeView={this.getActiveViewId()}
             onSetActiveView={this.handleSetActiveView}
             onSplitPane={this.handleSplitPane}
             onCloseView={this.handleClosePane}
@@ -1425,8 +1510,8 @@ export default withInitialValue(
             renderActions={this.renderActions}
             isClosable={isClosable}
           >
-            {activeView.type === 'form' && <FormView ref={this.formRef} {...documentProps} />}
-            {activeView.type === 'component' && <activeView.component {...documentProps} />}
+            {this.renderHistorySpinner()}
+            {this.renderCurrentView()}
             {inspect && this.historyIsOpen() && (
               <InspectHistory document={historical} onClose={this.handleHideInspector} />
             )}
