@@ -11,7 +11,7 @@ export default function TabPanel(props) {
       className={className}
       id={props.id}
       role="tabpanel"
-      tabIndex={0}
+      tabIndex={props.tabIndex === undefined ? 0 : props.tabIndex}
     >
       {props.children}
     </div>
@@ -22,10 +22,12 @@ TabPanel.propTypes = {
   'aria-labelledby': PropTypes.string.isRequired,
   children: PropTypes.node,
   className: PropTypes.string,
-  id: PropTypes.string.isRequired
+  id: PropTypes.string.isRequired,
+  tabIndex: PropTypes.number
 }
 
 TabPanel.defaultProps = {
   children: null,
-  className: undefined
+  className: undefined,
+  tabIndex: undefined
 }

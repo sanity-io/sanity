@@ -92,6 +92,17 @@
   }
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5em;
+
+  @nest .isCollapsed & {
+    display: none;
+  }
+}
+
 .buttonWrapper {
   display: flex;
   align-items: stretch;
@@ -101,24 +112,34 @@
 }
 
 .actionButton {
-  /* -webkit-font-smoothing: inherit; */
+  -webkit-appearance: none;
+  -webkit-font-smoothing: inherit;
   appearance: none;
-  font: inherit;
   background-color: transparent;
+  color: var(--text-muted);
+  font: inherit;
   border: 0;
-  border-radius: 0;
-  color: inherit;
-  width: 2.1875em;
+  height: calc(1.5625em + 0.5em);
+  width: calc(1.5625em + 0.5em);
   margin: 0;
-  padding: 0;
+  padding: 0.25em;
   display: flex;
   align-self: stretch;
   align-items: stretch;
   justify-content: stretch;
   outline: none;
+  border-radius: 2px;
+  box-sizing: border-box;
+
+  @media (hover: hover) {
+    @nest &:hover {
+      color: inherit;
+    }
+  }
 
   @nest &:focus {
-    background-color: color(var(--brand-primary) a(20%));
+    background: var(--selectable-item-color-hover);
+    color: inherit;
   }
 }
 
@@ -133,20 +154,6 @@
 
   @nest & > svg {
     font-size: 1.5625em;
-  }
-
-  @media (hover: hover) {
-    @nest & > svg {
-      opacity: 0.6;
-    }
-
-    @nest &:hover > svg {
-      opacity: 1;
-    }
-
-    @nest .actionButton:focus & > svg {
-      opacity: 1;
-    }
   }
 }
 
@@ -165,15 +172,6 @@
 
 .menuOverflowButtonInner {
   composes: actionButtonInner;
-}
-
-.actions {
-  display: flex;
-  align-items: center;
-
-  @nest .isCollapsed & {
-    display: none;
-  }
 }
 
 .menuContainer {
@@ -289,12 +287,15 @@
   flex-grow: 1;
   display: block;
   position: relative;
-  opacity: 1;
-  transition: opacity var(--pane-animation-time) var(--pane-animation-time) linear;
+  /* NOTE: animation is disabled because it breaks tab navigation */
+  /* opacity: 1; */
+  /* transition: opacity var(--pane-animation-time) var(--pane-animation-time) linear; */
 
   @nest .isCollapsed & {
-    opacity: 0;
-    transition: opacity 0 0;
+    /* NOTE: animation is disabled because it breaks tab navigation */
+    /* opacity: 0; */
+    /* transition: opacity 0 0; */
+    display: none;
   }
 }
 
@@ -435,5 +436,9 @@
     right: 0;
     top: -1px;
     border-top: 1px solid var(--hairline-color);
+  }
+
+  @nest .isCollapsed & {
+    display: none;
   }
 }

@@ -329,7 +329,9 @@ class Pane extends React.PureComponent {
     )
 
     const mainChildren = isScrollable ? (
-      <ScrollContainer className={styles.scrollContainer}>{children}</ScrollContainer>
+      <ScrollContainer className={styles.scrollContainer} tabIndex={-1}>
+        {children}
+      </ScrollContainer>
     ) : (
       <div className={styles.notScrollable}>{children}</div>
     )
@@ -361,7 +363,6 @@ class Pane extends React.PureComponent {
             className={styles.main}
             id={`${tabIdPrefix}tabpanel`}
             role="tabpanel"
-            tabIndex="0"
           >
             {mainChildren}
           </TabPanel>
