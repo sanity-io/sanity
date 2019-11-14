@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-const panePattern = /^([a-z0-9_-]+),?({.*?})?(?:(;|$))/i
+const panePattern = /^([.a-z0-9_-]+),?({.*?})?(?:(;|$))/i
 
 export function parsePanesSegment(str) {
   const chunks = []
