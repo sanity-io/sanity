@@ -195,8 +195,8 @@
   margin: 0;
   padding: 1em;
   font-size: 1rem;
-  line-height: 1;
-  font-weight: 800;
+  line-height: calc(17 / 16);
+  font-weight: 700;
   user-select: none;
   cursor: default;
   white-space: nowrap;
@@ -302,6 +302,7 @@
 .scrollContainer {
   display: block;
   box-sizing: border-box;
+  outline: none;
 
   @media (--screen-medium) {
     composes: scrollY from 'part:@sanity/base/theme/layout/scrolling-style';
