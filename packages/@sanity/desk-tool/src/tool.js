@@ -51,14 +51,18 @@ function getIntentState(intentName, params, currentState, payload) {
 function getFallbackIntentState({documentId, intentName, params, payload}) {
   const isTemplateCreate = intentName === 'create' && params.template
   const template = isTemplateCreate && getTemplateById(params.template)
-  const parameters = {
-    id: documentId,
-    template: params.template,
-    type: (template && template.schemaType) || params.type
+  const type = (template && template.schemaType) || params.type
+  const parameters = {}
+  if (type) {
+    parameters.type = type
+  }
+
+  if (template) {
+    parameters.template = template
   }
 
   return {
-    panes: [[{id: '__edit__', params: parameters, payload}]]
+    panes: [[{id: `__edit__${documentId}`, params: parameters, payload}]]
   }
 }
 
