@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
 import Button from 'part:@sanity/components/buttons/default'
+import {getNextFocusableMenuItemIdx, getPreviousFocusableMenuItemIdx} from './helpers'
 
 import styles from './DocumentStatusBarActions.css'
 
@@ -82,7 +83,10 @@ class DocumentStatusBarActions extends React.PureComponent {
       event.preventDefault()
       const menuElement = this.menuElementRef.current
       if (!menuElement) return
-      const focusedMenuItemIdx = this.getNextFocusableMenuItemIdx()
+      const focusedMenuItemIdx = getNextFocusableMenuItemIdx(
+        this.props.actions,
+        this.state.focusedMenuItemIdx
+      )
       const focusedMenuItem = menuElement.childNodes[focusedMenuItemIdx]
       if (focusedMenuItem && focusedMenuItem.firstChild) {
         this.setState(state => ({focusedMenuItemIdx, isMenuOpen: true}))
@@ -110,7 +114,10 @@ class DocumentStatusBarActions extends React.PureComponent {
     if (event.key === 'ArrowUp') {
       const menuElement = this.menuElementRef.current
       if (!menuElement) return
-      const focusedMenuItemIdx = this.getPreviousFocusableMenuItemIdx()
+      const focusedMenuItemIdx = getPreviousFocusableMenuItemIdx(
+        this.props.actions,
+        this.state.focusedMenuItemIdx
+      )
       const focusedMenuItem = menuElement.childNodes[focusedMenuItemIdx]
       if (focusedMenuItem && focusedMenuItem.firstChild) {
         this.setState(state => ({focusedMenuItemIdx, isMenuOpen: true}))
@@ -124,7 +131,10 @@ class DocumentStatusBarActions extends React.PureComponent {
     if (event.key === 'ArrowDown') {
       const menuElement = this.menuElementRef.current
       if (!menuElement) return
-      const focusedMenuItemIdx = this.getNextFocusableMenuItemIdx()
+      const focusedMenuItemIdx = getNextFocusableMenuItemIdx(
+        this.props.actions,
+        this.state.focusedMenuItemIdx
+      )
       const focusedMenuItem = menuElement.childNodes[focusedMenuItemIdx]
       if (focusedMenuItem && focusedMenuItem.firstChild) {
         this.setState(state => ({focusedMenuItemIdx, isMenuOpen: true}))
@@ -153,42 +163,6 @@ class DocumentStatusBarActions extends React.PureComponent {
         // console.log(elm)
         elm.focus()
       }, 0)
-    }
-  }
-
-  getPreviousFocusableMenuItemIdx() {
-    const {actions} = this.props
-    const restActions = actions.slice(1)
-    const actionsLength = restActions.length
-    const focusableLength = restActions.filter(action => !action.disabled).length
-    if (!focusableLength === 0) return -1
-    let idx = this.state.focusedMenuItemIdx - 1
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      if (idx < 0) {
-        idx = actionsLength
-      } else if (restActions[idx] && !restActions[idx].disabled) {
-        return idx
-      }
-      idx -= 1
-    }
-  }
-
-  getNextFocusableMenuItemIdx() {
-    const {actions} = this.props
-    const restActions = actions.slice(1)
-    const actionsLength = restActions.length
-    const focusableLength = restActions.filter(action => !action.disabled).length
-    if (!focusableLength === 0) return -1
-    let idx = this.state.focusedMenuItemIdx + 1
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      if (idx >= actionsLength) {
-        idx = -1
-      } else if (restActions[idx] && !restActions[idx].disabled) {
-        return idx
-      }
-      idx += 1
     }
   }
 
@@ -243,6 +217,7 @@ class DocumentStatusBarActions extends React.PureComponent {
                 {restActions.map((action, idx) => (
                   <li className={styles.menuItem} key={action.id} role="presentation">
                     <button
+                      aria-label={action.label}
                       className={styles.menuItemButton}
                       disabled={!action.handleClick || isDisconnected || action.disabled}
                       // eslint-disable-next-line react/jsx-no-bind
