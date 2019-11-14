@@ -44,7 +44,7 @@ function encodeChunks(pane, i, group) {
       return pairs
     }
 
-    return [...pairs, `${key}=${params[key]}`]
+    return params[key] ? [...pairs, `${key}=${params[key]}`] : pairs
   }, [])
 
   return (

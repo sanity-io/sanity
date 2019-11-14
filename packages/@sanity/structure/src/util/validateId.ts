@@ -1,7 +1,6 @@
 import {SerializeError} from '../SerializeError'
 import {SerializePath} from '../StructureNodes'
 
-const disallowedIds = ['__edit__']
 const disallowedPattern = /([^A-Za-z0-9-_.])/
 
 export function validateId(
@@ -26,8 +25,12 @@ export function validateId(
     )
   }
 
-  if (disallowedIds.includes(id)) {
-    throw new SerializeError(`Structure node id cannot be "${id}"`, parentPath, pathSegment)
+  if (id.startsWith('__edit__')) {
+    throw new SerializeError(
+      `Structure node id cannot start with __edit__`,
+      parentPath,
+      pathSegment
+    )
   }
 
   return id
