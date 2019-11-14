@@ -31,7 +31,8 @@ export function getDocumentPaneFooterActions(props) {
         errors.length > 0,
       id: 'publish',
       label: 'Publish',
-      handleClick: handlers.publish
+      handleClick: handlers.publish,
+      hotkeys: ['Ctrl', 'Alt', 'P']
     },
     enabledActions.includes('delete') &&
       !isLiveEditEnabled && {

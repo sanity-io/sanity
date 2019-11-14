@@ -1,10 +1,14 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import {Tooltip} from 'react-tippy'
 import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
 import Button from 'part:@sanity/components/buttons/default'
+import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 import {getNextFocusableMenuItemIdx, getPreviousFocusableMenuItemIdx} from './helpers'
 
 import styles from './DocumentStatusBarActions.css'
+
+const TOUCH_SUPPORT = 'ontouchstart' in document.documentElement
 
 class DocumentStatusBarActions extends React.PureComponent {
   static propTypes = {
@@ -13,6 +17,7 @@ class DocumentStatusBarActions extends React.PureComponent {
         color: PropTypes.oneOf(['primary', 'success', 'danger', 'white', 'warning']),
         disabled: PropTypes.bool,
         handleClick: PropTypes.func,
+        hotkeys: PropTypes.arrayOf(PropTypes.string),
         icon: PropTypes.func,
         id: PropTypes.string.isRequired,
         label: PropTypes.string.isRequired
@@ -166,6 +171,7 @@ class DocumentStatusBarActions extends React.PureComponent {
     }
   }
 
+  // eslint-disable-next-line complexity
   render() {
     const {actions, idPrefix, isDisconnected} = this.props
     const {isMenuOpen} = this.state
@@ -173,21 +179,35 @@ class DocumentStatusBarActions extends React.PureComponent {
     const restActions = actions.slice(1)
     const restActionsLen = restActions.length
     const hasMoreActions = restActionsLen > 0
+    const firstActionDisabled =
+      firstAction && (!firstAction.handleClick || isDisconnected || firstAction.disabled)
 
     return (
       <div className={isMenuOpen ? styles.isMenuOpen : styles.root}>
         {firstAction && (
           <div className={styles.mainAction}>
-            <Button
-              className={
-                hasMoreActions ? styles.mainActionButtonWithMoreActions : styles.mainActionButton
+            <Tooltip
+              arrow
+              theme="light"
+              disabled={firstActionDisabled || !firstAction.hotkeys || TOUCH_SUPPORT}
+              className={styles.tooltip}
+              html={
+                <span className={styles.tooltipHotkeys}>
+                  <Hotkeys keys={firstAction.hotkeys} />
+                </span>
               }
-              color={firstAction.color}
-              disabled={!firstAction.handleClick || isDisconnected || firstAction.disabled}
-              onClick={firstAction.handleClick}
             >
-              {firstAction.label}
-            </Button>
+              <Button
+                className={
+                  hasMoreActions ? styles.mainActionButtonWithMoreActions : styles.mainActionButton
+                }
+                color={firstAction.color}
+                disabled={firstActionDisabled}
+                onClick={firstAction.handleClick}
+              >
+                {firstAction.label}
+              </Button>
+            </Tooltip>
           </div>
         )}
 
@@ -233,6 +253,11 @@ class DocumentStatusBarActions extends React.PureComponent {
                           </span>
                         )}
                         <span className={styles.menuItemLabel}>{action.label}</span>
+                        {action.hotkeys && (
+                          <span className={styles.menuItemHotkeys}>
+                            <Hotkeys keys={action.hotkeys} />
+                          </span>
+                        )}
                       </div>
                     </button>
                   </li>
