@@ -22,6 +22,16 @@ export default {
       title: 'Label'
     },
     {
+      name: 'title',
+      type: 'string',
+      title: 'Title'
+    },
+    {
+      name: 'description',
+      type: 'string',
+      title: 'Description'
+    },
+    {
       name: 'sha1hash',
       type: 'string',
       title: 'SHA1 hash',
@@ -77,15 +87,8 @@ export default {
     },
     {
       name: 'source',
-      type: 'string',
+      type: 'sanity.assetSourceData',
       title: 'Source',
-      readOnly: true,
-      fieldset: 'system'
-    },
-    {
-      name: 'sourceId',
-      type: 'string',
-      title: 'Source ID',
       readOnly: true,
       fieldset: 'system'
     }

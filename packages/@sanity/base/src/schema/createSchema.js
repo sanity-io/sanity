@@ -7,6 +7,7 @@ import slug from './types/slug'
 import geopoint from './types/geopoint'
 import imageCrop from './types/imageCrop'
 import imageHotspot from './types/imageHotspot'
+import assetSource from './types/assetSource'
 import imageAsset from './types/imageAsset'
 import imagePalette from './types/imagePalette'
 import imagePaletteSwatch from './types/imagePaletteSwatch'
@@ -26,6 +27,7 @@ module.exports = schemaDef => {
   if (!hasErrors) {
     types = [
       ...schemaDef.types,
+      assetSource,
       slug,
       geopoint,
       legacyRichDate,
