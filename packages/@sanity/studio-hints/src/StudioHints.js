@@ -9,11 +9,9 @@ function StudioHintsLayout() {
     return null
   }
 
-  const slug = studioHintsConfig.hintsPackageSlug
-
   return (
     <div className={styles.root}>
-      <HintsPackage slug={slug} />
+      <HintsPackage />
     </div>
   )
 }

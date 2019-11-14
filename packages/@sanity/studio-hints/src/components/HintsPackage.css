@@ -38,3 +38,7 @@
   text-decoration: none;
   color: inherit;
 }
+
+.errorMessage {
+  color: var(--state-danger-color);
+}

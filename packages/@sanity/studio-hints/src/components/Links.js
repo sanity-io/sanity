@@ -5,6 +5,10 @@ import styles from './Links.css'
 
 function Links(props) {
   const {links} = props
+  if (!links) {
+    return null
+  }
+
   return (
     <div className={styles.root}>
       {links.map(link => {
@@ -24,6 +28,7 @@ function Links(props) {
 }
 
 Links.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
   links: PropTypes.array.isRequired
 }
 
