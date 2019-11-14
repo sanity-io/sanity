@@ -6,12 +6,15 @@ export default class ScrollContainer extends React.PureComponent {
   static propTypes = {
     className: PropTypes.string,
     children: PropTypes.node,
-    onScroll: PropTypes.func
+    onScroll: PropTypes.func,
+    tabIndex: PropTypes.number
   }
 
   static defaultProps = {
+    children: undefined,
     className: '',
-    onScroll: () => {}
+    onScroll: () => null,
+    tabIndex: undefined
   }
 
   getChildContext() {
@@ -53,6 +56,7 @@ export default class ScrollContainer extends React.PureComponent {
       <div
         ref={this.setScrollContainerElement}
         className={`${styles.scrollContainer} ${this.props.className}`}
+        tabIndex={this.props.tabIndex}
       >
         {this.props.children}
       </div>
