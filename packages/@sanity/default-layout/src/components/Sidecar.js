@@ -11,14 +11,14 @@ const StudioHints = StudioHintsComponents.StudioHintsLayout
 
 class Sidecar extends React.PureComponent {
   state = {
-    isOpen: false
+    isOpen: true
   }
 
   subscription = null
 
   componentDidMount() {
     this.subscription = isTrayOpenSetting.listen().subscribe(isOpen => {
-      this.setState({isOpen})
+      this.setState({isOpen: isOpen !== false})
     })
   }
 
