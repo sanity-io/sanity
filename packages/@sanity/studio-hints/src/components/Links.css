@@ -1,13 +1,5 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-:root {
-  --nav-bar-box: 3.0625em; /* 49px */
-}
-
-.root {
-  padding-top: var(--nav-bar-box);
-}
-
 .heading {
   font-size: var(--font-size-h4);
   margin: 0;
