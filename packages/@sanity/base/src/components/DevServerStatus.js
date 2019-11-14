@@ -1,6 +1,7 @@
 import React, {PureComponent} from 'react'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
+import spinnerStyles from 'part:@sanity/components/loading/spinner-style'
 
 const eventBus = window.__webpack_hot_middleware_eventbus__
 const events = eventBus ? eventBus.eventTypes : {}
@@ -43,6 +44,7 @@ class DevServerStatus extends PureComponent {
         return this.setState({connectionState: STATE_CONNECTING})
       case events.EVENT_CONNECTED:
         return this.handleConnected()
+      case events.EVENT_BUILT:
       case events.EVENT_BUILDING:
       case events.EVENT_UP_TO_DATE:
         return this.setState(({reloadRequired: reloadWasRequired}) => ({
@@ -95,7 +97,13 @@ class DevServerStatus extends PureComponent {
           kind="warning"
           isPersisted
           isCloseable={false}
-          title={<Spinner inline message={<strong>Rebuilding bundle…</strong>} />}
+          title={
+            <Spinner inline>
+              <div className={spinnerStyles.message}>
+                <strong>Rebuilding bundle…</strong>
+              </div>
+            </Spinner>
+          }
         />
       )
     }
