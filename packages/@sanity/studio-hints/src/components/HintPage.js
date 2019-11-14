@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp, react/prop-types, react/display-name, no-console */
 import React from 'react'
 import PropTypes from 'prop-types'
 import BlockContent from '@sanity/block-content-to-react'
@@ -25,7 +26,7 @@ const serializers = {
       const {code, language, _key, highlightedLines} = node
 
       if (!code) {
-        console.error('empty code block') // eslint-disable-line no-console
+        console.error('empty code block')
         return <div />
       }
       return (
@@ -44,14 +45,15 @@ const serializers = {
 
 function HintPage(props) {
   const {hint, onBackClick} = props
+
   return (
     <div className={styles.root}>
-      <button className={styles.backButton} onClick={() => onBackClick(null)}>
+      <button className={styles.backButton} onClick={() => onBackClick(null)} type="button">
         <ArrowRight /> Back
       </button>
       <div className={styles.blockContent}>
         <h2 className={styles.blockHeading}>{hint.title}</h2>
-        <BlockContent blocks={hint.body} serializers={serializers} />
+        <BlockContent blocks={hint.body || []} serializers={serializers} />
       </div>
     </div>
   )

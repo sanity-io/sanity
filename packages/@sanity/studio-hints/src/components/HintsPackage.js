@@ -10,6 +10,7 @@ import client from '../client'
 import Links from './Links'
 import HintPage from './HintPage'
 import HintCard from './HintCard'
+import ErrorBoundary from './ErrorBoundary'
 import styles from './HintsPackage.css'
 
 class HintsPackage extends React.PureComponent {
@@ -30,7 +31,7 @@ class HintsPackage extends React.PureComponent {
     const query = `
       *[_type == "hintsPackage" && slug.current == $slug && !(_id in path('drafts.**'))][0]{
         _id, title, slug, links, hintsTitle,
-        hints[]->{_id, title, summary, body}
+        hints[]->{...,_id, title, summary, body}
       }`
     client
       .fetch(query, {slug})
@@ -97,7 +98,11 @@ class HintsPackage extends React.PureComponent {
     }
 
     if (activePage) {
-      return <HintPage hint={this.activeHint()} onBackClick={this.handleBackClick} />
+      return (
+        <ErrorBoundary onBackClick={this.handleBackClick}>
+          <HintPage hint={this.activeHint()} onBackClick={this.handleBackClick} />
+        </ErrorBoundary>
+      )
     }
 
     const {links, hints, hintsTitle} = hintsPackage
