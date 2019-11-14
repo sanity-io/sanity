@@ -3,6 +3,10 @@ import PropTypes from 'prop-types'
 import {Portal} from '../utilities/Portal'
 import SnackbarItem from './SnackbarItem'
 
+// This determines (in pixels) how far from the bottom of the screen
+// the lowest of the snackbars will be placed:
+const SNACKBAR_MARGIN_BOTTOM = 76
+
 export default class SnackbarProvider extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired
@@ -27,7 +31,10 @@ export default class SnackbarProvider extends React.Component {
   get offsets() {
     const {activeSnacks} = this.state
     return activeSnacks.map((snack, index) => {
-      const {view: viewOffset, snackbar: snackbarOffset} = {view: 10, snackbar: 12}
+      const {view: viewOffset, snackbar: snackbarOffset} = {
+        view: SNACKBAR_MARGIN_BOTTOM,
+        snackbar: 12
+      }
       let offset = viewOffset
       while (activeSnacks[index - 1]) {
         const snackHeight = activeSnacks[index - 1].height || 60
