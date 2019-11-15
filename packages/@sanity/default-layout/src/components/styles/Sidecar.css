@@ -1,12 +1,17 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  min-height: 100vh;
-  max-height: 100vh;
-  max-width: 0;
-  transition: transform 500ms 100s ease-in-out, max-width 500ms ease-in-out;
-  transform: translate3d(420px, 0, 0);
-  width: 100%;
+  display: none;
+
+  @media (--screen-medium) {
+    display: block;
+    min-height: 100vh;
+    max-height: 100vh;
+    max-width: 0;
+    transition: transform 500ms 100s ease-in-out, max-width 500ms ease-in-out;
+    transform: translate3d(420px, 0, 0);
+    width: 100%;
+  }
 }
 
 .isOpen {
