@@ -4,12 +4,12 @@ import {Tooltip} from 'react-tippy'
 import config from 'config:sanity'
 import PlusIcon from 'part:@sanity/base/plus-icon'
 import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
-import Lightbulb from 'part:@sanity/base/lightbulb-icon'
 import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import {StateLink} from 'part:@sanity/base/router'
-import {toggleTrayOpenState} from 'part:@sanity/studio-hints/datastore'
-import studioHintsConfig from 'part:@sanity/studio-hints/config?'
+import sidecarConfig from 'part:@sanity/default-layout/sidecar-config?'
+import {SidecarToggleButtonIcon} from 'part:@sanity/default-layout/sidecar'
+import {toggleSidecarOpenState} from 'part:@sanity/default-layout/sidecar-datastore'
 import {HAS_SPACES} from '../util/spaces'
 import Branding from './Branding'
 import LoginStatus from './LoginStatus'
@@ -17,10 +17,6 @@ import SanityStatusContainer from './SanityStatusContainer'
 import SearchContainer from './SearchContainer'
 import SpaceSwitcher from './SpaceSwitcher'
 import styles from './styles/NavBar.css'
-
-function onSidecarButtonClick(event) {
-  toggleTrayOpenState()
-}
 
 function NavBar(props) {
   const {
@@ -111,10 +107,10 @@ function NavBar(props) {
       <div className={styles.loginStatus} ref={onSetLoginStatusElement}>
         <LoginStatus onLogout={onUserLogout} user={user} />
       </div>
-      {studioHintsConfig && (
+      {sidecarConfig && (
         <div className={styles.sidecarStatus}>
-          <button className={styles.sidecarButton} onClick={onSidecarButtonClick} type="button">
-            <Lightbulb />
+          <button className={styles.sidecarButton} onClick={toggleSidecarOpenState} type="button">
+            <SidecarToggleButtonIcon />
           </button>
         </div>
       )}
