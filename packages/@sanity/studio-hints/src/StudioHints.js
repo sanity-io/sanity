@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react'
-import Lightbulb from 'part:@sanity/base/lightbulb-icon'
+import ToggleSidecarButton from './components/ToggleSidecarButton'
 import HintsPackage from './components/HintsPackage'
 import styles from './StudioHints.css'
 
@@ -13,5 +13,5 @@ export function SidecarLayout() {
 }
 
 export function SidecarToggleButtonIcon() {
-  return <Lightbulb />
+  return <ToggleSidecarButton />
 }
