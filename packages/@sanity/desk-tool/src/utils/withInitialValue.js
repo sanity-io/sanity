@@ -2,7 +2,15 @@
 import React from 'react'
 import {streamingComponent} from 'react-props-stream'
 import {merge, from, of} from 'rxjs'
-import {map, switchMap, scan, filter, distinctUntilChanged, catchError} from 'rxjs/operators'
+import {
+  map,
+  switchMap,
+  scan,
+  filter,
+  distinctUntilChanged,
+  catchError,
+  debounceTime
+} from 'rxjs/operators'
 import schema from 'part:@sanity/base/schema'
 import {observePaths} from 'part:@sanity/base/preview'
 import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
@@ -33,6 +41,8 @@ const withInitialValue = Pane => {
           map(res => res.draft || res.published),
           // Only update if we didn't previously have a document but we now do
           distinctUntilChanged((prev, next) => Boolean(prev) !== Boolean(next)),
+          // Prevent rapid re-resolving when transitioning between different templates
+          debounceTime(25),
           switchMap(document => {
             const {templateName, parameters} = getInitialValueProps(document, props, paneContext)
             const shouldResolve = Boolean(templateName)
@@ -123,7 +133,7 @@ function getInitialValueProps(document, props, paneContext) {
   }
 
   const {options = {}} = props
-  const template = options.template || urlTemplate
+  const template = definedTemplate || urlTemplate
   const typeTemplates = getTemplatesBySchemaType(options.type)
 
   const parameters = {...options.templateParameters, ...payload}
