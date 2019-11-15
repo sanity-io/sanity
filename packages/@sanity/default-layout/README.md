@@ -21,7 +21,7 @@ An implementation of `part:@sanity/default-layout/sidecar` _must_ export two com
  - `SidecarToggleButton` The button which will appear in the NavBar to toggle on/off the Sidecar
  - `SidecarLayout` The content of the Sidecar (once it appears)
 
-If you need inspiration, `@sanity/studio-hints` package is an implementation of this part.
+If you need inspiration, the `@sanity/studio-hints` package is an implementation of this part.
 
 ### `part:@sanity/default-layout/sidecar-config`
 
