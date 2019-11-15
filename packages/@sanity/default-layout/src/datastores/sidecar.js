@@ -4,8 +4,10 @@ import settings from 'part:@sanity/base/settings'
 const storageKey = 'sidecar'
 const sidecarSettings = settings.forNamespace(storageKey)
 
+// Listen to this to determine if the sidecar is open or closed
 export const isSidecarOpenSetting = sidecarSettings.forKey('isSidecarOpen')
 
+// Call this to flip sidecar state
 export function toggleSidecarOpenState() {
   isSidecarOpenSetting
     .listen()

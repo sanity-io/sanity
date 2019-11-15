@@ -1,7 +1,5 @@
-/* eslint-disable no-console */
 /* eslint-disable prefer-template */
 import React from 'react'
-
 import sidecarConfig from 'part:@sanity/default-layout/sidecar-config?'
 import {SidecarLayout} from 'part:@sanity/default-layout/sidecar?'
 import {isSidecarOpenSetting} from 'part:@sanity/default-layout/sidecar-datastore'
