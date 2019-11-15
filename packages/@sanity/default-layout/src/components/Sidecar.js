@@ -3,7 +3,7 @@
 import React from 'react'
 
 import sidecarConfig from 'part:@sanity/default-layout/sidecar-config?'
-import {SidecarLayout} from 'part:@sanity/default-layout/sidecar'
+import {SidecarLayout} from 'part:@sanity/default-layout/sidecar?'
 import {isSidecarOpenSetting} from 'part:@sanity/default-layout/sidecar-datastore'
 
 import styles from './styles/Sidecar.css'
