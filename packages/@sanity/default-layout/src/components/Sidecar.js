@@ -3,7 +3,6 @@ import React from 'react'
 import sidecarConfig from 'part:@sanity/default-layout/sidecar-config?'
 import {SidecarLayout} from 'part:@sanity/default-layout/sidecar?'
 import {isSidecarOpenSetting} from 'part:@sanity/default-layout/sidecar-datastore'
-
 import styles from './styles/Sidecar.css'
 
 class Sidecar extends React.PureComponent {
@@ -28,9 +27,9 @@ class Sidecar extends React.PureComponent {
   render() {
     const {isOpen} = this.state
 
-    if (sidecarConfig && isOpen) {
+    if (sidecarConfig) {
       return (
-        <div className={styles.root}>
+        <div className={`${styles.root} ${isOpen ? styles.isOpen : ''}`}>
           <SidecarLayout />
         </div>
       )

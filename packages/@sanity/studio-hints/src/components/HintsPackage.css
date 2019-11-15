@@ -5,7 +5,7 @@
 }
 
 .cardsList {
-  margin: var(--extra-large-padding) 0;
+  padding: var(--medium-padding) 0;
 }
 
 .cardsTitle {
@@ -14,21 +14,7 @@
   font-family: var(--font-family-monospace);
   font-size: var(--font-size-small);
   font-weight: 100;
-  margin-bottom: var(--medium-padding);
-}
-
-.linkHeading {
-  font-size: var(--font-size-h4);
-  margin: 0;
-  padding: var(--small-padding) 0;
-  border-bottom: 1px solid var(--gray);
-}
-
-.link {
-  display: flex;
-  justify-content: space-between;
-  text-decoration: none;
-  color: inherit;
+  margin: var(--medium-padding) 0;
 }
 
 .errorMessage {

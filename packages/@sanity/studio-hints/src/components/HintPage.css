@@ -1,5 +1,7 @@
-:root {
-  --nav-bar-box: 3.0625em; /* 49px */
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  padding-bottom: var(--medium-padding);
 }
 
 .backButton {
@@ -20,12 +22,12 @@
 }
 
 .blockHeading {
-  composes: heading2 from 'part:@sanity/base/theme/typography/headings-style';
+  composes: heading3 from 'part:@sanity/base/theme/typography/headings-style';
   padding: 0;
 }
 
 .blockContent {
-  padding-top: var(--nav-bar-box);
+  padding-top: var(--medium-padding);
 }
 
 .youtubeContainer {

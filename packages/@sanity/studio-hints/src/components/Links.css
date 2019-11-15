@@ -1,9 +1,14 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+.root {
+  margin-bottom: var(--small-padding);
+}
+
 .heading {
   font-size: var(--font-size-h4);
   margin: 0;
-  padding: var(--small-padding) 0;
+  padding-bottom: var(--small-padding);
+  margin-bottom: var(--medium-padding);
   border-bottom: 1px solid var(--gray);
 }
 

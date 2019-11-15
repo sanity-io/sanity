@@ -1,10 +1,15 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  display: flex;
-  flex-direction: column;
   min-height: 100vh;
   max-height: 100vh;
-  max-width: 420px;
+  max-width: 0;
+  transition: transform 500ms 100s ease-in-out, max-width 500ms ease-in-out;
+  transform: translate3d(420px, 0, 0);
   width: 100%;
+}
+
+.isOpen {
+  max-width: 420px;
+  transform: translate3d(0, 0, 0);
 }
