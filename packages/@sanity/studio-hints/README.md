@@ -1,14 +1,13 @@
 # Studio hints
 
-Helpful stuff appears
+Helpful stuff appears! In the sidecar!
 
-This plugin is an implementation of `part:@sanity/default-layout/sidecar`. As such, it export the three things it is required to:
+This plugin is an implementation of `part:@sanity/default-layout/sidecar`. As such, it export the two things it is required to:
 
  - `SidecarToggleButton` React component: The button which will appear in the NavBar to toggle on/off the Sidecar
- - `SidecarLayout` React component: The content of the Sidecar (once it has appeared)
+ - `SidecarLayout` React component: The content of the Sidecar (once it appears)
 
-
-## In the sanity.json file of your Studio, add
+## For the Studio hints to appear in a running Studio, add the following to the sanity.json file
 ```
 {
   "implements": "part:@sanity/default-layout/sidecar-config",
@@ -16,8 +15,7 @@ This plugin is an implementation of `part:@sanity/default-layout/sidecar`. As su
 }
 ```
 
-## create studioHintsConfig.js and add this to it:
-
+In that file, specify which hints package the plugin will show:
 ```
 export default {
   options: {
