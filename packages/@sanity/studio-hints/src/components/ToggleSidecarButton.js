@@ -1,6 +1,8 @@
 /* eslint-disable prefer-template */
 import React from 'react'
 import Lightbulb from 'part:@sanity/base/lightbulb-icon'
+import IoLightbulb from 'react-icons/lib/io/lightbulb'
+
 import {isSidecarOpenSetting} from 'part:@sanity/default-layout/sidecar-datastore'
 
 export default class ToggleSidecarButton extends React.PureComponent {
@@ -24,7 +26,7 @@ export default class ToggleSidecarButton extends React.PureComponent {
     const {isOpen} = this.state
     return isOpen ? (
       <span style={{color: '#ffba00'}}>
-        <Lightbulb />
+        <IoLightbulb />
       </span>
     ) : (
       <Lightbulb />
