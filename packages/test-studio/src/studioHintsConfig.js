@@ -1,3 +1,5 @@
 export default {
-  hintsPackageSlug: 'gatsby-blog'
+  options: {
+    hintsPackageSlug: 'gatsby-blog'
+  }
 }

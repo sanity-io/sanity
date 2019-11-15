@@ -74,7 +74,7 @@
       "path": "src/deskStructure.js"
     },
     {
-      "implements": "part:@sanity/studio-hints/config",
+      "implements": "part:@sanity/default-layout/sidecar-config",
       "path": "src/studioHintsConfig.js"
     },
     {
