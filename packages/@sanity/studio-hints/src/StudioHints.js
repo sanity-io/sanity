@@ -1,9 +1,10 @@
+/* eslint-disable react/no-multi-comp */
 import React from 'react'
+import Lightbulb from 'part:@sanity/base/lightbulb-icon'
 import HintsPackage from './components/HintsPackage'
-import HintCard from './components/HintCard'
 import styles from './StudioHints.css'
 
-function StudioHintsLayout() {
+export function SidecarLayout() {
   return (
     <div className={styles.root}>
       <HintsPackage />
@@ -11,7 +12,6 @@ function StudioHintsLayout() {
   )
 }
 
-export default {
-  HintCard: HintCard,
-  StudioHintsLayout: StudioHintsLayout
+export function SidecarToggleButtonIcon() {
+  return <Lightbulb />
 }

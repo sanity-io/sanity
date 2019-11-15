@@ -1,11 +1,9 @@
-/* eslint-disable no-console */
-/* eslint-disable class-methods-use-this */
+/* eslint-disable no-console, class-methods-use-this */
 import React from 'react'
-import PropTypes from 'prop-types'
 import {isEmpty} from 'lodash'
-import {locationSetting, updateLocation} from 'part:@sanity/studio-hints/datastore'
 import Spinner from 'part:@sanity/components/loading/spinner'
-import studioHintsConfig from 'part:@sanity/studio-hints/config'
+import sidecarConfig from 'part:@sanity/default-layout/sidecar-config'
+import {locationSetting, updateLocation} from '../datastore'
 import client from '../client'
 import Links from './Links'
 import HintPage from './HintPage'
@@ -13,11 +11,7 @@ import HintCard from './HintCard'
 import ErrorBoundary from './ErrorBoundary'
 import styles from './HintsPackage.css'
 
-class HintsPackage extends React.PureComponent {
-  static props = {
-    slug: PropTypes.string.isRequired
-  }
-
+export default class HintsPackage extends React.PureComponent {
   state = {
     error: null,
     hintsPackage: null,
@@ -42,7 +36,7 @@ class HintsPackage extends React.PureComponent {
   }
 
   componentDidMount() {
-    const slug = studioHintsConfig.hintsPackageSlug
+    const slug = sidecarConfig.options.hintsPackageSlug
     this.fetchHintsPackage(slug)
 
     this.subscription = locationSetting.listen().subscribe(currentLocation => {
@@ -77,7 +71,7 @@ class HintsPackage extends React.PureComponent {
 
   render() {
     const {hintsPackage, error, activePage, isLoading} = this.state
-    const slug = studioHintsConfig.hintsPackageSlug
+    const slug = sidecarConfig.options.hintsPackageSlug
 
     if (!slug) {
       return this.renderError(
@@ -121,5 +115,3 @@ class HintsPackage extends React.PureComponent {
     )
   }
 }
-
-export default HintsPackage
