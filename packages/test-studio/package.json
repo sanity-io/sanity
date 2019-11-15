@@ -45,6 +45,7 @@
     "humanize-list": "^1.0.1",
     "prop-types": "^15.6.0",
     "react": "16.9.0",
+    "react-confetti": "^5.0.1",
     "react-dom": "^16.9.0",
     "react-icons": "^2.2.7",
     "react-json-pretty": "^2.2.0",
