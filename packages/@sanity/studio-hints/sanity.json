@@ -12,15 +12,6 @@
     {
       "implements": "part:@sanity/default-layout/sidecar",
       "path": "StudioHints.js"
-    },
-
-    {
-      "name": "part:@sanity/studio-hints/datastore",
-      "description": "Helpers to get and set hints state"
-    },
-    {
-      "implements": "part:@sanity/studio-hints/datastore",
-      "path": "datastore.js"
     }
   ]
 }
