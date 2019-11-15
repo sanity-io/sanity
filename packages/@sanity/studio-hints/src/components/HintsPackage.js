@@ -25,7 +25,7 @@ export default class HintsPackage extends React.PureComponent {
     const query = `
       *[_type == "hintsPackage" && slug.current == $slug && !(_id in path('drafts.**'))][0]{
         _id, title, slug, links, hintsTitle,
-        hints[]->{...,_id, title, summary, body}
+        hints[]->{_id, title, summary, body}
       }`
     client
       .fetch(query, {slug})
