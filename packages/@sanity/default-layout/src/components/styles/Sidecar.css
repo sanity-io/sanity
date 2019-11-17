@@ -1,12 +1,16 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+:root {
+  --nav-bar-box: 3.0625em; /* 49px */
+}
+
 .root {
   display: none;
 
   @media (--screen-medium) {
     display: block;
-    min-height: 100vh;
-    max-height: 100vh;
+    min-height: calc(100vh - var(--nav-bar-box));
+    max-height: calc(100vh - var(--nav-bar-box));
     max-width: 0;
     transition: transform 500ms 100s ease-in-out, max-width 500ms ease-in-out;
     transform: translate3d(420px, 0, 0);
