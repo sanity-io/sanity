@@ -8,8 +8,7 @@ import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import {StateLink} from 'part:@sanity/base/router'
 import sidecarConfig from 'part:@sanity/default-layout/sidecar-config?'
-import {SidecarToggleButtonIcon} from 'part:@sanity/default-layout/sidecar?'
-import {toggleSidecarOpenState} from 'part:@sanity/default-layout/sidecar-datastore'
+import {SidecarToggleButton} from 'part:@sanity/default-layout/sidecar?'
 import {HAS_SPACES} from '../util/spaces'
 import Branding from './Branding'
 import LoginStatus from './LoginStatus'
@@ -109,9 +108,7 @@ function NavBar(props) {
       </div>
       {sidecarConfig && (
         <div className={styles.sidecarStatus}>
-          <button className={styles.sidecarButton} onClick={toggleSidecarOpenState} type="button">
-            <SidecarToggleButtonIcon />
-          </button>
+          <SidecarToggleButton />
         </div>
       )}
       <button className={styles.searchButton} onClick={onSearchOpen} type="button">

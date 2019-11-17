@@ -12,6 +12,6 @@ export function SidecarLayout() {
   )
 }
 
-export function SidecarToggleButtonIcon() {
+export function SidecarToggleButton() {
   return <ToggleSidecarButton />
 }

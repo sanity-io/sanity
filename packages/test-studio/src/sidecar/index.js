@@ -13,6 +13,6 @@ export function SidecarLayout() {
   return <Confetti numberOfPieces={400} opacity={0.7} />
 }
 
-export function SidecarToggleButtonIcon() {
+export function SidecarToggleButton() {
   return <ToggleSidecarButton />
 }
