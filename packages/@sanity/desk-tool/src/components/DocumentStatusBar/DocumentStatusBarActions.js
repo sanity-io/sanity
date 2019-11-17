@@ -201,7 +201,7 @@ class DocumentStatusBarActions extends React.PureComponent {
                 className={
                   hasMoreActions ? styles.mainActionButtonWithMoreActions : styles.mainActionButton
                 }
-                color={firstAction.color}
+                color={firstActionDisabled ? undefined : firstAction.color}
                 disabled={firstActionDisabled}
                 onClick={firstAction.handleClick}
               >
@@ -218,10 +218,10 @@ class DocumentStatusBarActions extends React.PureComponent {
               aria-haspopup="true"
               aria-label="Actions"
               className={styles.actionsDropDownButton}
-              color={firstAction.color}
               disabled={isDisconnected}
               icon={ChevronDownIcon}
               id={`${idPrefix}-button`}
+              kind="secondary"
               onClick={this.handleDropDownButtonClick}
               ref={this.actionsDropDownButtonRef}
             />

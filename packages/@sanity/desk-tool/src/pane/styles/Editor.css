@@ -137,7 +137,7 @@
 
 .editor {
   padding: var(--medium-padding);
-  padding-bottom: 8rem;
+  padding-bottom: 4em;
 }
 
 .syncStatus {
