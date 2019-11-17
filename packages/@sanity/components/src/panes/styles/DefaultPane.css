@@ -329,7 +329,7 @@
     top: initial;
     left: initial;
     height: initial;
-    width: initial;
+    width: 100%;
     overflow: initial;
   }
 
