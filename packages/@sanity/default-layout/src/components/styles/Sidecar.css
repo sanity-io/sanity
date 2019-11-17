@@ -1,5 +1,9 @@
 @import 'part:@sanity/base/theme/variables-style';
 
+:root {
+  --nav-bar-box: 3.0625em; /* 49px */
+}
+
 .root {
   display: none;
   max-width: 0;
