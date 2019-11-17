@@ -15,9 +15,30 @@
   font-weight: 600;
   padding: 0;
   cursor: pointer;
+  -webkit-font-smoothing: inherit;
+  appearance: none;
+  outline: none;
+  border-radius: 0;
+  user-select: none;
+  position: relative;
+  margin: 0;
+  width: 100%;
+  align-self: flex-start;
+
+  @nest &:focus {
+    outline: 0;
+    background-color: color(var(--brand-primary) a(20%));
+  }
+
   @nest & svg {
     transform: rotate(-180deg);
     padding-left: 0.5em;
+  }
+
+  @nest & .inner {
+    outline: 0;
+    display: flex;
+    align-items: center;
   }
 }
 
@@ -47,4 +68,24 @@
   height: 100%;
   width: 100%;
   max-width: 100%;
+}
+
+a {
+  color: var(--default-button-color);
+  text-decoration: inherit;
+}
+
+h3 {
+  margin: var(--medium-padding) 0 var(--small-padding) 0;
+}
+
+p {
+  margin: var(--small-padding) 0 var(--medium-padding);
+}
+
+p code {
+  background: color(var(--gray-base) lightness(+ 50%) a(30%));
+  font-size: 95%;
+  padding: 1px 2px;
+  border-radius: 3px;
 }

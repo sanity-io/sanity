@@ -49,7 +49,7 @@ function HintPage(props) {
   return (
     <div className={styles.root}>
       <button className={styles.backButton} onClick={() => onBackClick(null)} type="button">
-        <ArrowRight /> Back
+       <div className={styles.inner} tabIndex={-1}> <ArrowRight /> Back</div>
       </button>
       <div className={styles.blockContent}>
         <h2 className={styles.blockHeading}>{hint.title}</h2>
