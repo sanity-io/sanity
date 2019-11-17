@@ -1,8 +1,14 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 :root {
+  /* The height of the navbar */
   --nav-bar-box: 3.0625em; /* 49px */
+
+  /* Expand/collapse animation timing */
   --pane-animation-time: 200ms;
+
+  /* The height of the pane footer */
+  --pane-footer-height: 4em;
 }
 
 .root {
@@ -292,6 +298,7 @@
   flex-grow: 1;
   display: flex;
   align-items: stretch;
+  padding-bottom: var(--pane-footer-height);
 
   @nest .isCollapsed & {
     /* NOTE: animation is disabled because it breaks tab navigation */
