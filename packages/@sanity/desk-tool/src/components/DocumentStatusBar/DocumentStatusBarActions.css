@@ -19,18 +19,14 @@
 
 .mainActionButtonWithMoreActions {
   composes: mainActionButton;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
 }
 
 .actionsDropDown {
-  margin-left: 1px;
+  margin-left: 0.25em;
 }
 
 .actionsDropDownButton {
   vertical-align: top;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
 }
 
 .menuContainer {
