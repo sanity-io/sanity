@@ -374,11 +374,16 @@
 }
 
 .initialValueTemplateDropDownMenuButton {
-  @nest & [class^='DropDownButton'] {
-    width: 2.1875rem;
+  @nest & [class^='DropDownButton_button'] {
+    width: 2.0625rem;
+    border: 0 !important;
   }
 
-  @nest & [class^='DropDownButton']:hover {
+  @nest & [class^='DropDownButton_button'] > span > span {
+    margin: 0 !important;
+  }
+
+  @nest & [class^='DropDownButton_button']:hover {
     background-color: transparent;
   }
 }
@@ -429,6 +434,14 @@
 
   @media (--screen-medium) {
     position: relative;
+  }
+
+  @media (hover: hover) {
+    display: none;
+
+    @nest .root:hover & {
+      display: block;
+    }
   }
 
   @nest &:before {
