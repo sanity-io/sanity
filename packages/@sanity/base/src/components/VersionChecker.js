@@ -26,8 +26,13 @@ const onIdle =
     ? window.requestIdleCallback
     : cb => setTimeout(cb, 0)
 
-// eslint-disable-next-line id-length
-const buildQueryString = () => ({m: Object.keys(versions).map(pkg => `${pkg}@${versions[pkg]}`)})
+const buildQueryString = () => ({
+  // eslint-disable-next-line id-length
+  m: Object.keys(versions)
+    .filter(pkg => versions[pkg])
+    .map(pkg => `${pkg}@${versions[pkg]}`)
+})
+
 const hashQuery = items => items.join(',').replace(/@?sanity[/-]/g, '')
 const storage = typeof sessionStorage === 'undefined' ? {} : sessionStorage
 
