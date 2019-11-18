@@ -10,6 +10,11 @@
 
 .imageContainer {
   width: 100%;
+
+  @nest & img {
+    width: 100%;
+    vertical-align: top;
+  }
 }
 
 .figcaption {

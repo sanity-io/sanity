@@ -15,18 +15,26 @@ function urlFor(source) {
 }
 
 function Image(props) {
+  if (props.node.caption) {
+    return (
+      <figure className={styles.figure}>
+        <div className={styles.imageContainer}>
+          <img src={urlFor(props.node)} alt={props.node.alt} />
+        </div>
+        <figcaption className={styles.figcaption}>{props.node.caption}</figcaption>
+      </figure>
+    )
+  }
   return (
-    <figure className={styles.figure}>
-      <div className={styles.imageContainer}>
-        <img src={urlFor(props.node)} alt="must have alt" />
-      </div>
-      <figcaption className={styles.figcaption}>Must have alt</figcaption>
-    </figure>
+    <div className={styles.imageContainer}>
+      <img src={urlFor(props.node)} alt={props.node.alt} />
+    </div>
   )
 }
 
 Image.propTypes = {
-  node: PropTypes.node.isRequired
+  // eslint-disable-next-line react/forbid-prop-types
+  node: PropTypes.object.isRequired
 }
 
 export default Image
