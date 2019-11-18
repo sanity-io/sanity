@@ -1,11 +1,11 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.icon {
-  transform: rotate(-45deg);
+.root {
+  padding: var(--medium-padding);
 }
 
-.cardsList {
-  padding: var(--medium-padding) 0;
+.icon {
+  transform: rotate(-45deg);
 }
 
 .cardsTitle {
