@@ -7,7 +7,7 @@ import styles from './StudioHints.css'
 
 export const isSidecarEnabled = () => !!studioHintsConfig
 
-export function SidecarLayout() {
+export const SidecarLayout = () => {
   return (
     <div className={styles.root}>
       <HintsPackage />
@@ -15,6 +15,6 @@ export function SidecarLayout() {
   )
 }
 
-export function SidecarToggleButton() {
+export const SidecarToggleButton = () => {
   return <ToggleSidecarButton />
 }
