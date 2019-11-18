@@ -329,12 +329,13 @@ function getPaneDiffIndex(nextPanes, prevPanes) {
     return [0, 0]
   }
 
-  for (let index = 0; index < nextPanes.length; index++) {
+  const maxPanes = Math.max(nextPanes.length, prevPanes.length)
+  for (let index = 0; index < maxPanes; index++) {
     const nextGroup = nextPanes[index]
     const prevGroup = prevPanes[index]
 
     // Whole group is now invalid
-    if (!prevGroup) {
+    if (!prevGroup || !nextGroup) {
       return [index, 0]
     }
 
