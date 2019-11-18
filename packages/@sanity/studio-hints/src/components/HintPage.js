@@ -5,12 +5,16 @@ import BlockContent from '@sanity/block-content-to-react'
 import ArrowRight from 'part:@sanity/base/arrow-right'
 import dynamic from 'next/dynamic'
 import styles from './HintPage.css'
+import internalLinkSerializer from './serializers/internalLinkSerializer'
 
 const YouTube = dynamic(() => import('./serializers/Video'))
 const Image = dynamic(() => import('./serializers/Image'))
 const CodeSnippet = dynamic(() => import('./serializers/CodeSnippet'))
 
 const serializers = {
+  marks: {
+    internalLink: internalLinkSerializer
+  },
   types: {
     youtube: ({node: {url}}) => {
       return (

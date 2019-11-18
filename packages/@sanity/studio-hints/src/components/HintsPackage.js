@@ -25,7 +25,21 @@ export default class HintsPackage extends React.PureComponent {
     const query = `
       *[_type == "hintsPackage" && slug.current == $slug && !(_id in path('drafts.**'))][0]{
         _id, title, slug, links, hintsTitle,
-        hints[]->{_id, title, summary, body}
+        hints[]->{
+          _id, title, summary,
+          body[]{
+            ...,
+            markDefs[] {
+              ...,
+              _type == 'internalLink' => {
+                ...(@->) {
+                  slug,
+                  "type": ^._type
+                }
+              }
+            }
+          }
+        }
       }`
     client
       .fetch(query, {slug})
@@ -51,6 +65,7 @@ export default class HintsPackage extends React.PureComponent {
   }
 
   handleCardClick = id => {
+    // apply transition class first, wait until transitioned out, then change
     const locationObject = {type: 'hint', id}
     updateLocation(locationObject)
   }
