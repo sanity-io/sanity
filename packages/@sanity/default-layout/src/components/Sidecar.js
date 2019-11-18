@@ -7,7 +7,8 @@ import styles from './styles/Sidecar.css'
 
 class Sidecar extends React.PureComponent {
   state = {
-    isOpen: true
+    isOpen: true,
+    isVisible: true
   }
 
   componentDidMount() {
@@ -16,6 +17,22 @@ class Sidecar extends React.PureComponent {
         this.setState({isOpen: isOpen !== false})
       })
     }
+    if (!this.state.isOpen) {
+      this.handleRemoveSidecar()
+    }
+  }
+
+  handleRemoveSidecar = () => {
+    this.setState({
+      isVisible: false
+    })
+  }
+
+  handleDismissSidecar = () => {
+    const transitionDuration = 500 // from the isOpen class
+    setTimeout(() => {
+      this.handleRemoveSidecar()
+    }, transitionDuration)
   }
 
   componentWillUnmount() {
@@ -24,13 +41,18 @@ class Sidecar extends React.PureComponent {
     }
   }
 
+  componentDidUpdate() {
+    // eslint-disable-next-line react/no-did-update-set-state
+    return this.state.isOpen ? this.setState({isVisible: true}) : this.handleDismissSidecar()
+  }
+
   render() {
-    const {isOpen} = this.state
+    const {isOpen, isVisible} = this.state
 
     if (sidecarConfig) {
       return (
         <div className={`${styles.root} ${isOpen ? styles.isOpen : ''}`}>
-          <SidecarLayout />
+          {isVisible && <SidecarLayout />}
         </div>
       )
     }
