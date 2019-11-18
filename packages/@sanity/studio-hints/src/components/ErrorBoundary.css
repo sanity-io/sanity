@@ -22,5 +22,6 @@
 }
 
 .errorMessage {
+  padding: var(--medium-padding);
   color: var(--state-danger-color);
 }
