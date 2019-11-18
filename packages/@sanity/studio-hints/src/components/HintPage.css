@@ -70,20 +70,20 @@
   max-width: 100%;
 }
 
-a {
+.root a {
   color: var(--default-button-color);
   text-decoration: inherit;
 }
 
-h3 {
+.root h3 {
   margin: var(--medium-padding) 0 var(--small-padding) 0;
 }
 
-p {
+.root p {
   margin: var(--small-padding) 0 var(--medium-padding);
 }
 
-p code {
+.root p code {
   background: color(var(--gray-base) lightness(+ 50%) a(30%));
   font-size: 95%;
   padding: 1px 2px;
