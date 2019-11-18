@@ -1,4 +1,3 @@
-
 Want to file an issue? [Jump to _How to file an issue_ ⏬](#how-to-file-an-issue)
 
 # Contributing
@@ -9,7 +8,7 @@ Contributions are always welcome, no matter how large or small.
 
 Before contributing, please read our [code of conduct](https://github.com/sanity-io/sanity/blob/master/CODE_OF_CONDUCT.md).
 
-Then make sure you have *Node.js version 4 or newer* and *npm version 5 or newer*.
+Then make sure you have _Node.js version 4 or newer_ and _npm version 5 or newer_.
 
 ```sh
 git clone git@github.com:sanity-io/sanity.git
@@ -28,7 +27,7 @@ npm start
 - Rebase your feature branch regularly against `next`. Make sure its even with `next` before merging.
 - Once its done, open a pull request to merge your feature branch into `next`
 - After someone else has reviewed and signed off on the pull request, you can merge it into `next`.
-- Everything except minor *trivial* changes should go through pull-requests. If you're unsure whether it's a trivial change or not, submit a pull request just to be sure.
+- Everything except minor _trivial_ changes should go through pull-requests. If you're unsure whether it's a trivial change or not, submit a pull request just to be sure.
 - Pull requests should be as ready as possible for merge. Unless stated otherwise, it should be safe to assume that:
 
   - The changes/feature are reviewed and tested by you
@@ -93,7 +92,10 @@ If you run into build issues, you might want to run `npm run init`, which will d
 
 # Testing
 
+Some tests are based on compiled files, so you will need to build the repository first before running the tests:
+
 ```sh
+npm run build
 npm test
 ```
 
