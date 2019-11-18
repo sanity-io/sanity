@@ -55,21 +55,17 @@ export default class HintsPackage extends React.PureComponent {
    * These are the handlers for opening and closing hint pages:
    */
   /*
-
   handleCardClick = id => {
     const locationObject = {type: 'hint', id}
     updateLocation(locationObject)
   }
-
   handleBackClick = () => {
     updateLocation(null)
   }
-
   activeHint = () => {
     const {activePage, hintsPackage} = this.state
     return activePage ? hintsPackage.hints.find(hint => hint._id === activePage) : null
   }
-
   getNextHint = () => {
     const {hints = []} = this.state.hintsPackage
     if (!this.activeHint) {
@@ -82,7 +78,6 @@ export default class HintsPackage extends React.PureComponent {
     }
     return -1
   }
-
   */
 
   renderError(title, message) {
