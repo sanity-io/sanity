@@ -69,7 +69,7 @@
 }
 
 .root a {
-  color: var(--default-button-color);
+  color: var(--link-color);
   text-decoration: inherit;
 }
 
