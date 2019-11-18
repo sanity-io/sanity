@@ -8,7 +8,7 @@
   "scripts": {
     "clean": "rimraf lib",
     "start": "cd example && sanity start",
-    "prepublish": "in-publish && sanity-check || not-in-publish"
+    "prepublishOnly": "sanity-check"
   },
   "keywords": [
     "sanity",
@@ -19,9 +19,6 @@
     "google-maps-input",
     "sanity-plugin"
   ],
-  "dependencies": {
-    "in-publish": "^2.0.0"
-  },
   "devDependencies": {
     "@sanity/base": "0.144.1",
     "@sanity/check": "0.144.0",

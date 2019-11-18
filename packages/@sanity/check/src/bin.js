@@ -3,7 +3,6 @@
 const path = require('path')
 const fse = require('fs-extra')
 const chalk = require('chalk')
-const publish = require('in-publish')
 const sanityCheck = require('./sanityCheck')
 const pkg = require('../package.json')
 
@@ -16,10 +15,7 @@ const manifestDir = path.join(dir, 'sanity.json')
 const showHelp = includes(args, '-h') || includes(args, '--help')
 const showVersion = includes(args, '-v') || includes(args, '--version')
 const productionMode =
-  process.env.NODE_ENV === 'production' ||
-  publish.inPublish() ||
-  includes(args, '-p') ||
-  includes(args, '--production')
+  process.env.NODE_ENV === 'production' || includes(args, '-p') || includes(args, '--production')
 
 if (showHelp) {
   console.log('Usage: sanity-check [DIRECTORY]')
