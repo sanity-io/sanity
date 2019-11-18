@@ -28,7 +28,8 @@ function isBaseType(type) {
   return (
     type.name !== type.jsonType &&
     allowedJsonTypes.includes(type.jsonType) &&
-    !skipTypes.includes(type.name)
+    !skipTypes.includes(type.name) &&
+    !isReference(type)
   )
 }
 
@@ -50,7 +51,15 @@ function isArrayOfBlocks(typeDef) {
 }
 
 function isReference(typeDef) {
-  return typeDef.name === 'reference' || (typeDef.type && typeDef.type.name === 'reference')
+  let type = typeDef
+  while (type) {
+    if (type.name === 'reference' || (type.type && type.type.name === 'reference')) {
+      return true
+    }
+
+    type = type.type
+  }
+  return false
 }
 
 function extractFromSanitySchema(sanitySchema) {
@@ -108,7 +117,15 @@ function extractFromSanitySchema(sanitySchema) {
   }
 
   function _convertType(type, parent, options) {
-    const name = type.type ? type.type.name : type.jsonType
+    let name = type.type ? type.type.name : type.jsonType
+
+    if (isReference(type)) {
+      name = 'reference'
+    }
+
+    if (type.jsonType === 'array' || (type.type && type.type.jsonType === 'array')) {
+      name = 'array'
+    }
 
     switch (name) {
       case 'document':
