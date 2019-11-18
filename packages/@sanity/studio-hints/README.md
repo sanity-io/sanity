@@ -20,8 +20,6 @@ This plugin is an implementation of `part:@sanity/default-layout/sidecar`. As su
 In that file, specify which hints package the plugin will show:
 ```
 export default {
-  options: {
-    hintsPackageSlug: 'gatsby-blog'
-  }
+  hintsPackageSlug: 'gatsby-blog'
 }
 ```
