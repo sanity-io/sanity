@@ -31,10 +31,6 @@
       "description": "Controls the open/closed state of the Sidecar"
     },
     {
-      "name": "part:@sanity/default-layout/sidecar-config",
-      "description": "Sidecar config. If implemented in a Studio, sidecar will render"
-    },
-    {
       "implements": "part:@sanity/default-layout/sidecar-datastore",
       "path": "datastores/sidecar.js"
     },

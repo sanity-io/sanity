@@ -1,6 +1,6 @@
 /* eslint-disable prefer-template */
 import React from 'react'
-import sidecarConfig from 'part:@sanity/default-layout/sidecar-config?'
+import studioHintsConfig from 'part:@sanity/default-layout/studio-hints-config?'
 import {SidecarLayout} from 'part:@sanity/default-layout/sidecar?'
 import {isSidecarOpenSetting} from 'part:@sanity/default-layout/sidecar-datastore'
 import styles from './styles/Sidecar.css'
@@ -12,7 +12,7 @@ class Sidecar extends React.PureComponent {
   }
 
   componentDidMount() {
-    if (sidecarConfig) {
+    if (studioHintsConfig) {
       this.subscription = isSidecarOpenSetting.listen().subscribe(isOpen => {
         this.setState({isOpen: isOpen !== false})
       })
@@ -49,7 +49,7 @@ class Sidecar extends React.PureComponent {
   render() {
     const {isOpen, isVisible} = this.state
 
-    if (sidecarConfig) {
+    if (studioHintsConfig) {
       return (
         <div className={`${styles.root} ${isOpen ? styles.isOpen : ''}`}>
           {isVisible && <SidecarLayout />}
