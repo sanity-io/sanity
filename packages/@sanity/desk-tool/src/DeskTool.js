@@ -325,6 +325,10 @@ export default withRouterHOC(
 )
 
 function getPaneDiffIndex(nextPanes, prevPanes) {
+  if (!nextPanes.length) {
+    return [0, 0]
+  }
+
   for (let index = 0; index < nextPanes.length; index++) {
     const nextGroup = nextPanes[index]
     const prevGroup = prevPanes[index]
