@@ -40,6 +40,10 @@
   }
 }
 
+.blockContent {
+  padding: var(--medium-padding);
+}
+
 .blockHeading {
   composes: heading3 from 'part:@sanity/base/theme/typography/headings-style';
   padding: 0;

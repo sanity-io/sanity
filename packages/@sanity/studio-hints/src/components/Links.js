@@ -10,7 +10,7 @@ function Links(props) {
   }
 
   return (
-    <div className={styles.root}>
+    <div>
       {links.map(link => {
         return (
           <h3 className={styles.heading} key={link.title}>
