@@ -8,7 +8,6 @@
       "name": "part:@sanity/default-layout/studio-hints-config",
       "description": "Studio hints config. If implemented in a Studio, sidecar will render hints"
     },
-
     {
       "implements": "part:@sanity/default-layout/sidecar",
       "path": "StudioHints.js"
