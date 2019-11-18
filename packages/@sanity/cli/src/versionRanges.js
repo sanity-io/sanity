@@ -27,9 +27,6 @@ export default {
       'eslint-config-sanity': '^1.1.3',
       'eslint-plugin-react': '^6.3.0',
       rimraf: '^2.5.2'
-    },
-    prod: {
-      'in-publish': '^2.0.0'
     }
   }
 }

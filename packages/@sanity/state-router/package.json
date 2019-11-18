@@ -32,7 +32,6 @@
     "error-capture-middleware": "0.0.2",
     "express": "^4.16.1",
     "history": "^4.6.3",
-    "in-publish": "^2.0.0",
     "jest": "^24.9.0",
     "object-inspect": "^1.6.0",
     "prop-types": "^15.6.0",

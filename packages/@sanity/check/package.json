@@ -12,7 +12,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "prepublish": "in-publish && ./src/bin.js || not-in-publish",
+    "prepublishOnly": "./src/bin.js",
     "clean": "rimraf lib"
   },
   "keywords": [
@@ -29,7 +29,6 @@
     "@sanity/resolver": "0.144.0",
     "chalk": "^2.3.0",
     "fs-extra": "^6.0.1",
-    "in-publish": "^2.0.0",
     "promise-props-recursive": "^1.0.0"
   },
   "devDependencies": {

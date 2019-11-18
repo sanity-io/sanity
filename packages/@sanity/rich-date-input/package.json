@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "clean": "rimraf lib",
-    "prepublish": "in-publish && sanity-check || not-in-publish"
+    "prepublishOnly": "sanity-check"
   },
   "keywords": [
     "sanity",
@@ -28,7 +28,6 @@
   },
   "devDependencies": {
     "@sanity/check": "0.144.0",
-    "in-publish": "^2.0.0",
     "rimraf": "^2.6.2"
   },
   "repository": {

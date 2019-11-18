@@ -7,7 +7,7 @@
     "start": "cd example && sanity start",
     "coverage": "nyc --report=lcov --report=text _mocha -- test/**/*.test.js",
     "clean": "rimraf lib .nyc_output coverage",
-    "prepublish": "in-publish && sanity-check || not-in-publish"
+    "prepublishOnly": "sanity-check"
   },
   "repository": {
     "type": "git",
@@ -47,7 +47,6 @@
     "@sanity/schema": "0.144.0",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
-    "in-publish": "^2.0.0",
     "mocha": "^5.0.1",
     "nyc": "^11.0.3",
     "prop-types": "^15.6.0",
