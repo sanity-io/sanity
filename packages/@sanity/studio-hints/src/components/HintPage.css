@@ -1,26 +1,24 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.root {
-  padding-bottom: var(--medium-padding);
-}
-
 .backButton {
+  position: sticky;
+  top: 0;
+  background: var(--main-navigation-color);
+  z-index: 10;
   display: flex;
   align-items: center;
   font: inherit;
   color: inherit;
-  background: none;
   border: none;
   text-transform: uppercase;
   font-weight: 600;
-  padding: 0;
+  padding: var(--medium-padding);
   cursor: pointer;
   -webkit-font-smoothing: inherit;
   appearance: none;
   outline: none;
   border-radius: 0;
   user-select: none;
-  position: relative;
   margin: 0;
   width: 100%;
   align-self: flex-start;
@@ -42,13 +40,13 @@
   }
 }
 
+.blockContent {
+  padding: var(--medium-padding);
+}
+
 .blockHeading {
   composes: heading3 from 'part:@sanity/base/theme/typography/headings-style';
   padding: 0;
-}
-
-.blockContent {
-  padding-top: var(--medium-padding);
 }
 
 .youtubeContainer {

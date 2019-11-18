@@ -116,17 +116,15 @@ export default class HintsPackage extends React.PureComponent {
 
     const {links, hints, hintsTitle} = hintsPackage
     return (
-      <>
+      <div className={styles.root}>
         <Links links={links} />
-        <div className={styles.cardsList}>
-          <h2 className={styles.cardsTitle}>{hintsTitle}</h2>
-          {hints &&
-            hints.map(hint => {
-              return <HintCard key={hint._id} card={hint} onCardClick={this.handleCardClick} />
-            })}
-          {!hints && <p>No hints in this package</p>}
-        </div>
-      </>
+        <h2 className={styles.cardsTitle}>{hintsTitle}</h2>
+        {hints &&
+          hints.map(hint => {
+            return <HintCard key={hint._id} card={hint} onCardClick={this.handleCardClick} />
+          })}
+        {!hints && <p>No hints in this package</p>}
+      </div>
     )
   }
 }
