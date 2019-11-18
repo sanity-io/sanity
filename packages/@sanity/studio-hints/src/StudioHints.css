@@ -5,7 +5,7 @@
   height: 100%;
   width: 100%;
   background: var(--main-navigation-color);
-  color: var(--main-navigation-color--inverted);
+  color: color(var(--main-navigation-color--inverted) a(90%));
   overflow-x: auto;
   min-width: 420px;
 }

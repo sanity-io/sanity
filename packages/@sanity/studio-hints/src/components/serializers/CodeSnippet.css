@@ -1,7 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  background: color(var(--gray-base) lightness(+ 50%) a(30%));
+  background: color(var(--gray-base) lightness(+ 20%) a(20%));
   position: relative;
   box-sizing: content-box !important;
   overflow: auto;
@@ -24,6 +24,163 @@
 
   @nest & pre {
     font-family: var(--font-family-monospace);
+  }
+
+  @nest & :global(.refractor-marker) {
+    background: #13336c;
+    padding: 0 1.25rem;
+    margin: 0 -1.25rem;
+  }
+
+  @nest & pre[class*='language-']::selection,
+  & pre[class*='language-'] ::selection,
+  & code[class*='language-']::selection,
+  & code[class*='language-'] ::selection {
+    background: #7b8ba8;
+  }
+
+  @nest & :global(.token.atrule) {
+    color: #cb86f6;
+  }
+
+  @nest & :global(.token.attr-name) {
+    color: #17cc41;
+  }
+
+  @nest & :global(.token.attr-value) {
+    color: #e1c116;
+  }
+
+  @nest & :global(.token.attribute) {
+    color: #e1c116;
+  }
+
+  @nest & :global(.token.boolean) {
+    color: #cb86f6;
+  }
+
+  @nest & :global(.token.builtin) {
+    color: #ff7a00;
+  }
+
+  @nest & :global(.token.cdata) {
+    color: #e1c116;
+  }
+
+  @nest & :global(.token.char) {
+    color: #e1c116;
+  }
+
+  @nest & :global(.token.class) {
+    color: #ff7a00;
+  }
+
+  @nest & :global(.token.class-name) {
+    color: #4f91ff;
+  }
+
+  @nest & :global(.token.comment) {
+    color: #697791;
+  }
+
+  @nest & :global(.token.constant) {
+    color: #cb86f6;
+  }
+
+  @nest & :global(.token.deleted) {
+    color: #fc736a;
+  }
+
+  @nest & :global(.token.doctype) {
+    color: #697791;
+  }
+
+  @nest & :global(.token.entity) {
+    color: #fc736a;
+  }
+
+  @nest & :global(.token.function) {
+    color: #17cc41;
+  }
+
+  @nest & :global(.token.hexcode) {
+    color: #4f91ff;
+  }
+
+  @nest & :global(.token.id) {
+    color: #cb86f6;
+  }
+
+  @nest & :global(.token.important) {
+    color: #cb86f6;
+  }
+
+  @nest & :global(.token.inserted) {
+    color: #e1c116;
+  }
+
+  @nest & :global(.token.keyword) {
+    color: #cb86f6;
+  }
+
+  @nest & :global(.token.number) {
+    color: #ff7a00;
+  }
+
+  @nest & :global(.token.operator) {
+    color: #fc736a;
+  }
+
+  @nest & :global(.token.prolog) {
+    color: #697791;
+  }
+
+  @nest & :global(.token.property) {
+    color: #4f91ff;
+  }
+
+  @nest & :global(.token.pseudo-class) {
+    color: #e1c116;
+  }
+
+  @nest & :global(.token.pseudo-element) {
+    color: #e1c116;
+  }
+
+  @nest & :global(.token.punctuation) {
+    color: #9ca8bd;
+  }
+
+  @nest & :global(.token.regex) {
+    color: #4f91ff;
+  }
+
+  @nest & :global(.token.selector) {
+    color: #fc736a;
+  }
+
+  @nest & :global(.token.string) {
+    color: #e1c116;
+  }
+
+  @nest & :global(.token.symbol) {
+    color: #cb86f6;
+  }
+
+  @nest & :global(.token.tag) {
+    color: #fc736a;
+  }
+
+  @nest & :global(.token.unit) {
+    color: #ff7a00;
+  }
+
+  @nest & :global(.token.url) {
+    color: #fc736a;
+  }
+
+  @nest & :global(.token.variable) {
+    color: #fc736a;
   }
 }
 
