@@ -33,6 +33,10 @@ declare module 'part:@sanity/components/textareas/*' {
   export default SanityTextareaComponent
 }
 
+
+declare module 'config:@sanity/form-builder'
+declare module 'all:part:@sanity/form-builder/input/image/asset-source'
+
 declare module 'part:@sanity/components/utilities/portal'
 declare module 'part:@sanity/components/lists/*'
 declare module 'part:@sanity/*'

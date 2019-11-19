@@ -72,3 +72,19 @@
 .advancedEditFields {
   margin-bottom: var(--medium-padding);
 }
+
+.selectDropDownAssetSourceItem {
+  color: inherit;
+  text-decoration: none;
+  display: flex;
+}
+
+.selectDropDownAssetSourceIcon {
+  display: flex;
+  align-items: left;
+  justify-content: center;
+  align-self: center;
+  font-size: var(--font-size-large);
+  margin-right: var(--small-padding);
+}
+

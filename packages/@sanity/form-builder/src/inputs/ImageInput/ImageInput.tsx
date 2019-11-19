@@ -1,37 +1,67 @@
-/* eslint-disable complexity */
-
-import React from 'react'
-import Button from 'part:@sanity/components/buttons/default'
-import FileInputButton from 'part:@sanity/components/fileinput/button'
-import ProgressCircle from 'part:@sanity/components/progress/circle'
-import EditIcon from 'part:@sanity/base/edit-icon'
-import UploadIcon from 'part:@sanity/base/upload-icon'
-import VisibilityIcon from 'part:@sanity/base/visibility-icon'
+// Modules
 import {get, partition} from 'lodash'
-import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
-import styles from './styles/ImageInput.css'
-import Dialog from 'part:@sanity/components/dialogs/fullscreen'
-import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
-import {Marker, Reference, Type} from '../../typedefs'
-import {ResolvedUploader, Uploader, UploaderResolver} from '../../sanity/uploads/typedefs'
-import WithMaterializedReference from '../../utils/WithMaterializedReference'
-import ImageToolInput from '../ImageToolInput'
+import {Observable} from 'rxjs'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
-import SelectAsset from './SelectAsset'
+import ImageIcon from 'react-icons/lib/md/image'
+import ImageTool from '@sanity/imagetool'
+import React from 'react'
+
+// Parts
+import assetSources from 'all:part:@sanity/form-builder/input/image/asset-source'
+import Button from 'part:@sanity/components/buttons/default'
+import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
+import Dialog from 'part:@sanity/components/dialogs/fullscreen'
+import DropDownButton from 'part:@sanity/components/buttons/dropdown'
+import EditIcon from 'part:@sanity/base/edit-icon'
+import Fieldset from 'part:@sanity/components/fieldsets/default'
+import FileInputButton from 'part:@sanity/components/fileinput/button'
+import formBuilderConfig from 'config:@sanity/form-builder'
+import ProgressCircle from 'part:@sanity/components/progress/circle'
+import UploadIcon from 'part:@sanity/base/upload-icon'
+import userDefinedAssetSources from 'part:@sanity/form-builder/input/image/asset-sources?'
+import VisibilityIcon from 'part:@sanity/base/visibility-icon'
+
+// Package files
 import {FormBuilderInput} from '../../FormBuilderInput'
+import {Marker, Reference, Type} from '../../typedefs'
+import {Path} from '../../typedefs/path'
+import {ResolvedUploader, Uploader, UploaderResolver} from '../../sanity/uploads/typedefs'
+import {urlToFile, base64ToFile} from './utils/image'
+import ImageToolInput from '../ImageToolInput'
+import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
+import Snackbar from 'part:@sanity/components/snackbar/default'
+import styles from './styles/ImageInput.css'
 import UploadPlaceholder from '../common/UploadPlaceholder'
 import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
-import Snackbar from 'part:@sanity/components/snackbar/default'
-import ImageTool from '@sanity/imagetool'
-import {Observable} from 'rxjs'
-import {Path} from '../../typedefs/path'
+import WithMaterializedReference from '../../utils/WithMaterializedReference'
+
+const SUPPORT_DIRECT_UPLOADS = get(formBuilderConfig, 'images.directUploads')
 
 type FieldT = {
   name: string
   type: Type
 }
 
-interface Value {
+export type AssetDocumentProps = {
+  originalFilename?: string
+  label?: string
+  title?: string
+  description?: string
+  creditLine?: string
+  source?: {
+    id: string
+    name: string
+    url?: string
+  }
+}
+
+export type AssetFromSource = {
+  kind: 'assetDocumentId' | 'file' | 'base64' | 'url'
+  value: string | File
+  assetDocumentProps?: AssetDocumentProps
+}
+
+export interface Value {
   _upload?: any
   asset?: Reference
   hotspot?: any
@@ -63,9 +93,11 @@ type ImageInputState = {
   isUploading: boolean
   uploadError: Error | null
   isAdvancedEditOpen: boolean
-  isSelectAssetOpen: boolean
+  selectedAssetSource?: any
   hasFocus: boolean
 }
+const globalAssetSources = userDefinedAssetSources ? userDefinedAssetSources : assetSources
+
 export default class ImageInput extends React.PureComponent<Props, ImageInputState> {
   _focusArea: any
   uploadSubscription: any
@@ -73,11 +105,41 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     isUploading: false,
     uploadError: null,
     isAdvancedEditOpen: false,
-    isSelectAssetOpen: false,
+    selectedAssetSource: null,
     hasFocus: false
   }
-  handleRemoveButtonClick = (event: React.SyntheticEvent<any>) => {
-    this.props.onChange(PatchEvent.from(unset(['asset'])))
+  assetSources = globalAssetSources
+
+  constructor(props: Props) {
+    super(props)
+    // Allow overriding sources set directly on type.options
+    const sourcesFromType = get(props.type, 'options.sources')
+    if (Array.isArray(sourcesFromType) && sourcesFromType.length > 0) {
+      this.assetSources = sourcesFromType
+    } else if (sourcesFromType) {
+      this.assetSources = null
+    }
+  }
+
+  focus() {
+    if (this._focusArea) {
+      this._focusArea.focus()
+    }
+  }
+
+  setFocusArea = (el: any | null) => {
+    this._focusArea = el
+  }
+
+  isImageToolEnabled() {
+    return get(this.props.type, 'options.hotspot') === true
+  }
+
+  getConstrainedImageSrc = (assetDocument: Record<string, any>): string => {
+    const materializedSize = ImageTool.maxWidth || 1000
+    const maxSize = materializedSize * getDevicePixelRatio()
+    const constrainedSrc = `${assetDocument.url}?w=${maxSize}&h=${maxSize}&fit=max`
+    return constrainedSrc
   }
 
   clearUploadStatus() {
@@ -91,11 +153,10 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     }
   }
 
-  handleCancelUpload = () => {
-    this.cancelUpload()
-  }
-  handleSelectFile = (files: FileList) => {
-    this.uploadFirstAccepted(files)
+  getUploadOptions = (file: File): Array<ResolvedUploader> => {
+    const {type, resolveUploader} = this.props
+    const uploader = resolveUploader && resolveUploader(type, file)
+    return uploader ? [{type: type, uploader}] : []
   }
 
   uploadFirstAccepted(fileList: FileList) {
@@ -117,11 +178,21 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     }
   }
 
-  uploadWith(uploader: Uploader, file: File) {
+  uploadWith(
+    uploader: Uploader,
+    file: File,
+    assetDocumentProps: AssetDocumentProps = {}
+  ) {
     const {type, onChange} = this.props
+    const {label, title, description, creditLine, source} = assetDocumentProps
     const options = {
       metadata: get(type, 'options.metadata'),
-      storeOriginalFilename: get(type, 'options.storeOriginalFilename')
+      storeOriginalFilename: get(type, 'options.storeOriginalFilename'),
+      label,
+      title,
+      description,
+      creditLine,
+      source
     }
     this.cancelUpload()
     this.setState({isUploading: true})
@@ -144,12 +215,141 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     })
   }
 
-  getConstrainedImageSrc = (assetDocument: Record<string, any>): string => {
-    const materializedSize = ImageTool.maxWidth || 1000
-    const maxSize = materializedSize * getDevicePixelRatio()
-    const constrainedSrc = `${assetDocument.url}?w=${maxSize}&h=${maxSize}&fit=max`
-    return constrainedSrc
+  handleRemoveButtonClick = (event: React.SyntheticEvent<any>) => {
+    this.props.onChange(PatchEvent.from(unset(['asset'])))
   }
+
+  handleFieldChange = (event: PatchEvent, field: FieldT) => {
+    const {onChange, type} = this.props
+    onChange(
+      event.prefixAll(field.name).prepend(
+        setIfMissing({
+          _type: type.name
+        })
+      )
+    )
+  }
+  handleStartAdvancedEdit = () => {
+    this.setState({isAdvancedEditOpen: true})
+  }
+  handleStopAdvancedEdit = () => {
+    this.setState({isAdvancedEditOpen: false})
+  }
+  handleSelectAssetFromSource = (assetFromSource: AssetFromSource) => {
+    const {onChange, type, resolveUploader} = this.props
+    if (!assetFromSource) {
+      throw new Error('No asset given')
+    }
+    if (!Array.isArray(assetFromSource) || assetFromSource.length === 0) {
+      throw new Error('Returned value must be an array with at least one item (asset)')
+    }
+    const firstAsset = assetFromSource[0]
+    const originalFilename = get(firstAsset, 'assetDocumentProps.originalFilename')
+    const label = get(firstAsset, 'assetDocumentProps.label')
+    const title = get(firstAsset, 'assetDocumentProps.title')
+    const description = get(firstAsset, 'assetDocumentProps.description')
+    const creditLine = get(firstAsset, 'assetDocumentProps.creditLine')
+    const source = get(firstAsset, 'assetDocumentProps.source')
+    switch (firstAsset.kind) {
+      case 'assetDocumentId':
+        onChange(
+          PatchEvent.from([
+            setIfMissing({
+              _type: type.name
+            }),
+            unset(['hotspot']),
+            unset(['crop']),
+            set(
+              {
+                _type: 'reference',
+                _ref: firstAsset.value
+              },
+              ['asset']
+            )
+          ])
+        )
+        break
+      case 'file':
+        const uploader = resolveUploader(type, firstAsset.value)
+        this.uploadWith(uploader, firstAsset.value, {label, title, description, creditLine, source})
+        break
+      case 'base64':
+        base64ToFile(firstAsset.value, originalFilename).then(file => {
+          const uploader = resolveUploader(type, file)
+          this.uploadWith(uploader, file, {label, title, description, creditLine, source})
+        })
+        break
+      case 'url':
+        urlToFile(firstAsset.value, originalFilename).then(file => {
+          const uploader = resolveUploader(type, file)
+          this.uploadWith(uploader, file, {label, title, description, creditLine, source})
+        })
+        break
+      default: {
+        throw new Error('Invalid value returned from asset source plugin')
+      }
+    }
+    this.setState({selectedAssetSource: null})
+  }
+
+  handleFocus = (path: Path) => {
+    this.setState({
+      hasFocus: true
+    })
+    this.props.onFocus(path)
+  }
+
+  handleBlur = event => {
+    this.props.onBlur()
+    this.setState({
+      hasFocus: false
+    })
+  }
+
+  handleCancelUpload = () => {
+    this.cancelUpload()
+  }
+
+  handleSelectFile = (files: FileList) => {
+    this.uploadFirstAccepted(files)
+  }
+
+  handleUpload = ({file, uploader}) => {
+    this.uploadWith(uploader, file)
+  }
+
+  handleSelectImageFromAssetSource = source => {
+    this.setState({selectedAssetSource: source})
+  }
+
+  handleAssetSourceClosed = () => {
+    this.setState({selectedAssetSource: null})
+  }
+
+  renderAdvancedEdit(fields: Array<FieldT>) {
+    const {value, level, type, onChange, readOnly, materialize} = this.props
+    return (
+      <Dialog title="Edit details" onClose={this.handleStopAdvancedEdit} isOpen>
+        {this.isImageToolEnabled() && value && value.asset && (
+          <WithMaterializedReference materialize={materialize} reference={value.asset}>
+            {imageAsset => (
+              <ImageToolInput
+                type={type}
+                level={level}
+                readOnly={readOnly}
+                imageUrl={this.getConstrainedImageSrc(imageAsset)}
+                value={value}
+                onChange={onChange}
+              />
+            )}
+          </WithMaterializedReference>
+        )}
+        <div className={styles.advancedEditFields}>{this.renderFields(fields)}</div>
+        <Button onClick={this.handleStopAdvancedEdit}>Close</Button>
+      </Dialog>
+    )
+  }
+
   renderMaterializedAsset = (assetDocument: Record<string, any>) => {
     const {value = {}} = this.props
     const constrainedSrc = this.getConstrainedImageSrc(assetDocument)
@@ -162,6 +362,30 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         hotspot={value.hotspot}
         crop={value.crop}
       />
+    )
+  }
+
+  renderFields(fields: Array<FieldT>) {
+    return fields.map(field => this.renderField(field))
+  }
+
+  renderField(field: FieldT) {
+    const {value, level, focusPath, onFocus, readOnly, onBlur} = this.props
+    const fieldValue = value && value[field.name]
+    return (
+      <div className={styles.field} key={field.name}>
+        <FormBuilderInput
+          value={fieldValue}
+          type={field.type}
+          onChange={ev => this.handleFieldChange(ev, field)}
+          path={[field.name]}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          readOnly={readOnly || field.type.readOnly}
+          focusPath={focusPath}
+          level={level}
+        />
+      </div>
     )
   }
 
@@ -191,140 +415,85 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     )
   }
 
-  handleFieldChange = (event: PatchEvent, field: FieldT) => {
-    const {onChange, type} = this.props
-    onChange(
-      event.prefixAll(field.name).prepend(
-        setIfMissing({
-          _type: type.name
-        })
-      )
-    )
-  }
-  handleStartAdvancedEdit = () => {
-    this.setState({isAdvancedEditOpen: true})
-  }
-  handleStopAdvancedEdit = () => {
-    this.setState({isAdvancedEditOpen: false})
-  }
-  handleOpenSelectAsset = () => {
-    this.setState({
-      isSelectAssetOpen: true
-    })
-  }
-  handleCloseSelectAsset = () => {
-    this.setState({
-      isSelectAssetOpen: false
-    })
-  }
-  handleSelectAsset = (asset: Record<string, any>) => {
-    const {onChange, type} = this.props
-    onChange(
-      PatchEvent.from([
-        setIfMissing({
-          _type: type.name
-        }),
-        unset(['hotspot']),
-        unset(['crop']),
-        set(
-          {
-            _type: 'reference',
-            _ref: asset._id
-          },
-          ['asset']
-        )
-      ])
-    )
-    this.setState({
-      isSelectAssetOpen: false
-    })
-  }
-
-  isImageToolEnabled() {
-    return get(this.props.type, 'options.hotspot') === true
-  }
-
-  renderAdvancedEdit(fields: Array<FieldT>) {
-    const {value, level, type, onChange, readOnly, materialize} = this.props
+  renderDropDownMenuItem = item => {
+    if (!item) {
+      return null
+    }
+    const Icon = item.icon || ImageIcon
     return (
-      <Dialog title="Edit details" onClose={this.handleStopAdvancedEdit} isOpen>
-        {this.isImageToolEnabled() && value && value.asset && (
-          <WithMaterializedReference materialize={materialize} reference={value.asset}>
-            {imageAsset => (
-              <ImageToolInput
-                type={type}
-                level={level}
-                readOnly={readOnly}
-                imageUrl={this.getConstrainedImageSrc(imageAsset)}
-                value={value}
-                onChange={onChange}
-              />
-            )}
-          </WithMaterializedReference>
-        )}
-        <div className={styles.advancedEditFields}>{this.renderFields(fields)}</div>
-        <Button onClick={this.handleStopAdvancedEdit}>Close</Button>
-      </Dialog>
-    )
-  }
-
-  renderFields(fields: Array<FieldT>) {
-    return fields.map(field => this.renderField(field))
-  }
-
-  renderField(field: FieldT) {
-    const {value, level, focusPath, onFocus, readOnly, onBlur} = this.props
-    const fieldValue = value && value[field.name]
-    return (
-      <div className={styles.field} key={field.name}>
-        <FormBuilderInput
-          value={fieldValue}
-          type={field.type}
-          onChange={ev => this.handleFieldChange(ev, field)}
-          path={[field.name]}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          readOnly={readOnly || field.type.readOnly}
-          focusPath={focusPath}
-          level={level}
-        />
+      <div className={styles.selectDropDownAssetSourceItem}>
+        <div className={styles.selectDropDownAssetSourceIcon}>
+          <Icon />
+        </div>
+        <div>{item.title}</div>
       </div>
     )
   }
 
-  focus() {
-    if (this._focusArea) {
-      this._focusArea.focus()
+  renderSelectImageButton() {
+    // If there are multiple asset sources render a dropdown
+    if (this.assetSources.length > 1) {
+      return (
+        <DropDownButton
+          items={this.assetSources}
+          renderItem={this.renderDropDownMenuItem}
+          onAction={this.handleSelectImageFromAssetSource}
+          kind="default"
+          inverted
+          showArrow
+          ripple={false}
+        >
+          Select from
+        </DropDownButton>
+      )
     }
+    // Single asset source (just a normal button)
+    return (
+      <Button
+        onClick={this.handleSelectImageFromAssetSource.bind(this, this.assetSources[0])}
+        inverted
+      >
+        Select
+      </Button>
+    )
   }
 
-  handleFocus = (path: Path) => {
-    this.setState({
-      hasFocus: true
-    })
-    this.props.onFocus(path)
-  }
-  handleBlur = event => {
-    this.props.onBlur()
-    this.setState({
-      hasFocus: false
-    })
-  }
-  setFocusArea = (el: any | null) => {
-    this._focusArea = el
-  }
-  getUploadOptions = (file: File): Array<ResolvedUploader> => {
-    const {type, resolveUploader} = this.props
-    const uploader = resolveUploader && resolveUploader(type, file)
-    return uploader ? [{type: type, uploader}] : []
-  }
-  handleUpload = ({file, uploader}) => {
-    this.uploadWith(uploader, file)
+  renderAssetSource() {
+    const {selectedAssetSource} = this.state
+    const {value, materialize} = this.props
+    if (!selectedAssetSource) {
+      return null
+    }
+    const Component = selectedAssetSource.component
+    if (value && value.asset) {
+      return (
+        <WithMaterializedReference materialize={materialize} reference={value.asset}>
+          {imageAsset => {
+            return (
+              <Component
+                selectedAssets={[imageAsset]}
+                selectionType="single"
+                onClose={this.handleAssetSourceClosed}
+                onSelect={this.handleSelectAssetFromSource}
+              />
+            )
+          }}
+        </WithMaterializedReference>
+      )
+    }
+    return (
+      <Component
+        selectedAssets={[]}
+        selectionType="single"
+        onClose={this.handleAssetSourceClosed}
+        onSelect={this.handleSelectAssetFromSource}
+      />
+    )
   }
 
   render() {
     const {type, value, level, materialize, markers, readOnly} = this.props
-    const {isAdvancedEditOpen, isSelectAssetOpen, uploadError, hasFocus} = this.state
+    const {isAdvancedEditOpen, selectedAssetSource, uploadError, hasFocus} = this.state
     const [highlightedFields, otherFields] = partition(
       type.fields.filter(field => !HIDDEN_FIELDS.includes(field.name)),
       'type.options.isHighlighted'
@@ -333,17 +502,20 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const hasAsset = value && value.asset
     const showAdvancedEditButton =
       value && (otherFields.length > 0 || (hasAsset && this.isImageToolEnabled()))
+    const FieldSetComponent = SUPPORT_DIRECT_UPLOADS ? UploadTargetFieldset : Fieldset
+    const uploadProps = SUPPORT_DIRECT_UPLOADS
+      ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload}
+      : {}
     return (
-      <UploadTargetFieldset
+      <FieldSetComponent
         markers={markers}
         legend={type.title}
         description={type.description}
         level={level}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
-        onUpload={this.handleUpload}
-        getUploadOptions={this.getUploadOptions}
         ref={this.setFocusArea}
+        {...uploadProps}
       >
         {uploadError && (
           <Snackbar
@@ -367,13 +539,13 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
             ) : readOnly ? (
               <span>Field is read only</span>
             ) : (
-              <UploadPlaceholder hasFocus={hasFocus} />
+              SUPPORT_DIRECT_UPLOADS && <UploadPlaceholder hasFocus={hasFocus} />
             )}
           </div>
         </div>
         <div className={styles.functions}>
           <ButtonGrid>
-            {!readOnly && (
+            {!readOnly && SUPPORT_DIRECT_UPLOADS && (
               <FileInputButton
                 icon={UploadIcon}
                 inverted
@@ -383,11 +555,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
                 Upload
               </FileInputButton>
             )}
-            {!readOnly && (
-              <Button onClick={this.handleOpenSelectAsset} inverted>
-                Browse
-              </Button>
-            )}
+            {!readOnly && this.renderSelectImageButton()}
             {showAdvancedEditButton && (
               <Button
                 icon={readOnly ? VisibilityIcon : EditIcon}
@@ -409,12 +577,8 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           <div className={styles.fieldsWrapper}>{this.renderFields(highlightedFields)}</div>
         )}
         {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
-        {isSelectAssetOpen && (
-          <Dialog title="Select image" onClose={this.handleCloseSelectAsset} isOpen>
-            <SelectAsset onSelect={this.handleSelectAsset} />
-          </Dialog>
-        )}
-      </UploadTargetFieldset>
+        {selectedAssetSource && this.renderAssetSource()}
+      </FieldSetComponent>
     )
   }
 }

@@ -1,7 +1,7 @@
 import React from 'react'
 import ArrayFunctions from 'part:@sanity/form-builder/input/array/functions'
 import {map} from 'rxjs/operators'
-import {isPlainObject} from 'lodash'
+import {isPlainObject, get} from 'lodash'
 import {ResolvedUploader, Uploader} from '../../sanity/uploads/typedefs'
 import {Marker, Type} from '../../typedefs'
 import {Path} from '../../typedefs/path'
@@ -18,6 +18,9 @@ import randomKey from './randomKey'
 import Button from 'part:@sanity/components/buttons/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import Details from '../common/Details'
+import formBuilderConfig from 'config:@sanity/form-builder'
+
+const SUPPORT_DIRECT_UPLOADS = get(formBuilderConfig, 'images.directUploads')
 
 function createProtoValue(type: Type): ItemValue {
   if (type.jsonType !== 'object') {
@@ -317,19 +320,20 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
         </Fieldset>
       )
     }
+    const FieldSetComponent = SUPPORT_DIRECT_UPLOADS ? UploadTargetFieldset : Fieldset
+    const uploadProps = SUPPORT_DIRECT_UPLOADS ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload} : {}
     return (
-      <UploadTargetFieldset
+      <FieldSetComponent
         markers={markers}
         tabIndex={0}
         legend={type.title}
         description={type.description}
         level={level}
         className={styles.root}
-        onUpload={this.handleUpload}
         onFocus={this.handleFocus}
         type={type}
-        getUploadOptions={this.getUploadOptions}
         ref={this.setElement}
+        {...uploadProps}
       >
         {value && value.length > 0 && this.renderList()}
         <ArrayFunctions
@@ -342,7 +346,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
           onCreateValue={createProtoValue}
           onChange={onChange}
         />
-      </UploadTargetFieldset>
+      </FieldSetComponent>
     )
   }
 }
