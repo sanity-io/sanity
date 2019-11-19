@@ -31,6 +31,9 @@ export const PaneRouterContext = React.createContext({
   // Params of the current pane
   params: {},
 
+  // Whether or not the pane has any siblings (within the same group)
+  hasGroupSiblings: false,
+
   // Current router state for the "panes" property
   routerPanesState: [],
 
@@ -112,10 +115,16 @@ export function getPaneRouterContextFactory(instance) {
       }
     }
 
+    const getCurrentGroup = () => {
+      const {router} = instance.props
+      const panes = router.state.panes || []
+      return (panes[groupIndex] || []).slice()
+    }
+
     const modifyCurrentGroup = modifier => {
       const {router} = instance.props
       const newPanes = (router.state.panes || []).slice()
-      const group = newPanes[groupIndex].slice()
+      const group = getCurrentGroup()
       newPanes.splice(groupIndex, 1, modifier(group, group[siblingIndex]))
 
       const newRouterState = {...router.state, panes: newPanes}
@@ -186,6 +195,9 @@ export function getPaneRouterContextFactory(instance) {
 
       // Params of the current pane
       params: paneParams,
+
+      // Whether or not the pane has any siblings (within the same group)
+      hasGroupSiblings: getCurrentGroup().length > 1,
 
       // Current router state for the "panes" property
       routerPanesState: instance.props.router.state.panes || [],

@@ -1517,6 +1517,7 @@ export default withInitialValue(
             footer={this.historyIsOpen() ? this.renderHistoryFooter() : this.renderFooter()}
             renderActions={this.renderActions}
             isClosable={isClosable}
+            hasSiblings={this.context.hasGroupSiblings}
           >
             {this.renderHistorySpinner()}
             {this.renderCurrentView()}
