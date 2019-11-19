@@ -10,8 +10,17 @@ export type UploadEvent = {
 export type ResolvedUploader = {uploader: Uploader; type: Type}
 
 export type UploadOptions = {
-  metadata?: Array<string> | null
-  storeOriginalFilename?: boolean | null
+  metadata?: Array<string>
+  storeOriginalFilename?: boolean
+  label?: string
+  title?: string
+  description?: string
+  creditLine?: string
+  source?: {
+    id: string
+    name: string
+    url?: string
+  }
 }
 
 export type UploaderDef = {

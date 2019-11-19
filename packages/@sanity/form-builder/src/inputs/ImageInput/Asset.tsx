@@ -27,6 +27,7 @@ type AssetProps = {
     referenceCount?: number
     url?: string
   }
+  isSelected: boolean
   onClick?: (...args: any[]) => any
   onKeyPress?: (...args: any[]) => any
   onDeleteFinished: (...args: any[]) => any
@@ -97,7 +98,7 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
     return [DIALOG_CLOSE_ACTION]
   }
   render() {
-    const {asset, onClick, onKeyPress} = this.props
+    const {asset, onClick, onKeyPress, isSelected} = this.props
     const {isDeleting, dialogType} = this.state
     const size = 75
     const dpi =
@@ -122,7 +123,7 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
     ]
     return (
       <a
-        className={styles.item}
+        className={`${styles.item}${isSelected ? ` ${styles.selected}` : ''}`}
         tabIndex={0}
         data-id={asset._id}
         onKeyPress={onKeyPress}
@@ -148,7 +149,7 @@ export default class Asset extends React.PureComponent<AssetProps, State> {
           <DropDownButton
             placement="bottom-end"
             showArrow={false}
-            items={menuItems}
+            items={isSelected ? menuItems.filter(item => item.name !== 'delete') : menuItems}
             renderItem={this.renderMenuItem}
             onAction={this.handleMenuAction}
           >

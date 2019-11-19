@@ -25,6 +25,10 @@
   overflow: hidden;
   cursor: default;
   flex-wrap: nowrap;
+
+  @nest &.selected {
+    border: 4px solid var(--selected-item-color);
+  }
 }
 
 .padder {

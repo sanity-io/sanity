@@ -1,15 +1,22 @@
 import React from 'react'
+import ImageIcon from 'react-icons/lib/md/image'
 import client from 'part:@sanity/base/client'
 import Button from 'part:@sanity/components/buttons/default'
+import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import styles from './styles/SelectAsset.css'
 import AssetWidget from './Asset'
+import {AssetFromSource} from './ImageInput'
+
 const PER_PAGE = 200
 type Asset = {
   _id: string
   url: string
 }
 type Props = {
-  onSelect: (arg0: Asset) => void
+  onSelect: (arg0: AssetFromSource[]) => void
+  onClose: () => void
+  selectedAssets: Asset[]
+  selectionType: boolean
 }
 function createQuery(start = 0, end = PER_PAGE) {
   return `
@@ -26,7 +33,7 @@ type State = {
   isLoading: boolean
 }
 
-export default class SelectAsset extends React.Component<Props, State> {
+class DefaultSource extends React.Component<Props, State> {
   state = {
     assets: [],
     isLastPage: false,
@@ -56,7 +63,7 @@ export default class SelectAsset extends React.Component<Props, State> {
   select(id) {
     const selected = this.state.assets.find(doc => doc._id === id)
     if (selected) {
-      this.props.onSelect(selected)
+      this.props.onSelect([{kind: 'assetDocumentId', value: id}])
     }
   }
   handleItemClick = (event: React.SyntheticEvent<any>) => {
@@ -69,35 +76,51 @@ export default class SelectAsset extends React.Component<Props, State> {
       this.select(event.currentTarget.getAttribute('data-id'))
     }
   }
+  handleClose = () => {
+    if (this.props.onClose) {
+      this.props.onClose()
+    }
+  }
   handleFetchNextPage = () => {
     this.fetchPage(++this.pageNo)
   }
   render() {
+    const {selectedAssets} = this.props
     const {assets, isLastPage, isLoading} = this.state
     return (
-      <div className={styles.root}>
-        <div className={styles.imageList}>
-          {assets.map(asset => (
-            <AssetWidget
-              key={asset._id}
-              asset={asset}
-              onClick={this.handleItemClick}
-              onKeyPress={this.handleItemKeyPress}
-              onDeleteFinished={this.handleDeleteFinished}
-            />
-          ))}
-        </div>
-        {!isLoading && assets.length === 0 && (
-          <div className={styles.noAssets}>No images found</div>
-        )}
-        <div className={styles.loadMore}>
-          {!isLastPage && (
-            <Button onClick={this.handleFetchNextPage} loading={isLoading}>
-              Load more
-            </Button>
+      <Dialog title="Select image" onClose={this.handleClose} isOpen>
+        <div className={styles.root}>
+          <div className={styles.imageList}>
+            {assets.map(asset => (
+              <AssetWidget
+                key={asset._id}
+                asset={asset}
+                isSelected={selectedAssets.some(selected => selected._id === asset._id)}
+                onClick={this.handleItemClick}
+                onKeyPress={this.handleItemKeyPress}
+                onDeleteFinished={this.handleDeleteFinished}
+              />
+            ))}
+          </div>
+          {!isLoading && assets.length === 0 && (
+            <div className={styles.noAssets}>No images found</div>
           )}
+          <div className={styles.loadMore}>
+            {!isLastPage && (
+              <Button onClick={this.handleFetchNextPage} loading={isLoading}>
+                Load more
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
+      </Dialog>
     )
   }
+}
+
+export default {
+  name: 'sanity-default',
+  title: 'Uploaded images',
+  component: DefaultSource,
+  icon: ImageIcon
 }
