@@ -43,7 +43,7 @@
     "rimraf": "^2.6.2",
     "sse-channel": "^2.0.6",
     "tape": "^4.8.0",
-    "terser": "^3.10.11",
+    "terser": "^4.4.0",
     "uglifyify": "^5.0.1"
   },
   "repository": {
