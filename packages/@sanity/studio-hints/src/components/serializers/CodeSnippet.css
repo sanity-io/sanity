@@ -182,6 +182,10 @@
   @nest & :global(.token.variable) {
     color: #fc736a;
   }
+
+  @nest & :global(.language-bash), & :global(.language-bash .token) {
+    color: inherit;
+  }
 }
 
 .copyPasteButton {
