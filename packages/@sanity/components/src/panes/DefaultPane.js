@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import {negate} from 'lodash'
-import shallowEquals from 'shallow-equals'
 import classNames from 'classnames'
 import Menu from 'part:@sanity/components/menus/default'
 import IconMoreVert from 'part:@sanity/base/more-vert-icon'
@@ -29,7 +28,6 @@ const noop = () => {
 const isActionButton = item => item.showAsAction
 const isMenuButton = negate(isActionButton)
 
-// eslint-disable-next-line
 class Pane extends React.PureComponent {
   static propTypes = {
     hasTabs: PropTypes.bool,
@@ -42,6 +40,7 @@ class Pane extends React.PureComponent {
     children: PropTypes.node,
     isSelected: PropTypes.bool,
     isScrollable: PropTypes.bool,
+    hasSiblings: PropTypes.bool,
     onAction: PropTypes.func,
     renderActions: PropTypes.func,
     menuItems: PropTypes.arrayOf(
@@ -71,10 +70,13 @@ class Pane extends React.PureComponent {
   }
 
   static defaultProps = {
+    index: 0,
+    footer: undefined,
     hasTabs: false,
     tabIdPrefix: undefined,
     viewId: undefined,
     title: 'Untitled',
+    hasSiblings: false,
     isCollapsed: false,
     isSelected: false,
     isScrollable: true,
@@ -89,17 +91,10 @@ class Pane extends React.PureComponent {
   }
 
   state = {
-    menuIsOpen: false,
-    templateSelectionIsOpen: false
+    menuIsOpen: false
   }
 
-  actionHandlers = {
-    toggleTemplateSelectionMenu: () => {
-      this.setState(prevState => ({
-        templateSelectionIsOpen: !prevState.templateSelectionIsOpen
-      }))
-    }
-  }
+  actionHandlers = {}
 
   scrollFrameId = null
 
@@ -131,11 +126,6 @@ class Pane extends React.PureComponent {
   // Triggered by pane menu button
   handleMenuToggle = () => {
     this.setState(prev => ({menuIsOpen: !prev.menuIsOpen}))
-  }
-
-  // Triggered by clicking "outside" of the menu when open, or after triggering action
-  handleCloseTemplateSelection = () => {
-    this.setState({templateSelectionIsOpen: false})
   }
 
   handleRootClick = event => {
