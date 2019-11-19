@@ -370,7 +370,9 @@ class Pane extends React.PureComponent {
           <div className={styles.main}>{mainChildren}</div>
         )}
 
-        {footer && <div className={styles.footer}>{footer}</div>}
+        {footer && (
+          <div className={hasTabs ? styles.hoverFooter : styles.stickyFooter}>{footer}</div>
+        )}
       </div>
     )
   }

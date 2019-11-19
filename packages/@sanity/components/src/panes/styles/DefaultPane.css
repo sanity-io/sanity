@@ -416,7 +416,7 @@
   margin-left: var(--large-padding);
 }
 
-.footer {
+.stickyFooter {
   box-sizing: border-box;
   background-color: var(--component-bg);
   color: var(--text-color-secondary);
@@ -443,14 +443,6 @@
     position: relative;
   }
 
-  @media (hover: hover) {
-    display: none;
-
-    @nest .root:hover & {
-      display: block;
-    }
-  }
-
   @nest &:before {
     content: '';
     display: block;
@@ -463,5 +455,17 @@
 
   @nest .isCollapsed & {
     display: none;
+  }
+}
+
+.hoverFooter {
+  composes: stickyFooter;
+
+  @media (hover: hover) {
+    display: none;
+
+    @nest .root:hover & {
+      display: block;
+    }
   }
 }
