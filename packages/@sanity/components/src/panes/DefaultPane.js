@@ -307,6 +307,7 @@ class Pane extends React.PureComponent {
       isSelected,
       isCollapsed,
       isScrollable,
+      hasSiblings,
       menuItems,
       styles,
       renderActions,
@@ -361,7 +362,9 @@ class Pane extends React.PureComponent {
         )}
 
         {footer && (
-          <div className={hasTabs ? styles.hoverFooter : styles.stickyFooter}>{footer}</div>
+          <div className={hasTabs && hasSiblings ? styles.hoverFooter : styles.stickyFooter}>
+            {footer}
+          </div>
         )}
       </div>
     )
