@@ -122,7 +122,7 @@ export default class DocumentsListPane extends React.PureComponent {
     }
   }
 
-  state = {scrollTop: 0, sortOrder: null, layout: null, templateSelectionIsOpen: false}
+  state = {scrollTop: 0, sortOrder: null, layout: null}
 
   constructor(props) {
     super()
@@ -190,17 +190,6 @@ export default class DocumentsListPane extends React.PureComponent {
 
     handler(item.params, this)
     return true
-  }
-
-  handleSelectInitialValueTemplate = () => {
-    this.setState(prevState => ({
-      templateSelectionIsOpen: !prevState.templateSelectionIsOpen
-    }))
-  }
-
-  // Triggered by clicking "outside" of the menu when open, or after triggering action
-  handleCloseTemplateSelection = () => {
-    this.setState({templateSelectionIsOpen: false})
   }
 
   handleScroll = scrollTop => {
