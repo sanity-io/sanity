@@ -14,6 +14,7 @@ import isNarrowScreen from './utils/isNarrowScreen'
 import windowWidth$ from './utils/windowWidth'
 import defaultStructure from './defaultStructure'
 import {LOADING_PANE} from './index'
+import {getTemplateById} from '@sanity/base/initial-value-templates'
 
 const EMPTY_PANE_KEYS = []
 
@@ -96,6 +97,10 @@ export default withRouterHOC(
               })
             )
           ),
+          params: PropTypes.shape({
+            template: PropTypes.string
+          }),
+          editDocumentId: PropTypes.string,
           legacyEditDocumentId: PropTypes.string,
           type: PropTypes.string,
           action: PropTypes.string
@@ -242,9 +247,28 @@ export default withRouterHOC(
 
     maybeHandleOldUrl() {
       const {navigate} = this.props.router
-      const {panes, action, legacyEditDocumentId} = this.props.router.state
+      const {
+        action,
+        legacyEditDocumentId,
+        type: schemaType,
+        editDocumentId,
+        params = {}
+      } = this.props.router.state
+
+      const {template: templateName, ...payload} = params
+      const template = getTemplateById(templateName)
+      const type = (template && template.schemaType) || schemaType
+      const parameters = {type, template: templateName}
+
       if (action === 'edit' && legacyEditDocumentId) {
-        navigate({panes: panes.concat([{id: legacyEditDocumentId}])}, {replace: true})
+        navigate({panes: [[{id: `__edit__${legacyEditDocumentId}`}]]}, {replace: true})
+      }
+
+      if (type && editDocumentId) {
+        navigate(
+          {panes: [[{id: `__edit__${editDocumentId}`, params: parameters, payload}]]},
+          {replace: true}
+        )
       }
     }
 
