@@ -12,6 +12,7 @@ export const HELP_IDS = {
   OBJECT_FIELDS_INVALID: 'schema-object-fields-invalid',
   OBJECT_FIELD_NOT_UNIQUE: 'schema-object-fields-invalid',
   OBJECT_FIELD_NAME_INVALID: 'schema-object-fields-invalid',
+  ARRAY_OF_ARRAY: 'schema-array-of-array',
   ARRAY_OF_INVALID: 'schema-array-of-invalid',
   ARRAY_OF_NOT_UNIQUE: 'schema-array-of-invalid',
   REFERENCE_TO_INVALID: 'schema-reference-to-invalid',

@@ -8,6 +8,15 @@ export default (typeDef, visitorContext) => {
 
   if (ofIsArray) {
     const invalid = typeDef.of.reduce((errs, def, idx) => {
+      if (def.type === 'array') {
+        return errs.concat(
+          error(
+            `Found array member declaration of type "array" - multidimensional arrays are not currently supported by Sanity`,
+            HELP_IDS.ARRAY_OF_ARRAY
+          )
+        )
+      }
+
       if (def) {
         return errs
       }
