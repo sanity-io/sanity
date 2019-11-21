@@ -1,5 +1,8 @@
 /* eslint-disable no-process-env */
+import fs from 'fs'
+import path from 'path'
 import {mergeWith} from 'lodash'
+import dotenv from 'dotenv'
 
 const sanityEnv = process.env.SANITY_ENV || 'production'
 const basePath = process.env.SANITY_STUDIO_BASEPATH || process.env.STUDIO_BASEPATH
@@ -7,9 +10,6 @@ const apiHosts = {
   staging: 'https://api.sanity.work',
   development: 'http://api.sanity.wtf'
 }
-
-const projectId = process.env.SANITY_STUDIO_PROJECT_ID || undefined
-const dataset = process.env.SANITY_STUDIO_DATASET || undefined
 
 const processEnvConfig = {
   project: basePath ? {basePath} : {}
@@ -28,7 +28,34 @@ function merge(objValue, srcValue, key) {
   return undefined
 }
 
+function tryReadDotEnv(studioRootPath) {
+  const configEnv = process.env.NODE_ENV || 'development'
+  const envFile = path.join(studioRootPath, `.env.${configEnv}`)
+  let parsed = {}
+  try {
+    // eslint-disable-next-line no-sync
+    parsed = dotenv.parse(fs.readFileSync(envFile, {encoding: 'utf8'}))
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      // eslint-disable-next-line no-console
+      console.error(`There was a problem processing the .env file (${envFile})`, err)
+    }
+  }
+
+  return parsed
+}
+
 export default (rawConfig, env = 'development', options: {studioRootPath?: string} = {}) => {
+  const studioRootPath = options.studioRootPath
+
+  let envVars = {...process.env}
+  if (studioRootPath) {
+    envVars = {...envVars, ...tryReadDotEnv(studioRootPath)}
+  }
+
+  const projectId = envVars.SANITY_STUDIO_PROJECT_ID
+  const dataset = envVars.SANITY_STUDIO_DATASET
+
   const apiHost = apiHosts[sanityEnv]
   const api = clean({apiHost, projectId, dataset})
   const sanityConf = {api}
