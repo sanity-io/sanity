@@ -68,8 +68,20 @@
   max-width: 100%;
 }
 
+.nextHeading {
+  composes: cardsTitle from './HintsPackage.css';
+}
+
+.docsIcon {
+  margin-right: 0.25em;
+}
+
 .root a {
-  color: var(--link-color);
+  /* color: var(--link-color); */
+  color: inherit;
+  background-color: color(var(--gray-base) lightness(+ 20%) a(30%));
+  padding: 2px;
+  border-radius: 3px;
   text-decoration: inherit;
 }
 

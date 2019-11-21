@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
 import Link from 'next/link'
+import DocsIcon from 'react-icons/lib/fa/book'
+import style from '../HintPage.css'
 
 const resolveContentType = {
   post: 'blog',
@@ -16,6 +18,7 @@ const internalLinkSerializer = props => {
   const {mark = {}, children} = props
   const {type, slug = {}} = mark
   const segment = resolveContentType[type]
+  const isDocs = resolveContentType[type] === 'docs' || resolveContentType[type] === 'guide'
 
   if (!type) {
     // eslint-disable-next-line no-console
@@ -27,6 +30,11 @@ const internalLinkSerializer = props => {
 
   return (
     <a href={`https://www.sanity.io${href}`} target="_blank" rel="noopener">
+      {isDocs && (
+        <span className={style.docsIcon}>
+          <DocsIcon />
+        </span>
+      )}
       {children}
     </a>
   )

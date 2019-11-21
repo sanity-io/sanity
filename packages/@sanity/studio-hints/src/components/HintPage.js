@@ -6,6 +6,7 @@ import ArrowRight from 'part:@sanity/base/arrow-right'
 import dynamic from 'next/dynamic'
 import styles from './HintPage.css'
 import internalLinkSerializer from './serializers/internalLinkSerializer'
+import HintCard from './HintCard'
 
 const YouTube = dynamic(() => import('./serializers/Video'))
 const Image = dynamic(() => import('./serializers/Image'))
@@ -13,7 +14,12 @@ const CodeSnippet = dynamic(() => import('./serializers/CodeSnippet'))
 
 const serializers = {
   marks: {
-    internalLink: internalLinkSerializer
+    internalLink: internalLinkSerializer,
+    link: ({mark, children}) => (
+      <a href={mark.href} target="_blank" rel="noopener noreferrer">
+        {children}
+      </a>
+    )
   },
   types: {
     youtube: ({node: {url}}) => {
@@ -48,7 +54,7 @@ const serializers = {
 }
 
 function HintPage(props) {
-  const {hint, onBackClick} = props
+  const {hint, onBackClick, nextHint, onCardClick} = props
 
   return (
     <div className={styles.root}>
@@ -58,6 +64,12 @@ function HintPage(props) {
       <div className={styles.blockContent}>
         <h2 className={styles.blockHeading}>{hint.title}</h2>
         <BlockContent blocks={hint.body || []} serializers={serializers} />
+        {nextHint && (
+          <div style={{marginTop: '3em'}}>
+            <h2 className={styles.nextHeading}>Next</h2>
+            <HintCard card={nextHint} onCardClick={onCardClick} />
+          </div>
+        )}
       </div>
     </div>
   )
@@ -65,7 +77,9 @@ function HintPage(props) {
 
 HintPage.propTypes = {
   hint: PropTypes.object.isRequired,
-  onBackClick: PropTypes.func.isRequired
+  nextHint: PropTypes.object.isRequired,
+  onBackClick: PropTypes.func.isRequired,
+  onCardClick: PropTypes.func.isRequired
 }
 
 export default HintPage

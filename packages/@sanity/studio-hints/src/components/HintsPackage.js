@@ -22,7 +22,7 @@ export default class HintsPackage extends React.PureComponent {
   subscription = null
 
   fetchHintsPackage(slug) {
-    const query = `
+    const query = `//groq
       *[_type == "hintsPackage" && slug.current == $slug && !(_id in path('drafts.**'))][0]{
         _id, title, slug, links, hintsTitle,
         hints[]->{
@@ -79,6 +79,16 @@ export default class HintsPackage extends React.PureComponent {
     return activePage ? hintsPackage.hints.find(hint => hint._id === activePage) : null
   }
 
+  getNextHint = () => {
+    const {hints = []} = this.state.hintsPackage
+    for (let i = 0; i < hints.length; i++) {
+      if (hints[i]._id === this.activeHint()._id) {
+        return hints[i + 1]
+      }
+    }
+    return -1
+  }
+
   renderError(message) {
     console.error(message)
     return <p className={styles.errorMessage}>{message}</p>
@@ -109,7 +119,12 @@ export default class HintsPackage extends React.PureComponent {
     if (activePage) {
       return (
         <ErrorBoundary onBackClick={this.handleBackClick}>
-          <HintPage hint={this.activeHint()} onBackClick={this.handleBackClick} />
+          <HintPage
+            hint={this.activeHint()}
+            onBackClick={this.handleBackClick}
+            nextHint={this.getNextHint()}
+            onCardClick={this.handleCardClick}
+          />
         </ErrorBoundary>
       )
     }
