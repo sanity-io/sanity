@@ -1,15 +1,6 @@
-import {kebabCase} from 'lodash'
 import {View, ViewBuilder} from './View'
 import {SerializeOptions} from '../StructureNodes'
 import {SerializeError, HELP_URL} from '../SerializeError'
-
-interface ReactComponent extends Function {
-  displayName?: string
-}
-
-function getFunctionName(fn: ReactComponent) {
-  return typeof fn.displayName === 'string' ? fn.displayName : fn.name
-}
 
 export interface ComponentView extends View {
   component: Function
@@ -38,11 +29,7 @@ export class ComponentViewBuilder extends ViewBuilder {
   }
 
   component(component: Function) {
-    return this.clone({
-      component,
-      id: this.spec.id || kebabCase(getFunctionName(component)),
-      title: this.spec.title || getFunctionName(component)
-    })
+    return this.clone({component})
   }
 
   getComponent() {

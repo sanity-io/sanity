@@ -26,14 +26,6 @@ export interface BuildableComponent extends Partial<StructureNode> {
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
 }
 
-interface ReactComponent extends Function {
-  displayName?: string
-}
-
-function getFunctionName(fn: ReactComponent) {
-  return typeof fn.displayName === 'string' ? fn.displayName : fn.name
-}
-
 export class ComponentBuilder implements Serializable {
   protected spec: BuildableComponent
 
@@ -66,7 +58,7 @@ export class ComponentBuilder implements Serializable {
   }
 
   component(component: Function) {
-    return this.clone({component, id: this.spec.id || getFunctionName(component)})
+    return this.clone({component})
   }
 
   getComponent() {
