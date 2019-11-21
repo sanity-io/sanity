@@ -692,7 +692,9 @@ async function doDatasetImport(options) {
   const {outputPath, coreCommands, template, datasetName, context} = options
   const manifestPath = path.join(outputPath, 'sanity.json')
   const baseManifest = await loadJson(manifestPath)
-  const manifest = reduceConfig(baseManifest || {}, environment)
+  const manifest = reduceConfig(baseManifest || {}, environment, {
+    studioRootPath: outputPath
+  })
 
   const importCmd = coreCommands.find(cmd => cmd.name === 'import' && cmd.group === 'dataset')
   return importCmd.action(

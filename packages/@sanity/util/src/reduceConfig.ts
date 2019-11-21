@@ -28,7 +28,7 @@ function merge(objValue, srcValue, key) {
   return undefined
 }
 
-export default (rawConfig, env = 'development') => {
+export default (rawConfig, env = 'development', options: {studioRootPath?: string} = {}) => {
   const apiHost = apiHosts[sanityEnv]
   const api = clean({apiHost, projectId, dataset})
   const sanityConf = {api}

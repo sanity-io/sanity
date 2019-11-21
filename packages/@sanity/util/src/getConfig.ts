@@ -19,7 +19,8 @@ const getConfig = rootDir => {
   const localConfig = rootDir && loadJsonSync(path.join(rootDir, 'sanity.json'))
   const config = reduceConfig(
     localConfig ? merge({}, defaults, localConfig) : defaults,
-    process.env.NODE_ENV || 'development' // eslint-disable-line no-process-env
+    process.env.NODE_ENV || 'development', // eslint-disable-line no-process-env
+    {studioRootPath: rootDir}
   )
 
   return configContainer(config)

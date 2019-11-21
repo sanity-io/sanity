@@ -30,7 +30,9 @@ function handleManifestReadError(err, options) {
 function parseManifest(rawData, options) {
   const parsedManifest = JSON.parse(rawData)
   const manifest = validateManifest(parsedManifest)
-  const reduced = reduceConfig(manifest, options.env)
+  const reduced = reduceConfig(manifest, options.env, {
+    studioRootPath: options.manifestDir || options.basePath || process.cwd()
+  })
   return reduced
 }
 

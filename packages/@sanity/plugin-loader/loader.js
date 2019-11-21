@@ -81,7 +81,12 @@ function registerLoader(options) {
       const configFor = configMatch[1]
       if (configFor === 'sanity') {
         const sanityConfig = require(path.join(basePath, 'sanity.json'))
-        require.cache[request] = getModule(request, reduceConfig(sanityConfig, env))
+        require.cache[request] = getModule(
+          request,
+          reduceConfig(sanityConfig, env, {
+            studioRootPath: basePath
+          })
+        )
         return request
       }
 
