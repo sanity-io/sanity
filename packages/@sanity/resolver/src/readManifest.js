@@ -31,13 +31,13 @@ function parseManifest(rawData, options) {
   const parsedManifest = JSON.parse(rawData)
   const manifest = validateManifest(parsedManifest)
   const reduced = reduceConfig(manifest, options.env, {
-    studioRootPath: options.manifestDir || options.basePath || process.cwd()
+    studioRootPath: options.basePath || process.cwd()
   })
   return reduced
 }
 
 function readManifest(opts = {}) {
-  const env = process.env.NODE_ENV || 'development'
+  const env = process.env.NODE_ENV || opts.env || 'development'
   const options = Object.assign({env}, opts)
   const basePath = options.basePath || process.cwd()
   const manifestPath = path.join(options.manifestDir || basePath, 'sanity.json')

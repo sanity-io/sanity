@@ -24,7 +24,7 @@ export default async (args, context) => {
   const unattendedMode = flags.yes || flags.y
   const defaultOutputDir = path.resolve(path.join(workDir, 'dist'))
   const outputDir = path.resolve(args.argsWithoutOptions[0] || defaultOutputDir)
-  const config = getConfig(workDir)
+  const config = getConfig(workDir, {env: 'production'})
   const compilationConfig = {
     env: 'production',
     staticPath: resolveStaticPath(workDir, config.get('server')),
@@ -36,7 +36,7 @@ export default async (args, context) => {
     project: Object.assign({}, config.get('project'), overrides.project)
   }
 
-  await tryInitializePluginConfigs({workDir, output})
+  await tryInitializePluginConfigs({workDir, output, env: 'production'})
 
   checkStudioDependencyVersions(workDir)
 
