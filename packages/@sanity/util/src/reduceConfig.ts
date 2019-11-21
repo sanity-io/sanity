@@ -1,9 +1,10 @@
 /* eslint-disable no-process-env */
 import fs from 'fs'
 import path from 'path'
-import {mergeWith} from 'lodash'
+import {mergeWith, memoize} from 'lodash'
 import dotenv from 'dotenv'
 
+const readEnvFile = memoize(tryReadEnvFile)
 const sanityEnv = process.env.SANITY_ENV || 'production'
 const basePath = process.env.SANITY_STUDIO_BASEPATH || process.env.STUDIO_BASEPATH
 const apiHosts = {
@@ -28,21 +29,25 @@ function merge(objValue, srcValue, key) {
   return undefined
 }
 
-function tryReadDotEnv(studioRootPath) {
-  const configEnv = process.env.NODE_ENV || 'development'
-  const envFile = path.join(studioRootPath, `.env.${configEnv}`)
+function tryReadEnvFile(pathName: string): {[key: string]: string} {
   let parsed = {}
   try {
     // eslint-disable-next-line no-sync
-    parsed = dotenv.parse(fs.readFileSync(envFile, {encoding: 'utf8'}))
+    parsed = dotenv.parse(fs.readFileSync(pathName, {encoding: 'utf8'}))
   } catch (err) {
     if (err.code !== 'ENOENT') {
       // eslint-disable-next-line no-console
-      console.error(`There was a problem processing the .env file (${envFile})`, err)
+      console.error(`There was a problem processing the .env file (${pathName})`, err)
     }
   }
 
   return parsed
+}
+
+function tryReadDotEnv(studioRootPath: string, fallbackEnv?: string) {
+  const configEnv = process.env.NODE_ENV || fallbackEnv || 'development'
+  const envFile = path.join(studioRootPath, `.env.${configEnv}`)
+  return readEnvFile(envFile)
 }
 
 export default (rawConfig, env = 'development', options: {studioRootPath?: string} = {}) => {
@@ -50,7 +55,7 @@ export default (rawConfig, env = 'development', options: {studioRootPath?: strin
 
   let envVars = {...process.env}
   if (studioRootPath) {
-    envVars = {...envVars, ...tryReadDotEnv(studioRootPath)}
+    envVars = {...envVars, ...tryReadDotEnv(studioRootPath, env)}
   }
 
   const projectId = envVars.SANITY_STUDIO_PROJECT_ID

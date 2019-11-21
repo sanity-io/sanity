@@ -16,7 +16,7 @@ export function resolvePlugins(pluginNames, options) {
 }
 
 export function resolvePlugin(options) {
-  const {name, basePath, parentPluginPath, sync} = options
+  const {name, basePath, parentPluginPath, sync, env} = options
   const resolver = sync ? dir => dir : dir => Promise.resolve(dir)
   const parentDir = parentPluginPath || basePath
   const isDirPlugin = dirMatcher.test(name)
@@ -40,6 +40,7 @@ export function resolvePlugin(options) {
       manifest,
       path: manifestDir,
       plugins: resolvePlugins(manifest.plugins || [], {
+        env,
         sync,
         basePath,
         parentPluginPath: manifestDir
@@ -55,16 +56,18 @@ export function resolvePlugin(options) {
 
   return dirResolver.then(manifestDir => {
     const plugin = {name: pluginName, path: manifestDir}
-    return readManifest({basePath, manifestDir: plugin.path, plugin: pluginName}).then(manifest =>
-      promiseProps(
-        Object.assign(plugin, {
-          manifest,
-          plugins: resolvePlugins(manifest.plugins || [], {
-            basePath,
-            parentPluginPath: plugin.path
+    return readManifest({basePath, manifestDir: plugin.path, plugin: pluginName, env}).then(
+      manifest =>
+        promiseProps(
+          Object.assign(plugin, {
+            manifest,
+            plugins: resolvePlugins(manifest.plugins || [], {
+              env,
+              basePath,
+              parentPluginPath: plugin.path
+            })
           })
-        })
-      )
+        )
     )
   })
 }
