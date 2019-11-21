@@ -1,4 +1,7 @@
 /* eslint-disable no-process-env */
+const fs = require('fs')
+const path = require('path')
+const dotenv = require('dotenv')
 const postcssImport = require('postcss-import')
 const postcssCssnext = require('postcss-cssnext')
 const PartResolverPlugin = require('@sanity/webpack-loader')
@@ -10,8 +13,29 @@ function getPartResolverPlugin(options) {
   return new PartResolverPlugin(options)
 }
 
-function getEnvVars(isProd) {
-  return Object.keys(process.env).reduce(
+function tryReadDotEnv(studioRootPath) {
+  const configEnv = process.env.NODE_ENV || 'development'
+  const envFile = path.join(studioRootPath, `.env.${configEnv}`)
+
+  let parsed = {}
+  try {
+    // eslint-disable-next-line no-sync
+    parsed = dotenv.parse(fs.readFileSync(envFile, {encoding: 'utf8'}))
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      // eslint-disable-next-line no-console
+      console.error(`There was a problem processing the .env file (${envFile})`, err)
+    }
+  }
+
+  return parsed
+}
+
+function getEnvVars({isProd, basePath}) {
+  const dotEnvVars = tryReadDotEnv(basePath)
+  const allEnvVars = {...dotEnvVars, ...process.env}
+
+  return Object.keys(allEnvVars).reduce(
     (acc, key) => {
       if (key.startsWith('SANITY_STUDIO_')) {
         acc[`process.env.${key}`] = JSON.stringify(process.env[key])
@@ -32,7 +56,7 @@ function getEnvPlugin(options) {
   const webpack = options.webpack || require('webpack')
   return new webpack.DefinePlugin({
     __DEV__: !isProd && bundleEnv === 'development',
-    ...getEnvVars(isProd)
+    ...getEnvVars({isProd, basePath: options.basePath})
   })
 }
 
