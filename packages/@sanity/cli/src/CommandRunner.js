@@ -65,7 +65,9 @@ export default class CommandRunner {
     debug(`Reading "${manifestPath}"`)
 
     const baseManifest = await loadJson(manifestPath)
-    const manifest = reduceConfig(baseManifest || {}, environment)
+    const manifest = reduceConfig(baseManifest || {}, environment, {
+      studioRootPath: options.workDir
+    })
     const apiClient = clientWrapper(manifest, manifestPath)
 
     const context = {
