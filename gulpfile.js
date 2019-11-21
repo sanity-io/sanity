@@ -218,7 +218,7 @@ function buildAssets() {
 }
 
 const STUDIOS = [
-  {name: 'test-studio', port: '3333'},
+  {name: 'test-studio', port: '3335'},
   {name: 'movies-studio', port: '3334'},
   {name: 'example-studio', port: '3335'},
   {name: 'blog-studio', port: '3336'},
