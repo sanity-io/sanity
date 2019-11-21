@@ -1,4 +1,4 @@
-import {View, ViewBuilder} from './View'
+import {View, GenericViewBuilder} from './View'
 import {SerializeOptions} from '../StructureNodes'
 import {SerializeError, HELP_URL} from '../SerializeError'
 
@@ -10,13 +10,16 @@ const isComponentSpec = (spec: any): spec is ComponentView => {
   return typeof spec === 'object'
 }
 
-export class ComponentViewBuilder extends ViewBuilder {
+export class ComponentViewBuilder extends GenericViewBuilder<
+  Partial<ComponentView>,
+  ComponentViewBuilder
+> {
   protected spec: Partial<ComponentView>
 
   constructor(componentOrSpec?: Function | Partial<ComponentView>) {
     const spec = isComponentSpec(componentOrSpec) ? componentOrSpec : {}
 
-    super(spec)
+    super()
     this.spec = spec
 
     const userComponent =

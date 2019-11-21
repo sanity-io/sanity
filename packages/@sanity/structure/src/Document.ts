@@ -1,4 +1,4 @@
-import {camelCase} from 'lodash'
+import {uniq, camelCase} from 'lodash'
 import {SerializeOptions, Serializable, Child, DocumentNode, EditorNode} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {SchemaType} from './parts/Schema'
@@ -141,9 +141,21 @@ export class DocumentBuilder implements Serializable {
       ).withHelpUrl(HELP_URL.DOCUMENT_ID_REQUIRED)
     }
 
-    const views = (this.spec.views && this.spec.views.length > 0 ? this.spec.views : [form()]).map(
-      (item, i) => maybeSerializeView(item, i, path)
-    )
+    const views = (this.spec.views && this.spec.views.length > 0
+      ? this.spec.views
+      : [form()]
+    ).map((item, i) => maybeSerializeView(item, i, path))
+
+    const viewIds = views.map(view => view.id)
+    const dupes = uniq(viewIds.filter((id, i) => viewIds.includes(id, i + 1)))
+    if (dupes.length > 0) {
+      throw new SerializeError(
+        `document node has views with duplicate IDs: ${dupes.join(',  ')}`,
+        path,
+        id,
+        hint
+      )
+    }
 
     return {
       ...this.spec,

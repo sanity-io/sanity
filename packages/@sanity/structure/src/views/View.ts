@@ -3,6 +3,8 @@ import {Serializable, SerializeOptions, SerializePath} from '../StructureNodes'
 import {SerializeError} from '..'
 import {HELP_URL} from '../SerializeError'
 import {validateId} from '../util/validateId'
+import {ComponentViewBuilder} from './ComponentView'
+import {FormViewBuilder} from './FormView'
 
 export interface View {
   type: string
@@ -11,12 +13,9 @@ export interface View {
   icon?: Function
 }
 
-export class ViewBuilder implements Serializable {
-  protected spec: Partial<View>
-
-  constructor(spec?: Partial<View>) {
-    this.spec = spec || {}
-  }
+export abstract class GenericViewBuilder<L extends Partial<View>, ConcreteImpl>
+  implements Serializable {
+  protected spec: L = {} as L
 
   id(id: string) {
     return this.clone({id})
@@ -69,20 +68,21 @@ export class ViewBuilder implements Serializable {
   }
 
   clone(withSpec?: Partial<View>) {
-    const builder = new ViewBuilder()
-    builder.spec = {...this.spec, ...(withSpec || {})}
+    const builder = new (this.constructor as {new (): ConcreteImpl})()
     return builder
   }
 }
 
-function isBuilder(view: View | ViewBuilder): view is ViewBuilder {
-  return typeof (view as ViewBuilder).serialize === 'function'
+function isSerializable(view: View | Serializable): view is Serializable {
+  return typeof (view as Serializable).serialize === 'function'
 }
 
 export function maybeSerializeView(
-  item: View | ViewBuilder,
+  item: View | Serializable,
   index: number,
   path: SerializePath
 ): View {
-  return isBuilder(item) ? item.serialize({path, index}) : item
+  return isSerializable(item) ? (item.serialize({path, index}) as View) : item
 }
+
+export type ViewBuilder = ComponentViewBuilder | FormViewBuilder
