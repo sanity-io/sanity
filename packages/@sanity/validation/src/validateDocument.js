@@ -142,13 +142,14 @@ function resolveTypeForArrayItem(item, candidates) {
   const primitive =
     typeof item === 'undefined' || item === null || (!item._type && Type.string(item).toLowerCase())
 
-  if (primitive) {
+  if (primitive && primitive !== 'object') {
     return candidates.find(candidate => candidate.jsonType === primitive)
   }
 
   return (
     candidates.find(candidate => candidate.type.name === item._type) ||
-    candidates.find(candidate => candidate.name === item._type)
+    candidates.find(candidate => candidate.name === item._type) ||
+    candidates.find(candidate => candidate.name === 'object' && primitive === 'object')
   )
 }
 
