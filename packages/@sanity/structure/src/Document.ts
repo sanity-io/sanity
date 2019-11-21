@@ -1,3 +1,4 @@
+import {camelCase} from 'lodash'
 import {SerializeOptions, Serializable, Child, DocumentNode, EditorNode} from './StructureNodes'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {SchemaType} from './parts/Schema'
@@ -17,6 +18,7 @@ interface DocumentOptions {
 
 export type PartialDocumentNode = {
   id?: string
+  title?: string
   child?: Child
   views?: (View | ViewBuilder)[]
   options?: Partial<DocumentOptions>
@@ -35,6 +37,14 @@ export class DocumentBuilder implements Serializable {
 
   getId() {
     return this.spec.id
+  }
+
+  title(title: string) {
+    return this.clone({title, id: this.spec.id || camelCase(title)})
+  }
+
+  getTitle() {
+    return this.spec.title
   }
 
   child(child: Child) {

@@ -39,7 +39,13 @@ export default () =>
 
       S.listItem()
         .title('Singleton?')
-        .child(delay(S.editor({id: 'editor', options: {id: 'circular', type: 'referenceTest'}})))
+        .child(
+          delay(
+            S.editor({id: 'editor', options: {id: 'circular', type: 'referenceTest'}}).title(
+              'Specific title!'
+            )
+          )
+        )
         .showIcon(false),
 
       S.documentListItem()
