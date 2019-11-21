@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "clean": "rimraf lib",
-    "test": "tap test/*.test.ts",
+    "test": "tap -t120 test/*.test.ts",
     "perf": "node ./perf/run.js"
   },
   "keywords": [
