@@ -1,6 +1,12 @@
 const spawn = require('child_process').spawn
 const path = require('path')
+const dotenv = require('dotenv')
 const fse = require('fs-extra')
+
+// Try to load .env files from the current directory
+// eslint-disable-next-line no-process-env
+const env = process.env.NODE_ENV || 'development'
+dotenv.config({path: path.join(process.cwd(), `.env.${env}`)})
 
 module.exports = async args => {
   // In case of specifying --with-user-token <file.js>, use the "token" as the script
