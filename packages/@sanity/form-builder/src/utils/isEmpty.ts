@@ -13,9 +13,7 @@ function isEmptyObject(value: {[key: string]: any}): boolean {
 }
 
 function isEmptyArray(value: Array<any>): boolean {
-  if (value === undefined) {
-    return true
-  }
+
 
   for (let i = 0; i < value.length; i++) {
     if (isEmpty(value[i])) {
@@ -25,20 +23,16 @@ function isEmptyArray(value: Array<any>): boolean {
   return false
 }
 
-function isEmptyPrimitive(value: any) {
-  return value === undefined
-}
-
 export default function isEmpty(value: any): boolean {
-  if (value === undefined) {
+  if (value === undefined || value === null) {
     return true
   }
   const type = typeof value
-  if (type === 'object' && type !== null) {
+  if (type === 'object') {
     return isEmptyObject(value)
   }
   if (Array.isArray(value)) {
     return isEmptyArray(value)
   }
-  return isEmptyPrimitive(value)
+  return false
 }
