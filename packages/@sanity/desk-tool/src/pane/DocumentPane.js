@@ -564,6 +564,12 @@ export default withInitialValue(
     }
 
     handleToggleInspect = () => {
+      const {draft, published} = this.state
+      const value = draft.snapshot || published.snapshot
+      if (!value) {
+        return
+      }
+
       this.setState(prevState => ({inspect: !prevState.inspect}))
     }
 
@@ -1521,10 +1527,10 @@ export default withInitialValue(
           >
             {this.renderHistorySpinner()}
             {this.renderCurrentView()}
-            {inspect && this.historyIsOpen() && (
+            {inspect && this.historyIsOpen() && historical && (
               <InspectHistory document={historical} onClose={this.handleHideInspector} />
             )}
-            {inspect && !this.historyIsOpen() && (
+            {inspect && !this.historyIsOpen() && value && (
               <InspectView value={value} onClose={this.handleHideInspector} />
             )}
             {showConfirmDelete && (
