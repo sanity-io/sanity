@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import pubsub from 'nano-pubsub'
 import {Router} from '../types'
+import {RouterContext} from '../RouterContext'
 import {
   InternalRouter,
   NavigateOptions,
@@ -81,6 +82,10 @@ export default class RouterProvider extends React.Component<Props> {
   }
 
   render() {
-    return this.props.children
+    return (
+      <RouterContext.Provider value={this.__internalRouter}>
+        {this.props.children}
+      </RouterContext.Provider>
+    )
   }
 }
