@@ -48,27 +48,6 @@ test('infers ID from title if not specified', () => {
   ).toEqual('blah')
 })
 
-test('infers ID from function name if not specified', () => {
-  const FooBar = () => null
-  expect(
-    S.component()
-      .component(FooBar)
-      .getId()
-  ).toEqual('FooBar')
-  expect(
-    S.component()
-      .id('zing')
-      .component(FooBar)
-      .getId()
-  ).toEqual('zing')
-  expect(
-    S.component()
-      .component(FooBar)
-      .id('blah')
-      .getId()
-  ).toEqual('blah')
-})
-
 test('throws on missing component', () => {
   expect(() =>
     S.component()
