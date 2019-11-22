@@ -1,6 +1,12 @@
 import {DocumentListBuilder, DocumentListInput, PartialDocumentList} from './DocumentList'
 import {Child} from './StructureNodes'
 import {DEFAULT_INTENT_HANDLER} from './Intent'
+import {GenericListInput} from './GenericList'
+import {SchemaType} from './parts/Schema'
+
+export interface DocumentTypeListInput extends Partial<GenericListInput> {
+  schemaType: SchemaType | string
+}
 
 export class DocumentTypeListBuilder extends DocumentListBuilder {
   protected spec: PartialDocumentList
