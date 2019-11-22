@@ -3,6 +3,7 @@ import React from 'react'
 import isEmpty from '../utils/isEmpty'
 
 import {InternalRouter, NavigateOptions, RouterProviderContext} from './types'
+import {RouterContext} from '../RouterContext'
 
 function addScope(routerState: Object, scope: string, scopedState: Object) {
   return (
@@ -72,6 +73,10 @@ export default class RouteScope extends React.Component<Props> {
   }
 
   render() {
-    return this.props.children
+    return (
+      <RouterContext.Provider value={this.__internalRouter}>
+        {this.props.children}
+      </RouterContext.Provider>
+    )
   }
 }
