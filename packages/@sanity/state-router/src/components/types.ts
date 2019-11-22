@@ -4,7 +4,6 @@ export type NavigateOptions = {
 
 type Channel<T> = {
   subscribe: (arg0: T) => () => void
-  get(): T
   publish(arg0: T): void
 }
 
