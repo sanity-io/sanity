@@ -15,6 +15,20 @@ function toPath(panes) {
   return encodePanesSegment(panes)
 }
 
+function legacyEditParamsToState(params) {
+  try {
+    return JSON.parse(decodeURIComponent(params))
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.warn('Failed to parse JSON parameters')
+    return {}
+  }
+}
+
+function legacyEditParamsToPath(params) {
+  return JSON.stringify(params)
+}
+
 const state = {activePanes: []}
 
 function setActivePanes(panes) {
@@ -60,6 +74,14 @@ function getFallbackIntentState({documentId, intentName, params, payload}) {
 
 export default {
   router: route('/', [
+    // Legacy fallback route, will be redirected to new format
+    route('/edit/:type/:editDocumentId', [
+      route({
+        path: '/:params',
+        transform: {params: {toState: legacyEditParamsToState, toPath: legacyEditParamsToPath}}
+      })
+    ]),
+
     // The regular path - when the intent can be resolved to a specific pane
     route({
       path: '/:panes',
