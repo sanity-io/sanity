@@ -52,8 +52,8 @@ export default () =>
         .id('grrm')
         .schemaType('author')
         .child(
-          S.component()
-            .component(JsonDocumentDump)
+          S.component(JsonDocumentDump)
+            .id('json-dump')
             .menuItems([
               S.menuItem()
                 .title('Reload')
