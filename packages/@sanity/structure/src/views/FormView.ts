@@ -1,13 +1,13 @@
-import {View, ViewBuilder} from './View'
+import {View, GenericViewBuilder} from './View'
 import {SerializeOptions} from '../StructureNodes'
 
 export interface FormView extends View {}
 
-export class FormViewBuilder extends ViewBuilder {
+export class FormViewBuilder extends GenericViewBuilder<Partial<View>, FormViewBuilder> {
   protected spec: Partial<FormView>
 
   constructor(spec?: Partial<FormView>) {
-    super(spec)
+    super()
     this.spec = {id: 'editor', title: 'Editor', ...(spec ? spec : {})}
   }
 
