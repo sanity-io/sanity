@@ -1060,10 +1060,15 @@ export default withInitialValue(
         <div className={documentPaneStyles.unknownSchemaType}>
           <div className={documentPaneStyles.unknownSchemaTypeInner}>
             <h3>Unknown schema type</h3>
-            <p>
-              This document has the schema type <code>{typeName}</code>, which is not defined as a
-              type in the local content studio schema.
-            </p>
+            {typeName && (
+              <p>
+                This document has the schema type <code>{typeName}</code>, which is not defined as a
+                type in the local content studio schema.
+              </p>
+            )}
+            {!typeName && (
+              <p>This document does not exist, and no schema type was specified for it.</p>
+            )}
             {__DEV__ && doc && (
               <div>
                 <h4>Here is the JSON representation of the document:</h4>
