@@ -6,7 +6,7 @@ import {MenuItemBuilder, getOrderingMenuItemsForSchemaType} from './MenuItem'
 import {DEFAULT_SELECTED_ORDERING_OPTION} from './Sort'
 import {DocumentListBuilder} from './DocumentList'
 import {ListItemBuilder, ListItem} from './ListItem'
-import {DocumentTypeListBuilder} from './DocumentTypeList'
+import {DocumentTypeListBuilder, DocumentTypeListInput} from './DocumentTypeList'
 import {defaultIntentChecker} from './Intent'
 import {DocumentBuilder} from './Document'
 import {isList} from './List'
@@ -54,7 +54,15 @@ export function getDocumentTypeListItem(typeName: string, sanitySchema?: Schema)
     })
 }
 
-export function getDocumentTypeList(typeName: string, sanitySchema?: Schema): DocumentListBuilder {
+export function getDocumentTypeList(
+  typeNameOrSpec: string | DocumentTypeListInput,
+  sanitySchema?: Schema
+): DocumentListBuilder {
+  const schemaType = typeof typeNameOrSpec === 'string' ? typeNameOrSpec : typeNameOrSpec.schemaType
+  const typeName = typeof schemaType === 'string' ? schemaType : schemaType.name
+  const spec: DocumentTypeListInput =
+    typeof typeNameOrSpec === 'string' ? {schemaType} : typeNameOrSpec
+
   const schema = sanitySchema || getDefaultSchema()
   const type = schema.get(typeName)
   if (!type) {
@@ -66,46 +74,52 @@ export function getDocumentTypeList(typeName: string, sanitySchema?: Schema): Do
   const showIcons = shouldShowIcon(type)
 
   return new DocumentTypeListBuilder()
-    .id(typeName)
-    .title(title)
+    .id(spec.id || typeName)
+    .title(spec.title || title)
     .filter('_type == $type')
     .params({type: typeName})
     .schemaType(type)
     .showIcons(showIcons)
     .defaultOrdering(DEFAULT_SELECTED_ORDERING_OPTION.by)
-    .menuItemGroups([
-      {id: 'sorting', title: 'Sort'},
-      {id: 'layout', title: 'Layout'},
-      {id: 'actions', title: 'Actions'}
-    ])
-    .child((documentId: string) =>
-      new DocumentBuilder()
-        .id('editor')
-        .schemaType(type)
-        .documentId(documentId)
+    .menuItemGroups(
+      spec.menuItemGroups || [
+        {id: 'sorting', title: 'Sort'},
+        {id: 'layout', title: 'Layout'},
+        {id: 'actions', title: 'Actions'}
+      ]
     )
-    .canHandleIntent(defaultIntentChecker)
-    .menuItems([
-      // Create new (from action button) will be added in serialization step of GenericList
+    .child(
+      spec.child ||
+        ((documentId: string) =>
+          new DocumentBuilder()
+            .id('editor')
+            .schemaType(type)
+            .documentId(documentId))
+    )
+    .canHandleIntent(spec.canHandleIntent || defaultIntentChecker)
+    .menuItems(
+      spec.menuItems || [
+        // Create new (from action button) will be added in serialization step of GenericList
 
-      // Sort by <Y>
-      ...getOrderingMenuItemsForSchemaType(type),
+        // Sort by <Y>
+        ...getOrderingMenuItemsForSchemaType(type),
 
-      // Display as <Z>
-      new MenuItemBuilder()
-        .group('layout')
-        .title('List')
-        .icon(ListIcon)
-        .action('setLayout')
-        .params({layout: 'default'}),
+        // Display as <Z>
+        new MenuItemBuilder()
+          .group('layout')
+          .title('List')
+          .icon(ListIcon)
+          .action('setLayout')
+          .params({layout: 'default'}),
 
-      new MenuItemBuilder()
-        .group('layout')
-        .title('Details')
-        .icon(DetailsIcon)
-        .action('setLayout')
-        .params({layout: 'detail'})
+        new MenuItemBuilder()
+          .group('layout')
+          .title('Details')
+          .icon(DetailsIcon)
+          .action('setLayout')
+          .params({layout: 'detail'})
 
-      // Create new (from menu) will be added in serialization step of GenericList
-    ])
+        // Create new (from menu) will be added in serialization step of GenericList
+      ]
+    )
 }
