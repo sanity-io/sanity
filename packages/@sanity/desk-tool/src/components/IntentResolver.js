@@ -21,15 +21,15 @@ const FALLBACK_ID = '__fallback__'
  * - Checks if the last pane segment is an editor, and if so; is it the right type/id?
  *   - Yes: Resolves to "<typeName>;<documentId>"
  *   - No : Resolves to fallback edit pane (context-less)
- *
  */
-const IntentResolver = React.memo(({params, payload}) => {
+// eslint-disable-next-line complexity
+const IntentResolver = React.memo(function IntentResolver({params, payload}) {
   const {type: specifiedSchemaType, id, ...otherParams} = params || {}
 
   const documentId = id || FALLBACK_ID
-  const schemaType = useDocumentType(documentId, specifiedSchemaType)
-  const paneSegments = schemaType
-    ? [[{id: schemaType, params: {}}], [{id: documentId, params: otherParams, payload}]]
+  const {documentType, isLoaded} = useDocumentType(documentId, specifiedSchemaType)
+  const paneSegments = documentType
+    ? [[{id: documentType, params: {}}], [{id: documentId, params: otherParams, payload}]]
     : undefined
 
   const {structure, error} = useStructure(paneSegments, {silent: true})
@@ -38,8 +38,12 @@ const IntentResolver = React.memo(({params, payload}) => {
     return <StructureError error={error} />
   }
 
-  if (!schemaType) {
-    return <Spinner center message="Resolving document type…" delay={600} />
+  if (!documentType) {
+    return isLoaded ? (
+      <Redirect panes={[[{id: `__edit__${id || UUID()}`, params: {}}]]} />
+    ) : (
+      <Spinner center message="Resolving document type…" delay={600} />
+    )
   }
 
   const isLoading = !structure || structure.some(item => item === LOADING_PANE)
@@ -49,7 +53,7 @@ const IntentResolver = React.memo(({params, payload}) => {
 
   const panes = getNewRouterState({
     structure,
-    schemaType,
+    documentType,
     params: otherParams,
     payload,
     paneSegments,
@@ -59,7 +63,7 @@ const IntentResolver = React.memo(({params, payload}) => {
   return <Redirect panes={panes} />
 })
 
-function getNewRouterState({structure, schemaType, params, payload, documentId, paneSegments}) {
+function getNewRouterState({structure, documentType, params, payload, documentId, paneSegments}) {
   const lastChild = structure[structure.length - 1] || {}
   const lastGroup = paneSegments[paneSegments.length - 1]
   const lastSibling = lastGroup[lastGroup.length - 1]
@@ -67,7 +71,7 @@ function getNewRouterState({structure, schemaType, params, payload, documentId, 
 
   const isTemplateCreate = params.template
   const template = isTemplateCreate && getTemplateById(params.template)
-  const type = (template && template.schemaType) || schemaType
+  const type = (template && template.schemaType) || documentType
   const fallbackParameters = {type, template: params.template}
   const newDocumentId = documentId === FALLBACK_ID ? UUID() : documentId
 
@@ -90,12 +94,14 @@ function Redirect({panes}) {
 }
 
 function useDocumentType(documentId, specifiedType) {
-  const [documentType, setDocumentType] = useState()
+  const [{documentType, isLoaded}, setDocumentType] = useState({isLoaded: false})
   useEffect(() => {
-    const sub = resolveTypeForDocument(documentId, specifiedType).subscribe(setDocumentType)
+    const sub = resolveTypeForDocument(documentId, specifiedType).subscribe(documentType =>
+      setDocumentType({documentType, isLoaded: true})
+    )
     return () => sub.unsubscribe()
   })
-  return documentType
+  return {documentType, isLoaded}
 }
 
 function resolveTypeForDocument(id, specifiedType) {
