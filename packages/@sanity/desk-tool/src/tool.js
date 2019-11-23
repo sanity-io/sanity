@@ -1,9 +1,9 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import UUID from '@sanity/uuid'
-import {getTemplateById} from '@sanity/base/initial-value-templates'
 import Icon from 'part:@sanity/base/view-column-icon'
-import {route} from 'part:@sanity/base/router'
+import {route, useRouterState} from 'part:@sanity/base/router'
 import {parsePanesSegment, encodePanesSegment} from './utils/parsePanesSegment'
+import IntentResolver from './components/IntentResolver'
 import DeskTool from './DeskTool'
 import {EMPTY_PARAMS} from './'
 
@@ -36,7 +36,18 @@ function setActivePanes(panes) {
 }
 
 function DeskToolPaneStateSyncer(props) {
-  return <DeskTool {...props} onPaneChange={setActivePanes} />
+  const {intent, params, payload} = useRouterState()
+  useEffect(() => {
+    // Set active panes to blank on mount and unmount
+    setActivePanes([])
+    return () => setActivePanes([])
+  })
+
+  return intent ? (
+    <IntentResolver intent={intent} params={params} payload={payload} />
+  ) : (
+    <DeskTool {...props} onPaneChange={setActivePanes} />
+  )
 }
 
 // eslint-disable-next-line complexity
@@ -59,21 +70,14 @@ function getIntentState(intentName, params, currentState, payload) {
     }
   }
 
-  return getFallbackIntentState({documentId: editDocumentId, intentName, params, payload})
-}
-
-function getFallbackIntentState({documentId, intentName, params, payload}) {
-  const isTemplateCreate = intentName === 'create' && params.template
-  const template = isTemplateCreate && getTemplateById(params.template)
-  const type = (template && template.schemaType) || params.type
-  const parameters = {type, template: params.template}
-  return {
-    panes: [[{id: `__edit__${documentId}`, params: parameters, payload}]]
-  }
+  return {intent: intentName, params, payload}
 }
 
 export default {
   router: route('/', [
+    // "Asynchronous intent resolving" route
+    route.intents('/intent'),
+
     // Legacy fallback route, will be redirected to new format
     route('/edit/:type/:editDocumentId', [
       route({
@@ -93,10 +97,10 @@ export default {
     })
   ]),
   canHandleIntent(intentName, params) {
-    return (
+    return Boolean(
       (intentName === 'edit' && params.id) ||
-      (intentName === 'create' && params.type) ||
-      (intentName === 'create' && params.template)
+        (intentName === 'create' && params.type) ||
+        (intentName === 'create' && params.template)
     )
   },
   getIntentState,

@@ -1,86 +1,28 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {isEqual} from 'lodash'
-import {throwError, interval, defer, of} from 'rxjs'
+import {interval, of} from 'rxjs'
 import {map, switchMap, distinctUntilChanged, debounce} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 import {withRouterHOC} from 'part:@sanity/base/router'
-import {resolvePanes} from './utils/resolvePanes'
+import {
+  resolvePanes,
+  loadStructure,
+  maybeSerialize,
+  setStructureResolveError
+} from './utils/resolvePanes'
 import styles from './styles/DeskTool.css'
 import DeskToolPanes from './DeskToolPanes'
 import StructureError from './components/StructureError'
-import serializeStructure from './utils/serializeStructure'
+import {calculatePanesEquality} from './utils/calculatePanesEquality'
 import isNarrowScreen from './utils/isNarrowScreen'
 import windowWidth$ from './utils/windowWidth'
-import defaultStructure from './defaultStructure'
 import {LOADING_PANE} from './index'
 import {getTemplateById} from '@sanity/base/initial-value-templates'
 
 const EMPTY_PANE_KEYS = []
 
 const hasLoading = panes => panes.some(item => item === LOADING_PANE)
-
-const isStructure = structure => {
-  return (
-    structure &&
-    (typeof structure === 'function' ||
-      typeof structure.serialize !== 'function' ||
-      typeof structure.then !== 'function' ||
-      typeof structure.subscribe !== 'function' ||
-      typeof structure.type !== 'string')
-  )
-}
-
-let prevStructureError = null
-if (__DEV__) {
-  if (module.hot && module.hot.data) {
-    prevStructureError = module.hot.data.prevError
-  }
-}
-
-// We are lazy-requiring/resolving the structure inside of a function in order to catch errors
-// on the root-level of the module. Any loading errors will be caught and emitted as errors
-// eslint-disable-next-line complexity
-const loadStructure = () => {
-  let structure
-  try {
-    const mod = require('part:@sanity/desk-tool/structure?') || defaultStructure
-    structure = mod && mod.__esModule ? mod.default : mod
-
-    // On invalid modules, when HMR kicks in, we sometimes get an empty object back when the
-    // source has changed without fixing the problem. In this case, keep showing the error
-    if (
-      __DEV__ &&
-      prevStructureError &&
-      structure &&
-      structure.constructor.name === 'Object' &&
-      Object.keys(structure).length === 0
-    ) {
-      return throwError(prevStructureError)
-    }
-
-    prevStructureError = null
-  } catch (err) {
-    prevStructureError = err
-    return throwError(err)
-  }
-
-  if (!isStructure(structure)) {
-    return throwError(
-      new Error(
-        `Structure needs to export a function, an observable, a promise or a stucture builder, got ${typeof structure}`
-      )
-    )
-  }
-
-  // Defer to catch immediately thrown errors on serialization
-  return defer(() => serializeStructure(structure))
-}
-
-const maybeSerialize = structure =>
-  structure && typeof structure.serialize === 'function'
-    ? structure.serialize({path: []})
-    : structure
 
 export default withRouterHOC(
   // eslint-disable-next-line react/prefer-stateless-function
@@ -132,7 +74,7 @@ export default withRouterHOC(
     }
 
     setResolveError = error => {
-      prevStructureError = error
+      setStructureResolveError(error)
 
       // Log error for proper stacktraces
       console.error(error) // eslint-disable-line no-console
@@ -160,38 +102,7 @@ export default withRouterHOC(
         .subscribe(this.setResolvedPanes, this.setResolveError)
     }
 
-    calcPanesEquality = (prev = [], next = []) => {
-      if (prev === next) {
-        return {ids: true, params: true}
-      }
-
-      if (prev.length !== next.length) {
-        return {ids: false, params: false}
-      }
-
-      let paramsDiffer = false
-      const idsEqual = prev.every((prevGroup, index) => {
-        const nextGroup = next[index]
-        if (prevGroup.length !== nextGroup.length) {
-          return false
-        }
-
-        return prevGroup.every((prevPane, paneIndex) => {
-          const nextPane = nextGroup[paneIndex]
-
-          paramsDiffer =
-            paramsDiffer ||
-            !isEqual(nextPane.params, prevPane.params) ||
-            !isEqual(nextPane.payload, prevPane.payload)
-
-          return nextPane.id === prevPane.id
-        })
-      })
-
-      return {ids: idsEqual, params: !paramsDiffer}
-    }
-
-    panesAreEqual = (prev, next) => this.calcPanesEquality(prev, next).ids
+    panesAreEqual = (prev, next) => calculatePanesEquality(prev, next).ids
 
     shouldDerivePanes = (nextProps, prevProps) => {
       const nextRouterState = nextProps.router.state
@@ -215,7 +126,7 @@ export default withRouterHOC(
 
       const prevPanes = prevProps.router.state.panes || []
       const nextPanes = this.props.router.state.panes || []
-      const panesEqual = this.calcPanesEquality(prevPanes, nextPanes)
+      const panesEqual = calculatePanesEquality(prevPanes, nextPanes)
 
       if (!panesEqual.ids && this.shouldDerivePanes(this.props, prevProps)) {
         const diffAt = getPaneDiffIndex(nextPanes, prevPanes)
@@ -233,7 +144,7 @@ export default withRouterHOC(
       const {panes: newPanes, ...newState} = nextState
       const prevPanes = oldRouter.state.panes || []
       const nextPanes = newRouter.state.panes || []
-      const panesEqual = this.calcPanesEquality(prevPanes, nextPanes)
+      const panesEqual = calculatePanesEquality(prevPanes, nextPanes)
 
       const shouldUpdate =
         !panesEqual.params ||
@@ -255,21 +166,23 @@ export default withRouterHOC(
         params = {}
       } = this.props.router.state
 
-      const {template: templateName, ...payload} = params
+      const {template: templateName, ...payloadParams} = params
       const template = getTemplateById(templateName)
       const type = (template && template.schemaType) || schemaType
-      const parameters = {type, template: templateName}
-
-      if (action === 'edit' && legacyEditDocumentId) {
-        navigate({panes: [[{id: `__edit__${legacyEditDocumentId}`}]]}, {replace: true})
+      const shouldRewrite = (action === 'edit' && legacyEditDocumentId) || (type && editDocumentId)
+      if (!shouldRewrite) {
+        return
       }
 
-      if (type && editDocumentId) {
-        navigate(
-          {panes: [[{id: `__edit__${editDocumentId}`, params: parameters, payload}]]},
-          {replace: true}
-        )
-      }
+      navigate(
+        getIntentRouteParams({
+          id: editDocumentId || legacyEditDocumentId,
+          type,
+          payloadParams,
+          templateName
+        }),
+        {replace: true}
+      )
     }
 
     maybeCutSiblingPanes() {
@@ -391,10 +304,14 @@ function getPaneDiffIndex(nextPanes, prevPanes) {
   return undefined
 }
 
-if (__DEV__) {
-  if (module.hot) {
-    module.hot.dispose(data => {
-      data.prevError = prevStructureError
-    })
+function getIntentRouteParams({id, type, payloadParams, templateName}) {
+  return {
+    intent: 'edit',
+    params: {
+      id,
+      ...(type ? {type} : {}),
+      ...(templateName ? {template: templateName} : {})
+    },
+    payload: Object.keys(payloadParams).length > 0 ? payloadParams : undefined
   }
 }
