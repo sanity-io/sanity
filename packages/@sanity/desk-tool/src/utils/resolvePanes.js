@@ -1,17 +1,31 @@
+import {useEffect, useState} from 'react'
 import shallowEquals from 'shallow-equals'
-import {Observable, from, of as observableOf} from 'rxjs'
-import {switchMap} from 'rxjs/operators'
+import {Observable, defer, throwError, from, of as observableOf} from 'rxjs'
+import {map, switchMap, distinctUntilChanged} from 'rxjs/operators'
 import {LOADING_PANE} from '../index'
+import defaultStructure from '../defaultStructure'
 import isSubscribable from './isSubscribable'
 import validateStructure from './validateStructure'
 import serializeStructure from './serializeStructure'
 import generateHelpUrl from '@sanity/generate-help-url'
 
-// eslint-disable-next-line import/prefer-default-export
-export function resolvePanes(structure, paneGroups, prevStructure, fromIndex) {
+let prevStructureError = null
+if (__DEV__) {
+  if (module.hot && module.hot.data) {
+    prevStructureError = module.hot.data.prevError
+  }
+
+  if (module.hot) {
+    module.hot.dispose(data => {
+      data.prevError = prevStructureError
+    })
+  }
+}
+
+export function resolvePanes(structure, paneGroups, prevStructure, fromIndex, options) {
   const waitStructure = isSubscribable(structure) ? from(structure) : observableOf(structure)
   return waitStructure.pipe(
-    switchMap(struct => resolveForStructure(struct, paneGroups, prevStructure, fromIndex))
+    switchMap(struct => resolveForStructure(struct, paneGroups, prevStructure, fromIndex, options))
   )
 }
 
@@ -29,7 +43,7 @@ function sumPaneSegments(paneGroups) {
   return paneGroups.reduce((count, curr) => count + curr.length, 0)
 }
 
-function resolveForStructure(structure, paneGroups, prevStructure, fromIndex) {
+function resolveForStructure(structure, paneGroups, prevStructure, fromIndex, options = {}) {
   return Observable.create(subscriber => {
     try {
       validateStructure(structure)
@@ -140,7 +154,7 @@ function resolveForStructure(structure, paneGroups, prevStructure, fromIndex) {
     }
 
     function emit(pane, index, splitIndex) {
-      if (typeof pane === 'undefined') {
+      if (typeof pane === 'undefined' && !options.silent) {
         // eslint-disable-next-line no-console
         console.warn(
           'Pane at index %d returned no child %s - see %s',
@@ -193,4 +207,93 @@ function resolveForStructure(structure, paneGroups, prevStructure, fromIndex) {
       }
     }
   })
+}
+
+export const maybeSerialize = structure =>
+  structure && typeof structure.serialize === 'function'
+    ? structure.serialize({path: []})
+    : structure
+
+// We are lazy-requiring/resolving the structure inside of a function in order to catch errors
+// on the root-level of the module. Any loading errors will be caught and emitted as errors
+// eslint-disable-next-line complexity
+export const loadStructure = () => {
+  let structure
+  try {
+    const mod = require('part:@sanity/desk-tool/structure?') || defaultStructure
+    structure = mod && mod.__esModule ? mod.default : mod
+
+    // On invalid modules, when HMR kicks in, we sometimes get an empty object back when the
+    // source has changed without fixing the problem. In this case, keep showing the error
+    if (
+      __DEV__ &&
+      prevStructureError &&
+      structure &&
+      structure.constructor.name === 'Object' &&
+      Object.keys(structure).length === 0
+    ) {
+      return throwError(prevStructureError)
+    }
+
+    prevStructureError = null
+  } catch (err) {
+    prevStructureError = err
+    return throwError(err)
+  }
+
+  if (!isStructure(structure)) {
+    return throwError(
+      new Error(
+        `Structure needs to export a function, an observable, a promise or a stucture builder, got ${typeof structure}`
+      )
+    )
+  }
+
+  // Defer to catch immediately thrown errors on serialization
+  return defer(() => serializeStructure(structure))
+}
+
+export const useStructure = (segments, options = {}) => {
+  const hasSegments = Boolean(segments)
+  const numSegments = sumPaneSegments(segments || [])
+  const [{structure, error}, setStructure] = useState({structure: null, error: null})
+
+  // @todo This leads to deep update loops unless we serialize paneSegments
+  // @todo We should try to memoize/prevent this without resorting to JSON.stringify
+  useEffect(() => {
+    if (!hasSegments) {
+      return () => null
+    }
+
+    setStructure({structure: getInitialPanes(null, numSegments, 0)})
+    const subscription = loadStructure()
+      .pipe(
+        distinctUntilChanged(),
+        map(maybeSerialize),
+        switchMap(newStructure => resolvePanes(newStructure, segments, structure, [0, 0], options))
+      )
+      .subscribe(
+        newStructure => setStructure({structure: newStructure}),
+        resolveError => setStructure({error: resolveError})
+      )
+
+    return () => subscription.unsubscribe()
+  }, [JSON.stringify(segments)])
+
+  return {structure, error}
+}
+
+export const setStructureResolveError = err => {
+  prevStructureError = err
+}
+
+function isStructure(structure) {
+  return (
+    structure &&
+    (typeof structure === 'function' ||
+      typeof structure.serialize !== 'function' ||
+      typeof structure.then !== 'function' ||
+      typeof structure.subscribe !== 'function' ||
+      typeof structure.type !== 'string')
+  )
 }
