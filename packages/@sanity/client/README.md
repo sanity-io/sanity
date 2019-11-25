@@ -258,6 +258,17 @@ client
   .commit()
 ```
 
+### Deleting an element from an array
+
+Each entry in the `unset` array can be either an attribute or a JSON path.
+
+```js
+client
+  .patch('bike-123')
+  .unset(['reviews[0]']) // remove the first element in the reviews array
+  .commit()
+```
+
 ### Delete a document
 
 ```js
