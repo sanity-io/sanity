@@ -262,10 +262,14 @@ client
 
 Each entry in the `unset` array can be either an attribute or a JSON path.
 
+In this example, we remove the first review and the review with `_key: 'abc123'` from the `bike.reviews` array:
+
+
 ```js
+const reviewsToRemove = ['reviews[0]', 'reviews[_key=="abc123"]']
 client
   .patch('bike-123')
-  .unset(['reviews[0]']) // remove the first element in the reviews array
+  .unset(reviewsToRemove)
   .commit()
 ```
 
