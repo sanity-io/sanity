@@ -820,6 +820,10 @@
       "path": "components/icons/Plug.js"
     },
     {
+      "implements": "part:@sanity/base/image-icon",
+      "path": "components/icons/Image.js"
+    },
+    {
       "implements": "part:@sanity/base/image-area-icon",
       "path": "components/icons/ImageArea.js"
     },
