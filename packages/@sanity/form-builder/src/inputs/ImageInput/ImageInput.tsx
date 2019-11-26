@@ -70,6 +70,7 @@ export interface Value {
 
 export type Props = {
   value?: Value
+  document?: Value,
   type: Type
   level: number
   onChange: (arg0: PatchEvent) => void
@@ -460,7 +461,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
 
   renderAssetSource() {
     const {selectedAssetSource} = this.state
-    const {value, materialize} = this.props
+    const {value, materialize, document} = this.props
     if (!selectedAssetSource) {
       return null
     }
@@ -471,6 +472,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           {imageAsset => {
             return (
               <Component
+                document={document}
                 selectedAssets={[imageAsset]}
                 selectionType="single"
                 onClose={this.handleAssetSourceClosed}
@@ -483,6 +485,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     }
     return (
       <Component
+        document={document}
         selectedAssets={[]}
         selectionType="single"
         onClose={this.handleAssetSourceClosed}
