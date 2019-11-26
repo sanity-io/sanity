@@ -1,5 +1,5 @@
 import React from 'react'
-import ImageIcon from 'react-icons/lib/md/image'
+import ImageIcon from 'part:@sanity/base/image-icon'
 import client from 'part:@sanity/base/client'
 import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
