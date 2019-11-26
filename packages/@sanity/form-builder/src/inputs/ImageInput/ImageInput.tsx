@@ -20,7 +20,6 @@ import ProgressCircle from 'part:@sanity/components/progress/circle'
 import UploadIcon from 'part:@sanity/base/upload-icon'
 import userDefinedAssetSources from 'part:@sanity/form-builder/input/image/asset-sources?'
 import VisibilityIcon from 'part:@sanity/base/visibility-icon'
-import {withDocument} from 'part:@sanity/form-builder'
 
 // Package files
 import {FormBuilderInput} from '../../FormBuilderInput'
@@ -71,7 +70,6 @@ export interface Value {
 
 export type Props = {
   value?: Value
-  document?: Value,
   type: Type
   level: number
   onChange: (arg0: PatchEvent) => void
@@ -100,7 +98,7 @@ type ImageInputState = {
 }
 const globalAssetSources = userDefinedAssetSources ? userDefinedAssetSources : assetSources
 
-export default withDocument(class ImageInput extends React.PureComponent<Props, ImageInputState> {
+export default class ImageInput extends React.PureComponent<Props, ImageInputState> {
   _focusArea: any
   uploadSubscription: any
   state = {
@@ -462,7 +460,7 @@ export default withDocument(class ImageInput extends React.PureComponent<Props, 
 
   renderAssetSource() {
     const {selectedAssetSource} = this.state
-    const {value, materialize, document} = this.props
+    const {value, materialize} = this.props
     if (!selectedAssetSource) {
       return null
     }
@@ -473,7 +471,6 @@ export default withDocument(class ImageInput extends React.PureComponent<Props, 
           {imageAsset => {
             return (
               <Component
-                document={document}
                 selectedAssets={[imageAsset]}
                 selectionType="single"
                 onClose={this.handleAssetSourceClosed}
@@ -486,7 +483,6 @@ export default withDocument(class ImageInput extends React.PureComponent<Props, 
     }
     return (
       <Component
-        document={document}
         selectedAssets={[]}
         selectionType="single"
         onClose={this.handleAssetSourceClosed}
@@ -585,4 +581,4 @@ export default withDocument(class ImageInput extends React.PureComponent<Props, 
       </FieldSetComponent>
     )
   }
-})
+}
