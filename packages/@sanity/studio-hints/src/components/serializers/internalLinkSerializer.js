@@ -30,11 +30,6 @@ const internalLinkSerializer = props => {
 
   return (
     <a href={`https://www.sanity.io${href}`} target="_blank" rel="noopener">
-      {isDocs && (
-        <span className={style.docsIcon}>
-          <DocsIcon />
-        </span>
-      )}
       {children}
     </a>
   )

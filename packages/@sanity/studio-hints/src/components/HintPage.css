@@ -42,6 +42,7 @@
 
 .blockContent {
   padding: var(--medium-padding);
+  font-weight: 500;
 }
 
 .blockHeading {

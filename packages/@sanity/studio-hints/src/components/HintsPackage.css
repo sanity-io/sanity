@@ -68,3 +68,9 @@
 .errorMessage {
   color: var(--state-danger-color);
 }
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  padding: var(--small-padding) 0;
+}
