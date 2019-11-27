@@ -42,6 +42,7 @@
 
 .blockContent {
   padding: var(--medium-padding);
+  font-weight: 500;
 }
 
 .blockHeading {
@@ -77,16 +78,16 @@
 }
 
 .root a {
-  /* color: var(--link-color); */
-  color: inherit;
-  background-color: color(var(--gray-base) lightness(+ 20%) a(30%));
+  color: var(--link-color);
+  /* background-color: color(var(--gray-base) lightness(+ 20%) a(30%));
   padding: 2px;
-  border-radius: 3px;
+  border-radius: 3px; */
   text-decoration: inherit;
 }
 
 .root h3 {
   margin: var(--medium-padding) 0 var(--small-padding) 0;
+  margin-top: 2em;
 }
 
 .root p {

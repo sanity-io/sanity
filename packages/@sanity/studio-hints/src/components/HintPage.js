@@ -64,12 +64,12 @@ function HintPage(props) {
       <div className={styles.blockContent}>
         <h2 className={styles.blockHeading}>{hint.title}</h2>
         <BlockContent blocks={hint.body || []} serializers={serializers} />
-        {nextHint && (
+        {/* {nextHint && (
           <div style={{marginTop: '3em'}}>
             <h2 className={styles.nextHeading}>Next</h2>
             <HintCard card={nextHint} onCardClick={onCardClick} />
           </div>
-        )}
+        )} */}
       </div>
     </div>
   )

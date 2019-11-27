@@ -8,4 +8,5 @@
   color: color(var(--main-navigation-color--inverted) a(90%));
   overflow-x: auto;
   min-width: 420px;
+  display: flex;
 }

@@ -6,6 +6,10 @@
   border: 1px solid var(--gray);
   margin: var(--large-padding) 0;
   cursor: pointer;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  font-weight: 500;
 }
 
 .cardTitle {
@@ -16,6 +20,11 @@
   @nest & svg {
     padding-left: 0.5rem;
   }
+}
+
+.arrowUp {
+  transform: rotate(-45deg);
+  margin-top: 0.1em;
 }
 
 .cardSummary {

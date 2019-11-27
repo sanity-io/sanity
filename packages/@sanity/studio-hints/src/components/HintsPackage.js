@@ -26,7 +26,7 @@ export default class HintsPackage extends React.PureComponent {
       *[_type == "hintsPackage" && slug.current == $slug && !(_id in path('drafts.**'))][0]{
         _id, title, slug, links, hintsTitle,
         hints[]->{
-          _id, title, summary,
+          _type, _id, title, summary, slug, description,
           body[]{
             ...,
             markDefs[] {
@@ -81,10 +81,13 @@ export default class HintsPackage extends React.PureComponent {
 
   getNextHint = () => {
     const {hints = []} = this.state.hintsPackage
+    if (!this.activeHint) {
+      return -1
+    }
     for (let i = 0; i < hints.length; i++) {
-      if (hints[i]._id === this.activeHint()._id) {
-        return hints[i + 1]
-      }
+      // if (hints[i]._id === this.activeHint()._id) {
+      //   return hints[i + 1]
+      // }
     }
     return -1
   }
@@ -132,6 +135,7 @@ export default class HintsPackage extends React.PureComponent {
     const {links, hints, hintsTitle} = hintsPackage
     return (
       <div className={styles.root}>
+        <h2 className={styles.cardsTitle}>Developer resources</h2>
         <Links links={links} />
         <h2 className={styles.cardsTitle}>{hintsTitle}</h2>
         {hints &&
@@ -139,6 +143,9 @@ export default class HintsPackage extends React.PureComponent {
             return <HintCard key={hint._id} card={hint} onCardClick={this.handleCardClick} />
           })}
         {!hints && <p>No hints in this package</p>}
+        <div className={styles.footer}>
+          <small>How to remove this sidebar?</small>
+        </div>
       </div>
     )
   }

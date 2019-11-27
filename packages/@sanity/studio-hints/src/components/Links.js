@@ -10,16 +10,16 @@ function Links(props) {
   }
 
   return (
-    <div>
+    <div className={styles.root}>
       {links.map(link => {
         return (
           <h3 className={styles.heading} key={link.title}>
-            <div className={styles.link} href={link.url} target="_blank" rel="noopener noreferrer">
+            <a className={styles.link} href={link.url} target="_blank" rel="noopener noreferrer">
               {link.title}
               <span className={styles.icon}>
                 <ArrowRight />
               </span>
-            </div>
+            </a>
           </h3>
         )
       })}

@@ -2,6 +2,10 @@
 
 .root {
   padding: var(--medium-padding);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .icon {
@@ -13,10 +17,16 @@
   letter-spacing: 1px;
   font-family: var(--font-family-monospace);
   font-size: var(--font-size-small);
-  font-weight: 100;
+  font-weight: 500;
   margin: var(--medium-padding) 0;
 }
 
 .errorMessage {
   color: var(--state-danger-color);
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  padding: var(--small-padding) 0;
 }
