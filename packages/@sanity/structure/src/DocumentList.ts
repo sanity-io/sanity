@@ -163,6 +163,10 @@ export class DocumentListBuilder extends GenericListBuilder<
       builder.spec.initialValueTemplates = inferInitialValueTemplates(builder.spec)
     }
 
+    if (!this.spec.schemaTypeName) {
+      builder.spec.schemaTypeName = inferTypeName(builder.spec)
+    }
+
     return builder
   }
 
@@ -194,6 +198,13 @@ function inferInitialValueTemplates(
       )
     )
   }, templateItems)
+}
+
+function inferTypeName(spec: PartialDocumentList): string | undefined {
+  const {options} = spec
+  const {filter, params} = options || {filter: '', params: {}}
+  const typeNames = getTypeNamesFromFilter(filter, params)
+  return typeNames.length === 1 ? typeNames[0] : undefined
 }
 
 export function getTypeNamesFromFilter(
