@@ -118,9 +118,9 @@ export default (typeDef, visitorContext) => {
 
   return {
     ...typeDef,
-    fields: (Array.isArray(typeDef.fields) ? typeDef.fields : []).map(field => {
+    fields: (Array.isArray(typeDef.fields) ? typeDef.fields : []).map((field, index) => {
       const {name, ...fieldTypeDef} = field
-      const {_problems, ...fieldType} = visitorContext.visit(fieldTypeDef, visitorContext)
+      const {_problems, ...fieldType} = visitorContext.visit(fieldTypeDef, index)
       return {
         name,
         ...fieldType,
