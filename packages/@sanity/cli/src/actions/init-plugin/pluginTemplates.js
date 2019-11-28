@@ -23,5 +23,10 @@ module.exports = [
     value: 'dashboardWidget',
     name: 'A Dashboard widget with cats',
     url: 'https://github.com/sanity-io/plugin-template-dashboard-widget-cats/archive/master.zip'
+  },
+  {
+    value: 'assetSource',
+    name: 'Custom asset source plugin',
+    url: 'https://github.com/sanity-io/plugin-template-asset-source/archive/master.zip'
   }
 ]
