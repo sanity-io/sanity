@@ -38,6 +38,7 @@
     "@babel/plugin-proposal-class-properties": "^7.7.4",
     "@babel/preset-env": "^7.7.4",
     "@babel/preset-react": "^7.7.4",
+    "@babel/preset-typescript": "^7.7.4",
     "@babel/register": "^7.7.4",
     "@hot-loader/react-dom": "^16.9.0-4.12.11",
     "@sanity/css-loader": "^0.28.12",
