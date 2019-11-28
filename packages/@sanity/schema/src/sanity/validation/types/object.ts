@@ -1,3 +1,4 @@
+import {isPlainObject} from 'lodash'
 import {error, HELP_IDS, warning} from '../createValidationResult'
 import inspect from '../../inspect'
 
@@ -47,7 +48,16 @@ function validateFieldName(name): Array<any> {
   return []
 }
 
-function validateField(field, visitorContext) {
+export function validateField(field, visitorContext) {
+  if (!isPlainObject(field)) {
+    return [
+      error(
+        `Incorrect type for field definition - should be an object, saw ${inspect(field)}`,
+        HELP_IDS.OBJECT_FIELD_DEFINITION_INVALID_TYPE
+      )
+    ]
+  }
+
   const {name, fieldset, ...fieldType} = field
   return 'name' in field
     ? validateFieldName(name)
@@ -67,31 +77,38 @@ function getDuplicateFields(array: Array<Field>): Array<Array<Field>> {
     .filter(Boolean)
 }
 
-export default (typeDef, visitorContext) => {
+export function validateFields(fields: any, options = {allowEmpty: false}) {
   const problems = []
-  const fieldsIsArray = Array.isArray(typeDef.fields)
-  if (fieldsIsArray) {
-    const fieldsWithNames = typeDef.fields.filter(field => typeof field.name === 'string')
-
-    getDuplicateFields(fieldsWithNames).forEach(dupes => {
-      problems.push(
-        error(
-          `Found ${dupes.length} fields with name "${dupes[0].name}" in object`,
-          HELP_IDS.OBJECT_FIELD_NOT_UNIQUE
-        )
-      )
-    })
-    if (typeDef.fields.length === 0) {
-      problems.push(error('Object should have at least one field', HELP_IDS.OBJECT_FIELDS_INVALID))
-    }
-  } else {
-    problems.push(
+  const fieldsIsArray = Array.isArray(fields)
+  if (!fieldsIsArray) {
+    return [
       error(
-        `The "fields" property must be an array of fields. Instead saw "${typeof typeDef.fields}"`,
+        `The "fields" property must be an array of fields. Instead saw "${typeof fields}"`,
         HELP_IDS.OBJECT_FIELDS_INVALID
       )
-    )
+    ]
   }
+
+  const fieldsWithNames = fields.filter(field => typeof field.name === 'string')
+
+  getDuplicateFields(fieldsWithNames).forEach(dupes => {
+    problems.push(
+      error(
+        `Found ${dupes.length} fields with name "${dupes[0].name}" in object`,
+        HELP_IDS.OBJECT_FIELD_NOT_UNIQUE
+      )
+    )
+  })
+
+  if (fields.length === 0 && !options.allowEmpty) {
+    problems.push(error('Object should have at least one field', HELP_IDS.OBJECT_FIELDS_INVALID))
+  }
+
+  return problems
+}
+
+export default (typeDef, visitorContext) => {
+  const problems = validateFields(typeDef.fields)
 
   if (typeDef.type !== 'document' && typeof typeDef.initialValue !== 'undefined') {
     problems.push(
@@ -101,7 +118,7 @@ export default (typeDef, visitorContext) => {
 
   return {
     ...typeDef,
-    fields: (fieldsIsArray ? typeDef.fields : []).map(field => {
+    fields: (Array.isArray(typeDef.fields) ? typeDef.fields : []).map(field => {
       const {name, ...fieldTypeDef} = field
       const {_problems, ...fieldType} = visitorContext.visit(fieldTypeDef, visitorContext)
       return {
