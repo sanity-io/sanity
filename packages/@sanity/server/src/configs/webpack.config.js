@@ -81,12 +81,13 @@ export default (config = {}) => {
     module: {
       rules: [
         {
-          test: /\.jsx?/,
+          test: /(\.jsx?|\.tsx?)/,
           exclude: /(packages\/@sanity|node_modules|bower_components)/,
           use: {
             loader: resolve('babel-loader'),
             options: babelConfig || {
               presets: [
+                resolve('@babel/preset-typescript'),
                 resolve('@babel/preset-react'),
                 [resolve('@babel/preset-env'), require('./babel-env-config')]
               ],

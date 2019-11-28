@@ -29,6 +29,7 @@ module.exports = basePath => {
         ignore: [path.join(basePath, 'node_modules')],
         test: /.*/,
         presets: [
+          '@babel/preset-typescript',
           '@babel/preset-react',
           [
             '@babel/preset-env',

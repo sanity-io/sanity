@@ -10,6 +10,7 @@ function getConfig() {
   } catch (err) {
     return {
       presets: [
+        require.resolve('@babel/preset-typescript'),
         require.resolve('@babel/preset-react'),
         [
           require.resolve('@babel/preset-env'),
@@ -20,7 +21,8 @@ function getConfig() {
           }
         ]
       ],
-      plugins: [require.resolve('@babel/plugin-proposal-class-properties')]
+      plugins: [require.resolve('@babel/plugin-proposal-class-properties')],
+      extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx']
     }
   }
 }

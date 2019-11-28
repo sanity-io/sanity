@@ -23,6 +23,7 @@
     "@babel/plugin-proposal-class-properties": "^7.7.4",
     "@babel/preset-env": "^7.7.4",
     "@babel/preset-react": "^7.7.4",
+    "@babel/preset-typescript": "^7.7.4",
     "@babel/register": "^7.7.4",
     "@sanity/check": "0.147.0",
     "@sanity/export": "0.147.8",
