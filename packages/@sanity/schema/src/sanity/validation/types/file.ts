@@ -1,7 +1,13 @@
 import {error, HELP_IDS} from '../createValidationResult'
+import {validateFields, validateField} from './object'
 
 export default (typeDef, visitorContext) => {
   const problems = []
+  let fields = typeDef.fields
+
+  if (fields) {
+    problems.push(...validateFields(fields, {allowEmpty: true}))
+  }
 
   if (
     typeDef.options &&
@@ -18,6 +24,15 @@ export default (typeDef, visitorContext) => {
 
   return {
     ...typeDef,
+    fields: (Array.isArray(fields) ? fields : []).map(field => {
+      const {name, ...fieldTypeDef} = field
+      const {_problems, ...fieldType} = visitorContext.visit(fieldTypeDef, visitorContext)
+      return {
+        name,
+        ...fieldType,
+        _problems: validateField(field, visitorContext).concat(_problems || [])
+      }
+    }),
     _problems: problems
   }
 }

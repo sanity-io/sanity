@@ -35,6 +35,8 @@ function createTypeWithMembersProblemsAccessor(
 const arrify = val => (Array.isArray(val) ? val : (typeof val === 'undefined' && []) || [val])
 
 const getObjectProblems = createTypeWithMembersProblemsAccessor('fields')
+const getImageProblems = createTypeWithMembersProblemsAccessor('fields')
+const getFileProblems = createTypeWithMembersProblemsAccessor('fields')
 const getArrayProblems = createTypeWithMembersProblemsAccessor('of')
 const getReferenceProblems = createTypeWithMembersProblemsAccessor('to', type => arrify(type.to))
 const getBlockAnnotationProblems = createTypeWithMembersProblemsAccessor('marks.annotations')
@@ -69,6 +71,12 @@ export function getTypeProblems(type, path = []): TypeWithProblems[] {
     }
     case 'block': {
       return getBlockProblems(type, path)
+    }
+    case 'image': {
+      return getImageProblems(type, path)
+    }
+    case 'file': {
+      return getFileProblems(type, path)
     }
     default: {
       return getDefaultProblems(type, path)
