@@ -22,7 +22,7 @@ Object {
       "type": "book",
     },
   },
-  "schemaTypeName": undefined,
+  "schemaTypeName": "book",
   "title": "Books",
   "type": "documentList",
 }
@@ -50,7 +50,7 @@ Object {
       "type": "book",
     },
   },
-  "schemaTypeName": undefined,
+  "schemaTypeName": "book",
   "title": "Books",
   "type": "documentList",
 }
@@ -78,7 +78,7 @@ Object {
       "type": "book",
     },
   },
-  "schemaTypeName": undefined,
+  "schemaTypeName": "book",
   "title": "Books",
   "type": "documentList",
 }
