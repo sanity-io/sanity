@@ -5,7 +5,7 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 import studioHintsConfig from 'part:@sanity/default-layout/studio-hints-config'
 import {locationSetting, updateLocation} from '../datastore'
 import client from '../client'
-import Links from './Links'
+import Resources from './Resources'
 import HintPage from './HintPage'
 import HintCard from './HintCard'
 import ErrorBoundary from './ErrorBoundary'
@@ -24,7 +24,7 @@ export default class HintsPackage extends React.PureComponent {
   fetchHintsPackage(slug) {
     const query = `//groq
       *[_type == "hintsPackage" && slug.current == $slug && !(_id in path('drafts.**'))][0]{
-        _id, title, slug, links, hintsTitle,
+        _id, title, slug, "resources": links, hintsTitle,
         hints[]->{
           _type, _id, title, summary, slug, description,
           body[]{
@@ -132,19 +132,19 @@ export default class HintsPackage extends React.PureComponent {
       )
     }
 
-    const {links, hints, hintsTitle} = hintsPackage
+    const {resources, hints, hintsTitle} = hintsPackage
     return (
       <div className={styles.root}>
-        <h2 className={styles.cardsTitle}>Developer resources</h2>
-        <Links links={links} />
-        <h2 className={styles.cardsTitle}>{hintsTitle}</h2>
+        <h2 className={styles.trayTitle}>Get started with your project</h2>
+        <Resources title="Resources" resources={resources} />
+        <h3 className={styles.cardsTitle}>{hintsTitle}</h3>
         {hints &&
           hints.map(hint => {
             return <HintCard key={hint._id} card={hint} onCardClick={this.handleCardClick} />
           })}
         {!hints && <p>No hints in this package</p>}
         <div className={styles.footer}>
-          <small>How to remove this sidebar?</small>
+          <div className={styles.removeButton}>How to remove this?</div>
         </div>
       </div>
     )

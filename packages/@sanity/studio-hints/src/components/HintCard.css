@@ -1,10 +1,10 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  padding: var(--large-padding) var(--small-padding);
+  padding: var(--medium-padding);
   border-radius: var(--border-radius-medium);
   border: 1px solid var(--gray);
-  margin: var(--large-padding) 0;
+  margin: var(--small-padding) 0;
   cursor: pointer;
   display: block;
   text-decoration: none;

@@ -12,9 +12,9 @@ function HintCard(props) {
   const {card, onCardClick} = props
   return card._type === 'hint' ? (
     <div className={styles.root} onClick={() => onCardClick(card._id)}>
-      <h3 className={styles.cardTitle}>
+      <h4 className={styles.cardTitle}>
         {card.title} <ArrowRight />
-      </h3>
+      </h4>
       <p className={styles.cardSummary}>{card.summary}</p>
     </div>
   ) : (
@@ -24,12 +24,12 @@ function HintCard(props) {
       target="_blank"
       rel="noopener"
     >
-      <h3 className={styles.cardTitle}>
+      <h4 className={styles.cardTitle}>
         {card.title}
         <span className={styles.arrowUp}>
           <ArrowRight />
         </span>
-      </h3>
+      </h4>
       <p className={styles.cardSummary}>{card.description}</p>
     </a>
   )
