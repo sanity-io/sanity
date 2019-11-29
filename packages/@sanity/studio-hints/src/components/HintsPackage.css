@@ -70,7 +70,18 @@
 }
 
 .footer {
-  position: absolute;
+  position: sticky;
   bottom: 0;
-  padding: var(--small-padding) 0;
+  padding: var(--extra-small-padding) 0;
+  width: 100%;
+  background: var(--main-navigation-color);
+}
+
+.removeButton {
+  text-align: center;
+  background: var(--brand-primary);
+  color: var(--brand-primary--inverted);
+  margin: var(--small-padding) 0;
+  padding: var(--small-padding);
+  border-radius: var(--border-radius-medium);
 }
