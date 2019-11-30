@@ -1,5 +1,6 @@
 import {getParameterlessTemplatesBySchemaType} from '@sanity/initial-value-templates'
-import {SchemaType} from './parts/Schema'
+import {SchemaType, getDefaultSchema} from './parts/Schema'
+import {isActionEnabled} from './parts/documentActionUtils'
 import {client} from './parts/Client'
 import {SortItem} from './Sort'
 import {SerializeError, HELP_URL} from './SerializeError'
@@ -178,6 +179,7 @@ export class DocumentListBuilder extends GenericListBuilder<
 function inferInitialValueTemplates(
   spec: PartialDocumentList
 ): InitialValueTemplateItem[] | undefined {
+  const schema = getDefaultSchema()
   const {schemaTypeName, options} = spec
   const {filter, params} = options || {filter: '', params: {}}
   const typeNames = schemaTypeName ? [schemaTypeName] : getTypeNamesFromFilter(filter, params)
@@ -188,6 +190,11 @@ function inferInitialValueTemplates(
 
   let templateItems: InitialValueTemplateItem[] = []
   return typeNames.reduce((items, typeName) => {
+    const schemaType = schema.get(typeName)
+    if (!isActionEnabled(schemaType, 'create')) {
+      return items
+    }
+
     return items.concat(
       getParameterlessTemplatesBySchemaType(typeName).map(
         (tpl): InitialValueTemplateItem => ({
