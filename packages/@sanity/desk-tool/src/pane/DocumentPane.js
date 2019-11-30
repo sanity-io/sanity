@@ -6,7 +6,7 @@ import {omit, noop, get, throttle, debounce} from 'lodash'
 import {distanceInWordsToNow, format, isToday, isYesterday} from 'date-fns'
 import {from, merge, concat, timer, of as observableOf} from 'rxjs'
 import {catchError, switchMap, map, mapTo, tap} from 'rxjs/operators'
-import {resolveEnabledActions} from 'part:@sanity/base/util/document-action-utils'
+import {isActionEnabled, resolveEnabledActions} from 'part:@sanity/base/util/document-action-utils'
 import schema from 'part:@sanity/base/schema'
 import Button from 'part:@sanity/components/buttons/default'
 import client from 'part:@sanity/base/client'
@@ -536,6 +536,26 @@ export default withInitialValue(
       return Boolean(this.props.urlParams.rev)
     }
 
+    canPublish() {
+      const {markers, validationPending, draft} = this.state
+      const {
+        options: {type: typeName}
+      } = this.props
+
+      if (!draft.snapshot) {
+        return false
+      }
+
+      const errors = markers.filter(isValidationError)
+      const hasErrors = errors.length > 0
+      if (validationPending || hasErrors) {
+        return false
+      }
+
+      const type = schema.get(typeName)
+      return isActionEnabled(type, 'publish')
+    }
+
     dispose() {
       if (this.subscription) {
         this.subscription.unsubscribe()
@@ -613,11 +633,7 @@ export default withInitialValue(
     }
 
     handlePublishRequested = () => {
-      const {markers, validationPending, draft} = this.state
-      if (!draft.snapshot) {
-        return
-      }
-
+      const {markers, validationPending} = this.state
       const errors = markers.filter(isValidationError)
       const hasErrors = errors.length > 0
 
@@ -625,6 +641,10 @@ export default withInitialValue(
         this.setState(prevState => ({
           showValidationTooltip: !prevState.showValidationTooltip
         }))
+        return
+      }
+
+      if (!this.canPublish()) {
         return
       }
 
@@ -816,6 +836,10 @@ export default withInitialValue(
     }
 
     handlePublish = () => {
+      if (!this.canPublish()) {
+        return
+      }
+
       const documentId = this.props.options.id
       const {draft, published} = this.state
       this.setState({isPublishing: true})
