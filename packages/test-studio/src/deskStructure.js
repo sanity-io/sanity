@@ -158,6 +158,16 @@ export default () =>
 
       ...S.documentTypeListItems(),
 
+      S.listItem()
+        .title('Custom books list')
+        .child(
+          S.documentList()
+            .title('Unspecified books list')
+            .menuItems(S.documentTypeList('book').getMenuItems())
+            .filter('_type == $type')
+            .params({type: 'book'})
+        ),
+
       S.documentTypeListItem('sanity.imageAsset')
         .title('Images')
         .icon(MdImage)
