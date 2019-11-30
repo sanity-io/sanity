@@ -78,17 +78,20 @@ export default class FormView extends React.PureComponent {
     return selectedSchemaType.liveEdit === true
   }
 
-  render() {
-    const {
-      document,
-      history,
-      schemaType,
-      markers,
-      patchChannel,
-      initialValue,
-      isReconnecting
-    } = this.props
+  isReadOnly() {
+    const {document, schemaType, isReconnecting} = this.props
+    const {draft, published} = document
+    const isNonExistent = !draft && !published
 
+    return (
+      isReconnecting ||
+      !isActionEnabled(schemaType, 'update') ||
+      (isNonExistent && !isActionEnabled(schemaType, 'create'))
+    )
+  }
+
+  render() {
+    const {document, history, schemaType, markers, patchChannel, initialValue} = this.props
     const {draft, published, displayed} = document
     const {focusPath, filterField} = this.state
     const value = draft || published
@@ -122,7 +125,7 @@ export default class FormView extends React.PureComponent {
             onFocus={this.handleFocus}
             patchChannel={patchChannel}
             published={published}
-            readOnly={isReconnecting || !isActionEnabled(schemaType, 'update')}
+            readOnly={this.isReadOnly()}
             schema={schema}
             type={schemaType}
           />
