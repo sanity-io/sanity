@@ -20,7 +20,7 @@ export function getDocumentPaneFooterActions(props) {
   const isNonexistent = !draft && !published
 
   const actions = [
-    {
+    enabledActions.includes('publish') && {
       color: 'primary',
       disabled:
         isCreatingDraft ||
