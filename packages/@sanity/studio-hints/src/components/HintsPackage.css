@@ -85,4 +85,5 @@
   margin: var(--small-padding) 0;
   padding: var(--small-padding);
   border-radius: var(--border-radius-medium);
+  text-decoration: none;
 }

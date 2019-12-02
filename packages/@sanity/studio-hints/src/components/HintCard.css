@@ -24,10 +24,6 @@
   align-items: center;
   justify-content: space-between;
   margin: 0;
-
-  @nest & svg {
-    padding-left: 0.5rem;
-  }
 }
 
 .externalIcon {
