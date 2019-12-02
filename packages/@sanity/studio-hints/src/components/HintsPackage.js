@@ -27,7 +27,7 @@ export default class HintsPackage extends React.PureComponent {
     const query = `//groq
       *[_type == "starterTemplate" && repoId == $repoId && !(_id in path('drafts.**'))][0]{
         hintsPackage->{
-          _id, title, slug, links, hintsTitle,
+          _id, title, slug, links, hintsTitle, linksTitle,
           hints[]{
             ...,
             hint->{
@@ -140,11 +140,11 @@ export default class HintsPackage extends React.PureComponent {
     if (!hintsPackage || isEmpty(hintsPackage)) {
       return this.renderError(`No hints package found for slug "${repoId}"`)
     }
-    const {links, hints, hintsTitle} = hintsPackage
+    const {links, hints, title, hintsTitle, linksTitle} = hintsPackage
     return (
       <div className={styles.root}>
-        <h2 className={styles.trayTitle}>Get started with your project</h2>
-        <LinksList title={/* linksTitle ||  */ 'Resources'} links={links} />
+        <h2 className={styles.trayTitle}>{title}</h2>
+        <LinksList title={linksTitle || 'Resources'} links={links} />
         <LinksList type="card" title={hintsTitle} links={hints} />
         <div className={styles.footer}>
           {sidebarRemovalInstructions && (
