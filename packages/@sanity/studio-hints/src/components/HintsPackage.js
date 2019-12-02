@@ -5,9 +5,8 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 import studioHintsConfig from 'part:@sanity/default-layout/studio-hints-config'
 import {locationSetting, updateLocation} from '../datastore'
 import client from '../client'
-import Resources from './Resources'
+import LinksList from './LinksList'
 // import HintPage from './HintPage'
-import HintCard from './HintCard'
 import styles from './HintsPackage.css'
 
 export default class HintsPackage extends React.PureComponent {
@@ -113,7 +112,7 @@ export default class HintsPackage extends React.PureComponent {
   }
 
   render() {
-    const {hintsPackage, error, activePage, isLoading} = this.state
+    const {hintsPackage, error, isLoading} = this.state
     const repoId = studioHintsConfig.templateRepoId
 
     if (!repoId) {
@@ -138,15 +137,10 @@ export default class HintsPackage extends React.PureComponent {
     return (
       <div className={styles.root}>
         <h2 className={styles.trayTitle}>Get started with your project</h2>
-        <Resources title="Resources" resources={links} />
-        <h3 className={styles.cardsTitle}>{hintsTitle}</h3>
-        {hints &&
-          hints.map(hintItem => {
-            return <HintCard key={hintItem._key} card={hintItem} />
-          })}
-        {!hints && <p>No hints in this package</p>}
+        <LinksList title={/* linksTitle ||  */ 'Resources'} links={links} />
+        <LinksList type="card" title={hintsTitle} links={hints} />
         <div className={styles.footer}>
-          <div className={styles.removeButton}>How to remove this?</div>
+          <a className={styles.removeHintsLink}>How to remove this?</a>
         </div>
       </div>
     )

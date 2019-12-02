@@ -25,20 +25,22 @@ function HintCard(props) {
   </div>
   */
   return (
-    <a
-      href={`https://sanity.io/${resolveSegment[card.hint._type]}/${card.hint.slug.current}`}
-      className={styles.root}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      <h4 className={styles.cardTitle}>
-        {card.titleOverride || card.hint.title}
-        <span className={styles.arrowUp}>
-          <ArrowRight />
+    <li>
+      <a
+        href={`https://sanity.io/${resolveSegment[card.hint._type]}/${card.hint.slug.current}`}
+        className={styles.root}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span className={styles.cardTitle}>
+          {card.titleOverride || card.hint.title}
+          <span className={styles.arrowUp}>
+            <ArrowRight />
+          </span>
         </span>
-      </h4>
-      <p className={styles.cardSummary}>{card.hint.description}</p>
-    </a>
+        <p className={styles.cardSummary}>{card.hint.description}</p>
+      </a>
+    </li>
   )
 }
 

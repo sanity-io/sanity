@@ -13,19 +13,6 @@
   margin: 0;
 }
 
-.icon {
-  transform: rotate(-45deg);
-}
-
-.cardsTitle {
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-family: var(--font-family-monospace);
-  font-size: var(--font-size-small);
-  font-weight: 500;
-  margin: var(--medium-padding) 0;
-}
-
 .errorMessage {
   color: var(--state-danger-color);
 }
@@ -38,7 +25,8 @@
   background: var(--main-navigation-color);
 }
 
-.removeButton {
+.removeHintsLink {
+  display: block;
   text-align: center;
   background: var(--brand-primary);
   color: var(--brand-primary--inverted);
