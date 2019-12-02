@@ -77,7 +77,8 @@
   background: var(--main-navigation-color);
 }
 
-.removeButton {
+.removeHintsLink {
+  display: block;
   text-align: center;
   background: var(--brand-primary);
   color: var(--brand-primary--inverted);
