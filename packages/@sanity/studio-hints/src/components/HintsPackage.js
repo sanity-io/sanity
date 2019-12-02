@@ -4,8 +4,8 @@ import {isEmpty} from 'lodash'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import studioHintsConfig from 'part:@sanity/default-layout/studio-hints-config'
 import {locationSetting, updateLocation} from '../datastore'
-import {resolveUrl} from './utils'
 import client from '../client'
+import {resolveUrl} from './utils'
 import LinksList from './LinksList'
 // import HintPage from './HintPage'
 import styles from './HintsPackage.css'
@@ -47,7 +47,9 @@ export default class HintsPackage extends React.PureComponent {
             }
           }
         },
-        "sidebarRemovalInstructions": *[_type == "article" && slug.current == $removeHintsArticleSlug && !(_id in path('drafts.**'))][0]
+        "sidebarRemovalInstructions": *[_type == "article" && slug.current == $removeHintsArticleSlug && !(_id in path('drafts.**'))][0]{
+          _type, _id, slug
+        }
       }`
 
     client
