@@ -125,6 +125,7 @@ export default class HintsPackage extends React.PureComponent {
     if (!hintsPackage || isEmpty(hintsPackage)) {
       return this.renderError('Hints not found', `No hints package found for slug "${repoId}"`)
     }
+
     const {links, hints, title, hintsTitle, linksTitle} = hintsPackage
     return (
       <div className={styles.root}>
