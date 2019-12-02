@@ -21,17 +21,16 @@
 
 .cardTitle {
   display: flex;
+  font-weight: var(--headings-font-weight);
   align-items: center;
+  justify-content: space-between;
   margin: 0;
-
-  @nest & svg {
-    padding-left: 0.5rem;
-  }
 }
 
-.arrowUp {
-  transform: rotate(-45deg);
-  margin-top: 0.1em;
+.externalIcon {
+  display: flex;
+  align-items: stretch;
+  font-size: var(--icon-size);
 }
 
 .cardSummary {

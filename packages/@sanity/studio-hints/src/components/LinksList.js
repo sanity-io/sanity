@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import ArrowRight from 'part:@sanity/base/arrow-right'
+import LaunchIcon from 'part:@sanity/base/launch-icon'
 import styles from './LinksList.css'
 import HintCard from './HintCard'
 
@@ -23,7 +23,7 @@ function CardLinks(props) {
                 {/* TODO: handle inserting icon */}
                 {link.title}
                 <span className={styles.externalIcon}>
-                  <ArrowRight />
+                  <LaunchIcon />
                 </span>
               </a>
             </li>

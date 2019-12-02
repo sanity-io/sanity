@@ -46,5 +46,7 @@
 }
 
 .externalIcon {
-  transform: rotate(-45deg);
+  display: flex;
+  align-items: stretch;
+  font-size: var(--icon-size);
 }

@@ -9,6 +9,8 @@
 }
 
 .trayTitle {
+  display: flex;
+  align-items: center;
   font-size: var(--font-size-h4);
   margin: 0;
 }
@@ -33,4 +35,5 @@
   margin: var(--small-padding) 0;
   padding: var(--small-padding);
   border-radius: var(--border-radius-medium);
+  text-decoration: none;
 }

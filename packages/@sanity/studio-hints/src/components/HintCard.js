@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import ArrowRight from 'part:@sanity/base/arrow-right'
+import LaunchIcon from 'part:@sanity/base/launch-icon'
 import styles from './HintCard.css'
 import {resolveUrl} from './utils'
 
@@ -30,8 +30,8 @@ function HintCard(props) {
       >
         <span className={styles.cardTitle}>
           {card.titleOverride || card.hint.title}
-          <span className={styles.arrowUp}>
-            <ArrowRight />
+          <span className={styles.externalIcon}>
+            <LaunchIcon />
           </span>
         </span>
         <p className={styles.cardSummary}>{card.hint.description}</p>
