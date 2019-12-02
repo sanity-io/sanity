@@ -14,7 +14,7 @@
 }
 
 .resourceList {
-  border: 1px solid var(--gray);
+  border: 1px solid color(var(--main-navigation-color--inverted) a(40%));
   border-radius: var(--border-radius-large);
   margin: 0;
   padding: var(--small-padding) 0;
@@ -30,12 +30,13 @@
   margin: 0;
   color: color(var(--main-navigation-color--inverted) a(70%));
   padding: calc(var(--small-padding) + 0.25rem) var(--medium-padding);
-}
+  transition: all 0.2s linear;
 
-.link:hover {
-  color: var(--main-navigation-color--inverted);
-  background: color(var(--main-navigation-color) l(+4%));
-  cursor: pointer;
+  @nest &:hover {
+    color: var(--main-navigation-color--inverted);
+    background: color(var(--main-navigation-color) l(+4%));
+    cursor: pointer;
+  }
 }
 
 .externalIcon {

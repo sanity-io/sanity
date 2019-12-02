@@ -3,13 +3,20 @@
 .root {
   padding: var(--medium-padding);
   border-radius: var(--border-radius-medium);
-  border: 1px solid var(--gray);
+  border: 1px solid color(var(--main-navigation-color--inverted) a(40%));
   margin: var(--small-padding) 0;
   cursor: pointer;
   display: block;
   text-decoration: none;
-  color: inherit;
+  color: color(var(--main-navigation-color--inverted) a(70%));
   font-weight: 500;
+  transition: all 0.2s linear;
+
+  @nest &:hover {
+    color: var(--main-navigation-color--inverted);
+    background: color(var(--main-navigation-color) l(+4%));
+    cursor: pointer;
+  }
 }
 
 .cardTitle {
