@@ -5,7 +5,11 @@ import ToggleSidecarButton from './components/ToggleSidecarButton'
 import HintsPackage from './components/HintsPackage'
 import styles from './StudioHints.css'
 
-export const isSidecarEnabled = () => !!studioHintsConfig
+const isMobile = () => {
+  return typeof window !== 'undefined' && window.innerWidth < 512
+}
+
+export const isSidecarEnabled = () => studioHintsConfig && !isMobile()
 
 export const SidecarLayout = () => {
   return (
