@@ -2,11 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import ArrowRight from 'part:@sanity/base/arrow-right'
 import styles from './HintCard.css'
-
-const resolveSegment = {
-  guide: 'guides',
-  article: 'docs'
-}
+import {resolveUrl} from './utils'
 
 function HintCard(props) {
   const {card} = props
@@ -27,7 +23,7 @@ function HintCard(props) {
   return (
     <li>
       <a
-        href={`https://sanity.io/${resolveSegment[card.hint._type]}/${card.hint.slug.current}`}
+        href={resolveUrl(card.hint)}
         className={styles.root}
         target="_blank"
         rel="noopener noreferrer"

@@ -4,15 +4,19 @@ import {isEmpty} from 'lodash'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import studioHintsConfig from 'part:@sanity/default-layout/studio-hints-config'
 import {locationSetting, updateLocation} from '../datastore'
+import {resolveUrl} from './utils'
 import client from '../client'
 import LinksList from './LinksList'
 // import HintPage from './HintPage'
 import styles from './HintsPackage.css'
 
+const removeHintsArticleSlug = 'remove-this-sidebar'
+
 export default class HintsPackage extends React.PureComponent {
   state = {
     error: null,
     hintsPackage: null,
+    sidebarRemovalInstructions: null,
     activePage: null,
     isLoading: true
   }
@@ -42,13 +46,15 @@ export default class HintsPackage extends React.PureComponent {
               }
             }
           }
-        }
-      }.hintsPackage`
+        },
+        "sidebarRemovalInstructions": *[_type == "article" && slug.current == $removeHintsArticleSlug && !(_id in path('drafts.**'))][0]
+      }`
 
     client
-      .fetch(query, {repoId})
-      .then(hintsPackage => {
-        this.setState({hintsPackage, isLoading: false})
+      .fetch(query, {repoId, removeHintsArticleSlug})
+      .then(result => {
+        const {hintsPackage, sidebarRemovalInstructions} = result
+        this.setState({hintsPackage, sidebarRemovalInstructions, isLoading: false})
       })
       .catch(error => this.setState({error, isLoading: false}))
   }
@@ -112,7 +118,7 @@ export default class HintsPackage extends React.PureComponent {
   }
 
   render() {
-    const {hintsPackage, error, isLoading} = this.state
+    const {hintsPackage, sidebarRemovalInstructions, error, isLoading} = this.state
     const repoId = studioHintsConfig.templateRepoId
 
     if (!repoId) {
@@ -132,7 +138,6 @@ export default class HintsPackage extends React.PureComponent {
     if (!hintsPackage || isEmpty(hintsPackage)) {
       return this.renderError(`No hints package found for slug "${repoId}"`)
     }
-
     const {links, hints, hintsTitle} = hintsPackage
     return (
       <div className={styles.root}>
@@ -140,7 +145,16 @@ export default class HintsPackage extends React.PureComponent {
         <LinksList title={/* linksTitle ||  */ 'Resources'} links={links} />
         <LinksList type="card" title={hintsTitle} links={hints} />
         <div className={styles.footer}>
-          <a className={styles.removeHintsLink}>How to remove this?</a>
+          {sidebarRemovalInstructions && (
+            <a
+              href={resolveUrl(sidebarRemovalInstructions)}
+              className={styles.removeHintsLink}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              How to remove this?
+            </a>
+          )}
         </div>
       </div>
     )
