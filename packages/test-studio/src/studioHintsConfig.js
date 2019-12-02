@@ -1,3 +1,3 @@
 export default {
-  hintsPackageSlug: 'gatsby-blog'
+  templateRepoId: 'sanity-io/sanity-template-gatsby-blog'
 }

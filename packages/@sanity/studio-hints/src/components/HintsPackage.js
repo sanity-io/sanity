@@ -21,28 +21,34 @@ export default class HintsPackage extends React.PureComponent {
 
   subscription = null
 
-  fetchHintsPackage(slug) {
+  fetchHintsPackage(repoId) {
     const query = `//groq
-      *[_type == "hintsPackage" && slug.current == $slug && !(_id in path('drafts.**'))][0]{
-        _id, title, slug, "resources": links, hintsTitle,
-        hints[]->{
-          _type, _id, title, summary, slug, description,
-          body[]{
+      *[_type == "starterTemplate" && repoId == $repoId && !(_id in path('drafts.**'))][0]{
+        hintsPackage->{
+          _id, title, slug, links, hintsTitle,
+          hints[]{
             ...,
-            markDefs[] {
-              ...,
-              _type == 'internalLink' => {
-                ...(@->) {
-                  slug,
-                  "type": ^._type
+            hint->{
+              _type, _id, title, summary, slug, description,
+              body[]{
+                ...,
+                markDefs[] {
+                  ...,
+                  _type == 'internalLink' => {
+                    ...(@->) {
+                      slug,
+                      "type": ^._type
+                    }
+                  }
                 }
               }
             }
           }
         }
-      }`
+      }.hintsPackage`
+
     client
-      .fetch(query, {slug})
+      .fetch(query, {repoId})
       .then(hintsPackage => {
         this.setState({hintsPackage, isLoading: false})
       })
@@ -50,8 +56,8 @@ export default class HintsPackage extends React.PureComponent {
   }
 
   componentDidMount() {
-    const slug = studioHintsConfig.hintsPackageSlug
-    this.fetchHintsPackage(slug)
+    const repoId = studioHintsConfig.templateRepoId
+    this.fetchHintsPackage(repoId)
 
     this.subscription = locationSetting.listen().subscribe(currentLocation => {
       this.setState({activePage: currentLocation ? JSON.parse(currentLocation).id : null})
@@ -109,11 +115,11 @@ export default class HintsPackage extends React.PureComponent {
 
   render() {
     const {hintsPackage, error, activePage, isLoading} = this.state
-    const slug = studioHintsConfig.hintsPackageSlug
+    const repoId = studioHintsConfig.templateRepoId
 
-    if (!slug) {
+    if (!repoId) {
       return this.renderError(
-        'The studioHintsConfig does not contain a hints package slug. Please check the config file.'
+        'The studioHintsConfig does not contain a templateRepoId. Please check the config file.'
       )
     }
 
@@ -126,7 +132,7 @@ export default class HintsPackage extends React.PureComponent {
     }
 
     if (!hintsPackage || isEmpty(hintsPackage)) {
-      return this.renderError(`No hints package found for slug "${slug}"`)
+      return this.renderError(`No hints package found for slug "${repoId}"`)
     }
 
     if (activePage) {
@@ -142,15 +148,15 @@ export default class HintsPackage extends React.PureComponent {
       )
     }
 
-    const {resources, hints, hintsTitle} = hintsPackage
+    const {links, hints, hintsTitle} = hintsPackage
     return (
       <div className={styles.root}>
         <h2 className={styles.trayTitle}>Get started with your project</h2>
-        <Resources title="Resources" resources={resources} />
+        <Resources title="Resources" resources={links} />
         <h3 className={styles.cardsTitle}>{hintsTitle}</h3>
         {hints &&
-          hints.map(hint => {
-            return <HintCard key={hint._id} card={hint} /* onCardClick={this.handleCardClick} */ />
+          hints.map(hintItem => {
+            return <HintCard key={hintItem._key} card={hintItem} />
           })}
         {!hints && <p>No hints in this package</p>}
         <div className={styles.footer}>
