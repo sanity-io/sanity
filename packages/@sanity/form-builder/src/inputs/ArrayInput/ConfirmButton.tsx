@@ -3,6 +3,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import styles from './styles/ConfirmButton.css'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import PopOver from 'part:@sanity/components/dialogs/popover'
+
 type ConfirmButtonProps = {
   onConfirm?: () => void
   title: string
