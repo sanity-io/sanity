@@ -8,7 +8,6 @@ import client from '../client'
 import Resources from './Resources'
 // import HintPage from './HintPage'
 import HintCard from './HintCard'
-import ErrorBoundary from './ErrorBoundary'
 import styles from './HintsPackage.css'
 
 export default class HintsPackage extends React.PureComponent {
@@ -133,19 +132,6 @@ export default class HintsPackage extends React.PureComponent {
 
     if (!hintsPackage || isEmpty(hintsPackage)) {
       return this.renderError(`No hints package found for slug "${repoId}"`)
-    }
-
-    if (activePage) {
-      return (
-        <ErrorBoundary onBackClick={this.handleBackClick}>
-          <HintPage
-            hint={this.activeHint()}
-            onBackClick={this.handleBackClick}
-            nextHint={this.getNextHint()}
-            onCardClick={this.handleCardClick}
-          />
-        </ErrorBoundary>
-      )
     }
 
     const {links, hints, hintsTitle} = hintsPackage
