@@ -12,6 +12,12 @@ const YouTube = dynamic(() => import('./serializers/Video'))
 const Image = dynamic(() => import('./serializers/Image'))
 const CodeSnippet = dynamic(() => import('./serializers/CodeSnippet'))
 
+/**
+ * This component isn't currently used,
+ * but is saved for future iteration of the Studio Hints
+ * Component probably needs more work.
+ */
+
 const serializers = {
   marks: {
     internalLink: internalLinkSerializer,

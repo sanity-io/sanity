@@ -6,7 +6,7 @@ import studioHintsConfig from 'part:@sanity/default-layout/studio-hints-config'
 import {locationSetting, updateLocation} from '../datastore'
 import client from '../client'
 import Resources from './Resources'
-import HintPage from './HintPage'
+// import HintPage from './HintPage'
 import HintCard from './HintCard'
 import ErrorBoundary from './ErrorBoundary'
 import styles from './HintsPackage.css'
@@ -64,8 +64,16 @@ export default class HintsPackage extends React.PureComponent {
     }
   }
 
+  /**
+   * Hint cards currently only link to external sources.
+   * In future iterations a hint card may have it's own page
+   * that opens by clicking the card (onCardClick prop), that
+   * then renders the HintPage.js component.
+   * These are the handlers for opening and closing hint pages:
+   */
+  /*
+
   handleCardClick = id => {
-    // apply transition class first, wait until transitioned out, then change
     const locationObject = {type: 'hint', id}
     updateLocation(locationObject)
   }
@@ -91,6 +99,8 @@ export default class HintsPackage extends React.PureComponent {
     }
     return -1
   }
+
+  */
 
   renderError(message) {
     console.error(message)
@@ -140,7 +150,7 @@ export default class HintsPackage extends React.PureComponent {
         <h3 className={styles.cardsTitle}>{hintsTitle}</h3>
         {hints &&
           hints.map(hint => {
-            return <HintCard key={hint._id} card={hint} onCardClick={this.handleCardClick} />
+            return <HintCard key={hint._id} card={hint} /* onCardClick={this.handleCardClick} */ />
           })}
         {!hints && <p>No hints in this package</p>}
         <div className={styles.footer}>

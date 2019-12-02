@@ -9,20 +9,27 @@ const resolveSegment = {
 }
 
 function HintCard(props) {
-  const {card, onCardClick} = props
-  return card._type === 'hint' ? (
-    <div className={styles.root} onClick={() => onCardClick(card._id)}>
-      <h4 className={styles.cardTitle}>
-        {card.title} <ArrowRight />
-      </h4>
-      <p className={styles.cardSummary}>{card.summary}</p>
-    </div>
-  ) : (
+  const {card} = props
+  /**
+   * Hint cards currently only link to external sources.
+   * In future iterations a hint card may have it's own page
+   * that opens by clicking the card (onCardClick prop), that
+   * then renders the HintPage.js component.
+   */
+  /*
+  <div className={styles.root} onClick={() => onCardClick(card._id)}>
+    <h4 className={styles.cardTitle}>
+      {card.title} <ArrowRight />
+    </h4>
+    <p className={styles.cardSummary}>{card.summary}</p>
+  </div>
+  */
+  return (
     <a
       href={`https://sanity.io/${resolveSegment[card._type]}/${card.slug.current}`}
       className={styles.root}
       target="_blank"
-      rel="noopener"
+      rel="noopener noreferrer"
     >
       <h4 className={styles.cardTitle}>
         {card.title}
@@ -37,8 +44,8 @@ function HintCard(props) {
 
 HintCard.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
-  card: PropTypes.object.isRequired,
-  onCardClick: PropTypes.func.isRequired
+  card: PropTypes.object.isRequired
+  // onCardClick: PropTypes.func.isRequired
 }
 
 export default HintCard
