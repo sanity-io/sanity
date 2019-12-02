@@ -33,7 +33,7 @@
     font-size: calc(var(--font-size-large) - 2px);
     font-weight: normal;
     margin: 0;
-    color: color(var(--main-navigation-color--inverted) a(70%));
+    color: inherit;
     padding: calc(var(--small-padding) + 0.25rem) var(--medium-padding);
     transition: all 0.2s linear;
 

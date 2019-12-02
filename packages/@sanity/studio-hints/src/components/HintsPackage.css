@@ -6,6 +6,11 @@
   display: flex;
   flex-direction: column;
   flex: 1;
+  color: color(var(--main-navigation-color--inverted) a(70%));
+}
+
+.withError {
+  margin-top: var(--large-padding);
 }
 
 .trayTitle {
@@ -15,8 +20,26 @@
   margin: 0;
 }
 
-.errorMessage {
-  color: var(--state-danger-color);
+.errorWrapper {
+  padding: var(--medium-padding);
+
+  @nest & .errorTitle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-h4);
+    margin: 0;
+    text-align: center;
+
+    @nest & svg {
+      padding-right: 0.5em;
+    }
+  }
+
+  @nest & .errorMessage {
+    text-align: center;
+    margin: 0;
+  }
 }
 
 .footer {

@@ -3,6 +3,7 @@ import React from 'react'
 import {isEmpty} from 'lodash'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import studioHintsConfig from 'part:@sanity/default-layout/studio-hints-config'
+import WarningIcon from 'part:@sanity/base/warning-icon'
 import {locationSetting, updateLocation} from '../datastore'
 import client from '../client'
 import {resolveUrl} from './utils'
@@ -114,9 +115,18 @@ export default class HintsPackage extends React.PureComponent {
 
   */
 
-  renderError(message) {
-    console.error(message)
-    return <p className={styles.errorMessage}>{message}</p>
+  renderError(title, message) {
+    return (
+      <div className={`${styles.root} ${styles.withError}`}>
+        <div className={styles.errorWrapper}>
+          <h2 className={styles.errorTitle}>
+            <WarningIcon />
+            {title}
+          </h2>
+          <p className={styles.errorMessage}>{message}</p>
+        </div>
+      </div>
+    )
   }
 
   render() {
@@ -125,26 +135,37 @@ export default class HintsPackage extends React.PureComponent {
 
     if (!repoId) {
       return this.renderError(
-        'The studioHintsConfig does not contain a templateRepoId. Please check the config file.'
+        'Configuration missing',
+        <span>
+          The <code>studioHintsConfig</code> does not contain a hints package slug.
+        </span>
       )
     }
 
     if (isLoading) {
-      return <Spinner message="Loading hints package" />
+      return (
+        <div className={styles.root}>
+          <Spinner message="Loading hints package" />
+        </div>
+      )
     }
 
     if (error) {
-      return this.renderError('Error while attempting to fetch hints package')
+      return this.renderError(
+        'Hints not found',
+        'An error occurred while fetching the hints package.'
+      )
     }
 
     if (!hintsPackage || isEmpty(hintsPackage)) {
-      return this.renderError(`No hints package found for slug "${repoId}"`)
+      return this.renderError('Hints not found', `No hints package found for slug "${repoId}"`)
     }
+
     const {links, hints, title, hintsTitle, linksTitle} = hintsPackage
     return (
       <div className={styles.root}>
         <h2 className={styles.trayTitle}>{title}</h2>
-        <LinksList title={linksTitle || 'Resources'} links={links} />
+        <LinksList title={linksTitle} links={links} />
         <LinksList type="card" title={hintsTitle} links={hints} />
         <div className={styles.footer}>
           {sidebarRemovalInstructions && (

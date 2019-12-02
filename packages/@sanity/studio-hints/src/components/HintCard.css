@@ -8,9 +8,8 @@
   cursor: pointer;
   display: block;
   text-decoration: none;
-  color: color(var(--main-navigation-color--inverted) a(70%));
-  font-weight: 500;
   transition: all 0.2s linear;
+  color: inherit;
 
   @nest &:hover {
     color: var(--main-navigation-color--inverted);
