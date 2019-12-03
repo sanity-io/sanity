@@ -13,8 +13,7 @@ function getPartResolverPlugin(options) {
   return new PartResolverPlugin(options)
 }
 
-function tryReadDotEnv(studioRootPath) {
-  const configEnv = process.env.NODE_ENV || 'development'
+function tryReadDotEnv(studioRootPath, configEnv) {
   const envFile = path.join(studioRootPath, `.env.${configEnv}`)
 
   let parsed = {}
@@ -31,15 +30,24 @@ function tryReadDotEnv(studioRootPath) {
   return parsed
 }
 
-function getEnvVars({isProd, basePath}) {
-  const dotEnvVars = tryReadDotEnv(basePath)
+function getSanityEnvVars({env, basePath}) {
+  const configEnv = process.env.BUNDLE_ENV || env || process.env.NODE_ENV || 'development'
+  const dotEnvVars = tryReadDotEnv(basePath, configEnv)
   const allEnvVars = {...dotEnvVars, ...process.env}
+  return Object.keys(allEnvVars).reduce((acc, key) => {
+    if (key.startsWith('SANITY_STUDIO_')) {
+      acc[key] = allEnvVars[key]
+    }
+    return acc
+  }, {})
+}
 
-  return Object.keys(allEnvVars).reduce(
+function getEnvVars({isProd, env, basePath}) {
+  const envVars = getSanityEnvVars({env, basePath})
+
+  return Object.keys(envVars).reduce(
     (acc, key) => {
-      if (key.startsWith('SANITY_STUDIO_')) {
-        acc[`process.env.${key}`] = JSON.stringify(process.env[key])
-      }
+      acc[`process.env.${key}`] = JSON.stringify(envVars[key])
       return acc
     },
     {
@@ -56,7 +64,7 @@ function getEnvPlugin(options) {
   const webpack = options.webpack || require('webpack')
   return new webpack.DefinePlugin({
     __DEV__: !isProd && bundleEnv === 'development',
-    ...getEnvVars({isProd, basePath: options.basePath})
+    ...getEnvVars({isProd, env, basePath: options.basePath})
   })
 }
 
@@ -107,6 +115,7 @@ module.exports = {
   getEnvPlugin: getEnvPlugin,
   getPartLoader: getPartLoader,
   getStyleResolver: getStyleResolver,
+  getSanityEnvVars: getSanityEnvVars,
   getPartResolverPlugin: getPartResolverPlugin,
   getPostcssImportPlugin: getPostcssImportPlugin,
   getPostcssPlugins: getPostcssPlugins,
