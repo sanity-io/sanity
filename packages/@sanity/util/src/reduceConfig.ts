@@ -6,7 +6,7 @@ import dotenv from 'dotenv'
 
 const readEnvFile = memoize(tryReadEnvFile)
 const sanityEnv = process.env.SANITY_ENV || 'production'
-const basePath = process.env.SANITY_STUDIO_BASEPATH || process.env.STUDIO_BASEPATH
+const basePath = process.env.SANITY_STUDIO_PROJECT_BASEPATH || process.env.STUDIO_BASEPATH
 const apiHosts = {
   staging: 'https://api.sanity.work',
   development: 'http://api.sanity.wtf'
@@ -58,8 +58,8 @@ export default (rawConfig, env = 'development', options: {studioRootPath?: strin
     envVars = {...envVars, ...tryReadDotEnv(studioRootPath, env)}
   }
 
-  const projectId = envVars.SANITY_STUDIO_PROJECT_ID
-  const dataset = envVars.SANITY_STUDIO_DATASET
+  const projectId = envVars.SANITY_STUDIO_API_PROJECT_ID
+  const dataset = envVars.SANITY_STUDIO_API_DATASET
 
   const apiHost = apiHosts[sanityEnv]
   const api = clean({apiHost, projectId, dataset})
