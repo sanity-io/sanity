@@ -12,7 +12,6 @@
   max-height: calc(100vh - var(--nav-bar-box));
   transition: transform 500ms ease-in-out, max-width 500ms ease-in-out;
   transform: translate3d(420px, 0, 0);
-
   @media (--screen-medium) {
     position: fixed;
     top: var(--nav-bar-box);
