@@ -3,7 +3,7 @@ type PathSegment = string | number | KeyedSegment
 type Path = PathSegment[]
 
 export declare const FOCUS_TERMINATOR: string
-export declare function get(obj: any, path: Path | string, defaultVal: any): any
+export declare function get(obj: any, path: Path | string, defaultVal?: any): any
 export declare function isEqual(path: Path, otherPath: Path): boolean
 export declare function isSegmentEqual(
   pathSegment: PathSegment,
