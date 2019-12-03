@@ -6,7 +6,7 @@
   border: 1px solid color(var(--main-navigation-color--inverted) a(40%));
   margin: var(--small-padding) 0;
   cursor: pointer;
-  display: block;
+  display: flex;
   text-decoration: none;
   transition: all 0.2s linear;
   color: inherit;

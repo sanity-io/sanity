@@ -28,13 +28,13 @@ function HintCard(props) {
         target="_blank"
         rel="noopener noreferrer"
       >
-        <span className={styles.cardTitle}>
-          {card.titleOverride || card.hint.title}
-          <span className={styles.externalIcon}>
-            <LaunchIcon />
-          </span>
+        <div>
+          <span className={styles.cardTitle}>{card.titleOverride || card.hint.title}</span>
+          <p className={styles.cardSummary}>{card.hint.description}</p>
+        </div>
+        <span className={styles.externalIcon}>
+          <LaunchIcon />
         </span>
-        <p className={styles.cardSummary}>{card.hint.description}</p>
       </a>
     </li>
   )
