@@ -3,6 +3,7 @@ import fse from 'fs-extra'
 import rimTheRaf from 'rimraf'
 import filesize from 'filesize'
 import {promisify} from 'es6-promisify'
+import webpackIntegration from '@sanity/webpack-integration/v3'
 import getConfig from '@sanity/util/lib/getConfig'
 import {getWebpackCompiler, getDocumentElement, ReactDOM} from '@sanity/server'
 import sortModulesBySize from '../../stats/sortModulesBySize'
@@ -39,6 +40,16 @@ export default async (args, context) => {
   await tryInitializePluginConfigs({workDir, output, env: 'production'})
 
   checkStudioDependencyVersions(workDir)
+
+  const envVars = webpackIntegration.getSanityEnvVars({env: 'production', basePath: workDir})
+  const envVarKeys = Object.keys(envVars)
+  if (envVarKeys.length > 0) {
+    output.print(
+      '\nIncluding the following environment variables as part of the JavaScript bundle:'
+    )
+    envVarKeys.forEach(key => output.print(`- ${key}`))
+    output.print('')
+  }
 
   const compiler = getWebpackCompiler(compilationConfig)
   const compile = promisify(compiler.run.bind(compiler))
