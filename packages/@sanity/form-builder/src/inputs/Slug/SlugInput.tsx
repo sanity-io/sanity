@@ -1,6 +1,6 @@
 import React from 'react'
 import speakingurl from 'speakingurl'
-import {get} from 'lodash'
+import {get} from '@sanity/util/paths'
 import Button from 'part:@sanity/components/buttons/default'
 import FormField from 'part:@sanity/components/formfields/default'
 import TextInput from 'part:@sanity/components/textinputs/default'
@@ -71,7 +71,7 @@ export default withValuePath(
           return Promise.resolve(sourceValue)
         }
         const {type} = this.props
-        const slugify = get(type, 'options.slugify', defaultSlugify)
+        const slugify = get(type, ['options', 'slugify'], defaultSlugify)
         return Promise.resolve(slugify(sourceValue, type))
       }
       UNSAFE_componentWillReceiveProps(nextProps) {
@@ -99,7 +99,7 @@ export default withValuePath(
       }
       handleGenerateSlug = () => {
         const {type} = this.props
-        const source = get(type, 'options.source')
+        const source = get(type, ['options', 'source'])
         if (!source) {
           // eslint-disable-next-line no-console
           console.error(`Source is missing. Check source on type "${type.name}" in schema`)
@@ -120,8 +120,11 @@ export default withValuePath(
       getNewFromSource = () => {
         const {getValuePath, type, document} = this.props
         const parentPath = getValuePath().slice(0, -1)
-        const source = get(type, 'options.source')
-        return typeof source === 'function' ? source(document, {parentPath}) : get(document, source)
+        const parent = get(document, parentPath)
+        const source = get(type, ['options', 'source'])
+        return typeof source === 'function'
+          ? source(document, {parentPath, parent})
+          : get(document, source)
       }
       render() {
         const {value, type, level, markers, readOnly} = this.props
