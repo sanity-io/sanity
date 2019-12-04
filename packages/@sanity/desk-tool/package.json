@@ -46,7 +46,8 @@
     "react-tippy": "^1.2.3",
     "rxjs": "^6.5.3",
     "scroll": "^3.0.1",
-    "shallow-equals": "^1.0.0"
+    "shallow-equals": "^1.0.0",
+    "resize-observer": "1.0.0"
   },
   "devDependencies": {
     "@sanity/base": "0.147.0",

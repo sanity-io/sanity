@@ -2,7 +2,7 @@
 
 .root {
   position: fixed;
-  z-index: var(--zindex-modal);
+  z-index: var(--zindex-drawer);
   bottom: 0;
   right: 0;
   transform: translate3d(100vw, 0, 0);

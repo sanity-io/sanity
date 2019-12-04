@@ -5,12 +5,13 @@ import {merge, of} from 'rxjs'
 import {mapTo, delay, distinctUntilChanged} from 'rxjs/operators'
 import SplitController from 'part:@sanity/components/panes/split-controller'
 import SplitPaneWrapper from 'part:@sanity/components/panes/split-pane-wrapper'
+import {ResizeObserver} from 'resize-observer'
 import LoadingPane from './pane/LoadingPane'
 import Pane from './pane/Pane'
 import windowWidth$ from './utils/windowWidth'
 import isNarrowScreen from './utils/isNarrowScreen'
-import {PaneRouterContext, getPaneRouterContextFactory, LOADING_PANE} from './index'
 import desktoolStyles from './styles/DeskTool.css'
+import {PaneRouterContext, getPaneRouterContextFactory, LOADING_PANE} from './index'
 
 const COLLAPSED_WIDTH = 55
 
@@ -145,7 +146,6 @@ export default class DeskToolPanes extends React.Component {
   }
 
   componentWillUnmount() {
-
     if (this.resizeObserver && this._rootElement && this._rootElement.current) {
       this.resizeObserver.unobserve(this._rootElement.current)
     }
