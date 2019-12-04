@@ -4,6 +4,7 @@ import {Observable} from 'rxjs'
 import HotspotImage from '@sanity/imagetool/HotspotImage'
 import ImageTool from '@sanity/imagetool'
 import React from 'react'
+import PropTypes from 'prop-types'
 
 // Parts
 import assetSources from 'all:part:@sanity/form-builder/input/image/asset-source'
@@ -70,7 +71,7 @@ export interface Value {
 
 export type Props = {
   value?: Value
-  document?: Value,
+  document?: Value
   type: Type
   level: number
   onChange: (arg0: PatchEvent) => void
@@ -100,6 +101,10 @@ type ImageInputState = {
 const globalAssetSources = userDefinedAssetSources ? userDefinedAssetSources : assetSources
 
 export default class ImageInput extends React.PureComponent<Props, ImageInputState> {
+  static contextTypes = {
+    getValuePath: PropTypes.func
+  }
+
   _focusArea: any
   uploadSubscription: any
   state = {
@@ -217,7 +222,32 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   handleRemoveButtonClick = (event: React.SyntheticEvent<any>) => {
-    this.props.onChange(PatchEvent.from(unset(['asset'])))
+    const {getValuePath} = this.context
+    const {value} = this.props
+    const parentPathSegment = getValuePath().slice(-1)[0]
+
+    // String path segment mean an object path, while a number or a
+    // keyed segment means we're a direct child of an array
+    const isArrayElement = typeof parentPathSegment !== 'string'
+
+    // When removing the image, we should also remove any crop and hotspot
+    // _type and _key are "meta"-properties and are not significant unless
+    // other properties are present. Thus, we want to remove the entire
+    // "container" object if these are the only properties present, BUT
+    // only if we're not an array element, as removing the array element
+    // will close the selection dialog. Instead, when closing the dialog,
+    // the array logic will check for an "empty" value and remove it for us
+    const allKeys = Object.keys(value)
+    const remainingKeys = allKeys.filter(
+      key => !['_type', '_key', '_upload', 'asset', 'crop', 'hotspot'].includes(key)
+    )
+
+    const isEmpty = remainingKeys.length === 0
+    const removeKeys = ['asset']
+      .concat(allKeys.filter(key => ['crop', 'hotspot', '_upload'].includes(key)))
+      .map(key => unset([key]))
+
+    this.props.onChange(PatchEvent.from(isEmpty && !isArrayElement ? unset() : removeKeys))
   }
 
   handleFieldChange = (event: PatchEvent, field: FieldT) => {
