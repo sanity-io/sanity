@@ -20,22 +20,22 @@ export const navigate = id => {
 }
 
 const RenderActionDialog = props => {
-  switch (props.dialog.type) {
-    case 'popover': {
-      return <PopOverDialog>{props.dialog.children}</PopOverDialog>
-    }
-  }
+  return <PopOverDialog>{props.dialog}</PopOverDialog>
 }
 
 const ActionWrapper = props => {
   const {action} = props
 
+  const actionState = action.use(props.record)
+  if (actionState === null) {
+    return null
+  }
   return (
     <>
-      <button onClick={action.handle} disabled={action.disabled}>
-        {action.label}
+      <button onClick={actionState.handle} disabled={actionState.disabled}>
+        {actionState.label}
       </button>
-      {action.dialog && <RenderActionDialog dialog={action.dialog} />}
+      {actionState.dialog && <RenderActionDialog dialog={actionState.dialog} />}
     </>
   )
 }
@@ -68,11 +68,9 @@ function TestActionState(props) {
       <UserSwitch />
       <h2>Now editing: {props.record.id}</h2>
       <pre>{JSON.stringify(props.record.document, null, 2)}</pre>
-      {(groups.primary || []).map(action => {
-        const out = action.action(props.record)
-
-        return out ? <ActionWrapper action={out} /> : null
-      })}
+      {(groups.primary || []).map(action => (
+        <ActionWrapper action={action} record={props.record} />
+      ))}
     </div>
   )
 }
