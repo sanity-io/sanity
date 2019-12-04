@@ -1,14 +1,14 @@
 import {create} from '../mockDocStateDatastore'
 
-function CreateAction(state) {
-  if (state.draft || state.published) {
+function useCreate(record) {
+  if (record.draft || record.published) {
     return null
   }
   return {
     label: 'Create',
-    disabled: !!state.draft,
+    disabled: !!record.draft,
     handle: () => {
-      create(state.id, {_type: 'hello'})
+      create(record.id, {_type: 'hello'})
     }
   }
 }
@@ -16,5 +16,5 @@ function CreateAction(state) {
 export default {
   id: 'create',
   group: 'primary',
-  action: CreateAction
+  use: useCreate
 }

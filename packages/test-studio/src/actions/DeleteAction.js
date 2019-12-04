@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {del} from '../mockDocStateDatastore'
 
-const DeleteAction = record => {
+const useDelete = record => {
   const [isConfirming, setIsConfirming] = React.useState(false)
   return {
     disabled: !record.draft && !record.published,
@@ -20,5 +20,8 @@ const DeleteAction = record => {
 export default {
   id: 'delete',
   group: 'primary',
-  action: DeleteAction
+  use: record => {
+    const decorated = useDelete(record)
+    return {...decorated, label: `DECORATED: ${decorated.label}`}
+  }
 }

@@ -19,7 +19,7 @@ function approve(id, reviewerId) {
   return mutate(id, [set(`approvedBy`, reviewerId)])
 }
 
-function SendToReviewAction(record) {
+function useSendToReview(record) {
   const currentUser = useCurrentUser()
   const [isSelectReviewersDialogOpen, setSelectReviewersDialogOpen] = React.useState(false)
   const [isReviewAndApproveDialogOpen, setReviewAndApprove] = React.useState(false)
@@ -47,18 +47,15 @@ function SendToReviewAction(record) {
       handle: () => {
         setReviewAndApprove(true)
       },
-      dialog: isReviewAndApproveDialogOpen && {
-        type: 'popover',
-        children: (
-          <>
-            <h2>What do you think?</h2>
+      dialog: isReviewAndApproveDialogOpen && (
+        <>
+          <h2>What do you think?</h2>
 
-            <button type="button" onClick={() => approve(record.id, currentUser.id)}>
-              Looks good to me!
-            </button>
-          </>
-        )
-      }
+          <button type="button" onClick={() => approve(record.id, currentUser.id)}>
+            Looks good to me!
+          </button>
+        </>
+      )
     }
   }
 
@@ -67,22 +64,19 @@ function SendToReviewAction(record) {
     handle: () => {
       setSelectReviewersDialogOpen(true)
     },
-    dialog: isSelectReviewersDialogOpen && {
-      type: 'popover',
-      children: (
-        <>
-          <h2>Select who should approve</h2>
-          <SelectReviewer
-            reviewers={currentReviewers}
-            onAdd={reviewerId => addReviewer(record.id, reviewerId)}
-            onRemove={reviewerId => removeReviewer(record.id, reviewerId)}
-          />
-          <button type="button" onClick={() => setSelectReviewersDialogOpen(false)}>
-            OK
-          </button>
-        </>
-      )
-    }
+    dialog: isSelectReviewersDialogOpen && (
+      <>
+        <h2>Select who should approve</h2>
+        <SelectReviewer
+          reviewers={currentReviewers}
+          onAdd={reviewerId => addReviewer(record.id, reviewerId)}
+          onRemove={reviewerId => removeReviewer(record.id, reviewerId)}
+        />
+        <button type="button" onClick={() => setSelectReviewersDialogOpen(false)}>
+          OK
+        </button>
+      </>
+    )
   }
 }
 
@@ -126,5 +120,5 @@ function canApprove(permission) {
 export default {
   id: 'send-to-review',
   group: 'primary',
-  action: SendToReviewAction
+  use: useSendToReview
 }

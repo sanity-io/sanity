@@ -2,7 +2,7 @@ import {duplicate} from '../mockDocStateDatastore'
 import {navigate} from '../test-action-tool/TestActionsTool'
 import {omit} from 'lodash'
 
-const DuplicateAction = record => {
+const useAction = record => {
   return {
     disabled: !record.draft && !record.published,
     label: 'Duplicate',
@@ -17,5 +17,5 @@ const DuplicateAction = record => {
 export default {
   id: 'duplicate',
   group: 'primary',
-  action: DuplicateAction
+  use: useAction
 }
