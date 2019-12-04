@@ -1,56 +1,25 @@
 import * as React from 'react'
 import {mutate} from '../mockDocStateDatastore'
+import {setIfMissing, unset, append} from './patch-helpers'
 
 const REVIEWERS = ['simen', 'even', 'marius', 'per-kristian']
 
-function setIfMissing(id, path, value) {
-  return {
-    patch: {
-      id,
-      setIfMissing: {
-        [path]: value
-      }
-    }
-  }
-}
-function append(id, path, items) {
-  return {
-    patch: {
-      id,
-      insert: {
-        after: `${path}[-1]`,
-        items: items
-      }
-    }
-  }
-}
-function unset(id, paths) {
-  return {
-    patch: {
-      id: id,
-      unset: paths
-    }
-  }
-}
-
 function addReviewer(id, reviewerName) {
-  const draftId = `drafts.${id}`
   return mutate(id, [
-    setIfMissing(draftId, 'reviewers', []),
-    unset(draftId, [`reviewers[_key=="${reviewerName}"]`]),
-    append(draftId, `reviewers`, [{_key: reviewerName, name: reviewerName}])
+    setIfMissing('reviewers', []),
+    unset([`reviewers[_key=="${reviewerName}"]`]),
+    append(`reviewers`, [{_key: reviewerName, name: reviewerName}])
   ])
 }
 
 function removeReviewer(id, reviewerName) {
-  const draftId = `drafts.${id}`
-  return mutate(id, [unset(draftId, [`reviewers[_key=="${reviewerName}"]`])])
+  return mutate(id, [unset([`reviewers[_key=="${reviewerName}"]`])])
 }
 
 function SendToReviewAction(record) {
-  const [isOpen, setOpen] = React.useState(false)
+  const [isDialogOpen, setDialogOpen] = React.useState(false)
 
-  if (!record.draft) {
+  if (!record.draft || record.isLiveEdit) {
     return null
   }
 
@@ -59,9 +28,9 @@ function SendToReviewAction(record) {
   return {
     label: reviewers.length > 0 ? `Awaiting review from ${reviewers.length}` : 'Request review',
     handle: () => {
-      setOpen(true)
+      setDialogOpen(true)
     },
-    dialog: isOpen && {
+    dialog: isDialogOpen && {
       type: 'popover',
       children: (
         <>
@@ -81,7 +50,7 @@ function SendToReviewAction(record) {
               </label>
             )
           })}
-          <button onClick={() => setOpen(false)}>OK</button>
+          <button onClick={() => setDialogOpen(false)}>OK</button>
         </>
       )
     }

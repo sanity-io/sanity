@@ -62,23 +62,19 @@
     },
     {
       "implements": "part:@sanity/base/document-action",
-      "path": "src/actions/SendToReviewAction"
-    },
-    {
-      "implements": "part:@sanity/base/document-action",
-      "path": "src/actions/UnpublishAction"
-    },
-    {
-      "implements": "part:@sanity/base/document-action",
-      "path": "src/actions/PublishAction"
-    },
-    {
-      "implements": "part:@sanity/base/document-action",
       "path": "src/actions/DeleteAction"
     },
     {
       "implements": "part:@sanity/base/document-action",
       "path": "src/actions/CreateAction"
+    },
+    {
+      "implements": "part:@sanity/base/document-action",
+      "path": "src/actions/WriteFieldAction"
+    },
+    {
+      "implements": "part:@sanity/base/document-action",
+      "path": "src/actions/PolicyBasedReview"
     },
     {
       "implements": "part:@sanity/base/document-action",
