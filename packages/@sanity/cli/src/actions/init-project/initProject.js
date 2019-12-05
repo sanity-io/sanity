@@ -20,7 +20,7 @@ import templates from './templates'
 
 /* eslint-disable no-process-env */
 const isCI = process.env.CI
-const sanityEnv = process.env.SANITY_ENV
+const sanityEnv = process.env.SANITY_INTERNAL_ENV
 const environment = sanityEnv ? sanityEnv : process.env.NODE_ENV
 /* eslint-enable no-process-env */
 

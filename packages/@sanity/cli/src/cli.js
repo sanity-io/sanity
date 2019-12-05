@@ -13,7 +13,7 @@ import mergeCommands from './util/mergeCommands'
 import {getCliRunner} from './CommandRunner'
 import baseCommands from './commands'
 
-const sanityEnv = process.env.SANITY_ENV || 'production' // eslint-disable-line no-process-env
+const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production' // eslint-disable-line no-process-env
 const knownEnvs = ['development', 'staging', 'production']
 
 module.exports = async function runCli(cliRoot) {
