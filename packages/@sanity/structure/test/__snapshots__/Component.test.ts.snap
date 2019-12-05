@@ -7,6 +7,7 @@ Object {
   "id": "foo",
   "menuItemGroups": Array [],
   "menuItems": Array [],
+  "options": Object {},
   "title": undefined,
   "type": "component",
 }
@@ -19,6 +20,9 @@ Object {
   "id": "foo",
   "menuItemGroups": Array [],
   "menuItems": Array [],
+  "options": Object {
+    "foo": "bar",
+  },
   "title": "some title",
   "type": "component",
 }
@@ -31,6 +35,9 @@ Object {
   "id": "yeah",
   "menuItemGroups": Array [],
   "menuItems": Array [],
+  "options": Object {
+    "foo": "bar",
+  },
   "title": "Yeah",
   "type": "component",
 }
@@ -54,6 +61,7 @@ Object {
       "title": "Print",
     },
   ],
+  "options": Object {},
   "title": undefined,
   "type": "component",
 }
@@ -71,6 +79,7 @@ Object {
       "title": "Print",
     },
   ],
+  "options": Object {},
   "title": undefined,
   "type": "component",
 }
@@ -94,6 +103,7 @@ Object {
       "title": "Print",
     },
   ],
+  "options": Object {},
   "title": undefined,
   "type": "component",
 }
@@ -111,6 +121,7 @@ Object {
       "title": "Purge",
     },
   ],
+  "options": Object {},
   "title": undefined,
   "type": "component",
 }
