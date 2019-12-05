@@ -69,6 +69,10 @@
       "path": "src/actions/CreateAction"
     },
     {
+      "implements": "part:@sanity/base/document-actions",
+      "path": "src/actions/resolveDocumentActions"
+    },
+    {
       "implements": "part:@sanity/base/document-action",
       "path": "src/actions/WriteFieldAction"
     },

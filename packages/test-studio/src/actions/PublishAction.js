@@ -1,21 +1,19 @@
+import React from 'react'
 import {publish} from '../mockDocStateDatastore'
 import {omit} from 'lodash'
 
-const PublishAction = record => {
-  if (record.isLiveEdit) {
+export default function PublishAction(docInfo) {
+  const [isPublished, setPublished] = React.useState(false)
+  if (docInfo.isLiveEdit) {
     return null
   }
   return {
-    disabled: !record.draft || !!record.published,
+    disabled: !docInfo.draft || !!docInfo.published,
     label: 'Publish',
     handle: () => {
-      publish(record.id, doc => omit(doc, 'reviewers'))
-    }
+      publish(docInfo.id, doc => omit(doc, 'reviewers'))
+      setPublished(true)
+    },
+    snackbar: isPublished && {type: 'success', content: <div>Published!</div>}
   }
-}
-
-export default {
-  id: 'publish',
-  group: 'primary',
-  action: PublishAction
 }

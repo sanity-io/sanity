@@ -1,20 +1,13 @@
 import {create} from '../mockDocStateDatastore'
 
-function useCreate(record) {
-  if (record.draft || record.published) {
+export default function CreateAction(docInfo) {
+  if (docInfo.draft || docInfo.published) {
     return null
   }
   return {
     label: 'Create',
-    disabled: !!record.draft,
     handle: () => {
-      create(record.id, {_type: 'hello'})
+      create(docInfo.id, {_type: 'mock'})
     }
   }
-}
-
-export default {
-  id: 'create',
-  group: 'primary',
-  use: useCreate
 }

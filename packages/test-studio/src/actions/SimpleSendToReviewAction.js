@@ -16,14 +16,14 @@ function removeReviewer(id, reviewerName) {
   return mutate(id, [unset([`reviewers[_key=="${reviewerName}"]`])])
 }
 
-function useSendToReview(record) {
+export default function SendToReviewAction(docInfo) {
   const [isDialogOpen, setDialogOpen] = React.useState(false)
 
-  if (!record.draft || record.isLiveEdit) {
+  if (!docInfo.draft || docInfo.isLiveEdit) {
     return null
   }
 
-  const reviewers = record.draft.reviewers || []
+  const reviewers = docInfo.draft.reviewers || []
 
   return {
     label: reviewers.length > 0 ? `Awaiting review from ${reviewers.length}` : 'Request review',
@@ -41,7 +41,7 @@ function useSendToReview(record) {
                 checked={reviewers.some(r => r._key === reviewer)}
                 onClick={event => {
                   const op = event.currentTarget.checked ? addReviewer : removeReviewer
-                  op(record.id, reviewer)
+                  op(docInfo.id, reviewer)
                 }}
               />{' '}
               {reviewer}
@@ -52,10 +52,4 @@ function useSendToReview(record) {
       </>
     )
   }
-}
-
-export default {
-  id: 'send-to-review',
-  group: 'primary',
-  use: useSendToReview
 }

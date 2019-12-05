@@ -1,27 +1,30 @@
 import * as React from 'react'
-import {del} from '../mockDocStateDatastore'
+import {create, del} from '../mockDocStateDatastore'
 
-const useDelete = record => {
+export default function DeleteAction(docInfo) {
   const [isConfirming, setIsConfirming] = React.useState(false)
+  const [deletedDocument, setDeletedDocument] = React.useState(null)
+
   return {
-    disabled: !record.draft && !record.published,
+    disabled: !docInfo.draft && !docInfo.published,
     label: isConfirming ? 'Confirm delete…' : 'Delete',
     handle: () => {
       if (isConfirming) {
-        del(record.id)
-        setIsConfirming(false)
+        setDeletedDocument(docInfo.draft)
+        del(docInfo.id)
       } else {
         setIsConfirming(true)
       }
+    },
+    snackbar: deletedDocument && {
+      type: 'success',
+      content: <div>Document deleted</div>,
+      actionTitle: 'Undo',
+      onAction: () => {
+        create(docInfo.id, deletedDocument)
+        setDeletedDocument(null)
+        setIsConfirming(false)
+      }
     }
-  }
-}
-
-export default {
-  id: 'delete',
-  group: 'primary',
-  use: record => {
-    const decorated = useDelete(record)
-    return {...decorated, label: `DECORATED: ${decorated.label}`}
   }
 }

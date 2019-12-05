@@ -2,8 +2,8 @@ import * as React from 'react'
 import {mutate} from '../mockDocStateDatastore'
 import {set} from './patch-helpers'
 
-const useAction = record => {
-  const doc = record.isLiveEdit ? record.published : record.draft
+export default function WriteFieldAction(docInfo) {
+  const doc = docInfo.isLiveEdit ? docInfo.published : docInfo.draft
   const [isWriting, setIsWriting] = React.useState(false)
   return {
     disabled: !doc,
@@ -17,16 +17,10 @@ const useAction = record => {
         <input
           type="text"
           value={doc.title || ''}
-          onChange={event => mutate(record.id, [set('title', event.currentTarget.value)])}
+          onChange={event => mutate(docInfo.id, [set('title', event.currentTarget.value)])}
         />
         <button onClick={() => setIsWriting(false)}>OK</button>
       </>
     )
   }
-}
-
-export default {
-  id: 'write-field-action',
-  group: 'primary',
-  use: useAction
 }
