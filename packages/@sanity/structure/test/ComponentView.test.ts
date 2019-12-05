@@ -48,6 +48,7 @@ test('builds component view through component constructor', () => {
       .component(() => null)
       .id('custom')
       .title('Custom')
+      .options({foo: 'bar'})
       .serialize()
   ).toMatchSnapshot()
 })
@@ -67,19 +68,22 @@ test('can override component set through constructor', () => {
 
 test('builder is immutable', () => {
   const original = S.view.component()
-  expect(original.id('foo')).not.toEqual(original)
-  expect(original.title('foo')).not.toEqual(original)
-  expect(original.icon(() => null)).not.toEqual(original)
-  expect(original.component(() => null)).not.toEqual(original)
+  expect(original.id('foo')).not.toBe(original)
+  expect(original.title('foo')).not.toBe(original)
+  expect(original.icon(() => null)).not.toBe(original)
+  expect(original.options({})).not.toBe(original)
+  expect(original.component(() => null)).not.toBe(original)
 })
 
 test('getters work', () => {
   const original = S.view.component()
   const icon = () => null
   const component = () => null
+  const options = {foo: 'bar'}
 
   expect(original.id('foo').getId()).toEqual('foo')
   expect(original.title('title').getTitle()).toEqual('title')
   expect(original.icon(icon).getIcon()).toEqual(icon)
+  expect(original.options(options).getOptions()).toEqual(options)
   expect(original.component(component).getComponent()).toEqual(component)
 })

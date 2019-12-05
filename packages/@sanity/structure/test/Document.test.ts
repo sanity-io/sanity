@@ -71,12 +71,12 @@ test('can construct using builder (alt)', () => {
 
 test('builder is immutable', () => {
   const original = S.document()
-  expect(original.id('foo')).not.toEqual(original)
-  expect(original.views([])).not.toEqual(original)
-  expect(original.documentId('moo')).not.toEqual(original)
-  expect(original.schemaType('author')).not.toEqual(original)
-  expect(original.initialValueTemplate('book-by-author')).not.toEqual(original)
-  expect(original.child(() => S.documentTypeList('post'))).not.toEqual(original)
+  expect(original.id('foo')).not.toBe(original)
+  expect(original.views([])).not.toBe(original)
+  expect(original.documentId('moo')).not.toBe(original)
+  expect(original.schemaType('author')).not.toBe(original)
+  expect(original.initialValueTemplate('book-by-author')).not.toBe(original)
+  expect(original.child(() => S.documentTypeList('post'))).not.toBe(original)
 })
 
 test('throws on duplicate view ids', () => {

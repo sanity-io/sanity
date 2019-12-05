@@ -224,14 +224,14 @@ test('can disable icons from being displayed', () => {
 
 test('builder is immutable', () => {
   const original = S.list()
-  expect(original.id('foo')).not.toEqual(original)
-  expect(original.title('foo')).not.toEqual(original)
-  expect(original.items([])).not.toEqual(original)
-  expect(original.menuItems([])).not.toEqual(original)
-  expect(original.menuItemGroups([])).not.toEqual(original)
-  expect(original.defaultLayout('card')).not.toEqual(original)
-  expect(original.child(() => undefined)).not.toEqual(original)
-  expect(original.canHandleIntent(() => false)).not.toEqual(original)
+  expect(original.id('foo')).not.toBe(original)
+  expect(original.title('foo')).not.toBe(original)
+  expect(original.items([])).not.toBe(original)
+  expect(original.menuItems([])).not.toBe(original)
+  expect(original.menuItemGroups([])).not.toBe(original)
+  expect(original.defaultLayout('card')).not.toBe(original)
+  expect(original.child(() => undefined)).not.toBe(original)
+  expect(original.canHandleIntent(() => false)).not.toBe(original)
 })
 
 test('getters work', () => {

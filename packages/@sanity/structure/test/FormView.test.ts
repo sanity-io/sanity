@@ -17,9 +17,9 @@ test('can override defaults', () => {
 
 test('builder is immutable', () => {
   const original = S.view.form()
-  expect(original.id('foo')).not.toEqual(original)
-  expect(original.title('foo')).not.toEqual(original)
-  expect(original.icon(() => null)).not.toEqual(original)
+  expect(original.id('foo')).not.toBe(original)
+  expect(original.title('foo')).not.toBe(original)
+  expect(original.icon(() => null)).not.toBe(original)
 })
 
 test('getters work', () => {
