@@ -1396,6 +1396,7 @@ export default withInitialValue(
 
         // Other stuff
         documentId: this.getPublishedId(),
+        options,
         schemaType,
         markers: markers || []
       }

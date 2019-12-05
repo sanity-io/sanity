@@ -15,6 +15,7 @@ export default class UserComponentPane extends React.PureComponent {
     index: PropTypes.number.isRequired,
     type: PropTypes.string.isRequired,
     component: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
+    options: PropTypes.object, // eslint-disable-line react/forbid-prop-types
     isSelected: PropTypes.bool.isRequired,
     isCollapsed: PropTypes.bool.isRequired,
     onExpand: PropTypes.func,
@@ -34,6 +35,7 @@ export default class UserComponentPane extends React.PureComponent {
 
   static defaultProps = {
     title: '',
+    options: {},
     menuItems: [],
     menuItemGroups: [],
     styles: undefined,
