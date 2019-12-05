@@ -114,17 +114,17 @@ test('default child resolver resolves to editor', done => {
 
 test('builder is immutable', () => {
   const original = S.documentTypeList('author')
-  expect(original.id('foo')).not.toEqual(original)
-  expect(original.title('foo')).not.toEqual(original)
-  expect(original.filter('foo == "bar"')).not.toEqual(original)
-  expect(original.params({foo: 'bar'})).not.toEqual(original)
-  expect(original.menuItems([])).not.toEqual(original)
-  expect(original.showIcons(false)).not.toEqual(original)
-  expect(original.menuItemGroups([])).not.toEqual(original)
-  expect(original.defaultLayout('card')).not.toEqual(original)
-  expect(original.child(() => undefined)).not.toEqual(original)
-  expect(original.canHandleIntent(() => false)).not.toEqual(original)
-  expect(original.defaultOrdering([{field: 'title', direction: 'asc'}])).not.toEqual(original)
+  expect(original.id('foo')).not.toBe(original)
+  expect(original.title('foo')).not.toBe(original)
+  expect(original.filter('foo == "bar"')).not.toBe(original)
+  expect(original.params({foo: 'bar'})).not.toBe(original)
+  expect(original.menuItems([])).not.toBe(original)
+  expect(original.showIcons(false)).not.toBe(original)
+  expect(original.menuItemGroups([])).not.toBe(original)
+  expect(original.defaultLayout('card')).not.toBe(original)
+  expect(original.child(() => undefined)).not.toBe(original)
+  expect(original.canHandleIntent(() => false)).not.toBe(original)
+  expect(original.defaultOrdering([{field: 'title', direction: 'asc'}])).not.toBe(original)
 })
 
 test('getters work', () => {

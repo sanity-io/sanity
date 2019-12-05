@@ -2,6 +2,7 @@ import {StructureBuilder as S} from '../src'
 
 const noop = () => null
 const component = () => null
+const options = {foo: 'bar'}
 const childResolver = () => undefined
 
 test('builds component node through constructor', () => {
@@ -10,6 +11,7 @@ test('builds component node through constructor', () => {
       id: 'foo',
       title: 'some title',
       child: childResolver,
+      options,
       component
     }).serialize()
   ).toMatchSnapshot()
@@ -63,6 +65,7 @@ test('can construct using builder', () => {
       .id('yeah')
       .title('Yeah')
       .component(component)
+      .options(options)
       .child(childResolver)
       .serialize()
   ).toMatchSnapshot()
@@ -125,12 +128,13 @@ test('can set menu items groups with builder', () => {
 
 test('builder is immutable', () => {
   const original = S.component()
-  expect(original.id('foo')).not.toEqual(original)
-  expect(original.title('foo')).not.toEqual(original)
-  expect(original.component(component)).not.toEqual(original)
-  expect(original.child(childResolver)).not.toEqual(original)
-  expect(original.menuItems([])).not.toEqual(original)
-  expect(original.menuItemGroups([])).not.toEqual(original)
+  expect(original.id('foo')).not.toBe(original)
+  expect(original.title('foo')).not.toBe(original)
+  expect(original.component(component)).not.toBe(original)
+  expect(original.options(options)).not.toBe(original)
+  expect(original.child(childResolver)).not.toBe(original)
+  expect(original.menuItems([])).not.toBe(original)
+  expect(original.menuItemGroups([])).not.toBe(original)
 })
 
 test('getters work', () => {
@@ -138,6 +142,7 @@ test('getters work', () => {
   expect(original.id('foo').getId()).toEqual('foo')
   expect(original.title('bar').getTitle()).toEqual('bar')
   expect(original.component(component).getComponent()).toEqual(component)
+  expect(original.options(options).getOptions()).toEqual(options)
   expect(original.menuItems([]).getMenuItems()).toEqual([])
   expect(original.menuItemGroups([]).getMenuItemGroups()).toEqual([])
   expect(original.child(childResolver).getChild()).toEqual(childResolver)

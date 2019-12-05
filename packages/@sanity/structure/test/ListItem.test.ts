@@ -101,11 +101,11 @@ test('builds list items with display options (show icon)', () => {
 
 test('builder is immutable', () => {
   const original = S.listItem()
-  expect(original.id('foo')).not.toEqual(original)
-  expect(original.title('foo')).not.toEqual(original)
-  expect(original.child(() => undefined)).not.toEqual(original)
-  expect(original.schemaType('foo')).not.toEqual(original)
-  expect(original.showIcon(true)).not.toEqual(original)
+  expect(original.id('foo')).not.toBe(original)
+  expect(original.title('foo')).not.toBe(original)
+  expect(original.child(() => undefined)).not.toBe(original)
+  expect(original.schemaType('foo')).not.toBe(original)
+  expect(original.showIcon(true)).not.toBe(original)
 })
 
 test('getters work', () => {

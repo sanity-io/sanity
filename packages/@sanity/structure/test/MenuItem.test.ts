@@ -73,13 +73,13 @@ test('throws if building menu item group without title', () => {
 
 test('builder is immutable', () => {
   const original = S.menuItem()
-  expect(original.title('foo')).not.toEqual(original)
-  expect(original.params({foo: 'bar'})).not.toEqual(original)
-  expect(original.action('doSomething')).not.toEqual(original)
-  expect(original.intent({type: 'create'})).not.toEqual(original)
-  expect(original.group('create')).not.toEqual(original)
-  expect(original.icon(() => null)).not.toEqual(original)
-  expect(original.showAsAction(false)).not.toEqual(original)
+  expect(original.title('foo')).not.toBe(original)
+  expect(original.params({foo: 'bar'})).not.toBe(original)
+  expect(original.action('doSomething')).not.toBe(original)
+  expect(original.intent({type: 'create'})).not.toBe(original)
+  expect(original.group('create')).not.toBe(original)
+  expect(original.icon(() => null)).not.toBe(original)
+  expect(original.showAsAction(false)).not.toBe(original)
 })
 
 test('getters work', () => {
