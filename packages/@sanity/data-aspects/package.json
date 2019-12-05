@@ -20,11 +20,11 @@
   ],
   "dependencies": {
     "@sanity/generate-help-url": "0.146.0",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.15"
   },
   "devDependencies": {
     "@sanity/check": "0.146.0",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.7.1"
   },
   "repository": {
     "type": "git",

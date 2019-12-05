@@ -22,11 +22,11 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.15",
     "nano-pubsub": "^1.0.2"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.18",
+    "@types/jest": "^24.0.23",
     "@types/react": "^16.3",
     "browserify": "^14.3.0",
     "error-capture-middleware": "0.0.2",
@@ -40,9 +40,9 @@
     "react-dom": "^16.9.0",
     "rebundler": "^0.3.0",
     "remon": "^1.0.2",
-    "rimraf": "^2.6.2",
+    "rimraf": "^2.7.1",
     "staticr": "^4.0.2",
-    "ts-jest": "^24.0.2",
+    "ts-jest": "^24.2.0",
     "ts-node": "^8.3.0",
     "tsify": "^4.0.1"
   },

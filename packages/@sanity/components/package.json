@@ -32,7 +32,7 @@
     "dom-scroll-into-view": "^1.2.1",
     "element-resize-detector": "^1.1.14",
     "exif-component": "^1.0.1",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.15",
     "nano-pubsub": "^1.0.2",
     "palx": "^1.0.3",
     "popper.js": "1.14.1",
@@ -44,7 +44,7 @@
     "react-sortable-hoc": "^0.6.3",
     "react-split-pane": "^0.1.84",
     "react-tippy": "^1.2.3",
-    "rxjs": "^6.5.2",
+    "rxjs": "^6.5.3",
     "string-hash": "^1.1.3"
   },
   "devDependencies": {
@@ -55,7 +55,7 @@
     "prop-types": "^15.6.0",
     "react": "16.9.0",
     "react-styleguidist": "^2.3.1",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.7.1"
   },
   "peerDependencies": {
     "prop-types": "^15.6 || ^16",

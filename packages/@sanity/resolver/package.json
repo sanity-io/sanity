@@ -37,13 +37,13 @@
     "mock-fs": "^4.4.2",
     "nyc": "^11.0.3",
     "proxyquire": "^1.7.10",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.7.1"
   },
   "dependencies": {
     "@sanity/generate-help-url": "0.146.0",
     "@sanity/util": "0.146.0",
     "fs-extra": "^6.0.1",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.15",
     "path-exists": "^3.0.0",
     "promise-props-recursive": "^1.0.0"
   }

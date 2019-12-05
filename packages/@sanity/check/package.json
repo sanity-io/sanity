@@ -32,7 +32,7 @@
     "promise-props-recursive": "^1.0.0"
   },
   "devDependencies": {
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.7.1"
   },
   "repository": {
     "type": "git",

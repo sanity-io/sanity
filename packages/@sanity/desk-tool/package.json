@@ -36,14 +36,14 @@
     "diff": "^3.2.0",
     "element-resize-detector": "^1.1.14",
     "hashlru": "^2.1.0",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.15",
     "promise-latest": "^1.0.4",
     "react-click-outside": "^3.0.0",
     "react-ink": "^6.1.0",
     "react-json-inspector": "^7.1.1",
     "react-tiny-virtual-list": "^2.0.5",
     "react-tippy": "^1.2.3",
-    "rxjs": "^6.5.2",
+    "rxjs": "^6.5.3",
     "scroll": "^3.0.1",
     "shallow-equals": "^1.0.0"
   },
@@ -58,7 +58,7 @@
     "postcss-cssnext": "^3.0.2",
     "prop-types": "^15.6.0",
     "react": "16.9.0",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.7.1"
   },
   "peerDependencies": {
     "@sanity/base": "^0.141.5",
