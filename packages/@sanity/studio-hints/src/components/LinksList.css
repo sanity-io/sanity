@@ -19,6 +19,10 @@
   margin: var(--medium-padding) 0;
 }
 
+.cardList:last-child {
+  margin-bottom: calc(var(--font-size-large) * 3);
+}
+
 .simpleList {
   border: 1px solid color(var(--main-navigation-color--inverted) a(40%));
   border-radius: var(--border-radius-large);

@@ -13,7 +13,9 @@ function CardLinks(props) {
   return (
     <div className={styles.root}>
       <h3 className={styles.listTitle}>{title}</h3>
-      <ul className={`${styles.linksList} ${type === 'card' ? '' : styles.simpleList}`}>
+      <ul
+        className={`${styles.linksList} ${type === 'card' ? styles.cardList : styles.simpleList}`}
+      >
         {links.map(link => {
           return type === 'card' ? (
             <HintCard key={link._key} card={link} />
