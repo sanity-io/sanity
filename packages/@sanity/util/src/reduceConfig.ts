@@ -5,7 +5,7 @@ import {mergeWith, memoize} from 'lodash'
 import dotenv from 'dotenv'
 
 const readEnvFile = memoize(tryReadEnvFile)
-const sanityEnv = process.env.SANITY_ENV || 'production'
+const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production'
 const basePath = process.env.SANITY_STUDIO_PROJECT_BASEPATH || process.env.STUDIO_BASEPATH
 const apiHosts = {
   staging: 'https://api.sanity.work',

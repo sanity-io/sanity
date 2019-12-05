@@ -1,6 +1,6 @@
 import ConfigStore from 'configstore'
 
-const sanityEnv = (process.env.SANITY_ENV || '').toLowerCase() // eslint-disable-line no-process-env
+const sanityEnv = (process.env.SANITY_INTERNAL_ENV || '').toLowerCase() // eslint-disable-line no-process-env
 const defaults = {}
 let config = null
 

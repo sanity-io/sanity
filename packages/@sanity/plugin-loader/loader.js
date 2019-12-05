@@ -9,7 +9,7 @@ const reduceConfig = util.reduceConfig
 const getSanityVersions = util.getSanityVersions
 
 /* eslint-disable no-process-env */
-const sanityEnv = process.env.SANITY_ENV
+const sanityEnv = process.env.SANITY_INTERNAL_ENV
 const env = typeof sanityEnv === 'undefined' ? process.env.NODE_ENV : sanityEnv
 /* eslint-enable no-process-env */
 

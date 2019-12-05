@@ -6,7 +6,7 @@ if (!client) {
 }
 
 // eslint-disable-next-line no-process-env
-const sanityEnv = (process.env.SANITY_ENV || '').toLowerCase()
+const sanityEnv = (process.env.SANITY_INTERNAL_ENV || '').toLowerCase()
 const defaults = {}
 const config = new ConfigStore(
   sanityEnv && sanityEnv !== 'production' ? `sanity-${sanityEnv}` : 'sanity',
