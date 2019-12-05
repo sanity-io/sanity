@@ -19,22 +19,22 @@ function approve(id, reviewerId) {
   return mutate(id, [set(`approvedBy`, reviewerId)])
 }
 
-function useSendToReview(record) {
+export default function PolicyBasedReview(docInfo) {
   const currentUser = useCurrentUser()
   const [isSelectReviewersDialogOpen, setSelectReviewersDialogOpen] = React.useState(false)
   const [isReviewAndApproveDialogOpen, setReviewAndApprove] = React.useState(false)
 
-  if (record.isLiveEdit || !record.draft) {
+  if (docInfo.isLiveEdit || !docInfo.draft) {
     return null
   }
 
-  const approvedBy = record.draft.approvedBy
-  const currentReviewers = record.draft.reviewers || []
+  const approvedBy = docInfo.draft.approvedBy
+  const currentReviewers = docInfo.draft.reviewers || []
   if (approvedBy) {
     return {
       label: 'Publish',
       handle: () => {
-        publish(record.id)
+        publish(docInfo.id)
       }
     }
   } else if (
@@ -51,7 +51,7 @@ function useSendToReview(record) {
         <>
           <h2>What do you think?</h2>
 
-          <button type="button" onClick={() => approve(record.id, currentUser.id)}>
+          <button type="button" onClick={() => approve(docInfo.id, currentUser.id)}>
             Looks good to me!
           </button>
         </>
@@ -69,8 +69,8 @@ function useSendToReview(record) {
         <h2>Select who should approve</h2>
         <SelectReviewer
           reviewers={currentReviewers}
-          onAdd={reviewerId => addReviewer(record.id, reviewerId)}
-          onRemove={reviewerId => removeReviewer(record.id, reviewerId)}
+          onAdd={reviewerId => addReviewer(docInfo.id, reviewerId)}
+          onRemove={reviewerId => removeReviewer(docInfo.id, reviewerId)}
         />
         <button type="button" onClick={() => setSelectReviewersDialogOpen(false)}>
           OK
@@ -116,9 +116,4 @@ function SelectReviewer(props) {
 
 function canApprove(permission) {
   return ['approve', 'publish'].includes(permission.access)
-}
-export default {
-  id: 'send-to-review',
-  group: 'primary',
-  use: useSendToReview
 }

@@ -1,7 +1,6 @@
 import * as React from 'react'
-import {from} from 'rxjs'
-import {map, tap} from 'rxjs/operators'
-import {currentUser$, getUser, allUsers$, listenDocRecord} from '../mockDocStateDatastore'
+import {map} from 'rxjs/operators'
+import {allUsers$, currentUser$, getUser, listenDocRecord} from '../mockDocStateDatastore'
 
 function useObservable(observable$, initialValue) {
   const subscription = React.useRef()
@@ -32,15 +31,17 @@ function useObservable(observable$, initialValue) {
 }
 
 export function useDocument(id) {
-  return useObservable(listenDocRecord(id).pipe(map(record => record.document)))
+  return useObservable(listenDocRecord(id).pipe(map(docInfo => docInfo.document)))
 }
+
 export function useCurrentUser() {
-  return useObservable(currentUser$.pipe(tap(console.log)))
+  return useObservable(currentUser$)
 }
 
 export function useUsers() {
   return useObservable(allUsers$)
 }
+
 export function useUser(id) {
-  return useObservable(getUser(id).pipe(tap(console.log)))
+  return useObservable(getUser(id))
 }

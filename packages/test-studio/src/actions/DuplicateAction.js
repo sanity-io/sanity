@@ -2,13 +2,13 @@ import {duplicate} from '../mockDocStateDatastore'
 import {navigate} from '../test-action-tool/TestActionsTool'
 import {omit} from 'lodash'
 
-const useAction = record => {
+const useAction = docInfo => {
   return {
-    disabled: !record.draft && !record.published,
+    disabled: !docInfo.draft && !docInfo.published,
     label: 'Duplicate',
     handle: () => {
-      const dupeId = `duped-${record.id}`
-      duplicate(record.id, dupeId, current => omit(current, ['reviewers']))
+      const dupeId = `duped-${docInfo.id}`
+      duplicate(docInfo.id, dupeId, current => omit(current, ['reviewers']))
       navigate(dupeId)
     }
   }
