@@ -5,6 +5,10 @@ import {SchemaType} from './parts/Schema'
 import {validateId} from './util/validateId'
 import {View, ViewBuilder, maybeSerializeView} from './views/View'
 import {form} from './views'
+import {
+  getUserDefinedDefaultDocumentBuilder,
+  DocumentFragmentResolveOptions
+} from './userDefinedStructure'
 import {getTemplateById} from '@sanity/initial-value-templates'
 
 interface DocumentOptions {
@@ -141,10 +145,9 @@ export class DocumentBuilder implements Serializable {
       ).withHelpUrl(HELP_URL.DOCUMENT_ID_REQUIRED)
     }
 
-    const views = (this.spec.views && this.spec.views.length > 0
-      ? this.spec.views
-      : [form()]
-    ).map((item, i) => maybeSerializeView(item, i, path))
+    const views = (this.spec.views && this.spec.views.length > 0 ? this.spec.views : [form()]).map(
+      (item, i) => maybeSerializeView(item, i, path)
+    )
 
     const viewIds = views.map(view => view.id)
     const dupes = uniq(viewIds.filter((id, i) => viewIds.includes(id, i + 1)))
@@ -193,7 +196,12 @@ function getDocumentOptions(spec: Partial<DocumentOptions>): DocumentOptions {
 }
 
 export function documentFromEditor(spec?: EditorNode) {
-  let doc = new DocumentBuilder()
+  let doc =
+    spec && spec.type
+      ? // Use user-defined document fragment as base if possible
+        getDefaultDocumentNode({schemaType: spec.type})
+      : // Fall back to plain old document builder
+        new DocumentBuilder()
 
   if (spec) {
     const {id, type, template, templateParameters} = spec.options
@@ -225,7 +233,26 @@ export function documentFromEditorWithInitialValue(
     throw new Error(`Template with ID "${templateId}" not defined`)
   }
 
-  return documentFromEditor()
-    .schemaType(template.schemaType)
-    .initialValueTemplate(templateId, parameters)
+  return getDefaultDocumentNode({schemaType: template.schemaType}).initialValueTemplate(
+    templateId,
+    parameters
+  )
+}
+
+export function getDefaultDocumentNode(
+  options: DocumentFragmentResolveOptions
+): DocumentBuilder {
+  const {documentId, schemaType} = options
+  const userDefined = getUserDefinedDefaultDocumentBuilder(options)
+
+  let builder = userDefined || new DocumentBuilder()
+  if (!builder.getId()) {
+    builder = builder.id('documentEditor')
+  }
+
+  if (documentId) {
+    builder = builder.documentId(documentId.replace(/^drafts\./, ''))
+  }
+
+  return builder.schemaType(schemaType)
 }

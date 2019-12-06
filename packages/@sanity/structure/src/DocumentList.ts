@@ -13,7 +13,7 @@ import {
   GenericList,
   GenericListInput
 } from './GenericList'
-import {DocumentBuilder} from './Document'
+import {DocumentBuilder, getDefaultDocumentNode} from './Document'
 
 const resolveTypeForDocument = (id: string): Promise<string | undefined> => {
   const query = '*[_id in [$documentId, $draftId]]._type'
@@ -43,11 +43,13 @@ const resolveDocumentChildForItem: ChildResolver = (
 ): ItemChild | Promise<ItemChild> | undefined => {
   const parentItem = options.parent as DocumentList
   const schemaType = parentItem.schemaTypeName || resolveTypeForDocument(itemId)
-  return Promise.resolve(schemaType).then(type =>
-    new DocumentBuilder()
-      .id('editor')
-      .documentId(itemId)
-      .schemaType(type || '')
+  return Promise.resolve(schemaType).then(schemaType =>
+    schemaType
+      ? getDefaultDocumentNode({schemaType, documentId: itemId})
+      : new DocumentBuilder()
+          .id('editor')
+          .documentId(itemId)
+          .schemaType('')
   )
 }
 

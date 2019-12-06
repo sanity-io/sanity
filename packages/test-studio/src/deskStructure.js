@@ -10,6 +10,16 @@ import S from '@sanity/desk-tool/structure-builder'
 // For testing. Bump the timeout to introduce som lag
 const delay = (val, ms = 10) => new Promise(resolve => setTimeout(resolve, ms, val))
 
+export const getDefaultDocumentNode = () => {
+  return S.document().views([
+    S.view.form().icon(EditIcon),
+    S.view
+      .component(DeveloperPreview)
+      .icon(EyeIcon)
+      .title('Preview')
+  ])
+}
+
 export default () =>
   S.list()
     .id('root')

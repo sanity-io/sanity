@@ -6,7 +6,7 @@ import {DocumentTypeListBuilder} from '../src/DocumentTypeList'
 
 const nope = () => 'NOPE'
 const editor = {
-  id: 'editor',
+  id: 'documentEditor',
   options: {
     type: 'author',
     id: 'grrm'

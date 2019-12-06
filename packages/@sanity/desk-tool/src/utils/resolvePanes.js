@@ -2,12 +2,15 @@ import {useEffect, useState} from 'react'
 import shallowEquals from 'shallow-equals'
 import {Observable, defer, throwError, from, of as observableOf} from 'rxjs'
 import {map, switchMap, distinctUntilChanged} from 'rxjs/operators'
+import leven from 'leven'
 import {LOADING_PANE} from '../index'
 import defaultStructure from '../defaultStructure'
 import isSubscribable from './isSubscribable'
 import validateStructure from './validateStructure'
 import serializeStructure from './serializeStructure'
 import generateHelpUrl from '@sanity/generate-help-url'
+
+const KNOWN_STRUCTURE_EXPORTS = ['getDefaultDocumentNode']
 
 let prevStructureError = null
 if (__DEV__) {
@@ -223,6 +226,8 @@ export const loadStructure = () => {
     const mod = require('part:@sanity/desk-tool/structure?') || defaultStructure
     structure = mod && mod.__esModule ? mod.default : mod
 
+    warnOnUnknownExports(mod)
+
     // On invalid modules, when HMR kicks in, we sometimes get an empty object back when the
     // source has changed without fixing the problem. In this case, keep showing the error
     if (
@@ -296,4 +301,29 @@ function isStructure(structure) {
       typeof structure.subscribe !== 'function' ||
       typeof structure.type !== 'string')
   )
+}
+
+function warnOnUnknownExports(mod) {
+  if (!mod) {
+    return
+  }
+
+  const known = KNOWN_STRUCTURE_EXPORTS.concat('default')
+  const keys = Object.keys(mod)
+  keys
+    .filter(key => !known.includes(key))
+    .forEach(key => {
+      const {closest} = known.reduce(
+        (acc, current) => {
+          const distance = leven(current, key)
+          return distance < 3 && distance < acc.distance ? {closest: current, distance} : acc
+        },
+        {closest: null, distance: +Infinity}
+      )
+
+      const hint = closest ? ` - did you mean "${closest}"` : ''
+
+      // eslint-disable-next-line
+      console.warn(`Unknown structure export "${key}"${hint}`)
+    })
 }
