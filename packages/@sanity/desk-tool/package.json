@@ -20,10 +20,12 @@
     "sanity-tool"
   ],
   "dependencies": {
+    "@reach/auto-id": "^0.7.2",
     "@sanity/data-aspects": "0.147.0",
     "@sanity/form-builder": "0.147.9",
     "@sanity/generate-help-url": "0.147.0",
     "@sanity/mutator": "0.147.8",
+    "@sanity/react-hooks": "0.147.0",
     "@sanity/structure": "0.147.0",
     "@sanity/uuid": "0.147.0",
     "@sanity/validation": "0.147.0",
@@ -44,7 +46,8 @@
     "resize-observer": "1.0.0",
     "rxjs": "^6.5.3",
     "scroll": "^3.0.1",
-    "shallow-equals": "^1.0.0"
+    "shallow-equals": "^1.0.0",
+    "use-onclickoutside": "^0.3.1"
   },
   "devDependencies": {
     "history": "^4.6.3",

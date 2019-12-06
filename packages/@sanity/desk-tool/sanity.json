@@ -12,6 +12,24 @@
       "path": "tool.js"
     },
     {
+      "implements": "part:@sanity/base/document-actions",
+      "description": "The default document actions",
+      "path": "defaultDocumentActions.js"
+    },
+    {
+      "implements": "part:@sanity/base/document-actions/resolver",
+      "path": "defaultResolveDocumentActions.js"
+    },
+    {
+      "implements": "part:@sanity/base/document-badges",
+      "description": "The default document badges",
+      "path": "defaultDocumentBadges.js"
+    },
+    {
+      "implements": "part:@sanity/base/document-badges/resolver",
+      "path": "defaultResolveDocumentBadges.js"
+    },
+    {
       "name": "part:@sanity/desk-tool/after-editor-component",
       "description": "[DEPRECATED] Components to render directly after the editor form. Will be removed in future release."
     },
