@@ -9,13 +9,15 @@ const loadProps = receivedProps$ =>
     switchMap(receivedProps =>
       concat(
         of({...receivedProps, referringDocuments: [], isLoading: true}),
-        documentStore.query('*[references($docId)] [0...101]', {docId: receivedProps.id}).pipe(
-          map(event => ({
-            ...receivedProps,
-            referringDocuments: event.documents,
-            isLoading: false
-          }))
-        )
+        documentStore
+          .listenQuery('*[references($docId)] [0...101]', {docId: receivedProps.id})
+          .pipe(
+            map(docs => ({
+              ...receivedProps,
+              referringDocuments: docs,
+              isLoading: false
+            }))
+          )
       )
     )
   )
