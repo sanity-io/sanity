@@ -17,7 +17,7 @@ import {
 import {combineLatest, concat, merge, of} from 'rxjs'
 import deepEquals from 'react-fast-compare'
 import {createEventHandler, streamingComponent} from 'react-props-stream'
-import {listenQuery} from '../util/listenQuery'
+import {listenQuery} from '../datastores/document/listenQuery'
 
 const INITIAL_CHILD_PROPS = {
   result: null,
