@@ -28,20 +28,20 @@
   },
   "dependencies": {
     "@sanity/util": "0.146.0",
-    "@types/lodash": "^4.14.144",
+    "@types/lodash": "^4.14.149",
     "@types/memoize-one": "^3.1.1",
     "@types/node": "^8.0.0",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.15",
     "memoize-one": "^3.1.1",
     "oneline": "^1.0.3"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.18",
+    "@types/jest": "^24.0.23",
     "jest": "^24.9.0",
-    "rimraf": "^2.6.2",
-    "rxjs": "^6.5.2",
-    "ts-jest": "^24.0.2",
-    "typescript": "^3.6.2"
+    "rimraf": "^2.7.1",
+    "rxjs": "^6.5.3",
+    "ts-jest": "^24.2.0",
+    "typescript": "^3.7.3"
   },
   "repository": {
     "type": "git",

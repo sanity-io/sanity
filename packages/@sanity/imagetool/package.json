@@ -14,7 +14,7 @@
   "dependencies": {
     "debug": "^3.1.0",
     "dom-event": "1.0.0",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.15"
   },
   "devDependencies": {
     "@sanity/state-router": "0.146.0",
@@ -31,7 +31,7 @@
     "react-dom": "^16.9.0",
     "rebundler": "^0.3.0",
     "remon": "^1.0.2",
-    "rimraf": "^2.6.2",
+    "rimraf": "^2.7.1",
     "should": "^11.1.0",
     "staticr": "^4.0.2"
   },

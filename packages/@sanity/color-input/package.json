@@ -19,13 +19,13 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.15",
     "react-color": "^2.13.8",
     "reactcss": "^1.2.0"
   },
   "devDependencies": {
     "@sanity/check": "0.146.0",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.7.1"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"

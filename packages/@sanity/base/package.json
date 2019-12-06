@@ -40,7 +40,7 @@
     "@sanity/util": "0.146.0",
     "@sanity/validation": "0.146.0",
     "history": "^4.6.3",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.15",
     "nano-pubsub": "^1.0.2",
     "oneline": "^1.0.3",
     "promise-props": "^1.0.0",
@@ -49,7 +49,7 @@
     "react-icons": "^2.2.7",
     "react-intl": "^2.2.2",
     "react-props-stream": "^1.0.0",
-    "rxjs": "^6.5.2",
+    "rxjs": "^6.5.3",
     "semver-compare": "^1.0.0",
     "shallow-equals": "^1.0.0"
   },
@@ -58,7 +58,7 @@
     "prop-types": "^15.6.0",
     "react": "16.9.0",
     "react-dom": "^16.9.0",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.7.1"
   },
   "peerDependencies": {
     "prop-types": "^15.6 || ^16",

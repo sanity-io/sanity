@@ -19,11 +19,11 @@
   "license": "MIT",
   "dependencies": {
     "object-assign": "^4.1.1",
-    "rxjs": "^6.5.2"
+    "rxjs": "^6.5.3"
   },
   "devDependencies": {
     "is-observable": "^1.1.0",
-    "rimraf": "^2.6.2",
+    "rimraf": "^2.7.1",
     "symbol-observable": "^1.2.0",
     "tap": "^14.6.1",
     "zen-observable": "^0.7.1"

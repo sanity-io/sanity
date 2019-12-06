@@ -20,13 +20,13 @@
     "code-editor"
   ],
   "dependencies": {
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.15",
     "react-ace": "^5.0.1",
     "react-icons": "^2.2.7"
   },
   "devDependencies": {
     "@sanity/check": "0.146.0",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.7.1"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"

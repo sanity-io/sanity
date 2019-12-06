@@ -19,9 +19,9 @@
   "license": "MIT",
   "dependencies": {
     "@sanity/mutator": "0.146.0",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.15",
     "nano-pubsub": "^1.0.2",
-    "rxjs": "^6.5.2"
+    "rxjs": "^6.5.3"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
