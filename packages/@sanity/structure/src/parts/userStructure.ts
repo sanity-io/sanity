@@ -3,7 +3,7 @@ import {DocumentNode} from '../StructureNodes'
 import {DocumentFragmentResolveOptions} from '../userDefinedStructure'
 
 interface UserDefinedStructure {
-  getDefaultDocumentFragment?: (
+  getDefaultDocumentNode?: (
     options: DocumentFragmentResolveOptions
   ) => DocumentNode | DocumentBuilder | null
 }

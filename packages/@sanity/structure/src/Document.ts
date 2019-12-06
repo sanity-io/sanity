@@ -199,7 +199,7 @@ export function documentFromEditor(spec?: EditorNode) {
   let doc =
     spec && spec.type
       ? // Use user-defined document fragment as base if possible
-        getDefaultDocumentFragment({schemaType: spec.type})
+        getDefaultDocumentNode({schemaType: spec.type})
       : // Fall back to plain old document builder
         new DocumentBuilder()
 
@@ -233,13 +233,13 @@ export function documentFromEditorWithInitialValue(
     throw new Error(`Template with ID "${templateId}" not defined`)
   }
 
-  return getDefaultDocumentFragment({schemaType: template.schemaType}).initialValueTemplate(
+  return getDefaultDocumentNode({schemaType: template.schemaType}).initialValueTemplate(
     templateId,
     parameters
   )
 }
 
-export function getDefaultDocumentFragment(
+export function getDefaultDocumentNode(
   options: DocumentFragmentResolveOptions
 ): DocumentBuilder {
   const {documentId, schemaType} = options

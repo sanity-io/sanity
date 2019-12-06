@@ -8,7 +8,7 @@ import {DocumentListBuilder} from './DocumentList'
 import {ListItemBuilder, ListItem} from './ListItem'
 import {DocumentTypeListBuilder, DocumentTypeListInput} from './DocumentTypeList'
 import {defaultIntentChecker} from './Intent'
-import {getDefaultDocumentFragment} from './Document'
+import {getDefaultDocumentNode} from './Document'
 import {isList} from './List'
 
 const ListIcon = getListIcon()
@@ -90,7 +90,7 @@ export function getDocumentTypeList(
     )
     .child(
       spec.child ||
-        ((documentId: string) => getDefaultDocumentFragment({schemaType: typeName, documentId}))
+        ((documentId: string) => getDefaultDocumentNode({schemaType: typeName, documentId}))
     )
     .canHandleIntent(spec.canHandleIntent || defaultIntentChecker)
     .menuItems(

@@ -22,7 +22,7 @@ import {
   PartialDocumentNode,
   documentFromEditor,
   documentFromEditorWithInitialValue,
-  getDefaultDocumentFragment
+  getDefaultDocumentNode
 } from './Document'
 import {ComponentInput, ComponentBuilder} from './Component'
 import {DocumentListItemBuilder, DocumentListItemInput} from './DocumentListItem'
@@ -41,7 +41,7 @@ const StructureBuilder = {
   documentTypeListItems: getDocumentTypeListItems,
   document: (spec?: PartialDocumentNode) => new DocumentBuilder(spec),
   documentWithInitialValueTemplate: documentFromEditorWithInitialValue,
-  defaultDocument: getDefaultDocumentFragment,
+  defaultDocument: getDefaultDocumentNode,
 
   list: (spec?: ListInput) => new ListBuilder(spec),
   listItem: (spec?: ListItemInput) => new ListItemBuilder(spec),

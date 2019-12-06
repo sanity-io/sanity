@@ -10,7 +10,7 @@ import validateStructure from './validateStructure'
 import serializeStructure from './serializeStructure'
 import generateHelpUrl from '@sanity/generate-help-url'
 
-const KNOWN_STRUCTURE_EXPORTS = ['getDefaultDocumentFragment']
+const KNOWN_STRUCTURE_EXPORTS = ['getDefaultDocumentNode']
 
 let prevStructureError = null
 if (__DEV__) {

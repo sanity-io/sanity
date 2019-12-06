@@ -11,15 +11,15 @@ export const getUserDefinedDefaultDocumentBuilder = (
   options: DocumentFragmentResolveOptions
 ): DocumentBuilder | null => {
   const structure = getUserDefinedStructure()
-  if (!structure || !structure.getDefaultDocumentFragment) {
+  if (!structure || !structure.getDefaultDocumentNode) {
     return null
   }
 
-  if (typeof structure.getDefaultDocumentFragment !== 'function') {
-    throw new Error('Structure export `getDefaultDocumentFragment` must be a function')
+  if (typeof structure.getDefaultDocumentNode !== 'function') {
+    throw new Error('Structure export `getDefaultDocumentNode` must be a function')
   }
 
-  const documentNode = structure.getDefaultDocumentFragment(options)
+  const documentNode = structure.getDefaultDocumentNode(options)
 
   if (!documentNode) {
     return null
@@ -27,7 +27,7 @@ export const getUserDefinedDefaultDocumentBuilder = (
 
   const isBuilder = typeof (documentNode as DocumentBuilder).serialize === 'function'
   if (!isBuilder && (documentNode as DocumentNode).type !== 'document') {
-    throw new Error('`getDefaultDocumentFragment` must return a document or a document builder')
+    throw new Error('`getDefaultDocumentNode` must return a document or a document builder')
   }
 
   return isBuilder

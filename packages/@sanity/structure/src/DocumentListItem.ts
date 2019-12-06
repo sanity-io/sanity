@@ -3,7 +3,7 @@ import {Partial} from './Partial'
 import {ListItemBuilder, ListItem, UnserializedListItem, ListItemInput} from './ListItem'
 import {SchemaType} from './parts/Schema'
 import {SerializeError, HELP_URL} from './SerializeError'
-import {DocumentBuilder, getDefaultDocumentFragment} from './Document'
+import {DocumentBuilder, getDefaultDocumentNode} from './Document'
 
 export interface DocumentListItemInput extends ListItemInput {
   schemaType: SchemaType | string
@@ -22,7 +22,7 @@ const getDefaultChildResolver = (spec: PartialDocumentListItem) => (documentId: 
     (typeof spec.schemaType === 'string' ? spec.schemaType : spec.schemaType.name)
 
   return schemaType
-    ? getDefaultDocumentFragment({schemaType, documentId})
+    ? getDefaultDocumentNode({schemaType, documentId})
     : new DocumentBuilder().id('documentEditor').documentId(documentId)
 }
 
