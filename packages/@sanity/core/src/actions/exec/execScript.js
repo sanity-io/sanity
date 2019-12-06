@@ -5,7 +5,7 @@ const fse = require('fs-extra')
 
 // Try to load .env files from the current directory
 // eslint-disable-next-line no-process-env
-const env = process.env.NODE_ENV || 'development'
+const env = process.env.SANITY_ACTIVE_ENV || process.env.NODE_ENV || 'development'
 dotenv.config({path: path.join(process.cwd(), `.env.${env}`)})
 
 module.exports = async args => {

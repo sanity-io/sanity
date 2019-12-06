@@ -45,7 +45,7 @@ function tryReadEnvFile(pathName: string): {[key: string]: string} {
 }
 
 function tryReadDotEnv(studioRootPath: string, fallbackEnv?: string) {
-  const configEnv = process.env.NODE_ENV || fallbackEnv || 'development'
+  const configEnv = process.env.SANITY_ACTIVE_ENV || fallbackEnv || 'development'
   const envFile = path.join(studioRootPath, `.env.${configEnv}`)
   return readEnvFile(envFile)
 }

@@ -31,7 +31,7 @@ function tryReadDotEnv(studioRootPath, configEnv) {
 }
 
 function getSanityEnvVars({env, basePath}) {
-  const configEnv = process.env.BUNDLE_ENV || env || process.env.NODE_ENV || 'development'
+  const configEnv = process.env.SANITY_ACTIVE_ENV || env || 'development'
   const dotEnvVars = tryReadDotEnv(basePath, configEnv)
   const allEnvVars = {...dotEnvVars, ...process.env}
   return Object.keys(allEnvVars).reduce((acc, key) => {
