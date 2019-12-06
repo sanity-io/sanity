@@ -13,7 +13,6 @@ import client from 'part:@sanity/base/client'
 import {PreviewFields} from 'part:@sanity/base/preview'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import historyStore from 'part:@sanity/base/datastore/history'
-import documentStore from 'part:@sanity/base/datastore/document'
 import TabbedPane from 'part:@sanity/components/panes/tabbed'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
@@ -961,7 +960,7 @@ export default withInitialValue(
         ? copyDocument(published, {omit: omitProps})
         : newDraftFrom(copyDocument(draft || published, {omit: omitProps}))
 
-      this.duplicate$ = documentStore
+      this.duplicate$ = client.observable
         .create(duplicatedDocument)
         .subscribe(copied => paneContext.replaceCurrent({id: getPublishedId(copied._id)}))
     }
