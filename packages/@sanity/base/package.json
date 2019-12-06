@@ -28,9 +28,9 @@
   "homepage": "https://www.sanity.io/",
   "dependencies": {
     "@sanity/client": "0.147.3",
-    "@sanity/document-store": "0.147.8",
     "@sanity/image-url": "0.140.15",
     "@sanity/initial-value-templates": "0.147.0",
+    "@sanity/mutator": "0.147.8",
     "@sanity/observable": "0.147.0",
     "@sanity/preview": "0.147.0",
     "@sanity/schema": "0.147.6",
