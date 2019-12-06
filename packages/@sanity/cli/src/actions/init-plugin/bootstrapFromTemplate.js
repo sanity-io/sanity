@@ -149,6 +149,12 @@ function getZip(url) {
         return
       }
 
+      if (res.statusCode > 299) {
+        const httpErr = ['HTTP', res.statusCode, res.statusMessage].filter(Boolean).join(' ')
+        reject(new Error(`${httpErr} trying to download ${url}`))
+        return
+      }
+
       resolve(decompress(data))
     })
   })

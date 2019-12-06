@@ -5,6 +5,9 @@ Object {
   "component": [Function],
   "icon": undefined,
   "id": "custom",
+  "options": Object {
+    "foo": "bar",
+  },
   "title": "Custom",
   "type": "component",
 }
@@ -15,6 +18,7 @@ Object {
   "component": [Function],
   "icon": undefined,
   "id": "custom",
+  "options": Object {},
   "title": "Custom",
   "type": "component",
 }

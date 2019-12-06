@@ -25,9 +25,9 @@
     "@sanity/cli": "0.146.0",
     "@sanity/components": "0.146.3",
     "@sanity/core": "0.146.0",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.15",
     "prop-types": "^15.6.0",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.7.1"
   },
   "peerDependencies": {
     "react": "^16.9",

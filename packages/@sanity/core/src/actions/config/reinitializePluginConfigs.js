@@ -7,10 +7,10 @@ import generateConfigChecksum from '../../util/generateConfigChecksum'
 import {getChecksums, setChecksums, localConfigExists} from '../../util/pluginChecksumManifest'
 
 async function reinitializePluginConfigs(options, flags = {}) {
-  const {workDir, output} = options
+  const {workDir, output, env} = options
 
   const localChecksums = await getChecksums(workDir)
-  const allPlugins = await resolveTree({basePath: workDir})
+  const allPlugins = await resolveTree({basePath: workDir, env})
   const pluginsWithDistConfig = (await Promise.all(allPlugins.map(pluginHasDistConfig))).filter(
     Boolean
   )

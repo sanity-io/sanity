@@ -25,10 +25,10 @@
   },
   "dependencies": {
     "@sanity/image-url": "0.140.15",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.15",
     "observable-props": "^2.0.0",
     "react-props-stream": "^1.0.0",
-    "rxjs": "^6.5.2",
+    "rxjs": "^6.5.3",
     "shallow-equals": "^1.0.0"
   },
   "devDependencies": {

@@ -4,6 +4,7 @@ import {SerializeError, HELP_URL} from '../SerializeError'
 
 export interface ComponentView extends View {
   component: Function
+  options: {[key: string]: any}
 }
 
 const isComponentSpec = (spec: any): spec is ComponentView => {
@@ -17,7 +18,7 @@ export class ComponentViewBuilder extends GenericViewBuilder<
   protected spec: Partial<ComponentView>
 
   constructor(componentOrSpec?: Function | Partial<ComponentView>) {
-    const spec = isComponentSpec(componentOrSpec) ? componentOrSpec : {}
+    const spec = isComponentSpec(componentOrSpec) ? {...componentOrSpec} : {options: {}}
 
     super()
     this.spec = spec
@@ -39,6 +40,14 @@ export class ComponentViewBuilder extends GenericViewBuilder<
     return this.spec.component
   }
 
+  options(options: {[key: string]: any}) {
+    return this.clone({options})
+  }
+
+  getOptions() {
+    return this.spec.options || {}
+  }
+
   serialize(options: SerializeOptions = {path: []}): ComponentView {
     const base = super.serialize(options)
 
@@ -54,6 +63,7 @@ export class ComponentViewBuilder extends GenericViewBuilder<
     return {
       ...base,
       component,
+      options: this.spec.options || {},
       type: 'component'
     }
   }

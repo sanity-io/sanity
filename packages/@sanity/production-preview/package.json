@@ -19,7 +19,7 @@
     "sanity-plugin"
   ],
   "devDependencies": {
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.7.1"
   },
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"

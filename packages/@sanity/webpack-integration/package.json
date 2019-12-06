@@ -31,6 +31,7 @@
   "dependencies": {
     "@sanity/resolver": "0.146.0",
     "@sanity/webpack-loader": "0.146.0",
+    "dotenv": "^8.2.0",
     "fs.realpath": "^1.0.0",
     "p-async-cache": "^1.0.2",
     "postcss-cssnext": "^3.0.2",

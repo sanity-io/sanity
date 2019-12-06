@@ -21,11 +21,11 @@
   "dependencies": {
     "@sanity/generate-help-url": "0.146.0",
     "prop-types": "^15.6.0",
-    "rxjs": "^6.5.2"
+    "rxjs": "^6.5.3"
   },
   "devDependencies": {
     "@sanity/check": "0.146.0",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.7.1"
   },
   "repository": {
     "type": "git",

@@ -10,11 +10,11 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "devDependencies": {
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.7.1"
   },
   "dependencies": {
     "@sanity/eventsource": "0.146.0",
-    "rxjs": "^6.5.2"
+    "rxjs": "^6.5.3"
   },
   "publishConfig": {
     "access": "public"

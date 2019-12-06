@@ -3,7 +3,7 @@ import getUserConfig from './getUserConfig'
 
 /* eslint-disable no-process-env */
 const envAuthToken = process.env.SANITY_AUTH_TOKEN
-const sanityEnv = process.env.SANITY_ENV || 'production'
+const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production'
 /* eslint-enable no-process-env */
 
 const apiHosts = {

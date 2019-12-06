@@ -6,7 +6,7 @@ const reduceConfig = sanityUtil.reduceConfig
 const getSanityVersions = sanityUtil.getSanityVersions
 
 /* eslint-disable no-process-env */
-const sanityEnv = process.env.SANITY_ENV
+const sanityEnv = process.env.SANITY_INTERNAL_ENV
 const env = typeof sanityEnv === 'undefined' ? process.env.NODE_ENV : sanityEnv
 /* eslint-enable no-process-env */
 
@@ -35,7 +35,7 @@ function sanityPartLoader(input) {
   if (request.indexOf('config:') === 0) {
     const config = JSON.parse(input)
     const indent = buildEnv === 'production' ? 0 : 2
-    const reduced = reduceConfig(config, buildEnv)
+    const reduced = reduceConfig(config, buildEnv, {studioRootPath: basePath})
     return `module.exports = ${JSON.stringify(reduced, null, indent)}\n`
   }
 

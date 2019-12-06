@@ -31,12 +31,12 @@
   "dependencies": {
     "@sanity/generate-help-url": "0.146.0",
     "is-hotkey": "^0.1.4",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.15",
     "react-click-outside": "^3.0.0",
     "react-ink": "^6.1.0",
     "react-props-stream": "^1.0.0",
     "react-tippy": "^1.2.3",
-    "rxjs": "^6.5.2"
+    "rxjs": "^6.5.3"
   },
   "devDependencies": {
     "@sanity/base": "0.146.3",
@@ -50,7 +50,7 @@
     "mocha": "^5.0.1",
     "nyc": "^11.0.3",
     "prop-types": "^15.6.0",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.7.1"
   },
   "peerDependencies": {
     "@sanity/base": "^0.141.6",

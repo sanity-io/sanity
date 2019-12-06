@@ -58,6 +58,9 @@ export const PaneRouterContext = React.createContext({
   // Set the parameters for the current pane
   setParams: params => missingContext(),
 
+  // Set the payload for the current pane
+  setPayload: payload => missingContext(),
+
   // Proxied navigation to a given intent. Consider just exposing `router` instead?
   navigateIntent: (intentName, params, options = {}) => missingContext()
 })
@@ -130,6 +133,14 @@ export function getPaneRouterContextFactory(instance) {
       const newRouterState = {...router.state, panes: newPanes}
       router.navigate(newRouterState)
       return newRouterState
+    }
+
+    const setPayload = payload => {
+      modifyCurrentGroup((siblings, item) => {
+        const newGroup = siblings.slice()
+        newGroup[siblingIndex] = {...item, payload}
+        return newGroup
+      })
     }
 
     const setParams = (params, setOptions = {}) => {
@@ -241,6 +252,9 @@ export function getPaneRouterContextFactory(instance) {
 
       // Set the parameters for the current pane
       setParams,
+
+      // Set the payload for the current pane
+      setPayload,
 
       // Proxied navigation to a given intent. Consider just exposing `router` instead?
       navigateIntent: instance.props.router.navigateIntent

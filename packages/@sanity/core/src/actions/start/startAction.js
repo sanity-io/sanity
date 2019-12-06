@@ -36,7 +36,7 @@ export default async (args, context) => {
 
   let compileSpinner
   const configSpinner = output.spinner('Checking configuration files...')
-  await tryInitializePluginConfigs({workDir, output})
+  await tryInitializePluginConfigs({workDir, output, env: 'development'})
   configSpinner.succeed()
 
   const server = getDevServer(serverOptions)

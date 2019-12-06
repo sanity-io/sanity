@@ -84,9 +84,9 @@ test('builds list items with child defined through builder', () => {
 
 test('builder is immutable', () => {
   const original = S.documentListItem()
-  expect(original.id('foo')).not.toEqual(original)
-  expect(original.title('foo')).not.toEqual(original)
-  expect(original.child(() => undefined)).not.toEqual(original)
+  expect(original.id('foo')).not.toBe(original)
+  expect(original.title('foo')).not.toBe(original)
+  expect(original.child(() => undefined)).not.toBe(original)
 })
 
 test('getters work', () => {

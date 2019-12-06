@@ -3,6 +3,7 @@ import fse from 'fs-extra'
 import rimTheRaf from 'rimraf'
 import filesize from 'filesize'
 import {promisify} from 'es6-promisify'
+import webpackIntegration from '@sanity/webpack-integration/v3'
 import getConfig from '@sanity/util/lib/getConfig'
 import {getWebpackCompiler, getDocumentElement, ReactDOM} from '@sanity/server'
 import sortModulesBySize from '../../stats/sortModulesBySize'
@@ -24,7 +25,7 @@ export default async (args, context) => {
   const unattendedMode = flags.yes || flags.y
   const defaultOutputDir = path.resolve(path.join(workDir, 'dist'))
   const outputDir = path.resolve(args.argsWithoutOptions[0] || defaultOutputDir)
-  const config = getConfig(workDir)
+  const config = getConfig(workDir, {env: 'production'})
   const compilationConfig = {
     env: 'production',
     staticPath: resolveStaticPath(workDir, config.get('server')),
@@ -36,9 +37,19 @@ export default async (args, context) => {
     project: Object.assign({}, config.get('project'), overrides.project)
   }
 
-  await tryInitializePluginConfigs({workDir, output})
+  await tryInitializePluginConfigs({workDir, output, env: 'production'})
 
   checkStudioDependencyVersions(workDir)
+
+  const envVars = webpackIntegration.getSanityEnvVars({env: 'production', basePath: workDir})
+  const envVarKeys = Object.keys(envVars)
+  if (envVarKeys.length > 0) {
+    output.print(
+      '\nIncluding the following environment variables as part of the JavaScript bundle:'
+    )
+    envVarKeys.forEach(key => output.print(`- ${key}`))
+    output.print('')
+  }
 
   const compiler = getWebpackCompiler(compilationConfig)
   const compile = promisify(compiler.run.bind(compiler))

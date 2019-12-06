@@ -46,10 +46,8 @@ const withInitialValue = Pane => {
           switchMap(document => {
             const {templateName, parameters} = getInitialValueProps(document, props, paneContext)
             const shouldResolve = Boolean(templateName)
-            const documentType = options.type || (document && document._type)
-
-            // If we were not passed a schema type, use the resolved value if available
-            const paneOptions = options.type ? options : {...options, type: documentType}
+            const paneOptions = resolvePaneOptions(props, templateName, document)
+            const documentType = paneOptions.type
 
             if (!shouldResolve) {
               // Wrap in broken references component to prevent "reload"
@@ -158,6 +156,20 @@ function resolveInitialValueWithParameters(templateName, parameters) {
   return from(resolveInitialValue(getTemplateById(templateName), parameters)).pipe(
     map(initialValue => ({isResolving: false, initialValue}))
   )
+}
+
+function resolvePaneOptions(props, templateName, document) {
+  const {options} = props
+  const hasDefinedType = options.type && options.type !== '*'
+  const typeFromOptions = hasDefinedType ? options.type : undefined
+  let documentType = typeFromOptions || (document && document._type)
+  if (!documentType && templateName) {
+    const template = getTemplateById(templateName)
+    documentType = template && template.schemaType
+  }
+
+  // If we were not passed a schema type, use the resolved value if available
+  return hasDefinedType ? options : {...options, type: documentType}
 }
 
 export default withInitialValue

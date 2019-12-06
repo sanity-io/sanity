@@ -176,6 +176,10 @@ module.exports = function processUpdate(hash, moduleMap, callbacks = {}) {
   }
 
   function normalizeModulePath(pathName) {
+    if (!pathName) {
+      return {path: '<unknown>'}
+    }
+
     const [path, partName] = pathName.split('?sanityPart=')
     return {path, partName: partName && decodeURIComponent(partName)}
   }

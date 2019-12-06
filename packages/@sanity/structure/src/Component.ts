@@ -10,11 +10,13 @@ export interface Component extends StructureNode {
   child?: Child
   menuItems: MenuItem[]
   menuItemGroups: MenuItemGroup[]
+  options: {[key: string]: any}
 }
 
 export interface ComponentInput extends StructureNode {
   component: Function
   child?: Child
+  options?: {[key: string]: any}
   menuItems?: (MenuItem | MenuItemBuilder)[]
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
 }
@@ -22,6 +24,7 @@ export interface ComponentInput extends StructureNode {
 export interface BuildableComponent extends Partial<StructureNode> {
   component?: Function
   child?: Child
+  options?: {[key: string]: any}
   menuItems?: (MenuItem | MenuItemBuilder)[]
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
 }
@@ -30,7 +33,7 @@ export class ComponentBuilder implements Serializable {
   protected spec: BuildableComponent
 
   constructor(spec?: ComponentInput) {
-    this.spec = spec ? spec : {}
+    this.spec = {options: {}, ...(spec ? spec : {})}
   }
 
   id(id: string) {
@@ -65,6 +68,14 @@ export class ComponentBuilder implements Serializable {
     return this.spec.component
   }
 
+  options(options: {[key: string]: any}) {
+    return this.clone({options})
+  }
+
+  getOptions() {
+    return this.spec.options || {}
+  }
+
   menuItems(menuItems: (MenuItem | MenuItemBuilder)[]) {
     return this.clone({menuItems})
   }
@@ -82,7 +93,7 @@ export class ComponentBuilder implements Serializable {
   }
 
   serialize(options: SerializeOptions = {path: []}): Component {
-    const {id, title, child, component} = this.spec
+    const {id, title, child, options: componentOptions, component} = this.spec
     if (!id) {
       throw new SerializeError(
         '`id` is required for `component` structure item',
@@ -105,6 +116,7 @@ export class ComponentBuilder implements Serializable {
       type: 'component',
       child,
       component,
+      options: componentOptions || {},
       menuItems: (this.spec.menuItems || []).map((item, i) =>
         maybeSerializeMenuItem(item, i, options.path)
       ),

@@ -9,6 +9,8 @@ import styles from '../styles/Editor.css'
 import EditForm from './EditForm'
 import HistoryForm from './HistoryForm'
 
+const noop = () => undefined
+
 const INITIAL_STATE = {
   focusPath: [],
   filterField: () => true
@@ -78,20 +80,24 @@ export default class FormView extends React.PureComponent {
     return selectedSchemaType.liveEdit === true
   }
 
-  render() {
-    const {
-      document,
-      history,
-      schemaType,
-      markers,
-      patchChannel,
-      initialValue,
-      isReconnecting
-    } = this.props
+  isReadOnly() {
+    const {document, schemaType, isReconnecting} = this.props
+    const {draft, published} = document
+    const isNonExistent = !draft && !published
 
+    return (
+      isReconnecting ||
+      !isActionEnabled(schemaType, 'update') ||
+      (isNonExistent && !isActionEnabled(schemaType, 'create'))
+    )
+  }
+
+  render() {
+    const {document, history, schemaType, markers, patchChannel, initialValue} = this.props
     const {draft, published, displayed} = document
     const {focusPath, filterField} = this.state
     const value = draft || published
+    const readOnly = this.isReadOnly()
 
     const hasTypeMismatch = value && value._type && value._type !== schemaType.name
     if (hasTypeMismatch) {
@@ -118,11 +124,11 @@ export default class FormView extends React.PureComponent {
             initialValue={initialValue}
             markers={markers}
             onBlur={this.handleBlur}
-            onChange={this.props.onChange}
+            onChange={readOnly ? noop : this.props.onChange}
             onFocus={this.handleFocus}
             patchChannel={patchChannel}
             published={published}
-            readOnly={isReconnecting || !isActionEnabled(schemaType, 'update')}
+            readOnly={readOnly}
             schema={schema}
             type={schemaType}
           />

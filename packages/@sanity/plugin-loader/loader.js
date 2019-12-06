@@ -9,7 +9,7 @@ const reduceConfig = util.reduceConfig
 const getSanityVersions = util.getSanityVersions
 
 /* eslint-disable no-process-env */
-const sanityEnv = process.env.SANITY_ENV
+const sanityEnv = process.env.SANITY_INTERNAL_ENV
 const env = typeof sanityEnv === 'undefined' ? process.env.NODE_ENV : sanityEnv
 /* eslint-enable no-process-env */
 
@@ -81,7 +81,12 @@ function registerLoader(options) {
       const configFor = configMatch[1]
       if (configFor === 'sanity') {
         const sanityConfig = require(path.join(basePath, 'sanity.json'))
-        require.cache[request] = getModule(request, reduceConfig(sanityConfig, env))
+        require.cache[request] = getModule(
+          request,
+          reduceConfig(sanityConfig, env, {
+            studioRootPath: basePath
+          })
+        )
         return request
       }
 

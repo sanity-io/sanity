@@ -34,11 +34,11 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
-    "@babel/core": "^7.6.0",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/preset-env": "^7.6.0",
-    "@babel/preset-react": "^7.0.0",
-    "@babel/register": "^7.6.0",
+    "@babel/core": "^7.7.4",
+    "@babel/plugin-proposal-class-properties": "^7.7.4",
+    "@babel/preset-env": "^7.7.4",
+    "@babel/preset-react": "^7.7.4",
+    "@babel/register": "^7.7.4",
     "@hot-loader/react-dom": "^16.9.0-4.12.11",
     "@sanity/css-loader": "^0.28.12",
     "@sanity/eventsource": "0.146.0",
@@ -51,7 +51,7 @@
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^1.1.4",
     "json-loader": "^0.5.4",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.15",
     "normalize.css": "^5.0.0",
     "postcss-loader": "^2.0.6",
     "querystring": "^0.2.0",
@@ -59,7 +59,7 @@
     "require-uncached": "^1.0.3",
     "resolve": "^1.3.3",
     "resolve-from": "^4.0.0",
-    "rxjs": "^6.5.2",
+    "rxjs": "^6.5.3",
     "strip-ansi": "^5.2.0",
     "style-loader": "^0.20.1",
     "symbol-observable": "^1.2.0",
@@ -74,7 +74,7 @@
     "prop-types": "^15.6.0",
     "react": "16.9.0",
     "react-dom": "^16.9.0",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.7.1"
   },
   "peerDependencies": {
     "prop-types": "^15.6 || ^16",
