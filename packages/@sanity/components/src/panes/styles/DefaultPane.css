@@ -231,6 +231,7 @@
 
 .headerTabsContainer {
   flex: 1;
+  overflow: hidden;
 }
 
 .headerPaneActions {
