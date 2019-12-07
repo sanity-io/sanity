@@ -15,7 +15,7 @@ const toGroqParams = terms =>
   }, {})
 
 export function createWeightedSearch(types, client, options = {}) {
-  const {filter, filterParams} = options
+  const {filter, params} = options
   const searchSpec = types.map(type => {
     return {
       typeName: type.name,
@@ -56,7 +56,7 @@ export function createWeightedSearch(types, client, options = {}) {
         ...toGroqParams(terms),
         __types: searchSpec.map(spec => spec.typeName),
         __limit: 1000,
-        ...(filterParams || {})
+        ...(params || {})
       })
       .pipe(
         map(removeDupes),

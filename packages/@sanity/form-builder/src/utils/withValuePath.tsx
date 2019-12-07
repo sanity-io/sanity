@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 export default function withValuePath(ComposedComponent: any) {
-  return class WithValuePath extends React.PureComponent {
+  return class WithValuePath<P> extends React.PureComponent<P> {
     _input: typeof ComposedComponent
     static displayName = `withValuePath(${ComposedComponent.displayName || ComposedComponent.name})`
     static contextTypes = {
