@@ -18,6 +18,9 @@ export const HELP_IDS = {
   ARRAY_OF_NOT_UNIQUE: 'schema-array-of-invalid',
   REFERENCE_TO_INVALID: 'schema-reference-to-invalid',
   REFERENCE_TO_NOT_UNIQUE: 'schema-reference-to-invalid',
+  REFERENCE_INVALID_OPTIONS: 'schema-reference-invalid-options',
+  REFERENCE_INVALID_OPTIONS_LOCATION: 'schema-reference-options-nesting',
+  REFERENCE_INVALID_FILTER_PARAMS_COMBINATION: 'schema-reference-filter-params-combination',
   SLUG_SLUGIFY_FN_RENAMED: 'slug-slugifyfn-renamed',
   ASSET_METADATA_FIELD_INVALID: 'asset-metadata-field-invalid'
 }
