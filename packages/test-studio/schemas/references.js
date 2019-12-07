@@ -8,6 +8,51 @@ export default {
   icon,
   fields: [
     {name: 'title', type: 'string'},
+    {
+      title: 'Book with decade filter',
+      description: 'Reference will only search for books within given decade',
+      name: 'filtered',
+      type: 'object',
+      validation: Rule =>
+        Rule.custom(val => (!val || val.decade ? true : 'Must have decade defined')),
+      fields: [
+        {
+          title: 'Decade',
+          description: 'eg. 1980, 1990, 2000',
+          name: 'decade',
+          type: 'number',
+          validation: Rule =>
+            Rule.required()
+              .min(0)
+              .max(3000)
+              .custom(year => {
+                return year % 10 ? 'Must be a decade, eg use 1990 instead of 1994' : true
+              })
+        },
+        {
+          name: 'book',
+          title: 'Book reference',
+          type: 'reference',
+          to: {type: 'book'},
+          options: {
+            filter: options => {
+              const decade = options.parent && options.parent.decade
+              if (!decade) {
+                return {filter: 'false'} // && false always returns no results :)
+              }
+
+              const minYear = Math.floor(decade / 10) * 10
+              const maxYear = minYear + 9
+
+              return {
+                filter: 'publicationYear >= $minYear && publicationYear <= $maxYear',
+                params: {minYear, maxYear}
+              }
+            }
+          }
+        }
+      ]
+    },
     {name: 'selfRef', type: 'reference', to: {type: 'referenceTest'}},
     {
       name: 'refToTypeWithNoToplevelStrings',
