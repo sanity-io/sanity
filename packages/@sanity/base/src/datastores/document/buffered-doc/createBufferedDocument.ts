@@ -11,7 +11,7 @@ import {
 } from './types'
 import {ListenerEvent} from '../getPairListener'
 
-type BufferedDocumentEvent =
+export type BufferedDocumentEvent =
   | ReconnectEvent
   | SnapshotEvent
   | DocumentRebaseEvent
@@ -31,14 +31,16 @@ export interface BufferedDocumentWrapper {
 function isReconnect(event: ListenerEvent): event is ReconnectEvent {
   return event.type === 'reconnect'
 }
+
 export const createBufferedDocument = (
   documentId: string,
-  serverEvents$: Observable<ListenerEvent>,
+  // consider naming it remoteEvent$
+  listenerEvent$: Observable<ListenerEvent>,
   doCommit: CommitFunction
 ): BufferedDocumentWrapper => {
-  const bufferedDocument = createObservableBufferedDocument(serverEvents$, doCommit)
+  const bufferedDocument = createObservableBufferedDocument(listenerEvent$, doCommit)
 
-  const reconnects$ = serverEvents$.pipe(filter(isReconnect))
+  const reconnects$ = listenerEvent$.pipe(filter(isReconnect))
 
   return {
     events: merge(reconnects$, bufferedDocument.updates$),
@@ -46,6 +48,7 @@ export const createBufferedDocument = (
       bufferedDocument.addMutations(patches.map(patch => ({patch: {...patch, id: documentId}})))
     },
     create(document) {
+      console.log(document)
       bufferedDocument.addMutation({
         create: Object.assign({id: documentId}, document)
       })

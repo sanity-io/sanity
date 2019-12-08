@@ -82,6 +82,7 @@ export const createObservableBufferedDocument = (
 
   const bufferedDocument$ = listenerEvent$.pipe(
     scan((bufferedDocument, listenerEvent): BufferedDocument => {
+      // consider renaming 'snapshot' to initial/welcome
       if (listenerEvent.type === 'snapshot') {
         if (bufferedDocument) {
           // we received a new snapshot and already got an old one. When we receive a snapshot again
@@ -113,11 +114,11 @@ export const createObservableBufferedDocument = (
   // this is where the side effects mandated by local actions actually happens
   const actionHandler$ = actions$.pipe(
     withLatestFrom(bufferedDocument$),
-    tap(([operation, bufferedDocument]) => {
-      if (operation.type === 'mutation') {
-        bufferedDocument.add(new Mutation({mutations: operation.mutations}))
+    tap(([action, bufferedDocument]) => {
+      if (action.type === 'mutation') {
+        bufferedDocument.add(new Mutation({mutations: action.mutations}))
       }
-      if (operation.type === 'commit') {
+      if (action.type === 'commit') {
         bufferedDocument.commit()
       }
     }),
