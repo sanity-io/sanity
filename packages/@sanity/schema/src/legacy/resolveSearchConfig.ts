@@ -31,7 +31,7 @@ function reduceObject(objectType, reducer, accumulator, path, maxDepth) {
   }, accumulator)
 }
 
-const BASE_WEIGHTS = [{weight: 1, path: ['_id']}, {weight: 1, path: ['_type']}]
+const BASE_WEIGHTS = [{weight: 1, path: ['_id'], type: 'string'}, {weight: 1, path: ['_type'], type: 'string'}]
 
 const PREVIEW_FIELD_WEIGHT_MAP = {
   title: 10,
@@ -45,7 +45,8 @@ function deriveFromPreview(type) {
     .filter(fieldName => fieldName in PREVIEW_FIELD_WEIGHT_MAP)
     .map(fieldName => ({
       weight: PREVIEW_FIELD_WEIGHT_MAP[fieldName],
-      path: select[fieldName].split('.')
+      path: select[fieldName].split('.'),
+      type: 'string'
     }))
 }
 
@@ -55,7 +56,7 @@ function getCachedStringFieldPaths(type, maxDepth) {
       [
         ...BASE_WEIGHTS,
         ...deriveFromPreview(type),
-        ...getStringFieldPaths(type, maxDepth).map(path => ({weight: 1, path}))
+        ...getStringFieldPaths(type, maxDepth).map(path => ({weight: 1, path, type: 'string'}))
       ],
       spec => spec.path.join('.')
     )
