@@ -2,25 +2,17 @@ import * as React from 'react'
 // import actions from 'all:part:@sanity/base/document-action'
 import resolveActions from 'part:@sanity/base/document-actions'
 import {groupBy} from 'lodash'
+import {route, withRouterHOC} from 'part:@sanity/base/router'
+import documentStore from 'part:@sanity/base/datastore/document'
 
 import {streamingComponent} from 'react-props-stream'
-import {listenDocRecord, setCurrentUserId} from '../mockDocStateDatastore'
-import {Subject, merge, of} from 'rxjs'
-import {switchMap, map, distinctUntilChanged} from 'rxjs/operators'
+import {currentUser$, listenDocRecord, setCurrentUserId} from '../mockDocStateDatastore'
+import {Subject, merge, EMPTY, combineLatest, of} from 'rxjs'
+import {switchMap, tap, map, distinctUntilChanged} from 'rxjs/operators'
 import PopOverDialog from 'part:@sanity/components/dialogs/popover'
 import {useCurrentUser, useUsers} from '../actions/hooks'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Button from 'part:@sanity/components/buttons/default'
-
-function createAction() {
-  const actions$ = new Subject()
-  return [actions$.asObservable(), val => actions$.next(val)]
-}
-
-const [currentId$, setCurrentId] = createAction()
-export const navigate = id => {
-  setCurrentId(id)
-}
 
 const RenderActionDialog = props => {
   return <PopOverDialog>{props.dialog}</PopOverDialog>
@@ -38,10 +30,8 @@ const RenderSnackbar = props => {
   )
 }
 
-const ActionWrapper = props => {
-  const {action} = props
-
-  const actionState = action(props.record)
+const ActionButtonRenderer = props => {
+  const actionState = props.action(props.record)
 
   if (actionState === null) {
     return null
@@ -89,7 +79,7 @@ function ActionMenu(props) {
   return (
     <div>
       {(groups.primary || []).map(action => (
-        <ActionWrapper action={action} record={props.record} />
+        <ActionButtonRenderer action={action} record={props.record} />
       ))}
     </div>
   )
@@ -97,28 +87,80 @@ function ActionMenu(props) {
 
 function Footer(props) {
   const actions = resolveActions(props.record, props.type)
-
   return (
     <div>
       {actions.map(action => (
-        <ActionWrapper action={action} record={props.record} />
+        <ActionButtonRenderer action={action} record={props.record} />
       ))}
     </div>
   )
 }
 
-export const TestActionsTool = streamingComponent(() => {
-  return merge(of('mock-document'), currentId$).pipe(
-    distinctUntilChanged(),
-    switchMap(listenDocRecord),
-    map(record => (
-      <div style={{padding: '1em'}}>
-        <UserSwitch />
-        <h2>Now editing: {record.id}</h2>
-        <pre>{JSON.stringify(record.document, null, 2)}</pre>
-        {/*<ActionMenu record={record} type={{type: 'document', name: 'mock'}} />*/}
-        <Footer record={record} type={{type: 'document', name: 'mock'}} />
-      </div>
-    ))
+// export const TestActionsTool = withRouterHOC(
+//   streamingComponent(props$ => {
+//     const docId$ = props$.pipe(
+//       map(props => props.router),
+//       switchMap(router => {
+//         if (!router.state.id) {
+//           router.navigate({id: `foo`})
+//           return EMPTY
+//         }
+//         return of(router.state.id)
+//       }),
+//       distinctUntilChanged()
+//     )
+//
+//     return combineLatest([docId$, currentUser$]).pipe(
+//       switchMap(([docId, currentUser]) => {
+//         const doc = documentStore.checkoutPair({draftId: `drafts.${docId}`, publishedId: docId})
+//         return doc.draft.events.pipe(
+//           map(ev => {
+//             console.log(ev)
+//             const record = {}
+//             return (
+//               <div style={{padding: '1em'}}>
+//                 <h2>Now editing: {record.id}</h2>
+//                 <pre>{JSON.stringify(record.document, null, 2)}</pre>
+//                 {/*<ActionMenu record={record} type={{type: 'document', name: 'mock'}} />*/}
+//                 <Footer record={record} type={{type: 'document', name: 'mock'}} />
+//               </div>
+//             )
+//           })
+//         )
+//       })
+//     )
+//   })
+// )
+
+export const TestActionsTool = streamingComponent(props$ => {
+  const publishedId = `38552d45-143b-4909-9a7e-c5e52a798eb6`
+  const draftId = `drafts.${publishedId}`
+  const pair$ = documentStore.buffered.getById({draftId, publishedId})
+  return pair$.pipe(
+    map(pair => {
+      return (
+        <>
+          <h2>Testing</h2>
+          <div>
+            <pre>
+              {JSON.stringify(
+                {draft: pair.draft.snapshot, published: pair.published.snapshot},
+                null,
+                2
+              )}
+            </pre>
+            <button
+              onClick={() => {
+                debugger
+                pair.draft.create({_id: draftId, title: 'Hello'})
+                pair.draft.patch([{set: {title: 'Hello2you'}}])
+              }}
+            >
+              Mutate draft plz
+            </button>
+          </div>
+        </>
+      )
+    })
   )
 })

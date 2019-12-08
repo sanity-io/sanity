@@ -17,7 +17,7 @@ export default function resolveDocumentActions(docInfo, type) {
     UselessAction,
     AsyncAction,
     WriteFieldAction,
-    // PublishAction
-    PolicyBasedReview
+    PublishAction,
+    // PolicyBasedReview
   ].filter(Boolean)
 }
