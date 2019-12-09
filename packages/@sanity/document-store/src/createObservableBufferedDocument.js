@@ -43,6 +43,14 @@ export const createObservableBufferedDocument = (serverEvents$, doCommit) => {
       })
     }
 
+    bufferedDocument.onError = error => {
+      // If this is a permission error from Gradient, we should error the stream.
+      // Other errors might be tried recovered.
+      if (error && error.message && error.message.match(/permissions/gi)) {
+        updates$.error(error)
+      }
+    }
+
     bufferedDocument.onRebase = edge => {
       updates$.next({type: 'rebase', document: edge})
     }
