@@ -1,18 +1,18 @@
-import React from 'react'
-import documentStore from 'part:@sanity/base/datastore/document'
 import {omit} from 'lodash'
+import {useDocumentOperations} from '../test-action-tool/useDocumentOperations'
 
 export default function PublishAction(docInfo) {
   if (docInfo.isLiveEditEnabled) {
     return null
   }
-  console.log(docInfo)
+
+  const {publish} = useDocumentOperations(docInfo.id, docInfo.type)
 
   return {
     disabled: !docInfo.draft,
     label: 'Publish',
     handle: () => {
-      documentStore.local.publish(docInfo.id, docInfo.type, doc => omit(doc, 'reviewers'))
+      publish(doc => omit(doc, 'reviewers'))
     }
   }
 }
