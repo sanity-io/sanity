@@ -33,8 +33,6 @@ const RenderSnackbar = props => {
 
 const ActionButtonRenderer = props => {
   const actionState = props.action(props.record)
-  console.log(actionState)
-  console.log(actionState.dialog)
 
   if (actionState === null) {
     return null
