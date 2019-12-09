@@ -2,7 +2,7 @@ import * as React from 'react'
 import {map} from 'rxjs/operators'
 import {allUsers$, currentUser$, getUser, listenDocRecord} from '../mockDocStateDatastore'
 
-function useObservable(observable$, initialValue) {
+export function useObservable(observable$, initialValue) {
   const subscription = React.useRef()
   const [value, setState] = React.useState(() => {
     let isSync = true

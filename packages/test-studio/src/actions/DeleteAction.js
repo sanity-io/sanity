@@ -1,9 +1,11 @@
 import * as React from 'react'
-import {create, del} from '../mockDocStateDatastore'
+import {useDocumentOperations} from '../test-action-tool/useDocumentOperations'
 
 export default function DeleteAction(docInfo) {
   const [isConfirming, setIsConfirming] = React.useState(false)
   const [deletedDocument, setDeletedDocument] = React.useState(null)
+
+  const ops = useDocumentOperations(docInfo.id, docInfo.type)
 
   return {
     disabled: !docInfo.draft && !docInfo.published,
@@ -11,7 +13,7 @@ export default function DeleteAction(docInfo) {
     handle: () => {
       if (isConfirming) {
         setDeletedDocument(docInfo.draft)
-        del(docInfo.id)
+        ops.delete()
       } else {
         setIsConfirming(true)
       }
@@ -21,7 +23,7 @@ export default function DeleteAction(docInfo) {
       content: <div>Document deleted</div>,
       actionTitle: 'Undo',
       onAction: () => {
-        create(docInfo.id, deletedDocument)
+        ops.create(deletedDocument)
         setDeletedDocument(null)
         setIsConfirming(false)
       }

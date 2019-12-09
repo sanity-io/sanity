@@ -1,5 +1,5 @@
 function patch(p) {
-  return {patch: p}
+  return p
 }
 export function setIfMissing(path, value) {
   return patch({
@@ -9,11 +9,11 @@ export function setIfMissing(path, value) {
   })
 }
 export function set(path, value) {
-  return patch({
+  return {
     set: {
       [path]: value
     }
-  })
+  }
 }
 
 export function append(path, items) {
