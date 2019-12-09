@@ -121,7 +121,7 @@ export default withValuePath(
         const {getValuePath, type, document} = this.props
         const parentPath = getValuePath().slice(0, -1)
         const parent = get(document, parentPath)
-        const source = get(type, ['options', 'source'])
+        const source = get(type, ['options', 'source'], [])
         return typeof source === 'function'
           ? source(document, {parentPath, parent})
           : get(document, source)
