@@ -2,13 +2,7 @@ import {createObservableBufferedDocument} from './createObservableBufferedDocume
 import {filter} from 'rxjs/operators'
 import {merge, Observable} from 'rxjs'
 import {ReconnectEvent} from '../types'
-import {
-  CommitFunction,
-  SnapshotEvent,
-  CommittedEvent,
-  DocumentRebaseEvent,
-  DocumentMutationEvent
-} from './types'
+import {CommitFunction, CommittedEvent, DocumentMutationEvent, DocumentRebaseEvent, SnapshotEvent} from './types'
 import {ListenerEvent} from '../getPairListener'
 
 export type BufferedDocumentEvent =
@@ -48,9 +42,8 @@ export const createBufferedDocument = (
       bufferedDocument.addMutations(patches.map(patch => ({patch: {...patch, id: documentId}})))
     },
     create(document) {
-      console.log(document)
       bufferedDocument.addMutation({
-        create: Object.assign({id: documentId}, document)
+        create: document
       })
     },
     createIfNotExists(document) {

@@ -1,9 +1,12 @@
-import {IdPair, SanityDocument} from './types'
-import {BufferedDocumentEvent, BufferedDocumentWrapper} from './buffered-doc/createBufferedDocument'
-import {SnapshotEvent} from './buffered-doc/types'
-import docStore from './document-store'
+import {IdPair, SanityDocument} from '../types'
+import {
+  BufferedDocumentEvent,
+  BufferedDocumentWrapper
+} from '../buffered-doc/createBufferedDocument'
+import {DocumentMutationEvent, DocumentRebaseEvent, SnapshotEvent} from '../buffered-doc/types'
+import docStore from '../document-store'
 import {defer, merge, Observable} from 'rxjs'
-import {filter, map, scan, tap} from 'rxjs/operators'
+import {filter, map, scan, tap, refCount, publishReplay, share, finalize} from 'rxjs/operators'
 
 interface LocalDocument {
   snapshot: SanityDocument | null
@@ -15,25 +18,27 @@ interface LocalDocument {
   commit: () => Observable<never>
 }
 
-export interface LocalPair {
+export interface CachedPair {
   id: string
   draft: LocalDocument
   published: LocalDocument
 }
 
-function isSnapshotEvent(event: BufferedDocumentEvent): event is SnapshotEvent {
-  return event.type == 'snapshot'
+function hasDocument(
+  event: BufferedDocumentEvent
+): event is SnapshotEvent | DocumentRebaseEvent | DocumentMutationEvent {
+  return event.type === 'snapshot' || event.type === 'rebase' || event.type === 'mutation'
 }
 
-function isLocalPair(event: any): event is LocalPair {
+function isLocalPair(event: any): event is CachedPair {
   return 'draft' in event && 'published' in event
 }
 
 function toLocalDocument(bdw: BufferedDocumentWrapper) {
   return bdw.events.pipe(
-    filter(isSnapshotEvent),
-    map(draftEvent => ({
-      snapshot: draftEvent.document,
+    filter(hasDocument),
+    map(event => ({
+      snapshot: event.document,
       patch: bdw.patch,
       create: bdw.create,
       createIfNotExists: bdw.createIfNotExists,
@@ -48,30 +53,25 @@ function createCache<T>() {
   const CACHE: {[key: string]: Observable<T>} = Object.create(null)
   return function cacheBy(id: string) {
     return (input$: Observable<T>): Observable<T> => {
-      return defer(() => {
+      return new Observable<T>(subscriber => {
         if (!(id in CACHE)) {
           CACHE[id] = input$.pipe(
-            tap({
-              complete: () => {
-                delete CACHE[id]
-              }
-            })
+            finalize(() => {
+              delete CACHE[id]
+            }),
+            publishReplay(1),
+            refCount()
           )
         }
-        return CACHE[id]
+        return CACHE[id].subscribe(subscriber)
       })
     }
   }
 }
 
-function query(params: {}) {
-  return {}
-}
+const cacheBy = createCache<CachedPair>()
 
-query({foo: 'bar'})
-
-const cacheBy = createCache<LocalPair>()
-export function getPair(idPair: IdPair): Observable<LocalPair> {
+export function getPair(idPair: IdPair): Observable<CachedPair> {
   return defer(() => {
     const {draft, published} = docStore.checkoutPair(idPair)
     const draftEvents$ = toLocalDocument(draft).pipe(map(ev => ({draft: ev})))

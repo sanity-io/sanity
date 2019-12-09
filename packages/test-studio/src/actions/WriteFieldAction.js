@@ -1,10 +1,12 @@
 import * as React from 'react'
-import {mutate} from '../mockDocStateDatastore'
+import {useDocumentOperations} from '../test-action-tool/useDocumentOperations'
 import {set} from './patch-helpers'
 
 export default function WriteFieldAction(docInfo) {
   const doc = docInfo.isLiveEdit ? docInfo.published : docInfo.draft
   const [isWriting, setIsWriting] = React.useState(false)
+  const {patch} = useDocumentOperations(docInfo.id, docInfo.type)
+
   return {
     disabled: !doc,
     label: 'Edit title field',
@@ -17,7 +19,7 @@ export default function WriteFieldAction(docInfo) {
         <input
           type="text"
           value={doc.title || ''}
-          onChange={event => mutate(docInfo.id, [set('title', event.currentTarget.value)])}
+          onChange={event => patch([set('title', event.currentTarget.value)])}
         />
         <button onClick={() => setIsWriting(false)}>OK</button>
       </>
