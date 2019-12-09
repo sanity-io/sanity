@@ -271,28 +271,31 @@ export default withInitialValue(
         .pipe(
           switchMap(event =>
             event.type === 'reconnect' ? timer(500).pipe(mapTo(event)) : observableOf(event)
-          ),
-          catchError((err, _caught$) => {
-            // eslint-disable-next-line no-console
-            console.error(err)
-            return observableOf({type: 'error', error: err})
-          })
+          )
         )
-        .subscribe(event => {
-          this.setState(prevState => {
-            const version = event.version // either 'draft' or 'published'
-            const error = event.type === 'error' ? event.error : null
-            return {
-              isReconnecting: event.type === 'reconnect',
-              validationPending: true,
-              error,
-              [version]: {
-                ...(prevState[version] || {}),
-                ...documentEventToState(event),
-                isLoading: false
+        .subscribe({
+          next: event => {
+            this.setState(prevState => {
+              const version = event.version // either 'draft' or 'published'
+              const error = event.type === 'error' ? event.error : null
+              return {
+                isReconnecting: event.type === 'reconnect',
+                validationPending: true,
+                error,
+                [version]: {
+                  ...(prevState[version] || {}),
+                  ...documentEventToState(event),
+                  isLoading: false
+                }
               }
-            }
-          }, this.validateLatestDocument)
+            }, this.validateLatestDocument)
+          },
+          error: error => {
+            this.setStateIfMounted({
+              error,
+              transactionResult: null
+            })
+          }
         })
     }
 
