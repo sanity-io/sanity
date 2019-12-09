@@ -31,6 +31,14 @@ export default {
       }
     },
     {
+      name: 'noSource',
+      title: 'Slug with not source',
+      type: 'slug',
+      options: {
+        maxLength: 100
+      }
+    },
+    {
       name: 'requiredSlug',
       type: 'slug',
       title: 'Required slug',
