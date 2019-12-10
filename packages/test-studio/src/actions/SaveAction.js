@@ -1,7 +1,7 @@
-import {useDocumentOperations} from '../test-action-tool/useDocumentOperations'
+import {useDocumentOperation} from '@sanity/react-hooks'
 
 export default function SaveAction(docInfo) {
-  const {commit} = useDocumentOperations(docInfo.id, docInfo.type)
+  const {commit} = useDocumentOperation(docInfo.id, docInfo.type)
   return {
     label: 'Save',
     handle: () => {

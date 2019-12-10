@@ -2,19 +2,18 @@ import * as React from 'react'
 // import actions from 'all:part:@sanity/base/document-action'
 import resolveActions from 'part:@sanity/base/document-actions'
 import {groupBy} from 'lodash'
-import {route, withRouterHOC, StateLink} from 'part:@sanity/base/router'
+import {StateLink, withRouterHOC} from 'part:@sanity/base/router'
 import documentStore from 'part:@sanity/base/datastore/document'
-import {getPublishedId, isDraftId} from 'part:@sanity/base/util/draft-utils'
+import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 
 import {streamingComponent} from 'react-props-stream'
-import {Subject, merge, EMPTY, combineLatest, of} from 'rxjs'
-import {switchMap, tap, filter, map, distinctUntilChanged} from 'rxjs/operators'
+import {EMPTY, of} from 'rxjs'
+import {distinctUntilChanged, map, switchMap} from 'rxjs/operators'
 import PopOverDialog from 'part:@sanity/components/dialogs/popover'
-import {useCurrentUser, useUsers} from '../actions/hooks'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Button from 'part:@sanity/components/buttons/default'
-import {useDocumentOperations} from './useDocumentOperations'
 import schema from 'part:@sanity/base/schema'
+
 const RenderActionDialog = props => {
   return <PopOverDialog>{props.dialog}</PopOverDialog>
 }
@@ -32,23 +31,27 @@ const RenderSnackbar = props => {
 }
 
 const ActionButtonRenderer = props => {
-  const actionState = props.action(props.record)
+  const Action = props.action
+  const [key, setKey] = React.useState(Math.random())
 
-  if (actionState === null) {
-    return null
-  }
   return (
-    <>
-      <Button
-        loading={actionState.showActivityIndicator}
-        onClick={actionState.handle}
-        disabled={actionState.disabled}
-      >
-        {actionState.label}
-      </Button>
-      {actionState.dialog && <RenderActionDialog dialog={actionState.dialog} />}
-      {actionState.snackbar && <RenderSnackbar snackbar={actionState.snackbar} />}
-    </>
+    <Action key={key} {...props.record}>
+      {actionState => (
+        <>
+          <Button
+            loading={actionState.showActivityIndicator}
+            onClick={actionState.handle}
+            disabled={actionState.disabled}
+          >
+            {actionState.label}
+          </Button>
+          {/*Todo: reset state of others when handling one */}
+          <button onClick={() => setKey(Math.random())}>clear state</button>
+          {actionState.dialog && <RenderActionDialog dialog={actionState.dialog} />}
+          {actionState.snackbar && <RenderSnackbar snackbar={actionState.snackbar} />}
+        </>
+      )}
+    </Action>
   )
 }
 
@@ -103,7 +106,7 @@ const OtherEditor = streamingComponent(props$ => {
 })
 
 const DocumentList = streamingComponent(props => {
-  return documentStore.listenQuery(`*[defined(title)] {_id, _type, title} [0...20]`).pipe(
+  return documentStore.listenQuery(`*[defined(title)] {_id, _type, title} [100...121]`).pipe(
     map(result => {
       return (
         <div style={{overflow: 'auto'}}>
@@ -144,7 +147,7 @@ export const TestActionsTool = withRouterHOC(
                 <DocumentList />
                 <div>
                   <h2>Now editing: {documentState.id}</h2>
-                  <pre style={{fontSize: '0.8em', height: 100, overflow: 'auto'}}>
+                  <pre style={{fontSize: '0.8em', height: 400, overflow: 'auto'}}>
                     {JSON.stringify(documentState, null, 2)}
                   </pre>
                   <Footer record={documentState} type={schema.get(type)} />

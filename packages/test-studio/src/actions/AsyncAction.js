@@ -2,6 +2,7 @@ import React from 'react'
 
 import {mutate} from '../mockDocStateDatastore'
 import {set} from './patch-helpers'
+import {useDocumentOperation} from '@sanity/react-hooks'
 
 function wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
@@ -9,11 +10,13 @@ function wait(ms) {
 
 async function doSomeWork(id) {
   await wait(1000)
-  mutate(id, [set('randomNumber', Math.random())])
+  return Math.random()
 }
 
 export default function AsyncAction(docInfo) {
   const [isWorking, setIsWorking] = React.useState(false)
+
+  const {patch} = useDocumentOperation(docInfo.id, docInfo.type)
 
   return {
     disabled: isWorking,
@@ -21,7 +24,8 @@ export default function AsyncAction(docInfo) {
     label: isWorking ? 'Working…' : 'Do some work!',
     handle: async () => {
       setIsWorking(true)
-      await doSomeWork(docInfo.id)
+      const result = await doSomeWork(docInfo.id)
+      patch([set('randomNumber', result)])
       setIsWorking(false)
     }
   }

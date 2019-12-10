@@ -1,7 +1,7 @@
-import {useDocumentOperations} from '../test-action-tool/useDocumentOperations'
+import {useDocumentOperation} from '@sanity/react-hooks'
 
 export default function EditAction(docInfo) {
-  const {patch} = useDocumentOperations(docInfo.id, docInfo.type)
+  const {patch} = useDocumentOperation(docInfo.id, docInfo.type)
   return {
     label: 'Make an edit',
     handle: () => {
