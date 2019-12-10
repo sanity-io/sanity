@@ -2,12 +2,13 @@ import * as React from 'react'
 import {map} from 'rxjs/operators'
 import {allUsers$, currentUser$, getUser, listenDocRecord} from '../mockDocStateDatastore'
 
-export function useObservable(observable$, initialValue) {
+export function useObservable(getObservable, initialValue, deps = []) {
   const subscription = React.useRef()
+  const isDidMount = React.useRef(true)
   const [value, setState] = React.useState(() => {
     let isSync = true
     let syncVal = typeof initialValue === 'undefined' ? null : initialValue
-    subscription.current = observable$.subscribe(nextVal => {
+    subscription.current = getObservable(deps).subscribe(nextVal => {
       if (isSync) {
         syncVal = nextVal
       } else {
@@ -18,14 +19,18 @@ export function useObservable(observable$, initialValue) {
     return syncVal
   })
 
-  React.useEffect(
-    () => () => {
+  React.useEffect(() => {
+    if (!isDidMount.current && subscription.current) {
+      subscription.current.unsubscribe()
+      subscription.current = getObservable(deps).subscribe(next => setState(next))
+    }
+    isDidMount.current = false
+    return () => {
       if (subscription.current) {
         subscription.current.unsubscribe()
       }
-    },
-    []
-  )
+    }
+  }, deps)
 
   return value
 }

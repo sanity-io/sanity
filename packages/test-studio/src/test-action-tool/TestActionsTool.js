@@ -2,13 +2,13 @@ import * as React from 'react'
 // import actions from 'all:part:@sanity/base/document-action'
 import resolveActions from 'part:@sanity/base/document-actions'
 import {groupBy} from 'lodash'
-import {route, withRouterHOC} from 'part:@sanity/base/router'
+import {route, withRouterHOC, StateLink} from 'part:@sanity/base/router'
 import documentStore from 'part:@sanity/base/datastore/document'
+import {getPublishedId, isDraftId} from 'part:@sanity/base/util/draft-utils'
 
 import {streamingComponent} from 'react-props-stream'
-import {currentUser$, listenDocRecord, setCurrentUserId} from '../mockDocStateDatastore'
 import {Subject, merge, EMPTY, combineLatest, of} from 'rxjs'
-import {switchMap, tap, map, distinctUntilChanged} from 'rxjs/operators'
+import {switchMap, tap, filter, map, distinctUntilChanged} from 'rxjs/operators'
 import PopOverDialog from 'part:@sanity/components/dialogs/popover'
 import {useCurrentUser, useUsers} from '../actions/hooks'
 import Snackbar from 'part:@sanity/components/snackbar/default'
@@ -75,11 +75,10 @@ function UserSwitch() {
 function ActionMenu(props) {
   const actions = resolveActions(props.record, props.type)
   const groups = groupBy(actions, 'group')
-
   return (
     <div>
       {(groups.primary || []).map(action => (
-        <ActionButtonRenderer action={action} record={props.record} />
+        <ActionButtonRenderer key={props.record.id} action={action} record={props.record} />
       ))}
     </div>
   )
@@ -89,8 +88,8 @@ function Footer(props) {
   const actions = resolveActions(props.record, props.type)
   return (
     <div>
-      {actions.map(action => (
-        <ActionButtonRenderer action={action} record={props.record} type={props.type} />
+      {actions.map((action, i) => (
+        <ActionButtonRenderer key={i} action={action} record={props.record} type={props.type} />
       ))}
     </div>
   )
@@ -103,9 +102,30 @@ const OtherEditor = streamingComponent(props$ => {
   )
 })
 
+const DocumentList = streamingComponent(props => {
+  return documentStore.listenQuery(`*[defined(title)] {_id, _type, title} [0...20]`).pipe(
+    map(result => {
+      return (
+        <div style={{overflow: 'auto'}}>
+          <h2>Docs!</h2>
+          <ul>
+            {result.map(doc => (
+              <li key={doc._id}>
+                <StateLink state={{id: getPublishedId(doc._id), type: doc._type}}>
+                  {doc.title}
+                </StateLink>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    })
+  )
+})
+
 export const TestActionsTool = withRouterHOC(
   streamingComponent(props$ => {
-    const docId$ = props$.pipe(
+    return props$.pipe(
       map(props => props.router),
       switchMap(router => {
         if (!router.state.id) {
@@ -114,22 +134,21 @@ export const TestActionsTool = withRouterHOC(
         }
         return of([router.state.id, router.state.type])
       }),
-      distinctUntilChanged()
-    )
-
-    return combineLatest([docId$, currentUser$]).pipe(
-      switchMap(([[id, type], currentUser]) => {
+      distinctUntilChanged(([id, type], [prevId, prevType]) => id === prevId && type === prevType),
+      switchMap(([id, type]) => {
         const doc$ = documentStore.local.editStateOf(id, type)
         return doc$.pipe(
           map(documentState => {
             return (
-              <div style={{padding: '1em'}}>
-                <h2>Now editing: {documentState.id}</h2>
-                <pre>{JSON.stringify(documentState, null, 2)}</pre>
-                {/*<ActionMenu record={record} type={{type: 'document', name: 'mock'}} />*/}
-                <Footer record={documentState} type={schema.get(type)} />
-
-                <OtherEditor id={id} type={type} />
+              <div style={{padding: '1em', display: 'flex', flexDirection: 'row'}}>
+                <DocumentList />
+                <div>
+                  <h2>Now editing: {documentState.id}</h2>
+                  <pre style={{fontSize: '0.8em', height: 100, overflow: 'auto'}}>
+                    {JSON.stringify(documentState, null, 2)}
+                  </pre>
+                  <Footer record={documentState} type={schema.get(type)} />
+                </div>
               </div>
             )
           })

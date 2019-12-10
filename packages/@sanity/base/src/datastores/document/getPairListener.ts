@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import {defer, of as observableOf, Observable} from 'rxjs'
-import {concatMap, map} from 'rxjs/operators'
+import {concatMap, map, finalize} from 'rxjs/operators'
 import {
   IdPair,
   MutationEvent,
