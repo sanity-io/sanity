@@ -1,3 +1,4 @@
+const {tryInitializePluginConfigs} = require('../config/reinitializePluginConfigs')
 const getSanitySchema = require('./getSanitySchema')
 const extractFromSanitySchema = require('./extractFromSanitySchema')
 const generateTypeQueries = require('./generateTypeQueries')
@@ -6,6 +7,9 @@ const SchemaError = require('./SchemaError')
 
 module.exports = async function deployApiActions(args, context) {
   const {apiClient, workDir, output, prompt} = context
+
+  await tryInitializePluginConfigs({workDir, output, env: 'production'})
+
   const flags = args.extOptions
 
   const client = apiClient({
