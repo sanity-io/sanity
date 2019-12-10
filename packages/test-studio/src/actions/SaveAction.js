@@ -1,6 +1,7 @@
 import {useDocumentOperation} from '@sanity/react-hooks'
+import {createAction} from './createAction'
 
-export default function SaveAction(docInfo) {
+export default createAction(function SaveAction(docInfo) {
   const {commit} = useDocumentOperation(docInfo.id, docInfo.type)
   return {
     label: 'Save',
@@ -8,4 +9,4 @@ export default function SaveAction(docInfo) {
       commit(docInfo.id, docInfo.type)
     }
   }
-}
+})

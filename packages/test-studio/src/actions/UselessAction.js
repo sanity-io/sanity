@@ -1,6 +1,7 @@
 import React from 'react'
+import {createAction} from './createAction'
 
-export default function UselessButSimpleAction(documentInfo) {
+export default createAction(function UselessButSimpleAction(documentInfo) {
   const [clickCount, setClickCount] = React.useState(0)
   return {
     label: `Count clicks: ${clickCount}`,
@@ -8,4 +9,4 @@ export default function UselessButSimpleAction(documentInfo) {
       setClickCount(clickCount + 1)
     }
   }
-}
+})

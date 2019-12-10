@@ -1,7 +1,8 @@
 import {omit} from 'lodash'
 import {useDocumentOperation} from '@sanity/react-hooks'
+import {createAction} from './createAction'
 
-export default function PublishAction(docInfo) {
+export default createAction(function PublishAction(docInfo) {
   if (docInfo.isLiveEditEnabled) {
     return null
   }
@@ -15,4 +16,4 @@ export default function PublishAction(docInfo) {
       publish(doc => omit(doc, 'reviewers'))
     }
   }
-}
+})

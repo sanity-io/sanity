@@ -1,8 +1,9 @@
 import * as React from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {set} from './patch-helpers'
+import {createAction} from './createAction'
 
-export default function WriteFieldAction(docInfo) {
+export default createAction(function WriteFieldAction(docInfo) {
   const doc = docInfo.isLiveEdit ? docInfo.published : docInfo.draft
 
   const [isWriting, setIsWriting] = React.useState(false)
@@ -25,4 +26,4 @@ export default function WriteFieldAction(docInfo) {
       </>
     )
   }
-}
+})
