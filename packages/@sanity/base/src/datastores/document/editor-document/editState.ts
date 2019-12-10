@@ -1,6 +1,6 @@
 import {getDraftId, isDraftId} from 'part:@sanity/base/util/draft-utils'
 import {concat, from, Observable, of} from 'rxjs'
-import {map, switchMap, tap, scan} from 'rxjs/operators'
+import {map, switchMap} from 'rxjs/operators'
 import {SanityDocument} from '../types'
 import {getPair} from './cached-pair'
 import schema from 'part:@sanity/base/schema'
