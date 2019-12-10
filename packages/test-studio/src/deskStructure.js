@@ -15,6 +15,7 @@ export const getDefaultDocumentNode = () => {
     S.view.form().icon(EditIcon),
     S.view
       .component(DeveloperPreview)
+      .options({some: 'option'})
       .icon(EyeIcon)
       .title('Preview')
   ])
@@ -64,6 +65,7 @@ export default () =>
         .child(
           S.component(JsonDocumentDump)
             .id('json-dump')
+            .options({pass: 'through'})
             .menuItems([
               S.menuItem()
                 .title('Reload')
@@ -136,18 +138,6 @@ export default () =>
             .filter('_type == $type && role == $role')
             .params({type: 'author', role: 'developer'})
             .initialValueTemplates(S.initialValueTemplateItem('author-developer'))
-            .child(documentId =>
-              S.document()
-                .documentId(documentId)
-                .schemaType('author')
-                .views([
-                  S.view.form().icon(EditIcon),
-                  S.view
-                    .component(DeveloperPreview)
-                    .icon(EyeIcon)
-                    .title('Preview')
-                ])
-            )
       }),
 
       S.listItem({
