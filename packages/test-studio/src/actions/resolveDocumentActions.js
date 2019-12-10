@@ -7,19 +7,23 @@ import PublishAction from './PublishAction'
 import AsyncAction from './AsyncAction'
 import UselessAction from './UselessAction'
 import SaveAction from './SaveAction'
+import ObservableAction from './ObservableAction'
+import WrappedAction from './WrappedAction'
 
 const DISABLE_CREATE = ['author']
 
 export default function resolveDocumentActions(docInfo, type) {
   return [
     // type.__experimental_actions.includes('delete') && DeleteAction,
-    EditAction,
-    SaveAction,
+    // EditAction,
+    // SaveAction,
     DeleteAction,
-    UselessAction,
-    AsyncAction,
-    WriteFieldAction,
-    PublishAction,
-    PolicyBasedReview
+    // UselessAction,
+    // AsyncAction,
+    // ObservableAction,
+    // WriteFieldAction,
+    WrappedAction
+    // PublishAction,
+    // PolicyBasedReview
   ].filter(Boolean)
 }

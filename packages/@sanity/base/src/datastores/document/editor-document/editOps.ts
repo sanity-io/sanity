@@ -65,6 +65,10 @@ export function editOpsOf(publishedId: string, typeName: string): Observable<Edi
           published.delete()
           draft.delete()
         },
+        create(document) {
+          const target = liveEdit ? published : draft
+          target.create(document)
+        },
         patch(patches) {
           console.log('patching!', publishedId, patches)
           // const initialValue = this.getInitialValue()

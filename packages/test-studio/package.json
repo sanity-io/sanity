@@ -32,6 +32,7 @@
     "@sanity/google-maps-input": "0.147.9",
     "@sanity/image-url": "0.140.15",
     "@sanity/production-preview": "0.147.0",
+    "@sanity/react-hooks": "0.147.0",
     "@sanity/rich-date-input": "0.147.0",
     "@sanity/storybook": "0.147.0",
     "@sanity/studio-hints": "0.147.8",

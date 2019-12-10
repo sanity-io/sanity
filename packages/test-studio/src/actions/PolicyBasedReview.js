@@ -1,7 +1,6 @@
 import * as React from 'react'
 import {mutate, publish} from '../mockDocStateDatastore'
 import {setIfMissing, set, unset, append} from './patch-helpers'
-import {useCurrentUser, useDocument, useUser} from './hooks'
 
 function addReviewer(id, reviewerId) {
   return mutate(id, [

@@ -1,12 +1,12 @@
 import {omit} from 'lodash'
-import {useDocumentOperations} from '../test-action-tool/useDocumentOperations'
+import {useDocumentOperation} from '@sanity/react-hooks'
 
 export default function PublishAction(docInfo) {
   if (docInfo.isLiveEditEnabled) {
     return null
   }
 
-  const {publish} = useDocumentOperations(docInfo.id, docInfo.type)
+  const {publish} = useDocumentOperation(docInfo.id, docInfo.type)
 
   return {
     disabled: !docInfo.draft,

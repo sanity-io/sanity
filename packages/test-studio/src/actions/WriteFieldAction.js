@@ -1,12 +1,12 @@
 import * as React from 'react'
-import {useDocumentOperations} from '../test-action-tool/useDocumentOperations'
+import {useDocumentOperation} from '@sanity/react-hooks'
 import {set} from './patch-helpers'
 
 export default function WriteFieldAction(docInfo) {
   const doc = docInfo.isLiveEdit ? docInfo.published : docInfo.draft
 
   const [isWriting, setIsWriting] = React.useState(false)
-  const {patch} = useDocumentOperations(docInfo.id, docInfo.type)
+  const {patch} = useDocumentOperation(docInfo.id, docInfo.type)
   const currentTitle = (doc && doc.title) || ''
   return {
     label: `Edit title field of ${currentTitle}`,
