@@ -110,20 +110,17 @@ export default class HintsPackage extends React.PureComponent {
     if (isLoading) {
       return (
         <div className={styles.root}>
-          <Spinner message="Loading hints package" />
+          <Spinner message="Loading hints" />
         </div>
       )
     }
 
     if (error) {
-      return this.renderError(
-        'Hints not found',
-        'An error occurred while fetching the hints package.'
-      )
+      return this.renderError('Hints not found', 'An error occurred while fetching the hints.')
     }
 
     if (!hintsPackage || isEmpty(hintsPackage)) {
-      return this.renderError('Hints not found', `No hints package found for slug "${repoId}"`)
+      return this.renderError('Hints not found', `No hints found for slug "${repoId}"`)
     }
 
     const {links, hints, title, hintsTitle, linksTitle} = hintsPackage
