@@ -46,12 +46,43 @@ const ActionButtonRenderer = props => {
             {actionState.label}
           </Button>
           {/*Todo: reset state of others when handling one */}
-          <button onClick={() => setKey(Math.random())}>clear state</button>
+          <button type="button" title="Clear state" onClick={() => setKey(Math.random())}>
+            x
+          </button>
           {actionState.dialog && <RenderActionDialog dialog={actionState.dialog} />}
           {actionState.snackbar && <RenderSnackbar snackbar={actionState.snackbar} />}
         </>
       )}
     </Action>
+  )
+}
+
+function Footer(props) {
+  const actions = resolveActions(props.record, props.type)
+  return (
+    <div>
+      {actions.map((action, i) => (
+        <ActionButtonRenderer key={i} action={action} record={props.record} type={props.type} />
+      ))}
+    </div>
+  )
+}
+
+function ActionMenu(props) {
+  const actions = resolveActions(props.record, props.type)
+  const [active, setActive] = React.useState(null)
+  return (
+    <div>
+      {actions.map((action, i) => (
+        <ActionButtonRenderer
+          key={active ? `${active}-${i}` : i}
+          action={action}
+          record={props.record}
+          onHandle
+        />
+      ))}
+      <button onClick={() => setActive(null)}>Clear</button>
+    </div>
   )
 }
 
@@ -72,29 +103,6 @@ function UserSwitch() {
         </select>
       </>
     )
-  )
-}
-
-function ActionMenu(props) {
-  const actions = resolveActions(props.record, props.type)
-  const groups = groupBy(actions, 'group')
-  return (
-    <div>
-      {(groups.primary || []).map(action => (
-        <ActionButtonRenderer key={props.record.id} action={action} record={props.record} />
-      ))}
-    </div>
-  )
-}
-
-function Footer(props) {
-  const actions = resolveActions(props.record, props.type)
-  return (
-    <div>
-      {actions.map((action, i) => (
-        <ActionButtonRenderer key={i} action={action} record={props.record} type={props.type} />
-      ))}
-    </div>
   )
 }
 
@@ -160,57 +168,3 @@ export const TestActionsTool = withRouterHOC(
     )
   })
 )
-
-// export const TestActionsTool = () => {
-//   const doc = useDocumentActions('38552d45-143b-4909-9a7e-c5e52a798eb6', 'arraysTest')
-//
-//   if (!doc) {
-//     return null
-//   }
-//
-//   const {draft, published, publish, patch, discardDraft, commit} = doc
-//   return (
-//     <>
-//       <h2>Testing</h2>
-//       <div>
-//         <button
-//           onClick={() => {
-//             publish().subscribe()
-//           }}
-//         >
-//           Publish!
-//         </button>
-//         <button
-//           onClick={() => {
-//             commit().subscribe()
-//           }}
-//         >
-//           Commit!
-//         </button>
-//         <button
-//           onClick={() => {
-//             discardDraft()
-//           }}
-//         >
-//           Discard draft
-//         </button>
-//         <button
-//           onClick={() => {
-//             patch([
-//               {
-//                 set: {
-//                   title: `hello ${Math.random()
-//                     .toString(32)
-//                     .substring(2)}`
-//                 }
-//               }
-//             ])
-//           }}
-//         >
-//           Make an edit
-//         </button>
-//       </div>
-//       <pre>{JSON.stringify({draft, published}, null, 2)}</pre>
-//     </>
-//   )
-// }
