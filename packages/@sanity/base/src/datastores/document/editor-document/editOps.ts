@@ -66,6 +66,7 @@ export function editOpsOf(publishedId: string, typeName: string): Observable<Edi
           draft.delete()
         },
         patch(patches) {
+          console.log('patching!', publishedId, patches)
           // const initialValue = this.getInitialValue()
           if (liveEdit) {
             // No drafting, patch and commit the published document

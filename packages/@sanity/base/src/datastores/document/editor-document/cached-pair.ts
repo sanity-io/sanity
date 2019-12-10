@@ -1,12 +1,9 @@
 import {IdPair, SanityDocument} from '../types'
-import {
-  BufferedDocumentEvent,
-  BufferedDocumentWrapper
-} from '../buffered-doc/createBufferedDocument'
+import {BufferedDocumentEvent, BufferedDocumentWrapper} from '../buffered-doc/createBufferedDocument'
 import {DocumentMutationEvent, DocumentRebaseEvent, SnapshotEvent} from '../buffered-doc/types'
 import docStore from '../document-store'
 import {defer, merge, Observable} from 'rxjs'
-import {filter, map, scan, tap, refCount, publishReplay, share, finalize} from 'rxjs/operators'
+import {filter, finalize, map, publishReplay, refCount, scan} from 'rxjs/operators'
 
 interface LocalDocument {
   snapshot: SanityDocument | null
@@ -55,8 +52,10 @@ function createCache<T>() {
     return (input$: Observable<T>): Observable<T> => {
       return new Observable<T>(subscriber => {
         if (!(id in CACHE)) {
+          console.log('setting up', id)
           CACHE[id] = input$.pipe(
             finalize(() => {
+              console.log('disposing', id)
               delete CACHE[id]
             }),
             publishReplay(1),
