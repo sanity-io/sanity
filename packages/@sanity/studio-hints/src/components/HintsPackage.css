@@ -67,26 +67,3 @@
   min-height: calc(var(--font-size-large) * 2.2);
   margin: var(--small-padding) 0;
 }
-
-.errorMessage {
-  color: var(--state-danger-color);
-}
-
-.footer {
-  position: sticky;
-  bottom: 0;
-  padding: var(--extra-small-padding) 0;
-  width: 100%;
-  background: var(--main-navigation-color);
-}
-
-.removeHintsLink {
-  display: block;
-  text-align: center;
-  background: var(--brand-primary);
-  color: var(--brand-primary--inverted);
-  margin: var(--small-padding) 0;
-  padding: var(--small-padding);
-  border-radius: var(--border-radius-medium);
-  text-decoration: none;
-}
