@@ -128,7 +128,14 @@ class AssetHandler {
   async downloadAsset(assetDoc, dstPath, attemptNum = 0) {
     const {url} = assetDoc
     const options = this.getAssetRequestOptions(assetDoc)
-    const stream = await requestStream(options)
+
+    let stream
+    try {
+      stream = await requestStream(options)
+    } catch (err) {
+      this.reject(err)
+      return false
+    }
 
     if (stream.statusCode !== 200) {
       this.queue.clear()
@@ -301,33 +308,24 @@ function writeHashedStream(filePath, stream) {
   })
 
   return new Promise((resolve, reject) =>
-    miss.pipe(
-      stream,
-      hasher,
-      fse.createWriteStream(filePath),
-      err => {
-        if (err) {
-          reject(err)
-          return
-        }
-
-        resolve({
-          size,
-          sha1: sha1.digest('hex'),
-          md5: md5.digest('hex')
-        })
+    miss.pipe(stream, hasher, fse.createWriteStream(filePath), err => {
+      if (err) {
+        reject(err)
+        return
       }
-    )
+
+      resolve({
+        size,
+        sha1: sha1.digest('hex'),
+        md5: md5.digest('hex')
+      })
+    })
   )
 }
 
 function tryGetErrorFromStream(stream) {
   return new Promise((resolve, reject) => {
-    miss.pipe(
-      stream,
-      miss.concat(parse),
-      err => (err ? reject(err) : noop)
-    )
+    miss.pipe(stream, miss.concat(parse), err => (err ? reject(err) : noop))
 
     function parse(body) {
       try {
