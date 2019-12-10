@@ -1,23 +1,3 @@
-import React from 'react'
-import PublishAction from './actions/PublishAction'
-import {useEditState} from '@sanity/react-hooks'
-
-// // import customResolveActions from 'part:@sanity/desk-tool/resolve-document-actions?'
-//
-// const actions = [PublishAction]
-//
-// export const DocumentStatusBarActions = props => {
-//   console.log(props.id, props.type)
-//   const editState = useEditState(props.id, props.type)
-//   return (
-//     editState && (
-//       <>
-//         <PublishAction {...editState}>{actionState => actionState.label}</PublishAction>
-//       </>
-//     )
-//   )
-// }
-
 import PropTypes from 'prop-types'
 import React from 'react'
 import {Tooltip} from 'react-tippy'

@@ -1,9 +1,8 @@
 import React from 'react'
 
-import {mutate} from '../mockDocStateDatastore'
 import {set} from './patch-helpers'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import {createAction} from './createAction'
+import {createAction} from 'part:@sanity/base/util/document-action-utils'
 
 function wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))

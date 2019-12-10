@@ -6,7 +6,7 @@ import client from 'part:@sanity/base/client'
 import {CachedPair, getPair} from './cached-pair'
 import schema from 'part:@sanity/base/schema'
 
-interface EditorDocument {
+interface EditorDocumentOperations {
   publish: () => void
   delete: () => void
   patch: (patches: any[]) => void
@@ -14,9 +14,12 @@ interface EditorDocument {
   commit: () => void
 }
 
-export function editOpsOf(publishedId: string, typeName: string): Observable<EditorDocument> {
+export function editOpsOf(
+  publishedId: string,
+  typeName: string
+): Observable<EditorDocumentOperations> {
   if (isDraftId(publishedId)) {
-    throw new Error('useDocumentActions does not expect a draft id.')
+    throw new Error('editOpsOf does not expect a draft id.')
   }
 
   const draftId = getDraftId(publishedId)
@@ -70,7 +73,6 @@ export function editOpsOf(publishedId: string, typeName: string): Observable<Edi
           target.create(document)
         },
         patch(patches) {
-          console.log('patching!', publishedId, patches)
           // const initialValue = this.getInitialValue()
           if (liveEdit) {
             // No drafting, patch and commit the published document

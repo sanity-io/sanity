@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import {createAction} from './createAction'
+import {createAction} from 'part:@sanity/base/util/document-action-utils'
 
 export default createAction(({id, type, draft, published}) => {
   const [isConfirming, setIsConfirming] = React.useState(false)

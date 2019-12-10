@@ -3,7 +3,7 @@ import React from 'react'
 import Badge from 'part:@sanity/components/badges/default'
 import CheckIcon from 'part:@sanity/base/check-icon'
 import SyncIcon from 'part:@sanity/base/sync-icon'
-import DocumentStatusBarActions from './DocumentStatusBarActions'
+import {DocumentStatusBarActions} from './DocumentStatusBarActions'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import PopOverDialog from 'part:@sanity/components/dialogs/popover'
@@ -78,6 +78,8 @@ function DocumentStatusBar(props) {
         <div className={styles.actions}>
           <div className={styles.actionsWrapper}>
             <DocumentStatusBarActions
+              id={props.id}
+              type={props.type}
               actions={props.actions}
               idPrefix={props.idPrefix}
               isDisconnected={props.isDisconnected}
@@ -113,6 +115,9 @@ function DocumentStatusBar(props) {
 }
 
 DocumentStatusBar.propTypes = {
+  id: PropTypes.string,
+  type: PropTypes.string,
+
   actions: PropTypes.arrayOf(
     PropTypes.shape({
       color: PropTypes.oneOf(['primary', 'success', 'danger', 'white', 'warning']),

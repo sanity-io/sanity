@@ -1217,8 +1217,9 @@ export default withInitialValue(
         idPrefix: paneKey,
         isSyncing: isRestoring
       }
-
-      return <DocumentStatusBar {...documentStatusProps} />
+      return (
+        <DocumentStatusBar id={this.props.id} type={this.props.type} {...documentStatusProps} />
+      )
     }
 
     renderFooter = () => {
@@ -1314,7 +1315,9 @@ export default withInitialValue(
         confirmationDialog
       }
 
-      return <DocumentStatusBar {...documentStatusProps} />
+      return (
+        <DocumentStatusBar id={this.props.id} type={this.props.type} {...documentStatusProps} />
+      )
     }
 
     getHistoryEventDateString() {
