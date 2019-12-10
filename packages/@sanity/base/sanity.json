@@ -280,7 +280,7 @@
     },
     {
       "implements": "part:@sanity/base/util/document-action-utils",
-      "path": "util/documentActionUtils.js"
+      "path": "actions/utils/index.js"
     },
     {
       "implements": "part:@sanity/base/theme/variables-style",

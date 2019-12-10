@@ -1,7 +1,6 @@
 import * as React from 'react'
 // import actions from 'all:part:@sanity/base/document-action'
 import resolveActions from 'part:@sanity/base/document-actions'
-import {groupBy} from 'lodash'
 import {StateLink, withRouterHOC} from 'part:@sanity/base/router'
 import documentStore from 'part:@sanity/base/datastore/document'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
@@ -149,16 +148,16 @@ export const TestActionsTool = withRouterHOC(
       switchMap(([id, type]) => {
         const doc$ = documentStore.local.editStateOf(id, type)
         return doc$.pipe(
-          map(documentState => {
+          map(editState => {
             return (
               <div style={{padding: '1em', display: 'flex', flexDirection: 'row'}}>
                 <DocumentList />
                 <div>
-                  <h2>Now editing: {documentState.id}</h2>
+                  <h2>Now editing: {editState.id}</h2>
                   <pre style={{fontSize: '0.8em', height: 400, overflow: 'auto'}}>
-                    {JSON.stringify(documentState, null, 2)}
+                    {JSON.stringify(editState, null, 2)}
                   </pre>
-                  <Footer record={documentState} type={schema.get(type)} />
+                  <Footer record={editState} type={schema.get(type)} />
                 </div>
               </div>
             )
