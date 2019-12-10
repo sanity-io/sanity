@@ -1,7 +1,7 @@
 {
   "name": "clean-studio",
   "private": true,
-  "version": "0.147.1",
+  "version": "0.147.2",
   "description": "Content studio running with schema from the clean template",
   "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
@@ -20,13 +20,13 @@
   "dependencies": {
     "@sanity/base": "0.147.0",
     "@sanity/cli": "0.147.0",
-    "@sanity/components": "0.147.0",
-    "@sanity/core": "0.147.0",
-    "@sanity/default-layout": "0.147.0",
+    "@sanity/components": "0.147.2",
+    "@sanity/core": "0.147.2",
+    "@sanity/default-layout": "0.147.2",
     "@sanity/default-login": "0.147.0",
-    "@sanity/desk-tool": "0.147.1",
-    "@sanity/google-maps-input": "0.147.0",
-    "@sanity/vision": "0.147.0",
+    "@sanity/desk-tool": "0.147.2",
+    "@sanity/google-maps-input": "0.147.2",
+    "@sanity/vision": "0.147.2",
     "react": "16.9.0",
     "react-dom": "^16.9.0"
   },
