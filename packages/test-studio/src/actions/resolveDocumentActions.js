@@ -15,15 +15,15 @@ const DISABLE_CREATE = ['author']
 export default function resolveDocumentActions(docInfo, type) {
   return [
     // type.__experimental_actions.includes('delete') && DeleteAction,
-    // EditAction,
-    // SaveAction,
+    EditAction,
+    SaveAction,
     DeleteAction,
-    // UselessAction,
-    // AsyncAction,
-    // ObservableAction,
-    // WriteFieldAction,
-    WrappedAction
-    // PublishAction,
+    UselessAction,
+    AsyncAction,
+    ObservableAction,
+    WriteFieldAction,
+    WrappedAction,
+    PublishAction
     // PolicyBasedReview
   ].filter(Boolean)
 }
