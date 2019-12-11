@@ -54,7 +54,7 @@ assign(AssetsClient.prototype, {
    * @param  {String}  opts.label Label
    * @param  {String}  opts.title Title
    * @param  {String}  opts.description Description
-   * @param  {String}  opts.creditLine The credit to person(s) and/or organisation(s) required by the supplier of the image to be used when published
+   * @param  {String}  opts.creditLine The credit to person(s) and/or organization(s) required by the supplier of the image to be used when published
    * @param  {Object}  opts.source Source data (when the asset is from an external service)
    * @param  {String}  opts.source.id The (u)id of the asset within the source, i.e. 'i-f323r1E'
    *                                  Required if source is defined
