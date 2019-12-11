@@ -54,7 +54,7 @@ import Decorator from './nodes/Decorator'
 import InlineObject from './nodes/InlineObject'
 import Span from './nodes/Span'
 import styles from './styles/Editor.css'
-import {EDITOR_DEFAULT_BLOCK_TYPE, editorValueToBlocks} from '@sanity/block-tools'
+import {EDITOR_DEFAULT_BLOCK_TYPE, editorValueToBlocks, normalizeBlock} from '@sanity/block-tools'
 import {getKey} from './utils/getKey'
 import {Path} from '../../typedefs/path'
 type PasteProgressResult = {
@@ -293,11 +293,13 @@ export default class Editor extends React.Component<Props, {}> {
           throw result
         }
         if (result && result.insert) {
+          const allowedDecorators = this.props.blockContentFeatures.decorators.map(item => item.value)
+          const blocksToInsertNormalized = result.insert.map(block => normalizeBlock(block, {allowedDecorators}))
           const patches = [
-            setIfMissing(result.insert),
+            setIfMissing(blocksToInsertNormalized),
             this.props.value && this.props.value.length !== 0
-              ? insert(result.insert, 'after', result.path || focusPath)
-              : set(result.insert, [])
+              ? insert(blocksToInsertNormalized, 'after', result.path || focusPath)
+              : set(blocksToInsertNormalized, [])
           ]
           onPatch(PatchEvent.from(patches))
           onLoading({paste: null})
