@@ -48,7 +48,8 @@
     "resize-observer": "1.0.0",
     "rxjs": "^6.5.3",
     "scroll": "^3.0.1",
-    "shallow-equals": "^1.0.0"
+    "shallow-equals": "^1.0.0",
+    "use-onclickoutside": "^0.3.1"
   },
   "devDependencies": {
     "@sanity/base": "0.147.6",
