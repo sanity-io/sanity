@@ -35,12 +35,12 @@ npm start
   - The code is linted and the test suite is passing
 
 - It's fine to open a pull request to start a discussion / ask for help, but it should be stated clearly that it's not yet ready for merge.
-- When the `next`-branch is throughly tested and ready to be released (either as a minor or major version bump), it should be merged into master and bumped.
-- Critical fixes goes straight into master (preferably through a pull request)
+- When the `next`-branch is thoroughly tested and ready to be released (either as a minor or major version bump), it should be merged into master and bumped.
+- Critical fixes go straight into master (preferably through a pull request)
 
 ## Merging
 
-Prefer squash + merge. If it makes sense to keep individual commits (e.g. different people has been working on the same feature), the pull request should be merged with the "Rebase + merge"-button. If possible, each individual commit message should be rewritten with the pull-request number in paranthesis, e.g. `[some-package] Fix stuff (#22)`
+Prefer squash + merge. If it makes sense to keep individual commits (e.g. different people has been working on the same feature), the pull request should be merged with the "Rebase + merge"-button. If possible, each individual commit message should be rewritten with the pull-request number in parenthesis, e.g. `[some-package] Fix stuff (#22)`
 
 ## Publishing official releases
 
