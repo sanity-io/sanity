@@ -6,7 +6,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 import {getNextFocusableMenuItemIdx, getPreviousFocusableMenuItemIdx} from './helpers'
 
-import styles from './DocumentStatusBarActions_old.css'
+import styles from './DocumentStatusBarActions.css'
 
 const TOUCH_SUPPORT = 'ontouchstart' in document.documentElement
 

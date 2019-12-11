@@ -1189,7 +1189,7 @@ export default withInitialValue(
 
     renderHistoryFooter = () => {
       const selectedEvent = this.findSelectedHistoryEvent()
-      const {paneKey} = this.props
+      const {paneKey, options} = this.props
       const {historyState, isReconnecting, isRestoring} = this.state
       const isLatestEvent = historyState.events[0] === selectedEvent
       const historyStatus = selectedEvent ? (
@@ -1217,9 +1217,7 @@ export default withInitialValue(
         idPrefix: paneKey,
         isSyncing: isRestoring
       }
-      return (
-        <DocumentStatusBar id={this.props.id} type={this.props.type} {...documentStatusProps} />
-      )
+      return <DocumentStatusBar id={options.id} type={options.type} {...documentStatusProps} />
     }
 
     renderFooter = () => {
@@ -1315,9 +1313,7 @@ export default withInitialValue(
         confirmationDialog
       }
 
-      return (
-        <DocumentStatusBar id={this.props.id} type={this.props.type} {...documentStatusProps} />
-      )
+      return <DocumentStatusBar id={options.id} type={options.type} {...documentStatusProps} />
     }
 
     getHistoryEventDateString() {

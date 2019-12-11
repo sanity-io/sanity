@@ -94,7 +94,7 @@ export function editOpsOf(
           draft.delete()
         },
         commit() {
-          merge(published.commit(), draft.commit()).subscribe()
+          return merge(published.commit(), draft.commit()).subscribe()
         }
       }
     })
