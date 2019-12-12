@@ -4,11 +4,6 @@ import LaunchIcon from 'part:@sanity/base/launch-icon'
 import styles from './HintCard.css'
 import {resolveUrl} from './utils'
 
-const resolveSegment = {
-  guide: 'guides',
-  article: 'docs'
-}
-
 function HintCard(props) {
   const {card} = props
   /**
