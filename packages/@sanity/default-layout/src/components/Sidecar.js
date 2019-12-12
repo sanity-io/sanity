@@ -1,6 +1,6 @@
 /* eslint-disable prefer-template */
 import React from 'react'
-import sidecar from 'part:@sanity/default-layout/sidecar?'
+import * as sidecar from 'part:@sanity/default-layout/sidecar?'
 import {isSidecarOpenSetting} from 'part:@sanity/default-layout/sidecar-datastore'
 import styles from './styles/Sidecar.css'
 
