@@ -11,6 +11,7 @@ import RenderTool from './RenderTool'
 import ActionModal from './ActionModal'
 import NavBarContainer from './NavBarContainer'
 import {SchemaErrorReporter} from './SchemaErrorReporter'
+import Sidecar from './Sidecar'
 
 export default withRouterHOC(
   class DefaultLayout extends React.Component {
@@ -145,7 +146,6 @@ export default withRouterHOC(
               <AppLoadingScreen text="Restoring Sanity" />
             </div>
           )}
-
           <div className={styles.navBar}>
             <NavBarContainer
               tools={tools}
@@ -161,7 +161,6 @@ export default withRouterHOC(
               onSearchClose={this.handleSearchClose}
             />
           </div>
-
           <div className={styles.sideMenuContainer}>
             <SideMenu
               activeToolName={router.state.tool}
@@ -174,15 +173,14 @@ export default withRouterHOC(
               user={this.state.user}
             />
           </div>
-
           <div className={styles.mainArea}>
             <div className={styles.toolContainer}>
               <RouteScope scope={router.state.tool}>
                 <RenderTool tool={router.state.tool} />
               </RouteScope>
             </div>
+            <Sidecar />
           </div>
-
           {createMenuIsOpen && (
             <ActionModal
               onClose={this.handleActionModalClose}

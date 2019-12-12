@@ -528,6 +528,10 @@
       "description": "Logo for the branding"
     },
     {
+      "name": "part:@sanity/base/lightbulb-icon",
+      "description": "Lightbulb icon"
+    },
+    {
       "name": "part:@sanity/base/link-icon",
       "description": "Link icon"
     },
@@ -632,6 +636,10 @@
       "description": "Arrow drop down"
     },
     {
+      "name": "part:@sanity/base/arrow-right",
+      "description": "Arrow right"
+    },
+    {
       "name": "part:@sanity/base/circle-check-icon",
       "description": "Check in a filled circle"
     },
@@ -698,6 +706,10 @@
     {
       "implements": "part:@sanity/base/sign-out-icon",
       "path": "components/icons/SignOut.js"
+    },
+    {
+      "implements": "part:@sanity/base/lightbulb-icon",
+      "path": "components/icons/Lightbulb.js"
     },
     {
       "implements": "part:@sanity/base/link-icon",
@@ -790,6 +802,10 @@
     {
       "implements": "part:@sanity/base/arrow-drop-down",
       "path": "components/icons/ArrowDropDown.js"
+    },
+    {
+      "implements": "part:@sanity/base/arrow-right",
+      "path": "components/icons/ArrowRight.js"
     },
     {
       "implements": "part:@sanity/base/search-icon",
@@ -890,6 +906,10 @@
     {
       "implements": "part:@sanity/base/eye-icon",
       "path": "components/icons/Eye.js"
+    },
+    {
+      "implements": "part:@sanity/base/launch-icon",
+      "path": "components/icons/Launch.js"
     },
     {
       "implements": "part:@sanity/base/sanity-logo",

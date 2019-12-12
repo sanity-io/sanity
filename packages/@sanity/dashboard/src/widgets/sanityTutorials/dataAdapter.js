@@ -3,7 +3,7 @@ import imageUrlBuilder from '@sanity/image-url'
 
 const configuredClient = client.clone().config({
   projectId: '3do82whm',
-  dataset: 'production',
+  dataset: 'next',
   useCdn: true
 })
 

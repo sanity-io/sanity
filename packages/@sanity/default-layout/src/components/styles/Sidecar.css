@@ -1,0 +1,39 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+:root {
+  --nav-bar-box: 3.0625em; /* 49px */
+}
+
+.root {
+  display: none;
+  max-width: 0;
+  width: 100%;
+  min-height: calc(100vh - var(--nav-bar-box));
+  max-height: calc(100vh - var(--nav-bar-box));
+  transition: transform 500ms ease-in-out, max-width 500ms ease-in-out;
+  transform: translate3d(420px, 0, 0);
+  @media (--screen-medium) {
+    position: fixed;
+    top: var(--nav-bar-box);
+    right: 0;
+    display: block;
+    height: calc(100vh - var(--nav-bar-box));
+    z-index: var(--zindex-drawer);
+  }
+
+  @media (--screen-large) {
+    position: relative;
+    display: block;
+    top: 0;
+  }
+}
+
+.isOpen {
+  max-width: 420px;
+  transform: translate3d(0, 0, 0);
+}
+
+.isOpen {
+  max-width: 420px;
+  transform: translate3d(0, 0, 0);
+}

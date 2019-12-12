@@ -1,0 +1,54 @@
+{
+  "name": "@sanity/studio-hints",
+  "version": "0.147.0",
+  "description": "Plugin for rendering hints in the Studio",
+  "main": "src/StudioHints.js",
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "rimraf lib",
+    "start": "npm run example-testbed",
+    "test": "#todo: jest"
+  },
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "hints",
+    "sanity-plugin"
+  ],
+  "dependencies": {
+    "@sanity/block-content-to-react": "^2.0.7",
+    "lodash": "^4.17.4",
+    "next": "^9.1.3",
+    "react-copy-to-clipboard": "^5.0.2",
+    "react-icons": "^2.2.7",
+    "react-refractor": "^1.0.1",
+    "react-youtube": "^7.9.0",
+    "refractor": "^2.10.0",
+    "url-parse": "^1.4.7"
+  },
+  "devDependencies": {
+    "@sanity/base": "0.144.1",
+    "@sanity/check": "0.144.0",
+    "prop-types": "^15.6.0",
+    "rimraf": "^2.6.2"
+  },
+  "peerDependencies": {
+    "prop-types": "^15.6 || ^16",
+    "react": "^16.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/"
+}

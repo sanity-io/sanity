@@ -6,20 +6,20 @@
 
 .root {
   display: grid;
-  grid-template-areas:   "hamburger         createButton       branding     extras   searchButton";
-  grid-template-columns: var(--nav-bar-box) var(--nav-bar-box) auto         auto     var(--nav-bar-box);
+  grid-template-areas:   "hamburger         createButton       branding     extras   searchButton        sidecarStatus";
+  grid-template-columns: var(--nav-bar-box) var(--nav-bar-box) auto         auto     var(--nav-bar-box)  min-content;
   grid-template-rows: var(--nav-bar-box);
   box-sizing: border-box;
   align-items: stretch;
 
   @media (--screen-medium) {
     grid-template-rows: var(--nav-bar-box);
-    grid-template-areas: " hamburger   branding    createButton       search               extras";
-    grid-template-columns: max-content max-content var(--nav-bar-box) minmax(240px, 100%) max-content;
+    grid-template-areas: " hamburger   branding    createButton       search               extras      sidecarStatus";
+    grid-template-columns: max-content max-content var(--nav-bar-box) minmax(240px, 100%) max-content  min-content;
 
     @nest &.withToolSwitcher {
-      grid-template-areas: " branding    createButton       search               spaceSwitcher toolSwitcher extras      sanityStatus loginStatus";
-      grid-template-columns: max-content var(--nav-bar-box) minmax(240px, 400px) max-content   auto         max-content max-content  calc(var(--nav-bar-box) + 1em);
+      grid-template-areas: " branding    createButton       search               spaceSwitcher toolSwitcher extras      sanityStatus loginStatus sidecarStatus";
+      grid-template-columns: max-content var(--nav-bar-box) minmax(240px, 400px) max-content   auto         max-content max-content calc(var(--nav-bar-box) + 1em) min-content;
     }
   }
 
@@ -148,6 +148,12 @@ a.branding {
       display: flex;
     }
   }
+}
+
+.sidecarStatus {
+  grid-area: sidecarStatus;
+  display: flex;
+  justify-content: center;
 }
 
 .extras {

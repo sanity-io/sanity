@@ -1,0 +1,37 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  padding: var(--medium-padding);
+  border-radius: var(--border-radius-medium);
+  border: 1px solid color(var(--main-navigation-color--inverted) a(40%));
+  margin: var(--small-padding) 0;
+  cursor: pointer;
+  display: flex;
+  text-decoration: none;
+  transition: all 0.2s linear;
+  color: inherit;
+
+  @nest &:hover {
+    color: var(--main-navigation-color--inverted);
+    background: color(var(--main-navigation-color) l(+4%));
+    cursor: pointer;
+  }
+}
+
+.cardTitle {
+  display: flex;
+  font-weight: var(--headings-font-weight);
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+}
+
+.externalIcon {
+  display: flex;
+  align-items: stretch;
+  font-size: var(--icon-size);
+}
+
+.cardSummary {
+  margin: 0;
+}

@@ -1,0 +1,69 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+:root {
+  --nav-bar-box: 3.0625em; /* 49px */
+}
+
+.root {
+  padding: var(--medium-padding);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  color: color(var(--main-navigation-color--inverted) a(70%));
+}
+
+.withError {
+  margin-top: var(--large-padding);
+}
+
+.trayTitle {
+  display: flex;
+  align-items: center;
+  font-size: var(--font-size-h4);
+  margin: 0;
+}
+
+.errorWrapper {
+  padding: var(--medium-padding);
+
+  @nest & .errorTitle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-h4);
+    margin: 0;
+    text-align: center;
+
+    @nest & svg {
+      padding-right: 0.5em;
+    }
+  }
+
+  @nest & .errorMessage {
+    text-align: center;
+    margin: 0;
+  }
+}
+
+.footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-width: 100%;
+  padding: 0 var(--medium-padding);
+  background: var(--main-navigation-color);
+}
+
+.removeHintsLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-primary);
+  color: var(--brand-primary--inverted);
+  border-radius: var(--border-radius-medium);
+  text-decoration: none;
+  min-height: calc(var(--font-size-large) * 2.2);
+  margin: var(--small-padding) 0;
+}

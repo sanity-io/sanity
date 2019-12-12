@@ -7,6 +7,7 @@ import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
 import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import {StateLink} from 'part:@sanity/base/router'
+import {SidecarToggleButton, isSidecarEnabled} from 'part:@sanity/default-layout/sidecar?'
 import {HAS_SPACES} from '../util/spaces'
 import Branding from './Branding'
 import LoginStatus from './LoginStatus'
@@ -36,6 +37,7 @@ function NavBar(props) {
   if (searchIsOpen) searchClassName += ` ${styles.searchIsOpen}`
   let className = styles.root
   if (showToolSwitcher) className += ` ${styles.withToolSwitcher}`
+
   return (
     <div className={className} data-search-open={searchIsOpen}>
       <div className={styles.hamburger}>
@@ -103,6 +105,11 @@ function NavBar(props) {
       <div className={styles.loginStatus} ref={onSetLoginStatusElement}>
         <LoginStatus onLogout={onUserLogout} user={user} />
       </div>
+      {isSidecarEnabled() && (
+        <div className={styles.sidecarStatus}>
+          <SidecarToggleButton />
+        </div>
+      )}
       <button className={styles.searchButton} onClick={onSearchOpen} type="button">
         <div className={styles.searchButtonInner} tabIndex={-1}>
           <span className={styles.searchButtonIcon}>

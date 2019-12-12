@@ -33,6 +33,7 @@
 
   @nest & .inner {
     display: flex;
+    align-items: center;
   }
 
   @nest & .message {

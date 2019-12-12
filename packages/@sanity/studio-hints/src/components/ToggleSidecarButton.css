@@ -1,0 +1,46 @@
+@import "part:@sanity/base/theme/variables-style";
+
+.toggleButton {
+  -webkit-font-smoothing: inherit;
+  appearance: none;
+  outline: none;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  user-select: none;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  cursor: pointer;
+
+  @nest & .inner {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    outline: none;
+    padding: var(--small-padding);
+  }
+
+  @nest &:focus {
+    opacity: 1;
+    background-color: color(var(--brand-primary) a(20%));
+  }
+
+  @media (hover: hover) {
+    opacity: 0.6;
+
+    @nest &:hover {
+      opacity: 1;
+    }
+  }
+
+  @nest & svg {
+    font-size: calc(25 / 16 * 1em);
+  }
+}

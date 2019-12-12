@@ -1,0 +1,112 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.backButton {
+  position: sticky;
+  top: 0;
+  background: var(--main-navigation-color);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  font: inherit;
+  color: inherit;
+  border: none;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: var(--medium-padding);
+  cursor: pointer;
+  -webkit-font-smoothing: inherit;
+  appearance: none;
+  outline: none;
+  border-radius: 0;
+  user-select: none;
+  margin: 0;
+  width: 100%;
+  align-self: flex-start;
+
+  @nest &:focus {
+    outline: 0;
+    background-color: color(var(--brand-primary) a(20%));
+  }
+
+  @nest & svg {
+    transform: rotate(-180deg);
+    padding-left: 0.5em;
+  }
+
+  @nest & .inner {
+    outline: 0;
+    display: flex;
+    align-items: center;
+  }
+}
+
+.blockContent {
+  padding: var(--medium-padding);
+  font-weight: 500;
+}
+
+.blockHeading {
+  composes: heading3 from 'part:@sanity/base/theme/typography/headings-style';
+  padding: 0;
+}
+
+.blockContent {
+  padding: var(--medium-padding);
+  font-weight: 500;
+}
+
+.blockHeading {
+  composes: heading3 from 'part:@sanity/base/theme/typography/headings-style';
+  padding: 0;
+}
+
+.youtubeContainer {
+  width: 100%;
+}
+
+.youtube {
+  position: relative;
+  display: block;
+  padding-top: calc(100% / (16 / 9));
+}
+
+.youtubeIframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  max-width: 100%;
+}
+
+.nextHeading {
+  composes: cardsTitle from './HintsPackage.css';
+}
+
+.docsIcon {
+  margin-right: 0.25em;
+}
+
+.root a {
+  color: var(--link-color);
+  /* background-color: color(var(--gray-base) lightness(+ 20%) a(30%));
+  padding: 2px;
+  border-radius: 3px; */
+  text-decoration: inherit;
+}
+
+.root h3 {
+  margin: var(--medium-padding) 0 var(--small-padding) 0;
+  margin-top: 2em;
+}
+
+.root p {
+  margin: var(--small-padding) 0 var(--medium-padding);
+}
+
+.root p code {
+  background: color(var(--gray-base) lightness(+ 50%) a(30%));
+  font-size: 95%;
+  padding: 1px 2px;
+  border-radius: 3px;
+}
