@@ -7,7 +7,7 @@ import HamburgerIcon from 'part:@sanity/base/hamburger-icon'
 import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import {StateLink} from 'part:@sanity/base/router'
-import {SidecarToggleButton, isSidecarEnabled} from 'part:@sanity/default-layout/sidecar?'
+import sidecar from 'part:@sanity/default-layout/sidecar?'
 import {HAS_SPACES} from '../util/spaces'
 import Branding from './Branding'
 import LoginStatus from './LoginStatus'
@@ -15,6 +15,13 @@ import SanityStatusContainer from './SanityStatusContainer'
 import SearchContainer from './SearchContainer'
 import SpaceSwitcher from './SpaceSwitcher'
 import styles from './styles/NavBar.css'
+
+let isSidecarEnabled
+let SidecarToggleButton
+if (sidecar) {
+  isSidecarEnabled = sidecar.isSidecarEnabled
+  SidecarToggleButton = sidecar.SidecarToggleButton
+}
 
 function NavBar(props) {
   const {
@@ -105,7 +112,7 @@ function NavBar(props) {
       <div className={styles.loginStatus} ref={onSetLoginStatusElement}>
         <LoginStatus onLogout={onUserLogout} user={user} />
       </div>
-      {isSidecarEnabled() && (
+      {isSidecarEnabled && isSidecarEnabled() && (
         <div className={styles.sidecarStatus}>
           <SidecarToggleButton />
         </div>

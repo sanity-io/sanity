@@ -1,8 +1,15 @@
 /* eslint-disable prefer-template */
 import React from 'react'
-import {SidecarLayout, isSidecarEnabled} from 'part:@sanity/default-layout/sidecar?'
+import sidecar from 'part:@sanity/default-layout/sidecar?'
 import {isSidecarOpenSetting} from 'part:@sanity/default-layout/sidecar-datastore'
 import styles from './styles/Sidecar.css'
+
+let isSidecarEnabled
+let SidecarLayout
+if (sidecar) {
+  isSidecarEnabled = sidecar.isSidecarEnabled
+  SidecarLayout = sidecar.SidecarLayout
+}
 
 class Sidecar extends React.PureComponent {
   state = {
@@ -11,7 +18,7 @@ class Sidecar extends React.PureComponent {
   }
 
   componentDidMount() {
-    if (isSidecarEnabled()) {
+    if (isSidecarEnabled && isSidecarEnabled()) {
       this.subscription = isSidecarOpenSetting.listen().subscribe(isOpen => {
         this.setState({isOpen: isOpen !== false})
       })
@@ -48,7 +55,7 @@ class Sidecar extends React.PureComponent {
   render() {
     const {isOpen, isVisible} = this.state
 
-    if (isSidecarEnabled()) {
+    if (isSidecarEnabled && isSidecarEnabled()) {
       return (
         <div className={`${styles.root} ${isOpen ? styles.isOpen : ''}`}>
           {isVisible && <SidecarLayout />}
