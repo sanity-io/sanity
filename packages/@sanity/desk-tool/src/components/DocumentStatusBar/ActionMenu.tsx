@@ -2,7 +2,8 @@ import styles from './DocumentStatusBarActions.css'
 import Button from 'part:@sanity/components/buttons/default'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 import React from 'react'
-import {useUniqueId} from '../../utils/useUniqueId'
+import {useId} from '@reach/auto-id'
+
 import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
 import useOnClickOutside from 'use-onclickoutside'
 
@@ -19,22 +20,17 @@ interface Props {
   editState
 }
 
-export function ActionMenuItems({actions, editState, ...rest}) {
-  const actionStates = actions.map(action => action(editState))
-  return <ActionMenuItemsInner {...rest} actionStates={actionStates} />
-}
-
-function ActionMenuItemsInner({actionStates, onOpen, onClose, isOpen}) {
+export function ActionMenu({actionStates, onOpen, onClose, isOpen}) {
   const clickOutsideRef = React.useRef(null)
   useOnClickOutside(clickOutsideRef, onClose)
-  const idPrefix = useUniqueId()
+  const idPrefix = useId()
 
-  const [activeAction, setActiveAction] = React.useState(actionStates[actionStates.length - 1])
+  const [activeAction, setActiveAction] = React.useState(actionStates[0])
 
   const listRef = React.useRef<HTMLElement>()
 
   React.useEffect(() => {
-    setActiveAction(actionStates[actionStates.length - 1])
+    setActiveAction(actionStates[0])
   }, [isOpen])
 
   React.useEffect(() => {
@@ -51,7 +47,7 @@ function ActionMenuItemsInner({actionStates, onOpen, onClose, isOpen}) {
       if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') {
         return
       }
-      const dir = event.key === 'ArrowUp' ? -1 : 1
+      const dir = event.key === 'ArrowUp' ? 1 : -1
       const enabledActions = actionStates.filter(state => state === activeAction || !state.disabled)
 
       setActiveAction(getNext(enabledActions, enabledActions.indexOf(activeAction), dir))
@@ -80,6 +76,8 @@ function ActionMenuItemsInner({actionStates, onOpen, onClose, isOpen}) {
             className={styles.menu}
             id={`${idPrefix}-menu`}
             role="menu"
+            // todo: run this through marius
+            style={{display: 'flex', flexDirection: 'column-reverse'}}
             ref={listRef}
           >
             {actionStates.map((actionState, idx) => {

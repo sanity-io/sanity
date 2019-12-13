@@ -8,14 +8,14 @@ export const PublishAction = createAction(function PublishAction(docInfo) {
     return null
   }
 
-  const {publish} = useDocumentOperation(docInfo.id, docInfo.type)
+  const op = useDocumentOperation(docInfo.id, docInfo.type)
 
   return {
     icon: ContentCopyIcon,
     disabled: !docInfo.draft,
     label: 'Publish',
     onHandle: () => {
-      publish(doc => omit(doc, 'reviewers'))
+      op.publish(doc => omit(doc, 'reviewers'))
     }
   }
 })
