@@ -57,6 +57,7 @@
     "@sanity/client": "0.147.3",
     "@sanity/components": "0.147.6",
     "@sanity/core": "0.147.6",
+    "@reach/auto-id": "^0.6.1",
     "history": "^4.6.3",
     "jest": "^24.9.0",
     "postcss-cssnext": "^3.0.2",

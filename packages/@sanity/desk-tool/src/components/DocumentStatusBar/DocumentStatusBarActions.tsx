@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 import {PublishAction} from './actions/PublishAction'
 
 import {useEditState} from '@sanity/react-hooks'
@@ -7,83 +8,31 @@ import Button from 'part:@sanity/components/buttons/default'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 
 import styles from './DocumentStatusBarActions.css'
-import {ActionMenuItems} from './ActionMenu'
-import {createAction} from 'part:@sanity/base/util/document-action-utils'
+import {ActionMenu} from './ActionMenu'
+import {RenderActionCollectionState} from 'part:@sanity/base/util/document-action-utils'
+import {DeleteAction} from './actions/DeleteAction'
+import {BAR, BAZ, FOO} from './actions/TestActions'
 
 // import customResolveActions from 'part:@sanity/desk-tool/resolve-document-actions?'
-//
-const actions = [
-  PublishAction,
-  // DeleteAction,
-  createAction(() => {
-    const [isDisabled, setDisabled] = React.useState(true)
-    const [counter, setCounter] = React.useState(0)
-    React.useEffect(() => {
-      const id = setInterval(() => {
-        setDisabled(() => !isDisabled)
-        setCounter(p => p + 1)
-      }, 2000)
-      return () => {
-        clearInterval(id)
-      }
-    }, [])
-
-    return {
-      label: `Hel!lo ${counter} [${isDisabled ? 'disabled' : 'enabled'}]`,
-      disabled: isDisabled
-    }
-  }),
-  createAction(() => ({
-    label: 'Hello2',
-    disabled: true
-  })),
-  createAction(() => ({
-    label: 'Hello [enabled]',
-    disabled: false
-  })),
-  createAction(() => {
-    const [isDisabled, setDisabled] = React.useState(false)
-    const [counter, setCounter] = React.useState(0)
-    React.useEffect(() => {
-      const id = setInterval(() => {
-        setDisabled(() => !isDisabled)
-        setCounter(prev => prev + 1)
-      }, 2000)
-      return () => {
-        clearInterval(id)
-      }
-    }, [])
-
-    return {
-      label: `Hell2o ${counter} [${isDisabled ? 'disabled' : 'enabled'}]`,
-      disabled: Math.random() > 0.5
-    }
-  })
-]
+function resolveActions(documentState) {
+  const deleteme = documentState.draft && documentState.draft.title === 'deleteme'
+  return [deleteme && DeleteAction, PublishAction, FOO, BAR, BAZ, !deleteme && DeleteAction].filter(
+    Boolean
+  )
+}
 
 const TOUCH_SUPPORT = 'ontouchstart' in document.documentElement
 
 interface Props {
   id: string
   type: string
-  editState: any
+  actionStates: any
 }
-
-export function DocumentStatusBarActions(props: Props) {
-  const editState = useEditState(props.id, props.type)
-  return editState ? <DocumentStatusBarActionsInner {...props} editState={editState} /> : null
-}
-
 function DocumentStatusBarActionsInner(props: Props) {
   const [isMenuOpen, setMenuOpen] = React.useState(false)
 
-  const [firstAction, ...rest] = actions
+  const [firstActionState, ...rest] = props.actionStates
   const hasMoreActions = rest.length > 0
-  const editState = useEditState(props.id, props.type)
-  if (!editState) {
-    return null
-  }
-  const firstActionState = firstAction(editState)
   return (
     <div className={isMenuOpen ? styles.isMenuOpen : styles.root}>
       {firstActionState && (
@@ -111,12 +60,12 @@ function DocumentStatusBarActionsInner(props: Props) {
               {firstActionState.label}
             </Button>
           </Tooltip>
+          {firstActionState.dialog && firstActionState.dialog.content}
         </div>
       )}
       {hasMoreActions && (
-        <ActionMenuItems
-          editState={props.editState}
-          actions={rest}
+        <ActionMenu
+          actionStates={rest}
           isOpen={isMenuOpen}
           onOpen={() => setMenuOpen(true)}
           onClose={() => setMenuOpen(false)}
@@ -124,4 +73,15 @@ function DocumentStatusBarActionsInner(props: Props) {
       )}
     </div>
   )
+}
+
+export function DocumentStatusBarActions(props: Props) {
+  const editState = useEditState(props.id, props.type)
+
+  const actions = editState ? resolveActions(editState) : null
+  return actions ? (
+    <RenderActionCollectionState actions={actions} args={editState}>
+      {DocumentStatusBarActionsInner}
+    </RenderActionCollectionState>
+  ) : null
 }
