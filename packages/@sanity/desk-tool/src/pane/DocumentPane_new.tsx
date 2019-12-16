@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import promiseLatest from 'promise-latest'
 import {omit, noop, get, throttle, debounce} from 'lodash'
 import {distanceInWordsToNow, format, isToday, isYesterday} from 'date-fns'
-import {from, merge, concat, timer, of as observableOf} from 'rxjs'
+import {from, merge, concat, timer, of as observableOf, combineLatest} from 'rxjs'
 import {catchError, switchMap, map, mapTo, tap} from 'rxjs/operators'
 import {isActionEnabled, resolveEnabledActions} from 'part:@sanity/base/util/document-action-utils'
 import schema from 'part:@sanity/base/schema'
@@ -16,7 +16,6 @@ import historyStore from 'part:@sanity/base/datastore/history'
 import TabbedPane from 'part:@sanity/components/panes/tabbed'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
-import {FormBuilder, checkoutPair} from 'part:@sanity/form-builder'
 import {getDraftId, getPublishedId, newDraftFrom} from 'part:@sanity/base/util/draft-utils'
 import {PaneRouterContext} from '../../'
 import withInitialValue from '../utils/withInitialValue'
@@ -228,7 +227,6 @@ export default withInitialValue(
     }
 
     state = {...INITIAL_STATE, hasNarrowScreen: isNarrowScreen()}
-    patchChannel = FormBuilder.createPatchChannel()
     formRef = React.createRef()
 
     constructor(props, context) {
@@ -240,6 +238,16 @@ export default withInitialValue(
       this.dispose()
       const publishedId = getPublishedId(documentId)
       const draftId = getDraftId(documentId)
+
+      this.subscription = checkoutPair({publishedId, draftId}).pipe(
+        switchMap(({draft, published}) => {
+          return combineLatest([draft.events, published.events]).pipe(
+            map(([draftSnapshot, publishedSnapshot]) => {
+
+            })
+          )
+        })
+      )
 
       const {published, draft} = checkoutPair({publishedId, draftId})
       this.published = published
@@ -1432,7 +1440,7 @@ export default withInitialValue(
 
       switch (activeView.type) {
         case 'form':
-          return <FormView ref={this.formRef} id={formProps.documentId} {...formProps} />
+          return <FormView ref={this.formRef} {...formProps} />
         case 'component':
           return <activeView.component {...viewProps} />
         default:

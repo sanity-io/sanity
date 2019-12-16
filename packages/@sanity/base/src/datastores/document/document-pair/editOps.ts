@@ -1,12 +1,12 @@
-import {getDraftId, isDraftId} from 'part:@sanity/base/util/draft-utils'
 import {omit} from 'lodash'
 import {combineLatest, merge, Observable, concat, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 import client from 'part:@sanity/base/client'
 import schema from 'part:@sanity/base/schema'
 import {snapshotPair} from './snapshotPair'
+import {IdPair} from '../types'
 
-interface EditorDocumentOperations {
+export interface EditorDocumentOperations {
   publish: () => void
   delete: () => void
   patch: (patches: any[]) => void
@@ -25,19 +25,11 @@ const GUARDED = ['publish', 'delete', 'create', 'patch', 'discardDraft', 'commit
   {}
 ) as EditorDocumentOperations
 
-export function editOpsOf(
-  publishedId: string,
-  typeName: string
-): Observable<EditorDocumentOperations> {
-  if (isDraftId(publishedId)) {
-    throw new Error('editOpsOf does not expect a draft id.')
-  }
-
-  const draftId = getDraftId(publishedId)
-
+export function editOpsOf(idPair: IdPair, typeName: string): Observable<EditorDocumentOperations> {
+  const {publishedId, draftId} = idPair
   return concat(
     of(GUARDED),
-    snapshotPair({publishedId, draftId}).pipe(
+    snapshotPair(idPair).pipe(
       switchMap(({draft, published}) => {
         const schemaType = schema.get(typeName)
         const liveEdit = !!schemaType.liveEdit

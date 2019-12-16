@@ -1,9 +1,9 @@
 import {IdPair} from '../types'
-import {documentPairEventsFor} from './documentEvents'
 import {distinctUntilChanged, map} from 'rxjs/operators'
+import {documentEventsFor} from './documentEvents'
 
-export function connectionStateOf(idPair: IdPair) {
-  return documentPairEventsFor(idPair).pipe(
+export function connectionState(idPair: IdPair) {
+  return documentEventsFor(idPair).pipe(
     map(event => event.type === 'reconnect'),
     distinctUntilChanged(),
     map(isReconnecting => ({reconnecting: isReconnecting}))
