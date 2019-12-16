@@ -10,7 +10,7 @@ module.exports = async function deleteApiAction(args, context) {
   if (
     !(await prompt.single({
       type: 'confirm',
-      message: `Are you absolutely sure you want to delete the current GraphQL API?`,
+      message: 'Are you absolutely sure you want to delete the current GraphQL API?',
       default: false
     }))
   ) {
