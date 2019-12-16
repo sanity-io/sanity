@@ -7,7 +7,7 @@ import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 
 import {streamingComponent} from 'react-props-stream'
 import {EMPTY, of} from 'rxjs'
-import {distinctUntilChanged, map, switchMap} from 'rxjs/operators'
+import {distinctUntilChanged, map, tap, switchMap} from 'rxjs/operators'
 import PopOverDialog from 'part:@sanity/components/dialogs/popover'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Button from 'part:@sanity/components/buttons/default'
