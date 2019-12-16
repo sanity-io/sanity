@@ -14,7 +14,7 @@ export function doCommit(client, mutations) {
   })
 }
 
-export type DocumentVersionEvent = BufferedDocumentEvent & {target: 'published' | 'draft'}
+export type DocumentVersionEvent = BufferedDocumentEvent & {version: 'published' | 'draft'}
 export interface DocumentVersion {
   events: Observable<DocumentVersionEvent>
   patch: (patches) => void
@@ -30,8 +30,8 @@ export interface Pair {
   draft: DocumentVersion
 }
 
-function setTarget(target: 'draft' | 'published') {
-  return (ev: BufferedDocumentEvent): DocumentVersionEvent => ({...ev, target})
+function setVersion(version: 'draft' | 'published') {
+  return (ev: BufferedDocumentEvent): DocumentVersionEvent => ({...ev, version})
 }
 
 export function checkoutPair(client, idPair: IdPair): Pair {
@@ -56,11 +56,11 @@ export function checkoutPair(client, idPair: IdPair): Pair {
   return {
     draft: {
       ...draft,
-      events: draft.events.pipe(map(setTarget('draft')))
+      events: draft.events.pipe(map(setVersion('draft')))
     },
     published: {
       ...published,
-      events: draft.events.pipe(map(setTarget('published')))
+      events: draft.events.pipe(map(setVersion('published')))
     }
   }
 }

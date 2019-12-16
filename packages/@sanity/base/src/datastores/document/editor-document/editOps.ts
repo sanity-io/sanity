@@ -84,8 +84,8 @@ export function editOpsOf(
                 draft.delete()
               },
               create(document) {
-                const target = liveEdit ? published : draft
-                target.create(document)
+                const version = liveEdit ? published : draft
+                version.create(document)
               },
               patch(patches) {
                 // const initialValue = this.getInitialValue()
