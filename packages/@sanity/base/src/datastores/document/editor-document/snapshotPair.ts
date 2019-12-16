@@ -11,7 +11,7 @@ import {DocumentVersion} from '../checkoutPair'
 function hasDocument(
   event: BufferedDocumentEvent
 ): event is (SnapshotEvent | DocumentRebaseEvent | DocumentMutationEvent) & {
-  target: 'published' | 'draft'
+  version: 'published' | 'draft'
 } {
   return event.type === 'snapshot' || event.type === 'rebase' || event.type === 'mutation'
 }
