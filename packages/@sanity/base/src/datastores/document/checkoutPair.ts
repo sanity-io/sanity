@@ -1,10 +1,8 @@
 import {getPairListener, ListenerEvent} from './getPairListener'
-import {
-  BufferedDocumentWrapper,
-  createBufferedDocument
-} from './buffered-doc/createBufferedDocument'
-import {share, filter} from 'rxjs/operators'
+import {BufferedDocumentEvent, createBufferedDocument} from './buffered-doc/createBufferedDocument'
+import {share, filter, map} from 'rxjs/operators'
 import {IdPair} from './types'
+import {Observable} from 'rxjs'
 
 const isEventForDocId = (id: string) => (event: ListenerEvent): boolean =>
   event.type === 'reconnect' || (event.type !== 'welcome' && event.documentId === id)
@@ -16,12 +14,27 @@ export function doCommit(client, mutations) {
   })
 }
 
-export interface BufferedDocumentPair {
-  draft: BufferedDocumentWrapper
-  published: BufferedDocumentWrapper
+export type DocumentVersionEvent = BufferedDocumentEvent & {target: 'published' | 'draft'}
+export interface DocumentVersion {
+  events: Observable<DocumentVersionEvent>
+  patch: (patches) => void
+  create: (document) => void
+  createIfNotExists: (document) => void
+  createOrReplace: (document) => void
+  delete: () => void
+  commit: () => Observable<never>
 }
 
-export function checkoutPair(client, idPair: IdPair): BufferedDocumentPair {
+export interface Pair {
+  published: DocumentVersion
+  draft: DocumentVersion
+}
+
+function setTarget(target: 'draft' | 'published') {
+  return (ev: BufferedDocumentEvent): DocumentVersionEvent => ({...ev, target})
+}
+
+export function checkoutPair(client, idPair: IdPair): Pair {
   const {publishedId, draftId} = idPair
 
   const listenerEvents$ = getPairListener(client, idPair).pipe(share())
@@ -40,5 +53,14 @@ export function checkoutPair(client, idPair: IdPair): BufferedDocumentPair {
     _doCommit
   )
 
-  return {draft, published}
+  return {
+    draft: {
+      ...draft,
+      events: draft.events.pipe(map(setTarget('draft')))
+    },
+    published: {
+      ...published,
+      events: draft.events.pipe(map(setTarget('published')))
+    }
+  }
 }

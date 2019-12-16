@@ -1,29 +1,16 @@
 import {IdPair} from '../types'
-import {BufferedDocumentEvent} from '../buffered-doc/createBufferedDocument'
 import docStore from '../document-store'
 import {defer, Observable, of} from 'rxjs'
 import {createObservableCache} from '../utils/createObservableCache'
-import {BufferedDocumentPair} from '../checkoutPair'
+import {Pair} from '../checkoutPair'
+import {publishReplay, refCount} from 'rxjs/operators'
 
-export interface LocalDocumentUpdate {
-  target: 'draft' | 'published'
-  event: BufferedDocumentEvent
-  patch: (patches) => void
-  create: (document) => void
-  createIfNotExists: (document) => void
-  createOrReplace: (document) => void
-  delete: () => void
-  commit: () => Observable<never>
-}
+const cacheOn = createObservableCache<Pair>()
 
-export interface CachedPair {
-  id: string
-  draft: LocalDocumentUpdate
-  published: LocalDocumentUpdate
-}
-
-const cacheOn = createObservableCache<BufferedDocumentPair>()
-
-export function cachedPair(idPair: IdPair) {
-  return defer(() => of(docStore.checkoutPair(idPair))).pipe(cacheOn(idPair.publishedId))
+export function cachedPair(idPair: IdPair): Observable<Pair> {
+  return defer(() => of(docStore.checkoutPair(idPair))).pipe(
+    publishReplay(1),
+    refCount(),
+    cacheOn(idPair.publishedId)
+  )
 }
