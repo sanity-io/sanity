@@ -18,6 +18,7 @@ const INITIAL_STATE = {
 
 export default class FormView extends React.PureComponent {
   static propTypes = {
+    id: PropTypes.string,
     patchChannel: PropTypes.object,
     document: PropTypes.shape({
       draft: PropTypes.shape({_id: PropTypes.string, _type: PropTypes.string}),
@@ -119,6 +120,7 @@ export default class FormView extends React.PureComponent {
           <HistoryForm document={displayed} schema={schema} schemaType={schemaType} />
         ) : (
           <EditForm
+            id={this.props.id}
             draft={draft}
             filterField={filterField}
             focusPath={focusPath}

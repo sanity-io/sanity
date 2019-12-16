@@ -1,8 +1,9 @@
-import {getPairListener, ListenerEvent} from './getPairListener'
-import {BufferedDocumentEvent, createBufferedDocument} from './buffered-doc/createBufferedDocument'
+import {getPairListener, ListenerEvent} from '../getPairListener'
+import {BufferedDocumentEvent, createBufferedDocument} from '../buffered-doc/createBufferedDocument'
 import {share, filter, map} from 'rxjs/operators'
-import {IdPair} from './types'
+import {IdPair} from '../types'
 import {Observable} from 'rxjs'
+import client from 'part:@sanity/base/client'
 
 const isEventForDocId = (id: string) => (event: ListenerEvent): boolean =>
   event.type === 'reconnect' || (event.type !== 'welcome' && event.documentId === id)
@@ -34,7 +35,7 @@ function setVersion(version: 'draft' | 'published') {
   return (ev: BufferedDocumentEvent): DocumentVersionEvent => ({...ev, version})
 }
 
-export function checkoutPair(client, idPair: IdPair): Pair {
+export function checkoutPair(idPair: IdPair): Pair {
   const {publishedId, draftId} = idPair
 
   const listenerEvents$ = getPairListener(client, idPair).pipe(share())

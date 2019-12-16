@@ -5,7 +5,7 @@ import {BufferedDocumentEvent} from '../buffered-doc/createBufferedDocument'
 import {DocumentMutationEvent, DocumentRebaseEvent, SnapshotEvent} from '../buffered-doc/types'
 import {createObservableCache} from '../utils/createObservableCache'
 import {Observable} from 'rxjs'
-import {DocumentVersion} from '../checkoutPair'
+import {DocumentVersion} from './checkoutPair'
 
 // return true if the event comes with a document snapshot
 function hasDocument(

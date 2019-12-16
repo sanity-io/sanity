@@ -2,7 +2,7 @@
 import {Observable, defer, of as observableOf} from 'rxjs'
 import {concatMap, map, share} from 'rxjs/operators'
 import {createBufferedDocument} from './buffered-doc/createBufferedDocument'
-import {doCommit} from './checkoutPair'
+import {doCommit} from './document-pair/checkoutPair'
 import {SanityDocument, WelcomeEvent} from './types'
 
 function fetchDocumentSnapshot(client, id) {
