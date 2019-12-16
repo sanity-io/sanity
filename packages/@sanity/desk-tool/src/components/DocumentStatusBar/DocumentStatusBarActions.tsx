@@ -1,5 +1,4 @@
 /* eslint-disable react/no-multi-comp */
-import {PublishAction} from './actions/PublishAction'
 
 import {useEditState} from '@sanity/react-hooks'
 import React from 'react'
@@ -10,16 +9,7 @@ import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 import styles from './DocumentStatusBarActions.css'
 import {ActionMenu} from './ActionMenu'
 import {RenderActionCollectionState} from 'part:@sanity/base/util/document-action-utils'
-import {DeleteAction} from './actions/DeleteAction'
-import {BAR, BAZ, FOO} from './actions/TestActions'
-
-// import customResolveActions from 'part:@sanity/desk-tool/resolve-document-actions?'
-function resolveActions(documentState) {
-  const deleteme = documentState.draft && documentState.draft.title === 'deleteme'
-  return [deleteme && DeleteAction, PublishAction, FOO, BAR, BAZ, !deleteme && DeleteAction].filter(
-    Boolean
-  )
-}
+import {resolveActions} from './resolveActions'
 
 const TOUCH_SUPPORT = 'ontouchstart' in document.documentElement
 
@@ -29,6 +19,7 @@ interface Props {
   actionStates: any
 }
 function DocumentStatusBarActionsInner(props: Props) {
+
   const [isMenuOpen, setMenuOpen] = React.useState(false)
 
   const [firstActionState, ...rest] = props.actionStates
@@ -80,8 +71,10 @@ export function DocumentStatusBarActions(props: Props) {
 
   const actions = editState ? resolveActions(editState) : null
   return actions ? (
-    <RenderActionCollectionState actions={actions} args={editState}>
-      {DocumentStatusBarActionsInner}
-    </RenderActionCollectionState>
+    <RenderActionCollectionState
+      actions={actions}
+      args={editState}
+      component={DocumentStatusBarActionsInner}
+    />
   ) : null
 }

@@ -4,7 +4,7 @@ import {ActionState} from './createAction'
 interface RenderActionCollectionProps {
   actions: any[]
   args: any
-  children: React.ComponentType<{actionStates: ActionState[]}>
+  component: React.ComponentType<{actionStates: ActionState[]}>
 }
 
 export function RenderActionCollectionState(props: RenderActionCollectionProps) {
@@ -21,13 +21,13 @@ export function RenderActionCollectionState(props: RenderActionCollectionProps) 
     },
     [props.actions]
   )
-  const Component = props.children
+  const {actions, args, component: Component, ...rest} = props
   return (
     <>
-      <Component actionStates={actionsWithStates.map(([action, state]) => state)} />
-      {props.actions.map(Action => {
-        return <Action key={Action.id} args={props.args} onUpdate={onStateChange} />
-      })}
+      <Component actionStates={actionsWithStates.map(([action, state]) => state)} {...rest} />
+      {props.actions.map(Action => (
+        <Action key={Action.id} args={props.args} onUpdate={onStateChange} />
+      ))}
     </>
   )
 }

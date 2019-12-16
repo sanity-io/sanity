@@ -7,6 +7,7 @@ export default createAction(function SaveAction(docInfo) {
   return {
     label: 'Save',
     handle: () => {
+      console.log('SAVING')
       commit(docInfo.id, docInfo.type)
     }
   }

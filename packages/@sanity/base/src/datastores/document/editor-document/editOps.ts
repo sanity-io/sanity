@@ -39,10 +39,10 @@ export function editOpsOf(
     of(GUARDED),
     snapshotPair({publishedId, draftId}).pipe(
       switchMap(({draft, published}) => {
+        const schemaType = schema.get(typeName)
+        const liveEdit = !!schemaType.liveEdit
         return combineLatest([draft.snapshots$, published.snapshots$]).pipe(
           map(([draftSnapshot, publishSnapshot]) => {
-            const schemaType = schema.get(typeName)
-            const liveEdit = !!schemaType.liveEdit
             return {
               publish: () => {
                 if (liveEdit) {
