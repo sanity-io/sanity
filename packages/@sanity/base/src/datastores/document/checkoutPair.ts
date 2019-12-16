@@ -60,7 +60,7 @@ export function checkoutPair(client, idPair: IdPair): Pair {
     },
     published: {
       ...published,
-      events: draft.events.pipe(map(setVersion('published')))
+      events: published.events.pipe(map(setVersion('published')))
     }
   }
 }

@@ -156,7 +156,8 @@ export const createObservableBufferedDocument = (
         })
       )
     ),
-    mapTo(COMMITTED_EVENT)
+    mapTo(COMMITTED_EVENT),
+    share()
   )
 
   return {

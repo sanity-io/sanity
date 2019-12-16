@@ -12,6 +12,7 @@ import PopOverDialog from 'part:@sanity/components/dialogs/popover'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Button from 'part:@sanity/components/buttons/default'
 import schema from 'part:@sanity/base/schema'
+import {RenderActionCollectionState} from 'part:@sanity/base/util/document-action-utils'
 
 const RenderActionDialog = props => {
   return <PopOverDialog>{props.dialog}</PopOverDialog>
@@ -29,39 +30,34 @@ const RenderSnackbar = props => {
   )
 }
 
-const ActionButtonRenderer = props => {
-  const Action = props.action
+const ActionButton = props => {
+  const {actionState} = props
   const [key, setKey] = React.useState(Math.random())
 
   return (
-    <Action key={key} {...props.record}>
-      {actionState => (
-        <>
-          <Button
-            loading={actionState.showActivityIndicator}
-            onClick={actionState.handle}
-            disabled={actionState.disabled}
-          >
-            {actionState.label}
-          </Button>
-          {/*Todo: reset state of others when handling one */}
-          <button type="button" title="Clear state" onClick={() => setKey(Math.random())}>
-            x
-          </button>
-          {actionState.dialog && <RenderActionDialog dialog={actionState.dialog} />}
-          {actionState.snackbar && <RenderSnackbar snackbar={actionState.snackbar} />}
-        </>
-      )}
-    </Action>
+    <>
+      <Button
+        loading={actionState.showActivityIndicator}
+        onClick={actionState.handle}
+        disabled={actionState.disabled}
+      >
+        {actionState.label}
+      </Button>
+      {/*Todo: reset state of others when handling one */}
+      <button type="button" title="Clear state" onClick={() => setKey(Math.random())}>
+        x
+      </button>
+      {actionState.dialog && <RenderActionDialog dialog={actionState.dialog} />}
+      {actionState.snackbar && <RenderSnackbar snackbar={actionState.snackbar} />}
+    </>
   )
 }
 
 function Footer(props) {
-  const actions = resolveActions(props.record, props.type)
   return (
     <div>
-      {actions.map((action, i) => (
-        <ActionButtonRenderer key={i} action={action} record={props.record} type={props.type} />
+      {props.actionStates.filter(Boolean).map((actionState, i) => (
+        <ActionButton key={i} actionState={actionState} type={props.type} />
       ))}
     </div>
   )
@@ -157,7 +153,13 @@ export const TestActionsTool = withRouterHOC(
                   <pre style={{fontSize: '0.8em', height: 400, overflow: 'auto'}}>
                     {JSON.stringify(editState, null, 2)}
                   </pre>
-                  <Footer record={editState} type={schema.get(type)} />
+
+                  <RenderActionCollectionState
+                    component={Footer}
+                    actions={resolveActions(editState, type)}
+                    args={editState}
+                    type={schema.get(type)}
+                  />
                 </div>
               </div>
             )

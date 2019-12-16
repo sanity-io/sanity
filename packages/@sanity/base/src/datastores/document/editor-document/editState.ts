@@ -1,10 +1,11 @@
 import {getDraftId, isDraftId} from 'part:@sanity/base/util/draft-utils'
 import {combineLatest, concat, from, Observable, of} from 'rxjs'
-import {map, switchMap} from 'rxjs/operators'
+import {map, switchMap, publishReplay, refCount} from 'rxjs/operators'
 import {SanityDocument} from '../types'
 import {validateDocument} from '@sanity/validation'
 import schema from 'part:@sanity/base/schema'
 import {snapshotPair} from './snapshotPair'
+import {createObservableCache} from '../utils/createObservableCache'
 
 export interface EditState {
   id: string
@@ -25,6 +26,8 @@ function getValidationMarkers(draft, published): Observable<Marker[]> {
   return from(validateDocument(doc, schema) as Promise<Marker[]>)
 }
 
+const cacheOn = createObservableCache<EditState>()
+
 export function editStateOf(publishedId: string, typeName: string): Observable<EditState> {
   if (isDraftId(publishedId)) {
     throw new Error('useDocumentActions does not expect a draft id.')
@@ -34,13 +37,13 @@ export function editStateOf(publishedId: string, typeName: string): Observable<E
 
   return snapshotPair({publishedId, draftId}).pipe(
     switchMap(({draft, published}) => combineLatest([draft.snapshots$, published.snapshots$])),
-    map(([draft, published]) => {
+    map(([draftSnapshot, publishedSnapshot]) => {
       const schemaType = schema.get(typeName)
       const liveEdit = !!schemaType.liveEdit
       return {
         id: publishedId,
-        draft: draft.document,
-        published: published.document,
+        draft: draftSnapshot,
+        published: publishedSnapshot,
         type: typeName,
         liveEdit
       }
@@ -53,6 +56,9 @@ export function editStateOf(publishedId: string, typeName: string): Observable<E
         )
       )
     ),
-    map(state => ({validation: [], ...state}))
+    map(state => ({validation: [], ...state})),
+    publishReplay(1),
+    refCount(),
+    cacheOn(publishedId)
   )
 }
