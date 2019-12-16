@@ -89,6 +89,10 @@
       "name": "part:@sanity/dashboard/widget/test-dummy",
       "implements": "part:@sanity/dashboard/widget",
       "path": "src/widgets/DummyWidget"
+    },
+    {
+      "implements": "part:@sanity/desk-tool/after-editor-component",
+      "path": "src/components/AfterEditorComponent.js"
     }
   ],
   "env": {
