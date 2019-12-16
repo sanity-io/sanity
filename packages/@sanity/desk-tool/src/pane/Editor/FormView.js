@@ -22,7 +22,7 @@ export default class FormView extends React.PureComponent {
     document: PropTypes.shape({
       draft: PropTypes.shape({_id: PropTypes.string, _type: PropTypes.string}),
       published: PropTypes.shape({_id: PropTypes.string, _type: PropTypes.string}),
-      displayed: PropTypes.shape({_type: PropTypes.string})
+      displayed: PropTypes.shape({_id: PropTypes.string, _type: PropTypes.string})
     }).isRequired,
     initialValue: PropTypes.shape({_type: PropTypes.string}),
     isReconnecting: PropTypes.bool,
@@ -98,6 +98,7 @@ export default class FormView extends React.PureComponent {
     const {focusPath, filterField} = this.state
     const value = draft || published
     const readOnly = this.isReadOnly()
+    const documentId = displayed && displayed._id && displayed._id.replace(/^drafts\./, '')
 
     const hasTypeMismatch = value && value._type && value._type !== schemaType.name
     if (hasTypeMismatch) {
@@ -135,7 +136,7 @@ export default class FormView extends React.PureComponent {
         )}
 
         {afterEditorComponents.map((AfterEditorComponent, i) => (
-          <AfterEditorComponent key={i} documentId={published._id} />
+          <AfterEditorComponent key={i} documentId={documentId} />
         ))}
       </div>
     )
