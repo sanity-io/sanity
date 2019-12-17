@@ -61,32 +61,12 @@
       "path": "src/test-action-tool"
     },
     {
-      "implements": "part:@sanity/base/document-action",
-      "path": "src/actions/DeleteAction"
-    },
-    {
-      "implements": "part:@sanity/base/document-action",
-      "path": "src/actions/CreateAction"
-    },
-    {
-      "implements": "part:@sanity/base/document-actions",
-      "path": "src/actions/resolveDocumentActions"
-    },
-    {
-      "implements": "part:@sanity/base/document-action",
-      "path": "src/actions/WriteFieldAction"
-    },
-    {
-      "implements": "part:@sanity/base/document-action",
-      "path": "src/actions/PolicyBasedReview"
-    },
-    {
-      "implements": "part:@sanity/base/document-action",
-      "path": "src/actions/DuplicateAction"
-    },
-    {
       "implements": "part:@sanity/production-preview/resolve-production-url",
       "path": "src/resolveProductionUrl"
+    },
+    {
+      "implements": "part:@sanity/desk-tool/resolve-actions",
+      "path": "src/resolveActions"
     },
     {
       "implements": "part:@sanity/form-builder/input/array/functions",
