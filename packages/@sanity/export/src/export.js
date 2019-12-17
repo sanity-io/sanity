@@ -41,7 +41,8 @@ function exportDataset(opts) {
   const assetHandler = new AssetHandler({
     client: options.client,
     tmpDir,
-    prefix
+    prefix,
+    concurrency: options.concurrency
   })
 
   debug('Outputting assets (temporarily) to %s', tmpDir)

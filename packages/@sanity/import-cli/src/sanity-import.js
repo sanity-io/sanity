@@ -22,6 +22,7 @@ const cli = meow(
     -p, --project <projectId> Project ID to import to
     -d, --dataset <dataset> Dataset to import to
     -t, --token <token> Token to authenticate with
+    --concurrency <concurrency> Number of parallel asset imports
     --replace Replace documents with the same IDs
     --missing Skip documents that already exist
     --allow-failing-assets Skip assets that cannot be fetched/uploaded
@@ -42,7 +43,8 @@ const cli = meow(
     alias: {
       p: 'project',
       d: 'dataset',
-      t: 'token'
+      t: 'token',
+      c: 'concurrency'
     }
   }
 )
@@ -51,6 +53,7 @@ const {flags, input, showHelp} = cli
 const {dataset, allowFailingAssets} = flags
 const token = flags.token || process.env.SANITY_IMPORT_TOKEN
 const projectId = flags.project
+const concurrency = flags.concurrency
 const source = input[0]
 
 if (!projectId) {
@@ -96,7 +99,9 @@ const client = sanityClient({
 })
 
 getStream()
-  .then(stream => sanityImport(stream, {client, operation, onProgress, allowFailingAssets}))
+  .then(stream =>
+    sanityImport(stream, {client, operation, onProgress, allowFailingAssets, concurrency})
+  )
   .then(({numDocs, warnings}) => {
     const timeSpent = prettyMs(Date.now() - stepStart, {secDecimalDigits: 2})
     currentProgress.text = `[100%] ${currentStep} (${timeSpent})`

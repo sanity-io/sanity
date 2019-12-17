@@ -10,12 +10,13 @@ const noop = () => null
 
 const helpText = `
 Options
-  --raw         Extract only documents, without rewriting asset references
-  --no-assets   Export only non-asset documents and remove references to image assets
-  --no-drafts   Export only published versions of documents
-  --no-compress Skips compressing tarball entries (still generates a gzip file)
-  --types       Defines which document types to export
-  --overwrite   Overwrite any file with the same name
+  --raw                Extract only documents, without rewriting asset references
+  --no-assets          Export only non-asset documents and remove references to image assets
+  --no-drafts          Export only published versions of documents
+  --no-compress        Skips compressing tarball entries (still generates a gzip file)
+  --types              Defines which document types to export
+  --overwrite          Overwrite any file with the same name
+  --concurrency <field> Concurrent downloads of assets
 
 Examples
   sanity dataset export moviedb localPath.tar.gz

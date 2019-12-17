@@ -38,7 +38,10 @@ exportDataset({
 
   // Export only given document types (`_type`)
   // Optional, default: all types
-  types: ['products', 'shops']
+  types: ['products', 'shops'],
+
+  // Run 12 concurrent asset downloads
+  concurrency: 12
 })
 ```
 
