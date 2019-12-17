@@ -1,10 +1,9 @@
 /* eslint-disable complexity */
 import React from 'react'
-import {debounce, get, noop, omit, throttle} from 'lodash'
+import {debounce, get, noop} from 'lodash'
 import {format, isToday, isYesterday} from 'date-fns'
 import {concat, from, of as observableOf, Subscription} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
-import {isActionEnabled, resolveEnabledActions} from 'part:@sanity/base/util/document-action-utils'
 import schema from 'part:@sanity/base/schema'
 import Button from 'part:@sanity/components/buttons/default'
 import client from 'part:@sanity/base/client'
@@ -42,7 +41,6 @@ const DEBUG_HISTORY_TRANSITION = false
 const CURRENT_REVISION_FLAG = '-'
 const KEY_I = 73
 const KEY_O = 79
-const KEY_P = 80
 
 function debugHistory(...args) {
   if (DEBUG_HISTORY_TRANSITION) {
@@ -56,15 +54,9 @@ function isInspectHotkey(event) {
   return event.ctrlKey && event.keyCode === KEY_I && event.altKey && !event.shiftKey
 }
 
-function isPublishHotkey(event) {
-  return event.ctrlKey && event.keyCode === KEY_P && event.altKey && !event.shiftKey
-}
-
 function isPreviewHotkey(event) {
   return event.ctrlKey && event.keyCode === KEY_O && event.altKey && !event.shiftKey
 }
-
-const isValidationError = marker => marker.type === 'validation' && marker.level === 'error'
 
 interface Doc {
   _id: string
@@ -181,7 +173,7 @@ interface Props {
     options: {}
     component: React.ComponentType<any>
   }[]
-  initialValue?: Doc
+  initialValue?: {[field: string]: any}
   options: {
     id: string
     type: string
@@ -210,11 +202,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
     title: '',
     views: [],
     menuItems: [],
-    menuItemGroups: [],
-    styles: undefined,
-    onExpand: undefined,
-    onCollapse: undefined,
-    initialValue: undefined
+    menuItemGroups: []
   }
 
   state = {...INITIAL_STATE, hasNarrowScreen: isNarrowScreen()}
@@ -419,9 +407,6 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
   componentWillUnmount() {
     this._isMounted = false
 
-    // Cancel throttled commit since draft will be nulled on unmount
-    this.commit.cancel()
-
     this.setSavingStatus.cancel()
 
     if (this.resizeSubscriber) {
@@ -490,10 +475,6 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
 
     if (isInspectHotkey(event) && !this.historyIsOpen()) {
       return this.handleToggleInspect()
-    }
-
-    if (isPublishHotkey(event)) {
-      return this.handlePublishRequested()
     }
 
     if (isPreviewHotkey(event)) {
@@ -700,14 +681,6 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
     this.setState(...args)
   }
 
-  commit = throttle(
-    () => {
-      this.props.onCommit()
-    },
-    1000,
-    {leading: true, trailing: true}
-  )
-
   renderError(error) {
     return (
       <div className={documentPaneStyles.error}>
@@ -882,57 +855,19 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
   }
 
   renderFooter = () => {
-    const {initialValue, options, markers, paneKey} = this.props
+    const {initialValue, options, paneKey} = this.props
     const value = this.props.value || initialValue
     if (!value) {
       throw new Error(`Can't render footer without a value`)
     }
 
-    const {isReconnecting, showSavingStatus, showConfirmDiscardDraft} = this.state
+    const {isReconnecting, showSavingStatus} = this.state
 
-    const validation = markers.filter(marker => marker.type === 'validation')
-    const errors = validation.filter(marker => marker.level === 'error')
+    // const validation = markers.filter(marker => marker.type === 'validation')
+    // const errors = validation.filter(marker => marker.level === 'error')
     const onShowHistory = this.handleOpenHistory
-    const isLiveEditEnabled = this.isLiveEditEnabled()
+    // const isLiveEditEnabled = this.isLiveEditEnabled()
     const canShowHistory = this.canShowHistoryList()
-
-    // get enabled actions value
-    const typeName = options.type
-    const schemaType = schema.get(typeName)
-    const enabledActions = resolveEnabledActions(schemaType)
-    //
-    // const badges = [
-    //   !isLiveEditEnabled &&
-    //     published && {
-    //       id: 'published',
-    //       label: 'Published',
-    //       color: 'success',
-    //       title: `Published ${distanceInWordsToNow(published._updatedAt, {
-    //         addSuffix: true
-    //       })}`
-    //     },
-    //   !isLiveEditEnabled && draft && {id: 'draft', label: 'Draft', color: 'warning'},
-    //   isLiveEditEnabled && {id: 'live', label: 'Live', color: 'danger'}
-    // ].filter(Boolean)
-    //
-    // const actions = getDocumentPaneFooterActions({
-    //   draft,
-    //   enabledActions,
-    //   errors,
-    //   handlers: {
-    //     discardChanges: this.handleDiscardDraft,
-    //     publish: this.handlePublishRequested,
-    //     unpublish: this.handleShowConfirmUnpublish,
-    //     duplicate: this.handleCreateCopy,
-    //     delete: this.handleShowConfirmDelete
-    //   },
-    //   isCreatingDraft,
-    //   isLiveEditEnabled,
-    //   isPublishing,
-    //   isReconnecting,
-    //   isUnpublishing,
-    //   published
-    // })
 
     const historyStatus =
       value && value._updatedAt ? (
@@ -943,20 +878,6 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
         <>Empty</>
       )
 
-    let confirmationDialog
-    if (showConfirmDiscardDraft) {
-      confirmationDialog = {
-        message: (
-          <>
-            <strong>Are you sure</strong> you want to discard all changes since last published?
-          </>
-        ),
-        confirmText: 'Discard',
-        handleConfirm: this.handleConfirmDiscardDraft,
-        handleCancel: this.handleCancelDiscardDraft
-      }
-    }
-
     const documentStatusProps = {
       badges: [],
       historyStatus,
@@ -964,8 +885,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
       isDisconnected: isReconnecting,
       isHistoryAvailable: canShowHistory,
       isSyncing: showSavingStatus,
-      onHistoryStatusClick: onShowHistory,
-      confirmationDialog
+      onHistoryStatusClick: onShowHistory
     }
 
     return <DocumentStatusBar id={options.id} type={options.type} {...documentStatusProps} />
@@ -1009,7 +929,6 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
     const {views, options, urlParams, value, onChange} = this.props
     const {
       historical,
-      markers,
       isCreatingDraft,
       isUnpublishing,
       isPublishing,
@@ -1048,8 +967,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
       // Other stuff
       documentId: this.getPublishedId(),
       options: activeView.options,
-      schemaType,
-      markers: markers || []
+      schemaType
     }
 
     const formProps = {
@@ -1087,19 +1005,6 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
       default:
         return null
     }
-  }
-
-  _render() {
-    const {value, onChange} = this.props
-    return (
-      <input
-        type="text"
-        value={value && value.title}
-        onChange={event => {
-          onChange([{set: {title: event.target.value}}])
-        }}
-      />
-    )
   }
 
   render() {

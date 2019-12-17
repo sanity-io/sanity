@@ -8,7 +8,7 @@ export const PublishAction = createAction(function PublishAction(docInfo) {
     return null
   }
 
-  const op = useDocumentOperation(docInfo.id, docInfo.type)
+  const op: any = useDocumentOperation(docInfo.id, docInfo.type)
 
   return {
     icon: ContentCopyIcon,

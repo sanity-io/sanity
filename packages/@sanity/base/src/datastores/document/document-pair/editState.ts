@@ -1,5 +1,5 @@
 import {combineLatest, concat, from, Observable, of} from 'rxjs'
-import {map, publishReplay, refCount, switchMap, tap} from 'rxjs/operators'
+import {map, publishReplay, refCount, switchMap} from 'rxjs/operators'
 import {IdPair, SanityDocument} from '../types'
 import {validateDocument} from '@sanity/validation'
 import schema from 'part:@sanity/base/schema'

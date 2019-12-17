@@ -13,21 +13,20 @@ function getNext<T>(array: T[], fromIndex: number, dir = 1): T {
 }
 
 interface Props {
-  actions: any[]
+  actionStates: any[]
   onOpen: () => void
   onClose: () => void
   isOpen: boolean
-  editState
 }
 
-export function ActionMenu({actionStates, onOpen, onClose, isOpen}) {
+export function ActionMenu({actionStates, onOpen, onClose, isOpen}: Props) {
   const clickOutsideRef = React.useRef(null)
   useOnClickOutside(clickOutsideRef, onClose)
   const idPrefix = useId()
 
   const [activeAction, setActiveAction] = React.useState(actionStates[0])
 
-  const listRef = React.useRef<HTMLElement>()
+  const listRef = React.useRef<HTMLUListElement>(null)
 
   React.useEffect(() => {
     setActiveAction(actionStates[0])
@@ -35,7 +34,7 @@ export function ActionMenu({actionStates, onOpen, onClose, isOpen}) {
 
   React.useEffect(() => {
     if (listRef.current) {
-      const el = listRef.current.querySelector('[data-has-focus]')
+      const el: HTMLUListElement | null = listRef.current.querySelector('[data-has-focus]')
       if (el) {
         el.focus()
       }
