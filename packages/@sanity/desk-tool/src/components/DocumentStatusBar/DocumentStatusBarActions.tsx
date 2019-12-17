@@ -9,7 +9,7 @@ import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 import styles from './DocumentStatusBarActions.css'
 import {ActionMenu} from './ActionMenu'
 import {RenderActionCollectionState} from 'part:@sanity/base/util/document-action-utils'
-import {resolveActions} from './resolveActions'
+import {resolveActions} from 'part:@sanity/desk-tool/resolve-actions'
 
 const TOUCH_SUPPORT = 'ontouchstart' in document.documentElement
 
@@ -18,8 +18,8 @@ interface Props {
   type: string
   actionStates: any
 }
-function DocumentStatusBarActionsInner(props: Props) {
 
+function DocumentStatusBarActionsInner(props: Props) {
   const [isMenuOpen, setMenuOpen] = React.useState(false)
 
   const [firstActionState, ...rest] = props.actionStates

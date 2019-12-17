@@ -12,6 +12,15 @@
       "path": "tool.js"
     },
     {
+      "name": "part:@sanity/desk-tool/resolve-actions",
+      "description": "A function that resolves current available actions for a document."
+    },
+    {
+      "name": "part:@sanity/desk-tool/default-actions",
+      "description": "The default resolve actions used by desk-tool",
+      "path": "defaultActions.js"
+    },
+    {
       "name": "part:@sanity/desk-tool/after-editor-component",
       "description": "[DEPRECATED] Components to render directly after the editor form. Will be removed in future release."
     },
@@ -26,6 +35,10 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "components/story.js"
+    },
+    {
+      "implements": "part:@sanity/desk-tool/resolve-actions",
+      "path": "defaultResolveActions.js"
     }
   ]
 }
