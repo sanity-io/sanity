@@ -6,7 +6,7 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 
 export const DeleteAction = createAction(function DeleteAction({id, type, draft, published}) {
-  const {delete: del} = useDocumentOperation(id, type)
+  const {delete: del}: any = useDocumentOperation(id, type)
   const [isDeleting] = React.useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = React.useState(false)
 

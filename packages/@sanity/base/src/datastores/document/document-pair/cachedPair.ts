@@ -1,5 +1,5 @@
 import {IdPair} from '../types'
-import {defer, Observable, of} from 'rxjs'
+import {Observable} from 'rxjs'
 import {createObservableCache} from '../utils/createObservableCache'
 import {checkoutPair, Pair} from './checkoutPair'
 import {publishReplay, refCount} from 'rxjs/operators'
