@@ -39,6 +39,10 @@ function validateOptions(input, opts) {
     throw new Error(`Operation "${options.operation}" is not supported`)
   }
 
+  if (options.concurrency && options.concurrency > 24) {
+    throw new Error('`concurrency` must be <= 24')
+  }
+
   return options
 }
 

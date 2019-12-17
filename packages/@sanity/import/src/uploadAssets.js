@@ -45,7 +45,7 @@ async function uploadAssets(assets, options) {
     : ensureAssetExists
 
   // Loop over all unique URLs and ensure they exist, and if not, upload them
-  const mapOptions = {concurrency: ASSET_UPLOAD_CONCURRENCY}
+  const mapOptions = {concurrency: options.concurrency || ASSET_UPLOAD_CONCURRENCY}
   const assetIds = await pMap(assetRefMap.keys(), ensureMethod, mapOptions)
 
   // Extract a list of all failures so we may report them and possibly retry them later

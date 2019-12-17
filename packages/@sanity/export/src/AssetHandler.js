@@ -12,6 +12,7 @@ const debug = require('./debug')
 const EXCLUDE_PROPS = ['_id', '_type', 'assetId', 'extension', 'mimeType', 'path', 'url']
 const ACTION_REMOVE = 'remove'
 const ACTION_REWRITE = 'rewrite'
+const ASSET_DOWNLOAD_CONCURRENCY = 8
 
 class AssetHandler {
   constructor(options) {
@@ -23,7 +24,7 @@ class AssetHandler {
     this.assetMap = {}
     this.filesWritten = 0
     this.queueSize = 0
-    this.queue = options.queue || new PQueue({concurrency: 3})
+    this.queue = options.queue || new PQueue({concurrency: options.concurrency || ASSET_DOWNLOAD_CONCURRENCY})
     this.rejectedError = null
     this.reject = err => {
       this.rejectedError = err
