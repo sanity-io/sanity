@@ -65,7 +65,7 @@
       "path": "src/resolveProductionUrl"
     },
     {
-      "implements": "part:@sanity/desk-tool/resolve-actions",
+      "implements": "part:@sanity/base/document-actions/resolver",
       "path": "src/resolveActions"
     },
     {

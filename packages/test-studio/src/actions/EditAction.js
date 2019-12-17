@@ -1,6 +1,5 @@
 import {useDocumentOperation} from '@sanity/react-hooks'
-import {createAction} from 'part:@sanity/base/util/document-action-utils'
-
+import {createAction} from 'part:@sanity/base/actions/utils'
 
 export default createAction(function EditAction(docInfo) {
   const {patch} = useDocumentOperation(docInfo.id, docInfo.type)

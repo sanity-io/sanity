@@ -1,9 +1,7 @@
-import * as React from 'react'
-import {useDocumentOperation} from '@sanity/react-hooks'
 import {useObservable} from '@sanity/react-hooks'
 import {timer} from 'rxjs'
 import {map} from 'rxjs/operators'
-import {createAction} from 'part:@sanity/base/util/document-action-utils'
+import {createAction} from 'part:@sanity/base/actions/utils'
 
 export default createAction(function ObservableAction(docInfo) {
   return useObservable(

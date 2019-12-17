@@ -12,13 +12,13 @@
       "path": "tool.js"
     },
     {
-      "name": "part:@sanity/desk-tool/resolve-actions",
-      "description": "A function that resolves current available actions for a document."
+      "implements": "part:@sanity/base/document-actions",
+      "description": "The default document actions",
+      "path": "defaultActions.js"
     },
     {
-      "name": "part:@sanity/desk-tool/default-actions",
-      "description": "The default resolve actions used by desk-tool",
-      "path": "defaultActions.js"
+      "implements": "part:@sanity/base/document-actions/resolver",
+      "path": "defaultResolveActions.js"
     },
     {
       "name": "part:@sanity/desk-tool/after-editor-component",
@@ -35,10 +35,6 @@
     {
       "implements": "part:@sanity/base/component",
       "path": "components/story.js"
-    },
-    {
-      "implements": "part:@sanity/desk-tool/resolve-actions",
-      "path": "defaultResolveActions.js"
     }
   ]
 }

@@ -2,7 +2,7 @@ import React from 'react'
 
 import {set} from './patch-helpers'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import {createAction} from 'part:@sanity/base/util/document-action-utils'
+import {createAction} from 'part:@sanity/base/actions/utils'
 
 function wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))

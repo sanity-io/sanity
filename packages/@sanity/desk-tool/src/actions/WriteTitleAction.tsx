@@ -1,5 +1,5 @@
 import {useDocumentOperation} from '@sanity/react-hooks'
-import {createAction} from 'part:@sanity/base/util/document-action-utils'
+import {createAction} from 'part:@sanity/base/actions/utils'
 
 export const WriteTitleAction = createAction(function PublishAction(docInfo) {
   if (docInfo.isLiveEditEnabled) {

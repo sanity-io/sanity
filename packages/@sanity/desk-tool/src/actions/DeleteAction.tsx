@@ -1,6 +1,6 @@
 import React from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import {createAction} from 'part:@sanity/base/util/document-action-utils'
+import {createAction} from 'part:@sanity/base/actions/utils'
 import ConfirmDelete from '../components/ConfirmDelete'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import TrashIcon from 'part:@sanity/base/trash-icon'
