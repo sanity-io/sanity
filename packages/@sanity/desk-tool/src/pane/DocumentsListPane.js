@@ -2,17 +2,21 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import schema from 'part:@sanity/base/schema'
 import DefaultPane from 'part:@sanity/components/panes/default'
-import QueryContainer from 'part:@sanity/base/query-container'
+import {getQueryResults} from 'part:@sanity/base/query-container'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import {collate, getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import {combineLatest} from 'rxjs'
-import {map, tap} from 'rxjs/operators'
+import {of, combineLatest} from 'rxjs'
+import {map, tap, switchMap, filter as filterEvents} from 'rxjs/operators'
+import shallowEquals from 'shallow-equals'
 import settings from '../settings'
 import styles from './styles/DocumentsListPane.css'
 import listStyles from './styles/ListView.css'
 import InfiniteList from './InfiniteList'
 import PaneItem from './PaneItem'
+
+const PARTIAL_PAGE_LIMIT = 100
+const FULL_PAGE_LIMIT = 5000
 
 const DEFAULT_ORDERING = [{field: '_createdAt', direction: 'desc'}]
 
@@ -122,7 +126,7 @@ export default class DocumentsListPane extends React.PureComponent {
     }
   }
 
-  state = {sortOrder: null, layout: null}
+  state = {queryResult: {}, sortOrder: null, layout: null, isLoadingMore: false}
 
   constructor(props) {
     super()
@@ -150,7 +154,7 @@ export default class DocumentsListPane extends React.PureComponent {
         })),
         tap(nextState => {
           if (sync) {
-            this.state = nextState
+            this.state = {...this.state, ...nextState}
           } else {
             this.setState(nextState)
           }
@@ -161,8 +165,16 @@ export default class DocumentsListPane extends React.PureComponent {
     sync = false
   }
 
+  componentDidMount() {
+    this.setupQuery()
+  }
+
   componentWillUnmount() {
     this.settingsSubscription.unsubscribe()
+
+    if (this.queryResults$) {
+      this.queryResults$.unsubscribe()
+    }
   }
 
   itemIsSelected(item) {
@@ -192,14 +204,63 @@ export default class DocumentsListPane extends React.PureComponent {
     return true
   }
 
-  buildListQuery() {
+  componentDidUpdate(prevProps) {
+    // If the filter/params has changed, set up a new query from scratch
+    if (
+      prevProps.options.filter !== this.props.options.filter ||
+      !shallowEquals(prevProps.options.params, this.props.options.params)
+    ) {
+      this.setupQuery()
+    }
+  }
+
+  setupQuery() {
+    if (this.queryResults$) {
+      this.queryResults$.unsubscribe()
+    }
+
+    const params = this.props.options.params || {}
+    const initialQuery = this.buildListQuery({fullList: false})
+    const fullQuery = this.buildListQuery({fullList: true})
+
+    // Start by querying for a _partial_ result set which we can render right away
+    this.queryResults$ = getQueryResults(of({query: initialQuery, params}))
+      .pipe(
+        switchMap(queryResult => {
+          const documents = queryResult && queryResult.result && queryResult.result.documents
+          const numResults = documents && documents.length
+          const lessThanFullPage = numResults < PARTIAL_PAGE_LIMIT
+
+          // If this is a progress event, the query failed, or we didn't get a full page worth of items,
+          // just pass it through!
+          if (!documents || lessThanFullPage) {
+            return of(queryResult)
+          }
+
+          // We've got a partial result set, so set that to state so we can display it
+          this.setState({queryResult, isLoadingMore: true})
+
+          // Set up a query to get the entire set of documents available
+          // (or enough for it not to make sense to scroll to it)
+          return getQueryResults(of({query: fullQuery, params})).pipe(
+            // Don't include events that are not "complete", since it'll
+            // trigger the loading state again even if we have results
+            filterEvents(({result}) => result)
+          )
+        })
+      )
+      .subscribe(queryResult => this.setState({queryResult, isLoadingMore: false}))
+  }
+
+  buildListQuery({fullList}) {
     const {options} = this.props
     const {filter, defaultOrdering} = options
-    const sortState = this.state.sortOrder
-    const extendedProjection = sortState && sortState.extendedProjection
+    const {sortOrder} = this.state
+    const extendedProjection = sortOrder && sortOrder.extendedProjection
     const projectionFields = ['_id', '_type']
     const finalProjection = projectionFields.join(', ')
-    const sortBy = (sortState && sortState.by) || defaultOrdering || []
+    const sortBy = (sortOrder && sortOrder.by) || defaultOrdering || []
+    const limit = fullList ? FULL_PAGE_LIMIT : PARTIAL_PAGE_LIMIT
     const sort = sortBy.length > 0 ? sortBy : DEFAULT_ORDERING
 
     if (extendedProjection) {
@@ -212,36 +273,101 @@ export default class DocumentsListPane extends React.PureComponent {
       // Because Studios in the wild rely on the buggy nature of this
       // do not change this until we have API versioning
       return [
-        `*[${filter}] [0...50000]`,
+        `*[${filter}] [0...${limit}]`,
         `{${firstProjection}}`,
         `order(${toOrderClause(sort)})`,
         `{${finalProjection}}`
       ].join(' | ')
     }
 
-    return `*[${filter}] | order(${toOrderClause(sort)}) [0...50000] {${finalProjection}}`
+    return `*[${filter}] | order(${toOrderClause(sort)}) [0...${limit}] {${finalProjection}}`
+  }
+
+  renderResults() {
+    const {queryResult, isLoadingMore} = this.state
+    const {result} = queryResult
+    if (!result) {
+      return null
+    }
+
+    const {options, defaultLayout} = this.props
+    const layout = this.state.layout || defaultLayout || 'default'
+    const filterIsSimpleTypeContraint = isSimpleTypeFilter(options.filter)
+    const items = removePublishedWithDrafts(result ? result.documents : [])
+
+    if (!items || items.length === 0) {
+      return (
+        <div className={styles.empty}>
+          <div>
+            <h3>
+              {filterIsSimpleTypeContraint
+                ? 'No documents of this type found'
+                : 'No documents matching this filter found'}
+            </h3>
+          </div>
+        </div>
+      )
+    }
+
+    return (
+      <div className={styles[`layout__${layout}`]}>
+        {items && (
+          <InfiniteList
+            className={listStyles.scroll}
+            items={items}
+            layout={layout}
+            getItemKey={getDocumentKey}
+            renderItem={this.renderItem}
+            hasMoreItems={items.length === FULL_PAGE_LIMIT}
+            isLoadingMore={isLoadingMore}
+          />
+        )}
+      </div>
+    )
+  }
+
+  renderContent() {
+    const {defaultLayout} = this.props
+    const layout = this.state.layout || defaultLayout || 'default'
+    const {loading, error, onRetry} = this.state.queryResult
+
+    if (error) {
+      return (
+        <Snackbar
+          kind="error"
+          isPersisted
+          actionTitle="Retry"
+          onAction={onRetry}
+          title="An error occurred while loading items:"
+          subtitle={<div>{error.message}</div>}
+        />
+      )
+    }
+
+    if (loading) {
+      return (
+        <div className={styles[`layout__${layout}`]}>
+          {loading && <Spinner center message="Loading items…" />}
+        </div>
+      )
+    }
+
+    return this.renderResults()
   }
 
   render() {
     const {
       title,
-      options,
       className,
       isCollapsed,
       isSelected,
       onCollapse,
       onExpand,
-      defaultLayout,
       menuItems,
       menuItemGroups,
       initialValueTemplates
     } = this.props
 
-    const {filter, params} = options
-    const layout = this.state.layout || defaultLayout || 'default'
-    const filterIsSimpleTypeContraint = isSimpleTypeFilter(filter)
-    const hasItems = items => items && items.length > 0
-    const query = this.buildListQuery()
     return (
       <DefaultPane
         title={title}
@@ -258,64 +384,7 @@ export default class DocumentsListPane extends React.PureComponent {
         onExpand={onExpand}
         isScrollable={false}
       >
-        <QueryContainer query={query} params={params}>
-          {({result, loading, error, onRetry}) => {
-            if (error) {
-              return (
-                <Snackbar
-                  kind="error"
-                  isPersisted
-                  actionTitle="Retry"
-                  onAction={onRetry}
-                  title="An error occurred while loading items:"
-                  subtitle={<div>{error.message}</div>}
-                />
-              )
-            }
-
-            if (loading) {
-              return (
-                <div className={styles[`layout__${layout}`]}>
-                  {loading && <Spinner center message="Loading items…" />}
-                </div>
-              )
-            }
-
-            if (!result) {
-              return null
-            }
-
-            const items = removePublishedWithDrafts(result ? result.documents : [])
-
-            if (!hasItems(items)) {
-              return (
-                <div className={styles.empty}>
-                  <div>
-                    <h3>
-                      {filterIsSimpleTypeContraint
-                        ? 'No documents of this type found'
-                        : 'No documents matching this filter found'}
-                    </h3>
-                  </div>
-                </div>
-              )
-            }
-
-            return (
-              <div className={styles[`layout__${layout}`]}>
-                {items && (
-                  <InfiniteList
-                    className={listStyles.scroll}
-                    items={items}
-                    layout={layout}
-                    getItemKey={getDocumentKey}
-                    renderItem={this.renderItem}
-                  />
-                )}
-              </div>
-            )
-          }}
-        </QueryContainer>
+        {this.renderContent()}
       </DefaultPane>
     )
   }
