@@ -8,6 +8,8 @@ export default enhanceWithAvailHeight(
     static propTypes = {
       height: PropTypes.number,
       items: PropTypes.array, // eslint-disable-line react/forbid-prop-types
+      hasMoreItems: PropTypes.bool,
+      isLoadingMore: PropTypes.bool,
       renderItem: PropTypes.func,
       className: PropTypes.string,
       getItemKey: PropTypes.func,
@@ -16,6 +18,8 @@ export default enhanceWithAvailHeight(
     }
 
     static defaultProps = {
+      hasMoreItems: false,
+      isLoadingMore: false,
       layout: 'default',
       items: [],
       height: 250
@@ -54,7 +58,17 @@ export default enhanceWithAvailHeight(
     }
 
     renderItem = ({index, style}) => {
-      const {renderItem, getItemKey, items} = this.props
+      const {renderItem, getItemKey, items, isLoadingMore} = this.props
+      if (index === items.length) {
+        return (
+          <div key="more-items" style={style}>
+            {isLoadingMore
+              ? 'Loading additional documents…'
+              : 'There are more documents than are currently shown.'}
+          </div>
+        )
+      }
+
       const item = items[index]
       return (
         <div key={getItemKey(item)} style={style}>
@@ -64,8 +78,9 @@ export default enhanceWithAvailHeight(
     }
 
     render() {
-      const {layout, height, items, className, renderItem} = this.props
+      const {layout, height, items, className, renderItem, hasMoreItems, isLoadingMore} = this.props
       const {triggerUpdate, itemSize} = this.state
+      const addExtraItem = hasMoreItems || isLoadingMore
 
       if (!items || items.length === 0) {
         return <div />
@@ -82,7 +97,7 @@ export default enhanceWithAvailHeight(
           onScroll={this.props.onScroll}
           className={className || ''}
           height={height}
-          itemCount={items.length}
+          itemCount={addExtraItem ? items.length + 1 : items.length}
           itemSize={itemSize}
           renderItem={this.renderItem}
           overscanCount={50}
