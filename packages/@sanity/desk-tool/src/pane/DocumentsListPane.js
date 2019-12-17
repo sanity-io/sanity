@@ -7,7 +7,7 @@ import Snackbar from 'part:@sanity/components/snackbar/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import {collate, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import {of, combineLatest} from 'rxjs'
-import {map, tap, switchMap, filter as filterEvents} from 'rxjs/operators'
+import {map, tap, filter as filterEvents} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 import settings from '../settings'
 import styles from './styles/DocumentsListPane.css'
@@ -126,13 +126,20 @@ export default class DocumentsListPane extends React.PureComponent {
     }
   }
 
-  state = {queryResult: {}, sortOrder: null, layout: null, isLoadingMore: false}
+  state = {
+    queryResult: {},
+    sortOrder: null,
+    layout: null,
+    isLoadingMore: false,
+    hasFullSubscription: false
+  }
 
   constructor(props) {
     super()
     const {filter, params} = props.options
     const typeName = getTypeNameFromSingleTypeFilter(filter, params)
     const settingsNamespace = settings.forNamespace(typeName)
+    this.atLoadingThreshold = false
     this.sortOrderSetting = settingsNamespace.forKey('sortOrder')
     this.layoutSetting = settingsNamespace.forKey('layout')
 
@@ -166,7 +173,7 @@ export default class DocumentsListPane extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.setupQuery()
+    this.setupQuery({fullList: false})
   }
 
   componentWillUnmount() {
@@ -210,46 +217,50 @@ export default class DocumentsListPane extends React.PureComponent {
       prevProps.options.filter !== this.props.options.filter ||
       !shallowEquals(prevProps.options.params, this.props.options.params)
     ) {
-      this.setupQuery()
+      this.setupQuery({fullList: false})
     }
   }
 
-  setupQuery() {
+  setupQuery({fullList = false}) {
     if (this.queryResults$) {
       this.queryResults$.unsubscribe()
     }
 
     const params = this.props.options.params || {}
-    const initialQuery = this.buildListQuery({fullList: false})
-    const fullQuery = this.buildListQuery({fullList: true})
+    const query = this.buildListQuery({fullList})
 
-    // Start by querying for a _partial_ result set which we can render right away
-    this.queryResults$ = getQueryResults(of({query: initialQuery, params}))
-      .pipe(
-        switchMap(queryResult => {
-          const documents = queryResult && queryResult.result && queryResult.result.documents
-          const numResults = documents && documents.length
-          const lessThanFullPage = numResults < PARTIAL_PAGE_LIMIT
-
-          // If this is a progress event, the query failed, or we didn't get a full page worth of items,
-          // just pass it through!
-          if (!documents || lessThanFullPage) {
-            return of(queryResult)
-          }
-
-          // We've got a partial result set, so set that to state so we can display it
-          this.setState({queryResult, isLoadingMore: true})
-
-          // Set up a query to get the entire set of documents available
-          // (or enough for it not to make sense to scroll to it)
-          return getQueryResults(of({query: fullQuery, params})).pipe(
-            // Don't include events that are not "complete", since it'll
-            // trigger the loading state again even if we have results
-            filterEvents(({result}) => result)
-          )
-        })
+    this.queryResults$ = getQueryResults(of({query, params}))
+      .pipe(filterEvents(fullList ? ({result}) => result : () => true))
+      .subscribe(queryResult =>
+        this.setState({queryResult, isLoadingMore: false, hasFullSubscription: fullList})
       )
-      .subscribe(queryResult => this.setState({queryResult, isLoadingMore: false}))
+  }
+
+  handleScroll = (scrollTop, itemHeight) => {
+    const {queryResult, isLoadingMore, hasFullSubscription} = this.state
+    const {result} = queryResult
+    const documents = (result && result.documents) || []
+    const mightHaveMoreItems = documents.length === PARTIAL_PAGE_LIMIT
+    if (
+      this.atLoadingThreshold ||
+      isLoadingMore ||
+      hasFullSubscription ||
+      !result ||
+      !mightHaveMoreItems
+    ) {
+      return
+    }
+
+    if (scrollTop >= itemHeight * (PARTIAL_PAGE_LIMIT / 2)) {
+      // Prevent scroll handler from firing again before setState kicks in
+      this.atLoadingThreshold = true
+      this.setState({isLoadingMore: true, hasFullSubscription: true}, () => {
+        // Technically still here, but is only used to guard against double-firing
+        this.atLoadingThreshold = false
+      })
+
+      this.setupQuery({fullList: true})
+    }
   }
 
   buildListQuery({fullList}) {
@@ -318,6 +329,7 @@ export default class DocumentsListPane extends React.PureComponent {
             layout={layout}
             getItemKey={getDocumentKey}
             renderItem={this.renderItem}
+            onScroll={this.handleScroll}
             hasMoreItems={items.length === FULL_PAGE_LIMIT}
             isLoadingMore={isLoadingMore}
           />
