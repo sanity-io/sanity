@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {set} from './patch-helpers'
-import {createAction} from 'part:@sanity/base/util/document-action-utils'
+import {createAction} from 'part:@sanity/base/actions/utils'
 
 export default createAction(function WriteFieldAction(docInfo) {
   const doc = docInfo.isLiveEdit ? docInfo.published : docInfo.draft

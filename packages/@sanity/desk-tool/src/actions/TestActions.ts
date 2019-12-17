@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {createAction} from 'part:@sanity/base/util/document-action-utils'
+import {createAction} from 'part:@sanity/base/actions/utils'
 
 export const FOO = createAction(() => {
   const [isDisabled, setDisabled] = React.useState(true)

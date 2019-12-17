@@ -151,6 +151,22 @@
       "description": "Messages across all known locales"
     },
     {
+      "implements": "part:@sanity/base/util/document-action-utils",
+      "path": "actions/utils/legacy_documentActionUtils.js"
+    },
+    {
+      "implements": "part:@sanity/base/actions/utils",
+      "path": "actions/utils/index.js"
+    },
+    {
+      "name": "part:@sanity/base/document-actions/resolver",
+      "description": "A function that resolves current available actions for a document."
+    },
+    {
+      "name": "part:@sanity/base/document-actions",
+      "description": "The default document actions"
+    },
+    {
       "name": "part:@sanity/base/language-resolver",
       "description": "Figures out which locale the client should use"
     },
@@ -277,10 +293,6 @@
     {
       "implements": "part:@sanity/base/util/search-utils",
       "path": "util/searchUtils.js"
-    },
-    {
-      "implements": "part:@sanity/base/util/document-action-utils",
-      "path": "actions/utils/index.js"
     },
     {
       "implements": "part:@sanity/base/theme/variables-style",

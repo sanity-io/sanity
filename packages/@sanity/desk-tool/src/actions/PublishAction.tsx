@@ -1,6 +1,6 @@
 import {omit} from 'lodash'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import {createAction} from 'part:@sanity/base/util/document-action-utils'
+import {createAction} from 'part:@sanity/base/actions/utils'
 import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 
 export const PublishAction = createAction(function PublishAction(docInfo) {

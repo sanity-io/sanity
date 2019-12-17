@@ -8,8 +8,8 @@ import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 
 import styles from './DocumentStatusBarActions.css'
 import {ActionMenu} from './ActionMenu'
-import {RenderActionCollectionState} from 'part:@sanity/base/util/document-action-utils'
-import {resolveActions} from 'part:@sanity/desk-tool/resolve-actions'
+import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
+import {resolveActions} from 'part:@sanity/base/document-actions/resolver'
 
 const TOUCH_SUPPORT = 'ontouchstart' in document.documentElement
 

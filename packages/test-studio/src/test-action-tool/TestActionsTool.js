@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {resolveActions} from 'part:@sanity/desk-tool/resolve-actions'
+import {resolveActions} from 'part:@sanity/base/document-actions/resolver'
 import {StateLink, withRouterHOC} from 'part:@sanity/base/router'
 import documentStore from 'part:@sanity/base/datastore/document'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
