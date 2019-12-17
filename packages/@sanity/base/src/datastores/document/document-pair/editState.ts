@@ -30,7 +30,6 @@ const cacheOn = createObservableCache<EditState>()
 export function editStateOf(idPair: IdPair, typeName: string): Observable<EditState> {
   return snapshotPair(idPair).pipe(
     switchMap(({draft, published}) => combineLatest([draft.snapshots$, published.snapshots$])),
-    tap(console.log),
     map(([draftSnapshot, publishedSnapshot]) => {
       const schemaType = schema.get(typeName)
       const liveEdit = !!schemaType.liveEdit
