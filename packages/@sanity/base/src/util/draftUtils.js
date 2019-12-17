@@ -47,11 +47,17 @@ export function createPublishedFrom(document) {
 export function collate(documents) {
   const byId = documents.reduce((res, doc) => {
     const id = getPublishedId(doc._id)
-    const entry = res[id] || (res[id] = {id})
+    let entry = res.get(id)
+    if (!entry) {
+      entry = {id}
+      res.set(id, entry)
+    }
+
     entry[id === doc._id ? 'published' : 'draft'] = doc
     return res
-  }, Object.create(null))
-  return Object.values(byId)
+  }, new Map())
+
+  return Array.from(byId.values())
 }
 
 // Removes published documents that also has a draft
