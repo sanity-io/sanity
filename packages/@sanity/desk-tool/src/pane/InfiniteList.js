@@ -77,6 +77,14 @@ export default enhanceWithAvailHeight(
       )
     }
 
+    handleScroll = scrollTop => {
+      if (!this.props.onScroll) {
+        return
+      }
+
+      this.props.onScroll(scrollTop, this.state.itemSize)
+    }
+
     render() {
       const {layout, height, items, className, renderItem, hasMoreItems, isLoadingMore} = this.props
       const {triggerUpdate, itemSize} = this.state
@@ -94,7 +102,7 @@ export default enhanceWithAvailHeight(
         <VirtualList
           key={layout} // forcefully re-render the whole list when layout changes
           data-trigger-update-hack={triggerUpdate} // see componentWillReceiveProps above
-          onScroll={this.props.onScroll}
+          onScroll={this.handleScroll}
           className={className || ''}
           height={height}
           itemCount={addExtraItem ? items.length + 1 : items.length}
