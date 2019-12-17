@@ -18,6 +18,7 @@ import {PaneRouterContext} from '../../'
 import ErrorPane from '../pane/ErrorPane'
 import LoadingPane from '../pane/LoadingPane'
 import BrokenReferences from '../components/BrokenReferences'
+import shallow from 'shallow-equals'
 import {
   templateExists,
   getTemplateById,

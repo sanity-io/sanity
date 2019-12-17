@@ -1,6 +1,6 @@
 import documentStore from 'part:@sanity/base/datastore/document'
 import * as gradientPatchAdapter from './utils/gradientPatchAdapter'
-import {map, scan, switchMap, tap} from 'rxjs/operators'
+import {map, scan} from 'rxjs/operators'
 import {Patch} from '../typedefs/patch'
 
 function prepareMutationEvent(event) {
@@ -63,38 +63,19 @@ function wrap(document) {
   }
 }
 
+let hasWarned = false
 export function checkoutPair(idPair) {
+  if (!hasWarned) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[deprecation] The checkout() function has been deprecated in favor of checkoutPair()'
+    )
+    hasWarned = true
+  }
   const {draft, published} = documentStore.checkoutPair(idPair)
 
   return {
     draft: wrap(draft),
     published: wrap(published)
   }
-}
-
-export function patchEvents(idPair) {
-  return documentStore.local.documentEventsFor(idPair).pipe(
-    map((event: any) => {
-      if (event.type === 'mutation') {
-        return prepareMutationEvent(event)
-      } else if (event.type === 'rebase') {
-        return prepareRebaseEvent(event)
-      }
-      return event
-    }),
-    scan((prevEvent, currentEvent: any) => {
-      const deletedSnapshot =
-        prevEvent &&
-        currentEvent.type === 'mutation' &&
-        prevEvent.document !== null &&
-        currentEvent.document === null
-          ? prevEvent.document
-          : null
-
-      return {
-        ...currentEvent,
-        deletedSnapshot
-      }
-    }, null)
-  )
 }

@@ -94,7 +94,7 @@ export default class FormView extends React.PureComponent {
   }
 
   render() {
-    const {document, history, schemaType, markers, patchChannel, initialValue} = this.props
+    const {document, id, history, schemaType, markers, patchChannel, initialValue} = this.props
     const {draft, published, displayed} = document
     const {focusPath, filterField} = this.state
     const value = draft || published
@@ -120,17 +120,15 @@ export default class FormView extends React.PureComponent {
           <HistoryForm document={displayed} schema={schema} schemaType={schemaType} />
         ) : (
           <EditForm
-            id={this.props.id}
-            draft={draft}
+            id={id}
+            value={draft || published || initialValue}
             filterField={filterField}
             focusPath={focusPath}
-            initialValue={initialValue}
             markers={markers}
             onBlur={this.handleBlur}
             onChange={readOnly ? noop : this.props.onChange}
             onFocus={this.handleFocus}
             patchChannel={patchChannel}
-            published={published}
             readOnly={readOnly}
             schema={schema}
             type={schemaType}

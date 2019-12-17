@@ -74,42 +74,34 @@ function DocumentStatusBar(props) {
           </div>
         )}
       </div>
-      {props.actions && (
-        <div className={styles.actions}>
-          <div className={styles.actionsWrapper}>
-            <DocumentStatusBarActions
-              id={props.id}
-              type={props.type}
-              actions={props.actions}
-              idPrefix={props.idPrefix}
-              isDisconnected={props.isDisconnected}
-            />
-            {props.confirmationDialog && (
-              <PopOverDialog
-                onClickOutside={props.confirmationDialog.handleCancel}
-                placement="auto-end"
-                useOverlay={false}
-                hasAnimation
-              >
-                <>
-                  <div className={styles.popOverText}>{props.confirmationDialog.message}</div>
-                  <ButtonGrid>
-                    <Button onClick={props.confirmationDialog.handleCancel} kind="simple">
-                      {props.confirmationDialog.cancelText || 'Cancel'}
-                    </Button>
-                    <Button
-                      onClick={props.confirmationDialog.handleConfirm}
-                      color={props.confirmationDialog.confirmColor || 'danger'}
-                    >
-                      {props.confirmationDialog.confirmText || 'Confirm'}
-                    </Button>
-                  </ButtonGrid>
-                </>
-              </PopOverDialog>
-            )}
-          </div>
+      <div className={styles.actions}>
+        <div className={styles.actionsWrapper}>
+          <DocumentStatusBarActions id={props.id} type={props.type} />
+          {props.confirmationDialog && (
+            <PopOverDialog
+              onClickOutside={props.confirmationDialog.handleCancel}
+              placement="auto-end"
+              useOverlay={false}
+              hasAnimation
+            >
+              <>
+                <div className={styles.popOverText}>{props.confirmationDialog.message}</div>
+                <ButtonGrid>
+                  <Button onClick={props.confirmationDialog.handleCancel} kind="simple">
+                    {props.confirmationDialog.cancelText || 'Cancel'}
+                  </Button>
+                  <Button
+                    onClick={props.confirmationDialog.handleConfirm}
+                    color={props.confirmationDialog.confirmColor || 'danger'}
+                  >
+                    {props.confirmationDialog.confirmText || 'Confirm'}
+                  </Button>
+                </ButtonGrid>
+              </>
+            </PopOverDialog>
+          )}
         </div>
-      )}
+      </div>
     </div>
   )
 }

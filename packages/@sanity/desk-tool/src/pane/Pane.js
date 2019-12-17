@@ -4,13 +4,13 @@ import {noop} from 'lodash'
 import DocumentsListPane from './DocumentsListPane'
 import UserComponentPane from './UserComponentPane'
 import UnknownPaneType from './UnknownPaneType'
-import DocumentPane from './DocumentPane_ts'
+import {DocumentPaneProvider} from './DocumentPaneProvider'
 import ListPane from './ListPane'
 
 const paneMap = {
   list: ListPane,
   documentList: DocumentsListPane,
-  document: DocumentPane,
+  document: DocumentPaneProvider,
   component: UserComponentPane
 }
 

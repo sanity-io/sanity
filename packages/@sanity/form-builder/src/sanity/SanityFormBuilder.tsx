@@ -3,6 +3,8 @@ import SanityFormBuilderContext from './SanityFormBuilderContext'
 import {FormBuilderInput} from '../FormBuilderInput'
 import {Marker, Type} from '../typedefs'
 import {Path} from '../typedefs/path'
+import * as gradientPatchAdapter from './utils/gradientPatchAdapter'
+
 type PatchChannel = {
   subscribe: () => () => {}
   receivePatches: (patches: Array<any>) => void
@@ -15,12 +17,13 @@ type Props = {
   patchChannel: PatchChannel
   onFocus: (arg0: Path) => void
   readOnly: boolean
-  onChange: () => {}
+  onChange: (patches: any[]) => void
   filterField: (field: any) => boolean
   onBlur: () => void
   autoFocus: boolean
   focusPath: Path
 }
+
 export default class SanityFormBuilder extends React.Component<Props, {}> {
   static createPatchChannel = SanityFormBuilderContext.createPatchChannel
 
@@ -34,13 +37,17 @@ export default class SanityFormBuilder extends React.Component<Props, {}> {
       this._input.focus()
     }
   }
+
+  handleChange = patchEvent => {
+    this.props.onChange(gradientPatchAdapter.toGradient(patchEvent.patches))
+  }
+
   render() {
     const {
       value,
       schema,
       patchChannel,
       type,
-      onChange,
       readOnly,
       markers,
       onFocus,
@@ -52,7 +59,7 @@ export default class SanityFormBuilder extends React.Component<Props, {}> {
       <SanityFormBuilderContext value={value} schema={schema} patchChannel={patchChannel}>
         <FormBuilderInput
           type={type}
-          onChange={onChange}
+          onChange={this.handleChange}
           level={0}
           value={value}
           onFocus={onFocus}

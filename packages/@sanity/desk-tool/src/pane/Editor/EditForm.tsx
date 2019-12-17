@@ -1,9 +1,10 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import {FormBuilder, patchEvents} from 'part:@sanity/form-builder'
+import {FormBuilder} from 'part:@sanity/form-builder'
+import documentStore from 'part:@sanity/base/datastore/document'
+
 import styles from '../styles/Editor.css'
-import {map, tap} from 'rxjs/operators'
-import {Subscription} from '@sanity/form-builder/lib/src/typedefs/observable'
+import {tap} from 'rxjs/operators'
+import {Subscription} from 'rxjs'
 
 const preventDefault = ev => ev.preventDefault()
 type Doc = any
@@ -12,9 +13,7 @@ type SchemaType = any
 
 interface Props {
   id: string
-  draft: Doc
-  published: Doc
-  initialValue: Doc
+  value: Doc
 
   filterField: () => boolean
   focusPath: []
@@ -33,10 +32,11 @@ export default class EditForm extends React.PureComponent<Props> {
   patchChannel = FormBuilder.createPatchChannel()
 
   componentDidMount() {
-    this.subscription = patchEvents(this.props.id)
+    this.subscription = documentStore.local
+      .documentEventsFor(this.props.id, this.props.type.name)
       .pipe(
-        tap(pair => {
-          console.log(pair)
+        tap((event: any) => {
+          this.patchChannel.receiveEvent(event)
         })
       )
       .subscribe()
@@ -46,29 +46,19 @@ export default class EditForm extends React.PureComponent<Props> {
     if (this.subscription) this.subscription.unsubscribe()
   }
 
-  receivePatches(event) {
-    this.patchChannel.receivePatches({
-      patches: event.patches,
-      snapshot: event.document
-    })
-  }
-
   render() {
     const {
-      draft,
-      published,
       filterField,
       focusPath,
-      initialValue,
       markers,
+      value,
       onBlur,
-      onChange,
       onFocus,
+      onChange,
       readOnly,
       schema,
       type
     } = this.props
-    const value = draft || published || initialValue
     return (
       <>
         <form
