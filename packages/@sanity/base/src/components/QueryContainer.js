@@ -36,8 +36,7 @@ const createErrorChildProps = error => ({
   error
 })
 
-// todo: split into separate standalone parts so that behavior can be re-used
-export default streamingComponent(receivedProps$ => {
+export const getQueryResults = receivedProps$ => {
   const [onRetry$, onRetry] = createEventHandler()
 
   const queryProps$ = receivedProps$.pipe(
@@ -53,38 +52,31 @@ export default streamingComponent(receivedProps$ => {
         map(createResultChildProps),
         share()
       )
-      return merge(
-        of({loading: true}).pipe(
-          delay(400),
-          takeUntil(query$)
-        ),
-        query$
-      )
+      return merge(of({loading: true}).pipe(delay(400), takeUntil(query$)), query$)
     })
   )
 
-  const childProps$ = queryResults$.pipe(
+  return queryResults$.pipe(
     startWith(INITIAL_CHILD_PROPS),
     catchError((err, caught$) =>
-      concat(
-        of(createErrorChildProps(err)),
-        onRetry$.pipe(
-          take(1),
-          mergeMapTo(caught$)
-        )
-      )
+      concat(of(createErrorChildProps(err)), onRetry$.pipe(take(1), mergeMapTo(caught$)))
     ),
-    scan((prev, next) => ({...prev, ...next}))
+    scan((prev, next) => ({...prev, ...next, onRetry}))
   )
+}
 
-  return combineLatest(receivedProps$, childProps$).pipe(
+// todo: split into separate standalone parts so that behavior can be re-used
+export default streamingComponent(receivedProps$ => {
+  const resultProps$ = getQueryResults(receivedProps$)
+  return combineLatest(receivedProps$, resultProps$).pipe(
     map(([receivedProps, queryResult]) => {
       const {children, mapFn} = receivedProps
       if (typeof mapFn === 'function') {
         // eslint-disable-next-line no-console
         console.warn('The mapFn prop of the <QueryContainer/> is removed.')
       }
-      return children({...queryResult, onRetry})
+
+      return children(queryResult)
     })
   )
 })
