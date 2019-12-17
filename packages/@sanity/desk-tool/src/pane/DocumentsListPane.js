@@ -122,7 +122,7 @@ export default class DocumentsListPane extends React.PureComponent {
     }
   }
 
-  state = {scrollTop: 0, sortOrder: null, layout: null}
+  state = {sortOrder: null, layout: null}
 
   constructor(props) {
     super()
@@ -192,10 +192,6 @@ export default class DocumentsListPane extends React.PureComponent {
     return true
   }
 
-  handleScroll = scrollTop => {
-    this.setState({scrollTop})
-  }
-
   buildListQuery() {
     const {options} = this.props
     const {filter, defaultOrdering} = options
@@ -252,7 +248,6 @@ export default class DocumentsListPane extends React.PureComponent {
         className={className}
         styles={this.props.styles}
         index={this.props.index}
-        scrollTop={this.state.scrollTop}
         menuItems={menuItems}
         menuItemGroups={menuItemGroups}
         initialValueTemplates={initialValueTemplates}
@@ -311,7 +306,6 @@ export default class DocumentsListPane extends React.PureComponent {
                 {items && (
                   <InfiniteList
                     className={listStyles.scroll}
-                    onScroll={this.handleScroll}
                     items={items}
                     layout={layout}
                     getItemKey={getDocumentKey}
