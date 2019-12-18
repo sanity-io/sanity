@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {mutate, publish} from '../mockDocStateDatastore'
+import {mutate, publish} from '../../mockDocStateDatastore'
 import {setIfMissing, set, unset, append} from './patch-helpers'
 
 function addReviewer(id, reviewerId) {

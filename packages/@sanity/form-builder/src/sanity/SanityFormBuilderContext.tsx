@@ -25,6 +25,32 @@ export default function SanityFormBuilderContext(props: Props) {
     </FormBuilderContext>
   )
 }
+
+function prepareMutationEvent(event) {
+  const patches = event.mutations.map(mut => mut.patch).filter(Boolean)
+  return {
+    ...event,
+    patches: gradientPatchAdapter.toFormBuilder(event.origin, patches)
+  }
+}
+
+function prepareRebaseEvent(event) {
+  const patches = [
+    {
+      id: event.document._id,
+      set: event.document
+    }
+  ]
+  return {
+    type: 'mutation',
+    document: event.document,
+    mutations: patches.map(patch => ({
+      patch
+    })),
+    patches: gradientPatchAdapter.toFormBuilder('internal', patches)
+  }
+}
+
 SanityFormBuilderContext.createPatchChannel = () => {
   const patchChannel = FormBuilderContext.createPatchChannel()
   return {
@@ -32,18 +58,9 @@ SanityFormBuilderContext.createPatchChannel = () => {
       if (event.type !== 'mutation' && event.type !== 'rebase') {
         return
       }
-      const patches =
-        event.type === 'mutation'
-          ? event.mutations.map(mut => mut.patch).filter(Boolean)
-          : [
-              {
-                id: event.document._id,
-                set: event.document
-              }
-            ]
-      patchChannel.receivePatches({
-        patches: gradientPatchAdapter.toFormBuilder('internal', patches)
-      })
+      patchChannel.receivePatches(
+        event.type === 'mutation' ? prepareMutationEvent(event) : prepareRebaseEvent(event)
+      )
     },
     onPatch: patchChannel.onPatch
   }

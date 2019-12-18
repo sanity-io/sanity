@@ -1,5 +1,4 @@
 import * as React from 'react'
-import {resolveActions} from 'part:@sanity/base/document-actions/resolver'
 import {StateLink, withRouterHOC} from 'part:@sanity/base/router'
 import documentStore from 'part:@sanity/base/datastore/document'
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
@@ -11,7 +10,8 @@ import PopOverDialog from 'part:@sanity/components/dialogs/popover'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Button from 'part:@sanity/components/buttons/default'
 import schema from 'part:@sanity/base/schema'
-import {RenderActionCollectionState} from 'part:@sanity/base/util/document-action-utils'
+import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
+import resolveDocumentActions from './actions/resolveDocumentActions'
 
 const RenderActionDialog = props => {
   return <PopOverDialog>{props.dialog}</PopOverDialog>
@@ -155,7 +155,7 @@ export const TestActionsTool = withRouterHOC(
 
                   <RenderActionCollectionState
                     component={Footer}
-                    actions={resolveActions(editState, type)}
+                    actions={resolveDocumentActions(editState, type)}
                     args={editState}
                     type={schema.get(type)}
                   />
