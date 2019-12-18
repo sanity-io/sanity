@@ -857,9 +857,6 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
   renderFooter = () => {
     const {initialValue, options, paneKey} = this.props
     const value = this.props.value || initialValue
-    if (!value) {
-      throw new Error(`Can't render footer without a value`)
-    }
 
     const {isReconnecting, showSavingStatus} = this.state
 
