@@ -1,5 +1,5 @@
-import {duplicate} from '../mockDocStateDatastore'
-import {navigate} from '../test-action-tool/TestActionsTool'
+import {duplicate} from '../../mockDocStateDatastore'
+import {navigate} from '../TestActionsTool'
 import {omit} from 'lodash'
 
 const useAction = docInfo => {

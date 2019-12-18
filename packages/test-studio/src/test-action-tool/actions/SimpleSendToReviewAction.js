@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {mutate} from '../mockDocStateDatastore'
+import {mutate} from '../../mockDocStateDatastore'
 import {setIfMissing, unset, append} from './patch-helpers'
 
 const REVIEWERS = ['simen', 'even', 'marius', 'per-kristian']
