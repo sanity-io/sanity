@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import VirtualList from 'react-tiny-virtual-list'
 import enhanceWithAvailHeight from './enhanceWithAvailHeight'
+import styles from './styles/InfiniteList.css'
 
 export default enhanceWithAvailHeight(
   class InfiniteList extends React.PureComponent {
@@ -61,10 +62,12 @@ export default enhanceWithAvailHeight(
       const {renderItem, getItemKey, items, isLoadingMore} = this.props
       if (index === items.length) {
         return (
-          <div key="more-items" style={style}>
-            {isLoadingMore
-              ? 'Loading additional documents…'
-              : 'There are more documents than are currently shown.'}
+          <div
+            key="more-items"
+            style={{...style, height: style.height - 1, lineHeight: `${style.height - 1}px`}}
+            className={styles.bottomMetaInfo}
+          >
+            {isLoadingMore ? 'Loading…' : 'This list contains more documents'}
           </div>
         )
       }
