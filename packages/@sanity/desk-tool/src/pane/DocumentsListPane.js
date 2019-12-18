@@ -16,7 +16,7 @@ import InfiniteList from './InfiniteList'
 import PaneItem from './PaneItem'
 
 const PARTIAL_PAGE_LIMIT = 100
-const FULL_PAGE_LIMIT = 5000
+const FULL_LIST_LIMIT = 2000
 
 const DEFAULT_ORDERING = [{field: '_createdAt', direction: 'desc'}]
 
@@ -271,7 +271,7 @@ export default class DocumentsListPane extends React.PureComponent {
     const projectionFields = ['_id', '_type']
     const finalProjection = projectionFields.join(', ')
     const sortBy = (sortOrder && sortOrder.by) || defaultOrdering || []
-    const limit = fullList ? FULL_PAGE_LIMIT : PARTIAL_PAGE_LIMIT
+    const limit = fullList ? FULL_LIST_LIMIT : PARTIAL_PAGE_LIMIT
     const sort = sortBy.length > 0 ? sortBy : DEFAULT_ORDERING
 
     if (extendedProjection) {
@@ -330,7 +330,7 @@ export default class DocumentsListPane extends React.PureComponent {
             getItemKey={getDocumentKey}
             renderItem={this.renderItem}
             onScroll={this.handleScroll}
-            hasMoreItems={items.length === FULL_PAGE_LIMIT}
+            hasMoreItems={items.length === FULL_LIST_LIMIT}
             isLoadingMore={isLoadingMore}
           />
         )}
