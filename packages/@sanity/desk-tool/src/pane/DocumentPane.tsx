@@ -14,7 +14,6 @@ import TabbedPane from 'part:@sanity/components/panes/tabbed'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import {PaneRouterContext} from '../../'
 import UseState from '../utils/UseState'
 import InspectView from '../components/InspectView'
 import InspectHistory from '../components/InspectHistory'
@@ -32,6 +31,7 @@ import {historyIsEnabled} from './Editor/history'
 import menuItemStyles from './styles/documentPaneMenuItems.css'
 import {getProductionPreviewItem} from './documentPaneMenuItems'
 import {validateDocument} from '@sanity/validation'
+import {PaneRouterContext} from '..'
 
 declare const __DEV__: boolean
 
