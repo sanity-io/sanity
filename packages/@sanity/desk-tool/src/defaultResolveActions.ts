@@ -1,5 +1,5 @@
 import * as defaultActions from './defaultActions'
 
-export function resolveActions(documentState) {
+export default function resolveDocumentActions(documentState) {
   return Object.values(defaultActions)
 }

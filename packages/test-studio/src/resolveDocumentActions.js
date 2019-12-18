@@ -1,4 +1,4 @@
-import {DeleteAction} from 'part:@sanity/base/document-actions'
+import * as DefaultActions from 'part:@sanity/base/document-actions'
 import {createAction} from 'part:@sanity/base/actions/utils'
 
 const TestAction = createAction(editState => {
@@ -7,6 +7,6 @@ const TestAction = createAction(editState => {
   }
 })
 
-export function resolveActions(editState, type) {
-  return [TestAction, DeleteAction]
+export default function resolveDocumentActions(editState, type) {
+  return [...Object.values(DefaultActions), TestAction]
 }
