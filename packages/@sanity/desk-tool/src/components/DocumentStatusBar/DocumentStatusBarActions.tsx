@@ -9,7 +9,7 @@ import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 import styles from './DocumentStatusBarActions.css'
 import {ActionMenu} from './ActionMenu'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
-import {resolveActions} from 'part:@sanity/base/document-actions/resolver'
+import resolveDocumentActions from 'part:@sanity/base/document-actions/resolver'
 
 const TOUCH_SUPPORT = 'ontouchstart' in document.documentElement
 
@@ -69,7 +69,7 @@ function DocumentStatusBarActionsInner(props: Props) {
 export function DocumentStatusBarActions(props: Props) {
   const editState = useEditState(props.id, props.type)
 
-  const actions = editState ? resolveActions(editState) : null
+  const actions = editState ? resolveDocumentActions(editState) : null
   return actions ? (
     <RenderActionCollectionState
       actions={actions}
