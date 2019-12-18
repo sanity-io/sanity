@@ -29,7 +29,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@sanity/base": "^0.146.3",
+    "@sanity/base": "^0.147.3",
     "lodash": "^4.17.15",
     "shallow-equals": "^1.0.0",
     "rxjs": "^6.5.3"
