@@ -11,8 +11,8 @@ export const WriteTitleAction = createAction(function PublishAction(docInfo) {
   return {
     label: 'Set title to foo!',
     onHandle: () => {
-      patch([{set: {title: 'foo'}}])
-      commit()
+      patch.execute([{set: {title: 'foo'}}])
+      commit.execute()
     }
   }
 })

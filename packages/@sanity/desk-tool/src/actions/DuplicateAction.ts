@@ -12,7 +12,7 @@ export const DuplicateAction = createAction(function DuplicateAction({id, type, 
   const [isDuplicating, setDuplicating] = React.useState(false)
   return {
     icon: ContentCopyIcon,
-    disabled: isDuplicating || duplicate.disabled,
+    disabled: Boolean(isDuplicating || duplicate.disabled),
     label: isDuplicating ? 'Duplicating…' : 'Duplicate',
     title: duplicate.disabled ? `Cannot duplicate: ${duplicate.disabled}` : 'Duplicate',
     onHandle: () => {

@@ -17,24 +17,5 @@ export const unpublish = {
     }
 
     return tx.commit().toPromise()
-
-    // todo: signal error
-    //   map(result => ({
-    //     type: 'success',
-    //     result: result
-    //   })),
-    //   catchError(error =>
-    //     observableOf({
-    //       type: 'error',
-    //       message: `An error occurred while attempting to unpublish document.
-    //   This usually means that you attempted to unpublish a document that other documents
-    //   refers to.`,
-    //       error
-    //     })
-    //   )
-    // )
-    // .subscribe(result => {
-    //   this.setStateIfMounted({transactionResult: result})
-    // })
   }
 }

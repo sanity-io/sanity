@@ -1,5 +1,6 @@
 export {PublishAction} from './actions/PublishAction'
+export {DiscardChangesAction} from './actions/DiscardChangesAction'
 export {UnpublishAction} from './actions/UnpublishAction'
+export {DuplicateAction} from './actions/DuplicateAction'
 export {DeleteAction} from './actions/DeleteAction'
 export {SaveAction} from './actions/SaveAction'
-export {DuplicateAction} from './actions/DuplicateAction'
