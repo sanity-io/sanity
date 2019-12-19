@@ -5,7 +5,6 @@ import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 export const UnpublishAction = createAction(function UnpublishAction(docInfo) {
   const {unpublish}: any = useDocumentOperation(docInfo.id, docInfo.type)
 
-  console.log(unpublish.disabled)
   return {
     icon: ContentCopyIcon,
     disabled: unpublish.disabled,
