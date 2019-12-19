@@ -32,6 +32,7 @@ import menuItemStyles from './styles/documentPaneMenuItems.css'
 import {getProductionPreviewItem} from './documentPaneMenuItems'
 import {validateDocument} from '@sanity/validation'
 import {PaneRouterContext} from '..'
+import {HistoryStatusBarActions} from '../components/DocumentStatusBar/DocumentStatusBarActions'
 
 declare const __DEV__: boolean
 
@@ -539,17 +540,14 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
   }
 
   handleFetchHistoryEvents() {
-    const {value} = this.props
+    const {options} = this.props
 
     if (this._historyEventsSubscription) {
       this._historyEventsSubscription.unsubscribe()
     }
 
-    if (!value) {
-      throw new Error("Can't load history events without a value")
-    }
     this._historyEventsSubscription = historyStore
-      .historyEventsFor(getPublishedId(value._id))
+      .historyEventsFor(getPublishedId(options.id))
       .pipe(
         map((events, i) => {
           const newState = i === 0 ? {events, isLoading: false} : {events}
@@ -823,35 +821,20 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
 
   renderHistoryFooter = () => {
     const selectedEvent = this.findSelectedHistoryEvent()
-    const {paneKey, options} = this.props
-    const {historyState, isReconnecting, isRestoring} = this.state
-    const isLatestEvent = historyState.events[0] === selectedEvent
-    const historyStatus = selectedEvent ? (
-      <>
-        Changed <TimeAgo time={selectedEvent.endTime} /> {isLatestEvent && <> (latest)</>}
-      </>
-    ) : null
+    const {options} = this.props
 
-    const documentStatusProps = {
-      actions: [
-        {
-          color: 'primary',
-          disabled: isRestoring || isReconnecting || isLatestEvent,
-          id: 'restore',
-          label: 'Restore',
-          handleClick: () => {
-            this.handleRestoreRevision({
-              id: selectedEvent.displayDocumentId,
-              rev: selectedEvent.rev
-            })
-          }
-        }
-      ],
-      historyStatus,
-      idPrefix: paneKey,
-      isSyncing: isRestoring
-    }
-    return <DocumentStatusBar id={options.id} type={options.type} {...documentStatusProps} />
+    // const {historyState} = this.state
+
+    return historyIsEnabled && selectedEvent ? (
+      <HistoryStatusBarActions
+        id={options.id}
+        type={options.type}
+        historyId={selectedEvent.displayDocumentId}
+        revision={selectedEvent.rev}
+      />
+    ) : (
+      <DocumentStatusBar id={options.id} type={options.type} />
+    )
   }
 
   renderFooter = () => {
