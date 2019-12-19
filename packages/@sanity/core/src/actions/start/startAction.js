@@ -104,15 +104,17 @@ async function ensureProjectConfig(context) {
   const {workDir, output} = context
   const manifestPath = path.join(workDir, 'sanity.json')
   const projectManifest = await fse.readJson(manifestPath)
-  const apiConfig = projectManifest.api
+  const apiConfig = {    
+    projectId: context.apiClient().clientConfig.projectId || projectManifest.api.projectId,
+    dataset: context.apiClient().clientConfig.dataset || projectManifest.api.projectId
+  };
+  //TODO refactor this
   if (typeof apiConfig !== 'undefined' && !isPlainObject(apiConfig)) {
     throw new Error('Invalid `api` property in `sanity.json` - should be an object')
   }
 
   let displayName = projectManifest.project && projectManifest.project.displayName
-  let {projectId, dataset} = apiConfig || {}
-  const configMissing = !projectId || !dataset
-  if (!configMissing) {
+  if (apiConfig.projectId && apiConfig.dataset) {
     return
   }
 
