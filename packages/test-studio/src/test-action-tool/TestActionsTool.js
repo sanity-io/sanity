@@ -29,34 +29,28 @@ const RenderSnackbar = props => {
   )
 }
 
-const ActionButton = props => {
-  const {actionState} = props
+function Footer(props) {
+  const {actionStates} = props
   const [key, setKey] = React.useState(Math.random())
 
   return (
-    <>
-      <Button
-        loading={actionState.showActivityIndicator}
-        onClick={actionState.handle}
-        disabled={actionState.disabled}
-      >
-        {actionState.label}
-      </Button>
-      {/*Todo: reset state of others when handling one */}
-      <button type="button" title="Clear state" onClick={() => setKey(Math.random())}>
-        x
-      </button>
-      {actionState.dialog && <RenderActionDialog dialog={actionState.dialog} />}
-      {actionState.snackbar && <RenderSnackbar snackbar={actionState.snackbar} />}
-    </>
-  )
-}
-
-function Footer(props) {
-  return (
     <div>
-      {props.actionStates.filter(Boolean).map((actionState, i) => (
-        <ActionButton key={i} actionState={actionState} type={props.type} />
+      {actionStates.filter(Boolean).map((actionState, i) => (
+        <>
+          <Button
+            loading={actionState.showActivityIndicator}
+            onClick={actionState.handle}
+            disabled={actionState.disabled}
+          >
+            {actionState.label}
+          </Button>
+          {/*Todo: reset state of others when handling one */}
+          <button type="button" title="Clear state" onClick={() => setKey(Math.random())}>
+            x
+          </button>
+          {actionState.dialog && <RenderActionDialog dialog={actionState.dialog} />}
+          {actionState.snackbar && <RenderSnackbar snackbar={actionState.snackbar} />}
+        </>
       ))}
     </div>
   )

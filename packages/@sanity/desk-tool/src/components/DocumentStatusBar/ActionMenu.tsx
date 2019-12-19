@@ -87,6 +87,7 @@ export function ActionMenu({actionStates, onOpen, onClose, isOpen}: Props) {
                     aria-label={actionState.label}
                     className={styles.menuItemButton}
                     disabled={actionState.disabled}
+                    title={actionState.title}
                     onClick={actionState.onHandle}
                     role="menuitem"
                     tabIndex={-1}

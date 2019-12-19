@@ -4,18 +4,15 @@ import {createAction} from 'part:@sanity/base/actions/utils'
 import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 
 export const PublishAction = createAction(function PublishAction(docInfo) {
-  if (docInfo.isLiveEditEnabled) {
-    return null
-  }
-
-  const op: any = useDocumentOperation(docInfo.id, docInfo.type)
+  const {publish}: any = useDocumentOperation(docInfo.id, docInfo.type)
 
   return {
     icon: ContentCopyIcon,
-    disabled: !docInfo.draft,
+    disabled: publish.disabled,
     label: 'Publish',
+    title: publish.disabled ? `Cannot publish: ${publish.disabled}` : 'Publish',
     onHandle: () => {
-      op.publish(doc => omit(doc, 'reviewers'))
+      publish.execute(doc => omit(doc, 'reviewers'))
     }
   }
 })
