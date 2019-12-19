@@ -1,6 +1,5 @@
 import {MutationPayload} from './buffered-doc/types'
 import {SnapshotPair} from './document-pair/snapshotPair'
-import {Id} from '@sanity/preview/lib/src/types'
 
 export interface SanityDocument {
   _id: string
