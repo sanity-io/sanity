@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import {combineLatest, concat, of} from 'rxjs'
-import {map, switchMap, share, publishReplay, refCount} from 'rxjs/operators'
+import {map, switchMap, publishReplay, refCount} from 'rxjs/operators'
 import schema from 'part:@sanity/base/schema'
 import {snapshotPair} from './snapshotPair'
 import {IdPair, OperationArgs} from '../types'
