@@ -2,7 +2,6 @@ import React from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {createAction} from 'part:@sanity/base/actions/utils'
 import ConfirmDelete from '../components/ConfirmDelete'
-import Spinner from 'part:@sanity/components/loading/spinner'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -18,8 +17,8 @@ export const DeleteAction = createAction(function DeleteAction({
   const [isConfirmDialogOpen, setConfirmDialogOpen] = React.useState(false)
 
   return {
-    icon: isDeleting ? Spinner : TrashIcon,
-    disabled: deleteOp.disabled,
+    icon: TrashIcon,
+    disabled: Boolean(deleteOp.disabled),
     title: deleteOp.disabled ? `Cannot delete: ${deleteOp.disabled}` : '',
     label: isDeleting ? 'Deleting…' : 'Delete',
     onHandle: () => {

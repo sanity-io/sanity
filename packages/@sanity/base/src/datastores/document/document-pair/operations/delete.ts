@@ -1,6 +1,6 @@
 import {OperationArgs} from '../../types'
 
-export const destroy = {
+export const del = {
   disabled: ({snapshots}) =>
     snapshots.draft || snapshots.published ? false : 'Document does not exist',
   execute: ({versions}: OperationArgs) => {

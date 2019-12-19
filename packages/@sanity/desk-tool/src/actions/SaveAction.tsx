@@ -5,7 +5,7 @@ export const SaveAction = createAction(function DeleteAction({id, type, onComple
   const {commit}: any = useDocumentOperation(id, type)
 
   return {
-    disabled: commit.disabled,
+    disabled: Boolean(commit.disabled),
     label: 'Save',
     onHandle: async () => {
       await commit.execute()

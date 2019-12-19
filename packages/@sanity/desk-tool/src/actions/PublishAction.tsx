@@ -7,7 +7,7 @@ export const PublishAction = createAction(function PublishAction(props) {
   const [publishing, setPublishing] = React.useState(false)
 
   return {
-    disabled: publishing || publish.disabled,
+    disabled: Boolean(publishing || publish.disabled),
     label: publishing ? 'Publishing…' : 'Publish',
     title: publish.disabled ? publish.disabled : '',
     onHandle: async () => {

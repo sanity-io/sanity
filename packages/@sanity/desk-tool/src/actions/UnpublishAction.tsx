@@ -1,19 +1,20 @@
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {createAction} from 'part:@sanity/base/actions/utils'
-import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
+import CloseIcon from 'part:@sanity/base/close-icon'
 
-export const UnpublishAction = createAction(function UnpublishAction(docInfo) {
-  const {unpublish}: any = useDocumentOperation(docInfo.id, docInfo.type)
+export const UnpublishAction = createAction(function UnpublishAction({id, type, onComplete}) {
+  const {unpublish}: any = useDocumentOperation(id, type)
 
   return {
-    icon: ContentCopyIcon,
-    disabled: unpublish.disabled,
+    icon: CloseIcon,
+    disabled: Boolean(unpublish.disabled),
     label: 'Unpublish',
     title: unpublish.disabled
       ? `Cannot unpublish. ${unpublish.disabled}`
       : 'Unpublish this document',
     onHandle: () => {
       unpublish.execute()
+      onComplete()
     }
   }
 })
