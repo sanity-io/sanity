@@ -1,5 +1,11 @@
 const simpleGet = require('simple-get')
+const HttpAgent = require('agentkeepalive')
 
+const HttpsAgent = HttpAgent.HttpsAgent
+const httpAgent = new HttpAgent()
+const httpsAgent = new HttpsAgent()
+
+const RESPONSE_TIMEOUT = 15000
 const MAX_RETRIES = 5
 
 // Just a promisified simpleGet
@@ -15,10 +21,14 @@ function delay(ms) {
 
 /* eslint-disable no-await-in-loop, max-depth */
 module.exports = async options => {
+  const agent = options.url.startsWith('https:') ? httpsAgent : httpAgent
+  const reqOptions = {...options, followRedirects: false, agent}
   let error
   for (let i = 0; i < MAX_RETRIES; i++) {
     try {
-      return await getStream(options)
+      const response = await getStream(reqOptions)
+      response.setTimeout(RESPONSE_TIMEOUT)
+      return response
     } catch (err) {
       error = err
 

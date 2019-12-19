@@ -22,6 +22,7 @@
     "ndjson"
   ],
   "dependencies": {
+    "agentkeepalive": "^4.1.0",
     "archiver": "^2.1.1",
     "debug": "^3.1.0",
     "fs-extra": "^6.0.1",
