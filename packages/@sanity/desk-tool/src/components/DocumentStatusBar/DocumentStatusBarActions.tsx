@@ -17,6 +17,7 @@ interface Props {
   id: string
   type: string
   actionStates: any
+  onReset: () => void
 }
 
 function DocumentStatusBarActionsInner(props: Props) {
@@ -60,10 +61,7 @@ function DocumentStatusBarActionsInner(props: Props) {
           actionStates={rest}
           isOpen={isMenuOpen}
           onOpen={() => setMenuOpen(true)}
-          onClose={() => {
-            // setMenuOpen(false)
-            props.onReset()
-          }}
+          onClose={props.onReset}
         />
       )}
     </div>
