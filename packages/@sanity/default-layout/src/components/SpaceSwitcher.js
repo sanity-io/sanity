@@ -45,7 +45,9 @@ class SpaceSwitcher extends React.PureComponent {
 
   handleChange = item => {
     this.props.router.navigate({space: item.name})
-    this.setState({menuOpen: false})
+    this.setState({menuOpen: false}, () => {
+      window.location.reload()
+    })
   }
 
   render() {
