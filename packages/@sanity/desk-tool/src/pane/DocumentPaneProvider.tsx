@@ -36,14 +36,17 @@ interface Props {
   }
 }
 
+function useThrottled(fn, wait, opts, deps) {
+  const callback = React.useMemo(() => throttle(fn, wait, opts), deps)
+  React.useEffect(() => () => callback.flush(), deps)
+  return callback
+}
+
 export const DocumentPaneProvider = withInitialValue((props: Props) => {
   const {patch, commit}: any = useDocumentOperation(props.options.id, props.options.type)
   const editState: any = useEditState(props.options.id, props.options.type)
 
-  const runThrottled = React.useCallback(
-    throttle((run: any) => run(), 1000, {leading: true, trailing: true}),
-    []
-  )
+  const runThrottled = useThrottled(run => run(), 1000, {leading: true, trailing: true}, [])
 
   const value = (editState && (editState.draft || editState.published)) || props.initialValue
   return (

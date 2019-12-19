@@ -40,7 +40,7 @@ export function editOpsOf(idPair: IdPair, typeName: string) {
             disabled,
             execute: disabled
               ? createOperationGuard(opName)
-              : callerArgs => op.execute(args, callerArgs)
+              : (...callerArgs) => op.execute(args, ...callerArgs)
           }
         })
       })

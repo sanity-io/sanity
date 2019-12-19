@@ -98,7 +98,10 @@ function historyEventsFor(documentId) {
       return {...prev, ...next}
     }, {}),
     map(transactions =>
-      transactionsToEvents(pairs, Object.keys(transactions).map(key => transactions[key])).reverse()
+      transactionsToEvents(
+        pairs,
+        Object.keys(transactions).map(key => transactions[key])
+      ).reverse()
     )
   )
 }

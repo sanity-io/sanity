@@ -11,6 +11,7 @@ import {ActionMenu} from './ActionMenu'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
 import resolveDocumentActions from 'part:@sanity/base/document-actions/resolver'
 import {ActionStateDialog} from './ActionStateDialog'
+import {HistoryRestoreAction} from '../../actions/HistoryRestoreAction'
 
 const TOUCH_SUPPORT = 'ontouchstart' in document.documentElement
 
@@ -74,6 +75,8 @@ export function DocumentStatusBarActions(props: Props) {
   const [isMenuOpen, setMenuOpen] = React.useState(false)
 
   const actions = editState ? resolveDocumentActions(editState) : null
+
+  const actionProps = props.revision ? {...editState, revision} : editState
   return actions ? (
     <RenderActionCollectionState
       component={DocumentStatusBarActionsInner}
@@ -85,4 +88,29 @@ export function DocumentStatusBarActions(props: Props) {
       actionProps={editState}
     />
   ) : null
+}
+
+interface HistoryStatusBarActionsProps {
+  id: string
+  type: string
+  revision: string
+  historyId: string
+}
+
+const historyActions = [HistoryRestoreAction]
+
+export function HistoryStatusBarActions(props: HistoryStatusBarActionsProps) {
+  const editState: any = useEditState(props.id, props.type)
+
+  const actionProps = {...editState, historyId: props.historyId, revision: props.revision}
+  return (
+    <RenderActionCollectionState
+      component={DocumentStatusBarActionsInner}
+      actions={historyActions}
+      actionProps={actionProps}
+      onActionComplete={() => {
+        /*todo: make optional*/
+      }}
+    />
+  )
 }
