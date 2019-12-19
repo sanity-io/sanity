@@ -27,7 +27,7 @@ export default function SendToReviewAction(docInfo) {
 
   return {
     label: reviewers.length > 0 ? `Awaiting review from ${reviewers.length}` : 'Request review',
-    handle: () => {
+    onHandle: () => {
       setDialogOpen(true)
     },
     dialog: isDialogOpen && (

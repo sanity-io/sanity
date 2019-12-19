@@ -1,9 +1,10 @@
 import {OperationArgs} from '../../types'
 
 export const destroy = {
-  disabled: () => false,
-  execute: ({liveEdit, snapshots, idPair, versions, typeName}: OperationArgs) => {
-    versions.published.delete()
+  disabled: ({snapshots}) =>
+    snapshots.draft || snapshots.published ? false : 'Document does not exist',
+  execute: ({versions}: OperationArgs) => {
+    versions.draft.delete()
     versions.published.delete()
   }
 }

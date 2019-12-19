@@ -1,18 +1,19 @@
-import {omit} from 'lodash'
+import * as React from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {createAction} from 'part:@sanity/base/actions/utils'
-import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
 
-export const PublishAction = createAction(function PublishAction(docInfo) {
-  const {publish}: any = useDocumentOperation(docInfo.id, docInfo.type)
+export const PublishAction = createAction(function PublishAction(props) {
+  const {publish}: any = useDocumentOperation(props.id, props.type)
+  const [publishing, setPublishing] = React.useState(false)
 
   return {
-    icon: ContentCopyIcon,
-    disabled: publish.disabled,
-    label: 'Publish',
-    title: publish.disabled ? `Cannot publish: ${publish.disabled}` : 'Publish',
-    onHandle: () => {
-      publish.execute(doc => omit(doc, 'reviewers'))
+    disabled: publishing || publish.disabled,
+    label: publishing ? 'Publishing…' : 'Publish',
+    title: publish.disabled ? publish.disabled : '',
+    onHandle: async () => {
+      setPublishing(true)
+      await publish.execute()
+      props.onComplete()
     }
   }
 })

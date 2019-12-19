@@ -6,7 +6,7 @@ const useAction = docInfo => {
   return {
     disabled: !docInfo.draft && !docInfo.published,
     label: 'Duplicate',
-    handle: () => {
+    onHandle: () => {
       const dupeId = `duped-${docInfo.id}`
       duplicate(docInfo.id, dupeId, current => omit(current, ['reviewers']))
       navigate(dupeId)

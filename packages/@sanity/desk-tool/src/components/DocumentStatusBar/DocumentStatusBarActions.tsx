@@ -10,6 +10,7 @@ import styles from './DocumentStatusBarActions.css'
 import {ActionMenu} from './ActionMenu'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
 import resolveDocumentActions from 'part:@sanity/base/document-actions/resolver'
+import {ActionStateDialog} from './ActionStateDialog'
 
 const TOUCH_SUPPORT = 'ontouchstart' in document.documentElement
 
@@ -17,16 +18,16 @@ interface Props {
   id: string
   type: string
   actionStates: any
-  onReset: () => void
+  isMenuOpen: boolean
+  onMenuOpen: () => void
+  onMenuClose: () => void
 }
 
 function DocumentStatusBarActionsInner(props: Props) {
-  const [isMenuOpen, setMenuOpen] = React.useState(false)
-
   const [firstActionState, ...rest] = props.actionStates
   const hasMoreActions = rest.length > 0
   return (
-    <div className={isMenuOpen ? styles.isMenuOpen : styles.root}>
+    <div className={props.isMenuOpen ? styles.isMenuOpen : styles.root}>
       {firstActionState && (
         <div className={styles.mainAction}>
           <Tooltip
@@ -53,15 +54,15 @@ function DocumentStatusBarActionsInner(props: Props) {
               {firstActionState.label}
             </Button>
           </Tooltip>
-          {firstActionState.dialog && firstActionState.dialog.content}
+          {firstActionState.dialog && <ActionStateDialog dialog={firstActionState.dialog} />}
         </div>
       )}
       {hasMoreActions && (
         <ActionMenu
           actionStates={rest}
-          isOpen={isMenuOpen}
-          onOpen={() => setMenuOpen(true)}
-          onClose={props.onReset}
+          isOpen={props.isMenuOpen}
+          onOpen={props.onMenuOpen}
+          onClose={props.onMenuClose}
         />
       )}
     </div>
@@ -70,13 +71,18 @@ function DocumentStatusBarActionsInner(props: Props) {
 
 export function DocumentStatusBarActions(props: Props) {
   const editState = useEditState(props.id, props.type)
+  const [isMenuOpen, setMenuOpen] = React.useState(false)
 
   const actions = editState ? resolveDocumentActions(editState) : null
   return actions ? (
     <RenderActionCollectionState
-      actions={actions}
-      args={editState}
       component={DocumentStatusBarActionsInner}
+      isMenuOpen={isMenuOpen}
+      onMenuOpen={() => setMenuOpen(true)}
+      onMenuClose={() => setMenuOpen(false)}
+      onActionComplete={() => setMenuOpen(false)}
+      actions={actions}
+      actionProps={editState}
     />
   ) : null
 }

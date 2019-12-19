@@ -39,8 +39,8 @@ function Footer(props) {
         <>
           <Button
             loading={actionState.showActivityIndicator}
-            onClick={actionState.handle}
-            disabled={actionState.disabled}
+            onClick={actionState.onHandle}
+            disabled={Boolean(actionState.disabled)}
           >
             {actionState.label}
           </Button>
@@ -55,51 +55,6 @@ function Footer(props) {
     </div>
   )
 }
-
-function ActionMenu(props) {
-  const actions = resolveActions(props.record, props.type)
-  const [active, setActive] = React.useState(null)
-  return (
-    <div>
-      {actions.map((action, i) => (
-        <ActionButtonRenderer
-          key={active ? `${active}-${i}` : i}
-          action={action}
-          record={props.record}
-          onHandle
-        />
-      ))}
-      <button onClick={() => setActive(null)}>Clear</button>
-    </div>
-  )
-}
-
-function UserSwitch() {
-  const currentUser = useCurrentUser()
-  const users = useUsers()
-  return (
-    users &&
-    currentUser && (
-      <>
-        You are:{' '}
-        <select value={currentUser.id} onChange={e => setCurrentUserId(e.currentTarget.value)}>
-          {users.map(u => (
-            <option value={u.id} key={u.id}>
-              {u.displayName}
-            </option>
-          ))}
-        </select>
-      </>
-    )
-  )
-}
-
-const OtherEditor = streamingComponent(props$ => {
-  return props$.pipe(
-    switchMap(props => documentStore.local.editStateOf(props.id, props.type)),
-    map(docState => <pre>{JSON.stringify(docState.draft, null, 2)}</pre>)
-  )
-})
 
 const DocumentList = streamingComponent(props => {
   return documentStore.listenQuery(`*[defined(title)] {_id, _type, title} [100...121]`).pipe(
@@ -150,7 +105,7 @@ export const TestActionsTool = withRouterHOC(
                   <RenderActionCollectionState
                     component={Footer}
                     actions={resolveDocumentActions(editState, type)}
-                    args={editState}
+                    actionProps={editState}
                     type={schema.get(type)}
                   />
                 </div>
