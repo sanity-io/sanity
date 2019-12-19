@@ -45,6 +45,8 @@ function NavBar(props) {
   let className = styles.root
   if (showToolSwitcher) className += ` ${styles.withToolSwitcher}`
 
+  const rootState = HAS_SPACES && router.state.space ? {space: router.state.space} : {}
+
   return (
     <div className={className} data-search-open={searchIsOpen}>
       <div className={styles.hamburger}>
@@ -59,7 +61,7 @@ function NavBar(props) {
           </div>
         </button>
       </div>
-      <StateLink toIndex className={styles.branding}>
+      <StateLink state={rootState} className={styles.branding}>
         <Branding projectName={config && config.project.name} />
       </StateLink>
       <button className={styles.createButton} onClick={onCreateButtonClick} type="button">
@@ -147,7 +149,7 @@ NavBar.propTypes = {
   onSetLoginStatusElement: PropTypes.func,
   onSetSearchElement: PropTypes.func,
   router: PropTypes.shape({
-    state: PropTypes.shape({tool: PropTypes.string}),
+    state: PropTypes.shape({tool: PropTypes.string, space: PropTypes.string}),
     navigate: PropTypes.func
   }).isRequired,
   tools: PropTypes.arrayOf(
