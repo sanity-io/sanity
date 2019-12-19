@@ -1,9 +1,10 @@
 import * as DefaultActions from 'part:@sanity/base/document-actions'
 import {createAction} from 'part:@sanity/base/actions/utils'
 
-const TestAction = createAction(editState => {
+const TestAction = createAction(props => {
   return {
-    label: 'CUSTOM FOO ACTION DEFINED IN TEST STUDIO WOOHO'
+    label: 'A custom action',
+    title: `An action that doesn't do anything particular`
   }
 })
 
