@@ -1,12 +1,15 @@
 import React from 'react'
-import {StateLink} from 'part:@sanity/base/router'
+import {withRouterHOC, StateLink} from 'part:@sanity/base/router'
+import {HAS_SPACES} from '../util/spaces'
 
-export default function NotFound(props) {
+export default withRouterHOC(function NotFound(props) {
+  const router = props.router
+  const rootState = HAS_SPACES && router.state.space ? {space: router.state.space} : {}
   return (
     <div>
       <h2>Page not found</h2>
       {props.children}
-      <StateLink toIndex>Go to index</StateLink>
+      <StateLink state={rootState}>Go to index</StateLink>
     </div>
   )
-}
+})
