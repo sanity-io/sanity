@@ -46,6 +46,7 @@ function DocumentStatusBarActionsInner(props: Props) {
               icon={firstActionState.icon}
               color={firstActionState.disabled ? undefined : firstActionState.color || 'primary'}
               disabled={firstActionState.disabled}
+              title={firstActionState.title}
               onClick={firstActionState.onHandle}
             >
               {firstActionState.label}
@@ -59,7 +60,10 @@ function DocumentStatusBarActionsInner(props: Props) {
           actionStates={rest}
           isOpen={isMenuOpen}
           onOpen={() => setMenuOpen(true)}
-          onClose={() => setMenuOpen(false)}
+          onClose={() => {
+            // setMenuOpen(false)
+            props.onReset()
+          }}
         />
       )}
     </div>

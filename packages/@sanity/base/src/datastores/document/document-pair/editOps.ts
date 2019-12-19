@@ -1,112 +1,63 @@
-import {omit} from 'lodash'
-import {combineLatest, merge, Observable, concat, of} from 'rxjs'
-import {map, switchMap} from 'rxjs/operators'
-import client from 'part:@sanity/base/client'
+/* eslint-disable @typescript-eslint/no-use-before-define */
+import {combineLatest, concat, of} from 'rxjs'
+import {map, switchMap, share, publishReplay, refCount} from 'rxjs/operators'
 import schema from 'part:@sanity/base/schema'
 import {snapshotPair} from './snapshotPair'
-import {IdPair} from '../types'
+import {IdPair, OperationArgs} from '../types'
+import * as operations from './operations'
 
-export interface EditorDocumentOperations {
-  publish: () => void
-  delete: () => void
-  patch: (patches: any[]) => void
-  discardDraft: () => void
-  commit: () => void
-}
+const GUARDED = createOperationsAPI((op, opName) => {
+  return {
+    disabled: true,
+    execute: createOperationGuard(opName)
+  }
+})
 
-const GUARDED = ['publish', 'delete', 'create', 'patch', 'discardDraft', 'commit'].reduce(
-  (a, name) => {
-    a[name] = () => {
-      // todo: improve this error message
-      throw new Error(`Premature invocation of ${name}`)
-    }
-    return a
-  },
-  {}
-) as EditorDocumentOperations
+export function editOpsOf(idPair: IdPair, typeName: string) {
+  const schemaType = schema.get(typeName)
+  const liveEdit = !!schemaType.liveEdit
 
-export function editOpsOf(idPair: IdPair, typeName: string): Observable<EditorDocumentOperations> {
-  const {publishedId, draftId} = idPair
   return concat(
     of(GUARDED),
     snapshotPair(idPair).pipe(
-      switchMap(({draft, published}) => {
-        const schemaType = schema.get(typeName)
-        const liveEdit = !!schemaType.liveEdit
-        return combineLatest([draft.snapshots$, published.snapshots$]).pipe(
-          map(([draftSnapshot, publishSnapshot]) => {
-            return {
-              publish: () => {
-                if (liveEdit) {
-                  throw new Error('Cannot publish when liveEdit is enabled')
-                }
-
-                if (draftSnapshot === null) {
-                  throw new Error(`Can't publish an empty draft`)
-                }
-
-                const tx = client.observable.transaction()
-
-                if (!published || !publishSnapshot) {
-                  // If the document has not been published, we want to create it - if it suddenly exists
-                  // before being created, we don't want to overwrite if, instead we want to yield an error
-                  tx.create({
-                    ...omit(draftSnapshot, '_updatedAt'),
-                    _id: publishedId
-                  })
-                } else {
-                  // If it exists already, we only want to update it if the revision on the remote server
-                  // matches what our local state thinks it's at
-                  tx.patch(publishedId, {
-                    // Hack until other mutations support revision locking
-                    unset: ['_reserved_prop_'],
-                    ifRevisionID: publishSnapshot._rev
-                  }).createOrReplace({
-                    ...omit(draftSnapshot, '_updatedAt'),
-                    _id: publishedId
-                  })
-                }
-
-                tx.delete(draftId)
-
-                tx.commit().subscribe()
-              },
-              delete() {
-                published.delete()
-                draft.delete()
-              },
-              create(document) {
-                const version = liveEdit ? published : draft
-                version.create(document)
-              },
-              patch(patches) {
-                // const initialValue = this.getInitialValue()
-                if (liveEdit) {
-                  // No drafting, patch and commit the published document
-                  published.createIfNotExists({
-                    _id: publishedId,
-                    _type: typeName
-                  })
-                  published.patch(patches)
-                } else {
-                  draft.createIfNotExists({
-                    ...omit(publishSnapshot, '_updatedAt'),
-                    _id: draftId,
-                    _type: typeName
-                  })
-                  draft.patch(patches)
-                }
-              },
-              discardDraft() {
-                draft.delete()
-              },
-              commit() {
-                return merge(published.commit(), draft.commit()).subscribe()
-              }
-            }
-          })
+      switchMap(versions =>
+        combineLatest([versions.draft.snapshots$, versions.published.snapshots$]).pipe(
+          map(
+            ([draft, published]): OperationArgs => ({
+              idPair,
+              typeName: typeName,
+              snapshots: {draft, published},
+              versions,
+              liveEdit
+            })
+          )
         )
+      ),
+      map((args: OperationArgs) => {
+        return createOperationsAPI((op, opName) => {
+          const disabled = op.disabled(args)
+          return {
+            disabled,
+            execute: disabled
+              ? createOperationGuard(opName)
+              : callerArgs => op.execute(args, callerArgs)
+          }
+        })
       })
     )
-  )
+  ).pipe(publishReplay(1), refCount())
+}
+
+function createOperationsAPI(cb) {
+  return Object.keys(operations).reduce((acc, opName) => {
+    const op = operations[opName]
+    acc[opName] = cb(op)
+    return acc
+  }, {})
+}
+
+function createOperationGuard(opName) {
+  return () => {
+    throw new Error(`Called ${opName} when it was disabled`)
+  }
 }

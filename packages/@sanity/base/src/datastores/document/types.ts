@@ -1,4 +1,6 @@
 import {MutationPayload} from './buffered-doc/types'
+import {SnapshotPair} from './document-pair/snapshotPair'
+import {Id} from '@sanity/preview/lib/src/types'
 
 export interface SanityDocument {
   _id: string
@@ -27,3 +29,16 @@ export interface IdPair {
 }
 
 export type SanityClient = any
+
+export interface Operation<Args> {
+  disabled: (args: OperationArgs) => false | string
+  execute: (args: OperationArgs) => void
+}
+
+export interface OperationArgs {
+  liveEdit: boolean
+  typeName: string
+  idPair: IdPair
+  versions: SnapshotPair
+  snapshots: {draft: null | SanityDocument; published: null | SanityDocument}
+}

@@ -43,7 +43,7 @@ export const DocumentPaneProvider = withInitialValue((props: Props) => {
   return (
     <DocumentPane
       {...props}
-      onChange={patch}
+      onChange={patches => patch.execute(patches)}
       value={value}
       draft={editState && editState.draft}
       published={editState && editState.published}
