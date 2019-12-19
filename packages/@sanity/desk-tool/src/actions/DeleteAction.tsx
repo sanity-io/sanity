@@ -4,29 +4,45 @@ import {createAction} from 'part:@sanity/base/actions/utils'
 import ConfirmDelete from '../components/ConfirmDelete'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import TrashIcon from 'part:@sanity/base/trash-icon'
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
-export const DeleteAction = createAction(function DeleteAction({id, type, draft, published}) {
-  const {delete: del}: any = useDocumentOperation(id, type)
-  const [isDeleting] = React.useState(false)
+export const DeleteAction = createAction(function DeleteAction({
+  id,
+  type,
+  draft,
+  published,
+  onComplete
+}) {
+  const {delete: deleteOp}: any = useDocumentOperation(id, type)
+  const [isDeleting, setIsDeleting] = React.useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = React.useState(false)
 
   return {
     icon: isDeleting ? Spinner : TrashIcon,
-    disabled: !draft && !published,
-    label: 'Delete',
+    disabled: deleteOp.disabled,
+    title: deleteOp.disabled ? `Cannot delete: ${deleteOp.disabled}` : '',
+    label: isDeleting ? 'Deleting…' : 'Delete',
     onHandle: () => {
       setConfirmDialogOpen(true)
     },
     dialog: isConfirmDialogOpen && {
-      type: 'fullscreen',
+      type: 'legacy',
+      onClose: onComplete,
+      title: 'Delete',
       content: (
         <ConfirmDelete
           draft={draft}
           published={published}
-          onCancel={() => setConfirmDialogOpen(false)}
-          onConfirm={() => {
+          onCancel={() => {
             setConfirmDialogOpen(false)
-            del()
+            onComplete()
+          }}
+          onConfirm={async () => {
+            setIsDeleting(true)
+            setConfirmDialogOpen(false)
+            await sleep(1000)
+            await deleteOp.execute()
+            onComplete()
           }}
         />
       )

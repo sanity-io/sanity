@@ -3,37 +3,50 @@ import {ActionState} from './createAction'
 
 interface RenderActionCollectionProps {
   actions: any[]
-  args: any
-  onReset: (id: string) => void
+  actionProps: any
+  onActionComplete: () => void
   component: React.ComponentType<{actionStates: ActionState[]}>
 }
 
 export function RenderActionCollectionState(props: RenderActionCollectionProps) {
   const [actionsWithStates, setActionsWithState] = React.useState([])
-  const [key, setKey] = React.useState(0)
+
+  const [keys, setKey] = React.useState({})
+  const handleComplete = React.useCallback(
+    id => {
+      setKey(keys => ({...keys, [id]: (keys[id] || 0) + 1}))
+      props.onActionComplete()
+    },
+    [props.actions]
+  )
+
   const onStateChange = React.useCallback(
     stateUpdate => {
       setActionsWithState(prevState => {
         return props.actions.map((action: any) =>
-          stateUpdate[0] === action
-            ? [action, stateUpdate[1]]
-            : prevState.find(prev => prev[0] === action) || [action]
+          stateUpdate[0] === action.id
+            ? [action.id, stateUpdate[1]]
+            : prevState.find(prev => prev[0] === action.id) || [action.id]
         )
       })
     },
     [props.actions]
   )
 
-  const {actions, args, component: Component, ...rest} = props
+  const {actions, actionProps, component: Component, ...rest} = props
   return (
     <>
       <Component
-        actionStates={actionsWithStates.map(([action, state]) => state)}
-        onReset={() => setKey(key => key + 1)}
+        actionStates={actionsWithStates.map(([id, state]) => state).filter(Boolean)}
         {...rest}
       />
       {props.actions.map(Action => (
-        <Action key={`${key}-${Action.id}`} args={props.args} onUpdate={onStateChange} />
+        <Action
+          key={`${keys[Action.id] || '0'}-${Action.id}`}
+          actionProps={props.actionProps}
+          onUpdate={onStateChange}
+          onComplete={handleComplete}
+        />
       ))}
     </>
   )

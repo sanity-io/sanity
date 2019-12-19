@@ -22,10 +22,10 @@ export default createAction(function AsyncAction(docInfo) {
     disabled: isWorking,
     showActivityIndicator: isWorking,
     label: isWorking ? 'Working…' : 'Do some work!',
-    handle: async () => {
+    onHandle: async () => {
       setIsWorking(true)
       const result = await doSomeWork(docInfo.id)
-      patch([set('randomNumber', result)])
+      patch.execute([set('randomNumber', result)])
       setIsWorking(false)
     }
   }

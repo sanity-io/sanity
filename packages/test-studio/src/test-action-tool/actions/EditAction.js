@@ -5,8 +5,8 @@ export default createAction(function EditAction(docInfo) {
   const {patch} = useDocumentOperation(docInfo.id, docInfo.type)
   return {
     label: 'Make an edit',
-    handle: () => {
-      patch([
+    onHandle: () => {
+      patch.execute([
         {
           set: {
             title: `hello ${Math.random()

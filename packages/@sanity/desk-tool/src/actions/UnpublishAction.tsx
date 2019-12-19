@@ -9,7 +9,9 @@ export const UnpublishAction = createAction(function UnpublishAction(docInfo) {
     icon: ContentCopyIcon,
     disabled: unpublish.disabled,
     label: 'Unpublish',
-    title: unpublish.disabled ? `Cannot unpublish. ${unpublish.disabled}` : 'Publish',
+    title: unpublish.disabled
+      ? `Cannot unpublish. ${unpublish.disabled}`
+      : 'Unpublish this document',
     onHandle: () => {
       unpublish.execute()
     }

@@ -10,8 +10,8 @@ export const publish = {
     if (liveEdit) {
       return 'Cannot publish when liveEdit is enabled for schema type'
     }
-    if (snapshots.draft !== null) {
-      return 'No draft to publish'
+    if (!snapshots.draft) {
+      return snapshots.published ? 'Already published' : 'No draft to publish'
     }
     return false
   },
@@ -38,6 +38,6 @@ export const publish = {
       })
     }
     tx.delete(idPair.draftId)
-    tx.commit().subscribe()
+    return tx.commit().toPromise()
   }
 }

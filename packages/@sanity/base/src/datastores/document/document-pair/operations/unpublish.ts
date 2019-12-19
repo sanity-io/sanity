@@ -4,7 +4,7 @@ import {omit} from 'lodash'
 
 export const unpublish = {
   disabled: ({snapshots}: OperationArgs) => {
-    return snapshots.published ? false : 'This document is already published'
+    return snapshots.published ? false : 'This document is not published'
   },
   execute: ({idPair, snapshots}: OperationArgs) => {
     let tx = client.observable.transaction().delete(idPair.publishedId)
@@ -16,7 +16,7 @@ export const unpublish = {
       })
     }
 
-    tx.commit()
+    return tx.commit().toPromise()
 
     // todo: signal error
     //   map(result => ({

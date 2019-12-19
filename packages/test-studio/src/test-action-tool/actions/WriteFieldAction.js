@@ -3,15 +3,15 @@ import {useDocumentOperation} from '@sanity/react-hooks'
 import {set} from './patch-helpers'
 import {createAction} from 'part:@sanity/base/actions/utils'
 
-export default createAction(function WriteFieldAction(docInfo) {
-  const doc = docInfo.isLiveEdit ? docInfo.published : docInfo.draft
+export default createAction(function WriteFieldAction({id, type, published, draft}) {
+  const doc = draft || published
 
   const [isWriting, setIsWriting] = React.useState(false)
-  const {patch} = useDocumentOperation(docInfo.id, docInfo.type)
+  const {patch} = useDocumentOperation(id, type)
   const currentTitle = (doc && doc.title) || ''
   return {
     label: `Edit title field of ${currentTitle}`,
-    handle: () => {
+    onHandle: () => {
       setIsWriting(true)
     },
     dialog: isWriting && (
@@ -20,7 +20,7 @@ export default createAction(function WriteFieldAction(docInfo) {
         <input
           type="text"
           value={currentTitle}
-          onChange={event => patch([set('title', event.currentTarget.value)])}
+          onChange={event => patch.execute([set('title', event.currentTarget.value)])}
         />
         <button onClick={() => setIsWriting(false)}>OK</button>
       </>

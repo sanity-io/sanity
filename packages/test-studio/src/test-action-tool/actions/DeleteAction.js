@@ -2,7 +2,7 @@ import * as React from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {createAction} from 'part:@sanity/base/actions/utils'
 
-export default createAction(({id, type, draft, published}) => {
+export default createAction(({id, type, draft, published, onComplete}) => {
   const [isConfirming, setIsConfirming] = React.useState(false)
   const [deletedDocument, setDeletedDocument] = React.useState(null)
 
@@ -11,10 +11,10 @@ export default createAction(({id, type, draft, published}) => {
   return {
     disabled: !draft && !published,
     label: isConfirming ? 'Confirm delete…' : 'Delete',
-    handle: () => {
+    onHandle: () => {
       if (isConfirming) {
         setDeletedDocument(draft)
-        del()
+        del.execute()
       } else {
         setIsConfirming(true)
       }
@@ -24,12 +24,8 @@ export default createAction(({id, type, draft, published}) => {
       content: <div>Document deleted</div>,
       actionTitle: 'Undo',
       onAction: () => {
-        // todo: reconsider supporting this as it will either leak drafts abstraction or be wrong
-        // undoing here should probably be done in on a document operation level
-        // it should restore only the draft | published that got deleted
-        create(deletedDocument)
-        setDeletedDocument(null)
-        setIsConfirming(false)
+        create.execute(deletedDocument)
+        onComplete()
       }
     }
   }
