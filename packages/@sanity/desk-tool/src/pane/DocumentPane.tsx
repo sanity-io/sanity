@@ -33,6 +33,7 @@ import {getProductionPreviewItem} from './documentPaneMenuItems'
 import {validateDocument} from '@sanity/validation'
 import {PaneRouterContext} from '..'
 import {HistoryStatusBarActions} from '../components/DocumentStatusBar/DocumentStatusBarActions'
+import {getMenuItems} from './documentPaneMenuItems'
 
 declare const __DEV__: boolean
 
@@ -825,6 +826,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
 
     // const {historyState} = this.state
 
+    debugger
     return historyIsEnabled && selectedEvent ? (
       <HistoryStatusBarActions
         id={options.id}
@@ -1032,15 +1034,12 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
     }
 
     const selectedHistoryEvent = this.findSelectedHistoryEvent()
-    // const menuItems = getMenuItems({
-    //   enabledActions,
-    //   draft: draft,
-    //   published: published,
-    //   isLiveEditEnabled: this.isLiveEditEnabled(),
-    //   isHistoryEnabled: historyIsOpen,
-    //   selectedEvent: historyIsOpen && selectedHistoryEvent,
-    //   canShowHistoryList: this.canShowHistoryList()
-    // })
+    const menuItems = getMenuItems({
+      value,
+      isLiveEditEnabled: this.isLiveEditEnabled(),
+      revision: selectedHistoryEvent && selectedHistoryEvent._rev,
+      canShowHistoryList: this.canShowHistoryList()
+    })
 
     return (
       <div
@@ -1079,7 +1078,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
           onCollapse={onCollapse}
           onExpand={onExpand}
           onAction={this.handleMenuAction}
-          menuItems={[]}
+          menuItems={menuItems}
           footer={this.historyIsOpen() ? this.renderHistoryFooter() : this.renderFooter()}
           renderActions={this.renderActions}
           isClosable={isClosable}

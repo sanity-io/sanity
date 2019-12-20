@@ -110,15 +110,6 @@ DocumentStatusBar.propTypes = {
   id: PropTypes.string,
   type: PropTypes.string,
 
-  actions: PropTypes.arrayOf(
-    PropTypes.shape({
-      color: PropTypes.oneOf(['primary', 'success', 'danger', 'white', 'warning']),
-      handleClick: PropTypes.func,
-      icon: PropTypes.func,
-      id: PropTypes.string.isRequired,
-      label: PropTypes.string.isRequired
-    })
-  ),
   badges: PropTypes.arrayOf(
     PropTypes.shape({
       color: PropTypes.oneOf([undefined, 'success', 'warning', 'danger', 'info', 'neutral']),
@@ -136,7 +127,6 @@ DocumentStatusBar.propTypes = {
     confirmColor: PropTypes.string
   }),
   historyStatus: PropTypes.node,
-  idPrefix: PropTypes.string.isRequired,
   isDisconnected: PropTypes.bool,
   isHistoryAvailable: PropTypes.bool,
   isSyncing: PropTypes.bool,
@@ -144,10 +134,7 @@ DocumentStatusBar.propTypes = {
 }
 
 DocumentStatusBar.defaultProps = {
-  actions: undefined,
   badges: undefined,
-  historyStatus: undefined,
-  confirmationDialog: undefined,
   isDisconnected: false,
   isHistoryAvailable: false,
   isSyncing: false,
