@@ -11,6 +11,7 @@ interface Document {
 
 interface DocumentActionProps {
   id: string
+  type: string
   draft: null | Document
   published: null | Document
 }
