@@ -6,6 +6,7 @@ import {getQueryResults} from 'part:@sanity/base/query-container'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import {collate, getPublishedId} from 'part:@sanity/base/util/draft-utils'
+import {isEqual} from 'lodash'
 import {of, combineLatest} from 'rxjs'
 import {map, tap, filter as filterEvents} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
@@ -211,12 +212,16 @@ export default class DocumentsListPane extends React.PureComponent {
     return true
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     // If the filter/params has changed, set up a new query from scratch
-    if (
+    const queryChanged =
       prevProps.options.filter !== this.props.options.filter ||
       !shallowEquals(prevProps.options.params, this.props.options.params)
-    ) {
+
+    // If sort changed, set up a new query from scratch as well
+    const sortChanged = !isEqual(this.state.sortOrder, prevState.sortOrder)
+
+    if (queryChanged || sortChanged) {
       this.setupQuery({fullList: false})
     }
   }
