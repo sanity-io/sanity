@@ -5,7 +5,7 @@ export interface ActionComponent<ActionProps> {
 }
 
 interface Document {
-  _id: string,
+  _id: string
   _type: string
 }
 
@@ -17,9 +17,26 @@ interface DocumentActionProps {
 
 export type DocumentActionComponent = ActionComponent<DocumentActionProps>
 
-export interface ActionDialog {
-  type: 'modal' | 'confirm'
+interface ConfirmDialogProps {
+  type: 'confirm'
+  color: string
+  message: React.ReactNode
+  onConfirm: () => void
+  onCancel: () => void
+}
+
+// Todo: move these to action spec/core types
+interface ModalDialogProps {
+  type: 'modal'
   content: React.ReactNode
+  onClose: () => void
+}
+
+// Todo: move these to action spec/core types
+interface PopOverDialogProps {
+  type: 'popover'
+  content: React.ReactNode
+  onClose: () => void
 }
 
 export interface ActionDescription {
@@ -27,6 +44,6 @@ export interface ActionDescription {
   icon?: React.ReactNode
   disabled?: boolean
   title?: string
-  dialog?: ActionDialog
+  dialog?: ConfirmDialogProps | PopOverDialogProps | ModalDialogProps
   onHandle?: () => void
 }

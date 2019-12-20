@@ -16,6 +16,20 @@ interface ConfirmDialogProps {
   onCancel: () => void
 }
 
+// Todo: move these to action spec/core types
+interface ModalDialogProps {
+  type: 'modal'
+  content: React.ReactNode
+  onClose: () => void
+}
+
+// Todo: move these to action spec/core types
+interface PopOverDialogProps {
+  type: 'popover'
+  content: React.ReactNode
+  onClose: () => void
+}
+
 interface LegacyDialogProps {
   type: 'legacy'
   content: React.ReactNode
@@ -23,7 +37,7 @@ interface LegacyDialogProps {
 }
 
 interface Props {
-  dialog: ConfirmDialogProps | LegacyDialogProps
+  dialog: ConfirmDialogProps | LegacyDialogProps | ModalDialogProps | PopOverDialogProps
 }
 
 export function ActionStateDialog(props: Props) {
@@ -52,6 +66,29 @@ export function ActionStateDialog(props: Props) {
             </Button>
           </ButtonGrid>
         </>
+      </PopOverDialog>
+    )
+  }
+
+  if (dialog.type === 'modal') {
+    return (
+      <Dialog onClose={dialog.onClose} onClickOutside={dialog.onClose}>
+        <DialogContent size="medium" padding="large">
+          {dialog.content}
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
+  if (dialog.type === 'popover') {
+    return (
+      <PopOverDialog
+        onClickOutside={dialog.onClose}
+        placement="auto-end"
+        useOverlay={false}
+        hasAnimation
+      >
+        {dialog.content}
       </PopOverDialog>
     )
   }
