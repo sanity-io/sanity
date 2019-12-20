@@ -1,4 +1,5 @@
 import {OperationArgs} from '../../types'
+import {merge} from 'rxjs'
 
 export const del = {
   disabled: ({snapshots}) =>
@@ -6,5 +7,6 @@ export const del = {
   execute: ({versions}: OperationArgs) => {
     versions.draft.delete()
     versions.published.delete()
+    return merge(versions.draft.commit(), versions.published.commit()).toPromise()
   }
 }
