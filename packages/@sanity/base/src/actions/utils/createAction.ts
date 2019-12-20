@@ -1,18 +1,11 @@
 import * as React from 'react'
+import {ActionComponent, ActionDescription} from './types'
 
 let id = 0
 const getId = () => id++
 
-interface ActionComponent<ActionProps> {
-  (props: ActionProps): ActionState
-}
-export interface ActionState {
-  id: number
-  label: string
-}
-
 interface ActionWrapperProps<ActionProps extends {}> {
-  onUpdate: (updateDispatch: [number, ActionState | null]) => void
+  onUpdate: (updateDispatch: [number, ActionDescription | null]) => void
   onComplete: (id: number) => void
   actionProps: ActionProps
 }
@@ -28,7 +21,7 @@ export function createAction<ActionProps>(action: ActionComponent<ActionProps>) 
     const {onUpdate, onComplete, actionProps} = props
 
     const state = action({...actionProps, onComplete: () => onComplete(id)})
-    onUpdate([id, state ? {...state, id} : null])
+    onUpdate([id, state ? state : null])
     return null
   }
 

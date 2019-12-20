@@ -3,7 +3,6 @@ import {useDocumentOperation} from '@sanity/react-hooks'
 import {createAction} from 'part:@sanity/base/actions/utils'
 import ConfirmDelete from '../components/ConfirmDelete'
 import TrashIcon from 'part:@sanity/base/trash-icon'
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 export const DeleteAction = createAction(function DeleteAction({
   id,
@@ -39,7 +38,6 @@ export const DeleteAction = createAction(function DeleteAction({
           onConfirm={async () => {
             setIsDeleting(true)
             setConfirmDialogOpen(false)
-            await sleep(1000)
             await deleteOp.execute()
             onComplete()
           }}

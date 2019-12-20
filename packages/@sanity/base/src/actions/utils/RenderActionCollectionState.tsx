@@ -1,11 +1,11 @@
 import * as React from 'react'
-import {ActionState} from './createAction'
+import {ActionDescription} from './types'
 
 interface RenderActionCollectionProps {
   actions: any[]
   actionProps: any
   onActionComplete: () => void
-  component: React.ComponentType<{actionStates: ActionState[]}>
+  component: React.ComponentType<{actionStates: ActionDescription[]}>
 }
 
 export function RenderActionCollectionState(props: RenderActionCollectionProps) {
