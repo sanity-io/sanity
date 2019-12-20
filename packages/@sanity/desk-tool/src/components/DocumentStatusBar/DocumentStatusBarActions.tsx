@@ -101,6 +101,9 @@ const historyActions = [HistoryRestoreAction]
 export function HistoryStatusBarActions(props: HistoryStatusBarActionsProps) {
   const editState: any = useEditState(props.id, props.type)
 
+  if (!editState) {
+    return null
+  }
   const actionProps = {...editState, historyId: props.historyId, revision: props.revision}
   return (
     <RenderActionCollectionState
