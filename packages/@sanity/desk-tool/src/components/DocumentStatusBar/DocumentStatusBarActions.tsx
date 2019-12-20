@@ -76,7 +76,6 @@ export function DocumentStatusBarActions(props: Props) {
 
   const actions = editState ? resolveDocumentActions(editState) : null
 
-  const actionProps = props.revision ? {...editState, revision} : editState
   return actions ? (
     <RenderActionCollectionState
       component={DocumentStatusBarActionsInner}

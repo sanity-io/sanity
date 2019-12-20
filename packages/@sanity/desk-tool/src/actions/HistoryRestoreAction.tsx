@@ -1,4 +1,3 @@
-import React from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {createAction} from 'part:@sanity/base/actions/utils'
 import {useRouter} from 'part:@sanity/base/router'
