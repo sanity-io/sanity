@@ -111,8 +111,13 @@ async function ensureProjectConfig(context) {
 
   let displayName = projectManifest.project && projectManifest.project.displayName
   let {projectId, dataset} = apiConfig || {}
-  const configMissing = !projectId || !dataset
-  if (!configMissing) {
+
+  const sanityConfigPresent =
+    context.apiClient().clientConfig.projectId && context.apiClient().clientConfig.dataset
+  if (sanityConfigPresent) {
+    if (!projectId && !dataset) {
+      output.print('Using project id and dataset from .env file instead of sanity.json file.')
+    }
     return
   }
 
