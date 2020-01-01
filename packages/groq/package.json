@@ -3,6 +3,7 @@
   "version": "0.147.0",
   "description": "Tagged template literal for Sanity.io GROQ-queries",
   "main": "lib/groq.js",
+  "types": "./groq.d.ts",
   "directories": {
     "lib": "lib",
     "test": "test"
