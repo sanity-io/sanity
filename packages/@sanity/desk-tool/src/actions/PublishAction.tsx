@@ -9,7 +9,9 @@ export const PublishAction = createAction(function PublishAction(props) {
   return {
     disabled: Boolean(publishing || publish.disabled),
     label: publishing ? 'Publishing…' : 'Publish',
+    status: publishing ? 'Publishing' : null,
     title: publish.disabled ? publish.disabled : '',
+    shortcut: 'ctrl+alt+p',
     onHandle: async () => {
       setPublishing(true)
       await publish.execute()
