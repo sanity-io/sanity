@@ -125,7 +125,9 @@ function exportDataset(opts) {
 
       let prevCompleted = 0
       const progressInterval = setInterval(() => {
-        const completed = assetHandler.queueSize - assetHandler.queue.size
+        const completed =
+          assetHandler.queueSize - assetHandler.queue.size - assetHandler.queue.pending
+
         if (prevCompleted === completed) {
           return
         }
@@ -142,6 +144,15 @@ function exportDataset(opts) {
       debug('Waiting for asset handler to complete downloads')
       try {
         const assetMap = await assetHandler.finish()
+
+        // Make sure we mark the progress as done (eg 100/100 instead of 99/100)
+        onProgress({
+          step: 'Downloading assets...',
+          current: assetHandler.queueSize,
+          total: assetHandler.queueSize,
+          update: true
+        })
+
         archive.append(JSON.stringify(assetMap), {name: 'assets.json', prefix})
         clearInterval(progressInterval)
       } catch (assetErr) {
