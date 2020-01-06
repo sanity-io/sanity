@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {useDocumentOperation} from '@sanity/react-hooks'
+import {useDocumentOperation, useValidationStatus} from '@sanity/react-hooks'
 import {createAction} from 'part:@sanity/base/actions/utils'
 
 export const PublishAction = createAction(function PublishAction({id, type, onComplete}) {
@@ -7,10 +7,23 @@ export const PublishAction = createAction(function PublishAction({id, type, onCo
   const [publishing, setPublishing] = React.useState(false)
   const [didPublish, setDidPublish] = React.useState(false)
   const [error, setError] = React.useState<Error | null>(null)
+
+  const validationStatus = useValidationStatus(id, type)
+
+  const hasValidationErrors = validationStatus.errors.length > 0
+
+  const title = publish.disabled
+    ? publish.disabled
+    : hasValidationErrors
+    ? 'There are validation errors that needs to be fixed before this document can be published'
+    : ''
+
   return {
-    disabled: Boolean(publishing || publish.disabled),
+    disabled: Boolean(
+      validationStatus.isValidating || hasValidationErrors || publishing || publish.disabled
+    ),
     label: publishing ? 'Publishing…' : 'Publish',
-    title: publish.disabled ? publish.disabled : '',
+    title,
     onHandle: () => {
       setPublishing(true)
       setError(null)

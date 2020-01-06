@@ -1,28 +1,16 @@
 import {combineLatest, concat, from, Observable, of} from 'rxjs'
 import {map, publishReplay, refCount, switchMap} from 'rxjs/operators'
 import {IdPair, SanityDocument} from '../types'
-import {validateDocument} from '@sanity/validation'
 import schema from 'part:@sanity/base/schema'
 import {snapshotPair} from './snapshotPair'
 import {createObservableCache} from '../utils/createObservableCache'
 
 export interface EditState {
   id: string
+  type: string
   draft: null | SanityDocument
   published: null | SanityDocument
   liveEdit: boolean
-  type: string
-  validation: Marker[]
-}
-
-type Marker = any
-
-function getValidationMarkers(draft, published): Observable<Marker[]> {
-  const doc = draft || published
-  if (!doc || !doc._type) {
-    return of([])
-  }
-  return from(validateDocument(doc, schema) as Promise<Marker[]>)
 }
 
 const cacheOn = createObservableCache<EditState>()
@@ -41,15 +29,6 @@ export function editStateOf(idPair: IdPair, typeName: string): Observable<EditSt
         liveEdit
       }
     }),
-    switchMap(next =>
-      concat(
-        of(next),
-        getValidationMarkers(next.draft, next.published).pipe(
-          map(markers => ({...next, validation: markers}))
-        )
-      )
-    ),
-    map(state => ({validation: [], ...state})),
     publishReplay(1),
     refCount(),
     cacheOn(idPair.publishedId)
