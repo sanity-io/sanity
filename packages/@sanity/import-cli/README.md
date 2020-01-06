@@ -20,7 +20,7 @@ npm install -g @sanity/import-cli
     -p, --project <projectId> Project ID to import to
     -d, --dataset <dataset> Dataset to import to
     -t, --token <token> Token to authenticate with
-    --concurrency <concurrency> Number of parallel asset imports
+    --asset-concurrency <concurrency> Number of parallel asset imports
     --replace Replace documents with the same IDs
     --missing Skip documents that already exist
     --help Show this help

@@ -43,6 +43,7 @@ export default {
     const {apiClient, output, chalk, fromInitCommand} = context
 
     const allowFailingAssets = args.extOptions['allow-failing-assets']
+    const assetConcurrency = args.extOptions['asset-concurrency']
     const operation = getMutationOperation(args.extOptions)
     const client = apiClient()
 
@@ -148,7 +149,8 @@ export default {
         client: importClient,
         operation,
         onProgress,
-        allowFailingAssets
+        allowFailingAssets,
+        assetConcurrency
       })
 
       endTask({success: true})

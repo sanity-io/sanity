@@ -16,6 +16,9 @@ const ASSET_DOWNLOAD_CONCURRENCY = 8
 
 class AssetHandler {
   constructor(options) {
+    const concurrency = options.concurrency || ASSET_DOWNLOAD_CONCURRENCY
+    debug('Using asset download concurrency of %d', concurrency)
+
     this.client = options.client
     this.tmpDir = options.tmpDir
     this.assetDirsCreated = false
@@ -24,7 +27,8 @@ class AssetHandler {
     this.assetMap = {}
     this.filesWritten = 0
     this.queueSize = 0
-    this.queue = options.queue || new PQueue({concurrency: options.concurrency || ASSET_DOWNLOAD_CONCURRENCY})
+    this.queue = options.queue || new PQueue({concurrency})
+
     this.rejectedError = null
     this.reject = err => {
       this.rejectedError = err
@@ -171,7 +175,7 @@ class AssetHandler {
     }
 
     if (differs && attemptNum < 3) {
-      debug('%s does not match downloaded asset, retrying (#%d)', method, attemptNum + 1)
+      debug('%s does not match downloaded asset, retrying (#%d) [%s]', method, attemptNum + 1, url)
       return this.downloadAsset(assetDoc, dstPath, attemptNum + 1)
     } else if (differs) {
       const details = [

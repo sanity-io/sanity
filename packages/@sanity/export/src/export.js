@@ -42,7 +42,7 @@ function exportDataset(opts) {
     client: options.client,
     tmpDir,
     prefix,
-    concurrency: options.concurrency
+    concurrency: options.assetConcurrency
   })
 
   debug('Outputting assets (temporarily) to %s', tmpDir)
@@ -165,11 +165,7 @@ function exportDataset(opts) {
     })
 
     archive.append(jsonStream, {name: 'data.ndjson', prefix})
-    miss.pipe(
-      archive,
-      outputStream,
-      onComplete
-    )
+    miss.pipe(archive, outputStream, onComplete)
 
     async function onComplete(err) {
       onProgress({step: 'Clearing temporary files...'})

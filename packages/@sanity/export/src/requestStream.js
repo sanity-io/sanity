@@ -1,5 +1,6 @@
 const simpleGet = require('simple-get')
 const HttpAgent = require('agentkeepalive')
+const debug = require('./debug')
 
 const HttpsAgent = HttpAgent.HttpsAgent
 const httpAgent = new HttpAgent()
@@ -36,6 +37,7 @@ module.exports = async options => {
         break
       }
 
+      debug('Error, retrying after 1500ms: %s', err.message)
       await delay(1500)
     }
   }
