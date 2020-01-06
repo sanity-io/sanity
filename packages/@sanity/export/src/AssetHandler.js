@@ -23,6 +23,7 @@ class AssetHandler {
     this.tmpDir = options.tmpDir
     this.assetDirsCreated = false
 
+    this.downloading = []
     this.assetsSeen = new Map()
     this.assetMap = {}
     this.filesWritten = 0
@@ -101,6 +102,7 @@ class AssetHandler {
 
     debug('Adding download task for %s (destination: %s)', assetDoc._id, dstPath)
     this.queueSize++
+    this.downloading.push(assetDoc.url)
     this.queue.add(() => this.downloadAsset(assetDoc, dstPath))
   }
 
@@ -212,6 +214,11 @@ class AssetHandler {
     if (Object.keys(metaProps).length > 0) {
       this.assetMap[id] = metaProps
     }
+
+    this.downloading.splice(
+      this.downloading.findIndex(datUrl => datUrl === url),
+      1
+    )
 
     this.filesWritten++
     return true
