@@ -107,9 +107,9 @@ export function ActionMenu({actionStates, onOpen, onClose, isOpen}: Props) {
                         </span>
                       )}
                       <span className={styles.menuItemLabel}>{actionState.label}</span>
-                      {actionState.hotkeys && (
+                      {actionState.shortcut && (
                         <span className={styles.menuItemHotkeys}>
-                          <Hotkeys keys={actionState.hotkeys} />
+                          <Hotkeys keys={[actionState.shortcut]} />
                         </span>
                       )}
                     </div>

@@ -20,6 +20,7 @@ export const DeleteAction = createAction(function DeleteAction({
     disabled: Boolean(deleteOp.disabled),
     title: deleteOp.disabled ? `Cannot delete: ${deleteOp.disabled}` : '',
     label: isDeleting ? 'Deleting…' : 'Delete',
+    shortcut: 'ctrl+alt+d',
     onHandle: () => {
       setConfirmDialogOpen(true)
     },

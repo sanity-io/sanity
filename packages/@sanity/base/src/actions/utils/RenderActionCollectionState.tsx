@@ -5,7 +5,7 @@ interface RenderActionCollectionProps {
   actions: any[]
   actionProps: any
   onActionComplete: () => void
-  component: React.ComponentType<{actionStates: ActionDescription[]}>
+  component: (args: {actionStates: ActionDescription[]}) => React.ReactNode
 }
 
 export function RenderActionCollectionState(props: RenderActionCollectionProps) {
@@ -33,13 +33,16 @@ export function RenderActionCollectionState(props: RenderActionCollectionProps) 
     [props.actions]
   )
 
-  const {actions, actionProps, component: Component, ...rest} = props
+  const {actions, actionProps, component, ...rest} = props
   return (
     <>
-      <Component
-        actionStates={actionsWithStates.map(([id, state]) => state).filter(Boolean)}
-        {...rest}
-      />
+      {component({
+        actionStates: actionsWithStates
+          .map(([id, state]) => state && {...state, actionId: id})
+          .filter(Boolean),
+        ...rest
+      })}
+
       {props.actions.map(Action => (
         <Action
           key={`${keys[Action.id] || '0'}-${Action.id}`}

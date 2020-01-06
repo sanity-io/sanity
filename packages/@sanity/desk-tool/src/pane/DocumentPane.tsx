@@ -34,6 +34,7 @@ import {validateDocument} from '@sanity/validation'
 import {PaneRouterContext} from '..'
 import {HistoryStatusBarActions} from '../components/DocumentStatusBar/DocumentStatusBarActions'
 import {getMenuItems} from './documentPaneMenuItems'
+import {DocumentActionShortcuts} from '../components/DocumentActionShortcuts'
 
 declare const __DEV__: boolean
 
@@ -1042,8 +1043,9 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
     })
 
     return (
-      <div
-        onKeyUp={this.handleKeyUp}
+      <DocumentActionShortcuts
+        id={options.id}
+        type={typeName}
         className={
           this.historyIsOpen()
             ? documentPaneStyles.paneWrapperWithHistory
@@ -1115,7 +1117,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
             />
           )}
         </TabbedPane>
-      </div>
+      </DocumentActionShortcuts>
     )
   }
 }

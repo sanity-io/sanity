@@ -16,7 +16,7 @@ export const PublishAction = createAction(function PublishAction({id, type, onCo
     ? publish.disabled
     : hasValidationErrors
     ? 'There are validation errors that needs to be fixed before this document can be published'
-    : ''
+    : 'Publish this document'
 
   return {
     disabled: Boolean(
@@ -24,6 +24,7 @@ export const PublishAction = createAction(function PublishAction({id, type, onCo
     ),
     label: publishing ? 'Publishing…' : 'Publish',
     title,
+    shortcut: 'ctrl+alt+p',
     onHandle: () => {
       setPublishing(true)
       setError(null)

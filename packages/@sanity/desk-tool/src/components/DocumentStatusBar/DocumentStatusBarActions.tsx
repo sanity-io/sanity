@@ -27,6 +27,7 @@ interface Props {
 function DocumentStatusBarActionsInner(props: Props) {
   const [firstActionState, ...rest] = props.actionStates
   const hasMoreActions = rest.length > 0
+
   return (
     <div className={props.isMenuOpen ? styles.isMenuOpen : styles.root}>
       {firstActionState && (
@@ -34,12 +35,17 @@ function DocumentStatusBarActionsInner(props: Props) {
           <Tooltip
             arrow
             theme="light"
-            disabled={firstActionState.disabled || !firstActionState.hotkeys || TOUCH_SUPPORT}
+            disabled={TOUCH_SUPPORT}
             className={styles.tooltip}
             html={
-              <span className={styles.tooltipHotkeys}>
-                <Hotkeys keys={firstActionState.hotkeys} />
-              </span>
+              <>
+                {firstActionState.title && (
+                  <span className={styles.tooltipTitle}>{firstActionState.title}</span>
+                )}
+                <span className={styles.tooltipHotkeys}>
+                  <Hotkeys keys={[firstActionState.shortcut]} />
+                </span>
+              </>
             }
           >
             <Button

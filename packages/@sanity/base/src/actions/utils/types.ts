@@ -44,6 +44,7 @@ export interface ActionDescription {
   label: string
   icon?: React.ReactNode
   disabled?: boolean
+  shortcut?: string
   title?: string
   dialog?: ConfirmDialogProps | PopOverDialogProps | ModalDialogProps
   onHandle?: () => void

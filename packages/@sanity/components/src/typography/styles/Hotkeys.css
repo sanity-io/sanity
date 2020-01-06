@@ -11,6 +11,7 @@
   border-radius: 0.2em;
   min-width: 1em;
   text-align: center;
+  text-transform: uppercase;
 }
 
 .seperator {
