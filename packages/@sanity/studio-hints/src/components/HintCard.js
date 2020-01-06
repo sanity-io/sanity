@@ -5,7 +5,7 @@ import styles from './HintCard.css'
 import {resolveUrl} from './utils'
 
 function HintCard(props) {
-  const {card} = props
+  const {card, repoId} = props
   /**
    * Hint cards currently only link to external sources.
    * In future iterations a hint card may have it's own page
@@ -23,7 +23,7 @@ function HintCard(props) {
   return (
     <li>
       <a
-        href={resolveUrl(card.hint)}
+        href={resolveUrl(card.hint, repoId)}
         className={styles.root}
         target="_blank"
         rel="noopener noreferrer"
@@ -42,7 +42,8 @@ function HintCard(props) {
 
 HintCard.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
-  card: PropTypes.object.isRequired
+  card: PropTypes.object.isRequired,
+  repoId: PropTypes.string.isRequired
   // onCardClick: PropTypes.func.isRequired
 }
 

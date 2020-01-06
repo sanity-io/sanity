@@ -127,8 +127,8 @@ export default class HintsPackage extends React.PureComponent {
     return (
       <div className={styles.root}>
         <h2 className={styles.trayTitle}>{title}</h2>
-        <LinksList title={linksTitle} links={links} />
-        <LinksList type="card" title={hintsTitle} links={hints} />
+        <LinksList title={linksTitle} links={links} repoId={repoId} />
+        <LinksList type="card" title={hintsTitle} links={hints} repoId={repoId} />
         <div className={styles.footer}>
           {sidebarRemovalInstructions && (
             <a
