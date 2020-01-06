@@ -41,14 +41,14 @@ exportDataset({
   types: ['products', 'shops'],
 
   // Run 12 concurrent asset downloads
-  concurrency: 12
+  assetConcurrency: 12
 })
 ```
 
 ## Future improvements
 
-* Restore original filenames, keep track of duplicates, increase counter (`filename (<num>).ext`)
-* Skip archiving on raw/no-asset mode?
+- Restore original filenames, keep track of duplicates, increase counter (`filename (<num>).ext`)
+- Skip archiving on raw/no-asset mode?
 
 ## CLI-tool
 

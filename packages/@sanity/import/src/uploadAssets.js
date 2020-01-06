@@ -11,6 +11,9 @@ const ASSET_PATCH_CONCURRENCY = 1
 const ASSET_PATCH_BATCH_SIZE = 50
 
 async function uploadAssets(assets, options) {
+  const concurrency = options.assetConcurrency || ASSET_UPLOAD_CONCURRENCY
+  debug('Uploading assets with a concurrency of %d', concurrency)
+
   // Build a Map where the keys are `type#url` and the value is an array of all
   // objects containing document id and path to inject asset reference to.
   // `assets` is an array of objects with shape: {documentId, path, url, type}
@@ -45,7 +48,7 @@ async function uploadAssets(assets, options) {
     : ensureAssetExists
 
   // Loop over all unique URLs and ensure they exist, and if not, upload them
-  const mapOptions = {concurrency: options.concurrency || ASSET_UPLOAD_CONCURRENCY}
+  const mapOptions = {concurrency}
   const assetIds = await pMap(assetRefMap.keys(), ensureMethod, mapOptions)
 
   // Extract a list of all failures so we may report them and possibly retry them later

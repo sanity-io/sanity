@@ -10,13 +10,13 @@ const noop = () => null
 
 const helpText = `
 Options
-  --raw               Extract only documents, without rewriting asset references
-  --no-assets         Export only non-asset documents and remove references to image assets
-  --no-drafts         Export only published versions of documents
-  --no-compress       Skips compressing tarball entries (still generates a gzip file)
-  --types             Defines which document types to export
-  --overwrite         Overwrite any file with the same name
-  --concurrency <num> Concurrent number of asset downloads
+  --raw                     Extract only documents, without rewriting asset references
+  --no-assets               Export only non-asset documents and remove references to image assets
+  --no-drafts               Export only published versions of documents
+  --no-compress             Skips compressing tarball entries (still generates a gzip file)
+  --types                   Defines which document types to export
+  --overwrite               Overwrite any file with the same name
+  --asset-concurrency <num> Concurrent number of asset downloads
 
 Examples
   sanity dataset export moviedb localPath.tar.gz
@@ -40,6 +40,10 @@ export default {
 
     if (flags.types) {
       flags.types = `${flags.types}`.split(',')
+    }
+
+    if (flags['asset-concurrency']) {
+      flags.assetConcurrency = parseInt(flags['asset-concurrency'], 10)
     }
 
     let dataset = targetDataset ? `${targetDataset}` : null

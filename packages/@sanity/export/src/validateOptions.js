@@ -46,8 +46,8 @@ function validateOptions(opts) {
     throw new Error('outputPath must be specified (- for stdout)')
   }
 
-  if (options.concurrency && options.concurrency < 1 && options.concurrency > 24) {
-    throw new Error('`concurrency` must be between 1 and 24')
+  if (options.assetConcurrency && (options.assetConcurrency < 1 || options.assetConcurrency > 24)) {
+    throw new Error('`assetConcurrency` must be between 1 and 24')
   }
 
   return options
