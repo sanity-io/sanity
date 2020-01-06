@@ -6,15 +6,20 @@ import {createAction} from 'part:@sanity/base/actions/utils'
 export const DiscardChangesAction = createAction(function DiscardChangesAction({
   id,
   type,
+  published,
   onComplete
 }) {
+  if (!published) {
+    return null
+  }
+
   const {discardDraft}: any = useDocumentOperation(id, type)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = React.useState(false)
 
   return {
     icon: CloseIcon,
     disabled: Boolean(discardDraft.disabled),
-    title: discardDraft.disabled ? `Cannot delete: ${discardDraft.disabled}` : '',
+    title: discardDraft.disabled ? discardDraft.disabled : '',
     label: 'Discard changes',
     onHandle: () => {
       setConfirmDialogOpen(true)

@@ -12,7 +12,6 @@ const DISABLE_CREATE = ['author']
 
 export default function resolveDocumentActions(docInfo, type) {
   return [
-    // type.__experimental_actions.includes('delete') && DeleteAction,
     DefaultActions.PublishAction,
     EditAction,
     SaveAction,
