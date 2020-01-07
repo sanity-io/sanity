@@ -42,9 +42,11 @@ function DocumentStatusBarActionsInner(props: Props) {
                 {firstActionState.title && (
                   <span className={styles.tooltipTitle}>{firstActionState.title}</span>
                 )}
-                <span className={styles.tooltipHotkeys}>
-                  <Hotkeys keys={[firstActionState.shortcut]} />
-                </span>
+                {firstActionState.shortcut && (
+                  <span className={styles.tooltipHotkeys}>
+                    <Hotkeys keys={[firstActionState.shortcut]} />
+                  </span>
+                )}
               </>
             }
           >
