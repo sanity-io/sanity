@@ -126,7 +126,11 @@ export default function PastePlugin(options: any = {}) {
       return true
     }
     handleHTML(
-      html || `<html><body>${text.split('\n').map(line => `<p>${line}</p>`)}</body></html>`,
+      html ||
+        `<html><body>${text
+          .split('\n')
+          .map(line => `<p>${line}</p>`)
+          .join('')}</body></html>`,
       editor,
       blockContentType,
       onProgress,
