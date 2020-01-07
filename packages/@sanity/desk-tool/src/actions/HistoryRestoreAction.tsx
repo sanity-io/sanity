@@ -19,6 +19,7 @@ export const HistoryRestoreAction = createAction(function RestoreRevisionAction(
     onHandle: () => {
       setConfirmDialogOpen(true)
     },
+    title: 'Restore to this version',
     dialog: isConfirmDialogOpen && {
       type: 'confirm',
       color: 'danger',
