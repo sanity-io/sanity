@@ -804,9 +804,6 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
     const selectedEvent = this.findSelectedHistoryEvent()
     const {options} = this.props
 
-    // const {historyState} = this.state
-
-    debugger
     return historyIsEnabled && selectedEvent ? (
       <HistoryStatusBarActions
         id={options.id}
