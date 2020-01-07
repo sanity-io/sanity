@@ -17,7 +17,6 @@ import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import UseState from '../utils/UseState'
 import InspectView from '../components/InspectView'
 import InspectHistory from '../components/InspectHistory'
-import DocTitle from '../components/DocTitle'
 import TimeAgo from '../components/TimeAgo'
 import DocumentStatusBar from '../components/DocumentStatusBar'
 import Delay from '../utils/Delay'
@@ -95,16 +94,11 @@ interface State {
   hasNarrowScreen: boolean
   isReconnecting: boolean
   inspect: boolean
-  showConfirmDelete: boolean
-  showConfirmUnpublish: boolean
-  didPublish: boolean
 
   isCreatingDraft: boolean
   isMenuOpen: boolean
-  isPublishing: boolean
   isRestoring: boolean
   isSaving: boolean
-  isUnpublishing: boolean
 
   validationPending: boolean
   showSavingStatus: boolean
@@ -126,24 +120,19 @@ const INITIAL_HISTORY_STATE: HistoryState = {
 }
 
 const INITIAL_STATE: State = {
-  didPublish: false,
   error: null,
 
   isCreatingDraft: false,
   isMenuOpen: false,
-  isPublishing: false,
   isReconnecting: false,
   isRestoring: false,
   isSaving: false,
-  isUnpublishing: false,
   hasNarrowScreen: isNarrowScreen(),
 
   transactionResult: null,
   validationPending: true,
   inspect: false,
   showSavingStatus: false,
-  showConfirmDelete: false,
-  showConfirmUnpublish: false,
   showValidationTooltip: false,
   showConfirmDiscardDraft: false,
   historical: INITIAL_HISTORICAL_DOCUMENT_STATE,
@@ -497,16 +486,6 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
   handleMenuAction = item => {
     if (item.action === 'production-preview') {
       window.open(item.url)
-      return true
-    }
-
-    if (item.action === 'delete') {
-      this.setState({showConfirmDelete: true})
-      return true
-    }
-
-    if (item.action === 'unpublish') {
-      this.setState({showConfirmUnpublish: true})
       return true
     }
 
@@ -913,8 +892,6 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
     const {
       historical,
       isCreatingDraft,
-      isUnpublishing,
-      isPublishing,
       isRestoring,
       isSaving,
       validationPending,
@@ -960,8 +937,6 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
       isRestoring,
       isSaving,
       isReconnecting,
-      isPublishing,
-      isUnpublishing,
       isCreatingDraft,
       history: {
         isOpen: this.historyIsOpen(),
@@ -1012,7 +987,6 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
       hasNarrowScreen,
       isReconnecting,
       inspect,
-      didPublish,
       historyState
     } = this.state
 
@@ -1096,16 +1070,6 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
           )}
           {isReconnecting && (
             <Snackbar kind="warning" isPersisted title="Connection lost. Reconnecting…" />
-          )}
-          {didPublish && (
-            <Snackbar
-              kind="success"
-              title="You just published:"
-              timeout={3000}
-              // eslint-disable-next-line react/jsx-no-bind
-              onClose={() => this.setState({didPublish: false})}
-              subtitle={<DocTitle document={value} />}
-            />
           )}
           {transactionResult && transactionResult.type === 'error' && (
             <Snackbar
