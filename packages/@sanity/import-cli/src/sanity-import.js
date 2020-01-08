@@ -29,6 +29,9 @@ const cli = meow(
     --replace-assets Skip reuse of existing assets
     --help Show this help
 
+  Rarely used options (should generally not be used)
+    --allow-assets-in-different-dataset Allow asset documents to reference different project/dataset
+
   Examples
     # Import "./my-dataset.ndjson" into dataset "staging"
     $ sanity-import -p myPrOj -d staging -t someSecretToken my-dataset.ndjson
@@ -40,7 +43,13 @@ const cli = meow(
     --token = SANITY_IMPORT_TOKEN
 `,
   {
-    boolean: ['replace', 'missing', 'allow-failing-assets', 'replace-assets'],
+    boolean: [
+      'replace',
+      'missing',
+      'allow-failing-assets',
+      'allow-assets-in-different-dataset',
+      'replace-assets'
+    ],
     alias: {
       p: 'project',
       d: 'dataset',
@@ -51,7 +60,7 @@ const cli = meow(
 )
 
 const {flags, input, showHelp} = cli
-const {dataset, allowFailingAssets, replaceAssets} = flags
+const {dataset, allowFailingAssets, replaceAssets, allowAssetsInDifferentDataset} = flags
 const token = flags.token || process.env.SANITY_IMPORT_TOKEN
 const projectId = flags.project
 const assetConcurrency = flags.assetConcurrency
@@ -106,6 +115,7 @@ getStream()
       operation,
       onProgress,
       allowFailingAssets,
+      allowAssetsInDifferentDataset,
       assetConcurrency,
       replaceAssets
     })

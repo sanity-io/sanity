@@ -2,6 +2,7 @@ const debug = require('debug')('sanity:import:array')
 const flatten = require('lodash/flatten')
 const ensureUniqueIds = require('./util/ensureUniqueIds')
 const {getAssetRefs, unsetAssetRefs, absolutifyPaths} = require('./assetRefs')
+const validateAssetDocuments = require('./validateAssetDocuments')
 const assignArrayKeys = require('./assignArrayKeys')
 const assignDocumentId = require('./assignDocumentId')
 const uploadAssets = require('./uploadAssets')
@@ -54,6 +55,10 @@ async function importDocuments(documents, options) {
   // Create batches of documents to import. Try to keep batches below a certain
   // byte-size (since document may vary greatly in size depending on type etc)
   const batches = batchDocuments(weakened)
+
+  // Ensure that we don't reference missing assets, or assets in different datasets
+  debug('Validating asset documents')
+  await validateAssetDocuments(docs, options)
 
   // Trigger actual import process
   debug('Starting import of documents')

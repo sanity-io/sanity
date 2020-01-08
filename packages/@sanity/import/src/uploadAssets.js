@@ -5,6 +5,7 @@ const pMap = require('p-map')
 const progressStepper = require('./util/progressStepper')
 const getHashedBufferForUri = require('./util/getHashedBufferForUri')
 const retryOnFailure = require('./util/retryOnFailure')
+const urlExists = require('./util/urlExists')
 
 const ASSET_UPLOAD_CONCURRENCY = 8
 const ASSET_PATCH_CONCURRENCY = 1
@@ -150,9 +151,19 @@ async function getAssetDocumentIdForHash(client, type, sha1hash, attemptNum = 0)
   // @todo remove retry logic when client has reintroduced it
   try {
     const dataType = type === 'file' ? 'sanity.fileAsset' : 'sanity.imageAsset'
-    const query = '*[_type == $dataType && sha1hash == $sha1hash][0]._id'
-    const assetDocId = await client.fetch(query, {dataType, sha1hash})
-    return assetDocId
+    const query = '*[_type == $dataType && sha1hash == $sha1hash][0]{_id, url}'
+    const assetDoc = await client.fetch(query, {dataType, sha1hash})
+    if (!assetDoc) {
+      return null
+    }
+
+    const exists = await urlExists(assetDoc.url)
+    if (!exists) {
+      debug(`Asset document ${assetDoc._id} exists, but file does not. Overwriting.`)
+      return null
+    }
+
+    return assetDoc._id
   } catch (err) {
     if (attemptNum < 3) {
       return getAssetDocumentIdForHash(client, type, sha1hash, attemptNum + 1)

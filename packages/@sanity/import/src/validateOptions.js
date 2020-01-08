@@ -10,6 +10,7 @@ function validateOptions(input, opts) {
   const options = defaults({}, opts, {
     operation: defaultOperation,
     onProgress: noop,
+    allowAssetsInDifferentDataset: false,
     replaceAssets: false
   })
 
