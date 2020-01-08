@@ -17,6 +17,8 @@ Options
   --allow-failing-assets Skip assets that cannot be fetched/uploaded
   --replace-assets Skip reuse of existing assets
 
+Rarely used options (should generally not be used)
+  --allow-assets-in-different-dataset Allow asset documents to reference different project/dataset
 
 Examples
   # Import "moviedb.ndjson" from the current directory to the dataset called "moviedb"
@@ -44,6 +46,7 @@ export default {
   action: async (args, context) => {
     const {apiClient, output, chalk, fromInitCommand} = context
 
+    const allowAssetsInDifferentDataset = args.extOptions['allow-assets-in-different-dataset']
     const allowFailingAssets = args.extOptions['allow-failing-assets']
     const assetConcurrency = args.extOptions['asset-concurrency']
     const replaceAssets = args.extOptions['replace-assets']
@@ -153,6 +156,7 @@ export default {
         operation,
         onProgress,
         allowFailingAssets,
+        allowAssetsInDifferentDataset,
         assetConcurrency,
         replaceAssets
       })
