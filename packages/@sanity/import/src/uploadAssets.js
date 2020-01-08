@@ -21,7 +21,8 @@ async function uploadAssets(assets, options) {
 
   // We might have additional assets that is not referenced by any documents, but was part of a
   // dataset when exporting, for instance. Add these to the map without any references to update.
-  ;(options.unreferencedAssets || []).forEach(asset => {
+  const unreferencedAssets = options.unreferencedAssets || []
+  unreferencedAssets.forEach(asset => {
     if (!assetRefMap.has(asset)) {
       assetRefMap.set(asset, [])
     }
@@ -114,15 +115,17 @@ function downloadAsset(url, i) {
 
 async function ensureAsset(asset, options, i) {
   const {buffer, sha1hash, type, url} = asset
-  const {client, assetMap = {}} = options
+  const {client, assetMap = {}, replaceAssets} = options
 
   // See if the item exists on the server
-  debug('[Asset #%d] Checking for asset with hash %s', i, sha1hash)
-  const assetDocId = await getAssetDocumentIdForHash(client, type, sha1hash)
-  if (assetDocId) {
-    // Same hash means we want to reuse the asset
-    debug('[Asset #%d] Found %s for hash %s', i, type, sha1hash)
-    return assetDocId
+  if (!replaceAssets) {
+    debug('[Asset #%d] Checking for asset with hash %s', i, sha1hash)
+    const assetDocId = await getAssetDocumentIdForHash(client, type, sha1hash)
+    if (assetDocId) {
+      // Same hash means we want to reuse the asset
+      debug('[Asset #%d] Found %s for hash %s', i, type, sha1hash)
+      return assetDocId
+    }
   }
 
   const assetMeta = assetMap[`${type}-${sha1hash}`]

@@ -9,7 +9,8 @@ const defaultOperation = allowedOperations[0]
 function validateOptions(input, opts) {
   const options = defaults({}, opts, {
     operation: defaultOperation,
-    onProgress: noop
+    onProgress: noop,
+    replaceAssets: false
   })
 
   if (!isValidInput(input)) {
