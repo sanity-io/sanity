@@ -27,8 +27,12 @@ function importBatch(options, progress, batch) {
         .commit({visibility: 'async'})
         .then(progress)
         .then(res => res.results.length),
-    {maxRetries}
+    {maxRetries, isRetriable}
   )
+}
+
+function isRetriable(err) {
+  return !err.response || err.response.statusCode !== 409
 }
 
 module.exports = importBatches

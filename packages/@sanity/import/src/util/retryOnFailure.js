@@ -3,12 +3,17 @@ const debug = require('debug')('sanity:import')
 const {defaults} = require('lodash')
 
 module.exports = async function retryOnFailure(op, opts = {}) {
-  const options = defaults({}, opts, {delay: 150, maxTries: 3})
+  const options = defaults({}, opts, {delay: 150, maxTries: 3, isRetriable: () => true})
 
   for (let attempt = 1; attempt <= options.maxTries; attempt++) {
     try {
       return await op()
     } catch (err) {
+      if (!options.isRetriable(err)) {
+        debug('Encountered error which is not retriable, giving up')
+        throw err
+      }
+
       if (attempt === options.maxTries) {
         debug('Error encountered, max retries hit - giving up (attempt #%d)', attempt)
         throw err
