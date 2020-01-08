@@ -1,6 +1,7 @@
 const path = require('path')
 const fileUrl = require('file-url')
 const noop = require('lodash/noop')
+const nock = require('nock')
 const uploadAssets = require('../src/uploadAssets')
 const mockAssets = require('./fixtures/mock-assets')
 const {getSanityClient} = require('./helpers')
@@ -38,17 +39,71 @@ test('fails if asset lookup fails', async () => {
 })
 
 test('will reuse an existing asset if it exists', () => {
+  nock('https://foo.bar.baz')
+    .head('/images/foo/bar/someAssetId-200x200.png')
+    .reply(200)
+
   const client = getSanityClient(req => {
     const options = req.context.options
     const uri = options.uri || options.url
 
     if (uri.includes('/data/query')) {
-      return {body: {result: 'someAssetId'}}
+      return {
+        body: {
+          result: {
+            _id: 'image-someAssetId',
+            url: 'https://foo.bar.baz/images/foo/bar/someAssetId-200x200.png'
+          }
+        }
+      }
     }
 
     if (uri.includes('/data/mutate')) {
       const body = JSON.parse(options.body)
       expect(body).toMatchSnapshot('single asset mutation')
+      const results = body.mutations.map(mut => ({
+        id: mut.patch.id,
+        operation: 'update'
+      }))
+      return {body: {results}}
+    }
+
+    return {statusCode: 400, body: {error: `"${uri}" should not be called`}}
+  })
+
+  return expect(uploadAssets([fileAsset], {client, onProgress: noop})).resolves.toMatchObject({
+    batches: 1,
+    failures: []
+  })
+})
+
+test('will upload an asset if asset doc exists but file does not', () => {
+  nock('https://foo.bar.baz')
+    .head('/images/foo/bar/someAssetId-200x200.png')
+    .reply(404)
+
+  const client = getSanityClient(req => {
+    const options = req.context.options
+    const uri = options.uri || options.url
+
+    if (uri.includes('/data/query')) {
+      return {
+        body: {
+          result: {
+            _id: 'image-someAssetId',
+            url: 'https://foo.bar.baz/images/foo/bar/someAssetId-200x200.png'
+          }
+        }
+      }
+    }
+
+    if (uri.includes('/assets/images')) {
+      return {body: {document: {_id: 'image-newAssetId'}}}
+    }
+
+    if (uri.includes('/data/mutate')) {
+      const body = JSON.parse(options.body)
+      expect(body).toMatchSnapshot('single create mutation')
       const results = body.mutations.map(mut => ({
         id: mut.patch.id,
         operation: 'update'
@@ -74,7 +129,7 @@ test('will upload asset that do not already exist', () => {
     }
 
     if (uri.includes('/assets/images')) {
-      return {body: {document: {_id: 'newAssetId'}}}
+      return {body: {document: {_id: 'image-newAssetId'}}}
     }
 
     if (uri.includes('/data/mutate')) {
@@ -97,13 +152,24 @@ test('will upload asset that do not already exist', () => {
 })
 
 test('will upload once but batch patches', () => {
+  nock('https://foo.bar.baz')
+    .head('/images/foo/bar/someAssetId-200x200.png')
+    .reply(200)
+
   let batch = 0
   const client = getSanityClient(req => {
     const options = req.context.options
     const uri = options.uri || options.url
 
     if (uri.includes('/data/query')) {
-      return {body: {result: 'someAssetId'}}
+      return {
+        body: {
+          result: {
+            _id: 'image-someAssetId',
+            url: 'https://foo.bar.baz/images/foo/bar/someAssetId-200x200.png'
+          }
+        }
+      }
     }
 
     if (uri.includes('/data/mutate')) {
