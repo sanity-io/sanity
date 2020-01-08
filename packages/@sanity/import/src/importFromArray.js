@@ -16,7 +16,7 @@ const {
   strengthenReferences
 } = require('./references')
 
-async function importDocuments(documents, options, importers) {
+async function importDocuments(documents, options) {
   options.onProgress({step: 'Reading/validating data file'})
   documents.some(documentHasErrors.validate)
 

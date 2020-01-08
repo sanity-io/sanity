@@ -15,6 +15,8 @@ Options
   --missing On duplicate document IDs, skip importing document in question
   --replace On duplicate document IDs, replace existing document with imported document
   --allow-failing-assets Skip assets that cannot be fetched/uploaded
+  --replace-assets Skip reuse of existing assets
+
 
 Examples
   # Import "moviedb.ndjson" from the current directory to the dataset called "moviedb"
@@ -44,6 +46,7 @@ export default {
 
     const allowFailingAssets = args.extOptions['allow-failing-assets']
     const assetConcurrency = args.extOptions['asset-concurrency']
+    const replaceAssets = args.extOptions['replace-assets']
     const operation = getMutationOperation(args.extOptions)
     const client = apiClient()
 
@@ -150,7 +153,8 @@ export default {
         operation,
         onProgress,
         allowFailingAssets,
-        assetConcurrency
+        assetConcurrency,
+        replaceAssets
       })
 
       endTask({success: true})

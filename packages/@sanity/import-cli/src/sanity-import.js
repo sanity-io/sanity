@@ -26,6 +26,7 @@ const cli = meow(
     --replace Replace documents with the same IDs
     --missing Skip documents that already exist
     --allow-failing-assets Skip assets that cannot be fetched/uploaded
+    --replace-assets Skip reuse of existing assets
     --help Show this help
 
   Examples
@@ -39,7 +40,7 @@ const cli = meow(
     --token = SANITY_IMPORT_TOKEN
 `,
   {
-    boolean: ['replace', 'missing', 'allow-failing-assets'],
+    boolean: ['replace', 'missing', 'allow-failing-assets', 'replace-assets'],
     alias: {
       p: 'project',
       d: 'dataset',
@@ -50,7 +51,7 @@ const cli = meow(
 )
 
 const {flags, input, showHelp} = cli
-const {dataset, allowFailingAssets} = flags
+const {dataset, allowFailingAssets, replaceAssets} = flags
 const token = flags.token || process.env.SANITY_IMPORT_TOKEN
 const projectId = flags.project
 const assetConcurrency = flags.assetConcurrency
@@ -100,7 +101,14 @@ const client = sanityClient({
 
 getStream()
   .then(stream =>
-    sanityImport(stream, {client, operation, onProgress, allowFailingAssets, assetConcurrency})
+    sanityImport(stream, {
+      client,
+      operation,
+      onProgress,
+      allowFailingAssets,
+      assetConcurrency,
+      replaceAssets
+    })
   )
   .then(({numDocs, warnings}) => {
     const timeSpent = prettyMs(Date.now() - stepStart, {secDecimalDigits: 2})
