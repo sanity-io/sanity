@@ -7,6 +7,7 @@ import loginCommand from './login/loginCommand'
 import logoutCommand from './logout/logoutCommand'
 import projectsGroup from './projects/projectsGroup'
 import listProjectsCommand from './projects/listProjectsCommand'
+import studioHostUrlCommand from './projects/studioHostUrlCommand'
 import manageCommand from './manage/manageCommand'
 import upgradeCommand from './upgrade/upgradeCommand'
 import versionsCommand from './versions/versionsCommand'
@@ -23,5 +24,6 @@ export default [
   debugCommand,
   helpCommand,
   projectsGroup,
-  listProjectsCommand
+  listProjectsCommand,
+  studioHostUrlCommand
 ]
