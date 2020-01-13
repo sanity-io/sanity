@@ -83,9 +83,9 @@ module.exports = async (context, url) => {
     message: 'Plugin name:',
     default: tplVars.suggestedName || '',
     validate: async pkgName => {
-      const {validForNewPackages, errors} = validateNpmPackageName(pkgName)
+      const {validForNewPackages} = validateNpmPackageName(pkgName)
       if (!validForNewPackages) {
-        return errors[0]
+        return 'Name must be a valid npm package name (https://docs.npmjs.com/files/package.json#name)'
       }
 
       const outputPath = path.join(workDir, 'plugins', pkgName)
