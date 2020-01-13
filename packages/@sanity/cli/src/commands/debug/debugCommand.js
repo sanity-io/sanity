@@ -1,8 +1,18 @@
 import printDebugInfo from './printDebugInfo'
 
 const help = `
-Gathers information on user and local/global Sanity environment, to help
-debugging Sanity-related issues. Pass --secrets to include API keys in output.`
+Used to find information about the Sanity environment, and to debug Sanity-related issues.
+
+Options
+  --secrets Include API keys in output
+
+Examples
+  # Show information about the user, project, and local/global Sanity environment
+  sanity debug
+
+  # Include API keys in the output
+  sanity debug --secrets
+`
 
 export default {
   name: 'debug',
