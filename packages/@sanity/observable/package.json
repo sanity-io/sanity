@@ -3,6 +3,7 @@
   "description": "[deprecated] This package exists for legacy reasons only",
   "version": "1.148.1",
   "main": "minimal.js",
+  "types": "./minimal.d.ts",
   "scripts": {
     "clean": "rimraf lib",
     "test": "tap --node-arg=--require --node-arg=@babel/register --node-arg=--require --node-arg=symbol-observable test/*.test.js test/**/*.test.js"
