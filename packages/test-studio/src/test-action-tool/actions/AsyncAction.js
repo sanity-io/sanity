@@ -2,7 +2,6 @@ import React from 'react'
 
 import {set} from './patch-helpers'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import {createAction} from 'part:@sanity/base/actions/utils'
 
 function wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
@@ -13,7 +12,7 @@ async function doSomeWork(id) {
   return Math.random()
 }
 
-export default createAction(function AsyncAction(docInfo) {
+export default function AsyncAction(docInfo) {
   const [isWorking, setIsWorking] = React.useState(false)
 
   const {patch} = useDocumentOperation(docInfo.id, docInfo.type)
@@ -29,4 +28,4 @@ export default createAction(function AsyncAction(docInfo) {
       setIsWorking(false)
     }
   }
-})
+}

@@ -1,14 +1,8 @@
 import React from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import CloseIcon from 'part:@sanity/base/close-icon'
-import {createAction} from 'part:@sanity/base/actions/utils'
 
-export const DiscardChangesAction = createAction(function DiscardChangesAction({
-  id,
-  type,
-  published,
-  onComplete
-}) {
+export function DiscardChangesAction({id, type, published, onComplete}) {
   if (!published) {
     return null
   }
@@ -39,4 +33,4 @@ export const DiscardChangesAction = createAction(function DiscardChangesAction({
       )
     }
   }
-})
+}

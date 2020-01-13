@@ -1,8 +1,7 @@
 import * as React from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import {createAction} from 'part:@sanity/base/actions/utils'
 
-export default createAction(({id, type, draft, published, onComplete}) => {
+export default ({id, type, draft, published, onComplete}) => {
   const [isConfirming, setIsConfirming] = React.useState(false)
   const [deletedDocument, setDeletedDocument] = React.useState(null)
 
@@ -29,4 +28,4 @@ export default createAction(({id, type, draft, published, onComplete}) => {
       }
     }
   }
-})
+}

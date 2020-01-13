@@ -1,7 +1,6 @@
 import {useDocumentOperation} from '@sanity/react-hooks'
-import {createAction} from 'part:@sanity/base/actions/utils'
 
-export default createAction(function EditAction(docInfo) {
+export default function EditAction(docInfo) {
   const {patch} = useDocumentOperation(docInfo.id, docInfo.type)
   return {
     label: 'Make an edit',
@@ -17,4 +16,4 @@ export default createAction(function EditAction(docInfo) {
       ])
     }
   }
-})
+}

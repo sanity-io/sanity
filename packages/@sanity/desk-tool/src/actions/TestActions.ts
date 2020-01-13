@@ -1,7 +1,6 @@
 import * as React from 'react'
-import {createAction} from 'part:@sanity/base/actions/utils'
 
-export const FOO = createAction(() => {
+export const FOO = () => {
   const [isDisabled, setDisabled] = React.useState(true)
   const [counter, setCounter] = React.useState(0)
   React.useEffect(() => {
@@ -18,17 +17,19 @@ export const FOO = createAction(() => {
     label: `Hel!lo ${counter} [${isDisabled ? 'disabled' : 'enabled'}]`,
     disabled: isDisabled
   }
-})
-export const BAR = createAction(() => ({
+}
+
+export const BAR = () => ({
   label: 'Hello2',
   disabled: true
-}))
-export const BAZ = createAction(() => ({
+})
+
+export const BAZ = () => ({
   label: 'Hello [enabled]',
   disabled: false
-}))
+})
 
-export const QUX = createAction(() => {
+export const QUX = () => {
   const [isDisabled, setDisabled] = React.useState(false)
   const [counter, setCounter] = React.useState(0)
   React.useEffect(() => {
@@ -45,4 +46,4 @@ export const QUX = createAction(() => {
     label: `Hell2o ${counter} [${isDisabled ? 'disabled' : 'enabled'}]`,
     disabled: isDisabled
   }
-})
+}

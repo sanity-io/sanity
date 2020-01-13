@@ -1,8 +1,7 @@
 import * as React from 'react'
 import {useDocumentOperation, useValidationStatus} from '@sanity/react-hooks'
-import {createAction} from 'part:@sanity/base/actions/utils'
 
-export const PublishAction = createAction(function PublishAction({id, type, onComplete}) {
+export function PublishAction({id, type, onComplete}) {
   const {publish}: any = useDocumentOperation(id, type)
   const [publishing, setPublishing] = React.useState(false)
   const [didPublish, setDidPublish] = React.useState(false)
@@ -50,4 +49,4 @@ export const PublishAction = createAction(function PublishAction({id, type, onCo
         title: 'Succesfully published document'
       })
   }
-})
+}

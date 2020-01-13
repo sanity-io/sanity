@@ -1,16 +1,9 @@
 import React from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
-import {createAction} from 'part:@sanity/base/actions/utils'
 import ConfirmDelete from '../components/ConfirmDelete'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 
-export const DeleteAction = createAction(function DeleteAction({
-  id,
-  type,
-  draft,
-  published,
-  onComplete
-}) {
+export function DeleteAction({id, type, draft, published, onComplete}) {
   const {delete: deleteOp}: any = useDocumentOperation(id, type)
   const [isDeleting, setIsDeleting] = React.useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = React.useState(false)
@@ -46,4 +39,4 @@ export const DeleteAction = createAction(function DeleteAction({
       )
     }
   }
-})
+}
