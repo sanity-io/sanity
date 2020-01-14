@@ -153,7 +153,7 @@ async function getAssetDocumentIdForHash(client, type, sha1hash, attemptNum = 0)
     const dataType = type === 'file' ? 'sanity.fileAsset' : 'sanity.imageAsset'
     const query = '*[_type == $dataType && sha1hash == $sha1hash][0]{_id, url}'
     const assetDoc = await client.fetch(query, {dataType, sha1hash})
-    if (!assetDoc) {
+    if (!assetDoc || !assetDoc.url) {
       return null
     }
 
