@@ -4,7 +4,7 @@ import {
   UnpublishAction,
   DuplicateAction,
   DeleteAction
-} from './defaultActions'
+} from './defaultDocumentActions'
 import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'
 import schema from 'part:@sanity/base/schema'
 

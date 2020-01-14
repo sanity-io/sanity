@@ -14,7 +14,7 @@
     {
       "implements": "part:@sanity/base/document-actions",
       "description": "The default document actions",
-      "path": "defaultActions.js"
+      "path": "defaultDocumentActions.js"
     },
     {
       "implements": "part:@sanity/base/document-badges",
@@ -23,7 +23,7 @@
     },
     {
       "implements": "part:@sanity/base/document-actions/resolver",
-      "path": "defaultResolveActions.js"
+      "path": "defaultResolveDocumentActions.js"
     },
     {
       "name": "part:@sanity/desk-tool/after-editor-component",
