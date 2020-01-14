@@ -17,7 +17,6 @@ interface Props {
 }
 
 function DocumentStatusBarBadgesInner(props: Props) {
-  console.log(props.badgeStates)
   if (props.badgeStates.length === 0) {
     return null
   }
@@ -63,16 +62,16 @@ const getBadgeId = badge => {
 }
 
 export function RenderDocumentBadgeState(props: RenderBadgeCollectionProps) {
-  const [badgesWithStates, setBadgesWithState] = React.useState([])
+  const [badgesWithStates, setBadgesWithState] = React.useState<[string, Badge | null][]>([])
 
   const onStateChange = React.useCallback(
     stateUpdate => {
       setBadgesWithState(prevState => {
-        return props.badges.map((badge: any) => {
+        return props.badges.map((badge: Badge) => {
           const id = getBadgeId(badge)
           return stateUpdate[0] === id
             ? [id, stateUpdate[1]]
-            : prevState.find(prev => prev[0] === id) || [id]
+            : prevState.find(prev => prev[0] === id) || [id, null]
         })
       })
     },

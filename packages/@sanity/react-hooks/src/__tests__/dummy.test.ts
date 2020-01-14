@@ -1,5 +1,3 @@
-import {returnTrue} from '../'
-
 test('Its true', () => {
-  expect(returnTrue()).toBe(true)
+  expect(true).toBe(true)
 })
