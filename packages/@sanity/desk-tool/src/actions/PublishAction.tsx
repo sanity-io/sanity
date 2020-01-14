@@ -5,13 +5,19 @@ export function PublishAction(props) {
   const {id, type, liveEdit, onComplete} = props
 
   if (liveEdit) {
-    return null
+    return {
+      label: 'Publish',
+      title:
+        'Live Edit is enabled for this document and publishing happens automatically as you make changes',
+      disabled: true
+    }
   }
 
   const {publish}: any = useDocumentOperation(id, type)
   const [publishing, setPublishing] = React.useState(false)
   const [didPublish, setDidPublish] = React.useState(false)
   const [error, setError] = React.useState<Error | null>(null)
+
   const validationStatus = useValidationStatus(id, type)
 
   const hasValidationErrors = validationStatus.errors.length > 0
