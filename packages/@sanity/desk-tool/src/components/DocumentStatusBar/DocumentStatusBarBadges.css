@@ -1,0 +1,6 @@
+.statusBadges {
+  white-space: nowrap;
+  font-size: calc(11 / 16 * 1em);
+  line-height: 1;
+  margin-bottom: auto;
+}

@@ -17,6 +17,11 @@
       "path": "defaultActions.js"
     },
     {
+      "implements": "part:@sanity/base/document-badges",
+      "description": "The default document badges",
+      "path": "defaultDocumentBadges.js"
+    },
+    {
       "implements": "part:@sanity/base/document-actions/resolver",
       "path": "defaultResolveActions.js"
     },

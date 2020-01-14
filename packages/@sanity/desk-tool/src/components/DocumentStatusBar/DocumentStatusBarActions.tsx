@@ -78,7 +78,7 @@ function DocumentStatusBarActionsInner(props: Props) {
   )
 }
 
-export function DocumentStatusBarActions(props: Props) {
+export function DocumentStatusBarActions(props: {id: string; type: string}) {
   const editState = useEditState(props.id, props.type)
   const [isMenuOpen, setMenuOpen] = React.useState(false)
 

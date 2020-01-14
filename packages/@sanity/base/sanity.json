@@ -167,6 +167,14 @@
       "description": "The default document actions"
     },
     {
+      "name": "part:@sanity/base/document-badges/resolver",
+      "description": "A function that resolves current available badges for a document."
+    },
+    {
+      "name": "part:@sanity/base/document-badges",
+      "description": "The default document badges"
+    },
+    {
       "name": "part:@sanity/base/language-resolver",
       "description": "Figures out which locale the client should use"
     },

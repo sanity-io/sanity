@@ -1,14 +1,10 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Badge from 'part:@sanity/components/badges/default'
 import CheckIcon from 'part:@sanity/base/check-icon'
 import SyncIcon from 'part:@sanity/base/sync-icon'
-import {DocumentStatusBarActions} from './DocumentStatusBarActions'
-import Button from 'part:@sanity/components/buttons/default'
-import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
-import PopOverDialog from 'part:@sanity/components/dialogs/popover'
-
 import styles from './DocumentStatusBar.css'
+import {DocumentStatusBarActions} from './DocumentStatusBarActions'
+import {DocumentStatusBarBadges} from './DocumentStatusBarBadges'
 
 // eslint-disable-next-line complexity
 function DocumentStatusBar(props) {
@@ -59,15 +55,7 @@ function DocumentStatusBar(props) {
   return (
     <div className={className}>
       <div className={styles.status}>
-        {props.badges && props.badges.length > 0 && (
-          <div className={styles.statusBadges}>
-            {props.badges.map(badge => (
-              <Badge key={badge.id} color={badge.color} title={badge.title}>
-                {badge.label}
-              </Badge>
-            ))}
-          </div>
-        )}
+        <DocumentStatusBarBadges id={props.id} type={props.type} />
         {historyStatus && (
           <div className={styles.statusDetails}>
             {historyStatus} {statusIcon}
@@ -77,29 +65,6 @@ function DocumentStatusBar(props) {
       <div className={styles.actions}>
         <div className={styles.actionsWrapper}>
           <DocumentStatusBarActions id={props.id} type={props.type} />
-          {props.confirmationDialog && (
-            <PopOverDialog
-              onClickOutside={props.confirmationDialog.handleCancel}
-              placement="auto-end"
-              useOverlay={false}
-              hasAnimation
-            >
-              <>
-                <div className={styles.popOverText}>{props.confirmationDialog.message}</div>
-                <ButtonGrid>
-                  <Button onClick={props.confirmationDialog.handleCancel} kind="simple">
-                    {props.confirmationDialog.cancelText || 'Cancel'}
-                  </Button>
-                  <Button
-                    onClick={props.confirmationDialog.handleConfirm}
-                    color={props.confirmationDialog.confirmColor || 'danger'}
-                  >
-                    {props.confirmationDialog.confirmText || 'Confirm'}
-                  </Button>
-                </ButtonGrid>
-              </>
-            </PopOverDialog>
-          )}
         </div>
       </div>
     </div>
@@ -109,23 +74,6 @@ function DocumentStatusBar(props) {
 DocumentStatusBar.propTypes = {
   id: PropTypes.string,
   type: PropTypes.string,
-
-  badges: PropTypes.arrayOf(
-    PropTypes.shape({
-      color: PropTypes.oneOf([undefined, 'success', 'warning', 'danger', 'info', 'neutral']),
-      id: PropTypes.string.isRequired,
-      label: PropTypes.string.isRequired,
-      title: PropTypes.string
-    })
-  ),
-  confirmationDialog: PropTypes.shape({
-    message: PropTypes.node.isRequired,
-    handleConfirm: PropTypes.func.isRequired,
-    handleCancel: PropTypes.func.isRequired,
-    confirmText: PropTypes.string,
-    cancelText: PropTypes.string,
-    confirmColor: PropTypes.string
-  }),
   historyStatus: PropTypes.node,
   isDisconnected: PropTypes.bool,
   isHistoryAvailable: PropTypes.bool,
@@ -134,7 +82,6 @@ DocumentStatusBar.propTypes = {
 }
 
 DocumentStatusBar.defaultProps = {
-  badges: undefined,
   isDisconnected: false,
   isHistoryAvailable: false,
   isSyncing: false,

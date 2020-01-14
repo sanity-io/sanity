@@ -69,6 +69,10 @@
       "path": "src/resolveDocumentActions"
     },
     {
+      "implements": "part:@sanity/base/document-badges/resolver",
+      "path": "src/resolveDocumentBadges"
+    },
+    {
       "implements": "part:@sanity/form-builder/input/array/functions",
       "path": "src/components/SearchableArrayFunctions.js"
     },
