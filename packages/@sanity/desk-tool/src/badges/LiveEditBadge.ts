@@ -1,6 +1,8 @@
 export function LiveEditBadge(props) {
-  return {
-    label: 'Live',
-    color: 'danger'
-  }
+  return props.liveEdit
+    ? {
+        label: 'Live',
+        color: 'danger'
+      }
+    : null
 }
