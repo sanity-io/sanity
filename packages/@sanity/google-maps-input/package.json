@@ -7,7 +7,6 @@
   "license": "MIT",
   "scripts": {
     "clean": "rimraf lib",
-    "start": "cd example && sanity start",
     "prepublishOnly": "sanity-check"
   },
   "keywords": [
@@ -20,11 +19,7 @@
     "sanity-plugin"
   ],
   "devDependencies": {
-    "@sanity/base": "0.147.8",
     "@sanity/check": "0.147.0",
-    "@sanity/cli": "0.147.8",
-    "@sanity/components": "0.147.9",
-    "@sanity/core": "0.147.9",
     "lodash": "^4.17.15",
     "prop-types": "^15.6.0",
     "rimraf": "^2.7.1"
