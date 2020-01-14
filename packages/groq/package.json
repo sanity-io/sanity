@@ -1,6 +1,6 @@
 {
   "name": "groq",
-  "version": "0.147.0",
+  "version": "0.147.8",
   "description": "Tagged template literal for Sanity.io GROQ-queries",
   "main": "lib/groq.js",
   "types": "./groq.d.ts",
