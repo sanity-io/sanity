@@ -1,7 +1,6 @@
 import * as React from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {set} from './patch-helpers'
-import {createAction} from 'part:@sanity/base/actions/utils'
 
 export function WriteFieldAction({id, type, published, draft}) {
   const doc = draft || published
