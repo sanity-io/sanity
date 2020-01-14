@@ -1,6 +1,6 @@
 {
   "name": "@sanity/form-builder",
-  "version": "0.147.8",
+  "version": "0.147.9",
   "description": "Sanity form builder",
   "main": "lib/index.js",
   "scripts": {
@@ -66,8 +66,8 @@
     "@sanity/base": "0.147.8",
     "@sanity/check": "0.147.0",
     "@sanity/cli": "0.147.8",
-    "@sanity/components": "0.147.8",
-    "@sanity/core": "0.147.8",
+    "@sanity/components": "0.147.9",
+    "@sanity/core": "0.147.9",
     "@sanity/plugin-loader": "0.147.0",
     "@sanity/server": "0.147.0",
     "@types/diff-match-patch": "^1.0.32",

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/desk-tool",
-  "version": "0.147.8",
+  "version": "0.147.9",
   "description": "Tool for managing all sorts of content in a structured manner",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -23,7 +23,7 @@
   ],
   "dependencies": {
     "@sanity/data-aspects": "0.147.0",
-    "@sanity/form-builder": "0.147.8",
+    "@sanity/form-builder": "0.147.9",
     "@sanity/generate-help-url": "0.147.0",
     "@sanity/mutator": "0.147.8",
     "@sanity/schema": "0.147.6",
@@ -53,8 +53,8 @@
     "@sanity/base": "0.147.8",
     "@sanity/check": "0.147.0",
     "@sanity/client": "0.147.3",
-    "@sanity/components": "0.147.8",
-    "@sanity/core": "0.147.8",
+    "@sanity/components": "0.147.9",
+    "@sanity/core": "0.147.9",
     "history": "^4.6.3",
     "jest": "^24.9.0",
     "postcss-cssnext": "^3.0.2",
