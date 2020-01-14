@@ -2,8 +2,8 @@ import React from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import CloseIcon from 'part:@sanity/base/close-icon'
 
-export function DiscardChangesAction({id, type, published, onComplete}) {
-  if (!published) {
+export function DiscardChangesAction({id, type, published, liveEdit, onComplete}) {
+  if (!published || liveEdit) {
     return null
   }
 

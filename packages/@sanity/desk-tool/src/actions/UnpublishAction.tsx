@@ -2,7 +2,11 @@ import {useDocumentOperation} from '@sanity/react-hooks'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import React from 'react'
 
-export function UnpublishAction({id, type, onComplete}) {
+export function UnpublishAction({id, type, onComplete, liveEdit}) {
+  if (liveEdit) {
+    return null
+  }
+
   const {unpublish}: any = useDocumentOperation(id, type)
   const [error, setError] = React.useState<Error | null>(null)
   const [didUnpublish, setDidUnpublish] = React.useState(false)
