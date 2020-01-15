@@ -48,11 +48,18 @@ const getHistory = (documentIds, options = {}) => {
 }
 
 const getDocumentAtRevision = (documentId, revision) => {
-  const cacheKey = `${documentId}@${revision}`
+  const publishedId = getPublishedId(documentId)
+  const draftId = getDraftId(documentId)
+
+  const cacheKey = `${publishedId}@${revision}`
   if (!(cacheKey in documentRevisionCache)) {
     const dataset = client.clientConfig.dataset
-    const url = `/data/history/${dataset}/documents/${documentId}?revision=${revision}`
-    documentRevisionCache[cacheKey] = client.request({url}).then(result => result.documents[0])
+    const url = `/data/history/${dataset}/documents/${publishedId},${draftId}?revision=${revision}`
+    documentRevisionCache[cacheKey] = client.request({url}).then(({documents}) => {
+      const published = documents.find(res => res._id === publishedId)
+      const draft = documents.find(res => res._id === draftId)
+      return draft || published
+    })
   }
 
   return documentRevisionCache[cacheKey]

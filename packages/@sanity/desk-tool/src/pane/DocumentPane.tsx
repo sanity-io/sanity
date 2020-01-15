@@ -1,8 +1,8 @@
 /* eslint-disable complexity */
 import React from 'react'
-import {get, noop} from 'lodash'
+import {noop} from 'lodash'
 import {format, isToday, isYesterday} from 'date-fns'
-import {concat, from, of as observableOf, Subscription} from 'rxjs'
+import {from, of as observableOf, Subscription} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
 import schema from 'part:@sanity/base/schema'
 import Button from 'part:@sanity/components/buttons/default'
@@ -12,13 +12,11 @@ import Spinner from 'part:@sanity/components/loading/spinner'
 import historyStore from 'part:@sanity/base/datastore/history'
 import TabbedPane from 'part:@sanity/components/panes/tabbed'
 import Snackbar from 'part:@sanity/components/snackbar/default'
-import Hotkeys from 'part:@sanity/components/typography/hotkeys'
 import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import UseState from '../utils/UseState'
 import InspectView from '../components/InspectView'
 import InspectHistory from '../components/InspectHistory'
-import TimeAgo from '../components/TimeAgo'
-import DocumentStatusBar from '../components/DocumentStatusBar'
+import {DocumentStatusBar, HistoryStatusBar} from '../components/DocumentStatusBar'
 import Delay from '../utils/Delay'
 import isNarrowScreen from '../utils/isNarrowScreen'
 import windowWidth$ from '../utils/windowWidth'
@@ -27,12 +25,9 @@ import _documentPaneStyles from './styles/DocumentPane.css'
 import FormView from './Editor/FormView'
 import Actions from './Editor/Actions'
 import {historyIsEnabled} from './Editor/history'
-import menuItemStyles from './styles/documentPaneMenuItems.css'
-import {getProductionPreviewItem} from './documentPaneMenuItems'
+import {getMenuItems, getProductionPreviewItem} from './documentPaneMenuItems'
 import {validateDocument} from '@sanity/validation'
 import {PaneRouterContext} from '..'
-import {HistoryStatusBarActions} from '../components/DocumentStatusBar/DocumentStatusBarActions'
-import {getMenuItems} from './documentPaneMenuItems'
 import {DocumentActionShortcuts} from '../components/DocumentActionShortcuts'
 
 declare const __DEV__: boolean
@@ -89,19 +84,12 @@ interface State {
   historical: HistoricalDocumentState
   historyState: HistoryState
   history: any
-  transactionResult: null | {error: Error; type: string; message: string}
-  error?: null | Error
   hasNarrowScreen: boolean
   inspect: boolean
 
-  isCreatingDraft: boolean
   isMenuOpen: boolean
-  isRestoring: boolean
 
-  validationPending: boolean
-  showSavingStatus: boolean
   showValidationTooltip: boolean
-  showConfirmDiscardDraft: boolean
 }
 
 const INITIAL_HISTORICAL_DOCUMENT_STATE: HistoricalDocumentState = {
@@ -118,19 +106,11 @@ const INITIAL_HISTORY_STATE: HistoryState = {
 }
 
 const INITIAL_STATE: State = {
-  error: null,
-
-  isCreatingDraft: false,
   isMenuOpen: false,
-  isRestoring: false,
   hasNarrowScreen: isNarrowScreen(),
 
-  transactionResult: null,
-  validationPending: true,
   inspect: false,
-  showSavingStatus: false,
   showValidationTooltip: false,
-  showConfirmDiscardDraft: false,
   historical: INITIAL_HISTORICAL_DOCUMENT_STATE,
   historyState: INITIAL_HISTORY_STATE,
   history: {}
@@ -175,16 +155,12 @@ interface Props {
   }
 }
 
-type CancellableFunc = (() => void) & {cancel: () => void}
-
 export default class DocumentPane extends React.PureComponent<Props, State> {
   _historyEventsSubscription?: Subscription
   _historyFetchDocSubscription?: Subscription
-  duplicateSubscription?: Subscription
   resizeSubscriber?: Subscription
   _isMounted?: boolean
   subscription?: Subscription
-  validateLatestDocument?: CancellableFunc
 
   static contextType = PaneRouterContext
 
@@ -419,15 +395,6 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
       this.subscription = undefined
     }
 
-    if (this.validateLatestDocument) {
-      this.validateLatestDocument.cancel()
-      this.validateLatestDocument = undefined
-    }
-
-    if (this.duplicateSubscription) {
-      this.duplicateSubscription.unsubscribe()
-    }
-
     if (this._historyEventsSubscription) {
       this._historyEventsSubscription.unsubscribe()
     }
@@ -582,39 +549,6 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
     this.setStateIfMounted({transactionResult: null})
   }
 
-  handleRestoreRevision = ({id, rev}) => {
-    const transactionResult$ = historyStore.restore(id, rev).pipe(
-      map(result => ({
-        type: 'success',
-        result: result
-      })),
-      catchError(error =>
-        observableOf({
-          type: 'error',
-          message: 'An error occurred while attempting to restore the document',
-          error
-        })
-      ),
-      map(transactionResult => ({transactionResult}))
-    )
-
-    concat(
-      observableOf({isRestoring: true}),
-      transactionResult$,
-      observableOf({isRestoring: false})
-    ).subscribe((nextState: any) => {
-      this.setStateIfMounted(nextState)
-      this.setHistoryState(INITIAL_HISTORY_STATE)
-
-      const {rev: oldRev, ...params} = this.context.params
-      const newRevision = get(nextState, 'transactionResult.result.transactionId')
-      if (newRevision && oldRev) {
-        // If there is a revision in the URL, replace it with the new one
-        this.context.setParams({...params, rev: newRevision}, {recurseIfInherited: true})
-      }
-    })
-  }
-
   handleMenuToggle = evt => {
     evt.stopPropagation()
     this.setState(prevState => ({isMenuOpen: !prevState.isMenuOpen}))
@@ -735,22 +669,6 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
     )
   }
 
-  renderPublishButtonTooltip = (errors, published) => {
-    if (errors.length > 0) {
-      return <span>Fix errors before publishing</span>
-    }
-    return (
-      <span className={menuItemStyles.menuItem}>
-        {published ? 'Publish changes' : 'Publish'}
-        {errors.length < 1 && (
-          <span className={menuItemStyles.hotkey}>
-            <Hotkeys keys={['Ctrl', 'Alt', 'P']} />
-          </span>
-        )}
-      </span>
-    )
-  }
-
   renderActions = () => {
     const {value, markers} = this.props
     const typeName = this.props.options.type
@@ -785,19 +703,17 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
       : events.find(event => event.rev === rev || event.transactionIds.includes(rev))
   }
 
-  renderHistoryFooter = () => {
-    const selectedEvent = this.findSelectedHistoryEvent()
+  renderHistoryFooter = selectedEvent => {
+    const {events} = this.state.historyState
     const {options} = this.props
 
-    return historyIsEnabled && selectedEvent ? (
-      <HistoryStatusBarActions
+    return (
+      <HistoryStatusBar
         id={options.id}
         type={options.type}
-        historyId={selectedEvent.displayDocumentId}
-        revision={selectedEvent.rev}
+        selectedEvent={selectedEvent}
+        isLatestEvent={events[0] === selectedEvent}
       />
-    ) : (
-      <DocumentStatusBar id={options.id} type={options.type} />
     )
   }
 
@@ -805,24 +721,12 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
     const {initialValue, options} = this.props
     const value = this.props.value || initialValue
 
-    const canShowHistory = this.canShowHistoryList()
-
-    const historyStatus =
-      value && value._updatedAt ? (
-        <>
-          Updated <TimeAgo time={value._updatedAt} />
-        </>
-      ) : (
-        <></>
-      )
-
     return (
       <DocumentStatusBar
         id={options.id}
         type={options.type}
-        historyStatus={historyStatus}
-        isHistoryAvailable={canShowHistory}
-        onHistoryStatusClick={this.handleOpenHistory}
+        lastUpdated={value && value._updatedAt}
+        onLastUpdatedButtonClick={this.handleOpenHistory}
       />
     )
   }
@@ -863,7 +767,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
   renderCurrentView() {
     const initialValue = this.getInitialValue()
     const {views, options, urlParams, value, onChange, isConnected} = this.props
-    const {historical, isCreatingDraft, isRestoring, validationPending, historyState} = this.state
+    const {historical, historyState} = this.state
 
     const selectedHistoryEvent = this.findSelectedHistoryEvent()
 
@@ -899,10 +803,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
     const formProps = {
       ...viewProps,
       value: value,
-      validationPending,
-      isRestoring,
       isConnected,
-      isCreatingDraft,
       history: {
         isOpen: this.historyIsOpen(),
         selectedEvent: selectedHistoryEvent,
@@ -915,8 +816,6 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
             }
           : historical
       },
-      onDelete: this.handleDelete,
-      onRestore: this.handleRestoreRevision,
       onChange
     }
 
@@ -946,23 +845,12 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
       paneKey
     } = this.props
 
-    const {
-      historical,
-      transactionResult,
-      error,
-      hasNarrowScreen,
-      inspect,
-      historyState
-    } = this.state
+    const {historical, hasNarrowScreen, inspect, historyState} = this.state
 
     const typeName = options.type
     const schemaType = schema.get(typeName)
     if (!schemaType) {
       return this.renderUnknownSchemaType()
-    }
-
-    if (error) {
-      return this.renderError(error)
     }
 
     if (isLoading) {
@@ -1020,7 +908,11 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
           onExpand={onExpand}
           onAction={this.handleMenuAction}
           menuItems={menuItems}
-          footer={this.historyIsOpen() ? this.renderHistoryFooter() : this.renderFooter()}
+          footer={
+            this.historyIsOpen() && selectedHistoryEvent
+              ? this.renderHistoryFooter(selectedHistoryEvent)
+              : this.renderFooter()
+          }
           renderActions={this.renderActions}
           isClosable={isClosable}
           hasSiblings={this.context.hasGroupSiblings}
@@ -1035,15 +927,6 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
           )}
           {!isConnected && (
             <Snackbar kind="warning" isPersisted title="Connection lost. Reconnecting…" />
-          )}
-          {transactionResult && transactionResult.type === 'error' && (
-            <Snackbar
-              kind="error"
-              actionTitle="OK"
-              onAction={this.handleClearTransactionResult}
-              title={transactionResult.message}
-              subtitle={<details>{transactionResult.error.message}</details>}
-            />
           )}
         </TabbedPane>
       </DocumentActionShortcuts>

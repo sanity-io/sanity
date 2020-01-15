@@ -19,7 +19,7 @@ interface Props {
   id: string
   type: string
   actionStates: any
-  isConnected: boolean
+  disabled: boolean
   isMenuOpen: boolean
   onMenuOpen: () => void
   onMenuClose: () => void
@@ -57,7 +57,7 @@ function DocumentStatusBarActionsInner(props: Props) {
               }
               icon={firstActionState.icon}
               color={firstActionState.disabled ? undefined : firstActionState.color || 'primary'}
-              disabled={!props.isConnected || firstActionState.disabled}
+              disabled={props.disabled || firstActionState.disabled}
               title={firstActionState.title}
               onClick={firstActionState.onHandle}
             >
@@ -73,7 +73,7 @@ function DocumentStatusBarActionsInner(props: Props) {
           isOpen={props.isMenuOpen}
           onOpen={props.onMenuOpen}
           onClose={props.onMenuClose}
-          isConnected={props.isConnected}
+          disabled={props.disabled}
         />
       )}
     </div>
@@ -97,7 +97,7 @@ export function DocumentStatusBarActions(props: {id: string; type: string}) {
       onActionComplete={() => setMenuOpen(false)}
       actions={actions}
       actionProps={editState}
-      isConnected={isConnected}
+      disabled={!isConnected}
     />
   ) : null
 }
@@ -106,18 +106,21 @@ interface HistoryStatusBarActionsProps {
   id: string
   type: string
   revision: string
-  historyId: string
 }
 
 const historyActions = [HistoryRestoreAction]
 
 export function HistoryStatusBarActions(props: HistoryStatusBarActionsProps) {
   const editState: any = useEditState(props.id, props.type)
+  const {isConnected} = useConnectionState(props.id, props.type)
 
   if (!editState) {
     return null
   }
-  const actionProps = {...editState, historyId: props.historyId, revision: props.revision}
+
+  const disabled = (editState.draft || editState.published || {})._rev === props.revision
+
+  const actionProps = {...editState, revision: props.revision}
   return (
     <RenderActionCollectionState
       component={DocumentStatusBarActionsInner}
@@ -126,6 +129,7 @@ export function HistoryStatusBarActions(props: HistoryStatusBarActionsProps) {
       onActionComplete={() => {
         /*todo: make optional*/
       }}
+      disabled={!isConnected || disabled}
     />
   )
 }

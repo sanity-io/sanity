@@ -18,10 +18,10 @@ interface Props {
   onOpen: () => void
   onClose: () => void
   isOpen: boolean
-  isConnected: boolean
+  disabled: boolean
 }
 
-export function ActionMenu({actionStates, onOpen, onClose, isConnected, isOpen}: Props) {
+export function ActionMenu({actionStates, onOpen, onClose, disabled, isOpen}: Props) {
   const clickOutsideRef = React.useRef(null)
   const listRef = React.useRef<HTMLUListElement>(null)
   useOnClickOutside(clickOutsideRef, () => {
@@ -71,7 +71,7 @@ export function ActionMenu({actionStates, onOpen, onClose, isConnected, isOpen}:
         aria-haspopup="true"
         aria-label="Actions"
         className={styles.actionsDropDownButton}
-        disabled={!isConnected}
+        disabled={disabled}
         icon={ChevronDownIcon}
         id={`${idPrefix}-button`}
         kind="secondary"
@@ -94,7 +94,7 @@ export function ActionMenu({actionStates, onOpen, onClose, isConnected, isOpen}:
                     {...(actionState === activeAction && {['data-has-focus']: true})}
                     aria-label={actionState.label}
                     className={styles.menuItemButton}
-                    disabled={Boolean(actionState.disabled)}
+                    disabled={disabled || Boolean(actionState.disabled)}
                     title={actionState.title}
                     onClick={actionState.onHandle}
                     role="menuitem"

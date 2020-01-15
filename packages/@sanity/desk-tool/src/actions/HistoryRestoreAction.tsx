@@ -2,7 +2,7 @@ import React from 'react'
 import {useDocumentOperation} from '@sanity/react-hooks'
 import {useRouter} from 'part:@sanity/base/router'
 
-export function HistoryRestoreAction({id, type, historyId, revision, onComplete}) {
+export function HistoryRestoreAction({id, type, revision, onComplete}) {
   const {restoreFrom}: any = useDocumentOperation(id, type)
   const router = useRouter()
   const [isConfirmDialogOpen, setConfirmDialogOpen] = React.useState(false)
@@ -21,7 +21,7 @@ export function HistoryRestoreAction({id, type, historyId, revision, onComplete}
           onCancel: onComplete,
           onConfirm: () => {
             setError(null)
-            restoreFrom.execute(historyId, revision).then(
+            restoreFrom.execute(id, revision).then(
               () => {
                 router.navigateIntent('edit', {id, type})
                 onComplete()

@@ -21,12 +21,8 @@
   white-space: nowrap;
 }
 
-.historyLabel {
+.lastUpdatedButton {
   color: var(--text-muted);
-}
-
-.historyButton {
-  composes: historyLabel;
   vertical-align: top;
   -webkit-appearance: none;
   -webkit-font-smoothing: inherit;

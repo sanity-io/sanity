@@ -1,31 +1,32 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import styles from './DocumentStatusBar.css'
 import {DocumentStatusBarActions} from './DocumentStatusBarActions'
 import {DocumentStatusBarBadges} from './DocumentStatusBarBadges'
 import {SyncState} from './SyncState'
+import TimeAgo from '../../components/TimeAgo'
 
-function DocumentStatusBar(props) {
-  let historyStatus: any = null
-  if (props.historyStatus && props.isHistoryAvailable) {
-    historyStatus = (
-      <button className={styles.historyButton} onClick={props.onHistoryStatusClick} type="button">
-        {props.historyStatus}
-      </button>
-    )
-  } else if (props.historyStatus) {
-    historyStatus = <span className={styles.historyLabel}>{props.historyStatus}</span>
-  }
+interface Props {
+  id: string
+  type: string
+  lastUpdated: string
+  onLastUpdatedButtonClick: () => void
+}
 
+export default function DocumentStatusBar(props: Props) {
   return (
     <div className={styles.root}>
       <div className={styles.status}>
         <DocumentStatusBarBadges id={props.id} type={props.type} />
-        {historyStatus && (
-          <div className={styles.statusDetails}>
-            {historyStatus} <SyncState id={props.id} type={props.type} />
-          </div>
-        )}
+        <div className={styles.statusDetails}>
+          <button
+            className={styles.lastUpdatedButton}
+            onClick={props.onLastUpdatedButtonClick}
+            type="button"
+          >
+            Updated <TimeAgo time={props.lastUpdated} />
+          </button>{' '}
+          <SyncState id={props.id} type={props.type} />
+        </div>
       </div>
       <div className={styles.actions}>
         <div className={styles.actionsWrapper}>
@@ -35,18 +36,3 @@ function DocumentStatusBar(props) {
     </div>
   )
 }
-
-DocumentStatusBar.propTypes = {
-  id: PropTypes.string,
-  type: PropTypes.string,
-  historyStatus: PropTypes.node,
-  isHistoryAvailable: PropTypes.bool,
-  onHistoryStatusClick: PropTypes.func
-}
-
-DocumentStatusBar.defaultProps = {
-  isHistoryAvailable: false,
-  onHistoryStatusClick: undefined
-}
-
-export default DocumentStatusBar
