@@ -18,9 +18,10 @@ interface Props {
   onOpen: () => void
   onClose: () => void
   isOpen: boolean
+  isConnected: boolean
 }
 
-export function ActionMenu({actionStates, onOpen, onClose, isOpen}: Props) {
+export function ActionMenu({actionStates, onOpen, onClose, isConnected, isOpen}: Props) {
   const clickOutsideRef = React.useRef(null)
   const listRef = React.useRef<HTMLUListElement>(null)
   useOnClickOutside(clickOutsideRef, () => {
@@ -70,7 +71,7 @@ export function ActionMenu({actionStates, onOpen, onClose, isOpen}: Props) {
         aria-haspopup="true"
         aria-label="Actions"
         className={styles.actionsDropDownButton}
-        // disabled={isDisconnected} (todo: make a global thing)
+        disabled={!isConnected}
         icon={ChevronDownIcon}
         id={`${idPrefix}-button`}
         kind="secondary"

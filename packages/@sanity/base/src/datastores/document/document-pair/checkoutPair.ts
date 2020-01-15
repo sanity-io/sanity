@@ -2,11 +2,11 @@ import {getPairListener, ListenerEvent} from '../getPairListener'
 import {BufferedDocumentEvent, createBufferedDocument} from '../buffered-doc/createBufferedDocument'
 import {share, filter, map} from 'rxjs/operators'
 import {IdPair} from '../types'
-import {Observable} from 'rxjs'
+import {Observable, merge} from 'rxjs'
 import client from 'part:@sanity/base/client'
 
 const isEventForDocId = (id: string) => (event: ListenerEvent): boolean =>
-  event.type === 'reconnect' || (event.type !== 'welcome' && event.documentId === id)
+  event.type !== 'reconnect' && event.type !== 'welcome' && event.documentId === id
 
 export function doCommit(client, mutations) {
   return client.observable.dataRequest('mutate', mutations, {
@@ -32,13 +32,15 @@ export interface Pair {
 }
 
 function setVersion(version: 'draft' | 'published') {
-  return (ev: BufferedDocumentEvent): DocumentVersionEvent => ({...ev, version})
+  return (ev: any): DocumentVersionEvent => ({...ev, version})
 }
 
 export function checkoutPair(idPair: IdPair): Pair {
   const {publishedId, draftId} = idPair
 
   const listenerEvents$ = getPairListener(client, idPair).pipe(share())
+
+  const reconnect$ = listenerEvents$.pipe(filter(ev => ev.type === 'reconnect'))
 
   const _doCommit = mutations => doCommit(client, mutations)
 
@@ -57,11 +59,11 @@ export function checkoutPair(idPair: IdPair): Pair {
   return {
     draft: {
       ...draft,
-      events: draft.events.pipe(map(setVersion('draft')))
+      events: merge(reconnect$, draft.events).pipe(map(setVersion('draft')))
     },
     published: {
       ...published,
-      events: published.events.pipe(map(setVersion('published')))
+      events: merge(reconnect$, published.events).pipe(map(setVersion('published')))
     }
   }
 }

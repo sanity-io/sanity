@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import React from 'react'
-import {debounce, get, noop} from 'lodash'
+import {get, noop} from 'lodash'
 import {format, isToday, isYesterday} from 'date-fns'
 import {concat, from, of as observableOf, Subscription} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
@@ -92,13 +92,11 @@ interface State {
   transactionResult: null | {error: Error; type: string; message: string}
   error?: null | Error
   hasNarrowScreen: boolean
-  isReconnecting: boolean
   inspect: boolean
 
   isCreatingDraft: boolean
   isMenuOpen: boolean
   isRestoring: boolean
-  isSaving: boolean
 
   validationPending: boolean
   showSavingStatus: boolean
@@ -124,9 +122,7 @@ const INITIAL_STATE: State = {
 
   isCreatingDraft: false,
   isMenuOpen: false,
-  isReconnecting: false,
   isRestoring: false,
-  isSaving: false,
   hasNarrowScreen: isNarrowScreen(),
 
   transactionResult: null,
@@ -150,6 +146,8 @@ interface Props {
   value: null | Doc
   markers: Marker[]
   isLoading: boolean
+  isConnected: boolean
+  isSyncing: boolean
   isSelected: boolean
   isCollapsed: boolean
   onChange: (patches: any[]) => void
@@ -399,24 +397,12 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
   componentWillUnmount() {
     this._isMounted = false
 
-    this.setSavingStatus.cancel()
-
     if (this.resizeSubscriber) {
       this.resizeSubscriber.unsubscribe()
     }
 
     this.dispose()
   }
-
-  setSavingStatus = debounce(
-    () => {
-      this.setState({
-        showSavingStatus: false
-      })
-    },
-    1500,
-    {trailing: true}
-  )
 
   isLiveEditEnabled() {
     const selectedSchemaType = schema.get(this.props.options.type)
@@ -779,7 +765,6 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
         value={value}
         markers={markers}
         type={schemaType}
-        isLiveEditEnabled={this.isLiveEditEnabled()}
         showValidationTooltip={showValidationTooltip}
         onCloseValidationResults={this.handleCloseValidationResults}
         onToggleValidationResults={this.handleToggleValidationResults}
@@ -817,15 +802,9 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
   }
 
   renderFooter = () => {
-    const {initialValue, options, paneKey} = this.props
+    const {initialValue, options} = this.props
     const value = this.props.value || initialValue
 
-    const {isReconnecting, showSavingStatus} = this.state
-
-    // const validation = markers.filter(marker => marker.type === 'validation')
-    // const errors = validation.filter(marker => marker.level === 'error')
-    const onShowHistory = this.handleOpenHistory
-    // const isLiveEditEnabled = this.isLiveEditEnabled()
     const canShowHistory = this.canShowHistoryList()
 
     const historyStatus =
@@ -834,20 +813,18 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
           Updated <TimeAgo time={value._updatedAt} />
         </>
       ) : (
-        <>Empty</>
+        <></>
       )
 
-    const documentStatusProps = {
-      badges: [],
-      historyStatus,
-      idPrefix: paneKey,
-      isDisconnected: isReconnecting,
-      isHistoryAvailable: canShowHistory,
-      isSyncing: showSavingStatus,
-      onHistoryStatusClick: onShowHistory
-    }
-
-    return <DocumentStatusBar id={options.id} type={options.type} {...documentStatusProps} />
+    return (
+      <DocumentStatusBar
+        id={options.id}
+        type={options.type}
+        historyStatus={historyStatus}
+        isHistoryAvailable={canShowHistory}
+        onHistoryStatusClick={this.handleOpenHistory}
+      />
+    )
   }
 
   getHistoryEventDateString() {
@@ -885,16 +862,8 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
 
   renderCurrentView() {
     const initialValue = this.getInitialValue()
-    const {views, options, urlParams, value, onChange} = this.props
-    const {
-      historical,
-      isCreatingDraft,
-      isRestoring,
-      isSaving,
-      validationPending,
-      isReconnecting,
-      historyState
-    } = this.state
+    const {views, options, urlParams, value, onChange, isConnected} = this.props
+    const {historical, isCreatingDraft, isRestoring, validationPending, historyState} = this.state
 
     const selectedHistoryEvent = this.findSelectedHistoryEvent()
 
@@ -932,8 +901,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
       value: value,
       validationPending,
       isRestoring,
-      isSaving,
-      isReconnecting,
+      isConnected,
       isCreatingDraft,
       history: {
         isOpen: this.historyIsOpen(),
@@ -970,6 +938,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
       isCollapsed,
       isClosable,
       onCollapse,
+      isConnected,
       onExpand,
       menuItemGroups,
       views,
@@ -982,7 +951,6 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
       transactionResult,
       error,
       hasNarrowScreen,
-      isReconnecting,
       inspect,
       historyState
     } = this.state
@@ -1065,7 +1033,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
           {inspect && !this.historyIsOpen() && value && (
             <InspectView value={value} onClose={this.handleHideInspector} />
           )}
-          {isReconnecting && (
+          {!isConnected && (
             <Snackbar kind="warning" isPersisted title="Connection lost. Reconnecting…" />
           )}
           {transactionResult && transactionResult.type === 'error' && (

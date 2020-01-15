@@ -28,13 +28,15 @@ export function PublishAction(props) {
     ? 'There are validation errors that needs to be fixed before this document can be published'
     : 'Publish this document'
 
+  const disabled = Boolean(
+    validationStatus.isValidating || hasValidationErrors || publishing || publish.disabled
+  )
+
   return {
-    disabled: Boolean(
-      validationStatus.isValidating || hasValidationErrors || publishing || publish.disabled
-    ),
+    disabled,
     label: publishing ? 'Publishing…' : 'Publish',
     title,
-    shortcut: 'ctrl+alt+p',
+    shortcut: disabled ? null : 'ctrl+alt+p',
     onHandle: () => {
       setPublishing(true)
       setError(null)

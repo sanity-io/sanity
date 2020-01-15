@@ -1,29 +1,11 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-@keyframes DocumentStatusBar__spin {
-  0% {
-    transform: rotate(360deg);
-  }
-
-  100% {
-    transform: rotate(0deg);
-  }
-}
-
 .root {
   background: var(--component-bg);
   display: grid;
   grid-gap: 0.75em;
   grid-template-columns: 1fr 1fr;
   padding: 0.75em var(--medium-padding);
-}
-
-.isSyncing {
-  composes: root;
-}
-
-.isDisconnected {
-  composes: root;
 }
 
 .status {
@@ -62,37 +44,6 @@
     @nest &:hover {
       text-decoration: underline;
     }
-  }
-}
-
-.statusIcon {
-  display: inline-block;
-  vertical-align: top;
-  padding: 2px 0 1px;
-  color: var(--text-muted);
-
-  @nest & svg {
-    display: block;
-    transform-origin: center center;
-  }
-
-  @nest .isSyncing & {
-    color: var(--state-success-color);
-  }
-
-  @nest .isDisconnected & {
-    color: var(--state-danger-color);
-  }
-}
-
-.rotatingStatusIcon {
-  composes: statusIcon;
-
-  @nest & svg {
-    animation-name: DocumentStatusBar__spin;
-    animation-duration: 1.5s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
   }
 }
 

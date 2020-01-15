@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 
-import {useEditState} from '@sanity/react-hooks'
+import {useEditState, useConnectionState} from '@sanity/react-hooks'
 import React from 'react'
 import {Tooltip} from 'react-tippy'
 import Button from 'part:@sanity/components/buttons/default'
@@ -19,6 +19,7 @@ interface Props {
   id: string
   type: string
   actionStates: any
+  isConnected: boolean
   isMenuOpen: boolean
   onMenuOpen: () => void
   onMenuClose: () => void
@@ -56,7 +57,7 @@ function DocumentStatusBarActionsInner(props: Props) {
               }
               icon={firstActionState.icon}
               color={firstActionState.disabled ? undefined : firstActionState.color || 'primary'}
-              disabled={firstActionState.disabled}
+              disabled={!props.isConnected || firstActionState.disabled}
               title={firstActionState.title}
               onClick={firstActionState.onHandle}
             >
@@ -72,6 +73,7 @@ function DocumentStatusBarActionsInner(props: Props) {
           isOpen={props.isMenuOpen}
           onOpen={props.onMenuOpen}
           onClose={props.onMenuClose}
+          isConnected={props.isConnected}
         />
       )}
     </div>
@@ -80,6 +82,8 @@ function DocumentStatusBarActionsInner(props: Props) {
 
 export function DocumentStatusBarActions(props: {id: string; type: string}) {
   const editState = useEditState(props.id, props.type)
+  const {isConnected} = useConnectionState(props.id, props.type)
+
   const [isMenuOpen, setMenuOpen] = React.useState(false)
 
   const actions = editState ? resolveDocumentActions(editState) : null
@@ -93,6 +97,7 @@ export function DocumentStatusBarActions(props: {id: string; type: string}) {
       onActionComplete={() => setMenuOpen(false)}
       actions={actions}
       actionProps={editState}
+      isConnected={isConnected}
     />
   ) : null
 }

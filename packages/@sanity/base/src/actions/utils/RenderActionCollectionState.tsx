@@ -23,7 +23,6 @@ const getActionId = action => {
 
 export function RenderActionCollectionState(props: RenderActionCollectionProps) {
   const [actionsWithStates, setActionsWithState] = React.useState([])
-
   const [keys, setKey] = React.useState({})
   const handleComplete = React.useCallback(
     id => {

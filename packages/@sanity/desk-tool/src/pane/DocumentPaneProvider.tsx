@@ -4,7 +4,8 @@ import {useEditState} from '@sanity/react-hooks'
 import DocumentPane from './DocumentPane'
 import withInitialValue from '../utils/withInitialValue'
 import {throttle} from 'lodash'
-import {useValidationStatus} from '@sanity/react-hooks'
+import {useValidationStatus, useConnectionState, useSyncState} from '@sanity/react-hooks'
+
 interface Props {
   title?: string
   paneKey: string
@@ -46,6 +47,8 @@ function useThrottled(fn, wait, opts, deps) {
 export const DocumentPaneProvider = withInitialValue((props: Props) => {
   const {patch, commit}: any = useDocumentOperation(props.options.id, props.options.type)
   const editState: any = useEditState(props.options.id, props.options.type)
+  const {isConnected} = useConnectionState(props.options.id, props.options.type)
+  const {isSyncing} = useSyncState(props.options.id, props.options.type)
   const validationStatus: any = useValidationStatus(props.options.id, props.options.type)
 
   const runThrottled = useThrottled(run => run(), 1000, {leading: true, trailing: true}, [])
@@ -58,6 +61,8 @@ export const DocumentPaneProvider = withInitialValue((props: Props) => {
         patch.execute(patches)
         runThrottled(commit.execute)
       }}
+      isConnected={isConnected}
+      isSyncing={isSyncing}
       value={value}
       draft={editState && editState.draft}
       published={editState && editState.published}

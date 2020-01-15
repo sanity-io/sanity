@@ -26,7 +26,7 @@ export default class FormView extends React.PureComponent {
       displayed: PropTypes.shape({_id: PropTypes.string, _type: PropTypes.string})
     }).isRequired,
     initialValue: PropTypes.shape({_type: PropTypes.string}),
-    isReconnecting: PropTypes.bool,
+    isConnected: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     schemaType: PropTypes.shape({name: PropTypes.string, title: PropTypes.string}).isRequired,
     markers: PropTypes.arrayOf(
@@ -48,7 +48,7 @@ export default class FormView extends React.PureComponent {
 
   static defaultProps = {
     markers: [],
-    isReconnecting: false,
+    isConnected: true,
     initialValue: undefined
   }
 
@@ -82,12 +82,12 @@ export default class FormView extends React.PureComponent {
   }
 
   isReadOnly() {
-    const {document, schemaType, isReconnecting} = this.props
+    const {document, schemaType, isConnected} = this.props
     const {draft, published} = document
     const isNonExistent = !draft && !published
 
     return (
-      isReconnecting ||
+      !isConnected ||
       !isActionEnabled(schemaType, 'update') ||
       (isNonExistent && !isActionEnabled(schemaType, 'create'))
     )
