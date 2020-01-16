@@ -6,8 +6,11 @@ import schema from 'part:@sanity/base/schema'
 import afterEditorComponents from 'all:part:@sanity/desk-tool/after-editor-component'
 import filterFieldFn$ from 'part:@sanity/desk-tool/filter-fields-fn?'
 import styles from '../styles/Editor.css'
+import range from 'lodash/range'
+
 import EditForm from './EditForm'
 import HistoryForm from './HistoryForm'
+import recordedEdits from './recorded-edits'
 
 const noop = () => undefined
 
@@ -15,6 +18,17 @@ const INITIAL_STATE = {
   focusPath: [],
   filterField: () => true
 }
+
+const recordedArgs = []
+window.recordedArgs = recordedArgs
+function record(fn) {
+  return (...args) => {
+    recordedArgs.push({ts: new Date().getTime(), args})
+    return fn(...args)
+  }
+}
+
+const ENABLE_RENDER = true
 
 export default class FormView extends React.PureComponent {
   static propTypes = {
@@ -92,9 +106,31 @@ export default class FormView extends React.PureComponent {
       (isNonExistent && !isActionEnabled(schemaType, 'create'))
     )
   }
-
+  handleReplay = () => {
+    const {onChange} = this.props
+    const label = `replay ${recordedEdits.length} onChange events ${
+      ENABLE_RENDER ? 'with' : 'without'
+    } form render`
+    console.profile(label)
+    range(6).forEach(() => {
+      recordedEdits.forEach(ev => {
+        onChange(ev.args[0])
+      })
+    })
+    console.profileEnd(label)
+  }
   render() {
-    const {document, id, history, schemaType, markers, patchChannel, initialValue} = this.props
+    const {
+      document,
+      id,
+      history,
+      schemaType,
+      markers,
+      patchChannel,
+      initialValue,
+      onChange
+    } = this.props
+
     const {draft, published, displayed} = document
     const {focusPath, filterField} = this.state
     const value = draft || published
@@ -116,28 +152,35 @@ export default class FormView extends React.PureComponent {
 
     return (
       <div className={styles.root}>
-        {history.isOpen ? (
-          <HistoryForm document={displayed} schema={schema} schemaType={schemaType} />
-        ) : (
-          <EditForm
-            id={id}
-            value={draft || published || initialValue}
-            filterField={filterField}
-            focusPath={focusPath}
-            markers={markers}
-            onBlur={this.handleBlur}
-            onChange={readOnly ? noop : this.props.onChange}
-            onFocus={this.handleFocus}
-            patchChannel={patchChannel}
-            readOnly={readOnly}
-            schema={schema}
-            type={schemaType}
-          />
-        )}
+        <div style={{position: 'fixed', backgroundColor: '#fff', height: '2em', zIndex: 2000}}>
+          <button onClick={this.handleReplay}>Replay recorded</button>
+        </div>
+        {ENABLE_RENDER && (
+          <>
+            {history.isOpen ? (
+              <HistoryForm document={displayed} schema={schema} schemaType={schemaType} />
+            ) : (
+              <EditForm
+                id={id}
+                value={draft || published || initialValue}
+                filterField={filterField}
+                focusPath={focusPath}
+                markers={markers}
+                onBlur={this.handleBlur}
+                onChange={readOnly ? noop : onChange}
+                onFocus={this.handleFocus}
+                patchChannel={patchChannel}
+                readOnly={readOnly}
+                schema={schema}
+                type={schemaType}
+              />
+            )}
 
-        {afterEditorComponents.map((AfterEditorComponent, i) => (
-          <AfterEditorComponent key={i} documentId={documentId} />
-        ))}
+            {afterEditorComponents.map((AfterEditorComponent, i) => (
+              <AfterEditorComponent key={i} documentId={documentId} />
+            ))}
+          </>
+        )}
       </div>
     )
   }
