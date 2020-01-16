@@ -75,28 +75,19 @@ function createDocumentTypeFilters(documentTypes) {
   })
 }
 
-function getDocumentFilters(type) {
-  return (
-    [
-      {
-        fieldName: 'references',
-        type: 'ID',
-        description: 'All documents references the given document ID',
-        constraint: {
-          comparator: 'REFERENCES'
-        }
-      }
-    ],
+function getDocumentFilters() {
+  return [
+    {
+      fieldName: 'references',
+      type: 'ID',
+      description: 'All documents referencing the given document ID.'
+    },
     {
       fieldName: 'is_draft',
       type: 'Boolean',
-      description: 'All documents that are drafts',
-      constraint: {
-        field: '_id',
-        comparator: 'IS_DRAFT'
-      }
+      description: 'All documents that are drafts.'
     }
-  )
+  ]
 }
 
 module.exports = generateTypeFilters
