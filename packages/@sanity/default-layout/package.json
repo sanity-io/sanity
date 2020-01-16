@@ -4,7 +4,6 @@
   "description": "The default layout components for Sanity",
   "main": "lib/default-layout.js",
   "scripts": {
-    "start": "cd example && sanity start",
     "coverage": "nyc --report=lcov --report=text _mocha -- test/**/*.test.js",
     "clean": "rimraf lib .nyc_output coverage",
     "prepublishOnly": "sanity-check"
@@ -39,12 +38,7 @@
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
-    "@sanity/base": "0.147.8",
     "@sanity/check": "0.147.0",
-    "@sanity/cli": "0.147.8",
-    "@sanity/components": "0.147.9",
-    "@sanity/core": "0.147.9",
-    "@sanity/schema": "0.147.6",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "mocha": "^5.0.1",
@@ -53,7 +47,7 @@
     "rimraf": "^2.7.1"
   },
   "peerDependencies": {
-    "@sanity/base": "^0.141.6",
+    "@sanity/base": "^0.147.0",
     "prop-types": "^15.6 || ^16",
     "react": "^16.9",
     "react-dom": "^16.9"
