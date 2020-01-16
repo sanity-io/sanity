@@ -7,8 +7,6 @@
   "license": "MIT",
   "scripts": {
     "clean": "rimraf lib",
-    "example-testbed": "cd examples/testbed && sanity start",
-    "start": "npm run example-testbed",
     "test": "jest"
   },
   "keywords": [
@@ -26,7 +24,6 @@
     "@sanity/form-builder": "0.147.9",
     "@sanity/generate-help-url": "0.147.0",
     "@sanity/mutator": "0.147.8",
-    "@sanity/schema": "0.147.6",
     "@sanity/structure": "0.147.0",
     "@sanity/uuid": "0.147.0",
     "@sanity/validation": "0.147.0",
@@ -50,11 +47,6 @@
     "shallow-equals": "^1.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "0.147.8",
-    "@sanity/check": "0.147.0",
-    "@sanity/client": "0.147.3",
-    "@sanity/components": "0.147.9",
-    "@sanity/core": "0.147.9",
     "history": "^4.6.3",
     "jest": "^24.9.0",
     "postcss-cssnext": "^3.0.2",
@@ -63,7 +55,7 @@
     "rimraf": "^2.7.1"
   },
   "peerDependencies": {
-    "@sanity/base": "^0.141.5",
+    "@sanity/base": "^0.147.0",
     "prop-types": "^15.6 || ^16",
     "react": "^16.9"
   },
