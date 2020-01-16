@@ -6,11 +6,7 @@
   "scripts": {
     "clean": "rimraf lib",
     "test": "NODE_ENV=test jest",
-    "start": "npm run example-testbed",
-    "build": "tsc",
-    "example-testbed": "cd examples/schema-testbed && sanity start",
-    "example-undo": "cd examples/undo && sanity start",
-    "example-quickstart": "cd examples/quickstart && sanity start"
+    "build": "tsc"
   },
   "keywords": [
     "sanity",
@@ -25,10 +21,8 @@
   "dependencies": {
     "@sanity/block-tools": "0.147.6",
     "@sanity/generate-help-url": "0.147.0",
-    "@sanity/image-url": "0.140.15",
     "@sanity/imagetool": "0.147.0",
     "@sanity/mutator": "0.147.8",
-    "@sanity/schema": "0.147.6",
     "@sanity/util": "0.147.0",
     "@sanity/uuid": "0.147.0",
     "attr-accept": "^1.1.0",
@@ -63,13 +57,6 @@
     "speakingurl": "^13.0.0"
   },
   "devDependencies": {
-    "@sanity/base": "0.147.8",
-    "@sanity/check": "0.147.0",
-    "@sanity/cli": "0.147.8",
-    "@sanity/components": "0.147.9",
-    "@sanity/core": "0.147.9",
-    "@sanity/plugin-loader": "0.147.0",
-    "@sanity/server": "0.147.0",
     "@types/diff-match-patch": "^1.0.32",
     "@types/moment": "^2.13.0",
     "assert": "^1.4.1",
@@ -90,7 +77,6 @@
     "react-dom": "^16.9"
   },
   "directories": {
-    "example": "example",
     "test": "test"
   },
   "repository": {
