@@ -1,48 +1,78 @@
-const {flatten} = require('lodash')
+const createIdFilters = require('./filters/idFilters')
+const createStringFilters = require('./filters/stringFilters')
+const createUrlFilters = require('./filters/urlFilters')
+const createFloatFilters = require('./filters/floatFilters')
+const createIntegerFilters = require('./filters/integerFilters')
+const createBooleanFilters = require('./filters/booleanFilters')
+const createDatetimeFilters = require('./filters/datetimeFilters')
+const createDateFilters = require('./filters/dateFilters')
 
 const filterCreators = {
   ID: createIdFilters,
   String: createStringFilters,
-  Url: createStringFilters,
-  Float: createNumberFilters,
-  Integer: createNumberFilters,
+  Url: createUrlFilters,
+  Float: createFloatFilters,
+  Integer: createIntegerFilters,
   Boolean: createBooleanFilters,
-  Datetime: createDateFilters,
-  Date: createDateFilters,
-  Object: createObjectFilters
+  Datetime: createDatetimeFilters,
+  Date: createDateFilters
 }
 
 function generateTypeFilters(types) {
-  const queryable = types.filter(
+  const builtInTypeKeys = Object.keys(filterCreators)
+  const builtinTypeValues = Object.values(filterCreators)
+  const objectTypes = types.filter(
+    type =>
+      type.type === 'Object' &&
+      !['Block', 'Span'].includes(type.name) && // TODO: What do we do with blocks?
+      !type.interfaces &&
+      !builtInTypeKeys.includes(type.type)
+  )
+  const documentTypes = types.filter(
     type => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document')
   )
 
-  return queryable.map(type => {
-    const name = `${type.name}Filter`
-    const fields = flatten(type.fields.map(createFieldFilters)).filter(Boolean)
-    return {name, kind: 'InputObject', fields: fields.concat(getDocumentFilters(type))}
+  const builtinTypeFilters = createBuiltinTypeFilters(builtinTypeValues)
+  const objectTypeFilters = createObjectTypeFilters(objectTypes)
+  const documentTypeFilters = createDocumentTypeFilters(documentTypes)
+
+  return builtinTypeFilters.concat(objectTypeFilters).concat(documentTypeFilters)
+}
+
+function createBuiltinTypeFilters(builtinTypeValues) {
+  return builtinTypeValues.map(filterCreator => filterCreator())
+}
+
+function createObjectTypeFilters(objectTypes) {
+  return objectTypes.map(objectType => {
+    return {
+      name: `${objectType.name}Filter`,
+      kind: 'InputObject',
+      fields: objectType.fields
+        .filter(field => field.type !== 'JSON' && field.kind !== 'List')
+        .map(field => ({
+          fieldName: field.fieldName,
+          type: `${field.type}Filter`
+        }))
+    }
   })
 }
 
-function createFieldFilters(field) {
-  if (filterCreators[field.type]) {
-    return filterCreators[field.type](field)
-  }
-
-  if (field.kind === 'List') {
-    return createListFilters(field)
-  }
-
-  if (field.isReference) {
-    return createReferenceFilters(field)
-  }
-
-  return createInlineTypeFilters(field)
-}
-
-function getFieldName(field, modifier = '') {
-  const suffix = modifier ? `_${modifier}` : ''
-  return `${field.fieldName}${suffix}`
+function createDocumentTypeFilters(documentTypes) {
+  return documentTypes.map(documentType => {
+    const fields = documentType.fields
+      .filter(field => field.type !== 'JSON' && field.kind !== 'List')
+      .map(field => ({
+        fieldName: field.fieldName,
+        type: `${field.type}Filter`
+      }))
+      .concat(getDocumentFilters())
+    return {
+      name: `${documentType.name}Filter`,
+      kind: 'InputObject',
+      fields
+    }
+  })
 }
 
 function getDocumentFilters(type) {
@@ -67,159 +97,6 @@ function getDocumentFilters(type) {
       }
     }
   )
-}
-
-function createEqualityFilter(field) {
-  return {
-    fieldName: getFieldName(field),
-    type: field.type,
-    description: 'All documents that are equal to given value',
-    constraint: {
-      field: field.fieldName,
-      comparator: 'EQUALS'
-    }
-  }
-}
-
-function createInequalityFilter(field) {
-  return {
-    fieldName: getFieldName(field, 'not'),
-    type: field.type,
-    description: 'All documents that are not equal to given value',
-    constraint: {
-      field: field.fieldName,
-      comparator: 'NOT_EQUALS'
-    }
-  }
-}
-
-function createDefaultFilters(field) {
-  return [createEqualityFilter(field), createInequalityFilter(field)]
-}
-
-function createGtLtFilters(field) {
-  return [
-    {
-      fieldName: getFieldName(field, 'lt'),
-      type: field.type,
-      description: 'All documents are less than given value',
-      constraint: {
-        field: field.fieldName,
-        comparator: 'LT'
-      }
-    },
-    {
-      fieldName: getFieldName(field, 'lte'),
-      type: field.type,
-      description: 'All documents are less than or equal to given value',
-      constraint: {
-        field: field.fieldName,
-        comparator: 'LTE'
-      }
-    },
-    {
-      fieldName: getFieldName(field, 'gt'),
-      type: field.type,
-      description: 'All documents are greater than given value',
-      constraint: {
-        field: field.fieldName,
-        comparator: 'GT'
-      }
-    },
-    {
-      fieldName: getFieldName(field, 'gte'),
-      type: field.type,
-      description: 'All documents are greater than or equal to given value',
-      constraint: {
-        field: field.fieldName,
-        comparator: 'GTE'
-      }
-    }
-  ]
-}
-
-function createBooleanFilters(field) {
-  return createDefaultFilters(field)
-}
-
-function createIdFilters(field) {
-  return createStringFilters(field)
-}
-
-function createDateFilters(field) {
-  return createDefaultFilters(field).concat(createGtLtFilters(field))
-}
-
-function createStringFilters(field) {
-  return createDefaultFilters(field).concat([
-    {
-      fieldName: getFieldName(field, 'matches'),
-      type: 'String',
-      description: 'All documents contain (match) the given word/words',
-      constraint: {
-        field: field.fieldName,
-        comparator: 'MATCHES'
-      }
-    },
-    {
-      fieldName: getFieldName(field, 'in'),
-      kind: 'List',
-      children: {
-        type: 'String',
-        isNullable: false
-      },
-      description: 'All documents match one of the given values',
-      constraint: {
-        field: field.fieldName,
-        comparator: 'IN'
-      }
-    },
-    {
-      fieldName: getFieldName(field, 'not_in'),
-      kind: 'List',
-      children: {
-        type: 'String',
-        isNullable: false
-      },
-      description: 'None of the values match any of the given values',
-      constraint: {
-        field: field.fieldName,
-        comparator: 'NOT_IN'
-      }
-    }
-  ])
-}
-
-function createNumberFilters(field) {
-  return createDefaultFilters(field).concat(createGtLtFilters(field))
-}
-
-function createObjectFilters(field) {
-  // @todo
-  return []
-}
-
-function createListFilters(field) {
-  // @todo
-  return []
-}
-
-function createInlineTypeFilters(field) {
-  // @todo
-  return []
-}
-
-function createReferenceFilters(field) {
-  return [
-    {
-      fieldName: getFieldName(field),
-      type: 'ID',
-      constraint: {
-        field: `${field.fieldName}._ref`,
-        comparator: 'EQUALS'
-      }
-    }
-  ]
 }
 
 module.exports = generateTypeFilters
