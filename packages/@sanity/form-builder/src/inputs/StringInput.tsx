@@ -17,7 +17,9 @@ export default class StringInput extends React.Component<Props> {
   _input: TextInput | null
   handleChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value
+    console.profile('Keypress')
     this.props.onChange(PatchEvent.from(value ? set(value) : unset()))
+    console.profileEnd('Keypress')
   }
   focus() {
     if (this._input) {
