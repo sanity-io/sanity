@@ -1,6 +1,6 @@
 import documentStore from 'part:@sanity/base/datastore/document'
 import {toObservable, useObservable} from './utils/use-observable'
-import {map, switchMap} from 'rxjs/operators'
+import {map, switchMap, debounceTime, share} from 'rxjs/operators'
 import {validateDocument} from '@sanity/validation'
 import {concat, from, Observable, of} from 'rxjs'
 import schema from 'part:@sanity/base/schema'
@@ -30,6 +30,7 @@ export function useValidationStatus(publishedId, typeName): ValidationStatus {
           ([publishedId, typeName]): Observable<{draft: {}; published: {}}> =>
             documentStore.local.editStateOf(publishedId, typeName)
         ),
+        debounceTime(300),
         switchMap(editState =>
           concat(
             of(INITIAL_VALIDATION_STATUS),
@@ -40,7 +41,8 @@ export function useValidationStatus(publishedId, typeName): ValidationStatus {
               }))
             )
           )
-        )
+        ),
+        share()
       )
     ),
     INITIAL_VALIDATION_STATUS
