@@ -38,9 +38,7 @@ export function editOpsOf(idPair: IdPair, typeName: string) {
           const disabled = op.disabled(args)
           return {
             disabled,
-            execute: disabled
-              ? createOperationGuard(opName)
-              : (...callerArgs) => op.execute(args, ...callerArgs)
+            execute: disabled ? GUARDED[opName] : (...callerArgs) => op.execute(args, ...callerArgs)
           }
         })
       })
