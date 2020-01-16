@@ -6,32 +6,32 @@ function createIntegerFilters() {
       {
         fieldName: 'eq',
         type: 'Int',
-        description: 'All documents that are equal to given value.'
+        description: 'Checks if the value is equal to the given input.'
       },
       {
         fieldName: 'neq',
         type: 'Int',
-        description: 'All documents that are not equal to given value.'
+        description: 'Checks if the value is not equal to the given input.'
       },
       {
         fieldName: 'gt',
         type: 'Int',
-        description: 'All documents are greater than given value'
+        description: 'Checks if the value is greater than the given input.'
       },
       {
         fieldName: 'gte',
         type: 'Int',
-        description: 'All documents are greater than or equal to given value'
+        description: 'Checks if the value is greater than or equal to the given input.'
       },
       {
         fieldName: 'lt',
         type: 'Int',
-        description: 'All documents are less than given value'
+        description: 'Checks if the value is lesser than the given input.'
       },
       {
         fieldName: 'lte',
         type: 'Int',
-        description: 'All documents are less than or equal to given value'
+        description: 'Checks if the value is lesser than or equal to the given input.'
       }
     ]
   }

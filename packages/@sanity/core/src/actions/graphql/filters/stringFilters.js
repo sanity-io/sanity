@@ -6,17 +6,17 @@ function createStringFilters() {
       {
         fieldName: 'eq',
         type: 'String',
-        description: 'All documents that are equal to given value.'
+        description: 'Checks if the value is equal to the given input.'
       },
       {
         fieldName: 'neq',
         type: 'String',
-        description: 'All documents that are not equal to given value.'
+        description: 'Checks if the value is not equal to the given input.'
       },
       {
         fieldName: 'matches',
         type: 'String',
-        description: 'All documents contain (match) the given word/words.'
+        description: 'Checks if the value matches the given word/words.'
       },
       {
         fieldName: 'in',
@@ -25,7 +25,7 @@ function createStringFilters() {
           type: 'String',
           isNullable: false
         },
-        description: 'All documents match one of the given values.'
+        description: 'Checks if the value is equal to one of the given values.'
       },
       {
         fieldName: 'nin',
@@ -34,7 +34,7 @@ function createStringFilters() {
           type: 'String',
           isNullable: false
         },
-        description: 'None of the values match any of the given values.'
+        description: 'Checks if the value is not equal to one of the given values.'
       }
     ]
   }
