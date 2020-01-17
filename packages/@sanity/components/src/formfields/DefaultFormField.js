@@ -8,7 +8,7 @@ import ValidationStatus from 'part:@sanity/components/validation/status'
 import ValidationList from 'part:@sanity/components/validation/list'
 import AnimateHeight from 'react-animate-height'
 
-export default class DefaultFormField extends React.Component {
+export default class DefaultFormField extends React.PureComponent {
   static propTypes = {
     label: PropTypes.string,
     className: PropTypes.string,

@@ -18,7 +18,7 @@ type FieldProps = {
 }
 // This component renders a single type in an object type. It emits onChange events telling the owner about the name of the type
 // that changed. This gives the owner an opportunity to use the same event handler function for all of its fields
-export default class Field extends React.Component<FieldProps> {
+export default class Field extends React.PureComponent<FieldProps> {
   _input: any
   static defaultProps = {
     level: 0,
