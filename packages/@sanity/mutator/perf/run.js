@@ -1,6 +1,6 @@
-import {BufferedDocument, Mutation} from '../src'
-import mutations from './fixtures/patches'
-import snapshot from './fixtures/snapshot'
+const {BufferedDocument, Mutation} = require('../lib')
+const mutations = require('./fixtures/patches')
+const snapshot = require('./fixtures/snapshot')
 
 const bufferedDocument = new BufferedDocument(snapshot)
 const labelAll = `Adding ${mutations.length} mutations`
