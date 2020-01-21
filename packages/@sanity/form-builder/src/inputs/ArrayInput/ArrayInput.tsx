@@ -20,6 +20,7 @@ import Fieldset from 'part:@sanity/components/fieldsets/default'
 import Details from '../common/Details'
 import formBuilderConfig from 'config:@sanity/form-builder'
 
+const NO_MARKERS: Marker[] = []
 const SUPPORT_DIRECT_UPLOADS = get(formBuilderConfig, 'images.directUploads')
 
 function createProtoValue(type: Type): ItemValue {
@@ -179,6 +180,8 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
         {value.map((item, index) => {
           const isChildMarker = marker =>
             startsWith([index], marker.path) || startsWith([{_key: item && item._key}], marker.path)
+          const childMarkers = markers.filter(isChildMarker)
+
           const itemProps = isSortable ? {index} : {}
           return (
             <Item
@@ -190,7 +193,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
                 type={type}
                 value={item}
                 level={level}
-                markers={markers.filter(isChildMarker)}
+                markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
                 onRemove={this.handleRemoveItem}
                 onChange={this.handleItemChange}
                 focusPath={focusPath}
