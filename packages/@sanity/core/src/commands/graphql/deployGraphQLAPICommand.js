@@ -6,12 +6,14 @@ Options
   --tag <tag> Deploy API to given tag (defaults to 'default')
   --playground Deploy a GraphQL playground for easily testing queries (public)
   --no-playground Skip playground prompt (do not deploy a playground)
+  --force Deploy API without confirming breaking changes
 
 Examples
   sanity graphql deploy
   sanity graphql deploy --playground
   sanity graphql deploy --dataset staging --no-playground
   sanity graphql deploy --dataset staging --tag next --no-playground
+  sanity graphql deploy --no-playground --force
 `
 
 export default {
