@@ -4,7 +4,9 @@ import {Path, PathSegment} from './typedefs/path'
 import PatchEvent from './PatchEvent'
 import generateHelpUrl from '@sanity/generate-help-url'
 import * as PathUtils from '@sanity/util/paths.js'
-import {Type} from './typedefs'
+import {Type, Marker} from './typedefs'
+
+const NO_MARKERS: Marker[] = []
 
 type Props = {
   value: any
@@ -14,7 +16,7 @@ type Props = {
   onBlur: () => void
   readOnly: boolean
   focusPath: Path
-  markers: Array<any>
+  markers: Marker[]
   level: number
   isRoot?: boolean
   path: Array<PathSegment>
@@ -45,7 +47,7 @@ export class FormBuilderInput extends React.PureComponent<Props> {
   static defaultProps = {
     focusPath: [],
     path: [],
-    markers: []
+    markers: NO_MARKERS
   }
   _input: FormBuilderInput | HTMLDivElement | null
   getValuePath = () => {
@@ -203,7 +205,7 @@ export class FormBuilderInput extends React.PureComponent<Props> {
           {...leafProps}
           value={value}
           readOnly={readOnly || type.readOnly}
-          markers={childMarkers}
+          markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
           type={type}
           onChange={this.handleChange}
           onFocus={this.handleFocus}

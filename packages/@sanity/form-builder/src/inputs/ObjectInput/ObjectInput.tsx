@@ -1,5 +1,6 @@
 import React from 'react'
 import Field from './Field'
+import {Marker} from '../../typedefs'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import isEmpty from '../../utils/isEmpty'
@@ -35,7 +36,7 @@ type ObjectInputProps = {
   onChange?: (...args: any[]) => any
   onFocus: (...args: any[]) => any
   focusPath?: any[]
-  markers?: any[]
+  markers?: Marker[]
   onBlur: (...args: any[]) => any
   level?: number
   readOnly?: boolean

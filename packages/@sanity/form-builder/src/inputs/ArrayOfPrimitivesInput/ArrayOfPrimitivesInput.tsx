@@ -14,6 +14,8 @@ import styles from './styles/ArrayOfPrimitivesInput.css'
 import getEmptyValue from './getEmptyValue'
 import Item from './Item'
 
+const NO_MARKERS: Marker[] = []
+
 function move(arr, from, to) {
   const copy = arr.slice()
   const val = copy[from]
@@ -127,7 +129,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
           index={index}
           value={item}
           readOnly={readOnly}
-          markers={filteredMarkers}
+          markers={filteredMarkers.length === 0 ? NO_MARKERS : filteredMarkers}
           isSortable={isSortable}
           type={itemMemberType}
           focusPath={focusPath}
