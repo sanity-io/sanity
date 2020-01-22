@@ -7,18 +7,24 @@ module.exports = async function deleteApiAction(args, context) {
     requireProject: true
   })
 
+  const dataset = flags.dataset || client.config().dataset
+  const tag = flags.tag || 'default'
+
+  const confirmMessage =
+    tag === 'default'
+      ? 'Are you absolutely sure you want to delete the current GraphQL API?'
+      : `Are you absolutely sure you want to delete the GraphQL API tagged "${tag}"?`
+
   if (
     !(await prompt.single({
       type: 'confirm',
-      message: `Are you absolutely sure you want to delete the current GraphQL API?`,
+      message: confirmMessage,
       default: false
     }))
   ) {
     return
   }
 
-  const dataset = flags.dataset || client.config().dataset
-  const tag = flags.tag || 'default'
   try {
     await client.request({
       url: `/apis/graphql/${dataset}/${tag}`,
