@@ -11,6 +11,7 @@ module.exports = async function deployApiActions(args, context) {
   await tryInitializePluginConfigs({workDir, output, env: 'production'})
 
   const flags = args.extOptions
+  const {force, playground} = flags
 
   const client = apiClient({
     requireUser: true,
@@ -20,13 +21,13 @@ module.exports = async function deployApiActions(args, context) {
   const dataset = flags.dataset || client.config().dataset
   const tag = flags.tag || 'default'
   const enablePlayground =
-    typeof flags.playground === 'undefined'
+    typeof playground === 'undefined'
       ? await prompt.single({
           type: 'confirm',
-          message: `Do you want to enable a GraphQL playground?`,
+          message: 'Do you want to enable a GraphQL playground?',
           default: true
         })
-      : flags.playground
+      : playground
 
   let spinner = output.spinner('Generating GraphQL schema').start()
 
@@ -50,6 +51,25 @@ module.exports = async function deployApiActions(args, context) {
   }
 
   spinner.succeed()
+
+  spinner = output.spinner('Validating GraphQL API').start()
+  let valid
+  try {
+    valid = await client.request({
+      url: `/apis/graphql/${dataset}/${tag}/validate`,
+      method: 'POST',
+      body: {enablePlayground, schema},
+      maxRedirects: 0
+    })
+  } catch (err) {
+    spinner.fail()
+    throw err
+  }
+
+  if (!(await confirmValidationResult(valid, {spinner, output, prompt, force}))) {
+    return
+  }
+
   spinner = output.spinner('Deploying GraphQL API').start()
 
   try {
@@ -67,4 +87,44 @@ module.exports = async function deployApiActions(args, context) {
     spinner.fail()
     throw err
   }
+}
+
+async function confirmValidationResult(valid, {spinner, output, prompt, force}) {
+  const {validationError, breakingChanges, dangerousChanges} = valid
+  if (validationError) {
+    spinner.fail()
+    throw new Error(`GraphQL schema is not valid:\n\n${validationError}`)
+  }
+
+  const hasProblematicChanges = breakingChanges.length > 0 || dangerousChanges.length > 0
+  if (force && hasProblematicChanges) {
+    spinner.text = 'Validating GraphQL API: Dangerous changes. Forced with `--force`.'
+    spinner.warn()
+    return true
+  } else if (force || !hasProblematicChanges) {
+    spinner.succeed()
+    return true
+  }
+
+  spinner.warn()
+
+  if (dangerousChanges.length > 0) {
+    output.print('\nFound potentially dangerous changes from previous schema:')
+    dangerousChanges.forEach(change => output.print(` - ${change.description}`))
+  }
+
+  if (breakingChanges.length > 0) {
+    output.print('\nFound BREAKING changes from previous schema:')
+    breakingChanges.forEach(change => output.print(` - ${change.description}`))
+  }
+
+  output.print('')
+
+  const shouldDeploy = await prompt.single({
+    type: 'confirm',
+    message: 'Do you want to deploy a new API despite the dangerous changes?',
+    default: false
+  })
+
+  return shouldDeploy
 }
