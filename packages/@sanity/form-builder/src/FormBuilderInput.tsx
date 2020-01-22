@@ -1,5 +1,6 @@
 /* eslint-disable complexity */
 import React from 'react'
+import shallowEquals from 'shallow-equals'
 import {Path, PathSegment} from './typedefs/path'
 import PatchEvent from './PatchEvent'
 import generateHelpUrl from '@sanity/generate-help-url'
@@ -34,7 +35,7 @@ function trimChildPath(path, childPath) {
   return PathUtils.startsWith(path, childPath) ? PathUtils.trimLeft(path, childPath) : []
 }
 
-export class FormBuilderInput extends React.PureComponent<Props> {
+export class FormBuilderInput extends React.Component<Props> {
   scrollTimeout: number
   _element: HTMLDivElement | null
   static contextTypes = {
@@ -65,6 +66,16 @@ export class FormBuilderInput extends React.PureComponent<Props> {
     if (PathUtils.hasFocus(focusPath, path)) {
       this.focus()
     }
+  }
+
+  shouldComponentUpdate(nextProps) {
+    const {path: oldPath, ...oldProps} = this.props
+    const {path: newPath, ...newProps} = nextProps
+
+    const propsDiffer = !shallowEquals(oldProps, newProps)
+    const pathDiffer = !PathUtils.isEqual(oldPath, newPath)
+
+    return propsDiffer || pathDiffer
   }
 
   UNSAFE_componentWillReceiveProps(nextProps: Props) {
