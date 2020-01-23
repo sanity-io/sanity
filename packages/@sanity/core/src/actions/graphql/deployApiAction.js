@@ -3,6 +3,7 @@ const getSanitySchema = require('./getSanitySchema')
 const extractFromSanitySchema = require('./extractFromSanitySchema')
 const generateTypeQueries = require('./generateTypeQueries')
 const generateTypeFilters = require('./generateTypeFilters')
+const generateTypeSortings = require('./generateTypeSortings')
 const SchemaError = require('./SchemaError')
 
 module.exports = async function deployApiActions(args, context) {
@@ -36,9 +37,10 @@ module.exports = async function deployApiActions(args, context) {
     const sanitySchema = getSanitySchema(workDir)
     const extracted = extractFromSanitySchema(sanitySchema)
     const filters = generateTypeFilters(extracted.types)
-    const queries = generateTypeQueries(extracted.types, filters)
-    const types = extracted.types.concat(filters)
-    schema = {types, queries, interfaces: extracted.interfaces}
+    const sortings = generateTypeSortings(extracted.types)
+    const queries = generateTypeQueries(extracted.types, filters, sortings)
+    const types = extracted.types.concat(filters).concat(sortings)
+    schema = {types, queries, interfaces: extracted.interfaces, generation: 'v2'}
   } catch (err) {
     spinner.fail()
 
