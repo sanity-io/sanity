@@ -9,7 +9,7 @@ function pluralizeTypeName(name) {
   return words.join('')
 }
 
-function generateTypeQueries(types, filters) {
+function generateTypeQueries(types) {
   const queries = []
   const queryable = types.filter(
     type => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document')
@@ -40,8 +40,6 @@ function generateTypeQueries(types, filters) {
 
   // Fetch all of type
   queryable.forEach(type => {
-    const filterName = `${type.name}Filter`
-    const hasFilter = filters.find(filter => filter.name === filterName)
     queries.push({
       fieldName: `all${pluralizeTypeName(type.name)}`,
       filter: `_type == "${type.originalName || type.name}"`,
@@ -50,30 +48,40 @@ function generateTypeQueries(types, filters) {
         isNullable: false,
         children: {type: type.name, isNullable: false}
       },
-      args: hasFilter
-        ? [{name: 'where', type: filterName, isFieldFilter: true}].concat(getLimitOffsetArgs())
-        : getLimitOffsetArgs()
+      args: [
+        {
+          name: 'where',
+          type: `${type.name}Filter`,
+          isFieldFilter: true
+        },
+        {
+          name: 'sort',
+          type: {
+            kind: 'List',
+            isNullable: true,
+            children: {
+              type: `${type.name}Sorting`,
+              isNullable: false
+            }
+          }
+        },
+        {
+          name: 'limit',
+          type: 'Int',
+          description: 'Max documents to return',
+          isFieldFilter: false
+        },
+        {
+          name: 'offset',
+          type: 'Int',
+          description: 'Offset at which to start returning documents from',
+          isFieldFilter: false
+        }
+      ]
     })
   })
 
   return queries
-}
-
-function getLimitOffsetArgs() {
-  return [
-    {
-      name: 'limit',
-      type: 'Int',
-      description: 'Max documents to return',
-      isFieldFilter: false
-    },
-    {
-      name: 'offset',
-      type: 'Int',
-      description: 'Offset at which to start returning documents from',
-      isFieldFilter: false
-    }
-  ]
 }
 
 module.exports = generateTypeQueries
