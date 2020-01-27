@@ -364,7 +364,7 @@ export default withPatchSubscriber(
         this._input.focus()
       }
     }
-    handleDocumentPatches = ({patches, shouldReset, snapshot}) => {
+    handleDocumentPatches = ({patches}) => {
       if (patches.length === 0) {
         return
       }
