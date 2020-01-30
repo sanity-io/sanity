@@ -1,6 +1,7 @@
 // @flow
 import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash'
 import {INVALID_PREVIEW_CONFIG} from './constants'
+import {isPortableTextArray, extractTextFromBlocks} from './utils/portableText'
 
 const PRESERVE_KEYS = ['_id', '_type', '_upload']
 const EMPTY = []
@@ -190,6 +191,17 @@ function validateReturnedPreview(result: PrepareInvocationResult) {
   }
 }
 
+function defaultPrepare(value: SelectedValue): {[key: string]: any} {
+  return Object.keys(value).reduce((acc: {[key: string]: any}, fieldName: string) => {
+    return {
+      ...acc,
+      [fieldName]: isPortableTextArray(value[fieldName])
+        ? extractTextFromBlocks(value[fieldName])
+        : value[fieldName]
+    }
+  }, {})
+}
+
 export function invokePrepare(
   type: Type,
   value: SelectedValue,
@@ -198,7 +210,7 @@ export function invokePrepare(
   const prepare = type.preview.prepare
   try {
     return {
-      returnValue: prepare ? prepare(value, viewOptions) : value,
+      returnValue: prepare ? prepare(value, viewOptions) : defaultPrepare(value),
       errors: EMPTY
     }
   } catch (error) {
