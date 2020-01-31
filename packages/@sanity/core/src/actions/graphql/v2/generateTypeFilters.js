@@ -1,6 +1,5 @@
 const createIdFilters = require('./filters/idFilters')
 const createStringFilters = require('./filters/stringFilters')
-const createUrlFilters = require('./filters/urlFilters')
 const createFloatFilters = require('./filters/floatFilters')
 const createIntegerFilters = require('./filters/integerFilters')
 const createBooleanFilters = require('./filters/booleanFilters')
@@ -8,6 +7,7 @@ const createDatetimeFilters = require('./filters/datetimeFilters')
 const createDateFilters = require('./filters/dateFilters')
 
 const typeAliases = {
+  Url: 'String',
   Text: 'String',
   Email: 'String'
 }
@@ -15,7 +15,6 @@ const typeAliases = {
 const filterCreators = {
   ID: createIdFilters,
   String: createStringFilters,
-  Url: createUrlFilters,
   Float: createFloatFilters,
   Integer: createIntegerFilters,
   Boolean: createBooleanFilters,
