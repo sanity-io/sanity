@@ -1,4 +1,15 @@
-const builtInTypes = ['ID', 'String', 'Url', 'Float', 'Integer', 'Boolean', 'Datetime', 'Date']
+const builtInTypes = [
+  'Boolean',
+  'Date',
+  'Datetime',
+  'Email',
+  'Float',
+  'ID',
+  'Integer',
+  'String',
+  'Text',
+  'Url'
+]
 
 const builtInSortingEnum = {
   name: 'SortOrder',
