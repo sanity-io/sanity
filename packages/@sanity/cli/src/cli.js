@@ -56,7 +56,7 @@ module.exports = async function runCli(cliRoot) {
   cliRunner.runCommand(args.groupOrCommand, args, options).catch(err => {
     const error = err.details || err
     // eslint-disable-next-line no-console
-    console.error(error.stack ? neatStack(err) : error)
+    console.error(`\n${error.stack ? neatStack(err) : error}`)
     // eslint-disable-next-line no-process-exit
     process.exit(1)
   })
