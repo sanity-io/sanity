@@ -1,16 +1,26 @@
+const {get} = require('lodash')
+const debug = require('../../debug').default
+const getUrlHeaders = require('../../util/getUrlHeaders')
 const {tryInitializePluginConfigs} = require('../config/reinitializePluginConfigs')
 const getSanitySchema = require('./getSanitySchema')
 const extractFromSanitySchema = require('./extractFromSanitySchema')
-const generateTypeQueries = require('./generateTypeQueries')
-const generateTypeFilters = require('./generateTypeFilters')
-const generateTypeSortings = require('./generateTypeSortings')
 const SchemaError = require('./SchemaError')
 
+const v1 = require('./v1')
+const v2 = require('./v2')
+
+const latestGeneration = 'v2'
+const generations = {
+  v1,
+  v2
+}
+
 module.exports = async function deployApiActions(args, context) {
-  const {apiClient, workDir, output, prompt} = context
+  const {apiClient, workDir, output, prompt, chalk} = context
 
   await tryInitializePluginConfigs({workDir, output, env: 'production'})
 
+  let spinner
   const flags = args.extOptions
   const {force, playground} = flags
 
@@ -21,6 +31,32 @@ module.exports = async function deployApiActions(args, context) {
 
   const dataset = flags.dataset || client.config().dataset
   const tag = flags.tag || 'default'
+  let generation = flags.generation
+  if (generation && !generations.hasOwnProperty(generation)) {
+    throw new Error(`Unknown API generation "${generation}"`)
+  }
+
+  spinner = output.spinner('Checking for deployed API').start()
+  const currentGeneration = await getUrlHeaders(client.getUrl(`/apis/graphql/${dataset}/${tag}`), {
+    Authorization: `Bearer ${client.config().token}`
+  })
+    .then(res => res['x-sanity-graphql-generation'])
+    .catch(err => {
+      if (err.statusCode === 404) {
+        return null
+      }
+
+      throw err
+    })
+
+  spinner.succeed()
+
+  generation = await resolveApiGeneration({currentGeneration, flags, output, prompt, chalk})
+  if (!generation) {
+    // User cancelled
+    return
+  }
+
   const enablePlayground =
     typeof playground === 'undefined'
       ? await prompt.single({
@@ -30,17 +66,15 @@ module.exports = async function deployApiActions(args, context) {
         })
       : playground
 
-  let spinner = output.spinner('Generating GraphQL schema').start()
+  spinner = output.spinner('Generating GraphQL schema').start()
 
   let schema
   try {
+    const generateSchema = generations[generation]
     const sanitySchema = getSanitySchema(workDir)
     const extracted = extractFromSanitySchema(sanitySchema)
-    const filters = generateTypeFilters(extracted.types)
-    const sortings = generateTypeSortings(extracted.types)
-    const queries = generateTypeQueries(extracted.types, filters, sortings)
-    const types = extracted.types.concat(filters).concat(sortings)
-    schema = {types, queries, interfaces: extracted.interfaces, generation: 'v2'}
+
+    schema = generateSchema(extracted)
   } catch (err) {
     spinner.fail()
 
@@ -64,8 +98,9 @@ module.exports = async function deployApiActions(args, context) {
       maxRedirects: 0
     })
   } catch (err) {
+    const validationError = get(err, 'response.body.validationError')
     spinner.fail()
-    throw err
+    throw validationError ? new Error(validationError) : err
   }
 
   if (!(await confirmValidationResult(valid, {spinner, output, prompt, force}))) {
@@ -129,4 +164,55 @@ async function confirmValidationResult(valid, {spinner, output, prompt, force}) 
   })
 
   return shouldDeploy
+}
+
+async function resolveApiGeneration({currentGeneration, flags, output, prompt, chalk}) {
+  // a) If no API is currently disabled:
+  //    use the specificed one, or use whichever generation is the latest
+  // b) If an API generation is specified explicitly:
+  //    use the given one, but _prompt_ if it differs from the current one
+  // c) If no API generation is specified explicitly:
+  //    use whichever is already deployed, but warn if differs from latest
+  if (!currentGeneration) {
+    const generation = flags.generation || latestGeneration
+    debug(
+      'There is no current generation deployed, using %s (%s)',
+      generation,
+      flags.generation ? 'specified' : 'default'
+    )
+    return generation
+  }
+
+  if (flags.generation && flags.generation !== currentGeneration) {
+    output.warn(
+      `Specified generation (${flags.generation}) differs from the one currently deployed (${currentGeneration}).`
+    )
+
+    const confirmDeploy =
+      flags.force ||
+      (await prompt.single({
+        type: 'confirm',
+        message: 'Are you sure you want to deploy?',
+        default: false
+      }))
+
+    return confirmDeploy ? flags.generation : null
+  }
+
+  const generation = flags.generation || currentGeneration
+  if (generation !== latestGeneration) {
+    output.warn(
+      chalk.cyan(
+        `A new generation of the GraphQL API is available, use \`--generation ${latestGeneration}\` to use it`
+      )
+    )
+  }
+
+  if (flags.generation) {
+    debug('Using specified (%s) generation', flags.generation)
+    return flags.generation
+  }
+
+  debug('Using the currently deployed version (%s)', currentGeneration)
+  return currentGeneration
 }
