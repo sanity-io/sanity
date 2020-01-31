@@ -7,6 +7,11 @@ const createBooleanFilters = require('./filters/booleanFilters')
 const createDatetimeFilters = require('./filters/datetimeFilters')
 const createDateFilters = require('./filters/dateFilters')
 
+const typeAliases = {
+  Text: 'String',
+  Email: 'String'
+}
+
 const filterCreators = {
   ID: createIdFilters,
   String: createStringFilters,
@@ -48,31 +53,29 @@ function createObjectTypeFilters(objectTypes) {
     return {
       name: `${objectType.name}Filter`,
       kind: 'InputObject',
-      fields: objectType.fields
-        .filter(field => field.type !== 'JSON' && field.kind !== 'List')
-        .map(field => ({
-          fieldName: field.fieldName,
-          type: `${field.type}Filter`
-        }))
+      fields: createFieldFilters(objectType)
     }
   })
 }
 
 function createDocumentTypeFilters(documentTypes) {
   return documentTypes.map(documentType => {
-    const fields = documentType.fields
-      .filter(field => field.type !== 'JSON' && field.kind !== 'List')
-      .map(field => ({
-        fieldName: field.fieldName,
-        type: `${field.type}Filter`
-      }))
-      .concat(getDocumentFilters())
+    const fields = createFieldFilters(documentType).concat(getDocumentFilters())
     return {
       name: `${documentType.name}Filter`,
       kind: 'InputObject',
       fields
     }
   })
+}
+
+function createFieldFilters(objectType) {
+  return objectType.fields
+    .filter(field => field.type !== 'JSON' && field.kind !== 'List')
+    .map(field => ({
+      fieldName: field.fieldName,
+      type: `${typeAliases[field.type] || field.type}Filter`
+    }))
 }
 
 function getDocumentFilters() {
