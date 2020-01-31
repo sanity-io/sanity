@@ -19,5 +19,12 @@
       "name": "part:@sanity/base/schema",
       "path": "./schemas/schema.js"
     }
-  ]
+  ],
+  "env": {
+    "staging": {
+      "api": {
+        "projectId": "6989hjtp"
+      }
+    }
+  }
 }
