@@ -2,6 +2,7 @@ function createIntegerFilters() {
   return {
     name: 'IntFilter',
     kind: 'InputObject',
+    isConstraintFilter: true,
     fields: [
       {
         fieldName: 'eq',
