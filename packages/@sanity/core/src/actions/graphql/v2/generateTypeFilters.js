@@ -73,7 +73,8 @@ function createFieldFilters(objectType) {
     .filter(field => field.type !== 'JSON' && field.kind !== 'List')
     .map(field => ({
       fieldName: field.fieldName,
-      type: `${typeAliases[field.type] || field.type}Filter`
+      type: `${typeAliases[field.type] || field.type}Filter`,
+      isReference: field.isReference
     }))
 }
 
