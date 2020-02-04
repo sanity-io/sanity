@@ -5,6 +5,7 @@ const createIntegerFilters = require('./filters/integerFilters')
 const createBooleanFilters = require('./filters/booleanFilters')
 const createDatetimeFilters = require('./filters/datetimeFilters')
 const createDateFilters = require('./filters/dateFilters')
+const createDocumentFilters = require('./filters/documentFilters')
 
 const typeAliases = {
   Url: 'String',
@@ -19,7 +20,8 @@ const filterCreators = {
   Integer: createIntegerFilters,
   Boolean: createBooleanFilters,
   Datetime: createDatetimeFilters,
-  Date: createDateFilters
+  Date: createDateFilters,
+  Document: createDocumentFilters
 }
 
 function generateTypeFilters(types) {
@@ -81,14 +83,9 @@ function createFieldFilters(objectType) {
 function getDocumentFilters() {
   return [
     {
-      fieldName: 'references',
-      type: 'ID',
-      description: 'All documents referencing the given document ID.'
-    },
-    {
-      fieldName: 'is_draft',
-      type: 'Boolean',
-      description: 'All documents that are drafts.'
+      fieldName: '_',
+      type: 'DocumentFilter',
+      description: 'Apply filters on document level'
     }
   ]
 }
