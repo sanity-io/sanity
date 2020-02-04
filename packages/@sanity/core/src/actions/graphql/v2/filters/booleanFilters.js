@@ -2,6 +2,7 @@ function createBooleanFilters() {
   return {
     name: 'BooleanFilter',
     kind: 'InputObject',
+    isConstraintFilter: true,
     fields: [
       {
         fieldName: 'eq',

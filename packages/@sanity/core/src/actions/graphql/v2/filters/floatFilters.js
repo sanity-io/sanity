@@ -2,6 +2,7 @@ function createFloatFilters() {
   return {
     name: 'FloatFilter',
     kind: 'InputObject',
+    isConstraintFilter: true,
     fields: [
       {
         fieldName: 'eq',
