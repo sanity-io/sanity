@@ -2,6 +2,7 @@ function createDateTimeFilters() {
   return {
     name: 'DatetimeFilter',
     kind: 'InputObject',
+    isConstraintFilter: true,
     fields: [
       {
         fieldName: 'eq',

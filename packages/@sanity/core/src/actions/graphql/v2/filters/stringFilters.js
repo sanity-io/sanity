@@ -2,6 +2,7 @@ function createStringFilters() {
   return {
     name: 'StringFilter',
     kind: 'InputObject',
+    isConstraintFilter: true,
     fields: [
       {
         fieldName: 'eq',

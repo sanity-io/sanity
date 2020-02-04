@@ -2,6 +2,7 @@ function createIdFilters() {
   return {
     name: 'IDFilter',
     kind: 'InputObject',
+    isConstraintFilter: true,
     fields: [
       {
         fieldName: 'eq',
