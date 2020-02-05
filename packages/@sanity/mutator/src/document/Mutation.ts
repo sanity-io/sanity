@@ -6,7 +6,7 @@ import {Doc, Mut} from './types'
 // A mutation describing a number of operations on a single document
 // This should be considered an immutable structure. Mutations are compiled
 // on first application, and any changes in properties will not effectively
-type MutationParams = {
+export type MutationParams = {
   transactionId?: string
   transition?: string
   identity?: string
