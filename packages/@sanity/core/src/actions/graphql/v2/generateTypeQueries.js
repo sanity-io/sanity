@@ -9,11 +9,13 @@ function pluralizeTypeName(name) {
   return words.join('')
 }
 
-function generateTypeQueries(types) {
+function generateTypeQueries(types, filters, sortings) {
   const queries = []
   const queryable = types.filter(
     type => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document')
   )
+
+  const isSortable = type => sortings.some(sorting => sorting.name === `${type.name}Sorting`)
 
   // Single ID-based result lookup queries
   queryable.forEach(type => {
@@ -54,7 +56,7 @@ function generateTypeQueries(types) {
           type: `${type.name}Filter`,
           isFieldFilter: true
         },
-        {
+        isSortable(type) && {
           name: 'sort',
           type: {
             kind: 'List',
@@ -77,7 +79,7 @@ function generateTypeQueries(types) {
           description: 'Offset at which to start returning documents from',
           isFieldFilter: false
         }
-      ]
+      ].filter(Boolean)
     })
   })
 
