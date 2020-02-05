@@ -2,7 +2,6 @@
 import {Observable, defer, of as observableOf} from 'rxjs'
 import {concatMap, map, share} from 'rxjs/operators'
 import {createBufferedDocument} from './buffered-doc/createBufferedDocument'
-import {doCommit} from './checkoutPair'
 import {SanityDocument, WelcomeEvent} from './types'
 
 function fetchDocumentSnapshot(client, id) {
@@ -21,8 +20,15 @@ export interface QuerySnapshotEvent {
 
 type QueryEvent = WelcomeEvent | MutationEvent | QuerySnapshotEvent
 
+function commitMutations(client, mutations) {
+  return client.dataRequest('mutate', mutations, {
+    visibility: 'async',
+    returnDocuments: false
+  })
+}
+
 function _createDeprecatedAPIs(client) {
-  const _doCommit = mutations => doCommit(client, mutations)
+  const _doCommit = mutations => commitMutations(client, mutations)
 
   function patchDoc(documentId, patches) {
     const doc = checkout(documentId)

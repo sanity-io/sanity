@@ -1,66 +1,62 @@
 import {createObservableBufferedDocument} from './createObservableBufferedDocument'
-import {filter} from 'rxjs/operators'
-import {merge, Observable} from 'rxjs'
-import {ReconnectEvent} from '../types'
+import {Observable} from 'rxjs'
 import {
   CommitFunction,
-  SnapshotEvent,
   CommittedEvent,
+  DocumentMutationEvent,
   DocumentRebaseEvent,
-  DocumentMutationEvent
+  SnapshotEvent
 } from './types'
 import {ListenerEvent} from '../getPairListener'
+import {Mutation} from '../types'
 
-type BufferedDocumentEvent =
-  | ReconnectEvent
+export type BufferedDocumentEvent =
   | SnapshotEvent
   | DocumentRebaseEvent
   | DocumentMutationEvent
   | CommittedEvent
 
+const prepare = id => document => {
+  const {_id, _rev, _updatedAt, ...rest} = document
+  return {_id: id, ...rest}
+}
+
 export interface BufferedDocumentWrapper {
+  consistency$: Observable<boolean>
   events: Observable<BufferedDocumentEvent>
-  patch: (patches) => void
-  create: (document) => void
-  createIfNotExists: (document) => void
-  createOrReplace: (document) => void
-  delete: () => void
+  // helper functions
+  patch: (patches) => Mutation[]
+  create: (document) => Mutation
+  createIfNotExists: (document) => Mutation
+  createOrReplace: (document) => Mutation
+  delete: () => Mutation
+
+  mutate: (mutations: Mutation[]) => void
   commit: () => Observable<never>
 }
 
-function isReconnect(event: ListenerEvent): event is ReconnectEvent {
-  return event.type === 'reconnect'
-}
 export const createBufferedDocument = (
   documentId: string,
-  serverEvents$: Observable<ListenerEvent>,
-  doCommit: CommitFunction
+  // consider naming it remoteEvent$
+  listenerEvent$: Observable<ListenerEvent>,
+  commitMutations: CommitFunction
 ): BufferedDocumentWrapper => {
-  const bufferedDocument = createObservableBufferedDocument(serverEvents$, doCommit)
+  const bufferedDocument = createObservableBufferedDocument(listenerEvent$, commitMutations)
 
-  const reconnects$ = serverEvents$.pipe(filter(isReconnect))
+  const prepareDoc = prepare(documentId)
+
+  const DELETE = {delete: {id: documentId}}
 
   return {
-    events: merge(reconnects$, bufferedDocument.updates$),
-    patch(patches) {
-      bufferedDocument.addMutations(patches.map(patch => ({patch: {...patch, id: documentId}})))
-    },
-    create(document) {
-      bufferedDocument.addMutation({
-        create: Object.assign({id: documentId}, document)
-      })
-    },
-    createIfNotExists(document) {
-      bufferedDocument.addMutation({createIfNotExists: document})
-    },
-    createOrReplace(document) {
-      bufferedDocument.addMutation({createOrReplace: document})
-    },
-    delete() {
-      bufferedDocument.addMutation({delete: {id: documentId}})
-    },
-    commit() {
-      return bufferedDocument.commit()
-    }
+    events: bufferedDocument.updates$,
+    consistency$: bufferedDocument.consistency$,
+    patch: patches => patches.map(patch => ({patch: {...patch, id: documentId}})),
+    create: document => ({create: prepareDoc(document)}),
+    createIfNotExists: document => ({createIfNotExists: prepareDoc(document)}),
+    createOrReplace: document => ({createOrReplace: prepareDoc(document)}),
+    delete: () => DELETE,
+
+    mutate: (mutations: Mutation[]) => bufferedDocument.addMutations(mutations),
+    commit: () => bufferedDocument.commit()
   }
 }

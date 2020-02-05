@@ -38,6 +38,7 @@
     "@sanity/structure": "0.147.0",
     "@sanity/transaction-collator": "0.147.0",
     "@sanity/util": "0.147.0",
+    "@sanity/uuid": "0.147.0",
     "@sanity/validation": "0.147.0",
     "history": "^4.6.3",
     "lodash": "^4.17.15",

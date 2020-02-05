@@ -1,27 +1,28 @@
 import {BufferedDocument, Mutation} from '@sanity/mutator'
-import {defer, merge, NEVER, Observable, Subject, EMPTY} from 'rxjs'
+import {BehaviorSubject, EMPTY, merge, Observable, Subject} from 'rxjs'
 import {
-  concatMap,
   distinctUntilChanged,
+  filter,
   map,
-  mapTo,
+  mergeMap,
   mergeMapTo,
   publishReplay,
   refCount,
   scan,
   share,
+  take,
   tap,
   withLatestFrom
 } from 'rxjs/operators'
 import {
   CommitFunction,
-  CommittedEvent,
+  DocumentMutationEvent,
   DocumentRebaseEvent,
-  SnapshotEvent,
   MutationPayload,
-  DocumentMutationEvent
+  SnapshotEvent
 } from './types'
-import {ListenerEvent} from '../getPairListener'
+
+import {ListenerEvent, MutationEvent} from '../getPairListener'
 
 interface MutationAction {
   type: 'mutation'
@@ -34,54 +35,95 @@ interface CommitAction {
 
 type Action = MutationAction | CommitAction
 
-interface CommitRequest {
-  mutation: MutationPayload
-  onSuccess: () => void
-  onError: (error: Error) => void
+// BufferedDocument.LOCAL never updates its revision due to its internal consistency checks
+// but we sometimes we need the most current _rev on the document in UI land, e.g.
+// in order to do optimistic locking on the edited document to make sure we publish the document the user
+// actually are looking at, and not the one currently at the server
+// Also - the mutator is not setting _updatedAt on patches applied optimistically or
+// when they are received from server
+const getUpdatedSnapshot = (bufferedDocument: BufferedDocument) => {
+  const LOCAL = bufferedDocument.LOCAL
+  const HEAD = bufferedDocument.document.HEAD
+  if (!LOCAL) {
+    return LOCAL
+  }
+
+  return {
+    ...LOCAL,
+    _rev: (HEAD || LOCAL)._rev,
+    _updatedAt: new Date().toISOString()
+  }
 }
 
-const COMMITTED_EVENT: CommittedEvent = {type: 'committed'}
+const toSnapshotEvent = (document): SnapshotEvent => ({type: 'snapshot', document})
+const getDocument = <T extends {document: any}>(event: T): T['document'] => event.document
 
 // This is an observable interface for BufferedDocument in an attempt
 // to make it easier to work with the api provided by it
 export const createObservableBufferedDocument = (
   listenerEvent$: Observable<ListenerEvent>,
-  doCommit: CommitFunction
+  commitMutations: CommitFunction
 ) => {
   // Incoming local actions (e.g. a request to mutate, a request to commit pending changes, etc.)
   const actions$ = new Subject<Action>()
 
   // Stream of commit requests. Must be handled by a commit handler
-  const commits$ = new Subject<CommitRequest>()
+  const consistency$ = new BehaviorSubject<boolean>(true)
 
-  // Stream of events that has happened with documents (e.g. a mutation that has been applied, a rebase).
-  // These are "after the fact" events and also includes the next document state.
-  const updates$ = new Subject<DocumentRebaseEvent | DocumentMutationEvent>()
+  // Stream of mutations for this document
+  // NOTE: this will *not* include remote mutations received over the listener
+  // that has *already* applied locally/optimistically
+  const mutations$ = new Subject<DocumentMutationEvent>()
 
-  const createInitialBufferedDocument = snapshot => {
-    const bufferedDocument = new BufferedDocument(snapshot)
+  // a stream of rebase events emitted from the mutator
+  const rebase$ = new Subject<DocumentRebaseEvent>()
+
+  const createInitialBufferedDocument = initialSnapshot => {
+    const bufferedDocument = new BufferedDocument(initialSnapshot)
     bufferedDocument.onMutation = ({mutation, remote}) => {
-      updates$.next({
+      // this is called after either when:
+      // 1) local mutations has been added, optimistically applied and queued for sending
+      // 2) remote mutations originating from another client has arrived and been applied
+      mutations$.next({
         type: 'mutation',
-        document: bufferedDocument.LOCAL,
+        document: getUpdatedSnapshot(bufferedDocument),
         mutations: mutation.mutations,
         origin: remote ? 'remote' : 'local'
       })
     }
 
     bufferedDocument.onRebase = edge => {
-      updates$.next({type: 'rebase', document: edge})
+      rebase$.next({type: 'rebase', document: edge})
     }
 
-    bufferedDocument.commitHandler = opts => {
+    bufferedDocument.onConsistencyChanged = isConsistent => {
+      consistency$.next(isConsistent)
+    }
+
+    bufferedDocument.commitHandler = (opts: {
+      success: () => {}
+      failure: () => {}
+      cancel: (error) => {}
+      mutation: Mutation
+    }) => {
       const {resultRev, ...mutation} = opts.mutation.params
-      commits$.next({onSuccess: opts.success, onError: opts.failure, mutation})
+      commitMutations(mutation).then(opts.success, error => {
+        const isBadRequest =
+          error.name === 'ClientError' && error.statusCode >= 400 && error.statusCode <= 500
+        if (isBadRequest) {
+          opts.cancel(error)
+        } else {
+          opts.failure()
+        }
+        return Promise.reject(error)
+      })
     }
     return bufferedDocument
   }
 
-  const bufferedDocument$ = listenerEvent$.pipe(
+  const currentBufferedDocument$ = listenerEvent$.pipe(
     scan((bufferedDocument, listenerEvent): BufferedDocument => {
+      // consider renaming 'snapshot' to initial/welcome
       if (listenerEvent.type === 'snapshot') {
         if (bufferedDocument) {
           // we received a new snapshot and already got an old one. When we receive a snapshot again
@@ -98,30 +140,38 @@ export const createObservableBufferedDocument = (
         )
         return null
       }
-      if (listenerEvent.type === 'mutation') {
-        bufferedDocument.arrive(new Mutation(listenerEvent))
-      } else if (listenerEvent.type !== 'reconnect') {
-        // eslint-disable-next-line no-console
-        console.warn('Received unexpected server event of type "%s"', listenerEvent.type)
-      }
       return bufferedDocument
     }, null),
+    distinctUntilChanged(),
     publishReplay(1),
     refCount()
   )
 
+  // this is a stream of document snapshots where each new snapshot are emitted after listener mutations
+  // has been applied. Since the optimistic patches is not emitted on the mutation$ stream, we need this
+  // in order to update the document with a new _rev (and _updatedAt)
+  const snapshotAfterSync$ = listenerEvent$.pipe(
+    filter((ev): ev is MutationEvent => ev.type === 'mutation'),
+    withLatestFrom(currentBufferedDocument$),
+    map(([mutationEvent, bufferedDocument]) => {
+      bufferedDocument.arrive(new Mutation(mutationEvent))
+      return getUpdatedSnapshot(bufferedDocument)
+    })
+  )
+
   // this is where the side effects mandated by local actions actually happens
   const actionHandler$ = actions$.pipe(
-    withLatestFrom(bufferedDocument$),
-    tap(([operation, bufferedDocument]) => {
-      if (operation.type === 'mutation') {
-        bufferedDocument.add(new Mutation({mutations: operation.mutations}))
+    withLatestFrom(currentBufferedDocument$),
+    tap(([action, bufferedDocument]) => {
+      if (action.type === 'mutation') {
+        bufferedDocument.add(new Mutation({mutations: action.mutations}))
       }
-      if (operation.type === 'commit') {
+      if (action.type === 'commit') {
         bufferedDocument.commit()
       }
     }),
-    mergeMapTo(NEVER),
+    // We subscribe to this only for the side effects
+    mergeMapTo(EMPTY),
     share()
   )
 
@@ -130,36 +180,25 @@ export const createObservableBufferedDocument = (
   const addMutations = (mutations: MutationPayload[]) => emitAction({type: 'mutation', mutations})
   const addMutation = (mutation: MutationPayload) => addMutations([mutation])
 
-  const commit = () =>
-    defer(() => {
-      emitAction({type: 'commit'})
-      return EMPTY
-    })
-
-  const snapshot$ = bufferedDocument$.pipe(
-    distinctUntilChanged((bufDoc, prevBufDoc) => bufDoc.LOCAL === prevBufDoc.LOCAL),
-    map(
-      (bufferedDocument): SnapshotEvent => ({
-        type: 'snapshot',
-        document: bufferedDocument.LOCAL
-      })
+  const commit = () => {
+    return currentBufferedDocument$.pipe(
+      take(1),
+      mergeMap(bufferedDocument => bufferedDocument.commit()),
+      mergeMapTo(EMPTY)
     )
-  )
+  }
 
-  const commitResults$ = commits$.pipe(
-    concatMap(commitReq =>
-      doCommit(commitReq.mutation).pipe(
-        tap({
-          next: commitReq.onSuccess,
-          error: commitReq.onError
-        })
-      )
-    ),
-    mapTo(COMMITTED_EVENT)
-  )
+  // A stream of this document's snapshot
+  const snapshot$ = merge(
+    currentBufferedDocument$.pipe(map(bufferedDocument => bufferedDocument.LOCAL)),
+    mutations$.pipe(map(getDocument)),
+    rebase$.pipe(map(getDocument)),
+    snapshotAfterSync$
+  ).pipe(map(toSnapshotEvent), publishReplay(1), refCount())
 
   return {
-    updates$: merge(snapshot$, actionHandler$, updates$, commitResults$),
+    updates$: merge(snapshot$, actionHandler$, mutations$, rebase$),
+    consistency$: consistency$.pipe(distinctUntilChanged(), publishReplay(1), refCount()),
     addMutation,
     addMutations,
     commit

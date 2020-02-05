@@ -1,7 +1,7 @@
-import {Observable} from 'rxjs'
 import {SanityDocument} from '../types'
+import {Mutation} from '@sanity/mutator'
 
-export type CommitFunction = (mutation: MutationPayload) => Observable<unknown>
+export type CommitFunction = (mutation: Mutation['params']) => Promise<unknown>
 
 export interface DocumentRebaseEvent {
   type: 'rebase'
