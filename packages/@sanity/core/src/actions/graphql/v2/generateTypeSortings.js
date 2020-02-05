@@ -40,41 +40,41 @@ function generateTypeSortings(types) {
     type => type.type === 'Object' && type.interfaces && type.interfaces.includes('Document')
   )
 
+  const hasFields = type => type.fields.length > 0
+
   const objectTypeSortings = createObjectTypeSortings(objectTypes)
   const documentTypeSortings = createDocumentTypeSortings(documentTypes)
+  const allSortings = [].concat(objectTypeSortings, documentTypeSortings).filter(hasFields)
 
-  return objectTypeSortings.concat(documentTypeSortings).concat(builtInSortingEnum)
+  return allSortings.concat(builtInSortingEnum)
 }
 
 function createObjectTypeSortings(objectTypes) {
-  return objectTypes.map(objectType => {
-    return {
-      name: `${objectType.name}Sorting`,
-      kind: 'InputObject',
-      fields: objectType.fields
-        .filter(field => field.type !== 'JSON' && field.kind !== 'List')
-        .map(field => ({
-          fieldName: field.fieldName,
-          type: builtInTypes.includes(field.type) ? builtInSortingEnum.name : `${field.type}Sorting`
-        }))
-    }
-  })
-}
-
-function createDocumentTypeSortings(documentTypes) {
-  return documentTypes.map(documentType => {
-    const fields = documentType.fields
+  return objectTypes.map(objectType => ({
+    name: `${objectType.name}Sorting`,
+    kind: 'InputObject',
+    fields: objectType.fields
       .filter(field => field.type !== 'JSON' && field.kind !== 'List')
+      .filter(field => !field.isReference)
       .map(field => ({
         fieldName: field.fieldName,
         type: builtInTypes.includes(field.type) ? builtInSortingEnum.name : `${field.type}Sorting`
       }))
-    return {
-      name: `${documentType.name}Sorting`,
-      kind: 'InputObject',
-      fields
-    }
-  })
+  }))
+}
+
+function createDocumentTypeSortings(documentTypes) {
+  return documentTypes.map(documentType => ({
+    name: `${documentType.name}Sorting`,
+    kind: 'InputObject',
+    fields: documentType.fields
+      .filter(field => field.type !== 'JSON' && field.kind !== 'List')
+      .filter(field => !field.isReference)
+      .map(field => ({
+        fieldName: field.fieldName,
+        type: builtInTypes.includes(field.type) ? builtInSortingEnum.name : `${field.type}Sorting`
+      }))
+  }))
 }
 
 module.exports = generateTypeSortings
