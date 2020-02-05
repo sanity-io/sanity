@@ -14,7 +14,7 @@ interface Props {
   children: React.ReactNode
 }
 
-function KeyboardShortcutResponder({actionStates, activeId, children, className}) {
+function KeyboardShortcutResponder({actionStates, activeId, children, className, onActionStart}) {
   const active = actionStates.find(act => act.actionId === activeId)
 
   const handleKey = React.useCallback(
@@ -22,21 +22,22 @@ function KeyboardShortcutResponder({actionStates, activeId, children, className}
       const matchingStates = actionStates.filter(
         state => state.shortcut && isHotkey(state.shortcut, event)
       )
-      if (matchingStates.length > 1) {
-        alert('More than one matching keyboard shortcut')
-        return
-      }
       const matchingState = matchingStates[0]
       if (matchingState) {
         event.preventDefault()
       }
+      if (matchingStates.length > 1) {
+        console.warn(
+          `Keyboard shortcut conflict: More than one document action matches the shortcut "${matchingState.shortcut}"`
+        )
+      }
       if (matchingState && !matchingState.disabled) {
         matchingState.onHandle()
+        onActionStart(matchingState.actionId)
       }
     },
     [actionStates]
   )
-
   return (
     <div onKeyDown={handleKey} tabIndex={-1} className={className}>
       {children}
@@ -52,23 +53,27 @@ function KeyboardShortcutResponder({actionStates, activeId, children, className}
   )
 }
 
-export function DocumentActionShortcuts(props: Props) {
+export const DocumentActionShortcuts = React.memo((props: Props) => {
   const editState = useEditState(props.id, props.type)
 
   const actions = editState ? resolveDocumentActions(editState) : null
 
   const [activeId, setActiveId] = React.useState(null)
 
+  const onActionComplete = React.useCallback(() => setActiveId(null), [])
+  const onActionStart = React.useCallback(id => setActiveId(id), [])
+
   return actions ? (
     <RenderActionCollectionState
       actions={actions}
       actionProps={editState}
       component={KeyboardShortcutResponder}
-      onActionComplete={() => setActiveId(null)}
+      onActionStart={onActionStart}
+      onActionComplete={onActionComplete}
       className={props.className}
       activeId={activeId}
     >
       {props.children}
     </RenderActionCollectionState>
   ) : null
-}
+})

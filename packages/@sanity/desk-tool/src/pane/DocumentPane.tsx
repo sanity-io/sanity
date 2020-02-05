@@ -29,6 +29,7 @@ import {DocumentActionShortcuts} from '../components/DocumentActionShortcuts'
 import styles from './styles/Editor.css'
 import {Validation} from './Editor/Validation'
 import LanguageFilter from 'part:@sanity/desk-tool/language-select-component?'
+import {DocumentOperationResults} from '../components/DocumentOperationResults'
 
 declare const __DEV__: boolean
 
@@ -864,6 +865,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
           {!isConnected && (
             <Snackbar kind="warning" isPersisted title="Connection lost. Reconnecting…" />
           )}
+          <DocumentOperationResults id={options.id} type={options.type} />
         </TabbedPane>
       </DocumentActionShortcuts>
     )
