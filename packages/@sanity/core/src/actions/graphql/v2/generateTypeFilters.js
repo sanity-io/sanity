@@ -61,7 +61,7 @@ function createObjectTypeFilters(objectTypes) {
 
 function createDocumentTypeFilters(documentTypes) {
   return documentTypes.map(documentType => {
-    const fields = createFieldFilters(documentType).concat(getDocumentFilters())
+    const fields = getDocumentFilters().concat(createFieldFilters(documentType))
     return {
       name: `${documentType.name}Filter`,
       kind: 'InputObject',
