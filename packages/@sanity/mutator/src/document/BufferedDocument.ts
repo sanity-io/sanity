@@ -14,9 +14,13 @@ const ONE_MINUTE = 1000 * 60
 class Commit {
   mutations: Mutation[]
   tries: number
-  constructor(mutations) {
+  resolve: () => {}
+  reject: (error: Error) => {}
+  constructor(mutations, {resolve, reject}) {
     this.mutations = mutations
     this.tries = 0
+    this.resolve = resolve
+    this.reject = reject
   }
   apply(doc: Doc): Doc {
     return Mutation.applyAll(doc, this.mutations)
@@ -43,11 +47,14 @@ export default class BufferedDocument {
   onDelete: Function
   commitHandler: Function
   committerRunning: boolean
+  onConsistencyChanged: (boolean) => void
+
   constructor(doc) {
     this.buffer = new SquashingBuffer(doc)
     this.document = new Document(doc)
     this.document.onMutation = msg => this.handleDocMutation(msg)
     this.document.onRebase = msg => this.handleDocRebase(msg)
+    this.document.onConsistencyChanged = msg => this.handleDocConsistencyChanged(msg)
     this.LOCAL = doc
     this.mutations = []
     this.commits = []
@@ -63,23 +70,14 @@ export default class BufferedDocument {
     }
     this.document.reset(doc)
     this.rebase()
-  }
-
-  set onConsistencyChanged(callback: Function) {
-    this.document.onConsistencyChanged = callback
-  }
-
-  get onConsistencyChanged(): Function {
-    return this.document.onConsistencyChanged
-  }
-
-  get inconsitentAt(): Date {
-    // @ts-ignore
-    return this.document.inconsitentAt
+    this.handleDocConsistencyChanged(this.document.isConsistent())
   }
 
   // Add a change to the buffer
   add(mutation: Mutation) {
+    if (this.onConsistencyChanged) {
+      this.onConsistencyChanged(false)
+    }
     debug('Staged local mutation')
     this.buffer.add(mutation)
     const oldLocal = this.LOCAL
@@ -110,16 +108,19 @@ export default class BufferedDocument {
 
   // Submit all mutations in the buffer to be committed
   commit() {
-    // Anything to commit?
-    if (!this.buffer.hasChanges()) {
-      return
-    }
-    debug('Committing local changes')
-    // Collect current staged mutations into a commit and ...
-    this.commits.push(new Commit([this.buffer.purge()]))
-    // ... clear the table for the next commit.
-    this.buffer = new SquashingBuffer(this.LOCAL)
-    this.performCommits()
+    return new Promise((resolve, reject) => {
+      // Anything to commit?
+      if (!this.buffer.hasChanges()) {
+        resolve()
+        return
+      }
+      debug('Committing local changes')
+      // Collect current staged mutations into a commit and ...
+      this.commits.push(new Commit([this.buffer.purge()], {resolve, reject}))
+      // ... clear the table for the next commit.
+      this.buffer = new SquashingBuffer(this.LOCAL)
+      this.performCommits()
+    })
   }
 
   // Starts the committer that will try to committ all staged commits to the database
@@ -151,6 +152,7 @@ export default class BufferedDocument {
       success: () => {
         debug('Commit succeeded')
         docResponder.success()
+        commit.resolve()
         // Keep running the committer until no more commits
         this._cycleCommitter()
       },
@@ -168,13 +170,28 @@ export default class BufferedDocument {
         if (commit.tries < 200) {
           setTimeout(() => this._cycleCommitter(), Math.min(commit.tries * 1000, ONE_MINUTE))
         }
+      },
+      cancel: error => {
+        this.commits.forEach(commit => commit.reject(error))
+        // Throw away waiting commits
+        this.commits = []
+        // Reset back to last known state from gradient and
+        // cause a rebase that will reset the view in the
+        // form
+        this.reset(this.document.HEAD)
+        // Clear the buffer of recent mutations
+        this.buffer = new SquashingBuffer(this.LOCAL)
+
+        // Stop the committer loop
+        this.committerRunning = false
       }
     }
     debug('Posting commit')
     this.commitHandler({
       mutation: squashed,
       success: responder.success,
-      failure: responder.failure
+      failure: responder.failure,
+      cancel: responder.cancel
     })
   }
 
@@ -232,6 +249,20 @@ export default class BufferedDocument {
     const changed = !isEqual(this.LOCAL, oldLocal)
     if (changed && this.onRebase) {
       this.onRebase(this.LOCAL)
+    }
+  }
+
+  handleDocConsistencyChanged(isConsistent: boolean) {
+    if (!this.onConsistencyChanged) {
+      return
+    }
+    const hasLocalChanges = this.commits.length > 0 || this.buffer.hasChanges()
+
+    if (isConsistent && !hasLocalChanges) {
+      this.onConsistencyChanged(true)
+    }
+    if (!isConsistent) {
+      this.onConsistencyChanged(false)
     }
   }
 }
