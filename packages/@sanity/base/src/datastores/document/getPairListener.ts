@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import {defer, Observable, of as observableOf} from 'rxjs'
+import {defer, of as observableOf, Observable} from 'rxjs'
 import {concatMap, map} from 'rxjs/operators'
 import {
   IdPair,
@@ -21,7 +21,9 @@ export interface InitialSnapshotEvent {
   document: SanityDocument | null
 }
 
-export type ListenerEvent = WelcomeEvent | MutationEvent | ReconnectEvent | InitialSnapshotEvent
+export {MutationEvent}
+
+export type ListenerEvent = MutationEvent | ReconnectEvent | InitialSnapshotEvent
 
 export function getPairListener(client: SanityClient, idPair: IdPair) {
   const {publishedId, draftId} = idPair
