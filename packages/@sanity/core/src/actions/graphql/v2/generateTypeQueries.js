@@ -1,13 +1,4 @@
-const pluralize = require('pluralize')
-const {startCase, upperFirst} = require('lodash')
-
-function pluralizeTypeName(name) {
-  const words = startCase(name).split(' ')
-  const last = words[words.length - 1]
-  const plural = pluralize(last.toLowerCase())
-  words[words.length - 1] = upperFirst(plural)
-  return words.join('')
-}
+const {upperFirst} = require('lodash')
 
 function generateTypeQueries(types, filters, sortings) {
   const queries = []
@@ -43,7 +34,7 @@ function generateTypeQueries(types, filters, sortings) {
   // Fetch all of type
   queryable.forEach(type => {
     queries.push({
-      fieldName: `all${pluralizeTypeName(type.name)}`,
+      fieldName: `all${upperFirst(type.name)}`,
       filter: `_type == "${type.originalName || type.name}"`,
       type: {
         kind: 'List',
