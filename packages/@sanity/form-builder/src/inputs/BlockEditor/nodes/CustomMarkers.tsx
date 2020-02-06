@@ -26,7 +26,7 @@ export default class Markers extends React.Component<Props, {}> {
       <Tooltip
         title={text}
         trigger="mouseenter"
-        animation="fade scale"
+        animation="fade"
         arrow
         theme="light"
         distance={2}
