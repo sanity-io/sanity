@@ -16,7 +16,7 @@ function generateTypeQueries(types, filters, sortings) {
       constraints: [
         {
           field: '_id',
-          comparator: 'EQUALS',
+          comparator: 'eq',
           value: {kind: 'argumentValue', argName: 'id'}
         }
       ],
