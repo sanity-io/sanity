@@ -18,7 +18,8 @@ export default config => {
       alias: Object.assign({}, baseConfig.resolve.alias, {
         'react-dom': require.resolve('@hot-loader/react-dom'),
         'webpack-hot-middleware/client': require.resolve('../browser/hot-client')
-      })
+      }),
+      extensions: baseConfig.resolve.extensions
     },
     plugins: (baseConfig.plugins || []).concat([
       new webpack.HotModuleReplacementPlugin(),

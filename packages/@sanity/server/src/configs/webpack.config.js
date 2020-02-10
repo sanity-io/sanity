@@ -76,7 +76,8 @@ export default (config = {}) => {
         'react-dom': path.dirname(reactDomPath),
         moment$: 'moment/moment.js',
         ...rxPaths()
-      }
+      },
+      extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx']
     },
     module: {
       rules: [
