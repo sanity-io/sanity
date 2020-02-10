@@ -11,11 +11,7 @@ declare module 'config:*' {
   export default pluginConfig
 }
 
-declare module 'part:*' {
-  const any: any
-
-  export default any
-}
+declare module 'part:*'
 
 declare module '*.css' {
   const cssModule: {[key: string]: string}
