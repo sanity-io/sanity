@@ -4,22 +4,26 @@ const CHANGELOG_COMMAND =
 const execa = require('execa')
 
 const TEMPLATE = `
-Upgrade the Command Line Interface (CLI) with
+Upgrade the Command Line Interface (CLI) with:
 
     npm install --global @sanity/cli
 
-Upgrade the Content Studio with:
+Upgrade Sanity Studio with:
 
     sanity upgrade
 
 # ✨ Highlights
+
 ## Awesome feature X
+
 A few words about the awesome feature X, preferably with screengifs
 
 ## Awesome feature Y
+
 A few words about the awesome feature Y, preferably with screengifs
 
 ## Other features
+
 - This is feature is not that important, but worth mentioning anyway
 
 # 🐛 Notable bugfixes
