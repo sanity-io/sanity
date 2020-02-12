@@ -387,6 +387,10 @@
       "path": "datastores/user"
     },
     {
+      "name": "part:@sanity/base/presence",
+      "path": "datastores/presence"
+    },
+    {
       "name": "part:@sanity/base/project",
       "path": "datastores/project"
     },
