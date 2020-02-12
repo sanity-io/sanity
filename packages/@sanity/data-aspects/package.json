@@ -1,6 +1,6 @@
 {
   "name": "@sanity/data-aspects",
-  "version": "0.147.0",
+  "version": "1.148.0",
   "description": "Sanity plugin which controls how your data is presented",
   "main": "lib/DataAspectsResolver.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -19,11 +19,11 @@
     "sanity-plugin"
   ],
   "dependencies": {
-    "@sanity/generate-help-url": "0.147.0",
+    "@sanity/generate-help-url": "1.148.0",
     "lodash": "^4.17.15"
   },
   "devDependencies": {
-    "@sanity/check": "0.147.0",
+    "@sanity/check": "1.148.0",
     "rimraf": "^2.7.1"
   },
   "repository": {

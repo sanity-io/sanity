@@ -1,6 +1,6 @@
 {
   "name": "@sanity/import",
-  "version": "0.147.9",
+  "version": "1.148.0",
   "description": "Import documents to a Sanity dataset",
   "main": "lib/import.js",
   "engines": {
@@ -23,9 +23,9 @@
     "ndjson"
   ],
   "dependencies": {
-    "@sanity/generate-help-url": "0.147.0",
-    "@sanity/mutator": "0.147.8",
-    "@sanity/uuid": "0.147.0",
+    "@sanity/generate-help-url": "1.148.0",
+    "@sanity/mutator": "1.148.0",
+    "@sanity/uuid": "1.148.0",
     "debug": "^3.1.0",
     "file-url": "^2.0.2",
     "fs-extra": "^6.0.1",
@@ -43,7 +43,7 @@
     "whatwg-url": "^7.0.0"
   },
   "devDependencies": {
-    "@sanity/client": "0.147.3",
+    "@sanity/client": "1.148.0",
     "get-it": "^5.0.0",
     "jest": "^24.9.0",
     "nock": "^9.0.5",

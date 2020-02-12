@@ -16,5 +16,5 @@
     "packages/storybook",
     "packages/test-studio"
   ],
-  "version": "0.147.9"
+  "version": "1.148.0"
 }
