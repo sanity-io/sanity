@@ -169,10 +169,10 @@ export type PatchBuilder = (patch: Patch) => Patch
 
 export type PatchMutationOperation = PatchOperations & MutationSelection
 
-export type Mutation =
-  | {create: SanityDocumentStub}
-  | {createOrReplace: IdentifiedSanityDocumentStub}
-  | {createIfNotExists: IdentifiedSanityDocumentStub}
+export type Mutation<R = any> =
+  | {create: SanityDocumentStub<R>}
+  | {createOrReplace: IdentifiedSanityDocumentStub<R>}
+  | {createIfNotExists: IdentifiedSanityDocumentStub<R>}
   | {delete: MutationSelection}
   | {patch: PatchMutationOperation}
 
@@ -305,14 +305,14 @@ export class Patch {
    *
    * @param options Options for the mutation operation
    */
-  commit(options: FirstDocumentMutationOptions): Promise<SanityDocument>
+  commit<R = any>(options: FirstDocumentMutationOptions): Promise<SanityDocument<R>>
 
   /**
    * Commit the patch, returning a promise that resolves to an array of the mutated documents
    *
    * @param options Options for the mutation operation
    */
-  commit(options: AllDocumentsMutationOptions): Promise<SanityDocument[]>
+  commit<R = any>(options: AllDocumentsMutationOptions): Promise<SanityDocument<R>[]>
 
   /**
    * Commit the patch, returning a promise that resolves to the document ID of the first mutated document
@@ -333,7 +333,7 @@ export class Patch {
    *
    * @param options Options for the mutation operation
    */
-  commit(options?: BaseMutationOptions): Promise<SanityDocument>
+  commit<R = any>(options?: BaseMutationOptions): Promise<SanityDocument<R>>
 
   /**
    * Clears the patch of all operations
@@ -351,7 +351,7 @@ export class Transaction {
    *
    * @param doc Document to create. Requires a `_type` property.
    */
-  create(doc: SanityDocumentStub): this
+  create<R = any>(doc: SanityDocumentStub<R>): this
 
   /**
    * Creates a new Sanity document. If a document with the same `_id` already exists, the create operation will be ignored.
@@ -359,7 +359,7 @@ export class Transaction {
    *
    * @param doc Document to create if it does not already exist. Requires `_id` and `_type` properties.
    */
-  createIfNotExists(doc: IdentifiedSanityDocumentStub): this
+  createIfNotExists<R = any>(doc: IdentifiedSanityDocumentStub<R>): this
 
   /**
    * Creates a new Sanity document, or replaces an existing one if the same `_id` is already used.
@@ -367,7 +367,7 @@ export class Transaction {
    *
    * @param doc Document to create or replace. Requires `_id` and `_type` properties.
    */
-  createOrReplace(doc: IdentifiedSanityDocumentStub): this
+  createOrReplace<R = any>(doc: IdentifiedSanityDocumentStub<R>): this
 
   /**
    * Deletes the document with the given document ID
@@ -410,14 +410,14 @@ export class Transaction {
    *
    * @param options Options for the mutation operation
    */
-  commit(options: FirstDocumentMutationOptions): Promise<SanityDocument>
+  commit<R>(options: FirstDocumentMutationOptions): Promise<SanityDocument<R>>
 
   /**
    * Commit the transaction, returning a promise that resolves to an array of the mutated documents
    *
    * @param options Options for the mutation operation
    */
-  commit(options: AllDocumentsMutationOptions): Promise<SanityDocument[]>
+  commit<R>(options: AllDocumentsMutationOptions): Promise<SanityDocument<R>[]>
 
   /**
    * Commit the transaction, returning a promise that resolves to the document ID of the first mutated document
@@ -498,7 +498,7 @@ type BaseMutationOptions = RequestOptions & {
   returnFirst?: boolean
 }
 
-export type MutationEvent = {
+export type MutationEvent<R = any> = {
   type: 'mutation'
   documentId: string
   eventId: string
@@ -506,8 +506,8 @@ export type MutationEvent = {
   mutations: Mutation[]
   previousRev?: string
   resultRev?: string
-  result?: SanityDocument
-  previous?: SanityDocument | null
+  result?: SanityDocument<R>
+  previous?: SanityDocument<R> | null
   timestamp: string
   transactionId: string
   transition: 'update' | 'appear' | 'disappear'
@@ -531,8 +531,8 @@ export type WelcomeEvent = {
   type: 'welcome'
 }
 
-export type ListenEvent =
-  | MutationEvent
+export type ListenEvent<R> =
+  | MutationEvent<R>
   | ChannelErrorEvent
   | DisconnectEvent
   | ReconnectEvent
@@ -601,29 +601,78 @@ export type MutationOptions =
   | AllDocumentsMutationOptions
   | AllDocumentIdsMutationOptions
 
-export interface RawQueryResponse {
+export interface RawQueryResponse<R> {
   q: string
   ms: number
-  result: any
+  result: R
 }
 
-export interface SanityDocument {
+export type SanityDocument<T extends object = {}> = {
+  [P in keyof T]: T[P]
+} & {
   _id: string
   _rev: string
   _type: string
   _createdAt: string
   _updatedAt: string
-  [key: string]: any
 }
 
-export interface SanityDocumentStub {
+export type SanityDocumentStub<T extends object = {}> = {
+  [P in keyof T]: T[P]
+} & {
   _type: string
-  [key: string]: any
 }
 
-export type IdentifiedSanityDocumentStub = {
+export type IdentifiedSanityDocumentStub<T extends object = {}> = {
+  [P in keyof T]: T[P]
+} & {
   _id: string
 } & SanityDocumentStub
+
+export interface SanityAssetDocument extends SanityDocument {
+  url: string
+  path: string
+  size: number
+  assetId: string
+  mimeType: string
+  sha1hash: string
+  extension: string
+  uploadId?: string
+  originalFilename?: string
+}
+
+export interface SanityImageAssetDocument extends SanityAssetDocument {
+  metadata: {
+    _type: 'sanity.imageMetadata'
+    hasAlpha: boolean
+    isOpaque: boolean
+    lqip?: string
+    dimensions: {
+      _type: 'sanity.imageDimensions'
+      aspectRatio: number
+      height: number
+      width: number
+    }
+    palette?: {
+      _type: 'sanity.imagePalette'
+      darkMuted?: SanityImagePalette
+      darkVibrant?: SanityImagePalette
+      dominant?: SanityImagePalette
+      lightMuted?: SanityImagePalette
+      lightVibrant?: SanityImagePalette
+      muted?: SanityImagePalette
+      vibrant?: SanityImagePalette
+    }
+    image?: {
+      _type: 'sanity.imageExifTags'
+      [key: string]: any
+    }
+    exif?: {
+      _type: 'sanity.imageExifMetadata'
+      [key: string]: any
+    }
+  }
+}
 
 export class ClientError extends Error {
   response: any
@@ -673,17 +722,30 @@ export class ObservableSanityClient {
 
   assets: {
     /**
-     * Uploads an asset to the configured dataset
+     * Uploads a file asset to the configured dataset
      *
      * @param assetType Asset type (file/image)
      * @param body Asset content - can be a browser File instance, a Blob, a Node.js Buffer instance or a Node.js ReadableStream.
      * @param options Options to use for the upload
      */
     upload(
-      assetType: 'file' | 'image',
+      assetType: 'file',
       body: File | Blob | Buffer | ReadableStream,
       options?: UploadOptions
-    ): Observable<SanityDocument>
+    ): Observable<SanityAssetDocument>
+
+    /**
+     * Uploads an image asset to the configured dataset
+     *
+     * @param assetType Asset type (file/image)
+     * @param body Asset content - can be a browser File instance, a Blob, a Node.js Buffer instance or a Node.js ReadableStream.
+     * @param options Options to use for the upload
+     */
+    upload(
+      assetType: 'image',
+      body: File | Blob | Buffer | ReadableStream,
+      options?: UploadOptions
+    ): Observable<SanityImageAssetDocument>
 
     /**
      * DEPRECATED: Deletes an asset of the given type and ID
@@ -695,7 +757,7 @@ export class ObservableSanityClient {
     delete(
       assetType: 'file' | 'image',
       id: string | IdentifiedSanityDocumentStub
-    ): Observable<SanityDocument | undefined>
+    ): Observable<SanityAssetDocument | undefined>
 
     /**
      * DEPRECATED: Returns the URL for an asset with a given document ID
@@ -805,18 +867,40 @@ export class ObservableSanityClient {
    * @param params Optional query parameters
    * @param options Request options
    */
-  fetch<T extends FilteredResponseQueryOptions | UnfilteredReponseQueryOptions>(
+  fetch<R = any>(
     query: string,
     params?: QueryParams,
-    options?: T
-  ): Observable<T extends UnfilteredReponseQueryOptions ? RawQueryResponse : any>
+    options: UnfilteredReponseQueryOptions
+  ): Observable<RawQueryResponse<R>>
+
+  /**
+   * Perform a GROQ-query against the configured dataset.
+   *
+   * @param query GROQ-query to perform
+   * @param params Optional query parameters
+   * @param options Request options
+   */
+  fetch<R = any>(
+    query: string,
+    params?: QueryParams,
+    options: FilteredResponseQueryOptions
+  ): Observable<R>
+
+  /**
+   * Perform a GROQ-query against the configured dataset.
+   *
+   * @param query GROQ-query to perform
+   * @param params Optional query parameters
+   * @param options Request options
+   */
+  fetch<R = any>(query: string, params?: QueryParams): Observable<R>
 
   /**
    * Fetch a single document with the given ID.
    *
    * @param id Document ID to fetch
    */
-  getDocument(id: string): Observable<SanityDocument | undefined>
+  getDocument<R = any>(id: string): Observable<SanityDocument<R> | undefined>
 
   /**
    * Fetch multiple documents in one request.
@@ -826,7 +910,7 @@ export class ObservableSanityClient {
    *
    * @param ids Document IDs to fetch
    */
-  getDocuments(ids: string[]): Observable<(SanityDocument | null)[]>
+  getDocuments<R = any>(ids: string[]): Observable<(SanityDocument<R> | null)[]>
 
   /**
    * Create a document. Requires a `_type` property. If no `_id` is provided, it will be generated by the database.
@@ -835,10 +919,10 @@ export class ObservableSanityClient {
    * @param document Document to create
    * @param options Mutation options
    */
-  create(
-    document: SanityDocumentStub,
+  create<R = any>(
+    document: SanityDocumentStub<R>,
     options: FirstDocumentMutationOptions
-  ): Observable<SanityDocument>
+  ): Observable<SanityDocument<R>>
 
   /**
    * Create a document. Requires a `_type` property. If no `_id` is provided, it will be generated by the database.
@@ -847,10 +931,10 @@ export class ObservableSanityClient {
    * @param document Document to create
    * @param options Mutation options
    */
-  create(
-    document: SanityDocumentStub,
+  create<R = any>(
+    document: SanityDocumentStub<R>,
     options: AllDocumentsMutationOptions
-  ): Observable<SanityDocument[]>
+  ): Observable<SanityDocument<R>[]>
 
   /**
    * Create a document. Requires a `_type` property. If no `_id` is provided, it will be generated by the database.
@@ -859,7 +943,10 @@ export class ObservableSanityClient {
    * @param document Document to create
    * @param options Mutation options
    */
-  create(document: SanityDocumentStub, options: FirstDocumentIdMutationOptions): Observable<string>
+  create<R = any>(
+    document: SanityDocumentStub<R>,
+    options: FirstDocumentIdMutationOptions
+  ): Observable<string>
 
   /**
    * Create a document. Requires a `_type` property. If no `_id` is provided, it will be generated by the database.
@@ -868,7 +955,10 @@ export class ObservableSanityClient {
    * @param document Document to create
    * @param options Mutation options
    */
-  create(document: SanityDocumentStub, options: AllDocumentIdsMutationOptions): Observable<string[]>
+  create<R = any>(
+    document: SanityDocumentStub<R>,
+    options: AllDocumentIdsMutationOptions
+  ): Observable<string[]>
 
   /**
    * Create a document. Requires a `_type` property. If no `_id` is provided, it will be generated by the database.
@@ -877,7 +967,10 @@ export class ObservableSanityClient {
    * @param document Document to create
    * @param options Mutation options
    */
-  create(document: SanityDocumentStub, options?: BaseMutationOptions): Observable<SanityDocument>
+  create<R = any>(
+    document: SanityDocumentStub<R>,
+    options?: BaseMutationOptions
+  ): Observable<SanityDocument<R>>
 
   /**
    * Create a document if no document with the same ID already exists.
@@ -886,10 +979,10 @@ export class ObservableSanityClient {
    * @param document Document to create
    * @param options Mutation options
    */
-  createIfNotExists(
-    document: IdentifiedSanityDocumentStub,
+  createIfNotExists<R = any>(
+    document: IdentifiedSanityDocumentStub<R>,
     options: FirstDocumentMutationOptions
-  ): Observable<SanityDocument>
+  ): Observable<SanityDocument<R>>
 
   /**
    * Create a document if no document with the same ID already exists.
@@ -898,10 +991,10 @@ export class ObservableSanityClient {
    * @param document Document to create
    * @param options Mutation options
    */
-  createIfNotExists(
-    document: IdentifiedSanityDocumentStub,
+  createIfNotExists<R = any>(
+    document: IdentifiedSanityDocumentStub<R>,
     options: AllDocumentsMutationOptions
-  ): Observable<SanityDocument[]>
+  ): Observable<SanityDocument<R>[]>
 
   /**
    * Create a document if no document with the same ID already exists.
@@ -910,8 +1003,8 @@ export class ObservableSanityClient {
    * @param document Document to create
    * @param options Mutation options
    */
-  createIfNotExists(
-    document: IdentifiedSanityDocumentStub,
+  createIfNotExists<R = any>(
+    document: IdentifiedSanityDocumentStub<R>,
     options: FirstDocumentIdMutationOptions
   ): Observable<string>
 
@@ -922,8 +1015,8 @@ export class ObservableSanityClient {
    * @param document Document to create
    * @param options Mutation options
    */
-  createIfNotExists(
-    document: IdentifiedSanityDocumentStub,
+  createIfNotExists<R = any>(
+    document: IdentifiedSanityDocumentStub<R>,
     options: AllDocumentIdsMutationOptions
   ): Observable<string[]>
 
@@ -934,10 +1027,10 @@ export class ObservableSanityClient {
    * @param document Document to create
    * @param options Mutation options
    */
-  createIfNotExists(
-    document: IdentifiedSanityDocumentStub,
+  createIfNotExists<R = any>(
+    document: IdentifiedSanityDocumentStub<R>,
     options?: BaseMutationOptions
-  ): Observable<SanityDocument>
+  ): Observable<SanityDocument<R>>
 
   /**
    * Create a document if it does not exist, or replace a document with the same document ID
@@ -946,10 +1039,10 @@ export class ObservableSanityClient {
    * @param document Document to either create or replace
    * @param options Mutation options
    */
-  createOrReplace(
-    document: IdentifiedSanityDocumentStub,
+  createOrReplace<R = any>(
+    document: IdentifiedSanityDocumentStub<R>,
     options: FirstDocumentMutationOptions
-  ): Observable<SanityDocument>
+  ): Observable<SanityDocument<R>>
 
   /**
    * Create a document if it does not exist, or replace a document with the same document ID
@@ -958,10 +1051,10 @@ export class ObservableSanityClient {
    * @param document Document to either create or replace
    * @param options Mutation options
    */
-  createOrReplace(
-    document: IdentifiedSanityDocumentStub,
+  createOrReplace<R = any>(
+    document: IdentifiedSanityDocumentStub<R>,
     options: AllDocumentsMutationOptions
-  ): Observable<SanityDocument[]>
+  ): Observable<SanityDocument<R>[]>
 
   /**
    * Create a document if it does not exist, or replace a document with the same document ID
@@ -970,8 +1063,8 @@ export class ObservableSanityClient {
    * @param document Document to either create or replace
    * @param options Mutation options
    */
-  createOrReplace(
-    document: IdentifiedSanityDocumentStub,
+  createOrReplace<R = any>(
+    document: IdentifiedSanityDocumentStub<R>,
     options: FirstDocumentIdMutationOptions
   ): Observable<string>
 
@@ -982,8 +1075,8 @@ export class ObservableSanityClient {
    * @param document Document to either create or replace
    * @param options Mutation options
    */
-  createOrReplace(
-    document: IdentifiedSanityDocumentStub,
+  createOrReplace<R = any>(
+    document: IdentifiedSanityDocumentStub<R>,
     options: AllDocumentIdsMutationOptions
   ): Observable<string[]>
 
@@ -994,10 +1087,10 @@ export class ObservableSanityClient {
    * @param document Document to either create or replace
    * @param options Mutation options
    */
-  createOrReplace(
-    document: IdentifiedSanityDocumentStub,
+  createOrReplace<R = any>(
+    document: IdentifiedSanityDocumentStub<R>,
     options?: BaseMutationOptions
-  ): Observable<SanityDocument>
+  ): Observable<SanityDocument<R>>
 
   /**
    * Deletes a document with the given document ID.
@@ -1006,7 +1099,7 @@ export class ObservableSanityClient {
    * @param id Document ID to delete
    * @param options Options for the mutation
    */
-  delete(id: string, options: FirstDocumentMutationOptions): Observable<SanityDocument>
+  delete<R = any>(id: string, options: FirstDocumentMutationOptions): Observable<SanityDocument<R>>
 
   /**
    * Deletes a document with the given document ID.
@@ -1015,7 +1108,7 @@ export class ObservableSanityClient {
    * @param id Document ID to delete
    * @param options Options for the mutation
    */
-  delete(id: string, options: AllDocumentsMutationOptions): Observable<SanityDocument[]>
+  delete<R = any>(id: string, options: AllDocumentsMutationOptions): Observable<SanityDocument<R>[]>
 
   /**
    * Deletes a document with the given document ID.
@@ -1042,7 +1135,7 @@ export class ObservableSanityClient {
    * @param id Document ID to delete
    * @param options Options for the mutation
    */
-  delete(id: string, options?: BaseMutationOptions): Observable<SanityDocument>
+  delete<R = any>(id: string, options?: BaseMutationOptions): Observable<SanityDocument<R>>
 
   /**
    * Deletes one or more documents matching the given query or document ID.
@@ -1051,10 +1144,10 @@ export class ObservableSanityClient {
    * @param selection An object with either an `id` or `query` key defining what to delete
    * @param options Options for the mutation
    */
-  delete(
+  delete<R = any>(
     selection: MutationSelection,
     options: FirstDocumentMutationOptions
-  ): Observable<SanityDocument>
+  ): Observable<SanityDocument<R>>
 
   /**
    * Deletes one or more documents matching the given query or document ID.
@@ -1063,10 +1156,10 @@ export class ObservableSanityClient {
    * @param selection An object with either an `id` or `query` key defining what to delete
    * @param options Options for the mutation
    */
-  delete(
+  delete<R = any>(
     selection: MutationSelection,
     options: AllDocumentsMutationOptions
-  ): Observable<SanityDocument[]>
+  ): Observable<SanityDocument<R>[]>
 
   /**
    * Deletes one or more documents matching the given query or document ID.
@@ -1093,7 +1186,10 @@ export class ObservableSanityClient {
    * @param selection An object with either an `id` or `query` key defining what to delete
    * @param options Options for the mutation
    */
-  delete(selection: MutationSelection, options?: BaseMutationOptions): Observable<SanityDocument>
+  delete<R = any>(
+    selection: MutationSelection,
+    options?: BaseMutationOptions
+  ): Observable<SanityDocument<R>>
 
   /**
    * Perform mutation operations against the configured dataset
@@ -1102,10 +1198,10 @@ export class ObservableSanityClient {
    * @param operations Mutation operations to execute
    * @param options Mutation options
    */
-  mutate(
-    operations: Mutation[] | Patch | Transaction,
+  mutate<R = any>(
+    operations: Mutation<R>[] | Patch | Transaction,
     options: FirstDocumentMutationOptions
-  ): Observable<SanityDocument>
+  ): Observable<SanityDocument<R>>
 
   /**
    * Perform mutation operations against the configured dataset.
@@ -1114,10 +1210,10 @@ export class ObservableSanityClient {
    * @param operations Mutation operations to execute
    * @param options Mutation options
    */
-  mutate(
-    operations: Mutation[] | Patch | Transaction,
+  mutate<R = any>(
+    operations: Mutation<R>[] | Patch | Transaction,
     options: AllDocumentsMutationOptions
-  ): Observable<SanityDocument[]>
+  ): Observable<SanityDocument<R>[]>
 
   /**
    * Perform mutation operations against the configured dataset
@@ -1126,8 +1222,8 @@ export class ObservableSanityClient {
    * @param operations Mutation operations to execute
    * @param options Mutation options
    */
-  mutate(
-    operations: Mutation[] | Patch | Transaction,
+  mutate<R = any>(
+    operations: Mutation<R>[] | Patch | Transaction,
     options: FirstDocumentIdMutationOptions
   ): Observable<string>
 
@@ -1138,8 +1234,8 @@ export class ObservableSanityClient {
    * @param operations Mutation operations to execute
    * @param options Mutation options
    */
-  mutate(
-    operations: Mutation[] | Patch | Transaction,
+  mutate<R = any>(
+    operations: Mutation<R>[] | Patch | Transaction,
     options: AllDocumentIdsMutationOptions
   ): Observable<string[]>
 
@@ -1150,10 +1246,10 @@ export class ObservableSanityClient {
    * @param operations Mutation operations to execute
    * @param options Mutation options
    */
-  mutate(
-    operations: Mutation[] | Patch | Transaction,
+  mutate<R = any>(
+    operations: Mutation<R>[] | Patch | Transaction,
     options?: BaseMutationOptions
-  ): Observable<SanityDocument>
+  ): Observable<SanityDocument<R>>
 
   /**
    * Create a new buildable patch of operations to perform
@@ -1168,7 +1264,7 @@ export class ObservableSanityClient {
    *
    * @param operations Optional array of mutation operations to initialize the transaction instance with
    */
-  transaction(operations?: Mutation[]): Transaction
+  transaction<R = any>(operations?: Mutation<R>[]): Transaction
 
   // "Internals", should generally not be used externally
   /**
@@ -1238,17 +1334,30 @@ export interface SanityClient {
 
   assets: {
     /**
-     * Uploads an asset to the configured dataset
+     * Uploads a file asset to the configured dataset
      *
      * @param assetType Asset type (file/image)
      * @param body Asset content - can be a browser File instance, a Blob, a Node.js Buffer instance or a Node.js ReadableStream.
      * @param options Options to use for the upload
      */
     upload(
-      assetType: 'file' | 'image',
+      assetType: 'file',
       body: File | Blob | Buffer | ReadableStream,
       options?: UploadOptions
-    ): Promise<SanityDocument>
+    ): Promise<SanityAssetDocument>
+
+    /**
+     * Uploads an image asset to the configured dataset
+     *
+     * @param assetType Asset type (file/image)
+     * @param body Asset content - can be a browser File instance, a Blob, a Node.js Buffer instance or a Node.js ReadableStream.
+     * @param options Options to use for the upload
+     */
+    upload(
+      assetType: 'image',
+      body: File | Blob | Buffer | ReadableStream,
+      options?: UploadOptions
+    ): Promise<SanityImageAssetDocument>
 
     /**
      * DEPRECATED: Deletes an asset of the given type and ID
@@ -1260,7 +1369,7 @@ export interface SanityClient {
     delete(
       assetType: 'file' | 'image',
       id: string | IdentifiedSanityDocumentStub
-    ): Promise<SanityDocument | undefined>
+    ): Promise<SanityAssetDocument | undefined>
 
     /**
      * DEPRECATED: Returns the URL for an asset with a given document ID
@@ -1352,7 +1461,7 @@ export interface SanityClient {
    * @param params Optional query parameters
    * @param options Listener options
    */
-  listen(query: string, params?: QueryParams): Observable<MutationEvent>
+  listen<R = any>(query: string, params?: QueryParams): Observable<MutationEvent<R>>
 
   /**
    * Set up a listener that will be notified when mutations occur on documents matching the provided query/filter.
@@ -1361,7 +1470,11 @@ export interface SanityClient {
    * @param params Optional query parameters
    * @param options Listener options
    */
-  listen(query: string, params?: QueryParams, options?: ListenOptions): Observable<ListenEvent>
+  listen<R = any>(
+    query: string,
+    params?: QueryParams,
+    options?: ListenOptions
+  ): Observable<ListenEvent<R>>
 
   /**
    * Perform a GROQ-query against the configured dataset.
@@ -1370,18 +1483,40 @@ export interface SanityClient {
    * @param params Optional query parameters
    * @param options Request options
    */
-  fetch<T extends FilteredResponseQueryOptions | UnfilteredReponseQueryOptions>(
+  fetch<R = any>(
     query: string,
     params?: QueryParams,
-    options?: T
-  ): Promise<T extends UnfilteredReponseQueryOptions ? RawQueryResponse : any>
+    options: UnfilteredReponseQueryOptions
+  ): Promise<RawQueryResponse<R>>
+
+  /**
+   * Perform a GROQ-query against the configured dataset.
+   *
+   * @param query GROQ-query to perform
+   * @param params Optional query parameters
+   * @param options Request options
+   */
+  fetch<R = any>(
+    query: string,
+    params?: QueryParams,
+    options: FilteredResponseQueryOptions
+  ): Promise<R>
+
+  /**
+   * Perform a GROQ-query against the configured dataset.
+   *
+   * @param query GROQ-query to perform
+   * @param params Optional query parameters
+   * @param options Request options
+   */
+  fetch<R = any>(query: string, params?: QueryParams): Promise<R>
 
   /**
    * Fetch a single document with the given ID.
    *
    * @param id Document ID to fetch
    */
-  getDocument(id: string): Promise<SanityDocument | undefined>
+  getDocument<R = any>(id: string): Promise<SanityDocument<R> | undefined>
 
   /**
    * Fetch multiple documents in one request.
@@ -1391,7 +1526,7 @@ export interface SanityClient {
    *
    * @param ids Document IDs to fetch
    */
-  getDocuments(ids: string[]): Promise<(SanityDocument | null)[]>
+  getDocuments<R = any>(ids: string[]): Promise<(SanityDocument<R> | null)[]>
 
   /**
    * Create a document. Requires a `_type` property. If no `_id` is provided, it will be generated by the database.
@@ -1400,10 +1535,10 @@ export interface SanityClient {
    * @param document Document to create
    * @param options Mutation options
    */
-  create(
-    document: SanityDocumentStub,
+  create<R = any>(
+    document: SanityDocumentStub<R>,
     options: FirstDocumentMutationOptions
-  ): Promise<SanityDocument>
+  ): Promise<SanityDocument<R>>
 
   /**
    * Create a document. Requires a `_type` property. If no `_id` is provided, it will be generated by the database.
@@ -1412,10 +1547,10 @@ export interface SanityClient {
    * @param document Document to create
    * @param options Mutation options
    */
-  create(
-    document: SanityDocumentStub,
+  create<R = any>(
+    document: SanityDocumentStub<R>,
     options: AllDocumentsMutationOptions
-  ): Promise<SanityDocument[]>
+  ): Promise<SanityDocument<R>[]>
 
   /**
    * Create a document. Requires a `_type` property. If no `_id` is provided, it will be generated by the database.
@@ -1424,7 +1559,10 @@ export interface SanityClient {
    * @param document Document to create
    * @param options Mutation options
    */
-  create(document: SanityDocumentStub, options: FirstDocumentIdMutationOptions): Promise<string>
+  create<R = any>(
+    document: SanityDocumentStub<R>,
+    options: FirstDocumentIdMutationOptions
+  ): Promise<string>
 
   /**
    * Create a document. Requires a `_type` property. If no `_id` is provided, it will be generated by the database.
@@ -1433,7 +1571,10 @@ export interface SanityClient {
    * @param document Document to create
    * @param options Mutation options
    */
-  create(document: SanityDocumentStub, options: AllDocumentIdsMutationOptions): Promise<string[]>
+  create<R = any>(
+    document: SanityDocumentStub<R>,
+    options: AllDocumentIdsMutationOptions
+  ): Promise<string[]>
 
   /**
    * Create a document. Requires a `_type` property. If no `_id` is provided, it will be generated by the database.
@@ -1442,7 +1583,10 @@ export interface SanityClient {
    * @param document Document to create
    * @param options Mutation options
    */
-  create(document: SanityDocumentStub, options?: BaseMutationOptions): Promise<SanityDocument>
+  create<R = any>(
+    document: SanityDocumentStub<R>,
+    options?: BaseMutationOptions
+  ): Promise<SanityDocument<R>>
 
   /**
    * Create a document if no document with the same ID already exists.
@@ -1451,10 +1595,10 @@ export interface SanityClient {
    * @param document Document to create
    * @param options Mutation options
    */
-  createIfNotExists(
-    document: IdentifiedSanityDocumentStub,
+  createIfNotExists<R = any>(
+    document: IdentifiedSanityDocumentStub<R>,
     options: FirstDocumentMutationOptions
-  ): Promise<SanityDocument>
+  ): Promise<SanityDocument<R>>
 
   /**
    * Create a document if no document with the same ID already exists.
@@ -1463,10 +1607,10 @@ export interface SanityClient {
    * @param document Document to create
    * @param options Mutation options
    */
-  createIfNotExists(
-    document: IdentifiedSanityDocumentStub,
+  createIfNotExists<R = any>(
+    document: IdentifiedSanityDocumentStub<R>,
     options: AllDocumentsMutationOptions
-  ): Promise<SanityDocument[]>
+  ): Promise<SanityDocument<R>[]>
 
   /**
    * Create a document if no document with the same ID already exists.
@@ -1475,8 +1619,8 @@ export interface SanityClient {
    * @param document Document to create
    * @param options Mutation options
    */
-  createIfNotExists(
-    document: IdentifiedSanityDocumentStub,
+  createIfNotExists<R = any>(
+    document: IdentifiedSanityDocumentStub<R>,
     options: FirstDocumentIdMutationOptions
   ): Promise<string>
 
@@ -1487,8 +1631,8 @@ export interface SanityClient {
    * @param document Document to create
    * @param options Mutation options
    */
-  createIfNotExists(
-    document: IdentifiedSanityDocumentStub,
+  createIfNotExists<R = any>(
+    document: IdentifiedSanityDocumentStub<R>,
     options: AllDocumentIdsMutationOptions
   ): Promise<string[]>
 
@@ -1499,10 +1643,10 @@ export interface SanityClient {
    * @param document Document to create
    * @param options Mutation options
    */
-  createIfNotExists(
-    document: IdentifiedSanityDocumentStub,
+  createIfNotExists<R = any>(
+    document: IdentifiedSanityDocumentStub<R>,
     options?: BaseMutationOptions
-  ): Promise<SanityDocument>
+  ): Promise<SanityDocument<R>>
 
   /**
    * Create a document if it does not exist, or replace a document with the same document ID
@@ -1511,10 +1655,10 @@ export interface SanityClient {
    * @param document Document to either create or replace
    * @param options Mutation options
    */
-  createOrReplace(
-    document: IdentifiedSanityDocumentStub,
+  createOrReplace<R = any>(
+    document: IdentifiedSanityDocumentStub<R>,
     options: FirstDocumentMutationOptions
-  ): Promise<SanityDocument>
+  ): Promise<SanityDocument<R>>
 
   /**
    * Create a document if it does not exist, or replace a document with the same document ID
@@ -1523,10 +1667,10 @@ export interface SanityClient {
    * @param document Document to either create or replace
    * @param options Mutation options
    */
-  createOrReplace(
-    document: IdentifiedSanityDocumentStub,
+  createOrReplace<R = any>(
+    document: IdentifiedSanityDocumentStub<R>,
     options: AllDocumentsMutationOptions
-  ): Promise<SanityDocument[]>
+  ): Promise<SanityDocument<R>[]>
 
   /**
    * Create a document if it does not exist, or replace a document with the same document ID
@@ -1535,8 +1679,8 @@ export interface SanityClient {
    * @param document Document to either create or replace
    * @param options Mutation options
    */
-  createOrReplace(
-    document: IdentifiedSanityDocumentStub,
+  createOrReplace<R = any>(
+    document: IdentifiedSanityDocumentStub<R>,
     options: FirstDocumentIdMutationOptions
   ): Promise<string>
 
@@ -1547,8 +1691,8 @@ export interface SanityClient {
    * @param document Document to either create or replace
    * @param options Mutation options
    */
-  createOrReplace(
-    document: IdentifiedSanityDocumentStub,
+  createOrReplace<R = any>(
+    document: IdentifiedSanityDocumentStub<R>,
     options: AllDocumentIdsMutationOptions
   ): Promise<string[]>
 
@@ -1559,10 +1703,10 @@ export interface SanityClient {
    * @param document Document to either create or replace
    * @param options Mutation options
    */
-  createOrReplace(
-    document: IdentifiedSanityDocumentStub,
+  createOrReplace<R = any>(
+    document: IdentifiedSanityDocumentStub<R>,
     options?: BaseMutationOptions
-  ): Promise<SanityDocument>
+  ): Promise<SanityDocument<R>>
 
   /**
    * Deletes a document with the given document ID.
@@ -1571,7 +1715,7 @@ export interface SanityClient {
    * @param id Document ID to delete
    * @param options Options for the mutation
    */
-  delete(id: string, options: FirstDocumentMutationOptions): Promise<SanityDocument>
+  delete<R = any>(id: string, options: FirstDocumentMutationOptions): Promise<SanityDocument<R>>
 
   /**
    * Deletes a document with the given document ID.
@@ -1580,7 +1724,7 @@ export interface SanityClient {
    * @param id Document ID to delete
    * @param options Options for the mutation
    */
-  delete(id: string, options: AllDocumentsMutationOptions): Promise<SanityDocument[]>
+  delete<R = any>(id: string, options: AllDocumentsMutationOptions): Promise<SanityDocument<R>[]>
 
   /**
    * Deletes a document with the given document ID.
@@ -1607,7 +1751,7 @@ export interface SanityClient {
    * @param id Document ID to delete
    * @param options Options for the mutation
    */
-  delete(id: string, options?: BaseMutationOptions): Promise<SanityDocument>
+  delete<R = any>(id: string, options?: BaseMutationOptions): Promise<SanityDocument<R>>
 
   /**
    * Deletes one or more documents matching the given query or document ID.
@@ -1616,10 +1760,10 @@ export interface SanityClient {
    * @param selection An object with either an `id` or `query` key defining what to delete
    * @param options Options for the mutation
    */
-  delete(
+  delete<R = any>(
     selection: MutationSelection,
     options: FirstDocumentMutationOptions
-  ): Promise<SanityDocument>
+  ): Promise<SanityDocument<R>>
 
   /**
    * Deletes one or more documents matching the given query or document ID.
@@ -1628,10 +1772,10 @@ export interface SanityClient {
    * @param selection An object with either an `id` or `query` key defining what to delete
    * @param options Options for the mutation
    */
-  delete(
+  delete<R = any>(
     selection: MutationSelection,
     options: AllDocumentsMutationOptions
-  ): Promise<SanityDocument[]>
+  ): Promise<SanityDocument<R>[]>
 
   /**
    * Deletes one or more documents matching the given query or document ID.
@@ -1658,7 +1802,10 @@ export interface SanityClient {
    * @param selection An object with either an `id` or `query` key defining what to delete
    * @param options Options for the mutation
    */
-  delete(selection: MutationSelection, options?: BaseMutationOptions): Promise<SanityDocument>
+  delete<R = any>(
+    selection: MutationSelection,
+    options?: BaseMutationOptions
+  ): Promise<SanityDocument<R>>
 
   /**
    * Perform mutation operations against the configured dataset
@@ -1667,10 +1814,10 @@ export interface SanityClient {
    * @param operations Mutation operations to execute
    * @param options Mutation options
    */
-  mutate(
-    operations: Mutation[] | Patch | Transaction,
+  mutate<R = any>(
+    operations: Mutation<R>[] | Patch | Transaction,
     options: FirstDocumentMutationOptions
-  ): Promise<SanityDocument>
+  ): Promise<SanityDocument<R>>
 
   /**
    * Perform mutation operations against the configured dataset.
@@ -1679,10 +1826,10 @@ export interface SanityClient {
    * @param operations Mutation operations to execute
    * @param options Mutation options
    */
-  mutate(
-    operations: Mutation[] | Patch | Transaction,
+  mutate<R = any>(
+    operations: Mutation<R>[] | Patch | Transaction,
     options: AllDocumentsMutationOptions
-  ): Promise<SanityDocument[]>
+  ): Promise<SanityDocument<R>[]>
 
   /**
    * Perform mutation operations against the configured dataset
@@ -1691,8 +1838,8 @@ export interface SanityClient {
    * @param operations Mutation operations to execute
    * @param options Mutation options
    */
-  mutate(
-    operations: Mutation[] | Patch | Transaction,
+  mutate<R = any>(
+    operations: Mutation<R>[] | Patch | Transaction,
     options: FirstDocumentIdMutationOptions
   ): Promise<string>
 
@@ -1703,8 +1850,8 @@ export interface SanityClient {
    * @param operations Mutation operations to execute
    * @param options Mutation options
    */
-  mutate(
-    operations: Mutation[] | Patch | Transaction,
+  mutate<R>(
+    operations: Mutation<R>[] | Patch | Transaction,
     options: AllDocumentIdsMutationOptions
   ): Promise<string[]>
 
@@ -1715,10 +1862,10 @@ export interface SanityClient {
    * @param operations Mutation operations to execute
    * @param options Mutation options
    */
-  mutate(
-    operations: Mutation[] | Patch | Transaction,
+  mutate<R = any>(
+    operations: Mutation<R>[] | Patch | Transaction,
     options?: BaseMutationOptions
-  ): Promise<SanityDocument>
+  ): Promise<SanityDocument<R>>
 
   /**
    * Create a new buildable patch of operations to perform
@@ -1733,7 +1880,7 @@ export interface SanityClient {
    *
    * @param operations Optional array of mutation operations to initialize the transaction instance with
    */
-  transaction(operations?: Mutation[]): Transaction
+  transaction<R = any>(operations?: Mutation<R>[]): Transaction
 
   // "Internals", should generally not be used externally
   /**
