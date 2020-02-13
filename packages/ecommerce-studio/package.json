@@ -1,7 +1,7 @@
 {
   "name": "ecommerce-studio",
   "private": true,
-  "version": "1.148.1",
+  "version": "1.148.2",
   "description": "",
   "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
@@ -19,7 +19,7 @@
     "ecommerce-studio"
   ],
   "dependencies": {
-    "@sanity/base": "1.148.1",
+    "@sanity/base": "1.148.2",
     "@sanity/cli": "1.148.1",
     "@sanity/components": "1.148.1",
     "@sanity/core": "1.148.1",
