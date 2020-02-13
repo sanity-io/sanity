@@ -40,6 +40,9 @@ function recalculateOperations(item: UndoRedoStackItem) {
       if (!checkedOp || !checkedOp.path) {
         return
       }
+      if (!remoteOp || !remoteOp.path) {
+        return
+      }
       const pAbove = remoteOp.path.get(0) < checkedOp.path.get(0)
       const pEqual = remoteOp.path.get(0) == checkedOp.path.get(0)
       switch (remoteOp.type) {
