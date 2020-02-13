@@ -1,6 +1,6 @@
 {
   "name": "@sanity/document-store",
-  "version": "0.147.8",
+  "version": "1.148.1",
   "description": "",
   "main": "./lib/index.js",
   "scripts": {
