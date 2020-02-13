@@ -6,18 +6,11 @@
       {
         "_key": "randomKey00",
         "_type": "span",
-        "marks": [
-          "em"
-        ],
-        "text": "Hei"
+        "marks": [],
+        "text": "This is a test"
       }
     ],
     "markDefs": [],
     "style": "normal"
-  },
-  {
-    "_key": "randomKey1",
-    "_type": "code",
-    "text": "const foo = 'bar'"
   }
 ]

@@ -30,7 +30,7 @@ const blockContentFunctions = {
    */
   htmlToBlocks(html, blockContentType, options = {}) {
     const deserializer = new HtmlDeserializer(blockContentType, options)
-    return deserializer.deserialize(html)
+    return deserializer.deserialize(html).map(_normalizeBlock)
   },
 
   /**
