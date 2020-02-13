@@ -58,20 +58,8 @@
       "path": "src/test-intent-tool"
     },
     {
-      "implements": "part:@sanity/base/tool",
-      "path": "src/test-action-tool"
-    },
-    {
       "implements": "part:@sanity/production-preview/resolve-production-url",
       "path": "src/resolveProductionUrl"
-    },
-    {
-      "implements": "part:@sanity/base/document-actions/resolver",
-      "path": "src/resolveDocumentActions"
-    },
-    {
-      "implements": "part:@sanity/base/document-badges/resolver",
-      "path": "src/resolveDocumentBadges"
     },
     {
       "implements": "part:@sanity/form-builder/input/array/functions",

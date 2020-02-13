@@ -18,7 +18,6 @@ const INITIAL_STATE = {
 
 export default class FormView extends React.PureComponent {
   static propTypes = {
-    id: PropTypes.string,
     patchChannel: PropTypes.object,
     document: PropTypes.shape({
       draft: PropTypes.shape({_id: PropTypes.string, _type: PropTypes.string}),
@@ -26,7 +25,7 @@ export default class FormView extends React.PureComponent {
       displayed: PropTypes.shape({_id: PropTypes.string, _type: PropTypes.string})
     }).isRequired,
     initialValue: PropTypes.shape({_type: PropTypes.string}),
-    isConnected: PropTypes.bool,
+    isReconnecting: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     schemaType: PropTypes.shape({name: PropTypes.string, title: PropTypes.string}).isRequired,
     markers: PropTypes.arrayOf(
@@ -48,7 +47,7 @@ export default class FormView extends React.PureComponent {
 
   static defaultProps = {
     markers: [],
-    isConnected: true,
+    isReconnecting: false,
     initialValue: undefined
   }
 
@@ -76,20 +75,25 @@ export default class FormView extends React.PureComponent {
     // do nothing
   }
 
+  isLiveEditEnabled() {
+    const selectedSchemaType = schema.get(this.props.schemaType.name)
+    return selectedSchemaType.liveEdit === true
+  }
+
   isReadOnly() {
-    const {document, schemaType, isConnected} = this.props
+    const {document, schemaType, isReconnecting} = this.props
     const {draft, published} = document
     const isNonExistent = !draft && !published
 
     return (
-      !isConnected ||
+      isReconnecting ||
       !isActionEnabled(schemaType, 'update') ||
       (isNonExistent && !isActionEnabled(schemaType, 'create'))
     )
   }
 
   render() {
-    const {document, id, history, schemaType, markers, patchChannel, initialValue} = this.props
+    const {document, history, schemaType, markers, patchChannel, initialValue} = this.props
     const {draft, published, displayed} = document
     const {focusPath, filterField} = this.state
     const value = draft || published
@@ -115,15 +119,16 @@ export default class FormView extends React.PureComponent {
           <HistoryForm document={displayed} schema={schema} schemaType={schemaType} />
         ) : (
           <EditForm
-            id={id}
-            value={draft || published || initialValue}
+            draft={draft}
             filterField={filterField}
             focusPath={focusPath}
+            initialValue={initialValue}
             markers={markers}
             onBlur={this.handleBlur}
             onChange={readOnly ? noop : this.props.onChange}
             onFocus={this.handleFocus}
             patchChannel={patchChannel}
+            published={published}
             readOnly={readOnly}
             schema={schema}
             type={schemaType}
