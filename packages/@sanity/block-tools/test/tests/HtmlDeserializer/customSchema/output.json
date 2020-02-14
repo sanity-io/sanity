@@ -1,8 +1,14 @@
 [
   {
+    "_key": "randomKey0",
     "_type": "block",
     "children": [
-      { "_type": "span", "marks": [], "text": "A heading that is not allowed" }
+      {
+        "_key": "randomKey00",
+        "_type": "span",
+        "marks": [],
+        "text": "A heading that is not allowed"
+      }
     ],
     "markDefs": [],
     "style": "normal"
