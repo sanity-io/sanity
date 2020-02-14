@@ -1,4 +1,4 @@
-import {defer, merge, Observable, of, Subject} from 'rxjs'
+import {defer, asyncScheduler, merge, Observable, of, Subject} from 'rxjs'
 import {OperationImpl, OperationsAPI} from './operations'
 import {IdPair} from '../types'
 import {
@@ -10,7 +10,9 @@ import {
   mergeMap,
   share,
   switchMap,
-  take
+  take,
+  tap,
+  throttleTime
 } from 'rxjs/operators'
 import {operationArgs} from './operationArgs'
 import {del} from './operations/delete'
@@ -87,41 +89,28 @@ export interface OperationSuccess {
 
 const results$ = operationCalls$.pipe(
   groupBy(op => op.idPair.publishedId),
-  mergeMap(groupedByDocId$ => {
-    return groupedByDocId$.pipe(
+  mergeMap(groups$ => {
+    return groups$.pipe(
       // although it might look like a but, dropping pending async operations here is actually a feature
       // E.g. if the user types `publish` which is async and then starts patching (sync) then the publish
       // should be cancelled
-      switchMap(op => {
-        return operationArgs(op.idPair, op.typeName).pipe(
+      switchMap(args => {
+        return operationArgs(args.idPair, args.typeName).pipe(
           take(1),
           switchMap(operationArgs => {
-            const requiresConsistency = REQUIRES_CONSISTENCY.includes(op.operationName)
+            const requiresConsistency = REQUIRES_CONSISTENCY.includes(args.operationName)
             if (requiresConsistency) {
               operationArgs.published.commit()
               operationArgs.draft.commit()
             }
-            const isConsistent$ = consistencyStatus(op.idPair).pipe(filter(Boolean))
+            const isConsistent$ = consistencyStatus(args.idPair).pipe(filter(Boolean))
             const ready$ = requiresConsistency ? isConsistent$.pipe(take(1)) : of(null)
             return ready$.pipe(
-              mergeMap(() => execute(op.operationName, operationArgs, op.extraArgs))
+              mergeMap(() => execute(args.operationName, operationArgs, args.extraArgs))
             )
           }),
-          map(
-            (): OperationSuccess => ({
-              type: 'success',
-              op: op.operationName,
-              id: op.idPair.publishedId
-            })
-          ),
-          catchError(err =>
-            of<OperationError>({
-              type: 'error',
-              op: op.operationName,
-              id: op.idPair.publishedId,
-              error: err
-            })
-          )
+          map(() => ({type: 'success', args})),
+          catchError(err => of({type: 'error', args, error: err}))
         )
       })
     )
@@ -129,8 +118,28 @@ const results$ = operationCalls$.pipe(
   share()
 )
 
+// this enables autocommit after patch operations
+const AUTOCOMMIT_INTERVAL = 1000
+const autoCommit$ = results$.pipe(
+  filter(result => result.type === 'success' && result.args.operationName === 'patch'),
+  throttleTime(AUTOCOMMIT_INTERVAL, asyncScheduler, {leading: true, trailing: true}),
+  tap(result => {
+    emitOperation('commit', result.args.idPair, result.args.typeName, [])
+  })
+)
+
+autoCommit$.subscribe()
+
 export const operationEvents = memoize(
   (idPair: IdPair, typeName: string) =>
-    results$.pipe(filter(result => result.id === idPair.publishedId)),
+    results$.pipe(
+      filter(result => result.args.idPair.publishedId === idPair.publishedId),
+      map((result: any): OperationSuccess | OperationError => {
+        const {operationName, idPair} = result.args
+        return result.type === 'success'
+          ? {type: 'success', op: operationName, id: idPair.publishedId}
+          : {type: 'error', op: operationName, id: idPair.publishedId, error: result.error}
+      })
+    ),
   idPair => idPair.publishedId
 )
