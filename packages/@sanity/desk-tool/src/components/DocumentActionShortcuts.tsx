@@ -12,9 +12,17 @@ interface Props {
   type: string
   className?: string
   children: React.ReactNode
+  onKeyUp: (event: any) => void
 }
 
-function KeyboardShortcutResponder({actionStates, activeId, children, className, onActionStart}) {
+function KeyboardShortcutResponder({
+  actionStates,
+  activeId,
+  children,
+  className,
+  onActionStart,
+  onKeyUp
+}) {
   const active = actionStates.find(act => act.actionId === activeId)
 
   const handleKey = React.useCallback(
@@ -35,20 +43,14 @@ function KeyboardShortcutResponder({actionStates, activeId, children, className,
         matchingState.onHandle()
         onActionStart(matchingState.actionId)
       }
+      onKeyUp(event)
     },
     [actionStates]
   )
   return (
     <div onKeyDown={handleKey} tabIndex={-1} className={className}>
       {children}
-      {active &&
-        (active.dialog ? (
-          <ActionStateDialog dialog={active.dialog} />
-        ) : (
-          <Dialog onClose>
-            <DialogContent>{active.label || 'Working…'}</DialogContent>
-          </Dialog>
-        ))}
+      {active && active.dialog && <ActionStateDialog dialog={active.dialog} />}
     </div>
   )
 }
@@ -72,6 +74,7 @@ export const DocumentActionShortcuts = React.memo((props: Props) => {
       onActionComplete={onActionComplete}
       className={props.className}
       activeId={activeId}
+      onKeyUp={props.onKeyUp}
     >
       {props.children}
     </RenderActionCollectionState>

@@ -810,6 +810,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
       <DocumentActionShortcuts
         id={options.id}
         type={typeName}
+        onKeyUp={this.handleKeyUp}
         className={
           this.historyIsOpen()
             ? documentPaneStyles.paneWrapperWithHistory
