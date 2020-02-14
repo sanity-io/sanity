@@ -3,7 +3,7 @@ import {filter, map, publishReplay, refCount} from 'rxjs/operators'
 import {memoizedPair} from './memoizedPair'
 import {BufferedDocumentEvent} from '../buffered-doc/createBufferedDocument'
 import {SnapshotEvent} from '../buffered-doc/types'
-import {createMemoizer} from '../utils/createMemoizer'
+import {memoize} from '../utils/createMemoizer'
 import {Observable} from 'rxjs'
 import {DocumentVersion} from './checkoutPair'
 
@@ -54,20 +54,20 @@ interface SnapshotPair {
   published: DocumentVersionSnapshots
 }
 
-const memoizeOn = createMemoizer<SnapshotPair>()
-
-export function snapshotPair(idPair: IdPair) {
-  return memoizedPair(idPair).pipe(
-    map(
-      ({published, draft}): SnapshotPair => {
-        return {
-          published: withSnapshots(published),
-          draft: withSnapshots(draft)
+export const snapshotPair = memoize(
+  (idPair: IdPair) => {
+    return memoizedPair(idPair).pipe(
+      map(
+        ({published, draft}): SnapshotPair => {
+          return {
+            published: withSnapshots(published),
+            draft: withSnapshots(draft)
+          }
         }
-      }
-    ),
-    publishReplay(1),
-    refCount(),
-    memoizeOn(idPair.publishedId)
-  )
-}
+      ),
+      publishReplay(1),
+      refCount()
+    )
+  },
+  idPair => idPair.publishedId
+)

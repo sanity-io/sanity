@@ -68,8 +68,9 @@ export const GUARDED: OperationsAPI = {
   duplicate: createOperationGuard('duplicate'),
   restore: createOperationGuard('restore')
 }
-const createEmitter = (operationName: keyof OperationsAPI, id) => (...extraArgs: any[]) =>
-  emitOperation(operationName, id, extraArgs)
+const createEmitter = (operationName: keyof OperationsAPI, idPair, typeName) => (
+  ...executeArgs: any[]
+) => emitOperation(operationName, idPair, typeName, executeArgs)
 
 function wrap<ErrorStrings>(
   opName: keyof OperationsAPI,
@@ -79,7 +80,7 @@ function wrap<ErrorStrings>(
   const disabled = op.disabled(operationArgs)
   return {
     disabled,
-    execute: createEmitter(opName, operationArgs.idPair.publishedId)
+    execute: createEmitter(opName, operationArgs.idPair, operationArgs.typeName)
   }
 }
 
