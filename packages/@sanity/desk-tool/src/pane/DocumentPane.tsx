@@ -120,8 +120,7 @@ interface Props {
   published: null | Doc
   draft: null | Doc
   value: null | Doc
-  isLoading: boolean
-  isConnected: boolean
+  connectionState: 'connecting' | 'connected' | 'reconnecting'
   isSelected: boolean
   isCollapsed: boolean
   markers: any[]
@@ -702,7 +701,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
 
   renderCurrentView() {
     const initialValue = this.getInitialValue()
-    const {views, options, urlParams, value, onChange, isConnected, markers} = this.props
+    const {views, options, urlParams, value, onChange, connectionState, markers} = this.props
     const {historical, historyState} = this.state
 
     const selectedHistoryEvent = this.findSelectedHistoryEvent()
@@ -739,7 +738,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
     const formProps = {
       ...viewProps,
       value: value,
-      isConnected,
+      connectionState,
       markers,
       history: {
         isOpen: this.historyIsOpen(),
@@ -769,12 +768,11 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
   render() {
     const {
       isSelected,
-      isLoading,
       value,
       isCollapsed,
       isClosable,
       onCollapse,
-      isConnected,
+      connectionState,
       onExpand,
       menuItemGroups,
       views,
@@ -790,7 +788,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
       return this.renderUnknownSchemaType()
     }
 
-    if (isLoading) {
+    if (connectionState === 'connecting') {
       return (
         <div className={documentPaneStyles.loading}>
           <Spinner center message={`Loading ${schemaType.title}…`} delay={600} />
@@ -863,7 +861,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
           {inspect && !this.historyIsOpen() && value && (
             <InspectView value={value} onClose={this.handleHideInspector} />
           )}
-          {!isConnected && (
+          {connectionState === 'reconnecting' && (
             <Snackbar kind="warning" isPersisted title="Connection lost. Reconnecting…" />
           )}
           <DocumentOperationResults id={options.id} type={options.type} />

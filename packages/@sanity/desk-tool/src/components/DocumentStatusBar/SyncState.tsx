@@ -11,7 +11,9 @@ interface Props {
 
 export function SyncState(props: Props) {
   const {isSyncing} = useSyncState(props.id, props.type)
-  const {isConnected} = useConnectionState(props.id, props.type)
+  const connectionState = useConnectionState(props.id, props.type)
+
+  const isConnected = connectionState === 'connected'
 
   const icon = isSyncing || !isConnected ? <SyncIcon /> : <CheckIcon />
   const className = isSyncing

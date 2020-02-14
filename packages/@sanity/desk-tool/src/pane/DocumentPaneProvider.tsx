@@ -44,7 +44,7 @@ export const DocumentPaneProvider = withInitialValue((props: Props) => {
   const {patch}: any = useDocumentOperation(props.options.id, props.options.type)
   const editState: any = useEditState(props.options.id, props.options.type)
   const {markers} = useValidationStatus(props.options.id, props.options.type)
-  const {isConnected} = useConnectionState(props.options.id, props.options.type)
+  const connectionState = useConnectionState(props.options.id, props.options.type)
 
   const onChange = React.useCallback(
     patches => {
@@ -59,11 +59,10 @@ export const DocumentPaneProvider = withInitialValue((props: Props) => {
       {...props}
       onChange={onChange}
       markers={markers}
-      isConnected={isConnected}
+      connectionState={connectionState}
       value={value}
       draft={editState && editState.draft}
       published={editState && editState.published}
-      isLoading={!editState}
     />
   )
 })

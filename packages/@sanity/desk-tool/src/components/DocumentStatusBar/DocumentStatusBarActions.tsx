@@ -90,7 +90,7 @@ function DocumentStatusBarActionsInner(props: Props) {
 
 export function DocumentStatusBarActions(props: {id: string; type: string}) {
   const editState = useEditState(props.id, props.type)
-  const {isConnected} = useConnectionState(props.id, props.type)
+  const connectionState = useConnectionState(props.id, props.type)
 
   const [isMenuOpen, setMenuOpen] = React.useState(false)
 
@@ -105,7 +105,7 @@ export function DocumentStatusBarActions(props: {id: string; type: string}) {
       onActionComplete={() => setMenuOpen(false)}
       actions={actions}
       actionProps={editState}
-      disabled={!isConnected}
+      disabled={connectionState !== 'connected'}
     />
   ) : null
 }
@@ -120,7 +120,7 @@ const historyActions = [HistoryRestoreAction]
 
 export function HistoryStatusBarActions(props: HistoryStatusBarActionsProps) {
   const editState: any = useEditState(props.id, props.type)
-  const {isConnected} = useConnectionState(props.id, props.type)
+  const connectionState = useConnectionState(props.id, props.type)
 
   if (!editState) {
     return null
@@ -137,7 +137,7 @@ export function HistoryStatusBarActions(props: HistoryStatusBarActionsProps) {
       onActionComplete={() => {
         /*todo: make optional*/
       }}
-      disabled={!isConnected || Boolean(disabled)}
+      disabled={connectionState !== 'connected' || Boolean(disabled)}
     />
   )
 }
