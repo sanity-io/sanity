@@ -9,6 +9,7 @@ export type ArrayType = Type & {
     editModal?: 'fold' | 'modal' | string
     sortable?: boolean
     layout?: 'grid'
+    canDuplicate?: boolean
   }
   of: Array<Type>
 }

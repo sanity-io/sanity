@@ -6,6 +6,8 @@ import {Type} from '../../typedefs'
 import styles from './styles/ArrayInput.css'
 import {ArrayType, ItemValue} from './typedefs'
 import PatchEvent from '../../PatchEvent'
+import updateKeys from './updateKeys'
+
 type Props = {
   type: ArrayType
   children: Node | null
@@ -17,6 +19,7 @@ type Props = {
   onCreateValue: (type: Type) => ItemValue
   onChange: (event: PatchEvent) => void
 }
+
 export default class ArrayFunctions extends React.Component<Props, {}> {
   handleDropDownAction = (menuItem: {type: Type}) => {
     this.handleInsertItem(menuItem.type)
@@ -28,6 +31,25 @@ export default class ArrayFunctions extends React.Component<Props, {}> {
     const {onCreateValue, onAppendItem} = this.props
     const item = onCreateValue(type)
     onAppendItem(item)
+  }
+  handleDuplicateBtnClick = (menuItem: {item: Record<string, any>}) => {
+    this.handleDuplicateItem(menuItem.item)
+  }
+  handleDuplicateItem = item => {
+    const {onAppendItem} = this.props
+    const newItem = item.hasOwnProperty('_key') ? updateKeys(Object.assign({}, item), '_key') : item
+    onAppendItem(newItem)
+  }
+  renderSelectDuplicate() {
+    const items = this.props.value.map(item => ({
+      title: item.title || item.name || item.where,
+      item: item
+    }))
+    return (
+      <DropDownButton inverted items={items} onAction={this.handleDuplicateBtnClick}>
+        Duplicate
+      </DropDownButton>
+    )
   }
   renderSelectType() {
     const items = this.props.type.of.map(memberDef => ({
@@ -55,7 +77,7 @@ export default class ArrayFunctions extends React.Component<Props, {}> {
           ) : (
             this.renderSelectType()
           )}
-
+          {this.props.type.options?.canDuplicate && this.renderSelectDuplicate()}
           {children || null}
         </ButtonGrid>
       </div>
