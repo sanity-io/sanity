@@ -44,6 +44,7 @@ function DocumentStatusBarActionsInner(props: Props) {
             show={firstActionState.title || firstActionState.shortcut}
             arrow
             theme="light"
+            hideOnClick={false}
             disabled={TOUCH_SUPPORT}
             className={styles.tooltip}
             html={
