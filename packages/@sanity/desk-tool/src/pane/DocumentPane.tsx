@@ -458,9 +458,8 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
     this._historyEventsSubscription = historyStore
       .historyEventsFor(getPublishedId(options.id))
       .pipe(
-        map((events, i) => {
-          const newState = i === 0 ? {events, isLoading: false} : {events}
-          this.setHistoryState(newState)
+        map(events => {
+          this.setHistoryState({events, isLoading: false})
           return events
         })
       )
