@@ -18,7 +18,7 @@ function noChildResolver() {
   return undefined
 }
 
-const shallowIntentChecker: IntentChecker = (intentName, params, {pane, index}): boolean => {
+export const shallowIntentChecker: IntentChecker = (intentName, params, {pane, index}): boolean => {
   return index <= 1 && defaultIntentChecker(intentName, params, {pane, index})
 }
 

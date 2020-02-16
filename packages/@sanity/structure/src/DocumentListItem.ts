@@ -55,3 +55,8 @@ export class DocumentListItemBuilder extends ListItemBuilder {
     return builder
   }
 }
+
+export function isDocumentListItem(item: any): item is DocumentListItem {
+  const listItem = item as DocumentListItem
+  return typeof listItem.schemaType !== 'undefined' && typeof listItem._id === 'string'
+}
