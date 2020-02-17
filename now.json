@@ -6,7 +6,8 @@
     },
     {
       "src": "/.*",
-      "dest": "/packages/test-studio/dist/index.html"
+      "handle": "filesystem",
+      "dest": "/index.html"
     }
   ]
 }
