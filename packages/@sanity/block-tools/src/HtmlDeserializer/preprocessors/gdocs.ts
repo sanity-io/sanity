@@ -9,7 +9,7 @@ function isGoogleDocsDocument(el) {
 }
 
 export default (html, doc) => {
-  if (isGoogleDocsDocument(doc.body.firstElementChild)) {
+  if (doc.body.firstElementChild && isGoogleDocsDocument(doc.body.firstElementChild)) {
     // Tag every child with attribute 'is-google-docs' so that the GDocs rule-set can
     // work exclusivly on these children
     const childNodes = doc.evaluate(
