@@ -37,7 +37,8 @@
     "versions": "node scripts/normalizeDependencyVersions.js",
     "normalize-pkgfields": "node scripts/normalizePackageFields.js",
     "prettify": "lerna run clean && prettier --write \"**/*.js\"",
-    "postinstall": "lerna bootstrap"
+    "postinstall": "lerna bootstrap",
+    "now-build": "npm run build && cd packages/test-studio && node ../@sanity/cli/bin/sanity build -y"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.4",
@@ -47,6 +48,7 @@
     "@babel/preset-react": "^7.7.4",
     "@babel/preset-typescript": "^7.7.4",
     "@babel/register": "^7.7.4",
+    "@now/node": "^1.4.1",
     "@typescript-eslint/eslint-plugin": "^2.10.0",
     "@typescript-eslint/parser": "^2.10.0",
     "babel-eslint": "^10.0.3",
