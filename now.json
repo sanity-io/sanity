@@ -6,7 +6,6 @@
     },
     {
       "src": "/.*",
-      "handle": "filesystem",
       "dest": "/index.html"
     }
   ]
