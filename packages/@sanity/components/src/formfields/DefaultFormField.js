@@ -7,7 +7,9 @@ import DefaultLabel from 'part:@sanity/components/labels/default'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import ValidationList from 'part:@sanity/components/validation/list'
 import AnimateHeight from 'react-animate-height'
+import FieldPresence from '../presence/FieldPresence'
 
+const ENABLE_CONTEXT = () => {}
 export default class DefaultFormField extends React.PureComponent {
   static propTypes = {
     label: PropTypes.string,
@@ -22,12 +24,18 @@ export default class DefaultFormField extends React.PureComponent {
       PropTypes.shape({
         type: PropTypes.string
       })
-    )
+    ),
+    type: PropTypes.any
   }
 
   static defaultProps = {
     level: 1,
     markers: []
+  }
+
+  static contextTypes = {
+    formBuilder: ENABLE_CONTEXT,
+    getValuePath: PropTypes.func
   }
 
   state = {
@@ -38,6 +46,15 @@ export default class DefaultFormField extends React.PureComponent {
     this.setState(prevState => ({
       showValidationMessages: !prevState.showValidationMessages
     }))
+  }
+
+  getDocumentId() {
+    const document = this.context.formBuilder.getDocument()
+    return document._id
+  }
+
+  getValuePath() {
+    return this.context.getValuePath()
   }
 
   render() {
@@ -54,9 +71,7 @@ export default class DefaultFormField extends React.PureComponent {
     } = this.props
 
     const {showValidationMessages} = this.state
-
     const levelClass = `level_${level}`
-
     return (
       <div
         className={`
@@ -79,6 +94,15 @@ export default class DefaultFormField extends React.PureComponent {
               <div className={styles.headerStatus}>
                 <div onClick={this.handleToggleShowValidation} className={styles.validationStatus}>
                   <ValidationStatus markers={markers} />
+                </div>
+                <div>
+                  <FieldPresence
+                    filter={{
+                      namespace: 'formBuilder',
+                      documentId: this.getDocumentId(),
+                      path: this.getValuePath()
+                    }}
+                  />
                 </div>
               </div>
             </div>

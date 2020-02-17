@@ -69,6 +69,7 @@ export default class DefaultTextField extends React.Component {
         labelFor={this._inputId}
         label={label}
         description={description}
+        type={type}
       >
         <DefaultTextInput
           className={styles.input}
