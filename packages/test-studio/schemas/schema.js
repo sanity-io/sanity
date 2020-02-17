@@ -39,6 +39,7 @@ import notitle from './notitle'
 import typeWithNoToplevelStrings from './typeWithNoToplevelStrings'
 
 import focus from './focus'
+import diffTest from './diffTest'
 import previewImageUrlTest from './previewImageUrlTest'
 import previewMediaTest from './previewMediaTest'
 import species from './species'
@@ -96,6 +97,7 @@ export default createSchema({
     codeInputType,
     notitle,
     typeWithNoToplevelStrings,
+    diffTest,
     reservedFieldNames,
     previewImageUrlTest,
     previewMediaTest,

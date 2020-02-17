@@ -5,6 +5,7 @@ import EditIcon from 'part:@sanity/base/edit-icon'
 import MdImage from 'react-icons/lib/md/image'
 import JsonDocumentDump from './components/JsonDocumentDump'
 import {DeveloperPreview} from './previews/developer'
+import DiffView from './diffs/index'
 import S from '@sanity/desk-tool/structure-builder'
 
 // For testing. Bump the timeout to introduce som lag
@@ -74,6 +75,28 @@ export default () =>
                 .showAsAction(true)
             ])
         ),
+
+      S.listItem()
+        .id('visualizing-diffs')
+        .title('Diff Test')
+        .schemaType('diffTest')
+        .child(
+          S.documentTypeList('diffTest')
+            .title('Visualizing diffs')
+            .child(documentId =>
+              S.document()
+                .documentId(documentId)
+                .schemaType('diffTest')
+                .views([
+                  S.view.form().icon(EditIcon),
+                  S.view
+                    .component(DiffView)
+                    .icon(EyeIcon)
+                    .title('Diffit!')
+                ])
+            )
+        ),
+
       S.listItem()
         .title('Deep')
         .child(
