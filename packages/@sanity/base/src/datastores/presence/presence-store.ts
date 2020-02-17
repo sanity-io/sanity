@@ -1,7 +1,5 @@
-import {EMPTY, merge, Observable, of, timer, Subject, BehaviorSubject, partition} from 'rxjs'
+import {EMPTY, merge, of, timer, BehaviorSubject} from 'rxjs'
 import {
-  concatMap,
-  filter,
   map,
   mapTo,
   scan,
@@ -13,25 +11,19 @@ import {
   mergeMap
 } from 'rxjs/operators'
 import {groupBy, omit} from 'lodash'
-import {createReflectorTransport, PresenceSyncEvent} from './message-transports/reflectorTransport'
+import {createReflectorTransport} from './message-transports/reflectorTransport'
 
 export const CLIENT_ID = Math.random()
   .toString(32)
   .substring(2)
 
-interface PresenceMessage {
-  type: string
-  clientId: string
+type PresenceLocation = {
+  namespace: string
+  documentId?: string
+  path?: (string | {})[]
 }
 
-interface ReceivedPresenceMessage extends PresenceMessage {
-  identity: string
-  timestamp: string
-}
-
-interface PresenceLocation {}
-
-const [events$, sendMessages] = createReflectorTransport<PresenceLocation>('presence', CLIENT_ID)
+const [events$, sendMessages] = createReflectorTransport<PresenceLocation[]>('presence', CLIENT_ID)
 
 type PrivacyType = 'anonymous' | 'private' | 'dataset' | 'visible'
 const privacy$ = new BehaviorSubject<PrivacyType>('visible')
@@ -40,7 +32,7 @@ const location$ = new BehaviorSubject(null)
 export const setPrivacy = (privacy: PrivacyType) => {
   privacy$.next(privacy)
 }
-export const setLocation = (nextLocation: PresenceLocation) => {
+export const setLocation = (nextLocation: PresenceLocation[]) => {
   location$.next(nextLocation)
 }
 
@@ -94,7 +86,7 @@ export const clients$ = merge(
   purgeOld$,
   merge(reportLocation$).pipe(mergeMapTo(EMPTY))
 ).pipe(
-  scan((clients, event) => {
+  scan((clients, event: any) => {
     if (event.type === 'welcome') {
       // i am connected and can safely request a rollcall
       requestRollCall()
@@ -118,7 +110,7 @@ export const clients$ = merge(
     Object.keys(grouped).map(identity => {
       return {
         identity,
-        sessions: grouped[identity].map(session => omit(session, 'identity'))
+        sessions: grouped[identity].map((session: any) => omit(session, 'identity'))
       }
     })
   )
