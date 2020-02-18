@@ -16,16 +16,16 @@ function getOpErrorTitle(op) {
 
 function getOpSuccessTitle(op) {
   if (op === 'publish') {
-    return `This document is now published. If you continue editing a draft will be created.`
+    return `This document is now published.`
   }
   if (op === 'unpublish') {
-    return `This document is now unpublished. We have created a draft from the latest published version.`
+    return `This document is now unpublished. A draft have been created from the latest published version.`
   }
   if (op === 'discardChanges') {
-    return `All changes since last publish has been discarded. You can still recover the previous draft from history`
+    return `All changes since last publish has now been discarded. The discarded draft can still be recovered from history`
   }
   if (op === 'delete') {
-    return `This document is now deleted. If you continue editing it will be recreated. You can also still recover the deleted version from history.`
+    return `This document is now deleted. It can still be recovered from history and if you continue editing it will be recreated.`
   }
   return `Successfully performed ${op} on document`
 }
