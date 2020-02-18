@@ -22,14 +22,14 @@ It seems image isn't handled at all
 
 ## Operations
 
-`modifyField` - something on this field has changeed
-`replaceImage` - image asset reference has changed
-`editText` - a string (or text in block) has changed
-`replace` - object type has changed
-`remove` - a value has been removed
-`set` - a value has appeared where there was none
-`modifyEntry` - an entry in an array (with the given key) has changed
-`edit` - a plain value (number, booelan, null/undefined) has changed
+- `modifyField` - something on this field has changeed
+- `replaceImage` - image asset reference has changed
+- `editText` - a string (or text in block) has changed
+- `replace` - object type has changed
+- `remove` - a value has been removed
+- `set` - a value has appeared where there was none
+- `modifyEntry` - an entry in an array (with the given key) has changed
+- `edit` - a plain value (number, booelan, null/undefined) has changed
 
 Operations (`op: 'something'`) should have the verb first. `modifyEntry` is nice. I've renamed `textEdit` --> `editText`
 
