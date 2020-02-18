@@ -12,13 +12,13 @@
   max-height: calc(100vh - var(--nav-bar-box));
   transition: transform 500ms ease-in-out, max-width 500ms ease-in-out;
   transform: translate3d(420px, 0, 0);
+  z-index: var(--zindex-pane);
   @media (--screen-medium) {
     position: fixed;
     top: var(--nav-bar-box);
     right: 0;
     display: block;
     height: calc(100vh - var(--nav-bar-box));
-    z-index: var(--zindex-drawer);
   }
 
   @media (--screen-large) {
