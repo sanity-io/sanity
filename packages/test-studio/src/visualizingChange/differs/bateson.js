@@ -1,40 +1,7 @@
 /* eslint-disable max-depth, id-length */
 import {difference, intersection} from 'lodash'
 
-const context = {
-  differs: {
-    block: (a, b) => {
-      const aText = extractText(a.children)
-      const bText = extractText(b.children)
-      if (aText !== bText) {
-        return [
-          {
-            op: 'textEdit',
-            type: 'block',
-            from: aText,
-            to: bText
-          }
-        ]
-      }
-      return []
-    },
-    string: (a, b) => {
-      return [
-        {
-          op: 'textEdit',
-          type: 'string',
-          from: a,
-          to: b
-        }
-      ]
-    },
-    image: (a, b) => {
-      if (a.asset && b.asset && a.asset._ref !== b.asset._ref) {
-        return [{op: 'replaceImage', from: a.asset._ref, to: b.asset._ref}]
-      }
-      return []
-    }
-  },
+const defaultContext = {
   ignore: ['_updatedAt', '_createdAt', '_rev', '_weak']
 }
 
@@ -60,7 +27,7 @@ function sanityType(value) {
   return typeOf(value)
 }
 
-function diff(ctx, path, a, b) {
+function diff(context, path, a, b) {
   if (!isSameType(a, b)) {
     return [{op: 'replace', from: a, to: b}]
   }
@@ -88,7 +55,7 @@ function diff(ctx, path, a, b) {
       kept.forEach(field => {
         const fieldA = a[field]
         const fieldB = b[field]
-        const changes = diff(ctx, path.concat(field), fieldA, fieldB)
+        const changes = diff(context, path.concat(field), fieldA, fieldB)
         const type = isSameType(fieldA, fieldB) ? sanityType(fieldA) : null
         if (changes.length > 0) {
           result.push({op: 'modifyField', type, field, changes})
@@ -112,7 +79,7 @@ function diff(ctx, path, a, b) {
       intersection(aKeys, bKeys).forEach(key => {
         const elementA = aElements[key]
         const elementB = bElements[key]
-        const changes = diff(ctx, path.concat(key), elementA, elementB)
+        const changes = diff(context, path.concat(key), elementA, elementB)
         const type = isSameType(elementA, elementB) ? sanityType(elementA) : null
         if (changes.length > 0) {
           result.push({op: 'modifyEntry', type, key, changes})
@@ -135,13 +102,7 @@ function diff(ctx, path, a, b) {
   }
 }
 
-function extractText(blockContent) {
-  return blockContent
-    .map(item => (item._type == 'span' ? item.text : null))
-    .filter(Boolean)
-    .join(' ')
-}
-
-export default function bateson(a, b) {
+export default function bateson(a, b, options = {}) {
+  const context = {...defaultContext, ...options}
   return diff(context, [], a, b)
 }

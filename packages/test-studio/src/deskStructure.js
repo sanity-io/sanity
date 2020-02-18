@@ -5,7 +5,7 @@ import EditIcon from 'part:@sanity/base/edit-icon'
 import MdImage from 'react-icons/lib/md/image'
 import JsonDocumentDump from './components/JsonDocumentDump'
 import {DeveloperPreview} from './previews/developer'
-import DiffView from './diffs/index'
+import DiffView from './visualizingChange'
 import S from '@sanity/desk-tool/structure-builder'
 
 // For testing. Bump the timeout to introduce som lag

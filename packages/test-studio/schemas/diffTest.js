@@ -10,6 +10,29 @@ export default {
       type: 'string'
     },
     {
+      name: 'description',
+      title: 'Description',
+      type: 'string'
+    },
+    {
+      name: 'face',
+      title: 'Face',
+      type: 'object',
+      fields: [
+        {
+          name: 'nose',
+          title: 'Nose',
+          type: 'string',
+          options: {layout: 'radio', list: ['Slim', 'Long', 'Red']}
+        },
+        {
+          name: 'eyes',
+          title: 'Eyes',
+          type: 'number'
+        }
+      ]
+    },
+    {
       name: 'friend',
       title: 'Friend',
       type: 'reference',
@@ -19,7 +42,22 @@ export default {
       name: 'image',
       title: 'Image',
       type: 'image',
-      options: {hotspot: true}
+      options: {hotspot: true},
+      fields: [
+        {
+          name: 'caption',
+          title: 'Caption',
+          type: 'string',
+          options: {
+            isHighlighted: true
+          }
+        },
+        {
+          name: 'attribution',
+          title: 'Attribution',
+          type: 'string'
+        }
+      ]
     }
   ]
 }
