@@ -53,13 +53,13 @@ export function Validation(props: ValidationProps) {
       }
     >
       <Button
-        color="danger"
+        color={errors.length > 0 ? 'danger' : 'warning'}
         bleed
         icon={WarningIcon}
         padding="small"
         onClick={onToggleValidationResults}
       >
-        {errors.length}
+        {errors.length + warnings.length}
         <span style={{paddingLeft: '0.5em', display: 'flex'}}>
           <ChevronDown />
         </span>
