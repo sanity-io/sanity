@@ -123,6 +123,14 @@ export default {
           }
         }
       ]
+    },
+    {
+      name: 'async',
+      type: 'slug',
+      title: 'Async slug resolving',
+      options: {
+        source: doc => new Promise(resolve => setTimeout(resolve, 1000, doc.title))
+      }
     }
   ]
 }
