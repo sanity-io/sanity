@@ -39,6 +39,7 @@ export default class BufferedDocument {
   // Local mutations that are not scheduled to be committed yet
   buffer: SquashingBuffer
   onMutation: Function
+  onError: Function
   onRebase: Function
   onDelete: Function
   commitHandler: Function
@@ -154,8 +155,11 @@ export default class BufferedDocument {
         // Keep running the committer until no more commits
         this._cycleCommitter()
       },
-      failure: () => {
+      failure: error => {
         debug('Commit failed')
+        if (error && this.onError) {
+          this.onError(error)
+        }
         // Re stage commit
         commit.tries += 1
         if (this.LOCAL !== null) {
@@ -163,7 +167,7 @@ export default class BufferedDocument {
           // indefinitely when the document was deleted from under our noses
           this.commits.unshift(commit)
         }
-        docResponder.failure()
+        docResponder.failure(error)
         // Todo: Need better error handling (i.e. propagate to user and provide means of retrying)
         if (commit.tries < 200) {
           setTimeout(() => this._cycleCommitter(), Math.min(commit.tries * 1000, ONE_MINUTE))

@@ -41,6 +41,7 @@ import {historyIsEnabled} from './Editor/history'
 import menuItemStyles from './styles/documentPaneMenuItems.css'
 import {getDocumentPaneFooterActions} from './documentPaneFooterActions'
 import {getProductionPreviewItem, getMenuItems} from './documentPaneMenuItems'
+import {ClientError} from '@sanity/client'
 import {validateDocument} from '@sanity/validation'
 
 const DEBUG_HISTORY_TRANSITION = false
@@ -70,6 +71,11 @@ function isPreviewHotkey(event) {
 }
 
 const isValidationError = marker => marker.type === 'validation' && marker.level === 'error'
+
+const isPermissionError = error =>
+  !!(error && error instanceof ClientError && error.message.match(/permissions/gi))
+
+const isClientError = error => !!(error && error instanceof ClientError)
 
 const INITIAL_DOCUMENT_STATE = {
   isLoading: true,
@@ -265,27 +271,31 @@ export default withInitialValue(
         .pipe(
           switchMap(event =>
             event.type === 'reconnect' ? timer(500).pipe(mapTo(event)) : observableOf(event)
-          ),
-          catchError((err, _caught$) => {
-            // eslint-disable-next-line no-console
-            console.error(err)
-            return observableOf({type: 'error', error: err})
-          })
+          )
         )
-        .subscribe(event => {
-          this.setState(prevState => {
-            const version = event.version // either 'draft' or 'published'
-            return {
-              isReconnecting: event.type === 'reconnect',
-              validationPending: true,
-              error: event.type === 'error' ? event.error : null,
-              [version]: {
-                ...(prevState[version] || {}),
-                ...documentEventToState(event),
-                isLoading: false
+        .subscribe({
+          next: event => {
+            this.setState(prevState => {
+              const version = event.version // either 'draft' or 'published'
+              const error = event.type === 'error' ? event.error : null
+              return {
+                isReconnecting: event.type === 'reconnect',
+                validationPending: true,
+                error,
+                [version]: {
+                  ...(prevState[version] || {}),
+                  ...documentEventToState(event),
+                  isLoading: false
+                }
               }
-            }
-          }, this.validateLatestDocument)
+            }, this.validateLatestDocument)
+          },
+          error: error => {
+            this.setStateIfMounted({
+              error,
+              transactionResult: null
+            })
+          }
         })
     }
 
@@ -781,24 +791,19 @@ export default withInitialValue(
           map(result => ({
             type: 'success',
             result: result
-          })),
-          catchError(error =>
-            observableOf({
-              type: 'error',
-              message: `An error occurred while attempting to delete document.
-              This usually means that you attempted to delete a document that other documents
-              refers to.`,
-              error
-            })
-          )
+          }))
         )
-        .subscribe(result => {
-          this.setStateIfMounted({transactionResult: result})
+        .subscribe({
+          next: result => {
+            this.setStateIfMounted({transactionResult: result})
+          },
+          error: error => {
+            this.setStateIfMounted({
+              error,
+              transactionResult: null
+            })
+          }
         })
-    }
-
-    handleClearTransactionResult = () => {
-      this.setStateIfMounted({transactionResult: null})
     }
 
     handleUnpublish = () => {
@@ -819,19 +824,18 @@ export default withInitialValue(
           map(result => ({
             type: 'success',
             result: result
-          })),
-          catchError(error =>
-            observableOf({
-              type: 'error',
-              message: `An error occurred while attempting to unpublish document.
-        This usually means that you attempted to unpublish a document that other documents
-        refers to.`,
-              error
-            })
-          )
+          }))
         )
-        .subscribe(result => {
-          this.setStateIfMounted({transactionResult: result})
+        .subscribe({
+          next: result => {
+            this.setStateIfMounted({transactionResult: result})
+          },
+          error: error => {
+            this.setStateIfMounted({
+              error,
+              transactionResult: null
+            })
+          }
         })
     }
 
@@ -874,20 +878,19 @@ export default withInitialValue(
           map(result => ({
             type: 'success',
             result: result
-          })),
-          catchError(error =>
-            observableOf({
-              type: 'error',
-              message: 'An error occurred while attempting to publishing document',
-              error
-            })
-          )
+          }))
         )
         .subscribe({
-          next: result => {
-            this.setState({
-              transactionResult: result
+          error: error => {
+            this.setStateIfMounted({
+              error,
+              didPublish: false,
+              isPublishing: false,
+              transactionResult: null
             })
+          },
+          next: result => {
+            this.setStateIfMounted({transactionResult: result})
           },
           complete: () => {
             this.setStateIfMounted({isPublishing: false, didPublish: true})
@@ -901,13 +904,6 @@ export default withInitialValue(
           type: 'success',
           result: result
         })),
-        catchError(error =>
-          observableOf({
-            type: 'error',
-            message: 'An error occurred while attempting to restore the document',
-            error
-          })
-        ),
         map(transactionResult => ({transactionResult}))
       )
 
@@ -915,15 +911,25 @@ export default withInitialValue(
         observableOf({isRestoring: true}),
         transactionResult$,
         observableOf({isRestoring: false})
-      ).subscribe(nextState => {
-        this.setStateIfMounted(nextState)
-        this.setHistoryState(INITIAL_HISTORY_STATE)
+      ).subscribe({
+        error: error => {
+          this.setStateIfMounted({
+            error,
+            transactionResult: null,
+            isRestoring: false
+          })
+          this.setHistoryState(INITIAL_HISTORY_STATE)
+        },
+        next: nextState => {
+          this.setStateIfMounted(nextState)
+          this.setHistoryState(INITIAL_HISTORY_STATE)
 
-        const {rev: oldRev, ...params} = this.context.params
-        const newRevision = get(nextState, 'transactionResult.result.transactionId')
-        if (newRevision && oldRev) {
-          // If there is a revision in the URL, replace it with the new one
-          this.context.setParams({...params, rev: newRevision}, {recurseIfInherited: true})
+          const {rev: oldRev, ...params} = this.context.params
+          const newRevision = get(nextState, 'transactionResult.result.transactionId')
+          if (newRevision && oldRev) {
+            // If there is a revision in the URL, replace it with the new one
+            this.context.setParams({...params, rev: newRevision}, {recurseIfInherited: true})
+          }
         }
       })
     }
@@ -961,9 +967,14 @@ export default withInitialValue(
         ? copyDocument(published, {omit: omitProps})
         : newDraftFrom(copyDocument(draft || published, {omit: omitProps}))
 
-      this.duplicate$ = documentStore
-        .create(duplicatedDocument)
-        .subscribe(copied => paneContext.replaceCurrent({id: getPublishedId(copied._id)}))
+      this.duplicate$ = documentStore.create(duplicatedDocument).subscribe({
+        next: copied => paneContext.replaceCurrent({id: getPublishedId(copied._id)}),
+        error: error => {
+          this.setStateIfMounted({
+            error
+          })
+        }
+      })
     }
 
     handleMenuToggle = evt => {
@@ -1046,7 +1057,45 @@ export default withInitialValue(
       )
     }
 
+    handleClearErrorAction = () => {
+      this.setState({error: null})
+    }
+
     renderError(error) {
+      if (isPermissionError(error)) {
+        return (
+          <Snackbar
+            kind="error"
+            actionTitle="OK"
+            onAction={this.handleClearErrorAction}
+            isCloseable={false}
+            title="Permission error"
+            subtitle={
+              <>
+                You are not allowed to edit this document.
+                <details>{error.message}</details>
+              </>
+            }
+          />
+        )
+      }
+      if (isClientError(error)) {
+        return (
+          <Snackbar
+            kind="error"
+            actionTitle="OK"
+            onAction={this.handleClearErrorAction}
+            isCloseable={false}
+            title="Could not perform the document action"
+            subtitle={
+              <>
+                An error happeneded trying to change the document.
+                <details>{error.message}</details>
+              </>
+            }
+          />
+        )
+      }
       return (
         <div className={documentPaneStyles.error}>
           <div className={documentPaneStyles.errorInner}>
@@ -1460,7 +1509,6 @@ export default withInitialValue(
         draft,
         published,
         historical,
-        transactionResult,
         error,
         hasNarrowScreen,
         isReconnecting,
@@ -1481,7 +1529,7 @@ export default withInitialValue(
         return this.renderDeleted()
       }
 
-      if (error) {
+      if (error && !isClientError(error)) {
         return this.renderError(error)
       }
 
@@ -1592,16 +1640,8 @@ export default withInitialValue(
                 subtitle={<DocTitle document={value} />}
               />
             )}
-            {transactionResult && transactionResult.type === 'error' && (
-              <Snackbar
-                kind="error"
-                actionTitle="OK"
-                onAction={this.handleClearTransactionResult}
-                title={transactionResult.message}
-                subtitle={<details>{transactionResult.error.message}</details>}
-              />
-            )}
           </TabbedPane>
+          {error && isClientError(error) && this.renderError(error)}
         </div>
       )
     }
