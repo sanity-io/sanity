@@ -48,7 +48,7 @@ export const DocumentPaneProvider = withInitialValue((props: Props) => {
 
   const onChange = React.useCallback(
     patches => {
-      patch.execute(patches)
+      patch.execute(patches, props.initialValue)
     },
     [patch]
   )
