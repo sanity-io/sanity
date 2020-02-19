@@ -105,27 +105,36 @@ export default withValuePath(
           console.error(`Source is missing. Check source on type "${type.name}" in schema`)
           return
         }
-        const newFromSource = this.getNewFromSource()
+
         this.setState({loading: true})
-        this.slugify(newFromSource || '')
+        this.getNewFromSource()
+          .then(newFromSource => this.slugify(newFromSource || ''))
           .then(newSlug => this.updateCurrent(newSlug))
           .catch(err => {
             // eslint-disable-next-line no-console
-            console.error(
-              `An error occured while slugifying "${newFromSource}":\n${err.message}\n${err.stack}`
-            )
+            console.error(`An error occured while slugifying:\n${err.message}\n${err.stack}`)
           })
           .then(() => this._isMounted && this.setState({loading: false}))
       }
-      getNewFromSource = () => {
+
+      hasSource = (): boolean => {
+        const {type, document} = this.props
+        const source = get(type, ['options', 'source'], [])
+        return typeof source === 'function' ? true : Boolean(get(document, source))
+      }
+
+      getNewFromSource = (): Promise<string> => {
         const {getValuePath, type, document} = this.props
         const parentPath = getValuePath().slice(0, -1)
         const parent = get(document, parentPath)
         const source = get(type, ['options', 'source'], [])
-        return typeof source === 'function'
-          ? source(document, {parentPath, parent})
-          : get(document, source)
+        return Promise.resolve(
+          typeof source === 'function'
+            ? source(document, {parentPath, parent})
+            : get(document, source)
+        )
       }
+
       render() {
         const {value, type, level, markers, readOnly} = this.props
         const {loading, inputText} = this.state
@@ -138,7 +147,6 @@ export default withValuePath(
         }
         const validation = markers.filter(marker => marker.type === 'validation')
         const errors = validation.filter(marker => marker.level === 'error')
-        const hasSource = Boolean(this.getNewFromSource())
         return (
           <FormField {...formFieldProps}>
             <div className={styles.wrapper}>
@@ -158,7 +166,7 @@ export default withValuePath(
                 <Button
                   className={styles.button}
                   inverted
-                  disabled={readOnly || loading || !hasSource}
+                  disabled={readOnly || loading || !this.hasSource()}
                   loading={loading}
                   onClick={this.handleGenerateSlug}
                 >
