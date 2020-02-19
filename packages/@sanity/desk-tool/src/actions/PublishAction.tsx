@@ -42,7 +42,7 @@ export function PublishAction(props) {
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id, type)
 
-  const hasValidationErrors = validationStatus.markers.length > 0
+  const hasValidationErrors = validationStatus.markers.some(marker => marker.level === 'error')
 
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
   const [publishScheduled, setPublishScheduled] = React.useState<boolean>(false)
