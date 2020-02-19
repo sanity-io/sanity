@@ -291,8 +291,8 @@ export default {
       options: {
         direction: 'vertical',
         list: [
-          {_type: 'reference', _key: 'espen', _ref: 'espen'},
-          {_type: 'reference', _key: 'bjoerge', _ref: 'bjoerge'}
+          {_type: 'reference', _key: 'grrm', _ref: 'grrm'},
+          {_type: 'reference', _key: 'jrr-tolkien', _ref: 'jrr-tolkien'}
         ]
       }
     },
@@ -318,22 +318,27 @@ export default {
     {
       name: 'body',
       title: 'Block content',
-      description: 'Requires',
       type: 'array',
       of: [
-        {type: 'image', title: 'Image', options: {inline: true}},
         {type: 'author', title: 'Author'},
         {
           type: 'block',
+          of: [{type: 'image', title: 'Image', options: {inline: true}}],
           styles: [
             {title: 'Normal', value: 'normal'},
             {title: 'H1', value: 'h1'},
             {title: 'H2', value: 'h2'},
             {title: 'Quote', value: 'blockquote'}
           ],
-          lists: [{title: 'Bullet', value: 'bullet'}, {title: 'Numbered', value: 'number'}],
+          lists: [
+            {title: 'Bullet', value: 'bullet'},
+            {title: 'Numbered', value: 'number'}
+          ],
           marks: {
-            decorators: [{title: 'Strong', value: 'strong'}, {title: 'Emphasis', value: 'em'}],
+            decorators: [
+              {title: 'Strong', value: 'strong'},
+              {title: 'Emphasis', value: 'em'}
+            ],
             annotations: [
               {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}
             ]
