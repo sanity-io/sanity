@@ -24,8 +24,8 @@ const defaults = {
 
 const authErrors = () => ({
   onError: err => {
-    const body = err.response.body
-    if (body.statusCode === 401) {
+    const statusCode = err.response && err.response.body && err.response.body.statusCode
+    if (statusCode === 401) {
       err.message = `${err.message}. For more information, see ${generateHelpUrl('cli-errors')}.`
     }
     return err
