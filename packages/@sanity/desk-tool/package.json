@@ -21,6 +21,7 @@
   ],
   "dependencies": {
     "@reach/auto-id": "^0.7.2",
+    "@sanity/base": "1.148.3",
     "@sanity/data-aspects": "1.148.1",
     "@sanity/form-builder": "1.148.4",
     "@sanity/generate-help-url": "1.148.1",

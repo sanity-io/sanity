@@ -34,8 +34,8 @@
     "url-parse": "^1.4.7"
   },
   "devDependencies": {
-    "@sanity/base": "0.144.1",
-    "@sanity/check": "0.144.0",
+    "@sanity/base": "1.148.3",
+    "@sanity/check": "1.148.1",
     "prop-types": "^15.6.0",
     "rimraf": "^2.7.1"
   },
