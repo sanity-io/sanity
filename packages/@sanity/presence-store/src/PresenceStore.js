@@ -1,4 +1,4 @@
-/* global window */
+s/* global window */
 
 import {Observable} from 'rxjs'
 import UUID from '@sanity/uuid'

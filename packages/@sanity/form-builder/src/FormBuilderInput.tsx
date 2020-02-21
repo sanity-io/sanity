@@ -9,13 +9,19 @@ import {Type, Marker} from './typedefs'
 
 const NO_MARKERS: Marker[] = []
 
-type Props = {
+interface PresenceInfo {
+  identity: string
+  path: string[]
+}
+
+interface Props {
   value: any
   type: Type
   onChange: (arg0: PatchEvent) => void
   onFocus: (arg0: Path) => void
   onBlur: () => void
   readOnly: boolean
+  presence: PresenceInfo[]
   focusPath: Path
   markers: Marker[]
   level: number
@@ -25,6 +31,7 @@ type Props = {
   onKeyUp?: (ev: React.KeyboardEvent) => void
   onKeyPress?: (ev: React.KeyboardEvent) => void
 }
+
 const ENABLE_CONTEXT = () => {}
 
 function getDisplayName(component) {
@@ -183,6 +190,7 @@ export class FormBuilderInput extends React.Component<Props> {
       markers,
       type,
       level,
+      presence,
       focusPath,
       isRoot,
       ...rest
@@ -208,6 +216,15 @@ export class FormBuilderInput extends React.Component<Props> {
     const childFocusPath = this.getChildFocusPath()
     const isLeaf = childFocusPath.length === 0 || childFocusPath[0] === PathUtils.FOCUS_TERMINATOR
     const leafProps = isLeaf ? {} : {focusPath: childFocusPath}
+    const childPresenceInfo = (presence || [])
+      .filter(presence => {
+        return PathUtils.startsWith(path, presence.path)
+      })
+      .map(presence => ({
+        ...presence,
+        path: trimChildPath(path, presence.path)
+      }))
+
     return (
       <div data-focus-path={PathUtils.toString(path)}>
         <InputComponent
@@ -218,6 +235,7 @@ export class FormBuilderInput extends React.Component<Props> {
           readOnly={readOnly || type.readOnly}
           markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
           type={type}
+          presence={childPresenceInfo}
           onChange={this.handleChange}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}

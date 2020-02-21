@@ -37,6 +37,7 @@ export const setLocation = (nextLocation: PresenceLocation[]) => {
 }
 
 export const reportLocation = location => {
+  console.log('reporting lcoation', location)
   return sendMessages([
     {
       type: 'sync',

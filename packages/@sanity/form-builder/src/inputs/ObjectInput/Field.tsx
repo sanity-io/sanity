@@ -72,6 +72,7 @@ export default class Field extends React.PureComponent<FieldProps> {
     }
     return (
       <div className={styles.root}>
+        <h2>PRESENCE</h2>
         <FormBuilderInput
           value={value}
           type={field.type}
