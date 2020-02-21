@@ -95,15 +95,6 @@ export default class DefaultFormField extends React.PureComponent {
                 <div onClick={this.handleToggleShowValidation} className={styles.validationStatus}>
                   <ValidationStatus markers={markers} />
                 </div>
-                <div>
-                  <FieldPresence
-                    filter={{
-                      namespace: 'formBuilder',
-                      documentId: this.getDocumentId(),
-                      path: this.getValuePath()
-                    }}
-                  />
-                </div>
               </div>
             </div>
           )}
