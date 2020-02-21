@@ -607,7 +607,7 @@ export interface RawQueryResponse<R> {
   result: R
 }
 
-export type SanityDocument<T extends object = {}> = {
+export type SanityDocument<T extends Record<string, any> = {}> = {
   [P in keyof T]: T[P]
 } & {
   _id: string
@@ -617,13 +617,13 @@ export type SanityDocument<T extends object = {}> = {
   _updatedAt: string
 }
 
-export type SanityDocumentStub<T extends object = {}> = {
+export type SanityDocumentStub<T extends Record<string, any> = {}> = {
   [P in keyof T]: T[P]
 } & {
   _type: string
 }
 
-export type IdentifiedSanityDocumentStub<T extends object = {}> = {
+export type IdentifiedSanityDocumentStub<T extends Record<string, any> = {}> = {
   [P in keyof T]: T[P]
 } & {
   _id: string
@@ -858,7 +858,7 @@ export class ObservableSanityClient {
    * @param params Optional query parameters
    * @param options Listener options
    */
-  listen(query: string, params?: QueryParams, options?: ListenOptions): Observable<ListenEvent>
+  listen(query: string, params?: QueryParams, options?: ListenOptions): Observable<ListenEvent<any>>
 
   /**
    * Perform a GROQ-query against the configured dataset.
@@ -870,7 +870,7 @@ export class ObservableSanityClient {
   fetch<R = any>(
     query: string,
     params?: QueryParams,
-    options: UnfilteredReponseQueryOptions
+    options?: UnfilteredReponseQueryOptions
   ): Observable<RawQueryResponse<R>>
 
   /**
@@ -883,7 +883,7 @@ export class ObservableSanityClient {
   fetch<R = any>(
     query: string,
     params?: QueryParams,
-    options: FilteredResponseQueryOptions
+    options?: FilteredResponseQueryOptions
   ): Observable<R>
 
   /**
@@ -1486,7 +1486,7 @@ export interface SanityClient {
   fetch<R = any>(
     query: string,
     params?: QueryParams,
-    options: UnfilteredReponseQueryOptions
+    options?: UnfilteredReponseQueryOptions
   ): Promise<RawQueryResponse<R>>
 
   /**
@@ -1499,7 +1499,7 @@ export interface SanityClient {
   fetch<R = any>(
     query: string,
     params?: QueryParams,
-    options: FilteredResponseQueryOptions
+    options?: FilteredResponseQueryOptions
   ): Promise<R>
 
   /**
