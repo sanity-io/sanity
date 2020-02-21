@@ -36,6 +36,9 @@ module.exports = async function deployApiActions(args, context) {
     throw new Error(`Unknown API generation "${generation}"`)
   }
 
+  context.output.print(`Dataset: ${dataset}`)
+  context.output.print(`Tag: ${tag}\n`)
+
   spinner = output.spinner('Checking for deployed API').start()
   const currentGeneration = await getUrlHeaders(client.getUrl(`/apis/graphql/${dataset}/${tag}`), {
     Authorization: `Bearer ${client.config().token}`
