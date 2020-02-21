@@ -12,8 +12,8 @@ module.exports = async function deleteApiAction(args, context) {
 
   const confirmMessage =
     tag === 'default'
-      ? 'Are you absolutely sure you want to delete the current GraphQL API?'
-      : `Are you absolutely sure you want to delete the GraphQL API tagged "${tag}"?`
+      ? `Are you absolutely sure you want to delete the current GraphQL API connected to the "${dataset}" dataset?`
+      : `Are you absolutely sure you want to delete the GraphQL API connected to the "${dataset}" dataset, tagged "${tag}"?`
 
   if (
     !(await prompt.single({
