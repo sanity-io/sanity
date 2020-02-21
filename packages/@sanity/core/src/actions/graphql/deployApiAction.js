@@ -6,13 +6,13 @@ const getSanitySchema = require('./getSanitySchema')
 const extractFromSanitySchema = require('./extractFromSanitySchema')
 const SchemaError = require('./SchemaError')
 
-const v1 = require('./v1')
-const v2 = require('./v2')
+const gen1 = require('./gen1')
+const gen2 = require('./gen2')
 
-const latestGeneration = 'v2'
+const latestGeneration = 'gen2'
 const generations = {
-  v1,
-  v2
+  gen1,
+  gen2
 }
 
 module.exports = async function deployApiActions(args, context) {
@@ -122,7 +122,7 @@ module.exports = async function deployApiActions(args, context) {
 
     spinner.succeed()
     output.print('GraphQL API deployed to:')
-    output.print(client.getUrl(response.location.replace(/^\/(v1|v\d{4}-\d{2}-\d{2})\//, '/')))
+    output.print(client.getUrl(response.location.replace(/^\/(gen1|v\d{4}-\d{2}-\d{2})\//, '/')))
   } catch (err) {
     spinner.fail()
     throw err

@@ -8,5 +8,5 @@ module.exports = extracted => {
   const queries = generateTypeQueries(extracted.types, filters, sortings)
   const types = extracted.types.concat(filters).concat(sortings)
 
-  return {types, queries, interfaces: extracted.interfaces, generation: 'v2'}
+  return {types, queries, interfaces: extracted.interfaces, generation: 'gen2'}
 }
