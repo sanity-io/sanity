@@ -22,7 +22,8 @@ import {
   SlateSelection,
   SlateValue,
   Type,
-  UndoRedoStack, UndoRedoStackItem
+  UndoRedoStack,
+  UndoRedoStackItem
 } from './typeDefs'
 import createEditorController from './utils/createEditorController'
 import Input from './Input'
@@ -222,7 +223,14 @@ export default withPatchSubscriber(
         !isRemote &&
         !operations.some(op => op.__isUndoRedo) &&
         !operations.every(op => op.type === 'set_selection') &&
-        !operations.every(op => op.type === 'set_value')
+        !operations.every(op => op.type === 'set_value') &&
+        !operations.every(
+          op =>
+            op.type === 'set_node' &&
+            op.properties &&
+            op.properties.data &&
+            op.properties.data.get('placeholder')
+        )
       ) {
         this._undoRedoStack.undo.push({
           operations,
@@ -356,7 +364,7 @@ export default withPatchSubscriber(
         this._input.focus()
       }
     }
-    handleDocumentPatches = ({patches, shouldReset, snapshot}) => {
+    handleDocumentPatches = ({patches}) => {
       if (patches.length === 0) {
         return
       }

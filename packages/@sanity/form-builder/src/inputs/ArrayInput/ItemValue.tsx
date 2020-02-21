@@ -64,7 +64,7 @@ const IGNORE_KEYS = ['_key', '_type', '_weak']
 function isEmpty(value) {
   return Object.keys(value).every(key => IGNORE_KEYS.includes(key))
 }
-export default class RenderItemValue extends React.Component<Props> {
+export default class RenderItemValue extends React.PureComponent<Props> {
   _focusArea: HTMLDivElement | null
   static defaultProps = {
     level: 0,

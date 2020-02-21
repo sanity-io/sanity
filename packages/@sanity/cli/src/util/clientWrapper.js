@@ -1,5 +1,6 @@
-import client from '@sanity/client'
+import generateHelpUrl from '@sanity/generate-help-url'
 import getUserConfig from './getUserConfig'
+import client from '@sanity/client'
 
 /* eslint-disable no-process-env */
 const envAuthToken = process.env.SANITY_AUTH_TOKEN
@@ -23,21 +24,11 @@ const defaults = {
 
 const authErrors = () => ({
   onError: err => {
-    if (envAuthToken || !err || !err.response) {
-      return err
+    const statusCode = err.response && err.response.body && err.response.body.statusCode
+    if (statusCode === 401) {
+      err.message = `${err.message}. For more information, see ${generateHelpUrl('cli-errors')}.`
     }
-
-    const body = err.response.body
-    if (!body || body.statusCode !== 401) {
-      return err
-    }
-
-    const cfg = getUserConfig()
-    cfg.delete('authType')
-    cfg.delete('authToken')
-
-    // @todo trigger reauthentication automatically?
-    return new Error('You\'ve been logged out. Log back in again with "sanity login"')
+    return err
   }
 })
 

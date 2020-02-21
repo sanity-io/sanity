@@ -40,6 +40,9 @@ function recalculateOperations(item: UndoRedoStackItem) {
       if (!checkedOp || !checkedOp.path) {
         return
       }
+      if (!remoteOp || !remoteOp.path) {
+        return
+      }
       const pAbove = remoteOp.path.get(0) < checkedOp.path.get(0)
       const pEqual = remoteOp.path.get(0) == checkedOp.path.get(0)
       switch (remoteOp.type) {
@@ -108,6 +111,16 @@ function moveCursorRedo(editor: SlateEditor, item: UndoRedoStackItem) {
   return editor
 }
 
+function ensureNoPlaceholder(editor: any) {
+  const firstBlock = editor.value.document.nodes.first()
+  if (firstBlock.type === 'contentBlock' && firstBlock.data.get('placeholder')) {
+    const newData = firstBlock.data.toObject()
+    delete newData.placeholder
+    editor.setNodeByKey(firstBlock.key, {data: newData})
+  }
+  return editor
+}
+
 // This plugin handles our own undo redo (disables Slate built in handling)
 
 export default function UndoRedoPlugin(options: Options) {
@@ -117,6 +130,7 @@ export default function UndoRedoPlugin(options: Options) {
     if (!item) {
       return editor.focus()
     }
+    ensureNoPlaceholder(editor)
     let operations: any = List(_operations || [])
     const undoOperations =
       item.remoteOperations.size === 0 ? item.operations : recalculateOperations(item)

@@ -63,7 +63,15 @@ function wrap(document) {
   }
 }
 
+let hasWarned = false
 export function checkoutPair(idPair) {
+  if (!hasWarned) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[deprecation] The checkout() function has been deprecated in favor of checkoutPair()'
+    )
+    hasWarned = true
+  }
   const {draft, published} = documentStore.checkoutPair(idPair)
 
   return {

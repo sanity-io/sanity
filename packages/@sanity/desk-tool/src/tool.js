@@ -41,7 +41,7 @@ function DeskToolPaneStateSyncer(props) {
     // Set active panes to blank on mount and unmount
     setActivePanes([])
     return () => setActivePanes([])
-  })
+  }, [])
 
   return intent ? (
     <IntentResolver intent={intent} params={params} payload={payload} />

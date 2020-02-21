@@ -3,11 +3,14 @@ import {SerializePath, SerializeOptions, Divider, Collection} from './StructureN
 import {ChildResolverOptions, ChildResolver} from './ChildResolver'
 import {SerializeError, HELP_URL} from './SerializeError'
 import {ListItem, ListItemBuilder} from './ListItem'
+import {IntentChecker} from './Intent'
+import {isDocumentListItem} from './DocumentListItem'
 import {
   GenericListBuilder,
   BuildableGenericList,
   GenericList,
-  GenericListInput
+  GenericListInput,
+  shallowIntentChecker
 } from './GenericList'
 
 const getArgType = (thing: ListItem) => {
@@ -24,6 +27,17 @@ const getArgType = (thing: ListItem) => {
 
 const isListItem = (item: ListItem | Divider): item is ListItem => {
   return item.type === 'listItem'
+}
+
+const defaultCanHandleIntent: IntentChecker = (intentName: string, params, context) => {
+  const pane = context.pane as List
+  const items = pane.items || []
+  return (
+    items
+      .filter(isDocumentListItem)
+      .some(item => item.schemaType.name === params.type && item._id === params.id) ||
+    shallowIntentChecker(intentName, params, context)
+  )
 }
 
 const resolveChildForItem: ChildResolver = (itemId: string, options: ChildResolverOptions) => {
@@ -138,6 +152,7 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
     return {
       ...super.serialize(options),
       type: 'list',
+      canHandleIntent: this.spec.canHandleIntent || defaultCanHandleIntent,
       child: this.spec.child || resolveChildForItem,
       items: serializedItems
     }

@@ -124,6 +124,10 @@
   display: block !important;
 }
 
+.tooltipTitle {
+  padding-right: 0.5em;
+}
+
 .tooltipHotkeys {
   display: inline-block;
   color: var(--text-muted);
