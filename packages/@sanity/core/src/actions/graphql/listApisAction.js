@@ -1,5 +1,5 @@
 module.exports = async function listApisAction(args, context) {
-  const {apiClient, output} = context
+  const {apiClient, output, chalk} = context
 
   const client = apiClient({
     requireUser: true,
@@ -20,14 +20,25 @@ module.exports = async function listApisAction(args, context) {
     }
   }
 
+  endpoints = [{
+    dataset: 'production',
+    tag: 'default',
+    generation: 'gen1',
+    playgroundEnabled: false
+  }, {
+    dataset: 'staging',
+    tag: 'next',
+    generation: 'gen2',
+    playgroundEnabled: true
+  }]
+
   if (endpoints && endpoints.length > 0) {
     output.print('Here are the GraphQL endpoints deployed for this project:')
     endpoints.forEach((endpoint, index) => {
-      output.print(`* [${index + 1}] `)
-      output.print(`  ** Dataset:     ${endpoint.dataset}`)
-      output.print(`  ** Tag:         ${endpoint.tag}`)
-      output.print(`  ** Generation:  ${endpoint.generation}`)
-      output.print(`  ** Playground:  ${endpoint.playgroundEnabled}\n`)
+      output.print(`${index + 1}.  ${chalk.bold('Dataset:')}     ${endpoint.dataset}`)
+      output.print(`    ${chalk.bold('Tag:')}         ${endpoint.tag}`)
+      output.print(`    ${chalk.bold('Generation:')}  ${endpoint.generation}`)
+      output.print(`    ${chalk.bold('Playground:')}  ${endpoint.playgroundEnabled}\n`)
     })
   }
 
