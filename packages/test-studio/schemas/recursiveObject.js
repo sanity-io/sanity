@@ -39,6 +39,11 @@ export default {
       name: 'recursiveObject',
       type: 'recursiveObject',
       title: 'A field of a recursive object type'
-    }
+    },
+    ...[1, 2, 3, 4].map(n => ({
+      name: `myself${n}`,
+      title: `Field ${n}`,
+      type: 'recursiveObject'
+    }))
   ]
 }
