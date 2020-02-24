@@ -30,6 +30,11 @@ export default {
           name: 'eyes',
           title: 'Eyes',
           type: 'number'
+        },
+        {
+          name: 'hasFreckles',
+          title: 'Freckles?',
+          type: 'boolean'
         }
       ]
     },

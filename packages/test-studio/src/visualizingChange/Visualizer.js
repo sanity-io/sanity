@@ -26,7 +26,7 @@ function resolveDiffer(item, differs) {
   const component = props => {
     const {op: operation, field, from, to, value} = props.item
     let description = ''
-    if (operation === 'editText') {
+    if (['edit', 'editText'].includes(operation)) {
       description = `${from} --> ${to}`
     }
     if (operation === 'set') {

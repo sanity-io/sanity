@@ -45,8 +45,8 @@ Should both summaryDiffers and visualDiffers be defined on the schema? Or do the
 - [x] add `_id` to ignore-fields and ensure it doesn't bork
 - [x] visual differs should return an object `{coponent: MyComponent, haltNestedRendering: true}`
 - [x] summaryDiffers return null if type is handled but not that particular case
+- [x] verify primitives work
 - [ ] the visualizer needs both documents as well
-- [ ] verify primitives work
 - [ ] load schema and use input component (or list-previews) in default visualDiffer
 - [ ] make image changes appear
 - [ ] chunk info about a deeply nested single change
