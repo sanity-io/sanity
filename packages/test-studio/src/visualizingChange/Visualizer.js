@@ -40,8 +40,7 @@ function resolveDiffer(item, differs) {
   }
 
   return {
-    component,
-    otherKey: true
+    component
   }
 }
 

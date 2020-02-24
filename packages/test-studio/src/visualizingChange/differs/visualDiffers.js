@@ -41,7 +41,7 @@ const differs = {
           </li>
         )
       },
-      halt: true
+      haltNestedRendering: false // this is the default, keeping it here for the moment as an exmaple
     }
   },
 
@@ -53,8 +53,7 @@ const differs = {
           {field} [{operation}] {operation === 'editText' && stringDiffComponent(from, to)}
         </li>
       )
-    },
-    otherKey: true
+    }
   }
 }
 
