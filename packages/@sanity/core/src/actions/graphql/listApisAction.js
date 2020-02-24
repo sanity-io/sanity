@@ -20,18 +20,6 @@ module.exports = async function listApisAction(args, context) {
     }
   }
 
-  endpoints = [{
-    dataset: 'production',
-    tag: 'default',
-    generation: 'gen1',
-    playgroundEnabled: false
-  }, {
-    dataset: 'staging',
-    tag: 'next',
-    generation: 'gen2',
-    playgroundEnabled: true
-  }]
-
   if (endpoints && endpoints.length > 0) {
     output.print('Here are the GraphQL endpoints deployed for this project:')
     endpoints.forEach((endpoint, index) => {
