@@ -28,7 +28,7 @@ module.exports = async function listApisAction(args, context) {
       output.print(`    ${chalk.bold('Generation:')}  ${endpoint.generation}`)
       output.print(`    ${chalk.bold('Playground:')}  ${endpoint.playgroundEnabled}\n`)
     })
+  } else {
+    output.print("This project doesn't have any GraphQL endpoints deployed.")
   }
-
-  output.print("This project doesn't have any GraphQL endpoints deployed.")
 }
