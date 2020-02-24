@@ -32,24 +32,29 @@ function stringDiffComponent(from, to) {
 
 const differs = {
   string: {
-    editText: ({item}) => {
-      return (
-        <li>
-          {item.field} [{item.op}]{' '}
-          {item.op === 'editText' && stringDiffComponent(item.from, item.to)}
-        </li>
-      )
+    editText: {
+      component: props => {
+        const {op: operation, field, from, to} = props.item
+        return (
+          <li>
+            {field} [{operation}] {operation === 'editText' && stringDiffComponent(from, to)}
+          </li>
+        )
+      },
+      halt: true
     }
   },
+
   block: {
-    editText: ({item}) => {
+    component: props => {
+      const {op: operation, field, from, to} = props.item
       return (
         <li>
-          {item.field} [{item.op}]{' '}
-          {item.op === 'editText' && stringDiffComponent(item.from, item.to)}
+          {field} [{operation}] {operation === 'editText' && stringDiffComponent(from, to)}
         </li>
       )
-    }
+    },
+    otherKey: true
   }
 }
 

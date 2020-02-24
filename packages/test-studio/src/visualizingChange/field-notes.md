@@ -43,9 +43,9 @@ Should both summaryDiffers and visualDiffers be defined on the schema? Or do the
 - [x] separate visualDiffers
 - [x] rename operation `textEdit` --> `editText`
 - [x] add `_id` to ignore-fields and ensure it doesn't bork
+- [x] visual differs should return an object `{coponent: MyComponent, otherFlag: true}`
 - [ ] the visualizer needs both documents as well
 - [ ] summaryDiffers return null if type is handled but not that particular case
-- [ ] visual differs should return an object `{coponent: MyComponent, otherFlag: true}`
 - [ ] verify primitives work
 - [ ] make image changes appear
 - [ ] chunk info about a deeply nested single change
