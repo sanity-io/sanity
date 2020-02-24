@@ -6,14 +6,20 @@
 import React from 'react'
 import {diffWordsWithSpace} from 'diff'
 
+const colors = {
+  unchanged: '#ccc',
+  added: 'green',
+  removed: 'red'
+}
+
 function stringDiffComponent(from, to) {
   const computedStringDiff = diffWordsWithSpace(from, to)
   return (
     <span>
       {computedStringDiff.map((part, index) => {
-        let color = '#ccc'
-        if (part.added) color = 'green'
-        if (part.removed) color = 'red'
+        let color = colors.unchanged
+        if (part.added) color = colors.added
+        if (part.removed) color = colors.removed
         return (
           <span key={index} style={{backgroundColor: color}}>
             {part.value}
@@ -26,8 +32,17 @@ function stringDiffComponent(from, to) {
 
 const differs = {
   string: {
-    editText: props => {
-      const {item} = props
+    editText: ({item}) => {
+      return (
+        <li>
+          {item.field} [{item.op}]{' '}
+          {item.op === 'editText' && stringDiffComponent(item.from, item.to)}
+        </li>
+      )
+    }
+  },
+  block: {
+    editText: ({item}) => {
       return (
         <li>
           {item.field} [{item.op}]{' '}

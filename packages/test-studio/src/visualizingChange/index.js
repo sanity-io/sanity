@@ -19,7 +19,12 @@ const VisualDiff = props => {
 
   return (
     <div>
-      <Visualizer diff={diff} differs={customVisualDiffers} />
+      <Visualizer
+        diff={diff}
+        differs={customVisualDiffers}
+        original={original}
+        modified={modified}
+      />
 
       <hr />
 

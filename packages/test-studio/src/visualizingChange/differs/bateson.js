@@ -1,8 +1,9 @@
+/* eslint-disable complexity */
 /* eslint-disable max-depth, id-length */
 import {difference, intersection} from 'lodash'
 
 const defaultContext = {
-  ignore: ['_updatedAt', '_createdAt', '_rev', '_weak']
+  ignore: ['_id', '_updatedAt', '_createdAt', '_rev', '_weak']
 }
 
 function typeOf(value) {
@@ -36,8 +37,11 @@ function diff(context, path, a, b) {
     case 'object': {
       const result = []
       if (context.differs[a._type]) {
-        return context.differs[a._type](a, b)
-        result.push(...context.differs[a._type](a, b))
+        // There might be a differ for this type, but maybe not for every operation imaginable
+        const summary = context.differs[a._type](a, b)
+        if (summary) {
+          return summary
+        }
       }
       const [aFields, bFields] = [
         difference(Object.keys(a), context.ignore || []),
