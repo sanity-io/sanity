@@ -46,13 +46,15 @@ const differs = {
   },
 
   block: {
-    component: props => {
-      const {op: operation, field, from, to} = props.item
-      return (
-        <li>
-          {field} [{operation}] {operation === 'editText' && stringDiffComponent(from, to)}
-        </li>
-      )
+    editText: {
+      component: props => {
+        const {op: operation, field, from, to} = props.item
+        return (
+          <li>
+            {field} [{operation}] {operation === 'editText' && stringDiffComponent(from, to)}
+          </li>
+        )
+      }
     }
   }
 }

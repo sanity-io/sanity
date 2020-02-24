@@ -53,9 +53,9 @@ function NestedVisualizer(props) {
     const Component = iteratorWrapper.component
     return (
       <Component>
-        {item.map(subItem => {
+        {item.map((subItem, index) => {
           // Now render a visualizer for each element in the array
-          const key = `level_${level}_${subItem.field}`
+          const key = `level_${level}_${index}`
           return <NestedVisualizer key={key} item={subItem} differs={differs} level={level + 1} />
         })}
       </Component>

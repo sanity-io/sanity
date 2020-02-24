@@ -2,8 +2,8 @@
 /* eslint-disable max-depth, id-length */
 import {difference, intersection} from 'lodash'
 
-const defaultContext = {
-  ignore: ['_id', '_updatedAt', '_createdAt', '_rev', '_weak']
+const defaultOptions = {
+  ignoreFields: ['_id', '_updatedAt', '_createdAt', '_rev', '_weak']
 }
 
 function typeOf(value) {
@@ -28,7 +28,7 @@ function sanityType(value) {
   return typeOf(value)
 }
 
-function diff(context, path, a, b) {
+function diff(a, b, path, options) {
   if (!isSameType(a, b)) {
     return [{op: 'replace', from: a, to: b}]
   }
@@ -37,7 +37,7 @@ function diff(context, path, a, b) {
     case 'object': {
       const result = []
 
-      const differForType = context.differs[a._type]
+      const differForType = options.differs[a._type]
       if (differForType) {
         // There might be a differ for this type, but maybe not for every operation imaginable
         const summary = differForType(a, b)
@@ -46,8 +46,8 @@ function diff(context, path, a, b) {
         }
       }
       const [aFields, bFields] = [
-        difference(Object.keys(a), context.ignore || []),
-        difference(Object.keys(b), context.ignore || [])
+        difference(Object.keys(a), options.ignoreFields || []),
+        difference(Object.keys(b), options.ignoreFields || [])
       ]
       const removed = difference(aFields, bFields)
       removed.forEach(field => {
@@ -61,7 +61,7 @@ function diff(context, path, a, b) {
       kept.forEach(field => {
         const fieldA = a[field]
         const fieldB = b[field]
-        const changes = diff(context, path.concat(field), fieldA, fieldB)
+        const changes = diff(fieldA, fieldB, path.concat(field), options)
         const type = isSameType(fieldA, fieldB) ? sanityType(fieldA) : null
         if (changes.length > 0) {
           result.push({op: 'modifyField', type, field, changes})
@@ -85,7 +85,7 @@ function diff(context, path, a, b) {
       intersection(aKeys, bKeys).forEach(key => {
         const elementA = aElements[key]
         const elementB = bElements[key]
-        const changes = diff(context, path.concat(key), elementA, elementB)
+        const changes = diff(elementA, elementB, path.concat(key), options)
         const type = isSameType(elementA, elementB) ? sanityType(elementA) : null
         if (changes.length > 0) {
           result.push({op: 'modifyEntry', type, key, changes})
@@ -99,7 +99,7 @@ function diff(context, path, a, b) {
 
     default:
       if (a !== b) {
-        const differForType = context.differs[typeOf(a)]
+        const differForType = options.differs[typeOf(a)]
         if (differForType) {
           const summary = differForType(a, b)
           if (summary) {
@@ -112,7 +112,7 @@ function diff(context, path, a, b) {
   }
 }
 
-export default function bateson(a, b, options = {}) {
-  const context = {...defaultContext, ...options}
-  return diff(context, [], a, b)
+export default function bateson(a, b, opts = {}) {
+  const options = {...defaultOptions, ...opts}
+  return diff(a, b, [], options)
 }

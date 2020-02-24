@@ -38,21 +38,6 @@ When you write your own summaryDiffer for a type, are you expected to handle _al
 
 Should both summaryDiffers and visualDiffers be defined on the schema? Or do the appear via the part system?
 
-- [x] barebones whole wood setup
-- [x] separate summaryDiffers
-- [x] separate visualDiffers
-- [x] rename operation `textEdit` --> `editText`
-- [x] add `_id` to ignore-fields and ensure it doesn't bork
-- [x] visual differs should return an object `{coponent: MyComponent, haltNestedRendering: true}`
-- [x] summaryDiffers return null if type is handled but not that particular case
-- [x] verify primitives work
-- [ ] the visualizer needs both documents as well
-- [ ] load schema and use input component (or list-previews) in default visualDiffer
-- [ ] make image changes appear
-- [ ] chunk info about a deeply nested single change
-- [ ] block text, first pass
-- [ ] arrays, first pass
-- [ ] figure out if differ definitions should be loaded via the schema or part system
 
 
 

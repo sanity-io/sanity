@@ -5,16 +5,16 @@
 // --> return null to "drop the ball" and rely on a default summary to be created
 
 function extractText(blockContent) {
-  return blockContent
+  return blockContent.children
     .map(item => (item._type == 'span' ? item.text : null))
     .filter(Boolean)
-    .join(' ')
+    .join('')
 }
 
 const differs = {
   block: (a, b) => {
-    const aText = extractText(a.children)
-    const bText = extractText(b.children)
+    const aText = extractText(a)
+    const bText = extractText(b)
     if (aText !== bText) {
       return [
         {

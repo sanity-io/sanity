@@ -15,16 +15,10 @@ const VisualDiff = props => {
   }
 
   const diff = createDiffSummary(original, modified, {differs: summaryDiffers})
-  const customVisualDiffers = visualDiffers // use default visual differs or BYO
 
   return (
     <div>
-      <Visualizer
-        diff={diff}
-        differs={customVisualDiffers}
-        original={original}
-        modified={modified}
-      />
+      <Visualizer diff={diff} differs={visualDiffers} original={original} modified={modified} />
 
       <hr />
 
