@@ -21,7 +21,7 @@ interface Props {
   onFocus: (arg0: Path) => void
   onBlur: () => void
   readOnly: boolean
-  presence: PresenceInfo[]
+  presence?: PresenceInfo[]
   focusPath: Path
   markers: Marker[]
   level: number
