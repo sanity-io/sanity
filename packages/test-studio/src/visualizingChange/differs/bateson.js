@@ -36,9 +36,11 @@ function diff(context, path, a, b) {
   switch (typeOf(a)) {
     case 'object': {
       const result = []
-      if (context.differs[a._type]) {
+
+      const differForType = context.differs[a._type]
+      if (differForType) {
         // There might be a differ for this type, but maybe not for every operation imaginable
-        const summary = context.differs[a._type](a, b)
+        const summary = differForType(a, b)
         if (summary) {
           return summary
         }
@@ -97,8 +99,12 @@ function diff(context, path, a, b) {
 
     default:
       if (a !== b) {
-        if (context.differs[typeOf(a)]) {
-          return context.differs[typeOf(a)](a, b)
+        const differForType = context.differs[typeOf(a)]
+        if (differForType) {
+          const summary = differForType(a, b)
+          if (summary) {
+            return summary
+          }
         }
         return [{op: 'edit', from: a, to: b}]
       }
