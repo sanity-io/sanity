@@ -43,7 +43,6 @@ export const ObjectInput = React.forwardRef((props, ref) => {
   return (
     <div>
       <label>{props.type.title}</label>
-      {/*<RenderMarkers markers={props.markers.items}/>*/}
       <fieldset>
         {props.type.fields.map(field => (
           <ObjectField

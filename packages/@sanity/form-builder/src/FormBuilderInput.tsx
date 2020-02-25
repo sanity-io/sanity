@@ -214,7 +214,7 @@ export class FormBuilderInput extends React.Component<Props> {
         }))
     }
     const childFocusPath = this.getChildFocusPath()
-    const isLeaf = childFocusPath.length === 0 || childFocusPath[0] === PathUtils.FOCUS_TERMINATOR
+    const isLeaf = childFocusPath.length === 0 || childFocusPath.length === 1
     const leafProps = isLeaf ? {} : {focusPath: childFocusPath}
     const childPresenceInfo = (presence || [])
       .filter(presence => {
