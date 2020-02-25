@@ -1,25 +1,43 @@
-const value = {
+const document = {
   foo: {
     bar: {
       test: 'hi'
     }
   },
-  foobar: {
-
-  }
+  foobar: {}
 }
 
+const presence = []
+const validation = []
+const comments = []
+
 const markers = {
-  items: [],
+  props: {
+    presence,
+    validation,
+    comments
+  },
   children: {
     foo: {
-      items: [],
+      props: {
+        presence,
+        validation,
+        comments
+      },
       children: {
         bar: {
-          items: [{..}],
+          props: {
+            presence,
+            validation,
+            comments
+          },
           children: {
             test: {
-              items: [],
+              props: {
+                presence,
+                validation,
+                comments
+              },
               children: {}
             }
           }
@@ -27,7 +45,11 @@ const markers = {
       }
     },
     foobar: {
-      items: [],
+      props: {
+        presence,
+        validation,
+        comments
+      },
       children: {}
     }
   }
@@ -36,3 +58,5 @@ const markers = {
 //patch(markers, {set: {'children.foo.markers'}})
 
 // const markers = [{path: ['foo', 'bar'], markers: []}, {path: ['foo', 'bar']}, {path: ['foo', 'bar']}]
+
+export {}
