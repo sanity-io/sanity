@@ -13,11 +13,7 @@ module.exports = async function listApisAction(args, context) {
       method: 'GET'
     })
   } catch (err) {
-    if (err.statusCode === 404) {
-      endpoints = []
-    } else {
-      throw err
-    }
+    throw err
   }
 
   if (endpoints && endpoints.length > 0) {
