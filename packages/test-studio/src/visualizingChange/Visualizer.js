@@ -1,6 +1,7 @@
 /* eslint-disable react/display-name */
 /* eslint-disable react/no-multi-comp, react/prop-types */
 import React from 'react'
+//import schema from 'part:@sanity/base/schema'
 
 function resolveIterator(item, differs) {
   // Check for custom iterator
@@ -15,8 +16,9 @@ function resolveIterator(item, differs) {
   }
 }
 
-function resolveDiffer(item, differs) {
+function resolveDiffer(item, differs, documentType) {
   // Check for custom differ
+
   const customVisualDiffer = differs[item.type] ? differs[item.type][item.op] : null
   if (customVisualDiffer) {
     return customVisualDiffer
@@ -45,10 +47,10 @@ function resolveDiffer(item, differs) {
 }
 
 function NestedVisualizer(props) {
-  const {item, differs, level} = props
+  const {item, original, modified, differs, level} = props
 
-  // If we're dealing with an array, find out how to wrap the list
   if (Array.isArray(item)) {
+    // We're dealing with an array, find out how to wrap the list
     const iteratorWrapper = resolveIterator(item, differs)
     const Component = iteratorWrapper.component
     return (
@@ -56,14 +58,24 @@ function NestedVisualizer(props) {
         {item.map((subItem, index) => {
           // Now render a visualizer for each element in the array
           const key = `level_${level}_${index}`
-          return <NestedVisualizer key={key} item={subItem} differs={differs} level={level + 1} />
+
+          return (
+            <NestedVisualizer
+              key={key}
+              item={subItem}
+              original={original}
+              modified={modified}
+              differs={differs}
+              level={level + 1}
+            />
+          )
         })}
       </Component>
     )
   }
 
   // Not an array, resolve how to render the change summary
-  const visualDiffer = resolveDiffer(item, differs)
+  const visualDiffer = resolveDiffer(item, differs, original._type)
   const Component = visualDiffer.component
   const keepGoing = visualDiffer.haltNestedRendering !== true
 
@@ -71,20 +83,34 @@ function NestedVisualizer(props) {
     <>
       <Component item={item} />
       {item.changes && keepGoing && (
-        <NestedVisualizer item={item.changes} differs={differs} level={level + 1} />
+        <NestedVisualizer
+          item={item.changes}
+          original={original}
+          modified={modified}
+          differs={differs}
+          level={level}
+        />
       )}
     </>
   )
 }
 
 const Visualizer = props => {
-  const {diff, differs = {}} = props
+  const {diff, differs = {}, original, modified} = props
 
   if (!diff) {
     return <div>No diff present</div>
   }
 
-  return <NestedVisualizer item={diff} differs={differs} level={0} />
+  return (
+    <NestedVisualizer
+      item={diff}
+      original={original}
+      modified={modified}
+      differs={differs}
+      level={0}
+    />
+  )
 }
 
 export default Visualizer

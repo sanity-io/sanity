@@ -13,7 +13,29 @@ export default {
       name: 'description',
       title: 'Description',
       type: 'array',
-      of: [{type: 'block'}]
+      of: [{type: 'block'}, {type: 'image'}]
+    },
+    {
+      name: 'hobbies',
+      title: 'Hobbies',
+      type: 'array',
+      of: [{type: 'string'}]
+    },
+    {
+      name: 'bikes',
+      title: 'Bikes',
+      type: 'array',
+      of: [
+        {
+          name: 'bike',
+          title: 'Bike',
+          type: 'object',
+          fields: [
+            {name: 'brand', title: 'Brand', type: 'string'},
+            {name: 'model', title: 'Model', type: 'string'}
+          ]
+        }
+      ]
     },
     {
       name: 'face',

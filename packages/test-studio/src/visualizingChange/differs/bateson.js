@@ -32,7 +32,7 @@ function diff(a, b, path, options) {
   if (!isSameType(a, b)) {
     return [{op: 'replace', from: a, to: b}]
   }
-
+  console.log('path', path)
   switch (typeOf(a)) {
     case 'object': {
       const result = []
@@ -67,6 +67,7 @@ function diff(a, b, path, options) {
           result.push({op: 'modifyField', type, field, changes})
         }
       })
+
       return result
     }
 

@@ -10,6 +10,7 @@ import Visualizer from './Visualizer'
 
 const VisualDiff = props => {
   const {published: original, draft: modified} = props.document
+
   if (!original || !modified) {
     return <div>Need two documents to compare</div>
   }

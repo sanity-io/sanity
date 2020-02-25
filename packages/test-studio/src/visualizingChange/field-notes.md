@@ -27,7 +27,7 @@ That early return while evaluating `object` makes the next line unreachable
 `modifyEntry` - an entry in an array (with the given key) has changed
 `edit` - a plain value (number, booelan, null/undefined) has changed
 
-## Custom
+## Custom Operations
 `replaceImage` - image asset reference has changed
 
 
