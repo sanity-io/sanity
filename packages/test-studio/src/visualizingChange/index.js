@@ -3,6 +3,7 @@
 import React from 'react'
 import JSONPretty from 'react-json-pretty'
 import monikai from 'react-json-pretty/dist/monikai'
+import stuff from 'all:part:@sanity/base/document-differ'
 import summaryDiffers from './differs/summaryDiffers'
 import visualDiffers from './differs/visualDiffers'
 import createDiffSummary from './differs/bateson'
@@ -10,6 +11,8 @@ import Visualizer from './Visualizer'
 
 const VisualDiff = props => {
   const {published: original, draft: modified} = props.document
+
+  console.log('got differs', stuff)
 
   if (!original || !modified) {
     return <div>Need two documents to compare</div>
