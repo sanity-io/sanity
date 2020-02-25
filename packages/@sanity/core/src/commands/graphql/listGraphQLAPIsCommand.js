@@ -1,9 +1,6 @@
 import lazyRequire from '@sanity/util/lib/lazyRequire'
 
 const helpText = `
-Options
-  N/A
-
 Examples
   sanity graphql list
 `
