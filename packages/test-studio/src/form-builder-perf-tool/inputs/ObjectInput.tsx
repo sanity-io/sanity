@@ -28,7 +28,7 @@ export const ObjectField = React.memo(
 )
 
 export const ObjectInput = React.forwardRef((props, ref) => {
-  if (props.level > 10) {
+  if (props.level > 2) {
     return null
   }
 

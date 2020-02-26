@@ -4,6 +4,7 @@ import {FormBuilderInput} from '@sanity/form-builder/lib/FormBuilderInput'
 import {applyAll} from '@sanity/form-builder/lib/patch/applyPatch'
 import * as is from '@sanity/form-builder/lib/utils/is'
 import {setLocation} from 'part:@sanity/base/presence'
+import DefaultPane from 'part:@sanity/components/panes/default'
 
 import schema from 'part:@sanity/base/schema'
 import {StringInput} from './inputs/StringInput'
@@ -61,21 +62,23 @@ export const FormBuilderPerfTool = props => {
 
   return (
     <>
-      <FormBuilderContext resolveInputComponent={resolveInput}>
-        <form onSubmit={preventDefault}>
-          <FormBuilderInput
-            schema={schema}
-            value={value}
-            presence={presenceInfo}
-            level={0}
-            type={type}
-            onBlur={() => {}}
-            onFocus={onFocus}
-            focusPath={focusPath}
-            onChange={onChange}
-          />
-        </form>
-      </FormBuilderContext>
+      <DefaultPane title="Testing stuff">
+        <FormBuilderContext resolveInputComponent={resolveInput}>
+          <form onSubmit={preventDefault}>
+            <FormBuilderInput
+              schema={schema}
+              value={value}
+              presence={presenceInfo}
+              level={0}
+              type={type}
+              onBlur={() => {}}
+              onFocus={onFocus}
+              focusPath={focusPath}
+              onChange={onChange}
+            />
+          </form>
+        </FormBuilderContext>
+      </DefaultPane>
     </>
   )
 }
