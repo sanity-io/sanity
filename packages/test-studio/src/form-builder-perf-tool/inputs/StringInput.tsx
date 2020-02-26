@@ -1,5 +1,6 @@
 import * as React from 'react'
 import PatchEvent, {set} from '@sanity/form-builder/lib/PatchEvent'
+import Presence from './Presence'
 
 export const StringInput = React.memo(
   React.forwardRef((props, ref) => {
@@ -13,7 +14,7 @@ export const StringInput = React.memo(
 
     return (
       <div>
-        <pre>{JSON.stringify(props.presence, null, 2)}</pre>
+        {props.presence.length > 0 && <Presence title={props.type.title} presence={props.presence} />}
         <label>{props.type.title}</label>
         <input
           type="string"
