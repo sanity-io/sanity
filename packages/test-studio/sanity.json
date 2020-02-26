@@ -37,6 +37,7 @@
     "@sanity/storybook",
     "@sanity/google-maps-input",
     "@sanity/vision",
+    "@sanity/visual-diff",
     "@sanity/production-preview",
     "@sanity/studio-hints",
     "dashboard-widget-cats",

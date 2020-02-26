@@ -37,6 +37,7 @@
     "@sanity/storybook": "1.148.1",
     "@sanity/studio-hints": "1.148.1",
     "@sanity/vision": "1.148.1",
+    "@sanity/visual-diff": "1.148.2",
     "@turf/helpers": "^6.0.1",
     "@turf/points-within-polygon": "^5.1.5",
     "bio-pv": "^1.8.1",

@@ -3,9 +3,9 @@ import RefreshIcon from 'part:@sanity/base/sync-icon'
 import EyeIcon from 'part:@sanity/base/eye-icon'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import MdImage from 'react-icons/lib/md/image'
+import visualDiff from 'part:@sanity/visual-diff'
 import JsonDocumentDump from './components/JsonDocumentDump'
 import {DeveloperPreview} from './previews/developer'
-import DiffView from './visualizingChange'
 import S from '@sanity/desk-tool/structure-builder'
 
 // For testing. Bump the timeout to introduce som lag
@@ -90,7 +90,7 @@ export default () =>
                 .views([
                   S.view.form().icon(EditIcon),
                   S.view
-                    .component(DiffView)
+                    .component(visualDiff.component)
                     .icon(EyeIcon)
                     .title('Diffit!')
                 ])
