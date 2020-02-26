@@ -122,7 +122,7 @@ module.exports = async function deployApiActions(args, context) {
 
     spinner.succeed()
     output.print('GraphQL API deployed to:')
-    output.print(client.getUrl(response.location.replace(/^\/(gen1|v\d{4}-\d{2}-\d{2})\//, '/')))
+    output.print(client.getUrl(response.location.replace(/^\/(v1|v\d{4}-\d{2}-\d{2})\//, '/')))
   } catch (err) {
     spinner.fail()
     throw err
