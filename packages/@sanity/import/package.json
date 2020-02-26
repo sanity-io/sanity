@@ -1,6 +1,6 @@
 {
   "name": "@sanity/import",
-  "version": "1.148.5",
+  "version": "1.148.7",
   "description": "Import documents to a Sanity dataset",
   "main": "lib/import.js",
   "engines": {
@@ -43,7 +43,7 @@
     "whatwg-url": "^7.0.0"
   },
   "devDependencies": {
-    "@sanity/client": "1.148.3",
+    "@sanity/client": "1.148.7",
     "get-it": "^5.0.0",
     "jest": "^24.9.0",
     "nock": "^9.0.5",
