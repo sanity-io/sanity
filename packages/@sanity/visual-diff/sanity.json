@@ -1,0 +1,24 @@
+{
+  "paths": {
+    "source": "./src",
+    "compiled": "./lib"
+  },
+  "parts": [
+    {
+      "name": "part:@sanity/visual-diff/differs",
+      "description": "Definitions on how to render diffs for given types, based on change summaries"
+    },
+    {
+      "name": "part:@sanity/visual-diff/summarizers",
+      "description": "Rules for producing change summaries. These are consumed by the differs."
+    },
+    {
+      "name": "part:@sanity/visual-diff",
+      "description": "A component which takes two documents and renders a diff"
+    },
+    {
+      "implements": "part:@sanity/visual-diff",
+      "path": "index.js"
+    }
+  ]
+}

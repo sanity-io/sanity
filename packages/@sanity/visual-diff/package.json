@@ -1,0 +1,45 @@
+{
+  "name": "@sanity/visual-diff",
+  "version": "1.148.2",
+  "description": "Render diffs between documents",
+  "main": "src/index.js",
+  "author": "Sanity.io <hello@sanity.io>",
+  "license": "MIT",
+  "scripts": {
+    "clean": "rimraf lib",
+    "start": "npm run example-testbed",
+    "test": "#todo: jest"
+  },
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "diffs",
+    "sanity-plugin"
+  ],
+  "dependencies": {
+    "lodash": "^4.17.15",
+    "diff": "^4.0.2",
+    "react-json-pretty": "^2.2.0"
+  },
+  "devDependencies": {
+    "@sanity/base": "1.148.2",
+    "@sanity/check": "1.148.1",
+    "prop-types": "^15.6.0",
+    "rimraf": "^2.7.1"
+  },
+  "peerDependencies": {
+    "prop-types": "^15.6 || ^16",
+    "react": "^16.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/"
+}
