@@ -51,14 +51,6 @@
       "description": "React Storybook (https://github.com/kadirahq/react-storybook) stories"
     },
     {
-      "name": "part:@sanity/base/document-differ",
-      "description": "Customize how document diffing behaves"
-    },
-    {
-      "implements": "part:@sanity/base/document-differ",
-      "path": "document-differs/index.tsx"
-    },
-    {
       "name": "part:@sanity/base/search",
       "description": "Parse the search query and fetch search results from the dataset"
     },
