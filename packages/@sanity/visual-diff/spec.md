@@ -2,21 +2,22 @@
 
 ## Using the Visual Diff in a Studio
 
-In Studio context, a developer can import a component (e.g. `<VisualDiff>`) which takes two documents as props and will render a complete diff between the two documemnts.
+In Studio context, a developer can import a component (e.g. `<VisualDiff>`) which takes two versions of a document as props and renders a complete diff.
 
-The `<VisualDiff>` has three distinct task:
-  1. Resolves all Summarizers and Differs which are loaded in the Studio context, both from Sanity defaults and from third-party plugins
-  2. Call a function (currently located in `bateson.js`) which, based on the Summarizers and the two documents, creates a Change Summary which describes all the differences between the two docs. See "The Change Summary" below for more details.
-  3. Render a component which takes the Change Summary and the Differs (and probably the documents) to produce sweet, humanly grokable, description of the changes.
+The `<VisualDiff>` component does three things:
 
-It should be possible to pass styling and other useful UI options to the <VisualDiff> component
+  1. Resolve all Summarizers and Differs which are loaded in the Studio context, both from Sanity defaults and from third-party plugins
+  2. Call a function (currently located in `bateson.js`) which, based on the Summarizers and the two document versions, creates a Change Summary which describes all the differences between the two docs. See "The Change Summary" below for more details.
+  3. Render a component which takes the Change Summary and the Differs (and probably the two document versions) and produces sweet, humanly grokable, description of all the changes.
+
+It should be possible to pass styling and other useful UI options to the <VisualDiff> component.
 
 
 ## Custom Summarizers and Differs
 
 ### Summarizers
 
-A developer can implement a part to define custom Summarizers. A Summarizer's task is to describe a distinct change which has happened between the two documemnts. A Summarizer is defined per type, and returns a function which compares the data for that type and produces a change summary. This could look something like:
+A developer can implement a part to define custom Summarizers. A Summarizer's task is to describe a distinct change which has happened between the two documents. A Summarizer is defined per type, and returns a function which compares the data for that type and produces a change summary. This could look something like:
 
 ```
 {
@@ -48,13 +49,13 @@ string: {
 }
 ```
 
-Custom defined Differs override any default Differs for the same type _and_ operation. Defining a Differ for type `a.operationX` won't affect the presence of a Summarizer `a.operationY` defined elsewhere.
+Defining Custom Differs will override any default Differs for the same type _and_ operation. Defining a Differ for type `a.operationX` won't affect the presence of a Summarizer `a.operationY` defined elsewhere.
 
 
 
 ## The Change Summary
 
-Say a `person` document has changed a value `face.nose` from `Red` to `Long`. The current POC summary machine (`bateson.js`) produces something like this:
+Say a `person` document has changed the value on key `face.nose` from `Red` to `Long`. The current POC summary machine (`bateson.js`) outputs a nested structure like this:
 
 ```
 [
@@ -96,7 +97,7 @@ Say a `person` document has changed a value `face.nose` from `Red` to `Long`. Th
 ```
 
 
-Here are some more examples of a flat output:
+Here are some other examples of a flat output:
 
 ```
 [
@@ -142,7 +143,7 @@ Here are some more examples of a flat output:
 ]
 ```
 
-(Regarding the last bike-swap summary, one would probably write a custom summarizer and a custom differ in order to get a more useful visual diff)
+(Regarding the last bike-swap summary, the developer would probably write a custom summarizer and a custom differ in order to get a more useful visual diff)
 
 A flat array is easier for developers to understand, debug and adapt their own code to. And, if we iterate through the compiled schema while rendering changes, the `path` provided on a summary should be suficcient to both understand each change that has occurred and render these in a nested or flat fashion, depending on what we want.
 
