@@ -569,11 +569,11 @@ export type FilteredResponseQueryOptions = RequestOptions & {
   filterResponse: true
 }
 
-export type UnfilteredReponseQueryOptions = RequestOptions & {
+export type UnfilteredResponseQueryOptions = RequestOptions & {
   filterResponse: false
 }
 
-export type QueryOptions = FilteredResponseQueryOptions | UnfilteredReponseQueryOptions
+export type QueryOptions = FilteredResponseQueryOptions | UnfilteredResponseQueryOptions
 
 type FirstDocumentMutationOptions = BaseMutationOptions & {
   returnFirst?: true
@@ -877,7 +877,7 @@ export class ObservableSanityClient {
   fetch<R = any>(
     query: string,
     params?: QueryParams,
-    options?: UnfilteredReponseQueryOptions
+    options?: UnfilteredResponseQueryOptions
   ): Observable<RawQueryResponse<R>>
 
   /**
@@ -1493,7 +1493,7 @@ export interface SanityClient {
   fetch<R = any>(
     query: string,
     params?: QueryParams,
-    options?: UnfilteredReponseQueryOptions
+    options?: UnfilteredResponseQueryOptions
   ): Promise<RawQueryResponse<R>>
 
   /**
