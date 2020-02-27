@@ -102,19 +102,19 @@ Here are some other examples of a flat output:
 ```
 [
   {
-    "operation": "remove",
+    "operation": "remove", // I'm now nameless
     "type": "string",
     "path": "name"
   },
   {
-    "operation": "edit",
+    "operation": "edit", // I grew another eye!
     "type": "number",
     "path": "face.eyes",
     "from": 1,
     "to": 2
   },
   {
-    "operation": "set",
+    "operation": "set", // I got a job!
     "type": "object",
     "path": "job",
     "value": {
