@@ -8,6 +8,7 @@ import filterFieldFn$ from 'part:@sanity/desk-tool/filter-fields-fn?'
 import styles from '../Editor.css'
 import EditForm from './EditForm'
 import HistoryForm from './HistoryForm'
+import {setLocation} from 'part:@sanity/base/presence'
 
 const noop = () => undefined
 
@@ -43,7 +44,8 @@ export default class FormView extends React.PureComponent {
         isLoading: PropTypes.bool.isRequired,
         snapshot: PropTypes.shape({_type: PropTypes.string})
       })
-    }).isRequired
+    }).isRequired,
+    presence: PropTypes.any
   }
 
   static defaultProps = {
@@ -70,6 +72,13 @@ export default class FormView extends React.PureComponent {
 
   handleFocus = path => {
     this.setState({focusPath: path})
+    setLocation([
+      {
+        namespace: 'formBuilder',
+        documentId: this.getCanonicalDocumentId(),
+        path
+      }
+    ])
   }
 
   handleBlur = () => {
@@ -88,13 +97,27 @@ export default class FormView extends React.PureComponent {
     )
   }
 
+  getCanonicalDocumentId() {
+    const {displayed} = this.props.document
+    return displayed && displayed._id && displayed._id.replace(/^drafts\./, '')
+  }
+
   render() {
-    const {document, id, history, schemaType, markers, patchChannel, initialValue} = this.props
+    const {
+      document,
+      id,
+      history,
+      schemaType,
+      markers,
+      patchChannel,
+      initialValue,
+      presence
+    } = this.props
     const {draft, published, displayed} = document
     const {focusPath, filterField} = this.state
     const value = draft || published
     const readOnly = this.isReadOnly()
-    const documentId = displayed && displayed._id && displayed._id.replace(/^drafts\./, '')
+    const documentId = this.getCanonicalDocumentId()
 
     const hasTypeMismatch = value && value._type && value._type !== schemaType.name
     if (hasTypeMismatch) {
@@ -127,6 +150,7 @@ export default class FormView extends React.PureComponent {
             readOnly={readOnly}
             schema={schema}
             type={schemaType}
+            presence={presence}
           />
         )}
 

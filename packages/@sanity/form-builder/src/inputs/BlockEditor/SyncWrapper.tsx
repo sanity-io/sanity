@@ -91,6 +91,7 @@ type Props = {
   subscribe: (arg0: () => void) => void
   type: BlockArrayType
   value: FormBuilderValue[] | null
+  presence: any
 }
 type State = {
   deprecatedBlockValue: boolean
@@ -414,7 +415,8 @@ export default withPatchSubscriber(
         renderCustomMarkers,
         renderBlockActions,
         type,
-        value
+        value,
+        presence
       } = this.props
       const isDeprecated = deprecatedSchema || deprecatedBlockValue
       return (
@@ -427,6 +429,7 @@ export default withPatchSubscriber(
               isLoading={isLoading}
               level={level}
               markers={markers}
+              presence={presence}
               onBlur={onBlur}
               onChange={this.handleEditorChange}
               onFocus={onFocus}

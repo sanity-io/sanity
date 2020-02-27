@@ -7,7 +7,6 @@ import DefaultLabel from 'part:@sanity/components/labels/default'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import ValidationList from 'part:@sanity/components/validation/list'
 import AnimateHeight from 'react-animate-height'
-import FieldPresence from '../presence/FieldPresence'
 
 const ENABLE_CONTEXT = () => {}
 export default class DefaultFormField extends React.PureComponent {
@@ -25,7 +24,7 @@ export default class DefaultFormField extends React.PureComponent {
         type: PropTypes.string
       })
     ),
-    type: PropTypes.any
+    presence: PropTypes.any
   }
 
   static defaultProps = {
@@ -48,11 +47,6 @@ export default class DefaultFormField extends React.PureComponent {
     }))
   }
 
-  getDocumentId() {
-    const document = this.context.formBuilder.getDocument()
-    return document._id
-  }
-
   getValuePath() {
     return this.context.getValuePath()
   }
@@ -67,7 +61,8 @@ export default class DefaultFormField extends React.PureComponent {
       inline,
       wrapped,
       className,
-      markers
+      markers,
+      presence
     } = this.props
 
     const {showValidationMessages} = this.state
@@ -105,6 +100,7 @@ export default class DefaultFormField extends React.PureComponent {
           >
             <ValidationList markers={markers} />
           </AnimateHeight>
+          <div>PRESENCE: {JSON.stringify(presence)}</div>
           <div className={styles.content}>{children}</div>
         </label>
       </div>

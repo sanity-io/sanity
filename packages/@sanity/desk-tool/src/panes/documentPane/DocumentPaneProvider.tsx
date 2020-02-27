@@ -1,6 +1,8 @@
 import * as React from 'react'
 import DocumentPane from './DocumentPane'
-import withInitialValue from '../../utils/withInitialValue'
+import withInitialValue from '../utils/withInitialValue'
+import usePresence from 'part:@sanity/base/hooks/presence'
+
 import {
   useConnectionState,
   useDocumentOperation,
@@ -44,6 +46,14 @@ const DocumentPaneProvider = withInitialValue((props: Props) => {
   const {patch}: any = useDocumentOperation(props.options.id, props.options.type)
   const editState: any = useEditState(props.options.id, props.options.type)
   const {markers} = useValidationStatus(props.options.id, props.options.type)
+  const presence = usePresence({namespace: 'formBuilder', documentId: props.options.id})
+  const presenceInfo = presence.flatMap(entry => {
+    const {identity, sessions} = entry
+    return sessions.flatMap(sess => {
+      return (sess.state || []).map(state => ({identity, path: state.path}))
+    })
+  })
+
   const connectionState = useConnectionState(props.options.id, props.options.type)
 
   const onChange = React.useCallback(
@@ -61,6 +71,7 @@ const DocumentPaneProvider = withInitialValue((props: Props) => {
       markers={markers}
       connectionState={connectionState}
       value={value}
+      presence={presenceInfo}
       draft={editState && editState.draft}
       published={editState && editState.published}
     />

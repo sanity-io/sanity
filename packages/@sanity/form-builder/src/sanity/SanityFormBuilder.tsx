@@ -3,7 +3,6 @@ import SanityFormBuilderContext from './SanityFormBuilderContext'
 import {FormBuilderInput} from '../FormBuilderInput'
 import {Marker, Type} from '../typedefs'
 import {Path} from '../typedefs/path'
-import {setLocation} from 'part:@sanity/base/presence'
 import * as gradientPatchAdapter from './utils/gradientPatchAdapter'
 import PresenceDock from 'part:@sanity/base/presence/presence-dock'
 
@@ -24,6 +23,7 @@ type Props = {
   onBlur: () => void
   autoFocus: boolean
   focusPath: Path
+  presence: any
 }
 
 export default class SanityFormBuilder extends React.Component<Props, {}> {
@@ -42,18 +42,6 @@ export default class SanityFormBuilder extends React.Component<Props, {}> {
     }
   }
 
-  componentDidUpdate(prevProps: Props) {
-    if (this.props.focusPath !== prevProps.focusPath) {
-      setLocation([
-        {
-          namespace: 'formBuilder',
-          documentId: this.props.value._id,
-          path: this.props.focusPath
-        }
-      ])
-    }
-  }
-
   handleChange = patchEvent => {
     this.props.onChange(gradientPatchAdapter.toGradient(patchEvent.patches))
   }
@@ -69,7 +57,8 @@ export default class SanityFormBuilder extends React.Component<Props, {}> {
       onFocus,
       onBlur,
       focusPath,
-      filterField
+      filterField,
+      presence
     } = this.props
     return (
       <SanityFormBuilderContext value={value} schema={schema} patchChannel={patchChannel}>
@@ -87,6 +76,7 @@ export default class SanityFormBuilder extends React.Component<Props, {}> {
             readOnly={readOnly}
             filterField={filterField}
             ref={this.setInput}
+            presence={presence}
           />
         </PresenceDock>
       </SanityFormBuilderContext>

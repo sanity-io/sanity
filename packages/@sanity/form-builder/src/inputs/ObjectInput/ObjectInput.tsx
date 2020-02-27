@@ -42,6 +42,7 @@ type ObjectInputProps = {
   readOnly?: boolean
   isRoot?: boolean
   filterField?: (...args: any[]) => any
+  presence: any
 }
 export default class ObjectInput extends React.PureComponent<ObjectInputProps, {}> {
   _firstField: any
@@ -81,7 +82,17 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
     onChange(event)
   }
   renderField(field, level, index) {
-    const {type, value, markers, readOnly, focusPath, onFocus, onBlur, filterField} = this.props
+    const {
+      type,
+      value,
+      markers,
+      readOnly,
+      focusPath,
+      onFocus,
+      onBlur,
+      filterField,
+      presence
+    } = this.props
     if (!filterField(type, field) || field.type.hidden) {
       return null
     }
@@ -97,6 +108,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
         markers={markers}
         focusPath={focusPath}
         level={level}
+        presence={presence}
         readOnly={readOnly}
         filterField={filterField}
         ref={index === 0 && this.setFirstField}
