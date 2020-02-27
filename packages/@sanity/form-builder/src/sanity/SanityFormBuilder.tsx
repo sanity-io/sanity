@@ -5,6 +5,7 @@ import {Marker, Type} from '../typedefs'
 import {Path} from '../typedefs/path'
 import {setLocation} from 'part:@sanity/base/presence'
 import * as gradientPatchAdapter from './utils/gradientPatchAdapter'
+import PresenceDock from 'part:@sanity/base/presence/presence-dock'
 
 type PatchChannel = {
   subscribe: () => () => {}
@@ -72,20 +73,22 @@ export default class SanityFormBuilder extends React.Component<Props, {}> {
     } = this.props
     return (
       <SanityFormBuilderContext value={value} schema={schema} patchChannel={patchChannel}>
-        <FormBuilderInput
-          type={type}
-          onChange={this.handleChange}
-          level={0}
-          value={value}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          markers={markers}
-          focusPath={focusPath}
-          isRoot
-          readOnly={readOnly}
-          filterField={filterField}
-          ref={this.setInput}
-        />
+        <PresenceDock>
+          <FormBuilderInput
+            type={type}
+            onChange={this.handleChange}
+            level={0}
+            value={value}
+            onFocus={onFocus}
+            onBlur={onBlur}
+            markers={markers}
+            focusPath={focusPath}
+            isRoot
+            readOnly={readOnly}
+            filterField={filterField}
+            ref={this.setInput}
+          />
+        </PresenceDock>
       </SanityFormBuilderContext>
     )
   }

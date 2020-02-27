@@ -4,6 +4,7 @@ import {FormBuilderInput} from '../../FormBuilderInput'
 import InvalidValue from '../InvalidValueInput'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import styles from './styles/Field.css'
+
 type FieldProps = {
   field: any
   value?: any
@@ -72,7 +73,6 @@ export default class Field extends React.PureComponent<FieldProps> {
     }
     return (
       <div className={styles.root}>
-        <h2>PRESENCE</h2>
         <FormBuilderInput
           value={value}
           type={field.type}

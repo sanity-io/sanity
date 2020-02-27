@@ -1,0 +1,78 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  position: relative;
+  background: var(--white);
+  z-index: 10;
+  border-radius: 50%;
+}
+
+.root::before {
+  content: '';
+  height: 12px;
+  width: 12px;
+  position: absolute;
+  left: calc((100% - 12px) / 2);
+  background: blue;
+  transform: rotate(45deg);
+  border-radius: 2px;
+}
+
+.root[data-dock='top']::before {
+  top: -3px;
+}
+
+.root[data-dock='bottom']::before {
+  bottom: -3px;
+}
+
+.avatar {
+  position: relative;
+  background-color: var(--white);
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  box-sizing: border-box;
+  border: 2px solid transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  @nest & .inner {
+    height: 80%;
+    width: 80%;
+    display: flex;
+    border-radius: 50%;
+    background: var(--gray-light);
+  }
+}
+
+.avatar[data-status='active'] {
+  /* solid border */
+  border-style: solid;
+}
+
+.avatar[data-status='inactive'] {
+  /* faded */
+}
+
+.avatar[data-status='syncing'] {
+  /* dashed border */
+  border-style: dashed;
+}
+
+.avatar[data-status='attention'] {
+  /* pulsing, box-shadow */
+}
+
+.avatarImage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: -0.75rem;
+
+  @nest & img {
+    height: 100%;
+    display: flex;
+  }
+}

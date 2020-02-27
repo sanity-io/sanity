@@ -20,6 +20,8 @@ import * as PathUtils from '@sanity/util/paths'
 import ConfirmButton from './ConfirmButton'
 import styles from './styles/ItemValue.css'
 import {ArrayType, ItemValue} from './typedefs'
+import PresenceDock from 'part:@sanity/base/presence/presence-dock'
+
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
     <DragBarsIcon />
@@ -155,19 +157,21 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     const memberType = this.getMemberType()
     const childMarkers = markers.filter(marker => marker.path.length > 1)
     const content = (
-      <FormBuilderInput
-        type={memberType}
-        level={0}
-        value={isEmpty(item) ? undefined : item}
-        onChange={this.handleChange}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        focusPath={focusPath}
-        readOnly={readOnly || memberType.readOnly}
-        markers={childMarkers}
-        path={[{_key: item._key}]}
-        filterField={filterField}
-      />
+      <PresenceDock>
+        <FormBuilderInput
+          type={memberType}
+          level={0}
+          value={isEmpty(item) ? undefined : item}
+          onChange={this.handleChange}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          focusPath={focusPath}
+          readOnly={readOnly || memberType.readOnly}
+          markers={childMarkers}
+          path={[{_key: item._key}]}
+          filterField={filterField}
+        />
+      </PresenceDock>
     )
     // test focus issues by uncommenting the next line
     // return content
