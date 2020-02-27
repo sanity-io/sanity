@@ -224,7 +224,6 @@ export class FormBuilderInput extends React.Component<Props> {
         ...presence,
         path: trimChildPath(path, presence.path)
       }))
-
     return (
       <div data-focus-path={PathUtils.toString(path)}>
         <InputComponent

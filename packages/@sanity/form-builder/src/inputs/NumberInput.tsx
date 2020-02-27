@@ -12,6 +12,7 @@ type Props = {
   onChange: (arg0: PatchEvent) => void
   onFocus: () => void
   markers: Array<Marker>
+  presence: any
 }
 export default class NumberInput extends React.Component<Props, {}> {
   _input: TextInput | null
@@ -28,14 +29,20 @@ export default class NumberInput extends React.Component<Props, {}> {
     this._input = input
   }
   render() {
-    const {value = '', readOnly, markers, type, level, onFocus} = this.props
+    const {value = '', readOnly, markers, type, level, onFocus, presence} = this.props
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
     // Show numpad on mobile if only positive numbers is preferred
     const minRule = getValidationRule(type, 'min')
     const onlyPositiveNumber = minRule && minRule.constraint >= 0
     return (
-      <FormField markers={markers} level={level} label={type.title} description={type.description}>
+      <FormField
+        markers={markers}
+        level={level}
+        label={type.title}
+        description={type.description}
+        presence={presence}
+      >
         <TextInput
           customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
           type="number"

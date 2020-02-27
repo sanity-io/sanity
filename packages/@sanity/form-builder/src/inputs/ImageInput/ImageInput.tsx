@@ -82,6 +82,7 @@ export type Props = {
   readOnly: boolean | null
   focusPath: Array<any>
   markers: Array<Marker>
+  presence: any
 }
 
 const HIDDEN_FIELDS = ['asset', 'hotspot', 'crop']
@@ -525,7 +526,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   render() {
-    const {type, value, level, materialize, markers, readOnly} = this.props
+    const {type, value, level, materialize, markers, readOnly, presence} = this.props
     const {isAdvancedEditOpen, selectedAssetSource, uploadError, hasFocus} = this.state
     const [highlightedFields, otherFields] = partition(
       type.fields.filter(field => !HIDDEN_FIELDS.includes(field.name)),
@@ -542,6 +543,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     return (
       <FieldSetComponent
         markers={markers}
+        presence={presence}
         legend={type.title}
         description={type.description}
         level={level}

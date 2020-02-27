@@ -26,7 +26,8 @@ export default class Fieldset extends React.Component {
     tabIndex: PropTypes.number,
     transparent: PropTypes.bool,
     styles: PropTypes.object,
-    markers: PropTypes.array
+    markers: PropTypes.array,
+    presence: PropTypes.any
   }
 
   static defaultProps = {
@@ -89,6 +90,7 @@ export default class Fieldset extends React.Component {
       tabIndex,
       transparent,
       markers,
+      presence,
       ...rest
     } = this.props
 
@@ -157,6 +159,7 @@ export default class Fieldset extends React.Component {
               <div className={styles.headerStatus}>
                 <ValidationStatus markers={markers} onClick={this.handleToggleValidationList} />
               </div>
+              <div>PRESENCE: {JSON.stringify(presence)}</div>
             </div>
             {showValidationList && (
               <div className={styles.validationList}>
