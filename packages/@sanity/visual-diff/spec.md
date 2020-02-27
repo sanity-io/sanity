@@ -71,7 +71,6 @@ Say a `person` document has changed a value `face.nose` from `Red` to `Long`. Th
           {
             "operation": "editText",
             "type": "string",
-            "path": "face.nose",
             "from": "Red",
             "to": "Long"
           }
