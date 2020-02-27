@@ -1,4 +1,4 @@
-# Draft: Visual diff dev experience
+# Specification draft: Visual diff
 
 ## Using the Visual Diff in a Studio
 
