@@ -33,6 +33,6 @@
     "normalize.css": "^5.0.0",
     "react-addons-create-fragment": "^15.4.2",
     "shelljs": "^0.7.6",
-    "webpack": "^3.0.0"
+    "webpack": "^3.8.1"
   }
 }
