@@ -30,6 +30,7 @@ function getCollapsedWithDefaults(options: Record<string, any> = {}, level) {
     collapsed: level > 2
   }
 }
+
 type ObjectInputProps = {
   type?: any
   value?: {[key: string]: any}
@@ -43,6 +44,7 @@ type ObjectInputProps = {
   isRoot?: boolean
   filterField?: (...args: any[]) => any
 }
+
 export default class ObjectInput extends React.PureComponent<ObjectInputProps, {}> {
   _firstField: any
   static defaultProps = {

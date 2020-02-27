@@ -3,13 +3,14 @@ import FormField from 'part:@sanity/components/formfields/default'
 import TextArea from 'part:@sanity/components/textareas/default'
 import PatchEvent, {set, unset} from '../PatchEvent'
 import {Type, Marker} from '../typedefs'
+import {Path} from '../typedefs/path'
 type Props = {
   type: Type
   level: number
   value: string | null
   readOnly: boolean | null
   onChange: (arg0: PatchEvent) => void
-  onFocus: () => void
+  onFocus: (path: Path) => void
   onBlur: () => void
   markers: Array<Marker>
 }
@@ -27,8 +28,11 @@ export default class TextInput extends React.Component<Props> {
   setInput = (input: TextArea | null) => {
     this._input = input
   }
+  handleFocus = () => {
+    this.props.onFocus([0])
+  }
   render() {
-    const {value, markers, type, readOnly, level, onFocus, onBlur} = this.props
+    const {value, markers, type, readOnly, level, onBlur} = this.props
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
     return (
@@ -39,7 +43,7 @@ export default class TextInput extends React.Component<Props> {
           readOnly={readOnly}
           placeholder={type.placeholder}
           onChange={this.handleChange}
-          onFocus={onFocus}
+          onFocus={this.handleFocus}
           onBlur={onBlur}
           rows={type.rows}
           ref={this.setInput}

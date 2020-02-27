@@ -5,7 +5,7 @@ import SanityDefaultPreview from './SanityDefaultPreview'
 import {Type} from '../types'
 
 // Set this to true for debugging preview subscriptions
-const DEBUG = false
+const DEBUG = true
 
 function resolvePreview(type) {
   const fromPreview = get(type, 'preview.component')
@@ -22,6 +22,7 @@ type Props = {
   isLive: boolean
   layout: string
 }
+
 export default function RenderPreviewSnapshot(props: Props) {
   const {snapshot, type, isLive, layout, ...rest} = props
   const PreviewComponent = resolvePreview(type)

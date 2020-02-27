@@ -209,9 +209,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
         onAction={this.handleDialogAction}
         showCloseButton={false}
       >
-        <div>
-          <DialogContent size="medium">{content}</DialogContent>
-        </div>
+        <DialogContent size="medium">{content}</DialogContent>
       </DefaultDialog>
     )
   }
