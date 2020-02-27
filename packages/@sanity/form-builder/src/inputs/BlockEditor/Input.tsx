@@ -45,6 +45,7 @@ type Props = {
   undoRedoStack: UndoRedoStack
   value: FormBuilderValue[] | null
   userIsWritingText: boolean
+  presence: any
 }
 type State = {
   fullscreen: boolean
@@ -108,7 +109,8 @@ export default class BlockEditorInput extends React.Component<Props, BlockEditor
       type,
       undoRedoStack,
       userIsWritingText,
-      value
+      value,
+      presence
     } = this.props
     const {fullscreen} = this.state
     const isActive = Array.isArray(focusPath) && focusPath.length >= 1
@@ -118,6 +120,7 @@ export default class BlockEditorInput extends React.Component<Props, BlockEditor
           label={type.title}
           labelFor={this.inputId}
           markers={markers}
+          presence={presence}
           description={type.description}
           level={level}
         >

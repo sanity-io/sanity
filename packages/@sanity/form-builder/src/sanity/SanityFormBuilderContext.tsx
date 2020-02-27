@@ -3,8 +3,6 @@ import React from 'react'
 import FormBuilderContext from '../FormBuilderContext'
 import SanityPreview from 'part:@sanity/base/preview'
 import inputResolver from './inputResolver/inputResolver'
-import usePresence from 'part:@sanity/base/hooks/presence'
-import WithPresence from './WithPresence'
 
 const previewResolver = () => SanityPreview
 type Props = {
@@ -15,7 +13,6 @@ type Props = {
 }
 
 export default function SanityFormBuilderContext(props: Props) {
-  const presence = usePresence({namespace: 'formBuilder', documentId: props.value._id})
   return (
     <FormBuilderContext
       value={props.value}
@@ -24,7 +21,7 @@ export default function SanityFormBuilderContext(props: Props) {
       resolveInputComponent={inputResolver}
       resolvePreviewComponent={previewResolver}
     >
-      <WithPresence presence={presence}>{props.children}</WithPresence>
+      {props.children}
     </FormBuilderContext>
   )
 }

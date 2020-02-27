@@ -147,6 +147,7 @@ interface Props {
     view: string
     rev: string
   }
+  presence: any
 }
 
 export default class DocumentPane extends React.PureComponent<Props, State> {
@@ -700,7 +701,16 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
 
   renderCurrentView() {
     const initialValue = this.getInitialValue()
-    const {views, options, urlParams, value, onChange, connectionState, markers} = this.props
+    const {
+      views,
+      options,
+      urlParams,
+      value,
+      onChange,
+      connectionState,
+      markers,
+      presence
+    } = this.props
     const {historical, historyState} = this.state
 
     const selectedHistoryEvent = this.findSelectedHistoryEvent()
@@ -751,6 +761,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
             }
           : historical
       },
+      presence,
       onChange
     }
 
