@@ -641,6 +641,13 @@ export interface SanityAssetDocument extends SanityDocument {
   originalFilename?: string
 }
 
+export interface SanityImagePalette {
+  background: string
+  foreground: string
+  population: number
+  title: string
+}
+
 export interface SanityImageAssetDocument extends SanityAssetDocument {
   metadata: {
     _type: 'sanity.imageMetadata'
