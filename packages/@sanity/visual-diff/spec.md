@@ -145,7 +145,7 @@ Here are some more examples of a flat output:
 
 (Regarding the last bike-swap summary, one would probably write a custom summarizer and a custom differ in order to get a more useful visual diff)
 
-A flat array is easier for developers to understand, debug and adapt their own code to. And, if we iterate through the compiled schema while renering changes, the `path` provided on a summary should be suficcient to both understand each change that has occurred and render these in a nested or flat fashion, depending on what we want.
+A flat array is easier for developers to understand, debug and adapt their own code to. And, if we iterate through the compiled schema while rendering changes, the `path` provided on a summary should be suficcient to both understand each change that has occurred and render these in a nested or flat fashion, depending on what we want.
 
 
 ## There will be UI affordances to revert individual changes
