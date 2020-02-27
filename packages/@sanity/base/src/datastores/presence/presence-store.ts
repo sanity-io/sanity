@@ -1,4 +1,5 @@
-import {EMPTY, merge, of, timer, BehaviorSubject} from 'rxjs'
+import userStore from 'part:@sanity/base/user'
+import {EMPTY, merge, of, timer, BehaviorSubject, from} from 'rxjs'
 import {
   map,
   mapTo,
@@ -37,7 +38,6 @@ export const setLocation = (nextLocation: PresenceLocation[]) => {
 }
 
 export const reportLocation = location => {
-  // console.log('reporting lcoation', location)
   return sendMessages([
     {
       type: 'sync',
@@ -111,6 +111,7 @@ export const clients$ = merge(
     Object.keys(grouped).map(identity => {
       return {
         identity,
+        user: {},
         sessions: grouped[identity].map((session: any) => omit(session, 'identity'))
       }
     })

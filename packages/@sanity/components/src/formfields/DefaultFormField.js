@@ -100,7 +100,7 @@ export default class DefaultFormField extends React.PureComponent {
           >
             <ValidationList markers={markers} />
           </AnimateHeight>
-          <div>PRESENCE: {JSON.stringify(presence)}</div>
+          <div data-presence-container={label}>PRESENCE: {JSON.stringify(presence)}</div>
           <div className={styles.content}>{children}</div>
         </label>
       </div>
