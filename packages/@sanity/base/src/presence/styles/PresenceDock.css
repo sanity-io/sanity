@@ -1,0 +1,21 @@
+.root {
+  position: relative;
+}
+
+.dock {
+  position: sticky;
+  z-index: 10000;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.top {
+  top: 0;
+  padding-top: 0.5rem;
+  margin-top: -1rem;
+}
+
+.bottom {
+  bottom: 0;
+  padding-bottom: 0.5rem;
+}
