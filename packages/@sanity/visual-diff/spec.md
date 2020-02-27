@@ -60,17 +60,17 @@ Say a `person` document has changed the value on key `face.nose` from `Red` to `
 ```
 [
   {
-    "operation": "modifyField",
+    "op": "modifyField",
     "type": "object",
     "field": "face",
     "changes": [
       {
-        "operation": "modifyField",
+        "op": "modifyField",
         "type": "string",
         "field": "nose",
         "changes": [
           {
-            "operation": "editText",
+            "op": "editText",
             "type": "string",
             "from": "Red",
             "to": "Long"
