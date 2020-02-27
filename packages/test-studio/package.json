@@ -34,7 +34,6 @@
     "@sanity/production-preview": "1.149.0",
     "@sanity/react-hooks": "1.149.0",
     "@sanity/rich-date-input": "1.149.0",
-    "@sanity/storybook": "1.149.0",
     "@sanity/studio-hints": "1.149.0",
     "@sanity/vision": "1.149.0",
     "@turf/helpers": "^6.0.1",
