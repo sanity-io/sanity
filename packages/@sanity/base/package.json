@@ -1,6 +1,6 @@
 {
   "name": "@sanity/base",
-  "version": "1.149.0",
+  "version": "1.149.1",
   "description": "Sanity plugin containing the base components and roles for a Sanity configuration",
   "main": "lib/index.js",
   "scripts": {
@@ -27,7 +27,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
-    "@sanity/client": "1.149.0",
+    "@sanity/client": "1.149.1",
     "@sanity/generate-help-url": "1.149.0",
     "@sanity/image-url": "0.140.15",
     "@sanity/initial-value-templates": "1.149.0",
