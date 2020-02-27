@@ -49,7 +49,7 @@ string: {
 }
 ```
 
-Defining Custom Differs will override any default Differs for the same type _and_ operation. Defining a Differ for type `a.operationX` won't affect the presence of a Summarizer `a.operationY` defined elsewhere.
+Defining Custom Differs will override any default Differs for the same type _and_ operation. Defining a Differ for type `a.operationX` won't affect the presence of a Differ `a.operationY` defined elsewhere.
 
 
 
