@@ -48,9 +48,9 @@ const DocumentPaneProvider = withInitialValue((props: Props) => {
   const {markers} = useValidationStatus(props.options.id, props.options.type)
   const presence = usePresence({namespace: 'formBuilder', documentId: props.options.id})
   const presenceInfo = presence.flatMap(entry => {
-    const {identity, sessions} = entry
+    const {sessions, user} = entry
     return sessions.flatMap(sess => {
-      return (sess.state || []).map(state => ({identity, path: state.path}))
+      return (sess.state || []).map(state => ({user, path: state.path}))
     })
   })
 
