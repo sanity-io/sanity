@@ -1,6 +1,6 @@
 {
   "name": "@sanity/validation",
-  "version": "1.148.7",
+  "version": "1.149.0",
   "description": "Validation and warning infrastructure for Sanity projects",
   "main": "lib/index.js",
   "scripts": {
