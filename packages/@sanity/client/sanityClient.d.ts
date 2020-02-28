@@ -569,11 +569,11 @@ export type FilteredResponseQueryOptions = RequestOptions & {
   filterResponse: true
 }
 
-export type UnfilteredReponseQueryOptions = RequestOptions & {
+export type UnfilteredResponseQueryOptions = RequestOptions & {
   filterResponse: false
 }
 
-export type QueryOptions = FilteredResponseQueryOptions | UnfilteredReponseQueryOptions
+export type QueryOptions = FilteredResponseQueryOptions | UnfilteredResponseQueryOptions
 
 type FirstDocumentMutationOptions = BaseMutationOptions & {
   returnFirst?: true
@@ -871,36 +871,42 @@ export class ObservableSanityClient {
    * Perform a GROQ-query against the configured dataset.
    *
    * @param query GROQ-query to perform
-   * @param params Optional query parameters
-   * @param options Request options
    */
-  fetch<R = any>(
-    query: string,
-    params?: QueryParams,
-    options?: UnfilteredReponseQueryOptions
-  ): Observable<RawQueryResponse<R>>
+  fetch<R = any>(query: string): Observable<R>
 
   /**
    * Perform a GROQ-query against the configured dataset.
    *
    * @param query GROQ-query to perform
-   * @param params Optional query parameters
+   * @param params Query parameters
+   */
+  fetch<R = any>(query: string, params: QueryParams): Observable<R>
+
+  /**
+   * Perform a GROQ-query against the configured dataset.
+   *
+   * @param query GROQ-query to perform
+   * @param params Query parameters
    * @param options Request options
    */
   fetch<R = any>(
     query: string,
-    params?: QueryParams,
-    options?: FilteredResponseQueryOptions
+    params: QueryParams | undefined,
+    options: FilteredResponseQueryOptions
   ): Observable<R>
 
   /**
    * Perform a GROQ-query against the configured dataset.
    *
    * @param query GROQ-query to perform
-   * @param params Optional query parameters
+   * @param params Query parameters
    * @param options Request options
    */
-  fetch<R = any>(query: string, params?: QueryParams): Observable<R>
+  fetch<R = any>(
+    query: string,
+    params: QueryParams | undefined,
+    options: UnfilteredResponseQueryOptions
+  ): Observable<RawQueryResponse<R>>
 
   /**
    * Fetch a single document with the given ID.
@@ -1487,14 +1493,16 @@ export interface SanityClient {
    * Perform a GROQ-query against the configured dataset.
    *
    * @param query GROQ-query to perform
-   * @param params Optional query parameters
-   * @param options Request options
    */
-  fetch<R = any>(
-    query: string,
-    params?: QueryParams,
-    options?: UnfilteredReponseQueryOptions
-  ): Promise<RawQueryResponse<R>>
+  fetch<R = any>(query: string): Promise<R>
+
+  /**
+   * Perform a GROQ-query against the configured dataset.
+   *
+   * @param query GROQ-query to perform
+   * @param params Optional query parameters
+   */
+  fetch<R = any>(query: string, params: QueryParams): Promise<R>
 
   /**
    * Perform a GROQ-query against the configured dataset.
@@ -1505,8 +1513,8 @@ export interface SanityClient {
    */
   fetch<R = any>(
     query: string,
-    params?: QueryParams,
-    options?: FilteredResponseQueryOptions
+    params: QueryParams | undefined,
+    options: FilteredResponseQueryOptions
   ): Promise<R>
 
   /**
@@ -1516,7 +1524,11 @@ export interface SanityClient {
    * @param params Optional query parameters
    * @param options Request options
    */
-  fetch<R = any>(query: string, params?: QueryParams): Promise<R>
+  fetch<R = any>(
+    query: string,
+    params: QueryParams | undefined,
+    options: UnfilteredResponseQueryOptions
+  ): Promise<RawQueryResponse<R>>
 
   /**
    * Fetch a single document with the given ID.
