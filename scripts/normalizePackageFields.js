@@ -1,5 +1,5 @@
 const uniq = require('lodash/uniq')
-const transformPkgs = require('./transformPkgs')
+const transformPkgs = require('./utils/transformPkgs')
 
 const COMMON_KEYWORDS = ['sanity', 'cms', 'headless', 'realtime', 'content']
 const supportedNodeVersionRange = '>=8.0.0'
