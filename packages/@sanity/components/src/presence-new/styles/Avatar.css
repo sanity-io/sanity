@@ -5,18 +5,23 @@
   background: var(--white);
   z-index: 10;
   border-radius: 50%;
+  box-sizing: border-box;
 }
 
-/* .root::before {
+.root:not(:last-child) {
+  margin-right: -0.75rem;
+}
+
+.root[data-dock]::before {
   content: '';
-  height: 12px;
-  width: 12px;
+  height: 15px;
+  width: 15px;
   position: absolute;
-  left: calc((100% - 12px) / 2);
-  background: blue;
+  left: calc((100% - 15px) / 2);
+  background: var(--brand-primary);
   transform: rotate(45deg);
   border-radius: 2px;
-} */
+}
 
 .root[data-dock='top']::before {
   top: -3px;
@@ -32,15 +37,14 @@
   width: 1.5em;
   height: 1.5em;
   border-radius: 50%;
-  box-sizing: border-box;
-  border: 2px solid transparent;
+  border: 2px solid var(--brand-primary);
   display: flex;
   justify-content: center;
   align-items: center;
 
   @nest & .inner {
-    height: 80%;
-    width: 80%;
+    height: 100%;
+    width: 100%;
     display: flex;
     border-radius: 50%;
     background: var(--gray-light);
@@ -66,13 +70,20 @@
 }
 
 .avatarImage {
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-right: -0.75rem;
+  border: 2px solid var(--white);
+  border-radius: 50%;
+  overflow: hidden;
 
   @nest & img {
     height: 100%;
     display: flex;
   }
+}
+
+.root[data-hidden] {
+  opacity: 0;
 }

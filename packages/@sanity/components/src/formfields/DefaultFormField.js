@@ -90,6 +90,7 @@ export default class DefaultFormField extends React.PureComponent {
                 <div onClick={this.handleToggleShowValidation} className={styles.validationStatus}>
                   <ValidationStatus markers={markers} />
                 </div>
+                <PresenceContainer presence={presence} />
               </div>
             </div>
           )}
@@ -100,7 +101,6 @@ export default class DefaultFormField extends React.PureComponent {
           >
             <ValidationList markers={markers} />
           </AnimateHeight>
-          <PresenceContainer presence={presence} />
           <div className={styles.content}>{children}</div>
         </label>
       </div>
