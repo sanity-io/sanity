@@ -4,7 +4,7 @@ import {FormBuilderInput} from '../FormBuilderInput'
 import {Marker, Type} from '../typedefs'
 import {Path} from '../typedefs/path'
 import * as gradientPatchAdapter from './utils/gradientPatchAdapter'
-import PresenceDock from 'part:@sanity/base/presence/presence-dock'
+import PresenceDock from 'part:@sanity/components/presence/presence-dock'
 
 type PatchChannel = {
   subscribe: () => () => {}

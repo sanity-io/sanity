@@ -1095,6 +1095,18 @@
     {
       "implements": "part:@sanity/components/tabs/tab-panel",
       "path": "tabs/TabPanel.js"
+    },
+    {
+      "name": "part:@sanity/components/presence/presence-dock",
+      "path": "presence-new/PresenceDock"
+    },
+    {
+      "name": "part:@sanity/components/presence/presence-avatar",
+      "path": "presence-new/Avatar"
+    },
+    {
+      "name": "part:@sanity/components/presence/presence-container",
+      "path": "presence-new/PresenceContainer"
     }
   ]
 }
