@@ -7,6 +7,7 @@ import DefaultLabel from 'part:@sanity/components/labels/default'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import ValidationList from 'part:@sanity/components/validation/list'
 import AnimateHeight from 'react-animate-height'
+import Avatar from 'part:@sanity/base/presence/presence-avatar'
 
 const ENABLE_CONTEXT = () => {}
 export default class DefaultFormField extends React.PureComponent {
@@ -100,7 +101,9 @@ export default class DefaultFormField extends React.PureComponent {
           >
             <ValidationList markers={markers} />
           </AnimateHeight>
-          <div data-presence-container={label}>PRESENCE: {JSON.stringify(presence)}</div>
+          <div data-presence-container={presence && presence.map(u => u.id)}>
+            {presence && presence.map(user => <Avatar key={user.id} id={user.id} />)}
+          </div>
           <div className={styles.content}>{children}</div>
         </label>
       </div>

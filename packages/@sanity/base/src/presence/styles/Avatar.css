@@ -7,7 +7,7 @@
   border-radius: 50%;
 }
 
-.root::before {
+/* .root::before {
   content: '';
   height: 12px;
   width: 12px;
@@ -16,7 +16,7 @@
   background: blue;
   transform: rotate(45deg);
   border-radius: 2px;
-}
+} */
 
 .root[data-dock='top']::before {
   top: -3px;
