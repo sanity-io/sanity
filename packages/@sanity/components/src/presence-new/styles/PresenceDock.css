@@ -10,7 +10,7 @@
   z-index: 10000;
   display: flex;
   justify-content: flex-end;
-  padding: var(--small-padding);
+  padding-top: var(--small-padding);
 }
 
 .top {
