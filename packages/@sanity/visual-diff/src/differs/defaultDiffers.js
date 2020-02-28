@@ -45,6 +45,30 @@ const differs = {
     }
   },
 
+  // TODO: Generate for all types by default, not only internal ones, but custom schema types as well?
+  number: {
+    edit: {
+      component: props => {
+        const {op: operation, field, from, to} = props.item
+        return (
+          <li>
+            {field} [{operation}] {`${from} --> ${to}`}
+          </li>
+        )
+      }
+    },
+    set: {
+      component: props => {
+        const {op: operation, field, value} = props.item
+        return (
+          <li>
+            {field} [{operation}] {`--> ${value}`}
+          </li>
+        )
+      }
+    }
+  },
+
   block: {
     editText: {
       component: props => {
