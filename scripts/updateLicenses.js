@@ -3,7 +3,7 @@
  */
 const {promises: fs} = require('fs')
 const path = require('path')
-const readPackages = require('./readPackages')
+const readPackages = require('./utils/readPackages')
 
 const readLicense = fs.readFile(path.join(process.cwd(), 'LICENSE'), 'utf-8')
 
