@@ -147,10 +147,97 @@ Here are some other examples of a flat output:
 
 A flat array is easier for developers to understand, debug and adapt their own code to. And, if we iterate through the compiled schema while rendering changes, the `path` provided on a summary should be suficcient to both understand each change that has occurred and render these in a nested or flat fashion, depending on what we want.
 
+We should be able to access JavaScript objects with only the path. We could potentially use `lodash`s `get` method for that. If not (as `_key=something` might not be supported), we could do it manually by traversing the object and at the same time, supoort the `_key` syntax.
 
 ## There will be UI affordances to revert individual changes
 
 Each distinct change summary should be enough to generate a "revert patch". A button will enable the user to apply that patch.
+
+That said, that could bloat the contract (summarizers), as one would need to keep that information if you were to implement your own summarizer.
+
+Let's say we use the flattened array approach. A change might look like this with the default summarizers:
+
+```
+[
+  {
+    "operation": "editText",
+    "type": "string",
+    "path": "image.asset._ref",
+    "from": "image-ref-123",
+    "to": "image-ref-456"
+  }
+]
+```
+
+If one were to create a custom summarizer for `image`, the contract could potentially end up as this:
+
+```
+[
+  {
+    "operation": "replaceImage",
+    "type": "image",
+    "path": "image", // Old: image.asset._ref. Could potentially use this to keep information to build the revert
+    "from": "image-ref-123",
+    "to": "image-ref-456"
+  }
+]
+```
+
+This will make it impossible for the machinery we create to build a revert for the `_ref` field. So how will we solve this? We could potentially make the users add a `revert` key on the summarizer output, which contains all the information needed to revert the change like this:
+
+```
+[
+  {
+    "operation": "replaceImage",
+    "type": "image",
+    "path": "image", // Old: image.asset._ref. Could potentially use this to keep information to build the revert
+    "from": "image-ref-123",
+    "to": "image-ref-456",
+    "revert": {
+      "operation": "editText",
+      "type": "string",
+      "path": "image.asset._ref",
+      "from": "image-ref-123", // This might not necessarily be the same as `parent.from`
+      "to": "image-ref-456" // This might not necessarily be the same as `parent.to`
+    }
+  }
+]
+```
+
+That way we could easily build the revert, but it would bloat the contract, and seems very intrusive. We feel like the diffs themselves should be enough to construct whatever information/actions you need to show/do from this.
+
+---
+
+Another approach would be for the user to create their own reverter, much alike custom summarizers, as the kind of go hand-in-hand when overriding the summarizer, as the machinery wouldn't necessarily know how to revert your custom summarizer. This is very brittle, as if the create your own summarizer and later change it, you would need to remember in your brain to change the reverter accordingly. Let's take an example:
+
+If I were to change this custom summarizer from:
+
+```
+{
+  image: (a, b) => {
+    if (a.asset && b.asset && a.asset._ref !== b.asset._ref) {
+      return [{op: 'replaceImage', from: a.asset._ref, to: b.asset._ref}]
+    }
+    return null
+  }
+}
+```
+
+to:
+
+```
+{
+  image: (a, b) => {
+    if (a.asset && b.asset && a.asset._ref !== b.asset._ref) {
+      return [{op: 'replaceImage', from: a.asset, to: b.asset}]
+    }
+    return null
+  }
+}
+```
+
+Since I have changed the contract here, I would also need to change the reverter to know that the `from` and `to` field doesn't contain the `_ref` anymore. It contains the asset itself, and not the full path. We need to make this very smooth.
+
 
 ## There will be a "blame" feature, which renders the username responsible along side each change
 
