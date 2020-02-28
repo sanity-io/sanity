@@ -20,7 +20,7 @@ import * as PathUtils from '@sanity/util/paths'
 import ConfirmButton from './ConfirmButton'
 import styles from './styles/ItemValue.css'
 import {ArrayType, ItemValue} from './typedefs'
-import PresenceDock from 'part:@sanity/base/presence/presence-dock'
+import PresenceDock from 'part:@sanity/components/presence/presence-dock'
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>

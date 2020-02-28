@@ -159,7 +159,6 @@ export default class Fieldset extends React.Component {
               <div className={styles.headerStatus}>
                 <ValidationStatus markers={markers} onClick={this.handleToggleValidationList} />
               </div>
-              <div data-presence-container={legend}>PRESENCE: {JSON.stringify(presence)}</div>
             </div>
             {showValidationList && (
               <div className={styles.validationList}>
