@@ -24,7 +24,7 @@ export default function Avatar({id, dock}) {
   }, [user])
   return (
     <div className={styles.root} data-dock={dock}>
-      <div className={styles.avatar} data-status={status} style={{borderColor: color}}>
+      <div className={styles.avatar} data-status={status}>
         <div className={styles.inner}>
           <div className={styles.avatarImage}>
             {user && user.imageUrl && <img src={user.imageUrl} />}
