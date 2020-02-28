@@ -1,6 +1,7 @@
 import React from 'react'
-import styles from './styles/Avatar.css'
 import userStore from 'part:@sanity/base/user'
+import PropTypes from 'prop-types'
+import styles from './styles/Avatar.css'
 
 // type Props = {
 //   imageUrl?: string
@@ -11,7 +12,7 @@ import userStore from 'part:@sanity/base/user'
 //   color: string
 // }
 
-export default function Avatar({imageUrl, id, status, dock, initials, color}) {
+export default function Avatar({id, dock}) {
   // data-dock={dock}
   const [user, setUser] = React.useState(null)
   React.useEffect(() => {
@@ -32,4 +33,14 @@ export default function Avatar({imageUrl, id, status, dock, initials, color}) {
       </div>
     </div>
   )
+}
+
+Avatar.propTypes = {
+  id: PropTypes.string,
+  dock: PropTypes.string
+}
+
+Avatar.defaultProps = {
+  id: null,
+  dock: null
 }

@@ -1,0 +1,6 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  margin-right: calc(var(--small-padding) * -1);
+  display: flex;
+}

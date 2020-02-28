@@ -1,5 +1,6 @@
 .root {
   position: relative;
+  padding: 1rem 0;
 }
 
 .dock {
@@ -7,15 +8,14 @@
   z-index: 10000;
   display: flex;
   justify-content: flex-end;
+  padding: var(--small-padding);
 }
 
 .top {
   top: 0;
-  padding-top: 0.5rem;
   margin-top: -1rem;
 }
 
 .bottom {
   bottom: 0;
-  padding-bottom: 0.5rem;
 }
