@@ -83,7 +83,3 @@
     display: flex;
   }
 }
-
-.root[data-hidden] {
-  opacity: 0;
-}

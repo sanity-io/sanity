@@ -1,8 +1,8 @@
 import React from 'react'
 import cx from 'classnames'
+import {uniq} from 'lodash'
 import styles from './styles/PresenceDock.css'
 import Avatar from './Avatar'
-import {uniq} from 'lodash'
 
 // type Props = {
 //   children: React.ReactNode
@@ -40,10 +40,13 @@ export default function PresenceDock({children}) {
         return
       }
       let dockPosition = 'top'
-      if (entry.intersectionRect.y >= entry.rootBounds.bottom / 2) {
+      if (entry.intersectionRect.y > entry.rootBounds.bottom / 2) {
         dockPosition = 'bottom'
       }
       const visible = entry.isIntersecting
+      visible
+        ? entry.target.removeAttribute('data-hidden')
+        : entry.target.setAttribute('data-hidden', dockPosition)
       if (!visible && dockPosition === 'top') {
         _topDockUsers = _topDockUsers.concat(userIds)
       }
@@ -62,7 +65,7 @@ export default function PresenceDock({children}) {
       const scrollContainer = scrollparent(rootElm)
       const options = {
         root: scrollContainer,
-        rootMargin: '0px',
+        rootMargin: '2px 0px 0px 0px',
         threshold: 1.0
       }
       const observer = new IntersectionObserver(interSectionCallback, options)
