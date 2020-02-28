@@ -13,7 +13,7 @@ function typeOf(value) {
   return typeof value
 }
 
-function isSameType(a, b) {
+export function isSameType(a, b) {
   if (typeof a !== typeof b) return false
   if (Array.isArray(a) && Array.isArray(b)) return true
   if (a === null && b === null) return true
@@ -28,23 +28,35 @@ function sanityType(value) {
   return typeOf(value)
 }
 
+function summarizerExistForTypeOperation(a, b, type, summarizers) {
+  const summarizerForTypeOperation = summarizers[type]
+  if (summarizerForTypeOperation) {
+    const summary = summarizerForTypeOperation(a, b)
+    if (summary) {
+      return summary
+    }
+  }
+
+  return undefined
+}
+
 function diff(a, b, path, options) {
   if (!isSameType(a, b)) {
     return [{op: 'replace', from: a, to: b}]
   }
 
-  switch (typeOf(a)) {
+  const typeWeAreOperatingOn = typeOf(a) // We can check this, as a and b are guaranteed to be the same type
+
+  switch (typeWeAreOperatingOn) {
     case 'object': {
       const result = []
 
-      const summarizerForType = options.summarizers[a._type]
-      if (summarizerForType) {
-        // There might be a differ for this type, but maybe not for every operation imaginable
-        const summary = summarizerForType(a, b)
-        if (summary) {
-          return summary
-        }
+      const summarizerForTypeOperation = summarizerExistForTypeOperation(typeWeAreOperatingOn)
+      if (summarizerForTypeOperation) {
+        //  There might be a differ for this type, but maybe not for every operation imaginable
+        return summarizerForTypeOperation
       }
+
       const [aFields, bFields] = [
         difference(Object.keys(a), options.ignoreFields || []),
         difference(Object.keys(b), options.ignoreFields || [])
