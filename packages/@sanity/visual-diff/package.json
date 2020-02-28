@@ -8,7 +8,7 @@
   "scripts": {
     "clean": "rimraf lib",
     "start": "npm run example-testbed",
-    "test": "#todo: jest"
+    "test": "NODE_ENV=test jest"
   },
   "keywords": [
     "sanity",
@@ -27,6 +27,7 @@
   "devDependencies": {
     "@sanity/base": "1.148.2",
     "@sanity/check": "1.148.1",
+    "jest": "^25.1.0",
     "prop-types": "^15.6.0",
     "rimraf": "^2.7.1"
   },
