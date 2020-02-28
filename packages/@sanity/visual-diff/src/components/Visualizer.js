@@ -25,6 +25,7 @@ function resolveDiffer(item, differs, documentType) {
   }
 
   // Default differ
+  // TODO: Remove and incorporate into `defaultDiffers.js`
   const component = props => {
     const {op: operation, field, from, to, value} = props.item
     let description = ''

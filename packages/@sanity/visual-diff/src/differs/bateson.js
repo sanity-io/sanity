@@ -1,5 +1,6 @@
 /* eslint-disable complexity */
 /* eslint-disable max-depth, id-length */
+// TODO: Make importing less bloated
 import {difference, intersection} from 'lodash'
 
 const defaultOptions = {
@@ -45,7 +46,7 @@ function diff(a, b, path, options) {
     return [{op: 'replace', from: a, to: b}]
   }
 
-  const typeWeAreOperatingOn = typeOf(a) // We can check this, as a and b are guaranteed to be the same type
+  const typeWeAreOperatingOn = typeOf(a) // We can use this, as a and b are guaranteed to be the same type
 
   switch (typeWeAreOperatingOn) {
     case 'object': {
