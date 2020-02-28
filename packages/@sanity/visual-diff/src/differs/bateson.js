@@ -52,7 +52,12 @@ function diff(a, b, path, options) {
     case 'object': {
       const result = []
 
-      const summarizerForTypeOperation = summarizerExistForTypeOperation(typeWeAreOperatingOn)
+      const summarizerForTypeOperation = summarizerExistForTypeOperation(
+        a,
+        b,
+        typeWeAreOperatingOn,
+        options.summarizers
+      )
       if (summarizerForTypeOperation) {
         //  There might be a differ for this type, but maybe not for every operation imaginable
         return summarizerForTypeOperation
