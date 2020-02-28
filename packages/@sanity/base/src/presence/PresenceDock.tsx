@@ -24,11 +24,8 @@ const scrollparent = node =>
 export default function PresenceDock({children}: Props): HTMLDivElement {
   const avatarsTop = [
     {
-      status: 'active',
       dock: 'top',
-      id: 'avatar1',
-      initials: 'VB',
-      color: 'blue'
+      id: 'avatar1'
     },
     {
       status: 'syncing',
@@ -71,12 +68,13 @@ export default function PresenceDock({children}: Props): HTMLDivElement {
 
   const callback = entries => {
     entries.forEach(entry => {
-      const label = entry.target.getAttribute('data-presence-container')
+      const label = entry.target.getAttribute('data-presence-container').split(',')
       let dockPosition = 'above'
       if (entry.intersectionRect.y > entry.rootBounds.bottom / 2) {
         dockPosition = 'below'
       }
       console.log(label, `visible: ${entry.isIntersecting} - dockPosition: ${dockPosition}`)
+      // console.log('users', entry.target.getAttribute('data-presence-users'))
     })
   }
   const rootRef = React.useRef(null)
@@ -102,15 +100,15 @@ export default function PresenceDock({children}: Props): HTMLDivElement {
   return (
     <div className={styles.root} ref={rootRef}>
       <div className={cx(styles.dock, styles.top)}>
-        {avatarsTop.map(a => (
+        {/* {avatarsTop.map(a => (
           <Avatar key={a.id} {...a} />
-        ))}
+        ))} */}
       </div>
       {children}
       <div className={cx(styles.dock, styles.bottom)}>
-        {avatarsBottom.map(a => (
+        {/* {avatarsBottom.map(a => (
           <Avatar key={a.id} {...a} />
-        ))}
+        ))} */}
       </div>
     </div>
   )
