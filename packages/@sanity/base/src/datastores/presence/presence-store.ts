@@ -1,4 +1,3 @@
-import userStore from 'part:@sanity/base/user'
 import {EMPTY, merge, of, timer, BehaviorSubject, from} from 'rxjs'
 import {
   map,
@@ -111,7 +110,6 @@ export const clients$ = merge(
     Object.keys(grouped).map(identity => {
       return {
         identity,
-        user: {},
         sessions: grouped[identity].map((session: any) => omit(session, 'identity'))
       }
     })
