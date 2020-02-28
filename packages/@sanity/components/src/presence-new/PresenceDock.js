@@ -30,9 +30,17 @@ export default function PresenceDock({children}) {
     let _topDockUsers = []
     let _bottomDockUsers = []
     entries.forEach(entry => {
-      const userIds = entry.target.getAttribute('data-presence-container').split(',')
+      const userIds = entry.target
+        .getAttribute('data-presence-container')
+        .split(',')
+        .filter(id => !!id)
+      if (userIds.length === 0) {
+        setTopDockUsers([])
+        setBottomDockUsers([])
+        return
+      }
       let dockPosition = 'top'
-      if (entry.intersectionRect.y > entry.rootBounds.bottom / 2) {
+      if (entry.intersectionRect.y >= entry.rootBounds.bottom / 2) {
         dockPosition = 'bottom'
       }
       const visible = entry.isIntersecting
@@ -64,7 +72,6 @@ export default function PresenceDock({children}) {
       })
     }
   }, [])
-
   return (
     <div className={styles.root} ref={rootRef}>
       <div className={cx(styles.dock, styles.top)}>
