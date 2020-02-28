@@ -395,14 +395,6 @@
       "path": "hooks/usePresence"
     },
     {
-      "name": "part:@sanity/base/presence/presence-dock",
-      "path": "presence/PresenceDock"
-    },
-    {
-      "name": "part:@sanity/base/presence/presence-avatar",
-      "path": "presence/Avatar"
-    },
-    {
       "name": "part:@sanity/base/project",
       "path": "datastores/project"
     },
