@@ -22,23 +22,17 @@ const scrollparent = node =>
     ? node
     : scrollparent(node.parentNode)
 
-export default function PresenceDock({children}) {
-  const [topDockUsers, setTopDockUsers] = React.useState([])
-  const [bottomDockUsers, setBottomDockUsers] = React.useState([])
+export default function PresenceDock({children, presence}) {
+  const [watchedUsers, setWatchedUsers] = React.useState(
+    presence.map(item => ({id: item.identity, position: 'top', visible: true, path: item.path}))
+  )
 
   const interSectionCallback = entries => {
-    let _topDockUsers = []
-    let _bottomDockUsers = []
     entries.forEach(entry => {
       const userIds = entry.target
         .getAttribute('data-presence-container')
         .split(',')
         .filter(id => !!id)
-      if (userIds.length === 0) {
-        setTopDockUsers([])
-        setBottomDockUsers([])
-        return
-      }
       let dockPosition = 'top'
       if (entry.intersectionRect.y > entry.rootBounds.bottom / 2) {
         dockPosition = 'bottom'
@@ -47,15 +41,28 @@ export default function PresenceDock({children}) {
       visible
         ? entry.target.removeAttribute('data-hidden')
         : entry.target.setAttribute('data-hidden', dockPosition)
-      if (!visible && dockPosition === 'top') {
-        _topDockUsers = _topDockUsers.concat(userIds)
-      }
-      if (!visible && dockPosition === 'bottom') {
-        _bottomDockUsers = _bottomDockUsers.concat(userIds)
-      }
+
+      userIds.map(id => {
+        const user = watchedUsers.find(usr => usr.id === id)
+        if (user) {
+          user.visible = visible
+          user.position = dockPosition
+          setWatchedUsers(watchedUsers.filter(usr => usr.id !== user.id).concat(user))
+        } else {
+          setWatchedUsers(
+            watchedUsers.concat({
+              id,
+              position: dockPosition,
+              visible: visible
+            })
+          )
+        }
+      })
+      // // Ensure we only got the ones that are supposed to be here now
+      // setWatchedUsers(
+      //   watchedUsers.filter(usr => presence.map(item => item.identity).includes(usr.id))
+      // )
     })
-    setTopDockUsers(uniq(_topDockUsers))
-    setBottomDockUsers(uniq(_bottomDockUsers))
   }
   const rootRef = React.useRef(null)
 
@@ -74,19 +81,23 @@ export default function PresenceDock({children}) {
         observer.observe(elm)
       })
     }
-  }, [])
+  }, [presence])
   return (
     <div className={styles.root} ref={rootRef}>
       <div className={cx(styles.dock, styles.top)}>
-        {topDockUsers.map(identity => (
-          <Avatar key={identity} id={identity} />
-        ))}
+        {watchedUsers
+          .filter(user => user.position === 'top' && !user.visible)
+          .map(user => (
+            <Avatar key={user.id} id={user.id} />
+          ))}
       </div>
       {children}
       <div className={cx(styles.dock, styles.bottom)}>
-        {bottomDockUsers.map(identity => (
-          <Avatar key={identity} id={identity} />
-        ))}
+        {watchedUsers
+          .filter(user => user.position === 'bottom' && !user.visible)
+          .map(user => (
+            <Avatar key={user.id} id={user.id} />
+          ))}
       </div>
     </div>
   )
