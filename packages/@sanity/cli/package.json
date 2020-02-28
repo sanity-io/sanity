@@ -42,7 +42,7 @@
     "boxen": "^4.1.0",
     "chalk": "^2.3.0",
     "configstore": "^3.0.0",
-    "debug": "^3.1.0",
+    "debug": "^4.1.1",
     "decompress": "^4.2.0",
     "deep-sort-object": "^1.0.1",
     "es6-promisify": "^6.0.0",

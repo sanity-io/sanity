@@ -23,7 +23,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
-    "debug": "^3.1.0",
+    "debug": "^4.1.1",
     "detect-node": "^2.0.3",
     "dot-prop": "^4.2.0"
   },
