@@ -157,7 +157,7 @@ export const removeMissingReferences = (doc, existingIds) =>
     return documentExists ? refNode : undefined
   })
 
-function restore(id, rev) {
+function restore(id, targetId, rev) {
   return from(getDocumentAtRevision(id, rev)).pipe(
     mergeMap(documentAtRevision => {
       const existingIdsQuery = getAllRefIds(documentAtRevision)
@@ -172,7 +172,7 @@ function restore(id, rev) {
       // Remove _updatedAt and create a new draft from the document at given revision
       ({
         ...omit(documentAtRevision, '_updatedAt'),
-        _id: getDraftId(id)
+        _id: targetId
       })
     ),
     mergeMap(restoredDraft =>
