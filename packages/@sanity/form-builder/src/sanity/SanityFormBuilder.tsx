@@ -62,7 +62,7 @@ export default class SanityFormBuilder extends React.Component<Props, {}> {
     } = this.props
     return (
       <SanityFormBuilderContext value={value} schema={schema} patchChannel={patchChannel}>
-        <PresenceDock>
+        <PresenceDock presence={presence}>
           <FormBuilderInput
             type={type}
             onChange={this.handleChange}
