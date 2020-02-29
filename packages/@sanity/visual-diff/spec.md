@@ -6,12 +6,11 @@ In Studio context, a developer can import a component (e.g. `<VisualDiff>`) whic
 
 The `<VisualDiff>` component does three things:
 
-  1. Resolve all Summarizers and Differs which are loaded in the Studio context, both from Sanity defaults and from third-party plugins
+  1. Resolve all Summarizers and Visualizers which are loaded in the Studio context, both from Sanity defaults and from third-party plugins
   2. Call a function (currently located in `bateson.js`) which, based on the Summarizers and the two document versions, creates a Change Summary which describes all the differences between the two docs. See "The Change Summary" below for more details.
-  3. Render a component which takes the Change Summary and the Differs (and probably the two document versions) and produces sweet, humanly grokable, description of all the changes.
+  3. Render a component which takes the Change Summary and the Visualizers (and probably the two document versions) and produces sweet, humanly grokable, description of all the changes.
 
 It should be possible to pass styling and other useful UI options to the <VisualDiff> component.
-
 
 ## Custom Summarizers and Differs
 
@@ -31,10 +30,9 @@ A developer can implement a part to define custom Summarizers. A Summarizer's ta
 
 Custom defined Summarizers override any default Summarizers for the same type. Defining a Summarizer for type `a` won't affect the presence of a Summarizer for type `b` defined elsewhere.
 
-### Differs
+### Visualizers
 
-A developer can implement a part to define custom Differs. A Differ is defined per type _and_ change operation and it's output is a user friendly rendering of a particular change. An example could look like:
-
+A developer can implement a part to define custom Visualizers. A Visualizer is defined per type _and_ change operation and it's output is a user friendly rendering of a particular change. An example could look like:
 
 ```
 string: {
@@ -50,8 +48,6 @@ string: {
 ```
 
 Defining Custom Differs will override any default Differs for the same type _and_ operation. Defining a Differ for type `a.operationX` won't affect the presence of a Differ `a.operationY` defined elsewhere.
-
-
 
 ## The Change Summary
 
