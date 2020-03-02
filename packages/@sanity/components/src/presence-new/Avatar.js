@@ -12,7 +12,7 @@ import styles from './styles/Avatar.css'
 //   color: string
 // }
 
-export default function Avatar({id, dock}) {
+export default function Avatar({id, position}) {
   // data-dock={dock}
   const [user, setUser] = React.useState(null)
   React.useEffect(() => {
@@ -22,8 +22,9 @@ export default function Avatar({id, dock}) {
       })
     }
   }, [user])
+
   return (
-    <div className={styles.root} data-dock={dock}>
+    <div className={styles.root}>
       <div className={styles.avatar} data-status={status}>
         <div className={styles.inner}>
           <div className={styles.avatarImage}>
@@ -31,16 +32,21 @@ export default function Avatar({id, dock}) {
           </div>
         </div>
       </div>
+      <div className={styles.arrow} data-dock={position}>
+        <svg viewBox="0 0 6 6">
+          <path d="M0 6L3 0L6 6H4H2H0Z" />
+        </svg>
+      </div>
     </div>
   )
 }
 
 Avatar.propTypes = {
   id: PropTypes.string,
-  dock: PropTypes.string
+  position: PropTypes.string
 }
 
 Avatar.defaultProps = {
   id: null,
-  dock: null
+  position: null
 }

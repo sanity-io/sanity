@@ -10,14 +10,15 @@
   z-index: 10000;
   display: flex;
   justify-content: flex-end;
-  padding-top: var(--small-padding);
 }
 
 .top {
   top: 0;
   margin-top: -1rem;
+  padding-top: var(--small-padding);
 }
 
 .bottom {
   bottom: 0;
+  padding-bottom: var(--small-padding);
 }
