@@ -1,6 +1,6 @@
 import React from 'react'
 import cx from 'classnames'
-import {uniq} from 'lodash'
+import {isEqual} from 'lodash'
 import styles from './styles/PresenceDock.css'
 import Avatar from './Avatar'
 
@@ -58,10 +58,6 @@ export default function PresenceDock({children, presence}) {
           )
         }
       })
-      // // Ensure we only got the ones that are supposed to be here now
-      // setWatchedUsers(
-      //   watchedUsers.filter(usr => presence.map(item => item.identity).includes(usr.id))
-      // )
     })
   }
   const rootRef = React.useRef(null)
@@ -81,7 +77,24 @@ export default function PresenceDock({children, presence}) {
         observer.observe(elm)
       })
     }
+  }, [])
+
+  React.useEffect(() => {
+    // Ensure we only got the ones that are supposed to be here
+    setWatchedUsers(
+      watchedUsers
+        .filter(usr => presence.map(item => item.identity).includes(usr.id))
+        .map(usr => {
+          const presenceUsr = presence.find(item => item.identity === usr.id)
+          if (presenceUsr && !isEqual(presenceUsr.path, usr.path)) {
+            usr.visible = true
+            usr.path = presenceUsr.path
+          }
+          return usr
+        })
+    )
   }, [presence])
+
   return (
     <div className={styles.root} ref={rootRef}>
       <div className={cx(styles.dock, styles.top)}>
