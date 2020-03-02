@@ -10,6 +10,7 @@
   z-index: 10000;
   display: flex;
   justify-content: flex-end;
+  pointer-events: none;
 }
 
 .top {
