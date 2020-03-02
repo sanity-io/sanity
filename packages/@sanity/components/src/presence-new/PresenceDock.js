@@ -45,6 +45,7 @@ export default function PresenceDock({children, presence}) {
     let _topUsers = []
     let _bottomUsers = []
     const topElmtopY = topElm.getBoundingClientRect().y
+    const bottomElmtopY = bottomElm.getBoundingClientRect().y
     presenceContainers.forEach(elm => {
       const userIds = elm
         .getAttribute('data-presence-container')
@@ -52,13 +53,10 @@ export default function PresenceDock({children, presence}) {
         .filter(id => !!id)
       if (userIds.length > 0) {
         const elmtopY = elm.getBoundingClientRect().y
-        if (elm.offsetTop < scrollContainer.offsetHeight / 2 && elmtopY < topElmtopY) {
+        if (elmtopY < scrollContainer.offsetHeight / 2 && elmtopY < topElmtopY) {
           _topUsers = _topUsers.concat(userIds)
           elm.setAttribute('data-hidden', 'top')
-        } else if (
-          elm.offsetTop > scrollContainer.offsetHeight / 2 &&
-          elm.offsetTop > bottomElm.offsetTop
-        ) {
+        } else if (elmtopY > scrollContainer.offsetHeight / 2 && elmtopY > bottomElmtopY) {
           elm.setAttribute('data-hidden', 'bottom')
           _bottomUsers = _bottomUsers.concat(userIds)
         } else {
@@ -99,9 +97,9 @@ export default function PresenceDock({children, presence}) {
   return (
     <div className={styles.root} ref={rootRef}>
       <div className={cx(styles.dock, styles.top)} ref={topRef}>
-        {topUsers.map(user => (
+        {topUsers.map((user, index) => (
           <Avatar
-            key={user.id}
+            key={`${user.id}${index}`}
             id={user.id}
             position={user.position}
             scrollToField={scrollToField}
@@ -110,9 +108,9 @@ export default function PresenceDock({children, presence}) {
       </div>
       {children}
       <div className={cx(styles.dock, styles.bottom)} ref={bottomRef}>
-        {bottomUsers.map(user => (
+        {bottomUsers.map((user, index) => (
           <Avatar
-            key={user.id}
+            key={`${user.id}${index}`}
             id={user.id}
             position={user.position}
             scrollToField={scrollToField}
