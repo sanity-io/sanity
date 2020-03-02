@@ -56,6 +56,7 @@ type Props = {
   filterField: Function
   readOnly: boolean | null
   focusPath: Path
+  presence: any
 }
 function pathSegmentFrom(value) {
   return {_key: value._key}
@@ -157,8 +158,9 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     const options = type.options || {}
     const memberType = this.getMemberType()
     const childMarkers = markers.filter(marker => marker.path.length > 1)
+    const childPresence = presence.filter(presence => presence.path.length > 1)
     const content = (
-      <PresenceDock presence={presence}>
+      <PresenceDock presence={childPresence}>
         <FormBuilderInput
           type={memberType}
           level={0}
@@ -171,6 +173,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
           markers={childMarkers}
           path={[{_key: item._key}]}
           filterField={filterField}
+          presence={childPresence}
         />
       </PresenceDock>
     )
