@@ -12,7 +12,7 @@ import styles from './styles/Avatar.css'
 //   color: string
 // }
 
-export default function Avatar({id, position}) {
+export default function Avatar({id, position, scrollToField}) {
   // data-dock={dock}
   const [user, setUser] = React.useState(null)
   React.useEffect(() => {
@@ -23,8 +23,14 @@ export default function Avatar({id, position}) {
     }
   }, [user])
 
+  function handleScrollToField(event) {
+    if (scrollToField) {
+      scrollToField(event)
+    }
+  }
+
   return (
-    <div className={styles.root}>
+    <div className={styles.root} onClick={handleScrollToField} data-dock={position}>
       <div className={styles.avatar} data-status={status}>
         <div className={styles.inner}>
           <div className={styles.avatarImage}>
@@ -43,10 +49,12 @@ export default function Avatar({id, position}) {
 
 Avatar.propTypes = {
   id: PropTypes.string,
-  position: PropTypes.string
+  position: PropTypes.string,
+  scrollToField: PropTypes.func
 }
 
 Avatar.defaultProps = {
   id: null,
-  position: null
+  position: null,
+  scrollToField: null
 }
