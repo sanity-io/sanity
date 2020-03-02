@@ -46,6 +46,8 @@ type OptionsArrayInputProps = {
   level?: number
   readOnly?: boolean
   onChange?: (...args: any[]) => any
+  presence: any
+  onFocus: () => void
 }
 export default class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProps, {}> {
   handleChange = (isChecked, optionValue) => {
@@ -71,12 +73,24 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
         memberType.name === resolveTypeName(resolveValueWithLegacyOptionsSupport(option))
     )
   }
+
+  focus = () => {
+    const {onFocus} = this.props
+    onFocus([])
+  }
   render() {
-    const {type, markers, value, level, readOnly} = this.props
+    const {type, markers, value, level, readOnly, presence} = this.props
     const options = get(type.options, 'list')
     const direction = get(type.options, 'direction') // vertical and horizontal
     return (
-      <Fieldset legend={type.title} description={type.description} markers={markers} level={level}>
+      <Fieldset
+        legend={type.title}
+        description={type.description}
+        markers={markers}
+        level={level}
+        presence={presence}
+        onClick={this.focus}
+      >
         {options.map((option, index) => {
           const optionType = this.getMemberTypeOfItem(option)
           if (!optionType) {
