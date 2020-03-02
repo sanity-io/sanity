@@ -95,8 +95,6 @@ export default class Fieldset extends React.Component {
       ...rest
     } = this.props
 
-    console.log('array', presence)
-
     const {isCollapsed, showValidationList, hasBeenToggled} = this.state
 
     const styles = {
