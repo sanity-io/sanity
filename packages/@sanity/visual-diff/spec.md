@@ -257,3 +257,60 @@ Hook up to the Mendoza stuff to enable this
 * The hierarchy can be contructed when a flattened array is used, as we can traverse the schema
 * Reverting
     * If not revert function (receives a and b) defined for the type, use default revert based on path
+* How do we handle data which doesn't match the current schema? E.g. docA has a different (typically unmigrated data) structure than docB
+
+## Notes
+
+```
+zoo: {
+  keeper: {
+    name: 'Alice',
+    age: '33',
+    face: {
+      nose: {
+        color: 'red'
+      },
+      hasFreckles: true
+    }
+  },
+  giraffe: {
+    name: 'Zanzibar',
+    age: '15',
+    face: {
+      nose: {
+        color: 'pink'
+      }
+    },
+    horns: 'yellow with knobs'
+  }
+}
+```
+
+```
+const summarizers = {
+  zoo: {
+    resolve: (a, b) => {
+      return [{operation: 'editText', path: 'zoo.keeper.name', change: {from: 'Alice', to: 'ALfred'}}]
+    },
+    fields: ['zoo.keeper.name', 'zoo.keeper.face.nose']
+  }
+}
+
+const summarizers = {
+  face: {
+    resolve: (a, b, path) => {
+      return [{operation: 'editText', path: 'zoo.keeper.face.nose', change: {from: 'red', to: 'long'}}]
+    },
+    fields: ['face.nose', 'face.hasFreckles']
+  }
+}
+```
+
+* Bateson adds absolute path to all summarizer objects
+
+
+- look up summarizers for type
+- can it handle the current path?
+- receive summarizers and handled fields
+- record handled fields and keep nesting json remains
+
