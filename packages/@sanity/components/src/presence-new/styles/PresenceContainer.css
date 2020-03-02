@@ -3,7 +3,6 @@
 .root {
   margin-right: calc(var(--small-padding) * -1);
   display: flex;
-  transition: all 0.3s linear;
 }
 
 .root[data-hidden] {

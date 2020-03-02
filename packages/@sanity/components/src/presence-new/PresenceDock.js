@@ -62,6 +62,15 @@ export default function PresenceDock({children, presence}) {
   }
   const rootRef = React.useRef(null)
 
+  function scrollToField(event) {
+    const position = event.currentTarget.getAttribute('data-dock')
+    if (position === 'top') {
+      event.currentTarget.scrollIntoView({behavior: 'smooth', block: 'end'})
+    } else {
+      event.currentTarget.scrollIntoView({behavior: 'smooth'})
+    }
+  }
+
   React.useEffect(() => {
     const rootElm = rootRef && rootRef.current
     if (rootElm) {
@@ -101,7 +110,12 @@ export default function PresenceDock({children, presence}) {
         {watchedUsers
           .filter(user => user.position === 'top' && !user.visible)
           .map(user => (
-            <Avatar key={user.id} id={user.id} position={user.position} />
+            <Avatar
+              key={user.id}
+              id={user.id}
+              position={user.position}
+              scrollToField={scrollToField}
+            />
           ))}
       </div>
       {children}
@@ -109,7 +123,12 @@ export default function PresenceDock({children, presence}) {
         {watchedUsers
           .filter(user => user.position === 'bottom' && !user.visible)
           .map(user => (
-            <Avatar key={user.id} id={user.id} position={user.position} />
+            <Avatar
+              key={user.id}
+              id={user.id}
+              position={user.position}
+              scrollToField={scrollToField}
+            />
           ))}
       </div>
     </div>
