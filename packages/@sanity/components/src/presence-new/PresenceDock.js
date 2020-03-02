@@ -68,7 +68,7 @@ export default function PresenceDock({children, presence}) {
       const scrollContainer = scrollparent(rootElm)
       const options = {
         root: scrollContainer,
-        rootMargin: '2px 0px 0px 0px',
+        rootMargin: '-10px 0px 0px 0px',
         threshold: 1.0
       }
       const observer = new IntersectionObserver(interSectionCallback, options)
@@ -101,7 +101,7 @@ export default function PresenceDock({children, presence}) {
         {watchedUsers
           .filter(user => user.position === 'top' && !user.visible)
           .map(user => (
-            <Avatar key={user.id} id={user.id} />
+            <Avatar key={user.id} id={user.id} position={user.position} />
           ))}
       </div>
       {children}
@@ -109,7 +109,7 @@ export default function PresenceDock({children, presence}) {
         {watchedUsers
           .filter(user => user.position === 'bottom' && !user.visible)
           .map(user => (
-            <Avatar key={user.id} id={user.id} />
+            <Avatar key={user.id} id={user.id} position={user.position} />
           ))}
       </div>
     </div>
