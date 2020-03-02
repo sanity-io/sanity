@@ -158,7 +158,8 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
       onBlur,
       onFocus,
       level,
-      filterField
+      filterField,
+      presence
     } = this.props
     const {isMoving} = this.state
     const options = type.options || {}
@@ -182,7 +183,9 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
           const isChildMarker = marker =>
             startsWith([index], marker.path) || startsWith([{_key: item && item._key}], marker.path)
           const childMarkers = markers.filter(isChildMarker)
-
+          const isChildPresence = pItem =>
+            startsWith([index], pItem.path) || startsWith([{_key: item && item._key}], pItem.path)
+          const childPresence = presence.filter(isChildPresence)
           const itemProps = isSortable ? {index} : {}
           return (
             <Item
@@ -202,6 +205,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
                 onFocus={onFocus}
                 onBlur={onBlur}
                 readOnly={readOnly || hasMissingKeys}
+                presence={childPresence}
               />
             </Item>
           )
@@ -339,7 +343,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
         onFocus={this.handleFocus}
         type={type}
         ref={this.setElement}
-        presence={presence}
+        presence={presence.filter(item => item.path[0] === '$')}
         {...uploadProps}
       >
         {value && value.length > 0 && this.renderList()}
