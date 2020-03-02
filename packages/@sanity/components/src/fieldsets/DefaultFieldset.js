@@ -7,6 +7,7 @@ import ArrowDropDown from 'part:@sanity/base/arrow-drop-down'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import ValidationList from 'part:@sanity/components/validation/list'
 import AnimateHeight from 'react-animate-height'
+import PresenceContainer from 'part:@sanity/components/presence/presence-container'
 
 export default class Fieldset extends React.Component {
   static propTypes = {
@@ -94,6 +95,8 @@ export default class Fieldset extends React.Component {
       ...rest
     } = this.props
 
+    console.log('array', presence)
+
     const {isCollapsed, showValidationList, hasBeenToggled} = this.state
 
     const styles = {
@@ -158,6 +161,7 @@ export default class Fieldset extends React.Component {
               </div>
               <div className={styles.headerStatus}>
                 <ValidationStatus markers={markers} onClick={this.handleToggleValidationList} />
+                <PresenceContainer presence={presence} />
               </div>
             </div>
             {showValidationList && (
