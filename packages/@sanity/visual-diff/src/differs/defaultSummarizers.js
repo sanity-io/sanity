@@ -27,24 +27,24 @@ const differs = {
     }
     return []
   },
-  string: (a, b) => {
-    return [
-      {
-        op: 'editText',
-        type: 'string',
-        from: a,
-        to: b
-      }
-    ]
+  string: {
+    resolve: (a, b) => {
+      return [
+        {
+          op: 'editText',
+          type: 'string',
+          from: a,
+          to: b
+        }
+      ]
+    }
   },
   image: (a, b) => {
-    // if (!a.asset && b.asset) {
-    //   return [{op: 'set', field: 'asset', value: b.asset._ref}]
-    // }
-    // if (a.asset && !b.asset) {
-    //   return [{op: 'remove', field: 'asset'}]
-    // }
-    if (a.asset && b.asset && a.asset._ref !== b.asset._ref) {
+    if (!a.asset && b.asset) {
+      return [{op: 'addImage', field: 'asset', value: b.asset._ref}]
+    } else if (a.asset && !b.asset) {
+      return [{op: 'removeImage', from: a.asset._ref}]
+    } else if (a.asset && b.asset && a.asset._ref !== b.asset._ref) {
       return [{op: 'replaceImage', from: a.asset._ref, to: b.asset._ref}]
     }
     return null

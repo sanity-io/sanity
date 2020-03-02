@@ -1,8 +1,41 @@
+/* eslint-disable id-length */
 import bateson, {isSameType} from '../src/differs/bateson'
 import defaultSummarizers from '../src/differs/defaultSummarizers'
 
-describe('simple string operations', () => {
-  test('string edit', () => {
+describe('when adding field', () => {
+  test('should generate add operation', () => {
+    const docA = {
+      _type: 'book'
+    }
+
+    const docB = {
+      _type: 'book',
+      author: 'J. K. Rowling'
+    }
+
+    const result = bateson(docA, docB, {summarizers: defaultSummarizers})
+    expect(result).toMatchSnapshot()
+  })
+})
+
+describe('when removing field', () => {
+  test('should generate remove operation', () => {
+    const docA = {
+      _type: 'book',
+      author: 'J. R. R. Tolkien'
+    }
+
+    const docB = {
+      _type: 'book'
+    }
+
+    const result = bateson(docA, docB, {summarizers: defaultSummarizers})
+    expect(result).toMatchSnapshot()
+  })
+})
+
+describe('when modifying strings', () => {
+  test('given string is edited, should generate editText operation', () => {
     const docA = {
       _type: 'book',
       author: 'J. R. R. Tolkien'
@@ -14,35 +47,7 @@ describe('simple string operations', () => {
     }
 
     const result = bateson(docA, docB, {summarizers: defaultSummarizers})
-    expect(result[0].changes[0].op).toBe('editText')
-  })
-
-  test('string set', () => {
-    const docA = {
-      _type: 'book'
-    }
-
-    const docB = {
-      _type: 'book',
-      author: 'J. K. Rowling'
-    }
-
-    const result = bateson(docA, docB, {summarizers: defaultSummarizers})
-    expect(result[0].op).toBe('set')
-  })
-
-  test('string unset', () => {
-    const docA = {
-      _type: 'book',
-      author: 'J. R. R. Tolkien'
-    }
-
-    const docB = {
-      _type: 'book'
-    }
-
-    const result = bateson(docA, docB, {summarizers: defaultSummarizers})
-    expect(result[0].op).toBe('remove')
+    expect(result).toMatchSnapshot()
   })
 })
 
@@ -74,10 +79,11 @@ describe('bateson tests', () => {
 
     const summarizers = {
       image: {
-        resolve: (a, b, path) => {
+        resolve: (a, b) => {
           if (a.asset && b.asset && a.asset._ref !== b.asset._ref) {
-            return [{op: 'replaceImage', from: a.asset._ref, to: b.asset._ref}]
+            return [{op: 'my-custom-action', from: a.asset._ref, to: b.asset._ref}]
           }
+          // TODO: Call SUMMARIZE()?
           return null
         }
       }
@@ -86,16 +92,48 @@ describe('bateson tests', () => {
     const result = bateson(docA, docB, {
       summarizers: {...Object.entries(defaultSummarizers), ...summarizers}
     })
-    expect(result[0].changes[0].op).toBe('replaceImage')
+    expect(result).toMatchSnapshot()
+  })
+})
+
+describe('when diffing', () => {
+  const zooA = {
+    _type: 'zoo',
+    keeper: {
+      _type: 'keeper',
+      name: 'Steve Irwin'
+    }
+  }
+
+  const zooB = {
+    _type: 'zoo',
+    keeper: {
+      _type: 'keeper',
+      name: 'Bindi Irwin 😭'
+    }
+  }
+
+  test('given no summarizer for object, should use default summarizers', () => {
+    const result = bateson(zooA, zooB, {summarizers: defaultSummarizers})
+    expect(result).toMatchSnapshot()
+  })
+
+  test('given summarizer for object, should use custom summarizer', () => {
+    const summarizers = {
+      keeper: {
+        resolve: (a, b) => {
+          return [{op: 'keeperNameChanged', from: a.name, to: b.name}]
+        }
+      }
+    }
+    const result = bateson(zooA, zooB, {
+      summarizers: {...Object.entries(defaultSummarizers), ...summarizers}
+    })
+    expect(result).toMatchSnapshot()
   })
 })
 
 describe('bateson tests', () => {
-  test('isSameType returns true on both null objects', () => {
-    const result = isSameType(null, null)
-    expect(result).toBe(true)
-  })
-
   test('bateson stuff', () => {
     const zooA = {
       _type: 'zoo',
@@ -143,25 +181,58 @@ describe('bateson tests', () => {
     const summarizers = {
       zebra: {
         resolve: (previous, current, path) => {
-          console.log('path', path)
           return [{op: 'only-zebra-stuff', from: previous, to: current}]
         },
         fields: ['zebra.face.nose']
       },
       face: {
         resolve: (previous, current, path) => {
-          console.log('path', path)
-          expect(path).not.toBeUndefined()
           return [{op: 'wut', from: previous, to: current}]
         },
         fields: ['face.nose']
       }
     }
 
-    const stuff = bateson(zooA, zooB, {summarizers})
-    console.log(JSON.stringify(stuff, null, 2))
+    const result = bateson(zooA, zooB, {summarizers})
+    expect(result).toMatchSnapshot()
   })
 })
 
+describe('when diffing ignored fields', () => {
+  test('should not generate diff entries', () => {
+    const zooA = {
+      _type: 'zoo',
+      _id: '123',
+      _updatedAt: '2019-02-02T00:00:00.000Z',
+      _createdAt: '2019-02-01T00:00:00.000Z',
+      _rev: '123',
+      _weak: false
+    }
 
-// TODO: Ignored fields test
+    const zooB = {
+      _type: 'zoo',
+      _id: '456',
+      _updatedAt: '2019-02-04T00:00:00.000Z',
+      _createdAt: '2019-02-03T00:00:00.000Z',
+      _rev: '456',
+      _weak: true
+    }
+
+    const result = bateson(zooA, zooB, {summarizers: defaultSummarizers})
+    expect(result).toEqual([])
+  })
+})
+
+describe('when checking if two objects are of same Sanity type', () => {
+  test.each([
+    [null, null, true],
+    [null, {_type: 'zoo'}, false],
+    [{_type: 'zoo'}, null, false],
+    [{}, {}, true],
+    [[], [], true],
+    [{_type: 'zoo'}, {_type: 'zoo'}, true]
+  ])('isSameType(%o, %o)', (a, b, expected) => {
+    const result = isSameType(a, b)
+    expect(result).toBe(expected)
+  })
+})

@@ -1,0 +1,153 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`bateson tests bateson stuff 1`] = `
+Array [
+  Object {
+    "changes": Array [
+      Object {
+        "changes": Array [
+          Object {
+            "from": Object {
+              "_type": "face",
+              "nose": "slim",
+            },
+            "op": "wut",
+            "to": Object {
+              "_type": "face",
+              "nose": "big",
+            },
+          },
+        ],
+        "field": "face",
+        "op": "modifyField",
+        "type": "face",
+      },
+    ],
+    "field": "keeper",
+    "op": "modifyField",
+    "type": "keeper",
+  },
+  Object {
+    "changes": Array [
+      Object {
+        "from": Object {
+          "_type": "zebra",
+          "face": Object {
+            "_type": "face",
+            "eyes": 2,
+            "nose": "long",
+          },
+        },
+        "op": "only-zebra-stuff",
+        "to": Object {
+          "_type": "zebra",
+          "face": Object {
+            "_type": "face",
+            "eyes": 3,
+            "nose": "longandbig",
+          },
+        },
+      },
+    ],
+    "field": "zebra",
+    "op": "modifyField",
+    "type": "zebra",
+  },
+]
+`;
+
+exports[`bateson tests image test 1`] = `
+Array [
+  Object {
+    "changes": Array [
+      Object {
+        "from": "ref-123",
+        "op": "my-custom-action",
+        "to": "ref-456",
+      },
+    ],
+    "field": "profile",
+    "op": "modifyField",
+    "type": "image",
+  },
+]
+`;
+
+exports[`when adding field should generate add operation 1`] = `
+Array [
+  Object {
+    "field": "author",
+    "op": "add",
+    "value": "J. K. Rowling",
+  },
+]
+`;
+
+exports[`when diffing given no summarizer for object, should use default summarizers 1`] = `
+Array [
+  Object {
+    "changes": Array [
+      Object {
+        "changes": Array [
+          Object {
+            "from": "Steve Irwin",
+            "op": "editText",
+            "to": "Bindi Irwin 😭",
+            "type": "string",
+          },
+        ],
+        "field": "name",
+        "op": "modifyField",
+        "type": "string",
+      },
+    ],
+    "field": "keeper",
+    "op": "modifyField",
+    "type": "keeper",
+  },
+]
+`;
+
+exports[`when diffing given summarizer for object, should use custom summarizer 1`] = `
+Array [
+  Object {
+    "changes": Array [
+      Object {
+        "from": "Steve Irwin",
+        "op": "keeperNameChanged",
+        "to": "Bindi Irwin 😭",
+      },
+    ],
+    "field": "keeper",
+    "op": "modifyField",
+    "type": "keeper",
+  },
+]
+`;
+
+exports[`when modifying strings given string is edited, should generate editText operation 1`] = `
+Array [
+  Object {
+    "changes": Array [
+      Object {
+        "from": "J. R. R. Tolkien",
+        "op": "editText",
+        "to": "J. K. Rowling",
+        "type": "string",
+      },
+    ],
+    "field": "author",
+    "op": "modifyField",
+    "type": "string",
+  },
+]
+`;
+
+exports[`when removing field should generate remove operation 1`] = `
+Array [
+  Object {
+    "field": "author",
+    "op": "remove",
+  },
+]
+`;

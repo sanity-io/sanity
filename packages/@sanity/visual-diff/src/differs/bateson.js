@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 /* eslint-disable max-depth, id-length */
-// TODO: Make importing less bloated
-import {difference, intersection} from 'lodash'
+import difference from 'lodash/difference'
+import intersection from 'lodash/intersection'
 
 const defaultOptions = {
   ignoreFields: ['_id', '_updatedAt', '_createdAt', '_rev', '_weak']
@@ -15,9 +15,10 @@ function typeOf(value) {
 }
 
 export function isSameType(a, b) {
-  if (typeof a !== typeof b) return false
-  if (Array.isArray(a) && Array.isArray(b)) return true
   if (a === null && b === null) return true
+  if (a === null && b !== null) return false
+  if (a !== null && b === null) return false
+  if (typeof a !== typeof b) return false
   if (typeof a === 'object') {
     if (a._type !== b._type) return false
   }
@@ -32,18 +33,7 @@ function sanityType(value) {
 function summarizerExistForTypeOperation(a, b, type, path, summarizers) {
   const summarizerForTypeOperation = summarizers[type]
   if (summarizerForTypeOperation) {
-    const joinedPath = path.join('.') // TODO: Pass this from the outside?
-    if (path) {
-      // TODO: If no fields are set, just assume it handles everything?
-      if (summarizerForTypeOperation.fields && summarizerForTypeOperation.fields.length > 0) {
-        const stuff = summarizerForTypeOperation.fields.filter(x => x.includes(joinedPath))
-        if (stuff.length > 0) {
-          // TODO: store this information in a list for later use
-        }
-      }
-    }
-
-    const summary = summarizerForTypeOperation.resolve(a, b, joinedPath)
+    const summary = summarizerForTypeOperation.resolve(a, b)
     if (summary) {
       return summary
     }
@@ -86,7 +76,7 @@ function diff(a, b, path, options) {
       })
       const added = difference(bFields, aFields)
       added.forEach(field => {
-        result.push({op: 'set', field, value: b[field]})
+        result.push({op: 'add', field, value: b[field]})
       })
       const kept = intersection(aFields, bFields)
       kept.forEach(field => {
@@ -134,7 +124,7 @@ function diff(a, b, path, options) {
       if (a !== b) {
         const summarizerForType = options.summarizers[typeOf(a)]
         if (summarizerForType) {
-          const summary = summarizerForType(a, b)
+          const summary = summarizerForType.resolve(a, b)
           if (summary) {
             return summary
           }
