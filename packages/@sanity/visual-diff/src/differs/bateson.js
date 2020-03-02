@@ -29,16 +29,27 @@ function sanityType(value) {
   return typeOf(value)
 }
 
-function summarizerExistForTypeOperation(a, b, type, summarizers) {
+function summarizerExistForTypeOperation(a, b, type, path, summarizers) {
   const summarizerForTypeOperation = summarizers[type]
   if (summarizerForTypeOperation) {
-    const summary = summarizerForTypeOperation(a, b)
+    const joinedPath = path.join('.') // TODO: Pass this from the outside?
+    if (path) {
+      // TODO: If no fields are set, just assume it handles everything?
+      if (summarizerForTypeOperation.fields && summarizerForTypeOperation.fields.length > 0) {
+        const stuff = summarizerForTypeOperation.fields.filter(x => x.includes(joinedPath))
+        if (stuff.length > 0) {
+          // TODO: store this information in a list for later use
+        }
+      }
+    }
+
+    const summary = summarizerForTypeOperation.resolve(a, b, joinedPath)
     if (summary) {
       return summary
     }
   }
 
-  return undefined
+  return null
 }
 
 function diff(a, b, path, options) {
@@ -55,9 +66,11 @@ function diff(a, b, path, options) {
       const summarizerForTypeOperation = summarizerExistForTypeOperation(
         a,
         b,
-        typeWeAreOperatingOn,
+        sanityType(a),
+        path,
         options.summarizers
       )
+
       if (summarizerForTypeOperation) {
         //  There might be a differ for this type, but maybe not for every operation imaginable
         return summarizerForTypeOperation
@@ -82,6 +95,7 @@ function diff(a, b, path, options) {
         const changes = diff(fieldA, fieldB, path.concat(field), options)
         const type = isSameType(fieldA, fieldB) ? sanityType(fieldA) : null
         if (changes.length > 0) {
+          // console.log('superpath', path)
           result.push({op: 'modifyField', type, field, changes})
         }
       })

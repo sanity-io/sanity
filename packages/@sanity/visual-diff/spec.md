@@ -289,8 +289,11 @@ zoo: {
 ```
 const summarizers = {
   zoo: {
-    resolve: (a, b) => {
-      return [{operation: 'editText', path: 'zoo.keeper.name', change: {from: 'Alice', to: 'ALfred'}}]
+    resolve: (a, b, summarize) => {
+      if (i dont want to handle this) {
+        summarize()
+      }
+      return [{operation: 'editText', path: 'zoo.keeper.name', change: {from: 'Alice', to: 'Alfred'}}]
     },
     fields: ['zoo.keeper.name', 'zoo.keeper.face.nose']
   }
@@ -307,7 +310,7 @@ const summarizers = {
 ```
 
 * Bateson adds absolute path to all summarizer objects
-
+* On startup, we should check for duplicate summarizers. What do we do? Give a warning and use the latest one, or fail?
 
 - look up summarizers for type
 - can it handle the current path?
