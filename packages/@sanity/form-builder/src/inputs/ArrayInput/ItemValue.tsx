@@ -21,6 +21,7 @@ import ConfirmButton from './ConfirmButton'
 import styles from './styles/ItemValue.css'
 import {ArrayType, ItemValue} from './typedefs'
 import PresenceDock from 'part:@sanity/components/presence/presence-dock'
+import PresenceContainer from 'part:@sanity/components/presence/presence-container'
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
@@ -152,12 +153,12 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     }
   }
   renderEditItemForm(item: ItemValue) {
-    const {type, markers, focusPath, onFocus, onBlur, readOnly, filterField} = this.props
+    const {type, markers, focusPath, onFocus, onBlur, readOnly, filterField, presence} = this.props
     const options = type.options || {}
     const memberType = this.getMemberType()
     const childMarkers = markers.filter(marker => marker.path.length > 1)
     const content = (
-      <PresenceDock>
+      <PresenceDock presence={presence}>
         <FormBuilderInput
           type={memberType}
           level={0}
@@ -233,7 +234,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     )
   }
   renderItem() {
-    const {value, markers, type, readOnly} = this.props
+    const {value, markers, type, readOnly, presence} = this.props
     const options = type.options || {}
     const isGrid = options.layout === 'grid'
     const isSortable = !readOnly && !type.readOnly && options.sortable !== false
@@ -278,6 +279,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
         <div className={isGrid ? styles.functionsInGrid : styles.functions}>
           <div>
             <ValidationStatus markers={scopedValidation} />
+            <PresenceContainer presence={presence} />
           </div>
           {value._ref && (
             <IntentLink className={styles.linkToReference} intent="edit" params={{id: value._ref}}>
