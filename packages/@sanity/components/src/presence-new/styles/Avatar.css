@@ -6,6 +6,13 @@
   z-index: 10;
   border-radius: 50%;
   box-sizing: border-box;
+  color: var(--brand-primary);
+  fill: currentColor;
+}
+
+.root:last-child {
+  color: var(--brand-secondary);
+  fill: currentColor;
 }
 
 .root:not(:last-child) {
@@ -18,7 +25,7 @@
   width: 1.5em;
   height: 1.5em;
   border-radius: 50%;
-  border: 2px solid var(--brand-primary);
+  border: 2px solid currentColor;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -71,7 +78,7 @@
   height: 100%;
   box-sizing: border-box;
   display: none;
-  fill: var(--brand-primary);
+  fill: currentColor;
 
   @nest & > svg {
     width: 6px;
