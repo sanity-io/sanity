@@ -1,5 +1,6 @@
 import React from 'react'
 import {Tooltip} from 'react-tippy'
+import schema from 'part:@sanity/base/schema'
 import Button from 'part:@sanity/components/buttons/default'
 import ValidationList from 'part:@sanity/components/validation/list'
 import ChevronDown from 'part:@sanity/base/chevron-down-icon'
@@ -46,7 +47,7 @@ export function Validation(props: ValidationProps) {
           markers={validation}
           showLink
           isOpen={showValidationTooltip}
-          documentType={type}
+          documentType={schema.get(type)}
           onClose={onCloseValidationResults}
           onFocus={onFocus}
         />
