@@ -48,7 +48,7 @@ export default class BlockStyleSelect extends React.Component<Props, {}> {
       }
     })
     let value = items.filter(item => item.active)
-    if (value.length === 0) {
+    if (value.length === 0 && items.length > 1) {
       items.push({
         key: 'style-none',
         style: null,
