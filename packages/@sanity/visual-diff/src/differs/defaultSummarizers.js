@@ -12,20 +12,22 @@ function extractText(blockContent) {
 }
 
 const differs = {
-  block: (a, b) => {
-    const aText = extractText(a)
-    const bText = extractText(b)
-    if (aText !== bText) {
-      return [
-        {
-          op: 'editText',
-          type: 'block',
-          from: aText,
-          to: bText
-        }
-      ]
+  block: {
+    resolve: (a, b) => {
+      const aText = extractText(a)
+      const bText = extractText(b)
+      if (aText !== bText) {
+        return [
+          {
+            op: 'editText',
+            type: 'block',
+            from: aText,
+            to: bText
+          }
+        ]
+      }
+      return []
     }
-    return []
   },
   string: {
     resolve: (a, b) => {
@@ -39,15 +41,17 @@ const differs = {
       ]
     }
   },
-  image: (a, b) => {
-    if (!a.asset && b.asset) {
-      return [{op: 'addImage', field: 'asset', value: b.asset._ref}]
-    } else if (a.asset && !b.asset) {
-      return [{op: 'removeImage', from: a.asset._ref}]
-    } else if (a.asset && b.asset && a.asset._ref !== b.asset._ref) {
-      return [{op: 'replaceImage', from: a.asset._ref, to: b.asset._ref}]
+  image: {
+    resolve: (a, b) => {
+      if (!a.asset && b.asset) {
+        return [{op: 'addImage', field: 'asset', value: b.asset._ref}]
+      } else if (a.asset && !b.asset) {
+        return [{op: 'removeImage', from: a.asset._ref}]
+      } else if (a.asset && b.asset && a.asset._ref !== b.asset._ref) {
+        return [{op: 'replaceImage', from: a.asset._ref, to: b.asset._ref}]
+      }
+      return null
     }
-    return null
   }
 }
 
