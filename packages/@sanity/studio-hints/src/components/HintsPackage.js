@@ -4,10 +4,9 @@ import {isEmpty} from 'lodash'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import studioHintsConfig from 'part:@sanity/default-layout/studio-hints-config'
 import WarningIcon from 'part:@sanity/base/warning-icon'
-import {locationSetting, getHints, updateLocation} from '../datastore'
+import {locationSetting, getHints} from '../datastore'
 import {resolveUrl} from './utils'
 import LinksList from './LinksList'
-// import HintPage from './HintPage'
 import styles from './HintsPackage.css'
 
 const removeHintsArticleSlug = 'remove-this-sidebar'
@@ -24,12 +23,15 @@ export default class HintsPackage extends React.PureComponent {
   subscription = null
 
   fetchHintsPackage(repoId) {
-    getHints(repoId, removeHintsArticleSlug)
-      .then(result => {
+    this.fetchSubscription = getHints(repoId, removeHintsArticleSlug).subscribe({
+      next: result => {
         const {hintsPackage, sidebarRemovalInstructions} = result
         this.setState({hintsPackage, sidebarRemovalInstructions, isLoading: false})
-      })
-      .catch(error => this.setState({error, isLoading: false}))
+      },
+      error: error => {
+        this.setState({error, isLoading: false})
+      }
+    })
   }
 
   componentDidMount() {
@@ -44,6 +46,10 @@ export default class HintsPackage extends React.PureComponent {
   componentWillUnmount() {
     if (this.subscription) {
       this.subscription.unsubscribe()
+    }
+
+    if (this.fetchSubscription) {
+      this.fetchSubscription.unsubscribe()
     }
   }
 
