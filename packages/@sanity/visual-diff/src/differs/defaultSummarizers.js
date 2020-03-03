@@ -11,7 +11,7 @@ function extractText(blockContent) {
     .join('')
 }
 
-const differs = {
+const summarizers = {
   block: {
     resolve: (a, b) => {
       const aText = extractText(a)
@@ -55,4 +55,4 @@ const differs = {
   }
 }
 
-export default differs
+export default summarizers

@@ -5,7 +5,7 @@
   },
   "parts": [
     {
-      "name": "part:@sanity/visual-diff/differs",
+      "name": "part:@sanity/visual-diff/visualizers",
       "description": "Definitions on how to render diffs for given types, based on change summaries"
     },
     {

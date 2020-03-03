@@ -1,15 +1,15 @@
 import summarizers from 'part:@sanity/visual-diff/summarizers?'
-import differs from 'part:@sanity/visual-diff/differs?'
+import visualizers from 'part:@sanity/visual-diff/visualizers?'
 import defaultSummarizers from './defaultSummarizers'
-import defaultDiffers from './defaultDiffers'
+import defaultVisualizers from './defaultVisualizers'
 
 const resolver = () => {
   const allSummarizers = {...defaultSummarizers, ...summarizers}
-  const allDiffers = {...defaultDiffers, ...differs}
+  const allVisualizers = {...defaultVisualizers, ...visualizers}
 
   return {
     summarizers: allSummarizers,
-    differs: allDiffers
+    visualizers: allVisualizers
   }
 }
 

@@ -30,7 +30,7 @@ function stringDiffComponent(from, to) {
   )
 }
 
-const differs = {
+const visualizers = {
   string: {
     editText: {
       component: props => {
@@ -83,4 +83,4 @@ const differs = {
   }
 }
 
-export default differs
+export default visualizers

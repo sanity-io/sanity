@@ -7,7 +7,7 @@ import getDiffers from './differs/resolver'
 import createDiffSummary from './differs/bateson'
 import Visualizer from './components/Visualizer'
 
-const {summarizers, differs} = getDiffers()
+const {summarizers, visualizers} = getDiffers()
 
 const VisualDiff = props => {
   let original
@@ -31,7 +31,7 @@ const VisualDiff = props => {
 
   return (
     <div>
-      <Visualizer diff={diff} differs={differs} original={original} modified={modified} />
+      <Visualizer diff={diff} visualizers={visualizers} original={original} modified={modified} />
 
       <hr />
 

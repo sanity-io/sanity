@@ -12,7 +12,7 @@ The `<VisualDiff>` component does three things:
 
 It should be possible to pass styling and other useful UI options to the <VisualDiff> component.
 
-## Custom Summarizers and Differs
+## Custom Summarizers and Visualizers
 
 ### Summarizers
 
@@ -47,7 +47,7 @@ string: {
 }
 ```
 
-Defining Custom Differs will override any default Differs for the same type _and_ operation. Defining a Differ for type `a.operationX` won't affect the presence of a Differ `a.operationY` defined elsewhere.
+Defining Custom Visualizers will override any default Visualizers for the same type _and_ operation. Defining a Visualizer for type `a.operationX` won't affect the presence of a Visualizer `a.operationY` defined elsewhere.
 
 ## The Change Summary
 
@@ -139,7 +139,7 @@ Here are some other examples of a flat output:
 ]
 ```
 
-(Regarding the last bike-swap summary, the developer would probably write a custom summarizer and a custom differ in order to get a more useful visual diff)
+(Regarding the last bike-swap summary, the developer would probably write a custom summarizer and a custom visualizer in order to get a more useful visual diff)
 
 A flat array is easier for developers to understand, debug and adapt their own code to. And, if we iterate through the compiled schema while rendering changes, the `path` provided on a summary should be suficcient to both understand each change that has occurred and render these in a nested or flat fashion, depending on what we want.
 
@@ -239,7 +239,7 @@ Since I have changed the contract here, I would also need to change the reverter
 
 Hook up to the Mendoza stuff to enable this
 
-## There should be excellent docs on how to create custom summarizers/differs
+## There should be excellent docs on how to create custom summarizers/visualizers
 
 `!important`
 
@@ -253,7 +253,7 @@ Hook up to the Mendoza stuff to enable this
     How do we know what is specific or not?
 * Summarizer signature: (schema type, a, b)
     * How do we give the option to specify a summarizer for "array of string where layout is tags"?
-* Rename differs to visualizers
+* [x] Rename differs to visualizers
 * The hierarchy can be contructed when a flattened array is used, as we can traverse the schema
 * Reverting
     * If not revert function (receives a and b) defined for the type, use default revert based on path
