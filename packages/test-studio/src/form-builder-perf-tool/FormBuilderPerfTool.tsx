@@ -9,6 +9,7 @@ import schema from 'part:@sanity/base/schema'
 import {StringInput} from './inputs/StringInput'
 import {ObjectInput} from './inputs/ObjectInput'
 import usePresence from './usePresence'
+import {ArrayInput} from './inputs/ArrayInput'
 const preventDefault = e => e.preventDefault()
 
 function memoize(fn) {
@@ -21,11 +22,14 @@ function memoize(fn) {
   }
 }
 
-const MissingInput = () => <div>No input component resolved for type {type.name} :/</div>
+const MissingInput = ({type}) => <div>No input component resolved for type {type.name} :/</div>
 
 const resolveInput = memoize(type => {
   if (is.type('object', type)) {
     return ObjectInput
+  }
+  if (is.type('array', type)) {
+    return ArrayInput
   }
   if (is.type('document', type)) {
     return ObjectInput
@@ -61,6 +65,9 @@ export const FormBuilderPerfTool = props => {
 
   return (
     <>
+      <pre style={{position: 'fixed', left: 0, top: 0, backgroundColor: '#fff'}}>
+        {JSON.stringify(focusPath)}
+      </pre>
       <FormBuilderContext resolveInputComponent={resolveInput}>
         <form onSubmit={preventDefault}>
           <FormBuilderInput

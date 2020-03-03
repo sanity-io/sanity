@@ -13,6 +13,16 @@ export const recursiveObject = {
       title: 'First'
     },
     {
+      name: 'someArray',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [{name: 'foo', type: 'string'}]
+        }
+      ]
+    },
+    {
       name: 'second',
       type: 'string',
       title: 'Second'
@@ -35,6 +45,12 @@ export default {
     }
   },
   fields: [
+    {
+      name: 'arrayOfRecursiveObjects',
+      type: 'array',
+      of: [{type: 'recursiveObject'}],
+      title: 'A field of a recursive object type'
+    },
     {
       name: 'recursiveObject',
       type: 'recursiveObject',

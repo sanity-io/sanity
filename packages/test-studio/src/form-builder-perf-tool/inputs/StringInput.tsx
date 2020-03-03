@@ -7,19 +7,24 @@ export const StringInput = React.memo(
       props.onChange(PatchEvent.from(set(event.currentTarget.value)))
     }, [])
 
+    const onSelect = React.useCallback(event => {
+      // const {selectionStart, selectionEnd, selectionDirection} = event.currentTarget
+      // props.onFocus([selectionDirection === 'backward' ? selectionStart : selectionEnd])
+    }, [])
+
     const onFocus = React.useCallback(event => {
-      props.onFocus(['$'])
+      props.onFocus([0])
     }, [])
 
     return (
       <div>
-        <pre>{JSON.stringify(props.presence, null, 2)}</pre>
         <label>{props.type.title}</label>
         <input
           type="string"
           value={props.value || ''}
-          onFocus={onFocus}
           onChange={onChange}
+          // onSelect={onSelect}
+          onFocus={onFocus}
           ref={ref}
         />
       </div>

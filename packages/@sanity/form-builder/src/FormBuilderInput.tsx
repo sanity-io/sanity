@@ -32,6 +32,7 @@ interface Props {
   onKeyPress?: (ev: React.KeyboardEvent) => void
 }
 
+const MAX_NESTING_LEVEL = 10
 const ENABLE_CONTEXT = () => {}
 
 function getDisplayName(component) {
@@ -195,6 +196,11 @@ export class FormBuilderInput extends React.Component<Props> {
       isRoot,
       ...rest
     } = this.props
+
+    if (level > MAX_NESTING_LEVEL) {
+      return <div>Reached max nesting level ({MAX_NESTING_LEVEL})</div>
+    }
+
     const InputComponent = this.resolveInputComponent(type)
     if (!InputComponent) {
       return (
@@ -214,8 +220,6 @@ export class FormBuilderInput extends React.Component<Props> {
         }))
     }
     const childFocusPath = this.getChildFocusPath()
-    const isLeaf = childFocusPath.length === 0 || childFocusPath.length === 1
-    const leafProps = isLeaf ? {} : {focusPath: childFocusPath}
     const childPresenceInfo = (presence || [])
       .filter(presence => {
         return PathUtils.startsWith(path, presence.path)
@@ -230,7 +234,7 @@ export class FormBuilderInput extends React.Component<Props> {
         <InputComponent
           {...rest}
           {...rootProps}
-          {...leafProps}
+          focusPath={childFocusPath}
           value={value}
           readOnly={readOnly || type.readOnly}
           markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}

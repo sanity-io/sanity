@@ -19,7 +19,7 @@ export const ObjectField = React.memo(
         onBlur={() => {}}
         path={[field.name]}
         presence={props.presence}
-        focusPath={(props.focusPath || []).slice(1)}
+        focusPath={props.focusPath}
         onChange={onChange}
         onFocus={props.onFocus}
       />
