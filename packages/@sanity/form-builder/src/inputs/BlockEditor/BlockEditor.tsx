@@ -122,6 +122,10 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
   editor: RefObject<Editor> = React.createRef()
   editorWrapper: RefObject<HTMLDivElement> = React.createRef()
 
+  componentDidMount() {
+    this.forceUpdate() // Needed to resolve the refs properly
+  }
+
   componentDidUpdate() {
     this.checkScrollHeight()
   }
@@ -330,7 +334,6 @@ export default class BlockEditor extends React.PureComponent<Props, State> {
             userIsWritingText={userIsWritingText}
           />
         )}
-
         {isLoading && (
           <div className={styles.loading}>
             <Spinner center />
