@@ -8,6 +8,7 @@ export default class RadioSelect extends React.Component {
     name: PropTypes.string,
     direction: PropTypes.oneOf(['horizontal', 'vertical']),
     onChange: PropTypes.func,
+    onFocus: PropTypes.func,
     value: PropTypes.object,
     readOnly: PropTypes.bool,
     items: PropTypes.arrayOf(
@@ -33,6 +34,7 @@ export default class RadioSelect extends React.Component {
     this.setState({
       focusedItem: item
     })
+    this.props.onFocus([])
   }
 
   handleBlur = () => {
