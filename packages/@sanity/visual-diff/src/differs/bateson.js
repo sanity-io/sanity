@@ -121,7 +121,7 @@ function diff(a, b, path, options) {
 
       // something has been removed
       difference(aKeys, bKeys).forEach(key => {
-        result.push({op: 'remove', key})
+        result.push({op: 'remove', key, path: `${path}[_key=${key}]`})
       })
 
       return result

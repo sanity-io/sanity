@@ -270,7 +270,7 @@ describe('when diffing a document', () => {
 })
 
 describe('when an object has been added to an array', () => {
-  test.skip('should generate a "set" operation', () => {
+  test('should generate a "set" operation', () => {
     const zooA = {
       _id: '123',
       _type: 'zoo',
@@ -292,6 +292,7 @@ describe('when an object has been added to an array', () => {
     }
 
     const result = bateson(zooA, zooB, {summarizers: defaultSummarizers})
-    expect(result).toEqual([])
+    expect(result.length).toEqual(1)
+    expect(result[0].op).toEqual('set')
   })
 })
