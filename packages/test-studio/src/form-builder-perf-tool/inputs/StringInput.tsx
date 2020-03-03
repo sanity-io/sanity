@@ -1,5 +1,7 @@
 import * as React from 'react'
 import PatchEvent, {set} from '@sanity/form-builder/lib/PatchEvent'
+import {PresenceMarker} from '../components/PresenceMarker'
+import {PresenceMarkerList} from '../components/PresenceMarkerList'
 
 export const StringInput = React.memo(
   React.forwardRef((props, ref) => {
@@ -17,8 +19,8 @@ export const StringInput = React.memo(
     }, [])
 
     return (
-      <div>
-        {props.presence.map(presence => <li>{JSON.stringify(presence)}</li>)}
+      <div style={{position: 'relative'}}>
+        <PresenceMarkerList presence={props.presence} />
         <label>{props.type.title}</label>
         <input
           type="string"

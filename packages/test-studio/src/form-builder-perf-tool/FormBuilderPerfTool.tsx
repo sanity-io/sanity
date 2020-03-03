@@ -24,6 +24,13 @@ function memoize(fn) {
 
 const MissingInput = ({type}) => <div>No input component resolved for type {type.name} :/</div>
 
+const getKey = (id, typeName) => `___formbuilder_perf_tool_${id}-${typeName}`
+
+const save = (key, value) => {
+  window.localStorage.setItem(key, JSON.stringify(value))
+}
+const load = key => JSON.parse(window.localStorage.getItem(key) || 'null')
+
 const resolveInput = memoize(type => {
   if (is.type('object', type)) {
     return ObjectInput
@@ -41,9 +48,10 @@ const resolveInput = memoize(type => {
 })
 
 export const FormBuilderPerfTool = props => {
-  const type = schema.get('recursiveObjectTest')
-
-  const [value, setValue] = React.useState({_type: type.name})
+  const id = 'test'
+  const typeName = 'recursiveObjectTest'
+  const lsKey = getKey('test', typeName)
+  const [value, setValue] = React.useState(load(lsKey) || {_id: id, _type: typeName})
   const [focusPath, setFocusPath] = React.useState([])
 
   const presence = usePresence({documentId: 'foobar', namespace: 'formBuilder'})
@@ -63,11 +71,14 @@ export const FormBuilderPerfTool = props => {
     })
   })
 
+  const type = schema.get(typeName)
+
   return (
     <>
       <pre style={{position: 'fixed', left: 0, top: 0, backgroundColor: '#fff'}}>
         {JSON.stringify(focusPath)}
       </pre>
+      <button onClick={() => save(lsKey, value)}>Save to localstorage</button>
       <FormBuilderContext resolveInputComponent={resolveInput}>
         <form onSubmit={preventDefault}>
           <FormBuilderInput

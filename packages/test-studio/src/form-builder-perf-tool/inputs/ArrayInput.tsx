@@ -6,6 +6,11 @@ import {PatchEvent} from '@sanity/form-builder/lib/PatchEvent'
 import {setIfMissing, set, insert} from '@sanity/form-builder/lib/PatchEvent'
 import {FormBuilderInput} from '@sanity/form-builder/lib/FormBuilderInput'
 import {Modal} from '../components/Modal'
+import {PresenceMarkerList} from '../components/PresenceMarkerList'
+import {PreviewAny} from '@sanity/form-builder/lib/utils/fallback-preview/PreviewAny'
+import {PresenceOverlay} from '../components/PresenceOverlay'
+
+const pathSegmentMatchesKey = (pathSegment, key) => pathSegment?._key === key
 
 export const ArrayItem = React.memo(
   React.forwardRef((props, ref) => {
@@ -31,29 +36,38 @@ export const ArrayItem = React.memo(
 
     const [firstFocusPathSegment, ...childFocusPath] = focusPath
 
-    const hasFocus = firstFocusPathSegment?._key === value._key
+    const hasFocus = pathSegmentMatchesKey(firstFocusPathSegment, key)
     const hasFocusWithin = hasFocus && childFocusPath.length > 0
+
+    const presenceInside = hasFocusWithin
+      ? []
+      : presence.filter(entry => {
+          return pathSegmentMatchesKey(entry.path[0], key)
+        })
     return (
       <div style={{border: '1px solid', position: 'relative'}}>
         <div tabIndex={0} onFocus={handleSelfFocus}>
           <pre style={{fontSize: '0.9em'}}>
-            {JSON.stringify(value)}
+            <PreviewAny value={value} maxDepth={1} />
             {hasFocus && <span style={{position: 'absolute', top: 0, right: 0}}>🎯</span>}
+            <PresenceMarkerList presence={presenceInside} />
           </pre>
         </div>
         <button onClick={handleEditStart}>Edit</button>
         {hasFocusWithin && (
           <Modal onClose={handleEditEnd}>
-            <FormBuilderInput
-              level={level}
-              value={value}
-              type={type}
-              presence={presence}
-              path={[{_key: value._key}]}
-              focusPath={props.focusPath}
-              onChange={handleChange}
-              onFocus={props.onFocus}
-            />
+            <PresenceOverlay>
+              <FormBuilderInput
+                level={level}
+                value={value}
+                type={type}
+                presence={presence}
+                path={[{_key: value._key}]}
+                focusPath={props.focusPath}
+                onChange={handleChange}
+                onFocus={props.onFocus}
+              />
+            </PresenceOverlay>
           </Modal>
         )}
       </div>
