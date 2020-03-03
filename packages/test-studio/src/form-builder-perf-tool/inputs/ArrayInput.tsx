@@ -9,7 +9,7 @@ import {Modal} from '../components/Modal'
 
 export const ArrayItem = React.memo(
   React.forwardRef((props, ref) => {
-    const {type, value, level, focusPath} = props
+    const {type, value, level, presence, focusPath} = props
 
     const key = value._key
 
@@ -48,6 +48,7 @@ export const ArrayItem = React.memo(
               level={level}
               value={value}
               type={type}
+              presence={presence}
               path={[{_key: value._key}]}
               focusPath={props.focusPath}
               onChange={handleChange}
@@ -86,7 +87,17 @@ export class ArrayInput extends React.Component<Props> {
   }
 
   render() {
-    const {type, level, focusPath = [], markers, onFocus, readOnly, onChange, value} = this.props
+    const {
+      type,
+      level,
+      presence,
+      focusPath = [],
+      markers,
+      onFocus,
+      readOnly,
+      onChange,
+      value
+    } = this.props
 
     return (
       <div style={{backgroundColor: '#aaa'}}>
@@ -97,6 +108,7 @@ export class ArrayInput extends React.Component<Props> {
             onChange={onChange}
             type={this.getMemberTypeOfItem(item)}
             value={item}
+            presence={presence}
             focusPath={focusPath}
             onFocus={onFocus}
           />

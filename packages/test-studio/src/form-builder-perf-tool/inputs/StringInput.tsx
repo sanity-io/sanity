@@ -18,6 +18,7 @@ export const StringInput = React.memo(
 
     return (
       <div>
+        {props.presence.map(presence => <li>{JSON.stringify(presence)}</li>)}
         <label>{props.type.title}</label>
         <input
           type="string"
