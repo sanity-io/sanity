@@ -38,6 +38,7 @@ type Props = {
       item: any
     }
   ]
+  presence: any
 }
 
 export default withValuePath(
@@ -136,14 +137,15 @@ export default withValuePath(
       }
 
       render() {
-        const {value, type, level, markers, readOnly} = this.props
+        const {value, type, level, markers, readOnly, presence} = this.props
         const {loading, inputText} = this.state
         const hasSourceField = type.options && type.options.source
         const formFieldProps = {
           label: type.title,
           description: type.description,
           level: level,
-          markers
+          markers,
+          presence
         }
         const validation = markers.filter(marker => marker.type === 'validation')
         const errors = validation.filter(marker => marker.level === 'error')
