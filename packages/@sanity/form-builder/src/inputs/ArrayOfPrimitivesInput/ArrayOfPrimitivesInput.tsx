@@ -40,6 +40,7 @@ type Props = {
   focusPath: Path
   readOnly: boolean | null
   markers: Array<Marker>
+  presence: any
 }
 export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   _element: Fieldset | null
@@ -176,7 +177,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   }
 
   render() {
-    const {type, value, level, markers, readOnly, onChange, onFocus} = this.props
+    const {type, value, level, markers, readOnly, onChange, onFocus, presence} = this.props
     return (
       <Fieldset
         legend={type.title}
@@ -186,6 +187,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
         onFocus={onFocus}
         ref={this.setElement}
         markers={markers}
+        presence={presence}
       >
         <div className={styles.root}>
           {value && value.length > 0 && <div className={styles.list}>{this.renderList(value)}</div>}
