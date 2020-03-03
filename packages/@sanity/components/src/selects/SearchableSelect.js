@@ -11,6 +11,7 @@ export default class SearchableSelect extends React.PureComponent {
     onSearch: PropTypes.func,
     onOpen: PropTypes.func,
     onClose: PropTypes.func,
+    onFocus: PropTypes.func,
     onClear: PropTypes.func,
     value: PropTypes.object,
     inputValue: PropTypes.string,
@@ -107,9 +108,13 @@ export default class SearchableSelect extends React.PureComponent {
   }
 
   handleFocus = event => {
+    const {onFocus} = this.props
     this.setState({
       hasFocus: true
     })
+    if (onFocus) {
+      onFocus()
+    }
   }
 
   handleBlur = event => {
