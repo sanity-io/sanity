@@ -22,7 +22,8 @@
   ],
   "dependencies": {
     "lodash": "^4.17.15",
-    "react-icons": "^2.2.7"
+    "react-icons": "^2.2.7",
+    "rxjs": "^6.5.3"
   },
   "devDependencies": {
     "@sanity/base": "1.149.3",
