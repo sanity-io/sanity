@@ -402,7 +402,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderField(field: FieldT) {
-    const {value, level, focusPath, onFocus, readOnly, onBlur} = this.props
+    const {value, level, focusPath, onFocus, readOnly, onBlur, presence} = this.props
     const fieldValue = value && value[field.name]
     return (
       <div className={styles.field} key={field.name}>
@@ -416,6 +416,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           readOnly={readOnly || field.type.readOnly}
           focusPath={focusPath}
           level={level}
+          presence={presence}
         />
       </div>
     )
@@ -540,10 +541,17 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const uploadProps = SUPPORT_DIRECT_UPLOADS
       ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload}
       : {}
+
+    const isInside = presence
+      .map(item => {
+        const otherFieldsPath = otherFields.map(field => field.name)
+        return item.path.some(path => otherFieldsPath.includes(path)) ? item.identity : null
+      })
+      .filter(String)
     return (
       <FieldSetComponent
         markers={markers}
-        presence={presence}
+        presence={presence.filter(item => item.path[0] === '$' || isInside.includes(item.identity))}
         legend={type.title}
         description={type.description}
         level={level}
