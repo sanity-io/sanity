@@ -40,6 +40,7 @@ import typeWithNoToplevelStrings from './typeWithNoToplevelStrings'
 
 import focus from './focus'
 import diffTest from './diffTest'
+import zoo from './zoo'
 import previewImageUrlTest from './previewImageUrlTest'
 import previewMediaTest from './previewMediaTest'
 import species from './species'
@@ -98,6 +99,7 @@ export default createSchema({
     notitle,
     typeWithNoToplevelStrings,
     diffTest,
+    zoo,
     reservedFieldNames,
     previewImageUrlTest,
     previewMediaTest,

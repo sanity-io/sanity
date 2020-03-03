@@ -98,6 +98,27 @@ export default () =>
         ),
 
       S.listItem()
+        .id('visualizing-diffs-zoo')
+        .title('Zoo')
+        .schemaType('zoo')
+        .child(
+          S.documentTypeList('zoo')
+            .title('Visualizing zoo diffs')
+            .child(documentId =>
+              S.document()
+                .documentId(documentId)
+                .schemaType('zoo')
+                .views([
+                  S.view.form().icon(EditIcon),
+                  S.view
+                    .component(visualDiff.component)
+                    .icon(EyeIcon)
+                    .title('Zoodiff!')
+                ])
+            )
+        ),
+
+      S.listItem()
         .title('Deep')
         .child(
           S.list()
