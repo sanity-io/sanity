@@ -7,6 +7,8 @@ import styles from './styles/OptionsArrayInput.css'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import {resolveValueWithLegacyOptionsSupport, isLegacyOptionsItem} from './legacyOptionsSupport'
 import {Type} from '../../typedefs'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
+
 function isEqual(item, otherItem) {
   if (isLegacyOptionsItem(item) || isLegacyOptionsItem(otherItem)) {
     return item.value === otherItem.value
@@ -74,10 +76,10 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
     )
   }
 
-  focus = () => {
-    const {onFocus} = this.props
-    onFocus([])
+  handleFocus = () => {
+    this.props.onFocus([FOCUS_TERMINATOR])
   }
+
   render() {
     const {type, markers, value, level, readOnly, presence} = this.props
     const options = get(type.options, 'list')
@@ -89,7 +91,7 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
         markers={markers}
         level={level}
         presence={presence}
-        onClick={this.focus}
+        onClick={this.handleFocus}
       >
         {options.map((option, index) => {
           const optionType = this.getMemberTypeOfItem(option)
