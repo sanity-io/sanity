@@ -49,6 +49,7 @@ export default class StringSelect extends React.Component<Props> {
         label={type.title}
         description={type.description}
         presence={presence}
+        onFocus={onFocus}
       >
         {isRadio ? (
           <RadioSelect
