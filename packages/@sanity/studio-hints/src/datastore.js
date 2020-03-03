@@ -15,5 +15,5 @@ export function updateLocation(locationObject) {
 
 export const getHints = (templateRepoId, removeHintsArticleSlug) => {
   const uri = `/addons/dashboard/hints?templateRepoId=${templateRepoId}&removeHintsArticleSlug=${removeHintsArticleSlug}`
-  return client.request({uri, withCredentials: false})
+  return client.observable.request({uri, withCredentials: false})
 }
