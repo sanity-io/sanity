@@ -2,6 +2,7 @@
 /* eslint-disable max-depth, id-length */
 import difference from 'lodash/difference'
 import intersection from 'lodash/intersection'
+import flattenDeep from 'lodash/flattenDeep'
 
 const defaultOptions = {
   ignoreFields: ['_id', '_updatedAt', '_createdAt', '_rev', '_weak']
@@ -83,10 +84,8 @@ function diff(a, b, path, options) {
         const fieldA = a[field]
         const fieldB = b[field]
         const changes = diff(fieldA, fieldB, path.concat(field), options)
-        const type = isSameType(fieldA, fieldB) ? sanityType(fieldA) : null
         if (changes.length > 0) {
-          // console.log('superpath', path)
-          result.push({op: 'modifyField', type, field, changes})
+          result.push(changes)
         }
       })
 
@@ -97,6 +96,7 @@ function diff(a, b, path, options) {
       const result = []
       const aElements = {}
       const bElements = {}
+
       a.forEach(element => {
         aElements[element._key] = element
       })
@@ -109,14 +109,21 @@ function diff(a, b, path, options) {
         const elementA = aElements[key]
         const elementB = bElements[key]
         const changes = diff(elementA, elementB, path.concat(key), options)
-        const type = isSameType(elementA, elementB) ? sanityType(elementA) : null
         if (changes.length > 0) {
-          result.push({op: 'modifyEntry', type, key, changes})
+          result.push(changes)
         }
       })
+
+      // something has been added
       difference(bKeys, aKeys).forEach(key => {
+        result.push({op: 'set', key, path: `${path}[_key=${key}]`, value: bElements[key]})
+      })
+
+      // something has been removed
+      difference(aKeys, bKeys).forEach(key => {
         result.push({op: 'remove', key})
       })
+
       return result
     }
 
@@ -137,5 +144,6 @@ function diff(a, b, path, options) {
 
 export default function bateson(a, b, opts = {}) {
   const options = {...defaultOptions, ...opts}
-  return diff(a, b, [], options)
+  const nestedChangeSummaries = diff(a, b, [], options)
+  return flattenDeep(nestedChangeSummaries)
 }

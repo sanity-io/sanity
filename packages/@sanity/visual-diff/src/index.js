@@ -38,10 +38,10 @@ const VisualDiff = props => {
       <h3>Full diff</h3>
       <JSONPretty data={diff} theme={monikai} mainStyle="white-space: pre-wrap" />
 
-      <h3>A (aka oriiginal)</h3>
+      <h3>Original</h3>
       <JSONPretty data={original} theme={monikai} mainStyle="white-space: pre-wrap" />
 
-      <h3>B (aka modified)</h3>
+      <h3>Modified</h3>
       <JSONPretty data={modified} theme={monikai} mainStyle="white-space: pre-wrap" />
     </div>
   )

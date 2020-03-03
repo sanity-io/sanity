@@ -10,6 +10,38 @@ export default {
       type: 'string'
     },
     {
+      name: 'openingHours',
+      title: 'Opening Hours',
+      type: 'array',
+      of: [
+        {
+          name: 'openDayAndTime',
+          title: 'Opening Hours by Day',
+          type: 'object',
+          fields: [
+            {
+              name: 'day',
+              title: 'Day',
+              type: 'string',
+              options: {
+                list: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+              }
+            },
+            {
+              name: 'opensAt',
+              title: 'Opens At',
+              type: 'datetime'
+            },
+            {
+              name: 'closesAt',
+              title: 'Closes At',
+              type: 'datetime'
+            }
+          ]
+        }
+      ]
+    },
+    {
       name: 'keeper',
       title: 'Keeper',
       type: 'object',

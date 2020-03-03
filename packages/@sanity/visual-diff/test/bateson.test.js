@@ -236,3 +236,62 @@ describe('when checking if two objects are of same Sanity type', () => {
     expect(result).toBe(expected)
   })
 })
+
+describe('when diffing a document', () => {
+  test('should generate a flat array of sumaries', () => {
+    const zooA = {
+      _id: '123',
+      _type: 'zoo',
+      keeper: {
+        age: 5,
+        name: 'Alfred'
+      },
+      name: 'El Zooas Thomaxas'
+    }
+
+    const zooB = {
+      _id: 'drafts.123',
+      _type: 'zoo',
+      keeper: {
+        age: 6,
+        name: 'Alice'
+      },
+      name: 'El Zooas Thomaxas'
+    }
+
+    const expectedNumberChange = {op: 'edit', from: 5, to: 6}
+    const expectedTextChange = {op: 'editText', type: 'string', from: 'Alfred', to: 'Alice'}
+
+    const result = bateson(zooA, zooB, {summarizers: defaultSummarizers})
+    expect(result.length).toEqual(2)
+    expect(result[0]).toEqual(expectedNumberChange)
+    expect(result[1]).toEqual(expectedTextChange)
+  })
+})
+
+describe('when an object has been added to an array', () => {
+  test.skip('should generate a "set" operation', () => {
+    const zooA = {
+      _id: '123',
+      _type: 'zoo',
+      openingHours: []
+    }
+
+    const zooB = {
+      _id: 'drafts.123',
+      _type: 'zoo',
+      openingHours: [
+        {
+          _key: '7c842c8c8f38',
+          _type: 'openDayAndTime',
+          day: 'Tuesday',
+          opensAt: '2020-03-03T11:45:22.336Z',
+          closesAt: '2020-03-03T12:00:24.349Z'
+        }
+      ]
+    }
+
+    const result = bateson(zooA, zooB, {summarizers: defaultSummarizers})
+    expect(result).toEqual([])
+  })
+})
