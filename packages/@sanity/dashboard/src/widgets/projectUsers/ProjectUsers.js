@@ -1,4 +1,5 @@
 import React from 'react'
+import {map, switchMap} from 'rxjs/operators'
 import sanityClient from 'part:@sanity/base/client'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import DefaultPreview from 'part:@sanity/components/previews/default'
@@ -11,7 +12,20 @@ function getInviteUrl(projectId) {
   return `https://manage.sanity.io/projects/${projectId}/team/invite`
 }
 
-class ProjectUsers extends React.Component {
+function sortUsersByRobotStatus(userA, userB, project) {
+  const {members} = project
+  const membershipA = members.find(member => member.id === userA.id)
+  const membershipB = members.find(member => member.id === userB.id)
+  if (membershipA.isRobot) {
+    return 1
+  }
+  if (membershipB.isRobot) {
+    return -1
+  }
+  return 0
+}
+
+class ProjectUsers extends React.PureComponent {
   static propTypes = {}
   static defaultProps = {}
 
@@ -21,34 +35,45 @@ class ProjectUsers extends React.Component {
     error: null
   }
 
-  sortUsersByRobotStatus = (userA, userB) => {
-    const {members} = this.state.project
-    const membershipA = members.find(member => member.id === userA.id)
-    const membershipB = members.find(member => member.id === userB.id)
-    if (membershipA.isRobot) {
-      return 1
-    }
-    if (membershipB.isRobot) {
-      return -1
-    }
-    return 0
-  }
-
   componentDidMount() {
     this.fetchData()
   }
 
+  componentWillUnmount() {
+    if (this.subscription) {
+      this.subscription.unsubscribe()
+    }
+  }
+
   fetchData() {
+    if (this.subscription) {
+      this.subscription.unsubscribe()
+    }
+
     const {projectId} = sanityClient.config()
-    sanityClient.projects
-      .getById(projectId)
-      .then(project => {
-        this.setState({project})
-        return project
+    this.subscription = sanityClient.observable
+      .request({
+        uri: `/projects/${projectId}`
       })
-      .then(project => sanityClient.users.getById(project.members.map(mem => mem.id).join(',')))
-      .then(users => this.setState({users: Array.isArray(users) ? users : [users]}))
-      .catch(error => this.setState({error}))
+      .pipe(
+        switchMap(project =>
+          sanityClient.observable
+            .request({
+              uri: `/users/${project.members.map(mem => mem.id).join(',')}`
+            })
+            .pipe(map(users => ({project, users})))
+        )
+      )
+      .subscribe({
+        next: ({users, project}) =>
+          this.setState({
+            project,
+            users: (Array.isArray(users) ? users : [users]).sort((userA, userB) =>
+              sortUsersByRobotStatus(userA, userB, project)
+            )
+          }),
+        error: error => this.setState({error})
+      })
   }
 
   handleRetryFetch = () => {
@@ -85,7 +110,7 @@ class ProjectUsers extends React.Component {
 
         {!isLoading && (
           <List className={styles.list}>
-            {users.sort(this.sortUsersByRobotStatus).map(user => {
+            {users.map(user => {
               const membership = project.members.find(member => member.id === user.id)
               const media = membership.isRobot ? (
                 <ToolIcon className={styles.profileImage} />

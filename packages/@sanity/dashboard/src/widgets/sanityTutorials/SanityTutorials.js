@@ -31,11 +31,17 @@ class SanityTutorials extends React.Component {
 
   componentDidMount() {
     const {templateRepoId} = this.props
-    getFeed(templateRepoId).then(response => {
+    this.subscription = getFeed(templateRepoId).subscribe(response => {
       this.setState({
         feedItems: response.items
       })
     })
+  }
+
+  componentWillUnmount() {
+    if (this.subscription) {
+      this.subscription.unsubscribe()
+    }
   }
 
   render() {

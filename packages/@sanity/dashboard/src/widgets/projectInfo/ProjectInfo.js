@@ -25,7 +25,7 @@ function getManageUrl() {
   return `https://manage.sanity.io/projects/${projectId}`
 }
 
-class ProjectInfo extends React.Component {
+class ProjectInfo extends React.PureComponent {
   static propTypes = {
     // eslint-disable-next-line camelcase
     __experimental_before: PropTypes.array,
@@ -44,42 +44,52 @@ class ProjectInfo extends React.Component {
 
   componentDidMount() {
     // fetch project data
-    sanityClient.projects
-      .getById(projectId)
-      .then(result => {
-        const {studioHost} = result
-        this.setState({studioHost: studioHost ? `https://${studioHost}.sanity.studio` : null})
-      })
-      .catch(error => {
-        console.log('Error while looking for studioHost', error)
-        this.setState({
-          studioHost: {
-            error: 'Something went wrong while looking up studioHost. See console.'
-          }
-        })
-      })
+    this.subscriptions = []
 
-    // ping assumed graphql endpoint
-    sanityClient
-      .request({
-        method: 'HEAD',
-        uri: `/graphql/${dataset}/default`
-      })
-      .then(response => {
-        this.setState({graphqlApi: getGraphQlUrl()})
-      })
-      .catch(error => {
-        if (error.statusCode === 404) {
-          this.setState({graphqlApi: null})
-        } else {
-          console.log('Error while looking for graphqlApi', error)
+    this.subscriptions.push(
+      sanityClient.observable.request({uri: `/projects/${projectId}`}).subscribe({
+        next: result => {
+          const {studioHost} = result
+          this.setState({studioHost: studioHost ? `https://${studioHost}.sanity.studio` : null})
+        },
+        error: error => {
+          console.log('Error while looking for studioHost', error)
           this.setState({
-            graphqlApi: {
-              error: 'Something went wrong while looking up graphqlApi. See console.'
+            studioHost: {
+              error: 'Something went wrong while looking up studioHost. See console.'
             }
           })
         }
       })
+    )
+
+    // ping assumed graphql endpoint
+    this.subscriptions.push(
+      sanityClient.observable
+        .request({
+          method: 'HEAD',
+          uri: `/graphql/${dataset}/default`
+        })
+        .subscribe({
+          next: () => this.setState({graphqlApi: getGraphQlUrl()}),
+          error: error => {
+            if (error.statusCode === 404) {
+              this.setState({graphqlApi: null})
+            } else {
+              console.log('Error while looking for graphqlApi', error)
+              this.setState({
+                graphqlApi: {
+                  error: 'Something went wrong while looking up graphqlApi. See console.'
+                }
+              })
+            }
+          }
+        })
+    )
+  }
+
+  componentWillUnmount() {
+    this.subscriptions.forEach(sub => sub.unsubscribe())
   }
 
   assembleTableRows() {
@@ -89,7 +99,10 @@ class ProjectInfo extends React.Component {
     let result = [
       {
         title: 'Sanity project',
-        rows: [{title: 'Project ID', value: projectId}, {title: 'Dataset', value: dataset}]
+        rows: [
+          {title: 'Project ID', value: projectId},
+          {title: 'Dataset', value: dataset}
+        ]
       }
     ]
 

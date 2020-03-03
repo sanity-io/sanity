@@ -12,7 +12,7 @@ export default {
     const uri = templateRepoId
       ? `/addons/dashboard?templateRepoId=${templateRepoId}`
       : '/addons/dashboard'
-    return client.request({uri, withCredentials: false})
+    return client.observable.request({uri, withCredentials: false})
   },
   urlBuilder: imageUrlBuilder(configuredClient)
 }
