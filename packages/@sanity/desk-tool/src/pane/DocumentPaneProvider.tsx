@@ -1,5 +1,6 @@
 import * as React from 'react'
 import DocumentPane from './DocumentPane'
+import {getPublishedId, isDraftId} from 'part:@sanity/base/util/draft-utils'
 import withInitialValue from '../utils/withInitialValue'
 import {
   useConnectionState,
@@ -41,10 +42,11 @@ interface Props {
 }
 
 export const DocumentPaneProvider = withInitialValue((props: Props) => {
-  const {patch}: any = useDocumentOperation(props.options.id, props.options.type)
-  const editState: any = useEditState(props.options.id, props.options.type)
-  const {markers} = useValidationStatus(props.options.id, props.options.type)
-  const connectionState = useConnectionState(props.options.id, props.options.type)
+  const id = getPublishedId(props.options.id)
+  const {patch}: any = useDocumentOperation(id, props.options.type)
+  const editState: any = useEditState(id, props.options.type)
+  const {markers} = useValidationStatus(id, props.options.type)
+  const connectionState = useConnectionState(id, props.options.type)
 
   const onChange = React.useCallback(
     patches => {
