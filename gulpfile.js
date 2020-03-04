@@ -89,6 +89,8 @@ const buildTS = parallel(...PACKAGE_PATHS.map(buildTypeScript).filter(Boolean))
 
 exports.buildTS = buildTS
 
+exports.build = build
+
 exports['test-studio'] = series(
   build,
   parallel(watchOnly, function runStudio_() {
