@@ -14,7 +14,12 @@ describe('when adding field', () => {
     }
 
     const result = bateson(docA, docB, {summarizers: defaultSummarizers})
-    expect(result).toMatchSnapshot()
+    expect(result).toHaveLength(1)
+    expect(result[0]).toEqual({
+      operation: 'add',
+      path: [],
+      to: 'J. K. Rowling'
+    })
   })
 })
 
@@ -30,7 +35,12 @@ describe('when removing field', () => {
     }
 
     const result = bateson(docA, docB, {summarizers: defaultSummarizers})
-    expect(result).toMatchSnapshot()
+    expect(result).toHaveLength(1)
+    expect(result[0]).toEqual({
+      operation: 'remove',
+      path: [],
+      from: 'J. R. R. Tolkien'
+    })
   })
 })
 
@@ -47,12 +57,18 @@ describe('when modifying strings', () => {
     }
 
     const result = bateson(docA, docB, {summarizers: defaultSummarizers})
-    expect(result).toMatchSnapshot()
+    expect(result).toHaveLength(1)
+    expect(result[0]).toEqual({
+      operation: 'editText',
+      path: ['author'],
+      from: 'J. R. R. Tolkien',
+      to: 'J. K. Rowling'
+    })
   })
 })
 
-describe('bateson tests', () => {
-  test('image test', () => {
+describe('when modifying images', () => {
+  test('given image is replaced, should generate replaceImage operation', () => {
     const docA = {
       _type: 'zoo',
       profile: {
@@ -60,8 +76,7 @@ describe('bateson tests', () => {
         asset: {
           _type: 'asset',
           _ref: 'ref-123'
-        },
-        source: 'my-fancy-source'
+        }
       }
     }
 
@@ -72,27 +87,20 @@ describe('bateson tests', () => {
         asset: {
           _type: 'asset',
           _ref: 'ref-456'
-        },
-        source: 'my-fancy-source-2'
-      }
-    }
-
-    const summarizers = {
-      image: {
-        resolve: (a, b) => {
-          if (a.asset && b.asset && a.asset._ref !== b.asset._ref) {
-            return [{op: 'my-custom-action', from: a.asset._ref, to: b.asset._ref}]
-          }
-          // TODO: Call SUMMARIZE()?
-          return null
         }
       }
     }
 
     const result = bateson(docA, docB, {
-      summarizers: {...Object.entries(defaultSummarizers), ...summarizers}
+      summarizers: defaultSummarizers
     })
-    expect(result).toMatchSnapshot()
+    expect(result).toHaveLength(1)
+    expect(result[0]).toEqual({
+      operation: 'replaceImage',
+      path: ['profile'],
+      from: 'ref-123',
+      to: 'ref-456'
+    })
   })
 })
 
@@ -115,86 +123,35 @@ describe('when diffing', () => {
 
   test('given no summarizer for object, should use default summarizers', () => {
     const result = bateson(zooA, zooB, {summarizers: defaultSummarizers})
-    expect(result).toMatchSnapshot()
+    expect(result[0]).toEqual({
+      operation: 'editText',
+      path: ['keeper', 'name'],
+      from: 'Steve Irwin',
+      to: 'Bindi Irwin 😭'
+    })
   })
 
   test('given summarizer for object, should use custom summarizer', () => {
     const summarizers = {
       keeper: {
         resolve: (a, b) => {
-          return [{op: 'keeperNameChanged', from: a.name, to: b.name}]
+          return {
+            fields: [],
+            changes: [{operation: 'keeperNameChanged', from: a.name, to: b.name}]
+          }
         }
       }
     }
     const result = bateson(zooA, zooB, {
       summarizers: {...Object.entries(defaultSummarizers), ...summarizers}
     })
-    expect(result).toMatchSnapshot()
-  })
-})
-
-describe('bateson tests', () => {
-  test('bateson stuff', () => {
-    const zooA = {
-      _type: 'zoo',
-      keeper: {
-        _type: 'keeper',
-        face: {
-          _type: 'face',
-          nose: 'slim'
-        }
-      },
-      zebra: {
-        _type: 'zebra',
-        face: {
-          _type: 'face',
-          nose: 'long',
-          eyes: 2
-        }
-      }
-    }
-
-    const zooB = {
-      _type: 'zoo',
-      keeper: {
-        _type: 'keeper',
-        face: {
-          _type: 'face',
-          nose: 'big'
-        }
-      },
-      zebra: {
-        _type: 'zebra',
-        face: {
-          _type: 'face',
-          nose: 'longandbig',
-          eyes: 3
-        }
-      }
-    }
-
-    // TODO: When zebra is defined as a summarizer, it "takes over" the processing of
-    //  everything deeper in the structure. By introducing `fields` (as below), bateson can
-    //  keep track of what has been processed already and not. We could also potentially
-    //  make 'zebra.face.nose' take prescedence over 'face.nose' as 'zebra.face.nose'
-    //  is more specific.
-    const summarizers = {
-      zebra: {
-        resolve: (previous, current, path) => {
-          return [{op: 'only-zebra-stuff', from: previous, to: current}]
-        },
-        fields: ['zebra.face.nose']
-      },
-      face: {
-        resolve: (previous, current, path) => {
-          return [{op: 'wut', from: previous, to: current}]
-        },
-        fields: ['face.nose']
-      }
-    }
-
-    const result = bateson(zooA, zooB, {summarizers})
-    expect(result).toMatchSnapshot()
+    expect(result).toHaveLength(1)
+    expect(result[0]).toEqual({
+      operation: 'keeperNameChanged',
+      path: ['keeper'],
+      from: 'Steve Irwin',
+      to: 'Bindi Irwin 😭'
+    })
   })
 })
 
@@ -238,7 +195,7 @@ describe('when checking if two objects are of same Sanity type', () => {
 })
 
 describe('when diffing a document', () => {
-  test('should generate a flat array of sumaries', () => {
+  test('should generate a flat array of diff summaries', () => {
     const zooA = {
       _id: '123',
       _type: 'zoo',
@@ -259,8 +216,13 @@ describe('when diffing a document', () => {
       name: 'El Zooas Thomaxas'
     }
 
-    const expectedNumberChange = {op: 'edit', from: 5, to: 6}
-    const expectedTextChange = {op: 'editText', type: 'string', from: 'Alfred', to: 'Alice'}
+    const expectedNumberChange = {operation: 'edit', path: ['keeper', 'age'], from: 5, to: 6}
+    const expectedTextChange = {
+      operation: 'editText',
+      path: ['keeper', 'name'],
+      from: 'Alfred',
+      to: 'Alice'
+    }
 
     const result = bateson(zooA, zooB, {summarizers: defaultSummarizers})
     expect(result.length).toEqual(2)
@@ -270,7 +232,7 @@ describe('when diffing a document', () => {
 })
 
 describe('when an object has been added to an array', () => {
-  test('should generate a "set" operation', () => {
+  test('should generate an "add" operation', () => {
     const zooA = {
       _id: '123',
       _type: 'zoo',
@@ -293,6 +255,6 @@ describe('when an object has been added to an array', () => {
 
     const result = bateson(zooA, zooB, {summarizers: defaultSummarizers})
     expect(result.length).toEqual(1)
-    expect(result[0].op).toEqual('set')
+    expect(result[0].operation).toEqual('add')
   })
 })
