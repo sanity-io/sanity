@@ -154,6 +154,11 @@ export default {
       ]
     },
     {
+      name: 'visitorCount',
+      title: 'Visitors so far this year',
+      type: 'number'
+    },
+    {
       name: 'description',
       title: 'Description of the zoo',
       type: 'array',
