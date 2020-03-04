@@ -10,6 +10,7 @@ import {StringInput} from './inputs/StringInput'
 import {ObjectInput} from './inputs/ObjectInput'
 import usePresence from './usePresence'
 import {ArrayInput} from './inputs/ArrayInput'
+import {PositionTracker} from './components/PositionTracker'
 const preventDefault = e => e.preventDefault()
 
 function memoize(fn) {
@@ -79,20 +80,23 @@ export const FormBuilderPerfTool = props => {
         {JSON.stringify(focusPath)}
       </pre>
       <button onClick={() => save(lsKey, value)}>Save to localstorage</button>
+
       <FormBuilderContext resolveInputComponent={resolveInput}>
-        <form onSubmit={preventDefault}>
-          <FormBuilderInput
-            schema={schema}
-            value={value}
-            presence={presenceInfo}
-            level={0}
-            type={type}
-            onBlur={() => {}}
-            onFocus={onFocus}
-            focusPath={focusPath}
-            onChange={onChange}
-          />
-        </form>
+        <PositionTracker>
+          <form onSubmit={preventDefault}>
+            <FormBuilderInput
+              schema={schema}
+              value={value}
+              presence={presenceInfo}
+              level={0}
+              type={type}
+              onBlur={() => {}}
+              onFocus={onFocus}
+              focusPath={focusPath}
+              onChange={onChange}
+            />
+          </form>
+        </PositionTracker>
       </FormBuilderContext>
     </>
   )

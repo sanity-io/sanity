@@ -9,6 +9,7 @@ import {Modal} from '../components/Modal'
 import {PresenceMarkerList} from '../components/PresenceMarkerList'
 import {PreviewAny} from '@sanity/form-builder/lib/utils/fallback-preview/PreviewAny'
 import {PresenceOverlay} from '../components/PresenceOverlay'
+import {PositionTracker} from '../components/PositionTracker'
 
 const pathSegmentMatchesKey = (pathSegment, key) => pathSegment?._key === key
 
@@ -56,7 +57,7 @@ export const ArrayItem = React.memo(
         <button onClick={handleEditStart}>Edit</button>
         {hasFocusWithin && (
           <Modal onClose={handleEditEnd}>
-            <PresenceOverlay>
+            <PositionTracker>
               <FormBuilderInput
                 level={level}
                 value={value}
@@ -67,7 +68,7 @@ export const ArrayItem = React.memo(
                 onChange={handleChange}
                 onFocus={props.onFocus}
               />
-            </PresenceOverlay>
+            </PositionTracker>
           </Modal>
         )}
       </div>

@@ -52,7 +52,8 @@
     "sanity-plugin-dashboard-widget-cats": "0.0.2",
     "sanity-plugin-dashboard-widget-document-count": "0.0.1",
     "sanity-plugin-dashboard-widget-document-list": "0.0.3",
-    "sanity-plugin-mux-input": "^0.1.11"
+    "sanity-plugin-mux-input": "^0.1.11",
+    "shallow-equals": "^1.0.0"
   },
   "devDependencies": {
     "rimraf": "^2.7.1"
