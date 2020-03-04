@@ -542,7 +542,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
       ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload}
       : {}
 
-    const isInsideDialog = presence
+    const isInside = presence
       .map(item => {
         const otherFieldsPath = otherFields.map(field => field.name)
         return item.path.some(path => otherFieldsPath.includes(path)) ? item.identity : null
@@ -551,9 +551,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     return (
       <FieldSetComponent
         markers={markers}
-        presence={presence.filter(
-          item => item.path[0] === '$' || isInsideDialog.includes(item.identity)
-        )}
+        presence={presence.filter(item => item.path[0] === '$' || isInside.includes(item.identity))}
         legend={type.title}
         description={type.description}
         level={level}
