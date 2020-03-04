@@ -38,7 +38,7 @@ function resolveSummarizerForType(a, b, type, path, summarizers) {
 
 function accumulateChangeSummaries(a, b, path, options) {
   if (!isSameType(a, b)) {
-    return [{op: 'replace', from: a, to: b}]
+    return [{operation: 'replace', from: a, to: b}]
   }
 
   const typeWeAreOperatingOn = typeOf(a) // We can use this, as a and b are guaranteed to be the same type
@@ -73,12 +73,12 @@ function accumulateChangeSummaries(a, b, path, options) {
 
       const removed = difference(aFields, bFields)
       removed.forEach(field => {
-        result.push({op: 'remove', field})
+        result.push({operation: 'remove', path, from: a[field]})
       })
 
       const added = difference(bFields, aFields)
       added.forEach(field => {
-        result.push({op: 'add', field, value: b[field]})
+        result.push({operation: 'add', path, to: b[field]})
       })
 
       const kept = intersection(aFields, bFields)
@@ -112,18 +112,23 @@ function accumulateChangeSummaries(a, b, path, options) {
         const elementB = bElements[key]
         const changes = accumulateChangeSummaries(elementA, elementB, path.concat(key), options)
         if (changes.length > 0) {
-          result.push(changes)
+          result.push(
+            changes.map(change => {
+              change.path = path
+              return change
+            })
+          )
         }
       })
 
       // something has been added
       difference(bKeys, aKeys).forEach(key => {
-        result.push({op: 'set', key, path: `${path}[_key=${key}]`, value: bElements[key]})
+        result.push({operation: 'add', key, path: `${path}[_key=${key}]`, to: bElements[key]})
       })
 
       // something has been removed
       difference(aKeys, bKeys).forEach(key => {
-        result.push({op: 'remove', key, path: `${path}[_key=${key}]`})
+        result.push({operation: 'remove', key, path: `${path}[_key=${key}]`, from: aElements[key]})
       })
 
       return result
@@ -141,7 +146,7 @@ function accumulateChangeSummaries(a, b, path, options) {
 
         return summarizerForType && summarizerForType.changes
           ? summarizerForType.changes
-          : [{op: 'edit', from: a, to: b}]
+          : [{operation: 'edit', path, from: a, to: b}]
       }
       return []
   }

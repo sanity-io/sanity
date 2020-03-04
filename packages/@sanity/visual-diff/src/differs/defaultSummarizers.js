@@ -22,7 +22,7 @@ const summarizers = {
           fields: [],
           changes: [
             {
-              op: 'editText',
+              operation: 'editText',
               type: 'block',
               from: aText,
               to: bText
@@ -43,7 +43,7 @@ const summarizers = {
         fields: [],
         changes: [
           {
-            op: 'editText',
+            operation: 'editText',
             type: 'string',
             from: a,
             to: b
@@ -57,11 +57,11 @@ const summarizers = {
     resolve: (a, b, _) => {
       const changes = []
       if (!a.asset && b.asset) {
-        changes.push({op: 'addImage', field: 'asset', value: b.asset._ref})
+        changes.push({operation: 'addImage', to: b.asset._ref})
       } else if (a.asset && !b.asset) {
-        changes.push({op: 'removeImage', from: a.asset._ref})
+        changes.push({operation: 'removeImage', from: a.asset._ref})
       } else if (a.asset && b.asset && a.asset._ref !== b.asset._ref) {
-        changes.push({op: 'replaceImage', from: a.asset._ref, to: b.asset._ref})
+        changes.push({operation: 'replaceImage', from: a.asset._ref, to: b.asset._ref})
       }
       return changes.length ? {fields: ['asset'], changes} : null
     }
