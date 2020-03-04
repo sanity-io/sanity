@@ -193,7 +193,6 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
 
   render() {
     const {type, value, level, markers, readOnly, onChange, onFocus, presence} = this.props
-    console.log(presence)
     return (
       <Fieldset
         legend={type.title}
