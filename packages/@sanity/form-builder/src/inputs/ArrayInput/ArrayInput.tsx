@@ -185,7 +185,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
           const childMarkers = markers.filter(isChildMarker)
           const isChildPresence = pItem =>
             startsWith([index], pItem.path) || startsWith([{_key: item && item._key}], pItem.path)
-          const childPresence = presence.filter(isChildPresence)
+          const childPresence = isGrid ? [] : presence.filter(isChildPresence)
           const itemProps = isSortable ? {index} : {}
           return (
             <Item
@@ -332,6 +332,8 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
     const uploadProps = SUPPORT_DIRECT_UPLOADS
       ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload}
       : {}
+    const options = type.options || {}
+    const isGrid = options.layout === 'grid'
     return (
       <FieldSetComponent
         markers={markers}
@@ -343,7 +345,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
         onFocus={this.handleFocus}
         type={type}
         ref={this.setElement}
-        presence={presence.filter(item => item.path[0] === '$')}
+        presence={isGrid ? presence : presence.filter(item => item.path[0] === '$')}
         {...uploadProps}
       >
         {value && value.length > 0 && this.renderList()}
