@@ -44,7 +44,6 @@ const summarizers = {
         changes: [
           {
             operation: 'editText',
-            type: 'string',
             from: a,
             to: b
           }

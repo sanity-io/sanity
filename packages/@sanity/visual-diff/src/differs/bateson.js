@@ -63,7 +63,12 @@ function accumulateChangeSummaries(a, b, path, options) {
           // An empty fields array means the whole thing has been handled
           return summarizerForType.changes
         }
-        result.concat(summarizerForType.changes)
+        result.concat(
+          summarizerForType.changes.map(change => {
+            change.path = path
+            return change
+          })
+        )
       }
 
       const [aFields, bFields] = [
@@ -112,12 +117,7 @@ function accumulateChangeSummaries(a, b, path, options) {
         const elementB = bElements[key]
         const changes = accumulateChangeSummaries(elementA, elementB, path.concat(key), options)
         if (changes.length > 0) {
-          result.push(
-            changes.map(change => {
-              change.path = path
-              return change
-            })
-          )
+          result.push(changes)
         }
       })
 
@@ -144,9 +144,14 @@ function accumulateChangeSummaries(a, b, path, options) {
           options.summarizers
         )
 
-        return summarizerForType && summarizerForType.changes
-          ? summarizerForType.changes
-          : [{operation: 'edit', path, from: a, to: b}]
+        if (summarizerForType && summarizerForType.changes) {
+          return summarizerForType.changes.map(change => {
+            change.path = path
+            return change
+          })
+        }
+
+        return [{operation: 'edit', path, from: a, to: b}]
       }
       return []
   }

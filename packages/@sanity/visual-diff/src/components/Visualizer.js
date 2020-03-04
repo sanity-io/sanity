@@ -17,23 +17,25 @@ function resolveIterator(item, visualizers) {
 }
 
 function resolveVisualizer(item, visualizers, documentType) {
-  // Check for custom differ
+  // Check for custom visualizer
 
   const customVisualDiffer = visualizers[item.type] ? visualizers[item.type][item.op] : null
   if (customVisualDiffer) {
     return customVisualDiffer
   }
 
-  // Default differ
-  // TODO: Remove and incorporate into `defaultDiffers.js`
+  // Default visualizer
+  // TODO: Remove and incorporate into `defaultVisualizers.js`
   const component = props => {
-    const {op: operation, field, from, to, value} = props.item
+    const {operation, path, from, to} = props.item
+    const field = path.slice(-1)
+
     let description = ''
     if (['edit', 'editText'].includes(operation)) {
       description = `${from} --> ${to}`
     }
-    if (operation === 'set') {
-      description = `--> ${value}`
+    if (operation === 'add') {
+      description = `--> ${to}`
     }
     return (
       <li>
