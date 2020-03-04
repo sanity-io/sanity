@@ -20,9 +20,7 @@ export function isSameType(a, b) {
   if (a === null && b !== null) return false
   if (a !== null && b === null) return false
   if (typeof a !== typeof b) return false
-  if (typeof a === 'object') {
-    if (a._type !== b._type) return false
-  }
+  if (typeof a === 'object' && a._type !== b._type) return false
   return true
 }
 
@@ -31,44 +29,38 @@ function sanityType(value) {
   return typeOf(value)
 }
 
-function resolveSummarizerForType(a, b, type, path, summarizers) {
-  const summarizerForTypeOperation = summarizers[type]
-  return summarizerForTypeOperation ? summarizerForTypeOperation.resolve(a, b, path) : null
-}
-
 function accumulateChangeSummaries(a, b, path, options) {
   if (!isSameType(a, b)) {
     return [{operation: 'replace', from: a, to: b}]
   }
 
   const typeWeAreOperatingOn = typeOf(a) // We can use this, as a and b are guaranteed to be the same type
-
   switch (typeWeAreOperatingOn) {
     case 'object': {
       const result = []
-
-      const summarizerForType = resolveSummarizerForType(
-        a,
-        b,
-        sanityType(a),
-        path,
-        options.summarizers
-      )
+      const summarizerForTypeOperation = options.summarizers[sanityType(a)]
+      const summary = summarizerForTypeOperation
+        ? summarizerForTypeOperation.resolve(a, b, path)
+        : null
 
       let ignoreFields = options.ignoreFields || []
 
-      if (summarizerForType && summarizerForType.changes) {
-        ignoreFields = summarizerForType.fields.concat(ignoreFields)
-        if (summarizerForType.fields.length === 0) {
+      if (summary && summary.changes) {
+        if (summary.fields.length === 0) {
           // An empty fields array means the whole thing has been handled
-          return summarizerForType.changes
+          return summary.changes.map(change => ({
+            ...change,
+            path
+          }))
         }
-        result.concat(
-          summarizerForType.changes.map(change => {
-            change.path = path
-            return change
+        ignoreFields = summary.fields.concat(ignoreFields)
+
+        summary.changes.forEach(change => {
+          result.push({
+            ...change,
+            path
           })
-        )
+        })
       }
 
       const [aFields, bFields] = [
@@ -136,16 +128,13 @@ function accumulateChangeSummaries(a, b, path, options) {
 
     default:
       if (a !== b) {
-        const summarizerForType = resolveSummarizerForType(
-          a,
-          b,
-          sanityType(a),
-          path,
-          options.summarizers
-        )
+        const summarizerForTypeOperation = options.summarizers[sanityType(a)]
+        const summary = summarizerForTypeOperation
+          ? summarizerForTypeOperation.resolve(a, b, path)
+          : null
 
-        if (summarizerForType && summarizerForType.changes) {
-          return summarizerForType.changes.map(change => {
+        if (summary && summary.changes) {
+          return summary.changes.map(change => {
             change.path = path
             return change
           })
