@@ -26,6 +26,7 @@ type Props = {
   onFocus?: (event: any) => void
   onBlur?: (event: any) => void
   level: number
+  presence: any
 }
 const getFormat = (dateFormat, timeFormat) => dateFormat + (timeFormat ? ` ${timeFormat}` : '')
 type State = {
@@ -117,7 +118,8 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
       todayLabel,
       readOnly,
       timeStep,
-      level
+      level,
+      presence
     } = this.props
     const {inputValue, isDialogOpen} = this.state
     const format = getFormat(dateFormat, timeFormat)
@@ -125,7 +127,13 @@ export default class BaseDateTimeInput extends React.Component<Props, State> {
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
     return (
-      <FormField markers={markers} label={title} level={level} description={description}>
+      <FormField
+        markers={markers}
+        label={title}
+        level={level}
+        description={description}
+        presence={presence}
+      >
         {readOnly && (
           <TextInput
             customValidity={errors.length > 0 ? errors[0].item.message : ''}

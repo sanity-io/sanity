@@ -32,6 +32,8 @@ type Props = {
   readOnly: boolean | null
   onChange: (arg0: PatchEvent) => void
   level: number
+  onFocus: () => void
+  presence: any
 }
 function parseOptions(options: SchemaOptions = {}): ParsedOptions {
   return {
@@ -56,7 +58,7 @@ export default class DateInput extends React.Component<Props> {
     this.baseDateTimeInputRef = baseInput
   }
   render() {
-    const {value, markers, type, readOnly, level} = this.props
+    const {value, markers, type, readOnly, level, onFocus, presence} = this.props
     const {title, description} = type
     const momentValue: Moment | null = value ? moment(value) : null
     const options = parseOptions(type.options)
@@ -75,6 +77,8 @@ export default class DateInput extends React.Component<Props> {
         timeStep={options.timeStep}
         todayLabel={options.calendarTodayLabel}
         onChange={this.handleChange}
+        onFocus={onFocus}
+        presence={presence}
       />
     )
   }
