@@ -115,12 +115,12 @@ function accumulateChangeSummaries(a, b, path, options) {
 
       // something has been added
       difference(bKeys, aKeys).forEach(key => {
-        result.push({operation: 'add', key, path, to: bElements[key]})
+        result.push({operation: 'add', path: path.concat({_key: key}), to: bElements[key]})
       })
 
       // something has been removed
       difference(aKeys, bKeys).forEach(key => {
-        result.push({operation: 'remove', key, path, from: aElements[key]})
+        result.push({operation: 'remove', path: path.concat({_key: key}), from: aElements[key]})
       })
 
       return result

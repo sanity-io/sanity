@@ -4,6 +4,18 @@ import React from 'react'
 import {isObject} from 'lodash'
 //import schema from 'part:@sanity/base/schema'
 
+function fullPath(path) {
+  let result = ''
+  path.forEach(item => {
+    if (isObject(item)) {
+      result = `${result}[_key=${item._key}]`
+    } else {
+      result = `${result}.${item}`
+    }
+  })
+  return result
+}
+
 function resolveIterator(item, visualizers) {
   // Check for custom iterator
   const customIterator = visualizers[item.type] ? visualizers[item.type][item.op] : null
@@ -29,7 +41,6 @@ function resolveVisualizer(item, visualizers, documentType) {
   // TODO: Remove and incorporate into `defaultVisualizers.js`
   const component = props => {
     const {operation, path, from, to} = props.item
-    const field = path.join('.')
 
     let description = ''
     if (['edit', 'editText'].includes(operation)) {
@@ -40,7 +51,7 @@ function resolveVisualizer(item, visualizers, documentType) {
     }
     return (
       <li>
-        {field} [{operation}] {description}
+        {fullPath(path)} [{operation}] {description}
       </li>
     )
   }

@@ -5,11 +5,24 @@
 /* eslint-disable id-length */
 import React from 'react'
 import {diffWordsWithSpace} from 'diff'
+import {isObject} from 'lodash'
 
 const colors = {
   unchanged: '#ccc',
   added: 'green',
   removed: 'red'
+}
+
+function fullPath(path) {
+  let result = ''
+  path.forEach(item => {
+    if (isObject(item)) {
+      result = `${result}[_key=${item._key}]`
+    } else {
+      result = `${result}.${item}`
+    }
+  })
+  return result
 }
 
 function stringDiffComponent(from, to) {
@@ -35,10 +48,11 @@ const visualizers = {
     editText: {
       component: props => {
         const {operation, path, from, to} = props.item
-        const field = path.join('.')
+
         return (
           <li>
-            {field} [{operation}] {operation === 'editText' && stringDiffComponent(from, to)}
+            {fullPath(path)} [{operation}]{' '}
+            {operation === 'editText' && stringDiffComponent(from, to)}
           </li>
         )
       },
@@ -51,10 +65,10 @@ const visualizers = {
     edit: {
       component: props => {
         const {operation, path, from, to} = props.item
-        const field = path.join('.')
+
         return (
           <li>
-            {field} [{operation}] {`${from} --> ${to}`}
+            {fullPath(path)} [{operation}] {`${from} --> ${to}`}
           </li>
         )
       }
@@ -62,10 +76,10 @@ const visualizers = {
     add: {
       component: props => {
         const {operation, path, to} = props.item
-        const field = path.join('.')
+
         return (
           <li>
-            {field} [{operation}] {`--> ${to}`}
+            {fullPath(path)} [{operation}] {`--> ${to}`}
           </li>
         )
       }
@@ -76,10 +90,11 @@ const visualizers = {
     editText: {
       component: props => {
         const {operation, path, from, to} = props.item
-        const field = path.slice(-1)
+
         return (
           <li>
-            {field} [{operation}] {operation === 'editText' && stringDiffComponent(from, to)}
+            {fullPath(path)} [{operation}]{' '}
+            {operation === 'editText' && stringDiffComponent(from, to)}
           </li>
         )
       }
