@@ -1,6 +1,7 @@
 /* eslint-disable react/display-name */
 /* eslint-disable react/no-multi-comp, react/prop-types */
 import React from 'react'
+import {isObject} from 'lodash'
 //import schema from 'part:@sanity/base/schema'
 
 function resolveIterator(item, visualizers) {
@@ -28,14 +29,14 @@ function resolveVisualizer(item, visualizers, documentType) {
   // TODO: Remove and incorporate into `defaultVisualizers.js`
   const component = props => {
     const {operation, path, from, to} = props.item
-    const field = path.slice(-1)
+    const field = path.join('.')
 
     let description = ''
     if (['edit', 'editText'].includes(operation)) {
       description = `${from} --> ${to}`
     }
     if (operation === 'add') {
-      description = `--> ${to}`
+      description = `--> ${isObject(to) ? JSON.stringify(to, null, 2) : to}`
     }
     return (
       <li>

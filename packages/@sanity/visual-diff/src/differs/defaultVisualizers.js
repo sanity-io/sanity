@@ -35,7 +35,7 @@ const visualizers = {
     editText: {
       component: props => {
         const {operation, path, from, to} = props.item
-        const field = path.slice(-1)
+        const field = path.join('.')
         return (
           <li>
             {field} [{operation}] {operation === 'editText' && stringDiffComponent(from, to)}
@@ -51,7 +51,7 @@ const visualizers = {
     edit: {
       component: props => {
         const {operation, path, from, to} = props.item
-        const field = path.slice(-1)
+        const field = path.join('.')
         return (
           <li>
             {field} [{operation}] {`${from} --> ${to}`}
@@ -62,7 +62,7 @@ const visualizers = {
     add: {
       component: props => {
         const {operation, path, to} = props.item
-        const field = path.slice(-1)
+        const field = path.join('.')
         return (
           <li>
             {field} [{operation}] {`--> ${to}`}
