@@ -11,8 +11,8 @@ export const StringInput = React.memo(
     }, [])
 
     const onSelect = React.useCallback(event => {
-      // const {selectionStart, selectionEnd, selectionDirection} = event.currentTarget
-      // props.onFocus([selectionDirection === 'backward' ? selectionStart : selectionEnd])
+      const {selectionStart, selectionEnd, selectionDirection} = event.currentTarget
+      props.onFocus([selectionDirection === 'backward' ? selectionStart : selectionEnd])
     }, [])
 
     const onFocus = React.useCallback(event => {
@@ -20,18 +20,15 @@ export const StringInput = React.memo(
     }, [])
 
     return (
-      <div style={{position: 'relative'}}>
-        <div style={{float: 'right', width: '100%'}}>
-          <PresenceTrackerBox />
-        </div>
-        {/*<PresenceMarkerList presence={props.presence} />*/}
+      <div>
+        <PresenceTrackerBox />
         <label>{props.type.title}</label>
         <input
           type="string"
           value={props.value || ''}
           onChange={onChange}
-          // onSelect={onSelect}
-          onFocus={onFocus}
+          onSelect={onSelect}
+          // onFocus={onFocus}
           ref={ref}
         />
       </div>

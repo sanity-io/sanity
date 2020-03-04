@@ -5,7 +5,7 @@ import {share, mergeMap, filter, tap} from 'rxjs/operators'
 import {Subject, Observable} from 'rxjs'
 import {fromEvent} from 'rxjs'
 
-export const scroll$ = fromEvent(window, 'scroll', {passive: true, capture: true}).pipe(share())
+// export const scroll$ = fromEvent(window, 'scroll', {passive: true, capture: true}).pipe(share())
 
 const createResizeObserver = () => {
   const entries$ = new Subject()
@@ -13,7 +13,7 @@ const createResizeObserver = () => {
     entries.forEach(entry => entries$.next(entry))
   })
   return element => {
-    return new Observable((subscriber) => {
+    return new Observable(subscriber => {
       resizeObserver.observe(element)
       subscriber.next()
       return () => {
@@ -24,7 +24,7 @@ const createResizeObserver = () => {
     }).pipe(
       mergeMap(() => entries$.asObservable()),
       tap(console.log),
-      filter(entry => entry.target === element),
+      filter(entry => entry.target === element)
     )
   }
 }
@@ -49,16 +49,23 @@ export const PresenceTrackerBox = React.memo(function PresenceTrackerBox(props) 
       context.dispatch({
         type: 'update',
         key,
-        rect: {top: rect.top, left: rect.left, width: rect.width, height: rect.height}
+        rect: {
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height,
+          bottom: rect.bottom,
+          right: rect.right
+        }
       })
     }
   })
-
-  React.useEffect(() => {
-    const subscription = scroll$.subscribe(dispatchUpdate)
-    return () => subscription.unsubscribe()
-  })
-
+  //
+  // React.useEffect(() => {
+  //   const subscription = scroll$.subscribe(dispatchUpdate)
+  //   return () => subscription.unsubscribe()
+  // })
+  //
   React.useEffect(() => {
     if (ref.current) {
       console.log('listening for resize')
@@ -75,5 +82,9 @@ export const PresenceTrackerBox = React.memo(function PresenceTrackerBox(props) 
   React.useEffect(() => {
     dispatchUpdate()
   })
-  return <div ref={ref}>Hello I'm a box</div>
+  return (
+    <div ref={ref} style={{border: '1px solid green'}}>
+      Rectangle ({key})
+    </div>
+  )
 }, shallowEquals)

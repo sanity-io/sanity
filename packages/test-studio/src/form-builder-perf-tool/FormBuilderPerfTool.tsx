@@ -11,6 +11,7 @@ import {ObjectInput} from './inputs/ObjectInput'
 import usePresence from './usePresence'
 import {ArrayInput} from './inputs/ArrayInput'
 import {PositionTracker} from './components/PositionTracker'
+import {PositionsOverlay} from './components/PositionsOverlay'
 const preventDefault = e => e.preventDefault()
 
 function memoize(fn) {
@@ -81,23 +82,26 @@ export const FormBuilderPerfTool = props => {
       </pre>
       <button onClick={() => save(lsKey, value)}>Save to localstorage</button>
 
-      <FormBuilderContext resolveInputComponent={resolveInput}>
-        <PositionTracker>
+      <PositionTracker>
+        <div style={{position: 'relative', overflow: 'auto'}}>
+          <PositionsOverlay />
           <form onSubmit={preventDefault}>
-            <FormBuilderInput
-              schema={schema}
-              value={value}
-              presence={presenceInfo}
-              level={0}
-              type={type}
-              onBlur={() => {}}
-              onFocus={onFocus}
-              focusPath={focusPath}
-              onChange={onChange}
-            />
+            <FormBuilderContext resolveInputComponent={resolveInput}>
+              <FormBuilderInput
+                schema={schema}
+                value={value}
+                presence={presenceInfo}
+                level={0}
+                type={type}
+                onBlur={() => {}}
+                onFocus={onFocus}
+                focusPath={focusPath}
+                onChange={onChange}
+              />
+            </FormBuilderContext>
           </form>
-        </PositionTracker>
-      </FormBuilderContext>
+        </div>
+      </PositionTracker>
     </>
   )
 }
