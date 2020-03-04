@@ -13,44 +13,57 @@ function extractText(blockContent) {
 
 const summarizers = {
   block: {
-    resolve: (a, b) => {
+    resolve: (a, b, _) => {
       const aText = extractText(a)
       const bText = extractText(b)
+
       if (aText !== bText) {
-        return [
+        return {
+          fields: [],
+          changes: [
+            {
+              op: 'editText',
+              type: 'block',
+              from: aText,
+              to: bText
+            }
+          ]
+        }
+      }
+      return {
+        fields: [],
+        changes: []
+      }
+    }
+  },
+
+  string: {
+    resolve: (a, b, _) => {
+      return {
+        fields: [],
+        changes: [
           {
             op: 'editText',
-            type: 'block',
-            from: aText,
-            to: bText
+            type: 'string',
+            from: a,
+            to: b
           }
         ]
       }
-      return []
     }
   },
-  string: {
-    resolve: (a, b) => {
-      return [
-        {
-          op: 'editText',
-          type: 'string',
-          from: a,
-          to: b
-        }
-      ]
-    }
-  },
+
   image: {
-    resolve: (a, b) => {
+    resolve: (a, b, _) => {
+      const changes = []
       if (!a.asset && b.asset) {
-        return [{op: 'addImage', field: 'asset', value: b.asset._ref}]
+        changes.push({op: 'addImage', field: 'asset', value: b.asset._ref})
       } else if (a.asset && !b.asset) {
-        return [{op: 'removeImage', from: a.asset._ref}]
+        changes.push({op: 'removeImage', from: a.asset._ref})
       } else if (a.asset && b.asset && a.asset._ref !== b.asset._ref) {
-        return [{op: 'replaceImage', from: a.asset._ref, to: b.asset._ref}]
+        changes.push({op: 'replaceImage', from: a.asset._ref, to: b.asset._ref})
       }
-      return null
+      return changes.length ? {fields: ['asset'], changes} : null
     }
   }
 }

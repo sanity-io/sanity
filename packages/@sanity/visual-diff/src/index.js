@@ -4,7 +4,7 @@ import React from 'react'
 import JSONPretty from 'react-json-pretty'
 import monikai from 'react-json-pretty/dist/monikai'
 import getDiffers from './differs/resolver'
-import createDiffSummary from './differs/bateson'
+import getChangeSummaries from './differs/bateson'
 import Visualizer from './components/Visualizer'
 
 const {summarizers, visualizers} = getDiffers()
@@ -27,7 +27,7 @@ const VisualDiff = props => {
     return <div>Need two documents to compare</div>
   }
 
-  const diff = createDiffSummary(original, modified, {summarizers})
+  const diff = getChangeSummaries(original, modified, {summarizers})
 
   return (
     <div>

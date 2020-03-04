@@ -247,17 +247,16 @@ Hook up to the Mendoza stuff to enable this
 
 * What happens if image summarizer is defined, but I, as a user, don't want to take control over other fields inside that type?
 * How does the custom summarizer communicate which keys/types it can't handle?
-* Should multiple summarizers be run based on how specific it is?
-    Example: array of strings vs. array of strings where layout is tags
-    Who wins?
-    How do we know what is specific or not?
-* Summarizer signature: (schema type, a, b)
-    * How do we give the option to specify a summarizer for "array of string where layout is tags"?
+* (How) do we handle multiple summarizers for the same type?
+  * --> specificity
 * [x] Rename differs to visualizers
-* The hierarchy can be contructed when a flattened array is used, as we can traverse the schema
+* [x] The hierarchy can be contructed when a flattened array is used, as we can traverse the schema
 * Reverting
     * If not revert function (receives a and b) defined for the type, use default revert based on path
 * How do we handle data which doesn't match the current schema? E.g. docA has a different (typically unmigrated data) structure than docB
+* Should we support that a summarizer can return `fields: ['key.otherKey']`?
+* apply path key to all summaries
+  * agree on summary shape
 
 ## Notes
 

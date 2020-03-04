@@ -31,19 +31,12 @@ function sanityType(value) {
   return typeOf(value)
 }
 
-function summarizerExistForTypeOperation(a, b, type, path, summarizers) {
+function resolveSummarizerForType(a, b, type, path, summarizers) {
   const summarizerForTypeOperation = summarizers[type]
-  if (summarizerForTypeOperation) {
-    const summary = summarizerForTypeOperation.resolve(a, b)
-    if (summary) {
-      return summary
-    }
-  }
-
-  return null
+  return summarizerForTypeOperation ? summarizerForTypeOperation.resolve(a, b, path) : null
 }
 
-function diff(a, b, path, options) {
+function accumulateChangeSummaries(a, b, path, options) {
   if (!isSameType(a, b)) {
     return [{op: 'replace', from: a, to: b}]
   }
@@ -54,7 +47,7 @@ function diff(a, b, path, options) {
     case 'object': {
       const result = []
 
-      const summarizerForTypeOperation = summarizerExistForTypeOperation(
+      const summarizerForType = resolveSummarizerForType(
         a,
         b,
         sanityType(a),
@@ -62,28 +55,37 @@ function diff(a, b, path, options) {
         options.summarizers
       )
 
-      if (summarizerForTypeOperation) {
-        //  There might be a differ for this type, but maybe not for every operation imaginable
-        return summarizerForTypeOperation
+      let ignoreFields = options.ignoreFields || []
+
+      if (summarizerForType && summarizerForType.changes) {
+        ignoreFields = summarizerForType.fields.concat(ignoreFields)
+        if (summarizerForType.fields.length === 0) {
+          // An empty fields array means the whole thing has been handled
+          return summarizerForType.changes
+        }
+        result.concat(summarizerForType.changes)
       }
 
       const [aFields, bFields] = [
-        difference(Object.keys(a), options.ignoreFields || []),
-        difference(Object.keys(b), options.ignoreFields || [])
+        difference(Object.keys(a), ignoreFields),
+        difference(Object.keys(b), ignoreFields)
       ]
+
       const removed = difference(aFields, bFields)
       removed.forEach(field => {
         result.push({op: 'remove', field})
       })
+
       const added = difference(bFields, aFields)
       added.forEach(field => {
         result.push({op: 'add', field, value: b[field]})
       })
+
       const kept = intersection(aFields, bFields)
       kept.forEach(field => {
         const fieldA = a[field]
         const fieldB = b[field]
-        const changes = diff(fieldA, fieldB, path.concat(field), options)
+        const changes = accumulateChangeSummaries(fieldA, fieldB, path.concat(field), options)
         if (changes.length > 0) {
           result.push(changes)
         }
@@ -108,7 +110,7 @@ function diff(a, b, path, options) {
       intersection(aKeys, bKeys).forEach(key => {
         const elementA = aElements[key]
         const elementB = bElements[key]
-        const changes = diff(elementA, elementB, path.concat(key), options)
+        const changes = accumulateChangeSummaries(elementA, elementB, path.concat(key), options)
         if (changes.length > 0) {
           result.push(changes)
         }
@@ -129,21 +131,24 @@ function diff(a, b, path, options) {
 
     default:
       if (a !== b) {
-        const summarizerForType = options.summarizers[typeOf(a)]
-        if (summarizerForType) {
-          const summary = summarizerForType.resolve(a, b)
-          if (summary) {
-            return summary
-          }
-        }
-        return [{op: 'edit', from: a, to: b}]
+        const summarizerForType = resolveSummarizerForType(
+          a,
+          b,
+          sanityType(a),
+          path,
+          options.summarizers
+        )
+
+        return summarizerForType && summarizerForType.changes
+          ? summarizerForType.changes
+          : [{op: 'edit', from: a, to: b}]
       }
       return []
   }
 }
 
-export default function bateson(a, b, opts = {}) {
+export default function changeSummaries(a, b, opts = {}) {
   const options = {...defaultOptions, ...opts}
-  const nestedChangeSummaries = diff(a, b, [], options)
-  return flattenDeep(nestedChangeSummaries)
+  const nestedSummaries = accumulateChangeSummaries(a, b, [], options)
+  return flattenDeep(nestedSummaries)
 }
