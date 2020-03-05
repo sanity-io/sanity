@@ -16,7 +16,7 @@ const getProjectEnv = projectPath => {
 
 const COMPILE_START = /webpack building/
 const COMPILE_DONE = /webpack built/
-exports.runStudio = function runStudio(projectPath, port) {
+exports.runSanityStart = function runSanityStart(projectPath, port) {
   const proc = childProcess.spawn('sanity', ['start', '--host', '0.0.0.0', '--port', port], {
     shell: isWindows,
     cwd: projectPath,
