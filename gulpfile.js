@@ -1,7 +1,5 @@
 /* eslint-disable import/no-commonjs, import/no-unassigned-import, max-nested-callbacks */
 
-const {runStudio} = require('./scripts/utils/runStudio')
-
 const {src, dest, watch, parallel, series} = require('gulp')
 const del = require('del')
 const path = require('path')
@@ -9,98 +7,123 @@ const changed = require('gulp-changed')
 const ts = require('gulp-typescript')
 const filter = require('gulp-filter')
 const log = require('fancy-log')
+const chalk = require('chalk')
 const fs = require('fs')
 const babel = require('gulp-babel')
 const through = require('through2')
 
 const {getPackagePaths} = require('./scripts/utils/getPackagePaths')
+const {runSanityStart} = require('./scripts/utils/runSanityStart')
 
-const DESTDIR = 'lib'
+const SRC_DIR = 'src'
+const DEST_DIR = 'lib'
 
-const IGNORE = /packages\/.*-studio/
-const PACKAGE_PATHS = getPackagePaths().filter(pkgPath => !IGNORE.test(pkgPath))
+// Match packages that doesn't follow the src/lib convention
+// or packages that does their own build (e.g. studios)
+const IGNORE_BUILD = /packages\/.*-studio/
+const PACKAGE_PATHS = getPackagePaths().filter(pkgPath => !IGNORE_BUILD.test(pkgPath))
+
+const withDisplayName = (name, fn) => {
+  fn.displayName = name
+  return fn
+}
+
+const TASK_INFO = {
+  babel: {title: 'Babel', color: chalk.yellowBright},
+  dts: {title: 'TypeScript (d.ts)', color: chalk.blueBright},
+  assets: {title: 'Assets (copy)', color: chalk.greenBright},
+  watch: {title: 'Watch', color: chalk.cyanBright},
+  _unknown: {title: 'Unknown', color: chalk.white}
+}
+
+const compileTaskName = (taskType, packagePath, extra = '') => {
+  const info = TASK_INFO[taskType] || TASK_INFO._unknown
+  return `${info.color(info.title)} → ${path.relative('packages', packagePath)}${
+    extra ? ` (${chalk.grey(extra)})` : ''
+  }`
+}
 
 function buildJavaScript(packageDir) {
-  function builder() {
-    return src(`src/**/*.{js,ts,tsx}`, {cwd: packageDir})
-      .pipe(changed(DESTDIR, {cwd: packageDir}))
+  return withDisplayName(compileTaskName('babel', packageDir), () =>
+    src(`${SRC_DIR}/**/*.{js,ts,tsx}`, {cwd: packageDir})
+      .pipe(
+        changed(DEST_DIR, {
+          cwd: packageDir,
+          transformPath: orgPath => orgPath.replace(/\.tsx?$/, '.js')
+        })
+      )
       .pipe(babel())
-      .pipe(dest(DESTDIR, {cwd: packageDir}))
-  }
-  Object.defineProperty(builder, 'name', {
-    value: `buildJS[${packageDir}]`
-  })
-  return builder
+      .pipe(dest(DEST_DIR, {cwd: packageDir}))
+  )
 }
 
 function copyAssets(packageDir) {
-  function builder() {
-    return src(`src/**/*`, {cwd: packageDir})
+  return withDisplayName(compileTaskName('assets', packageDir), () =>
+    src(`${SRC_DIR}/**/*`, {cwd: packageDir})
       .pipe(filter(['**/*.*', '!**/*.js', '!**/*.ts', '!**/*.tsx']))
-      .pipe(changed(DESTDIR, {cwd: packageDir}))
-      .pipe(dest(DESTDIR, {cwd: packageDir}))
-  }
-  Object.defineProperty(builder, 'name', {
-    value: `copyAssets[${packageDir}]`
-  })
-  return builder
-}
-
-function watchAll(packageDir) {
-  const t = () =>
-    watch(
-      [`src/**/*`],
-      {cwd: packageDir},
-      parallel(
-        [buildJavaScript(packageDir), buildTypeScript(packageDir), copyAssets(packageDir)].filter(
-          Boolean
-        )
-      )
-    )
-  Object.defineProperty(t, 'name', {
-    value: `watch[${packageDir}]`
-  })
-  return t
+      .pipe(changed(DEST_DIR, {cwd: packageDir}))
+      .pipe(dest(DEST_DIR, {cwd: packageDir}))
+  )
 }
 
 function buildTypeScript(packageDir) {
   const tsConfigPath = path.join(packageDir, 'tsconfig.json')
-  const isTS = fs.existsSync(tsConfigPath)
-  if (!isTS) {
-    return null
+  const isTSProject = fs.existsSync(tsConfigPath)
+  if (!isTSProject) {
+    return withDisplayName(compileTaskName('dts', packageDir, 'noop'), cb => cb())
   }
   const project = ts.createProject(tsConfigPath)
-  const task = () => {
+  return withDisplayName(compileTaskName('dts', packageDir), () => {
     const compilation = project.src().pipe(project())
-    return compilation.dts.pipe(dest(project.options.outDir))
-  }
-
-  Object.defineProperty(task, 'name', {
-    value: `buildTS[${packageDir}]`
+    return compilation.dts
+      .pipe(
+        changed(DEST_DIR, {
+          cwd: packageDir
+        })
+      )
+      .pipe(dest(project.options.outDir))
   })
-  return task
 }
 
-const build = parallel(...PACKAGE_PATHS.map(buildJavaScript), ...PACKAGE_PATHS.map(copyAssets))
+function buildPackage(packageDir) {
+  return parallel(buildJavaScript(packageDir), buildTypeScript(packageDir), copyAssets(packageDir))
+}
 
-const watchOnly = parallel(...PACKAGE_PATHS.map(watchAll))
+function watchPackage(packageDir) {
+  return withDisplayName(compileTaskName('watch', packageDir), () =>
+    watch([`${SRC_DIR}/**/*`], {cwd: packageDir}, buildPackage(packageDir))
+  )
+}
 
-const buildTS = parallel(...PACKAGE_PATHS.map(buildTypeScript).filter(Boolean))
+const buildAll = parallel(PACKAGE_PATHS.map(buildPackage))
+const watchAll = parallel(PACKAGE_PATHS.map(watchPackage))
 
-exports.buildTS = buildTS
+function studioTask(name, port) {
+  return series(
+    buildAll,
+    parallel(watchAll, function runStudio() {
+      log(`Starting ${name}…`)
+      runSanityStart(path.join(__dirname, 'packages', name), port).pipe(
+        through((data, enc, cb) => {
+          log(data.toString())
+          cb()
+        })
+      )
+    })
+  )
+}
 
-exports.build = build
+;[
+  ['test-studio', '3333'],
+  ['movies-studio', '3334'],
+  ['example-studio', '3335'],
+  ['blog-studio', '3336'],
+  ['ecommerce-studio', '3337'],
+  ['clean-studio', '3338'],
+  ['storybook', '9002']
+].forEach(([name, port]) => {
+  exports[name] = studioTask(name, port)
+})
 
-exports['test-studio'] = series(
-  build,
-  parallel(watchOnly, function runStudio_() {
-    log('Starting studio…')
-    runStudio(path.join(__dirname, 'packages', 'test-studio'), 3333).pipe(
-      through((data, enc, cb) => {
-        log(data.toString())
-        cb()
-      })
-    )
-  })
-)
-exports.clean = () => del(PACKAGE_PATHS.map(p => path.join(p, 'lib')))
+exports.build = buildAll
+exports.clean = () => del(PACKAGE_PATHS.map(pth => path.join(pth, DEST_DIR)))
