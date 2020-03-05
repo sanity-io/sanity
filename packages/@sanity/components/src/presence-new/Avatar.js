@@ -1,6 +1,7 @@
 import React from 'react'
 import userStore from 'part:@sanity/base/user'
 import PropTypes from 'prop-types'
+import colorHasher from '../presence/colorHasher'
 import styles from './styles/Avatar.css'
 
 // type Props = {
@@ -30,7 +31,12 @@ export default function Avatar({id, position, scrollToField}) {
   }
 
   return (
-    <div className={styles.root} onClick={handleScrollToField} data-dock={position}>
+    <div
+      className={styles.root}
+      onClick={handleScrollToField}
+      data-dock={position}
+      style={{color: colorHasher(id)}}
+    >
       <div className={styles.avatar} data-status={status}>
         <div className={styles.inner}>
           <div className={styles.avatarImage}>
