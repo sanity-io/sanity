@@ -8,6 +8,13 @@ interface Field {
   name: string
 }
 
+interface PreviewConfig {
+  select?: {
+    [key: string]: string
+  }
+  prepare?: Function
+}
+
 function validateFieldName(name): Array<any> {
   if (typeof name !== 'string') {
     return [
@@ -107,8 +114,52 @@ export function validateFields(fields: any, options = {allowEmpty: false}) {
   return problems
 }
 
+export function validatePreview(preview: PreviewConfig) {
+  if (!isPlainObject(preview)) {
+    return [error(`The "preview" property must be an object, instead saw "${typeof preview}"`)]
+  }
+
+  if (typeof preview.prepare !== 'undefined' && typeof preview.prepare !== 'function') {
+    return [
+      error(
+        `The "preview.prepare" property must be a function, instead saw "${typeof preview.prepare}"`
+      )
+    ]
+  }
+
+  if (!preview.select) {
+    return []
+  }
+
+  if (!isPlainObject(preview.select)) {
+    return [
+      error(
+        `The "preview.select" property must be an object, instead saw "${typeof preview.prepare}"`
+      )
+    ]
+  }
+
+  return Object.keys(preview.select).reduce((errs, key) => {
+    return typeof preview.select[key] === 'string'
+      ? errs
+      : errs.concat(
+          error(
+            `The key "${key}" of "preview.select" must be a string, instead saw "${typeof preview
+              .select[key]}"`
+          )
+        )
+  }, [])
+}
+
 export default (typeDef, visitorContext) => {
-  const problems = validateFields(typeDef.fields)
+  let problems = validateFields(typeDef.fields)
+
+  let preview = typeDef.preview
+  if (preview) {
+    const previewErrors = validatePreview(typeDef.preview)
+    problems = problems.concat(previewErrors)
+    preview = previewErrors.some(err => err.severity === 'error') ? {} : preview
+  }
 
   if (typeDef.type !== 'document' && typeof typeDef.initialValue !== 'undefined') {
     problems.push(
@@ -118,6 +169,7 @@ export default (typeDef, visitorContext) => {
 
   return {
     ...typeDef,
+    preview,
     fields: (Array.isArray(typeDef.fields) ? typeDef.fields : []).map((field, index) => {
       const {name, ...fieldTypeDef} = field
       const {_problems, ...fieldType} = visitorContext.visit(fieldTypeDef, index)
