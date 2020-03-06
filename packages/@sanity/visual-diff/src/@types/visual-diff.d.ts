@@ -1,0 +1,3 @@
+// TODO: More defined types...
+declare module 'part:@sanity/visual-diff/summarizers?'
+declare module 'part:@sanity/visual-diff/visualizers?'

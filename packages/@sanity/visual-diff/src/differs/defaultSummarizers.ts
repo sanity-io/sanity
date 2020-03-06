@@ -1,19 +1,21 @@
 /* eslint-disable id-length */
 
+import {Summarizers, Summary} from './bateson'
+
 // If the differ takes responsibility for the change in question
 // --> return an array of summaries, empty array means no summary needed
 // --> return null to "drop the ball" and rely on a default summary to be created
 
-function extractText(blockContent) {
+function extractText(blockContent): string {
   return blockContent.children
     .map(item => (item._type == 'span' ? item.text : null))
     .filter(Boolean)
     .join('')
 }
 
-const summarizers = {
+const summarizers: Summarizers = {
   block: {
-    resolve: (a, b, _) => {
+    resolve: (a, b, _): Summary => {
       const aText = extractText(a)
       const bText = extractText(b)
 
@@ -23,7 +25,7 @@ const summarizers = {
           changes: [
             {
               operation: 'editText',
-              type: 'block',
+              // type: 'block',
               from: aText,
               to: bText
             }
@@ -38,7 +40,7 @@ const summarizers = {
   },
 
   string: {
-    resolve: (a, b, _) => {
+    resolve: (a, b, _): Summary => {
       return {
         fields: [],
         changes: [
@@ -53,7 +55,7 @@ const summarizers = {
   },
 
   image: {
-    resolve: (a, b, _) => {
+    resolve: (a, b, _): Summary => {
       const changes = []
       if (!a.asset && b.asset) {
         changes.push({operation: 'addImage', to: b.asset._ref})

@@ -4,18 +4,18 @@ import difference from 'lodash/difference'
 import intersection from 'lodash/intersection'
 import flattenDeep from 'lodash/flattenDeep'
 
-const defaultOptions = {
+const defaultOptions: BatesonOptions = {
   ignoreFields: ['_id', '_updatedAt', '_createdAt', '_rev', '_weak']
 }
 
-function typeOf(value) {
+function typeOf(value): string {
   if (Array.isArray(value)) return 'array'
   if (typeof value === 'object') return 'object'
   if (value === null || value === undefined) return 'null'
   return typeof value
 }
 
-export function isSameType(a, b) {
+export function isSameType(a: any, b: any): boolean {
   if (a === null && b === null) return true
   if (a === null && b !== null) return false
   if (a !== null && b === null) return false
@@ -24,12 +24,12 @@ export function isSameType(a, b) {
   return true
 }
 
-function sanityType(value) {
+function sanityType(value): string {
   if (value._type) return value._type
   return typeOf(value)
 }
 
-function accumulateChangeSummaries(a, b, path, options) {
+function accumulateChangeSummaries(a: any, b: any, path: string[], options: BatesonOptions): Operation[] {
   if (!isSameType(a, b)) {
     return [{operation: 'replace', from: a, to: b}]
   }
@@ -50,6 +50,7 @@ function accumulateChangeSummaries(a, b, path, options) {
           // An empty fields array means the whole thing has been handled
           return summary.changes.map(change => ({
             ...change,
+            // TODO: Decide on path format
             path
           }))
         }
@@ -135,19 +136,47 @@ function accumulateChangeSummaries(a, b, path, options) {
 
         if (summary && summary.changes) {
           return summary.changes.map(change => {
+            // TODO: Use another type to specify Operation with path field?
             change.path = path
             return change
           })
         }
 
+        // TODO: Use another type to specify Operation with path field?
         return [{operation: 'edit', path, from: a, to: b}]
       }
       return []
   }
 }
 
-export default function changeSummaries(a, b, opts = {}) {
+export default function changeSummaries(a: any, b: any, opts: BatesonOptions = {}) {
   const options = {...defaultOptions, ...opts}
   const nestedSummaries = accumulateChangeSummaries(a, b, [], options)
   return flattenDeep(nestedSummaries)
 }
+
+export interface BatesonOptions {
+  summarizers?: Summarizers
+  ignoreFields?: string[]
+}
+
+export interface Summarizers {
+  [typeToSummarize: string]: Summarizer
+}
+
+export interface Summarizer {
+  resolve(a: any, b: any, path: string[]): Summary
+}
+
+export interface Summary {
+  fields: string[]
+  changes: Operation[]
+}
+
+export interface Operation {
+  operation: string
+  path?: string // TODO: Should be required, define another interface with this one?
+  from?: any
+  to?: any
+}
+

@@ -13,7 +13,7 @@ const colors = {
   removed: 'red'
 }
 
-function fullPath(path) {
+function fullPath(path: string[]) {
   let result = ''
   path.forEach(item => {
     if (isObject(item)) {
