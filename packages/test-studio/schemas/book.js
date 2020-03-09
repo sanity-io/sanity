@@ -57,13 +57,39 @@ export default {
       description: 'ISBN-number of the book. Not shown in studio.',
       type: 'number',
       hidden: true
+    },
+    {
+      name: 'reviews',
+      title: 'Reviews',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          name: 'review',
+          fields: [
+            {
+              name: 'title',
+              title: 'Title',
+              type: 'string'
+            },
+            {
+              name: 'body',
+              title: 'Body',
+              type: 'text'
+            }
+          ]
+        }
+      ]
     }
   ],
   orderings: [
     {
       title: 'Title',
       name: 'title',
-      by: [{field: 'title', direction: 'asc'}, {field: 'publicationYear', direction: 'asc'}]
+      by: [
+        {field: 'title', direction: 'asc'},
+        {field: 'publicationYear', direction: 'asc'}
+      ]
     },
     {
       title: 'Author name',
@@ -83,7 +109,10 @@ export default {
     {
       title: 'Swedish title',
       name: 'swedishTitle',
-      by: [{field: 'translations.se', direction: 'asc'}, {field: 'title', direction: 'asc'}]
+      by: [
+        {field: 'translations.se', direction: 'asc'},
+        {field: 'title', direction: 'asc'}
+      ]
     }
   ],
   preview: {
