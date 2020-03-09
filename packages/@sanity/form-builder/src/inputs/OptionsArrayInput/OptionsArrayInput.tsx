@@ -49,7 +49,7 @@ type OptionsArrayInputProps = {
   readOnly?: boolean
   onChange?: (...args: any[]) => any
   presence: any
-  onFocus: () => void
+  onFocus: (path: any[]) => void
 }
 export default class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProps, {}> {
   handleChange = (isChecked, optionValue) => {

@@ -6,9 +6,8 @@ import {createResizeObserver} from './resizeObserver'
 import {Overlay} from './Overlay'
 import {Context} from './context'
 type ResizeObserverEntry = any
-function rectWithTarget(key, entry: ResizeObserverEntry) {
+function rectWithTarget(key, children, entry: ResizeObserverEntry) {
   const {target, contentRect} = entry
-
   return {
     key: key,
     contentRect: {
@@ -19,6 +18,7 @@ function rectWithTarget(key, entry: ResizeObserverEntry) {
       bottom: contentRect.bottom,
       right: contentRect.right
     },
+    children,
     target
   }
 }
@@ -29,6 +29,7 @@ const withOffsets = (box, parent) => {
   const parentRect = parent.getBoundingClientRect()
   return {
     key: box.key,
+    children: box.children,
     rect: {
       top: targetRect.top - parentRect.top,
       left: targetRect.left - parentRect.left,
@@ -65,7 +66,8 @@ export const Tracker = React.memo(function Tracker(props: any) {
         curr.forEach(item => res.set(item.key, item))
         return res
       }, new Map()),
-      map(set => [...set.values()])
+      map(set => [...set.values()]),
+      tap(console.log)
     )
   }, [])
 
@@ -80,7 +82,7 @@ export const Tracker = React.memo(function Tracker(props: any) {
               [event.key]: {
                 key: event.key,
                 dispose: resizeObserver.observe(event.element, entry =>
-                  rectWithTarget(event.key, entry)
+                  rectWithTarget(event.key, event.children, entry)
                 )
               }
             }

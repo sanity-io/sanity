@@ -20,8 +20,9 @@ import * as PathUtils from '@sanity/util/paths'
 import ConfirmButton from './ConfirmButton'
 import styles from './styles/ItemValue.css'
 import {ArrayType, ItemValue} from './typedefs'
-import PresenceDock from 'part:@sanity/components/presence/presence-dock'
+import {Tracker} from '@sanity/overlayer'
 import PresenceContainer from 'part:@sanity/components/presence/presence-container'
+import {PresenceTransitionRenderer} from '../../sanity/PresenceTransitionRenderer'
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
@@ -150,7 +151,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     const childMarkers = markers.filter(marker => marker.path.length > 1)
     const childPresence = presence.filter(presence => presence.path.length > 1)
     const content = (
-      <PresenceDock presence={childPresence}>
+      <Tracker renderItemsWith={PresenceTransitionRenderer}>
         <FormBuilderInput
           type={memberType}
           level={0}
@@ -165,7 +166,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
           filterField={filterField}
           presence={childPresence}
         />
-      </PresenceDock>
+      </Tracker>
     )
     // test focus issues by uncommenting the next line
     // return content

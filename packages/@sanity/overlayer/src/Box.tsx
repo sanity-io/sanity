@@ -7,12 +7,15 @@ export const Box = React.memo(function PresenceTrackerBox(props: any) {
   const context = React.useContext(Context)
 
   React.useEffect(() => {
-    context.dispatch({type: 'mount', key: props.id, element: ref.current})
+    context.dispatch({type: 'mount', key: props.id, element: ref.current, children: props.children})
     return () => {
       context.dispatch({type: 'unmount', key: props.id})
     }
   }, [])
 
-  React.useEffect(() => {}, [])
-  return <span ref={ref}>{props.children}</span>
+  return (
+    <span ref={ref} style={{visibility: 'hidden'}}>
+      {props.children}
+    </span>
+  )
 }, shallowEquals)
