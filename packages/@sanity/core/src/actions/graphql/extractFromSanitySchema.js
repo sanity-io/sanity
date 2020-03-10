@@ -322,8 +322,11 @@ function extractFromSanitySchema(sanitySchema) {
 
       const interfaces = allCandidatesAreDocuments ? ['Document'] : undefined
       const refs = flattened.filter(type => type.isReference).map(ref => ref.type)
-      const possibleTypes = flattened.map(type => (type.isReference ? type.type : type.name)).sort()
-
+      const inlineObjs = flattened.filter(type => !type.isReference).map(ref => ref.name)
+      // Here we remove duplicates, as they might appear twice due to in-line usage of types as well as references
+      const possibleTypes = [
+        ...new Set(flattened.map(type => (type.isReference ? type.type : type.name)))
+      ].sort()
       const name = possibleTypes.join('Or')
 
       if (!unionTypes.some(item => item.name === name)) {
@@ -336,7 +339,8 @@ function extractFromSanitySchema(sanitySchema) {
       }
 
       const references = refs.length > 0 ? refs : undefined
-      return {type: name, references}
+      const inlineObjects = inlineObjs.length > 0 ? inlineObjs : undefined
+      return {type: name, references, inlineObjects}
     } finally {
       const parentIndex = unionRecursionGuards.indexOf(parent)
       if (parentIndex !== -1) {
