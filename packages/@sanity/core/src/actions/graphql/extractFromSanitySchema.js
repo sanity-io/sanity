@@ -369,31 +369,31 @@ function extractFromSanitySchema(sanitySchema) {
       {
         fieldName: '_id',
         type: 'ID',
-        isNullable: false,
+        isNullable: true,
         description: 'Document ID'
       },
       {
         fieldName: '_type',
         type: 'String',
-        isNullable: false,
+        isNullable: true,
         description: 'Document type'
       },
       {
         fieldName: '_createdAt',
         type: 'Datetime',
-        isNullable: false,
+        isNullable: true,
         description: 'Date the document was created'
       },
       {
         fieldName: '_updatedAt',
         type: 'Datetime',
-        isNullable: false,
+        isNullable: true,
         description: 'Date the document was last modified'
       },
       {
         fieldName: '_rev',
         type: 'String',
-        isNullable: false,
+        isNullable: true,
         description: 'Current document revision'
       }
     ]
