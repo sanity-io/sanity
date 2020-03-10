@@ -2,7 +2,7 @@ import customSummarizers from 'part:@sanity/visual-diff/summarizers?'
 import customVisualizers from 'part:@sanity/visual-diff/visualizers?'
 import defaultSummarizers from './defaultSummarizers'
 import defaultVisualizers from './defaultVisualizers'
-import { Summarizers } from './bateson'
+import {Summarizers} from '../@types/visual-diff'
 
 const resolver = (): DiffResolver => {
   const allSummarizers = {...defaultSummarizers, ...customSummarizers}

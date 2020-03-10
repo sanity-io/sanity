@@ -1,6 +1,6 @@
 /* eslint-disable id-length */
 
-import {Summarizers, Summary} from './bateson'
+import {Summarizers, Summary} from '../@types/visual-diff'
 
 // If the differ takes responsibility for the change in question
 // --> return an array of summaries, empty array means no summary needed

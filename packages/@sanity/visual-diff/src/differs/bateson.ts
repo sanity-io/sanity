@@ -1,5 +1,7 @@
 /* eslint-disable complexity */
 /* eslint-disable max-depth, id-length */
+import {BatesonOptions, Operation} from '../@types/visual-diff'
+
 import difference from 'lodash/difference'
 import intersection from 'lodash/intersection'
 import flattenDeep from 'lodash/flattenDeep'
@@ -154,29 +156,3 @@ export default function changeSummaries(a: any, b: any, opts: BatesonOptions = {
   const nestedSummaries = accumulateChangeSummaries(a, b, [], options)
   return flattenDeep(nestedSummaries)
 }
-
-export interface BatesonOptions {
-  summarizers?: Summarizers
-  ignoreFields?: string[]
-}
-
-export interface Summarizers {
-  [typeToSummarize: string]: Summarizer
-}
-
-export interface Summarizer {
-  resolve(a: any, b: any, path: string[]): Summary
-}
-
-export interface Summary {
-  fields: string[]
-  changes: Operation[]
-}
-
-export interface Operation {
-  operation: string
-  path?: string // TODO: Should be required, define another interface with this one?
-  from?: any
-  to?: any
-}
-
