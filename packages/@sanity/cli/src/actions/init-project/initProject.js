@@ -380,13 +380,6 @@ export default async function initSanity(args, context) {
   }
 
   async function getOrCreateDataset(opts) {
-    if (showDefaultConfigPrompt) {
-      output.print(
-        'Your content will be stored in a dataset that can be public or private, depending on\nwhether you want to query your content with or without authentication.\nThe default dataset configuration has a public dataset named "production".'
-      )
-      defaultConfig = await promptForDefaultConfig(prompt)
-    }
-
     if (opts.dataset && isCI) {
       return {datasetName: opts.dataset}
     }
@@ -434,13 +427,19 @@ export default async function initSanity(args, context) {
       return {datasetName: opts.dataset}
     }
 
+    const datasetInfo =
+      'Your content will be stored in a dataset that can be public or private, depending on\nwhether you want to query your content with or without authentication.\nThe default dataset configuration has a public dataset named "production".'
+
     if (datasets.length === 0) {
       debug('No datasets found for project, prompting for name')
+      if (showDefaultConfigPrompt) {
+        output.print(datasetInfo)
+        defaultConfig = await promptForDefaultConfig(prompt)
+      }
       const name = defaultConfig
         ? 'production'
         : await promptForDatasetName(prompt, {
-            message: 'Name of your first dataset:',
-            default: 'production'
+            message: 'Name of your first dataset:'
           })
       const aclMode = await getAclMode()
       const spinner = context.output.spinner('Creating dataset').start()
@@ -463,13 +462,22 @@ export default async function initSanity(args, context) {
     })
 
     if (selected === 'new') {
+      const existingDatasetNames = datasets.map(ds => ds.name)
       debug('User wants to create a new dataset, prompting for name')
+      if (showDefaultConfigPrompt && !existingDatasetNames.includes('production')) {
+        output.print(datasetInfo)
+        defaultConfig = await promptForDefaultConfig(prompt)
+      }
+
       const newDatasetName = defaultConfig
         ? 'production'
-        : await promptForDatasetName(prompt, {
-        message: 'Name your dataset:',
-        default: 'production'
-      })
+        : await promptForDatasetName(
+            prompt,
+            {
+              message: 'Dataset name:'
+            },
+            existingDatasetNames
+          )
       const aclMode = await getAclMode()
       const spinner = context.output.spinner('Creating dataset').start()
       await client.datasets.create(newDatasetName, {aclMode})
