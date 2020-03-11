@@ -50,7 +50,7 @@
     "react-json-pretty": "^2.2.0",
     "sanity-plugin-dashboard-widget-cats": "0.0.2",
     "sanity-plugin-dashboard-widget-document-count": "0.0.1",
-    "sanity-plugin-dashboard-widget-document-list": "0.0.3",
+    "sanity-plugin-dashboard-widget-document-list": "0.0.10",
     "sanity-plugin-mux-input": "^0.1.11"
   },
   "devDependencies": {
