@@ -115,7 +115,10 @@ export const ObjectType = {
             throw new Error('Cannot override `fields` of subtypes of "object"')
           }
           const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
-            title: extensionDef.title || subTypeDef.title,
+            title:
+              extensionDef.title ||
+              subTypeDef.title ||
+              (subTypeDef.name ? startCase(subTypeDef.name) : ''),
             type: parent
           })
           lazyGetter(current, '__experimental_search', () => parent.__experimental_search)
