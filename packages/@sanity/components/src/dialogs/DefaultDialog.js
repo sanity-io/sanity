@@ -172,13 +172,11 @@ export default class DefaultDialog extends React.PureComponent {
                   onClickOutside={isActive ? onClickOutside : undefined}
                   className={styles.inner}
                 >
-                  {!title &&
-                    onClose &&
-                    showCloseButton && (
-                      <button className={styles.closeButtonOutside} onClick={onClose} type="button">
-                        <CloseIcon color="inherit" />
-                      </button>
-                    )}
+                  {!title && onClose && showCloseButton && (
+                    <button className={styles.closeButtonOutside} onClick={onClose} type="button">
+                      <CloseIcon color="inherit" />
+                    </button>
+                  )}
                   {title && (
                     <div className={styles.header}>
                       <h1 className={styles.title}>{title}</h1>
@@ -205,12 +203,11 @@ export default class DefaultDialog extends React.PureComponent {
                   >
                     {this.props.children}
                   </div>
-                  {actions &&
-                    actions.length > 0 && (
-                      <div className={contentHasOverflow ? styles.footerWithShadow : styles.footer}>
-                        {this.renderActions(actions)}
-                      </div>
-                    )}
+                  {actions && actions.length > 0 && (
+                    <div className={contentHasOverflow ? styles.footerWithShadow : styles.footer}>
+                      {this.renderActions(actions)}
+                    </div>
+                  )}
                 </CaptureOutsideClicks>
               </div>
             </div>
