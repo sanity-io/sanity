@@ -62,6 +62,11 @@ export default {
       name: 'reviews',
       title: 'Reviews',
       type: 'array',
+      of: [{type: 'review'}]
+    },
+    {
+      name: 'reviewsInline',
+      type: 'array',
       of: [
         {
           type: 'object',
@@ -71,11 +76,6 @@ export default {
               name: 'title',
               title: 'Title',
               type: 'string'
-            },
-            {
-              name: 'body',
-              title: 'Body',
-              type: 'text'
             }
           ]
         }
