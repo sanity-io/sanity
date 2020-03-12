@@ -1,40 +1,38 @@
-import React from 'react'
-import {Observable, throwError} from 'rxjs'
+import * as React from 'react'
+import {Rect} from './types'
 
-interface PositionTrackerEvent {
-  type: 'mount' | 'unmount'
-  key: string
-  element?: HTMLElement
+export interface BoxMountEvent {
+  type: 'mount'
+  id: string
+  element: Element
 }
 
-interface Rect {
-  height: number
-  width: number
-  top: number
-  bottom: number
-  left: number
-  right: number
+export interface BoxUnmountEvent {
+  type: 'unmount'
+  id: string
 }
+
+export interface BoxUpdateEvent {
+  type: 'update'
+  id: string
+  children: React.ReactNode
+}
+
+export type BoxEvent = BoxMountEvent | BoxUpdateEvent | BoxUnmountEvent
 
 export interface Position {
-  key: string
+  id: string
   rect: Rect
 }
 
 interface OverlayerContext {
-  dispatch: (event: PositionTrackerEvent) => void
-  // recalc: () => void
-  __positions$: Observable<Position>
+  dispatch: (event: BoxEvent) => void
 }
 
 const DEFAULT_CONTEXT: OverlayerContext = {
-  dispatch: (event: PositionTrackerEvent) => {
+  dispatch: (event: BoxEvent) => {
     throw new Error('Missing context')
-  },
-  // recalc: () => {
-  //   throw new Error('Missing context')
-  // },
-  __positions$: throwError(new Error('Missing context'))
+  }
 }
 
 export const Context: React.Context<OverlayerContext> = React.createContext(DEFAULT_CONTEXT)

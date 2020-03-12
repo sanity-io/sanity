@@ -86,7 +86,7 @@ function buildTypeScript(packageDir) {
 }
 
 function buildPackage(packageDir) {
-  return parallel(buildJavaScript(packageDir), buildTypeScript(packageDir), copyAssets(packageDir))
+  return parallel(buildJavaScript(packageDir), copyAssets(packageDir))
 }
 
 function watchPackage(packageDir) {

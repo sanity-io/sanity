@@ -1,26 +1,29 @@
-import {Subject} from 'rxjs'
+import {Observable, Subject} from 'rxjs'
+import {filter} from 'rxjs/operators'
 
-const id = arg => arg
-export const createResizeObserver = () => {
-  const entries$ = new Subject()
-  const mappers = new WeakMap()
-  //@ts-ignore
+export interface ObservableResizeObserver {
+  observe: (element: Element) => Observable<ResizeObserverEntry>
+}
+
+export const createResizeObserver = (): ObservableResizeObserver => {
+  const entries$ = new Subject<ResizeObserverEntry>()
   const resizeObserver = new ResizeObserver(entries => {
-    entries$.next(
-      entries.map(entry => {
-        return mappers.get(entry.target)(entry)
-      })
-    )
+    entries.forEach(entry => {
+      entries$.next(entry)
+    })
   })
   return {
-    entries$: entries$.asObservable(),
-    observe: (element, map = id) => {
-      mappers.set(element, map)
-      resizeObserver.observe(element)
-      return () => {
-        mappers.delete(element)
-        resizeObserver.unobserve(element)
-      }
+    observe: (element: Element) => {
+      return new Observable<ResizeObserverEntry>(subscriber => {
+        const subscription = entries$
+          .pipe(filter(entry => entry.target === element))
+          .subscribe(subscriber)
+        resizeObserver.observe(element)
+        return () => {
+          subscription.unsubscribe()
+          resizeObserver.unobserve(element)
+        }
+      })
     }
   }
 }

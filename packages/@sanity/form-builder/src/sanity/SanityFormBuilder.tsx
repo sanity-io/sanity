@@ -63,7 +63,7 @@ export default class SanityFormBuilder extends React.Component<Props, {}> {
     } = this.props
     return (
       <SanityFormBuilderContext value={value} schema={schema} patchChannel={patchChannel}>
-        <Tracker renderItemsWith={PresenceTransitionRenderer}>
+        <Tracker renderWith={PresenceTransitionRenderer}>
           <FormBuilderInput
             type={type}
             onChange={this.handleChange}

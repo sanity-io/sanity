@@ -1,34 +1,13 @@
-import React from 'react'
-import {Context} from './context'
-import {tap} from 'rxjs/operators'
+import * as React from 'react'
+import {OverlayItem} from './types'
 
 const Noop = () => null
 
-export const Overlay = React.memo(function PositionsOverlay(props: any) {
-  const ctx = React.useContext(Context)
-  const [positions, setPositions] = React.useState<any>([])
-  React.useEffect(() => {
-    const subscription = ctx.__positions$
-      .pipe(tap(positions => setPositions(positions)))
-      .subscribe()
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [])
+export const Overlay = function PositionsOverlay(props: {
+  items: OverlayItem[]
+  renderWith: React.ComponentType<{items: OverlayItem[]}>
+}) {
+  const {items, renderWith: Component = Noop, ...rest} = props
 
-  const {renderWith: Component = Noop, ...rest} = props
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        pointerEvents: 'none'
-      }}
-    >
-      <Component items={positions} />
-    </div>
-  )
-})
+  return <Component items={items} />
+}
