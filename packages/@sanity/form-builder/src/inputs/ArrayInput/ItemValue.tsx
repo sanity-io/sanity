@@ -64,6 +64,7 @@ const IGNORE_KEYS = ['_key', '_type', '_weak']
 function isEmpty(value) {
   return Object.keys(value).every(key => IGNORE_KEYS.includes(key))
 }
+
 export default class RenderItemValue extends React.PureComponent<Props> {
   _focusArea: HTMLDivElement | null
   static defaultProps = {
@@ -113,7 +114,16 @@ export default class RenderItemValue extends React.PureComponent<Props> {
   getMemberType(): Type | null {
     const {value, type} = this.props
     const itemTypeName = resolveTypeName(value)
-    return type.of.find(memberType => memberType.name === itemTypeName)
+    const memberType = type.of.find(memberType => memberType.name === itemTypeName)
+    return memberType
+  }
+  getTitle(): string {
+    const {readOnly} = this.props
+    const memberType = this.getMemberType()
+    if (readOnly || memberType.readOnly) {
+      return memberType.title || ''
+    }
+    return memberType.title ? `Edit ${memberType.title}` : 'Edit'
   }
   setFocus(path: Path = []) {
     const {value, onFocus} = this.props
@@ -161,7 +171,9 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     )
     // test focus issues by uncommenting the next line
     // return content
-    const title = readOnly || memberType.readOnly ? memberType.title : `Edit ${memberType.title}`
+
+    const title = this.getTitle()
+
     if (options.editModal === 'fullscreen') {
       return (
         <FullscreenDialog title={title} onClose={this.handleEditStop} isOpen>
@@ -200,11 +212,12 @@ export default class RenderItemValue extends React.PureComponent<Props> {
         </div>
       )
     }
+
     return (
       <DefaultDialog
         onClose={this.handleEditStop}
         key={item._key}
-        title={`Edit ${memberType.title}`}
+        title={title}
         actions={actions}
         onAction={this.handleDialogAction}
         showCloseButton={false}
