@@ -2,6 +2,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/toggles/switch-style'
+import classNames from 'classnames'
 
 export default class Switch extends React.Component {
   static propTypes = {
@@ -62,12 +63,12 @@ export default class Switch extends React.Component {
 
     return (
       <label
-        className={`
-          ${disabled || readOnly ? styles.isDisabled : styles.isEnabled}
-          ${typeof checked === 'undefined' ? styles.indeterminate : styles.root}
-          ${checked ? styles.isChecked : styles.unChecked}
-          ${hasFocus ? styles.hasFocus : ''}
-        `}
+        className={classNames([
+          styles.root,
+          (disabled || readOnly) && styles.isDisabled,
+          checked ? styles.isChecked : styles.unChecked,
+          hasFocus && styles.hasFocus
+        ])}
         onBlur={this.handleBlur}
       >
         <div className={styles.inner}>

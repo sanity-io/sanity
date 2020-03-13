@@ -29,7 +29,6 @@
 
 .root {
   composes: root from 'part:@sanity/components/formfields/default-style';
-  display: inline-block !important;
   user-select: none;
   position: relative;
 }
@@ -38,12 +37,9 @@
   display: flex;
 }
 
-.indeterminate {
-  composes: root;
-}
-
 .switchWrapper {
   position: relative;
+  vertical-align: center;
   min-width: 2.5em;
 }
 
@@ -51,7 +47,7 @@
   background: var(--switch-off-track-color);
   position: absolute;
   left: 0;
-  top: var(--switch-track-top);
+  top: 50%;
   height: var(--switch-track-height);
   width: var(--switch-track-length);
   border-radius: var(--switch-track-height);
@@ -93,7 +89,7 @@
   background: var(--switch-off-thumb-color);
   position: absolute;
   left: 0;
-  top: var(--switch-thumb-top);
+  top: calc(50% - var(--switch-thumb-size) / 2);
   height: var(--switch-thumb-size);
   width: var(--switch-thumb-size);
   border-radius: 50%;
@@ -181,7 +177,7 @@
   background: var(--switch-off-track-color);
   position: absolute;
   left: 0;
-  top: var(--switch-track-top);
+  top: calc(50% - var(--switch-track-height) / 2);
   height: var(--switch-track-height);
   width: var(--switch-track-length);
   border-radius: var(--switch-track-height);
