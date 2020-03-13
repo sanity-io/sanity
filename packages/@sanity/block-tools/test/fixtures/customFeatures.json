@@ -102,6 +102,7 @@
               }
             },
             "name": "author",
+            "title": "Author",
             "fields": [
               {
                 "name": "name",
@@ -158,21 +159,15 @@
             "__experimental_search": [
               {
                 "weight": 1,
-                "path": [
-                  "_id"
-                ]
+                "path": ["_id"]
               },
               {
                 "weight": 1,
-                "path": [
-                  "_type"
-                ]
+                "path": ["_type"]
               },
               {
                 "weight": 10,
-                "path": [
-                  "name"
-                ]
+                "path": ["name"]
               }
             ]
           }
@@ -379,6 +374,7 @@
                               }
                             },
                             "name": "author",
+                            "title": "Author",
                             "fields": [
                               {
                                 "name": "name",
@@ -435,21 +431,15 @@
                             "__experimental_search": [
                               {
                                 "weight": 1,
-                                "path": [
-                                  "_id"
-                                ]
+                                "path": ["_id"]
                               },
                               {
                                 "weight": 1,
-                                "path": [
-                                  "_type"
-                                ]
+                                "path": ["_type"]
                               },
                               {
                                 "weight": 10,
-                                "path": [
-                                  "name"
-                                ]
+                                "path": ["name"]
                               }
                             ]
                           }
@@ -694,6 +684,7 @@
                 }
               },
               "name": "author",
+              "title": "Author",
               "fields": [
                 {
                   "name": "name",
@@ -750,21 +741,15 @@
               "__experimental_search": [
                 {
                   "weight": 1,
-                  "path": [
-                    "_id"
-                  ]
+                  "path": ["_id"]
                 },
                 {
                   "weight": 1,
-                  "path": [
-                    "_type"
-                  ]
+                  "path": ["_type"]
                 },
                 {
                   "weight": 10,
-                  "path": [
-                    "name"
-                  ]
+                  "path": ["name"]
                 }
               ]
             }
