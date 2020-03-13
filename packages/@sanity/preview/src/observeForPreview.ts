@@ -44,11 +44,7 @@ export default function observeForPreview(
 
   const selection = type.preview.select
   if (selection) {
-    const configFields = Object.keys(selection)
-    const targetFields = fields
-      ? configFields.filter(fieldName => fields.includes(fieldName))
-      : configFields
-    const paths = targetFields.map(key => selection[key].split('.'))
+    const paths = Object.keys(selection).map(key => selection[key].split('.'))
     return observePaths(value, paths).pipe(
       map(snapshot => ({
         type: type,
