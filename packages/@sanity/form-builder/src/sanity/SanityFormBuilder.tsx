@@ -4,8 +4,10 @@ import {FormBuilderInput} from '../FormBuilderInput'
 import {Marker, Type} from '../typedefs'
 import {Path} from '../typedefs/path'
 import * as gradientPatchAdapter from './utils/gradientPatchAdapter'
-import {Tracker} from '@sanity/overlayer'
+import {Tracker, Box} from '@sanity/overlayer'
 import {PresenceTransitionRenderer} from './PresenceTransitionRenderer'
+import {LoremIpsum} from './overlay-test/LoremIpsum'
+import {Dialog, DialogContent} from './overlay-test/Dialog'
 
 type PatchChannel = {
   subscribe: () => () => {}
@@ -30,57 +32,40 @@ type Props = {
 export default class SanityFormBuilder extends React.Component<Props, {}> {
   static createPatchChannel = SanityFormBuilderContext.createPatchChannel
 
-  _input: FormBuilderInput | null
-
-  setInput = (input: FormBuilderInput | null) => {
-    this._input = input
-  }
-
-  componentDidMount() {
-    const {autoFocus} = this.props
-    if (this._input && autoFocus) {
-      this._input.focus()
-    }
-  }
-
-  handleChange = patchEvent => {
-    this.props.onChange(gradientPatchAdapter.toGradient(patchEvent.patches))
-  }
-
   render() {
-    const {
-      value,
-      schema,
-      patchChannel,
-      type,
-      readOnly,
-      markers,
-      onFocus,
-      onBlur,
-      focusPath,
-      filterField,
-      presence
-    } = this.props
     return (
-      <SanityFormBuilderContext value={value} schema={schema} patchChannel={patchChannel}>
+      <Dialog>
         <Tracker renderWith={PresenceTransitionRenderer}>
-          <FormBuilderInput
-            type={type}
-            onChange={this.handleChange}
-            level={0}
-            value={value}
-            onFocus={onFocus}
-            onBlur={onBlur}
-            markers={markers}
-            focusPath={focusPath}
-            isRoot
-            readOnly={readOnly}
-            filterField={filterField}
-            ref={this.setInput}
-            presence={presence}
-          />
+          <h3>Nested overlay container</h3>
+          {/*Toggle boolean to switch*/
+          true ? (
+            // this works!
+            <>
+              <Box id="one" />
+              <LoremIpsum />
+              <Box id="two" />
+              <LoremIpsum />
+              <Box id="three" />
+              <LoremIpsum />
+              <Box id="four" />
+              <LoremIpsum />
+              <Box id="five" />
+              <LoremIpsum />
+            </>
+          ) : (
+            // this does not!
+            <>
+              <LoremIpsum />
+              <LoremIpsum />
+              <Box id="one" />
+              <LoremIpsum />
+              <LoremIpsum />
+              <Box id="two" />
+              <LoremIpsum />
+            </>
+          )}
         </Tracker>
-      </SanityFormBuilderContext>
+      </Dialog>
     )
   }
 }

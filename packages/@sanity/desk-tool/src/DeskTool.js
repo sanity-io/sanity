@@ -245,7 +245,7 @@ export default withRouterHOC(
       )
 
       return (
-        <div className={styles.deskTool}>
+        <div>
           {panes && (
             <DeskToolPanes
               router={router}

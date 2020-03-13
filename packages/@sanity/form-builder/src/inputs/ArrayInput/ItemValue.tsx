@@ -23,6 +23,7 @@ import {ArrayType, ItemValue} from './typedefs'
 import {Tracker} from '@sanity/overlayer'
 import PresenceContainer from 'part:@sanity/components/presence/presence-container'
 import {PresenceTransitionRenderer} from '../../sanity/PresenceTransitionRenderer'
+import {Dialog} from '../../sanity/overlay-test/Dialog'
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
@@ -208,16 +209,20 @@ export default class RenderItemValue extends React.PureComponent<Props> {
       )
     }
     return (
-      <DefaultDialog
+      <Dialog
         onClose={this.handleEditStop}
         key={item._key}
-        title={`Edit ${memberType.title}`}
+        title={title}
         actions={actions}
         onAction={this.handleDialogAction}
         showCloseButton={false}
       >
-        <Tracker renderWith={PresenceTransitionRenderer}>{content}</Tracker>
-      </DefaultDialog>
+        <Tracker renderWith={PresenceTransitionRenderer}>
+
+
+
+        </Tracker>
+      </Dialog>
     )
   }
   renderItem() {

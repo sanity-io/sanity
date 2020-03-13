@@ -111,6 +111,7 @@ export const Tracker = React.memo(function Tracker(props: {
           trackerBounds$.pipe(
             debounceTime(100, animationFrameScheduler),
             map(() => boundsToRect(mountEvent.element.getBoundingClientRect())),
+
             withLatestFrom(trackerBounds$),
             map(([elementBounds, containerBounds]) => ({
               top: elementBounds.top - containerBounds.top,
@@ -144,8 +145,8 @@ export const Tracker = React.memo(function Tracker(props: {
           // where the react reconciliation decides the most effective thing to do is to unmount and remount the
           // component
           // For now: keep all elements around
-          // return items
-          return items.filter(item => item.id !== event.id)
+          return items
+          // return items.filter(item => item.id !== event.id)
         }
         return items
       }, []),
@@ -164,7 +165,7 @@ export const Tracker = React.memo(function Tracker(props: {
 
   return (
     <Context.Provider value={{dispatch}}>
-      <div style={{position: 'relative'}}>
+      <div style={{position: 'relative', width: '100%', height: '100%'}}>
         <div ref={trackerRef}>{props.children}</div>
         <Overlay items={items} renderWith={props.renderWith} />
       </div>

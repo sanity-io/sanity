@@ -24,7 +24,10 @@ function getPaneDefaultSize(pane) {
 }
 
 function getWaitMessages(path) {
-  const thresholds = [{ms: 300, message: 'Loading…'}, {ms: 5000, message: 'Still loading…'}]
+  const thresholds = [
+    {ms: 300, message: 'Loading…'},
+    {ms: 5000, message: 'Still loading…'}
+  ]
 
   if (__DEV__) {
     const message = [
@@ -40,14 +43,7 @@ function getWaitMessages(path) {
   }
 
   const src = of(null)
-  return merge(
-    ...thresholds.map(({ms, message}) =>
-      src.pipe(
-        mapTo(message),
-        delay(ms)
-      )
-    )
-  )
+  return merge(...thresholds.map(({ms, message}) => src.pipe(mapTo(message), delay(ms))))
 }
 
 // eslint-disable-next-line react/require-optimization
@@ -210,13 +206,13 @@ export default class DeskToolPanes extends React.Component {
     const paneGroups = [[{id: 'root'}]].concat(routerPanes || [])
 
     let i = -1
-    return paneGroups.reduce((components, group, index) => {
+    return paneGroups.slice(-1).reduce((components, group, index) => {
       return components.concat(
         // eslint-disable-next-line complexity
         group.map((sibling, siblingIndex) => {
           const groupRoot = group[0]
           const isDuplicate = siblingIndex > 0 && sibling.id === groupRoot.id
-          const pane = panes[++i]
+          const pane = panes[panes.length -1]
           if (!pane) {
             return null
           }
@@ -244,42 +240,22 @@ export default class DeskToolPanes extends React.Component {
           })
 
           return (
-            <SplitPaneWrapper
-              key={wrapperKey}
-              isCollapsed={isCollapsed}
-              minSize={getPaneMinSize(pane)}
-              defaultSize={getPaneDefaultSize(pane)}
-            >
-              <PaneRouterContext.Provider value={paneRouterContext}>
-                {pane === LOADING_PANE ? (
-                  <LoadingPane
-                    key={paneKey} // Use key to force rerendering pane on ID change
-                    path={path}
-                    index={i}
-                    message={getWaitMessages}
-                    onExpand={this.handlePaneExpand}
-                    onCollapse={this.handlePaneCollapse}
-                    isCollapsed={isCollapsed}
-                    isSelected={i === panes.length - 1}
-                  />
-                ) : (
-                  <Pane
-                    key={paneKey} // Use key to force rerendering pane on ID change
-                    paneKey={paneKey}
-                    index={i}
-                    itemId={itemId}
-                    urlParams={params}
-                    childItemId={childItemId}
-                    onExpand={this.handlePaneExpand}
-                    onCollapse={this.handlePaneCollapse}
-                    isCollapsed={isCollapsed}
-                    isSelected={i === panes.length - 1}
-                    isClosable={siblingIndex > 0}
-                    {...pane}
-                  />
-                )}
-              </PaneRouterContext.Provider>
-            </SplitPaneWrapper>
+            <PaneRouterContext.Provider value={paneRouterContext}>
+              <Pane
+                key={paneKey} // Use key to force rerendering pane on ID change
+                paneKey={paneKey}
+                index={i}
+                itemId={itemId}
+                urlParams={params}
+                childItemId={childItemId}
+                onExpand={this.handlePaneExpand}
+                onCollapse={this.handlePaneCollapse}
+                isCollapsed={isCollapsed}
+                isSelected={i === panes.length - 1}
+                isClosable={siblingIndex > 0}
+                {...pane}
+              />
+            </PaneRouterContext.Provider>
           )
         })
       )
@@ -288,17 +264,6 @@ export default class DeskToolPanes extends React.Component {
 
   render() {
     const {hasNarrowScreen} = this.state
-    return (
-      <div ref={this._rootElement} className={desktoolStyles.deskTool}>
-        <SplitController
-          isMobile={hasNarrowScreen}
-          autoCollapse={this.props.autoCollapse}
-          collapsedWidth={COLLAPSED_WIDTH}
-          onCheckCollapse={this.handleCheckCollapse}
-        >
-          {this.renderPanes()}
-        </SplitController>
-      </div>
-    )
+    return this.renderPanes()
   }
 }

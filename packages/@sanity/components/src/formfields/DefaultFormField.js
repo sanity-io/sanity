@@ -68,13 +68,7 @@ export default class DefaultFormField extends React.PureComponent {
     const {showValidationMessages} = this.state
     const levelClass = `level_${level}`
     return (
-      <div
-        className={`
-          ${inline ? styles.inline : styles.block}
-          ${styles[levelClass] || ''}
-          ${wrapped ? styles.wrapped : ''}
-          ${className || ''}`}
-      >
+      <div>
         <label className={styles.inner} htmlFor={labelFor}>
           {label && (
             <div className={styles.header}>

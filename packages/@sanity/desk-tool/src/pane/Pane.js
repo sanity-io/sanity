@@ -8,10 +8,7 @@ import {DocumentPaneProvider} from './DocumentPaneProvider'
 import ListPane from './ListPane'
 
 const paneMap = {
-  list: ListPane,
-  documentList: DocumentsListPane,
-  document: DocumentPaneProvider,
-  component: UserComponentPane
+  document: DocumentPaneProvider
 }
 
 // eslint-disable-next-line react/prefer-stateless-function

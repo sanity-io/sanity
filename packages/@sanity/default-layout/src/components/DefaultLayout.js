@@ -1,17 +1,9 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import AppLoadingScreen from 'part:@sanity/base/app-loading-screen'
 import {RouteScope, withRouterHOC} from 'part:@sanity/base/router'
-import absolutes from 'all:part:@sanity/base/absolutes'
 import userStore from 'part:@sanity/base/user'
-import getNewDocumentModalActions from '../util/getNewDocumentModalActions'
 import styles from './styles/DefaultLayout.css'
-import SideMenu from './SideMenu'
 import RenderTool from './RenderTool'
-import ActionModal from './ActionModal'
-import NavBarContainer from './NavBarContainer'
-import {SchemaErrorReporter} from './SchemaErrorReporter'
-import Sidecar from './Sidecar'
 
 export default withRouterHOC(
   class DefaultLayout extends React.Component {
@@ -125,77 +117,17 @@ export default withRouterHOC(
     }
 
     renderContent = () => {
-      const {tools, router} = this.props
-      const {createMenuIsOpen, menuIsOpen, searchIsOpen} = this.state
-
-      const isOverlayVisible = menuIsOpen || searchIsOpen
-      let className = styles.root
-      if (isOverlayVisible) className += ` ${styles.isOverlayVisible}`
+      const {router} = this.props
 
       return (
-        <div className={className} onClickCapture={this.handleClickCapture}>
-          {this.state.showLoadingScreen && (
-            <div
-              className={
-                this.state.loaded || document.visibilityState == 'hidden'
-                  ? styles.loadingScreenLoaded
-                  : styles.loadingScreen
-              }
-              ref={this.setLoadingScreenElement}
-            >
-              <AppLoadingScreen text="Restoring Sanity" />
-            </div>
-          )}
-          <div className={styles.navBar}>
-            <NavBarContainer
-              tools={tools}
-              onCreateButtonClick={this.handleCreateButtonClick}
-              onToggleMenu={this.handleToggleMenu}
-              onSwitchTool={this.handleSwitchTool}
-              router={router}
-              user={this.state.user}
-              searchIsOpen={searchIsOpen}
-              /* eslint-disable-next-line react/jsx-handler-names */
-              onUserLogout={userStore.actions.logout}
-              onSearchOpen={this.handleSearchOpen}
-              onSearchClose={this.handleSearchClose}
-            />
-          </div>
-          <div className={styles.sideMenuContainer}>
-            <SideMenu
-              activeToolName={router.state.tool}
-              isOpen={menuIsOpen}
-              onClose={this.handleToggleMenu}
-              /* eslint-disable-next-line react/jsx-handler-names */
-              onSignOut={userStore.actions.logout}
-              onSwitchTool={this.handleSwitchTool}
-              tools={this.props.tools}
-              user={this.state.user}
-            />
-          </div>
-          <div className={styles.mainArea}>
-            <div className={styles.toolContainer}>
-              <RouteScope scope={router.state.tool}>
-                <RenderTool tool={router.state.tool} />
-              </RouteScope>
-            </div>
-            <Sidecar />
-          </div>
-          {createMenuIsOpen && (
-            <ActionModal
-              onClose={this.handleActionModalClose}
-              actions={getNewDocumentModalActions()}
-            />
-          )}
-          {absolutes.map((Abs, i) => (
-            <Abs key={i} />
-          ))}
-        </div>
+        <RouteScope scope={router.state.tool}>
+          <RenderTool tool={router.state.tool} />
+        </RouteScope>
       )
     }
 
     render() {
-      return <SchemaErrorReporter>{this.renderContent}</SchemaErrorReporter>
+      return this.renderContent()
     }
   }
 )

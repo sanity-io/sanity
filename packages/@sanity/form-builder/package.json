@@ -55,6 +55,8 @@
     "slate-insert-block-on-enter": "^0.4.0",
     "slate-react": "^0.21.16",
     "slate-soft-break": "^0.9.0",
+    "styled-components": "^5.0.1",
+    "lorem-ipsum": "^2.0.3",
     "speakingurl": "^13.0.0"
   },
   "devDependencies": {

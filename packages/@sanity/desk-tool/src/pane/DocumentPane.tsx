@@ -819,63 +819,19 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
         id={options.id}
         type={typeName}
         onKeyUp={this.handleKeyUp}
-        className={
-          this.historyIsOpen()
-            ? documentPaneStyles.paneWrapperWithHistory
-            : documentPaneStyles.paneWrapper
-        }
       >
-        {this.historyIsOpen() && this.canShowHistoryList() && (
-          <History
-            key="history"
-            documentId={getPublishedId(options.id)}
-            onClose={this.handleCloseHistory}
-            onItemSelect={this.handleHistorySelect}
-            lastEdited={value && new Date(value._updatedAt)}
-            events={historyState.events}
-            isLoading={historyState.isLoading}
-            error={historyState.error}
-            selectedEvent={selectedHistoryEvent}
-          />
+        {this.renderHistorySpinner()}
+        {this.renderCurrentView()}
+        {inspect && this.historyIsOpen() && historical && (
+          <InspectHistory document={historical} onClose={this.handleHideInspector} />
         )}
-        <TabbedPane
-          key="pane"
-          idPrefix={paneKey}
-          title={this.getTitle(value)}
-          views={views}
-          activeView={this.getActiveViewId()}
-          onSetActiveView={this.handleSetActiveView}
-          onSplitPane={hasNarrowScreen ? undefined : this.handleSplitPane}
-          onCloseView={this.handleClosePane}
-          menuItemGroups={menuItemGroups}
-          isSelected={isSelected}
-          isCollapsed={isCollapsed}
-          onCollapse={onCollapse}
-          onExpand={onExpand}
-          onAction={this.handleMenuAction}
-          menuItems={menuItems}
-          footer={
-            this.historyIsOpen() && selectedHistoryEvent
-              ? this.renderHistoryFooter(selectedHistoryEvent)
-              : this.renderFooter()
-          }
-          renderActions={this.renderActions}
-          isClosable={isClosable}
-          hasSiblings={this.context.hasGroupSiblings}
-        >
-          {this.renderHistorySpinner()}
-          {this.renderCurrentView()}
-          {inspect && this.historyIsOpen() && historical && (
-            <InspectHistory document={historical} onClose={this.handleHideInspector} />
-          )}
-          {inspect && !this.historyIsOpen() && value && (
-            <InspectView value={value} onClose={this.handleHideInspector} />
-          )}
-          {connectionState === 'reconnecting' && (
-            <Snackbar kind="warning" isPersisted title="Connection lost. Reconnecting…" />
-          )}
-          <DocumentOperationResults id={options.id} type={options.type} />
-        </TabbedPane>
+        {inspect && !this.historyIsOpen() && value && (
+          <InspectView value={value} onClose={this.handleHideInspector} />
+        )}
+        {connectionState === 'reconnecting' && (
+          <Snackbar kind="warning" isPersisted title="Connection lost. Reconnecting…" />
+        )}
+        <DocumentOperationResults id={options.id} type={options.type} />
       </DocumentActionShortcuts>
     )
   }

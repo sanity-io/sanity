@@ -1,7 +1,5 @@
 import * as React from 'react'
 
-const bottom = rect => rect.top + rect.height
-
 const ITEM_STYLE: React.CSSProperties = {
   transitionProperty: 'all',
   transitionDuration: '1s',
@@ -20,10 +18,11 @@ const OVERLAY_STYLE: React.CSSProperties = {
   right: 0,
   bottom: 0,
   pointerEvents: 'none',
-  backgroundColor: 'rgba(0, 255, 0, 0.4)'
+  background: 'rgba(255, 0, 255, 0.25)'
 }
+const bottom = rect => rect.top + rect.height
 
-export const StickyPresenceTransitionRenderer = React.memo(props => {
+export function StickyOverlayRenderer(props) {
   const {items} = props
   return (
     <div style={OVERLAY_STYLE}>
@@ -47,4 +46,4 @@ export const StickyPresenceTransitionRenderer = React.memo(props => {
       })}
     </div>
   )
-})
+}

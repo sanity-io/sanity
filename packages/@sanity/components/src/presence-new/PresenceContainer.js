@@ -8,7 +8,7 @@ export default function PresenceContainer({presence}) {
     <div className={styles.root}>
       {presence &&
         presence.map(item => (
-          <Box id={item.identity}>
+          <Box style={{display: 'inline-block'}} id={item.identity}>
             <Avatar key={item.identity} id={item.identity} />
           </Box>
         ))}

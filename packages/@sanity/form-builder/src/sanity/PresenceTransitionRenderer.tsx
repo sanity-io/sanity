@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {AbsolutePresenceTransitionRenderer} from './AbsolutePresenceRenderer'
-import {StickyPresenceTransitionRenderer} from './StickyPresenceRenderer'
+import {AbsoluteOverlayRenderer} from './AbsoluteOverlayRenderer'
+import {StickyOverlayRenderer} from './StickyOverlayRenderer'
 
-export const PresenceTransitionRenderer = StickyPresenceTransitionRenderer
+export const PresenceTransitionRenderer = StickyOverlayRenderer
