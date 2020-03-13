@@ -18,10 +18,26 @@ const {runSanityStart} = require('./scripts/utils/runSanityStart')
 const SRC_DIR = 'src'
 const DEST_DIR = 'lib'
 
-// Match packages that doesn't follow the src/lib convention
+// Regexes/names of packages that doesn't follow the src/lib convention
 // or packages that does their own build (e.g. studios)
-const IGNORE_BUILD = /packages\/.*-studio/
-const PACKAGE_PATHS = getPackagePaths().filter(pkgPath => !IGNORE_BUILD.test(pkgPath))
+const IGNORED_PACKAGES = [
+  'packages/@sanity/generate-help-url',
+  'packages/@sanity/plugin-loader',
+  'packages/@sanity/eventsource',
+  'packages/@sanity/date-input',
+  'packages/@sanity/uuid',
+  'packages/eslint-config-sanity',
+  'packages/create-sanity',
+  'packages/storybook',
+  'packages/sanity',
+  /packages\/.*-studio/
+]
+
+const PACKAGE_PATHS = getPackagePaths().filter(pkgPath =>
+  IGNORED_PACKAGES.every(pattern =>
+    typeof pattern === 'string' ? pattern !== pkgPath : !pattern.test(pkgPath)
+  )
+)
 
 const withDisplayName = (name, fn) => {
   fn.displayName = name
