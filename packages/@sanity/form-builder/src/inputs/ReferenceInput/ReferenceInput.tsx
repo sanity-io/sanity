@@ -56,7 +56,7 @@ export type Props = {
   markers: Array<Marker>
   readOnly?: boolean
   onSearch: (query: string, type: Type, options: SearchOptions) => ObservableI<Array<SearchHit>>
-  onFocus: () => void
+  onFocus: (path: any[]) => void
   getPreviewSnapshot: (Reference, Type) => ObservableI<PreviewSnapshot>
   onChange: (event: PatchEvent) => void
   level: number
