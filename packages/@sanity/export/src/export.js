@@ -15,6 +15,7 @@ const filterSystemDocuments = require('./filterSystemDocuments')
 const filterDocumentTypes = require('./filterDocumentTypes')
 const filterDrafts = require('./filterDrafts')
 const logFirstChunk = require('./logFirstChunk')
+const tryParseJson = require('./tryParseJson')
 
 const noop = () => null
 
@@ -97,7 +98,7 @@ function exportDataset(opts) {
     const jsonStream = miss.pipeline(
       inputStream,
       logFirstChunk(),
-      split(JSON.parse),
+      split(tryParseJson),
       rejectOnApiError(),
       filterSystemDocuments(),
       assetStreamHandler,

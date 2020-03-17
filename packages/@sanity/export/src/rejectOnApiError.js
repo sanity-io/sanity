@@ -7,5 +7,10 @@ module.exports = () =>
       return
     }
 
+    if (!doc._id && doc.error) {
+      callback(new Error(doc.error.description || doc.error.message || JSON.stringify(doc)))
+      return
+    }
+
     callback(null, doc)
   })
