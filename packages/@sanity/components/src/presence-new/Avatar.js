@@ -4,18 +4,9 @@ import PropTypes from 'prop-types'
 import colorHasher from '../presence/colorHasher'
 import styles from './styles/Avatar.css'
 
-// type Props = {
-//   imageUrl?: string
-//   id: string | null
-//   status: 'active' | 'inactive' | 'syncing' | 'pulse'
-//   dock: 'top' | 'bottom'
-//   initials: string
-//   color: string
-// }
-
-export default function Avatar({id, position, scrollToField}) {
+export default function Avatar({id, position, scrollToField, status, size}) {
   // data-dock={dock}
-  const [user, setUser] = React.useState(null)
+  const [user, setUser] = React.useState({})
   React.useEffect(() => {
     if (id) {
       userStore.getUser(id).then(result => {
@@ -30,6 +21,8 @@ export default function Avatar({id, position, scrollToField}) {
     }
   }
 
+  console.log('user', status)
+
   return (
     <div
       className={styles.root}
@@ -37,16 +30,41 @@ export default function Avatar({id, position, scrollToField}) {
       data-dock={position}
       style={{color: colorHasher(id)}}
     >
-      <div className={styles.avatar} data-status={status}>
-        <div className={styles.inner}>
-          <div className={styles.avatarImage}>
-            {user && user.imageUrl && <img src={user.imageUrl} />}
-          </div>
-        </div>
+      <div className={`${styles.avatar} ${styles[`size_${size}`]}`}>
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse
+            cx="16"
+            cy="16"
+            rx="15"
+            ry="15"
+            transform="rotate(90 16 16)"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            className={`${styles.avatarBorder} ${
+              status === 'active' ? styles[`avatar_${status}`] : ''
+            }`}
+          />
+          <ellipse cx="16" cy="16" rx="14" ry="14" transform="rotate(-90 16 16)" fill="white" />
+          <circle cx="16" cy="16" r="13" fill={`url(#${`${user.id}-pattern`})`} />
+          <defs>
+            <pattern
+              id={`${user.id}-pattern`}
+              patternContentUnits="objectBoundingBox"
+              width="1"
+              height="1"
+            >
+              {user.imageUrl && <image href={user.imageUrl} transform="scale(0.00195312)" />}
+            </pattern>
+          </defs>
+        </svg>
       </div>
       <div className={styles.arrow} data-dock={position}>
-        <svg viewBox="0 0 6 6">
-          <path d="M0 6L3 0L6 6H4H2H0Z" />
+        <svg viewBox="0 0 10 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M0 6.4H9.6L5.44 0.853333C5.12 0.426666 4.48 0.426666 4.16 0.853333L0 6.4Z"
+            fill="currentColor"
+          />
         </svg>
       </div>
     </div>
@@ -54,13 +72,16 @@ export default function Avatar({id, position, scrollToField}) {
 }
 
 Avatar.propTypes = {
-  id: PropTypes.string,
+  id: PropTypes.string.isRequired,
   position: PropTypes.string,
-  scrollToField: PropTypes.func
+  scrollToField: PropTypes.func,
+  size: PropTypes.string,
+  status: PropTypes.string
 }
 
 Avatar.defaultProps = {
-  id: null,
   position: null,
-  scrollToField: null
+  scrollToField: null,
+  size: 'small',
+  status: 'online'
 }

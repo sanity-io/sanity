@@ -2,7 +2,6 @@
 
 .root {
   position: relative;
-  background: var(--white);
   z-index: 10;
   border-radius: 50%;
   box-sizing: border-box;
@@ -16,55 +15,37 @@
 
 .avatar {
   position: relative;
-  background-color: var(--white);
-  width: 1.5em;
-  height: 1.5em;
   border-radius: 50%;
-  border: 2px solid currentColor;
   display: flex;
   justify-content: center;
   align-items: center;
 
-  @nest & .inner {
+  @nest & svg {
     height: 100%;
     width: 100%;
     display: flex;
-    border-radius: 50%;
-    background: var(--gray-light);
+    z-index: 1;
   }
 }
 
-.avatar[data-status='active'] {
-  /* solid border */
-  border-style: solid;
+.avatarBorder {
+  stroke-dasharray: 0;
 }
 
-.avatar[data-status='inactive'] {
-  /* faded */
+.avatar_active {
+  stroke-dasharray: 12%;
+  transform-origin: center;
+  animation: spinning 16s infinite linear;
 }
 
-.avatar[data-status='syncing'] {
-  /* dashed border */
-  border-style: dashed;
+.size_small {
+  width: 1.8em;
+  height: 1.8em;
 }
 
-.avatar[data-status='attention'] {
-  /* pulsing, box-shadow */
-}
-
-.avatarImage {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 2px solid var(--white);
-  border-radius: 50%;
-  overflow: hidden;
-
-  @nest & img {
-    height: 100%;
-    display: flex;
-  }
+.size_medium {
+  width: 2.2em;
+  height: 2.2em;
 }
 
 .arrow {
@@ -74,23 +55,33 @@
   box-sizing: border-box;
   display: none;
   fill: currentColor;
+  z-index: 0;
 
   @nest & > svg {
-    width: 6px;
-    height: 6px;
+    width: 9px;
+    height: 9px;
     position: absolute;
-    top: -5px;
-    left: calc(50% - 3px);
+    top: -7px;
+    left: calc((100% - 9px) / 2);
   }
 }
 
 .arrow[data-dock="top"] {
-  top: 0;
+  top: 1px;
   display: block;
 }
 
 .arrow[data-dock="bottom"] {
-  bottom: 0;
+  bottom: 1px;
   display: block;
   transform: rotate(180deg);
+}
+
+@keyframes spinning {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
