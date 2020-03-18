@@ -1097,6 +1097,10 @@
       "path": "tabs/TabPanel.js"
     },
     {
+      "name": "part:@sanity/components/presence/collaborator-status",
+      "path": "presence-new/CollaboratorStatus"
+    },
+    {
       "name": "part:@sanity/components/presence/presence-dock",
       "path": "presence-new/PresenceDock"
     },

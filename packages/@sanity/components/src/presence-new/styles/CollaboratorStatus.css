@@ -1,0 +1,60 @@
+@import "part:@sanity/base/theme/variables-style";
+
+.root {
+  position: relative;
+}
+
+.button {
+  display: flex;
+  text-decoration: none;
+  padding: 0.75em;
+  white-space: nowrap;
+  outline: none;
+  flex-direction: row;
+  align-items: center;
+  -webkit-font-smoothing: inherit;
+  appearance: none;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  font: inherit;
+  color: inherit;
+  line-height: calc(25 / 16);
+  margin: 0;
+  height: 100%;
+
+  @media (hover: hover) {
+    opacity: 0.7;
+
+    @nest &:hover {
+      opacity: 1;
+    }
+  }
+
+  @nest & .icon {
+    position: relative;
+    font-size: var(--font-size-small);
+    line-height: calc(25 / 14);
+  }
+
+  @nest & .icon > svg {
+    font-size: 2em;
+    vertical-align: top;
+  }
+}
+
+.isOpen {
+  opacity: 1;
+}
+
+.statusIndicator {
+  position: absolute;
+  top: 0.1em;
+  right: 0.15em;
+  height: 0.5em;
+  width: 0.5em;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  background: var(--state-success-color);
+  box-sizing: border-box;
+}

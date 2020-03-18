@@ -395,6 +395,10 @@
       "path": "hooks/usePresence"
     },
     {
+      "name": "part:@sanity/base/hooks/collaborators",
+      "path": "hooks/useCollaborators"
+    },
+    {
       "name": "part:@sanity/base/project",
       "path": "datastores/project"
     },
