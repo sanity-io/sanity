@@ -46,10 +46,10 @@ export default function SanityStatus(props) {
                 <div
                   className={styles.updateIndicator}
                   data-severity={severity}
-                  aria-label={`${severity} severity level.`} />
+                  aria-label={`${formatUpdateLabel(outdated.length)}, ${severity} severity level.`}
+                />
                 <PackageIcon />
               </span>
-              <span className={styles.updateLabel}>{formatUpdateLabel(outdated.length)}</span>
             </div>
           )}
         </div>
