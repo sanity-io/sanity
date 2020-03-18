@@ -21,8 +21,6 @@ export default function Avatar({id, position, scrollToField, status, size}) {
     }
   }
 
-  console.log('user', status)
-
   return (
     <div
       className={styles.root}
@@ -30,7 +28,7 @@ export default function Avatar({id, position, scrollToField, status, size}) {
       data-dock={position}
       style={{color: colorHasher(id)}}
     >
-      <div className={`${styles.avatar} ${styles[`size_${size}`]}`}>
+      <div className={`${styles.avatar} ${styles[`size_${size}`]}`} data-status={status}>
         <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
           <ellipse
             cx="16"
@@ -46,10 +44,16 @@ export default function Avatar({id, position, scrollToField, status, size}) {
             }`}
           />
           <ellipse cx="16" cy="16" rx="14" ry="14" transform="rotate(-90 16 16)" fill="white" />
-          <circle cx="16" cy="16" r="13" fill={`url(#${`${user.id}-pattern`})`} />
+          <circle
+            className={styles.avatarImage}
+            cx="16"
+            cy="16"
+            r="13"
+            fill={user.imageUrl ? `url(#${`${user.id}-image-url`})` : 'currentColor'}
+          />
           <defs>
             <pattern
-              id={`${user.id}-pattern`}
+              id={`${user.id}-image-url`}
               patternContentUnits="objectBoundingBox"
               width="1"
               height="1"
