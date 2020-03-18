@@ -28,6 +28,14 @@
   }
 }
 
+.avatarImage {
+  color: var(--gray-light);
+}
+
+.avatar[data-status="offline"] {
+  opacity: 0.7;
+}
+
 .avatarBorder {
   stroke-dasharray: 0;
 }
