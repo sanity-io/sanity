@@ -940,6 +940,10 @@
       "path": "components/icons/Launch.js"
     },
     {
+      "implements": "part:@sanity/base/users-icon",
+      "path": "components/icons/UsersIcon.js"
+    },
+    {
       "implements": "part:@sanity/base/sanity-logo",
       "path": "components/logos/SanityLogo.js"
     },
