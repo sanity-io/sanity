@@ -1,6 +1,6 @@
 {
   "name": "@sanity/core",
-  "version": "1.149.2",
+  "version": "1.149.4",
   "description": "Sanity core bundle, containing required packages for the development and build process",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -32,7 +32,7 @@
     "@sanity/mutator": "1.149.0",
     "@sanity/plugin-loader": "1.149.0",
     "@sanity/resolver": "1.149.0",
-    "@sanity/schema": "1.149.0",
+    "@sanity/schema": "1.149.4",
     "@sanity/server": "1.149.0",
     "@sanity/util": "1.149.0",
     "@sanity/uuid": "1.149.0",

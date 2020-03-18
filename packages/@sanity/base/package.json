@@ -1,6 +1,6 @@
 {
   "name": "@sanity/base",
-  "version": "1.149.3",
+  "version": "1.149.4",
   "description": "Sanity plugin containing the base components and roles for a Sanity configuration",
   "main": "lib/index.js",
   "scripts": {
@@ -33,8 +33,8 @@
     "@sanity/initial-value-templates": "1.149.0",
     "@sanity/mutator": "1.149.0",
     "@sanity/observable": "1.149.0",
-    "@sanity/preview": "1.149.0",
-    "@sanity/schema": "1.149.0",
+    "@sanity/preview": "1.149.4",
+    "@sanity/schema": "1.149.4",
     "@sanity/state-router": "1.149.0",
     "@sanity/structure": "1.149.0",
     "@sanity/transaction-collator": "1.149.0",

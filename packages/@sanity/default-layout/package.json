@@ -1,6 +1,6 @@
 {
   "name": "@sanity/default-layout",
-  "version": "1.149.3",
+  "version": "1.149.4",
   "description": "The default layout components for Sanity",
   "main": "lib/default-layout.js",
   "scripts": {
@@ -28,7 +28,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
-    "@sanity/base": "1.149.3",
+    "@sanity/base": "1.149.4",
     "@sanity/generate-help-url": "1.149.0",
     "is-hotkey": "^0.1.4",
     "lodash": "^4.17.15",

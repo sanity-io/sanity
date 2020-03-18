@@ -1,6 +1,6 @@
 {
   "name": "@sanity/desk-tool",
-  "version": "1.149.3",
+  "version": "1.149.4",
   "description": "Tool for managing all sorts of content in a structured manner",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -21,12 +21,12 @@
   ],
   "dependencies": {
     "@reach/auto-id": "^0.7.2",
-    "@sanity/base": "1.149.3",
+    "@sanity/base": "1.149.4",
     "@sanity/data-aspects": "1.149.0",
-    "@sanity/form-builder": "1.149.0",
+    "@sanity/form-builder": "1.149.4",
     "@sanity/generate-help-url": "1.149.0",
     "@sanity/mutator": "1.149.0",
-    "@sanity/react-hooks": "1.149.3",
+    "@sanity/react-hooks": "1.149.4",
     "@sanity/structure": "1.149.0",
     "@sanity/uuid": "1.149.0",
     "@sanity/validation": "1.149.0",
