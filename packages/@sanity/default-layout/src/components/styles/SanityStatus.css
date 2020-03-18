@@ -10,7 +10,7 @@
   }
 
   @nest & span > svg {
-    font-size: 25px;
+    font-size: 2em;
     vertical-align: top;
   }
 }
