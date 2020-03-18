@@ -1,0 +1,11 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  background-color: var(--component-bg);
+  color: var(--text-color);
+  list-style: none;
+  margin: 0;
+  padding: var(--small-padding) 0;
+  composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
+  border-radius: var(--border-radius-medium);
+}

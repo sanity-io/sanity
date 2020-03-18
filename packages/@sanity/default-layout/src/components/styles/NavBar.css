@@ -14,12 +14,12 @@
 
   @media (--screen-medium) {
     grid-template-rows: var(--nav-bar-box);
-    grid-template-areas: " hamburger   branding    createButton       search               extras      sidecarStatus";
-    grid-template-columns: max-content max-content var(--nav-bar-box) minmax(240px, 100%) max-content  min-content;
+    grid-template-areas: " hamburger   branding    createButton       search               extras      collaborators sidecarStatus";
+    grid-template-columns: max-content max-content var(--nav-bar-box) minmax(240px, 100%) max-content max-content  min-content;
 
     @nest &.withToolSwitcher {
-      grid-template-areas: " branding    createButton       search               spaceSwitcher toolSwitcher extras      sanityStatus loginStatus sidecarStatus";
-      grid-template-columns: max-content var(--nav-bar-box) minmax(240px, 400px) max-content   auto         max-content max-content calc(var(--nav-bar-box) + 1em) min-content;
+      grid-template-areas: " branding    createButton       search               spaceSwitcher toolSwitcher extras      collaborators sanityStatus loginStatus sidecarStatus";
+      grid-template-columns: max-content var(--nav-bar-box) minmax(240px, 400px) max-content   auto         max-content max-content max-content calc(var(--nav-bar-box) + 1em) min-content;
     }
   }
 
@@ -128,6 +128,18 @@ a.branding {
 
 .sanityStatus {
   grid-area: sanityStatus;
+  display: none;
+  align-items: stretch;
+
+  @media (--screen-medium) {
+    @nest .withToolSwitcher & {
+      display: flex;
+    }
+  }
+}
+
+.collaboratorsStatus {
+  grid-area: collaborators;
   display: none;
   align-items: stretch;
 
