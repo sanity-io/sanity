@@ -8,7 +8,7 @@ export default function CollaboratorList({users}) {
     <ul className={styles.root}>
       {users.map(user => (
         <li key={user.identity}>
-          <CollaboratorItem id={user.identity} status={user.status} />
+          <CollaboratorItem id={user.identity} status={user.status} sessions={user.sessions} />
         </li>
       ))}
     </ul>

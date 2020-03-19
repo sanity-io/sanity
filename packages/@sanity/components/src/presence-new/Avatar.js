@@ -87,5 +87,5 @@ Avatar.defaultProps = {
   position: null,
   scrollToField: null,
   size: 'small',
-  status: 'editing'
+  status: 'online'
 }

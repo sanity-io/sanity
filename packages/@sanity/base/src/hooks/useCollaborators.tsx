@@ -6,10 +6,16 @@ export default function useCollaborators() {
   useEffect(() => {
     const subscription = clients$.subscribe(clients => {
       setUsers(
-        clients.map(client => ({
-          ...client,
-          status: client.sessions[0].type === 'sync' ? 'online' : 'offline'
-        }))
+        clients.map(client => {
+          return {
+            ...client,
+            sessions: client.sessions.map(session => ({
+              ...session,
+              state: session.state && session.state.find(state => state.namespace === 'formBuilder')
+            })),
+            status: client.sessions[0].type === 'sync' ? 'online' : 'inactive'
+          }
+        })
       )
     })
     return () => {
