@@ -1,13 +1,12 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import userStore from 'part:@sanity/base/user'
 import PropTypes from 'prop-types'
 import colorHasher from '../presence/colorHasher'
 import styles from './styles/Avatar.css'
 
 export default function Avatar({id, position, scrollToField, status, size}) {
-  // data-dock={dock}
-  const [user, setUser] = React.useState({})
-  React.useEffect(() => {
+  const [user, setUser] = useState({})
+  useEffect(() => {
     if (id) {
       userStore.getUser(id).then(result => {
         setUser(result)
@@ -20,6 +19,8 @@ export default function Avatar({id, position, scrollToField, status, size}) {
       scrollToField(event)
     }
   }
+
+  const isAnimating = !position && status === 'editing'
 
   return (
     <div
@@ -37,11 +38,10 @@ export default function Avatar({id, position, scrollToField, status, size}) {
             ry="15"
             transform="rotate(90 16 16)"
             stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            className={`${styles.avatarBorder} ${
-              status === 'active' ? styles[`avatar_${status}`] : ''
-            }`}
+            className={`
+                ${styles.border}
+                ${isAnimating && styles.isAnimating}
+              `}
           />
           <ellipse cx="16" cy="16" rx="14" ry="14" transform="rotate(-90 16 16)" fill="white" />
           <circle
@@ -80,12 +80,12 @@ Avatar.propTypes = {
   position: PropTypes.string,
   scrollToField: PropTypes.func,
   size: PropTypes.string,
-  status: PropTypes.string
+  status: PropTypes.oneOf(['online', 'editing', 'inactive'])
 }
 
 Avatar.defaultProps = {
   position: null,
   scrollToField: null,
   size: 'small',
-  status: 'online'
+  status: 'editing'
 }
