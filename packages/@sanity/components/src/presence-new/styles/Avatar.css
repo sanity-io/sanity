@@ -9,10 +9,6 @@
   pointer-events: auto;
 }
 
-.root:not(:last-child) {
-  margin-right: -0.75rem;
-}
-
 .avatar {
   position: relative;
   border-radius: 50%;
@@ -26,24 +22,31 @@
     display: flex;
     z-index: 1;
   }
+
+  @nest & .border {
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 0;
+  }
+
+  @nest & .isAnimating {
+    transform-origin: center;
+    animation: spinning 16s infinite linear;
+  }
+
+  @nest & .avatarImage {
+    color: var(--gray-light);
+  }
 }
 
-.avatarImage {
-  color: var(--gray-light);
+.avatar[data-status="inactive"] {
+  opacity: 0.6;
 }
 
-.avatar[data-status="offline"] {
-  opacity: 0.7;
-}
-
-.avatarBorder {
-  stroke-dasharray: 0;
-}
-
-.avatar_active {
-  stroke-dasharray: 12%;
-  transform-origin: center;
-  animation: spinning 16s infinite linear;
+.avatar[data-status="editing"] {
+  @nest & .border {
+    stroke-dasharray: 12%;
+  }
 }
 
 .size_small {
@@ -89,6 +92,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
