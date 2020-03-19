@@ -32,7 +32,30 @@
 }
 
 .status {
+  font-style: italic;
   text-transform: capitalize;
   font-size: var(--font-size-small);
   color: var(--gray-darkest--transparent);
+}
+
+.sessions {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.intentLink {
+  font-size: var(--font-size-small);
+  text-decoration: none;
+  color: var(--gray-darkest--transparent);
+}
+
+.locationLabel {
+  font-weight: 600;
+}
+
+.location {
+  max-width: 20ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
