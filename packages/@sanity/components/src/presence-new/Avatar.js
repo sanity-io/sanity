@@ -58,7 +58,7 @@ export default function Avatar({id, position, scrollToField, status, size}) {
               width="1"
               height="1"
             >
-              {user.imageUrl && <image href={user.imageUrl} transform="scale(0.00195312)" />}
+              {user.imageUrl && <image href={user.imageUrl} width="1" height="1" />}
             </pattern>
           </defs>
         </svg>
