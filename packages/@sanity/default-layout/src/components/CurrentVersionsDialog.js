@@ -44,10 +44,10 @@ class CurrentVersionsDialog extends Component {
       <Dialog isOpen onClose={onClose} onClickOutside={onClose}>
         <DialogContent size="medium" padding="large">
           <div className={styles.content}>
-            <h2 className={styles.dialogHeading}>Studio is up to date</h2>
-            <p>Your Studio is running on the latest updates.</p>
+            <h2 className={styles.dialogHeading}>This Studio is up to date</h2>
+            <p>It was built using the latest versions of all packages.</p>
             <details className={styles.details}>
-              <summary className={styles.summary}>Show all installed modules</summary>
+              <summary className={styles.summary}>List all installed packages</summary>
               {this.renderTable()}
             </details>
           </div>
