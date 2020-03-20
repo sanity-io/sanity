@@ -1,0 +1,55 @@
+{
+  "name": "@sanity/overlayer",
+  "version": "1.149.3",
+  "description": "Overlayer util",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "author": "Sanity.io <hello@sanity.io>",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "license": "MIT",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "posttest": "tsc --noEmit",
+    "clean": "rimraf lib coverage"
+  },
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "structure",
+    "api"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "lodash": "^4.17.15",
+    "rxjs": "^6.5.3",
+    "shallow-equals": "^1.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.7",
+    "@types/jest": "^24.0.23",
+    "@types/lodash": "^4.14.149",
+    "@types/resize-observer-browser": "^0.1.3",
+    "jest": "^24.9.0",
+    "parcel-bundler": "^1.12.4",
+    "rimraf": "^2.7.1",
+    "rxjs": "^6.5.3",
+    "ts-jest": "^24.2.0",
+    "typescript": "^3.7.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "homepage": "https://www.sanity.io/"
+}

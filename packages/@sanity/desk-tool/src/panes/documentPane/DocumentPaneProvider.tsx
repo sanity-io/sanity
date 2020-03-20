@@ -50,7 +50,11 @@ const DocumentPaneProvider = withInitialValue((props: Props) => {
   const presenceInfo = presence.flatMap(entry => {
     const {identity, sessions} = entry
     return sessions.flatMap(sess => {
-      return (sess.state || []).map(state => ({identity, path: state.path}))
+      return (sess.state || []).map(state => ({
+        sessionId: sess.clientId,
+        identity,
+        path: state.path
+      }))
     })
   })
 

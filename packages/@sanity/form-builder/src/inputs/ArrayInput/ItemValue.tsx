@@ -20,8 +20,9 @@ import * as PathUtils from '@sanity/util/paths'
 import ConfirmButton from './ConfirmButton'
 import styles from './styles/ItemValue.css'
 import {ArrayType, ItemValue} from './typedefs'
-import PresenceDock from 'part:@sanity/components/presence/presence-dock'
+import {Tracker} from '@sanity/overlayer'
 import PresenceContainer from 'part:@sanity/components/presence/presence-container'
+import {PresenceTransitionRenderer} from '../../sanity/PresenceTransitionRenderer'
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
@@ -160,22 +161,20 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     const childMarkers = markers.filter(marker => marker.path.length > 1)
     const childPresence = presence.filter(presence => presence.path.length > 1)
     const content = (
-      <PresenceDock presence={childPresence}>
-        <FormBuilderInput
-          type={memberType}
-          level={0}
-          value={isEmpty(item) ? undefined : item}
-          onChange={this.handleChange}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          focusPath={focusPath}
-          readOnly={readOnly || memberType.readOnly}
-          markers={childMarkers}
-          path={[{_key: item._key}]}
-          filterField={filterField}
-          presence={childPresence}
-        />
-      </PresenceDock>
+      <FormBuilderInput
+        type={memberType}
+        level={0}
+        value={isEmpty(item) ? undefined : item}
+        onChange={this.handleChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        focusPath={focusPath}
+        readOnly={readOnly || memberType.readOnly}
+        markers={childMarkers}
+        path={[{_key: item._key}]}
+        filterField={filterField}
+        presence={childPresence}
+      />
     )
     // test focus issues by uncommenting the next line
     // return content
@@ -230,9 +229,9 @@ export default class RenderItemValue extends React.PureComponent<Props> {
         onAction={this.handleDialogAction}
         showCloseButton={false}
       >
-        <div>
+        <Tracker component={PresenceTransitionRenderer}>
           <DialogContent size="medium">{content}</DialogContent>
-        </div>
+        </Tracker>
       </DefaultDialog>
     )
   }
