@@ -8,12 +8,12 @@ const DISABLED_REASON_TITLE = {
 }
 
 export function DiscardChangesAction({id, type, published, liveEdit, onComplete}) {
+  const {discardChanges}: any = useDocumentOperation(id, type)
+  const [isConfirmDialogOpen, setConfirmDialogOpen] = React.useState(false)
+
   if (!published || liveEdit) {
     return null
   }
-
-  const {discardChanges}: any = useDocumentOperation(id, type)
-  const [isConfirmDialogOpen, setConfirmDialogOpen] = React.useState(false)
 
   return {
     icon: CloseIcon,

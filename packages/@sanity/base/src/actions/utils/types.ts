@@ -9,7 +9,7 @@ interface Document {
   _type: string
 }
 
-interface DocumentActionProps {
+export interface DocumentActionProps {
   id: string
   type: string
   draft: null | Document
