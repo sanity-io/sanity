@@ -6,6 +6,7 @@ const path = require('path')
 const changed = require('gulp-changed')
 const ts = require('gulp-typescript')
 const filter = require('gulp-filter')
+const {flatten} = require('lodash')
 const log = require('fancy-log')
 const chalk = require('chalk')
 const fs = require('fs')
@@ -83,12 +84,7 @@ function copyAssets(packageDir) {
 }
 
 function buildTypeScript(packageDir) {
-  const tsConfigPath = path.join(packageDir, 'tsconfig.json')
-  const isTSProject = fs.existsSync(tsConfigPath)
-  if (!isTSProject) {
-    return withDisplayName(compileTaskName('dts', packageDir, 'noop'), cb => cb())
-  }
-  const project = ts.createProject(tsConfigPath)
+  const project = ts.createProject(path.join(packageDir, 'tsconfig.json'))
   return withDisplayName(compileTaskName('dts', packageDir), () => {
     const compilation = project.src().pipe(project())
     return compilation.dts
@@ -102,22 +98,64 @@ function buildTypeScript(packageDir) {
 }
 
 function buildPackage(packageDir) {
-  return parallel(buildJavaScript(packageDir), buildTypeScript(packageDir), copyAssets(packageDir))
+  return parallel(buildJavaScript(packageDir), copyAssets(packageDir))
 }
 
-function watchPackage(packageDir) {
-  return withDisplayName(compileTaskName('watch', packageDir), () =>
-    watch([`${SRC_DIR}/**/*`], {cwd: packageDir}, buildPackage(packageDir))
+function watchPackage(name, packageDir, task) {
+  return withDisplayName(name, () => watch([`${SRC_DIR}/**/*`], {cwd: packageDir}, task))
+}
+
+const isTSProject = packageDir => {
+  const tsConfigPath = path.join(packageDir, 'tsconfig.json')
+  return fs.existsSync(tsConfigPath)
+}
+
+// Some TypeScript packages needs to be compiled first in order for their dependencies to compile
+// successfully.
+// Ideally this should have been taken care of by a dependency resolution, but for now the packages
+// that needs to be built serially is listed below.
+// Note: If you run into problems with packages that errors during TS compile due to issues with
+// another package in this monorepo it might help adding it to this array
+const BUILD_SERIALLY = [['packages/@sanity/mutator', 'packages/@sanity/base']]
+const TS_PROJECTS = BUILD_SERIALLY.concat(
+  PACKAGE_PATHS.filter(isTSProject).filter(
+    packagePath => !BUILD_SERIALLY.some(entry => entry.some(pkgPath => pkgPath === packagePath))
   )
-}
+)
 
-const buildAll = parallel(PACKAGE_PATHS.map(buildPackage))
-const watchAll = parallel(PACKAGE_PATHS.map(watchPackage))
+const buildTS = parallel(
+  TS_PROJECTS.map(projectPath =>
+    Array.isArray(projectPath)
+      ? series(projectPath.map(buildTypeScript))
+      : buildTypeScript(projectPath)
+  )
+)
+
+const watchTS = parallel(
+  flatten(TS_PROJECTS).map(packageDir =>
+    watchPackage(
+      compileTaskName('watch', packageDir, 'TS'),
+      packageDir,
+      buildTypeScript(packageDir)
+    )
+  )
+)
+
+const buildJSAndAssets = parallel(PACKAGE_PATHS.map(buildPackage))
+const watchJSAndAssets = parallel(
+  PACKAGE_PATHS.map(packageDir =>
+    watchPackage(
+      compileTaskName('watch', packageDir, 'JS/Assets'),
+      packageDir,
+      buildPackage(packageDir)
+    )
+  )
+)
 
 function studioTask(name, port) {
   return series(
-    buildAll,
-    parallel(watchAll, function runStudio() {
+    buildJSAndAssets,
+    parallel(buildTS, watchJSAndAssets, watchTS, function runStudio() {
       log(`Starting ${name}…`)
       runSanityStart(path.join(__dirname, 'packages', name), port).pipe(
         through((data, enc, cb) => {
@@ -141,5 +179,6 @@ function studioTask(name, port) {
   exports[name] = studioTask(name, port)
 })
 
-exports.build = buildAll
+exports.build = parallel(buildJSAndAssets, buildTS)
+exports.watch = series(parallel(buildJSAndAssets, buildTS), parallel(watchJSAndAssets, watchTS))
 exports.clean = () => del(PACKAGE_PATHS.map(pth => path.join(pth, DEST_DIR)))
