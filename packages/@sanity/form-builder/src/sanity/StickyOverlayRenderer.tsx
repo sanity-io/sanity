@@ -1,7 +1,9 @@
 import * as React from 'react'
 import {createIntersectionObserver} from './intersectionObserver'
-import {tap, debounceTime} from 'rxjs/operators'
+import {tap} from 'rxjs/operators'
 import {groupBy} from 'lodash'
+
+const DEBUG = true
 
 const OVERLAY_STYLE: React.CSSProperties = {
   position: 'absolute',
@@ -10,16 +12,16 @@ const OVERLAY_STYLE: React.CSSProperties = {
   right: 0,
   bottom: 0,
   pointerEvents: 'none',
-  // background: 'rgba(255, 255, 0, 0.25)'
+  ...(DEBUG ? {background: 'rgba(255, 255, 0, 0.25)'} : {})
 }
 
 const OVERLAY_ITEM_STYLE: React.CSSProperties = {
-  // background: 'rgba(255, 0, 0, 0.25)',
+  background: 'rgba(255, 0, 0, 0.25)',
   // transitionProperty: 'top, left',
   // transitionDuration: '0.4s',
   overflow: 'hidden',
   pointerEvents: 'all',
-  // outline: '1px solid #f00',
+  outline: '1px solid #00b',
   position: 'absolute'
 }
 
@@ -88,7 +90,7 @@ export function StickyOverlayRenderer(props) {
           position: 'sticky',
           top: 0,
           height: 1,
-          // backgroundColor: 'red'
+          backgroundColor: DEBUG ? 'red' : 'none'
         }}
       />
       <div
@@ -129,8 +131,11 @@ export function StickyOverlayRenderer(props) {
               id={item.id}
               style={{
                 ...OVERLAY_ITEM_STYLE,
-                ...item.rect,
-                visibility: 'hidden'
+                width: item.rect.width,
+                left: item.rect.left,
+                top: item.rect.top - 20,
+                height: item.rect.height + 40,
+                visibility: DEBUG ? 'visible' : 'hidden'
               }}
             />
           )
@@ -169,7 +174,7 @@ export function StickyOverlayRenderer(props) {
           position: 'sticky',
           bottom: 0,
           height: 1,
-          // backgroundColor: 'blue'
+          backgroundColor: DEBUG ? 'blue' : 'none'
         }}
       />
     </div>
