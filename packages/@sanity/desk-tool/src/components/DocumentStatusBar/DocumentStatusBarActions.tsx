@@ -18,9 +18,10 @@ const TOUCH_SUPPORT = 'ontouchstart' in document.documentElement
 interface Props {
   id: string
   type: string
-  actionStates: any
+  states: any[]
   disabled: boolean
   isMenuOpen: boolean
+  showMenu: boolean
   onMenuOpen: () => void
   onMenuClose: () => void
 }
@@ -33,8 +34,8 @@ function ConditionalTooltip(
 }
 
 function DocumentStatusBarActionsInner(props: Props) {
-  const [firstActionState, ...rest] = props.actionStates
-  const hasMoreActions = rest.length > 0
+  const {states, showMenu} = props
+  const [firstActionState, ...menuActionStates] = states
 
   return (
     <div className={props.isMenuOpen ? styles.isMenuOpen : styles.root}>
@@ -62,7 +63,7 @@ function DocumentStatusBarActionsInner(props: Props) {
           >
             <Button
               className={
-                hasMoreActions ? styles.mainActionButtonWithMoreActions : styles.mainActionButton
+                showMenu ? styles.mainActionButtonWithMoreActions : styles.mainActionButton
               }
               icon={firstActionState.icon}
               color={firstActionState.disabled ? undefined : firstActionState.color || 'primary'}
@@ -76,9 +77,9 @@ function DocumentStatusBarActionsInner(props: Props) {
           {firstActionState.dialog && <ActionStateDialog dialog={firstActionState.dialog} />}
         </div>
       )}
-      {hasMoreActions && (
+      {showMenu && (
         <ActionMenu
-          actionStates={rest}
+          actionStates={menuActionStates}
           isOpen={props.isMenuOpen}
           onOpen={props.onMenuOpen}
           onClose={props.onMenuClose}
@@ -90,7 +91,7 @@ function DocumentStatusBarActionsInner(props: Props) {
 }
 
 export function DocumentStatusBarActions(props: {id: string; type: string}) {
-  const editState = useEditState(props.id, props.type)
+  const editState: any = useEditState(props.id, props.type)
   const connectionState = useConnectionState(props.id, props.type)
 
   const [isMenuOpen, setMenuOpen] = React.useState(false)
@@ -101,10 +102,11 @@ export function DocumentStatusBarActions(props: {id: string; type: string}) {
     <RenderActionCollectionState
       component={DocumentStatusBarActionsInner}
       isMenuOpen={isMenuOpen}
+      showMenu={actions.length > 1}
       onMenuOpen={() => setMenuOpen(true)}
       onMenuClose={() => setMenuOpen(false)}
       onActionComplete={() => setMenuOpen(false)}
-      actions={actions}
+      actions={isMenuOpen ? actions : actions.slice(0, 1)}
       actionProps={editState}
       disabled={connectionState !== 'connected'}
     />
@@ -135,9 +137,6 @@ export function HistoryStatusBarActions(props: HistoryStatusBarActionsProps) {
       component={DocumentStatusBarActionsInner}
       actions={historyActions}
       actionProps={actionProps}
-      onActionComplete={() => {
-        /*todo: make optional*/
-      }}
       disabled={connectionState !== 'connected' || Boolean(disabled)}
     />
   )

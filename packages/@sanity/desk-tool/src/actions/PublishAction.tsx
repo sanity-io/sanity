@@ -85,6 +85,14 @@ export function PublishAction(props) {
       publish.disabled
   )
 
+  const onHandle = React.useCallback(() => {
+    if (syncState.isSyncing || validationStatus.isValidating) {
+      setPublishScheduled(true)
+    } else {
+      doPublish()
+    }
+  }, [syncState.isSyncing, validationStatus.isValidating])
+
   return {
     disabled,
     label:
@@ -105,12 +113,6 @@ export function PublishAction(props) {
       ? null
       : title,
     shortcut: disabled || publishScheduled ? null : 'Ctrl+Alt+P',
-    onHandle: () => {
-      if (syncState.isSyncing || validationStatus.isValidating) {
-        setPublishScheduled(true)
-      } else {
-        doPublish()
-      }
-    }
+    onHandle: onHandle
   }
 }
