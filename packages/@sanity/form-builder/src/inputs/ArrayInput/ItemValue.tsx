@@ -237,7 +237,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     )
   }
   renderItem() {
-    const {value, markers, type, readOnly, presence} = this.props
+    const {value, markers, type, readOnly, presence, focusPath} = this.props
     const options = type.options || {}
     const isGrid = options.layout === 'grid'
     const isSortable = !readOnly && !type.readOnly && options.sortable !== false
@@ -259,6 +259,9 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     ]
       .filter(Boolean)
       .join(' ')
+
+    const isEditing = PathUtils.isExpanded(value, focusPath)
+
     return (
       <div className={classNames}>
         {!isGrid && isSortable && <DragHandle />}
@@ -282,7 +285,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
         <div className={isGrid ? styles.functionsInGrid : styles.functions}>
           <div>
             <ValidationStatus markers={scopedValidation} />
-            <PresenceContainer presence={presence} />
+            {!isEditing && <PresenceContainer presence={presence} />}
           </div>
           {value._ref && (
             <IntentLink className={styles.linkToReference} intent="edit" params={{id: value._ref}}>
