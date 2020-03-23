@@ -5,7 +5,7 @@ export interface BoxMountEvent {
   type: 'mount'
   id: string
   element: Element
-  children: React.ReactNode
+  props: any
 }
 
 export interface BoxUnmountEvent {
@@ -16,7 +16,7 @@ export interface BoxUnmountEvent {
 export interface BoxUpdateEvent {
   type: 'update'
   id: string
-  children: React.ReactNode
+  props: any
 }
 
 export type BoxEvent = BoxMountEvent | BoxUpdateEvent | BoxUnmountEvent

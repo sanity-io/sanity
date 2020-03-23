@@ -90,7 +90,9 @@ export const Tracker = React.memo(function Tracker(props: {
     const positions$ = mounts$.pipe(
       mergeMap((mountEvent: BoxMountEvent, i) => {
         const mid = mountEvent.id
-        const unmounted$ = unmounts$.pipe(filter(isId(mountEvent.id)), share())
+        const unmounted$ = unmounts$.pipe(filter(isId(mid)), share())
+        const elementUpdates$ = updates$.pipe(filter(isId(mid)), share())
+
         const contentRect$ = merge(
           of(boundsToRect(mountEvent.element.getBoundingClientRect())),
           trackerBounds$.pipe(map(() => boundsToRect(mountEvent.element.getBoundingClientRect())))
@@ -107,25 +109,26 @@ export const Tracker = React.memo(function Tracker(props: {
         )
         return merge(
           contentRect$.pipe(
-            map(rect => ({type: 'update', id: mid, rect, children: mountEvent.children}))
+            map(rect => ({type: 'update', id: mid, rect, props: mountEvent.props}))
           ),
+          elementUpdates$.pipe(map(update => ({type: 'update', id: mid, props: update.props}))),
           unmounted$.pipe(map(() => ({type: 'remove', id: mid, children: null, rect: null})))
         )
       }),
-      scan((items, event) => {
+      scan((items, event: any) => {
         if (event.type === 'update') {
           const exists = items.some(item => item.id === event.id)
           if (exists) {
             return items.map(item =>
               item.id === event.id
-                ? {id: event.id, children: event.children || item.children, rect: event.rect}
+                ? {id: event.id, props: event.props || item.props, rect: event.rect || item.rect}
                 : item
             )
           }
           return items.concat({
             id: event.id,
             rect: event.rect,
-            children: event.children
+            props: event.props
           })
         }
 

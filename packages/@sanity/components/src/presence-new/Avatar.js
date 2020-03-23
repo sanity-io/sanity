@@ -4,11 +4,18 @@ import PropTypes from 'prop-types'
 import colorHasher from '../presence/colorHasher'
 import styles from './styles/Avatar.css'
 
-export default function Avatar({id, position, scrollToField, status, size}) {
+export default function Avatar({identity, position, scrollToField, status, size}) {
+  // we need to scope the value of the id attributes here
+  const idRef = React.useRef(
+    Math.random()
+      .toString(32)
+      .substring(2)
+  )
+  const _id = idRef.current
   const [user, setUser] = useState({})
   useEffect(() => {
-    if (id) {
-      userStore.getUser(id).then(result => {
+    if (identity) {
+      userStore.getUser(identity).then(result => {
         setUser(result)
       })
     }
@@ -27,7 +34,7 @@ export default function Avatar({id, position, scrollToField, status, size}) {
       className={styles.root}
       onClick={handleScrollToField}
       data-dock={position}
-      style={{color: colorHasher(id)}}
+      style={{color: colorHasher(identity)}}
     >
       <div className={`${styles.avatar} ${styles[`size_${size}`]}`} data-status={status}>
         <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -49,11 +56,11 @@ export default function Avatar({id, position, scrollToField, status, size}) {
             cx="16"
             cy="16"
             r="13"
-            fill={user.imageUrl ? `url(#${`${user.id}-image-url`})` : 'currentColor'}
+            fill={user.imageUrl ? `url(#${`${_id}_${user.id}-image-url`})` : 'currentColor'}
           />
           <defs>
             <pattern
-              id={`${user.id}-image-url`}
+              id={`${_id}_${user.id}-image-url`}
               patternContentUnits="objectBoundingBox"
               width="1"
               height="1"

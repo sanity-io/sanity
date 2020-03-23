@@ -3,7 +3,7 @@ import {createIntersectionObserver} from './intersectionObserver'
 import {tap} from 'rxjs/operators'
 import {groupBy} from 'lodash'
 
-const DEBUG = true
+const DEBUG = false
 
 const OVERLAY_STYLE: React.CSSProperties = {
   position: 'absolute',
@@ -12,13 +12,16 @@ const OVERLAY_STYLE: React.CSSProperties = {
   right: 0,
   bottom: 0,
   pointerEvents: 'none',
-  ...(DEBUG ? {background: 'rgba(255, 255, 0, 0.25)'} : {})
+  background: DEBUG ? 'rgba(255, 255, 0, 0.25)' : ''
+}
+
+const TRANSITION = {
+  transitionProperty: 'top, left',
+  transitionDuration: '0.4s'
 }
 
 const OVERLAY_ITEM_STYLE: React.CSSProperties = {
-  background: 'rgba(255, 0, 0, 0.25)',
-  // transitionProperty: 'top, left',
-  // transitionDuration: '0.4s',
+  background: DEBUG ? 'rgba(255, 0, 0, 0.25)' : '',
   overflow: 'hidden',
   pointerEvents: 'all',
   outline: '1px solid #00b',
@@ -67,7 +70,7 @@ export function StickyOverlayRenderer(props) {
             const distanceBottom =
               bottom.boundingClientRect.bottom - intersection.boundingClientRect.bottom
 
-            console.log({distanceTop, distanceBottom})
+            // console.log({distanceTop, distanceBottom})
             const above = distanceTop < -20
             const below = distanceBottom < -20
 
@@ -79,7 +82,6 @@ export function StickyOverlayRenderer(props) {
       : []
 
   const groups = {inside: [], below: [], above: [], ...groupBy(positions, e => e.position)}
-
   return (
     <div style={{position: 'relative'}}>
       <WithIntersection
@@ -97,26 +99,30 @@ export function StickyOverlayRenderer(props) {
         style={{
           display: 'flex',
           position: 'sticky',
-          top: 0,
+          top: 5,
           left: 0,
           right: 0,
           zIndex: 100,
           justifyContent: 'flex-end'
         }}
       >
-        {groups.above.map(e => (
-          <div
-            key={e.item.id}
-            style={{
-              position: 'absolute',
-              overflow: 'hidden',
-              display: 'inline-block',
-              left: e.item.rect.left
-            }}
-          >
-            {e.item.children}
-          </div>
-        ))}
+        {groups.above.map(e => {
+          const {childComponent: Avatar, identity} = e.item.props
+          return (
+            <div
+              key={e.item.id}
+              style={{
+                ...TRANSITION,
+                position: 'absolute',
+                display: 'inline-block',
+                left: e.item.rect.left,
+                marginTop: 2
+              }}
+            >
+              <Avatar identity={identity} position="top" />
+            </div>
+          )
+        })}
       </div>
       <div ref={trackerRef} style={{position: 'relative'}}>
         {children}
@@ -141,30 +147,52 @@ export function StickyOverlayRenderer(props) {
           )
         })}
       </div>
+      {groups.inside.map(e => {
+        const {childComponent: Avatar, identity} = e.item.props
+        return (
+          <div
+            key={e.item.id}
+            style={{
+              ...TRANSITION,
+              position: 'absolute',
+              overflow: 'hidden',
+              display: 'inline-block',
+              ...e.item.rect
+            }}
+          >
+            <Avatar identity={identity} />
+          </div>
+        )
+      })}
       <div
         style={{
           display: 'flex',
           position: 'sticky',
-          bottom: 0,
+          bottom: 5,
           left: 0,
           right: 0,
           justifyContent: 'flex-end'
         }}
       >
-        {groups.below.map(e => (
-          <div
-            key={e.item.id}
-            style={{
-              position: 'absolute',
-              top: -e.item.rect.height,
-              left: e.item.rect.left,
-              overflow: 'hidden',
-              display: 'inline-block'
-            }}
-          >
-            {e.item.children}
-          </div>
-        ))}
+        {groups.below.map(e => {
+          const {childComponent: Avatar, identity} = e.item.props
+          return (
+            <div
+              key={e.item.id}
+              style={{
+                ...TRANSITION,
+                position: 'absolute',
+                top: -e.item.rect.height - 2,
+                height: e.item.rect.height + 4,
+                left: e.item.rect.left,
+                overflow: 'hidden',
+                display: 'inline-block'
+              }}
+            >
+              <Avatar identity={identity} position="bottom" />
+            </div>
+          )
+        })}
       </div>
       <WithIntersection
         id="::bottom"

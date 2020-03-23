@@ -1,35 +1,41 @@
 import * as React from 'react'
 import {Context} from './context'
 
-export const Box = function Box(props: {id: string; children?: React.ReactNode, style?: React.CSSProperties}) {
+export const Box = React.memo(function Box(props: {
+  id: string
+  children?: React.ReactNode
+  childComponent: React.ComponentType
+  style?: React.CSSProperties
+}) {
+  const {id, childComponent, ...rest} = props
   const ref = React.useRef<HTMLDivElement>()
   const context = React.useContext(Context)
 
   React.useEffect(() => {
     context.dispatch({
       type: 'mount',
-      id: props.id,
+      id,
       element: ref.current,
-      children: props.children
+      props
     })
     return () => {
-      context.dispatch({type: 'unmount', id: props.id})
+      context.dispatch({type: 'unmount', id})
     }
   }, [])
 
   React.useEffect(() => {
-    console.log('update')
     context.dispatch({
       type: 'update',
-      id: props.id,
-      children: props.children
+      id,
+      props
     })
-  }, [])
+  }, [props])
 
+  const Component = childComponent
   return (
     // note the wrapper here must be a block element for ResizeObserver to work properly
-    <div ref={ref} style={{...props.style}}>
-      {props.children || props.id}
+    <div ref={ref} style={{display: 'inline-block', visibility: 'hidden', ...props.style}}>
+      <Component {...rest} />
     </div>
   )
-}
+})
