@@ -340,7 +340,9 @@ function extractFromSanitySchema(sanitySchema) {
 
       const references = refs.length > 0 ? refs : undefined
       const inlineObjects = inlineObjs.length > 0 ? inlineObjs : undefined
-      return {type: name, references, inlineObjects}
+      return isReference(parent)
+        ? {type: name, references}
+        : {type: name, references, inlineObjects}
     } finally {
       const parentIndex = unionRecursionGuards.indexOf(parent)
       if (parentIndex !== -1) {
