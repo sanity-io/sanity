@@ -180,7 +180,7 @@ export default class DefaultDialog extends React.PureComponent {
                   {title && (
                     <div className={styles.header}>
                       <h1 className={styles.title}>{title}</h1>
-                      {onClose && (
+                      {onClose && showCloseButton && (
                         <button
                           className={styles.closeButton}
                           onClick={onClose}
