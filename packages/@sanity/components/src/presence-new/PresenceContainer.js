@@ -11,7 +11,7 @@ export default function PresenceContainer({presence}) {
           <Box
             key={item.sessionId}
             id={item.sessionId}
-            identity={item.identity}
+            userId={item.identity}
             sessionId={item.sessionId}
             childComponent={Avatar}
           />

@@ -3,19 +3,15 @@ import userStore from 'part:@sanity/base/user'
 import PropTypes from 'prop-types'
 import colorHasher from '../presence/colorHasher'
 import styles from './styles/Avatar.css'
+import {useId} from '@reach/auto-id'
 
-export default function Avatar({identity, sessionId, position, scrollToField, status, size}) {
+export default function Avatar({userId, sessionId, position, scrollToField, status, size}) {
   // we need to scope the value of the id attributes here
-  const idRef = React.useRef(
-    Math.random()
-      .toString(32)
-      .substring(2)
-  )
-  const _id = idRef.current
+  const elementId = useId()
   const [user, setUser] = useState({})
   useEffect(() => {
-    if (identity) {
-      userStore.getUser(identity).then(result => {
+    if (userId) {
+      userStore.getUser(userId).then(result => {
         setUser(result)
       })
     }
@@ -56,11 +52,11 @@ export default function Avatar({identity, sessionId, position, scrollToField, st
             cx="16"
             cy="16"
             r="13"
-            fill={user.imageUrl ? `url(#${`${_id}_${user.id}-image-url`})` : 'currentColor'}
+            fill={user.imageUrl ? `url(#${`${elementId}_${user.id}-image-url`})` : 'currentColor'}
           />
           <defs>
             <pattern
-              id={`${_id}_${user.id}-image-url`}
+              id={`${elementId}_${user.id}-image-url`}
               patternContentUnits="objectBoundingBox"
               width="1"
               height="1"
@@ -83,7 +79,7 @@ export default function Avatar({identity, sessionId, position, scrollToField, st
 }
 
 Avatar.propTypes = {
-  id: PropTypes.string.isRequired,
+  userId: PropTypes.string.isRequired,
   position: PropTypes.string,
   scrollToField: PropTypes.func,
   size: PropTypes.string,
