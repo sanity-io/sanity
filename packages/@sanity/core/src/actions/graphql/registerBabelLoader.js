@@ -27,6 +27,7 @@ module.exports = basePath => {
         compact: false,
         root: basePath,
         ignore: [path.join(basePath, 'node_modules')],
+        extensions: ['.es6', '.es', '.jsx', '.js', '.mjs', '.ts', '.tsx'],
         test: /.*/,
         presets: [
           '@babel/preset-typescript',
