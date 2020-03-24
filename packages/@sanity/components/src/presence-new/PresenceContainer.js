@@ -12,6 +12,7 @@ export default function PresenceContainer({presence}) {
             key={item.sessionId}
             id={item.sessionId}
             identity={item.identity}
+            sessionId={item.sessionId}
             childComponent={Avatar}
           />
         ))}

@@ -39,11 +39,11 @@
   }
 }
 
-.avatar[data-status="inactive"] {
+.avatar[data-status='inactive'] {
   opacity: 0.6;
 }
 
-.avatar[data-status="editing"] {
+.avatar[data-status='editing'] {
   @nest & .border {
     stroke-dasharray: 12%;
   }
@@ -77,12 +77,12 @@
   }
 }
 
-.arrow[data-dock="top"] {
+.arrow[data-dock='top'] {
   top: 1px;
   display: block;
 }
 
-.arrow[data-dock="bottom"] {
+.arrow[data-dock='bottom'] {
   bottom: 1px;
   display: block;
   transform: rotate(180deg);

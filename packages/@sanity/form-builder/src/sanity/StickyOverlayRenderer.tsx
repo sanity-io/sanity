@@ -32,7 +32,7 @@ const WithIntersection = props => {
   const {onIntersection, io, id, ...rest} = props
   const element = React.useRef()
   React.useEffect(() => {
-    const io = createIntersectionObserver({threshold: [0, 0.1, 0.9, 1]})
+    const io = createIntersectionObserver({threshold: [0, 0.01, 0.1, 0.2, 0.8, 0.9, 0.99, 1]})
     const sub = io
       .observe(element.current)
       .pipe(tap(entry => onIntersection(id, entry)))
@@ -44,7 +44,7 @@ const WithIntersection = props => {
 }
 
 export function StickyOverlayRenderer(props) {
-  const {items, children, trackerRef} = props
+  const {items, render, children, trackerRef} = props
 
   const io = React.useMemo(() => createIntersectionObserver({threshold: [0, 0.1, 0.5, 0.9, 1]}), [])
 
@@ -70,18 +70,25 @@ export function StickyOverlayRenderer(props) {
             const distanceBottom =
               bottom.boundingClientRect.bottom - intersection.boundingClientRect.bottom
 
-            // console.log({distanceTop, distanceBottom})
-            const above = distanceTop < -20
-            const below = distanceBottom < -20
-
             // const inside = intersection.isIntersecting && !above && !below
 
-            return {position: above ? 'above' : below ? 'below' : 'inside', item}
+            return {
+              distanceTop,
+              distanceBottom,
+              item
+            }
           })
           .filter(Boolean)
       : []
 
-  const groups = {inside: [], below: [], above: [], ...groupBy(positions, e => e.position)}
+  const groups = {
+    inside: [],
+    below: [],
+    above: [],
+    ...groupBy(positions, e =>
+      e.distanceTop < -20 ? 'above' : e.distanceBottom < -10 ? 'below' : 'inside'
+    )
+  }
   return (
     <div style={{position: 'relative'}}>
       <WithIntersection
@@ -95,38 +102,10 @@ export function StickyOverlayRenderer(props) {
           backgroundColor: DEBUG ? 'red' : 'none'
         }}
       />
-      <div
-        style={{
-          display: 'flex',
-          position: 'sticky',
-          top: 5,
-          left: 0,
-          right: 0,
-          zIndex: 100,
-          justifyContent: 'flex-end'
-        }}
-      >
-        {groups.above.map(e => {
-          const {childComponent: Avatar, identity} = e.item.props
-          return (
-            <div
-              key={e.item.id}
-              style={{
-                ...TRANSITION,
-                position: 'absolute',
-                display: 'inline-block',
-                left: e.item.rect.left,
-                marginTop: 2
-              }}
-            >
-              <Avatar identity={identity} position="top" />
-            </div>
-          )
-        })}
-      </div>
-      <div ref={trackerRef} style={{position: 'relative'}}>
-        {children}
-      </div>
+      {render.above(groups.above)}
+      {render.inside(groups.inside)}
+      <div ref={trackerRef}>{children}</div>
+      {render.below(groups.below)}
       <div style={OVERLAY_STYLE}>
         {items.map(item => {
           return (
@@ -139,61 +118,15 @@ export function StickyOverlayRenderer(props) {
                 ...OVERLAY_ITEM_STYLE,
                 width: item.rect.width,
                 left: item.rect.left,
-                top: item.rect.top - 20,
-                height: item.rect.height + 40,
+                top: item.rect.top - 30,
+                height: item.rect.height + 60,
                 visibility: DEBUG ? 'visible' : 'hidden'
               }}
             />
           )
         })}
       </div>
-      {groups.inside.map(e => {
-        const {childComponent: Avatar, identity} = e.item.props
-        return (
-          <div
-            key={e.item.id}
-            style={{
-              ...TRANSITION,
-              position: 'absolute',
-              overflow: 'hidden',
-              display: 'inline-block',
-              ...e.item.rect
-            }}
-          >
-            <Avatar identity={identity} />
-          </div>
-        )
-      })}
-      <div
-        style={{
-          display: 'flex',
-          position: 'sticky',
-          bottom: 5,
-          left: 0,
-          right: 0,
-          justifyContent: 'flex-end'
-        }}
-      >
-        {groups.below.map(e => {
-          const {childComponent: Avatar, identity} = e.item.props
-          return (
-            <div
-              key={e.item.id}
-              style={{
-                ...TRANSITION,
-                position: 'absolute',
-                top: -e.item.rect.height - 2,
-                height: e.item.rect.height + 4,
-                left: e.item.rect.left,
-                overflow: 'hidden',
-                display: 'inline-block'
-              }}
-            >
-              <Avatar identity={identity} position="bottom" />
-            </div>
-          )
-        })}
-      </div>
+      <div style={{padding: 20}} />
       <WithIntersection
         id="::bottom"
         io={io}
