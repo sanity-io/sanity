@@ -1,100 +1,54 @@
 import * as React from 'react'
-import {sortBy} from 'lodash'
 import {StickyOverlayRenderer} from './StickyOverlayRenderer'
-const STYLE = {
+
+const TRANSITION = {
   transitionProperty: 'all',
   transitionDuration: '1s'
 }
+
+const THRESHOLD_TOP = 30
+const THRESHOLD_BOTTOM = 5
+
 const RenderItem = ({childComponent: ChildComponent, ...props}) => <ChildComponent {...props} />
+
+const bottom = rect => rect.top + rect.height
 
 export const PresenceTransitionRenderer = props => {
   return (
     <StickyOverlayRenderer
       {...props}
-      render={{
-        above: entries => {
-          let prevRight = 0
-          return (
-            <div
-              style={{
-                position: 'sticky',
-                width: '100%',
-                top: 0,
-                zIndex: 1
-              }}
-            >
-              {sortBy(entries, e => 1 - e.item.rect.top).map((entry, i) => {
-                const res = (
-                  <div
-                    key={entry.item.id}
-                    style={{
-                      ...STYLE,
-                      position: 'absolute',
-                      right: prevRight,
-                      top: Math.max(7, 60 - Math.max(0, -entry.distanceTop + 10))
-                    }}
-                  >
-                    <RenderItem
-                      {...entry.item.props}
-                      position={entry.distanceTop < -40 ? 'top' : 'inside'}
-                    />
-                  </div>
-                )
-                prevRight += entry.item.rect.width || 0
-                return res
-              })}
-            </div>
-          )
-        },
-        inside: entries =>
-          entries.map(entry => {
-            return (
+      render={entries => {
+        return entries.map((entry, idx) => {
+          const prevRect = entry[idx - 1]?.item.rect
+          const prevBottom = prevRect ? bottom(prevRect) : 0
+
+          const isNearBottom = entry.distanceBottom < -THRESHOLD_BOTTOM
+
+          const isNearTop = entry.distanceTop < -THRESHOLD_TOP
+          const marginTop = isNearTop
+            ? Math.max(0, entry.distanceTop + THRESHOLD_TOP)
+            : entry.item.rect.top - prevBottom
+
+          const div = (
+            <>
               <div
                 key={entry.item.id}
                 style={{
-                  ...STYLE,
-                  position: 'absolute',
-                  ...entry.item.rect
+                  ...TRANSITION,
+                  ...(isNearBottom || isNearTop
+                    ? {position: 'sticky', ...(isNearTop ? {top: 0} : {bottom: 0})}
+                    : {position: 'absolute'}),
+                  marginLeft: entry.item.rect.left,
+                  marginTop: marginTop
                 }}
               >
+                {/*{isNearBottom ? 'near bottom' : 'nowhere near bottom'}: {entry.distanceBottom}*/}
                 <RenderItem {...entry.item.props} />
               </div>
-            )
-          }),
-        below: entries => {
-          let prevRight = 0
-          return (
-            <div
-              style={{
-                ...STYLE,
-                position: 'sticky',
-                width: '100%',
-                bottom: 0
-              }}
-            >
-              {sortBy(entries, e => e.item.rect.top).map((entry, i) => {
-                const res = (
-                  <div
-                    key={entry.item.id}
-                    style={{
-                      ...STYLE,
-                      position: 'absolute',
-                      right: prevRight,
-                      bottom: Math.max(7, 30 - -entry.distanceBottom)
-                    }}
-                  >
-                    <RenderItem
-                      {...entry.item.props}
-                      position={entry.distanceBottom < -10 ? 'bottom' : 'inside'}
-                    />
-                  </div>
-                )
-                prevRight += entry.item.rect.width || 0
-                return res
-              })}
-            </div>
+            </>
           )
-        }
+          return div
+        })
       }}
     />
   )

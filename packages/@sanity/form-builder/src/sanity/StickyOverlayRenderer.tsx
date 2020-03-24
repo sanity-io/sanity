@@ -3,7 +3,7 @@ import {createIntersectionObserver} from './intersectionObserver'
 import {tap} from 'rxjs/operators'
 import {groupBy} from 'lodash'
 
-const DEBUG = false
+const DEBUG = true
 
 const OVERLAY_STYLE: React.CSSProperties = {
   position: 'absolute',
@@ -56,7 +56,7 @@ export function StickyOverlayRenderer(props) {
 
   const top = intersections['::top']
   const bottom = intersections['::bottom']
-  const positions =
+  const entries =
     top && bottom
       ? items
           .map(item => {
@@ -81,14 +81,6 @@ export function StickyOverlayRenderer(props) {
           .filter(Boolean)
       : []
 
-  const groups = {
-    inside: [],
-    below: [],
-    above: [],
-    ...groupBy(positions, e =>
-      e.distanceTop < -20 ? 'above' : e.distanceBottom < -10 ? 'below' : 'inside'
-    )
-  }
   return (
     <div style={{position: 'relative'}}>
       <WithIntersection
@@ -102,10 +94,15 @@ export function StickyOverlayRenderer(props) {
           backgroundColor: DEBUG ? 'red' : 'none'
         }}
       />
-      {render.above(groups.above)}
-      {render.inside(groups.inside)}
       <div ref={trackerRef}>{children}</div>
-      {render.below(groups.below)}
+      <div
+        style={{
+          ...OVERLAY_STYLE,
+          zIndex: 100
+        }}
+      >
+        {render(entries)}
+      </div>
       <div style={OVERLAY_STYLE}>
         {items.map(item => {
           return (
