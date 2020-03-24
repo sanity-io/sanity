@@ -21,6 +21,7 @@
   "dependencies": {
     "@sanity/base": "1.149.10",
     "@sanity/overlayer": "1.149.3",
+    "@reach/auto-id": "0.9.0",
     "attr-accept": "^1.1.0",
     "boundless-arrow-key-navigation": "^1.1.0",
     "chance": "^1.0.4",
