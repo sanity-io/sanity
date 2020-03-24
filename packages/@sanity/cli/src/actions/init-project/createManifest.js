@@ -132,7 +132,7 @@ export function createSanityManifest(data, opts) {
       parts: [
         {
           name: 'part:@sanity/base/schema',
-          path: './schemas/schema.js'
+          path: './schemas/schema'
         }
       ]
     }
