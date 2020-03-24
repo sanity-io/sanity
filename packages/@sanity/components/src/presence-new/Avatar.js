@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import colorHasher from '../presence/colorHasher'
 import styles from './styles/Avatar.css'
 
-export default function Avatar({identity, position, scrollToField, status, size}) {
+export default function Avatar({identity, sessionId, position, scrollToField, status, size}) {
   // we need to scope the value of the id attributes here
   const idRef = React.useRef(
     Math.random()
@@ -34,7 +34,7 @@ export default function Avatar({identity, position, scrollToField, status, size}
       className={styles.root}
       onClick={handleScrollToField}
       data-dock={position}
-      style={{color: colorHasher(identity)}}
+      style={{color: colorHasher(sessionId)}}
     >
       <div className={`${styles.avatar} ${styles[`size_${size}`]}`} data-status={status}>
         <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
