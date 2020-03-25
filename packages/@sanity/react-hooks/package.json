@@ -6,7 +6,7 @@
   "types": "./lib/index.d.ts",
   "author": "Sanity.io <hello@sanity.io>",
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=10.0.0"
   },
   "license": "MIT",
   "scripts": {
@@ -21,6 +21,7 @@
     "headless",
     "realtime",
     "content",
+    "react-hooks",
     "structure",
     "api"
   ],

@@ -19,6 +19,7 @@
     "headless",
     "realtime",
     "content",
+    "studio-hints",
     "hints",
     "sanity-plugin"
   ],
