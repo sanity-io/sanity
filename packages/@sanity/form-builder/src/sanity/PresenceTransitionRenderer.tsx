@@ -31,14 +31,14 @@ export const PresenceTransitionRenderer = props => {
 
           const div = (
             <>
+              <div style={{height: marginTop}} />
               <div
                 key={entry.item.id}
                 style={{
                   ...TRANSITION,
                   position: 'sticky',
                   ...(isNearTop ? {top: 0} : isNearBottom ? {bottom: 0} : {}),
-                  marginLeft: entry.item.rect.left,
-                  marginTop: marginTop
+                  marginLeft: entry.item.rect.left
                 }}
               >
                 {/*{isNearBottom ? 'near bottom' : 'nowhere near bottom'}: {entry.distanceBottom}*/}
