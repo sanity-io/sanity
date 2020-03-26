@@ -35,9 +35,8 @@ export const PresenceTransitionRenderer = props => {
                 key={entry.item.id}
                 style={{
                   ...TRANSITION,
-                  ...(isNearBottom || isNearTop
-                    ? {position: 'sticky', ...(isNearTop ? {top: 0} : {bottom: 0})}
-                    : {position: 'absolute'}),
+                  position: 'sticky',
+                  ...(isNearTop ? {top: 0} : isNearBottom ? {bottom: 0} : {}),
                   marginLeft: entry.item.rect.left,
                   marginTop: marginTop
                 }}
