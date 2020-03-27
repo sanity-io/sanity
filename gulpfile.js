@@ -12,6 +12,7 @@ const chalk = require('chalk')
 const fs = require('fs')
 const babel = require('gulp-babel')
 const through = require('through2')
+const sourcemaps = require('gulp-sourcemaps')
 
 const {getPackagePaths} = require('./scripts/utils/getPackagePaths')
 const {runSanityStart} = require('./scripts/utils/runSanityStart')
@@ -69,7 +70,9 @@ function buildJavaScript(packageDir) {
           transformPath: orgPath => orgPath.replace(/\.tsx?$/, '.js')
         })
       )
-      .pipe(babel())
+      .pipe(sourcemaps.init())
+      .pipe(babel({sourceMap: true}))
+      .pipe(sourcemaps.write(DEST_DIR))
       .pipe(dest(DEST_DIR, {cwd: packageDir}))
   )
 }
