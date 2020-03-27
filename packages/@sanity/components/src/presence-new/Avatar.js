@@ -31,6 +31,7 @@ export default function Avatar({userId, sessionId, position, scrollToField, stat
       onClick={handleScrollToField}
       data-dock={position}
       style={{color: colorHasher(sessionId)}}
+      aria-label={user.displayName}
     >
       <div className={`${styles.avatar} ${styles[`size_${size}`]}`} data-status={status}>
         <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -52,11 +53,11 @@ export default function Avatar({userId, sessionId, position, scrollToField, stat
             cx="16"
             cy="16"
             r="13"
-            fill={user.imageUrl ? `url(#${`${elementId}_${user.id}-image-url`})` : 'currentColor'}
+            fill={user.imageUrl ? `url(#${`${elementId}_${userId}-image-url`})` : 'currentColor'}
           />
           <defs>
             <pattern
-              id={`${elementId}_${user.id}-image-url`}
+              id={`${elementId}_${userId}-image-url`}
               patternContentUnits="objectBoundingBox"
               width="1"
               height="1"
@@ -65,7 +66,6 @@ export default function Avatar({userId, sessionId, position, scrollToField, stat
             </pattern>
           </defs>
         </svg>
-      </div>
       <div className={styles.arrow} data-dock={position}>
         <svg viewBox="0 0 10 7" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -75,12 +75,13 @@ export default function Avatar({userId, sessionId, position, scrollToField, stat
         </svg>
       </div>
     </div>
+    </div>
   )
 }
 
 Avatar.propTypes = {
   userId: PropTypes.string.isRequired,
-  position: PropTypes.string,
+  position: PropTypes.oneOf(['top', 'bottom', null]),
   scrollToField: PropTypes.func,
   size: PropTypes.string,
   status: PropTypes.oneOf(['online', 'editing', 'inactive'])

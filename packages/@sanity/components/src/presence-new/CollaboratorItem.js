@@ -20,7 +20,7 @@ export default function CollaboratorItem({id, status, sessions}) {
     <div className={styles.root}>
       <div className={styles.inner}>
         <div className={styles.avatar}>
-          <Avatar id={id} status={status} size="medium" />
+          <Avatar userId={id} status={status} size="medium" />
         </div>
         <div className={styles.userInfo}>
           <div className={styles.name}>{user.displayName}</div>
