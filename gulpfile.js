@@ -72,7 +72,7 @@ function buildJavaScript(packageDir) {
       )
       .pipe(sourcemaps.init())
       .pipe(babel({sourceMap: true}))
-      .pipe(sourcemaps.write(DEST_DIR))
+      .pipe(sourcemaps.write('.'))
       .pipe(dest(DEST_DIR, {cwd: packageDir}))
   )
 }
