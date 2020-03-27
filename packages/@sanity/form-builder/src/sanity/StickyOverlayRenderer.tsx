@@ -91,6 +91,8 @@ export function StickyOverlayRenderer(props) {
           position: 'sticky',
           top: 0,
           height: 1,
+          marginTop: '-1rem',
+          paddingBottom: '1rem',
           backgroundColor: DEBUG ? 'red' : 'none'
         }}
       />
