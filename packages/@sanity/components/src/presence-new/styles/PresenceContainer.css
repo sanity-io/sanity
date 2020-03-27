@@ -1,9 +1,6 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
+  display: flex;
   margin-right: calc(var(--small-padding) * -1);
-}
-
-.root[data-hidden] {
-  opacity: 0;
 }

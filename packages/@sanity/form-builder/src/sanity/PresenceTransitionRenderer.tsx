@@ -37,12 +37,14 @@ export const PresenceTransitionRenderer = props => {
                 style={{
                   ...TRANSITION,
                   position: 'sticky',
-                  ...(isNearTop ? {top: 0} : isNearBottom ? {bottom: 0} : {}),
+                  ...(isNearTop ? {top: '8px'} : isNearBottom ? {bottom: '8px'} : {}),
                   marginLeft: entry.item.rect.left
                 }}
               >
-                {/*{isNearBottom ? 'near bottom' : 'nowhere near bottom'}: {entry.distanceBottom}*/}
-                <RenderItem {...entry.item.props} />
+                <RenderItem
+                  {...entry.item.props}
+                  position={isNearTop ? 'top' : isNearBottom ? 'bottom' : null}
+                />
               </div>
             </>
           )
