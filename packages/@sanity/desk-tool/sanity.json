@@ -42,6 +42,14 @@
       "description": "An observable that emits a function to filter fields in form builder"
     },
     {
+      "name": "part:@sanity/desk-tool/components/draft-status",
+      "description": "A component that is displayed as a badge in the document list pane"
+    },
+    {
+      "implements": "part:@sanity/desk-tool/components/draft-status",
+      "path": "components/DraftStatus.js"
+    },
+    {
       "implements": "part:@sanity/base/component",
       "path": "components/story.js"
     }

@@ -104,6 +104,10 @@
     {
       "implements": "part:@sanity/desk-tool/after-editor-component",
       "path": "src/components/AfterEditorComponent.js"
+    },
+    {
+      "implements": "part:@sanity/desk-tool/components/draft-status",
+      "path": "src/components/CustomDraftStatusInList.js"
     }
   ],
   "env": {

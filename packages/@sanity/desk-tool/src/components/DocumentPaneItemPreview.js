@@ -7,7 +7,7 @@ import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import {observeForPreview, SanityDefaultPreview} from 'part:@sanity/base/preview'
 import NotPublishedStatus from './NotPublishedStatus'
-import DraftStatus from './DraftStatus'
+import DraftStatus from 'part:@sanity/desk-tool/components/draft-status'
 
 const isLiveEditEnabled = schemaType => schemaType.liveEdit === true
 
