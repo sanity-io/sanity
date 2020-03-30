@@ -1,5 +1,6 @@
 import * as React from 'react'
 import {StickyOverlayRenderer} from './StickyOverlayRenderer'
+import {orderBy} from 'lodash'
 
 const TRANSITION = {
   transitionProperty: 'all',
@@ -18,27 +19,28 @@ export const PresenceTransitionRenderer = props => {
     <StickyOverlayRenderer
       {...props}
       render={entries => {
-        return entries.map((entry, idx) => {
-          const prevRect = entry[idx - 1]?.item.rect
+        const ordered = orderBy(entries, entry => entry.item.rect.top)
+        return ordered.map((entry, idx) => {
+          const prevRect = ordered[idx - 1]?.item.rect
           const prevBottom = prevRect ? bottom(prevRect) : 0
 
+          const spacerHeight = entry.item.rect.top - prevBottom
+
           const isNearBottom = entry.distanceBottom < -THRESHOLD_BOTTOM
-
           const isNearTop = entry.distanceTop < -THRESHOLD_TOP
-          const marginTop = isNearTop
-            ? Math.max(0, entry.distanceTop + THRESHOLD_TOP)
-            : entry.item.rect.top - prevBottom
 
-          const div = (
+          return (
             <>
-              <div style={{height: marginTop}} />
+              {spacerHeight > 0 && <div style={{height: spacerHeight}} />}
               <div
                 key={entry.item.id}
                 style={{
                   ...TRANSITION,
                   position: 'sticky',
-                  ...(isNearTop ? {top: '8px'} : isNearBottom ? {bottom: '8px'} : {}),
-                  marginLeft: entry.item.rect.left
+                  display: 'inline-block',
+                  top: 8,
+                  bottom: 8,
+                  left: entry.item.rect.left + entry.item.rect.width / 2
                 }}
               >
                 <RenderItem
@@ -48,7 +50,6 @@ export const PresenceTransitionRenderer = props => {
               </div>
             </>
           )
-          return div
         })
       }}
     />
