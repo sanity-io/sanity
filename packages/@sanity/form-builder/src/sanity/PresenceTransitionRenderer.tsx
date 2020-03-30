@@ -1,6 +1,7 @@
 import * as React from 'react'
 import {StickyOverlayRenderer} from './StickyOverlayRenderer'
 import {orderBy} from 'lodash'
+import {AbsoluteOverlayRenderer} from './AbsoluteOverlayRenderer'
 
 const TRANSITION = {
   transitionProperty: 'all',
@@ -14,7 +15,7 @@ const RenderItem = ({childComponent: ChildComponent, ...props}) => <ChildCompone
 
 const bottom = rect => rect.top + rect.height
 
-export const PresenceTransitionRenderer = props => {
+function StickyPresenceTransitionRenderer(props) {
   return (
     <StickyOverlayRenderer
       {...props}
@@ -55,3 +56,6 @@ export const PresenceTransitionRenderer = props => {
     />
   )
 }
+
+// export const PresenceTransitionRenderer = AbsoluteOverlayRenderer
+export const PresenceTransitionRenderer = StickyPresenceTransitionRenderer

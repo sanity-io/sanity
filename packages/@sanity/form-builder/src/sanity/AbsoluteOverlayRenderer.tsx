@@ -21,18 +21,25 @@ const ITEM_STYLE = {
 }
 
 export function AbsoluteOverlayRenderer(props) {
-  const {items} = props
-  return items.map(item => {
-    return (
-      <div
-        key={item.id}
-        style={{
-          ...ITEM_STYLE,
-          ...item.rect
-        }}
-      >
-        {item.id}
+  const {items, trackerRef, children, ...rest} = props
+  return (
+    <div ref={trackerRef} style={{position: 'relative'}}>
+      <div>{children}</div>
+      <div style={OVERLAY_STYLE}>
+        {sortBy(items, item => -item.rect.top).map(item => {
+          return (
+            <div
+              key={item.id}
+              style={{
+                ...ITEM_STYLE,
+                ...item.rect
+              }}
+            >
+              {item.id}
+            </div>
+          )
+        })}
       </div>
-    )
-  })
+    </div>
+  )
 }
