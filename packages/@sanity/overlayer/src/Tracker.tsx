@@ -59,7 +59,7 @@ const getOffsetsTo = (source, target) => {
   let el = source
   let top = 0
   let left = 0
-  while (el !== target) {
+  while (el && el !== target) {
     top += el.offsetTop
     left += el.offsetLeft
     el = el.offsetParent
