@@ -32,7 +32,6 @@ const WithIntersection = props => {
   const {onIntersection, io, id, ...rest} = props
   const element = React.useRef()
   React.useEffect(() => {
-    const io = createIntersectionObserver({threshold: [0, 0.01, 0.1, 0.2, 0.8, 0.9, 0.99, 1]})
     const sub = io
       .observe(element.current)
       .pipe(tap(entry => onIntersection(id, entry)))
@@ -46,7 +45,10 @@ const WithIntersection = props => {
 export function StickyOverlayRenderer(props) {
   const {items, render, children, trackerRef} = props
 
-  const io = React.useMemo(() => createIntersectionObserver({threshold: [0, 0.1, 0.5, 0.9, 1]}), [])
+  const io = React.useMemo(
+    () => createIntersectionObserver({threshold: [0, 0.01, 0.1, 0.2, 0.8, 0.9, 0.99, 1]}),
+    []
+  )
 
   const [intersections, setIntersections] = React.useState({})
 
