@@ -1,6 +1,6 @@
 {
   "name": "@sanity/default-login",
-  "version": "1.149.0",
+  "version": "1.149.7",
   "description": "Lets the user log in to Sanity.",
   "main": "lib/index.js",
   "author": "Sanity.io <hello@sanity.io>",
@@ -24,7 +24,7 @@
     "rxjs": "^6.5.3"
   },
   "devDependencies": {
-    "@sanity/check": "1.149.0",
+    "@sanity/check": "1.149.7",
     "rimraf": "^2.7.1"
   },
   "repository": {
