@@ -82,7 +82,7 @@ export function StickyOverlayRenderer(props) {
       : []
 
   return (
-    <div style={{position: 'relative'}}>
+    <div ref={trackerRef} style={{position: 'relative'}}>
       <WithIntersection
         io={io}
         id="::top"
@@ -96,7 +96,7 @@ export function StickyOverlayRenderer(props) {
           backgroundColor: DEBUG ? 'red' : 'none'
         }}
       />
-      <div ref={trackerRef}>{children}</div>
+      <div>{children}</div>
       <div
         style={{
           ...OVERLAY_STYLE,
