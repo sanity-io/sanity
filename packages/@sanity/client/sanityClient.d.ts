@@ -492,10 +492,11 @@ type ProjectlessClientConfig = BaseClientConfig & {
   dataset?: string
 }
 
-type ProjectClientConfig = {
+type ProjectClientConfig = BaseClientConfig & {
+  useProjectHostname?: true
   projectId: string
   dataset?: string
-} & BaseClientConfig
+}
 
 export type ClientConfig = ProjectClientConfig | ProjectlessClientConfig
 
