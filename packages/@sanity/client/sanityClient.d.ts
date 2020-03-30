@@ -408,14 +408,14 @@ export class Transaction {
   transactionId<T extends string | undefined>(id: T): T extends string ? this : string | undefined
 
   /**
-   * Return a plain JSON representation of the patch
+   * Return a plain JSON representation of the transaction
    */
-  serialize(): PatchMutationOperation
+  serialize(): Mutation[]
 
   /**
    * Return a plain JSON representation of the transaction
    */
-  toJSON(): PatchMutationOperation
+  toJSON(): Mutation[]
 
   /**
    * Commit the transaction, returning a promise that resolves to the first mutated document
