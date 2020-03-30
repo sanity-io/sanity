@@ -55,6 +55,18 @@ const isRectEqual = (rect, otherRect) => {
   )
 }
 
+const getOffsetsTo = (source, target) => {
+  let el = source
+  let top = 0
+  let left = 0
+  while (el !== target) {
+    top += el.offsetTop
+    left += el.offsetLeft
+    el = el.offsetParent
+  }
+  return {top, left}
+}
+
 export const Tracker = React.memo(function Tracker(props: {
   component: React.ComponentType<{
     items: OverlayItem[]
@@ -98,9 +110,8 @@ export const Tracker = React.memo(function Tracker(props: {
           trackerBounds$.pipe(map(() => boundsToRect(mountEvent.element.getBoundingClientRect())))
         ).pipe(
           withLatestFrom(trackerBounds$),
-          map(([elementBounds, containerBounds]) => ({
-            top: elementBounds.top + (trackerRef.current?.offsetTop || 0) - containerBounds.top,
-            left: elementBounds.left + (trackerRef.current?.offsetLeft || 0) - containerBounds.left,
+          map(([elementBounds, trackerBounds]) => ({
+            ...getOffsetsTo(mountEvent.element, trackerRef.current),
             width: elementBounds.width,
             height: elementBounds.height
           })),
