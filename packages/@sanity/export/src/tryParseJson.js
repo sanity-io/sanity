@@ -5,6 +5,7 @@ module.exports = line => {
     // Catch half-done lines with an error at the end
     const errorPosition = line.lastIndexOf('{"error":')
     if (errorPosition === -1) {
+      err.message = `${err.message} (${line})`
       throw err
     }
 
