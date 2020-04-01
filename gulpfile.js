@@ -1,15 +1,15 @@
 /* eslint-disable import/no-commonjs, import/no-unassigned-import, max-nested-callbacks */
 
+const fs = require('fs')
+const path = require('path')
 const {src, dest, watch, parallel, series} = require('gulp')
 const del = require('del')
-const path = require('path')
 const changed = require('gulp-changed')
 const ts = require('gulp-typescript')
 const filter = require('gulp-filter')
 const {flatten} = require('lodash')
 const log = require('fancy-log')
 const chalk = require('chalk')
-const fs = require('fs')
 const babel = require('gulp-babel')
 const through = require('through2')
 
