@@ -6,13 +6,32 @@ const HttpsAgent = HttpAgent.HttpsAgent
 const httpAgent = new HttpAgent()
 const httpsAgent = new HttpsAgent()
 
-const RESPONSE_TIMEOUT = 15000
+const CONNECTION_TIMEOUT = 15 * 1000 // 15 seconds
+const READ_TIMEOUT = 3 * 60 * 1000 // 3 minutes
 const MAX_RETRIES = 5
 
 // Just a promisified simpleGet
 function getStream(options) {
   return new Promise((resolve, reject) => {
-    simpleGet(options, (err, res) => (err ? reject(err) : resolve(res)))
+    let rejected = false
+    const openTimeout = setTimeout(() => {
+      rejected = true
+      reject(new Error(`Connection timed out after ${CONNECTION_TIMEOUT} ms`))
+    }, CONNECTION_TIMEOUT)
+
+    simpleGet(options, (err, res) => {
+      clearTimeout(openTimeout)
+      if (rejected) {
+        return
+      }
+
+      if (err) {
+        reject(err)
+        return
+      }
+
+      resolve(res)
+    })
   })
 }
 
@@ -28,7 +47,11 @@ module.exports = async options => {
   for (let i = 0; i < MAX_RETRIES; i++) {
     try {
       const response = await getStream(reqOptions)
-      response.setTimeout(RESPONSE_TIMEOUT)
+      response.connection.setTimeout(READ_TIMEOUT, () => {
+        response.destroy(
+          new Error(`Read timeout: No data received on socket for ${READ_TIMEOUT} ms`)
+        )
+      })
       return response
     } catch (err) {
       error = err
