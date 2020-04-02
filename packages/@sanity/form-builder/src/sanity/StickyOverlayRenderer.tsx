@@ -1,9 +1,8 @@
 import * as React from 'react'
 import {createIntersectionObserver} from './intersectionObserver'
 import {tap} from 'rxjs/operators'
-import {groupBy} from 'lodash'
 
-const DEBUG = true
+const DEBUG = false
 
 const OVERLAY_STYLE: React.CSSProperties = {
   position: 'absolute',
@@ -23,7 +22,7 @@ const TRANSITION = {
 const OVERLAY_ITEM_STYLE: React.CSSProperties = {
   background: DEBUG ? 'rgba(255, 0, 0, 0.25)' : '',
   overflow: 'hidden',
-  pointerEvents: 'all',
+  pointerEvents: 'none',
   outline: '1px solid #00b',
   position: 'absolute'
 }
@@ -93,20 +92,11 @@ export function StickyOverlayRenderer(props) {
           position: 'sticky',
           top: 0,
           height: 1,
-          marginTop: '-1rem',
-          paddingBottom: '1rem',
           backgroundColor: DEBUG ? 'red' : 'none'
         }}
       />
       <div>{children}</div>
-      <div
-        style={{
-          ...OVERLAY_STYLE,
-          zIndex: 100
-        }}
-      >
-        {render(entries)}
-      </div>
+      <div style={OVERLAY_STYLE}>{render(entries)}</div>
       <div style={OVERLAY_STYLE}>
         {items.map(item => {
           return (
