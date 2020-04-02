@@ -33,10 +33,6 @@
     transform-origin: center;
     animation: spinning 16s infinite linear;
   }
-
-  @nest & .avatarImage {
-    color: var(--gray-light);
-  }
 }
 
 .avatar[data-status='inactive'] {
@@ -49,14 +45,38 @@
   }
 }
 
-.size_small {
+.avatar[data-size="small"] {
+  font-size: var(--avatar-height);
   width: var(--avatar-height);
   height: var(--avatar-height);
 }
 
-.size_medium {
+.avatar[data-size="medium"] {
+  font-size: calc(var(--avatar-height) * 1.3);
   width: calc(var(--avatar-height) * 1.3);
   height: calc(var(--avatar-height) * 1.3);
+}
+
+.avatarInner {
+  position: relative;
+
+  @nest & .avatarInitials {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.4em;
+    font-weight: 600;
+    line-height: 0;
+    text-transform: uppercase;
+    text-align: center;
+    border-radius: 50%;
+  }
 }
 
 .arrow {
