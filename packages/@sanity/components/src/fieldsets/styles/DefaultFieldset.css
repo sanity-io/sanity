@@ -36,7 +36,6 @@
 }
 
 .headerStatus {
-  padding: 0 var(--small-padding);
   min-height: var(--avatar-height);
 }
 
