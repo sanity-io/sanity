@@ -4,7 +4,7 @@ import {Rect} from './types'
 export interface BoxMountEvent {
   type: 'mount'
   id: string
-  element: Element
+  element: HTMLElement
   props: any
 }
 

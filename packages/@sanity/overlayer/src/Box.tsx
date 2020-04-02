@@ -34,7 +34,7 @@ export const Box = React.memo(function Box(props: {
   const Component = childComponent
   return (
     // note the wrapper here must be a block element for ResizeObserver to work properly
-    <div ref={ref} style={{display: 'inline-block', visibility: 'hidden', ...props.style}}>
+    <div ref={ref} style={{display: 'inline-block', opacity: 0.4, ...props.style}}>
       <Component {...rest} />
     </div>
   )

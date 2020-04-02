@@ -41,7 +41,7 @@ function StickyPresenceTransitionRenderer(props) {
                   display: 'inline-block',
                   top: 8,
                   bottom: 8,
-                  left: entry.item.rect.left + entry.item.rect.width / 2
+                  left: entry.item.rect.left
                 }}
               >
                 <RenderItem
@@ -57,5 +57,5 @@ function StickyPresenceTransitionRenderer(props) {
   )
 }
 
-// export const PresenceTransitionRenderer = AbsoluteOverlayRenderer
-export const PresenceTransitionRenderer = StickyPresenceTransitionRenderer
+export const PresenceTransitionRenderer = AbsoluteOverlayRenderer
+// export const PresenceTransitionRenderer = StickyPresenceTransitionRenderer
