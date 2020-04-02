@@ -2,5 +2,4 @@
 
 .root {
   display: flex;
-  margin-right: calc(var(--small-padding) * -1);
 }

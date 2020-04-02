@@ -1,19 +1,17 @@
 import React from 'react'
 import styles from './styles/PresenceContainer.css'
 import Avatar from './Avatar'
-import {Box} from '@sanity/overlayer'
 
-export default function PresenceContainer({presence}) {
+export default function PresenceContainer({presence, position}) {
   return (
     <div className={styles.root}>
       {presence &&
         presence.map(item => (
-          <Box
+          <Avatar
             key={item.sessionId}
-            id={item.sessionId}
+            position={position}
             userId={item.identity}
             sessionId={item.sessionId}
-            childComponent={Avatar}
           />
         ))}
     </div>

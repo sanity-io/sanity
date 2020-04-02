@@ -67,6 +67,14 @@ const getOffsetsTo = (source, target) => {
   return {top, left}
 }
 
+function getRelativeRect(element, parent): Rect {
+  return {
+    ...getOffsetsTo(element, parent),
+    width: element.offsetWidth,
+    height: element.offsetHeight
+  }
+}
+
 export const Tracker = React.memo(function Tracker(props: {
   component: React.ComponentType<{
     items: OverlayItem[]
@@ -87,11 +95,9 @@ export const Tracker = React.memo(function Tracker(props: {
   React.useEffect(() => {
     const resizeObserver: ObservableResizeObserver = createResizeObserver()
 
-    const trackerBounds$ = resizeObserver.observe(trackerRef.current).pipe(
-      map(e => boundsToRect(e.target.getBoundingClientRect())),
-      publishReplay(1),
-      refCount()
-    )
+    const trackerBounds$ = resizeObserver
+      .observe(trackerRef.current)
+      .pipe(publishReplay(1), refCount())
 
     const all$ = boxElementEvents$.pipe(share())
 
@@ -101,29 +107,27 @@ export const Tracker = React.memo(function Tracker(props: {
 
     const positions$ = mounts$.pipe(
       mergeMap((mountEvent: BoxMountEvent, i) => {
-        const mid = mountEvent.id
-        const unmounted$ = unmounts$.pipe(filter(isId(mid)), share())
-        const elementUpdates$ = updates$.pipe(filter(isId(mid)), share())
+        const elementId = mountEvent.id
+        const unmounted$ = unmounts$.pipe(filter(isId(elementId)), share())
+        const elementUpdates$ = updates$.pipe(filter(isId(elementId)), share())
 
-        const contentRect$ = merge(
-          of(boundsToRect(mountEvent.element.getBoundingClientRect())),
-          trackerBounds$.pipe(map(() => boundsToRect(mountEvent.element.getBoundingClientRect())))
-        ).pipe(
-          withLatestFrom(trackerBounds$),
-          map(([elementBounds, trackerBounds]) => ({
-            ...getOffsetsTo(mountEvent.element, trackerRef.current),
-            width: elementBounds.width,
-            height: elementBounds.height
-          })),
-          distinctUntilChanged(isRectEqual),
-          takeUntil(unmounted$)
-        )
         return merge(
-          contentRect$.pipe(
-            map(rect => ({type: 'update', id: mid, rect, props: mountEvent.props}))
+          trackerBounds$.pipe(
+            map(() => ({
+              type: 'update',
+              id: elementId,
+              rect: getRelativeRect(mountEvent.element, trackerRef.current)
+            }))
           ),
-          elementUpdates$.pipe(map(update => ({type: 'update', id: mid, props: update.props}))),
-          unmounted$.pipe(map(() => ({type: 'remove', id: mid, children: null, rect: null})))
+          elementUpdates$.pipe(
+            map(update => ({
+              type: 'update',
+              id: elementId,
+              props: update.props,
+              rect: getRelativeRect(mountEvent.element, trackerRef.current)
+            }))
+          ),
+          unmounted$.pipe(map(() => ({type: 'remove', id: elementId, children: null, rect: null})))
         )
       }),
       scan((items, event: any) => {

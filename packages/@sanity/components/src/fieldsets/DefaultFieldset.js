@@ -8,6 +8,7 @@ import ValidationStatus from 'part:@sanity/components/validation/status'
 import ValidationList from 'part:@sanity/components/validation/list'
 import AnimateHeight from 'react-animate-height'
 import PresenceContainer from 'part:@sanity/components/presence/presence-container'
+import {Box} from '@sanity/overlayer'
 
 export default class Fieldset extends React.Component {
   static propTypes = {
@@ -39,6 +40,10 @@ export default class Fieldset extends React.Component {
     isCollapsed: false,
     isCollapsible: false // can collapsing be toggled by user?
   }
+
+  _instanceId = Math.random()
+    .toString(32)
+    .substring(2)
 
   constructor(props) {
     super()
@@ -159,7 +164,7 @@ export default class Fieldset extends React.Component {
               </div>
               <div className={styles.headerStatus}>
                 <ValidationStatus markers={markers} onClick={this.handleToggleValidationList} />
-                <PresenceContainer presence={presence} />
+                <Box id={this._instanceId} presence={presence} childComponent={PresenceContainer} />
               </div>
             </div>
             {showValidationList && (

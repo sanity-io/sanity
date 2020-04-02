@@ -8,6 +8,7 @@ import ValidationStatus from 'part:@sanity/components/validation/status'
 import ValidationList from 'part:@sanity/components/validation/list'
 import AnimateHeight from 'react-animate-height'
 import PresenceContainer from 'part:@sanity/components/presence/presence-container'
+import {Box} from '@sanity/overlayer'
 
 const ENABLE_CONTEXT = () => {}
 export default class DefaultFormField extends React.PureComponent {
@@ -37,6 +38,10 @@ export default class DefaultFormField extends React.PureComponent {
     formBuilder: ENABLE_CONTEXT,
     getValuePath: PropTypes.func
   }
+
+  _instanceId = Math.random()
+    .toString(32)
+    .substring(2)
 
   state = {
     showValidationMessages: false
@@ -90,7 +95,7 @@ export default class DefaultFormField extends React.PureComponent {
                 <div onClick={this.handleToggleShowValidation} className={styles.validationStatus}>
                   <ValidationStatus markers={markers} />
                 </div>
-                <PresenceContainer presence={presence} />
+                <Box id={this._instanceId} presence={presence} childComponent={PresenceContainer} />
               </div>
             </div>
           )}
