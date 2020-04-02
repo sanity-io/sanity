@@ -59,18 +59,22 @@ export default class LoginDialog extends React.Component {
     const currentUrl = encodeURIComponent(window.location.toString())
     const params = [`origin=${currentUrl}`, projectId && `projectId=${projectId}`].filter(Boolean)
 
-    if (provider.custom && !provider.supported) {
+    if (provider.custom && !provider.supported && !this.state.error) {
       this.setState({
         error: {
           message:
             'This project is missing the required "thirdPartyLogin" ' +
             'feature to support custom logins.',
-          link: generateHelpUrl('third-party-login')
+          link: generateHelpUrl('third-party-login'),
+          hideClose: true
         }
       })
       return
     }
-    window.location = `${provider.url}?${params.join('&')}`
+
+    if (!this.state.error) {
+      window.location = `${provider.url}?${params.join('&')}`
+    }
   }
 
   handleLoginButtonClicked = (provider, evnt) => {
@@ -93,7 +97,7 @@ export default class LoginDialog extends React.Component {
           title="Error"
           isOpen
           centered
-          onClose={this.handleErrorDialogClosed}
+          onClose={error.hideClose ? undefined : this.handleErrorDialogClosed}
         >
           <div className={styles.error}>
             {error.message}
