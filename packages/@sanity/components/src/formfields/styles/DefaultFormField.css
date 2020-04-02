@@ -65,7 +65,6 @@
 
 .headerStatus {
   display: flex;
-  padding: 0 var(--small-padding);
   align-content: center;
   min-height: var(--avatar-height);
 }
