@@ -1,5 +1,5 @@
 import OptionsArray from '../../inputs/OptionsArrayInput'
-import BlockEditor from '../../inputs/BlockEditor'
+import PortableTextInput from '../../inputs/PortableText/PortableTextInput'
 import ArrayOfPrimitivesInput from '../../inputs/ArrayOfPrimitivesInput'
 import TagsArrayInput from '../../inputs/TagsArrayInput'
 import * as is from '../../utils/is'
@@ -18,7 +18,8 @@ function isTagsArray(type) {
   )
 }
 
-function hasBlocks(type) {
+function isPortableText(type) {
+  // TODO: better testing here, not only for type 'block' !
   return type.of.some(memberType => is.type('block', memberType))
 }
 
@@ -41,9 +42,10 @@ export default function resolveArrayInput(type) {
     return ArrayOfPrimitivesInput
   }
 
-  // Use block editor if its an array that includes blocks
-  if (hasBlocks(type)) {
-    return BlockEditor
+  // Use Portable Text editor if portable text.
+
+  if (isPortableText(type)) {
+    return PortableTextInput
   }
 
   // use default
