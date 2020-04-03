@@ -3,6 +3,7 @@ import codeInputType from 'part:@sanity/form-builder/input/code/schema'
 import schemaTypes from 'all:part:@sanity/base/schema-type'
 import richDateType from 'part:@sanity/form-builder/input/rich-date/schema'
 
+import simpleBlock from './simpleBlock'
 import book from './book'
 import author from './author'
 import blocks from './blocks'
@@ -111,6 +112,7 @@ export default createSchema({
     button,
     mux,
     review,
-    gallery
+    gallery,
+    simpleBlock
   ])
 })
