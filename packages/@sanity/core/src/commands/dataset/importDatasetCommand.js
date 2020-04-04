@@ -168,20 +168,31 @@ export default {
     } catch (err) {
       endTask({success: false})
 
-      let error = err.message
-      if (!fromInitCommand && err.response && err.response.statusCode === 409) {
-        error = [
-          err.message,
-          '',
-          'You probably want either:',
-          ' --replace (replace existing documents with same IDs)',
-          ' --missing (only import documents that do not already exist)'
-        ].join('\n')
+      const isNonRefConflict =
+        !fromInitCommand &&
+        err.response &&
+        err.response.statusCode === 409 &&
+        err.step !== 'strengthen-references'
 
-        err.message = error
+      if (!isNonRefConflict) {
+        throw err
       }
 
-      throw err
+      const message = [
+        err.message,
+        '',
+        'You probably want either:',
+        ' --replace (replace existing documents with same IDs)',
+        ' --missing (only import documents that do not already exist)',
+        ''
+      ].join('\n')
+
+      const error = new Error(message)
+      error.details = err.details
+      error.response = err.response
+      error.responseBody = err.responseBody
+
+      throw error
     }
   }
 }
