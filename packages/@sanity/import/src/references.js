@@ -75,12 +75,18 @@ function strengthenReferences(strongRefs, options) {
 
 function unsetWeakBatch(client, progress, batch) {
   debug('Strengthening batch of %d documents', batch.length)
-  return retryOnFailure(() =>
-    batch
-      .reduce(reducePatch, client.transaction())
-      .commit({visibility: 'async'})
-      .then(progress)
-      .then(res => res.results.length)
+  return retryOnFailure(
+    () =>
+      batch
+        .reduce(reducePatch, client.transaction())
+        .commit({visibility: 'async'})
+        .then(progress)
+        .then(res => res.results.length)
+        .catch(err => {
+          err.step = 'strengthen-references'
+          throw err
+        }),
+    {isRetriable: err => !err.statusCode || err.statusCode !== 409}
   )
 }
 
