@@ -146,7 +146,7 @@ function jsonMap(value, mapFn) {
 
 const mapRefNodes = (doc, mapFn) =>
   jsonMap(doc, node => {
-    return typeof node && typeof node === 'object' && typeof node._ref === 'string'
+    return node && typeof node === 'object' && typeof node._ref === 'string'
       ? mapFn(node)
       : node
   })
