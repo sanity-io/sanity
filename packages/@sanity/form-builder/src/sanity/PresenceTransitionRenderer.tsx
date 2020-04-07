@@ -32,7 +32,7 @@ function group(entries) {
     [
       ...grouped.above.map((entry, i) => ({
         ...entry,
-        indent: grouped.above.slice(i).reduce((w, entry) => w + entry.item.rect.width, 0)
+        indent: grouped.above.slice(i + 1).reduce((w, entry) => w + entry.item.rect.width, 0)
       })),
       ...grouped.inside.map((entry, i) => ({...entry, indent: 0})),
       ...grouped.below.map((entry, i) => ({
@@ -65,7 +65,8 @@ function StickyPresenceTransitionRenderer(props) {
               <div
                 key={entry.item.id}
                 style={{
-                  transition: 'all',
+                  zIndex: 1100,
+                  transition: 'transform',
                   transitionDuration: '200ms',
                   transitionTimingFunction: 'ease-in-out',
                   transform: `translate3d(-${entry.indent}px, 0px, 0px)`,
@@ -73,7 +74,7 @@ function StickyPresenceTransitionRenderer(props) {
                   pointerEvents: 'all',
                   height: entry.item.rect.height,
                   width: entry.item.rect.width,
-                  marginLeft: isNearBottom || isNearTop ? `100%` : entry.item.rect.left,
+                  marginLeft: entry.item.rect.left,
                   top: 8,
                   bottom: 8
                 }}
