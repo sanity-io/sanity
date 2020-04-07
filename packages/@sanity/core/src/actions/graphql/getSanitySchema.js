@@ -1,6 +1,7 @@
 const pirates = require('pirates')
 const jsdomGlobal = require('jsdom-global')
 const pluginLoader = require('@sanity/plugin-loader')
+const requireContext = require('../../util/requireContext')
 const registerBabelLoader = require('./registerBabelLoader')
 
 const getFakeGlobals = () => ({
@@ -30,6 +31,7 @@ function provideFakeGlobals() {
 function getSanitySchema(basePath) {
   const domCleanup = jsdomGlobal()
   const globalCleanup = provideFakeGlobals()
+  const contextCleanup = requireContext.register()
   const cleanupFileLoader = pirates.addHook(
     (code, filename) => `module.exports = ${JSON.stringify(filename)}`,
     {
@@ -45,6 +47,7 @@ function getSanitySchema(basePath) {
   const schema = schemaMod.default || schemaMod
 
   cleanupFileLoader()
+  contextCleanup()
   globalCleanup()
   domCleanup()
 
