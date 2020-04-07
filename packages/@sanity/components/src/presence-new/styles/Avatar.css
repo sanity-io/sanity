@@ -2,11 +2,11 @@
 
 .root {
   position: relative;
-  z-index: 10;
   border-radius: 50%;
   box-sizing: border-box;
   fill: currentColor;
   pointer-events: auto;
+  display: inline-block;
 }
 
 .avatar {
