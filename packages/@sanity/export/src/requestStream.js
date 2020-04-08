@@ -47,11 +47,15 @@ module.exports = async options => {
   for (let i = 0; i < MAX_RETRIES; i++) {
     try {
       const response = await getStream(reqOptions)
-      response.connection.setTimeout(READ_TIMEOUT, () => {
-        response.destroy(
-          new Error(`Read timeout: No data received on socket for ${READ_TIMEOUT} ms`)
-        )
-      })
+
+      if (response.connection && typeof response.connection.setTimeout === 'function') {
+        response.connection.setTimeout(READ_TIMEOUT, () => {
+          response.destroy(
+            new Error(`Read timeout: No data received on socket for ${READ_TIMEOUT} ms`)
+          )
+        })
+      }
+
       return response
     } catch (err) {
       error = err
