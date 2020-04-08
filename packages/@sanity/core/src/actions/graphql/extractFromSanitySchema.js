@@ -415,7 +415,8 @@ function extractFromSanitySchema(sanitySchema) {
   }
 
   function getDescription(type) {
-    return (type.type && type.type.description) || undefined
+    const description = type.type && type.type.description
+    return typeof description === 'string' ? description : undefined
   }
 
   function gatherAllFields(type, field = 'fields') {
