@@ -24,7 +24,8 @@ module.exports = async args => {
 
   const babel = require.resolve('./babel')
   const loader = require.resolve('./pluginLoader')
-  const nodeArgs = ['-r', babel, '-r', loader]
+  const requireContext = require.resolve('./requireContext')
+  const nodeArgs = ['-r', babel, '-r', loader, '-r', requireContext]
     .concat(withToken ? ['-r', require.resolve('./configClient')] : [])
     .concat(scriptPath)
     .concat(args.extraArguments || [])
