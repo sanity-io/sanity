@@ -24,10 +24,10 @@ function validateFieldName(name): Array<any> {
       )
     ]
   }
-  if (name.startsWith('_')) {
+  if (name.startsWith('_') && !name.startsWith('__')) {
     return [
       error(
-        `Invalid field name "${name}". Field names cannot start with underscores "_" as it's reserved for system fields.`,
+        `Invalid field name "${name}". Field names cannot start with a single underscore "_" as it's reserved for system fields.`,
         HELP_IDS.OBJECT_FIELD_NAME_INVALID
       )
     ]
