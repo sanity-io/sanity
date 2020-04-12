@@ -12,6 +12,7 @@ export const SUPPORTED_LANGUAGES = [
   {title: 'Python', value: 'python'},
   {title: 'sh', value: 'sh'},
   {title: 'Plain text', value: 'text'},
+  {title: 'YAML', value: 'yaml'},
   {title: 'GROQ', value: 'groq'}
 ]
 

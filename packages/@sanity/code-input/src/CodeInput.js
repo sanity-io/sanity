@@ -34,6 +34,7 @@ import 'brace/mode/scss'
 import 'brace/mode/python'
 import 'brace/mode/sh'
 import 'brace/mode/text'
+import 'brace/mode/yaml'
 import './groq'
 
 import 'brace/theme/github'
