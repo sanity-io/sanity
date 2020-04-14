@@ -4,6 +4,10 @@ const {flatten} = require('lodash')
 
 // eslint-disable-next-line import/prefer-default-export
 export const blockValidator = async (value, options) => {
+  if (value.markDefs.length === 0) {
+    return []
+  }
+
   const {type} = options
   const childrenType = type.fields.find(field => field.name === 'children').type
   const spanType = childrenType.of.find(ofType => ofType.name === 'span')
@@ -21,12 +25,14 @@ export const blockValidator = async (value, options) => {
     })
     annotationValidations.push(validations)
   })
-  const result = await Promise.all(annotationValidations).then(flatten)
-  if (result.length) {
-    return result.map(res => {
+
+  const results = await Promise.all(annotationValidations).then(flatten)
+  if (results.length) {
+    return results.map(res => {
       res.item.paths = [res.path]
       return res.item
     })
   }
-  return true
+
+  return []
 }

@@ -251,6 +251,10 @@ class Rule {
     return this.cloneWithRules([{flag: 'reference'}])
   }
 
+  block(fn) {
+    return this.cloneWithRules([{flag: 'block', constraint: fn}])
+  }
+
   fields(rules) {
     if (this._type !== 'Object') {
       throw new Error('fields() can only be called on an object type')
