@@ -1,7 +1,7 @@
 {
   "name": "blog-studio",
   "private": true,
-  "version": "1.149.11",
+  "version": "1.149.12",
   "description": "Content studio running with schema from the blog init template",
   "main": "package.json",
   "author": "Sanity.io <hello@sanity.io>",
@@ -21,7 +21,7 @@
     "@sanity/base": "1.149.10",
     "@sanity/cli": "1.149.9",
     "@sanity/components": "1.149.10",
-    "@sanity/core": "1.149.11",
+    "@sanity/core": "1.149.12",
     "@sanity/default-layout": "1.149.10",
     "@sanity/default-login": "1.149.11",
     "@sanity/desk-tool": "1.149.10",
