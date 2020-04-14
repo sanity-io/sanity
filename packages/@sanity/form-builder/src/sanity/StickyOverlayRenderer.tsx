@@ -1,8 +1,8 @@
+/* eslint-disable react/no-multi-comp */
 import * as React from 'react'
 import {createIntersectionObserver} from './intersectionObserver'
 import {tap} from 'rxjs/operators'
-
-const DEBUG = false
+import {THRESHOLD_BOTTOM, THRESHOLD_TOP, DEBUG} from './constants'
 
 const OVERLAY_STYLE: React.CSSProperties = {
   position: 'absolute',
@@ -71,12 +71,17 @@ export function StickyOverlayRenderer(props) {
             const distanceBottom =
               bottom.boundingClientRect.bottom - intersection.boundingClientRect.bottom
 
-            // const inside = intersection.isIntersecting && !above && !below
-
+            const position =
+              distanceTop < -THRESHOLD_TOP
+                ? 'top'
+                : distanceBottom < -THRESHOLD_BOTTOM
+                ? 'bottom'
+                : 'inside'
             return {
               distanceTop,
               distanceBottom,
-              item
+              item,
+              position
             }
           })
           .filter(Boolean)
@@ -99,6 +104,7 @@ export function StickyOverlayRenderer(props) {
       <div style={OVERLAY_STYLE}>{render(entries)}</div>
       <div style={OVERLAY_STYLE}>
         {items.map(item => {
+          const forceWidth = item.rect.width === 0
           return (
             <WithIntersection
               io={io}
@@ -107,8 +113,8 @@ export function StickyOverlayRenderer(props) {
               id={item.id}
               style={{
                 ...OVERLAY_ITEM_STYLE,
-                width: item.rect.width,
-                left: item.rect.left,
+                width: forceWidth ? 1 : item.rect.width,
+                left: item.rect.left - (forceWidth ? 1 : 0),
                 top: item.rect.top - 30,
                 height: item.rect.height + 60,
                 visibility: DEBUG ? 'visible' : 'hidden'
