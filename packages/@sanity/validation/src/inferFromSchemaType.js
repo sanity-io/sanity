@@ -50,7 +50,7 @@ function inferFromSchemaType(typeDef, schema, visited = new Set()) {
   }
 
   if (type && type.name === 'block') {
-    base = base.custom(blockValidator)
+    base = base.block(blockValidator)
   }
 
   if (typeDef.annotations) {

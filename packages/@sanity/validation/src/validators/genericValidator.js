@@ -2,6 +2,7 @@ const Type = require('type-of-is')
 const {flatten} = require('lodash')
 const deepEquals = require('../util/deepEquals')
 const pathToString = require('../util/pathToString')
+const handleValidationResult = require('../util/handleValidationResult')
 const ValidationError = require('../ValidationError')
 
 const SLOW_VALIDATOR_TIMEOUT = 5000
@@ -87,29 +88,7 @@ const custom = async (fn, value, message, options) => {
 
   clearTimeout(slowTimer)
 
-  if (Array.isArray(result)) {
-    if (result.length === 0) {
-      return true
-    }
-    return result
-  }
-
-  if (result === true) {
-    return true
-  }
-
-  if (typeof result === 'string') {
-    return new ValidationError(message || result)
-  }
-
-  if (result && (result.message && result.paths)) {
-    return new ValidationError(message || result.message, {paths: result.paths})
-  }
-
-  const path = pathToString(options.path)
-  throw new Error(
-    `${path}: Validator must return 'true' if valid or an error message as a string on errors`
-  )
+  return handleValidationResult(result, message, options)
 }
 
 function formatValidationErrors(message, results, options = {}) {

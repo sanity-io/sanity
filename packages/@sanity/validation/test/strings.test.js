@@ -116,14 +116,13 @@ describe('string', () => {
   })
 
   test('custom rule with string', async () => {
-    const rule = Rule.string().custom(
-      val =>
-        val
-          .split('')
-          .reverse()
-          .join('') === val
-          ? true
-          : 'Must be a palindrome!'
+    const rule = Rule.string().custom(val =>
+      val
+        .split('')
+        .reverse()
+        .join('') === val
+        ? true
+        : 'Must be a palindrome!'
     )
 
     await expect(rule.validate('hei')).resolves.toMatchSnapshot('not a palindrome')
