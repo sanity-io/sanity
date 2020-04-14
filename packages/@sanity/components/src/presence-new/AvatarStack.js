@@ -1,6 +1,11 @@
 import React from 'react'
-
+/* TODO:
+ - Make sure counter div is aligned with avatars
+*/
 const EXTRA_STYLE = {
+  position: 'absolute',
+  top: 0,
+  left: `-25px`,
   height: '25px',
   fontSize: '10px',
   fontWeight: '600',
