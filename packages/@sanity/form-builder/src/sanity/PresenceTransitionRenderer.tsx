@@ -4,34 +4,28 @@
 import * as React from 'react'
 import {StickyOverlayRenderer} from './StickyOverlayRenderer'
 import {groupBy, orderBy} from 'lodash'
-import Avatar from '@sanity/components/lib/presence-new/Avatar'
-import {AbsoluteOverlayRenderer} from './AbsoluteOverlayRenderer'
-import {THRESHOLD_TOP} from './constants'
+import {CSSProperties} from 'react'
 
-const TRANSITION = {
-  transitionProperty: 'all',
-  transitionDuration: '0.4s'
+const split = (array, index) => [array.slice(0, index), array.slice(index)]
+
+const MAX_AVATARS = 1
+
+const ITEM_STYLE: CSSProperties = {
+  zIndex: 1100,
+  transition: 'transform',
+  transitionDuration: '200ms',
+  transitionTimingFunction: 'ease-in-out',
+  position: 'sticky',
+  pointerEvents: 'all',
+  top: 8,
+  bottom: 8
 }
 
-const RenderItem = ({childComponent: ChildComponent, ...props}) => {
-  const presence = props.presence || []
-  return (
-    <div
-      style={{
-        display: 'flex'
-      }}
-    >
-      {presence.map(presence => (
-        <Avatar
-          position={props.position}
-          key={presence.sessionId}
-          userId={presence.identity}
-          {...presence}
-        />
-      ))}
-    </div>
-  )
+const RenderInside = props => {
+  const {childComponent: ChildComponent, presence, ...rest} = props
+  return <ChildComponent presence={presence} {...rest} />
 }
+
 const bottom = rect => rect.top + rect.height
 
 function withSpacerHeight(entries) {
@@ -52,17 +46,17 @@ function group(entries) {
     ...groupBy(withSpacerHeight(orderByTop(entries)), entry => entry.position)
   }
 
-  return [
-    ...orderByTop(grouped.top).map((entry, i, grp) => ({
+  return {
+    top: orderByTop(grouped.top).map((entry, i, grp) => ({
       ...entry,
       indent: grp.slice(i + 1).reduce((w, entry) => w + entry.item.rect.width, 0)
     })),
-    ...orderByTop(grouped.inside).map((entry, i) => ({...entry, indent: 0})),
-    ...orderByTop(grouped.bottom).map((entry, i, grp) => ({
+    inside: orderByTop(grouped.inside).map((entry, i) => ({...entry, indent: 0})),
+    bottom: orderByTop(grouped.bottom).map((entry, i, grp) => ({
       ...entry,
       indent: grp.slice(0, i).reduce((w, entry) => w + entry.item.rect.width, 0)
     }))
-  ]
+  }
 }
 
 function StickyPresenceTransitionRenderer(props) {
@@ -70,16 +64,55 @@ function StickyPresenceTransitionRenderer(props) {
     <StickyOverlayRenderer
       {...props}
       render={entries => {
-        const grouped = group(entries)
         const maxRight = Math.max(
-          ...grouped.map(record => record.item.rect.left + record.item.rect.width)
+          ...entries.map(record => record.item.rect.left + record.item.rect.width)
         )
-        return grouped.map(record => renderSticky(record, maxRight))
+        const grouped = group(entries)
+        return [
+          renderInside(grouped.top, maxRight),
+          renderInside(grouped.inside, maxRight),
+          renderInside(grouped.bottom, maxRight)
+        ]
       }}
     />
   )
 }
 
+function renderTop(entries, maxRight) {
+  return entries.map((entry, i) => {
+    const {
+      childComponent: ChildComponent,
+      avatarComponent: AvatarComponent,
+      presence,
+      ...rest
+    } = entry.item.props
+    return (
+      <React.Fragment key={entry.item.id}>
+        <div style={{height: Math.max(0, entry.spacerHeight)}} />
+        {presence?.map((p, i) => {
+          return (
+            <>
+              <div
+                style={{
+                  ...ITEM_STYLE,
+                  backgroundColor: 'black',
+                  transform: `translate3d(${maxRight -
+                    entry.item.rect.width / presence.length -
+                    entry.indent -
+                    (entry.item.rect.width / presence.length) * i}px, 0px, 0px)`,
+                  height: entry.item.rect.height,
+                  width: entry.item.rect.width / presence.length
+                }}
+              >
+                <AvatarComponent {...p} userId={p.identity} />
+              </div>
+            </>
+          )
+        })}
+      </React.Fragment>
+    )
+  })
+}
 //  keep for debugging purposes
 // function renderAbsolute(entry) {
 //   return (
@@ -90,33 +123,27 @@ function StickyPresenceTransitionRenderer(props) {
 //   )
 // }
 
-function renderSticky(entry, maxRight) {
-  return (
+function renderInside(entries, maxRight) {
+  return entries.map(entry => (
     <React.Fragment key={entry.item.id}>
       <div style={{height: Math.max(0, entry.spacerHeight)}} />
       <div
         style={{
-          zIndex: 1100,
-          transition: 'transform',
-          transitionDuration: '200ms',
-          transitionTimingFunction: 'ease-in-out',
+          ...ITEM_STYLE,
           transform: `translate3d(${
             entry.position === 'top' || entry.position === 'bottom'
               ? maxRight - entry.item.rect.width - entry.indent
               : entry.item.rect.left
           }px, 0px, 0px)`,
-          position: 'sticky',
-          pointerEvents: 'all',
+
           height: entry.item.rect.height,
-          width: entry.item.rect.width,
-          top: 8,
-          bottom: 8
+          width: entry.item.rect.width
         }}
       >
-        <RenderItem {...entry.item.props} position={entry.position} />
+        <RenderInside {...entry.item.props} />
       </div>
     </React.Fragment>
-  )
+  ))
 }
 
 // export const PresenceTransitionRenderer = AbsoluteOverlayRenderer
