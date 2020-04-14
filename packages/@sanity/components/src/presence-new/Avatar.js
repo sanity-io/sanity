@@ -1,48 +1,28 @@
-import React, {useState, useEffect} from 'react'
-import userStore from 'part:@sanity/base/user'
+import React from 'react'
 import PropTypes from 'prop-types'
 import {useId} from '@reach/auto-id'
-import colorHasher from '../presence/colorHasher'
 import styles from './styles/Avatar.css'
 
-function nameToInitials(fullName) {
-  const namesArray = fullName.split(' ')
-  if (namesArray.length === 1) return `${namesArray[0].charAt(0)}`
-  return `${namesArray[0].charAt(0)}${namesArray[namesArray.length - 1].charAt(0)}`
-}
-
-export default function Avatar({userId, sessionId, position, scrollToField, status, size}) {
-  // we need to scope the value of the id attributes here
+export default function Avatar({
+  color,
+  imageUrl,
+  label,
+  isAnimating,
+  children,
+  onImageLoadError,
+  position,
+  onClick,
+  status,
+  size
+}) {
   const elementId = useId()
-  const [user, setUser] = useState({})
-  const [src, setSrc] = useState(null)
-  useEffect(() => {
-    if (userId) {
-      userStore.getUser(userId).then(result => {
-        setUser(result)
-        setSrc(result.imageUrl)
-      })
-    }
-  }, [user])
-
-  function handleScrollToField(event) {
-    if (scrollToField) {
-      scrollToField(event)
-    }
-  }
-
-  // Decide whether the avatar border should animate
-  const isAnimating = !position && status === 'editing'
-  // Create a unique color for the user
-  const userColor = colorHasher(sessionId || userId)
-
   return (
     <div
       className={styles.root}
-      onClick={handleScrollToField}
+      onClick={onClick}
       data-dock={position}
-      style={{color: userColor}}
-      aria-label={user.displayName}
+      style={{color}}
+      aria-label={label}
     >
       <div className={`${styles.avatar}`} data-status={status} data-size={size}>
         <div className={styles.avatarInner}>
@@ -65,22 +45,22 @@ export default function Avatar({userId, sessionId, position, scrollToField, stat
               cx="16"
               cy="16"
               r="13"
-              fill={src ? `url(#${`${elementId}_${userId}-image-url`})` : 'currentColor'}
+              fill={imageUrl ? `url(#${elementId}-image-url)` : 'currentColor'}
             />
             <defs>
               <pattern
-                id={`${elementId}_${userId}-image-url`}
+                id={`${elementId}-image-url`}
                 patternContentUnits="objectBoundingBox"
                 width="1"
                 height="1"
               >
-                {src && <image href={src} width="1" height="1" onError={() => setSrc(null)} />}
+                {imageUrl && (
+                  <image href={imageUrl} width="1" height="1" onError={onImageLoadError} />
+                )}
               </pattern>
             </defs>
           </svg>
-          {user.displayName && !src && (
-            <div className={styles.avatarInitials}>{nameToInitials(user.displayName)}</div>
-          )}
+          {children && <div className={styles.avatarInitials}>{children}</div>}
         </div>
         <div className={styles.arrow} data-dock={position}>
           <svg viewBox="0 0 10 7" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -96,17 +76,19 @@ export default function Avatar({userId, sessionId, position, scrollToField, stat
 }
 
 Avatar.propTypes = {
-  userId: PropTypes.string.isRequired,
-  sessionId: PropTypes.string,
+  color: PropTypes.string,
+  imageUrl: PropTypes.string,
+  isAnimating: PropTypes.bool,
   position: PropTypes.oneOf(['top', 'bottom', null]),
-  scrollToField: PropTypes.func,
+  onClick: PropTypes.func,
+  label: PropTypes.string.isRequired,
+  children: PropTypes.any,
+  onImageLoadError: PropTypes.func,
   size: PropTypes.string,
   status: PropTypes.oneOf(['online', 'editing', 'inactive'])
 }
 
 Avatar.defaultProps = {
-  position: null,
-  scrollToField: null,
   size: 'small',
   status: 'online'
 }

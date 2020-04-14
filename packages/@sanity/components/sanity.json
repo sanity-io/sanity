@@ -1106,7 +1106,7 @@
     },
     {
       "name": "part:@sanity/components/presence/presence-avatar",
-      "path": "presence-new/Avatar"
+      "path": "presence-new/AvatarProvider"
     },
     {
       "name": "part:@sanity/components/presence/presence-container",
