@@ -17,12 +17,15 @@ export default function PresenceContainerBox(props) {
   )
 }
 
-const SHOW_MAX = 2
+const SHOW_MAX = 3
 
-const split = (array, index) => [array.slice(0, index), array.slice(index)]
+const splitRight = (array, index) => {
+  const idx = Math.max(0, array.length - index)
+  return [array.slice(0, idx), array.slice(idx)]
+}
 
 function PresenceContainer({presence, position}) {
-  const [avatars, collapsed] = split(presence || [], SHOW_MAX)
+  const [collapsed, avatars] = splitRight(presence || [], SHOW_MAX)
   return (
     <div className={styles.root}>
       {collapsed.length > 0 && (
