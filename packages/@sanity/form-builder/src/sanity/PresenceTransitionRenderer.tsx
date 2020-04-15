@@ -7,14 +7,13 @@ import {groupBy, orderBy} from 'lodash'
 import {CSSProperties} from 'react'
 import AvatarProvider from '@sanity/components/lib/presence-new/AvatarProvider'
 import Avatar from '@sanity/components/lib/presence-new/Avatar'
+import {MAX_ABOVE} from './constants'
 
 const split = (array, index) => [array.slice(0, index), array.slice(index)]
 const splitRight = (array, index) => {
   const idx = Math.max(0, array.length - index)
   return [array.slice(0, idx), array.slice(idx)]
 }
-
-const MAX_AVATARS = 2
 
 const ITEM_TRANSITION: CSSProperties = {
   transition: 'transform',
@@ -31,7 +30,7 @@ const ITEM_STYLE: CSSProperties = {
 }
 
 const RenderItem = props => {
-  const {childComponent: ChildComponent, presence, ...rest} = props
+  const {childComponent: ChildComponent, presence = [], ...rest} = props
   return <ChildComponent presence={presence} {...rest} />
 }
 
@@ -90,50 +89,53 @@ function StickyPresenceTransitionRenderer(props) {
 const Spacer = ({height, ...rest}) => <div style={{height: Math.max(0, height), ...rest?.style}} />
 
 function renderTop(entries, maxRight) {
-  const spacerSum = entries.reduce((total, entry) => total + entry.spacerHeight, 0)
+  const [prev, [last]] = splitRight(entries, 1)
+
+  if (!last) {
+    return []
+  }
 
   const allPresenceItems = entries.flatMap(entry => entry.item.props.presence || [])
 
-  const [collapsed, visible] = splitRight(allPresenceItems, MAX_AVATARS)
+  const {childComponent: ChildComponent, presence = [], ...rest} = last.item.props
 
   return (
-    <React.Fragment>
-      <Spacer height={spacerSum} />
-      <div
-        style={{
-          ...ITEM_STYLE,
-          display: 'flex',
-          justifyContent: 'flex-end'
-        }}
-      >
-        {collapsed.length > 0 && (
+    <>
+      {prev.map(entry => (
+        <React.Fragment key={entry.item.id}>
+          <Spacer height={entry.spacerHeight} />
           <div
-            key={collapsed.slice(-1)[0].sessionId}
             style={{
-              ...ITEM_TRANSITION,
-              position: 'absolute',
-              transform: `translate3d(${-25 * MAX_AVATARS}px, 0px, 0px)`
+              ...ITEM_STYLE,
+              transform: `translate3d(${
+                entry.position === 'top' || entry.position === 'bottom'
+                  ? maxRight - entry.item.rect.width - entry.indent
+                  : entry.item.rect.left
+              }px, 0px, 0px)`,
+              height: entry.item.rect.height,
+              width: entry.item.rect.width
             }}
-          >
-            <Avatar label={collapsed.map(a => a.displayName).join(', ')} color="salmon">
-              +{collapsed.length}
-            </Avatar>
-          </div>
-        )}
-        {visible.map((p, i) => (
-          <div
-            key={p.sessionId}
-            style={{
-              ...ITEM_TRANSITION,
-              position: 'absolute',
-              transform: `translate3d(${-25 * (visible.length - i -1)}px, 0px, 0px)`
-            }}
-          >
-            <AvatarProvider userId={p.identity} {...p} />
-          </div>
-        ))}
-      </div>
-    </React.Fragment>
+          />
+        </React.Fragment>
+      ))}
+      <React.Fragment key={'top-group'}>
+        <Spacer height={last.spacerHeight} />
+        <div
+          style={{
+            ...ITEM_STYLE,
+            transform: `translate3d(${maxRight -
+              (allPresenceItems.length > MAX_ABOVE
+                ? (MAX_ABOVE + 1) * 29
+                : allPresenceItems.length * 29)}px, 0px, 0px)`,
+            height: last.item.rect.height,
+            right: maxRight,
+            width: last.item.rect.width
+          }}
+        >
+          <ChildComponent presence={allPresenceItems} />
+        </div>
+      </React.Fragment>
+    </>
   )
 }
 
