@@ -29,7 +29,11 @@ function PresenceContainer({presence, position}) {
   return (
     <div className={styles.root}>
       {collapsed.length > 0 && (
-        <Avatar label={collapsed.map(a => a.displayName).join(', ')} color="salmon">
+        <Avatar
+          position={position}
+          label={collapsed.map(a => a.displayName).join(', ')}
+          color="salmon"
+        >
           +{collapsed.length}
         </Avatar>
       )}
