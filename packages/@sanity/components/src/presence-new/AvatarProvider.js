@@ -38,6 +38,7 @@ export default function AvatarProvider({userId, sessionId, position, scrollToFie
     <Avatar
       imageUrl={imageUrl}
       isAnimating={isAnimating}
+      position={position}
       size={size}
       label={user.displayName}
       color={userColor}

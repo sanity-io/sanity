@@ -124,15 +124,12 @@ function renderTop(entries, maxRight) {
           style={{
             ...ITEM_STYLE,
             transform: `translate3d(${maxRight -
-              (allPresenceItems.length > MAX_ABOVE
-                ? (MAX_ABOVE + 1) * 29
-                : allPresenceItems.length * 29)}px, 0px, 0px)`,
-            height: last.item.rect.height,
-            right: maxRight,
-            width: last.item.rect.width
+              (allPresenceItems.length > MAX_ABOVE ? MAX_ABOVE + 1 : allPresenceItems.length) *
+                29}px, 0px, 0px)`,
+            height: last.item.rect.height
           }}
         >
-          <ChildComponent presence={allPresenceItems} />
+          <ChildComponent position="top" presence={allPresenceItems} />
         </div>
       </React.Fragment>
     </>
