@@ -8,7 +8,7 @@ import ToolSwitcher from 'part:@sanity/default-layout/tool-switcher'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import {StateLink} from 'part:@sanity/base/router'
 import * as sidecar from 'part:@sanity/default-layout/sidecar?'
-import CollaboratorStatus from 'part:@sanity/components/presence/collaborator-status'
+import PresenceStatus from 'part:@sanity/components/presence/presence-status'
 import {HAS_SPACES} from '../util/spaces'
 import Branding from './Branding'
 import LoginStatus from './LoginStatus'
@@ -109,8 +109,8 @@ function NavBar(props) {
         />
       </div>
       <div className={styles.extras}>{/* Insert plugins here */}</div>
-      <div className={styles.collaboratorStatus}>
-        <CollaboratorStatus />
+      <div className={styles.presenceStatus}>
+        <PresenceStatus />
       </div>
       <div className={styles.sanityStatus}>
         <SanityStatusContainer />

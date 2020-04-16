@@ -1,12 +1,11 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import PopOverDialog from 'part:@sanity/components/dialogs/popover'
-import {clients$} from 'part:@sanity/base/presence'
 import UsersIcon from 'part:@sanity/base/users-icon'
 import useCollaborators from 'part:@sanity/base/hooks/collaborators'
-import styles from './styles/CollaboratorStatus.css'
-import CollaboratorList from './CollaboratorList'
+import styles from './styles/PresenceStatus.css'
+import PresenceStatusItem from './PresenceStatusItem'
 
-export default function CollaboratorStatus() {
+export default function PresenceStatus() {
   const [isOpen, setIsOpen] = useState(false)
   const users = useCollaborators()
 
@@ -32,7 +31,21 @@ export default function CollaboratorStatus() {
           onEscape={handlePresenceMenuToggle}
           padding="none"
         >
-          <CollaboratorList users={users} />
+          <ul className={styles.presenceList}>
+            {users.length > 0 ? (
+              users.map(user => (
+                <li key={user.identity}>
+                  <PresenceStatusItem
+                    id={user.identity}
+                    status={user.status}
+                    sessions={user.sessions}
+                  />
+                </li>
+              ))
+            ) : (
+              <li className={styles.empty}>Looks like it's just you...</li>
+            )}
+          </ul>
         </PopOverDialog>
       )}
     </div>

@@ -5,6 +5,11 @@
   user-select: none;
 }
 
+.intentLink {
+  color: inherit;
+  text-decoration: none;
+}
+
 .inner {
   display: flex;
   composes: item from 'part:@sanity/base/theme/layout/selectable-style';
@@ -17,6 +22,7 @@
 .avatar {
   display: flex;
   align-items: center;
+  padding-right: var(--small-padding);
 }
 
 .userInfo {
@@ -41,12 +47,6 @@
   margin: 0;
   padding: 0;
   list-style: none;
-}
-
-.intentLink {
-  font-size: var(--font-size-small);
-  text-decoration: none;
-  color: var(--gray-darkest--transparent);
 }
 
 .locationLabel {
