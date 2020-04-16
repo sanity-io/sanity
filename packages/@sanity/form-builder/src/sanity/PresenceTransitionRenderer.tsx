@@ -101,7 +101,7 @@ function renderTop(entries, maxRight) {
 
   const counter = collapsed.length > 0 && (
     <div
-      key={collapsed[collapsed.length - 1].sessionId}
+      key={collapsed.length > 1 ? 'counter' : collapsed[collapsed.length - 1].sessionId}
       style={{
         ...ITEM_TRANSITION,
         // position: 'relative'
