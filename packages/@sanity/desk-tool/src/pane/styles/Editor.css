@@ -140,6 +140,11 @@
   padding-bottom: 4em;
 }
 
+.description {
+  display: flex;
+  padding-bottom: 0.5em;
+}
+
 .syncStatus {
   display: block;
   opacity: 1;
