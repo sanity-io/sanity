@@ -2,14 +2,13 @@
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as React from 'react'
+import {CSSProperties} from 'react'
 import {StickyOverlayRenderer} from './StickyOverlayRenderer'
 import {groupBy, orderBy} from 'lodash'
-import {CSSProperties} from 'react'
 import AvatarProvider from '@sanity/components/lib/presence-new/AvatarProvider'
 import Avatar from '@sanity/components/lib/presence-new/Avatar'
-import {MAX_AVATARS} from '@sanity/components/lib/presence-new/config'
+import {DEBUG, THRESHOLD_TOP, MAX_AVATARS} from './constants'
 
-const split = (array, index) => [array.slice(0, index), array.slice(index)]
 const splitRight = (array, index) => {
   const idx = Math.max(0, array.length - index)
   return [array.slice(0, idx), array.slice(idx)]
@@ -29,7 +28,7 @@ const ITEM_STYLE: CSSProperties = {
 
 const RenderItem = props => {
   const {childComponent: ChildComponent, presence = [], ...rest} = props
-  return <ChildComponent presence={presence} {...rest} />
+  return ChildComponent ? <ChildComponent presence={presence} {...rest} /> : null
 }
 
 const bottom = rect => rect.top + rect.height
@@ -86,7 +85,7 @@ function StickyPresenceTransitionRenderer(props) {
         return [
           renderTop(grouped.top),
           <Spacer key="spacerTop" height={topSpacing} />,
-          ...renderGroup(grouped.inside),
+          ...renderInside(grouped.inside, maxRight),
           <Spacer key="spacerBottom" height={bottomSpacing} />,
           renderBottom(grouped.bottom)
         ]
@@ -96,7 +95,7 @@ function StickyPresenceTransitionRenderer(props) {
 }
 
 function renderTop(entries) {
-  const allPresenceItems = entries.flatMap(entry => entry.item.props.presence || [])
+  const allPresenceItems = entries.flatMap(entry => entry.item.props?.presence || [])
 
   const [collapsed, visible] = splitRight(allPresenceItems, MAX_AVATARS)
 
@@ -215,22 +214,62 @@ function renderBottom(entries) {
 //   )
 // }
 
-function renderGroup(entries) {
-  return entries.map(entry => (
-    <React.Fragment key={entry.item.id}>
-      <Spacer height={entry.spacerHeight} />
-      <div
+// The avatar will move to the right when this close (in pixels) to the top
+const topDistanceRightMovementThreshold = 12
+
+function renderInside(entries, maxRight) {
+  return entries.map(entry => {
+    const distanceMaxLeft = maxRight - entry.item.rect.width - entry.item.rect.left
+    const originalLeft = entry.item.rect.left
+    const distanceTop = entry.distanceTop + THRESHOLD_TOP
+
+    return (
+      <React.Fragment key={entry.item.id}>
+        <Spacer height={entry.spacerHeight} />
+        <div
+          style={{
+            ...ITEM_STYLE,
+            ...ITEM_TRANSITION,
+            transform: `translate3d(${originalLeft +
+              (distanceTop < topDistanceRightMovementThreshold
+                ? distanceMaxLeft
+                : 0)}px, 0px, 0px)`,
+            // transitionDuration: '2s',
+            transitionTimingFunction: 'cubic-bezier(0.85, 0, 0.15, 1)',
+            height: entry.item.rect.height,
+            width: entry.item.rect.width
+          }}
+        >
+          <DebugValue value={() => distanceTop}>
+            <RenderItem {...entry.item.props} />
+          </DebugValue>
+        </div>
+      </React.Fragment>
+    )
+  })
+}
+
+function DebugValue(props) {
+  if (!DEBUG) {
+    return props.children
+  }
+  return (
+    <div style={{position: 'relative'}}>
+      {props.children}
+      <span
         style={{
-          ...ITEM_STYLE,
-          transform: `translate3d(${entry.item.rect.left}px, 0px, 0px)`,
-          height: entry.item.rect.height,
-          width: entry.item.rect.width
+          top: 0,
+          left: 0,
+          color: 'white',
+          backgroundColor: 'rgba(0, 0, 0, 0.2)',
+          padding: 4,
+          position: 'absolute'
         }}
       >
-        <RenderItem {...entry.item.props} />
-      </div>
-    </React.Fragment>
-  ))
+        {props.value()}
+      </span>
+    </div>
+  )
 }
 
 // export const PresenceTransitionRenderer = AbsoluteOverlayRenderer
