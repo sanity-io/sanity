@@ -58,3 +58,22 @@
   background: var(--state-success-color);
   box-sizing: border-box;
 }
+
+.presenceList {
+  background-color: var(--component-bg);
+  color: var(--text-color);
+  list-style: none;
+  margin: 0;
+  padding: var(--small-padding) 0;
+  composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
+  border-radius: var(--border-radius-medium);
+  z-index: var(--zindex-dropdown);
+
+  @nest & .empty {
+    padding: var(--small-padding) var(--medium-padding);
+    color: var(--gray-dark);
+    text-align: center;
+    font-style: italic;
+    font-size: var(--font-size-small);
+  }
+}

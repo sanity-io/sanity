@@ -22,12 +22,6 @@ export default function AvatarProvider({userId, sessionId, position, scrollToFie
     }
   }, [user])
 
-  function handleScrollToField(event) {
-    if (scrollToField) {
-      scrollToField(event)
-    }
-  }
-
   // Decide whether the avatar border should animate
   const isAnimating = !position && status === 'editing'
   // Create a unique color for the user
@@ -42,7 +36,6 @@ export default function AvatarProvider({userId, sessionId, position, scrollToFie
       size={size}
       label={user.displayName}
       color={userColor}
-      onClick={handleScrollToField}
       onImageLoadError={error => setImageLoadError(error)}
     >
       {!imageUrl && user?.displayName && nameToInitials(user.displayName)}
@@ -53,7 +46,7 @@ export default function AvatarProvider({userId, sessionId, position, scrollToFie
 AvatarProvider.propTypes = {
   userId: PropTypes.string.isRequired,
   sessionId: PropTypes.string,
-  position: PropTypes.oneOf(['top', 'bottom', null]),
+  position: PropTypes.oneOf(['top', 'bottom', 'inside', null]),
   scrollToField: PropTypes.func,
   size: PropTypes.string,
   status: PropTypes.oneOf(['online', 'editing', 'inactive'])

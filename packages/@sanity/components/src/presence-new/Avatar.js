@@ -11,19 +11,12 @@ export default function Avatar({
   children,
   onImageLoadError,
   position,
-  onClick,
   status,
   size
 }) {
   const elementId = useId()
   return (
-    <div
-      className={styles.root}
-      onClick={onClick}
-      data-dock={position}
-      style={{color}}
-      aria-label={label}
-    >
+    <div className={styles.root} data-dock={position} style={{color}} aria-label={label}>
       <div className={`${styles.avatar}`} data-status={status} data-size={size}>
         <div className={styles.avatarInner}>
           <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -79,7 +72,7 @@ Avatar.propTypes = {
   color: PropTypes.string,
   imageUrl: PropTypes.string,
   isAnimating: PropTypes.bool,
-  position: PropTypes.oneOf(['top', 'bottom', null]),
+  position: PropTypes.oneOf(['top', 'bottom', 'inside', null]),
   onClick: PropTypes.func,
   label: PropTypes.string.isRequired,
   children: PropTypes.any,
