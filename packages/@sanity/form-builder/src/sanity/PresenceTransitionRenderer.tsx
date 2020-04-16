@@ -7,7 +7,7 @@ import {groupBy, orderBy} from 'lodash'
 import {CSSProperties} from 'react'
 import AvatarProvider from '@sanity/components/lib/presence-new/AvatarProvider'
 import Avatar from '@sanity/components/lib/presence-new/Avatar'
-import {MAX_ABOVE} from './constants'
+import {MAX_AVATARS} from '@sanity/components/lib/presence-new/config'
 
 const split = (array, index) => [array.slice(0, index), array.slice(index)]
 const splitRight = (array, index) => {
@@ -21,7 +21,6 @@ const ITEM_TRANSITION: CSSProperties = {
   transitionTimingFunction: 'ease-in-out'
 }
 const ITEM_STYLE: CSSProperties = {
-  zIndex: 1100,
   position: 'sticky',
   pointerEvents: 'all',
   top: 0,
@@ -99,7 +98,7 @@ function StickyPresenceTransitionRenderer(props) {
 function renderTop(entries) {
   const allPresenceItems = entries.flatMap(entry => entry.item.props.presence || [])
 
-  const [collapsed, visible] = splitRight(allPresenceItems, MAX_ABOVE)
+  const [collapsed, visible] = splitRight(allPresenceItems, MAX_AVATARS)
 
   const counter = collapsed.length > 0 && (
     <div
@@ -154,7 +153,7 @@ function renderTop(entries) {
 function renderBottom(entries) {
   const allPresenceItems = entries.flatMap(entry => entry.item.props.presence || []).reverse()
 
-  const [collapsed, visible] = splitRight(allPresenceItems, MAX_ABOVE)
+  const [collapsed, visible] = splitRight(allPresenceItems, MAX_AVATARS)
 
   const counter = collapsed.length > 0 && (
     <div

@@ -1,8 +1,9 @@
 import React from 'react'
+import {useId} from '@reach/auto-id'
 import styles from './styles/PresenceContainer.css'
 import AvatarProvider from './AvatarProvider'
 import Avatar from './Avatar'
-import {useId} from '@reach/auto-id'
+import {MAX_AVATARS} from './config'
 import {Box} from '@sanity/overlayer'
 
 export default function PresenceContainerBox(props) {
@@ -17,15 +18,13 @@ export default function PresenceContainerBox(props) {
   )
 }
 
-const SHOW_MAX = 3
-
 const splitRight = (array, index) => {
   const idx = Math.max(0, array.length - index)
   return [array.slice(0, idx), array.slice(idx)]
 }
 
 function PresenceContainer({presence, position}) {
-  const [collapsed, avatars] = splitRight(presence || [], SHOW_MAX)
+  const [collapsed, avatars] = splitRight(presence || [], MAX_AVATARS)
   return (
     <div className={styles.root}>
       {collapsed.length > 0 && (
