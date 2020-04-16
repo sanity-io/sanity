@@ -21,12 +21,11 @@ const ITEM_TRANSITION: CSSProperties = {
   transitionTimingFunction: 'ease-in-out'
 }
 const ITEM_STYLE: CSSProperties = {
-  ...ITEM_TRANSITION,
   zIndex: 1100,
   position: 'sticky',
   pointerEvents: 'all',
-  top: 8,
-  bottom: 8
+  top: 0,
+  bottom: 0
 }
 
 const RenderItem = props => {
@@ -45,6 +44,9 @@ function withSpacerHeight(entries) {
 }
 
 const orderByTop = entries => orderBy(entries, entry => entry.item.rect.top)
+
+const plus = (a, b) => a + b
+const sum = array => array.reduce(plus, 0)
 
 function group(entries) {
   const grouped = {
@@ -67,6 +69,10 @@ function group(entries) {
   }
 }
 
+const Spacer = ({height, ...rest}) => {
+  return <div style={{height: Math.max(0, height), ...rest?.style}} />
+}
+
 function StickyPresenceTransitionRenderer(props) {
   return (
     <StickyOverlayRenderer
@@ -76,8 +82,10 @@ function StickyPresenceTransitionRenderer(props) {
           ...entries.map(record => record.item.rect.left + record.item.rect.width)
         )
         const grouped = group(entries)
+        const topSpacing = sum(grouped.top.map(n => n.item.rect.height + n.spacerHeight))
         return [
           renderTop(grouped.top, maxRight),
+          <Spacer key="spacerTop" height={topSpacing} />,
           ...renderGroup(grouped.inside, maxRight),
           ...renderGroup(grouped.bottom, maxRight)
         ]
@@ -86,52 +94,58 @@ function StickyPresenceTransitionRenderer(props) {
   )
 }
 
-const Spacer = ({height, ...rest}) => <div style={{height: Math.max(0, height), ...rest?.style}} />
-
 function renderTop(entries, maxRight) {
-  const [prev, [last]] = splitRight(entries, 1)
-
-  if (!last) {
-    return []
-  }
-
   const allPresenceItems = entries.flatMap(entry => entry.item.props.presence || [])
 
-  const {childComponent: ChildComponent, presence = [], ...rest} = last.item.props
+  const [collapsed, visible] = splitRight(allPresenceItems, MAX_ABOVE)
+
+  const counter = collapsed.length > 0 && (
+    <div
+      key={collapsed[collapsed.length - 1].sessionId}
+      style={{
+        ...ITEM_TRANSITION,
+        // position: 'relative'
+        position: 'absolute',
+        // top: 0
+        transform: `translate3d(${visible.length * -28}px, 0px, 0px)`
+      }}
+    >
+      <Avatar position="top" label={collapsed.map(a => a.displayName).join(', ')} color="salmon">
+        +{collapsed.length}
+      </Avatar>
+    </div>
+  )
+
+  const visibleItems = visible.map((avatar, i) => (
+    <div
+      key={avatar.sessionId}
+      style={{
+        ...ITEM_TRANSITION,
+        // position: 'relative'
+        position: 'absolute',
+        // top: 0
+        transform: `translate3d(${(visible.length - 1 - i) * -28}px, 0px, 0px)`
+      }}
+    >
+      <AvatarProvider position="top" userId={avatar.identity} {...avatar} />
+    </div>
+  ))
 
   return (
     <>
-      {prev.map(entry => (
-        <React.Fragment key={entry.item.id}>
-          <Spacer height={entry.spacerHeight} />
-          <div
-            style={{
-              ...ITEM_STYLE,
-              transform: `translate3d(${
-                entry.position === 'top' || entry.position === 'bottom'
-                  ? maxRight - entry.item.rect.width - entry.indent
-                  : entry.item.rect.left
-              }px, 0px, 0px)`,
-              height: entry.item.rect.height,
-              width: entry.item.rect.width
-            }}
-          />
-        </React.Fragment>
-      ))}
-      <React.Fragment key={'top-group'}>
-        <Spacer height={last.spacerHeight} />
-        <div
-          style={{
-            ...ITEM_STYLE,
-            transform: `translate3d(${maxRight -
-              (allPresenceItems.length > MAX_ABOVE ? MAX_ABOVE + 1 : allPresenceItems.length) *
-                29}px, 0px, 0px)`,
-            height: last.item.rect.height
-          }}
-        >
-          <ChildComponent position="top" presence={allPresenceItems} />
-        </div>
-      </React.Fragment>
+      <div
+        style={{
+          position: 'sticky',
+          top: 8,
+          bottom: 0,
+          right: 0,
+          left: 0,
+          display: 'flex',
+          justifyContent: 'flex-end'
+        }}
+      >
+        {[].concat(counter || []).concat(visibleItems)}
+      </div>
     </>
   )
 }
