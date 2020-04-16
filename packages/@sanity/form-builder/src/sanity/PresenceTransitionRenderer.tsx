@@ -83,18 +83,20 @@ function StickyPresenceTransitionRenderer(props) {
         )
         const grouped = group(entries)
         const topSpacing = sum(grouped.top.map(n => n.item.rect.height + n.spacerHeight))
+        const bottomSpacing = sum(grouped.bottom.map(n => n.item.rect.height + n.spacerHeight))
         return [
-          renderTop(grouped.top, maxRight),
+          renderTop(grouped.top),
           <Spacer key="spacerTop" height={topSpacing} />,
-          ...renderGroup(grouped.inside, maxRight),
-          ...renderGroup(grouped.bottom, maxRight)
+          ...renderGroup(grouped.inside),
+          <Spacer key="spacerBottom" height={bottomSpacing} />,
+          renderBottom(grouped.bottom)
         ]
       }}
     />
   )
 }
 
-function renderTop(entries, maxRight) {
+function renderTop(entries) {
   const allPresenceItems = entries.flatMap(entry => entry.item.props.presence || [])
 
   const [collapsed, visible] = splitRight(allPresenceItems, MAX_ABOVE)
@@ -132,21 +134,75 @@ function renderTop(entries, maxRight) {
   ))
 
   return (
-    <>
-      <div
-        style={{
-          position: 'sticky',
-          top: 8,
-          bottom: 0,
-          right: 0,
-          left: 0,
-          display: 'flex',
-          justifyContent: 'flex-end'
-        }}
-      >
-        {[].concat(counter || []).concat(visibleItems)}
-      </div>
-    </>
+    <div
+      key="sticky-top"
+      style={{
+        position: 'sticky',
+        top: 8,
+        bottom: 0,
+        right: 0,
+        left: 0,
+        display: 'flex',
+        justifyContent: 'flex-end'
+      }}
+    >
+      {[].concat(counter || []).concat(visibleItems)}
+    </div>
+  )
+}
+
+function renderBottom(entries) {
+  const allPresenceItems = entries.flatMap(entry => entry.item.props.presence || []).reverse()
+
+  const [collapsed, visible] = splitRight(allPresenceItems, MAX_ABOVE)
+
+  const counter = collapsed.length > 0 && (
+    <div
+      key={collapsed.length > 1 ? 'counter' : collapsed[collapsed.length - 1].sessionId}
+      style={{
+        ...ITEM_TRANSITION,
+        // position: 'relative'
+        position: 'absolute',
+        // top: 0
+        transform: `translate3d(${visible.length * -28}px, 0px, 0px)`
+      }}
+    >
+      <Avatar position="bottom" label={collapsed.map(a => a.displayName).join(', ')} color="salmon">
+        +{collapsed.length}
+      </Avatar>
+    </div>
+  )
+
+  const visibleItems = visible.map((avatar, i) => (
+    <div
+      key={avatar.sessionId}
+      style={{
+        ...ITEM_TRANSITION,
+        // position: 'relative'
+        position: 'absolute',
+        // top: 0
+        transform: `translate3d(${(visible.length - 1 - i) * -28}px, 0px, 0px)`
+      }}
+    >
+      <AvatarProvider position="bottom" userId={avatar.identity} {...avatar} />
+    </div>
+  ))
+
+  return (
+    <div
+      key="sticky-bottom"
+      style={{
+        position: 'sticky',
+        top: 8,
+        bottom: 38,
+        right: 0,
+        left: 0,
+        display: 'flex',
+        justifyContent: 'flex-end'
+      }}
+    >
+      {[].concat(counter || []).concat(visibleItems)}
+    </div>
   )
 }
 
@@ -160,18 +216,14 @@ function renderTop(entries, maxRight) {
 //   )
 // }
 
-function renderGroup(entries, maxRight) {
+function renderGroup(entries) {
   return entries.map(entry => (
     <React.Fragment key={entry.item.id}>
       <Spacer height={entry.spacerHeight} />
       <div
         style={{
           ...ITEM_STYLE,
-          transform: `translate3d(${
-            entry.position === 'top' || entry.position === 'bottom'
-              ? maxRight - entry.item.rect.width - entry.indent
-              : entry.item.rect.left
-          }px, 0px, 0px)`,
+          transform: `translate3d(${entry.item.rect.left}px, 0px, 0px)`,
           height: entry.item.rect.height,
           width: entry.item.rect.width
         }}
