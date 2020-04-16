@@ -37,6 +37,7 @@
 
 .headerStatus {
   min-height: var(--avatar-height);
+  display: flex;
 }
 
 .validationIconError {

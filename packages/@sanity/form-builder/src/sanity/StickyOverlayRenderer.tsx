@@ -2,7 +2,7 @@
 import * as React from 'react'
 import {createIntersectionObserver} from './intersectionObserver'
 import {tap} from 'rxjs/operators'
-import {THRESHOLD_BOTTOM, THRESHOLD_TOP, DEBUG} from './constants'
+import {THRESHOLD_BOTTOM, THRESHOLD_TOP, DEBUG} from '@sanity/components/lib/presence-new/config'
 
 const OVERLAY_STYLE: React.CSSProperties = {
   position: 'absolute',
@@ -11,10 +11,11 @@ const OVERLAY_STYLE: React.CSSProperties = {
   right: 0,
   bottom: 0,
   pointerEvents: 'none',
-  background: DEBUG ? 'rgba(255, 255, 0, 0.25)' : ''
+  background: DEBUG ? 'rgba(255, 255, 0, 0.25)' : '',
+  zIndex: 5
 }
 
-const TRANSITION = {
+const TRANSITION: React.CSSProperties = {
   transitionProperty: 'top, left',
   transitionDuration: '0.4s'
 }
