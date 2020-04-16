@@ -2,7 +2,7 @@
 import * as React from 'react'
 import {createIntersectionObserver} from './intersectionObserver'
 import {tap} from 'rxjs/operators'
-import {THRESHOLD_BOTTOM, THRESHOLD_TOP, DEBUG} from '@sanity/components/lib/presence-new/config'
+import {THRESHOLD_BOTTOM, THRESHOLD_TOP, DEBUG} from './constants'
 
 const OVERLAY_STYLE: React.CSSProperties = {
   position: 'absolute',
@@ -13,11 +13,6 @@ const OVERLAY_STYLE: React.CSSProperties = {
   pointerEvents: 'none',
   background: DEBUG ? 'rgba(255, 255, 0, 0.25)' : '',
   zIndex: 5
-}
-
-const TRANSITION: React.CSSProperties = {
-  transitionProperty: 'top, left',
-  transitionDuration: '0.4s'
 }
 
 const OVERLAY_ITEM_STYLE: React.CSSProperties = {
@@ -46,7 +41,7 @@ export function StickyOverlayRenderer(props) {
   const {items, render, children, trackerRef} = props
 
   const io = React.useMemo(
-    () => createIntersectionObserver({threshold: [0, 0.01, 0.1, 0.2, 0.8, 0.9, 0.99, 1]}),
+    () => createIntersectionObserver({threshold: [0, 0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 0.99, 1]}),
     []
   )
 
