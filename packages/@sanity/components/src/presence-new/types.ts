@@ -1,7 +1,6 @@
-
 export type Position = 'top' | 'bottom' | 'inside' | null
 export type Status = 'online' | 'editing' | 'inactive'
-export type Presence = Array<any>
+export type Presence = {}
 
 export type User = {
   displayName: string

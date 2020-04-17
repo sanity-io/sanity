@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import React from 'react'
 import {useId} from '@reach/auto-id'
 import styles from './styles/PresenceContainer.css'
@@ -5,25 +6,28 @@ import AvatarProvider from './AvatarProvider'
 import Avatar from './Avatar'
 import {MAX_AVATARS} from './config'
 import {RegionReporter} from '@sanity/overlayer'
-import {Presence, Position}  from './types'
+import {Presence, Position} from './types'
 
 type ContainerProps = {
-  presence: Presence
+  presence: Presence[]
   position: Position
+  avatarComponent: React.ComponentType<{userId: string; sessionId: string; position: Position}>
   children?: React.ReactNode
 }
 
 type RegionReporterProps = {
-  presence: Presence
+  presence: Presence[]
+  position: Position
 }
 
-export default function PresenceContainerBox({presence}: RegionReporterProps) {
+export default function PresenceContainerRegion({presence, position}: RegionReporterProps) {
   const id = useId()
+
   return (
     <RegionReporter
       id={id}
-      data={{presence, avatarComponent: AvatarProvider}}
-      childComponent={PresenceContainer}
+      data={{presence, position, avatarComponent: AvatarProvider}}
+      component={PresenceContainer}
     />
   )
 }
@@ -33,7 +37,7 @@ const splitRight = (array: Array<any>, index: number): Array<any> => {
   return [array.slice(0, idx), array.slice(idx)]
 }
 
-function PresenceContainer({presence, position}: ContainerProps) {
+function PresenceContainer({presence, position, avatarComponent: AvatarComponent}: ContainerProps) {
   const [collapsed, avatars] = splitRight(presence || [], MAX_AVATARS)
   return (
     <div className={styles.root}>
@@ -47,7 +51,7 @@ function PresenceContainer({presence, position}: ContainerProps) {
         </Avatar>
       )}
       {avatars.map(item => (
-        <AvatarProvider
+        <AvatarComponent
           key={item.sessionId}
           position={position}
           userId={item.identity}
