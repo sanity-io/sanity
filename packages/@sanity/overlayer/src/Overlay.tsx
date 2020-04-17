@@ -4,10 +4,10 @@ import {OverlayItem} from './types'
 const Noop = () => null
 
 export const Overlay = function PositionsOverlay(props: {
-  items: OverlayItem[]
-  renderWith: React.ComponentType<{items: OverlayItem[]}>
+  regions: OverlayItem[]
+  renderWith: React.ComponentType<{regions: OverlayItem[]}>
 }) {
-  const {items, renderWith: Component = Noop, ...rest} = props
+  const {regions, renderWith: Component = Noop, ...rest} = props
 
-  return <Component items={items} />
+  return <Component regions={regions} />
 }

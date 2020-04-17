@@ -15,14 +15,20 @@ import {
   withLatestFrom
 } from 'rxjs/operators'
 import {createResizeObserver, ObservableResizeObserver} from './resizeObserver'
-import {BoxEvent, BoxMountEvent, BoxUnmountEvent, BoxUpdateEvent, Context} from './context'
+import {
+  RegionReporterEvent,
+  RegionReporterMountEvent,
+  RegionReporterUnmountEvent,
+  RegionReporterUpdateEvent,
+  Context
+} from './context'
 import {OverlayItem, Rect} from './types'
 
 function isId<T extends {id: string}>(id: string) {
   return (event: T) => event.id === id
 }
 
-interface BoxResizeEvent {
+interface RegionReporterResizeEvent {
   type: 'resize'
   id: string
   entry: ResizeObserverEntry
@@ -77,7 +83,7 @@ function getRelativeRect(element, parent): Rect {
 
 export const Tracker = React.memo(function Tracker(props: {
   component: React.ComponentType<{
-    items: OverlayItem[]
+    regions: OverlayItem[]
     children: React.ReactNode
     trackerRef: React.RefObject<HTMLElement>
   }>
@@ -87,8 +93,8 @@ export const Tracker = React.memo(function Tracker(props: {
   const trackerRef = React.useRef<HTMLElement>()
   const [items, setItems] = React.useState([])
 
-  const boxElementEvents$: Subject<BoxEvent> = React.useMemo(
-    () => new ReplaySubject<BoxEvent>(),
+  const regionReporterElementEvents$: Subject<RegionReporterEvent> = React.useMemo(
+    () => new ReplaySubject<RegionReporterEvent>(),
     []
   )
 
@@ -99,14 +105,18 @@ export const Tracker = React.memo(function Tracker(props: {
       .observe(trackerRef.current)
       .pipe(publishReplay(1), refCount())
 
-    const all$ = boxElementEvents$.pipe(share())
+    const all$ = regionReporterElementEvents$.pipe(share())
 
-    const mounts$ = all$.pipe(filter((ev): ev is BoxMountEvent => ev.type === 'mount'))
-    const updates$ = all$.pipe(filter((ev: BoxEvent): ev is BoxUpdateEvent => ev.type === 'update'))
-    const unmounts$ = all$.pipe(filter((ev): ev is BoxUnmountEvent => ev.type === 'unmount'))
+    const mounts$ = all$.pipe(filter((ev): ev is RegionReporterMountEvent => ev.type === 'mount'))
+    const updates$ = all$.pipe(
+      filter((ev: RegionReporterEvent): ev is RegionReporterUpdateEvent => ev.type === 'update')
+    )
+    const unmounts$ = all$.pipe(
+      filter((ev): ev is RegionReporterUnmountEvent => ev.type === 'unmount')
+    )
 
     const positions$ = mounts$.pipe(
-      mergeMap((mountEvent: BoxMountEvent, i) => {
+      mergeMap((mountEvent: RegionReporterMountEvent, i) => {
         const elementId = mountEvent.id
         const unmounted$ = unmounts$.pipe(filter(isId(elementId)), share())
         const elementUpdates$ = updates$.pipe(filter(isId(elementId)), share())
@@ -123,7 +133,8 @@ export const Tracker = React.memo(function Tracker(props: {
             map(update => ({
               type: 'update',
               id: elementId,
-              props: update.props,
+              data: update.data,
+              component: update.component,
               rect: getRelativeRect(mountEvent.element, trackerRef.current)
             }))
           ),
@@ -136,14 +147,20 @@ export const Tracker = React.memo(function Tracker(props: {
           if (exists) {
             return items.map(item =>
               item.id === event.id
-                ? {id: event.id, props: event.props || item.props, rect: event.rect || item.rect}
+                ? {
+                    id: event.id,
+                    data: event.data || item.data,
+                    component: event.component || item.component,
+                    rect: event.rect || item.rect
+                  }
                 : item
             )
           }
           return items.concat({
             id: event.id,
             rect: event.rect,
-            props: event.props
+            data: event.data,
+            component: event.component
           })
         }
 
@@ -167,13 +184,13 @@ export const Tracker = React.memo(function Tracker(props: {
   }, [])
 
   const dispatch = React.useCallback(event => {
-    boxElementEvents$.next(event)
+    regionReporterElementEvents$.next(event)
   }, [])
 
   const Component = props.component
   return (
     <Context.Provider value={{dispatch}}>
-      <Component items={items} trackerRef={trackerRef}>
+      <Component regions={items} trackerRef={trackerRef}>
         {props.children}
       </Component>
     </Context.Provider>

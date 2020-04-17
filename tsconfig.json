@@ -15,7 +15,7 @@
     "emitDeclarationOnly": false,
 
     "declarationMap": true,
-    "lib": ["dom", "es2016"],
+    "lib": ["dom", "es2020"],
     "moduleResolution": "node",
     "sourceMap": true
   }

@@ -1,13 +1,14 @@
 import * as React from 'react'
 import {Context} from './context'
 
-export const Box = React.memo(function Box(props: {
+export const RegionReporter = React.memo(function RegionReporter(props: {
   id: string
+  data: any
   children?: React.ReactNode
   childComponent: React.ComponentType
   style?: React.CSSProperties
 }) {
-  const {id, childComponent, ...rest} = props
+  const {id, childComponent, data} = props
   const ref = React.useRef<HTMLDivElement>()
   const context = React.useContext(Context)
 
@@ -16,7 +17,8 @@ export const Box = React.memo(function Box(props: {
       type: 'mount',
       id,
       element: ref.current,
-      props
+      data,
+      component: childComponent
     })
     return () => {
       context.dispatch({type: 'unmount', id})
@@ -27,7 +29,8 @@ export const Box = React.memo(function Box(props: {
     context.dispatch({
       type: 'update',
       id,
-      props
+      data,
+      component: childComponent
     })
   }, [props])
 
@@ -35,7 +38,7 @@ export const Box = React.memo(function Box(props: {
   return (
     // note the wrapper here must be a block element for ResizeObserver to work properly
     <div ref={ref} style={{display: 'inline-block', visibility: 'hidden', ...props.style}}>
-      <Component {...rest} />
+      <Component {...data} />
     </div>
   )
 })

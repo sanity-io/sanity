@@ -1,25 +1,30 @@
 import * as React from 'react'
 import {Rect} from './types'
 
-export interface BoxMountEvent {
+export interface RegionReporterMountEvent {
   type: 'mount'
   id: string
   element: HTMLElement
-  props: any
+  data: any
+  component: React.ComponentType
 }
 
-export interface BoxUnmountEvent {
+export interface RegionReporterUnmountEvent {
   type: 'unmount'
   id: string
 }
 
-export interface BoxUpdateEvent {
+export interface RegionReporterUpdateEvent {
   type: 'update'
   id: string
-  props: any
+  data: any
+  component: React.ComponentType
 }
 
-export type BoxEvent = BoxMountEvent | BoxUpdateEvent | BoxUnmountEvent
+export type RegionReporterEvent =
+  | RegionReporterMountEvent
+  | RegionReporterUpdateEvent
+  | RegionReporterUnmountEvent
 
 export interface Position {
   id: string
@@ -27,11 +32,11 @@ export interface Position {
 }
 
 interface OverlayerContext {
-  dispatch: (event: BoxEvent) => void
+  dispatch: (event: RegionReporterEvent) => void
 }
 
 const DEFAULT_CONTEXT: OverlayerContext = {
-  dispatch: (event: BoxEvent) => {
+  dispatch: (event: RegionReporterEvent) => {
     throw new Error('Missing context')
   }
 }
