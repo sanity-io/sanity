@@ -14,7 +14,9 @@ import PatchEvent from '../../PatchEvent'
 import {Marker} from '../../typedefs'
 import {Patch} from '../../typedefs/patch'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
-import {Subject} from 'rxjs'
+import {interval, Subject} from 'rxjs'
+import {map, take} from 'rxjs/operators'
+import {keyGenerator} from '@sanity/portable-text-editor/lib/editor/PortableTextEditor'
 
 type Props = {
   type: Type
@@ -53,8 +55,9 @@ export default withPatchSubscriber(
   class PortableTextInput extends React.PureComponent<Props, State> {
     private editor: PortableTextEditor | null
     private incoming: PatchWithOrigin[] = []
-    private usubscribe: any
     private patche$: any = new Subject()
+    private usubscribe: any
+    private interval: any
     private hotkeys = {
       marks: {
         'mod+b': 'strong',
@@ -79,6 +82,22 @@ export default withPatchSubscriber(
     constructor(props: Props) {
       super(props)
       this.usubscribe = props.subscribe(this.handleDocumentPatches)
+      this.interval = interval(2000)
+      // this.interval
+      //   .pipe(take(10))
+      //   .pipe(
+      //     map(
+      //       (): Patch => ({
+      //         type: 'diffMatchPatch',
+      //         path: [0, 'children', 0, 'text'],
+      //         value: `@@ -0,0 +1 @@\n+${keyGenerator().substring(0, 1)}\n`,
+      //         origin: 'remote'
+      //       })
+      //     )
+      //   )
+      //   .subscribe(patch => {
+      //     props.onChange(PatchEvent.from([patch]))
+      //   })
     }
 
     componentWillUnmount(): void {
