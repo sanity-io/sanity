@@ -14,7 +14,7 @@ export type Region = {
     height: number
     width: number
   }
-  childComponent: React.ComponentType<Data>
+  component: React.ComponentType<Data>
   spacerHeight?: number
 }
 

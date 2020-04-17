@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react'
 import userStore from 'part:@sanity/base/user'
-import PropTypes from 'prop-types'
 import {IntentLink} from 'part:@sanity/base/router'
 import styles from './styles/PresenceStatusItem.css'
 import AvatarProvider from './AvatarProvider'
 import {Status, User} from './types'
 import {shortenName} from './helpers'
+import colorHasher from '../presence/colorHasher'
 
 function withIntent(content: any, documentId: string) {
   return (
@@ -18,10 +18,24 @@ function withIntent(content: any, documentId: string) {
 type Props = {
   id: string
   status: Status
-  sessions: Array<any>
+  sessions: any[]
 }
 
-export default function PresenceStatusItem({id, status, sessions}: Props) {
+const renderContent = ({id, user, status}: {id: string; user: User; status: Status}) => {
+  return (
+    <div className={styles.inner}>
+      <div className={styles.avatar}>
+        <AvatarProvider size="medium" status={status} userId={id} color={colorHasher(id)} />
+      </div>
+      <div className={styles.userInfo}>
+        <div className={styles.name}>{shortenName(user.displayName)}</div>
+        <div>{status}</div>
+      </div>
+    </div>
+  )
+}
+
+export default function PresenceStatusItem({id, status = 'inactive', sessions = []}: Props) {
   const [user, setUser] = useState<User | null>(null)
   useEffect(() => {
     if (id) {
@@ -31,34 +45,19 @@ export default function PresenceStatusItem({id, status, sessions}: Props) {
     }
   }, [user])
 
-  const renderContent = () => {
-    return (
-      <div className={styles.inner}>
-        <div className={styles.avatar}>
-          <AvatarProvider size="medium" status={status} userId={id} sessionId={user.sessionId} />
-        </div>
-        <div className={styles.userInfo}>
-          <div className={styles.name}>{shortenName(user.displayName)}</div>
-          <div>{status}</div>
-        </div>
-      </div>
-    )
+  if (!user) {
+    return null
   }
 
   // TODO
   // Temp solution: Find first session with a document id to decide param for intent link
-  const session = sessions.find(session => session.state && session.state.documentId)
+  const session = sessions.find(session => session.state?.documentId)
 
   return (
     <div className={styles.root}>
-      {session && session.state && session.state.documentId
-        ? withIntent(renderContent, session.state.documentId)
-        : renderContent()}
+      {session?.state?.documentId
+        ? withIntent(() => renderContent({user, id, status}), session.state.documentId)
+        : renderContent({user, id, status})}
     </div>
   )
 }
-
-PresenceStatusItem.defaultProps = {
-  status: 'inactive',
-  sessions: []
-} as Partial<Props>;

@@ -52,37 +52,56 @@ const orderByTop = (regionsWithIntersectionDetails: RegionWithIntersectionDetail
 const plus = (a, b) => a + b
 const sum = array => array.reduce(plus, 0)
 
-function group(regionsWithIntersectionDetails: RegionWithIntersectionDetails[]) {
-  const grouped = {
+type RegionWithSpacerHeightAndIndent = RegionWithSpacerHeight & {indent: number}
+
+function group(
+  regionsWithIntersectionDetails: RegionWithIntersectionDetails[]
+): {
+  top: RegionWithSpacerHeightAndIndent[]
+  inside: RegionWithSpacerHeightAndIndent[]
+  bottom: RegionWithSpacerHeightAndIndent[]
+} {
+  const regionsWithSpacerHeight = withSpacerHeight(orderByTop(regionsWithIntersectionDetails))
+  const grouped: {
+    top: RegionWithSpacerHeight[]
+    inside: RegionWithSpacerHeight[]
+    bottom: RegionWithSpacerHeight[]
+  } = {
     top: [],
     inside: [],
     bottom: [],
-    ...groupBy(
-      withSpacerHeight(orderByTop(regionsWithIntersectionDetails)),
-      withIntersection => withIntersection.position
-    )
+    ...groupBy(regionsWithSpacerHeight, withSpacerHeight => withSpacerHeight.position)
   }
 
   return {
-    top: orderByTop(grouped.top).map((withIntersection, i, grp) => ({
-      ...withIntersection,
-      indent: grp
-        .slice(i + 1)
-        .reduce((w, withIntersection) => w + withIntersection.region.rect.width, 0)
-    })),
-    inside: orderByTop(grouped.inside).map(withIntersection => ({...withIntersection, indent: 0})),
-    bottom: orderByTop(grouped.bottom).map((withIntersection, i, grp) => ({
-      ...withIntersection,
-      indent: grp
-        .slice(0, i)
-        .reduce((w, withIntersection) => w + withIntersection.region.rect.width, 0)
-    }))
+    top: orderByTop(grouped.top).map(
+      (withIntersection: RegionWithSpacerHeight, i, grp): RegionWithSpacerHeightAndIndent => ({
+        ...withIntersection,
+        indent: grp
+          .slice(i + 1)
+          .reduce((w, withIntersection) => w + withIntersection.region.rect.width, 0)
+      })
+    ),
+    inside: orderByTop(grouped.inside).map(
+      (withIntersection: RegionWithSpacerHeight): RegionWithSpacerHeightAndIndent => ({
+        ...withIntersection,
+        indent: 0
+      })
+    ),
+    bottom: orderByTop(grouped.bottom).map(
+      (withIntersection: RegionWithSpacerHeight, i, grp): RegionWithSpacerHeightAndIndent => ({
+        ...withIntersection,
+        indent: grp
+          .slice(0, i)
+          .reduce((w, withIntersection) => w + withIntersection.region.rect.width, 0)
+      })
+    )
   }
 }
 
-const Spacer = ({height, ...rest}) => {
-  return <div style={{height: Math.max(0, height), ...rest?.style}} />
-}
+const Spacer = ({height, ...rest}: {height: number; style?: CSSProperties}) => (
+  <div style={{height: Math.max(0, height), ...rest?.style}} />
+)
 
 type Props = {
   regions: any[]
@@ -173,9 +192,9 @@ function renderTop(regionsWithIntersectionDetails: RegionWithIntersectionDetails
   )
 }
 
-function renderBottom(regionsWithIntersectionDetails) {
+function renderBottom(regionsWithIntersectionDetails: RegionWithSpacerHeight[]) {
   const allPresenceItems = regionsWithIntersectionDetails
-    .flatMap(withIntersection => withIntersection.region.props.presence || [])
+    .flatMap(withIntersection => withIntersection.region.data.presence || [])
     .reverse()
 
   const [collapsed, visible] = splitRight(allPresenceItems, MAX_AVATARS)
@@ -250,7 +269,7 @@ function renderInside(regionsWithIntersectionDetails: RegionWithSpacerHeight[], 
     const originalLeft = withIntersection.region.rect.left
     const distanceTop = withIntersection.distanceTop + THRESHOLD_TOP
 
-    const {childComponent: ChildComponent, data} = withIntersection.region
+    const {component: Component, data} = withIntersection.region
 
     return (
       <React.Fragment key={withIntersection.region.id}>
@@ -269,7 +288,7 @@ function renderInside(regionsWithIntersectionDetails: RegionWithSpacerHeight[], 
           }}
         >
           <DebugValue value={() => distanceTop}>
-            <ChildComponent {...data} />
+            {Component ? <Component {...data} /> : null}
           </DebugValue>
         </div>
       </React.Fragment>
