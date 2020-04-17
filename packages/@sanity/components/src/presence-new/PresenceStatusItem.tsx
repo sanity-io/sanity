@@ -4,8 +4,10 @@ import PropTypes from 'prop-types'
 import {IntentLink} from 'part:@sanity/base/router'
 import styles from './styles/PresenceStatusItem.css'
 import AvatarProvider from './AvatarProvider'
+import {Status, User} from './types'
+import {shortenName} from './helpers'
 
-function withIntent(content, documentId) {
+function withIntent(content: any, documentId: string) {
   return (
     <IntentLink className={styles.intentLink} intent="edit" params={{id: documentId}}>
       {content()}
@@ -13,9 +15,14 @@ function withIntent(content, documentId) {
   )
 }
 
-export default function PresenceStatusItem({id, status, sessions = []}) {
-  const [user, setUser] = useState({displayName: ''})
+type Props = {
+  id: string
+  status: Status
+  sessions: Array<any>
+}
 
+export default function PresenceStatusItem({id, status, sessions}: Props) {
+  const [user, setUser] = useState<User | null>(null)
   useEffect(() => {
     if (id) {
       userStore.getUser(id).then(result => {
@@ -24,16 +31,6 @@ export default function PresenceStatusItem({id, status, sessions = []}) {
     }
   }, [user])
 
-  // Decide whether to show full name or only firstname with an initial
-  const displayName = name => {
-    const length = name.split('').length
-    if (length > 18) {
-      const nameArray = name.split(' ')
-      return `${nameArray[0]} ${nameArray[nameArray.length - 1].charAt(0)}.`
-    }
-    return name
-  }
-
   const renderContent = () => {
     return (
       <div className={styles.inner}>
@@ -41,7 +38,7 @@ export default function PresenceStatusItem({id, status, sessions = []}) {
           <AvatarProvider size="medium" status={status} userId={id} sessionId={user.sessionId} />
         </div>
         <div className={styles.userInfo}>
-          <div className={styles.name}>{displayName(user.displayName)}</div>
+          <div className={styles.name}>{shortenName(user.displayName)}</div>
           <div>{status}</div>
         </div>
       </div>
@@ -61,13 +58,7 @@ export default function PresenceStatusItem({id, status, sessions = []}) {
   )
 }
 
-PresenceStatusItem.propTypes = {
-  id: PropTypes.string.isRequired,
-  status: PropTypes.oneOf(['online', 'editing', 'inactive']),
-  sessions: PropTypes.array
-}
-
 PresenceStatusItem.defaultProps = {
   status: 'inactive',
   sessions: []
-}
+} as Partial<Props>;

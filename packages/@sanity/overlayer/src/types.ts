@@ -14,4 +14,5 @@ export interface OverlayItem {
     width: number
     height: number
   }
+  data: any
 }

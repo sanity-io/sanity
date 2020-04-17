@@ -23,6 +23,7 @@ const OVERLAY_ITEM_STYLE: React.CSSProperties = {
   position: 'absolute'
 }
 
+// TODO: type this
 const WithIntersection = props => {
   const {onIntersection, io, id, ...rest} = props
   const element = React.useRef()
@@ -37,8 +38,15 @@ const WithIntersection = props => {
   return <div ref={element} {...rest} />
 }
 
-export function StickyOverlayRenderer(props) {
-  const {items, render, children, trackerRef} = props
+type Props = {
+  regions: any[]
+  render: (regionsWithIntersectionDetails: any[]) => React.ReactElement
+  children: React.ReactElement
+  trackerRef: React.RefObject<any>
+}
+
+export function RegionIntersectionAssembler(props: Props) {
+  const {regions, render, children, trackerRef} = props
 
   const io = React.useMemo(
     () => createIntersectionObserver({threshold: [0, 0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 0.99, 1]}),
@@ -53,11 +61,11 @@ export function StickyOverlayRenderer(props) {
 
   const top = intersections['::top']
   const bottom = intersections['::bottom']
-  const entries =
+  const regionsWithIntersectionDetails =
     top && bottom
-      ? items
-          .map(item => {
-            const intersection = intersections[item.id]
+      ? regions
+          .map(region => {
+            const intersection = intersections[region.id]
             if (!intersection) {
               return null
             }
@@ -76,7 +84,7 @@ export function StickyOverlayRenderer(props) {
             return {
               distanceTop,
               distanceBottom,
-              item,
+              region,
               position
             }
           })
@@ -97,22 +105,22 @@ export function StickyOverlayRenderer(props) {
         }}
       />
       <div>{children}</div>
-      <div style={OVERLAY_STYLE}>{render(entries)}</div>
+      <div style={OVERLAY_STYLE}>{render(regionsWithIntersectionDetails)}</div>
       <div style={OVERLAY_STYLE}>
-        {items.map(item => {
-          const forceWidth = item.rect.width === 0
+        {regions.map(region => {
+          const forceWidth = region.rect.width === 0
           return (
             <WithIntersection
               io={io}
               onIntersection={onIntersection}
-              key={item.id}
-              id={item.id}
+              key={region.id}
+              id={region.id}
               style={{
                 ...OVERLAY_ITEM_STYLE,
-                width: forceWidth ? 1 : item.rect.width,
-                left: item.rect.left - (forceWidth ? 1 : 0),
-                top: item.rect.top - 30,
-                height: item.rect.height + 60,
+                width: forceWidth ? 1 : region.rect.width,
+                left: region.rect.left - (forceWidth ? 1 : 0),
+                top: region.rect.top - 30,
+                height: region.rect.height + 60,
                 visibility: DEBUG ? 'visible' : 'hidden'
               }}
             />

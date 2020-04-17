@@ -1,13 +1,15 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as React from 'react'
 import {CSSProperties} from 'react'
-import {StickyOverlayRenderer} from './StickyOverlayRenderer'
+import {RegionIntersectionAssembler} from './RegionIntersectionAssembler'
 import {groupBy, orderBy} from 'lodash'
 import AvatarProvider from '@sanity/components/lib/presence-new/AvatarProvider'
 import Avatar from '@sanity/components/lib/presence-new/Avatar'
 import {DEBUG, THRESHOLD_TOP, MAX_AVATARS} from './constants'
+import {RegionWithIntersectionDetails} from './types'
 
 const splitRight = (array, index) => {
   const idx = Math.max(0, array.length - index)
@@ -26,43 +28,54 @@ const ITEM_STYLE: CSSProperties = {
   bottom: 0
 }
 
-const RenderItem = props => {
-  const {childComponent: ChildComponent, presence = [], ...rest} = props
-  return ChildComponent ? <ChildComponent presence={presence} {...rest} /> : null
-}
-
 const bottom = rect => rect.top + rect.height
 
-function withSpacerHeight(entries) {
-  return entries.map((entry, idx, entries) => {
-    const prevRect = entries[idx - 1]?.item.rect
-    const prevBottom = prevRect ? bottom(prevRect) : 0
-    return {...entry, spacerHeight: entry.item.rect.top - prevBottom}
-  })
+type RegionWithSpacerHeight = RegionWithIntersectionDetails & {
+  spacerHeight: number
 }
 
-const orderByTop = entries => orderBy(entries, entry => entry.item.rect.top)
+function withSpacerHeight(
+  regionsWithIntersectionDetails: RegionWithIntersectionDetails[]
+): RegionWithSpacerHeight[] {
+  return regionsWithIntersectionDetails.map(
+    (withIntersection, idx, regionsWithIntersectionDetails) => {
+      const prevRect = regionsWithIntersectionDetails[idx - 1]?.region.rect
+      const prevBottom = prevRect ? bottom(prevRect) : 0
+      return {...withIntersection, spacerHeight: withIntersection.region.rect.top - prevBottom}
+    }
+  )
+}
+
+const orderByTop = (regionsWithIntersectionDetails: RegionWithIntersectionDetails[]) =>
+  orderBy(regionsWithIntersectionDetails, withIntersection => withIntersection.region.rect.top)
 
 const plus = (a, b) => a + b
 const sum = array => array.reduce(plus, 0)
 
-function group(entries) {
+function group(regionsWithIntersectionDetails: RegionWithIntersectionDetails[]) {
   const grouped = {
     top: [],
     inside: [],
     bottom: [],
-    ...groupBy(withSpacerHeight(orderByTop(entries)), entry => entry.position)
+    ...groupBy(
+      withSpacerHeight(orderByTop(regionsWithIntersectionDetails)),
+      withIntersection => withIntersection.position
+    )
   }
 
   return {
-    top: orderByTop(grouped.top).map((entry, i, grp) => ({
-      ...entry,
-      indent: grp.slice(i + 1).reduce((w, entry) => w + entry.item.rect.width, 0)
+    top: orderByTop(grouped.top).map((withIntersection, i, grp) => ({
+      ...withIntersection,
+      indent: grp
+        .slice(i + 1)
+        .reduce((w, withIntersection) => w + withIntersection.region.rect.width, 0)
     })),
-    inside: orderByTop(grouped.inside).map((entry, i) => ({...entry, indent: 0})),
-    bottom: orderByTop(grouped.bottom).map((entry, i, grp) => ({
-      ...entry,
-      indent: grp.slice(0, i).reduce((w, entry) => w + entry.item.rect.width, 0)
+    inside: orderByTop(grouped.inside).map(withIntersection => ({...withIntersection, indent: 0})),
+    bottom: orderByTop(grouped.bottom).map((withIntersection, i, grp) => ({
+      ...withIntersection,
+      indent: grp
+        .slice(0, i)
+        .reduce((w, withIntersection) => w + withIntersection.region.rect.width, 0)
     }))
   }
 }
@@ -71,31 +84,46 @@ const Spacer = ({height, ...rest}) => {
   return <div style={{height: Math.max(0, height), ...rest?.style}} />
 }
 
-function StickyPresenceTransitionRenderer(props) {
+type Props = {
+  regions: any[]
+  children: React.ReactElement
+  trackerRef: React.RefObject<any>
+}
+
+export function PresenceTransitionRenderer(props: Props) {
   return (
-    <StickyOverlayRenderer
+    <RegionIntersectionAssembler
       {...props}
-      render={entries => {
+      render={(regionsWithIntersectionDetails: RegionWithIntersectionDetails[]) => {
         const maxRight = Math.max(
-          ...entries.map(record => record.item.rect.left + record.item.rect.width)
+          ...regionsWithIntersectionDetails.map(
+            withIntersection =>
+              withIntersection.region.rect.left + withIntersection.region.rect.width
+          )
         )
-        const grouped = group(entries)
-        const topSpacing = sum(grouped.top.map(n => n.item.rect.height + n.spacerHeight))
-        const bottomSpacing = sum(grouped.bottom.map(n => n.item.rect.height + n.spacerHeight))
-        return [
-          renderTop(grouped.top),
-          <Spacer key="spacerTop" height={topSpacing} />,
-          ...renderInside(grouped.inside, maxRight),
-          <Spacer key="spacerBottom" height={bottomSpacing} />,
-          renderBottom(grouped.bottom)
-        ]
+        const grouped = group(regionsWithIntersectionDetails)
+        const topSpacing = sum(grouped.top.map(n => n.region.rect.height + n.spacerHeight))
+        const bottomSpacing = sum(grouped.bottom.map(n => n.region.rect.height + n.spacerHeight))
+        return (
+          <>
+            {[
+              renderTop(grouped.top),
+              <Spacer key="spacerTop" height={topSpacing} />,
+              ...renderInside(grouped.inside, maxRight),
+              <Spacer key="spacerBottom" height={bottomSpacing} />,
+              renderBottom(grouped.bottom)
+            ]}
+          </>
+        )
       }}
     />
   )
 }
 
-function renderTop(entries) {
-  const allPresenceItems = entries.flatMap(entry => entry.item.props?.presence || [])
+function renderTop(regionsWithIntersectionDetails: RegionWithIntersectionDetails[]) {
+  const allPresenceItems = regionsWithIntersectionDetails.flatMap(
+    withIntersection => withIntersection.region.data?.presence || []
+  )
 
   const [collapsed, visible] = splitRight(allPresenceItems, MAX_AVATARS)
 
@@ -104,9 +132,7 @@ function renderTop(entries) {
       key={collapsed.length > 1 ? 'counter' : collapsed[collapsed.length - 1].sessionId}
       style={{
         ...ITEM_TRANSITION,
-        // position: 'relative'
         position: 'absolute',
-        // top: 0
         transform: `translate3d(${visible.length * -28}px, 0px, 0px)`
       }}
     >
@@ -121,9 +147,7 @@ function renderTop(entries) {
       key={avatar.sessionId}
       style={{
         ...ITEM_TRANSITION,
-        // position: 'relative'
         position: 'absolute',
-        // top: 0
         transform: `translate3d(${(visible.length - 1 - i) * -28}px, 0px, 0px)`
       }}
     >
@@ -149,8 +173,10 @@ function renderTop(entries) {
   )
 }
 
-function renderBottom(entries) {
-  const allPresenceItems = entries.flatMap(entry => entry.item.props.presence || []).reverse()
+function renderBottom(regionsWithIntersectionDetails) {
+  const allPresenceItems = regionsWithIntersectionDetails
+    .flatMap(withIntersection => withIntersection.region.props.presence || [])
+    .reverse()
 
   const [collapsed, visible] = splitRight(allPresenceItems, MAX_AVATARS)
 
@@ -217,15 +243,18 @@ function renderBottom(entries) {
 // The avatar will move to the right when this close (in pixels) to the top
 const topDistanceRightMovementThreshold = 12
 
-function renderInside(entries, maxRight) {
-  return entries.map(entry => {
-    const distanceMaxLeft = maxRight - entry.item.rect.width - entry.item.rect.left
-    const originalLeft = entry.item.rect.left
-    const distanceTop = entry.distanceTop + THRESHOLD_TOP
+function renderInside(regionsWithIntersectionDetails: RegionWithSpacerHeight[], maxRight: number) {
+  return regionsWithIntersectionDetails.map(withIntersection => {
+    const distanceMaxLeft =
+      maxRight - withIntersection.region.rect.width - withIntersection.region.rect.left
+    const originalLeft = withIntersection.region.rect.left
+    const distanceTop = withIntersection.distanceTop + THRESHOLD_TOP
+
+    const {childComponent: ChildComponent, data} = withIntersection.region
 
     return (
-      <React.Fragment key={entry.item.id}>
-        <Spacer height={entry.spacerHeight} />
+      <React.Fragment key={withIntersection.region.id}>
+        <Spacer height={withIntersection.spacerHeight} />
         <div
           style={{
             ...ITEM_STYLE,
@@ -234,14 +263,13 @@ function renderInside(entries, maxRight) {
               (distanceTop < topDistanceRightMovementThreshold
                 ? distanceMaxLeft
                 : 0)}px, 0px, 0px)`,
-            // transitionDuration: '2s',
             transitionTimingFunction: 'cubic-bezier(0.85, 0, 0.15, 1)',
-            height: entry.item.rect.height,
-            width: entry.item.rect.width
+            height: withIntersection.region.rect.height,
+            width: withIntersection.region.rect.width
           }}
         >
           <DebugValue value={() => distanceTop}>
-            <RenderItem {...entry.item.props} />
+            <ChildComponent {...data} />
           </DebugValue>
         </div>
       </React.Fragment>
@@ -249,7 +277,7 @@ function renderInside(entries, maxRight) {
   })
 }
 
-function DebugValue(props) {
+function DebugValue(props: any) {
   if (!DEBUG) {
     return props.children
   }
@@ -271,6 +299,3 @@ function DebugValue(props) {
     </div>
   )
 }
-
-// export const PresenceTransitionRenderer = AbsoluteOverlayRenderer
-export const PresenceTransitionRenderer = StickyPresenceTransitionRenderer

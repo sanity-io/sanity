@@ -1,19 +1,30 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import {useId} from '@reach/auto-id'
 import styles from './styles/Avatar.css'
 
+type Props = {
+  color: string
+  imageUrl: string
+  label: string
+  isAnimating?: boolean
+  children?: React.ReactNode
+  onImageLoadError: any
+  position?: 'top' | 'bottom' | 'inside' | null
+  status?: 'online' | 'editing' | 'inactive',
+  size?: 'small' | 'medium'
+}
+
 export default function Avatar({
-  color,
-  imageUrl,
-  label,
-  isAnimating,
-  children,
-  onImageLoadError,
-  position,
-  status,
-  size
-}) {
+    color,
+    imageUrl,
+    label,
+    isAnimating,
+    children,
+    onImageLoadError,
+    position,
+    status,
+    size
+  }: Props) {
   const elementId = useId()
   return (
     <div className={styles.root} data-dock={position} style={{color}} aria-label={label}>
@@ -68,20 +79,7 @@ export default function Avatar({
   )
 }
 
-Avatar.propTypes = {
-  color: PropTypes.string,
-  imageUrl: PropTypes.string,
-  isAnimating: PropTypes.bool,
-  position: PropTypes.oneOf(['top', 'bottom', 'inside', null]),
-  onClick: PropTypes.func,
-  label: PropTypes.string.isRequired,
-  children: PropTypes.any,
-  onImageLoadError: PropTypes.func,
-  size: PropTypes.string,
-  status: PropTypes.oneOf(['online', 'editing', 'inactive'])
-}
-
 Avatar.defaultProps = {
   size: 'small',
   status: 'online'
-}
+} as Partial<Props>;

@@ -1,21 +1,25 @@
 import React, {useState, useEffect} from 'react'
 import userStore from 'part:@sanity/base/user'
-import PropTypes from 'prop-types'
 import colorHasher from '../presence/colorHasher'
 import Avatar from './Avatar'
+import {nameToInitials} from './helpers'
+import {Position, Status, User} from './types'
 
-function nameToInitials(fullName) {
-  const namesArray = fullName.split(' ')
-  if (namesArray.length === 1) return `${namesArray[0].charAt(0)}`
-  return `${namesArray[0].charAt(0)}${namesArray[namesArray.length - 1].charAt(0)}`
+export type Props = {
+  userId:  string
+  sessionId: string
+  position: Position
+  status: Status
+  size: 'small' | 'medium'
 }
 
-export default function AvatarProvider({userId, sessionId, position, scrollToField, status, size}) {
+export default function AvatarProvider({userId, sessionId, position, status, size}: Props){
   // we need to scope the value of the id attributes here
-  const [user, setUser] = useState({})
+  const [user, setUser] = useState<User | null>(null)
   const [imageLoadError, setImageLoadError] = useState(false)
   useEffect(() => {
     if (userId) {
+      // Fetch the user information from the user store
       userStore.getUser(userId).then(result => {
         setUser(result)
       })
@@ -34,7 +38,7 @@ export default function AvatarProvider({userId, sessionId, position, scrollToFie
       isAnimating={isAnimating}
       position={position}
       size={size}
-      label={user.displayName}
+      label={user?.displayName}
       color={userColor}
       onImageLoadError={error => setImageLoadError(error)}
     >
@@ -43,16 +47,7 @@ export default function AvatarProvider({userId, sessionId, position, scrollToFie
   )
 }
 
-AvatarProvider.propTypes = {
-  userId: PropTypes.string.isRequired,
-  sessionId: PropTypes.string,
-  position: PropTypes.oneOf(['top', 'bottom', 'inside', null]),
-  scrollToField: PropTypes.func,
-  size: PropTypes.string,
-  status: PropTypes.oneOf(['online', 'editing', 'inactive'])
-}
-
 AvatarProvider.defaultProps = {
   size: 'small',
   status: 'online'
-}
+} as Partial<Props>;
