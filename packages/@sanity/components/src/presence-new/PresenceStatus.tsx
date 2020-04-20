@@ -39,21 +39,23 @@ export default function PresenceStatus() {
             }
           }}
         >
-          <ul className={styles.presenceList}>
-            {users.length > 0 ? (
-              users.map(user => (
-                <li key={user.identity}>
-                  <PresenceStatusItem
-                    id={user.identity}
-                    status={user.status}
-                    sessions={user.sessions}
-                  />
-                </li>
-              ))
-            ) : (
-              <li className={styles.empty}>Looks like it's just you...</li>
-            )}
-          </ul>
+          <div className={styles.inner}>
+            <ul className={styles.presenceList}>
+              {users.length > 0 ? (
+                users.map(user => (
+                  <li key={user.identity}>
+                    <PresenceStatusItem
+                      id={user.identity}
+                      status={user.status}
+                      sessions={user.sessions}
+                    />
+                  </li>
+                ))
+              ) : (
+                <li className={styles.empty}>Looks like it's just you...</li>
+              )}
+            </ul>
+          </div>
         </PopOverDialog>
       )}
     </div>
