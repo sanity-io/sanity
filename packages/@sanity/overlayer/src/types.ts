@@ -14,5 +14,15 @@ export interface OverlayItem {
     width: number
     height: number
   }
-  data: any
+  data: {
+    presence: Presence[]
+    position: string | null
+    avatarComponent: React.ComponentType
+  }
+}
+
+type Presence = {
+  sessionId: string
+  identity: string
+  path: string[]
 }
