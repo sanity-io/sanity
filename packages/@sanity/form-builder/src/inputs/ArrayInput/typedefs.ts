@@ -1,12 +1,14 @@
 import {Type} from '../../typedefs'
 
+export type ModalType = 'modal' | 'fullscreen' | string
+
 export type ArrayType = Type & {
   name: string
   title: string
   description: string
   readOnly: boolean | null
   options: {
-    editModal?: 'fold' | 'modal' | string
+    editModal?: ModalType
     sortable?: boolean
     layout?: 'grid'
   }

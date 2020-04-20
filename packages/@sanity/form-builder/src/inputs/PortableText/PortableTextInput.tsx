@@ -22,6 +22,8 @@ import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {interval, Subject} from 'rxjs'
 import {map, take} from 'rxjs/operators'
 import Toolbar from './Toolbar/Toolbar'
+import Block from './BlockRendering/Block'
+import {Path} from '../../typedefs/path'
 
 const IS_MAC =
   typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
@@ -35,6 +37,7 @@ type Props = {
   onFocus: () => void
   onBlur: () => void
   markers: Array<Marker>
+  focusPath: Path
   onPaste?: (arg0: {
     event: React.SyntheticEvent
     path: []
@@ -182,24 +185,40 @@ export default withPatchSubscriber(
       this.focus()
     }
 
+    handleBlockChange = (patchEvent: PatchEvent, block: PortableTextBlock): void => {
+      this.props.onChange(patchEvent.prefixAll({_key: block._key}))
+    }
+
     renderBlock = (
       block: PortableTextBlock,
-      attributes: {focused: boolean; selected: boolean}
+      type: Type,
+      ref: React.RefObject<HTMLDivElement>,
+      attributes: {
+        focused: boolean
+        selected: boolean
+      },
+      defaultRender: (block: PortableTextBlock) => JSX.Element
     ): JSX.Element => {
       if (!this.editor) {
         return null
       }
-      // Offload rendering text to the editor
+
       if (block._type === this.editor.current.getPortableTextFeatures().types.block.name) {
-        return undefined
+        return defaultRender(block)
       }
-      // Render object blocks (images, etc)
+
       return (
-        <div
-          style={{color: '#999', fontFamily: 'monospace', padding: '1em', backgroundColor: '#eee'}}
-        >
-          {JSON.stringify(block)} {JSON.stringify(attributes)}
-        </div>
+        <Block
+          block={block}
+          type={type}
+          referenceElement={ref}
+          onFocus={this.props.onFocus}
+          onBlur={this.props.onBlur}
+          focusPath={this.props.focusPath}
+          readOnly={this.props.readOnly}
+          markers={this.props.markers}
+          handleChange={(patchEvent: PatchEvent) => this.handleBlockChange(patchEvent, block)}
+        />
       )
     }
 
