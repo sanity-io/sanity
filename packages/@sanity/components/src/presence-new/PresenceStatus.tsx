@@ -32,6 +32,12 @@ export default function PresenceStatus() {
           onClickOutside={handlePresenceMenuToggle}
           onEscape={handlePresenceMenuToggle}
           padding="none"
+          placement="bottom"
+          modifiers={{
+            preventOverflow: {
+              padding: 16
+            }
+          }}
         >
           <ul className={styles.presenceList}>
             {users.length > 0 ? (
