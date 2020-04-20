@@ -2,4 +2,9 @@
 
 .root {
   display: flex;
+  padding-left: var(--small-padding);
+}
+
+.root:empty {
+  padding: 0;
 }
