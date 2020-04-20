@@ -6,6 +6,7 @@ import {
   EditorSelection,
   Type,
   EditorChange,
+  Patch as EditorPatch,
   InvalidValue as InvalidEditorValue
 } from '@sanity/portable-text-editor'
 import FormField from 'part:@sanity/components/formfields/default'
@@ -15,8 +16,7 @@ import {Marker} from '../../typedefs'
 import {Patch} from '../../typedefs/patch'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {interval, Subject} from 'rxjs'
-import {map, take} from 'rxjs/operators'
-import {keyGenerator} from '@sanity/portable-text-editor/lib/editor/PortableTextEditor'
+// import {map, take} from 'rxjs/operators'
 
 type Props = {
   type: Type
@@ -55,7 +55,7 @@ export default withPatchSubscriber(
   class PortableTextInput extends React.PureComponent<Props, State> {
     private editor: PortableTextEditor | null
     private incoming: PatchWithOrigin[] = []
-    private patche$: any = new Subject()
+    private patche$: Subject<EditorPatch> = new Subject()
     private usubscribe: any
     private interval: any
     private hotkeys = {
@@ -83,8 +83,7 @@ export default withPatchSubscriber(
       super(props)
       this.usubscribe = props.subscribe(this.handleDocumentPatches)
       this.interval = interval(2000)
-      // this.interval
-      //   .pipe(take(10))
+      //   .pipe(take(100))
       //   .pipe(
       //     map(
       //       (): Patch => ({
@@ -223,7 +222,7 @@ export default withPatchSubscriber(
               hotkeys={this.hotkeys}
               maxBlocks={-1} // TODO: from schema
               onChange={this.handleChange}
-              incomingPatche$={this.patche$}
+              incomingPatche$={this.patche$.asObservable()}
               placeholderText={value ? '' : '[No value]'}
               readOnly={readOnly}
               ref={this.setEditor}
