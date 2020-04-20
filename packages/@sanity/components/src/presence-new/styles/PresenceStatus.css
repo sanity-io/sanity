@@ -68,6 +68,8 @@
   composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
   border-radius: var(--border-radius-medium);
   z-index: var(--zindex-dropdown);
+  max-height: 230px;
+  overflow-x: auto;
 
   @nest & .empty {
     padding: var(--small-padding) var(--medium-padding);
