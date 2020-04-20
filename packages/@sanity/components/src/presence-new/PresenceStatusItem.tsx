@@ -18,13 +18,24 @@ type Props = {
   id: string
   status: Status
   sessions: any[]
+  size?: 'small' | 'medium'
 }
 
-const renderContent = ({id, user, status}: {id: string; user: User; status: Status}) => {
+const renderContent = ({
+  id,
+  user,
+  status,
+  size
+}: {
+  id: string
+  user: User
+  status: Status
+  size: 'small' | 'medium'
+}) => {
   return (
     <div className={styles.inner}>
       <div className={styles.avatar}>
-        <AvatarProvider size="medium" status={status} userId={id} color={colorHasher(id)} />
+        <AvatarProvider size={size} status={status} userId={id} color={colorHasher(id)} />
       </div>
       <div className={styles.userInfo}>
         <span className={styles.name} title={user.displayName}>
@@ -35,7 +46,12 @@ const renderContent = ({id, user, status}: {id: string; user: User; status: Stat
   )
 }
 
-export default function PresenceStatusItem({id, status = 'inactive', sessions = []}: Props) {
+export default function PresenceStatusItem({
+  id,
+  status = 'inactive',
+  sessions = [],
+  size = 'medium'
+}: Props) {
   const [user, setUser] = useState<User | null>(null)
   useEffect(() => {
     if (id) {
@@ -56,8 +72,8 @@ export default function PresenceStatusItem({id, status = 'inactive', sessions = 
   return (
     <div className={styles.root}>
       {session?.state?.documentId
-        ? withIntent(() => renderContent({user, id, status}), session.state.documentId)
-        : renderContent({user, id, status})}
+        ? withIntent(() => renderContent({user, id, status, size}), session.state.documentId)
+        : renderContent({user, id, status, size})}
     </div>
   )
 }

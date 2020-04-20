@@ -10,6 +10,9 @@ import AvatarProvider from '@sanity/components/lib/presence-new/AvatarProvider'
 import Avatar from '@sanity/components/lib/presence-new/Avatar'
 import {DEBUG, THRESHOLD_TOP, MAX_AVATARS} from './constants'
 import {RegionWithIntersectionDetails} from './types'
+import PopOverDialog from 'part:@sanity/components/dialogs/popover'
+import listStyles from '@sanity/components/lib/presence-new/styles/PresenceStatus.css'
+import PresenceStatusItem from '@sanity/components/lib/presence-new/PresenceStatusItem'
 
 const splitRight = (array, index) => {
   const idx = Math.max(0, array.length - index)
@@ -126,11 +129,11 @@ export function PresenceTransitionRenderer(props: Props) {
         return (
           <>
             {[
-              renderTop(grouped.top),
+              renderDock('top', grouped.top),
               <Spacer key="spacerTop" height={topSpacing} />,
               ...renderInside(grouped.inside, maxRight),
               <Spacer key="spacerBottom" height={bottomSpacing} />,
-              renderBottom(grouped.bottom)
+              renderDock('bottom', grouped.bottom)
             ]}
           </>
         )
@@ -139,12 +142,17 @@ export function PresenceTransitionRenderer(props: Props) {
   )
 }
 
-function renderTop(regionsWithIntersectionDetails: RegionWithIntersectionDetails[]) {
+function renderDock(
+  position: 'top' | 'bottom',
+  regionsWithIntersectionDetails: RegionWithIntersectionDetails[]
+) {
   const allPresenceItems = regionsWithIntersectionDetails.flatMap(
     withIntersection => withIntersection.region.data?.presence || []
   )
-
   const [collapsed, visible] = splitRight(allPresenceItems, MAX_AVATARS)
+
+  const [showPresenceList, setShowPresenceList] = React.useState(false)
+  const handlePresenceMenuToggle = () => setShowPresenceList(!showPresenceList)
 
   const counter = collapsed.length > 0 && (
     <div
@@ -155,9 +163,35 @@ function renderTop(regionsWithIntersectionDetails: RegionWithIntersectionDetails
         transform: `translate3d(${visible.length * -28}px, 0px, 0px)`
       }}
     >
-      <Avatar position="top" label={collapsed.map(a => a.displayName).join(', ')} color="salmon">
-        +{collapsed.length}
-      </Avatar>
+      <div style={{position: 'relative'}}>
+        <div onClick={() => setShowPresenceList(true)}>
+          <Avatar label="" position={position} color="salmon">
+            +{collapsed.length}
+          </Avatar>
+        </div>
+        {showPresenceList && (
+          <PopOverDialog
+            useOverlay={false}
+            onClickOutside={handlePresenceMenuToggle}
+            padding="none"
+          >
+            <div className={listStyles.inner}>
+              <ul className={listStyles.presenceList}>
+                {collapsed.map(user => (
+                  <li key={user.identity}>
+                    <PresenceStatusItem
+                      size="small"
+                      id={user.identity}
+                      status={user.status}
+                      sessions={user.sessions}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </PopOverDialog>
+        )}
+      </div>
     </div>
   )
 
@@ -170,74 +204,17 @@ function renderTop(regionsWithIntersectionDetails: RegionWithIntersectionDetails
         transform: `translate3d(${(visible.length - 1 - i) * -28}px, 0px, 0px)`
       }}
     >
-      <AvatarProvider position="top" userId={avatar.identity} {...avatar} />
+      <AvatarProvider position={position} userId={avatar.identity} {...avatar} />
     </div>
   ))
 
   return (
     <div
-      key="sticky-top"
+      key={`sticky-${position}`}
       style={{
         position: 'sticky',
         top: 8,
-        bottom: 0,
-        right: 0,
-        left: 0,
-        display: 'flex',
-        justifyContent: 'flex-end'
-      }}
-    >
-      {[].concat(counter || []).concat(visibleItems)}
-    </div>
-  )
-}
-
-function renderBottom(regionsWithIntersectionDetails: RegionWithSpacerHeight[]) {
-  const allPresenceItems = regionsWithIntersectionDetails
-    .flatMap(withIntersection => withIntersection.region.data.presence || [])
-    .reverse()
-
-  const [collapsed, visible] = splitRight(allPresenceItems, MAX_AVATARS)
-
-  const counter = collapsed.length > 0 && (
-    <div
-      key={collapsed.length > 1 ? 'counter' : collapsed[collapsed.length - 1].sessionId}
-      style={{
-        ...ITEM_TRANSITION,
-        // position: 'relative'
-        position: 'absolute',
-        // top: 0
-        transform: `translate3d(${visible.length * -28}px, 0px, 0px)`
-      }}
-    >
-      <Avatar position="bottom" label={collapsed.map(a => a.displayName).join(', ')} color="salmon">
-        +{collapsed.length}
-      </Avatar>
-    </div>
-  )
-
-  const visibleItems = visible.map((avatar, i) => (
-    <div
-      key={avatar.sessionId}
-      style={{
-        ...ITEM_TRANSITION,
-        // position: 'relative'
-        position: 'absolute',
-        // top: 0
-        transform: `translate3d(${(visible.length - 1 - i) * -28}px, 0px, 0px)`
-      }}
-    >
-      <AvatarProvider position="bottom" userId={avatar.identity} {...avatar} />
-    </div>
-  ))
-
-  return (
-    <div
-      key="sticky-bottom"
-      style={{
-        position: 'sticky',
-        top: 8,
-        bottom: 38,
+        bottom: position === 'bottom' ? 38 : 0,
         right: 0,
         left: 0,
         display: 'flex',

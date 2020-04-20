@@ -1,5 +1,6 @@
+/* eslint-disable react/no-multi-comp */
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import React from 'react'
+import React, {useState} from 'react'
 import {useId} from '@reach/auto-id'
 import styles from './styles/PresenceContainer.css'
 import AvatarProvider from './AvatarProvider'
@@ -7,6 +8,10 @@ import Avatar from './Avatar'
 import {MAX_AVATARS} from './config'
 import {RegionReporter} from '@sanity/overlayer'
 import {Presence, Position} from './types'
+import PopOverDialog from 'part:@sanity/components/dialogs/popover'
+import PresenceStatusItem from './PresenceStatusItem'
+import listStyles from './styles/PresenceStatus.css'
+import {uniqBy} from 'lodash'
 
 type ContainerProps = {
   presence: Presence[]
@@ -38,17 +43,44 @@ const splitRight = (array: Array<any>, index: number): Array<any> => {
 }
 
 function PresenceContainer({presence, position, avatarComponent: AvatarComponent}: ContainerProps) {
-  const [collapsed, avatars] = splitRight(presence || [], MAX_AVATARS)
+  const [showPresenceList, setShowPresenceList] = useState(false)
+  const handlePresenceMenuToggle = () => setShowPresenceList(!showPresenceList)
+  const [collapsed, avatars] = splitRight(
+    uniqBy(presence, user => user.identity) || [],
+    MAX_AVATARS
+  )
   return (
     <div className={styles.root}>
       {collapsed.length > 0 && (
-        <Avatar
-          position={position}
-          label={collapsed.map(a => a.displayName).join(', ')}
-          color="salmon"
-        >
-          +{collapsed.length}
-        </Avatar>
+        <div style={{position: 'relative'}}>
+          <div onClick={() => setShowPresenceList(true)}>
+            <Avatar label="" position={position} color="salmon">
+              +{collapsed.length}
+            </Avatar>
+          </div>
+          {showPresenceList && (
+            <PopOverDialog
+              useOverlay={false}
+              onClickOutside={handlePresenceMenuToggle}
+              padding="none"
+            >
+              <div className={listStyles.inner}>
+                <ul className={listStyles.presenceList}>
+                  {collapsed.map(user => (
+                    <li key={user.identity}>
+                      <PresenceStatusItem
+                        size="small"
+                        id={user.identity}
+                        status={user.status}
+                        sessions={user.sessions}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </PopOverDialog>
+          )}
+        </div>
       )}
       {avatars.map(item => (
         <AvatarComponent
