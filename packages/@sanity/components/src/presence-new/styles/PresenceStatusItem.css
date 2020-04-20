@@ -12,11 +12,13 @@
 
 .inner {
   display: flex;
-  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
   white-space: nowrap;
   position: relative;
   padding: var(--small-padding) var(--medium-padding);
-  padding-right: var(--large-padding);
+}
+
+.inner:hover {
+  background: var(--gray-lighter);
 }
 
 .avatar {
@@ -34,27 +36,4 @@
 
 .name {
   font-weight: 600;
-}
-
-.status {
-  font-style: italic;
-  text-transform: capitalize;
-  font-size: var(--font-size-small);
-  color: var(--gray-darkest--transparent);
-}
-
-.sessions {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.locationLabel {
-  font-weight: 600;
-}
-
-.location {
-  max-width: 20ch;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }

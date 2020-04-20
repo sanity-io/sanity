@@ -29,7 +29,6 @@ const renderContent = ({id, user, status}: {id: string; user: User; status: Stat
       </div>
       <div className={styles.userInfo}>
         <div className={styles.name}>{shortenName(user.displayName)}</div>
-        <div>{status}</div>
       </div>
     </div>
   )
