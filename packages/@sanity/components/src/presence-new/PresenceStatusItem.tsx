@@ -4,7 +4,6 @@ import {IntentLink} from 'part:@sanity/base/router'
 import styles from './styles/PresenceStatusItem.css'
 import AvatarProvider from './AvatarProvider'
 import {Status, User} from './types'
-import {shortenName} from './helpers'
 import colorHasher from '../presence/colorHasher'
 
 function withIntent(content: any, documentId: string) {
@@ -28,7 +27,9 @@ const renderContent = ({id, user, status}: {id: string; user: User; status: Stat
         <AvatarProvider size="medium" status={status} userId={id} color={colorHasher(id)} />
       </div>
       <div className={styles.userInfo}>
-        <div className={styles.name}>{shortenName(user.displayName)}</div>
+        <span className={styles.name} title={user.displayName}>
+          {user.displayName}
+        </span>
       </div>
     </div>
   )

@@ -32,8 +32,13 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding-right: var(--small-padding);
 }
 
 .name {
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 13ch;
 }
