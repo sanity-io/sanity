@@ -68,7 +68,9 @@ export default class EditNode extends React.Component<Props, {}> {
   handleClose = () => {
     const {focusPath, onFocus, editor} = this.props
     onFocus(focusPath.slice(0, 1))
-    editor.command('focusNoScroll')
+    if (!this.props.readOnly) {
+      editor.command('focusNoScroll')
+    }
   }
   handleDialogAction = () => {
     // NOOP
