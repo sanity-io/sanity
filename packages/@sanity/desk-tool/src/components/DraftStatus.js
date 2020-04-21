@@ -1,6 +1,6 @@
 import React from 'react'
 import {Tooltip} from 'react-tippy'
-import styles from './styles/ItemStatus.css'
+import styles from './ItemStatus.css'
 import Badge from 'part:@sanity/components/badges/default'
 
 const DraftStatus = () => (

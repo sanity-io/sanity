@@ -4,7 +4,7 @@ import {List as DefaultList, Item as DefaultItem} from 'part:@sanity/components/
 import Preview from 'part:@sanity/base/preview'
 import {IntentLink} from 'part:@sanity/base/router'
 import schema from 'part:@sanity/base/schema'
-import styles from './styles/ReferringDocumentsList.css'
+import styles from './ReferringDocumentsList.css'
 import DraftStatus from './DraftStatus'
 
 export default function ReferringDocumentsList(props) {

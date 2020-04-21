@@ -1,4 +1,4 @@
-import {EMPTY_PARAMS} from '../'
+import {EMPTY_PARAMS} from '../constants'
 import {exclusiveParams} from '../contexts/PaneRouterContext'
 
 // old: authors;knut,{"template":"diaryEntry"}

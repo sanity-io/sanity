@@ -9,7 +9,7 @@ import {observePaths} from 'part:@sanity/base/preview'
 import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import FormBuilder from 'part:@sanity/form-builder'
 import PanePopover from 'part:@sanity/components/dialogs/pane-popover'
-import styles from './styles/BrokenReferences.css'
+import styles from './BrokenReferences.css'
 import ReferringDocumentsList from './ReferringDocumentsList'
 
 function BrokenRefs(props) {

@@ -1,5 +1,5 @@
 import React from 'react'
-import styles from './styles/MissingDocumentTypesMessage.css'
+import styles from './MissingDocumentTypesMessage.css'
 
 export default function MissingDocumentTypesMessage(props) {
   return (
