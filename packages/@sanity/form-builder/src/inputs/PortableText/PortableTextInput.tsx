@@ -5,6 +5,7 @@ import {
   PortableTextChild,
   EditorSelection,
   Type,
+  keyGenerator,
   EditorChange,
   Patch as EditorPatch,
   InvalidValue as InvalidEditorValue
@@ -16,7 +17,7 @@ import {Marker} from '../../typedefs'
 import {Patch} from '../../typedefs/patch'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {interval, Subject} from 'rxjs'
-// import {map, take} from 'rxjs/operators'
+import {map, take} from 'rxjs/operators'
 
 type Props = {
   type: Type
@@ -82,21 +83,23 @@ export default withPatchSubscriber(
     constructor(props: Props) {
       super(props)
       this.usubscribe = props.subscribe(this.handleDocumentPatches)
-      this.interval = interval(2000)
-      //   .pipe(take(100))
-      //   .pipe(
-      //     map(
-      //       (): Patch => ({
-      //         type: 'diffMatchPatch',
-      //         path: [0, 'children', 0, 'text'],
-      //         value: `@@ -0,0 +1 @@\n+${keyGenerator().substring(0, 1)}\n`,
-      //         origin: 'remote'
-      //       })
-      //     )
-      //   )
-      //   .subscribe(patch => {
-      //     props.onChange(PatchEvent.from([patch]))
-      //   })
+      if (document.location.hash === '#test') {
+        this.interval = interval(2000)
+          .pipe(take(100))
+          .pipe(
+            map(
+              (): Patch => ({
+                type: 'diffMatchPatch',
+                path: [0, 'children', 0, 'text'],
+                value: `@@ -0,0 +1 @@\n+${keyGenerator().substring(0, 1)}\n`,
+                origin: 'remote'
+              })
+            )
+          )
+          .subscribe(patch => {
+            props.onChange(PatchEvent.from([patch]))
+          })
+      }
     }
 
     componentWillUnmount(): void {
