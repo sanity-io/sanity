@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react/jsx-no-bind */
+
 import {useDocumentOperation} from '@sanity/react-hooks'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import React from 'react'

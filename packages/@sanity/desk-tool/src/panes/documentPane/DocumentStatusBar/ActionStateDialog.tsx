@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable react/jsx-handler-names */
 
 import * as React from 'react'

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+
 import React from 'react'
 import styles from './DocumentStatusBar.css'
 import {HistoryStatusBarActions} from './DocumentStatusBarActions'

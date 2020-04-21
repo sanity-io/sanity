@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react/jsx-handler-names */
+/* eslint-disable react/jsx-no-bind */
 /* eslint-disable react/no-multi-comp */
 
 import {useEditState, useConnectionState} from '@sanity/react-hooks'

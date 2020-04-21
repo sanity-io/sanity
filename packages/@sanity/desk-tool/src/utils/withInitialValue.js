@@ -1,4 +1,7 @@
-/* eslint-disable max-nested-callbacks */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable react/jsx-filename-extension */
+
 import React from 'react'
 import {streamingComponent} from 'react-props-stream'
 import {merge, from, of} from 'rxjs'

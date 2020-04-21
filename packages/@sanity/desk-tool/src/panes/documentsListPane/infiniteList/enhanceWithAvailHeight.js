@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/class-name-casing */
+/* eslint-disable react/jsx-filename-extension */
+
 import React from 'react'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import styles from './enhanceWithAvailableHeight.css'

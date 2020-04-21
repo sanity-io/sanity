@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import React from 'react'
 import {Tooltip} from 'react-tippy'
 import schema from 'part:@sanity/base/schema'

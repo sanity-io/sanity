@@ -1,4 +1,9 @@
-/* eslint-disable react/no-multi-comp, react/prop-types */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/no-multi-comp */
+/* eslint-disable react/prop-types */
+
 import React, {useContext} from 'react'
 import {isEqual, pick, omit} from 'lodash'
 import {StateLink} from 'part:@sanity/base/router'

@@ -1,3 +1,9 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable react/forbid-prop-types */
+/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/jsx-no-bind */
+/* eslint-disable react/require-default-props */
+
 import PropTypes from 'prop-types'
 import React from 'react'
 import scroll from 'scroll'

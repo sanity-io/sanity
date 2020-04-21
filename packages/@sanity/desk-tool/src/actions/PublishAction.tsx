@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import * as React from 'react'
 import {useDocumentOperation, useValidationStatus} from '@sanity/react-hooks'
 import TimeAgo from '../components/TimeAgo'

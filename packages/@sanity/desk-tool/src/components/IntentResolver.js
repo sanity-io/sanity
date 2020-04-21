@@ -1,4 +1,9 @@
-/* eslint-disable react/no-multi-comp, react/prop-types */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/no-multi-comp */
+/* eslint-disable react/prop-types */
+
 import React, {useEffect, useState} from 'react'
 import {of} from 'rxjs'
 import {map} from 'rxjs/operators'

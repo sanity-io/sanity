@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+
 import {useEffect, useState} from 'react'
 import shallowEquals from 'shallow-equals'
 import {Observable, defer, throwError, from, of as observableOf} from 'rxjs'

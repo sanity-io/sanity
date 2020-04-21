@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/require-default-props */
+/* eslint-disable react/forbid-prop-types */
+
 /* eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React, {Fragment} from 'react'

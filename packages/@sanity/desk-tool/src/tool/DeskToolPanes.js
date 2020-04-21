@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/no-unused-state */
 
 import React from 'react'
 import PropTypes from 'prop-types'

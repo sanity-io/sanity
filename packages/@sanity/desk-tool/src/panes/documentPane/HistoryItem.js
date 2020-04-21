@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/require-default-props */
+
 import PropTypes from 'prop-types'
 import React from 'react'
 import {from} from 'rxjs'
@@ -72,7 +77,7 @@ export default class HistoryItem extends React.PureComponent {
     }
   }
 
-  handleEnterKey = event => {
+  handleEnterKey = () => {
     this.props.onClick()
   }
 

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import * as React from 'react'
 import DocumentPane from './DocumentPane'
 import withInitialValue from '../../utils/withInitialValue'

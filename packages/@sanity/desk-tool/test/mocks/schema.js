@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+
 const types = {
   author: author(),
   post: post()
@@ -129,12 +132,18 @@ function post() {
       {
         title: 'Title',
         name: 'title',
-        by: [{field: 'title', direction: 'asc'}, {field: 'publicationYear', direction: 'asc'}]
+        by: [
+          {field: 'title', direction: 'asc'},
+          {field: 'publicationYear', direction: 'asc'}
+        ]
       },
       {
         title: 'Swedish title',
         name: 'swedishTitle',
-        by: [{field: 'translations.se', direction: 'asc'}, {field: 'title', direction: 'asc'}]
+        by: [
+          {field: 'translations.se', direction: 'asc'},
+          {field: 'title', direction: 'asc'}
+        ]
       }
     ]
   }

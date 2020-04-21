@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+
 export default (iterable, reducer, initVal) =>
   new Promise((resolve, reject) => {
     const iterator = iterable[Symbol.iterator]()

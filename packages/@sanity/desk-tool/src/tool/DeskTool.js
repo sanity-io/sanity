@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable react/jsx-filename-extension */
+
 import React from 'react'
 import PropTypes from 'prop-types'
 import {isEqual} from 'lodash'
@@ -281,7 +285,6 @@ function getPaneDiffIndex(nextPanes, prevPanes) {
       return [index, 0]
     }
 
-    /* eslint-disable max-depth */
     // Iterate over siblings
     for (let splitIndex = 0; splitIndex < nextGroup.length; splitIndex++) {
       const nextSibling = nextGroup[splitIndex]
@@ -297,7 +300,6 @@ function getPaneDiffIndex(nextPanes, prevPanes) {
         return [index, splitIndex]
       }
     }
-    /* eslint-enable max-depth */
   }
 
   // "No diff"

@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/require-default-props */
+
 import React from 'react'
 import PropTypes from 'prop-types'
 import {List as DefaultList, Item as DefaultItem} from 'part:@sanity/components/lists/default'

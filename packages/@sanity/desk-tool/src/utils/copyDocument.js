@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+
 import {isObject, omit} from 'lodash'
 
 function copyReference(reference) {

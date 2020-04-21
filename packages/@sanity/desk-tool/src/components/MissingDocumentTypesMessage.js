@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable react/jsx-filename-extension */
+
 import React from 'react'
 import styles from './MissingDocumentTypesMessage.css'
 
-export default function MissingDocumentTypesMessage(props) {
+export default function MissingDocumentTypesMessage() {
   return (
     <div className={styles.root}>
       <h2>Empty schema</h2>

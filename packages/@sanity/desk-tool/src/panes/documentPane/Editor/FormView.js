@@ -1,3 +1,9 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable react/forbid-prop-types */
+/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react/require-default-props */
+
 import React from 'react'
 import PropTypes from 'prop-types'
 import {isActionEnabled} from 'part:@sanity/base/util/document-action-utils'

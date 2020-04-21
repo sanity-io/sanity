@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+
 import {of as observableOf} from 'rxjs'
 import {takeWhile, concatMap, reduce} from 'rxjs/operators'
 import {LOADING_PANE} from '../src'

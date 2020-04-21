@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable react/forbid-prop-types */
+/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/no-direct-mutation-state */
+
 import React from 'react'
 import PropTypes from 'prop-types'
 import schema from 'part:@sanity/base/schema'
@@ -69,7 +74,7 @@ export default class DocumentsListPane extends React.PureComponent {
     title: PropTypes.string.isRequired,
     childItemId: PropTypes.string.isRequired,
     className: PropTypes.string,
-    styles: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+    styles: PropTypes.object,
     defaultLayout: PropTypes.string,
     options: PropTypes.shape({
       filter: PropTypes.string.isRequired,
@@ -79,7 +84,7 @@ export default class DocumentsListPane extends React.PureComponent {
           direction: PropTypes.oneOf(['asc', 'desc'])
         })
       ),
-      params: PropTypes.object // eslint-disable-line react/forbid-prop-types
+      params: PropTypes.object
     }).isRequired,
     menuItems: PropTypes.arrayOf(
       PropTypes.shape({
@@ -94,7 +99,7 @@ export default class DocumentsListPane extends React.PureComponent {
     initialValueTemplates: PropTypes.arrayOf(
       PropTypes.shape({
         templateId: PropTypes.string,
-        parameters: PropTypes.object // eslint-disable-line react/forbid-prop-types
+        parameters: PropTypes.object
       })
     ),
     displayOptions: PropTypes.shape({

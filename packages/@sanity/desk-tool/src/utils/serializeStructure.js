@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+
 import {from as observableFrom, of as observableOf} from 'rxjs'
 import {mergeMap} from 'rxjs/operators'
 import isSubscribable from './isSubscribable'

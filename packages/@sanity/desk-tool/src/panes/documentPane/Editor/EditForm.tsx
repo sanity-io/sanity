@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import React from 'react'
 import {FormBuilder} from 'part:@sanity/form-builder'
 import documentStore from 'part:@sanity/base/datastore/document'
@@ -6,7 +9,7 @@ import styles from '../Editor.css'
 import {tap} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
 
-const preventDefault = ev => ev.preventDefault()
+const preventDefault = (ev: any) => ev.preventDefault()
 type Doc = any
 type Schema = any
 type SchemaType = any

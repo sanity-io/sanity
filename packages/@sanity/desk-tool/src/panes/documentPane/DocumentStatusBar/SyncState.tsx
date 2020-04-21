@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+
 import * as React from 'react'
 import CheckIcon from 'part:@sanity/base/check-icon'
 import SyncIcon from 'part:@sanity/base/sync-icon'

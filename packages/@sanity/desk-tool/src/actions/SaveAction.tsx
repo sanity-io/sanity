@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {useDocumentOperation} from '@sanity/react-hooks'
 
 export function SaveAction({id, type, onComplete}) {

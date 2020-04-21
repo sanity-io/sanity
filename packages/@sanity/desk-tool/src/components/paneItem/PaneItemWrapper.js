@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/require-default-props */
+
 import PropTypes from 'prop-types'
 import React, {useContext} from 'react'
 import {Item as GridListItem} from 'part:@sanity/components/lists/grid'

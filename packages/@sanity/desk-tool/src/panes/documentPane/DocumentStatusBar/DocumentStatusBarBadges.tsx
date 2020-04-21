@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable react/no-multi-comp */
+
 import {useEditState} from '@sanity/react-hooks'
 import React from 'react'
 import Badge from 'part:@sanity/components/badges/default'

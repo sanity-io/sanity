@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable react/jsx-handler-names */
+/* eslint-disable react/no-array-index-key */
+
 import styles from './DocumentStatusBarActions.css'
 import Button from 'part:@sanity/components/buttons/default'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'

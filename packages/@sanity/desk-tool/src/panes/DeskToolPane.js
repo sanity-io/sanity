@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable react/jsx-filename-extension */
 
 import React from 'react'
@@ -16,7 +17,6 @@ const paneMap = {
   component: UserComponentPane
 }
 
-// eslint-disable-next-line react/prefer-stateless-function
 export default class Pane extends React.PureComponent {
   static propTypes = {
     index: PropTypes.number,

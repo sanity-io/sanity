@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable react/jsx-filename-extension */
+
 import React from 'react'
 import PropTypes from 'prop-types'
 import Spinner from 'part:@sanity/components/loading/spinner'

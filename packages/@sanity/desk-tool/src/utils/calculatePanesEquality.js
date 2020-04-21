@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+
 import {isEqual} from 'lodash'
 
-// eslint-disable-next-line import/prefer-default-export
 export const calculatePanesEquality = (prev = [], next = []) => {
   if (prev === next) {
     return {ids: true, params: true}

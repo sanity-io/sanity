@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+
 import * as React from 'react'
 
 export const FOO = () => {

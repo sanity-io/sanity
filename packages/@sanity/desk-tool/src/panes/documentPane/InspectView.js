@@ -1,8 +1,12 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable react/forbid-prop-types */
+/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/require-default-props */
+
 import PropTypes from 'prop-types'
 import React from 'react'
 import {combineLatest} from 'rxjs'
 import {map} from 'rxjs/operators'
-// eslint-disable-next-line import/no-unassigned-import
 import './JSONInspector.css'
 import styles from './InspectView.css'
 import JSONInspector from 'react-json-inspector'

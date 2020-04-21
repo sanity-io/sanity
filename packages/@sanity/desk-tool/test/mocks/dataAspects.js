@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+
 module.exports = class AspectsMock {
   constructor(schema) {
     this.schema = schema

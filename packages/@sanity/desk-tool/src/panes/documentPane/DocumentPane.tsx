@@ -1,4 +1,7 @@
-/* eslint-disable complexity */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react/jsx-no-bind */
+
 import React from 'react'
 import {noop} from 'lodash'
 import {format, isToday, isYesterday} from 'date-fns'
@@ -572,7 +575,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
     )
   }
 
-  getTitle(value) {
+  getTitle(value: any) {
     const {title: paneTitle, options} = this.props
     const typeName = options.type
     const type = schema.get(typeName)

@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable react/jsx-filename-extension */
+
 import React from 'react'
 import PublicIcon from 'part:@sanity/base/public-icon'
 import BinaryIcon from 'part:@sanity/base/binary-icon'
@@ -71,7 +74,6 @@ export const getProductionPreviewItem = ({value, revision}) => {
   }
 }
 
-// eslint-disable-next-line import/prefer-default-export
 export const getMenuItems = ({
   value,
   isLiveEditEnabled,

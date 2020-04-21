@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react/no-multi-comp */
+
 import React from 'react'
 import {RenderActionCollectionState} from 'part:@sanity/base/actions/utils'
 import {useEditState} from '@sanity/react-hooks'
@@ -84,3 +88,5 @@ export const DocumentActionShortcuts = React.memo((props: Props) => {
     </RenderActionCollectionState>
   ) : null
 })
+
+DocumentActionShortcuts.displayName = 'DocumentActionShortcuts'

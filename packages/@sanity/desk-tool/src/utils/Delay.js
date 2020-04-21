@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable react/require-default-props */
+/* eslint-disable react/require-optimization */
+
 import * as React from 'react'
 import * as PropTypes from 'prop-types'
 

@@ -1,3 +1,9 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/require-default-props */
+/* eslint-disable react/forbid-prop-types */
+/* eslint-disable react/require-optimization */
+
 import React from 'react'
 import PropTypes from 'prop-types'
 import {combineLatest, concat, of} from 'rxjs'

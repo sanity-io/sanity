@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+
 import {Observable, merge} from 'rxjs'
 import {map, share, debounceTime} from 'rxjs/operators'
 
