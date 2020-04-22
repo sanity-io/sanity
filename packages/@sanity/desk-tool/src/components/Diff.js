@@ -18,7 +18,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import {diffJson} from 'diff'
-import styles from './styles/Diff.css'
+import styles from './Diff.css'
 
 function getDiffStatKey(part) {
   if (part.added) {

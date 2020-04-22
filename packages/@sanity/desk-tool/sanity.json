@@ -9,25 +9,25 @@
   "parts": [
     {
       "implements": "part:@sanity/base/tool",
-      "path": "tool.js"
+      "path": "tool/index.js"
     },
     {
       "implements": "part:@sanity/base/document-actions",
       "description": "The default document actions",
-      "path": "defaultDocumentActions.js"
+      "path": "actions/defaultDocumentActions.js"
     },
     {
       "implements": "part:@sanity/base/document-actions/resolver",
-      "path": "defaultResolveDocumentActions.js"
+      "path": "actions/defaultResolveDocumentActions.js"
     },
     {
       "implements": "part:@sanity/base/document-badges",
       "description": "The default document badges",
-      "path": "defaultDocumentBadges.js"
+      "path": "badges/defaultDocumentBadges.js"
     },
     {
       "implements": "part:@sanity/base/document-badges/resolver",
-      "path": "defaultResolveDocumentBadges.js"
+      "path": "badges/defaultResolveDocumentBadges.js"
     },
     {
       "name": "part:@sanity/desk-tool/after-editor-component",

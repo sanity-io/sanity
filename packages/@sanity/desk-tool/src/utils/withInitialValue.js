@@ -14,9 +14,9 @@ import {
 import schema from 'part:@sanity/base/schema'
 import {observePaths} from 'part:@sanity/base/preview'
 import {getDraftId, getPublishedId} from 'part:@sanity/base/util/draft-utils'
-import {PaneRouterContext} from '../../'
-import ErrorPane from '../pane/ErrorPane'
-import LoadingPane from '../pane/LoadingPane'
+import {PaneRouterContext} from '../contexts/PaneRouterContext'
+import {ErrorPane} from '../panes/errorPane'
+import {LoadingPane} from '../panes/loadingPane'
 import BrokenReferences from '../components/BrokenReferences'
 import {
   templateExists,
