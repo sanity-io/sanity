@@ -130,7 +130,7 @@ export default withPatchSubscriber(
           this.props.onChange(PatchEvent.from(change.patches))
           break
         case 'selection':
-          this.setState({selection: change.selection})
+          //   this.setState({selection: change.selection})
           break
         case 'focus':
           this.props.onFocus && this.props.onFocus()
