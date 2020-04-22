@@ -15,10 +15,11 @@
   white-space: nowrap;
   position: relative;
   padding: var(--small-padding) var(--medium-padding);
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
 }
 
-.inner:hover {
-  background: var(--gray-lighter);
+.inner[data-size='small'] {
+  font-size: var(--font-size-small);
 }
 
 .avatar {
@@ -40,5 +41,5 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 13ch;
+  max-width: 15ch;
 }
