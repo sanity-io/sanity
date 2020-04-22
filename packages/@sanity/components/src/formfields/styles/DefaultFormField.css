@@ -63,12 +63,6 @@
   flex-grow: 1;
 }
 
-.headerStatus {
-  display: flex;
-  align-content: center;
-  min-height: var(--avatar-height);
-}
-
 .validationStatus {
   cursor: default;
 }

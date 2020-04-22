@@ -7,6 +7,7 @@ import DefaultLabel from 'part:@sanity/components/labels/default'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import ValidationList from 'part:@sanity/components/validation/list'
 import AnimateHeight from 'react-animate-height'
+import FieldStatus from '../fieldsets/FieldStatus'
 import PresenceContainer from 'part:@sanity/components/presence/presence-container'
 import {Box} from '@sanity/overlayer'
 
@@ -91,12 +92,12 @@ export default class DefaultFormField extends React.PureComponent {
                 )}
                 {description && <div className={styles.description}>{description}</div>}
               </div>
-              <div className={styles.headerStatus}>
+              <FieldStatus>
                 <div onClick={this.handleToggleShowValidation} className={styles.validationStatus}>
                   <ValidationStatus markers={markers} />
                 </div>
                 <PresenceContainer presence={presence} />
-              </div>
+              </FieldStatus>
             </div>
           )}
           <AnimateHeight

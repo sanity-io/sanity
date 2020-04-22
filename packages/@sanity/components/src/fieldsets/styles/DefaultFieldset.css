@@ -35,11 +35,6 @@
   flex-grow: 1;
 }
 
-.headerStatus {
-  min-height: var(--avatar-height);
-  display: flex;
-}
-
 .validationIconError {
   composes: validationIconError from 'part:@sanity/base/theme/forms/validation-style';
 }
