@@ -7,6 +7,7 @@
   fill: currentColor;
   pointer-events: auto;
   display: inline-block;
+  user-select: none;
 }
 
 .avatar {

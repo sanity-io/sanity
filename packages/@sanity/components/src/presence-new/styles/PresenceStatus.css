@@ -65,7 +65,7 @@
   composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
   border-radius: var(--border-radius-medium);
   z-index: var(--zindex-dropdown);
-  padding: var(--small-padding) 0;
+  padding: var(--extra-small-padding) 0;
 }
 
 .presenceList {

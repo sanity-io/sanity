@@ -33,7 +33,7 @@ const renderContent = ({
   size: 'small' | 'medium'
 }) => {
   return (
-    <div className={styles.inner}>
+    <div className={styles.inner} data-size={size}>
       <div className={styles.avatar}>
         <AvatarProvider size={size} status={status} userId={id} color={colorHasher(id)} />
       </div>

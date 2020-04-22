@@ -42,27 +42,49 @@ const splitRight = (array: Array<any>, index: number): Array<any> => {
   return [array.slice(0, idx), array.slice(idx)]
 }
 
+const isMobile = () => {
+  return typeof window !== 'undefined' && window.innerWidth < 512
+}
+
 function PresenceContainer({presence, position, avatarComponent: AvatarComponent}: ContainerProps) {
   const [showPresenceList, setShowPresenceList] = useState(false)
-  const handlePresenceMenuToggle = () => setShowPresenceList(!showPresenceList)
   const [collapsed, avatars] = splitRight(
     uniqBy(presence, user => user.identity) || [],
     MAX_AVATARS
   )
+
+  const handleMouseEnter = () => {
+    setShowPresenceList(true)
+  }
+
+  const handleMouseLeave = () => {
+    setShowPresenceList(false)
+  }
+
+  const handleClick = () => {
+    if (isMobile) {
+      setShowPresenceList(!showPresenceList)
+    }
+  }
+
   return (
     <div className={styles.root}>
       {collapsed.length > 0 && (
-        <div style={{position: 'relative'}}>
-          <div onClick={() => setShowPresenceList(true)}>
+        <div
+          style={{position: 'relative'}}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          onClick={handleClick}
+        >
             <Avatar label="" position={position} color="salmon">
               +{collapsed.length}
             </Avatar>
-          </div>
           {showPresenceList && (
             <PopOverDialog
               useOverlay={false}
-              onClickOutside={handlePresenceMenuToggle}
+              onClickOutside={() => setShowPresenceList(false)}
               padding="none"
+              placement="bottom"
             >
               <div className={listStyles.inner}>
                 <ul className={listStyles.presenceList}>
