@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import userStore from 'part:@sanity/base/user'
 import Avatar from './Avatar'
-import {nameToInitials} from './helpers'
 import {Position, Status, User} from './types'
 
 export type Props = {
@@ -10,6 +9,12 @@ export type Props = {
   position?: Position
   status: Status
   size: 'small' | 'medium'
+}
+
+function nameToInitials(fullName: string) {
+  const namesArray = fullName.split(' ')
+  if (namesArray.length === 1) return `${namesArray[0].charAt(0)}`
+  return `${namesArray[0].charAt(0)}${namesArray[namesArray.length - 1].charAt(0)}`
 }
 
 export default function AvatarProvider({

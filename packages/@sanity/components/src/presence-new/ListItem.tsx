@@ -1,14 +1,20 @@
+/* eslint-disable react/no-multi-comp */
 import React, {useEffect, useState} from 'react'
 import userStore from 'part:@sanity/base/user'
 import {IntentLink} from 'part:@sanity/base/router'
-import styles from './styles/PresenceStatusItem.css'
+import styles from './ListItem.css'
 import AvatarProvider from './AvatarProvider'
 import {Status, User} from './types'
 import colorHasher from '../presence/colorHasher'
 
-function withIntent(content: any, documentId: string) {
+function withIntent(onClick: () => void, content: any, documentId: string) {
   return (
-    <IntentLink className={styles.intentLink} intent="edit" params={{id: documentId}}>
+    <IntentLink
+      className={styles.intentLink}
+      intent="edit"
+      params={{id: documentId}}
+      onClick={onClick}
+    >
       {content()}
     </IntentLink>
   )
@@ -19,6 +25,7 @@ type Props = {
   status: Status
   sessions: any[]
   size?: 'small' | 'medium'
+  onClick: () => void
 }
 
 const renderContent = ({
@@ -46,11 +53,12 @@ const renderContent = ({
   )
 }
 
-export default function PresenceStatusItem({
+export default function ListItem({
   id,
   status = 'inactive',
   sessions = [],
-  size = 'medium'
+  size = 'medium',
+  onClick
 }: Props) {
   const [user, setUser] = useState<User | null>(null)
   useEffect(() => {
@@ -72,7 +80,11 @@ export default function PresenceStatusItem({
   return (
     <div className={styles.root}>
       {session?.state?.documentId
-        ? withIntent(() => renderContent({user, id, status, size}), session.state.documentId)
+        ? withIntent(
+            onClick,
+            () => renderContent({user, id, status, size}),
+            session.state.documentId
+          )
         : renderContent({user, id, status, size})}
     </div>
   )

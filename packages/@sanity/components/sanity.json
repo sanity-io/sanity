@@ -1098,15 +1098,7 @@
     },
     {
       "name": "part:@sanity/components/presence/presence-status",
-      "path": "presence-new/PresenceStatus"
-    },
-    {
-      "name": "part:@sanity/components/presence/presence-avatar",
-      "path": "presence-new/AvatarProvider"
-    },
-    {
-      "name": "part:@sanity/components/presence/presence-container",
-      "path": "presence-new/PresenceContainer"
+      "path": "presence-new/GlobalStatus"
     }
   ]
 }
