@@ -39,15 +39,12 @@ export default function clientWrapper(manifest, configPath) {
   return function(opts = {}) {
     const {requireUser, requireProject, api} = {...defaults, ...opts}
     const userConfig = getUserConfig()
-    const userApiConf = userConfig.get('api')
     const token = envAuthToken || userConfig.get('authToken')
     const apiHost = apiHosts[sanityEnv]
-    const apiConfig = Object.assign(
-      {},
-      userApiConf || {},
-      (manifest && manifest.api) || {},
-      api || {}
-    )
+    const apiConfig = {
+      ...((manifest && manifest.api) || {}),
+      ...(api || {})
+    }
 
     if (apiHost) {
       apiConfig.apiHost = apiHost
@@ -66,7 +63,7 @@ export default function clientWrapper(manifest, configPath) {
 
     return client({
       ...apiConfig,
-      dataset: apiConfig.dataset || 'dummy',
+      dataset: apiConfig.dataset || '_dummy_',
       token: token,
       useProjectHostname: requireProject,
       requester: requester,

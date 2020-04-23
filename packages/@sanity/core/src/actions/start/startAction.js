@@ -1,7 +1,7 @@
 import path from 'path'
 import chalk from 'chalk'
 import fse from 'fs-extra'
-import {isPlainObject} from 'lodash'
+import {get, isPlainObject} from 'lodash'
 import {promisify} from 'es6-promisify'
 import {getDevServer} from '@sanity/server'
 import getConfig from '@sanity/util/lib/getConfig'
@@ -104,13 +104,30 @@ async function ensureProjectConfig(context) {
   const {workDir, output} = context
   const manifestPath = path.join(workDir, 'sanity.json')
   const projectManifest = await fse.readJson(manifestPath)
-  const apiConfig = projectManifest.api
-  if (typeof apiConfig !== 'undefined' && !isPlainObject(apiConfig)) {
+  const apiConfig = projectManifest.api || {}
+  if (!isPlainObject(apiConfig)) {
     throw new Error('Invalid `api` property in `sanity.json` - should be an object')
   }
 
-  let displayName = projectManifest.project && projectManifest.project.displayName
-  let {projectId, dataset} = apiConfig || {}
+  // The API client wrapper extracts information from environment variables,
+  // which means it could potentially hold any missing project ID / dataset
+  let {projectId, dataset} = context.apiClient({requireProject: false}).config()
+
+  // The client wrapper returns `_dummy_` in the case where no dataset is configured,
+  // to be able to do non-dataset requests without having the client complain.
+  // We obviously don't want to use this as an actual value
+  dataset = dataset === '_dummy_' ? undefined : dataset
+
+  // Let the user know why these values are being used
+  if (projectId && projectId !== apiConfig.projectId) {
+    output.print(`Using project ID from environment config (${projectId})`)
+  }
+
+  if (dataset && dataset !== apiConfig.dataset) {
+    output.print(`Using dataset from environment config (${dataset})`)
+  }
+
+  // If we're still missing information, prompt the user to provide them
   const configMissing = !projectId || !dataset
   if (!configMissing) {
     return
@@ -118,6 +135,8 @@ async function ensureProjectConfig(context) {
 
   output.print('Project configuration required before starting studio')
   output.print('')
+
+  let displayName = get(projectManifest, 'project.displayName')
 
   if (!projectId) {
     const selected = await getOrCreateProject(context)
@@ -140,7 +159,7 @@ async function ensureProjectConfig(context) {
   const newProps = {
     root: true,
     api: {
-      ...(projectManifest.api || {}),
+      ...apiConfig,
       projectId,
       dataset
     },
@@ -151,10 +170,11 @@ async function ensureProjectConfig(context) {
     }
   }
 
-  // Ensure root, api and project keys are at top to follow sanity.json key order convention
   await fse.outputJSON(
     manifestPath,
     {
+      // We're listing `newProps` twice to ensure root, api and project keys
+      // are at top to follow sanity.json key order convention
       ...newProps,
       ...projectManifest,
       ...newProps
@@ -162,7 +182,7 @@ async function ensureProjectConfig(context) {
     {spaces: 2}
   )
 
-  output.print('Project ID / dataset configured')
+  output.print(`Project ID + dataset written to "${manifestPath}"`)
 }
 
 function resolveStaticPath(rootDir, config) {
