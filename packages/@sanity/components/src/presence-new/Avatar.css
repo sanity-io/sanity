@@ -6,7 +6,7 @@
   box-sizing: border-box;
   fill: currentColor;
   pointer-events: auto;
-  display: inline-block;
+  display: flex;
   user-select: none;
 }
 
