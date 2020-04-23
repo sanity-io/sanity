@@ -50,7 +50,7 @@ function PresenceContainer({presence, position, avatarComponent: AvatarComponent
     <div className={styles.root}>
       {collapsedAvatars.length > 0 && <PopoverList users={collapsedAvatars} />}
       {avatars.map(item => (
-        <div key={item.sessionId} style={{marginLeft: '-8px'}}>
+        <div key={item.sessionId} style={{display: 'flex', marginLeft: '-8px'}}>
           <AvatarComponent position={position} userId={item.identity} sessionId={item.sessionId} />
         </div>
       ))}
