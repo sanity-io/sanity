@@ -6,13 +6,9 @@ import * as React from 'react'
 import {CSSProperties} from 'react'
 import {RegionIntersectionAssembler} from './RegionIntersectionAssembler'
 import {groupBy, orderBy} from 'lodash'
-import AvatarProvider from '@sanity/components/lib/presence-new/AvatarProvider'
-import Avatar from '@sanity/components/lib/presence-new/Avatar'
+import {Avatar, AvatarProvider, PopoverList} from '@sanity/components/lib/presence-new'
 import {DEBUG, THRESHOLD_TOP, MAX_AVATARS} from './constants'
 import {RegionWithIntersectionDetails} from './types'
-import PopOverDialog from 'part:@sanity/components/dialogs/popover'
-import listStyles from '@sanity/components/lib/presence-new/styles/PresenceStatus.css'
-import PresenceStatusItem from '@sanity/components/lib/presence-new/PresenceStatusItem'
 
 const splitRight = (array, index) => {
   const idx = Math.max(0, array.length - index)
@@ -20,9 +16,9 @@ const splitRight = (array, index) => {
 }
 
 const ITEM_TRANSITION: CSSProperties = {
-  transition: 'transform',
+  transitionProperty: 'transform',
   transitionDuration: '200ms',
-  transitionTimingFunction: 'ease-in-out'
+  transitionTimingFunction: 'cubic-bezier(0.85, 0, 0.15, 1)'
 }
 const ITEM_STYLE: CSSProperties = {
   position: 'sticky',
@@ -142,6 +138,10 @@ export function PresenceTransitionRenderer(props: Props) {
   )
 }
 
+const isMobile = () => {
+  return typeof window !== 'undefined' && window.innerWidth < 512
+}
+
 function renderDock(
   position: 'top' | 'bottom',
   regionsWithIntersectionDetails: RegionWithIntersectionDetails[]
@@ -149,49 +149,22 @@ function renderDock(
   const allPresenceItems = regionsWithIntersectionDetails.flatMap(
     withIntersection => withIntersection.region.data?.presence || []
   )
-  const [collapsed, visible] = splitRight(allPresenceItems, MAX_AVATARS)
+  const [collapsedAvatars, visible] = splitRight(allPresenceItems, MAX_AVATARS)
 
-  const [showPresenceList, setShowPresenceList] = React.useState(false)
-  const handlePresenceMenuToggle = () => setShowPresenceList(!showPresenceList)
-
-  const counter = collapsed.length > 0 && (
+  const counter = collapsedAvatars.length > 0 && (
     <div
-      key={collapsed.length > 1 ? 'counter' : collapsed[collapsed.length - 1].sessionId}
+      key={
+        collapsedAvatars.length > 1
+          ? 'counter'
+          : collapsedAvatars[collapsedAvatars.length - 1].sessionId
+      }
       style={{
         ...ITEM_TRANSITION,
         position: 'absolute',
-        transform: `translate3d(${visible.length * -28}px, 0px, 0px)`
+        transform: `translate3d(${visible.length * -20}px, 0px, 0px)`
       }}
     >
-      <div style={{position: 'relative'}}>
-        <div onClick={() => setShowPresenceList(true)}>
-          <Avatar label="" position={position} color="salmon">
-            +{collapsed.length}
-          </Avatar>
-        </div>
-        {showPresenceList && (
-          <PopOverDialog
-            useOverlay={false}
-            onClickOutside={handlePresenceMenuToggle}
-            padding="none"
-          >
-            <div className={listStyles.inner}>
-              <ul className={listStyles.presenceList}>
-                {collapsed.map(user => (
-                  <li key={user.identity}>
-                    <PresenceStatusItem
-                      size="small"
-                      id={user.identity}
-                      status={user.status}
-                      sessions={user.sessions}
-                    />
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </PopOverDialog>
-        )}
-      </div>
+      <PopoverList users={collapsedAvatars} position={position} />
     </div>
   )
 
@@ -201,7 +174,7 @@ function renderDock(
       style={{
         ...ITEM_TRANSITION,
         position: 'absolute',
-        transform: `translate3d(${(visible.length - 1 - i) * -28}px, 0px, 0px)`
+        transform: `translate3d(${(visible.length - 1 - i) * -20}px, 0px, 0px)`
       }}
     >
       <AvatarProvider position={position} userId={avatar.identity} {...avatar} />
@@ -247,19 +220,18 @@ function renderInside(regionsWithIntersectionDetails: RegionWithSpacerHeight[], 
     const distanceTop = withIntersection.distanceTop + THRESHOLD_TOP
 
     const {component: Component, data} = withIntersection.region
-
+    const transition = withIntersection.region.data.presence?.length > 1 ? ITEM_TRANSITION : {}
     return (
       <React.Fragment key={withIntersection.region.id}>
         <Spacer height={withIntersection.spacerHeight} />
         <div
           style={{
             ...ITEM_STYLE,
-            ...ITEM_TRANSITION,
+            ...transition,
             transform: `translate3d(${originalLeft +
               (distanceTop < topDistanceRightMovementThreshold
                 ? distanceMaxLeft
                 : 0)}px, 0px, 0px)`,
-            transitionTimingFunction: 'cubic-bezier(0.85, 0, 0.15, 1)',
             height: withIntersection.region.rect.height,
             width: withIntersection.region.rect.width
           }}

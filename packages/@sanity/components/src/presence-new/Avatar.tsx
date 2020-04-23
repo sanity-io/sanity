@@ -1,7 +1,6 @@
 import React from 'react'
 import {useId} from '@reach/auto-id'
-import styles from './styles/Avatar.css'
-import {Tooltip} from 'react-tippy'
+import styles from './Avatar.css'
 
 type Props = {
   color: string

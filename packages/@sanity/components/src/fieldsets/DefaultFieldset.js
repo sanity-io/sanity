@@ -7,7 +7,7 @@ import ArrowDropDown from 'part:@sanity/base/arrow-drop-down'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import ValidationList from 'part:@sanity/components/validation/list'
 import AnimateHeight from 'react-animate-height'
-import PresenceContainer from 'part:@sanity/components/presence/presence-container'
+import {Container as PresenceContainer} from '../presence-new'
 import FieldStatus from './FieldStatus'
 
 export default class Fieldset extends React.Component {

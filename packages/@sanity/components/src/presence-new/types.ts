@@ -7,7 +7,10 @@ export type Presence = {
 }
 
 export type User = {
+  identity: string
   displayName: string
   sessionId: string
   imageUrl: string
+  status?: Status
+  sessions: any[]
 }

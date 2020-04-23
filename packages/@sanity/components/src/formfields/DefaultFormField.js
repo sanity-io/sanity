@@ -8,7 +8,7 @@ import ValidationStatus from 'part:@sanity/components/validation/status'
 import ValidationList from 'part:@sanity/components/validation/list'
 import AnimateHeight from 'react-animate-height'
 import FieldStatus from '../fieldsets/FieldStatus'
-import PresenceContainer from 'part:@sanity/components/presence/presence-container'
+import {Container as PresenceContainer} from '../presence-new'
 import {Box} from '@sanity/overlayer'
 
 const ENABLE_CONTEXT = () => {}
