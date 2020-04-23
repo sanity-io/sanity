@@ -31,7 +31,7 @@ export default class HistoryForm extends React.PureComponent {
     const {focusPath} = this.state
 
     return (
-      <form className={styles.editor} id="Sanity_Default_DeskTool_Editor_ScrollContainer">
+      <form className={styles.editor}>
         {document ? (
           <FormBuilder
             onBlur={noop}

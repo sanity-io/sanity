@@ -61,11 +61,7 @@ export default class EditForm extends React.PureComponent<Props> {
     } = this.props
     return (
       <>
-        <form
-          className={styles.editor}
-          onSubmit={preventDefault}
-          id="Sanity_Default_DeskTool_Editor_ScrollContainer"
-        >
+        <form className={styles.editor} onSubmit={preventDefault}>
           <FormBuilder
             schema={schema}
             patchChannel={this.patchChannel}
