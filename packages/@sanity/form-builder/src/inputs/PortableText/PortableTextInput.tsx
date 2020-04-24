@@ -10,14 +10,21 @@ import {
   Patch as EditorPatch,
   InvalidValue as InvalidEditorValue
 } from '@sanity/portable-text-editor'
+import Button from 'part:@sanity/components/buttons/default'
 import FormField from 'part:@sanity/components/formfields/default'
+import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import InvalidValue from './InvalidValue'
 import PatchEvent from '../../PatchEvent'
 import {Marker} from '../../typedefs'
 import {Patch} from '../../typedefs/patch'
+import styles from './PortableTextInput.css'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {interval, Subject} from 'rxjs'
 import {map, take} from 'rxjs/operators'
+import Toolbar from './Toolbar/Toolbar'
+
+const IS_MAC =
+  typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
 
 type Props = {
   type: Type
@@ -41,6 +48,7 @@ type Props = {
 }
 
 type State = {
+  isActive: boolean
   selection: EditorSelection
   isLoading: boolean
   invalidValue: InvalidEditorValue | null
@@ -54,7 +62,7 @@ type PatchWithOrigin = Patch & {
 
 export default withPatchSubscriber(
   class PortableTextInput extends React.PureComponent<Props, State> {
-    private editor: PortableTextEditor | null
+    private editor: React.RefObject<PortableTextEditor> = React.createRef()
     private incoming: PatchWithOrigin[] = []
     private patche$: Subject<EditorPatch> = new Subject()
     private usubscribe: any
@@ -70,7 +78,8 @@ export default withPatchSubscriber(
       selection: null,
       isLoading: false,
       invalidValue: null,
-      valueWithError: undefined
+      valueWithError: undefined,
+      isActive: false
     }
 
     static getDerivedStateFromProps(nextProps: Props, prevState: State): {} | null {
@@ -83,6 +92,7 @@ export default withPatchSubscriber(
     constructor(props: Props) {
       super(props)
       this.usubscribe = props.subscribe(this.handleDocumentPatches)
+      // TODO: remove this when finished testing
       if (document.location.hash === '#test') {
         this.interval = interval(2000)
           .pipe(take(100))
@@ -104,10 +114,10 @@ export default withPatchSubscriber(
 
     componentWillUnmount(): void {
       this.usubscribe()
-    }
-
-    private setEditor = (editor: PortableTextEditor | null): void => {
-      this.editor = editor
+      // TODO: remove this when finished testing
+      if (this.interval) {
+        this.interval.unsubscribe()
+      }
     }
 
     private handleDocumentPatches = ({
@@ -116,11 +126,11 @@ export default withPatchSubscriber(
       patches: PatchWithOrigin[]
       snapshot: PortableTextBlock[] | undefined
     }): void => {
-      const selection =
+      const patchSelection =
         patches && patches.length > 0 && patches.filter(patch => patch.origin !== 'local')
-      if (selection) {
-        this.incoming = this.incoming.concat(selection)
-        selection.map(patch => this.patche$.next(patch))
+      if (patchSelection) {
+        this.incoming = this.incoming.concat(patchSelection)
+        patchSelection.map(patch => this.patche$.next(patch))
       }
     }
 
@@ -128,9 +138,6 @@ export default withPatchSubscriber(
       switch (change.type) {
         case 'mutation':
           this.props.onChange(PatchEvent.from(change.patches))
-          break
-        case 'selection':
-          //   this.setState({selection: change.selection})
           break
         case 'focus':
           this.props.onFocus && this.props.onFocus()
@@ -147,6 +154,8 @@ export default withPatchSubscriber(
         case 'invalidValue':
           this.setState({invalidValue: change, valueWithError: this.props.value})
           break
+        case 'selection':
+          this.setState({selection: change.selection})
         case 'patch':
         case 'value':
         case 'unset':
@@ -156,10 +165,21 @@ export default withPatchSubscriber(
       }
     }
 
-    focus(): void {
-      if (this.editor) {
-        this.editor.focus()
-      }
+    focus = () => {
+      PortableTextEditor.focus(this.editor.current)
+    }
+
+    blur = () => {
+      PortableTextEditor.blur(this.editor.current)
+    }
+
+    handleToggleFullscreen() {
+      console.log('fullscreen')
+    }
+
+    handleActivate = () => {
+      this.setState({isActive: true})
+      this.focus()
     }
 
     renderBlock = (
@@ -170,7 +190,7 @@ export default withPatchSubscriber(
         return null
       }
       // Offload rendering text to the editor
-      if (block._type === this.editor.getPortableTextFeatures().types.block.name) {
+      if (block._type === this.editor.current.getPortableTextFeatures().types.block.name) {
         return undefined
       }
       // Render object blocks (images, etc)
@@ -188,7 +208,7 @@ export default withPatchSubscriber(
         return null
       }
       // Offload rendering text to the editor
-      if (child._type === this.editor.getPortableTextFeatures().types.span.name) {
+      if (child._type === this.editor.current.getPortableTextFeatures().types.span.name) {
         return undefined
       }
       // Render object childs (images, etc)
@@ -196,6 +216,18 @@ export default withPatchSubscriber(
         <span style={{fontFamily: 'monospace', padding: '1em', backgroundColor: '#eee'}}>
           {JSON.stringify(child)}
         </span>
+      )
+    }
+
+    renderEditor = editor => {
+      const {selection} = this.state
+      return (
+        <>
+          <Toolbar editor={this.editor.current} selection={selection} />
+          <div className={styles.scrollContainer}>
+            <div className={styles.editor}>{editor}</div>
+          </div>
+        </>
       )
     }
 
@@ -214,31 +246,54 @@ export default withPatchSubscriber(
         )
       }
       return (
-        <FormField
-          markers={markers}
-          level={level}
-          label={type.title}
-          description={type.description}
-        >
-          <div style={{overflowY: 'auto', maxHeight: '300px', overflowX: 'hidden'}}>
+        <div className={styles.root}>
+          <FormField
+            markers={markers}
+            level={level}
+            label={type.title}
+            description={type.description}
+          />
+          <ActivateOnFocus
+            isActive={this.state.isActive}
+            html={
+              <div className={styles.activeOnFocus}>
+                <h3>Click to edit</h3>
+                <div>or</div>
+                <div>
+                  <Button onClick={this.handleToggleFullscreen} color="primary">
+                    Open in fullscreen
+                  </Button>
+                </div>
+                <p className={styles.keyboardShortcut}>
+                  Tip: <br />
+                  <strong>
+                    {IS_MAC ? '⌘' : 'ctrl'}
+                    &nbsp;+&nbsp;enter
+                  </strong>{' '}
+                  while editing to go in fullscreen
+                </p>
+              </div>
+            }
+            onActivate={this.handleActivate}
+          >
             <PortableTextEditor
               hotkeys={this.hotkeys}
-              maxBlocks={-1} // TODO: from schema
+              maxBlocks={-1} // TODO: from schema?
               onChange={this.handleChange}
               incomingPatche$={this.patche$.asObservable()}
-              placeholderText={value ? '' : '[No value]'}
+              placeholderText={value ? '' : '[No content]'}
               readOnly={readOnly}
-              ref={this.setEditor}
+              ref={this.editor}
               renderBlock={this.renderBlock}
               renderChild={this.renderChild}
+              renderEditor={this.renderEditor}
               searchAndReplace
-              selection={selection}
-              spellCheck={false}
+              spellCheck={false} // TODO: from schema?
               type={type}
               value={value}
             />
-          </div>
-        </FormField>
+          </ActivateOnFocus>
+        </div>
       )
     }
   }
