@@ -1,6 +1,7 @@
 import React from 'react'
 import {useId} from '@reach/auto-id'
 import styles from './Avatar.css'
+import {Position, Status, Size} from './types'
 
 type Props = {
   color: string
@@ -9,9 +10,9 @@ type Props = {
   isAnimating?: boolean
   children?: React.ReactNode
   onImageLoadError?: (event: Error) => void
-  position?: 'top' | 'bottom' | 'inside' | null
-  status?: 'online' | 'editing' | 'inactive'
-  size?: 'small' | 'medium'
+  position?: Position
+  status?: Status
+  size?: Size
 }
 
 export default function Avatar({

@@ -1,14 +1,15 @@
 import React, {useState, useEffect} from 'react'
 import userStore from 'part:@sanity/base/user'
 import Avatar from './Avatar'
-import {Position, Status, User} from './types'
+import {Position, Status, User, Size} from './types'
+import colorHasher from './colorHasher'
 
 export type Props = {
   userId: string
-  color: string
+  color?: string
   position?: Position
   status: Status
-  size: 'small' | 'medium'
+  size: Size
 }
 
 function nameToInitials(fullName: string) {
@@ -39,7 +40,7 @@ export default function AvatarProvider({
   // Decide whether the avatar border should animate
   const isAnimating = !position && status === 'editing'
   // Create a unique color for the user
-
+  const userColor = color || colorHasher(userId)
   const imageUrl = imageLoadError ? null : user?.imageUrl
   return (
     <Avatar
@@ -48,7 +49,7 @@ export default function AvatarProvider({
       position={position}
       size={size}
       label={user?.displayName}
-      color={color}
+      color={userColor}
       onImageLoadError={error => setImageLoadError(error)}
     >
       {!imageUrl && user?.displayName && nameToInitials(user.displayName)}

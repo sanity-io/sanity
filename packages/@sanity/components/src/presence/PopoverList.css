@@ -1,20 +1,12 @@
 @import 'part:@sanity/base/theme/variables-style';
 
-.root {
-  background-color: var(--component-bg);
-  color: var(--text-color);
-  composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
-  border-radius: var(--border-radius-medium);
-  z-index: var(--zindex-dropdown);
-  padding: var(--extra-small-padding) 0;
-}
-
 .list {
   list-style: none;
-  margin: 0;
-  padding: 0;
   max-height: 230px;
   overflow-x: auto;
+  color: var(--text-color);
+  padding: var(--extra-small-padding) 0;
+  margin: -0.375rem -0.75rem;
 
   @nest & .empty {
     padding: var(--small-padding) var(--medium-padding);

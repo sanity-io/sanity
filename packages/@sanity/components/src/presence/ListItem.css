@@ -10,12 +10,15 @@
   text-decoration: none;
 }
 
+.intentInner {
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
+}
+
 .inner {
   display: flex;
   white-space: nowrap;
   position: relative;
   padding: var(--small-padding) var(--medium-padding);
-  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
 }
 
 .inner[data-size='small'] {

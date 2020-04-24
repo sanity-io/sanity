@@ -6,7 +6,7 @@ import * as React from 'react'
 import {CSSProperties} from 'react'
 import {RegionIntersectionAssembler} from './RegionIntersectionAssembler'
 import {groupBy, orderBy} from 'lodash'
-import {Avatar, AvatarProvider, PopoverList} from '@sanity/components/lib/presence-new'
+import {AvatarProvider, PopoverList} from '@sanity/components/lib/presence'
 import {DEBUG, THRESHOLD_TOP, MAX_AVATARS} from './constants'
 import {RegionWithIntersectionDetails} from './types'
 
@@ -138,10 +138,6 @@ export function PresenceTransitionRenderer(props: Props) {
   )
 }
 
-const isMobile = () => {
-  return typeof window !== 'undefined' && window.innerWidth < 512
-}
-
 function renderDock(
   position: 'top' | 'bottom',
   regionsWithIntersectionDetails: RegionWithIntersectionDetails[]
@@ -164,7 +160,7 @@ function renderDock(
         transform: `translate3d(${visible.length * -20}px, 0px, 0px)`
       }}
     >
-      <PopoverList users={collapsedAvatars} position={position} />
+      <PopoverList users={collapsedAvatars} position={position} avatarSize="small" distance={10} />
     </div>
   )
 
@@ -220,14 +216,13 @@ function renderInside(regionsWithIntersectionDetails: RegionWithSpacerHeight[], 
     const distanceTop = withIntersection.distanceTop + THRESHOLD_TOP
 
     const {component: Component, data} = withIntersection.region
-    const transition = withIntersection.region.data.presence?.length > 1 ? ITEM_TRANSITION : {}
     return (
       <React.Fragment key={withIntersection.region.id}>
         <Spacer height={withIntersection.spacerHeight} />
         <div
           style={{
             ...ITEM_STYLE,
-            ...transition,
+            ...ITEM_TRANSITION,
             transform: `translate3d(${originalLeft +
               (distanceTop < topDistanceRightMovementThreshold
                 ? distanceMaxLeft
