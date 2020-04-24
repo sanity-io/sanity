@@ -93,10 +93,10 @@ export default class DefaultFormField extends React.PureComponent {
                 {description && <div className={styles.description}>{description}</div>}
               </div>
               <FieldStatus>
+                <PresenceContainer presence={presence} />
                 <div onClick={this.handleToggleShowValidation} className={styles.validationStatus}>
                   <ValidationStatus markers={markers} />
                 </div>
-                <PresenceContainer presence={presence} />
               </FieldStatus>
             </div>
           )}

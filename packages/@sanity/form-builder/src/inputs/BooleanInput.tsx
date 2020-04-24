@@ -69,8 +69,8 @@ export default class BooleanInput extends React.Component<Props> {
           />
         )}
         <FieldStatus position="top">
-          <ValidationStatus markers={markers} onClick={this.handleToggleValidationList} />
           <PresenceContainer presence={presence} />
+          <ValidationStatus markers={markers} onClick={this.handleToggleValidationList} />
         </FieldStatus>
       </div>
     )

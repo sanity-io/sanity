@@ -163,8 +163,8 @@ export default class Fieldset extends React.Component {
                 )}
               </div>
               <FieldStatus>
-                <ValidationStatus markers={markers} onClick={this.handleToggleValidationList} />
                 <PresenceContainer presence={presence} />
+                <ValidationStatus markers={markers} onClick={this.handleToggleValidationList} />
               </FieldStatus>
             </div>
             {showValidationList && (
