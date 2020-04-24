@@ -1,8 +1,8 @@
 /* eslint-disable react/jsx-filename-extension */
 import PropTypes from 'prop-types'
 import React from 'react'
-import AvatarProvider from '../presence-new/AvatarProvider'
-import PopoverList from '../presence-new/PopoverList'
+import AvatarProvider from '../presence/AvatarProvider'
+import PopoverList from '../presence/PopoverList'
 import EventIcon from './EventIcon'
 
 import styles from './styles/ListItem.modules.css'
