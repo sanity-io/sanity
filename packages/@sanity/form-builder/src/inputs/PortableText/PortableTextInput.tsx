@@ -159,6 +159,7 @@ export default withPatchSubscriber(
           break
         case 'selection':
           this.setState({selection: change.selection})
+          break
         case 'patch':
         case 'value':
         case 'unset':
@@ -199,11 +200,14 @@ export default withPatchSubscriber(
       },
       defaultRender: (block: PortableTextBlock) => JSX.Element
     ): JSX.Element => {
-      if (!this.editor) {
+      if (!this.editor.current) {
         return null
       }
 
-      if (block._type === this.editor.current.getPortableTextFeatures().types.block.name) {
+      if (
+        block._type ===
+        PortableTextEditor.getPortableTextFeatures(this.editor.current).types.block.name
+      ) {
         return defaultRender(block)
       }
 
@@ -223,11 +227,14 @@ export default withPatchSubscriber(
     }
 
     renderChild = (child: PortableTextChild): JSX.Element => {
-      if (!this.editor) {
+      if (!this.editor.current) {
         return null
       }
       // Offload rendering text to the editor
-      if (child._type === this.editor.current.getPortableTextFeatures().types.span.name) {
+      if (
+        child._type ===
+        PortableTextEditor.getPortableTextFeatures(this.editor.current).types.span.name
+      ) {
         return undefined
       }
       // Render object childs (images, etc)
