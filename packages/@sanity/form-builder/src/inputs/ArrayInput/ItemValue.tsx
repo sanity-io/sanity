@@ -21,7 +21,7 @@ import ConfirmButton from './ConfirmButton'
 import styles from './styles/ItemValue.css'
 import {ArrayType, ItemValue} from './typedefs'
 import {Tracker} from '@sanity/overlayer'
-import {Container as PresenceContainer} from '@sanity/components/lib/presence-new'
+import {Container as PresenceContainer} from '@sanity/components/lib/presence'
 import {PresenceTransitionRenderer} from '../../sanity/PresenceTransitionRenderer'
 
 const DragHandle = createDragHandle(() => (

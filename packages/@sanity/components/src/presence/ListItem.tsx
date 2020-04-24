@@ -4,8 +4,7 @@ import userStore from 'part:@sanity/base/user'
 import {IntentLink} from 'part:@sanity/base/router'
 import styles from './ListItem.css'
 import AvatarProvider from './AvatarProvider'
-import {Status, User} from './types'
-import colorHasher from '../presence/colorHasher'
+import {Status, User, Size} from './types'
 
 function withIntent(onClick: () => void, content: any, documentId: string) {
   return (
@@ -15,7 +14,7 @@ function withIntent(onClick: () => void, content: any, documentId: string) {
       params={{id: documentId}}
       onClick={onClick}
     >
-      {content()}
+      <div className={styles.intentInner}>{content()}</div>
     </IntentLink>
   )
 }
@@ -23,9 +22,9 @@ function withIntent(onClick: () => void, content: any, documentId: string) {
 type Props = {
   id: string
   status: Status
-  sessions: any[]
-  size?: 'small' | 'medium'
-  onClick: () => void
+  sessions?: any[]
+  size?: Size
+  onClick?: () => void
 }
 
 const renderContent = ({
@@ -37,12 +36,12 @@ const renderContent = ({
   id: string
   user: User
   status: Status
-  size: 'small' | 'medium'
+  size: Size
 }) => {
   return (
     <div className={styles.inner} data-size={size}>
       <div className={styles.avatar}>
-        <AvatarProvider size={size} status={status} userId={id} color={colorHasher(id)} />
+        <AvatarProvider size={size} status={status} userId={id} />
       </div>
       <div className={styles.userInfo}>
         <span className={styles.name} title={user.displayName}>
@@ -56,7 +55,7 @@ const renderContent = ({
 export default function ListItem({
   id,
   status = 'inactive',
-  sessions = [],
+  sessions,
   size = 'medium',
   onClick
 }: Props) {
@@ -75,8 +74,7 @@ export default function ListItem({
 
   // TODO
   // Temp solution: Find first session with a document id to decide param for intent link
-  const session = sessions.find(session => session.state?.documentId)
-
+  const session = sessions && sessions.find(session => session.state?.documentId)
   return (
     <div className={styles.root}>
       {session?.state?.documentId

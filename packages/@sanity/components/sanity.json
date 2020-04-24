@@ -1098,7 +1098,7 @@
     },
     {
       "name": "part:@sanity/components/presence/presence-status",
-      "path": "presence-new/GlobalStatus"
+      "path": "presence/GlobalStatus"
     }
   ]
 }
