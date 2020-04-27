@@ -145,23 +145,23 @@ function renderDock(
   const allPresenceItems = regionsWithIntersectionDetails.flatMap(
     withIntersection => withIntersection.region.data?.presence || []
   )
-  const [collapsedAvatars, visible] = splitRight(allPresenceItems, MAX_AVATARS)
+  const [hiddenUsers, visibleUsers] = splitRight(
+    allPresenceItems,
+    allPresenceItems.length > MAX_AVATARS ? MAX_AVATARS - 1 : MAX_AVATARS
+  )
 
-  const counter = collapsedAvatars.length > 0 && (
+  const counter = hiddenUsers.length > 0 && (
     <div
-      key={
-        collapsedAvatars.length > 1
-          ? 'counter'
-          : collapsedAvatars[collapsedAvatars.length - 1].sessionId
-      }
+      key={hiddenUsers.length > 1 ? 'counter' : hiddenUsers[hiddenUsers.length - 1].sessionId}
       style={{
         ...ITEM_TRANSITION,
         position: 'absolute',
-        transform: `translate3d(${visible.length * -20}px, 0px, 0px)`
+        transform: `translate3d(${visibleUsers.length * -20}px, 0px, 0px)`
       }}
     >
       <PopoverList
-        userList={collapsedAvatars}
+        userList={allPresenceItems}
+        hiddenCount={hiddenUsers.length}
         arrowPosition={position}
         avatarSize="small"
         distance={10}
@@ -169,13 +169,13 @@ function renderDock(
     </div>
   )
 
-  const visibleItems = visible.map((avatar, i) => (
+  const visibleItems = visibleUsers.map((avatar, i) => (
     <div
       key={avatar.sessionId}
       style={{
         ...ITEM_TRANSITION,
         position: 'absolute',
-        transform: `translate3d(${(visible.length - 1 - i) * -20}px, 0px, 0px)`
+        transform: `translate3d(${(visibleUsers.length - 1 - i) * -20}px, 0px, 0px)`
       }}
     >
       <AvatarProvider position={position} userId={avatar.identity} {...avatar} />

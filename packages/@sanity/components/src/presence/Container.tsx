@@ -1,13 +1,14 @@
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import React, {useState} from 'react'
+import React from 'react'
 import {useId} from '@reach/auto-id'
 import styles from './Container.css'
 import AvatarProvider from './AvatarProvider'
-import {MAX_AVATARS} from './config'
+import {MAX_AVATARS} from './constants'
 import {RegionReporter} from '@sanity/overlayer'
 import {Presence, Position} from './types'
 import PopoverList from './PopoverList'
+import {splitRight} from './utils'
 
 type ContainerProps = {
   presence: Presence[]
@@ -33,31 +34,24 @@ export default function PresenceContainerRegion({presence, position}: RegionRepo
   )
 }
 
-const splitRight = (array: Array<any>, index: number): Array<any> => {
-  const idx = Math.max(0, array.length - index)
-  return [array.slice(0, idx), array.slice(idx)]
-}
-
 function PresenceContainer({presence, position, avatarComponent: AvatarComponent}: ContainerProps) {
-  const [collapsedAvatars, avatars] = splitRight(
-    /* uniqBy(presence, user => user.identity) */ presence || [],
-    MAX_AVATARS
-  )
+  const [hiddenUsers, visibleUsers] = splitRight(presence || [])
 
   return (
     <div className={styles.root}>
       <PopoverList
         trigger="click"
-        userList={collapsedAvatars}
-        avatarSize="small"
-        disabled={collapsedAvatars.length < 1}
+        userList={presence}
+        hiddenCount={hiddenUsers.length}
+        disabled={hiddenUsers.length <= 1}
+        withStack={hiddenUsers.length >= MAX_AVATARS - 1}
       >
-        {avatars.map(item => (
-          <div key={item.sessionId} style={{display: 'flex', marginLeft: '-8px'}}>
+        {visibleUsers.map(user => (
+          <div key={user.sessionId} style={{display: 'flex', marginLeft: '-8px'}}>
             <AvatarComponent
               position={position}
-              userId={item.identity}
-              sessionId={item.sessionId}
+              userId={user.identity}
+              sessionId={user.sessionId}
             />
           </div>
         ))}

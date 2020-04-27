@@ -18,8 +18,8 @@
     grid-template-columns: max-content max-content var(--nav-bar-box) minmax(240px, 100%) max-content max-content  min-content;
 
     @nest &.withToolSwitcher {
-      grid-template-areas: " branding    createButton       search               spaceSwitcher toolSwitcher extras      presence sanityStatus loginStatus sidecarStatus";
-      grid-template-columns: max-content var(--nav-bar-box) minmax(240px, 400px) max-content   auto         max-content max-content max-content calc(var(--nav-bar-box) + 1em) min-content;
+      grid-template-areas: " branding    createButton       search               spaceSwitcher toolSwitcher extras      sanityStatus presence loginStatus sidecarStatus";
+      grid-template-columns: max-content var(--nav-bar-box) minmax(240px, 400px) max-content   auto         max-content max-content max-content calc(var(--nav-bar-box)) min-content;
     }
   }
 

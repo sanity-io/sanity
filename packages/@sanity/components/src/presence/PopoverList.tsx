@@ -4,10 +4,10 @@ import styles from './PopoverList.css'
 import ListItem from './ListItem'
 import {User, Size, Position} from './types'
 import {Tooltip} from 'react-tippy'
-import Avatar from './Avatar'
 
 type Props = {
   userList: User[]
+  hiddenCount?: number
   avatarSize?: Size
   position?: 'top' | 'bottom'
   arrowPosition?: Position
@@ -20,6 +20,7 @@ type Props = {
 
 export default function PopoverList({
   userList = [],
+  hiddenCount,
   position = 'top',
   distance = 10,
   avatarSize,
@@ -43,7 +44,7 @@ export default function PopoverList({
           </li>
         ))
       ) : (
-        <li className={styles.empty}>Looks like it's just you...</li>
+        <li className={styles.empty}>{/* TODO: see slack messages from marius */}</li>
       )}
     </ul>
   )
@@ -54,18 +55,18 @@ export default function PopoverList({
       interactive
       position={position}
       trigger={trigger}
-      animation="scale"
       arrow
       theme="light"
       distance={distance}
-      duration={50}
     >
-      {withStack && userList.length > 1 && (
-        <Avatar label="" position={arrowPosition} color="grey">
-          +{userList.length}
-        </Avatar>
-      )}
-      {children && children}
+      <div className={styles.root}>
+        {withStack && hiddenCount && (
+          <div data-position={arrowPosition} className={styles.avatarCounter}>
+            {hiddenCount}
+          </div>
+        )}
+        {children && children}
+      </div>
     </Tooltip>
   )
 }
