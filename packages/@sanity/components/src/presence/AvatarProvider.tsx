@@ -40,7 +40,7 @@ export default function AvatarProvider({
   // Decide whether the avatar border should animate
   const isAnimating = !position && status === 'editing'
   // Create a unique color for the user
-  const userColor = color || colorHasher(userId)
+  const userColor = /* color || colorHasher(userId) */ 'currentColor'
   const imageUrl = imageLoadError ? null : user?.imageUrl
   return (
     <Avatar

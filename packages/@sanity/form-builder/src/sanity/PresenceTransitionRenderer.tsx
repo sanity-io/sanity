@@ -160,7 +160,12 @@ function renderDock(
         transform: `translate3d(${visible.length * -20}px, 0px, 0px)`
       }}
     >
-      <PopoverList users={collapsedAvatars} position={position} avatarSize="small" distance={10} />
+      <PopoverList
+        userList={collapsedAvatars}
+        arrowPosition={position}
+        avatarSize="small"
+        distance={10}
+      />
     </div>
   )
 
