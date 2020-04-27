@@ -15,7 +15,7 @@ export default function GlobalStatus({projectId}: {projectId?: string}) {
       <PopoverList
         trigger="click"
         userList={users}
-        withStack={hiddenUsers.length >= MAX_AVATARS - 1}
+        withStack={hiddenUsers.length >= MAX_AVATARS - 1 || users.length === 0}
         hiddenCount={hiddenUsers.length}
         avatarSize="medium"
         isGlobal

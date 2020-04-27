@@ -82,9 +82,10 @@ export default function PopoverList({
         arrow
         theme="light"
         distance={distance}
+        tabIndex={0}
       >
         <div className={styles.outer}>
-          {withStack && hiddenCount && (
+          {withStack && (
             <div data-position={arrowPosition} className={styles.avatarCounter}>
               {hiddenCount}
             </div>
