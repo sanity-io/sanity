@@ -9,6 +9,7 @@ import {RegionReporter} from '@sanity/overlayer'
 import {Presence, Position} from './types'
 import PopoverList from './PopoverList'
 import {splitRight} from './utils'
+import {uniqBy} from 'lodash'
 
 type ContainerProps = {
   presence: Presence[]
@@ -35,7 +36,7 @@ export default function PresenceContainerRegion({presence, position}: RegionRepo
 }
 
 function PresenceContainer({presence, position, avatarComponent: AvatarComponent}: ContainerProps) {
-  const [hiddenUsers, visibleUsers] = splitRight(presence || [])
+  const [hiddenUsers, visibleUsers] = splitRight(uniqBy(presence || [], user => user.identity))
 
   return (
     <div className={styles.root}>
