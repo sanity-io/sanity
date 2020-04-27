@@ -2,12 +2,20 @@
 
 .root {
   position: relative;
+  padding-left: 0.5em;
+
+  @nest & div[class*="avatarCounter"] {
+    border: 1px solid color(var(--main-navigation-color--inverted) a(70%));
+    color: currentColor;
+    font-size: var(--font-size-tiny--relative);
+    background: var(--main-navigation-color);
+  }
 }
 
-.button {
+.mobileButton {
   display: flex;
   text-decoration: none;
-  padding: 0.75em;
+  padding: 0.75em 0.5em;
   white-space: nowrap;
   outline: none;
   flex-direction: row;
@@ -22,6 +30,11 @@
   line-height: calc(25 / 16);
   margin: 0;
   height: 100%;
+
+  @media (--screen-medium) {
+    display: none;
+    padding: 0.75em;
+  }
 
   @media (hover: hover) {
     opacity: 0.7;
@@ -41,20 +54,35 @@
     font-size: 2em;
     vertical-align: top;
   }
+
+  @nest & .statusIndicator {
+    position: absolute;
+    top: 0.1em;
+    right: 0.15em;
+    height: 0.5em;
+    width: 0.5em;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    background: var(--state-success-color);
+    box-sizing: border-box;
+  }
 }
 
-.isOpen {
-  opacity: 1;
-}
+.avatarView {
+  display: none;
+  align-items: stretch;
+  flex: 1;
+  height: 100%;
 
-.statusIndicator {
-  position: absolute;
-  top: 0.1em;
-  right: 0.15em;
-  height: 0.5em;
-  width: 0.5em;
-  border-radius: 50%;
-  border: 1px solid currentColor;
-  background: var(--state-success-color);
-  box-sizing: border-box;
+  @media (--screen-medium) {
+    display: flex;
+  }
+
+  @nest & .avatars {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    height: 100%;
+    color: var(--main-navigation-color); /* For avatar border color */
+  }
 }

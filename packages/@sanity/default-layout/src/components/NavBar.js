@@ -109,11 +109,11 @@ function NavBar(props) {
         />
       </div>
       <div className={styles.extras}>{/* Insert plugins here */}</div>
-      <div className={styles.presenceStatus}>
-        <PresenceStatus />
-      </div>
       <div className={styles.sanityStatus}>
         <SanityStatusContainer />
+      </div>
+      <div className={styles.presenceStatus}>
+        <PresenceStatus />
       </div>
       <div className={styles.loginStatus} ref={onSetLoginStatusElement}>
         <LoginStatus onLogout={onUserLogout} user={user} />

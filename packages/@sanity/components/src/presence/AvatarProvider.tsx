@@ -7,9 +7,11 @@ import colorHasher from './colorHasher'
 export type Props = {
   userId: string
   color?: string
+  fillColor?: string
   position?: Position
-  status: Status
-  size: Size
+  status?: Status
+  size?: Size
+  showFill?: boolean
 }
 
 function nameToInitials(fullName: string) {
@@ -22,8 +24,10 @@ export default function AvatarProvider({
   userId,
   position,
   color,
+  fillColor,
+  showFill,
   status = 'online',
-  size = 'small'
+  size
 }: Props) {
   // we need to scope the value of the id attributes here
   const [user, setUser] = useState<User | null>(null)
@@ -40,7 +44,7 @@ export default function AvatarProvider({
   // Decide whether the avatar border should animate
   const isAnimating = !position && status === 'editing'
   // Create a unique color for the user
-  const userColor = /* color || colorHasher(userId) */ 'currentColor'
+  const userColor = color || /* colorHasher(userId) */ 'currentColor'
   const imageUrl = imageLoadError ? null : user?.imageUrl
   return (
     <Avatar
@@ -49,8 +53,10 @@ export default function AvatarProvider({
       position={position}
       size={size}
       label={user?.displayName}
-      color={userColor}
+      borderColor={userColor}
+      fillColor={fillColor}
       onImageLoadError={error => setImageLoadError(error)}
+      showFill={showFill}
     >
       {!imageUrl && user?.displayName && nameToInitials(user.displayName)}
     </Avatar>

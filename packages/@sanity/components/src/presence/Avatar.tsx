@@ -4,7 +4,9 @@ import styles from './Avatar.css'
 import {Position, Status, Size} from './types'
 
 type Props = {
-  color: string
+  borderColor: string
+  fillColor?: string
+  showFill?: boolean
   imageUrl?: string
   label: string
   isAnimating?: boolean
@@ -16,7 +18,9 @@ type Props = {
 }
 
 export default function Avatar({
-  color,
+  borderColor,
+  fillColor = 'white',
+  showFill = true,
   imageUrl,
   label,
   isAnimating = false,
@@ -31,7 +35,7 @@ export default function Avatar({
     <div
       className={styles.root}
       data-dock={position}
-      style={{color}}
+      style={{color: borderColor}}
       aria-label={label}
       title={label}
     >
@@ -50,11 +54,18 @@ export default function Avatar({
                 ${isAnimating && styles.isAnimating}
               `}
             />
-            <ellipse cx="16" cy="16" rx="14" ry="14" transform="rotate(-90 16 16)" fill="white" />
+            <ellipse
+              cx="16"
+              cy="16"
+              rx="14"
+              ry="14"
+              transform="rotate(-90 16 16)"
+              fill={fillColor}
+            />
             <circle
               cx="16"
               cy="16"
-              r="13"
+              r={showFill ? 13 : 14.2}
               fill={imageUrl ? `url(#${elementId}-image-url)` : 'currentColor'}
             />
             <defs>
