@@ -24,6 +24,7 @@ import {map, take} from 'rxjs/operators'
 import Toolbar from './Toolbar/Toolbar'
 import Block from './BlockRendering/Block'
 import {Path} from '../../typedefs/path'
+import { InlineBlock } from './InlineBlockRendering/InlineBlock'
 
 const IS_MAC =
   typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
@@ -226,18 +227,35 @@ export default withPatchSubscriber(
       )
     }
 
-    renderChild = (child: PortableTextChild): JSX.Element => {
+    renderChild = (
+      block: PortableTextBlock,
+      child: PortableTextChild,
+      type: Type,
+      ref: React.RefObject<HTMLSpanElement>,
+      attributes: {focused: boolean, selected: boolean},
+      defaultRender: (child: PortableTextChild) => JSX.Element
+    ): JSX.Element => {
       if (!this.editor.current) {
         return null
       }
-      // Offload rendering text to the editor
       if (
         child._type ===
         PortableTextEditor.getPortableTextFeatures(this.editor.current).types.span.name
       ) {
-        return undefined
+        return defaultRender(child)
       }
-      // Render object childs (images, etc)
+
+      return (
+        <InlineBlock
+          block={block}
+          child={child}
+          type={type}
+          readOnly={this.props.readOnly}
+          attributes={attributes}
+          onFocus={this.props.onFocus}
+        />
+      )
+
       return (
         <span style={{fontFamily: 'monospace', padding: '1em', backgroundColor: '#eee'}}>
           {JSON.stringify(child)}
