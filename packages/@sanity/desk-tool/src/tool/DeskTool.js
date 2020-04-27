@@ -1,3 +1,4 @@
+import isHotkey from 'is-hotkey'
 import React from 'react'
 import PropTypes from 'prop-types'
 import {isEqual} from 'lodash'
@@ -24,9 +25,15 @@ const EMPTY_PANE_KEYS = []
 
 const hasLoading = panes => panes.some(item => item === LOADING_PANE)
 
+const isSaveHotkey = isHotkey('mod+s')
+
 export default withRouterHOC(
   // eslint-disable-next-line react/prefer-stateless-function
   class DeskTool extends React.Component {
+    static contextTypes = {
+      addToSnackQueue: PropTypes.func
+    }
+
     static propTypes = {
       router: PropTypes.shape({
         navigate: PropTypes.func.isRequired,
@@ -214,6 +221,8 @@ export default withRouterHOC(
       this.maybeHandleOldUrl()
       this.derivePanes(this.props)
       this.props.onPaneChange(this.state.panes || [])
+
+      window.addEventListener('keydown', this.handleGlobalKeyDown)
     }
 
     componentWillUnmount() {
@@ -223,6 +232,25 @@ export default withRouterHOC(
 
       if (this.resizeSubscriber) {
         this.resizeSubscriber.unsubscribe()
+      }
+
+      window.removeEventListener('keydown', this.handleGlobalKeyDown)
+    }
+
+    handleGlobalKeyDown = event => {
+      // Prevent `Cmd+S`
+      if (isSaveHotkey(event)) {
+        event.preventDefault()
+
+        this.context.addToSnackQueue({
+          id: 'auto-save-message',
+          isOpen: true,
+          setFocus: false,
+          kind: 'info',
+          title: 'Don’t worry, your work is automatically saved!',
+          autoDismissTimeout: 4000,
+          isCloseable: true
+        })
       }
     }
 
