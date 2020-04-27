@@ -8,7 +8,6 @@ import {MAX_AVATARS} from './config'
 import {RegionReporter} from '@sanity/overlayer'
 import {Presence, Position} from './types'
 import PopoverList from './PopoverList'
-import {uniqBy} from 'lodash'
 
 type ContainerProps = {
   presence: Presence[]
@@ -40,7 +39,6 @@ const splitRight = (array: Array<any>, index: number): Array<any> => {
 }
 
 function PresenceContainer({presence, position, avatarComponent: AvatarComponent}: ContainerProps) {
-  const [showPresenceList, setShowPresenceList] = useState(false)
   const [collapsedAvatars, avatars] = splitRight(
     /* uniqBy(presence, user => user.identity) */ presence || [],
     MAX_AVATARS
@@ -48,12 +46,22 @@ function PresenceContainer({presence, position, avatarComponent: AvatarComponent
 
   return (
     <div className={styles.root}>
-      {collapsedAvatars.length > 0 && <PopoverList users={collapsedAvatars} />}
-      {avatars.map(item => (
-        <div key={item.sessionId} style={{display: 'flex', marginLeft: '-8px'}}>
-          <AvatarComponent position={position} userId={item.identity} sessionId={item.sessionId} />
-        </div>
-      ))}
+      <PopoverList
+        trigger="click"
+        userList={collapsedAvatars}
+        avatarSize="small"
+        disabled={collapsedAvatars.length < 1}
+      >
+        {avatars.map(item => (
+          <div key={item.sessionId} style={{display: 'flex', marginLeft: '-8px'}}>
+            <AvatarComponent
+              position={position}
+              userId={item.identity}
+              sessionId={item.sessionId}
+            />
+          </div>
+        ))}
+      </PopoverList>
     </div>
   )
 }

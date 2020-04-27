@@ -133,12 +133,14 @@ export default class HistoryListItem extends React.PureComponent {
         )}
         {availableUsers && availableUsers.length > 0 && (
           <PopoverList
-            users={availableUsers.map(user => ({
+            userList={availableUsers.map(user => ({
               identity: user.id
             }))}
             withStack={false}
             disabled={availableUsers.length < 2}
             position="top"
+            avatarSize="small"
+            distance={16}
           >
             <div className={styles.users}>
               <div className={styles.userIcons}>

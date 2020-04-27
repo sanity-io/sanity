@@ -2,7 +2,7 @@
 
 .list {
   list-style: none;
-  max-height: 230px;
+  max-height: 200px;
   overflow-x: auto;
   color: var(--text-color);
   padding: var(--extra-small-padding) 0;

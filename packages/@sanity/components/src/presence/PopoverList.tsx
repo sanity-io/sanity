@@ -2,14 +2,15 @@
 import React from 'react'
 import styles from './PopoverList.css'
 import ListItem from './ListItem'
-import {User, Size} from './types'
+import {User, Size, Position} from './types'
 import {Tooltip} from 'react-tippy'
 import Avatar from './Avatar'
 
 type Props = {
-  users: User[]
+  userList: User[]
   avatarSize?: Size
   position?: 'top' | 'bottom'
+  arrowPosition?: Position
   withStack?: boolean
   trigger?: 'mouseenter' | 'click'
   children?: any
@@ -18,19 +19,20 @@ type Props = {
 }
 
 export default function PopoverList({
-  users,
-  position = 'bottom',
-  distance = 16,
+  userList = [],
+  position = 'top',
+  distance = 10,
   avatarSize,
   withStack = true,
   trigger = 'mouseenter',
   children,
-  disabled = false
+  disabled = false,
+  arrowPosition
 }: Props) {
   const html = (
     <ul className={styles.list}>
-      {users.length > 0 ? (
-        users.map(user => (
+      {userList.length > 0 ? (
+        userList.map(user => (
           <li key={user.identity}>
             <ListItem
               id={user.identity}
@@ -58,9 +60,9 @@ export default function PopoverList({
       distance={distance}
       duration={50}
     >
-      {withStack && (
-        <Avatar label="" position={position} color="grey">
-          +{users.length}
+      {withStack && userList.length > 1 && (
+        <Avatar label="" position={arrowPosition} color="grey">
+          +{userList.length}
         </Avatar>
       )}
       {children && children}
