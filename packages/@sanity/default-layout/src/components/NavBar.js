@@ -24,6 +24,8 @@ if (sidecar) {
   SidecarToggleButton = sidecar.SidecarToggleButton
 }
 
+const {projectId} = config.api || {}
+
 function NavBar(props) {
   const {
     searchIsOpen,
@@ -113,7 +115,7 @@ function NavBar(props) {
         <SanityStatusContainer />
       </div>
       <div className={styles.presenceStatus}>
-        <PresenceStatus />
+        <PresenceStatus projectId={projectId} />
       </div>
       <div className={styles.loginStatus} ref={onSetLoginStatusElement}>
         <LoginStatus onLogout={onUserLogout} user={user} />

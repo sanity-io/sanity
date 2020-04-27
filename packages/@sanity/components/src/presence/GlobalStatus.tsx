@@ -7,18 +7,19 @@ import AvatarProvider from './AvatarProvider'
 import {MAX_AVATARS} from './constants'
 import {splitRight} from './utils'
 
-export default function GlobalStatus() {
+export default function GlobalStatus({projectId}: {projectId?: string}) {
   const users = useCollaborators()
   const [hiddenUsers, visibleUsers] = splitRight(users)
   return (
     <div className={styles.root}>
       <PopoverList
         trigger="click"
-        disabled={hiddenUsers.length <= 1}
         userList={users}
         withStack={hiddenUsers.length >= MAX_AVATARS - 1}
         hiddenCount={hiddenUsers.length}
         avatarSize="medium"
+        isGlobal
+        projectId={projectId}
       >
         {/* Only show this on mobile */}
         <button className={styles.mobileButton} title="Show online users" type="button">
