@@ -87,7 +87,8 @@ export default withPatchSubscriber(
     }
 
     static getDerivedStateFromProps(nextProps: Props, prevState: State): {} | null {
-      if (nextProps.value !== prevState.valueWithError && prevState.invalidValue) {
+      // Reset invalidValue state if new value is coming in from props
+      if (nextProps.value !== (prevState.invalidValue && prevState.invalidValue.value)) {
         return {invalidValue: null}
       }
       return null
@@ -156,7 +157,7 @@ export default withPatchSubscriber(
           this.props.onChange(PatchEvent.from(change.patches))
           break
         case 'invalidValue':
-          this.setState({invalidValue: change, valueWithError: this.props.value})
+          this.setState({invalidValue: change})
           break
         case 'selection':
           this.setState({selection: change.selection})
