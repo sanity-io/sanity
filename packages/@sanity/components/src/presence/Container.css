@@ -2,7 +2,10 @@
 
 .root {
   display: flex;
-  padding-left: var(--small-padding);
+}
+
+.inner {
+  position: relative;
 }
 
 .root:empty {

@@ -35,6 +35,8 @@ export default function PresenceContainerRegion({presence, position}: RegionRepo
   )
 }
 
+const AVATAR_WIDTH = 28
+
 function PresenceContainer({presence, position, avatarComponent: AvatarComponent}: ContainerProps) {
   const [hiddenUsers, visibleUsers] = splitRight(uniqBy(presence || [], user => user.identity))
 
@@ -47,15 +49,27 @@ function PresenceContainer({presence, position, avatarComponent: AvatarComponent
         disabled={hiddenUsers.length <= 1}
         withStack={hiddenUsers.length >= MAX_AVATARS - 1}
       >
-        {visibleUsers.map(user => (
-          <div key={user.sessionId} style={{display: 'flex', marginLeft: '-8px'}}>
-            <AvatarComponent
-              position={position}
-              userId={user.identity}
-              sessionId={user.sessionId}
-            />
-          </div>
-        ))}
+        <div className={styles.inner}>
+          {visibleUsers.map((user, i) => (
+            <div
+              key={user.sessionId}
+              style={{
+                position: 'absolute',
+                transform: `translate3d(${-AVATAR_WIDTH + i * -18}px, 0px, 0px)`,
+                transitionProperty: 'transform',
+                transitionDuration: '200ms',
+                transitionTimingFunction: 'cubic-bezier(0.85, 0, 0.15, 1)',
+                zIndex: -i
+              }}
+            >
+              <AvatarComponent
+                position={position}
+                userId={user.identity}
+                sessionId={user.sessionId}
+              />
+            </div>
+          ))}
+        </div>
       </PopoverList>
     </div>
   )
