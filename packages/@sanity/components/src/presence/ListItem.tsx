@@ -6,38 +6,17 @@ import styles from './ListItem.css'
 import AvatarProvider from './AvatarProvider'
 import {Status, User, Size} from './types'
 
-function withIntent(onClick: () => void, content: any, documentId: string) {
-  return (
-    <IntentLink
-      className={styles.intentLink}
-      intent="edit"
-      params={{id: documentId}}
-      onClick={onClick}
-    >
-      <div className={styles.intentInner}>{content()}</div>
-    </IntentLink>
-  )
-}
-
-type Props = {
-  id: string
-  status: Status
-  sessions?: any[]
-  size?: Size
-  onClick?: () => void
-}
-
-const renderContent = ({
+function Content({
   id,
   user,
-  status,
-  size
+  status = 'inactive',
+  size = 'small'
 }: {
   id: string
   user: User
-  status: Status
-  size: Size
-}) => {
+  status?: Status
+  size?: Size
+}) {
   return (
     <div className={styles.inner} data-size={size}>
       <div className={styles.avatar}>
@@ -52,13 +31,16 @@ const renderContent = ({
   )
 }
 
-export default function ListItem({
-  id,
-  status = 'inactive',
-  sessions,
-  size = 'medium',
-  onClick
-}: Props) {
+type Props = {
+  id: string
+  status: Status
+  sessions?: any[]
+  size?: Size
+  onClick?: () => void
+}
+
+export default function ListItem(props: Props) {
+  const {id, sessions} = props
   const [user, setUser] = useState<User | null>(null)
   useEffect(() => {
     if (id) {
@@ -75,15 +57,25 @@ export default function ListItem({
   // TODO
   // Temp solution: Find first session with a document id to decide param for intent link
   const session = sessions && sessions.find(session => session.state?.documentId)
+
+  if (session?.state?.documentId) {
+    return (
+      <div className={styles.root}>
+        <IntentLink
+          className={styles.intentLink}
+          intent="edit"
+          params={{id: session.state.documentId}}
+        >
+          <div className={styles.intentInner}>
+            <Content user={user} {...props} />
+          </div>
+        </IntentLink>
+      </div>
+    )
+  }
   return (
     <div className={styles.root}>
-      {session?.state?.documentId
-        ? withIntent(
-            onClick,
-            () => renderContent({user, id, status, size}),
-            session.state.documentId
-          )
-        : renderContent({user, id, status, size})}
+      <Content user={user} {...props} />
     </div>
   )
 }
