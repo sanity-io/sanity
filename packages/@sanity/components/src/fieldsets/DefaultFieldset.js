@@ -9,6 +9,7 @@ import ValidationList from 'part:@sanity/components/validation/list'
 import AnimateHeight from 'react-animate-height'
 import {Container as PresenceContainer} from '../presence'
 import FieldStatus from './FieldStatus'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 
 export default class Fieldset extends React.Component {
   static propTypes = {
@@ -59,6 +60,12 @@ export default class Fieldset extends React.Component {
       isCollapsed: !prevState.isCollapsed,
       hasBeenToggled: true
     }))
+
+    // Let parent know field has been toggled
+    const {onFocus} = this.props
+    if (onFocus) {
+      onFocus([FOCUS_TERMINATOR])
+    }
   }
 
   handleFocus = event => {
