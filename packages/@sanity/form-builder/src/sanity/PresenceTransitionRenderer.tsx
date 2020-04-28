@@ -221,6 +221,7 @@ function renderInside(regionsWithIntersectionDetails: RegionWithSpacerHeight[], 
     const distanceTop = withIntersection.distanceTop + THRESHOLD_TOP
 
     const {component: Component, data} = withIntersection.region
+    const hasAvatars = data.presence?.length > 0
     return (
       <React.Fragment key={withIntersection.region.id}>
         <Spacer height={withIntersection.spacerHeight} />
@@ -231,7 +232,7 @@ function renderInside(regionsWithIntersectionDetails: RegionWithSpacerHeight[], 
             transform: `translate3d(${originalLeft +
               (distanceTop < topDistanceRightMovementThreshold
                 ? distanceMaxLeft
-                : 0)}px, 0px, 0px)`,
+                : 0)}px, 0px, 0px) scale(${hasAvatars ? 1.0 : 0}`,
             height: withIntersection.region.rect.height,
             width: withIntersection.region.rect.width
           }}
