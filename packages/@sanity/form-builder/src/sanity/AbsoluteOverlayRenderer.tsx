@@ -12,6 +12,9 @@ const OVERLAY_STYLE: React.CSSProperties = {
 
 const ITEM_STYLE = {
   display: 'inline-block',
+  transitionProperty: 'all',
+  transitionDuration: '2000ms',
+  transitionTimingFunction: 'cubic-bezier(0.85, 0, 0.15, 1)',
   background: 'rgba(255, 0, 0, 0.25)',
   overflow: 'hidden',
   textAlign: 'right',
@@ -20,22 +23,26 @@ const ITEM_STYLE = {
   outline: '1px solid #f00'
 }
 
+// This renders regions as they are reported from the RegionReporter. Useful for debugging
 export function AbsoluteOverlayRenderer(props) {
-  const {items, trackerRef, children, ...rest} = props
+  const {regions, trackerRef, children, ...rest} = props
   return (
     <div ref={trackerRef} style={{position: 'relative'}}>
       <div>{children}</div>
       <div style={OVERLAY_STYLE}>
-        {sortBy(items, item => -item.rect.top).map(item => {
+        {sortBy(
+          regions.filter(r => r.data.presence?.length > 0),
+          region => -region.rect.top
+        ).map(region => {
           return (
             <div
-              key={item.id}
+              key={region.id}
               style={{
                 ...ITEM_STYLE,
-                ...item.rect
+                ...region.rect
               }}
             >
-              {item.id}
+              {region.id}
             </div>
           )
         })}
