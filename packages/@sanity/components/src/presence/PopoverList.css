@@ -38,7 +38,8 @@
 }
 
 .inner {
-  max-height: 200px;
+  position: relative;
+  max-height: 250px;
   max-width: 220px;
   margin: -0.375rem -0.75rem; /* Needed to get rid of tooltip padding */
 }
@@ -65,12 +66,15 @@
   color: var(--text-color);
   margin: 0;
   padding: var(--extra-small-padding) 0;
-  max-width: 220px;
+  overflow-x: auto;
+  max-height: 180px;
 }
 
 .manageMembers {
   border-top: 1px solid var(--hairline-color);
   padding: var(--extra-small-padding) 0;
+  position: sticky;
+  bottom: 0;
 }
 
 .manageLink {
