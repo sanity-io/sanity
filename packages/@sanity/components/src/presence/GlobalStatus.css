@@ -3,12 +3,17 @@
 .root {
   position: relative;
   padding-left: 0.5em;
+  outline: none;
 
   @nest & div[class*="avatarCounter"] {
     border: 1px solid color(var(--main-navigation-color--inverted) a(70%));
     color: currentColor;
     font-size: var(--font-size-tiny--relative);
     background: var(--main-navigation-color);
+  }
+
+  @nest &:focus {
+    background: var(--selectable-item-color-focus);
   }
 }
 
@@ -30,6 +35,10 @@
   line-height: calc(25 / 16);
   margin: 0;
   height: 100%;
+
+  @nest &:focus {
+    outline: 0;
+  }
 
   @media (--screen-medium) {
     display: none;
@@ -68,11 +77,15 @@
   }
 }
 
-.avatarView {
+.avatarsButton {
   display: none;
   align-items: stretch;
   flex: 1;
   height: 100%;
+  border: 0;
+  background: none;
+  box-shadow: 0;
+  outline: none;
 
   @media (--screen-medium) {
     display: flex;
@@ -85,4 +98,12 @@
     height: 100%;
     color: var(--main-navigation-color); /* For avatar border color */
   }
+}
+
+.avatarOverlap {
+  display: flex;
+}
+
+.avatarOverlap:not(:last-of-type) {
+  margin-right: -8px;
 }

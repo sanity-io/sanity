@@ -11,7 +11,7 @@ export default function GlobalStatus({projectId}: {projectId?: string}) {
   const users = useCollaborators()
   const [hiddenUsers, visibleUsers] = splitRight(users)
   return (
-    <div className={styles.root}>
+    <div className={styles.root} tabIndex={0}>
       <PopoverList
         trigger="click"
         userList={users}
@@ -22,7 +22,12 @@ export default function GlobalStatus({projectId}: {projectId?: string}) {
         projectId={projectId}
       >
         {/* Only show this on mobile */}
-        <button className={styles.mobileButton} title="Show online users" type="button">
+        <button
+          className={styles.mobileButton}
+          title="Show online users"
+          type="button"
+          tabIndex={-1}
+        >
           <div className={styles.icon}>
             {users.length > 0 && (
               <div className={styles.statusIndicator} aria-label={`Online collaborators`} />
@@ -30,16 +35,21 @@ export default function GlobalStatus({projectId}: {projectId?: string}) {
             <UsersIcon />
           </div>
         </button>
-        {/* Show avatars laid out like on a field, with stack when needed */}
-        <div className={styles.avatarView}>
+        {/* Show avatars laid out like on a field */}
+        <button
+          className={styles.avatarsButton}
+          aria-label="Show online users"
+          type="button"
+          tabIndex={-1}
+        >
           <div className={styles.avatars}>
             {visibleUsers.map(user => (
-              <div key={user.identity} style={{display: 'flex', marginLeft: '-8px'}}>
+              <div className={styles.avatarOverlap} key={user.identity}>
                 <AvatarProvider userId={user.identity} showFill={false} />
               </div>
             ))}
           </div>
-        </div>
+        </button>
       </PopoverList>
     </div>
   )
