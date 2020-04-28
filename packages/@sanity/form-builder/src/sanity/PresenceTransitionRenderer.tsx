@@ -250,7 +250,7 @@ function DebugValue(props: any) {
     return props.children
   }
   return (
-    <div style={{position: 'relative'}}>
+    <div style={{position: 'absolute'}}>
       {props.children}
       <span
         style={{
