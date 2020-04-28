@@ -6,8 +6,11 @@ import PopoverList from './PopoverList'
 import AvatarProvider from './AvatarProvider'
 import {MAX_AVATARS} from './constants'
 import {splitRight} from './utils'
+import client from 'part:@sanity/base/client'
 
-export default function GlobalStatus({projectId}: {projectId?: string}) {
+const {projectId} = client.config()
+
+export default function GlobalStatus() {
   const users = useCollaborators()
   const [hiddenUsers, visibleUsers] = splitRight(users)
   return (

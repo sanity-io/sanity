@@ -7,6 +7,10 @@
   height: 100%;
 }
 
+.tooltip {
+  padding-right: 8px;
+}
+
 .avatarCounter {
   align-self: center;
   background: var(--white);

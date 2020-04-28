@@ -62,6 +62,8 @@ export default function PopoverList({
           <a
             href={`https://manage.sanity.io/projects/${projectId}/team`}
             className={styles.manageLink}
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <span>Manage members</span>
             <CogIcon />
@@ -82,7 +84,7 @@ export default function PopoverList({
         arrow
         theme="light"
         distance={distance}
-        tabIndex={0}
+        className={styles.tooltip}
       >
         <div className={styles.outer}>
           {withStack && (
