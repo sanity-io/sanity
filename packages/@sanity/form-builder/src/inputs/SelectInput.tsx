@@ -7,7 +7,9 @@ import {Type, Marker} from '../typedefs'
 import {uniqueId} from 'lodash'
 const EMPTY_ITEM = {title: '', value: undefined}
 function toSelectItems(list) {
-  return typeof list[0] === 'string' ? list.map(item => ({title: item, value: item})) : list
+  return typeof list[0] === 'string' || typeof list[0] === 'number'
+    ? list.map(item => ({title: item, value: item}))
+    : list
 }
 type Props = {
   type: Type
@@ -26,7 +28,9 @@ export default class StringSelect extends React.Component<Props> {
   }
   handleChange = (item: Record<string, any>) => {
     const {onChange} = this.props
-    onChange(PatchEvent.from(set(typeof item === 'string' ? item : item.value)))
+    onChange(
+      PatchEvent.from(set(typeof item === 'string' || typeof item === 'number' ? item : item.value))
+    )
   }
   focus() {
     if (this._input) {
