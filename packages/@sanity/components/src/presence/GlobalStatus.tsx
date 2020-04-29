@@ -7,12 +7,14 @@ import AvatarProvider from './AvatarProvider'
 import {MAX_AVATARS} from './constants'
 import {splitRight} from './utils'
 import client from 'part:@sanity/base/client'
+import popoverListStyles from './PopoverList.css'
 
 const {projectId} = client.config()
 
 export default function GlobalStatus() {
   const users = useCollaborators()
   const [hiddenUsers, visibleUsers] = splitRight(users)
+  const showCounter = hiddenUsers.length >= MAX_AVATARS - 1 || users.length === 0
   return (
     <div className={styles.root} tabIndex={0}>
       <PopoverList
@@ -46,6 +48,11 @@ export default function GlobalStatus() {
           tabIndex={-1}
         >
           <div className={styles.avatars}>
+            {showCounter && (
+              <div className={styles.avatarOverlap} key="counter">
+                <div className={popoverListStyles.avatarCounter}>{hiddenUsers.length}</div>
+              </div>
+            )}
             {visibleUsers.map(user => (
               <div className={styles.avatarOverlap} key={user.identity}>
                 <AvatarProvider userId={user.identity} showFill={false} />

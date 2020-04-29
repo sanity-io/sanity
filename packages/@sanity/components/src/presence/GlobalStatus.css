@@ -7,7 +7,7 @@
 
   @nest & div[class*="avatarCounter"] {
     border: 1px solid color(var(--main-navigation-color--inverted) a(70%));
-    color: currentColor;
+    color: var(--main-navigation-color--inverted);
     font-size: var(--font-size-tiny--relative);
     background: var(--main-navigation-color);
   }

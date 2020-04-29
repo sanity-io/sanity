@@ -5,6 +5,7 @@ import ListItem from './ListItem'
 import {User, Size, Position} from './types'
 import {Tooltip} from 'react-tippy'
 import CogIcon from 'part:@sanity/base/cog-icon'
+import popoverListStyles from './PopoverList.css'
 
 type Props = {
   userList: User[]
@@ -46,7 +47,7 @@ export default function PopoverList({
       {userList.length > 0 && (
         <ul className={styles.userList}>
           {userList.map(user => (
-            <li key={user.identity}>
+            <li key={user.sessionId}>
               <ListItem
                 id={user.identity}
                 status={user.status}
@@ -83,17 +84,10 @@ export default function PopoverList({
         trigger={trigger}
         arrow
         theme="light"
-        distance={distance}
+        distance={isGlobal ? 10 : 40}
         className={styles.tooltip}
       >
-        <div className={styles.outer}>
-          {withStack && (
-            <div data-position={arrowPosition} className={styles.avatarCounter}>
-              {hiddenCount}
-            </div>
-          )}
-          {children && children}
-        </div>
+        <div className={styles.outer}>{children}</div>
       </Tooltip>
     </div>
   )
