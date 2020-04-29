@@ -1,16 +1,15 @@
 /* eslint-disable react/prop-types */
 import React, {FunctionComponent} from 'react'
-
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Stacked from 'part:@sanity/components/utilities/stacked'
+import {PortableTextBlock, Type} from '@sanity/portable-text-editor'
 
 import {FormBuilderInput} from '../../../FormBuilderInput'
-import {PortableTextBlock, Type} from '@sanity/portable-text-editor'
 import {Marker} from '../../../typedefs'
 import {Path} from '../../../typedefs/path'
 import {PatchEvent} from '../../../PatchEvent'
 
-type FullscreenBlockEditingProps = {
+type Props = {
   type: Type
   block: PortableTextBlock
   readOnly: boolean
@@ -23,7 +22,7 @@ type FullscreenBlockEditingProps = {
   onClose: (event: React.SyntheticEvent) => void
 }
 
-export const FullscreenBlockEditing: FunctionComponent<FullscreenBlockEditingProps> = ({
+export const FullscreenObjectEditing: FunctionComponent<Props> = ({
   type,
   block,
   readOnly,

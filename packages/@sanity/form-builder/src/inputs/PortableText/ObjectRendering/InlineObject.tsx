@@ -4,8 +4,7 @@ import {isEqual} from 'lodash'
 import {PortableTextChild, Type} from '@sanity/portable-text-editor'
 
 import Preview from '../../../Preview'
-import {EditBlock} from './EditBlock'
-
+import {EditObject} from './EditObject'
 import {PatchEvent} from '../../../PatchEvent'
 import {Marker} from '../../../typedefs'
 import {Path} from '../../../typedefs/path'
@@ -22,7 +21,7 @@ type Props = {
   onBlur: () => void
 }
 
-export const InlineBlock: FunctionComponent<Props> = ({
+export const InlineObject: FunctionComponent<Props> = ({
   value,
   type,
   readOnly,
@@ -71,7 +70,7 @@ export const InlineBlock: FunctionComponent<Props> = ({
       contentEditable={false}
     >
       {isEditing && (
-        <EditBlock
+        <EditObject
           value={value}
           type={type}
           path={path}

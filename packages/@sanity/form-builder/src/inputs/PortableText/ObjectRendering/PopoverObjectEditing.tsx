@@ -25,7 +25,7 @@ type Props = {
   onBlur: () => void
 }
 
-export const PopoverBlockEditing: FunctionComponent<Props> = ({
+export const PopoverObjectEditing: FunctionComponent<Props> = ({
   type,
   block,
   referenceElement,

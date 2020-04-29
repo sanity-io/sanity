@@ -2,9 +2,9 @@ import React, {FunctionComponent} from 'react'
 import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
 import {get} from 'lodash'
 
-import {DefaultBlockEditing} from './DefaultBlockEditing'
-import {FullscreenBlockEditing} from './FullscreenBlockEditing'
-import {PopoverBlockEditing} from './PopoverBlockEditing'
+import {DefaultObjectEditing} from './DefaultObjectEditing'
+import {FullscreenObjectEditing} from './FullscreenObjectEditing'
+import {PopoverObjectEditing} from './PopoverObjectEditing'
 
 import {ModalType} from '../../ArrayInput/typedefs'
 import {Marker} from '../../../typedefs'
@@ -25,7 +25,7 @@ type Props = {
   onBlur: () => void
 }
 
-export const EditBlock: FunctionComponent<Props> = ({
+export const EditObject: FunctionComponent<Props> = ({
   value,
   type,
   referenceElement,
@@ -43,7 +43,7 @@ export const EditBlock: FunctionComponent<Props> = ({
   switch (editModalLayout) {
     case 'fullscreen': {
       return (
-        <FullscreenBlockEditing
+        <FullscreenObjectEditing
           block={value}
           type={type}
           readOnly={readOnly}
@@ -59,7 +59,7 @@ export const EditBlock: FunctionComponent<Props> = ({
     }
     case 'popover': {
       return (
-        <PopoverBlockEditing
+        <PopoverObjectEditing
           block={value}
           type={type}
           referenceElement={referenceElement}
@@ -76,7 +76,7 @@ export const EditBlock: FunctionComponent<Props> = ({
     }
     default: {
       return (
-        <DefaultBlockEditing
+        <DefaultObjectEditing
           block={value}
           type={type}
           readOnly={readOnly}

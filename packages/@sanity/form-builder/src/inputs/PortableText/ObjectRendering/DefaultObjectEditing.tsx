@@ -1,6 +1,6 @@
-import React from 'react'
+/* eslint-disable react/prop-types */
+import React, {FunctionComponent} from 'react'
 import {PortableTextBlock, Type} from '@sanity/portable-text-editor'
-
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import DialogContent from 'part:@sanity/components/dialogs/content'
 import Stacked from 'part:@sanity/components/utilities/stacked'
@@ -10,7 +10,7 @@ import {Marker} from '../../../typedefs'
 import {Path} from '../../../typedefs/path'
 import {PatchEvent} from '../../../PatchEvent'
 
-type DefaultBlockEditingProps = {
+type Props = {
   type: Type
   block: PortableTextBlock
   readOnly: boolean
@@ -23,20 +23,18 @@ type DefaultBlockEditingProps = {
   onClose: (event: React.SyntheticEvent) => void
 }
 
-export const DefaultBlockEditing = (props: DefaultBlockEditingProps): JSX.Element => {
-  const {
-    type,
-    block,
-    readOnly,
-    markers,
-    focusPath,
-    path,
-    handleChange,
-    onFocus,
-    onBlur,
-    onClose
-  } = props
-
+export const DefaultObjectEditing: FunctionComponent<Props> = ({
+  type,
+  block,
+  readOnly,
+  markers,
+  focusPath,
+  path,
+  handleChange,
+  onFocus,
+  onBlur,
+  onClose
+} ): JSX.Element => {
   return (
     <div>
       <Stacked>

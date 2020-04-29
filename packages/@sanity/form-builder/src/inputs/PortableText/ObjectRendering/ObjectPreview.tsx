@@ -15,7 +15,7 @@ import PatchEvent, {unset} from '../../../PatchEvent'
 import Preview from '../../../Preview'
 import {Path} from '@sanity/portable-text-editor/lib/types/path'
 
-type BlockPreviewProps = {
+type Props = {
   type: Type
   value: PortableTextBlock
   path: Path
@@ -25,7 +25,7 @@ type BlockPreviewProps = {
   onClickingDelete: (patchEvent: PatchEvent) => void
 }
 
-export const BlockPreview: FunctionComponent<BlockPreviewProps> = ({
+export const ObjectPreview: FunctionComponent<Props> = ({
   value,
   type,
   path,

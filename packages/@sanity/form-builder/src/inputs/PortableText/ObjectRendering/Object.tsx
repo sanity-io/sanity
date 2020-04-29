@@ -6,10 +6,10 @@ import {Marker} from '../../../typedefs'
 import {Path} from '../../../typedefs/path'
 import {PatchEvent} from '../../../PatchEvent'
 
-import {BlockPreview} from './BlockPreview'
-import {EditBlock} from './EditBlock'
+import {ObjectPreview} from './ObjectPreview'
+import {EditObject} from './EditObject'
 
-type BlockProps = {
+type Props = {
   type: Type
   value: PortableTextBlock
   referenceElement: React.RefObject<HTMLDivElement>
@@ -21,7 +21,7 @@ type BlockProps = {
   onBlur: () => void
 }
 
-export const Block: FunctionComponent<BlockProps> = ({
+export const Object: FunctionComponent<Props> = ({
   type,
   value,
   referenceElement,
@@ -47,7 +47,7 @@ export const Block: FunctionComponent<BlockProps> = ({
   return (
     <div>
       {isEditingNode && (
-        <EditBlock
+        <EditObject
           value={value}
           type={type}
           path={path}
@@ -61,7 +61,7 @@ export const Block: FunctionComponent<BlockProps> = ({
           handleClose={handleClose}
         />
       )}
-      <BlockPreview
+      <ObjectPreview
         type={type}
         value={value}
         path={path}
