@@ -22,9 +22,9 @@ import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {interval, Subject} from 'rxjs'
 import {map, take} from 'rxjs/operators'
 import Toolbar from './Toolbar/Toolbar'
-import {Block} from './BlockRendering/Block'
+import {Object} from './ObjectRendering/Object'
 import {Path} from '../../typedefs/path'
-import {InlineBlock} from './BlockRendering/InlineBlock'
+import {InlineObject} from './ObjectRendering/InlineObject'
 
 const IS_MAC =
   typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
@@ -213,7 +213,7 @@ export default withPatchSubscriber(
       }
 
       return (
-        <Block
+        <Object
           value={block}
           type={type}
           referenceElement={ref}
@@ -248,7 +248,7 @@ export default withPatchSubscriber(
       }
 
       return (
-        <InlineBlock
+        <InlineObject
           value={value}
           type={type}
           referenceElement={ref}
