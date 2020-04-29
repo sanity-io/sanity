@@ -3,7 +3,6 @@ import {PortableTextBlock, Type} from '@sanity/portable-text-editor'
 
 import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import DialogContent from 'part:@sanity/components/dialogs/content'
-import Escapable from 'part:@sanity/components/utilities/escapable'
 import Stacked from 'part:@sanity/components/utilities/stacked'
 
 import {FormBuilderInput} from '../../../FormBuilderInput'
@@ -21,10 +20,10 @@ type DefaultBlockEditingProps = {
   handleChange: (patchEvent: PatchEvent) => void
   onFocus: (arg0: Path) => void
   onBlur: () => void
-  onClose: () => void
+  onClose: (event: React.SyntheticEvent) => void
 }
 
-const DefualtBlockEditing = (props: DefaultBlockEditingProps): JSX.Element => {
+export const DefaultBlockEditing = (props: DefaultBlockEditingProps): JSX.Element => {
   const {
     type,
     block,
@@ -41,10 +40,15 @@ const DefualtBlockEditing = (props: DefaultBlockEditingProps): JSX.Element => {
   return (
     <div>
       <Stacked>
-        {isActive => (
+        {(): JSX.Element => (
           <div>
-            <Escapable onEscape={() => isActive && onClose()} />
-            <DefaultDialog isOpen title={type.title} onClose={onClose} showCloseButton>
+            <DefaultDialog
+              isOpen
+              title={type.title}
+              onClose={onClose}
+              onClickOutside={onClose}
+              showCloseButton
+            >
               <DialogContent size="medium">
                 {/* TODO: Styling */}
                 {/* <div className={styles.formBuilderInputWrapper}> */}
@@ -70,5 +74,3 @@ const DefualtBlockEditing = (props: DefaultBlockEditingProps): JSX.Element => {
     </div>
   )
 }
-
-export default DefualtBlockEditing

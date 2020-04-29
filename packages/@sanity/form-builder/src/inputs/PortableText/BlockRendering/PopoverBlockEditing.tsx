@@ -1,7 +1,7 @@
-import React from 'react'
+/* eslint-disable react/prop-types */
+import React, {FunctionComponent} from 'react'
 
 import DialogContent from 'part:@sanity/components/dialogs/content'
-import Escapable from 'part:@sanity/components/utilities/escapable'
 import Popover from 'part:@sanity/components/dialogs/popover'
 import Stacked from 'part:@sanity/components/utilities/stacked'
 
@@ -11,41 +11,38 @@ import {Marker} from '../../../typedefs'
 import {Path} from '../../../typedefs/path'
 import {PatchEvent} from '../../../PatchEvent'
 
-type PopoverBlockEditingProps = {
+type Props = {
   type: Type
   block: PortableTextBlock
-  referenceElement: React.RefObject<HTMLDivElement>
+  referenceElement: React.RefObject<HTMLDivElement> | React.RefObject<HTMLSpanElement>
   readOnly: boolean
   markers: Marker[]
   focusPath: Path
   path: Path
   handleChange: (patchEvent: PatchEvent) => void
   onFocus: (arg0: Path) => void
+  onClose: (event: React.SyntheticEvent) => void
   onBlur: () => void
-  onClose: () => void
 }
 
-const PopoverBlockEditing = (props: PopoverBlockEditingProps): JSX.Element => {
-  const {
-    type,
-    block,
-    referenceElement,
-    readOnly,
-    markers,
-    focusPath,
-    path,
-    handleChange,
-    onFocus,
-    onBlur,
-    onClose
-  } = props
-
+export const PopoverBlockEditing: FunctionComponent<Props> = ({
+  type,
+  block,
+  referenceElement,
+  readOnly,
+  markers,
+  focusPath,
+  path,
+  handleChange,
+  onFocus,
+  onBlur,
+  onClose
+}): JSX.Element => {
   return (
     <div>
       <Stacked>
-        {isActive => (
+        {(): JSX.Element => (
           <div>
-            <Escapable onEscape={() => isActive && onClose()} />
             <Popover
               placement="bottom"
               referenceElement={referenceElement.current}
@@ -80,5 +77,3 @@ const PopoverBlockEditing = (props: PopoverBlockEditingProps): JSX.Element => {
     </div>
   )
 }
-
-export default PopoverBlockEditing

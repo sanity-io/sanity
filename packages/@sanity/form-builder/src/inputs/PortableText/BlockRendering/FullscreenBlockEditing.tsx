@@ -1,8 +1,8 @@
-import React from 'react'
+/* eslint-disable react/prop-types */
+import React, {FunctionComponent} from 'react'
 
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Stacked from 'part:@sanity/components/utilities/stacked'
-import Escapable from 'part:@sanity/components/utilities/escapable'
 
 import {FormBuilderInput} from '../../../FormBuilderInput'
 import {PortableTextBlock, Type} from '@sanity/portable-text-editor'
@@ -20,30 +20,32 @@ type FullscreenBlockEditingProps = {
   handleChange: (patchEvent: PatchEvent) => void
   onFocus: (arg0: Path) => void
   onBlur: () => void
-  onClose: () => void
+  onClose: (event: React.SyntheticEvent) => void
 }
 
-const FullscreenBlockEditing = (props: FullscreenBlockEditingProps): JSX.Element => {
-  const {
-    type,
-    block,
-    readOnly,
-    markers,
-    focusPath,
-    path,
-    handleChange,
-    onFocus,
-    onBlur,
-    onClose
-  } = props
-
+export const FullscreenBlockEditing: FunctionComponent<FullscreenBlockEditingProps> = ({
+  type,
+  block,
+  readOnly,
+  markers,
+  focusPath,
+  path,
+  handleChange,
+  onFocus,
+  onBlur,
+  onClose
+}): JSX.Element => {
   return (
     <div>
       <Stacked>
-        {isActive => (
+        {(isActive: boolean): JSX.Element => (
           <div>
-            <Escapable onEscape={() => isActive && onClose()} />
-            <FullscreenDialog isOpen title={type.title} onClose={onClose}>
+            <FullscreenDialog
+              isOpen
+              title={type.title}
+              onEscape={(event: React.SyntheticEvent): void => isActive && onClose(event)}
+              onClose={onClose}
+            >
               {/* TODO: Styling */}
               {/* <div className={styles.formBuilderInputWrapper}> */}
               <div>
@@ -67,5 +69,3 @@ const FullscreenBlockEditing = (props: FullscreenBlockEditingProps): JSX.Element
     </div>
   )
 }
-
-export default FullscreenBlockEditing

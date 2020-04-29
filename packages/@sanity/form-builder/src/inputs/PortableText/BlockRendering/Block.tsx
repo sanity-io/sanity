@@ -1,19 +1,17 @@
-import React from 'react'
-import {get} from 'lodash'
+/* eslint-disable react/prop-types */
+import React, {FunctionComponent} from 'react'
 import {PortableTextBlock, Type} from '@sanity/portable-text-editor'
 
 import {Marker} from '../../../typedefs'
 import {Path} from '../../../typedefs/path'
 import {PatchEvent} from '../../../PatchEvent'
-import {ModalType} from '../../ArrayInput/typedefs'
-import DefaultBlockEditing from './DefaultBlockEditing'
-import FullscreenBlockEditing from './FullscreenBlockEditing'
-import PopoverBlockEditing from './PopoverBlockEditing'
-import BlockPreview from './BlockPreview'
+
+import {BlockPreview} from './BlockPreview'
+import {EditBlock} from './EditBlock'
 
 type BlockProps = {
   type: Type
-  block: PortableTextBlock
+  value: PortableTextBlock
   referenceElement: React.RefObject<HTMLDivElement>
   readOnly: boolean
   markers: Marker[]
@@ -23,22 +21,20 @@ type BlockProps = {
   onBlur: () => void
 }
 
-const Block = (props: BlockProps): JSX.Element => {
-  const {
-    type,
-    block,
-    referenceElement,
-    readOnly,
-    markers,
-    focusPath,
-    handleChange,
-    onFocus,
-    onBlur
-  } = props
-  const editModalLayout: ModalType = get(type.options, 'editModal')
+export const Block: FunctionComponent<BlockProps> = ({
+  type,
+  value,
+  referenceElement,
+  readOnly,
+  markers,
+  focusPath,
+  handleChange,
+  onFocus,
+  onBlur
+}): JSX.Element => {
   const [isEditingNode, setEditingNode] = React.useState(false)
 
-  const path = [{_key: block._key}]
+  const path = [{_key: value._key}]
 
   const handleOpen = (): void => {
     setEditingNode(true)
@@ -48,66 +44,26 @@ const Block = (props: BlockProps): JSX.Element => {
     setEditingNode(false)
   }
 
-  const renderBlockEditing = (): JSX.Element => {
-    switch (editModalLayout) {
-      case 'fullscreen': {
-        return (
-          <FullscreenBlockEditing
-            type={type}
-            block={block}
-            readOnly={readOnly}
-            markers={markers}
-            focusPath={focusPath}
-            path={path}
-            handleChange={handleChange}
-            onFocus={onFocus}
-            onBlur={onBlur}
-            onClose={handleClose}
-          />
-        )
-      }
-      case 'popover': {
-        return (
-          <PopoverBlockEditing
-            type={type}
-            block={block}
-            referenceElement={referenceElement}
-            readOnly={readOnly}
-            markers={markers}
-            focusPath={focusPath}
-            path={path}
-            handleChange={handleChange}
-            onFocus={onFocus}
-            onBlur={onBlur}
-            onClose={handleClose}
-          />
-        )
-      }
-      default: {
-        return (
-          <DefaultBlockEditing
-            type={type}
-            block={block}
-            readOnly={readOnly}
-            markers={markers}
-            focusPath={focusPath}
-            path={path}
-            handleChange={handleChange}
-            onFocus={onFocus}
-            onBlur={onBlur}
-            onClose={handleClose}
-          />
-        )
-      }
-    }
-  }
-
   return (
     <div>
-      {isEditingNode && renderBlockEditing()}
+      {isEditingNode && (
+        <EditBlock
+          value={value}
+          type={type}
+          path={path}
+          referenceElement={referenceElement}
+          readOnly={readOnly}
+          markers={markers}
+          focusPath={focusPath}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          handleChange={handleChange}
+          handleClose={handleClose}
+        />
+      )}
       <BlockPreview
         type={type}
-        block={block}
+        value={value}
         path={path}
         readOnly={readOnly}
         onFocus={onFocus}
@@ -117,5 +73,3 @@ const Block = (props: BlockProps): JSX.Element => {
     </div>
   )
 }
-
-export default Block
