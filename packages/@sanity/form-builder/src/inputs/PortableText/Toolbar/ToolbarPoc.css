@@ -1,0 +1,29 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  position: relative;
+  display: flex;
+  width: 100%;
+  justify-content: stretch;
+  flex-wrap: nowrap;
+  padding-bottom: var(--small-padding);
+  font-size: var(--font-size-small);
+
+  @nest &.fullscreen {
+    position: fixed;
+    box-sizing: border-box;
+    width: 100vw;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    padding: var(--small-padding);
+    background-color: var(--component-bg);
+    box-shadow: 0 0 8px color(var(--component-border-color) a(35%));
+
+    @media (--screen-medium) {
+      padding: var(--small-padding);
+      font-size: var(--font-size-base);
+    }
+  }
+}
