@@ -10,6 +10,8 @@ import {Presence, Position} from './types'
 import PopoverList from './PopoverList'
 import {splitRight} from './utils'
 import {uniqBy} from 'lodash'
+import popoverListStyles from './PopoverList.css'
+import Avatar from './Avatar'
 
 type ContainerProps = {
   presence: Presence[]
@@ -38,21 +40,36 @@ export default function PresenceContainerRegion({presence, position}: RegionRepo
 const AVATAR_WIDTH = 28
 
 function PresenceContainer({presence, position, avatarComponent: AvatarComponent}: ContainerProps) {
-  const [hiddenUsers, visibleUsers] = splitRight(uniqBy(presence || [], user => user.identity))
+  const [hiddenUsers, visibleUsers] = splitRight(uniqBy(presence || [], Math.random))
+
+  const avatars = [
+    ...visibleUsers.map(user => ({
+      key: user.sessionId,
+      element: (
+        <AvatarComponent position={position} userId={user.identity} sessionId={user.sessionId} />
+      )
+    })),
+    hiddenUsers.length >= MAX_AVATARS - 1
+      ? {
+          key: 'counter',
+          element: <div className={popoverListStyles.avatarCounter}>{hiddenUsers.length}</div>
+        }
+      : null
+  ].filter(Boolean)
 
   return (
     <div className={styles.root}>
       <PopoverList
         trigger="click"
         userList={presence}
-        hiddenCount={hiddenUsers.length}
         disabled={hiddenUsers.length <= 1}
         withStack={hiddenUsers.length >= MAX_AVATARS - 1}
       >
+        <div style={{minWidth: 55}}></div>
         <div className={styles.inner}>
-          {visibleUsers.map((user, i) => (
+          {avatars.map((av, i) => (
             <div
-              key={user.sessionId}
+              key={av.key}
               style={{
                 position: 'absolute',
                 transform: `translate3d(${-AVATAR_WIDTH + i * -18}px, 0px, 0px)`,
@@ -62,11 +79,7 @@ function PresenceContainer({presence, position, avatarComponent: AvatarComponent
                 zIndex: -i
               }}
             >
-              <AvatarComponent
-                position={position}
-                userId={user.identity}
-                sessionId={user.sessionId}
-              />
+              {av.element}
             </div>
           ))}
         </div>
