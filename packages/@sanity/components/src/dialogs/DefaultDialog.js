@@ -166,7 +166,7 @@ export default class DefaultDialog extends React.PureComponent {
             <div className={classNames}>
               <div className={styles.overlay} />
               <div className={styles.dialog}>
-                <Escapable onEscape={event => (isActive || event.shiftKey) && handleEscape()} />
+                <Escapable onEscape={event => (isActive || event.shiftKey) && handleEscape(event)} />
                 <CaptureOutsideClicks
                   onClickOutside={isActive ? onClickOutside : undefined}
                   className={styles.inner}

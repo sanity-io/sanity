@@ -121,7 +121,7 @@ export default class PopOver extends React.PureComponent {
                           style={arrowProps.style}
                         />
                         <Escapable
-                          onEscape={event => (isActive || event.shiftKey) && onEscape && onEscape()}
+                          onEscape={event => (isActive || event.shiftKey) && onEscape && onEscape(event)}
                         />
                         <CaptureOutsideClicks
                           onClickOutside={isActive ? onClickOutside : undefined}
