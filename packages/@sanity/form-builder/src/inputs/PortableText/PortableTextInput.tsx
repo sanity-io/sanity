@@ -22,8 +22,9 @@ import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {interval, Subject} from 'rxjs'
 import {map, take} from 'rxjs/operators'
 import Toolbar from './Toolbar/Toolbar'
-import Block from './BlockRendering/Block'
+import {Object} from './ObjectRendering/Object'
 import {Path} from '../../typedefs/path'
+import {InlineObject} from './ObjectRendering/InlineObject'
 
 const IS_MAC =
   typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
@@ -212,36 +213,52 @@ export default withPatchSubscriber(
       }
 
       return (
-        <Block
-          block={block}
+        <Object
+          value={block}
           type={type}
           referenceElement={ref}
-          onFocus={this.props.onFocus}
-          onBlur={this.props.onBlur}
           focusPath={this.props.focusPath}
           readOnly={this.props.readOnly}
           markers={this.props.markers}
+          onFocus={this.props.onFocus}
+          onBlur={this.props.onBlur}
           handleChange={(patchEvent: PatchEvent) => this.handleBlockChange(patchEvent, block)}
         />
       )
     }
 
-    renderChild = (child: PortableTextChild): JSX.Element => {
+    renderChild = (
+      value: PortableTextChild,
+      type: Type,
+      ref: React.RefObject<HTMLSpanElement>,
+      attributes: {
+        focused: boolean
+        selected: boolean
+      },
+      defaultRender: (child: PortableTextChild) => JSX.Element
+    ): JSX.Element => {
       if (!this.editor.current) {
         return null
       }
-      // Offload rendering text to the editor
       if (
-        child._type ===
+        value._type ===
         PortableTextEditor.getPortableTextFeatures(this.editor.current).types.span.name
       ) {
-        return undefined
+        return defaultRender(value)
       }
-      // Render object childs (images, etc)
+
       return (
-        <span style={{fontFamily: 'monospace', padding: '1em', backgroundColor: '#eee'}}>
-          {JSON.stringify(child)}
-        </span>
+        <InlineObject
+          value={value}
+          type={type}
+          referenceElement={ref}
+          markers={this.props.markers}
+          focusPath={this.props.focusPath}
+          readOnly={this.props.readOnly}
+          onFocus={this.props.onFocus}
+          onBlur={this.props.onBlur}
+          handleChange={(patchEvent: PatchEvent) => this.handleBlockChange(patchEvent, value)}
+        />
       )
     }
 
