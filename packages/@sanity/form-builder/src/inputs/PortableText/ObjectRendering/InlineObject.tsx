@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, {FunctionComponent} from 'react'
 import {isEqual} from 'lodash'
+import classNames from 'classnames'
 import {PortableTextChild, Type} from '@sanity/portable-text-editor'
 
 import Preview from '../../../Preview'
@@ -9,10 +10,16 @@ import {PatchEvent} from '../../../PatchEvent'
 import {Marker} from '../../../typedefs'
 import {Path} from '../../../typedefs/path'
 
+import styles from './styles/InlineObject.css'
+
 type Props = {
   value: PortableTextChild
   type: Type
   referenceElement: React.RefObject<HTMLSpanElement>
+  attributes: {
+    focused: boolean
+    selected: boolean
+  }
   readOnly: boolean
   markers: Marker[]
   focusPath: Path
@@ -26,6 +33,7 @@ export const InlineObject: FunctionComponent<Props> = ({
   type,
   readOnly,
   markers,
+  attributes: {focused, selected},
   focusPath,
   referenceElement,
   handleChange,
@@ -33,14 +41,14 @@ export const InlineObject: FunctionComponent<Props> = ({
   onBlur
 }) => {
   const [isEditing, setEditingInlineBlock] = React.useState(false)
-  // const validation = markers.filter(marker => marker.type === 'validation')
-  // const errors = validation.filter(marker => marker.level === 'error')
-  // const classnames = classNames([
-  //   styles.root,
-  //   editor.value.selection.focus.isInNode(node) && styles.focused,
-  //   isSelected && styles.selected,
-  //   errors.length > 0 && styles.hasErrors
-  // ])
+  const validation = markers.filter(marker => marker.type === 'validation')
+  const errors = validation.filter(marker => marker.level === 'error')
+  const classnames = classNames([
+    styles.root,
+    // focused && styles.focused, // TODO: focused is not the element that is focused, it's the editor. We need the node here.
+    selected && styles.selected,
+    errors.length > 0 && styles.hasErrors
+  ])
 
   // const focusPath = [{_key: block._key}, 'children', {_key: child._key}, FOCUS_TERMINATOR]
   // TODO: Path and focuspath needs to be fixed.
@@ -65,10 +73,7 @@ export const InlineObject: FunctionComponent<Props> = ({
   const valueKeys = value ? Object.keys(value) : []
   const isEmpty = !value || isEqual(valueKeys.sort(), ['_key', '_type'].sort())
   return (
-    <span
-      // className={classnames}
-      contentEditable={false}
-    >
+    <span className={classnames} contentEditable={false}>
       {isEditing && (
         <EditObject
           value={value}
@@ -85,8 +90,8 @@ export const InlineObject: FunctionComponent<Props> = ({
         />
       )}
       <span
-        onClick={readOnly ? () => {} : handleOpen}
-        // className={styles.previewContainer}
+        onClick={readOnly ? () => {} : handleOpen} // TODO: Should call handleView when readOnly
+        className={styles.previewContainer}
         style={readOnly ? {cursor: 'default'} : {}} // TODO: Probably move to styles aka. className?
       >
         {!isEmpty && <Preview type={type} value={value} layout="inline" />}

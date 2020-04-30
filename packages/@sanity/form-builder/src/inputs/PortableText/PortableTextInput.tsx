@@ -217,6 +217,7 @@ export default withPatchSubscriber(
           value={block}
           type={type}
           referenceElement={ref}
+          attributes={attributes}
           focusPath={this.props.focusPath}
           readOnly={this.props.readOnly}
           markers={this.props.markers}
@@ -252,6 +253,7 @@ export default withPatchSubscriber(
           value={value}
           type={type}
           referenceElement={ref}
+          attributes={attributes}
           markers={this.props.markers}
           focusPath={this.props.focusPath}
           readOnly={this.props.readOnly}

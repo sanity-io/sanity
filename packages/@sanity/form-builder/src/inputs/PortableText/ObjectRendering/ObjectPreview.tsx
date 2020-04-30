@@ -11,9 +11,10 @@ import LinkIcon from 'part:@sanity/base/link-icon'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import VisibilityIcon from 'part:@sanity/base/visibility-icon'
 import PatchEvent, {unset} from '../../../PatchEvent'
-
 import Preview from '../../../Preview'
 import {Path} from '@sanity/portable-text-editor/lib/types/path'
+
+import styles from './styles/Object.css'
 
 type Props = {
   type: Type
@@ -79,12 +80,9 @@ export const ObjectPreview: FunctionComponent<Props> = ({
   }
 
   return (
-    // TODO: styling
-    // <div className={styles.preview}>
-    <div>
+    <div className={styles.preview}>
       <Preview type={type} value={value} layout="block" />
-      {/* <div className={styles.header}> */}
-      <div>
+      <div className={styles.header}>
         <DropDownButton
           placement="bottom-end"
           items={menuItems}
