@@ -1,20 +1,18 @@
-import React from 'react'
-
+/* eslint-disable react/prop-types */
+import React, {FunctionComponent} from 'react'
+import {PortableTextBlock, Type} from '@sanity/portable-text-editor'
+import DefaultDialog from 'part:@sanity/components/dialogs/default'
 import DialogContent from 'part:@sanity/components/dialogs/content'
-import Escapable from 'part:@sanity/components/utilities/escapable'
-import Popover from 'part:@sanity/components/dialogs/popover'
 import Stacked from 'part:@sanity/components/utilities/stacked'
 
 import {FormBuilderInput} from '../../../FormBuilderInput'
-import {PortableTextBlock, Type} from '@sanity/portable-text-editor'
 import {Marker} from '../../../typedefs'
 import {Path} from '../../../typedefs/path'
 import {PatchEvent} from '../../../PatchEvent'
 
-type PopoverBlockEditingProps = {
+type Props = {
   type: Type
   block: PortableTextBlock
-  referenceElement: React.RefObject<HTMLDivElement>
   readOnly: boolean
   markers: Marker[]
   focusPath: Path
@@ -22,40 +20,34 @@ type PopoverBlockEditingProps = {
   handleChange: (patchEvent: PatchEvent) => void
   onFocus: (arg0: Path) => void
   onBlur: () => void
-  onClose: () => void
+  onClose: (event: React.SyntheticEvent) => void
 }
 
-const PopoverBlockEditing = (props: PopoverBlockEditingProps): JSX.Element => {
-  const {
-    type,
-    block,
-    referenceElement,
-    readOnly,
-    markers,
-    focusPath,
-    path,
-    handleChange,
-    onFocus,
-    onBlur,
-    onClose
-  } = props
-
+export const DefaultObjectEditing: FunctionComponent<Props> = ({
+  type,
+  block,
+  readOnly,
+  markers,
+  focusPath,
+  path,
+  handleChange,
+  onFocus,
+  onBlur,
+  onClose
+} ): JSX.Element => {
   return (
     <div>
       <Stacked>
-        {isActive => (
+        {(): JSX.Element => (
           <div>
-            <Escapable onEscape={() => isActive && onClose()} />
-            <Popover
-              placement="bottom"
-              referenceElement={referenceElement.current}
-              onClickOutside={onClose}
-              onEscape={onClose}
-              onClose={onClose}
+            <DefaultDialog
+              isOpen
               title={type.title}
-              padding="none"
+              onClose={onClose}
+              onClickOutside={onClose}
+              showCloseButton
             >
-              <DialogContent size="medium" padding="small">
+              <DialogContent size="medium">
                 {/* TODO: Styling */}
                 {/* <div className={styles.formBuilderInputWrapper}> */}
                 <div>
@@ -73,12 +65,10 @@ const PopoverBlockEditing = (props: PopoverBlockEditingProps): JSX.Element => {
                   />
                 </div>
               </DialogContent>
-            </Popover>
+            </DefaultDialog>
           </div>
         )}
       </Stacked>
     </div>
   )
 }
-
-export default PopoverBlockEditing
