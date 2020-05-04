@@ -347,9 +347,6 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
             )}
             {this.renderAsset()}
           </div>
-          {highlightedFields.length > 0 && (
-            <div className={styles.fieldsWrapper}>{this.renderFields(highlightedFields)}</div>
-          )}
         </div>
         <div className={styles.functions}>
           <ButtonGrid>
@@ -382,6 +379,9 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
             {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
           </ButtonGrid>
         </div>
+        {highlightedFields.length > 0 && (
+          <div className={styles.fieldsWrapper}>{this.renderFields(highlightedFields)}</div>
+        )}
       </UploadTargetFieldset>
     )
   }
