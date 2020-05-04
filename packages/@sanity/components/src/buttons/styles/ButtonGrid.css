@@ -11,8 +11,8 @@
     grid-template-columns: unset;
   }
 
-  @media (--screen-medium) {
-    grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+  &[data-buttons="4"] {
+    grid-template-columns: 1fr 1fr;
   }
 
   /* When buttons are alone */
