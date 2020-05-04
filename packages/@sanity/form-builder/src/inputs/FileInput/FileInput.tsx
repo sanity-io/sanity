@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Button from 'part:@sanity/components/buttons/default'
 import FileInputButton from 'part:@sanity/components/fileinput/button'
-import ProgressBar from 'part:@sanity/components/progress/bar'
+import ProgressCircle from 'part:@sanity/components/progress/circle'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import VisibilityIcon from 'part:@sanity/base/visibility-icon'
 import FileIcon from 'part:@sanity/base/file-icon'
@@ -184,7 +184,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
       <div className={styles.uploadState}>
         <div>
           <div>
-            <ProgressBar
+            <ProgressCircle
               percent={status === 'complete' ? 100 : uploadState.progress}
               text={isComplete ? 'Complete' : `Uploading${filename ? ` "${filename}"` : '...'}`}
               completed={isComplete}
