@@ -21,6 +21,7 @@ import UploadTargetFieldset from '../../utils/UploadTargetFieldset'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import {Path} from '../../typedefs/path'
 import {Observable} from 'rxjs'
+import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 
 type FieldT = {
   name: string
@@ -229,6 +230,15 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     )
   }
 
+  renderSelectFileButton() {
+    // Single asset source (just a normal button)
+    return (
+      <Button onClick={() => console.log('add select handling here')} inverted>
+        Select
+      </Button>
+    )
+  }
+
   renderFields(fields: Array<FieldT>) {
     return fields.map(field => this.renderField(field))
   }
@@ -342,28 +352,36 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
           )}
         </div>
         <div className={styles.functions}>
-          {!readOnly && (
-            <FileInputButton icon={UploadIcon} onSelect={this.handleSelectFile} accept={accept}>
-              Upload
-            </FileInputButton>
-          )}
-          {value && otherFields.length > 0 && (
-            <Button
-              icon={readOnly ? VisibilityIcon : EditIcon}
-              kind="simple"
-              title={readOnly ? 'View details' : 'Edit details'}
-              onClick={this.handleStartAdvancedEdit}
-            >
-              {readOnly ? 'View details' : 'Edit'}
-            </Button>
-          )}
-          {!readOnly && hasAsset && (
-            <Button color="danger" kind="simple" onClick={this.handleRemoveButtonClick}>
-              Remove
-            </Button>
-          )}
+          <ButtonGrid>
+            {!readOnly && (
+              <FileInputButton
+                inverted
+                icon={UploadIcon}
+                onSelect={this.handleSelectFile}
+                accept={accept}
+              >
+                Upload
+              </FileInputButton>
+            )}
+            {!readOnly && this.renderSelectFileButton()}
+            {value && otherFields.length > 0 && (
+              <Button
+                icon={readOnly ? VisibilityIcon : EditIcon}
+                kind="simple"
+                title={readOnly ? 'View details' : 'Edit details'}
+                onClick={this.handleStartAdvancedEdit}
+              >
+                {readOnly ? 'View details' : 'Edit'}
+              </Button>
+            )}
+            {!readOnly && hasAsset && (
+              <Button color="danger" inverted onClick={this.handleRemoveButtonClick}>
+                Remove
+              </Button>
+            )}
+            {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
+          </ButtonGrid>
         </div>
-        {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
       </UploadTargetFieldset>
     )
   }
