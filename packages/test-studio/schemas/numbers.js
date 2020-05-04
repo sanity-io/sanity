@@ -30,6 +30,25 @@ export default {
       description: 'A subclassed number, with validation!'
     },
     {
+      name: 'testNumberWithListObjects',
+      title: 'Test Number - List Objects',
+      type: 'number',
+      options: {
+        list: [
+          {value: 1, title: 'One'},
+          {value: 2, title: 'Two'}
+        ]
+      }
+    },
+    {
+      name: 'testNumberWithListValues',
+      title: 'Test Number - List Values',
+      type: 'number',
+      options: {
+        list: [1, 2]
+      }
+    },
+    {
       name: 'readonlyField',
       type: 'number',
       title: 'A read only number',
