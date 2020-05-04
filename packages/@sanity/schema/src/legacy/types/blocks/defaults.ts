@@ -41,11 +41,11 @@ export const DEFAULT_LIST_TYPES = [LIST_TYPES.bullet, LIST_TYPES.numbered]
 export const BLOCK_STYLES = {
   normal: {title: 'Normal', value: 'normal'},
   h1: {title: 'Heading 1', value: 'h1'},
-  h2: {title: 'H2', value: 'h2'},
-  h3: {title: 'H3', value: 'h3'},
-  h4: {title: 'H4', value: 'h4'},
-  h5: {title: 'H5', value: 'h5'},
-  h6: {title: 'H6', value: 'h6'},
+  h2: {title: 'Heading 2', value: 'h2'},
+  h3: {title: 'Heading 3', value: 'h3'},
+  h4: {title: 'Heading 4', value: 'h4'},
+  h5: {title: 'Heading 5', value: 'h5'},
+  h6: {title: 'Heading 6', value: 'h6'},
   blockquote: {title: 'Quote', value: 'blockquote'}
 }
 
