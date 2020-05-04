@@ -3,13 +3,14 @@
 .root {
   display: block;
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--block-editor-base-font-family);
+  margin: 0;
+  padding: 0;
 }
 
-.editor {
-  margin: var(--small-padding);
-}
-
-.fullscreen {
+.fullscreenWrapper {
   position: fixed;
   top: 0;
   left: 0;
@@ -43,7 +44,8 @@
     z-index: -1;
   }
 
-  @nest .fullscreen & {
+  @nest .fullscreenWrapper & {
+    border: 1px solid red;
     position: absolute;
     top: 0;
     left: 0;
@@ -58,7 +60,7 @@
     }
   }
 
-  @nest .focus:not(.fullscreen) & {
+  @nest .focus:not(.fullscreenWrapper) & {
     border: 1px solid var(--input-border-color-focus);
     box-shadow: 0 0 8px color(var(--input-border-color-focus) a(35%));
   }
@@ -133,20 +135,72 @@
   opacity: 0.5;
 }
 
-.readOnlyFullscreenButtonContainer {
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  height: 100%;
-  font-size: 0.8rem;
-  border: none;
+/*
+  The flex alignment here is to stretch the editor to
+  fit its parrent, and to make the last child selectable for editing
+*/
 
-  @nest & svg {
-    transform: scale(1.5);
+.editor {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--block-editor-base-font-family);
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.editor.hasBlockExtras:not(.fullscreen) .editor {
+  padding-right: var(--block-extras-width);
+}
+
+/* less spacing on block objects / non-text objects */
+.editor div[data-slate-void='true'] + div[data-slate-void='true'] {
+  padding-top: var(--small-padding);
+}
+
+.editor > div > * {
+  position: relative;
+  box-sizing: content-box;
+  word-break: break-word;
+  padding-left: var(--small-padding);
+  padding-right: var(--small-padding);
+
+  @media (--screen-medium) {
+    padding-left: var(--medium-padding);
+    padding-right: var(--medium-padding);
   }
 
-  @nest .fullscreen & {
-    height: auto;
-    background-color: color(var(--body-bg) lightness(- 2%));
+  @nest .fullscreenWrapper & {
+    padding-left: var(--small-padding);
+    padding-right: var(--small-padding);
+
+    @media (--screen-medium) {
+      padding-left: var(--large-padding);
+      padding-right: var(--large-padding);
+    }
+
+    @media (--screen-large) {
+      padding-left: 4rem;
+      padding-right: 4rem;
+    }
+  }
+}
+
+.editor > div > *:first-child {
+  padding-top: var(--small-padding);
+
+  @media (--screen-medium) {
+    margin-top: var(--medium-padding);
+  }
+
+  @nest .fullscreenWrapper & {
+    @media (--screen-medium) {
+      margin-top: var(--large-padding);
+    }
+
+    @media (--screen-large) {
+      margin-top: 4rem;
+    }
   }
 }

@@ -14,6 +14,8 @@ import Button from 'part:@sanity/components/buttons/default'
 import FormField from 'part:@sanity/components/formfields/default'
 import ActivateOnFocus from 'part:@sanity/components/utilities/activate-on-focus'
 import InvalidValue from './InvalidValue'
+import {Portal} from 'part:@sanity/components/utilities/portal'
+import StackedEscapeable from 'part:@sanity/components/utilities/stacked-escapable'
 import PatchEvent from '../../PatchEvent'
 import {Marker} from '../../typedefs'
 import {Patch} from '../../typedefs/patch'
@@ -26,7 +28,7 @@ import {Object} from './ObjectRendering/Object'
 import {Path} from '../../typedefs/path'
 import {InlineObject} from './ObjectRendering/InlineObject'
 
-const IS_MAC =
+export const IS_MAC =
   typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
 
 type Props = {
@@ -52,10 +54,12 @@ type Props = {
 }
 
 type State = {
-  isActive: boolean
-  selection: EditorSelection
-  isLoading: boolean
+  isFullscreen: boolean
+  hasFocus: boolean
   invalidValue: InvalidEditorValue | null
+  isActive: boolean
+  isLoading: boolean
+  selection: EditorSelection
   valueWithError: PortableTextBlock[] | undefined
 }
 
@@ -79,11 +83,13 @@ export default withPatchSubscriber(
       }
     }
     state = {
-      selection: null,
-      isLoading: false,
+      hasFocus: false,
       invalidValue: null,
-      valueWithError: undefined,
-      isActive: false
+      isActive: false,
+      isFullscreen: false,
+      isLoading: false,
+      selection: null,
+      valueWithError: undefined
     }
 
     static getDerivedStateFromProps(nextProps: Props, prevState: State): {} | null {
@@ -142,12 +148,19 @@ export default withPatchSubscriber(
     private handleChange = (change: EditorChange): void => {
       switch (change.type) {
         case 'mutation':
-          this.props.onChange(PatchEvent.from(change.patches))
+          // Don't wait for the form-builder to do it's thing, we live in the
+          // local state for now. The final value will be updated through props afterwards.
+          setTimeout(() => {
+            this.props.onChange(PatchEvent.from(change.patches))
+          })
           break
         case 'focus':
-          this.props.onFocus && this.props.onFocus()
+          this.setState({hasFocus: true})
+          // this.props.onFocus && this.props.onFocus()
+          break
         case 'blur':
-          this.props.onBlur && this.props.onBlur()
+          this.setState({hasFocus: false})
+          // this.props.onBlur && this.props.onBlur()
           break
         case 'loading':
           this.setState({isLoading: change.isLoading})
@@ -162,6 +175,7 @@ export default withPatchSubscriber(
         case 'selection':
           this.setState({selection: change.selection})
           break
+        case 'ready':
         case 'patch':
         case 'value':
         case 'unset':
@@ -171,19 +185,15 @@ export default withPatchSubscriber(
       }
     }
 
-    focus = () => {
+    focus = (): void => {
       PortableTextEditor.focus(this.editor.current)
     }
 
-    blur = () => {
+    blur = (): void => {
       PortableTextEditor.blur(this.editor.current)
     }
 
-    handleToggleFullscreen() {
-      console.log('fullscreen')
-    }
-
-    handleActivate = () => {
+    handleActivate = (): void => {
       this.setState({isActive: true})
       this.focus()
     }
@@ -265,23 +275,80 @@ export default withPatchSubscriber(
       )
     }
 
-    renderEditor = editor => {
-      const {selection} = this.state
-      return (
-        <>
-          <Toolbar editor={this.editor.current} selection={selection} />
-          <div className={styles.scrollContainer}>
-            <div className={styles.editor}>{editor}</div>
-          </div>
-        </>
-      )
+    // Highlight the cursor
+    highlightCursor = () => {
+      console.log('Hightlight cursor')
     }
 
-    render(): React.ReactNode {
+    handleToggleFullscreen = (): void => {
+      const {isFullscreen, selection} = this.state
+      const currentSelection = selection
+      this.setState({isFullscreen: !isFullscreen})
+      // The renderEditor fn will be redraw the DOM at this point, init the editor on the next tick to ensure we have something to focus on.
+      setTimeout(() => {
+        PortableTextEditor.select(this.editor.current, currentSelection)
+        this.focus()
+        this.highlightCursor()
+      }, 100)
+    }
+
+    renderEditor = (editor: JSX.Element): JSX.Element => {
+      const {selection, isFullscreen} = this.state
+      const {onFocus, markers} = this.props
+
+      const scClassNames = [
+        styles.scrollContainer,
+        ...(isFullscreen ? [styles.fullscreen] : [])
+      ].join(' ')
+      const editorWrapperClassNames = [
+        styles.editorWrapper,
+        ...(isFullscreen ? [styles.fullscreen] : [])
+      ].join(' ')
+
+      const editorClassNames = [styles.editor, ...(isFullscreen ? [styles.fullscreen] : [])].join(
+        ' '
+      )
+
+      const toolbar = (
+        <Toolbar
+          editor={this.editor.current}
+          isFullscreen={isFullscreen}
+          markers={markers}
+          onFocus={onFocus}
+          onToggleFullscreen={this.handleToggleFullscreen}
+          selection={selection}
+        />
+      )
+
+      const wrappedEditor = (
+        <div>
+          {toolbar}
+          <div className={scClassNames}>
+            <div className={editorWrapperClassNames}>
+              <div className={editorClassNames}>{editor}</div>
+            </div>
+          </div>
+        </div>
+      )
+
+      // TODO: could this be rendered the same way DOM-wize?
+      if (isFullscreen) {
+        return (
+          <Portal>
+            <StackedEscapeable onEscape={this.handleToggleFullscreen}>
+              <div className={styles.fullscreenWrapper}>{wrappedEditor}</div>
+            </StackedEscapeable>
+          </Portal>
+        )
+      }
+      return wrappedEditor
+    }
+
+    render(): JSX.Element {
       const {value, readOnly, type, markers, level, onFocus, onBlur} = this.props
       const validation = markers.filter(marker => marker.type === 'validation')
       const errors = validation.filter(marker => marker.level === 'error')
-      const {isLoading, selection, invalidValue} = this.state
+      const {isLoading, hasFocus, invalidValue} = this.state
       if (invalidValue) {
         return (
           <InvalidValue
@@ -292,7 +359,7 @@ export default withPatchSubscriber(
         )
       }
       return (
-        <div className={styles.root}>
+        <div className={[styles.root, ...(hasFocus ? [styles.focus] : [])].join(' ')}>
           <FormField
             markers={markers}
             level={level}
@@ -327,13 +394,12 @@ export default withPatchSubscriber(
               maxBlocks={-1} // TODO: from schema?
               onChange={this.handleChange}
               incomingPatche$={this.patche$.asObservable()}
-              placeholderText={value ? '' : '[No content]'}
+              placeholderText={value ? undefined : '[No content]'}
               readOnly={readOnly}
               ref={this.editor}
               renderBlock={this.renderBlock}
               renderChild={this.renderChild}
               renderEditor={this.renderEditor}
-              searchAndReplace
               spellCheck={false} // TODO: from schema?
               type={type}
               value={value}
