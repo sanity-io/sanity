@@ -8,7 +8,8 @@ import {
   keyGenerator,
   EditorChange,
   Patch as EditorPatch,
-  InvalidValue as InvalidEditorValue
+  InvalidValue as InvalidEditorValue,
+  HotkeyOptions
 } from '@sanity/portable-text-editor'
 import Button from 'part:@sanity/components/buttons/default'
 import FormField from 'part:@sanity/components/formfields/default'
@@ -75,11 +76,27 @@ export default withPatchSubscriber(
     private patche$: Subject<EditorPatch> = new Subject()
     private usubscribe: any
     private interval: any
-    private hotkeys = {
+
+    handleToggleFullscreen = (): void => {
+      const {isFullscreen, selection} = this.state
+      const currentSelection = selection
+      this.setState({isFullscreen: !isFullscreen})
+      // The renderEditor fn will be redraw the DOM at this point, init the editor on the next tick to ensure we have something to focus on.
+      setTimeout(() => {
+        PortableTextEditor.select(this.editor.current, currentSelection)
+        this.focus()
+        this.highlightCursor()
+      }, 100)
+    }
+
+    private hotkeys: HotkeyOptions = {
       marks: {
         'mod+b': 'strong',
         'mod+i': 'em',
         'mod+´': 'code'
+      },
+      custom: {
+        'ctrl+alt+p': this.handleToggleFullscreen
       }
     }
     state = {
@@ -280,18 +297,6 @@ export default withPatchSubscriber(
       console.log('Hightlight cursor')
     }
 
-    handleToggleFullscreen = (): void => {
-      const {isFullscreen, selection} = this.state
-      const currentSelection = selection
-      this.setState({isFullscreen: !isFullscreen})
-      // The renderEditor fn will be redraw the DOM at this point, init the editor on the next tick to ensure we have something to focus on.
-      setTimeout(() => {
-        PortableTextEditor.select(this.editor.current, currentSelection)
-        this.focus()
-        this.highlightCursor()
-      }, 100)
-    }
-
     renderEditor = (editor: JSX.Element): JSX.Element => {
       const {selection, isFullscreen} = this.state
       const {onFocus, markers} = this.props
@@ -358,6 +363,7 @@ export default withPatchSubscriber(
           />
         )
       }
+
       return (
         <div className={[styles.root, ...(hasFocus ? [styles.focus] : [])].join(' ')}>
           <FormField
