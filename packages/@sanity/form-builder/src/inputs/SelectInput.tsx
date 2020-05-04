@@ -4,13 +4,16 @@ import RadioSelect from 'part:@sanity/components/selects/radio'
 import PatchEvent, {set} from '../PatchEvent'
 import FormField from 'part:@sanity/components/formfields/default'
 import {Type, Marker} from '../typedefs'
-import {uniqueId} from 'lodash'
+import {uniqueId, capitalize} from 'lodash'
 const EMPTY_ITEM = {title: '', value: undefined}
-function toSelectItems(list) {
-  return typeof list[0] === 'string' || typeof list[0] === 'number'
-    ? list.map(item => ({title: item, value: item}))
-    : list
+
+function toSelectItem(option) {
+  if (typeof option === 'object') {
+    return option
+  }
+  return {title: capitalize(option), value: option}
 }
+
 type Props = {
   type: Type
   level: number
@@ -42,7 +45,7 @@ export default class StringSelect extends React.Component<Props> {
   }
   render() {
     const {value, readOnly, markers, type, level, onFocus} = this.props
-    const items = toSelectItems(type.options.list || [])
+    const items = (type.options.list || []).map(toSelectItem)
     const currentItem = items.find(item => item.value === value)
     const isRadio = type.options && type.options.layout === 'radio'
     return (
