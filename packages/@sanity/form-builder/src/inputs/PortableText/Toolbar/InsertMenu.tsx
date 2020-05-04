@@ -3,18 +3,13 @@ import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import Button from 'part:@sanity/components/buttons/default'
 import BlockObjectIcon from 'part:@sanity/base/block-object-icon'
 import InlineObjectIcon from 'part:@sanity/base/inline-object-icon'
-import {Tooltip} from 'react-tippy'
 import {get} from 'lodash'
-import {SlateEditor, SlateValue, Type} from '../typeDefs'
-import styles from './styles/InsertMenu.css'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
+import styles from './InsertMenu.css'
 import {Path} from '../../../typedefs/path'
+import {PortableTextEditor, Type} from '@sanity/portable-text-editor'
 
 type Props = {
-  blockTypes: Type[]
-  editor: SlateEditor
-  editorValue: SlateValue
-  inlineTypes: Type[]
+  editor: PortableTextEditor
   onFocus: (arg0: Path) => void
   collapsed: boolean
   showLabels: boolean
@@ -23,22 +18,17 @@ type Props = {
 type BlockItem = {
   title: string
   value: Type
-  icon: any
+  icon: Function
   key: string
   isInline: boolean
   isDisabled: boolean
 }
 export default class InsertMenu extends React.Component<Props> {
-  shouldComponentUpdate(nextProps: Props) {
-    return (
-      this.props.collapsed !== nextProps.collapsed ||
-      this.props.blockTypes !== nextProps.blockTypes ||
-      this.props.inlineTypes !== nextProps.inlineTypes ||
-      this.props.editorValue.focusBlock !== nextProps.editorValue.focusBlock
-    )
+  shouldComponentUpdate(nextProps: Props): boolean {
+    return this.props.collapsed !== nextProps.collapsed
   }
 
-  renderItem = (item: BlockItem) => {
+  renderItem = (item: BlockItem): JSX.Element => {
     const Icon = item.icon
     return (
       <div className={styles.item}>
@@ -51,39 +41,42 @@ export default class InsertMenu extends React.Component<Props> {
       </div>
     )
   }
-  renderButton = (item: BlockItem) => {
-    const {showLabels} = this.props
+  // TODO: removed this tooltip for now, seems over-aggressive when also aria/title props?
+  renderButton = (item: BlockItem): JSX.Element => {
+    // const {showLabels} = this.props
     return (
-      <Tooltip
-        title={`Insert ${item.title}`}
-        disabled={this.props.collapsed}
-        key={`insertMenuItem_${item.key}`}
-        style={showLabels ? {display: 'block', flexGrow: 1, minWidth: 'fit-content'} : {}}
+      // <Tooltip
+      //   title={`Insert ${item.title}${item.isInline ? ' (inline)' : ' (block)'}`}
+      //   disabled={this.props.collapsed}
+      //   key={`insertMenuItem_${item.key}`}
+      //   style={showLabels ? {display: 'block', flexGrow: 1, minWidth: 'fit-content'} : {}}
+      // >
+      <Button
+        onClick={() => this.handleOnAction(item)}
+        title={`Insert ${item.title}${item.isInline ? ' (inline)' : ' (block)'}`}
+        aria-label={`Insert ${item.title}${item.isInline ? ' (inline)' : ' (block)'}`}
+        icon={item.icon}
+        kind="simple"
+        bleed
       >
-        <Button
-          onClick={() => this.handleOnAction(item)}
-          title={`Insert ${item.title}`}
-          aria-label={`Insert ${item.title}`}
-          icon={item.icon}
-          kind="simple"
-          bleed
-        >
-          {showLabels && item.title}
-        </Button>
-      </Tooltip>
+        {/* {showLabels && item.title} */}
+      </Button>
+      // </Tooltip>
     )
   }
-  getIcon = (type: Type, fallbackIcon: any) => {
+
+  getIcon = (type: Type, fallbackIcon: Function): Function => {
     const referenceIcon = get(type, 'to[0].icon')
     return type.icon || (type.type && type.type.icon) || referenceIcon || fallbackIcon
   }
 
   getItems(): BlockItem[] {
     const {editor} = this.props
-    const {focusBlock} = editor.value
+    const focusBlock = PortableTextEditor.focusBlock(editor)
+    const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
     let keyCount = 0
-    const blockItems = this.props.blockTypes.map(
-      (type, index): BlockItem => ({
+    const blockItems = ptFeatures.types.blockObjects.map(
+      (type: Type): BlockItem => ({
         title: type.title,
         value: type,
         key: (keyCount++).toString(),
@@ -92,40 +85,29 @@ export default class InsertMenu extends React.Component<Props> {
         isDisabled: false
       })
     )
-    const inlineItems = this.props.inlineTypes.map(
-      (type, index): BlockItem => ({
+    const inlineItems = ptFeatures.types.inlineObjects.map(
+      (type: Type): BlockItem => ({
         title: type.title,
         icon: this.getIcon(type, InlineObjectIcon),
         value: type,
         key: (keyCount++).toString(),
         isInline: true,
-        isDisabled: focusBlock ? editor.query('isVoid', focusBlock) : true
+        isDisabled: focusBlock ? focusBlock._type !== ptFeatures.types.block.name : true
       })
     )
     return blockItems.concat(inlineItems)
   }
 
-  handleOnAction = (item: BlockItem) => {
-    const {onFocus, editor} = this.props
+  handleOnAction = (item: BlockItem): void => {
+    const {editor} = this.props
     if (item.isInline) {
-      editor.command('insertInlineObject', {objectType: item.value})
-      setTimeout(
-        () =>
-          onFocus([
-            {_key: editor.value.focusBlock.key},
-            'children',
-            {_key: editor.value.focusInline.key},
-            FOCUS_TERMINATOR
-          ]),
-        200
-      )
+      PortableTextEditor.insertChild(editor, item.value)
     } else {
-      editor.command('insertBlockObject', {objectType: item.value})
-      setTimeout(() => onFocus([{_key: editor.value.focusBlock.key}, FOCUS_TERMINATOR]), 200)
+      PortableTextEditor.insertBlock(editor, item.value)
     }
   }
 
-  render() {
+  render(): JSX.Element | JSX.Element[] {
     const {collapsed} = this.props
     const items = this.getItems()
     if (!collapsed) {
