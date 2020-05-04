@@ -1,5 +1,4 @@
 import React from 'react'
-import {isEqual} from 'lodash'
 import FormatBoldIcon from 'part:@sanity/base/format-bold-icon'
 import FormatItalicIcon from 'part:@sanity/base/format-italic-icon'
 import FormatStrikethroughIcon from 'part:@sanity/base/format-strikethrough-icon'
@@ -7,22 +6,26 @@ import FormatUnderlinedIcon from 'part:@sanity/base/format-underlined-icon'
 import FormatCodeIcon from 'part:@sanity/base/format-code-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import ToggleButton from 'part:@sanity/components/toggles/button'
-import {BlockContentFeature, BlockContentFeatures, SlateValue, SlateEditor} from '../typeDefs'
-import {keyMaps} from '../plugins/SetMarksOnKeyComboPlugin'
-import ToolbarClickAction from './ToolbarClickAction'
-import styles from './styles/DecoratorButtons.css'
+import styles from './DecoratorButtons.css'
 import CollapsibleButtonGroup from './CollapsibleButtonGroup'
-type DecoratorItem = BlockContentFeature & {
+import {
+  PortableTextEditor,
+  PortableTextFeature,
+  EditorSelection
+} from '@sanity/portable-text-editor'
+
+type DecoratorItem = PortableTextFeature & {
   active: boolean
   disabled: boolean
   icon: any
 }
+
 type Props = {
-  blockContentFeatures: BlockContentFeatures
-  editor: SlateEditor
-  editorValue: SlateValue
+  editor: PortableTextEditor
   collapsed: boolean
+  selection: EditorSelection
 }
+
 function getIcon(type: string, schemaIcon?: any) {
   switch (type) {
     case 'strong':
@@ -39,63 +42,52 @@ function getIcon(type: string, schemaIcon?: any) {
       return schemaIcon || SanityLogoIcon
   }
 }
-const NOOP = () => {}
 export default class DecoratorButtons extends React.Component<Props, {}> {
-  shouldComponentUpdate(nextProps: Props) {
-    const nextMarks = nextProps.editorValue.marks.map(mrk => mrk.type)
-    const currentMarks = this.props.editorValue.marks.map(mrk => mrk.type)
-    if (nextProps.collapsed != this.props.collapsed) {
+  shouldComponentUpdate(nextProps: Props): boolean {
+    if (nextProps.collapsed !== this.props.collapsed) {
       return true
     }
-    if (isEqual(nextMarks, currentMarks)) {
-      return false
+    if (nextProps.selection !== this.props.selection) {
+      return true
     }
-    return true
+    return false
   }
-  getItems() {
-    const {editor, blockContentFeatures} = this.props
-    const {focusBlock} = editor.value
-    const disabled = focusBlock ? editor.query('isVoid', focusBlock) : false
-    return blockContentFeatures.decorators.map<DecoratorItem>(decorator => ({
+  getItems(): DecoratorItem[] {
+    const {editor} = this.props
+    const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
+    const focusBlock = PortableTextEditor.focusBlock(editor)
+    return ptFeatures.decorators.map<DecoratorItem>(decorator => ({
       ...decorator,
       icon: getIcon(decorator.value, decorator.blockEditor && decorator.blockEditor.icon),
-      active: editor.query('hasMark', decorator.value),
-      disabled
+      active: PortableTextEditor.isMarkActive(editor, decorator.value),
+      disabled: focusBlock ? ptFeatures.types.block.name !== focusBlock._type : false
     }))
   }
-  handleClick = (item: DecoratorItem) => {
+  handleClick = (item: DecoratorItem): void => {
     const {editor} = this.props
-    editor.toggleMark(item.value).focus()
+    PortableTextEditor.toggleMark(editor, item.value)
   }
-  renderDecoratorButton = (item: DecoratorItem) => {
-    const {editor} = this.props
+  renderDecoratorButton = (item: DecoratorItem): JSX.Element => {
     const icon = item.icon || (item.blockEditor && item.blockEditor.icon)
     const Icon = icon || getIcon(item.value)
-    // We must not do a click-event here, because that messes with the editor focus!
     const onAction = () => {
       this.handleClick(item)
     }
-    const shortCut = keyMaps[item.value] ? `(${keyMaps[item.value]})` : ''
+    const shortCut = '' // TODO: keyMaps[item.value] ? `(${keyMaps[item.value]})` : ''
     const title = `${item.title} ${shortCut}`
     return (
       <span className={styles.buttonWrapper} key={item.value}>
-        <ToolbarClickAction
-          onAction={onAction}
-          editor={editor}
-          key={`decoratorButton${item.value}`}
-        >
-          <ToggleButton
-            selected={!!item.active}
-            disabled={item.disabled}
-            onClick={NOOP}
-            title={title}
-            icon={Icon}
-          />
-        </ToolbarClickAction>
+        <ToggleButton
+          selected={!!item.active}
+          disabled={item.disabled}
+          onClick={onAction}
+          title={title}
+          icon={Icon}
+        />
       </span>
     )
   }
-  render() {
+  render(): JSX.Element {
     const {collapsed} = this.props
     const items = this.getItems()
     const icon = items[0].icon || (items[0].blockEditor && items[0].blockEditor.icon)
