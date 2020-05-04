@@ -5,6 +5,8 @@ import Button from 'part:@sanity/components/buttons/default'
 import Dialog from 'part:@sanity/components/dialogs/default'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import {PatchEvent, set, setIfMissing, unset} from 'part:@sanity/form-builder/patch-event'
+import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
+import EditIcon from 'part:@sanity/base/edit-icon'
 import styles from '../styles/GeopointInput.css'
 import GeopointSelect from './GeopointSelect'
 import GoogleMapsLoadProxy from './GoogleMapsLoadProxy'
@@ -141,13 +143,17 @@ class GeopointInput extends React.Component {
           )}
 
           <div className={styles.functions}>
-            <Button onClick={this.handleToggleModal}>{value ? 'Edit' : 'Set location'}</Button>
-
-            {value && (
-              <Button type="button" onClick={this.handleClear}>
-                Remove
+            <ButtonGrid>
+              <Button inverted onClick={this.handleToggleModal} icon={value && EditIcon}>
+                {value ? 'Edit' : 'Set location'}
               </Button>
-            )}
+
+              {value && (
+                <Button color="danger" inverted type="button" onClick={this.handleClear}>
+                  Remove
+                </Button>
+              )}
+            </ButtonGrid>
           </div>
 
           {this.state.modalOpen && (
