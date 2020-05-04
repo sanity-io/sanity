@@ -52,7 +52,7 @@
 }
 
 .fieldsWrapper {
-  flex-basis: 30rem;
+  margin-top: var(--medium-padding);
 }
 
 .previewAsset {
