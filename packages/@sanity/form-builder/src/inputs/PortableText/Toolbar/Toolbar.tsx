@@ -1,9 +1,6 @@
 /* eslint-disable complexity */
-
-import classNames from 'classnames'
 import React, {RefObject} from 'react'
 import {Tooltip} from 'react-tippy'
-import Measure from 'react-measure'
 import ArrowIcon from 'part:@sanity/base/angle-down-icon'
 import Button from 'part:@sanity/components/buttons/default'
 import ChevronDown from 'part:@sanity/base/chevron-down-icon'
@@ -12,48 +9,52 @@ import FullscreenIcon from 'part:@sanity/base/fullscreen-icon'
 import ValidationList from 'part:@sanity/components/validation/list'
 import WarningIcon from 'part:@sanity/base/warning-icon'
 import Poppable from 'part:@sanity/components/utilities/poppable'
-import {debounce, xor} from 'lodash'
-import {BlockContentFeatures, Marker, SlateEditor, SlateValue, Type} from '../typeDefs'
-import IS_MAC from '../utils/isMac'
+import {debounce, xor, uniq} from 'lodash'
+import {IS_MAC} from '../PortableTextInput'
 import PrimaryGroup from './PrimaryGroup'
-import styles from './styles/Toolbar.css'
+import styles from './Toolbar.css'
 import {Path} from '../../../typedefs/path'
+import {Marker} from '../../../typedefs'
+import {PortableTextEditor, EditorSelection, HotkeyOptions} from '@sanity/portable-text-editor'
 
-const collapsibleGroups = ['insertMenu', 'annotationButtons', 'decoratorButtons', 'listItemButtons']
 const BREAKPOINT_SCREEN_MEDIUM = 512
 
+const collapsibleGroups = ['insertMenu', 'annotationButtons', 'decoratorButtons', 'listItemButtons']
+
+const denyFocusChange = (event: React.SyntheticEvent<HTMLDivElement>): void => {
+  event.preventDefault()
+}
+
 type Props = {
-  blockContentFeatures: BlockContentFeatures
-  editor: SlateEditor
-  editorValue: SlateValue
-  fullscreen: boolean
-  onFocus: (path: Path) => void
-  onToggleFullScreen: (event: React.SyntheticEvent<any>) => void
+  editor: PortableTextEditor
+  hotkeys: HotkeyOptions
+  isFullscreen: boolean
+  isReadOnly: boolean
   markers: Marker[]
-  type: Type
-  isDragging: boolean
-  userIsWritingText: boolean
+  onFocus: (path: Path) => void
+  onToggleFullscreen: () => void
+  selection: EditorSelection
 }
 
 type ToolbarState = {
-  collapsePrimaryIsOpen: boolean
+  collapsedGroups: string[]
   collapsePrimary: boolean
-  showValidationTooltip: boolean
-  collapsedGroups: any[]
-  lastContentWidth: number
+  collapsePrimaryIsOpen: boolean
   isMobile: boolean
+  lastContentWidth: number
+  showValidationTooltip: boolean
 }
 
-class Toolbar extends React.PureComponent<Props, ToolbarState> {
+export default class Toolbar extends React.Component<Props, ToolbarState> {
   state = {
-    collapsePrimaryIsOpen: false,
-    collapsePrimary: false,
-    showValidationTooltip: false,
     collapsedGroups: [],
+    collapsePrimary: false,
+    collapsePrimaryIsOpen: false,
+    isMobile: false,
     lastContentWidth: -1,
-    isMobile: false
+    showValidationTooltip: false
   }
-  _primaryToolbar: RefObject<any> = React.createRef()
+  _primaryToolbar: RefObject<HTMLDivElement> = React.createRef()
 
   constructor(props: Props) {
     super(props)
@@ -65,29 +66,33 @@ class Toolbar extends React.PureComponent<Props, ToolbarState> {
     }
   }
 
-  handleOpenPrimary = () => {
+  shouldComponentUpdate(nextProps: Props): boolean {
+    return this.props.selection !== nextProps.selection || this.props.editor !== nextProps.editor
+  }
+
+  handleOpenPrimary = (): void => {
     this.setState({
       collapsePrimaryIsOpen: true
     })
   }
-  handleClosePrimary = () => {
+  handleClosePrimary = (): void => {
     this.setState({
       collapsePrimaryIsOpen: false
     })
   }
-  handleClickOutsidePrimary = () => {
+  handleClickOutsidePrimary = (): void => {
     this.setState({
       collapsePrimaryIsOpen: false
     })
   }
-  handleFocus = (focusPath: []) => {
+  handleFocus = (focusPath: []): void => {
     const {onFocus} = this.props
     onFocus(focusPath)
   }
-  handleCloseValidationResults = () => {
+  handleCloseValidationResults = (): void => {
     this.setState({showValidationTooltip: false})
   }
-  handleToggleValidationResults = () => {
+  handleToggleValidationResults = (): void => {
     this.setState(prevState => ({
       showValidationTooltip: !prevState.showValidationTooltip
     }))
@@ -128,129 +133,110 @@ class Toolbar extends React.PureComponent<Props, ToolbarState> {
     }
   }, 50)
 
-  render() {
-    const {
-      blockContentFeatures,
-      editor,
-      fullscreen,
-      isDragging,
-      markers,
-      onToggleFullScreen,
-      type
-    } = this.props
+  render(): JSX.Element {
+    const {editor, isFullscreen, markers, onToggleFullscreen} = this.props
     if (!editor) {
       return null
     }
     const {showValidationTooltip, isMobile} = this.state
-    const insertItems = blockContentFeatures.types.inlineObjects.concat(
-      blockContentFeatures.types.blockObjects
-    )
+    const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
+    const insertItems = uniq(ptFeatures.types.inlineObjects.concat(ptFeatures.types.blockObjects))
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
     const warnings = validation.filter(marker => marker.level === 'warning')
     const {collapsedGroups, collapsePrimary, collapsePrimaryIsOpen} = this.state
-
-    const className = classNames(styles.root, fullscreen && styles.fullscreen)
-
+    const rootClassNames = [styles.root, ...(isFullscreen ? [styles.fullscreen] : [])].join(' ')
     return (
-      <div className={className}>
-        <Measure offset scroll onResize={this.handleResize}>
-          {({measureRef}) => (
-            <div
-              className={styles.inner}
-              ref={measureRef}
-              style={{pointerEvents: isDragging ? 'none' : 'unset'}}
+      <div
+        // Ensure the editor doesn't lose focus when interacting with the toolbar (prevent focus click events)
+        onMouseDown={denyFocusChange}
+        onKeyPress={denyFocusChange}
+        className={rootClassNames}
+      >
+        <div className={styles.primary} ref={this._primaryToolbar}>
+          {collapsePrimary && (
+            <Button
+              className={styles.showMoreButton}
+              onClick={this.handleOpenPrimary}
+              kind="simple"
             >
-              <div className={styles.primary} ref={this._primaryToolbar}>
-                {collapsePrimary && (
-                  <Button
-                    className={styles.showMoreButton}
-                    onClick={this.handleOpenPrimary}
-                    kind="simple"
-                  >
-                    Show menu&nbsp;
-                    <span>
-                      <ArrowIcon color="inherit" />
-                    </span>
-                    <Poppable
-                      onClickOutside={this.handleClosePrimary}
-                      onEscape={this.handleClosePrimary}
-                    >
-                      {collapsePrimaryIsOpen && (
-                        <PrimaryGroup
-                          {...this.props}
-                          isPopped
-                          collapsedGroups={collapsedGroups}
-                          insertItems={insertItems}
-                        />
-                      )}
-                    </Poppable>
-                  </Button>
-                )}
-                <div className={styles.primaryInner}>
-                  {!collapsePrimary && (
-                    <PrimaryGroup
-                      {...this.props}
-                      collapsedGroups={collapsedGroups}
-                      insertItems={insertItems}
-                      isMobile={isMobile}
-                    />
-                  )}
-                </div>
-              </div>
-              <div className={styles.secondary}>
-                {fullscreen && (errors.length > 0 || warnings.length > 0) && (
-                  <Tooltip
-                    arrow
-                    duration={100}
-                    html={
-                      <ValidationList
-                        markers={validation}
-                        showLink
-                        isOpen={showValidationTooltip}
-                        documentType={type}
-                        onClose={this.handleCloseValidationResults}
-                        onFocus={this.handleFocus}
-                      />
-                    }
-                    interactive
-                    onRequestClose={this.handleCloseValidationResults}
-                    open={showValidationTooltip}
-                    position="bottom"
-                    style={{padding: 0}}
-                    theme="light"
-                    trigger="click"
-                  >
-                    <Button
-                      color="danger"
-                      icon={WarningIcon}
-                      kind="simple"
-                      onClick={this.handleToggleValidationResults}
-                      padding="small"
-                    >
-                      {errors.length}
-                      <span style={{paddingLeft: '0.5em'}}>
-                        <ChevronDown />
-                      </span>
-                    </Button>
-                  </Tooltip>
-                )}
-                <div className={styles.fullscreenButtonContainer}>
-                  <Button
-                    kind="simple"
-                    onClick={onToggleFullScreen}
-                    title={`Open in fullscreen (${IS_MAC ? 'cmd' : 'ctrl'}+enter)`}
-                    icon={fullscreen ? CloseIcon : FullscreenIcon}
-                    bleed
+              Show menu&nbsp;
+              <span>
+                <ArrowIcon color="inherit" />
+              </span>
+              <Poppable onClickOutside={this.handleClosePrimary} onEscape={this.handleClosePrimary}>
+                {collapsePrimaryIsOpen && (
+                  <PrimaryGroup
+                    {...this.props}
+                    isPopped
+                    collapsedGroups={collapsedGroups}
+                    insertItems={insertItems}
                   />
-                </div>
-              </div>
-            </div>
+                )}
+              </Poppable>
+            </Button>
           )}
-        </Measure>
+          <div className={styles.primaryInner}>
+            {!collapsePrimary && (
+              <PrimaryGroup
+                {...this.props}
+                collapsedGroups={collapsedGroups}
+                insertItems={insertItems}
+                isMobile={isMobile}
+              />
+            )}
+          </div>
+        </div>
+        <div className={styles.secondary}>
+          {isFullscreen && (errors.length > 0 || warnings.length > 0) && (
+            <Tooltip
+              arrow
+              duration={100}
+              html={
+                <ValidationList
+                  markers={validation}
+                  showLink
+                  isOpen={showValidationTooltip}
+                  documentType={
+                    PortableTextEditor.getPortableTextFeatures(editor).types.portableText
+                  }
+                  onClose={this.handleCloseValidationResults}
+                  onFocus={this.handleFocus}
+                />
+              }
+              interactive
+              onRequestClose={this.handleCloseValidationResults}
+              open={showValidationTooltip}
+              position="bottom"
+              style={{padding: 0}}
+              theme="light"
+              trigger="click"
+            >
+              <Button
+                color="danger"
+                icon={WarningIcon}
+                kind="simple"
+                onClick={this.handleToggleValidationResults}
+                padding="small"
+              >
+                {errors.length}
+                <span style={{paddingLeft: '0.5em'}}>
+                  <ChevronDown />
+                </span>
+              </Button>
+            </Tooltip>
+          )}
+          <div className={styles.fullscreenButtonContainer}>
+            <Button
+              kind="simple"
+              onClick={onToggleFullscreen}
+              title={`Open in fullscreen (${IS_MAC ? 'cmd' : 'ctrl'}+enter)`}
+              icon={isFullscreen ? CloseIcon : FullscreenIcon}
+              bleed
+            />
+          </div>
+        </div>
       </div>
     )
   }
 }
-
-export default Toolbar
