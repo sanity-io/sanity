@@ -1,52 +1,53 @@
 import React from 'react'
 import StyleSelect from 'part:@sanity/components/selects/style'
-import Text from '../nodes/Text'
-import {BlockContentFeature, BlockContentFeatures, SlateValue, SlateEditor} from '../typeDefs'
+import {
+  StyledComponents,
+  PortableTextEditor,
+  PortableTextFeature,
+  EditorSelection
+} from '@sanity/portable-text-editor'
 export type BlockStyleItem = {
   key: string
   active: boolean
   title: string
   style: string
-  preview: Node
+  preview: JSX.Element
 }
 type Props = {
-  blockContentFeatures: BlockContentFeatures
-  editor: SlateEditor
-  editorValue: SlateValue
+  editor: PortableTextEditor
   className: string
+  selection: EditorSelection
 }
+
 export default class BlockStyleSelect extends React.Component<Props, {}> {
-  shouldComponentUpdate(nextProps: Props) {
-    const nextFocusBlock = nextProps.editorValue.focusBlock
-    const currentFocusBlock = this.props.editorValue.focusBlock
-    if (nextProps.editorValue.blocks.size > 1) {
+  shouldComponentUpdate(nextProps: Props): boolean {
+    if (nextProps.selection !== this.props.selection) {
       return true
     }
-    if ((nextFocusBlock && nextFocusBlock.key) !== (currentFocusBlock && currentFocusBlock.key)) {
-      return true
-    }
-    return (
-      (nextFocusBlock && nextFocusBlock.data.get('style')) !==
-      (currentFocusBlock && currentFocusBlock.data.get('style'))
-    )
+    return false
   }
-  getItemsAndValue() {
-    const {blockContentFeatures, editor} = this.props
-    const items = blockContentFeatures.styles.map((style: BlockContentFeature) => {
-      const styleComponent = style && style.blockEditor && style.blockEditor.render
-      const preview = (
-        <Text style={style.value} styleComponent={styleComponent}>
-          {style.title}
-        </Text>
-      )
-      return {
-        key: `style-${style.value}`,
-        style: style.value,
-        preview: preview,
-        title: ` ${style.title}`,
-        active: editor.query('hasStyle', style.value)
+  getItemsAndValue(): {
+    items: BlockStyleItem[]
+    value: BlockStyleItem[]
+  } {
+    const {editor} = this.props
+    const items = PortableTextEditor.getPortableTextFeatures(editor).styles.map(
+      (style: PortableTextFeature) => {
+        const styleComponent = style && style.blockEditor && style.blockEditor.render
+        const preview: JSX.Element = (
+          <StyledComponents.Text style={style.value} styleComponent={styleComponent}>
+            {style.title}
+          </StyledComponents.Text>
+        )
+        return {
+          key: `style-${style.value}`,
+          style: style.value,
+          preview: preview,
+          title: ` ${style.title}`,
+          active: PortableTextEditor.hasBlockStyle(editor, style.value)
+        }
       }
-    })
+    )
     let value = items.filter(item => item.active)
     if (value.length === 0 && items.length > 1) {
       items.push({
@@ -63,23 +64,23 @@ export default class BlockStyleSelect extends React.Component<Props, {}> {
       value: value
     }
   }
-  handleChange = (item: BlockStyleItem) => {
+  handleChange = (item: BlockStyleItem): void => {
     const {editor} = this.props
-    editor.command('setBlockStyle', item.style)
-    editor.command('focusNoScroll')
-    this.forceUpdate()
+    PortableTextEditor.toggleBlockStyle(editor, item.style)
   }
-  renderItem = (item: BlockStyleItem) => {
+  renderItem = (item: BlockStyleItem): JSX.Element => {
     return item.preview
   }
-  render() {
+  render(): JSX.Element {
     const {items, value} = this.getItemsAndValue()
+    // If just one style, don't show
     if (!items || items.length < 2) {
       return null
     }
-    const {editorValue, className} = this.props
-    const {focusBlock} = editorValue
-    const disabled = focusBlock ? focusBlock.isVoid : false
+    const {className, editor} = this.props
+    const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
+    const focusBlock = PortableTextEditor.focusBlock(editor)
+    const disabled = focusBlock ? ptFeatures.types.block.name !== focusBlock._type : false
     return (
       <label className={className}>
         <span style={{display: 'none'}}>Text</span>

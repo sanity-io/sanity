@@ -1,7 +1,7 @@
 import React from 'react'
 import ChevronDown from 'part:@sanity/base/chevron-down-icon'
 import ToggleButton from 'part:@sanity/components/toggles/button'
-import styles from './styles/CollapsibleButtonGroup.css'
+import styles from './CollapsibleButtonGroup.css'
 import Poppable from 'part:@sanity/components/utilities/poppable'
 type CollapsibleButtonGroupProps = {
   icon?: any
@@ -9,7 +9,7 @@ type CollapsibleButtonGroupProps = {
 type CollapsibleButtonGroupState = {
   isOpen: boolean
 }
-export default class CollapsibleButtonGroup extends React.Component<
+export default class CollapsibleButtonGroup extends React.PureComponent<
   CollapsibleButtonGroupProps,
   CollapsibleButtonGroupState
 > {
