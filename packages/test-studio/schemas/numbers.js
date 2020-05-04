@@ -41,6 +41,18 @@ export default {
       }
     },
     {
+      name: 'testNumberWithListObjectsAndNumbers',
+      title: 'Test Number - List objects and numbers',
+      type: 'number',
+      options: {
+        list: [
+          {value: 1, title: 'One'},
+          {value: 2, title: 'Two'},
+          3
+        ]
+      }
+    },
+    {
       name: 'testNumberWithListValues',
       title: 'Test Number - List Values',
       type: 'number',
