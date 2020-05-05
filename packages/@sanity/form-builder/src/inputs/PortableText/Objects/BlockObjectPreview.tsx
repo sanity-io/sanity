@@ -1,20 +1,18 @@
 /* eslint-disable react/prop-types */
-/* eslint-disable react/no-multi-comp */
-import React, {FunctionComponent} from 'react'
+import React, {FunctionComponent, SyntheticEvent} from 'react'
 import {PortableTextBlock, Type} from '@sanity/portable-text-editor'
-import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
-import {MenuItem, DropDownMenuItemProps} from './MenuItem'
+
+import {Path} from '@sanity/portable-text-editor/lib/types/path'
 import EditIcon from 'part:@sanity/base/edit-icon'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import VisibilityIcon from 'part:@sanity/base/visibility-icon'
-import PatchEvent, {unset} from '../../../PatchEvent'
-import Preview from '../../../Preview'
-import {Path} from '@sanity/portable-text-editor/lib/types/path'
 
-import styles from './styles/Object.css'
+import {MenuItem, DropDownMenuItemProps} from './MenuItem'
+import Preview from '../../../Preview'
+
+import styles from './BlockObject.css'
 
 type Props = {
   type: Type
@@ -23,15 +21,13 @@ type Props = {
   readOnly: boolean
   onFocus: (arg0: Path) => void
   onClickingEdit: () => void
-  onClickingDelete: (patchEvent: PatchEvent) => void
+  onClickingDelete: () => void
 }
 
-export const ObjectPreview: FunctionComponent<Props> = ({
+export const BlockObjectPreview: FunctionComponent<Props> = ({
   value,
   type,
-  path,
   readOnly,
-  onFocus,
   onClickingEdit,
   onClickingDelete
 }): JSX.Element => {
@@ -65,24 +61,25 @@ export const ObjectPreview: FunctionComponent<Props> = ({
   }
 
   const handleHeaderMenuAction = (item: DropDownMenuItemProps): void => {
-    // const {node, editor} = this.props
     if (item.name === 'delete') {
-      onClickingDelete(PatchEvent.from([unset(path)]))
-      // TODO: We may not need this. Double-check that.
-      // editor.removeNodeByKey(node.key).focus()
+      onClickingDelete()
     }
     if (item.name === 'edit') {
       onClickingEdit()
     }
     if (item.name === 'view') {
-      onFocus([{_key: value._key}, FOCUS_TERMINATOR])
+      onClickingEdit()
     }
+  }
+
+  const stopPropagation = (event: SyntheticEvent<HTMLDivElement>): void => {
+    event.stopPropagation()
   }
 
   return (
     <div className={styles.preview}>
       <Preview type={type} value={value} layout="block" />
-      <div className={styles.header}>
+      <div className={styles.header} onClick={stopPropagation}>
         <DropDownButton
           placement="bottom-end"
           items={menuItems}
