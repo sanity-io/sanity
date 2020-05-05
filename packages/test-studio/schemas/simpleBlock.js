@@ -13,7 +13,13 @@ export default {
       title: 'Body',
       type: 'array',
       of: [
-        {type: 'block', of: [{type: 'image', name: 'image'}]},
+        {
+          type: 'block',
+          of: [
+            {type: 'image', name: 'image'},
+            {type: 'object', name: 'test', fields: [{type: 'string', name: 'mystring'}]}
+          ]
+        },
         {type: 'image', name: 'image'}
       ]
     }
