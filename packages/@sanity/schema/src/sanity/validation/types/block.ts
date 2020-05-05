@@ -203,6 +203,11 @@ function validateMembers(members, visitorContext, problems) {
 
   return members.map(member => {
     const {_problems} = visitorContext.visit(member, visitorContext)
+    if (member && !isJSONTypeOf(member, 'object', visitorContext)) {
+      _problems.push(
+        error(`Block type members cannot have type "${member.type}" - must inherit from object`)
+      )
+    }
     return {...member, _problems}
   })
 }
