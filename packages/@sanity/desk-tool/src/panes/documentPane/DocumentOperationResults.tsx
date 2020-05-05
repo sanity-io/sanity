@@ -2,7 +2,7 @@ import * as React from 'react'
 import Snackbar from 'part:@sanity/components/snackbar/default'
 import {useDocumentOperationEvent} from '@sanity/react-hooks'
 
-function getOpErrorTitle(op) {
+function getOpErrorTitle(op: string): string {
   if (op === 'delete') {
     return `An error occurred while attempting to delete this document.
       This usually means that there are other documents that refers to it.`
@@ -14,7 +14,7 @@ function getOpErrorTitle(op) {
   return `An error occurred during ${op}`
 }
 
-function getOpSuccessTitle(op) {
+function getOpSuccessTitle(op: string): string {
   if (op === 'publish') {
     return `This document is now published.`
   }
@@ -32,7 +32,12 @@ function getOpSuccessTitle(op) {
 
 const IGNORE_OPS = ['patch', 'commit']
 
-export const DocumentOperationResults = React.memo((props: {id: string; type: string}) => {
+type Props = {
+  id: string
+  type: string
+}
+
+export const DocumentOperationResults = React.memo((props: Props) => {
   const event: any = useDocumentOperationEvent(props.id, props.type)
 
   if (!event) {
@@ -51,12 +56,13 @@ export const DocumentOperationResults = React.memo((props: {id: string; type: st
             {event.error.message}
           </details>
         }
+        preventDuplicate
       />
     )
   }
 
   if (event && event.type === 'success' && !IGNORE_OPS.includes(event.op)) {
-    return <Snackbar key={Math.random()} kind="success" title={getOpSuccessTitle(event.op)} />
+    return <Snackbar key={Math.random()} kind="success" title={getOpSuccessTitle(event.op)} preventDuplicate />
   }
 
   return null
