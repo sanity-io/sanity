@@ -25,13 +25,17 @@ type RegionReporterProps = {
   position: Position
 }
 
-export default function PresenceContainerRegion({presence, position}: RegionReporterProps) {
+export function PresenceRegion({presence, component, data}) {
   const id = useId()
 
+  return <RegionReporter id={id} data={{presence, ...data}} component={component} />
+}
+
+export default function PresenceContainerRegion({presence}: RegionReporterProps) {
   return (
-    <RegionReporter
-      id={id}
-      data={{presence, position, avatarComponent: AvatarProvider}}
+    <PresenceRegion
+      presence={presence}
+      data={{avatarComponent: AvatarProvider}}
       component={PresenceContainer}
     />
   )
@@ -59,31 +63,23 @@ function PresenceContainer({presence, position, avatarComponent: AvatarComponent
 
   return (
     <div className={styles.root}>
-      <PopoverList
-        trigger="click"
-        userList={presence}
-        disabled={hiddenUsers.length <= 1}
-        withStack={hiddenUsers.length >= MAX_AVATARS - 1}
-      >
-        <div style={{minWidth: 55}}></div>
-        <div className={styles.inner}>
-          {avatars.map((av, i) => (
-            <div
-              key={av.key}
-              style={{
-                position: 'absolute',
-                transform: `translate3d(${-AVATAR_WIDTH + i * -18}px, 0px, 0px)`,
-                transitionProperty: 'transform',
-                transitionDuration: '200ms',
-                transitionTimingFunction: 'cubic-bezier(0.85, 0, 0.15, 1)',
-                zIndex: -i
-              }}
-            >
-              {av.element}
-            </div>
-          ))}
-        </div>
-      </PopoverList>
+      <div className={styles.inner}>
+        {avatars.map((av, i) => (
+          <div
+            key={av.key}
+            style={{
+              position: 'absolute',
+              transform: `translate3d(${-AVATAR_WIDTH + i * -18}px, 0px, 0px)`,
+              transitionProperty: 'transform',
+              transitionDuration: '200ms',
+              transitionTimingFunction: 'cubic-bezier(0.85, 0, 0.15, 1)',
+              zIndex: -i
+            }}
+          >
+            {av.element}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

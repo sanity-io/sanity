@@ -1,7 +1,7 @@
 import React from 'react'
 import {FormBuilder} from 'part:@sanity/form-builder'
 
-import styles from '../styles/Editor.css'
+import styles from '../Editor.css'
 import {Subscription} from 'rxjs'
 
 const preventDefault = ev => ev.preventDefault()

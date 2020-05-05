@@ -1,6 +1,6 @@
 import * as React from 'react'
 import DocumentPane from './DocumentPane'
-import withInitialValue from '../utils/withInitialValue'
+import withInitialValue from '../../utils/withInitialValue'
 import usePresence from 'part:@sanity/base/hooks/presence'
 
 import {

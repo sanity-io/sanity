@@ -50,12 +50,14 @@ import button from './button'
 import richTextObject from './richTextObject'
 import mux from './mux'
 import review from './review'
+import presence from './presence'
 
 export default createSchema({
   name: 'test-examples',
   types: schemaTypes.concat([
     book,
     author,
+    presence,
     species,
     focus,
     strings,
