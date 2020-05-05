@@ -53,8 +53,12 @@ export default class InsertMenu extends React.Component<Props> {
       // >
       <Button
         onClick={() => this.handleOnAction(item)}
-        title={`Insert ${item.title}${item.isInline ? ' (inline)' : ' (block)'}`}
-        aria-label={`Insert ${item.title}${item.isInline ? ' (inline)' : ' (block)'}`}
+        title={`Insert ${item.title || item.value.type.name}${
+          item.isInline ? ' (inline)' : ' (block)'
+        }`}
+        aria-label={`Insert ${item.title || item.value.type.name}${
+          item.isInline ? ' (inline)' : ' (block)'
+        }`}
         icon={item.icon}
         kind="simple"
         bleed
