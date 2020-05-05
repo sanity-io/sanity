@@ -1,27 +1,27 @@
 import React from 'react'
 import StyleSelect from 'part:@sanity/components/selects/style'
 import {
-  StyledComponents,
+  EditorSelection,
   PortableTextEditor,
   PortableTextFeature,
-  EditorSelection
+  StyledComponents
 } from '@sanity/portable-text-editor'
 export type BlockStyleItem = {
-  key: string
   active: boolean
-  title: string
-  style: string
+  key: string
   preview: JSX.Element
+  style: string
+  title: string
 }
 type Props = {
-  editor: PortableTextEditor
   className: string
+  editor: PortableTextEditor
   selection: EditorSelection
 }
 
 export default class BlockStyleSelect extends React.Component<Props, {}> {
   shouldComponentUpdate(nextProps: Props): boolean {
-    if (nextProps.selection !== this.props.selection) {
+    if (nextProps.selection && nextProps.selection !== this.props.selection) {
       return true
     }
     return false
@@ -40,11 +40,11 @@ export default class BlockStyleSelect extends React.Component<Props, {}> {
           </StyledComponents.Text>
         )
         return {
+          active: PortableTextEditor.hasBlockStyle(editor, style.value),
           key: `style-${style.value}`,
-          style: style.value,
           preview: preview,
-          title: ` ${style.title}`,
-          active: PortableTextEditor.hasBlockStyle(editor, style.value)
+          style: style.value,
+          title: ` ${style.title}`
         }
       }
     )
@@ -85,12 +85,12 @@ export default class BlockStyleSelect extends React.Component<Props, {}> {
       <label className={className}>
         <span style={{display: 'none'}}>Text</span>
         <StyleSelect
-          items={items}
-          value={value}
           disabled={disabled}
+          items={items}
           onChange={this.handleChange}
           renderItem={this.renderItem}
           transparent
+          value={value}
         />
       </label>
     )
