@@ -9,7 +9,8 @@ import {
   EditorChange,
   Patch as EditorPatch,
   InvalidValue as InvalidEditorValue,
-  HotkeyOptions
+  HotkeyOptions,
+  RenderAttributes
 } from '@sanity/portable-text-editor'
 import Button from 'part:@sanity/components/buttons/default'
 import FormField from 'part:@sanity/components/formfields/default'
@@ -25,9 +26,11 @@ import withPatchSubscriber from '../../utils/withPatchSubscriber'
 import {interval, Subject} from 'rxjs'
 import {map, take} from 'rxjs/operators'
 import Toolbar from './Toolbar/Toolbar'
-import {Object} from './ObjectRendering/Object'
+import {BlockObject} from './Objects/BlockObject'
 import {Path} from '../../typedefs/path'
-import {InlineObject} from './ObjectRendering/InlineObject'
+import {InlineObject} from './Objects/InlineObject'
+import {startsWith} from '@sanity/util/paths'
+import {EditObject} from './Objects/EditObject'
 
 export const IS_MAC =
   typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
@@ -38,7 +41,7 @@ type Props = {
   value: PortableTextBlock[]
   readOnly: boolean | null
   onChange: (arg0: PatchEvent) => void
-  onFocus: () => void
+  onFocus: (Path) => void
   onBlur: () => void
   markers: Array<Marker>
   focusPath: Path
@@ -62,6 +65,7 @@ type State = {
   isLoading: boolean
   selection: EditorSelection
   valueWithError: PortableTextBlock[] | undefined
+  objectEditPath: Path | null
 }
 
 type PatchWithOrigin = Patch & {
@@ -105,16 +109,36 @@ export default withPatchSubscriber(
       isActive: false,
       isFullscreen: false,
       isLoading: false,
+      objectEditPath: null,
       selection: null,
       valueWithError: undefined
     }
 
     static getDerivedStateFromProps(nextProps: Props, prevState: State): {} | null {
+      let state = {}
       // Reset invalidValue state if new value is coming in from props
       if (nextProps.value !== (prevState.invalidValue && prevState.invalidValue.value)) {
-        return {invalidValue: null}
+        state = {...state, invalidValue: null}
       }
-      return null
+      // Figure out if the current focusPath is editing something that isn't text.
+      // Set object edit path if so, or nullify the object edit path
+      const {focusPath} = nextProps
+      if (focusPath) {
+        const isChild = focusPath[1] === 'children'
+        if (
+          focusPath &&
+          ((isChild && focusPath.length > 3) || (!isChild && focusPath.length > 1))
+        ) {
+          let objectEditPath = focusPath.slice(0, 1)
+          if (isChild) {
+            objectEditPath = objectEditPath.concat(focusPath.slice(1, -1))
+          }
+          state = {...state, objectEditPath}
+        } else {
+          state = {...state, objectEditPath: null}
+        }
+      }
+      return Object.keys(state).length === 0 ? null : state
     }
 
     constructor(props: Props) {
@@ -173,11 +197,9 @@ export default withPatchSubscriber(
           break
         case 'focus':
           this.setState({hasFocus: true})
-          // this.props.onFocus && this.props.onFocus()
           break
         case 'blur':
           this.setState({hasFocus: false})
-          // this.props.onBlur && this.props.onBlur()
           break
         case 'loading':
           this.setState({isLoading: change.isLoading})
@@ -191,6 +213,9 @@ export default withPatchSubscriber(
           break
         case 'selection':
           this.setState({selection: change.selection})
+          if (change.selection) {
+            this.props.onFocus(change.selection.focus.path)
+          }
           break
         case 'ready':
         case 'patch':
@@ -215,43 +240,62 @@ export default withPatchSubscriber(
       this.focus()
     }
 
-    handleBlockChange = (patchEvent: PatchEvent, block: PortableTextBlock): void => {
-      this.props.onChange(patchEvent.prefixAll({_key: block._key}))
+    handleFormBuilderChange = (patchEvent: PatchEvent, path: Path): void => {
+      let _patchEvent = patchEvent
+      path
+        .slice(0)
+        .reverse()
+        .forEach(segment => {
+          _patchEvent = _patchEvent.prefixAll(segment)
+        })
+      this.props.onChange(_patchEvent)
+    }
+
+    handleEditObjectFormBuilderFocus = (nextPath: Path): void => {
+      if (this.state.objectEditPath) {
+        if (startsWith(this.state.objectEditPath, this.props.focusPath)) {
+          this.props.onFocus(nextPath)
+          return
+        }
+      }
+    }
+
+    handleEditObjectFormBuilderBlur = (): void => {
+      const {focusPath} = this.props
+      PortableTextEditor.select(this.editor.current, {
+        anchor: {path: focusPath, offset: 0},
+        focus: {path: focusPath, offset: 0}
+      })
     }
 
     renderBlock = (
-      block: PortableTextBlock,
+      value: PortableTextBlock,
       type: Type,
       ref: React.RefObject<HTMLDivElement>,
-      attributes: {
-        focused: boolean
-        selected: boolean
-      },
-      defaultRender: (block: PortableTextBlock) => JSX.Element
+      attributes: RenderAttributes,
+      defaultRender: (value: PortableTextBlock) => JSX.Element
     ): JSX.Element => {
       if (!this.editor.current) {
         return null
       }
 
       if (
-        block._type ===
+        value._type ===
         PortableTextEditor.getPortableTextFeatures(this.editor.current).types.block.name
       ) {
-        return defaultRender(block)
+        return defaultRender(value)
       }
 
       return (
-        <Object
-          value={block}
-          type={type}
-          referenceElement={ref}
+        <BlockObject
           attributes={attributes}
           focusPath={this.props.focusPath}
-          readOnly={this.props.readOnly}
           markers={this.props.markers}
+          onChange={this.handleFormBuilderChange}
           onFocus={this.props.onFocus}
-          onBlur={this.props.onBlur}
-          handleChange={(patchEvent: PatchEvent) => this.handleBlockChange(patchEvent, block)}
+          readOnly={this.props.readOnly}
+          type={type}
+          value={value}
         />
       )
     }
@@ -263,31 +307,31 @@ export default withPatchSubscriber(
       attributes: {
         focused: boolean
         selected: boolean
+        path: Path
       },
-      defaultRender: (child: PortableTextChild) => JSX.Element
+      defaultRender: (value: PortableTextChild) => JSX.Element
     ): JSX.Element => {
+      const {focusPath, markers, readOnly} = this.props
       if (!this.editor.current) {
         return null
       }
-      if (
+      const isSpan =
         value._type ===
         PortableTextEditor.getPortableTextFeatures(this.editor.current).types.span.name
-      ) {
+
+      if (isSpan) {
         return defaultRender(value)
       }
-
       return (
         <InlineObject
-          value={value}
-          type={type}
-          referenceElement={ref}
           attributes={attributes}
-          markers={this.props.markers}
-          focusPath={this.props.focusPath}
-          readOnly={this.props.readOnly}
+          focusPath={focusPath}
+          markers={markers}
           onFocus={this.props.onFocus}
-          onBlur={this.props.onBlur}
-          handleChange={(patchEvent: PatchEvent) => this.handleBlockChange(patchEvent, value)}
+          onChange={this.handleFormBuilderChange}
+          readOnly={readOnly}
+          type={type}
+          value={value}
         />
       )
     }
@@ -349,11 +393,41 @@ export default withPatchSubscriber(
       return wrappedEditor
     }
 
+    renderEditObject = () => {
+      const {objectEditPath} = this.state
+      const [object] = PortableTextEditor.findByPath(this.editor.current, objectEditPath)
+      if (object) {
+        const type = PortableTextEditor.getPortableTextFeatures(this.editor.current).types[
+          objectEditPath.length === 1 ? 'blockObjects' : 'inlineObjects'
+        ].find(t => t.name === object._type)
+        //const referenceElement = PortableTextEditor.findDOMNode(this.editor.current, object)
+        const handleClose = () => {
+          this.props.onFocus(objectEditPath)
+        }
+        return (
+          <EditObject
+            object={object}
+            type={type}
+            path={objectEditPath}
+            referenceElement={null}
+            readOnly={this.props.readOnly}
+            markers={this.props.markers}
+            focusPath={this.props.focusPath}
+            onFocus={this.handleEditObjectFormBuilderFocus}
+            onBlur={this.handleEditObjectFormBuilderBlur}
+            onClose={handleClose}
+            onChange={this.handleFormBuilderChange}
+          />
+        )
+      }
+      return null
+    }
+
     render(): JSX.Element {
       const {value, readOnly, type, markers, level, onFocus, onBlur} = this.props
       const validation = markers.filter(marker => marker.type === 'validation')
       const errors = validation.filter(marker => marker.level === 'error')
-      const {isLoading, hasFocus, invalidValue} = this.state
+      const {isLoading, hasFocus, invalidValue, objectEditPath} = this.state
       if (invalidValue) {
         return (
           <InvalidValue
@@ -395,6 +469,19 @@ export default withPatchSubscriber(
             }
             onActivate={this.handleActivate}
           >
+            {/* <button
+              type="button"
+              onClick={() =>
+                this.props.onFocus([
+                  {_key: '880e222c24c6'},
+                  'children',
+                  {_key: 'c1c72256843e'},
+                  'mystring'
+                ])
+              }
+            >
+              Test focuspath
+            </button> */}
             <PortableTextEditor
               hotkeys={this.hotkeys}
               maxBlocks={-1} // TODO: from schema?
@@ -411,6 +498,7 @@ export default withPatchSubscriber(
               value={value}
             />
           </ActivateOnFocus>
+          {this.state.objectEditPath && this.renderEditObject()}
         </div>
       )
     }

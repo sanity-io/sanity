@@ -1,56 +1,68 @@
-import React, {FunctionComponent} from 'react'
+import React, {FunctionComponent, useState} from 'react'
 import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
-import {get} from 'lodash'
+import {get, debounce} from 'lodash'
 
-import {DefaultObjectEditing} from './DefaultObjectEditing'
-import {FullscreenObjectEditing} from './FullscreenObjectEditing'
-import {PopoverObjectEditing} from './PopoverObjectEditing'
+import {DefaultObjectEditing} from './renderers/DefaultObjectEditing'
+import {FullscreenObjectEditing} from './renderers/FullscreenObjectEditing'
+import {PopoverObjectEditing} from './renderers/PopoverObjectEditing'
 
 import {ModalType} from '../../ArrayInput/typedefs'
 import {Marker} from '../../../typedefs'
 import {Path} from '../../../typedefs/path'
-import {PatchEvent} from '../../../PatchEvent'
+import {PatchEvent, set} from '../../../PatchEvent'
+import {applyAll} from '../../../patch/applyPatch'
 
 type Props = {
-  value: PortableTextBlock | PortableTextChild
+  object: PortableTextBlock | PortableTextChild
   type: Type
   referenceElement: React.RefObject<HTMLSpanElement> | React.RefObject<HTMLDivElement>
   readOnly: boolean
   markers: Marker[]
   focusPath: Path
   path: Path
-  handleChange: (patchEvent: PatchEvent) => void
-  handleClose: (event: React.SyntheticEvent) => void
+  onChange: (patchEvent: PatchEvent, path: Path) => void
+  onClose: (event: React.SyntheticEvent) => void
   onFocus: (arg0: Path) => void
   onBlur: () => void
 }
 
 export const EditObject: FunctionComponent<Props> = ({
-  value,
+  object,
   type,
   referenceElement,
   readOnly,
   markers,
   focusPath,
   path,
-  handleChange,
-  handleClose,
+  onChange,
   onFocus,
   onBlur
 }): JSX.Element => {
+  const [patchedObject, setPatchedObject] = useState(object)
   const editModalLayout: ModalType = get(type.options, 'editModal')
+  const flush = debounce(() => {
+    onChange(PatchEvent.from([set(patchedObject, [])]), path)
+  }, 500)
+  const handleClose = () => {
+    flush()
+    onFocus(path)
+  }
 
+  const handleChange = (patchEvent: PatchEvent) => {
+    setPatchedObject(applyAll(patchedObject, patchEvent.patches))
+    flush()
+  }
   switch (editModalLayout) {
     case 'fullscreen': {
       return (
         <FullscreenObjectEditing
-          block={value}
+          object={object}
           type={type}
           readOnly={readOnly}
           markers={markers}
           focusPath={focusPath}
           path={path}
-          handleChange={handleChange}
+          onChange={handleChange}
           onFocus={onFocus}
           onBlur={onBlur}
           onClose={handleClose}
@@ -60,14 +72,14 @@ export const EditObject: FunctionComponent<Props> = ({
     case 'popover': {
       return (
         <PopoverObjectEditing
-          block={value}
+          object={object}
           type={type}
           referenceElement={referenceElement}
           readOnly={readOnly}
           markers={markers}
           focusPath={focusPath}
           path={path}
-          handleChange={handleChange}
+          onChange={handleChange}
           onFocus={onFocus}
           onBlur={onBlur}
           onClose={handleClose}
@@ -77,13 +89,13 @@ export const EditObject: FunctionComponent<Props> = ({
     default: {
       return (
         <DefaultObjectEditing
-          block={value}
+          object={patchedObject}
           type={type}
           readOnly={readOnly}
           markers={markers}
           focusPath={focusPath}
           path={path}
-          handleChange={handleChange}
+          onChange={handleChange}
           onFocus={onFocus}
           onBlur={onBlur}
           onClose={handleClose}
