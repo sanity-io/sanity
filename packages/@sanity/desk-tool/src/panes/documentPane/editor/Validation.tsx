@@ -19,8 +19,8 @@ interface ValidationProps {
 export function Validation(props: ValidationProps) {
   const {
     onCloseValidationResults,
-    onFocus,
     onToggleValidationResults,
+    onFocus,
     showValidationTooltip,
     type,
     markers
@@ -34,8 +34,8 @@ export function Validation(props: ValidationProps) {
   return (
     <Tooltip
       arrow
-      theme="light"
       trigger="click"
+      theme="light"
       position="bottom"
       interactive
       open={showValidationTooltip}
@@ -52,13 +52,14 @@ export function Validation(props: ValidationProps) {
       }
     >
       <Button
+        title="Show validation issues"
         kind="simple"
+        inverted
+        ripple={false}
         color={errors.length > 0 ? 'danger' : 'warning'}
-        bleed
         icon={ErrorOutlineIcon}
-        padding="small"
-        onClick={onToggleValidationResults}
         className={`${styles.button} ${showValidationTooltip ? styles.isOpen : ''}`}
+        onClick={onToggleValidationResults}
       />
     </Tooltip>
   )
