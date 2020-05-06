@@ -11,6 +11,7 @@ import {HAS_SPACES} from '../util/spaces'
 import Branding from './branding/Branding'
 import LoginStatus from './loginStatus/LoginStatus'
 import SanityStatusContainer from './studioStatus/SanityStatusContainer'
+import {GlobalPresence} from './studioStatus/GlobalPresence'
 import SearchContainer from './search/SearchContainer'
 import DatasetSelect from './datasetSelect/DatasetSelect'
 import {Router, Tool, User} from '../types'
@@ -129,6 +130,9 @@ function Navbar(props: Props) {
       <div className={styles.extras}>{/* Insert plugins here */}</div>
       <div className={styles.sanityStatus}>
         <SanityStatusContainer />
+      </div>
+      <div className={styles.presenceStatus}>
+        <GlobalPresence />
       </div>
       {isSidecarEnabled && isSidecarEnabled() && (
         <div className={styles.sidecarStatus}>
