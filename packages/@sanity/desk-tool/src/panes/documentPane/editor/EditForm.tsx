@@ -1,9 +1,8 @@
 import React from 'react'
 import {FormBuilder} from 'part:@sanity/form-builder'
-import documentStore from 'part:@sanity/base/datastore/document'
+import {Overlay as PresenceOverlay} from '@sanity/components/presence'
 
 import styles from '../Editor.css'
-import {tap} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
 
 const preventDefault = ev => ev.preventDefault()
@@ -25,22 +24,12 @@ interface Props {
   readOnly: boolean
   schema: Schema
   type: SchemaType
+  presence: any
 }
 
 export default class EditForm extends React.PureComponent<Props> {
   subscription?: Subscription
   patchChannel = FormBuilder.createPatchChannel()
-
-  componentDidMount() {
-    this.subscription = documentStore.pair
-      .documentEvents(this.props.id, this.props.type.name)
-      .pipe(
-        tap((event: any) => {
-          this.patchChannel.receiveEvent(event)
-        })
-      )
-      .subscribe()
-  }
 
   componentWillUnmount() {
     if (this.subscription) this.subscription.unsubscribe()
@@ -57,16 +46,18 @@ export default class EditForm extends React.PureComponent<Props> {
       onChange,
       readOnly,
       schema,
-      type
+      type,
+      presence
     } = this.props
     return (
-      <>
+      <PresenceOverlay margin={[0, 0, 0, 0]}>
         <form className={styles.editor} onSubmit={preventDefault}>
           <FormBuilder
             schema={schema}
             patchChannel={this.patchChannel}
             value={value || {_type: type}}
             type={type}
+            presence={presence}
             filterField={filterField}
             readOnly={readOnly}
             onBlur={onBlur}
@@ -76,7 +67,7 @@ export default class EditForm extends React.PureComponent<Props> {
             markers={markers}
           />
         </form>
-      </>
+      </PresenceOverlay>
     )
   }
 }
