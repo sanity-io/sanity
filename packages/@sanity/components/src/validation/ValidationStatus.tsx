@@ -14,12 +14,11 @@ type Props = {
 export default class ValidationStatus extends React.PureComponent<Props> {
 
   static defaultProps = {
-    onClick: () => {},
     markers: []
   }
 
   render() {
-    const {markers, onClick} = this.props
+    const {markers} = this.props
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
     const warnings = validation.filter(marker => marker.level === 'warning')
@@ -56,7 +55,7 @@ export default class ValidationStatus extends React.PureComponent<Props> {
     }
 
     return (
-      <Tooltip title={tooltipText} tabIndex={0} arrow theme="light" className={styles.root} onClick={onClick}>
+      <Tooltip title={tooltipText} tabIndex={0} arrow theme="light" className={styles.root}>
         <div className={styles.inner}>
           {errors && errors.length > 0 && (
             <div className={`${styles.icon} ${styles.error}`}>

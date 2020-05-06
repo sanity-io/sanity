@@ -42,7 +42,7 @@ export default class ValidationList extends React.PureComponent<Props> {
     const element = document.querySelector(`[data-focus-path="${pathString}"]`)
 
     if (element) {
-      element.scrollIntoView({behavior: 'smooth', alignToTop: false, inline: 'center'})
+      element.scrollIntoView({behavior: 'smooth', inline: 'center'})
       this.scrollTimeout = setTimeout(() => {
         onFocus(path)
       }, 300)
@@ -74,11 +74,10 @@ export default class ValidationList extends React.PureComponent<Props> {
         <ul className={styles.list} data-kind={kind}>
           {errors.length > 0 &&
             errors.map((error, i) => (
-              <li className={styles.item}>
+              <li className={styles.item} key={i}>
                 <ValidationListItem
                   kind={kind}
                   truncate={truncate}
-                  key={i}
                   path={this.resolvePathTitle(error.path)}
                   marker={error}
                   onClick={this.handleClick}
@@ -89,11 +88,10 @@ export default class ValidationList extends React.PureComponent<Props> {
 
           {warnings.length > 0 &&
             warnings.map((warning, i) => (
-              <li className={styles.item}>
+              <li className={styles.item} key={i}>
                 <ValidationListItem
                   kind={kind}
                   truncate={truncate}
-                  key={i}
                   path={this.resolvePathTitle(warning.path)}
                   marker={warning}
                   onClick={this.handleClick}
