@@ -3,6 +3,8 @@ import React, {FunctionComponent} from 'react'
 import {IntentLink} from 'part:@sanity/base/router'
 import styles from './BlockObject.css'
 
+// This is the component that renders the dropdown button-menu on the block object's preview
+
 export type DropDownMenuItemProps = {
   title: string
   icon: React.ComponentType
