@@ -60,7 +60,11 @@ export default function SanityStatus(props: Props) {
           <div className={styles.buttonInner} tabIndex={-1}>
             <div className={styles.hasUpdates}>
               <span className={styles.updateIcon} role="image">
-                <div className={styles.updateIndicator} data-severity={severity} />
+                <div
+                  className={styles.updateIndicator}
+                  data-severity={severity}
+                  aria-label={`${formatUpdateLabel(outdated.length)}, ${severity} severity level.`}
+                />
                 <PackageIcon />
               </span>
             </div>

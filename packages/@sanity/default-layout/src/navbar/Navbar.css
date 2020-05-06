@@ -7,23 +7,23 @@
 .root {
   display: grid;
   /* prettier-ignore */
-  grid-template-areas:  'hamburger   createButton branding     sidecarStatus searchButton';
+  grid-template-areas:  'hamburger   createButton branding     sidecarStatus presence    searchButton';
   /* prettier-ignore */
-  grid-template-columns: min-content min-content  auto         min-content   min-content;
+  grid-template-columns: min-content min-content  auto         min-content   min-content min-content;
   box-sizing: border-box;
   align-items: stretch;
 
   @media (--screen-medium) {
     /* prettier-ignore */
-    grid-template-areas:  'hamburger   branding    createButton search              sidecarStatus extras';
+    grid-template-areas:  'hamburger   branding    createButton search              presence    sidecarStatus extras';
     /* prettier-ignore */
-    grid-template-columns: max-content max-content min-content  minmax(240px, 100%) min-content   max-content;
+    grid-template-columns: max-content max-content min-content  minmax(240px, 100%) max-content min-content   max-content;
 
     @nest &.withToolSwitcher {
       /* prettier-ignore */
-      grid-template-areas:  'branding    datasetSelect createButton search                toolSwitcher extras      sanityStatus sidecarStatus loginStatus';
+      grid-template-areas:  'branding    datasetSelect createButton search                toolSwitcher extras      sanityStatus presence   sidecarStatus loginStatus';
       /* prettier-ignore */
-      grid-template-columns: max-content max-content   min-content  minmax(240px, 400px)  auto         max-content max-content  min-content   min-content;
+      grid-template-columns: max-content max-content   min-content  minmax(240px, 400px)  auto         max-content max-content  max-content min-content   min-content;
     }
   }
 
@@ -140,6 +140,12 @@ a.branding {
       display: flex;
     }
   }
+}
+
+.presenceStatus {
+  grid-area: presence;
+  display: flex;
+  align-items: stretch;
 }
 
 .loginStatus {
