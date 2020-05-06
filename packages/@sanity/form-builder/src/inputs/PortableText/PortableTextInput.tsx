@@ -100,7 +100,7 @@ export default withPatchSubscriber(
         'mod+´': 'code'
       },
       custom: {
-        'ctrl+alt+p': this.handleToggleFullscreen
+        'mod+enter': this.handleToggleFullscreen
       }
     }
     state = {
