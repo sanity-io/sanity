@@ -43,12 +43,12 @@ export const EditObject: FunctionComponent<Props> = ({
   const flush = debounce(() => {
     onChange(PatchEvent.from([set(patchedObject, [])]), path)
   }, 500)
-  const handleClose = () => {
+  const handleClose = (): void => {
     flush()
     onFocus(path)
   }
 
-  const handleChange = (patchEvent: PatchEvent) => {
+  const handleChange = (patchEvent: PatchEvent): void => {
     setPatchedObject(applyAll(patchedObject, patchEvent.patches))
     flush()
   }
