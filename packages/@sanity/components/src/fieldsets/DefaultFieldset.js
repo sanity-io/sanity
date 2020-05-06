@@ -5,8 +5,8 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import ArrowDropDown from 'part:@sanity/base/arrow-drop-down'
 import ValidationStatus from 'part:@sanity/components/validation/status'
-import ValidationList from 'part:@sanity/components/validation/list'
 import AnimateHeight from 'react-animate-height'
+import DefaultLabel from 'part:@sanity/components/labels/default'
 
 export default class Fieldset extends React.Component {
   static propTypes = {
@@ -42,8 +42,7 @@ export default class Fieldset extends React.Component {
     super()
     this.state = {
       isCollapsed: props.isCollapsed,
-      hasBeenToggled: false,
-      showValidationList: false
+      hasBeenToggled: false
     }
   }
 
@@ -69,12 +68,6 @@ export default class Fieldset extends React.Component {
     this._focusElement = el
   }
 
-  handleToggleValidationList = event => {
-    this.setState({
-      showValidationList: !this.state.showValidationList
-    })
-  }
-
   render() {
     const {
       fieldset,
@@ -92,7 +85,7 @@ export default class Fieldset extends React.Component {
       ...rest
     } = this.props
 
-    const {isCollapsed, showValidationList, hasBeenToggled} = this.state
+    const {isCollapsed, hasBeenToggled} = this.state
 
     const styles = {
       ...defaultStyles,
@@ -145,8 +138,14 @@ export default class Fieldset extends React.Component {
                         <ArrowDropDown />
                       </div>
                     )}
-                    {legend || fieldset.legend}
+                    <DefaultLabel className={styles.label}>
+                      {legend || fieldset.legend}
+                    </DefaultLabel>
                   </div>
+                  <ValidationStatus
+                    markers={markers}
+                    showSummary={markers.filter(marker => marker.type === 'validation').length > 1}
+                  />
                 </legend>
                 {(description || fieldset.description) && (
                   <p className={`${styles.description} ${isCollapsed ? '' : styles.isOpen}`}>
@@ -154,15 +153,7 @@ export default class Fieldset extends React.Component {
                   </p>
                 )}
               </div>
-              <div className={styles.headerStatus}>
-                <ValidationStatus markers={markers} onClick={this.handleToggleValidationList} />
-              </div>
             </div>
-            {showValidationList && (
-              <div className={styles.validationList}>
-                <ValidationList markers={markers} />
-              </div>
-            )}
             {isCollapsible && (
               <AnimateHeight
                 duration={250}

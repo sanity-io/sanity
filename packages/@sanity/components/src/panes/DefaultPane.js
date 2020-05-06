@@ -8,6 +8,7 @@ import {IntentLink} from 'part:@sanity/base/router'
 import ScrollContainer from 'part:@sanity/components/utilities/scroll-container'
 import DropDownButton from 'part:@sanity/components/buttons/dropdown'
 import TabPanel from 'part:@sanity/components/tabs/tab-panel'
+import {Tooltip} from 'react-tippy'
 import Styleable from '../utilities/Styleable'
 import defaultStyles from './styles/DefaultPane.css'
 import S from '@sanity/base/structure-builder'
@@ -116,16 +117,6 @@ class Pane extends React.PureComponent {
     if (this.closeRequest) {
       cancelAnimationFrame(this.closeRequest)
     }
-  }
-
-  // Triggered by clicking "outside" of the menu when open, or after triggering action
-  handleCloseMenu = () => {
-    this.setState({menuIsOpen: false})
-  }
-
-  // Triggered by pane menu button
-  handleMenuToggle = () => {
-    this.setState(prev => ({menuIsOpen: !prev.menuIsOpen}))
   }
 
   handleRootClick = event => {
@@ -260,7 +251,6 @@ class Pane extends React.PureComponent {
 
   renderMenu() {
     const {styles, menuItems, menuItemGroups, isCollapsed} = this.props
-    const {menuIsOpen} = this.state
     const items = menuItems.filter(isMenuButton)
 
     if (items.length === 0) {
@@ -269,31 +259,30 @@ class Pane extends React.PureComponent {
 
     return (
       <div className={styles.menuWrapper}>
-        <button
-          className={styles.menuOverflowButton}
-          // Makes menu component ignore clicks on button (prevents double-toggling)
-          data-menu-button-id={this.paneMenuId}
-          type="button"
-          onClick={this.handleMenuToggle}
-          title="Show menu"
+        <Tooltip
+          arrow
+          theme="light"
+          trigger="click"
+          position="bottom"
+          interactive
+          html={
+            <div className={styles.menuInner}>
+              <Menu
+                id={this.paneMenuId}
+                items={items}
+                groups={menuItemGroups}
+                origin={isCollapsed ? 'top-left' : 'top-right'}
+                onAction={this.handleMenuAction}
+              />
+            </div>
+          }
         >
-          <div className={styles.menuOverflowButtonInner} tabIndex={-1}>
-            <IconMoreVert />
-          </div>
-        </button>
-        <div className={styles.menuContainer}>
-          {menuIsOpen && (
-            <Menu
-              id={this.paneMenuId}
-              items={items}
-              groups={menuItemGroups}
-              origin={isCollapsed ? 'top-left' : 'top-right'}
-              onAction={this.handleMenuAction}
-              onClose={this.handleCloseMenu}
-              onClickOutside={this.handleCloseMenu}
-            />
-          )}
-        </div>
+          <button className={styles.menuOverflowButton} title="Show menu">
+            <div className={styles.menuOverflowButtonInner} tabIndex={-1}>
+              <IconMoreVert />
+            </div>
+          </button>
+        </Tooltip>
       </div>
     )
   }

@@ -3,8 +3,8 @@ import {Tooltip} from 'react-tippy'
 import schema from 'part:@sanity/base/schema'
 import Button from 'part:@sanity/components/buttons/default'
 import ValidationList from 'part:@sanity/components/validation/list'
-import ChevronDown from 'part:@sanity/base/chevron-down-icon'
-import WarningIcon from 'part:@sanity/base/warning-icon'
+import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
+import styles from './Validation.css'
 
 interface ValidationProps {
   id: string
@@ -19,8 +19,8 @@ interface ValidationProps {
 export function Validation(props: ValidationProps) {
   const {
     onCloseValidationResults,
-    onFocus,
     onToggleValidationResults,
+    onFocus,
     showValidationTooltip,
     type,
     markers
@@ -34,16 +34,14 @@ export function Validation(props: ValidationProps) {
   return (
     <Tooltip
       arrow
-      theme="light"
       trigger="click"
+      theme="light"
       position="bottom"
       interactive
-      duration={100}
       open={showValidationTooltip}
       onRequestClose={onCloseValidationResults}
       html={
         <ValidationList
-          truncate
           markers={validation}
           showLink
           isOpen={showValidationTooltip}
@@ -54,17 +52,15 @@ export function Validation(props: ValidationProps) {
       }
     >
       <Button
+        title="Show validation issues"
+        kind="simple"
+        inverted
+        ripple={false}
         color={errors.length > 0 ? 'danger' : 'warning'}
-        bleed
-        icon={WarningIcon}
-        padding="small"
+        icon={ErrorOutlineIcon}
+        className={`${styles.button} ${showValidationTooltip ? styles.isOpen : ''}`}
         onClick={onToggleValidationResults}
-      >
-        {errors.length + warnings.length}
-        <span style={{paddingLeft: '0.5em', display: 'flex'}}>
-          <ChevronDown />
-        </span>
-      </Button>
+      />
     </Tooltip>
   )
 }
