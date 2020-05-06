@@ -26,7 +26,7 @@
 }
 
 .inner {
-  padding: 0.5em 1em;
+  padding: 0.5em;
   position: relative;
   outline: none;
 
@@ -83,4 +83,8 @@
   top: 2rem;
   right: 1rem;
   z-index: var(--zindex-portal);
+}
+
+.menuWrapper {
+  margin: -0.375rem -0.75rem; /* Needed to get rid of tooltip padding */
 }
