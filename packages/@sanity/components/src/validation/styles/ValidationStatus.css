@@ -9,6 +9,16 @@
   }
 }
 
+.inner {
+  display: flex;
+  align-items: center;
+  font-size: var(--font-size-base);
+}
+
+.icon {
+  display: flex;
+}
+
 .error {
   color: var(--state-danger-color);
 }

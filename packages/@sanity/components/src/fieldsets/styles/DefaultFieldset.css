@@ -45,10 +45,6 @@
   padding: 0 var(--small-padding);
 }
 
-.validationIconError {
-  composes: validationIconError from 'part:@sanity/base/theme/forms/validation-style';
-}
-
 .description {
   composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
   margin: 0;
@@ -162,7 +158,8 @@
 .legend {
   composes: headingLevel_1 from 'part:@sanity/base/theme/typography/forms-style';
   color: var(--legend-color);
-  display: block;
+  display: flex;
+  align-items: center;
   width: 100%;
   margin: 0;
   padding: 0;
@@ -200,6 +197,10 @@
 
 .description + .content {
   margin-top: var(--small-padding);
+}
+
+.label {
+  padding-right: var(--small-padding);
 }
 
 .animateHeight {
