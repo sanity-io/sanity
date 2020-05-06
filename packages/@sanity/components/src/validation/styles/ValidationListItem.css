@@ -5,61 +5,64 @@
   margin: 0;
   flex-grow: 1;
   width: 100%;
-  padding: var(--small-padding);
   cursor: pointer;
   box-sizing: border-box;
   outline: none;
+  color: inherit;
+  font-size: var(--font-size-small);
+  font-weight: unset;
+  padding: var(--medium-padding);
+}
 
-  @nest &.truncate {
-    align-items: center;
+.item[data-item-type="simple"] {
+  user-select: none;
+  cursor: unset;
+  padding: var(--small-padding) var(--medium-padding);
+  border: 0;
+
+  @nest & .message {
+    color: var(--text-color);
+  }
+
+  @nest & .icon {
+    padding-top: 3px;
+    font-size: inherit;
   }
 }
 
-.error {
-  color: var(--state-danger-color);
-
-  @nest &:focus {
-    background-color: color(var(--state-danger-color) a(15%));
-  }
-
-  @nest &:not(:last-child) {
-    border-bottom: 1px solid color(var(--state-danger-color) a(10%));
+.item.error {
+  @nest & .icon {
+    color: var(--state-danger-color);
   }
 }
 
-.warning {
-  color: var(--state-warning-color);
-
-  @nest &:hover,
-  &:focus {
-    background-color: color(var(--state-warning-color) a(10%));
-  }
-
-  @nest &:not(:last-child) {
-    border-bottom: 1px solid color(var(--state-warning-color) a(10%));
+.item.warning {
+  @nest & .icon {
+    color: var(--state-warning-color);
   }
 }
 
 .interactiveItem {
   composes: item;
-  border-radius: var(--border-radius-base);
 
-  @nest &.error:hover {
+  @nest &.error:not([data-item-type="simple"]):hover {
     background-color: color(var(--state-danger-color) a(10%));
+  }
+
+  @nest &.warning:not([data-item-type="simple"]):hover,
+  &:focus {
+    background-color: color(var(--state-warning-color) a(10%));
   }
 }
 
 .icon {
   display: flex;
-  padding: var(--medium-padding);
-  padding-right: var(--large-padding);
+  padding: 2px var(--small-padding) 0 0;
+  font-size: var(--font-size-large);
 }
 
 .content {
-  display: block;
-  padding-right: 2em;
   flex-grow: 1;
-  padding-top: 1em;
 
   @nest .truncate & {
     padding-top: 0;
@@ -70,21 +73,9 @@
 }
 
 .path {
-  display: block;
-  text-transform: uppercase;
-  font-size: var(--font-size-xsmall);
+  font-weight: bold;
 }
 
 .message {
-  font-size: var(--font-size-base);
-}
-
-.link {
-  cursor: pointer;
-  text-align: right;
-  display: block;
-  margin-left: auto;
-  text-decoration: underline;
-  white-space: nowrap;
-  padding-right: var(--medium-padding);
+  color: var(--gray);
 }
