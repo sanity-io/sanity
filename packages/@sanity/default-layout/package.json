@@ -30,6 +30,7 @@
   "dependencies": {
     "@sanity/base": "1.149.15",
     "@sanity/generate-help-url": "1.149.0",
+    "@sanity/components": "1.149.15",
     "is-hotkey": "^0.1.4",
     "lodash": "^4.17.15",
     "react-click-outside": "^3.0.0",

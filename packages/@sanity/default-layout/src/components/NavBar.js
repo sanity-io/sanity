@@ -15,6 +15,7 @@ import SanityStatusContainer from './SanityStatusContainer'
 import SearchContainer from './SearchContainer'
 import SpaceSwitcher from './SpaceSwitcher'
 import styles from './styles/NavBar.css'
+import {GlobalPresence} from './GlobalPresence'
 
 let isSidecarEnabled
 let SidecarToggleButton
@@ -110,6 +111,9 @@ function NavBar(props) {
       <div className={styles.extras}>{/* Insert plugins here */}</div>
       <div className={styles.sanityStatus}>
         <SanityStatusContainer />
+      </div>
+      <div className={styles.presenceStatus}>
+        <GlobalPresence />
       </div>
       <div className={styles.loginStatus} ref={onSetLoginStatusElement}>
         <LoginStatus onLogout={onUserLogout} user={user} />
