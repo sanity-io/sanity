@@ -1,25 +1,17 @@
 /* eslint-disable complexity */
 import React from 'react'
 import PropTypes from 'prop-types'
-import styles from './styles/ValidationStatus.css'
-import WarningIcon from 'part:@sanity/base/warning-icon'
+import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
 import CheckIcon from 'part:@sanity/base/check-icon'
 import {Tooltip} from 'react-tippy'
+import styles from './styles/ValidationStatus.css'
+import { Marker } from './types'
 
-export default class ValidationStatus extends React.PureComponent {
-  static propTypes = {
-    onClick: PropTypes.func,
-    markers: PropTypes.arrayOf(
-      PropTypes.shape({
-        path: PropTypes.arrayOf(
-          PropTypes.oneOfType([PropTypes.object, PropTypes.string, PropTypes.number])
-        ),
-        type: PropTypes.string,
-        level: PropTypes.string,
-        item: PropTypes.any
-      })
-    )
-  }
+type Props = {
+  markers: Marker[]
+}
+
+export default class ValidationStatus extends React.PureComponent<Props> {
 
   static defaultProps = {
     onClick: () => {},
@@ -64,31 +56,18 @@ export default class ValidationStatus extends React.PureComponent {
     }
 
     return (
-      <Tooltip
-        title={tooltipText}
-        tabIndex={0}
-        trigger="mouseenter focus"
-        animation="scale"
-        arrow
-        theme="light"
-        distance="2"
-        duration={50}
-        className={styles.root}
-        onClick={onClick}
-      >
-        <div>
-          {errors &&
-            errors.length > 0 && (
-              <div className={styles.error}>
-                <WarningIcon />
-              </div>
-            )}
-          {warnings &&
-            warnings.length > 0 && (
-              <div className={styles.warning}>
-                <WarningIcon />
-              </div>
-            )}
+      <Tooltip title={tooltipText} tabIndex={0} arrow theme="light" className={styles.root} onClick={onClick}>
+        <div className={styles.inner}>
+          {errors && errors.length > 0 && (
+            <div className={`${styles.icon} ${styles.error}`}>
+              <ErrorOutlineIcon />
+            </div>
+          )}
+          {warnings && warnings.length > 0 && (
+            <div className={`${styles.icon} ${styles.warning}`}>
+              <ErrorOutlineIcon />
+            </div>
+          )}
         </div>
       </Tooltip>
     )

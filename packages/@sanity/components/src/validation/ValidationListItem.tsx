@@ -1,35 +1,30 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import styles from './styles/ValidationListItem.css'
-import WarningIcon from 'part:@sanity/base/warning-icon'
+import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
 import LinkIcon from 'part:@sanity/base/link-icon'
+import styles from './styles/ValidationListItem.css'
+import { Marker } from './types'
 
-export default class ValidationListItem extends React.PureComponent {
-  static propTypes = {
-    onClick: PropTypes.func,
-    showLink: PropTypes.bool,
-    path: PropTypes.string,
-    hasFocus: PropTypes.bool,
-    truncate: PropTypes.bool,
-    marker: PropTypes.shape({
-      path: PropTypes.arrayOf(
-        PropTypes.oneOfType([
-          PropTypes.string,
-          PropTypes.number,
-          PropTypes.shape({_key: PropTypes.string})
-        ])
-      ),
-      type: PropTypes.string,
-      level: PropTypes.string,
-      item: PropTypes.any
-    }).isRequired
-  }
+type Props = {
+  kind: string
+  onClick: (event: any, path: any) => void
+  showLink?: boolean
+  path: string
+  hasFocus?: boolean
+  truncate?: boolean
+  marker: Marker
+}
+
+export default class ValidationListItem extends React.PureComponent<Props> {
 
   static defaultProps = {
+    kind: '',
     path: '',
     onClick: undefined,
-    showLink: false
+    showLink: false,
+    truncate: false
   }
+  _element: any
 
   componentDidMount() {
     if (this.props.hasFocus) {
@@ -67,11 +62,11 @@ export default class ValidationListItem extends React.PureComponent {
   }
 
   render() {
-    const {marker, onClick, path, showLink, truncate} = this.props
-    const shouldRenderLink = onClick && showLink
+    const {kind, marker, onClick, path, showLink, truncate} = this.props
 
     return (
       <a
+        data-item-type={kind}
         ref={this.setElement}
         tabIndex={0}
         onClick={this.handleClick}
@@ -82,20 +77,16 @@ export default class ValidationListItem extends React.PureComponent {
           ${truncate ? styles.truncate : ''}
         `}
       >
-        <span className={styles.icon}>
-          <WarningIcon />
+        <span
+          className={styles.icon}
+        >
+          <ErrorOutlineIcon />
         </span>
 
         <div className={styles.content}>
-          <span className={styles.path}>{path}</span>
-          <span className={styles.message}>{marker.item.message}</span>
+          <div className={styles.path}>{path}</div>
+          <div className={styles.message}>{marker.item.message}</div>
         </div>
-
-        {shouldRenderLink && (
-          <span className={styles.link} title="View">
-            <LinkIcon />
-          </span>
-        )}
       </a>
     )
   }

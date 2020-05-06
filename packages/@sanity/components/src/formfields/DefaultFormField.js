@@ -69,17 +69,20 @@ export default class DefaultFormField extends React.PureComponent {
           {label && (
             <div className={styles.header}>
               <div className={styles.headerMain}>
-                {label && (
-                  <DefaultLabel className={styles.label} level={level}>
-                    {label}
-                  </DefaultLabel>
-                )}
-                {description && <div className={styles.description}>{description}</div>}
-              </div>
-              <div className={styles.headerStatus}>
-                <div onClick={this.handleToggleShowValidation} className={styles.validationStatus}>
-                  <ValidationStatus markers={markers} />
+                <div className={styles.title}>
+                  {label && (
+                    <DefaultLabel className={styles.label} level={level}>
+                      {label}
+                    </DefaultLabel>
+                  )}
+                  <div
+                    onClick={this.handleToggleShowValidation}
+                    className={styles.validationStatus}
+                  >
+                    <ValidationStatus markers={markers} />
+                  </div>
                 </div>
+                {description && <div className={styles.description}>{description}</div>}
               </div>
             </div>
           )}

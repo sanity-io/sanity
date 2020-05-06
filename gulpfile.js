@@ -116,7 +116,10 @@ const isTSProject = packageDir => {
 // that needs to be built serially is listed below.
 // Note: If you run into problems with packages that errors during TS compile due to issues with
 // another package in this monorepo it might help adding it to this array
-const BUILD_SERIALLY = [['packages/@sanity/mutator', 'packages/@sanity/base']]
+const BUILD_SERIALLY = [
+  ['packages/@sanity/components'],
+  ['packages/@sanity/mutator', 'packages/@sanity/base']
+]
 const TS_PROJECTS = BUILD_SERIALLY.concat(
   PACKAGE_PATHS.filter(isTSProject).filter(
     packagePath => !BUILD_SERIALLY.some(entry => entry.some(pkgPath => pkgPath === packagePath))
