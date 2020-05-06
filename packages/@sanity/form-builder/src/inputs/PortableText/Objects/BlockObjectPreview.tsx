@@ -9,7 +9,7 @@ import LinkIcon from 'part:@sanity/base/link-icon'
 import TrashIcon from 'part:@sanity/base/trash-icon'
 import VisibilityIcon from 'part:@sanity/base/visibility-icon'
 
-import {MenuItem, DropDownMenuItemProps} from './MenuItem'
+import {MenuItem, DropDownMenuItemProps} from './BlockObjectMenuItem'
 import Preview from '../../../Preview'
 
 import styles from './BlockObject.css'

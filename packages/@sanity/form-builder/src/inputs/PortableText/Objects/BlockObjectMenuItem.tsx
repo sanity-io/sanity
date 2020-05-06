@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, {FunctionComponent} from 'react'
 import {IntentLink} from 'part:@sanity/base/router'
+import styles from './BlockObject.css'
 
 export type DropDownMenuItemProps = {
   title: string
@@ -20,9 +21,7 @@ export const MenuItem: FunctionComponent<DropDownMenuItemProps> = ({
 }): JSX.Element => {
   const Icon = icon
   return (
-    // TODO: styling
-    // <div className={color === 'danger' ? styles.menuItemDanger : styles.menuItem}>
-    <div>
+    <div className={color === 'danger' ? styles.menuItemDanger : styles.menuItem}>
       {intent ? (
         <IntentLink intent={intent} params={params}>
           {Icon && <Icon />}
