@@ -23,6 +23,7 @@
     "@juggle/resize-observer": "3.1.3",
     "@reach/auto-id": "^0.7.2",
     "@sanity/base": "1.149.15",
+    "@sanity/components": "1.149.15",
     "@sanity/data-aspects": "1.149.7",
     "@sanity/form-builder": "1.149.15",
     "@sanity/generate-help-url": "1.149.0",
