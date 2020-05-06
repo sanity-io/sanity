@@ -61,6 +61,14 @@
       "path": "src/test-action-tool"
     },
     {
+      "implements": "part:@sanity/base/tool",
+      "path": "src/test-presence-tool"
+    },
+    {
+      "implements": "part:@sanity/base/tool",
+      "path": "src/form-builder-perf-tool"
+    },
+    {
       "implements": "part:@sanity/production-preview/resolve-production-url",
       "path": "src/resolveProductionUrl"
     },
