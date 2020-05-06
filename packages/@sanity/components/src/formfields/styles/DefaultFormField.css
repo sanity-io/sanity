@@ -17,6 +17,7 @@
 
 .label {
   display: block;
+  padding-right: var(--small-padding);
 }
 
 .content {
@@ -31,6 +32,11 @@
 
 .label + .content {
   margin-top: var(--small-padding);
+}
+
+.title {
+  display: flex;
+  align-items: center;
 }
 
 .description {
@@ -66,25 +72,23 @@
 }
 
 .validationStatus {
+  display: flex;
+  align-items: stretch;
   cursor: default;
 }
 
-.validationIconError {
-  composes: validationIconError from 'part:@sanity/base/theme/forms/validation-style';
-
-  @nest .root:focus-within & {
-    text-shadow: 0 0 5px var(--state-danger-color);
-    color: var(--state-danger-color);
-  }
-}
-
 .validationList {
-  composes: validationList from 'part:@sanity/base/theme/forms/validation-style';
-  padding-bottom: var(--small-padding);
-}
+  padding: 0;
 
-.validationListClosed {
-  composes: validationListClosed from 'part:@sanity/base/theme/forms/validation-style';
+  @nest & div[class*="root"] {
+    margin: 0;
+    padding: 0;
+
+    @nest & .item {
+      padding: 0;
+      border: 0;
+    }
+  }
 }
 
 .labelAndDescriptionWrapper {

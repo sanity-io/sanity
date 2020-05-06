@@ -2,31 +2,24 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styles from './styles/ValidationList.css'
 import ValidationListItem from './ValidationListItem'
+import {Marker} from './types'
 
-export default class ValidationList extends React.PureComponent {
-  static propTypes = {
-    onFocus: PropTypes.func,
-    onClose: PropTypes.func,
-    showLink: PropTypes.bool,
-    truncate: PropTypes.bool,
-    documentType: PropTypes.shape({
-      fields: PropTypes.arrayOf(PropTypes.shape({name: PropTypes.string.isRequired}))
-    }),
-    markers: PropTypes.arrayOf(
-      PropTypes.shape({
-        path: PropTypes.arrayOf(
-          PropTypes.oneOfType([
-            PropTypes.string,
-            PropTypes.number,
-            PropTypes.shape({_key: PropTypes.string})
-          ])
-        ),
-        type: PropTypes.string,
-        level: PropTypes.string,
-        item: PropTypes.any
-      })
-    )
+type Props = {
+  kind: string
+  onFocus: (path: any) => void
+  onClose: () => void
+  showLink: boolean
+  truncate: boolean
+  documentType: {
+    fields: {
+      name: string
+      type: any
+    }[]
   }
+  markers: Marker[]
+}
+
+export default class ValidationList extends React.PureComponent<Props> {
 
   static defaultProps = {
     markers: [],
@@ -35,6 +28,7 @@ export default class ValidationList extends React.PureComponent {
     showLink: false,
     onFocus: () => undefined
   }
+  scrollTimeout: any
 
   componentWillUnmount() {
     if (this.scrollTimeout) {
@@ -66,7 +60,7 @@ export default class ValidationList extends React.PureComponent {
   }
 
   render() {
-    const {markers, showLink, truncate} = this.props
+    const {kind, markers, showLink, truncate} = this.props
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
     const warnings = validation.filter(marker => marker.level === 'warning')
@@ -77,11 +71,12 @@ export default class ValidationList extends React.PureComponent {
 
     return (
       <div className={styles.root}>
-        <div className={styles.items}>
-          <ul>
-            {errors.length > 0 &&
-              errors.map((error, i) => (
+        <ul className={styles.list} data-kind={kind}>
+          {errors.length > 0 &&
+            errors.map((error, i) => (
+              <li className={styles.item}>
                 <ValidationListItem
+                  kind={kind}
                   truncate={truncate}
                   key={i}
                   path={this.resolvePathTitle(error.path)}
@@ -89,11 +84,14 @@ export default class ValidationList extends React.PureComponent {
                   onClick={this.handleClick}
                   showLink={showLink}
                 />
-              ))}
+              </li>
+            ))}
 
-            {warnings.length > 0 &&
-              warnings.map((warning, i) => (
+          {warnings.length > 0 &&
+            warnings.map((warning, i) => (
+              <li className={styles.item}>
                 <ValidationListItem
+                  kind={kind}
                   truncate={truncate}
                   key={i}
                   path={this.resolvePathTitle(warning.path)}
@@ -101,9 +99,9 @@ export default class ValidationList extends React.PureComponent {
                   onClick={this.handleClick}
                   showLink={showLink}
                 />
-              ))}
-          </ul>
-        </div>
+              </li>
+            ))}
+        </ul>
       </div>
     )
   }

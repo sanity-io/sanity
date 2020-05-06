@@ -1,0 +1,9 @@
+@import "part:@sanity/base/theme/variables-style";
+
+.button {
+  font-size: var(--font-size-large);
+}
+
+.isOpen {
+  background-color: color(var(--state-danger-color) a(10%));
+}

@@ -880,6 +880,10 @@
       "path": "components/icons/Error.js"
     },
     {
+      "implements": "part:@sanity/base/error-outline-icon",
+      "path": "components/icons/ErrorOutline.js"
+    },
+    {
       "implements": "part:@sanity/base/warning-icon",
       "path": "components/icons/Warning.js"
     },
