@@ -87,6 +87,8 @@ export default {
           ]
         }
       ]
-    }
+    },
+    {name: 'end', type: 'string', title: 'A field at the end'},
+    {name: 'anotherEnd', type: 'string', title: 'Another field at the end'}
   ]
 }
