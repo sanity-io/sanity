@@ -393,7 +393,7 @@ export default withPatchSubscriber(
       return wrappedEditor
     }
 
-    renderEditObject = () => {
+    renderEditObject = (): JSX.Element => {
       const {objectEditPath} = this.state
       const [object] = PortableTextEditor.findByPath(this.editor.current, objectEditPath)
       if (object) {
@@ -401,7 +401,7 @@ export default withPatchSubscriber(
           objectEditPath.length === 1 ? 'blockObjects' : 'inlineObjects'
         ].find(t => t.name === object._type)
         //const referenceElement = PortableTextEditor.findDOMNode(this.editor.current, object)
-        const handleClose = () => {
+        const handleClose = (): void => {
           this.props.onFocus(objectEditPath)
         }
         return (
