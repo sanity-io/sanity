@@ -9,7 +9,8 @@ import styles from './ListItemButtons.css'
 import {
   PortableTextFeature,
   PortableTextEditor,
-  EditorSelection
+  EditorSelection,
+  keyGenerator
 } from '@sanity/portable-text-editor'
 
 type ListItem = PortableTextFeature & {
@@ -71,12 +72,13 @@ export default class ListItemButtons extends React.Component<Props, {}> {
     const onAction = (): void => this.handleClick(item)
     return (
       <ToggleButton
-        selected={item.active}
-        disabled={item.disabled}
-        onClick={onAction}
         aria-label={`Toggle '${item.title}' list`}
-        title={`Toggle '${item.title}' list`}
+        disabled={item.disabled}
         icon={Icon}
+        key={keyGenerator()}
+        onClick={onAction}
+        selected={item.active}
+        title={`Toggle '${item.title}' list`}
       />
     )
   }

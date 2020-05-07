@@ -6,7 +6,7 @@ import InlineObjectIcon from 'part:@sanity/base/inline-object-icon'
 import {get} from 'lodash'
 import styles from './InsertMenu.css'
 import {Path} from '../../../typedefs/path'
-import {PortableTextEditor, Type} from '@sanity/portable-text-editor'
+import {PortableTextEditor, Type, keyGenerator} from '@sanity/portable-text-editor'
 
 type Props = {
   editor: PortableTextEditor
@@ -52,6 +52,7 @@ export default class InsertMenu extends React.Component<Props> {
       //   style={showLabels ? {display: 'block', flexGrow: 1, minWidth: 'fit-content'} : {}}
       // >
       <Button
+        key={keyGenerator()}
         onClick={() => this.handleOnAction(item)}
         title={`Insert ${item.title || item.value.type.name}${
           item.isInline ? ' (inline)' : ' (block)'
