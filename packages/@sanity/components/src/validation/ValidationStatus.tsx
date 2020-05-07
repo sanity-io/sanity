@@ -5,20 +5,22 @@ import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
 import CheckIcon from 'part:@sanity/base/check-icon'
 import {Tooltip} from 'react-tippy'
 import styles from './styles/ValidationStatus.css'
-import { Marker } from './types'
+import {Marker} from './types'
+import ValidationList from './ValidationList'
 
 type Props = {
+  hideTooltip?: boolean
+  showSummary?: boolean
   markers: Marker[]
 }
 
 export default class ValidationStatus extends React.PureComponent<Props> {
-
   static defaultProps = {
     markers: []
   }
 
   render() {
-    const {markers} = this.props
+    const {markers, showSummary = false, hideTooltip = false} = this.props
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
     const warnings = validation.filter(marker => marker.level === 'warning')
@@ -32,38 +34,37 @@ export default class ValidationStatus extends React.PureComponent<Props> {
     }
 
     const errorDef = `error${errors.length === 1 ? '' : 's'}`
-    const errorText = errors.length > 0 && `${errors.length} ${errorDef}`
     const warningDef = `warning${warnings.length === 1 ? '' : 's'}`
-    const warningText = warnings.length > 0 && `${warnings.length} ${warningDef}`
+    const errorText = errors.length > 0 ? `${errors.length} validation ${errorDef}` : ''
+    const warningText = warnings.length > 0 ? `${warnings.length} ${warningDef}` : ''
 
-    let tooltipText = errorText
+    const tooltipText = `There are ${errorText} ${
+      warningText !== '' ? `and ${warningText}` : ''
+    }${showSummary && ' in this list'}`
 
-    if (errorText && warningText) {
-      tooltipText = `${errorText} and ${warningText}`
-    }
+    const iconStyle = errors?.length < 1 && warnings?.length > 0 ? styles.warning : styles.error
 
-    if (warningText && !errorText) {
-      tooltipText = warningText
-    }
-
-    if (errors.length === 1 && warnings.length === 0) {
-      tooltipText = errors[0].item.message
-    }
-
-    if (warnings.length === 1 && errors.length === 0) {
-      tooltipText = warnings[0].item.message
-    }
+    const TooltipText = () => (
+      <div className={styles.tooltipText}>
+        <div className={`${styles.icon} ${iconStyle}`}>
+          <ErrorOutlineIcon />
+        </div>
+        {tooltipText}
+      </div>
+    )
 
     return (
-      <Tooltip title={tooltipText} tabIndex={0} arrow theme="light" className={styles.root}>
+      <Tooltip
+        tabIndex={0}
+        arrow
+        theme="light"
+        className={styles.root}
+        disabled={hideTooltip}
+        html={showSummary ? <TooltipText /> : <ValidationList markers={validation} kind="simple" />}
+      >
         <div className={styles.inner}>
-          {errors && errors.length > 0 && (
-            <div className={`${styles.icon} ${styles.error}`}>
-              <ErrorOutlineIcon />
-            </div>
-          )}
-          {warnings && warnings.length > 0 && (
-            <div className={`${styles.icon} ${styles.warning}`}>
+          {validation && validation.length > 0 && (
+            <div className={`${styles.icon} ${iconStyle}`}>
               <ErrorOutlineIcon />
             </div>
           )}
