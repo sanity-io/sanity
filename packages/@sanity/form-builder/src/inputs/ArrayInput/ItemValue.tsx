@@ -273,7 +273,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
 
         <div className={isGrid ? styles.functionsInGrid : styles.functions}>
           <div>
-            <ValidationStatus markers={scopedValidation} />
+            <ValidationStatus markers={scopedValidation} hideTooltip={!value._ref} />
           </div>
           {value._ref && (
             <IntentLink className={styles.linkToReference} intent="edit" params={{id: value._ref}}>
