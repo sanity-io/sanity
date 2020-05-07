@@ -14,7 +14,7 @@ import {PatchEvent} from '../../../../PatchEvent'
 type Props = {
   type: Type
   object: PortableTextBlock | PortableTextChild
-  referenceElement: React.RefObject<HTMLDivElement> | React.RefObject<HTMLSpanElement>
+  referenceElement: HTMLElement
   readOnly: boolean
   markers: Marker[]
   focusPath: Path
@@ -44,7 +44,7 @@ export const PopoverObjectEditing: FunctionComponent<Props> = ({
       {(): JSX.Element => (
         <Popover
           placement="bottom"
-          referenceElement={referenceElement.current}
+          referenceElement={referenceElement}
           onClickOutside={onClose}
           onEscape={onClose}
           onClose={onClose}
