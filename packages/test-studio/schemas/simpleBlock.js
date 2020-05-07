@@ -15,6 +15,12 @@ export default {
       of: [
         {
           type: 'block',
+          marks: {
+            annotations: [
+              {type: 'object', name: 'link', fields: [{type: 'string', name: 'url'}]},
+              {type: 'object', name: 'test', fields: [{type: 'string', name: 'mystring'}]}
+            ]
+          },
           of: [
             {type: 'image', name: 'image'},
             {type: 'object', name: 'test', fields: [{type: 'string', name: 'mystring'}]}
