@@ -5,12 +5,12 @@ import ValidationListItem from './ValidationListItem'
 import {Marker} from './types'
 
 type Props = {
-  kind: string
-  onFocus: (path: any) => void
-  onClose: () => void
-  showLink: boolean
-  truncate: boolean
-  documentType: {
+  kind?: string
+  onFocus?: (path: any) => void
+  onClose?: () => void
+  showLink?: boolean
+  truncate?: boolean
+  documentType?: {
     fields: {
       name: string
       type: any
@@ -20,7 +20,6 @@ type Props = {
 }
 
 export default class ValidationList extends React.PureComponent<Props> {
-
   static defaultProps = {
     markers: [],
     documentType: null,
