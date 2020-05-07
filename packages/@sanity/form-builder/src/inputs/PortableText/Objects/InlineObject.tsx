@@ -45,8 +45,6 @@ export const InlineObject: FunctionComponent<Props> = ({
       event.preventDefault()
       event.stopPropagation()
       onFocus(path.concat(FOCUS_TERMINATOR))
-    } else {
-      onFocus(path)
     }
   }
 
