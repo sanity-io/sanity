@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import React from 'react'
-// import AnnotationButtons from './AnnotationButtons'
+import AnnotationButtons from './AnnotationButtons'
 import BlockStyleSelect from './BlockStyleSelect'
 import DecoratorButtons from './DecoratorButtons'
 import InsertMenu from './InsertMenu'
@@ -31,7 +31,7 @@ export default class PrimaryGroup extends React.PureComponent<Props, State> {
     isMobile: false
   }
 
-  render() {
+  render(): JSX.Element {
     const {
       editor,
       onFocus,
@@ -74,13 +74,12 @@ export default class PrimaryGroup extends React.PureComponent<Props, State> {
         )}
         {portableTextFeatures.annotations.length > 0 && (
           <div className={styles.group}>
-            {/* <AnnotationButtons
+            <AnnotationButtons
+              selection={this.props.selection}
               collapsed={collapsedGroups.indexOf('annotationButtons') >= 0}
-              portableTextFeatures={portableTextFeatures}
               editor={editor}
               onFocus={onFocus}
-              isThrottling={isThrottling}
-            /> */}
+            />
           </div>
         )}
         {insertItems.length > 0 && (

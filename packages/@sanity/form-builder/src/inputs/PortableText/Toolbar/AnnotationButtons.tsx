@@ -7,20 +7,27 @@ import CustomIcon from './CustomIcon'
 import styles from './AnnotationButtons.css'
 import CollapsibleButtonGroup from './CollapsibleButtonGroup'
 import {Path} from '../../../typedefs/path'
-import {PortableTextEditor, PortableTextFeature} from '@sanity/portable-text-editor'
+import {
+  PortableTextEditor,
+  PortableTextFeature,
+  EditorSelection,
+  keyGenerator
+} from '@sanity/portable-text-editor'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 
 type AnnotationItem = PortableTextFeature & {
   active: boolean
   disabled: boolean
-  icon?: any
+  icon?: Function
 }
 
 type Props = {
   editor: PortableTextEditor
+  selection: EditorSelection
   onFocus: (arg0: Path) => void
   collapsed: boolean
 }
-function getIcon(type: string) {
+function getIcon(type: string): Function {
   switch (type) {
     case 'link':
       return LinkIcon
@@ -28,7 +35,7 @@ function getIcon(type: string) {
       return SanityLogoIcon
   }
 }
-function getIconFromItem(item: AnnotationItem) {
+function getIconFromItem(item: AnnotationItem): Function {
   return (
     item.icon ||
     get(item, 'blockEditor.icon') ||
@@ -41,62 +48,47 @@ function getIconFromItem(item: AnnotationItem) {
 export default class AnnotationButtons extends React.PureComponent<Props, {}> {
   getItems(): AnnotationItem[] {
     const {editor} = this.props
-    const inlines = [] // TODO: get inlines here
-    const disabled =
-      // TODO: deal with this?
-      // userIsWritingText ||
-      // editor.query('hasSelectionWithText') === false ||
-      inlines.some(inline => inline.type !== 'span')
-    return PortableTextEditor.getPortableTextFeatures(editor).annotations.map(annotation => {
+    const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
+    const activeAnnotations = PortableTextEditor.activeAnnotations(editor)
+    const focusChild = PortableTextEditor.focusChild(editor)
+    return ptFeatures.annotations.map((item: AnnotationItem) => {
       return {
-        ...annotation,
-        active: true, // TODO: editor.query('hasAnnotation', annotation.value),
-        disabled
+        ...item,
+        active: !!activeAnnotations.find(an => an._type === item.type.name),
+        disabled: !focusChild || PortableTextEditor.isVoid(editor, focusChild)
       }
     })
   }
-  handleClick = (item: AnnotationItem, originalSelection: Range) => {
-    // const {editor, onFocus} = this.props
-    // if (item.disabled) {
-    //   return
-    // }
-    // const key = randomKey(12)
-    // editor.command('toggleAnnotation', {annotationName: item.value, key})
-    // if (editor.value.startInline) {
-    //   // Make the block editor focus the annotation input if we added an annotation
-    //   editor.blur()
-    //   const focusPath = [
-    //     {_key: editor.value.focusBlock.key},
-    //     'markDefs',
-    //     {_key: key},
-    //     FOCUS_TERMINATOR
-    //   ]
-    //   setTimeout(() => {
-    //     onFocus(focusPath)
-    //   }, 200)
-    //   return
-    // }
-    // editor.command('focusNoScroll')
+  handleClick = (item: AnnotationItem): void => {
+    const {editor, onFocus} = this.props
+    if (item.active) {
+      PortableTextEditor.removeAnnotation(editor, item.type)
+      PortableTextEditor.focus(editor)
+      return
+    }
+    const paths = PortableTextEditor.addAnnotation(editor, item.type)
+    if (paths.markDefPath) {
+      onFocus(paths.markDefPath.concat(FOCUS_TERMINATOR))
+    }
   }
-  renderAnnotationButton = (item: AnnotationItem) => {
-    const {editor} = this.props
+  renderAnnotationButton = (item: AnnotationItem): JSX.Element => {
     let Icon
     const icon = getIconFromItem(item)
     if (icon) {
       if (typeof icon === 'string') {
-        Icon = () => <CustomIcon icon={icon} active={!!item.active} />
+        Icon = (): JSX.Element => <CustomIcon icon={icon} active={!!item.active} />
       } else if (typeof icon === 'function') {
         Icon = icon
       }
     }
     Icon = Icon || getIcon(item.value)
-    // We must not do a click-event here, because that messes with the editor focus!
-    const onAction = (originalSelection: Range) => {
-      this.handleClick(item, originalSelection)
+    const onAction = (): void => {
+      this.handleClick(item)
     }
     return (
       <ToggleButton
-        selected={!!item.active}
+        key={keyGenerator()}
+        selected={item.active}
         disabled={item.disabled}
         onClick={onAction}
         title={item.title}
@@ -104,14 +96,14 @@ export default class AnnotationButtons extends React.PureComponent<Props, {}> {
       />
     )
   }
-  render() {
+  render(): JSX.Element {
     const {collapsed} = this.props
     const items = this.getItems()
     let Icon
     const icon = getIconFromItem(items[0])
     if (icon) {
       if (typeof icon === 'string') {
-        Icon = () => <CustomIcon icon={icon} active={!!items[0].active} />
+        Icon = (): JSX.Element => <CustomIcon icon={icon} active={items[0].active} />
       } else if (typeof icon === 'function') {
         Icon = icon
       }
