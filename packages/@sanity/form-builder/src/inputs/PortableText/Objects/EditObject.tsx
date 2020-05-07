@@ -15,13 +15,14 @@ import {applyAll} from '../../../patch/applyPatch'
 type Props = {
   object: PortableTextBlock | PortableTextChild
   type: Type
-  referenceElement: React.RefObject<HTMLSpanElement> | React.RefObject<HTMLDivElement>
+  referenceElement: HTMLElement
   readOnly: boolean
   markers: Marker[]
   focusPath: Path
-  path: Path
-  onChange: (patchEvent: PatchEvent, path: Path) => void
-  onClose: (event: React.SyntheticEvent) => void
+  formBuilderPath: Path
+  editorPath: Path
+  onChange: (patchEvent: PatchEvent, editPath: Path) => void
+  onClose: () => void
   onFocus: (arg0: Path) => void
   onBlur: () => void
 }
@@ -33,22 +34,27 @@ export const EditObject: FunctionComponent<Props> = ({
   readOnly,
   markers,
   focusPath,
-  path,
+  formBuilderPath,
   onChange,
   onFocus,
+  onClose,
   onBlur
 }): JSX.Element => {
+  const [isChanged, setIsChanged] = useState(false)
   const [patchedObject, setPatchedObject] = useState(object)
-  const editModalLayout: ModalType = get(type.options, 'editModal')
+  const editModalLayout: ModalType = get(type, 'options.editModal')
   const flush = debounce(() => {
-    onChange(PatchEvent.from([set(patchedObject, [])]), path)
+    onChange(PatchEvent.from([set(patchedObject, [])]), formBuilderPath)
   }, 500)
   const handleClose = (): void => {
-    flush()
-    onFocus(path)
+    if (isChanged) {
+      flush()
+    }
+    onClose()
   }
 
   const handleChange = (patchEvent: PatchEvent): void => {
+    setIsChanged(true)
     setPatchedObject(applyAll(patchedObject, patchEvent.patches))
     flush()
   }
@@ -61,7 +67,7 @@ export const EditObject: FunctionComponent<Props> = ({
           readOnly={readOnly}
           markers={markers}
           focusPath={focusPath}
-          path={path}
+          path={formBuilderPath}
           onChange={handleChange}
           onFocus={onFocus}
           onBlur={onBlur}
@@ -78,7 +84,7 @@ export const EditObject: FunctionComponent<Props> = ({
           readOnly={readOnly}
           markers={markers}
           focusPath={focusPath}
-          path={path}
+          path={formBuilderPath}
           onChange={handleChange}
           onFocus={onFocus}
           onBlur={onBlur}
@@ -94,7 +100,7 @@ export const EditObject: FunctionComponent<Props> = ({
           readOnly={readOnly}
           markers={markers}
           focusPath={focusPath}
-          path={path}
+          path={formBuilderPath}
           onChange={handleChange}
           onFocus={onFocus}
           onBlur={onBlur}
