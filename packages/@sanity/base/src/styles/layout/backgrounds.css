@@ -7,42 +7,13 @@
 .listItemStates {
   position: relative;
 
-  @nest &:active::after {
-    z-index: 1;
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--selectable-item-color-active);
-    opacity: 0.5;
-    pointer-events: none;
-  }
-
   @media (hover: hover) {
-    @nest &:hover::after {
-      z-index: 1;
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+    @nest &:hover {
       background-color: var(--selectable-item-color-hover);
-      pointer-events: none;
     }
 
-    @nest &:hover:active::after {
-      z-index: 1;
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+    @nest &:active {
       background-color: var(--selectable-item-color-active);
-      pointer-events: none;
     }
   }
 }

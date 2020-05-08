@@ -4,7 +4,7 @@
   position: absolute;
   top: 0;
   width: 100%;
-  vertical-align: bottom;
+  vertical-align: top;
   box-sizing: border-box;
   background-color: var(--body-bg);
   background-image:
@@ -17,17 +17,27 @@
 }
 
 .item {
-  composes: listItemStates from 'part:@sanity/base/theme/layout/backgrounds-style';
   background-color: var(--gray-lighter);
   display: block;
   margin: calc(var(--small-padding) / 2);
   position: relative;
   overflow: hidden;
-  cursor: default;
+  cursor: pointer;
   flex-wrap: nowrap;
+  border-radius: var(--border-radius-small);
 
   @nest &.selected {
-    border: 4px solid var(--selected-item-color);
+    opacity: 1;
+    box-shadow: 0 0 0 1px var(--body-bg), 0 0 0 4px var(--body-text);
+  }
+
+  @media (hover: hover) {
+    opacity: 0.75;
+
+    @nest &:not(.selected):hover {
+      opacity: 1;
+      box-shadow: 0 0 0 1px var(--body-bg), 0 0 0 3px var(--selected-item-color);
+    }
   }
 }
 
@@ -42,7 +52,6 @@
   top: 0.2em;
   right: 0.2em;
   opacity: 1;
-  font-size: var(--font-size-small);
 
   @nest & [class^='DefaultButton_content'] {
     margin: 0.2em !important;

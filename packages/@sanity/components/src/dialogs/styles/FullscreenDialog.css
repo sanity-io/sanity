@@ -10,8 +10,8 @@
   right: 0;
   z-index: var(--zindex-portal);
   overflow: auto;
-  background-color: var(--body-bg);
-  color: var(--text-color);
+  background-color: var(--component-bg);
+  color: var(--component-text-color);
 }
 
 .centered {
@@ -19,10 +19,11 @@
 }
 
 .title {
-  font-size: var(--font-size-h2);
+  font-size: 1.25em;
+  line-height: 1;
+  font-weight: 700;
   margin: 0;
   padding: 0 0 var(--large-padding) 0;
-  line-height: 1;
 }
 
 .title:empty {
@@ -91,7 +92,7 @@
 .inner {
   position: relative;
   box-sizing: border-box;
-  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
+  composes: scrollY from 'part:@sanity/base/theme/layout/scrolling-style';
   max-height: 100vh;
   max-width: 100vw;
 }
@@ -125,30 +126,36 @@
 }
 
 .closeButton {
+  appearance: none;
+  background: var(--component-bg);
   display: block;
   position: fixed;
-  z-index: 1;
+  z-index: 100;
   top: var(--medium-padding);
   right: var(--medium-padding);
-  font-size: 3em;
-  height: 1em;
-  width: 1em;
+  font-size: var(--icon-size);
   border: none;
   color: inherit;
   outline: none;
-  background-color: transparent;
-  padding: 0;
+  padding: var(--small-padding);
   margin: 0;
+  border-radius: 50%;
+  cursor: pointer;
+
+  & > svg {
+    display: block;
+  }
 
   @nest .centered & {
     position: absolute;
   }
 
   @nest .default & {
-    color: var(--text-color);
+    color: var(--text-muted);
 
     @nest &:hover {
-      color: var(--black);
+      background: var(--body-bg);
+      color: var(--text-color);
     }
   }
 }
