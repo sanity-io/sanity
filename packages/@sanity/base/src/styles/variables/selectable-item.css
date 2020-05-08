@@ -5,6 +5,7 @@
   /*
     Selectable item
   */
+  --selectable-item-base: var(--brand-primary);
   --selectable-item-color: color(var(--selectable-item-base) a(0%));
   --selectable-item-color--inverted: var(--text-color);
   --selectable-item-color-hover: color(var(--selectable-item-base) a(15%));

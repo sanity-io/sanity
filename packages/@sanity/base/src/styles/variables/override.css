@@ -4,12 +4,36 @@
 */
 
 :root {
-  --selectable-item-base: #156dff;
-  --default-button-primary-color: #156dff;
-  --default-button-danger-color: #e0322d;
-  --default-button-success-color: #308654;
-  --selectable-item-color-hover: color(var(--brand-primary) a(15%));
-  --selectable-item-color-focus: color(var(--brand-primary) a(25%));
-  --selectable-item-color-active: color(var(--brand-primary) a(25%));
-  --selectable-item-color-highlighted: color(var(--brand-primary) a(25%));
+  /* Base */
+  --black: #121923;
+  --white: #fff;
+  --gray-base: #7b8ca8;
+
+  /* Brand */
+  --brand-primary: #2276fc;
+  --brand-primary--inverted: #fff;
+  --brand-secondary: #f03e2f;
+  --brand-secondary--inverted: #fff;
+
+  /* Focus */
+  --focus-color: #4e91fc;
+
+  /* Gray */
+  --gray-darkest: #262f3d;
+  --gray-darker: #3c4758;
+  --gray-dark: #66758d;
+  --gray: #7b8ca8;
+  --gray-light: #95a3b9;
+  --gray-ligther: #cad1dc;
+  --gray-lightest: #e4e8ed;
+
+  /* Navbar */
+  --main-navigation-color: #121923;
+  --main-navigation-color--inverted: #fff;
+
+  /* Selectable item */
+  --selectable-item-color-hover: #f1f3f6;
+  --selectable-item-color-focus: #e4e8ed;
+  --selectable-item-color-active: #f1f3f6;
+  --selectable-item-color-highlighted: #e4e8ed;
 }

@@ -1,15 +1,27 @@
-@import "part:@sanity/base/theme/variables/brand-colors-style";
-@import "part:@sanity/base/theme/variables/gray-colors-style";
+@import 'part:@sanity/base/theme/variables/brand-colors-style';
+@import 'part:@sanity/base/theme/variables/gray-colors-style';
 
 :root {
   --text-color: var(--body-text);
-  --text-color-secondary: color(var(--text-color) a(80%));
-  --text-muted: color(var(--text-color) a(50%));
+  --text-color-secondary: var(--gray-darker);
+  --text-muted: var(--gray);
   --link-color: var(--brand-primary);
-  --link-hover-color: var(--brand-primary);
-  --font-family-sans-serif: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-  --font-family-serif: Georgia, "Times New Roman", Times, serif;
-  --font-family-monospace: "SF Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
+  --link-hover-color: color(var(--state-info-color) saturation(+5%) lightness(-4%));
+  --font-family-sans-serif:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Roboto',
+    'Oxygen',
+    'Ubuntu',
+    'Cantarell',
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    sans-serif;
+  --font-family-serif: Georgia, 'Times New Roman', Times, serif;
+  --font-family-monospace: 'SF Mono', Menlo, Monaco, Consolas, 'Courier New', monospace;
   --font-family-base: var(--font-family-sans-serif);
   --font-size-base: 16px;
   --font-size-huge: 2rem;
@@ -23,21 +35,21 @@
   --font-size-xsmall--relative-uppercase: calc(11 / 16 * 1em); /* 11px when base is 16px */
   --font-size-xsmall--relative: 0.75em;
   --font-size-tiny--relative: 0.625em;
-  --font-size-h1: 2.625rem;
-  --font-size-h2: 2rem;
-  --font-size-h3: 1.75rem;
+  --font-size-h1: 2rem;
+  --font-size-h2: 1.75rem;
+  --font-size-h3: 1.5rem;
   --font-size-h4: 1.25rem;
   --font-size-h5: var(--font-size-base);
   --font-size-h6: 0.875rem;
   --line-height-base: 1.5;
-  --line-height-computed: calc(var(--font-size-base) * var(--line-height-base)));
+  --line-height-computed: calc(var(--font-size-base) * var(--line-height-base));
   --headings-font-family: inherit;
   --headings-font-weight: 700;
   --headings-line-height: 1.1em;
   --headings-color: inherit;
   --blockquote-color: var(--gray);
   --blockquote-font-size: 1.25em;
-  --blockquote-border-color: var(---gray-light);
+  --blockquote-border-color: var(--gray-light);
   --blockquote-small-color: var(--gray-light);
   --page-header-border-color: var(--gray-lighter);
   --hr-border: var(--gray-lighter);

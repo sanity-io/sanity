@@ -1,19 +1,19 @@
 @import "part:@sanity/base/theme/variables/brand-colors-style";
 
 :root {
-  --state-success-color: hsl(150, 75.5%, 40%); /* 19B366 */
+  --state-success-color: #3ab667;
   --state-success-color--faded: color(var(--state-success-color) hue(-0.2) saturation(-22.6%) lightness(+10%)); /* #3CC37F hsl(149.8, 52.9%, 50%) */
   --state-success-color--strong: color(var(--state-success-color) hue(-4.9) saturation(-28.2%) lightness(-4.3%)); /* #308654  hsl(145.1, 47.3%, 35.7%) */
   --state-success-color--inverted: color(var(--state-success-color) contrast(80%));
-  --state-info-color: #2097ac;
+  --state-info-color: #2276fc;
   --state-info-color--faded: color(var(--state-info-color) lightness(+10%));
   --state-info-color--strong: color(var(--state-info-color) saturation(+5%) lightness(-4%));
   --state-info-color--inverted: color(var(--state-info-color) contrast(80%));
-  --state-warning-color: #ffba00;
+  --state-warning-color: #b89b23;
   --state-warning-color--faded: color(var(--state-warning-color) hue(-2) saturation(+10%) lightness(+10%));
   --state-warning-color--strong: color(var(--state-warning-color) hue(-5) saturation(+1%) lightness(-4%));
   --state-warning-color--inverted: color(var(--state-warning-color) contrast(80%));
-  --state-danger-color: #e66666;
+  --state-danger-color: #f03e2f;
   --state-danger-color--faded: color(var(--state-danger-color) saturation(+18%) lightness(+10%));
   --state-danger-color--strong: color(var(--state-danger-color) saturation(+10%) lightness(-10%));
   --state-danger-color--inverted: color(var(--state-danger-color) contrast(80%));

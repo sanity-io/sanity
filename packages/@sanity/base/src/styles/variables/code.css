@@ -1,12 +1,17 @@
 @import 'part:@sanity/base/theme/variables/gray-colors-style';
 
 :root {
-  --code-color: #c7254e;
-  --code-bg: #f9f2f4;
-  --kbd-color: #fff;
-  --kbd-bg: #333;
-  --pre-bg: #f5f5f5;
-  --pre-color: var(--gray-dark);
-  --pre-border-color: #ccc;
+  /* Code */
+  --code-bg: var(--gray-lightest);
+  --code-color: var(--gray);
+
+  /* KBD */
+  --kbd-bg: var(--gray);
+  --kbd-color: var(--white);
+
+  /* Pre */
+  --pre-bg: var(--code-bg);
+  --pre-color: var(--code-color);
+  --pre-border-color: var(--gray);
   --pre-scrollable-max-height: 20em;
 }

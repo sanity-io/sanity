@@ -1,9 +1,15 @@
 :root {
-  --brand-darkest: #000;
-  --brand-lightest: #fff;
-  --gray-base: #323232;
-  --brand-primary: #24a3e3;
-  --brand-primary--inverted: #fff;
-  --brand-secondary: #f43;
-  --brand-secondary--inverted: #fff;
+  --black: #000;
+  --white: #fff;
+  --brand-darkest: var(--black);
+  --brand-darkest--inverted: color(var(--brand-darkest) contrast(80%));
+  --brand-lightest: var(--white);
+  --brand-primary: #2276fc;
+  --brand-primary--inverted: var(--brand-lightest);
+  --brand-secondary: #f03e2f;
+  --brand-secondary--inverted: var(--brand-lightest);
+
+  /* Base */
+  --brand-faded: color(var(--brand-primary) blend(var(--white) 60%));
+  --gray-base: color(var(--black) blend(var(--brand-faded) 50%));
 }
