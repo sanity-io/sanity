@@ -3,8 +3,9 @@
 
 .root {
   background-color: var(--code-bg);
+  color: var(--code-color);
   line-height: 17px;
   font-size: 13px;
-  font-family: monospace;
+  font-family: var(--font-family-monospace);
   white-space: pre-wrap;
 }

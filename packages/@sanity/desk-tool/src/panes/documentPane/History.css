@@ -1,9 +1,8 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  min-width: 260px;
-  max-width: 320px;
-  background-color: color(var(--component-bg) shade(2%));
+  min-width: 200px;
+  max-width: 250px;
   height: 100%;
   width: 100%;
   z-index: 1;
