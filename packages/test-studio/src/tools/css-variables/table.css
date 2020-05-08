@@ -1,0 +1,2333 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  margin: var(--large-padding) 0;
+
+  @nest &::before {
+    background: var(--body-bg);
+    content: '';
+    position: sticky;
+    top: 0;
+    height: calc(var(--small-padding) * 2);
+    margin-bottom: calc(0 - var(--small-padding));
+    display: block;
+    z-index: 9;
+  }
+}
+
+.header {
+  background: var(--component-bg);
+  display: flex;
+  position: sticky;
+  top: var(--small-padding);
+  z-index: 10;
+  border-top-left-radius: var(--border-radius-base);
+  border-top-right-radius: var(--border-radius-base);
+
+  @nest &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    border-bottom: 1px solid var(--hairline-color);
+  }
+}
+
+.name {
+  flex: 1;
+  padding: 0.5em 1em;
+  font-weight: 700;
+}
+
+.actions {
+  padding-right: var(--small-padding);
+}
+
+.content {
+  background: var(--component-bg);
+  border-bottom-left-radius: var(--border-radius-base);
+  border-bottom-right-radius: var(--border-radius-base);
+  padding-bottom: var(--small-padding);
+}
+
+.row {
+  position: relative;
+  display: flex;
+  padding: 0 var(--small-padding);
+
+  @nest &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    border-bottom: 1px solid var(--hairline-color);
+    z-index: 1;
+    mix-blend-mode: multiply;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background: var(--selectable-item-color-hover);
+      /* outline: 1px solid var(--selectable-item-base); */
+      /* outline-offset: -1px; */
+      /* z-index: 1; */
+    }
+  }
+}
+
+.varValue {
+  flex: 3;
+  min-height: 1.5em;
+  padding: var(--small-padding);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 20rem;
+}
+
+.varName {
+  padding: var(--small-padding) var(--medium-padding);
+  flex: 3;
+  border-left: 1px solid var(--hairline-color);
+  font-family: var(--font-family-monospace);
+  white-space: nowrap;
+  overflow: auto;
+  margin-left: -1px;
+
+  @nest .deprecated & {
+    opacity: 0.25;
+  }
+}
+
+.varContent {
+  flex: 3;
+  padding: var(--small-padding);
+  text-align: right;
+  font-family: var(--font-family-monospace);
+  border-left: 1px solid var(--hairline-color);
+  white-space: nowrap;
+  overflow: auto;
+  color: var(--text-muted);
+
+  @nest &::before {
+    content: '?';
+  }
+}
+
+[data-type='border'] .varValue {
+  @nest & > div {
+    height: 1.5em;
+  }
+}
+
+[data-type='radius'] .varValue,
+[data-type='shadow'] .varValue,
+[data-type='size'] .varValue {
+  @nest & > div {
+    width: 1.5em;
+    height: 1.5em;
+  }
+}
+
+[data-type='radius'] .varValue > div {
+  background: var(--gray);
+}
+
+[data-type='size'] .varValue > div {
+  background: var(--gray);
+  height: 1.5em;
+}
+
+[data-type='font'] .varValue::before {
+  background: var(--gray-lighter);
+  content: 'Hamburgefontstiv';
+}
+
+[data-type='fontSize'] .varValue::before {
+  background: var(--gray-lighter);
+  content: 'Hamburgefontstiv';
+}
+
+[data-type='fontWeight'] .varValue::before {
+  background: var(--gray-lighter);
+  content: 'Hamburgefontstiv';
+}
+
+[data-type='lineHeight'] .varValue::before {
+  background: var(--gray-lighter);
+  content: 'Hamburgefontstiv';
+}
+
+[data-type='shadow'] .varValue {
+  background: var(--body-bg);
+
+  @nest & > div {
+    background: var(--component-bg);
+    width: 10em;
+  }
+}
+
+/* brand-colors.css */
+
+[data-name='--black'] {
+  @nest & .varValue {
+    background: var(--black);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--black)';
+  }
+}
+
+[data-name='--white'] {
+  @nest & .varValue {
+    background: var(--white);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--white)';
+  }
+}
+
+[data-name='--white'] .content::before {
+  content: 'var(--white)';
+}
+
+[data-name='--brand-darkest'] {
+  @nest & .varValue {
+    background: var(--brand-darkest);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--brand-darkest)';
+  }
+}
+
+[data-name='--brand-lightest'] {
+  @nest & .varValue {
+    background: var(--brand-lightest);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--brand-lightest)';
+  }
+}
+
+[data-name='--brand-primary'] {
+  @nest & .varValue {
+    background: var(--brand-primary);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--brand-primary)';
+  }
+}
+
+[data-name='--brand-primary--inverted'] {
+  @nest & .varValue {
+    background: var(--brand-primary--inverted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--brand-primary--inverted)';
+  }
+}
+
+[data-name='--brand-secondary'] {
+  @nest & .varValue {
+    background: var(--brand-secondary);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--brand-secondary)';
+  }
+}
+
+[data-name='--brand-secondary--inverted'] {
+  @nest & .varValue {
+    background: var(--brand-secondary--inverted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--brand-secondary--inverted)';
+  }
+}
+
+[data-name='--gray-base'] {
+  @nest & .varValue {
+    background: var(--gray-base);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--gray-base)';
+  }
+}
+
+/* code.css */
+
+[data-name='--code-bg'] {
+  @nest & .varValue {
+    background: var(--code-bg);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--code-bg)';
+  }
+}
+
+[data-name='--code-color'] {
+  @nest & .varValue {
+    background: var(--code-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--code-color)';
+  }
+}
+
+[data-name='--kbd-bg'] {
+  @nest & .varValue {
+    background: var(--kbd-bg);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--kbd-bg)';
+  }
+}
+
+[data-name='--kbd-color'] {
+  @nest & .varValue {
+    background: var(--kbd-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--kbd-color)';
+  }
+}
+
+[data-name='--pre-bg'] {
+  @nest & .varValue {
+    background: var(--pre-bg);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--pre-bg)';
+  }
+}
+
+[data-name='--pre-color'] {
+  @nest & .varValue {
+    background: var(--pre-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--pre-color)';
+  }
+}
+
+[data-name='--pre-border-color'] {
+  @nest & .varValue {
+    background: var(--pre-border-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--pre-border-color)';
+  }
+}
+
+[data-name='--pre-scrollable-max-height'] {
+  @nest & .varValue > div {
+    width: var(--pre-scrollable-max-height);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--pre-scrollable-max-height)';
+  }
+}
+
+/* forms.css */
+
+[data-name='--default-button-color'] {
+  @nest & .varValue {
+    background: var(--default-button-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--default-button-color)';
+  }
+}
+
+[data-name='--default-button-color--inverted'] {
+  @nest & .varValue {
+    background: var(--default-button-color--inverted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--default-button-color--inverted)';
+  }
+}
+
+[data-name='--default-button-color--hover'] {
+  @nest & .varValue {
+    background: var(--default-button-color--hover);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--default-button-color--hover)';
+  }
+}
+
+[data-name='--default-button-color--active'] {
+  @nest & .varValue {
+    background: var(--default-button-color--active);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--default-button-color--active)';
+  }
+}
+
+[data-name='--button-border-radius'] {
+  @nest & .varValue > div {
+    border-radius: var(--button-border-radius);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--button-border-radius)';
+  }
+}
+
+[data-name='--input-bg'] {
+  @nest & .varValue {
+    background: var(--input-bg);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-bg)';
+  }
+}
+
+[data-name='--input-bg-focus'] {
+  @nest & .varValue {
+    background: var(--input-bg-focus);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-bg-focus)';
+  }
+}
+
+[data-name='--input-bg-invalid'] {
+  @nest & .varValue {
+    background: var(--input-bg-invalid);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-bg-invalid)';
+  }
+}
+
+[data-name='--input-bg-disabled'] {
+  @nest & .varValue {
+    background: var(--input-bg-disabled);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-bg-disabled)';
+  }
+}
+
+[data-name='--input-color'] {
+  @nest & .varValue {
+    background: var(--input-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-color)';
+  }
+}
+
+[data-name='--input-border-color'] {
+  @nest & .varValue {
+    background: var(--input-border-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-border-color)';
+  }
+}
+
+[data-name='--input-border-size'] {
+  @nest & .varValue > div {
+    width: var(--input-border-size);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-border-size)';
+  }
+}
+
+[data-name='--input-line-height'] {
+  @nest & .varValue > div {
+    line-height: var(--input-line-height);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-line-height)';
+  }
+}
+
+[data-name='--input-padding-vertical'] {
+  @nest & .varValue > div {
+    width: var(--input-padding-vertical);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-padding-vertical)';
+  }
+}
+
+[data-name='--input-padding-horizontal'] {
+  @nest & .varValue > div {
+    width: var(--input-padding-horizontal);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-padding-horizontal)';
+  }
+}
+
+[data-name='--input-border-radius'] {
+  @nest & .varValue > div {
+    border-radius: var(--input-border-radius);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-border-radius)';
+  }
+}
+
+[data-name='--input-border-radius-large'] {
+  @nest & .varValue > div {
+    border-radius: var(--input-border-radius-large);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-border-radius-large)';
+  }
+}
+
+[data-name='--input-border-radius-small'] {
+  @nest & .varValue > div {
+    border-radius: var(--input-border-radius-small);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-border-radius-small)';
+  }
+}
+
+[data-name='--input-border-color-hover'] {
+  @nest & .varValue {
+    background: var(--input-border-color-hover);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-border-color-hover)';
+  }
+}
+
+[data-name='--input-border-color-focus'] {
+  @nest & .varValue {
+    background: var(--input-border-color-focus);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-border-color-focus)';
+  }
+}
+
+[data-name='--input-border-color-active'] {
+  @nest & .varValue {
+    background: var(--input-border-color-active);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-border-color-active)';
+  }
+}
+
+[data-name='--input-border-color-invalid'] {
+  @nest & .varValue {
+    background: var(--input-border-color-invalid);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-border-color-invalid)';
+  }
+}
+
+[data-name='--focus-color'] {
+  @nest & .varValue {
+    background: var(--focus-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--focus-color)';
+  }
+}
+
+[data-name='--input-color-placeholder'] {
+  @nest & .varValue {
+    background: var(--input-color-placeholder);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-color-placeholder)';
+  }
+}
+
+[data-name='--label-color'] {
+  @nest & .varValue {
+    background: var(--label-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--label-color)';
+  }
+}
+
+[data-name='--legend-color'] {
+  @nest & .varValue {
+    background: var(--legend-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--legend-color)';
+  }
+}
+
+[data-name='--cursor-disabled'] {
+  @nest & .varValue {
+    cursor: var(--cursor-disabled);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--cursor-disabled)';
+  }
+}
+
+[data-name='--clear-cross-color'] {
+  @nest & .varValue {
+    background: var(--clear-cross-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--clear-cross-color)';
+  }
+}
+
+[data-name='--clear-cross-color-hover'] {
+  @nest & .varValue {
+    background: var(--clear-cross-color-hover);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--clear-cross-color-hover)';
+  }
+}
+
+[data-name='--input-box-shadow-base'] {
+  @nest & .varValue {
+    background: var(--input-box-shadow-base);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-box-shadow-base)';
+  }
+}
+
+[data-name='--input-box-shadow'] {
+  @nest & .varValue > div {
+    box-shadow: var(--input-box-shadow);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-box-shadow)';
+  }
+}
+
+[data-name='--input-box-shadow--hover'] {
+  @nest & .varValue > div {
+    box-shadow: var(--input-box-shadow--hover);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-box-shadow--hover)';
+  }
+}
+
+[data-name='--input-box-shadow--focus'] {
+  @nest & .varValue > div {
+    box-shadow: var(--input-box-shadow--focus);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-box-shadow--focus)';
+  }
+}
+
+[data-name='--input-box-shadow--invalid'] {
+  @nest & .varValue > div {
+    box-shadow: var(--input-box-shadow--invalid);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-box-shadow--invalid)';
+  }
+}
+
+[data-name='--input-box-shadow--invalid-focus'] {
+  @nest & .varValue > div {
+    box-shadow: var(--input-box-shadow--invalid-focus);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--input-box-shadow--invalid-focus)';
+  }
+}
+
+[data-name='--fieldset-border'] {
+  @nest & .varValue > div {
+    border-left: var(--fieldset-border);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--fieldset-border)';
+  }
+}
+
+[data-name='--fieldset-box-shadow'] {
+  @nest & .varValue > div {
+    box-shadow: var(--fieldset-box-shadow);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--fieldset-box-shadow)';
+  }
+}
+
+[data-name='--fieldset-box-shadow--hover'] {
+  @nest & .varValue > div {
+    box-shadow: var(--fieldset-box-shadow--hover);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--fieldset-box-shadow--hover)';
+  }
+}
+
+[data-name='--fieldset-box-shadow--invalid'] {
+  @nest & .varValue > div {
+    box-shadow: var(--fieldset-box-shadow--invalid);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--fieldset-box-shadow--invalid)';
+  }
+}
+
+[data-name='--fieldset-box-shadow--focus'] {
+  @nest & .varValue > div {
+    box-shadow: var(--fieldset-box-shadow--focus);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--fieldset-box-shadow--focus)';
+  }
+}
+
+[data-name='--fieldset-box-shadow--invalid-focus'] {
+  @nest & .varValue > div {
+    box-shadow: var(--fieldset-box-shadow--invalid-focus);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--fieldset-box-shadow--invalid-focus)';
+  }
+}
+
+[data-name='--fieldset-bg'] {
+  @nest & .varValue > div {
+    background: var(--fieldset-bg);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--fieldset-bg)';
+  }
+}
+
+[data-name='--form-builder-block-border-color'] {
+  @nest & .varValue {
+    background: var(--form-builder-block-border-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--form-builder-block-border-color)';
+  }
+}
+
+[data-name='--form-builder-block-border-color-focus'] {
+  @nest & .varValue {
+    background: var(--form-builder-block-border-color-focus);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--form-builder-block-border-color-focus)';
+  }
+}
+
+[data-name='--form-builder-block-border-color-error'] {
+  @nest & .varValue {
+    background: var(--form-builder-block-border-color-error);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--form-builder-block-border-color-error)';
+  }
+}
+
+[data-name='--form-builder-block-background'] {
+  @nest & .varValue {
+    background: var(--form-builder-block-background);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--form-builder-block-background)';
+  }
+}
+
+[data-name='--form-builder-block-background-hover'] {
+  @nest & .varValue {
+    background: var(--form-builder-block-background-hover);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--form-builder-block-background-hover)';
+  }
+}
+
+[data-name='--form-builder-block-background-selected'] {
+  @nest & .varValue {
+    background: var(--form-builder-block-background-selected);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--form-builder-block-background-selected)';
+  }
+}
+
+[data-name='--form-builder-block-shadow'] {
+  @nest & .varValue > div {
+    box-shadow: var(--form-builder-block-shadow);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--form-builder-block-shadow)';
+  }
+}
+
+[data-name='--form-builder-block-shadow--hover'] {
+  @nest & .varValue > div {
+    box-shadow: var(--form-builder-block-shadow--hover);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--form-builder-block-shadow--hover)';
+  }
+}
+
+[data-name='--form-builder-block-shadow--focus'] {
+  @nest & .varValue > div {
+    box-shadow: var(--form-builder-block-shadow--focus);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--form-builder-block-shadow--focus)';
+  }
+}
+
+[data-name='--form-builder-block-shadow--invalid'] {
+  @nest & .varValue > div {
+    box-shadow: var(--form-builder-block-shadow--invalid);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--form-builder-block-shadow--invalid)';
+  }
+}
+
+[data-name='--form-builder-block-shadow--invalid-focus'] {
+  @nest & .varValue > div {
+    box-shadow: var(--form-builder-block-shadow--invalid-focus);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--form-builder-block-shadow--invalid-focus)';
+  }
+}
+
+[data-name='--form-builder-block-border-radius'] {
+  @nest & .varValue > div {
+    border-radius: var(--form-builder-block-border-radius);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--form-builder-block-border-radius)';
+  }
+}
+
+/* gray-colors.css */
+
+[data-name='--gray-darkest'] {
+  @nest & .varValue {
+    background: var(--gray-darkest);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--gray-darkest)';
+  }
+}
+
+[data-name='--gray-darkest--transparent'] {
+  @nest & .varValue {
+    background: var(--gray-darkest--transparent);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--gray-darkest--transparent)';
+  }
+}
+
+[data-name='--gray-darker'] {
+  @nest & .varValue {
+    background: var(--gray-darker);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--gray-darker)';
+  }
+}
+
+[data-name='--gray-darker-transparent'] {
+  @nest & .varValue {
+    background: var(--gray-darker-transparent);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--gray-darker-transparent)';
+  }
+}
+
+[data-name='--gray-dark'] {
+  @nest & .varValue {
+    background: var(--gray-dark);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--gray-dark)';
+  }
+}
+
+[data-name='--gray-dark--transparent'] {
+  @nest & .varValue {
+    background: var(--gray-dark--transparent);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--gray-dark--transparent)';
+  }
+}
+
+[data-name='--gray'] {
+  @nest & .varValue {
+    background: var(--gray);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--gray)';
+  }
+}
+
+[data-name='--gray--transparent'] {
+  @nest & .varValue {
+    background: var(--gray--transparent);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--gray--transparent)';
+  }
+}
+
+[data-name='--gray-light'] {
+  @nest & .varValue {
+    background: var(--gray-light);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--gray-light)';
+  }
+}
+
+[data-name='--gray-light--transparent'] {
+  @nest & .varValue {
+    background: var(--gray-light--transparent);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--gray-light--transparent)';
+  }
+}
+
+[data-name='--gray-lighter'] {
+  @nest & .varValue {
+    background: var(--gray-lighter);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--gray-lighter)';
+  }
+}
+
+[data-name='--gray-lighter--transparent'] {
+  @nest & .varValue {
+    background: var(--gray-lighter--transparent);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--gray-lighter--transparent)';
+  }
+}
+
+[data-name='--gray-lightest'] {
+  @nest & .varValue {
+    background: var(--gray-lightest);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--gray-lightest)';
+  }
+}
+
+[data-name='--gray-lightest--transparent'] {
+  @nest & .varValue {
+    background: var(--gray-lightest--transparent);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--gray-lightest--transparent)';
+  }
+}
+
+/* globals.css */
+[data-name='--body-bg'] {
+  @nest & .varValue {
+    background: var(--body-bg);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--body-bg)';
+  }
+}
+
+[data-name='--body-text'] {
+  @nest & .varValue {
+    background: var(--body-text);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--body-text)';
+  }
+}
+
+[data-name='--component-bg'] {
+  @nest & .varValue {
+    background: var(--component-bg);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--component-bg)';
+  }
+}
+
+[data-name='--component-text-color'] {
+  @nest & .varValue {
+    background: var(--component-text-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--component-text-color)';
+  }
+}
+
+[data-name='--preview-placeholder-color'] {
+  @nest & .varValue {
+    background: var(--preview-placeholder-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--preview-placeholder-color)';
+  }
+}
+
+[data-name='--component-border-color'] {
+  @nest & .varValue {
+    background: var(--component-border-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--component-border-color)';
+  }
+}
+
+[data-name='--backdrop-color'] {
+  @nest & .varValue {
+    background: var(--backdrop-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--backdrop-color)';
+  }
+}
+
+[data-name='--main-navigation-color'] {
+  @nest & .varValue {
+    background: var(--main-navigation-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--main-navigation-color)';
+  }
+}
+
+[data-name='--main-navigation-color--inverted'] {
+  @nest & .varValue {
+    background: var(--main-navigation-color--inverted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--main-navigation-color--inverted)';
+  }
+}
+
+[data-name='--dialog-header-color'] {
+  @nest & .varValue {
+    background: var(--dialog-header-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--dialog-header-color)';
+  }
+}
+
+[data-name='--dialog-header-color--inverted'] {
+  @nest & .varValue {
+    background: var(--dialog-header-color--inverted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--dialog-header-color--inverted)';
+  }
+}
+
+[data-name='--header-height'] {
+  @nest & .varValue {
+    background: var(--header-height);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--header-height)';
+  }
+}
+
+[data-name='--checkerboard-color'] {
+  @nest & .varValue {
+    background: var(--checkerboard-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--checkerboard-color)';
+  }
+}
+
+[data-name='--selectable-item-base'] {
+  @nest & .varValue {
+    background: var(--selectable-item-base);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--selectable-item-base)';
+  }
+}
+
+[data-name='--brand-darkest--inverted'] {
+  @nest & .varValue {
+    background: var(--brand-darkest--inverted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--brand-darkest--inverted)';
+  }
+}
+
+[data-name='--hairline-color'] {
+  @nest & .varValue {
+    background: var(--hairline-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--hairline-color)';
+  }
+}
+
+[data-name='--default-button-primary-color'] {
+  @nest & .varValue {
+    background: var(--default-button-primary-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--default-button-primary-color)';
+  }
+}
+
+[data-name='--default-button-primary-color--inverted'] {
+  @nest & .varValue {
+    background: var(--default-button-primary-color--inverted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--default-button-primary-color--inverted)';
+  }
+}
+
+[data-name='--default-button-danger-color'] {
+  @nest & .varValue {
+    background: var(--default-button-danger-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--default-button-danger-color)';
+  }
+}
+
+[data-name='--default-button-danger-color--inverted'] {
+  @nest & .varValue {
+    background: var(--default-button-danger-color--inverted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--default-button-danger-color--inverted)';
+  }
+}
+
+[data-name='--default-button-success-color'] {
+  @nest & .varValue {
+    background: var(--default-button-success-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--default-button-success-color)';
+  }
+}
+
+[data-name='--default-button-success-color--inverted'] {
+  @nest & .varValue {
+    background: var(--default-button-success-color--inverted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--default-button-success-color--inverted)';
+  }
+}
+
+[data-name='--default-button-warning-color'] {
+  @nest & .varValue {
+    background: var(--default-button-warning-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--default-button-warning-color)';
+  }
+}
+
+[data-name='--default-button-warning-color--inverted'] {
+  @nest & .varValue {
+    background: var(--default-button-warning-color--inverted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--default-button-warning-color--inverted)';
+  }
+}
+
+[data-name='--shadow-base'] {
+  @nest & .varValue {
+    background: var(--shadow-base);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--shadow-base)';
+  }
+}
+
+[data-name='--shadow-color-umbra'] {
+  @nest & .varValue {
+    background: var(--shadow-color-umbra);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--shadow-color-umbra)';
+  }
+}
+
+[data-name='--shadow-color-penumbra'] {
+  @nest & .varValue {
+    background: var(--shadow-color-penumbra);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--shadow-color-penumbra)';
+  }
+}
+
+[data-name='--shadow-color-ambient'] {
+  @nest & .varValue {
+    background: var(--shadow-color-ambient);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--shadow-color-ambient)';
+  }
+}
+
+[data-name='--border-radius-base'] {
+  @nest & .varValue > div {
+    border-radius: var(--border-radius-base);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--border-radius-base)';
+  }
+}
+
+[data-name='--border-radius-large'] {
+  @nest & .varValue > div {
+    border-radius: var(--border-radius-large);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--border-radius-large)';
+  }
+}
+
+[data-name='--border-radius-medium'] {
+  @nest & .varValue > div {
+    border-radius: var(--border-radius-medium);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--border-radius-medium)';
+  }
+}
+
+[data-name='--border-radius-small'] {
+  @nest & .varValue > div {
+    border-radius: var(--border-radius-small);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--border-radius-small)';
+  }
+}
+
+[data-name='--extra-small-padding'] {
+  @nest & .varValue > div {
+    width: var(--extra-small-padding);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--extra-small-padding)';
+  }
+}
+
+[data-name='--small-padding'] {
+  @nest & .varValue > div {
+    width: var(--small-padding);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--small-padding)';
+  }
+}
+
+[data-name='--medium-padding'] {
+  @nest & .varValue > div {
+    width: var(--medium-padding);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--medium-padding)';
+  }
+}
+
+[data-name='--large-padding'] {
+  @nest & .varValue > div {
+    width: var(--large-padding);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--large-padding)';
+  }
+}
+
+[data-name='--extra-large-padding'] {
+  @nest & .varValue > div {
+    width: var(--extra-large-padding);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--extra-large-padding)';
+  }
+}
+
+[data-name='--extra-small-padding--em'] {
+  @nest & .varValue > div {
+    width: var(--extra-small-padding--em);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--extra-small-padding--em)';
+  }
+}
+
+[data-name='--small-padding--em'] {
+  @nest & .varValue > div {
+    width: var(--small-padding--em);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--small-padding--em)';
+  }
+}
+
+[data-name='--medium-padding--em'] {
+  @nest & .varValue > div {
+    width: var(--medium-padding--em);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--medium-padding--em)';
+  }
+}
+
+[data-name='--large-padding--em'] {
+  @nest & .varValue > div {
+    width: var(--large-padding--em);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--large-padding--em)';
+  }
+}
+
+[data-name='--extra-large-padding--em'] {
+  @nest & .varValue > div {
+    width: var(--extra-large-padding--em);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--extra-large-padding--em)';
+  }
+}
+
+[data-name='--text-selection-color'] {
+  @nest & .varValue {
+    background: var(--text-selection-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--text-selection-color)';
+  }
+}
+
+[data-name='--block-editor-base-font-family'] {
+  @nest & .varValue {
+    font-family: var(--block-editor-base-font-family);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--block-editor-base-font-family)';
+  }
+}
+
+[data-name='--block-editor-header-font-family'] {
+  @nest & .varValue {
+    font-family: var(--block-editor-header-font-family);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--block-editor-header-font-family)';
+  }
+}
+
+[data-name='--block-extras-width'] {
+  @nest & .varValue > div {
+    width: var(--block-extras-width);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--block-extras-width)';
+  }
+}
+
+[data-name='--block-extras-border-color'] {
+  @nest & .varValue {
+    background: var(--block-extras-border-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--block-extras-border-color)';
+  }
+}
+
+[data-name='--block-extras-background-color'] {
+  @nest & .varValue {
+    background: var(--block-extras-background-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--block-extras-background-color)';
+  }
+}
+
+[data-name='--pane-header-height'] {
+  @nest & .varValue > div {
+    width: var(--pane-header-height);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--pane-header-height)';
+  }
+}
+
+[data-name='--selectable-item-color'] {
+  @nest & .varValue {
+    background: var(--selectable-item-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--selectable-item-color)';
+  }
+}
+
+[data-name='--selectable-item-color--inverted'] {
+  @nest & .varValue {
+    background: var(--selectable-item-color--inverted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--selectable-item-color--inverted)';
+  }
+}
+
+[data-name='--selectable-item-color-hover'] {
+  @nest & .varValue {
+    background: var(--selectable-item-color-hover);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--selectable-item-color-hover)';
+  }
+}
+
+[data-name='--selectable-item-color-hover--inverted'] {
+  @nest & .varValue {
+    background: var(--selectable-item-color-hover--inverted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--selectable-item-color-hover--inverted)';
+  }
+}
+
+[data-name='--selectable-item-color-focus'] {
+  @nest & .varValue {
+    background: var(--selectable-item-color-focus);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--selectable-item-color-focus)';
+  }
+}
+
+[data-name='--selectable-item-color-focus--inverted'] {
+  @nest & .varValue {
+    background: var(--selectable-item-color-focus--inverted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--selectable-item-color-focus--inverted)';
+  }
+}
+
+[data-name='--selectable-item-color-active'] {
+  @nest & .varValue {
+    background: var(--selectable-item-color-active);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--selectable-item-color-active)';
+  }
+}
+
+[data-name='--selectable-item-color-active--inverted'] {
+  @nest & .varValue {
+    background: var(--selectable-item-color-active--inverted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--selectable-item-color-active--inverted)';
+  }
+}
+
+[data-name='--selectable-item-color-highlighted'] {
+  @nest & .varValue {
+    background: var(--selectable-item-color-highlighted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--selectable-item-color-highlighted)';
+  }
+}
+
+[data-name='--selected-item-color'] {
+  @nest & .varValue {
+    background: var(--selected-item-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--selected-item-color)';
+  }
+}
+
+[data-name='--selected-item-color--inverted'] {
+  @nest & .varValue {
+    background: var(--selected-item-color--inverted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--selected-item-color--inverted)';
+  }
+}
+
+[data-name='--selected-item-color-hover'] {
+  @nest & .varValue {
+    background: var(--selected-item-color-hover);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--selected-item-color-hover)';
+  }
+}
+
+[data-name='--selected-item-color-hover--inverted'] {
+  @nest & .varValue {
+    background: var(--selected-item-color-hover--inverted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--selected-item-color-hover--inverted)';
+  }
+}
+
+/* list.css */
+
+[data-name='--list-border-color'] {
+  @nest & .varValue {
+    background: var(--list-border-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--list-border-color)';
+  }
+}
+
+[data-name='--list-border'] {
+  @nest & .varValue > div {
+    border-left: var(--list-border);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--list-border)';
+  }
+}
+
+/* progress.css */
+
+[data-name='--progress-bg'] {
+  @nest & .varValue {
+    background: var(--progress-bg);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--progress-bg)';
+  }
+}
+
+[data-name='--progress-bar-color'] {
+  @nest & .varValue {
+    background: var(--progress-bar-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--progress-bar-color)';
+  }
+}
+
+[data-name='--progress-border-radius'] {
+  @nest & .varValue > div {
+    border-radius: var(--progress-border-radius);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--progress-border-radius)';
+  }
+}
+
+[data-name='--progress-bar-bg'] {
+  @nest & .varValue {
+    background: var(--progress-bar-bg);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--progress-bar-bg)';
+  }
+}
+
+[data-name='--progress-bar-success-bg'] {
+  @nest & .varValue {
+    background: var(--progress-bar-success-bg);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--progress-bar-success-bg)';
+  }
+}
+
+[data-name='--progress-bar-warning-bg'] {
+  @nest & .varValue {
+    background: var(--progress-bar-warning-bg);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--progress-bar-warning-bg)';
+  }
+}
+
+[data-name='--progress-bar-danger-bg'] {
+  @nest & .varValue {
+    background: var(--progress-bar-danger-bg);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--progress-bar-danger-bg)';
+  }
+}
+
+[data-name='--progress-bar-info-bg'] {
+  @nest & .varValue {
+    background: var(--progress-bar-info-bg);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--progress-bar-info-bg)';
+  }
+}
+
+/* state-colors.css */
+
+[data-name='--state-success-color'] {
+  @nest & .varValue {
+    background: var(--state-success-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--state-success-color)';
+  }
+}
+
+[data-name='--state-success-color--faded'] {
+  @nest & .varValue {
+    background: var(--state-success-color--faded);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--state-success-color--faded)';
+  }
+}
+
+[data-name='--state-success-color--strong'] {
+  @nest & .varValue {
+    background: var(--state-success-color--strong);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--state-success-color--strong)';
+  }
+}
+
+[data-name='--state-success-color--inverted'] {
+  @nest & .varValue {
+    background: var(--state-success-color--inverted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--state-success-color--inverted)';
+  }
+}
+
+[data-name='--state-info-color'] {
+  @nest & .varValue {
+    background: var(--state-info-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--state-info-color)';
+  }
+}
+
+[data-name='--state-info-color--faded'] {
+  @nest & .varValue {
+    background: var(--state-info-color--faded);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--state-info-color--faded)';
+  }
+}
+
+[data-name='--state-info-color--strong'] {
+  @nest & .varValue {
+    background: var(--state-info-color--strong);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--state-info-color--strong)';
+  }
+}
+
+[data-name='--state-info-color--inverted'] {
+  @nest & .varValue {
+    background: var(--state-info-color--inverted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--state-info-color--inverted)';
+  }
+}
+
+[data-name='--state-warning-color'] {
+  @nest & .varValue {
+    background: var(--state-warning-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--state-warning-color)';
+  }
+}
+
+[data-name='--state-warning-color--faded'] {
+  @nest & .varValue {
+    background: var(--state-warning-color--faded);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--state-warning-color--faded)';
+  }
+}
+
+[data-name='--state-warning-color--strong'] {
+  @nest & .varValue {
+    background: var(--state-warning-color--strong);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--state-warning-color--strong)';
+  }
+}
+
+[data-name='--state-warning-color--inverted'] {
+  @nest & .varValue {
+    background: var(--state-warning-color--inverted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--state-warning-color--inverted)';
+  }
+}
+
+[data-name='--state-danger-color'] {
+  @nest & .varValue {
+    background: var(--state-danger-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--state-danger-color)';
+  }
+}
+
+[data-name='--state-danger-color--faded'] {
+  @nest & .varValue {
+    background: var(--state-danger-color--faded);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--state-danger-color--faded)';
+  }
+}
+
+[data-name='--state-danger-color--strong'] {
+  @nest & .varValue {
+    background: var(--state-danger-color--strong);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--state-danger-color--strong)';
+  }
+}
+
+[data-name='--state-danger-color--inverted'] {
+  @nest & .varValue {
+    background: var(--state-danger-color--inverted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--state-danger-color--inverted)';
+  }
+}
+
+/* typography.css */
+
+[data-name='--text-color'] {
+  @nest & .varValue {
+    background: var(--text-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--text-color)';
+  }
+}
+
+[data-name='--text-color-secondary'] {
+  @nest & .varValue {
+    background: var(--text-color-secondary);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--text-color-secondary)';
+  }
+}
+
+[data-name='--text-muted'] {
+  @nest & .varValue {
+    background: var(--text-muted);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--text-muted)';
+  }
+}
+
+[data-name='--link-color'] {
+  @nest & .varValue {
+    background: var(--link-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--link-color)';
+  }
+}
+
+[data-name='--link-hover-color'] {
+  @nest & .varValue {
+    background: var(--link-hover-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--link-hover-color)';
+  }
+}
+
+[data-name='--font-family-sans-serif'] {
+  @nest & .varValue {
+    font-family: var(--font-family-sans-serif);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-family-sans-serif)';
+  }
+}
+
+[data-name='--font-family-serif'] {
+  @nest & .varValue {
+    font-family: var(--font-family-serif);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-family-serif)';
+  }
+}
+
+[data-name='--font-family-monospace'] {
+  @nest & .varValue {
+    font-family: var(--font-family-monospace);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-family-monospace)';
+  }
+}
+
+[data-name='--font-family-base'] {
+  @nest & .varValue {
+    font-family: var(--font-family-base);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-family-base)';
+  }
+}
+
+[data-name='--font-size-base'] {
+  @nest & .varValue {
+    font-size: var(--font-size-base);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-size-base)';
+  }
+}
+
+[data-name='--font-size-huge'] {
+  @nest & .varValue {
+    font-size: var(--font-size-huge);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-size-huge)';
+  }
+}
+
+[data-name='--font-size-large'] {
+  @nest & .varValue {
+    font-size: var(--font-size-large);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-size-large)';
+  }
+}
+
+[data-name='--font-size-small'] {
+  @nest & .varValue {
+    font-size: var(--font-size-small);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-size-small)';
+  }
+}
+
+[data-name='--font-size-xsmall'] {
+  @nest & .varValue {
+    font-size: var(--font-size-xsmall);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-size-xsmall)';
+  }
+}
+
+[data-name='--font-size-xsmall--uppercase'] {
+  @nest & .varValue {
+    font-size: var(--font-size-xsmall--uppercase);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-size-xsmall--uppercase)';
+  }
+}
+
+[data-name='--font-size-tiny'] {
+  @nest & .varValue {
+    font-size: var(--font-size-tiny);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-size-tiny)';
+  }
+}
+
+[data-name='--font-size-base--relative'] {
+  @nest & .varValue {
+    font-size: var(--font-size-base--relative);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-size-base--relative)';
+  }
+}
+
+[data-name='--font-size-large--relative'] {
+  @nest & .varValue {
+    font-size: var(--font-size-large--relative);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-size-large--relative)';
+  }
+}
+
+[data-name='--font-size-xsmall--relative-uppercase'] {
+  @nest & .varValue {
+    font-size: var(--font-size-xsmall--relative-uppercase);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-size-xsmall--relative-uppercase)';
+  }
+}
+
+[data-name='--font-size-xsmall--relative'] {
+  @nest & .varValue {
+    font-size: var(--font-size-xsmall--relative);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-size-xsmall--relative)';
+  }
+}
+
+[data-name='--font-size-tiny--relative'] {
+  @nest & .varValue {
+    font-size: var(--font-size-tiny--relative);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-size-tiny--relative)';
+  }
+}
+
+[data-name='--font-size-h1'] {
+  @nest & .varValue {
+    font-size: var(--font-size-h1);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-size-h1)';
+  }
+}
+
+[data-name='--font-size-h2'] {
+  @nest & .varValue {
+    font-size: var(--font-size-h2);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-size-h2)';
+  }
+}
+
+[data-name='--font-size-h3'] {
+  @nest & .varValue {
+    font-size: var(--font-size-h3);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-size-h3)';
+  }
+}
+
+[data-name='--font-size-h4'] {
+  @nest & .varValue {
+    font-size: var(--font-size-h4);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-size-h4)';
+  }
+}
+
+[data-name='--font-size-h5'] {
+  @nest & .varValue {
+    font-size: var(--font-size-h5);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-size-h5)';
+  }
+}
+
+[data-name='--font-size-h6'] {
+  @nest & .varValue {
+    font-size: var(--font-size-h6);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--font-size-h6)';
+  }
+}
+
+[data-name='--line-height-base'] {
+  @nest & .varValue {
+    line-height: var(--line-height-base);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--line-height-base)';
+  }
+}
+
+[data-name='--line-height-computed'] {
+  @nest & .varValue {
+    background: var(--line-height-computed);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--line-height-computed)';
+  }
+}
+
+[data-name='--headings-font-family'] {
+  @nest & .varValue {
+    font-family: var(--headings-font-family);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--headings-font-family)';
+  }
+}
+
+[data-name='--headings-font-weight'] {
+  @nest & .varValue {
+    font-weight: var(--headings-font-weight);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--headings-font-weight)';
+  }
+}
+
+[data-name='--headings-line-height'] {
+  @nest & .varValue {
+    background: var(--headings-line-height);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--headings-line-height)';
+  }
+}
+
+[data-name='--headings-color'] {
+  @nest & .varValue {
+    background: var(--headings-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--headings-color)';
+  }
+}
+
+[data-name='--blockquote-color'] {
+  @nest & .varValue {
+    background: var(--blockquote-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--blockquote-color)';
+  }
+}
+
+[data-name='--blockquote-font-size'] {
+  @nest & .varValue {
+    font-size: var(--blockquote-font-size);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--blockquote-font-size)';
+  }
+}
+
+[data-name='--blockquote-border-color'] {
+  @nest & .varValue {
+    background: var(--blockquote-border-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--blockquote-border-color)';
+  }
+}
+
+[data-name='--blockquote-small-color'] {
+  @nest & .varValue {
+    background: var(--blockquote-small-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--blockquote-small-color)';
+  }
+}
+
+[data-name='--page-header-border-color'] {
+  @nest & .varValue {
+    background: var(--page-header-border-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--page-header-border-color)';
+  }
+}
+
+[data-name='--hr-border'] {
+  @nest & .varValue {
+    background: var(--hr-border);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--hr-border)';
+  }
+}
+
+[data-name='--preview-placeholder-text-color'] {
+  @nest & .varValue {
+    background: var(--preview-placeholder-text-color);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--preview-placeholder-text-color)';
+  }
+}
+
+[data-name='--icon-size'] {
+  @nest & .varValue > div {
+    width: var(--icon-size);
+  }
+
+  @nest & .varContent::before {
+    content: 'var(--icon-size)';
+  }
+}

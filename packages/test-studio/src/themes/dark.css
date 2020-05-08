@@ -1,0 +1,84 @@
+:root {
+  /* Brand Colors */
+  --brand-darkest: #000;
+  --brand-lightest: #fff;
+  --gray-base: #b2b2be;
+  --brand-primary: #145eda;
+  --brand-primary--inverted: #fff;
+  --brand-secondary: #f43;
+  --brand-secondary--inverted: #fff;
+
+  /* Forms */
+  --default-button-color: #145eda;
+  --default-button-color--inverted: #fff;
+  --default-button-color--hover: #156dff;
+  --default-button-color--active: #156dff;
+  --input-bg: #1a202e;
+
+  --input-color: #fff;
+  --input-border-color: #353d4f;
+
+  /* Colors */
+  --body-bg: color(#121723 blend(var(--brand-darkest) 25%));
+  --body-text: #9ca8bd;
+  --component-bg: #121723;
+  --component-text-color: #9ca8bd;
+  --preview-placeholder-color: color(var(--component-bg) contrast(80%) alpha(10%));
+  --component-border-color: color(var(--component-bg) contrast(80%) a(20%));
+  --backdrop-color: color(var(--brand-darkest) a(12%));
+
+  --main-navigation-color: #145eda;
+
+  --main-navigation-color--inverted: color(var(--main-navigation-color) contrast(80%));
+
+  --dialog-header-color: var(--component-bg);
+  --dialog-header-color--inverted: var(--body-text);
+  --header-height: 3rem;
+  --checkerboard-color: color(var(--component-text-color) a(5%));
+  --selectable-item-base: var(--brand-primary);
+  --brand-darkest--inverted: color(var(--brand-darkest) contrast(80%));
+
+  /* Hairline */
+  --hairline-color: color(var(--component-bg) contrast(80%) a(10%));
+
+  /* Buttons */
+  --default-button-primary-color--inverted: #fff;
+  --default-button-danger-color--inverted: #fff;
+  --default-button-success-color--inverted: #fff;
+
+  /* Gray Colors */
+  --black: #000;
+  --white: color(#353d4f a(20%));
+  --gray-darkest: color(var(--gray-base) lightness(- 5%));
+  --gray-darkest--transparent: color(var(--gray-base) lightness(- 5%) a(95%));
+  --gray-darker: color(var(--gray-base) lightness(+ 2%));
+  --gray-darker-transparent: color(var(--gray-base) lightness(+ 2%) a(88%));
+  --gray-dark: color(var(--gray-base));
+  --gray-dark--transparent: color(var(--gray-base) a(70%));
+  --gray: color(var(--gray-base));
+  --gray--transparent: color(var(--gray-base) a(60%));
+  --gray-light: color(var(--component-bg) lightness(+ 10%));
+  --gray-light--transparent: color(var(--component-bg) lightness(+ 10%) a(50%));
+  --gray-lighter: color(var(--component-bg) lightness(+ 15%));
+  --gray-lighter--transparent: color(var(--component-bg) lightness(+ 15%) a(25%));
+  --gray-lightest: color(var(--component-bg) lightness(+ 30%));
+  --gray-lightest--transparent: color(var(--component-bg) lightness(+ 30%) a(50%));
+
+  /* List */
+  --list-border-color: var(--hairline-color);
+  --list-border: 1px solid var(--list-border-color);
+
+  /* Override */
+  --selectable-item-base: #156dff;
+  --default-button-primary-color: #156dff;
+
+  /* Code */
+  --code-color: var(--brand-primary);
+  --code-bg: var(--gray-light);
+  --kbd-color: #fff;
+  --kbd-bg: #333;
+  --pre-bg: var(--gray-light);
+  --pre-color: var(--gray-dark);
+  --pre-border-color: #ccc;
+  --pre-scrollable-max-height: 20em;
+}
