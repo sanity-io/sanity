@@ -14,7 +14,7 @@ import {
   refCount
 } from 'rxjs/operators'
 
-import {combineLatest, concat, merge, of} from 'rxjs'
+import {combineLatest, concat, merge, of, fromEvent} from 'rxjs'
 import deepEquals from 'react-fast-compare'
 import {createEventHandler, streamingComponent} from 'react-props-stream'
 import {listenQuery} from '../datastores/document/listenQuery'
@@ -59,7 +59,10 @@ export const getQueryResults = receivedProps$ => {
   return queryResults$.pipe(
     startWith(INITIAL_CHILD_PROPS),
     catchError((err, caught$) =>
-      concat(of(createErrorChildProps(err)), onRetry$.pipe(take(1), mergeMapTo(caught$)))
+      concat(
+        of(createErrorChildProps(err)),
+        merge(fromEvent(window, 'online'), onRetry$).pipe(take(1), mergeMapTo(caught$))
+      )
     ),
     scan((prev, next) => ({...prev, ...next, onRetry}))
   )
