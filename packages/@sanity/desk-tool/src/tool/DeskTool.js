@@ -247,7 +247,7 @@ export default withRouterHOC(
           isOpen: true,
           setFocus: false,
           kind: 'info',
-          title: 'Don’t worry, your work is automatically saved!',
+          title: 'Sanity auto-saves your work!',
           autoDismissTimeout: 4000,
           isCloseable: true
         })
