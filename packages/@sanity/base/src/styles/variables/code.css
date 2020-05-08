@@ -3,15 +3,15 @@
 :root {
   /* Code */
   --code-bg: var(--gray-lightest);
-  --code-color: var(--gray-dark);
+  --code-color: var(--gray);
 
   /* KBD */
-  --kbd-bg: var(--gray-lighter);
-  --kbd-color: var(--gray-darker);
+  --kbd-bg: var(--gray);
+  --kbd-color: var(--white);
 
   /* Pre */
-  --pre-bg: var(--gray-lightest);
-  --pre-color: var(--gray-dark);
-  --pre-border-color: var(--gray-lighter);
+  --pre-bg: var(--code-bg);
+  --pre-color: var(--code-color);
+  --pre-border-color: var(--gray);
   --pre-scrollable-max-height: 20em;
 }
