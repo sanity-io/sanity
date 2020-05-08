@@ -861,7 +861,12 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
             <InspectView value={value} onClose={this.handleHideInspector} />
           )}
           {connectionState === 'reconnecting' && (
-            <Snackbar kind="warning" isPersisted title="Connection lost. Reconnecting…" />
+            <Snackbar
+              kind="warning"
+              title="Connection lost. Reconnecting when online…"
+              isPersisted
+              preventDuplicate
+            />
           )}
           <DocumentOperationResults id={options.id} type={options.type} />
         </TabbedPane>

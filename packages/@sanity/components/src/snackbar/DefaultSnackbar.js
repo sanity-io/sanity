@@ -18,7 +18,8 @@ export default class DefaultSnackbar extends React.PureComponent {
     // Legacy props
     onAction: PropTypes.func,
     actionTitle: PropTypes.string,
-    timeout: PropTypes.number
+    timeout: PropTypes.number,
+    preventDuplicate: PropTypes.bool
   }
 
   static contextTypes = {
@@ -43,7 +44,8 @@ export default class DefaultSnackbar extends React.PureComponent {
       onClose,
       onAction,
       isPersisted,
-      isCloseable
+      isCloseable,
+      preventDuplicate
     } = this.props
 
     return {
@@ -58,7 +60,8 @@ export default class DefaultSnackbar extends React.PureComponent {
       },
       isPersisted,
       isCloseable,
-      autoDismissTimeout: timeout
+      autoDismissTimeout: timeout,
+      preventDuplicate
     }
   }
 
