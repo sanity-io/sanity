@@ -382,6 +382,7 @@ export default withPatchSubscriber(
           editor={this.editor.current}
           isFullscreen={isFullscreen}
           markers={markers}
+          hotkeys={this.hotkeys}
           onFocus={onFocus}
           onToggleFullscreen={this.handleToggleFullscreen}
           selection={selection}

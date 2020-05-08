@@ -7,38 +7,44 @@ import InsertMenu from './InsertMenu'
 import ListItemButtons from './ListItemButtons'
 import styles from './PrimaryGroup.css'
 import {Path} from '../../../typedefs/path'
-import {PortableTextEditor, EditorSelection, Type} from '@sanity/portable-text-editor'
+import {
+  PortableTextEditor,
+  EditorSelection,
+  Type,
+  HotkeyOptions
+} from '@sanity/portable-text-editor'
 
 type Props = {
   collapsedGroups: string[]
   editor: PortableTextEditor
-  selection: EditorSelection
-  onFocus: (path: Path) => void
+  hotkeys: HotkeyOptions
   insertItems: Type[]
-  isPopped?: boolean
   isMobile?: boolean
+  isPopped?: boolean
+  onFocus: (path: Path) => void
+  selection: EditorSelection
 }
 type State = {
-  collapsePrimaryIsOpen: boolean
-  showValidationTooltip: boolean
   collapsePrimary: boolean
+  collapsePrimaryIsOpen: boolean
   isMobile: boolean
   lastContentWidth: number
+  showValidationTooltip: boolean
 }
 export default class PrimaryGroup extends React.PureComponent<Props, State> {
   static defaultProps = {
-    isPopped: false,
-    isMobile: false
+    isMobile: false,
+    isPopped: false
   }
 
   render(): JSX.Element {
     const {
-      editor,
-      onFocus,
       collapsedGroups,
+      editor,
       insertItems,
       isMobile,
       isPopped,
+      onFocus,
       selection
     } = this.props
     if (!editor) {
@@ -59,6 +65,7 @@ export default class PrimaryGroup extends React.PureComponent<Props, State> {
             <DecoratorButtons
               collapsed={collapsedGroups.indexOf('decoratorButtons') >= 0}
               editor={editor}
+              hotkeys={this.props.hotkeys}
               selection={selection}
             />
           </div>
@@ -66,19 +73,19 @@ export default class PrimaryGroup extends React.PureComponent<Props, State> {
         {portableTextFeatures.lists.length > 0 && (
           <div className={styles.group}>
             <ListItemButtons
-              selection={this.props.selection}
               collapsed={collapsedGroups.indexOf('listItemButtons') >= 0}
               editor={editor}
+              selection={this.props.selection}
             />
           </div>
         )}
         {portableTextFeatures.annotations.length > 0 && (
           <div className={styles.group}>
             <AnnotationButtons
-              selection={this.props.selection}
               collapsed={collapsedGroups.indexOf('annotationButtons') >= 0}
               editor={editor}
               onFocus={onFocus}
+              selection={this.props.selection}
             />
           </div>
         )}
@@ -86,13 +93,13 @@ export default class PrimaryGroup extends React.PureComponent<Props, State> {
           <div className={styles.group}>
             <InsertMenu
               collapsed={isMobile || collapsedGroups.indexOf('insertMenu') >= 0}
+              editor={editor}
+              onFocus={onFocus}
               showLabels={
                 portableTextFeatures.types.blockObjects.concat(
                   portableTextFeatures.types.inlineObjects
                 ).length < 4
               }
-              editor={editor}
-              onFocus={onFocus}
             />
           </div>
         )}
