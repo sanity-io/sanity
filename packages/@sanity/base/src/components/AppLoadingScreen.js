@@ -4,10 +4,13 @@ import React from 'react'
 
 const AppLoadingScreenStyles = `
 .sanity-app-loading-screen__root {
+  -webkit-font-smoothing: antialiased;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  background-color: #e4e8ed;
+  color: #7b8ca8;
   display: block;
   width: 100vw;
   height: 100vh;
-  background-color: #333;
   position: absolute;
   top: 0;
   left: 0;
@@ -23,13 +26,10 @@ const AppLoadingScreenStyles = `
 }
 
 .sanity-app-loading-screen__text {
-  font-size: 5em;
-  color: #fff;
-  font-family: sans-serif;
   margin-top: 7rem;
-  font-size: 12px;
-  opacity: 0.5;
+  font-size: 13px;
 }
+
 .sanity-app-loading-screen__contentStudioLogo {
   display: block;
   top: 50vh;
@@ -38,7 +38,6 @@ const AppLoadingScreenStyles = `
   width: 4rem;
   height: 4rem;
   transform: translate(-50%, -50%);
-  opacity: 0.7;
 }
 `
 
@@ -60,7 +59,6 @@ export default class AppLoadingScreen extends React.PureComponent {
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 64 64"
           shapeRendering="geometricPrecision"
-          filter="drop-shadow(0px 0px 5px rgba(0,0,0,0.20))"
         >
           <style>
             {`
@@ -82,7 +80,7 @@ export default class AppLoadingScreen extends React.PureComponent {
           <path
             id="contentStudioLogoRed2"
             d="M31.8-.2C14.6-.2-.2 5.3-.2 14v14c0-15.8 24.1-17 32-17 8 0 32 1.3 32 17V14C63.8 5.2 49-.2 31.8-.2z"
-            fill="#666"
+            fill="#95a3b9"
             transform="rotate(135 29.6 26.5)"
             style={{
               animation:
@@ -92,7 +90,7 @@ export default class AppLoadingScreen extends React.PureComponent {
           <path
             id="contentStudioLogoBlue1"
             d="M32-.3C14.6-.3-.2 7.3-.2 16v14c0-15.8 24-19 32-19 7.9 0 32 5 32 19V16c0-8.7-14.8-16.3-32-16.3z"
-            fill="#999"
+            fill="#66758d"
             transform="rotate(45 21.2 27.7)"
             style={{
               animation:
@@ -102,7 +100,7 @@ export default class AppLoadingScreen extends React.PureComponent {
           <path
             id="contentStudioLogoBlue2"
             d="M32 0C14.8 0 0 7.3 0 16v14c0-15.8 23.3-18.9 31.2-18.9C39.1 11.1 64 14.3 64 30c-.2-4.3 0-10.2 0-14C64 7.2 49.2 0 32 0z"
-            fill="#eee"
+            fill="#3c4758"
             transform="rotate(-135 33.9 27.5)"
             style={{
               animation:
@@ -112,7 +110,7 @@ export default class AppLoadingScreen extends React.PureComponent {
           <path
             id="contentStudioLogoRed1"
             d="M32 0C14.8 0 0 7.3 0 16v14c0-15.8 23.3-18.9 31.2-18.9C39.1 11.1 64 14.3 64 30c-.2-4.3 0-10.2 0-14C64 7.2 49.2 0 32 0z"
-            fill="#444"
+            fill="#fff"
             transform="rotate(-45 42.9 27.5)"
             style={{
               animation:
