@@ -11,22 +11,24 @@ import CollapsibleButtonGroup from './CollapsibleButtonGroup'
 import {
   PortableTextEditor,
   PortableTextFeature,
-  EditorSelection
+  EditorSelection,
+  HotkeyOptions
 } from '@sanity/portable-text-editor'
 
 type DecoratorItem = PortableTextFeature & {
   active: boolean
   disabled: boolean
-  icon: any
+  icon: Function
 }
 
 type Props = {
   editor: PortableTextEditor
+  hotkeys: HotkeyOptions
   collapsed: boolean
   selection: EditorSelection
 }
 
-function getIcon(type: string, schemaIcon?: any) {
+function getIcon(type: string, schemaIcon?: Function | string): Function {
   switch (type) {
     case 'strong':
       return FormatBoldIcon
@@ -70,10 +72,16 @@ export default class DecoratorButtons extends React.Component<Props, {}> {
   renderDecoratorButton = (item: DecoratorItem): JSX.Element => {
     const icon = item.icon || (item.blockEditor && item.blockEditor.icon)
     const Icon = icon || getIcon(item.value)
-    const onAction = () => {
+    const onAction = (): void => {
       this.handleClick(item)
     }
-    const shortCut = '' // TODO: keyMaps[item.value] ? `(${keyMaps[item.value]})` : ''
+    const shortCutKey = Object.keys(this.props.hotkeys.marks).find(
+      key => this.props.hotkeys.marks[key] === item.value
+    )
+    let shortCut = ''
+    if (shortCutKey) {
+      shortCut = ` (${shortCutKey})`
+    }
     const title = `${item.title} ${shortCut}`
     return (
       <span className={styles.buttonWrapper} key={item.value}>
