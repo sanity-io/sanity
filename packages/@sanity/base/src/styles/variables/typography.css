@@ -21,7 +21,7 @@
     'Helvetica Neue',
     sans-serif;
   --font-family-serif: Georgia, 'Times New Roman', Times, serif;
-  --font-family-monospace: -apple-system-ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace;
+  --font-family-monospace: 'SF Mono', Menlo, Monaco, Consolas, 'Courier New', monospace;
   --font-family-base: var(--font-family-sans-serif);
   --font-size-base: 16px;
   --font-size-huge: 2rem;
