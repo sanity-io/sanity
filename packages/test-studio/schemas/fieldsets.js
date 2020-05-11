@@ -10,7 +10,18 @@ export default {
       title: 'myObject.first'
     }
   },
-  fieldsets: [{name: 'recursive', title: 'Recursive', options: {collapsable: true}}],
+  fieldsets: [
+    {
+      name: 'recursive',
+      title: 'Recursive',
+      options: {collapsable: true}
+    },
+    {
+      name: 'settings',
+      title: 'Settings',
+      options: {columns: 2}
+    }
+  ],
   fields: [
     {
       name: 'myObject',
@@ -18,6 +29,10 @@ export default {
       title: 'MyObject',
       description: 'The first field here should be the title'
     },
+    {type: 'number', name: 'x', title: 'X position', fieldset: 'settings'},
+    {type: 'number', name: 'y', title: 'Y position', fieldset: 'settings'},
+    {type: 'number', name: 'width', title: 'Width', fieldset: 'settings'},
+    {type: 'number', name: 'height', title: 'Height', fieldset: 'settings'},
     {
       name: 'person',
       type: 'object',

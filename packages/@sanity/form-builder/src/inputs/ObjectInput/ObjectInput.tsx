@@ -7,6 +7,8 @@ import isEmpty from '../../utils/isEmpty'
 import UnknownFields from './UnknownFields'
 import fieldStyles from './styles/Field.css'
 
+import styles from './styles/ObjectInput.css'
+
 function getCollapsedWithDefaults(options: Record<string, any> = {}, level) {
   // todo: warn on "collapsable" and deprecate collapsible in favor of just "collapsed"
   //       --> relevant: https://github.com/sanity-io/sanity/issues/537
@@ -173,9 +175,11 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
     const renderedUnknownFields = this.renderUnknownFields()
     if (level === 0) {
       return (
-        <div>
-          {renderedFields}
-          {renderedUnknownFields}
+        <div className={styles.root}>
+          <div className={styles.fieldWrapper}>
+            {renderedFields}
+            {renderedUnknownFields}
+          </div>
         </div>
       )
     }
@@ -183,17 +187,19 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
     const isExpanded = focusPath.length > 0
     const columns = type.options && type.options.columns
     return (
-      <Fieldset
-        level={level}
-        legend={type.title}
-        description={type.description}
-        columns={columns}
-        isCollapsible={collapsibleOpts.collapsible}
-        isCollapsed={!isExpanded && collapsibleOpts.collapsed}
-      >
-        {renderedFields}
-        {renderedUnknownFields}
-      </Fieldset>
+      <div className={styles.root}>
+        <Fieldset
+          level={level}
+          legend={type.title}
+          description={type.description}
+          columns={columns}
+          isCollapsible={collapsibleOpts.collapsible}
+          isCollapsed={!isExpanded && collapsibleOpts.collapsed}
+        >
+          {renderedFields}
+          {renderedUnknownFields}
+        </Fieldset>
+      </div>
     )
   }
 }
