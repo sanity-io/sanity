@@ -2,7 +2,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  composes: root from "part:@sanity/components/formfields/default-style";
+  composes: root from 'part:@sanity/components/formfields/default-style';
   outline: none;
 }
 
@@ -14,6 +14,12 @@
 .root + .root {
   /* Margin between fieldsets */
   margin-top: var(--medium-padding);
+}
+
+.fieldWrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: var(--large-padding);
 }
 
 .fieldset {

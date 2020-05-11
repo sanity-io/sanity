@@ -1,0 +1,11 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  /* empty */
+}
+
+.fieldWrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: var(--large-padding);
+}
