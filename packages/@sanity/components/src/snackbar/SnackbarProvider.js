@@ -63,7 +63,7 @@ export default class SnackbarProvider extends React.Component {
       ...contextSnack
     }
 
-    if (newSnack.preventDuplicate) {
+    if (!newSnack.allowDuplicateSnackbarType) {
       const isInQueue = this.snackQueue.findIndex(snack => snack.kind === newSnack.kind) > -1
       const isInActive = activeSnacks.findIndex(snack => snack.kind === newSnack.kind) > -1
 

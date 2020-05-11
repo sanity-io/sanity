@@ -56,13 +56,12 @@ export const DocumentOperationResults = React.memo((props: Props) => {
             {event.error.message}
           </details>
         }
-        preventDuplicate
       />
     )
   }
 
   if (event && event.type === 'success' && !IGNORE_OPS.includes(event.op)) {
-    return <Snackbar key={Math.random()} kind="success" title={getOpSuccessTitle(event.op)} preventDuplicate />
+    return <Snackbar key={Math.random()} kind="success" title={getOpSuccessTitle(event.op)} />
   }
 
   return null
