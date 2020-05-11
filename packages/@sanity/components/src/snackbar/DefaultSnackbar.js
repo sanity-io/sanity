@@ -19,7 +19,7 @@ export default class DefaultSnackbar extends React.PureComponent {
     onAction: PropTypes.func,
     actionTitle: PropTypes.string,
     timeout: PropTypes.number,
-    preventDuplicate: PropTypes.bool
+    allowDuplicateSnackbarType: PropTypes.bool
   }
 
   static contextTypes = {
@@ -45,7 +45,7 @@ export default class DefaultSnackbar extends React.PureComponent {
       onAction,
       isPersisted,
       isCloseable,
-      preventDuplicate
+      allowDuplicateSnackbarType
     } = this.props
 
     return {
@@ -61,7 +61,7 @@ export default class DefaultSnackbar extends React.PureComponent {
       isPersisted,
       isCloseable,
       autoDismissTimeout: timeout,
-      preventDuplicate
+      allowDuplicateSnackbarType
     }
   }
 

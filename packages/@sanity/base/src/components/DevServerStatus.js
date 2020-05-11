@@ -86,6 +86,7 @@ class DevServerStatus extends PureComponent {
           title={<strong>Reload required!</strong>}
           subtitle={<div>To see your latest changes, you need to reload the browser window.</div>}
           action={{title: 'Reload', callback: () => window.location.reload()}}
+          allowDuplicateSnackbarType
         />
       )
     }
@@ -104,6 +105,7 @@ class DevServerStatus extends PureComponent {
               </div>
             </Spinner>
           }
+          allowDuplicateSnackbarType
         />
       )
     }
@@ -135,6 +137,7 @@ class DevServerStatus extends PureComponent {
               project folder.
             </div>
           }
+          allowDuplicateSnackbarType
         />
       )
     }
