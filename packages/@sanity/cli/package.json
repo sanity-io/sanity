@@ -1,6 +1,6 @@
 {
   "name": "@sanity/cli",
-  "version": "1.149.9",
+  "version": "1.149.13",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "main": "lib/cli.js",
   "bin": {
@@ -36,7 +36,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "devDependencies": {
-    "@sanity/client": "1.149.7",
+    "@sanity/client": "1.149.13",
     "@sanity/resolver": "1.149.7",
     "@sanity/util": "1.149.7",
     "boxen": "^4.1.0",
