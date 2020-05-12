@@ -1,16 +1,12 @@
 /* eslint-disable complexity */
 import React, {Fragment} from 'react'
 import {storiesOf} from 'part:@sanity/storybook'
-import CloseIcon from 'part:@sanity/base/close-icon'
-import ContentCopyIcon from 'part:@sanity/base/content-copy-icon'
-import TrashIcon from 'part:@sanity/base/trash-icon'
 import Dialog from 'part:@sanity/components/dialogs/fullscreen'
 import DialogContent from 'part:@sanity/components/dialogs/content'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import Button from 'part:@sanity/components/buttons/default'
 import {withKnobs, boolean, number, text} from 'part:@sanity/storybook/addons/knobs'
 import {range} from 'lodash'
-import DocumentStatusBar from './DocumentStatusBar/index'
 
 storiesOf('[tool] Desk tool', module)
   .addDecorator(withKnobs)
@@ -150,91 +146,5 @@ storiesOf('[tool] Desk tool', module)
 
         <Button onClick={() => console.log('retry')}>Retry</Button>
       </Dialog>
-    )
-  })
-  .add('Document status (draft)', () => {
-    // eslint-disable-next-line no-console
-    const handleClick = (...args) => console.log('handleClick', ...args)
-    const isPublished = boolean('Published', false)
-    const isDraft = boolean('Draft', false)
-    const isDisconnected = boolean('Disconnected', false)
-    const isHistoryAvailable = boolean('History', false)
-    const isSyncing = boolean('Syncing', false)
-    const historyStatus = text('historyStatus', 'Updated just now')
-    const badges = [
-      isPublished && {id: 'published', label: 'Published', color: 'success'},
-      isDraft && {id: 'draft', label: 'Draft', color: 'warning'}
-    ].filter(Boolean)
-    const actions = [
-      {id: 'publish', label: 'Publish', color: 'primary', handleClick, disabled: true},
-      {
-        id: 'discardChanges',
-        label: 'Discard changes',
-        icon: CloseIcon,
-        handleClick,
-        disabled: true
-      },
-      {id: 'unpublish', label: 'Unpublish', icon: CloseIcon, handleClick},
-      {id: 'duplicate', label: 'Duplicate', icon: ContentCopyIcon, handleClick},
-      {id: 'delete', label: 'Delete', icon: TrashIcon, handleClick}
-    ]
-
-    const props = {
-      badges,
-      actions,
-      historyStatus: historyStatus ? <>{historyStatus}</> : null,
-      idPrefix: 'storybook-desk-tool',
-      isDisconnected,
-      isHistoryAvailable,
-      isSyncing,
-      // eslint-disable-next-line no-console
-      onHistoryStatusClick: () => console.log('onHistoryStatusClick')
-    }
-
-    const demoRootStyles = {
-      background: '#ddd',
-      display: 'flex',
-      flexDirection: 'column',
-      height: 'calc(100vh - 2em)',
-      margin: '0 auto'
-    }
-
-    return (
-      <div style={demoRootStyles}>
-        <div style={{flex: '1'}} />
-        <div>
-          <DocumentStatusBar {...props} />
-        </div>
-      </div>
-    )
-  })
-  .add('Document status (history)', () => {
-    // eslint-disable-next-line no-console
-    const handleClick = (...args) => console.log('handleClick', ...args)
-    const actions = [{id: 'restore', label: 'Restore', color: 'primary', handleClick}]
-
-    const props = {
-      actions,
-      historyStatus: <>Updated just now</>,
-      idPrefix: 'storybook-desk-tool',
-      // eslint-disable-next-line no-console
-      onHistoryStatusClick: () => console.log('onHistoryStatusClick')
-    }
-
-    const demoRootStyles = {
-      background: '#ddd',
-      display: 'flex',
-      flexDirection: 'column',
-      height: 'calc(100vh - 2em)',
-      margin: '0 auto'
-    }
-
-    return (
-      <div style={demoRootStyles}>
-        <div style={{flex: '1'}} />
-        <div>
-          <DocumentStatusBar {...props} />
-        </div>
-      </div>
     )
   })
