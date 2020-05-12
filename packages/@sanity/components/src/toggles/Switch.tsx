@@ -1,0 +1,70 @@
+import React, {useRef, useEffect} from 'react'
+import styles from './Switch.css'
+import sharedStyles from './shared.css'
+import {Marker} from '../typedefs'
+import {useId} from '@reach/auto-id'
+
+type Props = {
+  label: string
+  description: string
+  markers: Marker[]
+  checked: boolean
+  disabled: boolean
+  readOnly: boolean
+  children: any
+  onFocus: () => void
+  onBlur?: () => void
+}
+
+export default function Switch({
+  disabled,
+  markers,
+  checked,
+  label,
+  description,
+  readOnly,
+  children,
+  onFocus,
+  ...rest
+}: Props) {
+  const elementId = useId()
+  const switchInput = useRef(null)
+  useEffect(() => {
+    if (typeof checked === 'undefined' && switchInput.current) {
+      switchInput.current.indeterminate = true
+    }
+  }, [])
+
+  return (
+    <div className={styles.root}>
+      <input
+        {...rest}
+        id={`switch-${elementId}-input`}
+        aria-describedby={`switch-${elementId}-description`}
+        className={styles.input}
+        type="checkbox"
+        disabled={disabled || readOnly}
+        checked={checked}
+        ref={switchInput}
+        onFocus={onFocus}
+      />
+      <div className={styles.switchWrapper}>
+        <div className={styles.track} />
+        <div className={styles.thumb} />
+      </div>
+      <div>
+        <div className={sharedStyles.titleWrapper}>
+          <label className={sharedStyles.title} htmlFor={`switch-${elementId}-input`}>
+            {label}
+          </label>
+          {children}
+        </div>
+        {description && (
+          <div id={`switch-${elementId}-description`} className={sharedStyles.description}>
+            {description}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
