@@ -1,11 +1,10 @@
 /* eslint-disable complexity */
 import React from 'react'
-import PropTypes from 'prop-types'
 import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
 import CheckIcon from 'part:@sanity/base/check-icon'
 import {Tooltip} from 'react-tippy'
 import styles from './styles/ValidationStatus.css'
-import {Marker} from './types'
+import {Marker} from '../typedefs'
 import ValidationList from './ValidationList'
 
 type Props = {
