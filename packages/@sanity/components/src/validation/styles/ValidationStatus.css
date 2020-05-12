@@ -3,6 +3,7 @@
 .root {
   opacity: 1;
   outline: none;
+  z-index: 10;
 
   @nest &:hover {
     opacity: 1;
