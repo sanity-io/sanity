@@ -1,8 +1,7 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import styles from './styles/ValidationList.css'
 import ValidationListItem from './ValidationListItem'
-import {Marker} from './types'
+import {Marker} from '../typedefs'
 
 type Props = {
   kind?: string
