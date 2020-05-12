@@ -1,0 +1,16 @@
+
+@import "part:@sanity/base/theme/variables-style";
+
+.titleWrapper {
+  display: flex;
+  align-items: center;
+  z-index: 1;
+}
+
+.title {
+  padding-right: var(--small-padding);
+}
+
+.description {
+  composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
+}

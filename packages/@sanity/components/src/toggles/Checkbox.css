@@ -4,7 +4,7 @@
   --checkbox-label-height: 1em;
   --checkbox-off-color: var(--gray-light);
   --checkbox-color: var(--brand-primary);
-  --checkbox-button-size: 1.2em;
+  --checkbox-button-size: 1.3em;
   --checkbox-top-offset: 0;
   --checkbox-focus-color: var(--brand-primary);
   --checkbox-label-font-size: 1em;
@@ -36,46 +36,54 @@
   justify-content: center;
   height: var(--checkbox-button-size);
   width: var(--checkbox-button-size);
-  border: 0.1em solid var(--checkbox-off-color);
-  border-radius: 20%;
+  border: 1px solid var(--checkbox-off-color);
+  border-radius: 3px;
   margin-top: 3px;
   margin-right: var(--small-padding);
-  box-sizing: border-box;
+  line-height: 1;
 
-  @nest & svg {
+  @nest & .mark {
+    position: absolute;
+    top: calc((100% - var(--checkbox-button-size)) / 2);
+    left: calc((100% - var(--checkbox-button-size)) / 2);
     transition: all 0.1s linear;
     transform: scale(0.5);
     opacity: 0;
     flex: 1;
-    height: calc(var(--checkbox-button-size) * 0.55);
-    width: calc(var(--checkbox-button-size) * 0.55);
-  }
-
-  @nest & .indeterminate {
-    display: none;
-    height: calc(var(--checkbox-button-size) * 0.14);
-    width: calc(var(--checkbox-button-size) * 0.55);
-    background: currentColor;
+    height: var(--checkbox-button-size);
+    width: var(--checkbox-button-size);
   }
 }
 
 .input:indeterminate + .checkbox {
-  @nest & .checkmark {
-    display: none;
-  }
   @nest & .indeterminate {
     display: block;
+    opacity: 1;
+    transform: scale(0.6);
   }
 }
 
 .input:focus + .checkbox {
-  border: calc(var(--checkbox-button-size) * 0.13) solid var(--checkbox-focus-color);
+  border-color: transparent;
+
+  @nest &::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    height: calc(100% + 4px);
+    width: calc(100% + 4px);
+    border: 2px solid var(--checkbox-focus-color);
+    border-radius: 5px;
+    box-sizing: border-box;
+    background: var(--component-bg);
+  }
 }
 
 .input:checked + .checkbox {
   @nest & .checkmark {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(0.7);
   }
 }
 
@@ -85,18 +93,4 @@
   @nest & svg {
     color: var(--gray-dark);
   }
-}
-
-.titleWrapper {
-  display: flex;
-  align-items: center;
-  z-index: 1;
-}
-
-.title {
-  padding-right: var(--small-padding);
-}
-
-.description {
-  composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
 }
