@@ -9,6 +9,10 @@
   padding-bottom: var(--small-padding);
   font-size: var(--font-size-small);
 
+  @nest &:not(.fullscreen) {
+    max-width: 640px;
+  }
+
   @nest &.fullscreen {
     position: fixed;
     box-sizing: border-box;
