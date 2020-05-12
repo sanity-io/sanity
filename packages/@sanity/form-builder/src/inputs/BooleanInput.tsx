@@ -14,12 +14,12 @@ type Props = {
   onChange: (arg0: PatchEvent) => void
   markers: Marker[]
 }
-// Todo: support indeterminate state, see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox
 
 export default function BooleanInput(props: Props) {
   const handleChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
     props.onChange(PatchEvent.from(set(event.currentTarget.checked)))
   }
+  // TODO: forward ref
   const {value, type, readOnly, onFocus, markers} = props
   const isCheckbox = type.options && type.options.layout === 'checkbox'
   return (
