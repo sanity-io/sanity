@@ -1,0 +1,102 @@
+@import "part:@sanity/base/theme/variables-style";
+
+:root {
+  --checkbox-label-height: 1em;
+  --checkbox-off-color: var(--gray-light);
+  --checkbox-color: var(--brand-primary);
+  --checkbox-button-size: 1.2em;
+  --checkbox-top-offset: 0;
+  --checkbox-focus-color: var(--brand-primary);
+  --checkbox-label-font-size: 1em;
+}
+
+.root {
+  position: relative;
+  display: flex;
+}
+
+.input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  height: 100%;
+  width: 100%;
+  outline: none;
+  z-index: 1;
+}
+
+.checkbox {
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--checkbox-button-size);
+  width: var(--checkbox-button-size);
+  border: 0.1em solid var(--checkbox-off-color);
+  border-radius: 20%;
+  margin-top: 3px;
+  margin-right: var(--small-padding);
+  box-sizing: border-box;
+
+  @nest & svg {
+    transition: all 0.1s linear;
+    transform: scale(0.5);
+    opacity: 0;
+    flex: 1;
+    height: calc(var(--checkbox-button-size) * 0.55);
+    width: calc(var(--checkbox-button-size) * 0.55);
+  }
+
+  @nest & .indeterminate {
+    display: none;
+    height: calc(var(--checkbox-button-size) * 0.14);
+    width: calc(var(--checkbox-button-size) * 0.55);
+    background: currentColor;
+  }
+}
+
+.input:indeterminate + .checkbox {
+  @nest & .checkmark {
+    display: none;
+  }
+  @nest & .indeterminate {
+    display: block;
+  }
+}
+
+.input:focus + .checkbox {
+  border: calc(var(--checkbox-button-size) * 0.13) solid var(--checkbox-focus-color);
+}
+
+.input:checked + .checkbox {
+  @nest & .checkmark {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.input:disabled + .checkbox {
+  background: var(--gray-lighter);
+
+  @nest & svg {
+    color: var(--gray-dark);
+  }
+}
+
+.titleWrapper {
+  display: flex;
+  align-items: center;
+  z-index: 1;
+}
+
+.title {
+  padding-right: var(--small-padding);
+}
+
+.description {
+  composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
+}
