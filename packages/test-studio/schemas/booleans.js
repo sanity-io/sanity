@@ -19,6 +19,46 @@ export default {
       title: 'Title'
     },
     {
+      name: 'switchIndeterminate',
+      type: 'boolean',
+      title: `Hello world`,
+      validation: Rule => Rule.valid(false).warning('hello world')
+    },
+    {
+      name: 'switchTest',
+      type: 'boolean',
+      title: `I'm a switch`,
+      description: 'Try toggling me! This is the new switch design'
+    },
+    {
+      name: 'switchIndeterminate2',
+      type: 'boolean',
+      title: `Don't toggle me`,
+      readOnly: true
+    },
+    {
+      name: 'checkboxIndeterminate2',
+      type: 'boolean',
+      title: `Don't check me`,
+      // readOnly: true,
+      description: 'Indeterminate state',
+      validation: Rule => [Rule.valid(false).warning('hello world')],
+      options: {
+        layout: 'checkbox'
+      }
+    },
+    {
+      name: 'checkboxIndeterminate',
+      type: 'boolean',
+      title: `Don't check me`,
+      // readOnly: true,
+      description: 'Indeterminate state',
+      validation: Rule => [Rule.valid(false).warning('hello world')],
+      options: {
+        layout: 'checkbox'
+      }
+    },
+    {
       name: 'switch',
       type: 'boolean',
       description: 'Should be either true or false',
@@ -27,7 +67,8 @@ export default {
     {
       name: 'checkbox',
       type: 'boolean',
-      description: 'Should be displayed as a checkbox',
+      description:
+        'Should be displayed as a checkbox Should be displayed as a checkbox Should be displayed as a checkbox Should be displayed as a checkboxShould be displayed as a checkboxShould be displayed as a checkboxShould be displayed as a checkboxShould be displayed as a checkboxShould be displayed as a checkboxShould be displayed as a checkbox',
       options: {
         layout: 'checkbox'
       },
