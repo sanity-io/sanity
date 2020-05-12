@@ -1,6 +1,12 @@
 {
   "extends": ["stylelint-config-standard"],
-  "ignoreFiles": ["packages/@sanity/extract-text-webpack-plugin/**", "**/*.js"],
+  "ignoreFiles": [
+    "packages/@sanity/extract-text-webpack-plugin/**",
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
   "rules": {
     "at-rule-no-unknown": [
       true,
