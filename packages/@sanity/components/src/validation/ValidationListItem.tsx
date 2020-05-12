@@ -1,9 +1,7 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import ErrorOutlineIcon from 'part:@sanity/base/error-outline-icon'
-import LinkIcon from 'part:@sanity/base/link-icon'
 import styles from './styles/ValidationListItem.css'
-import { Marker } from './types'
+import {Marker} from '../typedefs'
 
 type Props = {
   kind: string
@@ -16,7 +14,6 @@ type Props = {
 }
 
 export default class ValidationListItem extends React.PureComponent<Props> {
-
   static defaultProps = {
     kind: '',
     path: '',
@@ -62,7 +59,7 @@ export default class ValidationListItem extends React.PureComponent<Props> {
   }
 
   render() {
-    const {kind, marker, onClick, path, showLink, truncate} = this.props
+    const {kind, marker, onClick, path, truncate} = this.props
 
     return (
       <a
@@ -77,9 +74,7 @@ export default class ValidationListItem extends React.PureComponent<Props> {
           ${truncate ? styles.truncate : ''}
         `}
       >
-        <span
-          className={styles.icon}
-        >
+        <span className={styles.icon}>
           <ErrorOutlineIcon />
         </span>
 
