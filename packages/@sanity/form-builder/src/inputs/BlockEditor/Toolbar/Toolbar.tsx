@@ -1,4 +1,6 @@
 /* eslint-disable complexity */
+
+import classNames from 'classnames'
 import React, {RefObject} from 'react'
 import {Tooltip} from 'react-tippy'
 import Measure from 'react-measure'
@@ -147,104 +149,106 @@ class Toolbar extends React.PureComponent<Props, ToolbarState> {
     const errors = validation.filter(marker => marker.level === 'error')
     const warnings = validation.filter(marker => marker.level === 'warning')
     const {collapsedGroups, collapsePrimary, collapsePrimaryIsOpen} = this.state
+
+    const className = classNames(styles.root, fullscreen && styles.fullscreen)
+
     return (
-      <Measure offset scroll onResize={this.handleResize}>
-        {({measureRef}) => (
-          <div
-            className={`
-              ${styles.root}
-              ${fullscreen ? ` ${styles.fullscreen}` : ''}
-            `}
-            ref={measureRef}
-            style={{pointerEvents: isDragging ? 'none' : 'unset'}}
-          >
-            <div className={styles.primary} ref={this._primaryToolbar}>
-              {collapsePrimary && (
-                <Button
-                  className={styles.showMoreButton}
-                  onClick={this.handleOpenPrimary}
-                  kind="simple"
-                >
-                  Show menu&nbsp;
-                  <span>
-                    <ArrowIcon color="inherit" />
-                  </span>
-                  <Poppable
-                    onClickOutside={this.handleClosePrimary}
-                    onEscape={this.handleClosePrimary}
-                  >
-                    {collapsePrimaryIsOpen && (
-                      <PrimaryGroup
-                        {...this.props}
-                        isPopped
-                        collapsedGroups={collapsedGroups}
-                        insertItems={insertItems}
-                      />
-                    )}
-                  </Poppable>
-                </Button>
-              )}
-              <div className={styles.primaryInner}>
-                {!collapsePrimary && (
-                  <PrimaryGroup
-                    {...this.props}
-                    collapsedGroups={collapsedGroups}
-                    insertItems={insertItems}
-                    isMobile={isMobile}
-                  />
-                )}
-              </div>
-            </div>
-            <div className={styles.secondary}>
-              {fullscreen && (errors.length > 0 || warnings.length > 0) && (
-                <Tooltip
-                  arrow
-                  duration={100}
-                  html={
-                    <ValidationList
-                      markers={validation}
-                      showLink
-                      isOpen={showValidationTooltip}
-                      documentType={type}
-                      onClose={this.handleCloseValidationResults}
-                      onFocus={this.handleFocus}
-                    />
-                  }
-                  interactive
-                  onRequestClose={this.handleCloseValidationResults}
-                  open={showValidationTooltip}
-                  position="bottom"
-                  style={{padding: 0}}
-                  theme="light"
-                  trigger="click"
-                >
+      <div className={className}>
+        <Measure offset scroll onResize={this.handleResize}>
+          {({measureRef}) => (
+            <div
+              className={styles.inner}
+              ref={measureRef}
+              style={{pointerEvents: isDragging ? 'none' : 'unset'}}
+            >
+              <div className={styles.primary} ref={this._primaryToolbar}>
+                {collapsePrimary && (
                   <Button
-                    color="danger"
-                    icon={WarningIcon}
+                    className={styles.showMoreButton}
+                    onClick={this.handleOpenPrimary}
                     kind="simple"
-                    onClick={this.handleToggleValidationResults}
-                    padding="small"
                   >
-                    {errors.length}
-                    <span style={{paddingLeft: '0.5em'}}>
-                      <ChevronDown />
+                    Show menu&nbsp;
+                    <span>
+                      <ArrowIcon color="inherit" />
                     </span>
+                    <Poppable
+                      onClickOutside={this.handleClosePrimary}
+                      onEscape={this.handleClosePrimary}
+                    >
+                      {collapsePrimaryIsOpen && (
+                        <PrimaryGroup
+                          {...this.props}
+                          isPopped
+                          collapsedGroups={collapsedGroups}
+                          insertItems={insertItems}
+                        />
+                      )}
+                    </Poppable>
                   </Button>
-                </Tooltip>
-              )}
-              <div className={styles.fullscreenButtonContainer}>
-                <Button
-                  kind="simple"
-                  onClick={onToggleFullScreen}
-                  title={`Open in fullscreen (${IS_MAC ? 'cmd' : 'ctrl'}+enter)`}
-                  icon={fullscreen ? CloseIcon : FullscreenIcon}
-                  bleed
-                />
+                )}
+                <div className={styles.primaryInner}>
+                  {!collapsePrimary && (
+                    <PrimaryGroup
+                      {...this.props}
+                      collapsedGroups={collapsedGroups}
+                      insertItems={insertItems}
+                      isMobile={isMobile}
+                    />
+                  )}
+                </div>
+              </div>
+              <div className={styles.secondary}>
+                {fullscreen && (errors.length > 0 || warnings.length > 0) && (
+                  <Tooltip
+                    arrow
+                    duration={100}
+                    html={
+                      <ValidationList
+                        markers={validation}
+                        showLink
+                        isOpen={showValidationTooltip}
+                        documentType={type}
+                        onClose={this.handleCloseValidationResults}
+                        onFocus={this.handleFocus}
+                      />
+                    }
+                    interactive
+                    onRequestClose={this.handleCloseValidationResults}
+                    open={showValidationTooltip}
+                    position="bottom"
+                    style={{padding: 0}}
+                    theme="light"
+                    trigger="click"
+                  >
+                    <Button
+                      color="danger"
+                      icon={WarningIcon}
+                      kind="simple"
+                      onClick={this.handleToggleValidationResults}
+                      padding="small"
+                    >
+                      {errors.length}
+                      <span style={{paddingLeft: '0.5em'}}>
+                        <ChevronDown />
+                      </span>
+                    </Button>
+                  </Tooltip>
+                )}
+                <div className={styles.fullscreenButtonContainer}>
+                  <Button
+                    kind="simple"
+                    onClick={onToggleFullScreen}
+                    title={`Open in fullscreen (${IS_MAC ? 'cmd' : 'ctrl'}+enter)`}
+                    icon={fullscreen ? CloseIcon : FullscreenIcon}
+                    bleed
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </Measure>
+          )}
+        </Measure>
+      </div>
     )
   }
 }
