@@ -214,9 +214,7 @@ export default withPatchSubscriber(
           break
         case 'selection':
           this.setState({selection: change.selection})
-          if (change.selection) {
-            this.props.onFocus(change.selection.focus.path)
-          }
+          this.props.onFocus(change.selection?.focus.path || null)
           break
         case 'ready':
         case 'patch':
