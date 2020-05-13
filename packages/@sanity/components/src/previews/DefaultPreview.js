@@ -1,4 +1,5 @@
 /* eslint-disable complexity */
+
 import PropTypes from 'prop-types'
 import React from 'react'
 import defaultStyles from 'part:@sanity/components/previews/default-style'
@@ -20,16 +21,21 @@ class DefaultPreview extends React.PureComponent {
     media: fieldProp,
     isPlaceholder: PropTypes.bool,
     children: PropTypes.node,
+    // eslint-disable-next-line react/forbid-prop-types
     styles: PropTypes.object,
     progress: PropTypes.number
   }
 
   static defaultProps = {
+    children: undefined,
     title: 'Untitled',
     subtitle: undefined,
     progress: undefined,
+    isPlaceholder: undefined,
     media: undefined,
-    mediaDimensions: {width: 80, height: 80, aspect: 1, fit: 'crop'}
+    mediaDimensions: {width: 80, height: 80, aspect: 1, fit: 'crop'},
+    status: undefined,
+    styles: undefined
   }
 
   render() {
@@ -48,10 +54,12 @@ class DefaultPreview extends React.PureComponent {
     if (isPlaceholder) {
       return (
         <div className={styles.placeholder}>
-          {media !== false && <div className={styles.media} />}
-          <div className={styles.heading}>
-            <h2 className={styles.title}>Loading…</h2>
-            <h3 className={styles.subtitle}>Loading…</h3>
+          <div className={styles.inner}>
+            {media !== false && <div className={styles.media} />}
+            <div className={styles.heading}>
+              <h2 className={styles.title}>Loading…</h2>
+              <h3 className={styles.subtitle}>Loading…</h3>
+            </div>
           </div>
         </div>
       )
@@ -64,37 +72,45 @@ class DefaultPreview extends React.PureComponent {
           ${subtitle ? styles.hasSubtitle : ''}
         `}
       >
-        {media !== false && (
-          <div className={styles.media}>
-            {typeof media === 'function' && media({dimensions: mediaDimensions, layout: 'default'})}
-            {typeof media === 'string' && <div className={styles.mediaString}>{media}</div>}
-            {React.isValidElement(media) && media}
-          </div>
-        )}
+        <div className={styles.inner}>
+          {media !== false && (
+            <div className={styles.media}>
+              {typeof media === 'function' &&
+                media({dimensions: mediaDimensions, layout: 'default'})}
 
-        <div className={styles.heading}>
-          <h2 className={styles.title}>
-            {typeof title !== 'function' && title}
-            {typeof title === 'function' && title({layout: 'default'})}
-          </h2>
-          {subtitle && (
-            <h3 className={styles.subtitle}>
-              {(typeof subtitle === 'function' && subtitle({layout: 'default'})) || subtitle}
-            </h3>
+              {typeof media === 'string' && <div className={styles.mediaString}>{media}</div>}
+
+              {React.isValidElement(media) && media}
+            </div>
           )}
-        </div>
-        {status && (
-          <div className={styles.status}>
-            {(typeof status === 'function' && status({layout: 'default'})) || status}
+
+          <div className={styles.heading}>
+            <h2 className={styles.title}>
+              {typeof title !== 'function' && title}
+              {typeof title === 'function' && title({layout: 'default'})}
+            </h2>
+
+            {subtitle && (
+              <h3 className={styles.subtitle}>
+                {(typeof subtitle === 'function' && subtitle({layout: 'default'})) || subtitle}
+              </h3>
+            )}
           </div>
-        )}
-        {children && <div className={styles.children}>{children}</div>}
-        {typeof progress === 'number' &&
-          progress > -1 && (
+
+          {status && (
+            <div className={styles.status}>
+              {(typeof status === 'function' && status({layout: 'default'})) || status}
+            </div>
+          )}
+
+          {children && <div className={styles.children}>{children}</div>}
+
+          {typeof progress === 'number' && progress > -1 && (
             <div className={styles.progress}>
               <div className={styles.progressBar} style={{width: `${progress}%`}} />
             </div>
           )}
+        </div>
       </div>
     )
   }

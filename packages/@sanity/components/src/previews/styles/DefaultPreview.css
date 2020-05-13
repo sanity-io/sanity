@@ -17,14 +17,22 @@
 }
 
 .root {
-  display: flex;
-  justify-content: space-between;
+  position: relative;
   width: 100%;
   padding: 0;
   user-select: none;
-  height: 2.5em;
-  position: relative;
   clear: both;
+  height: 2.5em;
+}
+
+.inner {
+  position: absolute;
+  display: flex;
+  justify-content: space-between;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2.5em;
 }
 
 .hasSubtitle {
@@ -115,20 +123,24 @@
   @nest & .heading {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     height: 100%;
+    padding-top: 0.25rem;
   }
 
   @nest & .title {
     width: 80%;
+    height: 12px;
     color: transparent;
     background-color: var(--preview-placeholder-color);
   }
 
   @nest & .subtitle {
     width: 40%;
+    height: 8px;
     color: transparent;
     background-color: var(--preview-placeholder-color);
+    margin-top: 0.5rem;
+    padding: 0;
   }
 
   @nest & .media {
