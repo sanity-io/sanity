@@ -194,6 +194,10 @@ export function createUploadTarget<T>(Component: any): React.ComponentType<any> 
 
     renderSnacks() {
       const {rejected, ambiguous} = this.state
+      const len = ambiguous.length + rejected.length
+
+      if (len === 0) return null
+
       return (
         <div>
           {ambiguous.length > 0 && ( // not in use right now as we just pick the first uploader
