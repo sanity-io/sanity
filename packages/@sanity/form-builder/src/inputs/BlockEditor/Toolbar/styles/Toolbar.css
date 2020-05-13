@@ -2,18 +2,22 @@
 
 .root {
   position: relative;
+  padding-bottom: var(--small-padding);
+  height: 2.25em;
+}
+
+.inner {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: flex;
   width: 100%;
   justify-content: stretch;
   flex-wrap: nowrap;
-  padding-bottom: var(--small-padding);
   font-size: var(--font-size-small);
+  white-space: nowrap;
 
-  @nest &:not(.fullscreen) {
-    max-width: 640px;
-  }
-
-  @nest &.fullscreen {
+  @nest .fullscreen & {
     position: fixed;
     box-sizing: border-box;
     width: 100vw;
@@ -57,7 +61,10 @@
   height: 100%;
   width: 1em;
   z-index: 2;
-  background: radial-gradient(var(--component-border-color), color(var(--component-border-color) a(0%)) 70%);
+  background: radial-gradient(
+    var(--component-border-color),
+    color(var(--component-border-color) a(0%)) 70%
+  );
   background-position: 0.5em 0;
   background-repeat: no-repeat;
   border-right: 1px solid color(var(--component-border-color) a(5%));
