@@ -4,7 +4,7 @@
   --body-text: color(var(--body-bg) contrast(57%));
   --component-bg: #fff;
   --component-text-color: color(var(--component-bg) contrast(80%));
-  --preview-placeholder-color: color(var(--component-bg) contrast(80%) alpha(10%));
+  --preview-placeholder-color: var(--gray-lightest);
   --component-border-color: color(var(--component-bg) contrast(80%) a(20%));
   --backdrop-color: color(var(--brand-darkest) a(12%));
   --main-navigation-color: color(var(--brand-primary) shade(70%) saturation(20%));
