@@ -18,14 +18,6 @@
   composes: functions from 'part:@sanity/components/fieldsets/default-style';
 }
 
-.list + .functions {
-  padding-top: var(--small-padding);
-
-  @media (--screen-medium) {
-    padding-top: var(--medium-padding);
-  }
-}
-
 .popupAnchor {
   position: absolute;
   top: 75%;
