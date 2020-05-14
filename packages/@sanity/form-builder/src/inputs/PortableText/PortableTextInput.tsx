@@ -59,6 +59,7 @@ type Props = {
 type State = {
   isFullscreen: boolean
   hasFocus: boolean
+  ignoreValidation: boolean
   invalidValue: InvalidEditorValue | null
   isActive: boolean
   isLoading: boolean
@@ -103,6 +104,7 @@ export default withPatchSubscriber(
     }
     state = {
       hasFocus: false,
+      ignoreValidation: false,
       invalidValue: null,
       isActive: false,
       isFullscreen: false,
@@ -267,6 +269,10 @@ export default withPatchSubscriber(
           focus: {path: focusPath, offset: 0}
         })
       }
+    }
+
+    handleIgnoreValidation = (): void => {
+      this.setState({invalidValue: undefined, ignoreValidation: true, isActive: true})
     }
 
     renderBlock = (
@@ -479,16 +485,7 @@ export default withPatchSubscriber(
       const {value, readOnly, type, markers, level, onFocus, onBlur} = this.props
       const validation = markers.filter(marker => marker.type === 'validation')
       const errors = validation.filter(marker => marker.level === 'error')
-      const {isLoading, hasFocus, invalidValue, objectEditStatus} = this.state
-      if (invalidValue) {
-        return (
-          <InvalidValue
-            onChange={this.handleEditorChange}
-            resolution={invalidValue.resolution}
-            value={value}
-          />
-        )
-      }
+      const {isLoading, hasFocus, invalidValue, objectEditStatus, ignoreValidation} = this.state
 
       return (
         <div className={[styles.root, ...(hasFocus ? [styles.focus] : [])].join(' ')}>
@@ -498,58 +495,55 @@ export default withPatchSubscriber(
             label={type.title}
             description={type.description}
           />
-          <ActivateOnFocus
-            isActive={this.state.isActive}
-            html={
-              <div className={styles.activeOnFocus}>
-                <h3>Click to edit</h3>
-                <div>or</div>
-                <div>
-                  <Button onClick={this.handleToggleFullscreen} color="primary">
-                    Open in fullscreen
-                  </Button>
-                </div>
-                <p className={styles.keyboardShortcut}>
-                  Tip: <br />
-                  <strong>
-                    {IS_MAC ? '⌘' : 'ctrl'}
-                    &nbsp;+&nbsp;enter
-                  </strong>{' '}
-                  while editing to go in fullscreen
-                </p>
-              </div>
-            }
-            onActivate={this.handleActivate}
-          >
-            {/* <button
-              type="button"
-              onClick={() =>
-                this.props.onFocus([
-                  {_key: 'fdc63fdab41d'},
-                  'markDefs',
-                  {_key: 'b96ee1f520be'},
-                  FOCUS_TERMINATOR
-                ])
-              }
-            >
-              Test focuspath
-            </button> */}
-            <PortableTextEditor
-              hotkeys={this.hotkeys}
-              maxBlocks={-1} // TODO: from schema?
+          {invalidValue && !ignoreValidation && (
+            <InvalidValue
               onChange={this.handleEditorChange}
-              incomingPatche$={this.patche$.asObservable()}
-              placeholderText={value ? undefined : '[No content]'}
-              readOnly={readOnly}
-              ref={this.editor}
-              renderBlock={this.renderBlock}
-              renderChild={this.renderChild}
-              renderEditor={this.renderEditor}
-              spellCheck={false} // TODO: from schema?
-              type={type}
+              onIgnore={this.handleIgnoreValidation}
+              resolution={invalidValue.resolution}
               value={value}
             />
-          </ActivateOnFocus>
+          )}
+          {(!invalidValue || ignoreValidation) && (
+            <ActivateOnFocus
+              isActive={this.state.isActive}
+              html={
+                <div className={styles.activeOnFocus}>
+                  <h3>Click to edit</h3>
+                  <div>or</div>
+                  <div>
+                    <Button onClick={this.handleToggleFullscreen} color="primary">
+                      Open in fullscreen
+                    </Button>
+                  </div>
+                  <p className={styles.keyboardShortcut}>
+                    Tip: <br />
+                    <strong>
+                      {IS_MAC ? '⌘' : 'ctrl'}
+                      &nbsp;+&nbsp;enter
+                    </strong>{' '}
+                    while editing to go in fullscreen
+                  </p>
+                </div>
+              }
+              onActivate={this.handleActivate}
+            >
+              <PortableTextEditor
+                hotkeys={this.hotkeys}
+                maxBlocks={-1} // TODO: from schema?
+                onChange={this.handleEditorChange}
+                incomingPatche$={this.patche$.asObservable()}
+                placeholderText={value ? undefined : '[No content]'}
+                readOnly={readOnly}
+                ref={this.editor}
+                renderBlock={this.renderBlock}
+                renderChild={this.renderChild}
+                renderEditor={this.renderEditor}
+                spellCheck={false} // TODO: from schema?
+                type={type}
+                value={value}
+              />
+            </ActivateOnFocus>
+          )}
           {objectEditStatus && this.renderEditObject()}
         </div>
       )
