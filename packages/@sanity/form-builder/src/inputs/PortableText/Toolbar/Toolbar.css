@@ -10,9 +10,12 @@
   justify-content: stretch;
   flex-wrap: nowrap;
   font-size: var(--font-size-small);
-  white-space: nowrap;
 
-  @nest .fullscreen & {
+  @nest &:not(.fullscreen) {
+    max-width: 640px;
+  }
+
+  @nest &.fullscreen {
     position: fixed;
     box-sizing: border-box;
     width: 100vw;
@@ -56,10 +59,7 @@
   height: 100%;
   width: 1em;
   z-index: 2;
-  background: radial-gradient(
-    var(--component-border-color),
-    color(var(--component-border-color) a(0%)) 70%
-  );
+  background: radial-gradient(var(--component-border-color), color(var(--component-border-color) a(0%)) 70%);
   background-position: 0.5em 0;
   background-repeat: no-repeat;
   border-right: 1px solid color(var(--component-border-color) a(5%));
