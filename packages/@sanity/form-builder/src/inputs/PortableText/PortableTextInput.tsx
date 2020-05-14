@@ -390,7 +390,7 @@ export default withPatchSubscriber(
     }
 
     // TODO: Highlight the cursor to better show where you are at when toggling fullscreen
-    highlightCursor = () => {
+    highlightCursor = (): void => {
       // console.log('Hightlight cursor')
     }
 
