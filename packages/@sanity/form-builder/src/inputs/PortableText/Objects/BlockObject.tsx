@@ -1,34 +1,40 @@
 /* eslint-disable react/prop-types */
 import React, {FunctionComponent, SyntheticEvent} from 'react'
 import classNames from 'classnames'
-import {PortableTextBlock, Type, RenderAttributes} from '@sanity/portable-text-editor'
+import {
+  PortableTextEditor,
+  PortableTextBlock,
+  Type,
+  RenderAttributes
+} from '@sanity/portable-text-editor'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 
 import {Marker} from '../../../typedefs'
 import {Path} from '../../../typedefs/path'
-import {PatchEvent, unset} from '../../../PatchEvent'
+import {PatchEvent} from '../../../PatchEvent'
 import {BlockObjectPreview} from './BlockObjectPreview'
 import styles from './BlockObject.css'
 
 type Props = {
-  type: Type
-  value: PortableTextBlock
   attributes: RenderAttributes
-  readOnly: boolean
-  markers: Marker[]
+  editorRef: React.RefObject<PortableTextEditor>
   focusPath: Path
+  markers: Marker[]
   onChange: (patchEvent: PatchEvent, path: Path) => void
   onFocus: (arg0: Path) => void
+  readOnly: boolean
+  type: Type
+  value: PortableTextBlock
 }
 
 export const BlockObject: FunctionComponent<Props> = ({
-  type,
-  value,
   attributes: {focused, selected, path},
-  readOnly,
+  editorRef,
   markers,
-  onChange,
-  onFocus
+  onFocus,
+  readOnly,
+  type,
+  value
 }): JSX.Element => {
   const validation = markers.filter(marker => marker.type === 'validation')
   const errors = validation.filter(marker => marker.level === 'error')
@@ -54,11 +60,18 @@ export const BlockObject: FunctionComponent<Props> = ({
   }
 
   const handleDelete = (): void => {
-    onChange(PatchEvent.from([unset()]), path)
+    if (editorRef && editorRef.current) {
+      PortableTextEditor.remove(
+        editorRef.current,
+        {focus: {path, offset: 0}, anchor: {path, offset: 0}},
+        {mode: 'block'}
+      )
+      PortableTextEditor.focus(editorRef.current)
+    }
   }
 
   return (
-    <div className={classnames} onClick={handleClickToOpen}>
+    <div className={classnames} onDoubleClick={handleClickToOpen}>
       <div className={styles.previewContainer} style={readOnly ? {cursor: 'default'} : {}}>
         <BlockObjectPreview
           type={type}

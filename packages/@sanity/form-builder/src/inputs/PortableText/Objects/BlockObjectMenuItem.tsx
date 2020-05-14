@@ -22,15 +22,8 @@ export const MenuItem: FunctionComponent<DropDownMenuItemProps> = ({
   params
 }): JSX.Element => {
   const Icon = icon
-  const preventDefault = (event: SyntheticEvent<HTMLDivElement>): void => {
-    event.preventDefault()
-    event.stopPropagation()
-  }
   return (
-    <div
-      className={color === 'danger' ? styles.menuItemDanger : styles.menuItem}
-      onClick={preventDefault}
-    >
+    <div className={color === 'danger' ? styles.menuItemDanger : styles.menuItem}>
       {intent ? (
         <IntentLink intent={intent} params={params}>
           {Icon && <Icon />}
