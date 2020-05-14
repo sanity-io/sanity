@@ -41,19 +41,12 @@ export default class InsertMenu extends React.Component<Props> {
       </div>
     )
   }
-  // TODO: removed this tooltip for now, seems over-aggressive when also aria/title props?
   renderButton = (item: BlockItem): JSX.Element => {
-    // const {showLabels} = this.props
+    const handleAction = () => this.handleOnAction(item)
     return (
-      // <Tooltip
-      //   title={`Insert ${item.title}${item.isInline ? ' (inline)' : ' (block)'}`}
-      //   disabled={this.props.collapsed}
-      //   key={`insertMenuItem_${item.key}`}
-      //   style={showLabels ? {display: 'block', flexGrow: 1, minWidth: 'fit-content'} : {}}
-      // >
       <Button
         key={keyGenerator()}
-        onClick={() => this.handleOnAction(item)}
+        onClick={handleAction}
         title={`Insert ${item.title || item.value.type.name}${
           item.isInline ? ' (inline)' : ' (block)'
         }`}
