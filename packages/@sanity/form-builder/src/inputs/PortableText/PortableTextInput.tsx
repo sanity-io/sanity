@@ -81,6 +81,9 @@ export default withPatchSubscriber(
     private usubscribe: any
 
     handleToggleFullscreen = (): void => {
+      if (!this.editor.current) {
+        return
+      }
       const {isFullscreen, selection} = this.state
       const currentSelection = selection
       this.setState({isFullscreen: !isFullscreen})
@@ -124,7 +127,7 @@ export default withPatchSubscriber(
       // Set object edit path if so, or nullify the object edit path.
       // This will open the editing interfaces.
       const {focusPath} = nextProps
-      if (focusPath) {
+      if (focusPath && prevState.objectEditStatus === null) {
         const isChild = focusPath[1] === 'children'
         const isMarkdef = focusPath[1] === 'markDefs'
         const blockSegment = focusPath[0]
@@ -285,7 +288,7 @@ export default withPatchSubscriber(
 
     handleEditObjectFormBuilderBlur = (): void => {
       const {focusPath} = this.props
-      if (focusPath && focusPath[1] !== 'markDefs') {
+      if (this.editor.current && focusPath && focusPath[1] !== 'markDefs') {
         PortableTextEditor.select(this.editor.current, {
           anchor: {path: focusPath, offset: 0},
           focus: {path: focusPath, offset: 0}
@@ -441,25 +444,54 @@ export default withPatchSubscriber(
 
     renderEditObject = (): JSX.Element => {
       const {objectEditStatus} = this.state
-      const [node] = PortableTextEditor.findByPath(this.editor.current, objectEditStatus.editorPath)
-      if (node) {
-        let object = node
-        const ptFeatures = PortableTextEditor.getPortableTextFeatures(this.editor.current)
-        let lookForType = node._type
-        // If it's an annotation get the object from the block.markDefs
-        if (objectEditStatus.type === 'annotation') {
-          const [block] = PortableTextEditor.findByPath(
-            this.editor.current,
-            objectEditStatus.editorPath.slice(0, 1)
-          )
-          if (block) {
-            const markDef = block['markDefs'].find(def => object.marks.includes(def._key))
+      const ptFeatures = PortableTextEditor.getPortableTextFeatures(this.editor.current)
+      let object
+      let lookForType
+      let referenceElement
+      const blockKey =
+        objectEditStatus.formBuilderPath[0] &&
+        typeof objectEditStatus.formBuilderPath[0] === 'object' &&
+        objectEditStatus.formBuilderPath[0]._key
+      const block =
+        this.props.value &&
+        blockKey &&
+        Array.isArray(this.props.value) &&
+        this.props.value.find(blk => blk._key === blockKey)
+      if (!block) {
+        return null
+      }
+      if (objectEditStatus.type === 'blockObject') {
+        object = block
+        lookForType = object._type
+        // eslint-disable-next-line react/no-find-dom-node
+        referenceElement = PortableTextEditor.findDOMNode(this.editor.current, object)
+      } else if (objectEditStatus.type === 'inlineObject') {
+        object =
+          block &&
+          block.children.find(child => child._key === objectEditStatus.formBuilderPath[2]._key)
+        lookForType = object._type
+        // eslint-disable-next-line react/no-find-dom-node
+        referenceElement = PortableTextEditor.findDOMNode(this.editor.current, object)
+      } else if (objectEditStatus.type === 'annotation') {
+        if (block) {
+          const child =
+            block &&
+            block.children.find(child => child._key === objectEditStatus.editorPath[2]._key)
+          if (child) {
+            const markDef =
+              child.marks &&
+              block.markDefs &&
+              block.markDefs.find(def => child.marks.includes(def._key))
             if (markDef) {
               lookForType = markDef._type
               object = markDef
+              // eslint-disable-next-line react/no-find-dom-node
+              referenceElement = PortableTextEditor.findDOMNode(this.editor.current, child)
             }
           }
         }
+      }
+      if (object && lookForType) {
         // Find the type
         const type = ptFeatures.types[
           objectEditStatus.formBuilderPath.length === 1
