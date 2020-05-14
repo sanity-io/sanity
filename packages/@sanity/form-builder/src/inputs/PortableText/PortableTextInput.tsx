@@ -506,18 +506,17 @@ export default withPatchSubscriber(
             : 'inlineObjects'
         ].find(t => t.name === lookForType)
 
-        // eslint-disable-next-line react/no-find-dom-node
-        const referenceElement = PortableTextEditor.findDOMNode(this.editor.current, node)
-
         const handleClose = (): void => {
           const {editorPath} = objectEditStatus
           const {onFocus} = this.props
           onFocus([])
           this.setState({objectEditStatus: null})
-          PortableTextEditor.select(this.editor.current, {
-            focus: {path: editorPath, offset: 0},
-            anchor: {path: editorPath, offset: 0}
-          })
+          if (this.editor.current) {
+            PortableTextEditor.select(this.editor.current, {
+              focus: {path: editorPath, offset: 0},
+              anchor: {path: editorPath, offset: 0}
+            })
+          }
         }
 
         return (
