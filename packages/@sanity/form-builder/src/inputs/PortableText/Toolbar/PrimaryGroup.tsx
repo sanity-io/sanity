@@ -21,6 +21,7 @@ type Props = {
   insertItems: Type[]
   isMobile?: boolean
   isPopped?: boolean
+  isReadOnly: boolean
   onFocus: (path: Path) => void
   selection: EditorSelection
 }
@@ -44,6 +45,7 @@ export default class PrimaryGroup extends React.PureComponent<Props, State> {
       insertItems,
       isMobile,
       isPopped,
+      isReadOnly,
       onFocus,
       selection
     } = this.props
@@ -54,53 +56,63 @@ export default class PrimaryGroup extends React.PureComponent<Props, State> {
     return (
       <div className={isPopped ? styles.isPopped : styles.root}>
         <div className={styles.blockStyleGroup}>
-          <BlockStyleSelect
-            className={styles.blockStyleSelect}
-            editor={editor}
-            selection={this.props.selection}
-          />
+          {!isReadOnly && (
+            <BlockStyleSelect
+              className={styles.blockStyleSelect}
+              editor={editor}
+              selection={this.props.selection}
+            />
+          )}
         </div>
         {portableTextFeatures.decorators.length > 0 && (
           <div className={styles.group}>
-            <DecoratorButtons
-              collapsed={collapsedGroups.indexOf('decoratorButtons') >= 0}
-              editor={editor}
-              hotkeys={this.props.hotkeys}
-              selection={selection}
-            />
+            {!isReadOnly && (
+              <DecoratorButtons
+                collapsed={collapsedGroups.indexOf('decoratorButtons') >= 0}
+                editor={editor}
+                hotkeys={this.props.hotkeys}
+                selection={selection}
+              />
+            )}
           </div>
         )}
         {portableTextFeatures.lists.length > 0 && (
           <div className={styles.group}>
-            <ListItemButtons
-              collapsed={collapsedGroups.indexOf('listItemButtons') >= 0}
-              editor={editor}
-              selection={this.props.selection}
-            />
+            {!isReadOnly && (
+              <ListItemButtons
+                collapsed={collapsedGroups.indexOf('listItemButtons') >= 0}
+                editor={editor}
+                selection={this.props.selection}
+              />
+            )}
           </div>
         )}
         {portableTextFeatures.annotations.length > 0 && (
           <div className={styles.group}>
-            <AnnotationButtons
-              collapsed={collapsedGroups.indexOf('annotationButtons') >= 0}
-              editor={editor}
-              onFocus={onFocus}
-              selection={this.props.selection}
-            />
+            {!isReadOnly && (
+              <AnnotationButtons
+                collapsed={collapsedGroups.indexOf('annotationButtons') >= 0}
+                editor={editor}
+                onFocus={onFocus}
+                selection={this.props.selection}
+              />
+            )}
           </div>
         )}
         {insertItems.length > 0 && (
           <div className={styles.group}>
-            <InsertMenu
-              collapsed={isMobile || collapsedGroups.indexOf('insertMenu') >= 0}
-              editor={editor}
-              onFocus={onFocus}
-              showLabels={
-                portableTextFeatures.types.blockObjects.concat(
-                  portableTextFeatures.types.inlineObjects
-                ).length < 4
-              }
-            />
+            {!isReadOnly && (
+              <InsertMenu
+                collapsed={isMobile || collapsedGroups.indexOf('insertMenu') >= 0}
+                editor={editor}
+                onFocus={onFocus}
+                showLabels={
+                  portableTextFeatures.types.blockObjects.concat(
+                    portableTextFeatures.types.inlineObjects
+                  ).length < 4
+                }
+              />
+            )}
           </div>
         )}
       </div>
