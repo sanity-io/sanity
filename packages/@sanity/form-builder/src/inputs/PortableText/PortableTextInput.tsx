@@ -276,6 +276,7 @@ export default withPatchSubscriber(
         .forEach(segment => {
           _patchEvent = _patchEvent.prefixAll(segment)
         })
+      _patchEvent.patches.map(patch => this.patche$.next(patch))
       this.props.onChange(_patchEvent)
     }
 
