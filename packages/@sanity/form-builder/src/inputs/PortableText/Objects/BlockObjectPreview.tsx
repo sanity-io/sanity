@@ -72,14 +72,10 @@ export const BlockObjectPreview: FunctionComponent<Props> = ({
     }
   }
 
-  const stopPropagation = (event: SyntheticEvent<HTMLDivElement>): void => {
-    event.stopPropagation()
-  }
-
   return (
     <div className={styles.preview}>
       <Preview type={type} value={value} layout="block" />
-      <div className={styles.header} onClick={stopPropagation}>
+      <div className={styles.header}>
         <DropDownButton
           placement="bottom-end"
           items={menuItems}
