@@ -27,7 +27,6 @@ import Toolbar from './Toolbar/Toolbar'
 import {BlockObject} from './Objects/BlockObject'
 import {Path} from '../../typedefs/path'
 import {InlineObject} from './Objects/InlineObject'
-import {startsWith} from '@sanity/util/paths'
 import {EditObject} from './Objects/EditObject'
 import {Annotation} from './Objects/Annotation'
 
@@ -63,7 +62,7 @@ type State = {
   invalidValue: InvalidEditorValue | null
   isActive: boolean
   isLoading: boolean
-  selection: EditorSelection
+  selection: EditorSelection | undefined
   valueWithError: PortableTextBlock[] | undefined
   objectEditStatus: {editorPath: Path; formBuilderPath: Path; type: string} | null
 }
@@ -113,7 +112,7 @@ export default withPatchSubscriber(
       isFullscreen: false,
       isLoading: false,
       objectEditStatus: null,
-      selection: null,
+      selection: undefined,
       valueWithError: undefined
     }
 
@@ -172,6 +171,11 @@ export default withPatchSubscriber(
     constructor(props: Props) {
       super(props)
       this.usubscribe = props.subscribe(this.handleDocumentPatches)
+    }
+
+    componentDidMount() {
+      // Trigger rendering of toolbar initially
+      this.setState({selection: null})
     }
 
     componentWillUnmount(): void {
