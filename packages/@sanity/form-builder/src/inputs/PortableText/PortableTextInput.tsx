@@ -324,6 +324,7 @@ export default withPatchSubscriber(
       return (
         <BlockObject
           attributes={attributes}
+          editorRef={this.editor}
           focusPath={this.props.focusPath}
           markers={this.props.markers}
           onChange={this.handleFormBuilderEditObjectChange}
@@ -418,6 +419,7 @@ export default withPatchSubscriber(
           onFocus={onFocus}
           onToggleFullscreen={this.handleToggleFullscreen}
           selection={selection}
+          isReadOnly={!!this.props.readOnly}
         />
       )
 
