@@ -26,7 +26,8 @@ export default {
             {type: 'object', name: 'test', fields: [{type: 'string', name: 'mystring'}]}
           ]
         },
-        {type: 'image', name: 'image'}
+        {type: 'image', name: 'image'},
+        {type: 'object', name: 'test', fields: [{type: 'string', name: 'mystring'}]}
       ]
     }
   ]
