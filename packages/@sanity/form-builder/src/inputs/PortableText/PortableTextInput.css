@@ -18,10 +18,10 @@
   background-color: var(--body-bg);
   width: 100vw;
   height: 100vh;
+  margin-top: 4rem;
 }
 
 .scrollContainer {
-  margin-top: var(--small-padding);
   composes: scrollY from 'part:@sanity/base/theme/layout/scrolling-style';
   display: block;
   height: 15rem;
@@ -49,7 +49,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    height: 100vh;
+    height: calc(100vh - 4rem);
     width: 100vw;
     background-color: color(var(--body-bg) lightness(- 2%));
     background-image: unset;
