@@ -9,6 +9,7 @@ type InvalidValueProps = {
   resolution: InvalidValueResolution
   value: PortableTextBlock[]
   onChange: (...args: any[]) => any
+  onIgnore: () => void
 }
 
 const setAutoHeight = el => {
@@ -20,12 +21,15 @@ const setAutoHeight = el => {
 }
 
 export default class InvalidValue extends React.PureComponent<InvalidValueProps, {}> {
-  handleClick = (): void => {
+  handleAction = (): void => {
     const resolution = this.props.resolution
     if (resolution) {
       const {patches} = resolution
       this.props.onChange({type: 'mutation', patches})
     }
+  }
+  handleIgnore = (): void => {
+    this.props.onIgnore()
   }
   render() {
     const {value, resolution} = this.props
@@ -39,13 +43,16 @@ export default class InvalidValue extends React.PureComponent<InvalidValueProps,
             ref={setAutoHeight}
             className={styles.currentValueDump}
             readOnly
-            value={JSON.stringify(value, null, 2)}
+            value={JSON.stringify(resolution.item, null, 2)}
           />
         </Details>
         {resolution.action && (
           <div className={styles.removeButtonWrapper}>
-            <DefaultButton color="danger" onClick={this.handleClick}>
+            <DefaultButton color="danger" onClick={this.handleAction}>
               {resolution.action}
+            </DefaultButton>
+            <DefaultButton color="secondary" onClick={this.handleIgnore}>
+              Ignore
             </DefaultButton>
           </div>
         )}
