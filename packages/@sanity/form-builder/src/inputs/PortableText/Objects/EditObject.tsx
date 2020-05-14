@@ -1,6 +1,6 @@
 import React, {FunctionComponent, useState} from 'react'
 import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
-import {get, debounce} from 'lodash'
+import {get} from 'lodash'
 
 import {DefaultObjectEditing} from './renderers/DefaultObjectEditing'
 import {FullscreenObjectEditing} from './renderers/FullscreenObjectEditing'
@@ -9,8 +9,7 @@ import {PopoverObjectEditing} from './renderers/PopoverObjectEditing'
 import {ModalType} from '../../ArrayInput/typedefs'
 import {Marker} from '../../../typedefs'
 import {Path} from '../../../typedefs/path'
-import {PatchEvent, set} from '../../../PatchEvent'
-import {applyAll} from '../../../patch/applyPatch'
+import {PatchEvent} from '../../../PatchEvent'
 
 type Props = {
   object: PortableTextBlock | PortableTextChild
@@ -40,23 +39,18 @@ export const EditObject: FunctionComponent<Props> = ({
   onClose,
   onBlur
 }): JSX.Element => {
-  const [isChanged, setIsChanged] = useState(false)
-  const [patchedObject, setPatchedObject] = useState(object)
   const editModalLayout: ModalType = get(type, 'options.editModal')
-  const flush = debounce(() => {
-    onChange(PatchEvent.from([set(patchedObject, [])]), formBuilderPath)
-  }, 500)
+  const [isOpen, setIsOpen] = useState(true)
+  if (!isOpen) {
+    return null
+  }
   const handleClose = (): void => {
-    if (isChanged) {
-      flush()
-    }
+    setIsOpen(false)
     onClose()
   }
 
   const handleChange = (patchEvent: PatchEvent): void => {
-    setIsChanged(true)
-    setPatchedObject(applyAll(patchedObject, patchEvent.patches))
-    flush()
+    onChange(patchEvent, formBuilderPath)
   }
   switch (editModalLayout) {
     case 'fullscreen': {
@@ -95,7 +89,7 @@ export const EditObject: FunctionComponent<Props> = ({
     default: {
       return (
         <DefaultObjectEditing
-          object={patchedObject}
+          object={object}
           type={type}
           readOnly={readOnly}
           markers={markers}
