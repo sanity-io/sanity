@@ -285,11 +285,8 @@ export default withPatchSubscriber(
     }
 
     handleEditObjectFormBuilderFocus = (nextPath: Path): void => {
-      if (this.state.objectEditStatus) {
-        if (startsWith(this.state.objectEditStatus.formBuilderPath, this.props.focusPath)) {
-          this.props.onFocus(nextPath)
-          return
-        }
+      if (this.state.objectEditStatus && nextPath) {
+        this.props.onFocus(nextPath)
       }
     }
 
@@ -544,7 +541,8 @@ export default withPatchSubscriber(
     }
 
     render(): JSX.Element {
-      const {value, readOnly, type, markers, level, onFocus, onBlur} = this.props
+      const {value, readOnly, type, markers, level} = this.props
+      // TODO: deal with validation and loading status
       const validation = markers.filter(marker => marker.type === 'validation')
       const errors = validation.filter(marker => marker.level === 'error')
       const {isLoading, hasFocus, invalidValue, objectEditStatus, ignoreValidation} = this.state
