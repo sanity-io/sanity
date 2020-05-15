@@ -182,28 +182,6 @@ export default withPatchSubscriber(
       this.usubscribe()
     }
 
-    shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
-      if (nextState.objectEditStatus !== this.state.objectEditStatus) {
-        return true
-      }
-      if (nextState.isFullscreen !== this.state.isFullscreen) {
-        return true
-      }
-      if (nextProps.value !== this.props.value) {
-        return true
-      }
-      if (nextProps.focusPath !== this.props.focusPath) {
-        return true
-      }
-      if (nextState.selection !== this.state.selection) {
-        return true
-      }
-      if (nextState.invalidValue !== this.state.invalidValue) {
-        return true
-      }
-      return false
-    }
-
     private handleDocumentPatches = ({
       patches
     }: {
