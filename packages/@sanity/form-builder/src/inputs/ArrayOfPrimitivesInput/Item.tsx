@@ -30,6 +30,7 @@ type Props = {
   isSortable: boolean
   readOnly: boolean | null
   level: number
+  presence: any
 }
 export default class Item extends React.PureComponent<Props> {
   handleRemove = () => {
@@ -72,7 +73,8 @@ export default class Item extends React.PureComponent<Props> {
       onBlur,
       type,
       readOnly,
-      isSortable
+      isSortable,
+      presence
     } = this.props
     return (
       <div className={styles.root}>
@@ -91,6 +93,7 @@ export default class Item extends React.PureComponent<Props> {
             onKeyPress={this.handleKeyPress}
             onChange={this.handleChange}
             level={level}
+            presence={presence}
           />
         </div>
         <div className={styles.functions}>

@@ -15,11 +15,12 @@ import PatchEvent from '../../PatchEvent'
 import Preview from '../../Preview'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import {Path} from '../../typedefs/path'
-import {Marker, Type} from '../../typedefs'
+import {FormBuilderPresence, Marker, Type} from '../../typedefs'
 import * as PathUtils from '@sanity/util/paths'
 import ConfirmButton from './ConfirmButton'
 import styles from './styles/ItemValue.css'
 import {ArrayType, ItemValue} from './typedefs'
+import {FieldPresence, Overlay as PresenceOverlay} from '@sanity/components/presence'
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
@@ -54,6 +55,7 @@ type Props = {
   filterField: Function
   readOnly: boolean | null
   focusPath: Path
+  presence: FormBuilderPresence[]
 }
 function pathSegmentFrom(value) {
   return {_key: value._key}
@@ -151,10 +153,11 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     }
   }
   renderEditItemForm(item: ItemValue) {
-    const {type, markers, focusPath, onFocus, onBlur, readOnly, filterField} = this.props
+    const {type, markers, focusPath, onFocus, onBlur, readOnly, filterField, presence} = this.props
     const options = type.options || {}
     const memberType = this.getMemberType()
     const childMarkers = markers.filter(marker => marker.path.length > 1)
+    const childPresence = presence.filter(presence => presence.path.length > 1)
     const content = (
       <FormBuilderInput
         type={memberType}
@@ -168,6 +171,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
         markers={childMarkers}
         path={[{_key: item._key}]}
         filterField={filterField}
+        presence={childPresence}
       />
     )
     // test focus issues by uncommenting the next line
@@ -223,14 +227,14 @@ export default class RenderItemValue extends React.PureComponent<Props> {
         onAction={this.handleDialogAction}
         showCloseButton={false}
       >
-        <div>
+        <PresenceOverlay>
           <DialogContent size="medium">{content}</DialogContent>
-        </div>
+        </PresenceOverlay>
       </DefaultDialog>
     )
   }
   renderItem() {
-    const {value, markers, type, readOnly} = this.props
+    const {value, markers, type, readOnly, presence, focusPath} = this.props
     const options = type.options || {}
     const isGrid = options.layout === 'grid'
     const isSortable = !readOnly && !type.readOnly && options.sortable !== false
@@ -247,6 +251,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
         })
       })
       .filter(Boolean)
+
     return (
       <div className={styles.inner}>
         {!isGrid && isSortable && <DragHandle />}
@@ -268,9 +273,8 @@ export default class RenderItemValue extends React.PureComponent<Props> {
         </div>
 
         <div className={isGrid ? styles.functionsInGrid : styles.functions}>
-          <div>
-            <ValidationStatus markers={scopedValidation} showSummary={!value._ref} />
-          </div>
+          <ValidationStatus markers={scopedValidation} showSummary={!value._ref} />
+          <FieldPresence presence={presence} />
           {value._ref && (
             <IntentLink className={styles.linkToReference} intent="edit" params={{id: value._ref}}>
               <LinkIcon />

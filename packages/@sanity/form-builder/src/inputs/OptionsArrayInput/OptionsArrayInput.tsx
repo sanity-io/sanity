@@ -7,6 +7,8 @@ import styles from './styles/OptionsArrayInput.css'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import {resolveValueWithLegacyOptionsSupport, isLegacyOptionsItem} from './legacyOptionsSupport'
 import {Type} from '../../typedefs'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
+
 function isEqual(item, otherItem) {
   if (isLegacyOptionsItem(item) || isLegacyOptionsItem(otherItem)) {
     return item.value === otherItem.value
@@ -46,6 +48,8 @@ type OptionsArrayInputProps = {
   level?: number
   readOnly?: boolean
   onChange?: (...args: any[]) => any
+  presence: any
+  onFocus: (path: any[]) => void
 }
 export default class OptionsArrayInput extends React.PureComponent<OptionsArrayInputProps, {}> {
   handleChange = (isChecked, optionValue) => {
@@ -71,12 +75,24 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
         memberType.name === resolveTypeName(resolveValueWithLegacyOptionsSupport(option))
     )
   }
+
+  handleFocus = () => {
+    this.props.onFocus([FOCUS_TERMINATOR])
+  }
+
   render() {
-    const {type, markers, value, level, readOnly} = this.props
+    const {type, markers, value, level, readOnly, presence} = this.props
     const options = get(type.options, 'list')
     const direction = get(type.options, 'direction') // vertical and horizontal
     return (
-      <Fieldset legend={type.title} description={type.description} markers={markers} level={level}>
+      <Fieldset
+        legend={type.title}
+        description={type.description}
+        markers={markers}
+        presence={presence}
+        level={level}
+        onClick={this.handleFocus}
+      >
         <div
           className={
             direction === 'vertical' ? styles.itemWrapperVertical : styles.itemWrapperHorizontal
