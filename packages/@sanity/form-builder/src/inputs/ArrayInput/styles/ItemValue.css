@@ -41,10 +41,6 @@
   margin-left: calc(var(--medium-padding) * -1);
 }
 
-.warning {
-  border: 1px dashed var(--state-warning-color);
-}
-
 .missingKeyMessage {
   color: var(--state-warning-color);
   position: absolute;
