@@ -1,13 +1,11 @@
 @import "part:@sanity/base/theme/variables-style";
 
 :root {
-  --checkbox-label-height: 1em;
   --checkbox-off-color: var(--gray-light);
   --checkbox-color: var(--brand-primary);
-  --checkbox-button-size: 1.3em;
+  --checkbox-button-size: 1em;
   --checkbox-top-offset: 0;
   --checkbox-focus-color: var(--brand-primary);
-  --checkbox-label-font-size: 1em;
 }
 
 .root {
@@ -83,7 +81,7 @@
 .input:checked + .checkbox {
   @nest & .checkmark {
     opacity: 1;
-    transform: scale(0.7);
+    transform: scale(0.8);
   }
 }
 

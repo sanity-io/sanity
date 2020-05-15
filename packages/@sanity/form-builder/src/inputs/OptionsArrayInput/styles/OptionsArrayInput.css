@@ -10,7 +10,7 @@
 }
 
 .itemWrapperHorizontal {
-  display: inline-block;
-  line-height: 2em;
-  margin-right: 1em;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 1em;
 }

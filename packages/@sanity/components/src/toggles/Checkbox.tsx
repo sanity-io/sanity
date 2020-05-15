@@ -1,14 +1,15 @@
-import React, {useRef, useEffect} from 'react'
+import React, {useEffect} from 'react'
 import styles from './Checkbox.css'
 import sharedStyles from './shared.css'
 import {Marker} from '../typedefs'
 import {useId} from '@reach/auto-id'
 
 type Props = {
-  label: string
+  label: any
   description: string
   markers: Marker[]
   checked: boolean
+  inputRef: React.RefObject<HTMLInputElement>
   disabled: boolean
   readOnly: boolean
   children: any
@@ -25,14 +26,14 @@ export default function Checkbox({
   readOnly,
   children,
   onFocus,
+  inputRef,
   onBlur,
   ...rest
 }: Props) {
   const elementId = useId()
-  const checkboxInput = useRef(null)
   useEffect(() => {
-    if (typeof checked === 'undefined' && checkboxInput.current) {
-      checkboxInput.current.indeterminate = true
+    if (typeof checked === 'undefined' && inputRef.current) {
+      inputRef.current.indeterminate = true
     }
   }, [])
 
@@ -46,7 +47,7 @@ export default function Checkbox({
         type="checkbox"
         disabled={disabled || readOnly}
         checked={checked}
-        ref={checkboxInput}
+        ref={inputRef}
         onFocus={onFocus}
       />
       <div className={styles.checkbox}>

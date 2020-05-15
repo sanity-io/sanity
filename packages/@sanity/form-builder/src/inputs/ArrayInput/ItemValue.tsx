@@ -20,6 +20,7 @@ import * as PathUtils from '@sanity/util/paths'
 import ConfirmButton from './ConfirmButton'
 import styles from './styles/ItemValue.css'
 import {ArrayType, ItemValue} from './typedefs'
+
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
     <DragBarsIcon />
@@ -235,24 +236,19 @@ export default class RenderItemValue extends React.PureComponent<Props> {
     const isSortable = !readOnly && !type.readOnly && options.sortable !== false
     const previewLayout = isGrid ? 'media' : 'default'
     const validation = markers.filter(marker => marker.type === 'validation')
-    const errors = validation.filter(marker => marker.level === 'error')
-    const scopedValidation = validation.map(marker => {
-      if (marker.path.length <= 1) {
-        return marker
-      }
-      const level = marker.level === 'error' ? 'errors' : 'warnings'
-      return Object.assign({}, marker, {
-        item: marker.item.cloneWithMessage(`Contains ${level}`)
+    const scopedValidation = validation
+      .map(marker => {
+        if (marker.path.length <= 1) {
+          return marker
+        }
+        const level = marker.level === 'error' ? 'errors' : 'warnings'
+        return Object.assign({}, marker, {
+          item: marker.item.cloneWithMessage(`Contains ${level}`)
+        })
       })
-    })
-    const classNames = [
-      errors.length > 0 ? styles.innerWithError : styles.inner,
-      !value._key && styles.warning
-    ]
       .filter(Boolean)
-      .join(' ')
     return (
-      <div className={classNames}>
+      <div className={styles.inner}>
         {!isGrid && isSortable && <DragHandle />}
         <div
           tabIndex={0}
@@ -272,9 +268,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
         </div>
 
         <div className={isGrid ? styles.functionsInGrid : styles.functions}>
-          <div>
-            <ValidationStatus markers={scopedValidation} hideTooltip={!value._ref} />
-          </div>
+          <ValidationStatus markers={scopedValidation} showSummary={!value._ref} />
           {value._ref && (
             <IntentLink className={styles.linkToReference} intent="edit" params={{id: value._ref}}>
               <LinkIcon />
