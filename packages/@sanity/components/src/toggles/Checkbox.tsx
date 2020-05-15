@@ -5,7 +5,7 @@ import {Marker} from '../typedefs'
 import {useId} from '@reach/auto-id'
 
 type Props = {
-  label: string
+  label: any
   description: string
   markers: Marker[]
   checked: boolean

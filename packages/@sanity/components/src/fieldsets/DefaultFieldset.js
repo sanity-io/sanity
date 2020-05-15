@@ -97,7 +97,6 @@ export default class Fieldset extends React.Component {
 
     const rootClassName = [
       styles.root,
-      errors.length > 0 && styles.hasErrors,
       styles[`columns${columns}`],
       styles[`level${level}`],
       transparent && styles.transparent,
@@ -107,6 +106,10 @@ export default class Fieldset extends React.Component {
       .filter(Boolean)
       .join(' ')
 
+    // Only show a summary of validation issues if field is collapsible and has been collapsed
+    const showSummary = isCollapsible && isCollapsed
+    // Hide the tooltip if field is collapsible, but field is not collapsed
+    const hideTooltip = isCollapsible && !isCollapsed
     return (
       <div
         {...rest}
@@ -131,7 +134,7 @@ export default class Fieldset extends React.Component {
                   <div
                     tabIndex={-1}
                     onClick={isCollapsible ? this.handleToggle : undefined}
-                    style={{outline: 'none'}}
+                    style={{outline: 'none', display: 'flex', alignItems: 'center'}}
                   >
                     {isCollapsible && (
                       <div className={`${styles.arrow} ${isCollapsed ? '' : styles.isOpen}`}>
@@ -143,8 +146,13 @@ export default class Fieldset extends React.Component {
                     </DefaultLabel>
                   </div>
                   <ValidationStatus
-                    markers={markers}
-                    showSummary={markers.filter(marker => marker.type === 'validation').length > 1}
+                    markers={
+                      showSummary
+                        ? validation.filter(marker => marker.path.length <= level)
+                        : validation.filter(marker => marker.path.length < 1)
+                    }
+                    showSummary={showSummary}
+                    hideTooltip={hideTooltip}
                   />
                 </legend>
                 {(description || fieldset.description) && (

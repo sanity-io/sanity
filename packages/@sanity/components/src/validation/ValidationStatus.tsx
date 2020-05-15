@@ -36,10 +36,11 @@ export default class ValidationStatus extends React.PureComponent<Props> {
     const warningDef = `warning${warnings.length === 1 ? '' : 's'}`
     const errorText = errors.length > 0 ? `${errors.length} validation ${errorDef}` : ''
     const warningText = warnings.length > 0 ? `${warnings.length} ${warningDef}` : ''
+    const hasBoth = errors.length > 0 && warnings.length > 0
 
-    const tooltipText = `There are ${errorText} ${
-      warningText !== '' ? `and ${warningText}` : ''
-    }${showSummary && ' in this list'}`
+    const tooltipText = `Found ${errorText} ${
+      warningText !== '' ? `${hasBoth ? 'and ' : ''}${warningText}` : ''
+    }`
 
     const iconStyle = errors?.length < 1 && warnings?.length > 0 ? styles.warning : styles.error
 

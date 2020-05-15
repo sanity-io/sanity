@@ -170,7 +170,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
     }
   }
   render() {
-    const {type, level, focusPath} = this.props
+    const {type, level, focusPath, markers} = this.props
     const renderedFields = this.getRenderedFields()
     const renderedUnknownFields = this.renderUnknownFields()
     if (level === 0) {
