@@ -15,6 +15,7 @@ import styles from './styles/ReferenceInput.css'
 import Button from 'part:@sanity/components/buttons/default'
 import withDocument from '../../utils/withDocument'
 import withValuePath from '../../utils/withValuePath'
+import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 
 type SanityDocument = {
   _id: string
@@ -129,7 +130,7 @@ export default withValuePath(
           this.search(this._lastQuery)
         }
         if (onFocus) {
-          onFocus([])
+          onFocus([FOCUS_TERMINATOR])
         }
       }
       handleChange = (item: SearchHit) => {
