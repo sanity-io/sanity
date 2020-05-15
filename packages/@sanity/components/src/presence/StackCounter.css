@@ -1,0 +1,32 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: flex;
+}
+
+.counter {
+  align-self: center;
+  background: var(--white);
+  min-height: calc(var(--avatar-height) - 1px);
+  min-width: calc(var(--avatar-height) - 1px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2rem;
+  border: 1px solid var(--text-color);
+  color: var(--text-color);
+  font-size: var(--font-size-tiny);
+  padding: 0 var(--extra-small-padding);
+  box-sizing: border-box;
+  margin-right: 3px;
+  font-weight: 600;
+  user-select: none;
+}
+
+.isGlobal {
+  border: 1px solid color(var(--main-navigation-color--inverted) a(70%));
+  color: var(--main-navigation-color--inverted);
+  font-size: var(--font-size-tiny--relative);
+  background: var(--main-navigation-color);
+  margin-right: -6px;
+}

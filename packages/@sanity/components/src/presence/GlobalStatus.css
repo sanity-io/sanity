@@ -1,0 +1,105 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: flex;
+  text-align: center;
+  align-items: stretch;
+  position: relative;
+}
+
+.intentLink {
+  display: flex;
+  outline: none;
+  color: inherit;
+  text-decoration: none;
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
+}
+
+.inner {
+  display: flex;
+  outline: none;
+}
+
+.mobileContent {
+  display: flex;
+  text-decoration: none;
+  padding: 0.75em 0.5em;
+  white-space: nowrap;
+  flex-direction: row;
+  align-items: center;
+  -webkit-font-smoothing: inherit;
+  line-height: calc(25 / 16);
+  margin: 0;
+  height: 100%;
+
+  @media (--screen-medium) {
+    display: none;
+    padding: 0.75em;
+  }
+
+  @media (hover: hover) {
+    opacity: 0.7;
+
+    @nest &:hover {
+      opacity: 1;
+    }
+  }
+
+  @nest & .icon {
+    position: relative;
+    font-size: var(--font-size-small);
+    line-height: calc(25 / 14);
+  }
+
+  @nest & .icon > svg {
+    font-size: 2em;
+    vertical-align: top;
+  }
+
+  @nest & .statusIndicator {
+    position: absolute;
+    top: 0.1em;
+    right: 0.15em;
+    height: 0.5em;
+    width: 0.5em;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    background: var(--state-success-color);
+    box-sizing: border-box;
+  }
+}
+
+.avatars {
+  display: none;
+  align-items: stretch;
+  flex: 1;
+  height: 100%;
+  border: 0;
+  background: none;
+  box-shadow: 0;
+  outline: none;
+
+  @media (--screen-medium) {
+    display: flex;
+  }
+
+  @nest & .avatars {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    height: 100%;
+    color: var(--main-navigation-color); /* For avatar border color */
+  }
+}
+
+.avatarOverlap {
+  display: flex;
+
+  @nest & div[class*="Avatar_root"] {
+    border: 1px solid var(--main-navigation-color);
+  }
+}
+
+.avatarOverlap:not(:last-of-type) {
+  margin-right: -8px;
+}
