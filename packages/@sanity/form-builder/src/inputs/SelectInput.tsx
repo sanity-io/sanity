@@ -22,6 +22,7 @@ type Props = {
   onChange: (arg0: PatchEvent) => void
   onFocus: () => void
   markers: Array<Marker>
+  presence: any
 }
 export default class StringSelect extends React.Component<Props> {
   _input: (RadioSelect | Select) | null
@@ -44,12 +45,19 @@ export default class StringSelect extends React.Component<Props> {
     this._input = input
   }
   render() {
-    const {value, readOnly, markers, type, level, onFocus} = this.props
+    const {value, readOnly, markers, type, level, onFocus, presence} = this.props
     const items = (type.options.list || []).map(toSelectItem)
     const currentItem = items.find(item => item.value === value)
     const isRadio = type.options && type.options.layout === 'radio'
     return (
-      <FormField markers={markers} level={level} label={type.title} description={type.description}>
+      <FormField
+        markers={markers}
+        level={level}
+        label={type.title}
+        description={type.description}
+        presence={presence}
+        onFocus={onFocus}
+      >
         {isRadio ? (
           <RadioSelect
             name={this.name}

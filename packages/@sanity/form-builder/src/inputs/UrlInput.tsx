@@ -13,6 +13,7 @@ type Props = {
   onChange: (arg0: PatchEvent) => void
   onFocus: () => void
   markers: Array<Marker>
+  presence: any
 }
 export default class UrlInput extends React.Component<Props> {
   _input: TextInput | null
@@ -29,14 +30,20 @@ export default class UrlInput extends React.Component<Props> {
     this._input = input
   }
   render() {
-    const {value, markers, type, readOnly, level, onFocus} = this.props
+    const {value, markers, type, readOnly, level, onFocus, presence} = this.props
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
     // Use text input for relative URIs
     const uriRule = getValidationRule(type, 'uri')
     const inputType = uriRule && get(uriRule, 'constraint.options.allowRelative') ? 'text' : 'url'
     return (
-      <FormField markers={markers} level={level} label={type.title} description={type.description}>
+      <FormField
+        markers={markers}
+        level={level}
+        label={type.title}
+        description={type.description}
+        presence={presence}
+      >
         <TextInput
           customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
           type={inputType}

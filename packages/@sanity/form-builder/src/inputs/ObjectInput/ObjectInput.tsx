@@ -1,6 +1,6 @@
 import React from 'react'
 import Field from './Field'
-import {Marker} from '../../typedefs'
+import {FormBuilderPresence, Marker} from '../../typedefs'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import isEmpty from '../../utils/isEmpty'
@@ -44,6 +44,7 @@ type ObjectInputProps = {
   readOnly?: boolean
   isRoot?: boolean
   filterField?: (...args: any[]) => any
+  presence: FormBuilderPresence[]
 }
 export default class ObjectInput extends React.PureComponent<ObjectInputProps, {}> {
   _firstField: any
@@ -83,7 +84,17 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
     onChange(event)
   }
   renderField(field, level, index) {
-    const {type, value, markers, readOnly, focusPath, onFocus, onBlur, filterField} = this.props
+    const {
+      type,
+      value,
+      markers,
+      readOnly,
+      focusPath,
+      onFocus,
+      onBlur,
+      filterField,
+      presence
+    } = this.props
     if (!filterField(type, field) || field.type.hidden) {
       return null
     }
@@ -99,6 +110,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
         markers={markers}
         focusPath={focusPath}
         level={level}
+        presence={presence}
         readOnly={readOnly}
         filterField={filterField}
         ref={index === 0 && this.setFirstField}
@@ -106,11 +118,16 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
     )
   }
   renderFieldset(fieldset, fieldsetIndex) {
-    const {level, focusPath} = this.props
+    const {level, focusPath, presence, onFocus} = this.props
     const columns = fieldset.options && fieldset.options.columns
     const collapsibleOpts = getCollapsedWithDefaults(fieldset.options, level)
     const isExpanded =
       focusPath.length > 0 && fieldset.fields.some(field => focusPath[0] === field.name)
+    const fieldNames = fieldset.fields.map(f => f.name)
+    const childPresence = presence.filter(
+      item => fieldNames.includes(item.path[0]) || item.path[0] === '$'
+    )
+    const isCollapsed = !isExpanded && collapsibleOpts.collapsed
     return (
       <div key={fieldset.name} className={fieldStyles.root}>
         <Fieldset
@@ -119,7 +136,9 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
           level={level + 1}
           columns={columns}
           isCollapsible={collapsibleOpts.collapsible}
-          isCollapsed={!isExpanded && collapsibleOpts.collapsed}
+          isCollapsed={isCollapsed}
+          presence={isCollapsed ? childPresence : []}
+          onFocus={onFocus}
         >
           {fieldset.fields.map((field, fieldIndex) => {
             return this.renderField(field, level + 2, fieldsetIndex + fieldIndex)
@@ -170,7 +189,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
     }
   }
   render() {
-    const {type, level, focusPath, markers} = this.props
+    const {type, level, focusPath, onFocus, presence} = this.props
     const renderedFields = this.getRenderedFields()
     const renderedUnknownFields = this.renderUnknownFields()
     if (level === 0) {
@@ -186,6 +205,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
     const collapsibleOpts = getCollapsedWithDefaults(type.options, level)
     const isExpanded = focusPath.length > 0
     const columns = type.options && type.options.columns
+    const isCollapsed = !isExpanded && collapsibleOpts.collapsed
     return (
       <div className={styles.root}>
         <Fieldset
@@ -194,7 +214,10 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
           description={type.description}
           columns={columns}
           isCollapsible={collapsibleOpts.collapsible}
-          isCollapsed={!isExpanded && collapsibleOpts.collapsed}
+          isCollapsed={isCollapsed}
+          presence={presence.filter(item => item.path[0] === '$' || item.path.length === 0)}
+          onFocus={onFocus}
+          focusPath={focusPath}
         >
           {renderedFields}
           {renderedUnknownFields}

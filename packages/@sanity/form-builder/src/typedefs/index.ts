@@ -20,3 +20,11 @@ export type Marker = {
   level?: string
   item: any
 }
+
+export type FormBuilderPresence = {
+  sessionId: string
+  userId: string
+  path: Path
+  timestamp: string
+  state: {[key: string]: any}
+}
