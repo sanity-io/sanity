@@ -40,6 +40,7 @@ type Props = {
   focusPath: Path
   readOnly: boolean | null
   markers: Array<Marker>
+  presence: any
 }
 export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   _element: Fieldset | null
@@ -105,7 +106,18 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   }
 
   renderItem = (item, index) => {
-    const {type, level, markers, value, focusPath, onChange, onFocus, readOnly, onBlur} = this.props
+    const {
+      type,
+      level,
+      markers,
+      value,
+      focusPath,
+      onChange,
+      onFocus,
+      readOnly,
+      onBlur,
+      presence
+    } = this.props
     const typeName = resolveTypeName(item)
     const itemMemberType = this.getMemberType(typeName)
     if (!itemMemberType) {
@@ -122,6 +134,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
     const isSortable = get(type, 'options.sortable') !== false
     const ListItem = isSortable ? SortableItem : DefaultItem
     const filteredMarkers = markers.filter(marker => startsWith([index], marker.path))
+    const childPresence = presence.filter(pItem => startsWith([index], pItem.path))
     return (
       <ListItem key={index} index={index} className={styles.item}>
         <Item
@@ -139,6 +152,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
           onEscapeKey={this.handleItemEscapeKey}
           onChange={this.handleItemChange}
           onRemove={this.handleRemoveItem}
+          presence={childPresence}
         />
       </ListItem>
     )
@@ -176,7 +190,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
   }
 
   render() {
-    const {type, value, level, markers, readOnly, onChange, onFocus} = this.props
+    const {type, value, level, markers, readOnly, onChange, onFocus, presence} = this.props
     return (
       <Fieldset
         legend={type.title}
@@ -186,6 +200,7 @@ export default class ArrayOfPrimitivesInput extends React.PureComponent<Props> {
         onFocus={onFocus}
         ref={this.setElement}
         markers={markers}
+        presence={presence.filter(item => item.path[0] === '$' || item.path.length === 0)}
       >
         <div className={styles.root}>
           {value && value.length > 0 && <div className={styles.list}>{this.renderList(value)}</div>}
