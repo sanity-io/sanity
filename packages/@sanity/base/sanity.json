@@ -379,6 +379,10 @@
       "path": "datastores/history"
     },
     {
+      "name": "part:@sanity/base/datastore/presence",
+      "path": "datastores/presence"
+    },
+    {
       "name": "part:@sanity/base/user",
       "path": "datastores/user"
     },
@@ -930,6 +934,10 @@
     {
       "implements": "part:@sanity/base/launch-icon",
       "path": "components/icons/Launch.js"
+    },
+    {
+      "implements": "part:@sanity/base/users-icon",
+      "path": "components/icons/UsersIcon.js"
     },
     {
       "implements": "part:@sanity/base/sanity-logo",
