@@ -8,6 +8,11 @@
   pointer-events: auto;
   display: flex;
   user-select: none;
+  box-shadow: 0 0 0 1px var(--component-bg);
+
+  &[data-tone='navbar'] {
+    box-shadow: 0 0 0 1px var(--main-navigation-color);
+  }
 }
 
 .avatar {
@@ -46,19 +51,19 @@
   }
 }
 
-.avatar[data-size="xsmall"] {
+.avatar[data-size='xsmall'] {
   font-size: calc(var(--avatar-height) * 0.8);
   width: calc(var(--avatar-height) * 0.8);
   height: calc(var(--avatar-height) * 0.8);
 }
 
-.avatar[data-size="small"] {
+.avatar[data-size='small'] {
   font-size: var(--avatar-height);
   width: var(--avatar-height);
   height: var(--avatar-height);
 }
 
-.avatar[data-size="medium"] {
+.avatar[data-size='medium'] {
   font-size: calc(var(--avatar-height) * 1.3);
   width: calc(var(--avatar-height) * 1.3);
   height: calc(var(--avatar-height) * 1.3);
@@ -86,6 +91,23 @@
   }
 }
 
+.border {
+  fill: var(--component-bg);
+
+  @nest .root[data-tone='navbar'] & {
+    fill: var(--main-navigation-color);
+  }
+}
+
+.backgroundFill {
+  stroke-width: 1;
+  stroke: var(--component-bg);
+
+  @nest .root[data-tone='navbar'] & {
+    stroke: var(--main-navigation-color);
+  }
+}
+
 .arrow {
   position: absolute;
   width: 100%;
@@ -98,11 +120,11 @@
   transform: rotate(-90deg) translate3d(0, 5px, 0);
 
   @nest & > svg {
-    width: 0.3em;
-    height: 0.3em;
+    width: 11px;
+    height: 7px;
     position: absolute;
-    top: -0.25em;
-    left: calc((100% - 0.3em) / 2);
+    top: -4px;
+    left: calc(50% - 5.5px);
   }
 }
 
@@ -112,15 +134,11 @@
 }
 
 .arrow[data-dock='top'] {
-  display: block;
-  top: 1px;
   opacity: 1;
   transform: rotate(0deg);
 }
 
 .arrow[data-dock='bottom'] {
-  bottom: 1px;
-  display: block;
   opacity: 1;
   transform: rotate(-180deg);
 }
