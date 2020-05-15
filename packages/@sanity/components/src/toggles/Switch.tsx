@@ -10,6 +10,7 @@ type Props = {
   markers: Marker[]
   checked: boolean
   disabled: boolean
+  inputRef: React.RefObject<HTMLInputElement>
   readOnly: boolean
   children: any
   onFocus: () => void
@@ -23,15 +24,15 @@ export default function Switch({
   label,
   description,
   readOnly,
+  inputRef,
   children,
   onFocus,
   ...rest
 }: Props) {
   const elementId = useId()
-  const switchInput = useRef(null)
   useEffect(() => {
-    if (typeof checked === 'undefined' && switchInput.current) {
-      switchInput.current.indeterminate = true
+    if (typeof checked === 'undefined' && inputRef.current) {
+      inputRef.current.indeterminate = true
     }
   }, [])
 
@@ -45,7 +46,7 @@ export default function Switch({
         type="checkbox"
         disabled={disabled || readOnly}
         checked={checked}
-        ref={switchInput}
+        ref={inputRef}
         onFocus={onFocus}
       />
       <div className={styles.switchWrapper}>
