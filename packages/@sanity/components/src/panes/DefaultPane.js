@@ -91,10 +91,6 @@ class Pane extends React.PureComponent {
     renderHeaderViewMenu: () => null
   }
 
-  state = {
-    menuIsOpen: false
-  }
-
   actionHandlers = {}
 
   scrollFrameId = null
@@ -113,12 +109,6 @@ class Pane extends React.PureComponent {
       .substr(2, 6)
   }
 
-  componentWillUnmount() {
-    if (this.closeRequest) {
-      cancelAnimationFrame(this.closeRequest)
-    }
-  }
-
   handleRootClick = event => {
     const {onExpand, isCollapsed, index} = this.props
     if (isCollapsed && onExpand) {
@@ -134,11 +124,6 @@ class Pane extends React.PureComponent {
   }
 
   handleMenuAction = item => {
-    // When closing the menu outright, the menu button will be focused and the "enter" keypress
-    // will bubble up to it and trigger a re-open of the menu. To work around this, use rAF to
-    // ensure the current event is completed before closing the menu
-    this.closeRequest = requestAnimationFrame(() => this.handleCloseMenu())
-
     if (typeof item.action === 'function') {
       item.action(item.params)
       return
