@@ -4,6 +4,7 @@ import {FormBuilderInput} from '../../FormBuilderInput'
 import InvalidValue from '../InvalidValueInput'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import styles from './styles/Field.css'
+
 type FieldProps = {
   field: any
   value?: any
@@ -15,6 +16,7 @@ type FieldProps = {
   readOnly?: boolean
   markers?: any[]
   level?: number
+  presence: any
 }
 // This component renders a single type in an object type. It emits onChange events telling the owner about the name of the type
 // that changed. This gives the owner an opportunity to use the same event handler function for all of its fields
@@ -46,7 +48,8 @@ export default class Field extends React.PureComponent<FieldProps> {
       onBlur,
       markers,
       focusPath,
-      filterField
+      filterField,
+      presence
     } = this.props
     if (typeof value !== 'undefined') {
       const expectedType = field.type.name
@@ -57,7 +60,7 @@ export default class Field extends React.PureComponent<FieldProps> {
       if (expectedType !== actualType && !isCompatible) {
         return (
           <div className={styles.root}>
-            <Fieldset legend={field.type.title} level={level}>
+            <Fieldset legend={field.type.title} level={level} presence={presence}>
               <InvalidValue
                 value={value}
                 onChange={this.handleChange}
@@ -84,6 +87,7 @@ export default class Field extends React.PureComponent<FieldProps> {
           filterField={filterField}
           markers={markers}
           level={level}
+          presence={presence}
           ref={this.setInput}
         />
       </div>
