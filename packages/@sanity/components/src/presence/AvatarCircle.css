@@ -1,0 +1,136 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  position: relative;
+  border-radius: 50%;
+  box-sizing: border-box;
+  fill: currentColor;
+  pointer-events: auto;
+  display: flex;
+  user-select: none;
+}
+
+.avatar {
+  position: relative;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  @nest & svg {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    z-index: 1;
+  }
+
+  @nest & .border {
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 0;
+  }
+
+  @nest & .isAnimating {
+    transform-origin: center;
+    animation: spinning 16s infinite linear;
+  }
+}
+
+.avatar[data-status='inactive'] {
+  opacity: 0.6;
+}
+
+.avatar[data-status='editing'] {
+  @nest & .border {
+    stroke-dasharray: 12%;
+  }
+}
+
+.avatar[data-size="xsmall"] {
+  font-size: calc(var(--avatar-height) * 0.8);
+  width: calc(var(--avatar-height) * 0.8);
+  height: calc(var(--avatar-height) * 0.8);
+}
+
+.avatar[data-size="small"] {
+  font-size: var(--avatar-height);
+  width: var(--avatar-height);
+  height: var(--avatar-height);
+}
+
+.avatar[data-size="medium"] {
+  font-size: calc(var(--avatar-height) * 1.3);
+  width: calc(var(--avatar-height) * 1.3);
+  height: calc(var(--avatar-height) * 1.3);
+}
+
+.avatarInner {
+  position: relative;
+
+  @nest & .avatarInitials {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.35em;
+    font-weight: 600;
+    line-height: 0;
+    text-transform: uppercase;
+    text-align: center;
+    border-radius: 50%;
+  }
+}
+
+.arrow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  fill: currentColor;
+  z-index: 0;
+  opacity: 0;
+  transition: all 0.2s linear;
+  transform: rotate(-90deg) translate3d(0, 5px, 0);
+
+  @nest & > svg {
+    width: 0.3em;
+    height: 0.3em;
+    position: absolute;
+    top: -0.25em;
+    left: calc((100% - 0.3em) / 2);
+  }
+}
+
+.arrow[data-dock='inside'] {
+  transform: rotate(-90deg) translate3d(0, 5px, 0);
+  opacity: 0;
+}
+
+.arrow[data-dock='top'] {
+  display: block;
+  top: 1px;
+  opacity: 1;
+  transform: rotate(0deg);
+}
+
+.arrow[data-dock='bottom'] {
+  bottom: 1px;
+  display: block;
+  opacity: 1;
+  transform: rotate(-180deg);
+}
+
+@keyframes spinning {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
