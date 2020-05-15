@@ -41,10 +41,6 @@
   flex-grow: 1;
 }
 
-.headerStatus {
-  padding: 0 var(--small-padding);
-}
-
 .validationIconError {
   composes: validationIconError from 'part:@sanity/base/theme/forms/validation-style';
 }
