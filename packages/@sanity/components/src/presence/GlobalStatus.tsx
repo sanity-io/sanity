@@ -61,10 +61,10 @@ export function GlobalStatus({projectId, presence}: Props) {
           </div>
           {/* Show avatars laid out like on a field */}
           <div className={styles.avatars}>
-            {showCounter && <StackCounter count={hiddenUsers.length} />}
+            {showCounter && <StackCounter count={hiddenUsers.length} tone="navbar" />}
             {visibleUsers.map(presentUser => (
               <div className={styles.avatarOverlap} key={presentUser.user.id}>
-                <UserAvatar user={presentUser.user} fillColor="currentColor" color="#ea5fb1" />
+                <UserAvatar user={presentUser.user} tone="navbar" />
               </div>
             ))}
           </div>

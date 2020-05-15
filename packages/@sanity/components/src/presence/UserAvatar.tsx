@@ -6,11 +6,10 @@ import {User} from './types'
 export type Props = {
   user: User
   color?: string
-  fillColor?: string
   position?: Position
   status?: Status
   size?: Size
-  showFill?: boolean
+  tone?: 'navbar'
 }
 
 function nameToInitials(fullName: string) {
@@ -19,15 +18,7 @@ function nameToInitials(fullName: string) {
   return `${namesArray[0].charAt(0)}${namesArray[namesArray.length - 1].charAt(0)}`
 }
 
-export default function UserAvatar({
-  user,
-  position,
-  color,
-  fillColor,
-  showFill,
-  status = 'online',
-  size
-}: Props) {
+export default function UserAvatar({user, position, color, status = 'online', size, tone}: Props) {
   const [imageLoadError, setImageLoadError] = useState<null | Error>(null)
   // Decide whether the avatar border should animate
   const isAnimating = !position && status === 'editing'
@@ -42,9 +33,8 @@ export default function UserAvatar({
       size={size}
       label={user?.displayName}
       borderColor={userColor}
-      fillColor={fillColor}
       onImageLoadError={error => setImageLoadError(error)}
-      showFill={showFill}
+      tone={tone}
     >
       {!imageUrl && user?.displayName && nameToInitials(user.displayName)}
     </AvatarCircle>

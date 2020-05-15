@@ -5,22 +5,25 @@
 }
 
 .counter {
+  color: inherit;
   align-self: center;
-  background: var(--white);
-  min-height: calc(var(--avatar-height) - 1px);
-  min-width: calc(var(--avatar-height) - 1px);
+  background: var(--component-bg);
+  min-height: var(--avatar-height);
+  min-width: var(--avatar-height);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 2rem;
-  border: 1px solid var(--text-color);
-  color: var(--text-color);
+  border-radius: calc(var(--avatar-height) / 2);
+  box-shadow: inset 0 0 0 1.5px var(--gray);
   font-size: var(--font-size-tiny);
-  padding: 0 var(--extra-small-padding);
+  padding: 0 calc(var(--small-padding) - 2px);
   box-sizing: border-box;
-  margin-right: 3px;
   font-weight: 600;
   user-select: none;
+
+  @nest .root[data-tone='navbar'] & {
+    background: var(--main-navigation-color);
+  }
 }
 
 .isGlobal {
@@ -28,5 +31,4 @@
   color: var(--main-navigation-color--inverted);
   font-size: var(--font-size-tiny--relative);
   background: var(--main-navigation-color);
-  margin-right: -6px;
 }
