@@ -27,6 +27,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
+    "@sanity/bifur-client": "0.0.2",
     "@sanity/client": "1.149.13",
     "@sanity/generate-help-url": "1.149.0",
     "@sanity/image-url": "0.140.15",
@@ -45,6 +46,7 @@
     "lodash": "^4.17.15",
     "nano-pubsub": "^1.0.2",
     "oneline": "^1.0.3",
+    "observable-callback": "^1.0.0",
     "promise-props": "^1.0.0",
     "react-fast-compare": "^2.0.2",
     "react-icon-base": "^2.1.2",
