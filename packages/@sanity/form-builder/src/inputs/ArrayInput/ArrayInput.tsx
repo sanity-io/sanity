@@ -50,6 +50,7 @@ export type Props = {
   readOnly: boolean
   filterField: (field: any) => boolean
   resolveUploader?: (type: Type, file: File) => Uploader
+  presence: any
 }
 type ArrayInputState = {
   isMoving: boolean
@@ -157,7 +158,8 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
       onBlur,
       onFocus,
       level,
-      filterField
+      filterField,
+      presence
     } = this.props
     const {isMoving} = this.state
     const options = type.options || {}
@@ -181,7 +183,9 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
           const isChildMarker = marker =>
             startsWith([index], marker.path) || startsWith([{_key: item && item._key}], marker.path)
           const childMarkers = markers.filter(isChildMarker)
-
+          const isChildPresence = pItem =>
+            startsWith([index], pItem.path) || startsWith([{_key: item && item._key}], pItem.path)
+          const childPresence = isGrid ? [] : presence.filter(isChildPresence)
           const itemProps = isSortable ? {index} : {}
           return (
             <Item
@@ -201,6 +205,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
                 onFocus={onFocus}
                 onBlur={onBlur}
                 readOnly={readOnly || hasMissingKeys}
+                presence={childPresence}
               />
             </Item>
           )
@@ -263,7 +268,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
   }
 
   render() {
-    const {type, level, markers, readOnly, onChange, value} = this.props
+    const {type, level, markers, readOnly, onChange, value, presence} = this.props
     const hasNonObjectValues = (value || []).some(item => !isPlainObject(item))
     if (hasNonObjectValues) {
       return (
@@ -324,7 +329,11 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
       )
     }
     const FieldSetComponent = SUPPORT_DIRECT_UPLOADS ? UploadTargetFieldset : Fieldset
-    const uploadProps = SUPPORT_DIRECT_UPLOADS ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload} : {}
+    const uploadProps = SUPPORT_DIRECT_UPLOADS
+      ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload}
+      : {}
+    const options = type.options || {}
+    const isGrid = options.layout === 'grid'
     return (
       <FieldSetComponent
         markers={markers}
@@ -336,6 +345,7 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
         onFocus={this.handleFocus}
         type={type}
         ref={this.setElement}
+        presence={isGrid ? presence : presence.filter(item => item.path[0] === '$')}
         {...uploadProps}
       >
         {value && value.length > 0 && this.renderList()}

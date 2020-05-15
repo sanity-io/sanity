@@ -82,6 +82,7 @@ export type Props = {
   readOnly: boolean | null
   focusPath: Array<any>
   markers: Array<Marker>
+  presence: any
 }
 
 const HIDDEN_FIELDS = ['asset', 'hotspot', 'crop']
@@ -401,7 +402,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   renderField(field: FieldT) {
-    const {value, level, focusPath, onFocus, readOnly, onBlur} = this.props
+    const {value, level, focusPath, onFocus, readOnly, onBlur, presence} = this.props
     const fieldValue = value && value[field.name]
     return (
       <div className={styles.field} key={field.name}>
@@ -415,6 +416,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
           readOnly={readOnly || field.type.readOnly}
           focusPath={focusPath}
           level={level}
+          presence={presence}
         />
       </div>
     )
@@ -525,7 +527,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
   }
 
   render() {
-    const {type, value, level, materialize, markers, readOnly} = this.props
+    const {type, value, level, materialize, markers, readOnly, presence} = this.props
     const {isAdvancedEditOpen, selectedAssetSource, uploadError, hasFocus} = this.state
     const [highlightedFields, otherFields] = partition(
       type.fields.filter(field => !HIDDEN_FIELDS.includes(field.name)),
@@ -539,9 +541,17 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     const uploadProps = SUPPORT_DIRECT_UPLOADS
       ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload}
       : {}
+
+    const isInside = presence
+      .map(item => {
+        const otherFieldsPath = otherFields.map(field => field.name)
+        return item.path.some(path => otherFieldsPath.includes(path)) ? item.identity : null
+      })
+      .filter(String)
     return (
       <FieldSetComponent
         markers={markers}
+        presence={presence.filter(item => item.path[0] === '$' || isInside.includes(item.identity))}
         legend={type.title}
         description={type.description}
         level={level}
