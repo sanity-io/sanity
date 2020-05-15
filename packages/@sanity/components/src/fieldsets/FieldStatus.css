@@ -1,0 +1,21 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  margin-left: auto;
+  flex: 1 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  box-sizing: border-box;
+  min-height: var(--avatar-height);
+  max-width: 125px;
+  width: 100%;
+  padding-left: var(--small-padding);
+}
+
+.root[data-position='top'] {
+  align-self: flex-start;
+}
+
+.root[data-position='bottom'] {
+  align-self: flex-end;
+}
