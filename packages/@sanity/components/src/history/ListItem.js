@@ -1,30 +1,14 @@
+/* eslint-disable react/jsx-filename-extension */
 import PropTypes from 'prop-types'
 import React from 'react'
-import {Tooltip} from 'react-tippy'
-import PresenceCircle from '../presence/PresenceCircle'
-import PresenceList from '../presence/PresenceList'
-import colorHasher from '../presence/colorHasher'
+import AvatarProvider from '../presence/UserAvatar'
+import PopoverList from '../presence/PopoverList'
 import EventIcon from './EventIcon'
 
 import styles from './styles/ListItem.modules.css'
 
 const noop = () => {} // eslint-disable-line no-empty-function
 const MAX_USERS = 3
-
-const DECIMALS = 2
-const DISTANCE_BETWEEN_POINTS = 5
-const offset = 100
-const radius = 50
-
-function makeClipPath() {
-  let p = ''
-  for (let i = 90; i <= 270; i += DISTANCE_BETWEEN_POINTS) {
-    const x = radius * Math.cos((i * Math.PI) / 180)
-    const y = radius * Math.sin((i * Math.PI) / 180)
-    p += `,${(offset + x).toFixed(DECIMALS)}% ${(50 + y).toFixed(DECIMALS)}%`
-  }
-  return `polygon(0 0,0 100%${p},0 0)`
-}
 
 export default class HistoryListItem extends React.PureComponent {
   static propTypes = {
@@ -148,39 +132,18 @@ export default class HistoryListItem extends React.PureComponent {
           </div>
         )}
         {availableUsers && availableUsers.length > 0 && (
-          <Tooltip
-            html={
-              <PresenceList
-                markers={availableUsers.map(user => ({
-                  type: 'presence',
-                  identity: user.id,
-                  color: colorHasher(user.id),
-                  user: {...user}
-                }))}
-              />
-            }
+          <PopoverList
+            userList={availableUsers.map(user => ({
+              identity: user.id
+            }))}
             disabled={availableUsers.length < 2}
-            interactive
-            position="top"
-            trigger="mouseenter"
-            animation="scale"
-            arrow
-            theme="light"
-            distance="10"
-            duration={50}
+            avatarSize="small"
           >
             <div className={styles.users}>
               <div className={styles.userIcons}>
                 {availableUsers.slice(0, MAX_USERS).map((user, i) => (
-                  <div className={styles.user} key={user.id}>
-                    <div className={styles.userInner} style={{clipPath: makeClipPath()}}>
-                      <PresenceCircle
-                        title={users.length === 1 ? undefined : user.displayName}
-                        showTooltip={false}
-                        imageUrl={user.imageUrl}
-                        color={user.imageUrl ? undefined : colorHasher(user.id)}
-                      />
-                    </div>
+                  <div key={user.id} className={styles.userAvatar}>
+                    <AvatarProvider userId={user.id} imageUrl={user.imageUrl} />
                   </div>
                 ))}
               </div>
@@ -193,7 +156,7 @@ export default class HistoryListItem extends React.PureComponent {
                 </div>
               )}
             </div>
-          </Tooltip>
+          </PopoverList>
         )}
         {children && <div className={styles.children}>{children}</div>}
       </>

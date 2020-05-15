@@ -1,0 +1,33 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.inner {
+  display: flex;
+  white-space: nowrap;
+  position: relative;
+  padding: var(--small-padding) var(--medium-padding);
+}
+
+.inner[data-size='small'] {
+  font-size: var(--font-size-small);
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  padding-right: var(--small-padding);
+}
+
+.userInfo {
+  line-height: 1.2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-right: var(--small-padding);
+}
+
+.name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 15ch;
+}
