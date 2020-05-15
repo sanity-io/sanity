@@ -9,7 +9,6 @@
 .root {
   display: block;
   text-decoration: none;
-
   position: relative;
   padding: var(--medium-padding);
   padding-top: calc(var(--small-padding) * 1.75);
@@ -94,33 +93,8 @@
   display: flex;
 }
 
-.user {
-  width: 0.5em;
-  height: 0.5em;
-  position: relative;
-}
-
-.user + .user {
-  margin-left: 1px;
-}
-
-.userInner {
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: translateY(-25%);
-}
-
-.userInner > * {
-  box-sizing: border-box;
-  border-radius: 50%;
-  background-clip: padding-box;
-  background-repeat: no-repeat;
-  background-position: 50% 50%;
-}
-
-.user:last-child .userInner {
-  clip-path: none !important;
+.userAvatar {
+  margin-right: -8px;
 }
 
 .userName {
