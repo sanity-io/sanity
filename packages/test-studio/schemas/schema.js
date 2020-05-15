@@ -53,12 +53,15 @@ import richTextObject from './richTextObject'
 import mux from './mux'
 import review from './review'
 import gallery from './gallery'
+import presence, {objectWithNestedArray} from './presence'
 
 export default createSchema({
   name: 'test-examples',
   types: schemaTypes.concat([
+    objectWithNestedArray,
     book,
     author,
+    presence,
     species,
     spotifyEmbed,
     focus,
