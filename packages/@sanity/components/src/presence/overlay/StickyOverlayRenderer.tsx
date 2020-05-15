@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable react/jsx-no-bind */
-/* eslint-disable react/no-multi-comp */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable react/no-multi-comp,@typescript-eslint/no-use-before-define */
 import * as React from 'react'
 import {CSSProperties} from 'react'
 import {RegionsWithIntersections} from './RegionsWithIntersections'
