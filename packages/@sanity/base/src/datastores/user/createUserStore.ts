@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import {Observable} from 'rxjs'
 import createActions from '../utils/createActions'
 import pubsub from 'nano-pubsub'
@@ -19,16 +20,24 @@ errorChannel.subscribe(val => {
   _currentError = val
 })
 
+export interface User {
+  id: string
+  displayName?: string
+  imageUrl?: string
+}
+
 function fetchInitial() {
-  return authenticationFetcher
-    .getCurrentUser()
-    .then(user => userChannel.publish(user), err => errorChannel.publish(err))
+  return authenticationFetcher.getCurrentUser().then(
+    user => userChannel.publish(user),
+    err => errorChannel.publish(err)
+  )
 }
 
 function logout() {
-  return authenticationFetcher
-    .logout()
-    .then(() => userChannel.publish(null), err => errorChannel.publish(err))
+  return authenticationFetcher.logout().then(
+    () => userChannel.publish(null),
+    err => errorChannel.publish(err)
+  )
 }
 
 const currentUser = new Observable(observer => {
@@ -60,7 +69,7 @@ const currentUser = new Observable(observer => {
 
 const userCache = {}
 
-const getUser = id => {
+const getUser = (id: string): Promise<User> => {
   if (!userCache[id]) {
     userCache[id] = client
       .request({
@@ -76,7 +85,7 @@ const getUser = id => {
 }
 
 // TODO Optimize for getting all users in one query
-const getUsers = ids => {
+const getUsers = (ids: string[]): Promise<User[]> => {
   return Promise.all(ids.map(id => getUser(id)))
 }
 
