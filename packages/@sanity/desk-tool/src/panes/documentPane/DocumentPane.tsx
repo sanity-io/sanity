@@ -711,7 +711,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
       markers,
       presence
     } = this.props
-    const {historical, historyState} = this.state
+    const {hasNarrowScreen: isNarrowScreen, historical, historyState} = this.state
 
     const selectedHistoryEvent = this.findSelectedHistoryEvent()
 
@@ -765,9 +765,21 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
       onChange
     }
 
+    // Calculate the height of the header
+    const hasTabs = views.length > 1
+    const headerHeight = hasTabs ? 74 : 49
+
     switch (activeView.type) {
       case 'form':
-        return <FormView ref={this.formRef} id={formProps.documentId} {...formProps} />
+        return (
+          <FormView
+            ref={this.formRef}
+            id={formProps.documentId}
+            {...formProps}
+            headerHeight={headerHeight}
+            isNarrowScreen={isNarrowScreen}
+          />
+        )
       case 'component':
         return <activeView.component {...viewProps} />
       default:
