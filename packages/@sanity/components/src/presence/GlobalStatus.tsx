@@ -44,7 +44,7 @@ export function GlobalStatus({projectId, presence}: Props) {
     <div className={styles.root}>
       <PopoverList
         items={presence}
-        renderItem={item => <GlobalPresenceListItem presence={item} />}
+        renderItem={item => <GlobalPresenceListItem presence={item} size="medium" />}
         isGlobal
         projectId={projectId}
         trigger="click"
