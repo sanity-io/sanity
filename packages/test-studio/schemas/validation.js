@@ -20,6 +20,24 @@ export default {
     }),
   fields: [
     {
+      name: 'checkbox',
+      type: 'boolean',
+      title: 'Checked?',
+      // readOnly: true,
+      description: 'Must be false, should be displayed as a checkbox',
+      validation: Rule => [Rule.valid(false).warning('hello world')],
+      options: {
+        layout: 'checkbox'
+      }
+    },
+    {
+      name: 'switch',
+      type: 'boolean',
+      title: 'Check me?',
+      validation: Rule => Rule.required().valid(true),
+      description: 'Must be true'
+    },
+    {
       name: 'title',
       type: 'string',
       title: 'Title',
@@ -113,7 +131,7 @@ export default {
       name: 'quotes',
       title: 'Quotes',
       description: 'Unique quotes - minimum of one',
-      validation: Rule => Rule.min(1).unique(),
+      validation: Rule => Rule.required().min(2),
       type: 'array',
       of: [
         {
@@ -121,6 +139,12 @@ export default {
           validation: Rule => Rule.min(2).max(100)
         }
       ]
+    },
+    {
+      name: 'gallery',
+      title: 'Gallery',
+      type: 'gallery',
+      validation: Rule => [Rule.min(1), Rule.required()]
     },
     {
       name: 'authors',
@@ -183,13 +207,27 @@ export default {
     {
       name: 'translations',
       title: 'Translations',
-      description: 'Needs at least one field to be valid',
+      description: 'All fields required.',
       type: 'object',
-      validation: Rule => Rule.required(),
       fields: [
-        {name: 'no', type: 'string', title: 'Norwegian (Bokmål)'},
-        {name: 'nn', type: 'string', title: 'Norwegian (Nynorsk)'},
-        {name: 'se', type: 'string', title: 'Swedish'}
+        {
+          name: 'no',
+          type: 'string',
+          title: 'Norwegian (Bokmål)',
+          validation: Rule => Rule.required().error('All fields are required')
+        },
+        {
+          name: 'nn',
+          type: 'string',
+          title: 'Norwegian (Nynorsk)',
+          validation: Rule => Rule.required().error('All fields are required')
+        },
+        {
+          name: 'se',
+          type: 'string',
+          title: 'Swedish',
+          validation: Rule => Rule.required().error('All fields are required')
+        }
       ]
     },
     {
@@ -226,23 +264,7 @@ export default {
       validation: Rule => Rule.required().min(5),
       readOnly: true
     },
-    {
-      name: 'switch',
-      type: 'boolean',
-      title: 'Check me?',
-      validation: Rule => Rule.required().valid(true),
-      description: 'Must be true'
-    },
-    {
-      name: 'checkbox',
-      type: 'boolean',
-      title: 'Checked?',
-      description: 'Must be false, should be displayed as a checkbox',
-      validation: Rule => Rule.required().valid(false),
-      options: {
-        layout: 'checkbox'
-      }
-    },
+
     {
       name: 'person',
       type: 'object',
@@ -346,11 +368,36 @@ export default {
         }
       ]
     },
-
+    {
+      name: 'bymonth',
+      title: 'By Month',
+      description:
+        'Set the months to apply the recurrence to. Example: By Month of Jan and Aug = This event occurs weekly in the month of January and August.',
+      type: 'array',
+      of: [{type: 'number'}],
+      validation: Rule => Rule.min(2),
+      options: {
+        list: [
+          {title: 'Jan', value: 0},
+          {title: 'Feb', value: 1},
+          {title: 'March', value: 2},
+          {title: 'April', value: 3},
+          {title: 'May', value: 4},
+          {title: 'June', value: 5},
+          {title: 'July', value: 6},
+          {title: 'Aug', value: 7},
+          {title: 'Sept', value: 8},
+          {title: 'Oct', value: 9},
+          {title: 'Nov', value: 10},
+          {title: 'Dec', value: 11}
+        ]
+      }
+    },
     {
       name: 'arrayOfSlugs',
       title: 'Array of slugs',
       type: 'array',
+      validation: Rule => Rule.unique(),
       of: [
         {
           type: 'object',
@@ -359,7 +406,14 @@ export default {
             {
               type: 'slug',
               name: 'sku',
-              title: 'SKU'
+              title: 'SKU',
+              validation: Rule => Rule.required()
+            },
+            {
+              type: 'string',
+              name: 'title',
+              title: 'title',
+              validation: Rule => Rule.required().min(3)
             }
           ]
         }
@@ -385,7 +439,11 @@ export default {
             {
               name: 'title',
               title: 'Title',
-              type: 'string'
+              type: 'string',
+              validation: Rule => [
+                Rule.required().uppercase(),
+                Rule.max(3).warning('Min 3 characters')
+              ]
             },
             {
               name: 'deeper',
@@ -405,7 +463,11 @@ export default {
                     {
                       name: 'title',
                       title: 'Title',
-                      type: 'string'
+                      type: 'string',
+                      validation: Rule => [
+                        Rule.required().uppercase(),
+                        Rule.max(3).warning('Min 3 characters')
+                      ]
                     },
                     {
                       name: 'deeper',
@@ -417,7 +479,10 @@ export default {
                           title: 'Title',
                           type: 'string',
                           description: 'Required, uppercase',
-                          validation: Rule => Rule.required().uppercase()
+                          validation: Rule => [
+                            Rule.required().uppercase(),
+                            Rule.max(3).warning('Min 3 characters')
+                          ]
                         }
                       ]
                     }

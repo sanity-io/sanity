@@ -77,7 +77,11 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
     const direction = get(type.options, 'direction') // vertical and horizontal
     return (
       <Fieldset legend={type.title} description={type.description} markers={markers} level={level}>
-        <div>
+        <div
+          className={
+            direction === 'vertical' ? styles.itemWrapperVertical : styles.itemWrapperHorizontal
+          }
+        >
           {options.map((option, index) => {
             const optionType = this.getMemberTypeOfItem(option)
             if (!optionType) {
@@ -92,14 +96,7 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
             }
             const checked = inArray(value, resolveValueWithLegacyOptionsSupport(option))
             return (
-              <div
-                key={option._key || index}
-                className={
-                  direction === 'vertical'
-                    ? styles.itemWrapperVertical
-                    : styles.itemWrapperHorizontal
-                }
-              >
+              <div key={option._key || index}>
                 <Item
                   type={optionType}
                   readOnly={readOnly}

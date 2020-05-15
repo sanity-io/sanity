@@ -2,6 +2,7 @@
 
 .button {
   font-size: var(--font-size-large);
+  margin: -1px;
 }
 
 .isOpen {
