@@ -66,12 +66,6 @@
   flex-grow: 1;
 }
 
-.headerStatus {
-  display: flex;
-  padding: 0 var(--small-padding);
-  align-content: center;
-}
-
 .validationStatus {
   display: flex;
   align-items: stretch;
