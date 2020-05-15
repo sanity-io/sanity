@@ -21,7 +21,7 @@ import InvalidValue from './InvalidValue'
 import {Portal} from 'part:@sanity/components/utilities/portal'
 import StackedEscapeable from 'part:@sanity/components/utilities/stacked-escapable'
 import PatchEvent from '../../PatchEvent'
-import {Marker} from '../../typedefs'
+import {FormBuilderPresence, Marker} from '../../typedefs'
 import {Patch} from '../../typedefs/patch'
 import styles from './PortableTextInput.css'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
@@ -64,6 +64,7 @@ type Props = {
   }
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
+  presence: FormBuilderPresence[]
   subscribe: (arg0: ({patches: PatchEvent}) => void) => void
 }
 
@@ -571,7 +572,7 @@ export default withPatchSubscriber(
     }
 
     render(): JSX.Element {
-      const {value, readOnly, type, markers, level} = this.props
+      const {value, readOnly, type, markers, level, presence} = this.props
       // TODO: deal with validation and loading status
       const validation = markers.filter(marker => marker.type === 'validation')
       const errors = validation.filter(marker => marker.level === 'error')
@@ -582,6 +583,7 @@ export default withPatchSubscriber(
             markers={markers}
             level={level}
             label={type.title}
+            presence={presence}
             description={type.description}
           />
           {invalidValue && !ignoreValidation && (

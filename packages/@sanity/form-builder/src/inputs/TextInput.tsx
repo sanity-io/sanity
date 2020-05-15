@@ -12,6 +12,7 @@ type Props = {
   onFocus: () => void
   onBlur: () => void
   markers: Array<Marker>
+  presence: any
 }
 export default class TextInput extends React.Component<Props> {
   _input: TextArea | null
@@ -28,11 +29,17 @@ export default class TextInput extends React.Component<Props> {
     this._input = input
   }
   render() {
-    const {value, markers, type, readOnly, level, onFocus, onBlur} = this.props
+    const {value, markers, type, readOnly, level, onFocus, onBlur, presence} = this.props
     const validation = markers.filter(marker => marker.type === 'validation')
     const errors = validation.filter(marker => marker.level === 'error')
     return (
-      <FormField markers={markers} level={level} label={type.title} description={type.description}>
+      <FormField
+        markers={markers}
+        level={level}
+        label={type.title}
+        description={type.description}
+        presence={presence}
+      >
         <TextArea
           customValidity={errors && errors.length > 0 ? errors[0].item.message : ''}
           value={value}

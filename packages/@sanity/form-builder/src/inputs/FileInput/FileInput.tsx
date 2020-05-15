@@ -45,6 +45,7 @@ export type Props = {
   readOnly: boolean | null
   focusPath: Array<any>
   markers: Array<Marker>
+  presence: any
 }
 
 const HIDDEN_FIELDS = ['asset', 'hotspot', 'crop']
@@ -257,7 +258,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   renderField(field: FieldT) {
-    const {value, level, focusPath, onFocus, readOnly, onBlur} = this.props
+    const {value, level, focusPath, onFocus, readOnly, onBlur, presence} = this.props
     const fieldValue = value && value[field.name]
     return (
       <FormBuilderInput
@@ -271,6 +272,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         readOnly={readOnly || field.type.readOnly}
         focusPath={focusPath}
         level={level}
+        presence={presence}
       />
     )
   }
@@ -310,7 +312,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
   }
 
   render() {
-    const {type, value, level, markers, readOnly} = this.props
+    const {type, value, level, markers, readOnly, presence} = this.props
     const {isAdvancedEditOpen, uploadError} = this.state
     const [highlightedFields, otherFields] = partition(
       type.fields.filter(field => !HIDDEN_FIELDS.includes(field.name)),
@@ -318,6 +320,14 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
     )
     const accept = get(type, 'options.accept', '')
     const hasAsset = value && value.asset
+
+    const isInside = presence
+      .map(item => {
+        const otherFieldsPath = otherFields.map(field => field.name)
+        return item.path.some(path => otherFieldsPath.includes(path)) ? item.identity : null
+      })
+      .filter(String)
+
     return (
       <UploadTargetFieldset
         markers={markers}
@@ -329,6 +339,7 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
         onUpload={this.handleUpload}
         getUploadOptions={this.getUploadOptions}
         ref={this.setFocusArea}
+        presence={presence.filter(item => item.path[0] === '$' || isInside.includes(item.identity))}
       >
         {uploadError && (
           <Snackbar

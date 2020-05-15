@@ -56,9 +56,11 @@ export type Props = {
   markers: Array<Marker>
   readOnly?: boolean
   onSearch: (query: string, type: Type, options: SearchOptions) => ObservableI<Array<SearchHit>>
+  onFocus: (path: any[]) => void
   getPreviewSnapshot: (Reference, Type) => ObservableI<PreviewSnapshot>
   onChange: (event: PatchEvent) => void
   level: number
+  presence: any
 
   // From withDocument
   document: SanityDocument
@@ -122,8 +124,12 @@ export default withValuePath(
         return type.to.find(ofType => ofType.type.name === typeName)
       }
       handleFocus = () => {
+        const {onFocus} = this.props
         if (this._lastQuery) {
           this.search(this._lastQuery)
+        }
+        if (onFocus) {
+          onFocus([])
         }
       }
       handleChange = (item: SearchHit) => {
@@ -232,7 +238,7 @@ export default withValuePath(
         this._input = input
       }
       render() {
-        const {type, value, level, markers, readOnly} = this.props
+        const {type, value, level, markers, readOnly, presence} = this.props
         const {previewSnapshot, isFetching, isMissing, hits} = this.state
         const valueFromHit = value && hits.find(hit => hit._id === value._ref)
         const weakIs = value && value._weak ? 'weak' : 'strong'
@@ -254,6 +260,7 @@ export default withValuePath(
             label={type.title}
             level={level}
             description={type.description}
+            presence={presence}
           >
             <div className={hasWeakMismatch || isMissing ? styles.hasWarnings : ''}>
               {hasWeakMismatch && (

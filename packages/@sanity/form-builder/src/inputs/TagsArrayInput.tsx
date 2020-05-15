@@ -10,6 +10,7 @@ type Props = {
   readOnly: boolean | null
   onChange: (arg0: PatchEvent) => void
   onFocus: () => void
+  presence: any
 }
 export default class TagsArrayInput extends React.PureComponent<Props> {
   _input: TagInput
@@ -29,9 +30,14 @@ export default class TagsArrayInput extends React.PureComponent<Props> {
     this._input = el
   }
   render() {
-    const {type, value, readOnly, level, onFocus} = this.props
+    const {type, value, readOnly, level, onFocus, presence} = this.props
     return (
-      <FormField level={level} label={type.title} description={type.description}>
+      <FormField
+        level={level}
+        label={type.title}
+        description={type.description}
+        presence={presence}
+      >
         <TagInput
           readOnly={readOnly}
           value={value}
