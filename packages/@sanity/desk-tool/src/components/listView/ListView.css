@@ -26,7 +26,7 @@
 }
 
 .scroll {
-  composes: scrollY from "part:@sanity/base/theme/layout/scrolling-style";
+  composes: scrollY from 'part:@sanity/base/theme/layout/scrolling-style';
 
   @media (--max-screen-medium) {
     height: auto !important;

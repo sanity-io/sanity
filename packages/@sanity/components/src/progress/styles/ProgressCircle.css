@@ -120,10 +120,8 @@
   fill: none;
   stroke-width: var(--stroke-width);
   stroke-dasharray: 0, var(--circumference);
-  animation:
-    strokeDash  6s ease-out infinite,
-    strokeWidth 3s ease-out infinite,
-    rotate     18s linear  infinite;
+  animation: strokeDash 6s ease-out infinite, strokeWidth 3s ease-out infinite,
+    rotate 18s linear infinite;
 
   @nest .completed & {
     opacity: 0;

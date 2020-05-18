@@ -1,4 +1,4 @@
-@import "part:@sanity/base/theme/variables-style";
+@import 'part:@sanity/base/theme/variables-style';
 
 :root {
   --button-inverted-color: var(--text-color);
@@ -52,7 +52,8 @@
   line-height: 1.25;
   font-family: inherit;
   user-select: none;
-  transition: border-color 0.15s, background-color 0.15s, color 0.15s, opacity 0.15s, box-shadow 0.1s;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s, opacity 0.15s,
+    box-shadow 0.1s;
   text-decoration: none;
   padding: 0;
 }
@@ -122,7 +123,9 @@ span.content {
   display: flex;
   margin-right: var(--small-padding);
 
-  @nest & > svg { display: block; }
+  @nest & > svg {
+    display: block;
+  }
 }
 
 .root:focus {

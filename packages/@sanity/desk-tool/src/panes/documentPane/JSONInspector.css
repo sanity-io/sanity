@@ -16,7 +16,11 @@
   padding-left: 18px;
 }
 
-:global .json-inspector > .json-inspector__leaf_root > .json-inspector__line > .json-inspector__key {
+:global
+  .json-inspector
+  > .json-inspector__leaf_root
+  > .json-inspector__line
+  > .json-inspector__key {
   display: none;
 }
 
@@ -65,7 +69,10 @@
   font-size: 90%;
 }
 
-:global .json-inspector .json-inspector__leaf_expanded.json-inspector__leaf_composite > .json-inspector__line::before {
+:global
+  .json-inspector
+  .json-inspector__leaf_expanded.json-inspector__leaf_composite
+  > .json-inspector__line::before {
   color: #999;
   content: '▽ ';
   font-size: 90%;

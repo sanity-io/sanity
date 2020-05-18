@@ -33,9 +33,9 @@
   }
 
   @nest & pre[class*='language-']::selection,
-  & pre[class*='language-'] ::selection,
-  & code[class*='language-']::selection,
-  & code[class*='language-'] ::selection {
+    & pre[class*='language-'] ::selection,
+    & code[class*='language-']::selection,
+    & code[class*='language-'] ::selection {
     background: #7b8ba8;
   }
 
