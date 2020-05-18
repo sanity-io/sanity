@@ -14,7 +14,7 @@
   padding: var(--medium-padding);
 }
 
-.item[data-item-type="simple"] {
+.item[data-item-type='simple'] {
   user-select: none;
   cursor: unset;
   padding: var(--extra-small-padding) var(--medium-padding);
@@ -45,12 +45,11 @@
 .interactiveItem {
   composes: item;
 
-  @nest &.error:not([data-item-type="simple"]):hover {
+  @nest &.error:not([data-item-type='simple']):hover {
     background-color: color(var(--state-danger-color) a(10%));
   }
 
-  @nest &.warning:not([data-item-type="simple"]):hover,
-  &:focus {
+  @nest &.warning:not([data-item-type='simple']):hover, &:focus {
     background-color: color(var(--state-warning-color) a(10%));
   }
 }

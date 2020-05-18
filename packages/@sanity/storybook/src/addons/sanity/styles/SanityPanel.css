@@ -1,5 +1,5 @@
 .root {
-  composes: root from "part:@sanity/base/theme/typography/text-blocks-style";
+  composes: root from 'part:@sanity/base/theme/typography/text-blocks-style';
   box-sizing: border-box;
   font-size: 14px;
   padding: 1em;
@@ -72,7 +72,8 @@
 }
 
 .noContent {
-  font-family: -apple-system, ".SFNSText-Regular", "San Francisco", Roboto, "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
+  font-family: -apple-system, '.SFNSText-Regular', 'San Francisco', Roboto, 'Segoe UI',
+    'Helvetica Neue', 'Lucida Grande', sans-serif;
   text-transform: uppercase;
   text-align: center;
   color: rgb(190, 190, 190);

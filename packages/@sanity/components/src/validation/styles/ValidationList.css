@@ -1,4 +1,4 @@
-@import "part:@sanity/base/theme/variables-style";
+@import 'part:@sanity/base/theme/variables-style';
 
 .root {
   display: block;
@@ -15,13 +15,13 @@
   padding: 0;
   text-align: left;
 
-  @nest &[data-kind="simple"] {
+  @nest &[data-kind='simple'] {
     max-width: 220px;
     padding: var(--small-padding) 0;
     padding-right: var(--small-padding);
   }
 
-  @nest &:not([data-kind="simple"]) {
+  @nest &:not([data-kind='simple']) {
     @nest & li:not(:last-child) {
       border-bottom: 1px solid var(--hairline-color);
     }

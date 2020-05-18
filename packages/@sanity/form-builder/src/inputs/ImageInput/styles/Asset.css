@@ -7,8 +7,7 @@
   vertical-align: top;
   box-sizing: border-box;
   background-color: var(--body-bg);
-  background-image:
-    linear-gradient(45deg, var(--checkerboard-color) 25%, transparent 25%),
+  background-image: linear-gradient(45deg, var(--checkerboard-color) 25%, transparent 25%),
     linear-gradient(-45deg, var(--checkerboard-color) 25%, transparent 25%),
     linear-gradient(45deg, transparent 75%, var(--checkerboard-color) 75%),
     linear-gradient(-45deg, transparent 75%, var(--checkerboard-color) 75%);

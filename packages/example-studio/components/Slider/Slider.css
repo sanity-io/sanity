@@ -26,7 +26,9 @@
   cursor: pointer;
   -webkit-appearance: none;
   margin-top: -8px;
-  background: #ffff7d url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='20px' width='20px'><text x='0' y='18' font-size='18'>🦄</text></svg>") no-repeat;
+  background: #ffff7d
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='20px' width='20px'><text x='0' y='18' font-size='18'>🦄</text></svg>")
+    no-repeat;
   background-size: 20px;
 }
 
@@ -57,7 +59,9 @@
   width: 30px;
   border-radius: 12px;
   cursor: pointer;
-  background: #ffff7d url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='20px' width='20px'><text x='0' y='18' font-size='18'>🦄</text></svg>") no-repeat;
+  background: #ffff7d
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='20px' width='20px'><text x='0' y='18' font-size='18'>🦄</text></svg>")
+    no-repeat;
 }
 
 .slider::-ms-track {
@@ -90,7 +94,9 @@
   border-radius: 12px;
   cursor: pointer;
   height: 13.3px;
-  background: #ffff7d url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='20px' width='20px'><text x='0' y='18' font-size='18'>🦄</text></svg>") no-repeat;
+  background: #ffff7d
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='20px' width='20px'><text x='0' y='18' font-size='18'>🦄</text></svg>")
+    no-repeat;
 }
 
 .slider:focus::-ms-fill-lower {

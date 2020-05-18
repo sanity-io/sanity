@@ -6,8 +6,7 @@
   position: relative;
 
   @nest &:focus {
-    box-shadow:
-      0 0 2px 1px color(var(--input-border-color-focus)),
+    box-shadow: 0 0 2px 1px color(var(--input-border-color-focus)),
       0 0 4px 0 color(var(--input-border-color-focus) a(60%)),
       0 0 10px 5px color(var(--input-border-color-focus) a(10%));
   }
@@ -51,7 +50,7 @@
 }
 
 .popper {
-  composes: shadow-6dp from "part:@sanity/base/theme/shadows-style";
+  composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
   box-sizing: border-box;
   background-color: var(--component-bg);
   position: relative;

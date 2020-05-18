@@ -28,7 +28,7 @@
 }
 
 .wrapper {
-  composes: shadow-12dp from "part:@sanity/base/theme/shadows-style";
+  composes: shadow-12dp from 'part:@sanity/base/theme/shadows-style';
   box-sizing: border-box;
   border: 1px solid var(--edit-item-fold-border-color);
   background-color: var(--component-bg);

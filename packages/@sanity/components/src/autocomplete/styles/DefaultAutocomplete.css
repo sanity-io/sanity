@@ -19,7 +19,7 @@
   overflow-x: hidden;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
-  composes: shadow-1dp from "part:@sanity/base/theme/shadows-style";
+  composes: shadow-1dp from 'part:@sanity/base/theme/shadows-style';
 
   @nest .closed & {
     display: none;
