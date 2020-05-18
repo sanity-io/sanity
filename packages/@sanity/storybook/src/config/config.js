@@ -1,3 +1,6 @@
+/* eslint-disable import/no-commonjs */
+/* eslint-disable import/no-unassigned-import */
+
 const {configure, sanity} = require('part:@sanity/storybook')
 
 require('normalize.css')

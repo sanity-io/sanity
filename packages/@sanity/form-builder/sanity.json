@@ -127,6 +127,10 @@
       "name": "part:@sanity/form-builder/input/image/asset-source-default",
       "implements": "part:@sanity/form-builder/input/image/asset-source",
       "path": "inputs/ImageInput/DefaultSource.js"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "story.js"
     }
   ]
 }
