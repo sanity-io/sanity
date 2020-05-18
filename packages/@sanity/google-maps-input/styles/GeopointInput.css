@@ -27,9 +27,9 @@
 }
 
 .map + .functions {
-  margin-top: 0.5rem;
+  margin-top: var(--small-padding);
 
   @media (--screen-medium) {
-    margin-top: 1rem;
+    margin-top: var(--medium-padding);
   }
 }
