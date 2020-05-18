@@ -1,7 +1,7 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  margin-top: 3rem;
+  /* empty */
 }
 
 .heading {
@@ -9,10 +9,13 @@
 }
 
 .inspectValue {
-  border: 1px solid #aaa;
+  font-family: var(--font-family-monospace);
+  border: 1px solid var(--hairline-color);
   max-height: 200px;
   overflow-y: scroll;
-  background-color: white;
+  background-color: var(--component-bg);
+  padding: var(--small-padding);
+  margin: 0 0 var(--medium-padding);
 }
 
 .content {
