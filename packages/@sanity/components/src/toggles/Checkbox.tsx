@@ -17,23 +17,25 @@ type Props = {
   onBlur?: () => void
 }
 
-export default function Checkbox({
-  label,
-  description,
-  markers,
-  checked,
-  disabled,
-  readOnly,
-  children,
-  onFocus,
-  inputRef,
-  onBlur,
-  ...rest
-}: Props) {
+export default React.forwardRef(function Checkbox(
+  {
+    label,
+    description,
+    markers,
+    checked,
+    disabled,
+    readOnly,
+    children,
+    onFocus,
+    onBlur,
+    ...rest
+  }: Props,
+  ref: any
+) {
   const elementId = useId()
   useEffect(() => {
-    if (typeof checked === 'undefined' && inputRef.current) {
-      inputRef.current.indeterminate = true
+    if (typeof checked === 'undefined' && ref?.current) {
+      ref.current.indeterminate = true
     }
   }, [])
 
@@ -47,7 +49,7 @@ export default function Checkbox({
         type="checkbox"
         disabled={disabled || readOnly}
         checked={checked}
-        ref={inputRef}
+        ref={ref}
         onFocus={onFocus}
       />
       <div className={styles.checkbox}>
@@ -83,4 +85,4 @@ export default function Checkbox({
       </div>
     </div>
   )
-}
+})
