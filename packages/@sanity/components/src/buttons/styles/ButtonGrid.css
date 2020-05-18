@@ -1,4 +1,4 @@
-@import "part:@sanity/base/theme/variables-style";
+@import 'part:@sanity/base/theme/variables-style';
 
 .root {
   width: 100%;
@@ -6,12 +6,12 @@
   grid-gap: var(--small-padding);
   grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
 
-  &[data-buttons="1"] {
+  &[data-buttons='1'] {
     display: block;
     grid-template-columns: unset;
   }
 
-  &[data-buttons="4"] {
+  &[data-buttons='4'] {
     grid-template-columns: 1fr 1fr;
   }
 
@@ -21,7 +21,7 @@
   }
 
   /* Stretch buttons to fit grid when not alone */
-  @nest &:not([data-buttons="1"]) > * {
+  @nest &:not([data-buttons='1']) > * {
     margin: 0 !important;
     width: stretch;
     display: flex;
@@ -50,7 +50,7 @@
 .secondary {
   display: contents;
 
-  @nest &:not([data-buttons="1"]) > * {
+  @nest &:not([data-buttons='1']) > * {
     margin: 0 !important;
     width: stretch;
   }

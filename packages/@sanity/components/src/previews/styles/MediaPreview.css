@@ -75,7 +75,7 @@
 }
 
 .meta {
-  composes: frosted from "part:@sanity/base/theme/layout/backgrounds-style";
+  composes: frosted from 'part:@sanity/base/theme/layout/backgrounds-style';
   position: absolute;
   opacity: 0;
   top: 0;
@@ -110,13 +110,12 @@
 .placeholder {
   height: 100%;
   width: 100%;
-  background-image:
-    linear-gradient(
-      90deg,
-      color(var(--text-color) a(10%)),
-      color(var(--text-color) a(5%)) 10%,
-      color(var(--text-color) a(10%))
-    );
+  background-image: linear-gradient(
+    90deg,
+    color(var(--text-color) a(10%)),
+    color(var(--text-color) a(5%)) 10%,
+    color(var(--text-color) a(10%))
+  );
 
   @nest & .media {
     x: 0;

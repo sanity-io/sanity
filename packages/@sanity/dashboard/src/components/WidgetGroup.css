@@ -13,13 +13,13 @@
     overflow: hidden;
   }
 
-  @nest & > div[data-width="medium"] {
+  @nest & > div[data-width='medium'] {
     @media (--grid-small-min) {
       grid-column: span 2;
     }
   }
 
-  @nest & > div[data-width="large"] {
+  @nest & > div[data-width='large'] {
     @media (--grid-small-min) {
       grid-column: span 2;
     }
@@ -29,19 +29,19 @@
     }
   }
 
-  @nest & > div[data-width="full"] {
+  @nest & > div[data-width='full'] {
     @media (--grid-small-min) {
       grid-column: 1 / -1;
     }
   }
 
-  @nest & > div[data-height="medium"] {
+  @nest & > div[data-height='medium'] {
     @media (--grid-small-min) {
       grid-row: span 2;
     }
   }
 
-  @nest & > div[data-height="large"] {
+  @nest & > div[data-height='large'] {
     @media (--grid-small-min) {
       grid-row: span 2;
     }
@@ -51,7 +51,7 @@
     }
   }
 
-  @nest & > div[data-height="full"] {
+  @nest & > div[data-height='full'] {
     @media (--grid-small-min) {
       grid-row: 1 / -1;
     }

@@ -1,17 +1,17 @@
 :root {
-  --body-bg: #3A4552;
-  --component-bg: #3A4552;
-  --gray-base: #3A4552;
+  --body-bg: #3a4552;
+  --component-bg: #3a4552;
+  --gray-base: #3a4552;
   --body-text: rgba(255, 255, 255, 0.9);
-  --main-navigation-color: #2C343D;
+  --main-navigation-color: #2c343d;
   --main-navigation-color--inverted: #fff;
-  --brand-primary: #65C5F6;
+  --brand-primary: #65c5f6;
   --brand-primary--inverted: rgba(0, 0, 0, 0.6);
-  --state-success-color: #63E1A2;
-  --state-info-color: #65C5F6;
+  --state-success-color: #63e1a2;
+  --state-info-color: #65c5f6;
   --state-warning-color: #ffba00;
-  --state-danger-color: #F58881;
-  --dialog-header-background-color: #2C343D;
+  --state-danger-color: #f58881;
+  --dialog-header-background-color: #2c343d;
   --selected-item-color--inverted: rgba(0, 0, 0, 0.6);
   --input-bg-focus: rgba(255, 255, 255, 0.15);
   --shadow-base: rgb(23, 27, 32);

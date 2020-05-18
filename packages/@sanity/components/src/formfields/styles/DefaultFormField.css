@@ -80,7 +80,7 @@
 .validationList {
   padding: 0;
 
-  @nest & div[class*="root"] {
+  @nest & div[class*='root'] {
     margin: 0;
     padding: 0;
 
