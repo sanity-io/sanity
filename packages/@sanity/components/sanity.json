@@ -211,10 +211,6 @@
       "description": "Radio select fieldset"
     },
     {
-      "name": "part:@sanity/components/selects/radio-style",
-      "description": "Radio select field styling"
-    },
-    {
       "name": "part:@sanity/components/selects/searchable",
       "description": "Searchable select field"
     },
@@ -557,10 +553,6 @@
     {
       "implements": "part:@sanity/components/selects/radio",
       "path": "selects/RadioSelect.js"
-    },
-    {
-      "implements": "part:@sanity/components/selects/radio-style",
-      "path": "selects/styles/RadioSelect.css"
     },
     {
       "implements": "part:@sanity/components/selects/searchable",
