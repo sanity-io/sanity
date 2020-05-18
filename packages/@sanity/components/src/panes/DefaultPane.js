@@ -98,6 +98,10 @@ class Pane extends React.PureComponent {
   constructor(props) {
     super(props)
 
+    this.state = {
+      isMenuOpen: false
+    }
+
     // Passed to rendered <Menu> components. This prevents the "click outside"
     // functionality from kicking in when pressing the toggle menu button
     this.templateMenuId = Math.random()
@@ -107,6 +111,10 @@ class Pane extends React.PureComponent {
     this.paneMenuId = Math.random()
       .toString(36)
       .substr(2, 6)
+  }
+
+  handleToggleMenu = () => {
+    this.setState(prevState => ({isMenuOpen: !prevState.isMenuOpen}))
   }
 
   handleRootClick = event => {
@@ -124,6 +132,7 @@ class Pane extends React.PureComponent {
   }
 
   handleMenuAction = item => {
+    this.setState({isMenuOpen: false})
     if (typeof item.action === 'function') {
       item.action(item.params)
       return
@@ -247,9 +256,11 @@ class Pane extends React.PureComponent {
         <Tooltip
           arrow
           theme="light"
-          trigger="click"
+          trigger="click focus"
           position="bottom"
           interactive
+          open={this.state.isMenuOpen}
+          onRequestClose={this.handleToggleMenu}
           html={
             <div className={styles.menuInner}>
               <Menu
@@ -262,8 +273,17 @@ class Pane extends React.PureComponent {
             </div>
           }
         >
-          <button className={styles.menuOverflowButton} title="Show menu">
-            <div className={styles.menuOverflowButtonInner} tabIndex={-1}>
+          <button
+            aria-label="Menu"
+            aria-haspopup="menu"
+            aria-expanded={this.state.isMenuOpen}
+            aria-controls={this.paneMenuId}
+            type="button"
+            className={styles.menuOverflowButton}
+            title="Show menu"
+            onClick={this.handleToggleMenu}
+          >
+            <div className={styles.menuOverflowButtonInner} tabIndex={-1} aria-hidden="true">
               <IconMoreVert />
             </div>
           </button>
