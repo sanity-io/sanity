@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useRef} from 'react'
 import Switch from 'part:@sanity/components/toggles/switch'
 import Checkbox from 'part:@sanity/components/toggles/checkbox'
 import ValidationStatus from 'part:@sanity/components/validation/status'
@@ -15,7 +15,8 @@ type Props = {
   markers: Marker[]
 }
 
-export default React.forwardRef(function BooleanInput(props: Props, ref) {
+export default function BooleanInput(props: Props) {
+  const ref = useRef<any>(null)
   const handleChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
     props.onChange(PatchEvent.from(set(event.currentTarget.checked)))
   }
@@ -25,7 +26,7 @@ export default React.forwardRef(function BooleanInput(props: Props, ref) {
     <div className={styles.root}>
       {isCheckbox ? (
         <Checkbox
-          inputRef={ref}
+          ref={ref}
           label={type.title}
           readOnly={readOnly}
           onChange={handleChange}
@@ -37,7 +38,7 @@ export default React.forwardRef(function BooleanInput(props: Props, ref) {
         </Checkbox>
       ) : (
         <Switch
-          inputRef={ref}
+          ref={ref}
           readOnly={readOnly}
           checked={value}
           label={type.title}
@@ -50,4 +51,4 @@ export default React.forwardRef(function BooleanInput(props: Props, ref) {
       )}
     </div>
   )
-})
+}

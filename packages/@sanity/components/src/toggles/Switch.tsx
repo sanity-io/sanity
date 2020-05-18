@@ -17,22 +17,14 @@ type Props = {
   onBlur?: () => void
 }
 
-export default function Switch({
-  disabled,
-  markers,
-  checked,
-  label,
-  description,
-  readOnly,
-  inputRef,
-  children,
-  onFocus,
-  ...rest
-}: Props) {
+export default React.forwardRef(function Switch(
+  {disabled, markers, checked, label, description, readOnly, children, onFocus, ...rest}: Props,
+  ref: any
+) {
   const elementId = useId()
   useEffect(() => {
-    if (typeof checked === 'undefined' && inputRef.current) {
-      inputRef.current.indeterminate = true
+    if (typeof checked === 'undefined' && ref?.current) {
+      ref.current.indeterminate = true
     }
   }, [])
 
@@ -46,7 +38,7 @@ export default function Switch({
         type="checkbox"
         disabled={disabled || readOnly}
         checked={checked}
-        ref={inputRef}
+        ref={ref}
         onFocus={onFocus}
       />
       <div className={styles.switchWrapper}>
@@ -68,4 +60,4 @@ export default function Switch({
       </div>
     </div>
   )
-}
+})
