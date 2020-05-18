@@ -1,9 +1,9 @@
 import React from 'react'
 import {storiesOf, action} from 'part:@sanity/storybook'
 import RichDateInput from 'part:@sanity/form-builder/input/rich-date'
-import {withKnobs, object, boolean, text, number, select} from 'part:@sanity/storybook/addons/knobs'
+import {withKnobs, boolean, text, number} from 'part:@sanity/storybook/addons/knobs'
 
-storiesOf('Date Picker')
+storiesOf('Date Picker', module)
   .addDecorator(withKnobs)
   .add('Default', () => {
     const dateFormat = text('dateFormat', 'YYYY-MM-DD')

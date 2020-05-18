@@ -27,9 +27,11 @@
   "dependencies": {
     "@sanity/server": "1.149.13",
     "@sanity/webpack-integration": "1.149.7",
+    "@storybook/addon-actions": "^3.4.11",
     "@storybook/addon-knobs": "^3.2.8",
     "@storybook/addons": "^3.2.6",
     "@storybook/react": "3.2.8",
+    "classnames": "^2.2.5",
     "normalize.css": "^5.0.0",
     "react-addons-create-fragment": "^15.4.2",
     "shelljs": "^0.7.6",

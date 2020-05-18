@@ -938,6 +938,10 @@
     },
     {
       "implements": "part:@sanity/base/component",
+      "path": "autocomplete/story.js"
+    },
+    {
+      "implements": "part:@sanity/base/component",
       "path": "buttons/story.js"
     },
     {

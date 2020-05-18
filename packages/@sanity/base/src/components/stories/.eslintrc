@@ -1,0 +1,9 @@
+{
+  "rules": {
+    "@typescript-eslint/explicit-function-return-type": 0,
+    "import/prefer-default-export": 0,
+    "react/jsx-filename-extension": 0,
+    "react/no-multi-comp": 0,
+    "react/prop-types": 0
+  }
+}

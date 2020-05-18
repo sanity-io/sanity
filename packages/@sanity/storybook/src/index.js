@@ -1,3 +1,5 @@
+'use strict'
+
 const storyBook = require('@storybook/react')
 const sortByName = (storyA, storyB) => (storyB.name || '').localeCompare(storyA.name || '')
 const registerStoryKind = storyBook.storiesOf

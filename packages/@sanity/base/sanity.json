@@ -47,10 +47,6 @@
       "path": "assets/asset-url-builder.js"
     },
     {
-      "name": "part:@sanity/base/component",
-      "description": "React Storybook (https://github.com/kadirahq/react-storybook) stories"
-    },
-    {
       "name": "part:@sanity/base/search",
       "description": "Parse the search query and fetch search results from the dataset"
     },
@@ -948,8 +944,16 @@
       "path": "components/logos/SanityStudioLogo.js"
     },
     {
+      "name": "part:@sanity/base/component",
+      "description": "React Storybook (https://github.com/kadirahq/react-storybook) stories"
+    },
+    {
       "implements": "part:@sanity/base/component",
       "path": "styles/variables/story.js"
+    },
+    {
+      "implements": "part:@sanity/base/component",
+      "path": "components/story.js"
     }
   ]
 }
