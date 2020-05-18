@@ -59,7 +59,7 @@
 }
 
 .listContainer {
-  composes: shadow-24dp from "part:@sanity/base/theme/shadows-style";
+  composes: shadow-24dp from 'part:@sanity/base/theme/shadows-style';
   display: block;
   min-height: 3.5rem;
   max-height: 20rem;

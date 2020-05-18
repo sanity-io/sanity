@@ -22,7 +22,9 @@
 
 :root {
   --array--add-item-color: var(--brand-primary);
-  --array--add-item-triangle-color: color(var(--form-builder--array--add-item-color) lightness(- 20%));
+  --array--add-item-triangle-color: color(
+    var(--form-builder--array--add-item-color) lightness(- 20%)
+  );
 }
 
 .overlay {
@@ -88,25 +90,25 @@
     background-color: var(--state-danger-color);
   }
 
-  @nest .popper[data-placement^="bottom"] & {
+  @nest .popper[data-placement^='bottom'] & {
     top: 0;
     bottom: unset;
     transform: translate(0, -50%) rotate(135deg);
   }
 
-  @nest .popper[data-placement^="top"] & {
+  @nest .popper[data-placement^='top'] & {
     top: unset;
     bottom: 0;
     transform: translate(-50%, 50%) rotate(-45deg);
   }
 
-  @nest .popper[data-placement^="right"] & {
+  @nest .popper[data-placement^='right'] & {
     right: unset;
     left: 0;
     transform: translate(-50%, 0) rotate(45deg);
   }
 
-  @nest .popper[data-placement^="left"] & {
+  @nest .popper[data-placement^='left'] & {
     left: unset;
     right: 0;
     transform: translate(50%, 0) rotate(225deg);
@@ -128,7 +130,7 @@
 
 .popover {
   z-index: 0;
-  composes: shadow-12dp from "part:@sanity/base/theme/shadows-style";
+  composes: shadow-12dp from 'part:@sanity/base/theme/shadows-style';
   background-color: var(--component-bg);
   border-radius: var(--border-radius-large);
   box-sizing: border-box;

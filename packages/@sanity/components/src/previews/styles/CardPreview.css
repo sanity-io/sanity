@@ -1,13 +1,12 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 :root {
-  --placeholder-gradient:
-    linear-gradient(
-      90deg,
-      color(var(--text-color) a(10%)),
-      color(var(--text-color) a(5%)) 10%,
-      color(var(--text-color) a(10%))
-    );
+  --placeholder-gradient: linear-gradient(
+    90deg,
+    color(var(--text-color) a(10%)),
+    color(var(--text-color) a(5%)) 10%,
+    color(var(--text-color) a(10%))
+  );
 }
 
 .root {
