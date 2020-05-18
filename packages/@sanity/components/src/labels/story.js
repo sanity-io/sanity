@@ -1,17 +1,7 @@
-import React from 'react'
 import {storiesOf} from 'part:@sanity/storybook'
-import DefaultLabel from 'part:@sanity/components/labels/default'
-import {withKnobs, number, text} from 'part:@sanity/storybook/addons/knobs'
-import Sanity from 'part:@sanity/storybook/addons/sanity'
+import {withKnobs} from 'part:@sanity/storybook/addons/knobs'
+import {DefaultStory} from './stories/default'
 
-storiesOf('Labels')
+storiesOf('@sanity/components/labels', module)
   .addDecorator(withKnobs)
-  .add('Default', () => {
-    return (
-      <Sanity part="part:@sanity/components/labels/default" propTables={[DefaultLabel]}>
-        <DefaultLabel level={number('level (prop)', 0)} htmlFor="thisNeedsToBeUnique">
-          {text('children  (prop)', 'Label')}
-        </DefaultLabel>
-      </Sanity>
-    )
-  })
+  .add('Default', DefaultStory)

@@ -8,7 +8,7 @@ import Button from 'part:@sanity/components/buttons/default'
 import {withKnobs, boolean, number, text} from 'part:@sanity/storybook/addons/knobs'
 import {range} from 'lodash'
 
-storiesOf('[tool] Desk tool', module)
+storiesOf('@sanity/desk-tool', module)
   .addDecorator(withKnobs)
   .add('Confirm Delete', () => {
     const hasReferringDocuments = boolean('hasReferringDocuments', false)

@@ -65,7 +65,7 @@ class StoryWidget extends React.Component {
   }
 }
 
-storiesOf('Dashboard')
+storiesOf('Dashboard', module)
   .addDecorator(withKnobs)
   .add('Grid', () => {
     const widgets = range(number('widgets', 7))
