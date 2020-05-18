@@ -11,6 +11,10 @@
       "path": "index.js"
     },
     {
+      "name": "part:@sanity/storybook/components",
+      "path": "components/index.js"
+    },
+    {
       "name": "part:@sanity/storybook/decorators/center",
       "description": "Center decorator for storybook",
       "path": "addons/Center.js"
@@ -19,6 +23,11 @@
       "name": "part:@sanity/storybook/iframe",
       "description": "React component that renders a fullscreen iframe that shows the storybook",
       "path": "tool/StorybookTool.js"
+    },
+    {
+      "name": "part:@sanity/storybook/addons/actions",
+      "description": "Knobs addon for storybook",
+      "path": "addons/Actions.js"
     },
     {
       "name": "part:@sanity/storybook/addons/knobs",

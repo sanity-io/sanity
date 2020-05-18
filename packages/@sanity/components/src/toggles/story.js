@@ -1,118 +1,15 @@
-import React from 'react'
-import {storiesOf, action} from 'part:@sanity/storybook'
-import ToggleButtons from 'part:@sanity/components/toggles/buttons'
-import ToggleButton from 'part:@sanity/components/toggles/button'
-import Switch from 'part:@sanity/components/toggles/switch'
-import Checkbox from 'part:@sanity/components/toggles/checkbox'
-import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
-import {withKnobs, boolean, text, number} from 'part:@sanity/storybook/addons/knobs'
-import Sanity from 'part:@sanity/storybook/addons/sanity'
+import {storiesOf} from 'part:@sanity/storybook'
+import {withKnobs} from 'part:@sanity/storybook/addons/knobs'
+import {SwitchStory} from './stories/switch'
+import {CheckboxStory} from './stories/checkbox'
+import {ButtonsStory} from './stories/buttons'
+import {ToggleButtonStory} from './stories/toggleButton'
+import {ToggleButtonCollectionStory} from './stories/toggleButtonCollectionStory'
 
-const centerStyle = {
-  display: 'block',
-  position: 'absolute',
-  padding: '2rem',
-  boxSizing: 'border-box',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)'
-}
-storiesOf('Toggles')
+storiesOf('@sanity/components/toggles', module)
   .addDecorator(withKnobs)
-  .add('Switch', () => {
-    return (
-      <div style={centerStyle}>
-        <Sanity part="part:@sanity/components/toggles/switch" propTables={[Switch]}>
-          <Switch
-            checked={boolean('undefined', false) ? undefined : boolean('checked', false, 'props')}
-            label={text('label', 'This is the label', 'props')}
-            description={text('description', 'This is the description', 'props')}
-            disabled={boolean('disabled', false, 'props')}
-            onChange={action('change')}
-            onFocus={action('onFocus')}
-            onBlur={action('onBlur')}
-          />
-        </Sanity>
-      </div>
-    )
-  })
-  .add('Checkbox', () => {
-    const fontSize = number('fontSize', 1, {range: true, min: 0.5, max: 3, step: 0.1}, 'test')
-    return (
-      <div style={centerStyle}>
-        <Sanity part="part:@sanity/components/toggles/checkbox" propTables={[Checkbox]}>
-          <div
-            style={{
-              fontSize: `${fontSize}em`
-            }}
-          >
-            <Checkbox
-              label={text('label', `This is the label (${fontSize}em)`, 'props')}
-              checked={boolean('undefined', false) ? undefined : boolean('checked', false, 'props')}
-              disabled={boolean('disabled', false, 'props')}
-              onChange={action('onChange')}
-              onBlur={action('onBlur')}
-              onFocus={action('onFocus')}
-            >
-              {boolean('Children', false, 'test') ? <h1 style={{color: 'red'}}>Test</h1> : false}
-            </Checkbox>
-          </div>
-        </Sanity>
-      </div>
-    )
-  })
-  .add('Buttons', () => {
-    const items = [
-      {
-        title: 'The good',
-        key: 'good'
-      },
-      {
-        title: 'The Bad',
-        key: 'bad'
-      },
-      {
-        title: 'The ugly',
-        key: 'ugly'
-      }
-    ]
-    return (
-      <div style={centerStyle}>
-        <Sanity part="part:@sanity/components/toggles/buttons" propTables={[ToggleButtons]}>
-          <ToggleButtons
-            items={items}
-            label="Select something"
-            onChange={action('onChange')}
-            value={items[number('value', 0, {range: 'true', min: 0, max: 2}, 'test')]}
-          />
-        </Sanity>
-      </div>
-    )
-  })
-  .add('Toggle button', () => {
-    const icon = boolean('icon', false) ? SanityLogoIcon : false
-    return (
-      <div style={centerStyle}>
-        <Sanity part="part:@sanity/components/toggles/buttons" propTables={[ToggleButtons]}>
-          <ToggleButton
-            selected={boolean('selected', false, 'props')}
-            disabled={boolean('disabled', false, 'props')}
-            onClick={action('onClick')}
-            icon={icon}
-          >
-            {text('children', 'this is the content', 'props')}
-          </ToggleButton>
-        </Sanity>
-      </div>
-    )
-  })
-  .add('Toggle button collection', () => {
-    return (
-      <div style={centerStyle}>
-        <ToggleButton icon={SanityLogoIcon} selected onClick={action('onClick')} />
-        <ToggleButton icon={SanityLogoIcon} selected onClick={action('onClick')} />
-        <ToggleButton icon={SanityLogoIcon} selected onClick={action('onClick')} />
-        <ToggleButton icon={SanityLogoIcon} selected onClick={action('onClick')} />
-      </div>
-    )
-  })
+  .add('Switch', SwitchStory)
+  .add('Checkbox', CheckboxStory)
+  .add('Buttons', ButtonsStory)
+  .add('Toggle button', ToggleButtonStory)
+  .add('Toggle button collection', ToggleButtonCollectionStory)

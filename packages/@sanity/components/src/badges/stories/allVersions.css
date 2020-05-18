@@ -1,0 +1,11 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  @nest & > div {
+    display: inline-block;
+  }
+
+  @nest & > div + div {
+    margin-left: var(--extra-small-padding);
+  }
+}
