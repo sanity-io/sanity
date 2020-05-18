@@ -10,7 +10,7 @@ type Props = {
   onChange: (arg0: PatchEvent) => void
   readOnly?: boolean
 }
-export default class UnknownFields extends React.Component<Props, {}> {
+export default class UnknownFields extends React.PureComponent<Props, {}> {
   handleUnsetClick = fieldName => {
     this.props.onChange(PatchEvent.from(unset([fieldName])))
   }
