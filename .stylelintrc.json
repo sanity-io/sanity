@@ -1,35 +1,4 @@
 {
-  "extends": ["stylelint-config-standard"],
-  "ignoreFiles": [
-    "packages/@sanity/extract-text-webpack-plugin/**",
-    "**/*.js",
-    "**/*.jsx",
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "rules": {
-    "at-rule-no-unknown": [
-      true,
-      {
-        "ignoreAtRules": ["value"]
-      }
-    ],
-    "block-no-empty": null,
-    "color-hex-length": null,
-    "comment-empty-line-before": null,
-    "declaration-block-no-redundant-longhand-properties": null,
-    "property-no-unknown": [
-      true,
-      {
-        "ignoreProperties": ["composes", "compose-with"]
-      }
-    ],
-    "selector-pseudo-class-no-unknown": [
-      true,
-      {
-        "ignorePseudoClasses": ["export", "import", "global", "local"]
-      }
-    ],
-    "shorthand-property-no-redundant-values": null
-  }
+  "extends": ["stylelint-prettier/recommended"],
+  "ignoreFiles": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"]
 }
