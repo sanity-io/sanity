@@ -1,4 +1,4 @@
-@import "part:@sanity/base/theme/variables-style";
+@import 'part:@sanity/base/theme/variables-style';
 
 .previewImage {
   width: 100%;
@@ -18,11 +18,18 @@
   overflow: hidden;
 }
 
+.map {
+  /* empty */
+}
+
 .functions {
   composes: functions from 'part:@sanity/components/fieldsets/default-style';
-  padding-top: var(--small-padding);
+}
+
+.map + .functions {
+  margin-top: 0.5rem;
 
   @media (--screen-medium) {
-    padding-top: var(--medium-padding);
+    margin-top: 1rem;
   }
 }

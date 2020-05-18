@@ -19,20 +19,15 @@
 .root {
   position: relative;
   width: 100%;
+  height: var(--height);
   padding: 0;
   user-select: none;
   clear: both;
-  height: 2.5em;
 }
 
 .inner {
-  position: absolute;
   display: flex;
   justify-content: space-between;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2.5em;
 }
 
 .hasSubtitle {
@@ -129,24 +124,26 @@
 
   @nest & .title {
     width: 80%;
+    max-width: 320px;
     height: 12px;
-    color: transparent;
-    background-color: var(--preview-placeholder-color);
+    background-color: currentColor;
+    opacity: 0.1;
   }
 
   @nest & .subtitle {
-    width: 40%;
+    width: 50%;
+    max-width: 200px;
     height: 8px;
-    color: transparent;
-    background-color: var(--preview-placeholder-color);
+    background-color: currentColor;
+    opacity: 0.1;
     margin-top: 0.5rem;
     padding: 0;
   }
 
   @nest & .media {
     border-color: transparent;
-    color: transparent;
-    background-color: var(--preview-placeholder-color);
+    background-color: currentColor;
+    opacity: 0.1;
   }
 }
 

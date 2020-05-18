@@ -6,6 +6,6 @@
 
 .fieldWrapper {
   display: grid;
-  grid-template-columns: 1fr;
-  grid-gap: var(--large-padding);
+  grid-template-columns: minmax(0, 1fr);
+  grid-gap: var(--large-padding) var(--medium-padding);
 }

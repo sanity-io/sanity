@@ -18,6 +18,14 @@
   composes: functions from 'part:@sanity/components/fieldsets/default-style';
 }
 
+.list + .functions {
+  margin-top: 0.5rem;
+
+  @media (--screen-medium) {
+    margin-top: 1rem;
+  }
+}
+
 .popupAnchor {
   position: absolute;
   top: 75%;

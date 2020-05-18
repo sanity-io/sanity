@@ -32,7 +32,7 @@ const getStaticImageUrl = value => {
   return `https://maps.googleapis.com/maps/api/staticmap?${qs.join('&')}`
 }
 
-class GeopointInput extends React.Component {
+class GeopointInput extends React.PureComponent {
   static propTypes = {
     onChange: PropTypes.func.isRequired,
     markers: PropTypes.arrayOf(
@@ -129,48 +129,50 @@ class GeopointInput extends React.Component {
         className={styles.root}
         markers={markers}
       >
-        {value && (
-          <div>
-            <img
-              className={styles.previewImage}
-              src={getStaticImageUrl(value)}
-              alt="Map location"
-            />
-          </div>
-        )}
-
-        <div className={styles.functions}>
-          <Button onClick={this.handleToggleModal}>{value ? 'Edit' : 'Set location'}</Button>
-
+        <div>
           {value && (
-            <Button type="button" onClick={this.handleClear}>
-              Remove
-            </Button>
-          )}
-        </div>
-
-        {this.state.modalOpen && (
-          <Dialog
-            title="Place on map"
-            onClose={this.handleCloseModal}
-            onCloseClick={this.handleCloseModal}
-            onOpen={this.handleOpenModal}
-            message="Select location by dragging the marker or search for a place"
-            isOpen={this.state.modalOpen}
-          >
-            <div className={styles.dialogInner}>
-              <GoogleMapsLoadProxy
-                value={value}
-                apiKey={config.apiKey}
-                onChange={this.handleChange}
-                defaultLocation={config.defaultLocation}
-                defaultZoom={config.defaultZoom}
-                locale={getLocale(this.context)}
-                component={GeopointSelect}
+            <div className={styles.map}>
+              <img
+                className={styles.previewImage}
+                src={getStaticImageUrl(value)}
+                alt="Map location"
               />
             </div>
-          </Dialog>
-        )}
+          )}
+
+          <div className={styles.functions}>
+            <Button onClick={this.handleToggleModal}>{value ? 'Edit' : 'Set location'}</Button>
+
+            {value && (
+              <Button type="button" onClick={this.handleClear}>
+                Remove
+              </Button>
+            )}
+          </div>
+
+          {this.state.modalOpen && (
+            <Dialog
+              title="Place on map"
+              onClose={this.handleCloseModal}
+              onCloseClick={this.handleCloseModal}
+              onOpen={this.handleOpenModal}
+              message="Select location by dragging the marker or search for a place"
+              isOpen={this.state.modalOpen}
+            >
+              <div className={styles.dialogInner}>
+                <GoogleMapsLoadProxy
+                  value={value}
+                  apiKey={config.apiKey}
+                  onChange={this.handleChange}
+                  defaultLocation={config.defaultLocation}
+                  defaultZoom={config.defaultZoom}
+                  locale={getLocale(this.context)}
+                  component={GeopointSelect}
+                />
+              </div>
+            </Dialog>
+          )}
+        </div>
       </Fieldset>
     )
   }
