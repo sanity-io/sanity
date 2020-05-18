@@ -1,26 +1,23 @@
+@import "part:@sanity/base/theme/variables-style";
+
 .root {
-  display: block;
+  display: flex;
+  border: var(--input-border-size) solid var(--input-border-color);
+  border-radius: var(--input-border-radius);
+  padding: var(--medium-padding);
 }
 
 .vertical {
-  composes: root;
-
   @nest & .item + .item {
     margin-top: 0.5em;
   }
 }
 
 .horizontal {
-  composes: root;
-
   @nest & .radioContainer {
     display: flex;
     flex-wrap: wrap;
   }
-}
-
-.container {
-  display: block;
 }
 
 .item {
