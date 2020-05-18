@@ -1,0 +1,84 @@
+@import "part:@sanity/base/theme/variables-style";
+
+:root {
+  --radio-off-color: var(--gray-light);
+  --radio-color: var(--brand-primary);
+  --radio-button-size: 1em;
+  --radio-top-offset: 0;
+  --radio-focus-color: var(--brand-primary);
+}
+
+.root {
+  position: relative;
+  display: flex;
+}
+
+.input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  height: 100%;
+  width: 100%;
+  outline: none;
+  z-index: 1;
+}
+
+.radio {
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--radio-button-size);
+  width: var(--radio-button-size);
+  border: 1px solid var(--radio-off-color);
+  border-radius: 50%;
+  margin-top: 3px;
+  margin-right: var(--small-padding);
+  line-height: 1;
+
+  @nest &::after {
+    position: absolute;
+    content: '';
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--text-color);
+    border-radius: 50%;
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+.input:focus + .radio {
+  border-color: transparent;
+
+  @nest &::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    height: calc(100% + 4px);
+    width: calc(100% + 4px);
+    border: 2px solid var(--radio-focus-color);
+    border-radius: 50%;
+    box-sizing: border-box;
+    background: var(--component-bg);
+  }
+}
+
+.input:checked + .radio::after {
+  opacity: 1;
+  transform: scale(0.55);
+}
+
+.input:disabled + .radio {
+  background: var(--gray-lighter);
+
+  @nest &::after {
+    background: var(--gray);
+  }
+}
