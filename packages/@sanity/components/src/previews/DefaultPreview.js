@@ -1,5 +1,6 @@
 /* eslint-disable complexity */
 
+import classNames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
 import defaultStyles from 'part:@sanity/components/previews/default-style'
@@ -65,13 +66,10 @@ class DefaultPreview extends React.PureComponent {
       )
     }
 
+    const className = classNames(styles.root, subtitle !== undefined && styles.hasSubtitle)
+
     return (
-      <div
-        className={`
-          ${styles.root}
-          ${subtitle ? styles.hasSubtitle : ''}
-        `}
-      >
+      <div className={className}>
         <div className={styles.inner}>
           {media !== false && (
             <div className={styles.media}>
@@ -90,9 +88,10 @@ class DefaultPreview extends React.PureComponent {
               {typeof title === 'function' && title({layout: 'default'})}
             </h2>
 
-            {subtitle && (
+            {subtitle !== undefined && (
               <h3 className={styles.subtitle}>
-                {(typeof subtitle === 'function' && subtitle({layout: 'default'})) || subtitle}
+                {(typeof subtitle === 'function' && subtitle({layout: 'default'})) ||
+                  String(subtitle)}
               </h3>
             )}
           </div>
