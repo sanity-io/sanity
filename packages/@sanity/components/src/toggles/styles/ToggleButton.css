@@ -1,4 +1,4 @@
-@import "part:@sanity/base/theme/variables-style";
+@import 'part:@sanity/base/theme/variables-style';
 
 .selected {
   composes: selected from 'part:@sanity/base/theme/layout/selectable-style';

@@ -1,4 +1,4 @@
-@import "part:@sanity/base/theme/variables-style";
+@import 'part:@sanity/base/theme/variables-style';
 
 .root {
   list-style: none;
@@ -19,7 +19,7 @@
 }
 
 .listItem {
-  composes: resetListItem from "part:@sanity/base/theme/layout/helpers";
+  composes: resetListItem from 'part:@sanity/base/theme/layout/helpers';
 }
 
 .sharedItem {
@@ -32,13 +32,13 @@
 .item {
   composes: sharedItem;
   composes: item from 'part:@sanity/base/theme/layout/selectable-style';
-  composes: resetLink from "part:@sanity/base/theme/layout/helpers";
+  composes: resetLink from 'part:@sanity/base/theme/layout/helpers';
 }
 
 .activeItem {
   composes: sharedItem;
   composes: selected from 'part:@sanity/base/theme/layout/selectable-style';
-  composes: resetLink from "part:@sanity/base/theme/layout/helpers";
+  composes: resetLink from 'part:@sanity/base/theme/layout/helpers';
 }
 
 .itemType {

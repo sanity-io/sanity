@@ -1,4 +1,4 @@
-@import "part:@sanity/base/theme/variables-style";
+@import 'part:@sanity/base/theme/variables-style';
 
 /*
   Unused shadows depths are left commented out for future reference
@@ -9,9 +9,7 @@
 }
 
 .shadow-1dp {
-  box-shadow:
-    0 2px 2px 0 var(--shadow-color-umbra),
-    0 3px 1px -2px var(--shadow-color-penumbra),
+  box-shadow: 0 2px 2px 0 var(--shadow-color-umbra), 0 3px 1px -2px var(--shadow-color-penumbra),
     0 1px 5px 0 var(--shadow-color-ambient);
 }
 
@@ -44,9 +42,7 @@
 } */
 
 .shadow-6dp {
-  box-shadow:
-    0 3px 3px 0 var(--shadow-color-umbra),
-    0 1px 7px 0 var(--shadow-color-penumbra),
+  box-shadow: 0 3px 3px 0 var(--shadow-color-umbra), 0 1px 7px 0 var(--shadow-color-penumbra),
     0 3px 1px -1px var(--shadow-color-ambient);
 }
 
@@ -86,9 +82,7 @@
 } */
 
 .shadow-12dp {
-  box-shadow:
-    0 8px 17px 2px var(--shadow-color-umbra),
-    0 3px 14px 2px var(--shadow-color-penumbra),
+  box-shadow: 0 8px 17px 2px var(--shadow-color-umbra), 0 3px 14px 2px var(--shadow-color-penumbra),
     0 5px 5px -3px var(--shadow-color-ambient);
 }
 
@@ -114,9 +108,7 @@
 } */
 
 .shadow-16dp {
-  box-shadow:
-    0 16px 24px 2px var(--shadow-color-umbra),
-    0 6px 30px 5px var(--shadow-color-penumbra),
+  box-shadow: 0 16px 24px 2px var(--shadow-color-umbra), 0 6px 30px 5px var(--shadow-color-penumbra),
     0 8px 10px -7px var(--shadow-color-ambient);
 }
 
@@ -170,8 +162,6 @@
 } */
 
 .shadow-24dp {
-  box-shadow:
-    0 24px 38px 3px var(--shadow-color-umbra),
-    0 9px 46px 8px var(--shadow-color-penumbra),
+  box-shadow: 0 24px 38px 3px var(--shadow-color-umbra), 0 9px 46px 8px var(--shadow-color-penumbra),
     0 11px 15px -7px var(--shadow-color-ambient);
 }
