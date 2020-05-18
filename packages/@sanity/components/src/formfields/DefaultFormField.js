@@ -78,7 +78,7 @@ export default class DefaultFormField extends React.PureComponent {
                 {description && <div className={styles.description}>{description}</div>}
               </div>
               <FieldStatus>
-                <FieldPresence presence={presence} />
+                <FieldPresence presence={presence || []} />
               </FieldStatus>
             </div>
           )}
