@@ -179,7 +179,7 @@ export default class Fieldset extends React.PureComponent {
                 )}
               </div>
               <FieldStatus>
-                <FieldPresence presence={presence} />
+                <FieldPresence presence={presence || []} />
               </FieldStatus>
             </div>
 
