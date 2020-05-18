@@ -20,15 +20,15 @@ export default {
   icon,
   fields: [
     {
+      name: 'title',
+      title: 'Title',
+      type: 'string'
+    },
+    {
       name: 'first',
       title: 'Block array as first field',
       type: 'array',
       of: [{type: 'block'}]
-    },
-    {
-      name: 'title',
-      title: 'Title',
-      type: 'string'
     },
     {
       name: 'defaults',
@@ -75,7 +75,10 @@ export default {
               of: [
                 {
                   type: 'object',
-                  fields: [{name: 'aString', type: 'string'}, {name: 'aNumber', type: 'number'}]
+                  fields: [
+                    {name: 'aString', type: 'string'},
+                    {name: 'aNumber', type: 'number'}
+                  ]
                 }
               ]
             }
@@ -89,6 +92,11 @@ export default {
               title: 'Color'
             }
           ]
+        },
+        {
+          type: 'spotifyEmbed',
+          name: 'spotifyEmbed',
+          title: 'Spotify embed'
         }
       ]
     },
@@ -179,7 +187,10 @@ export default {
               of: [
                 {
                   type: 'object',
-                  fields: [{name: 'aString', type: 'string'}, {name: 'aNumber', type: 'number'}]
+                  fields: [
+                    {name: 'aString', type: 'string'},
+                    {name: 'aNumber', type: 'number'}
+                  ]
                 }
               ]
             }
@@ -226,7 +237,10 @@ export default {
             {title: 'H2', value: 'h2'},
             {title: 'Quote', value: 'blockquote'}
           ],
-          lists: [{title: 'Bullet', value: 'bullet'}, {title: 'Numbered', value: 'number'}],
+          lists: [
+            {title: 'Bullet', value: 'bullet'},
+            {title: 'Numbered', value: 'number'}
+          ],
           marks: {
             decorators: [
               {title: 'Strong', value: 'strong'},
@@ -307,9 +321,15 @@ export default {
                 {title: 'H2', value: 'h2'},
                 {title: 'Quote', value: 'blockquote'}
               ],
-              lists: [{title: 'Bullet', value: 'bullet'}, {title: 'Numbered', value: 'number'}],
+              lists: [
+                {title: 'Bullet', value: 'bullet'},
+                {title: 'Numbered', value: 'number'}
+              ],
               marks: {
-                decorators: [{title: 'Strong', value: 'strong'}, {title: 'Emphasis', value: 'em'}],
+                decorators: [
+                  {title: 'Strong', value: 'strong'},
+                  {title: 'Emphasis', value: 'em'}
+                ],
                 annotations: [
                   {name: 'Author', title: 'Author', type: 'reference', to: {type: 'author'}}
                 ]
