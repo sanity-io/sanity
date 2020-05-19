@@ -1,0 +1,30 @@
+.root {
+  display: inline;
+}
+
+.strong {
+  font-weight: bold;
+}
+
+.em {
+  font-style: italic;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+.overline {
+  text-decoration: overline;
+}
+
+.strike-through {
+  text-decoration: line-through;
+}
+
+.code {
+  font-family: monospace;
+  background-color: #eee;
+  color: #333;
+  padding: 0.1em 0em;
+}
