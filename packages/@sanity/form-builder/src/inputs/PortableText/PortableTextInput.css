@@ -142,7 +142,6 @@
 
 .editor {
   position: relative;
-  width: 100%;
   box-sizing: border-box;
   font-family: var(--block-editor-base-font-family);
   height: 100%;
@@ -150,7 +149,7 @@
   padding: 0;
 }
 
-.editor.hasBlockExtras:not(.fullscreen) .editor {
+.editor.hasBlockExtras:not(.fullscreen) {
   padding-right: var(--block-extras-width);
 }
 
@@ -202,5 +201,16 @@
     @media (--screen-large) {
       margin-top: 4rem;
     }
+  }
+}
+.blockExtras {
+  position: absolute;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  @nest .fullscreen & {
+    padding-left: 0;
   }
 }
