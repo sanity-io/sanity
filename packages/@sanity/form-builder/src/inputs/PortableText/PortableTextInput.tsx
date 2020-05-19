@@ -31,10 +31,18 @@ import {BlockObject} from './Objects/BlockObject'
 import {Path} from '../../typedefs/path'
 import {InlineObject} from './Objects/InlineObject'
 import {EditObject} from './Objects/EditObject'
-import {Annotation} from './Objects/Annotation'
+import {Annotation} from './Text/Annotation'
+import Decorator from './Text/Decorator'
+import Normal from './Text/Normal'
+import Blockquote from './Text/Blockquote'
+import Header from './Text/Header'
+import BlockExtrasOverlay from './BlockExtrasOverlay'
+import {RenderBlockActions, RenderCustomMarkers} from './types'
 
 export const IS_MAC =
   typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
+
+const HEADER_STYLES = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
 type Props = {
   type: Type
@@ -207,7 +215,7 @@ export default withPatchSubscriber(
       switch (change.type) {
         case 'mutation':
           // Don't wait for the form-builder to do it's thing, we live in the
-          // local state for now. The final value will be updated through props afterwards.
+          // local state right now. The final value will be updated through props afterwards.
           setTimeout(() => {
             this.props.onChange(PatchEvent.from(change.patches))
           })
@@ -289,24 +297,22 @@ export default withPatchSubscriber(
       this.setState({invalidValue: undefined, ignoreValidation: true, isActive: true})
     }
 
-    renderBlock = (
-      value: PortableTextBlock,
-      type: Type,
-      ref: React.RefObject<HTMLDivElement>,
-      attributes: RenderAttributes,
-      defaultRender: (value: PortableTextBlock) => JSX.Element
-    ): JSX.Element => {
-      if (!this.editor.current) {
-        return null
+    renderBlock: RenderBlockFunction = (value, type, defaultRender, attributes) => {
+      // Text blocks
+      if (value._type === this.ptFeatures.types.block.name) {
+        let returned = defaultRender(value)
+        // Deal with block style
+        if (value.style === 'normal') {
+          returned = <Normal>{returned}</Normal>
+        } else if (value.style === 'blockquote') {
+          returned = <Blockquote>{returned}</Blockquote>
+        } else if (HEADER_STYLES.includes(value.style)) {
+          returned = <Header style={value.style}>{returned}</Header>
+        }
+        return returned
       }
 
-      if (
-        value._type ===
-        PortableTextEditor.getPortableTextFeatures(this.editor.current).types.block.name
-      ) {
-        return defaultRender(value)
-      }
-
+      // Object blocks
       return (
         <BlockObject
           attributes={attributes}
@@ -330,35 +336,9 @@ export default withPatchSubscriber(
       defaultRender: (value: PortableTextChild) => JSX.Element
     ): JSX.Element => {
       const {focusPath, markers, readOnly} = this.props
-      if (!this.editor.current) {
-        return null
-      }
-      const isSpan =
-        value._type ===
-        PortableTextEditor.getPortableTextFeatures(this.editor.current).types.span.name
-      const {annotations} = attributes
-      const hasAnnotations = annotations && annotations.length > 0
-
+      const isSpan = value._type === this.ptFeatures.types.span.name
       if (isSpan) {
         return defaultRender(value)
-      }
-      if (hasAnnotations) {
-        const annotation = annotations[0]
-        return (
-          <Annotation
-            key={annotation._key}
-            attributes={attributes}
-            focusPath={focusPath}
-            markers={markers}
-            onFocus={this.props.onFocus}
-            onChange={this.handleFormBuilderEditObjectChange}
-            readOnly={readOnly}
-            type={type}
-            value={annotation}
-          >
-            {defaultRender(value)}
-          </Annotation>
-        )
       }
       return (
         <InlineObject
@@ -372,6 +352,50 @@ export default withPatchSubscriber(
           value={value}
         />
       )
+    }
+
+    renderAnnotation = (
+      value: PortableTextBlock,
+      type: Type,
+      ref: React.RefObject<HTMLSpanElement>,
+      attributes: RenderAttributes,
+      defaultRender: () => JSX.Element
+    ): JSX.Element => {
+      if (!this.editor.current) {
+        return null
+      }
+      const {focusPath, readOnly} = this.props
+      const markers = this.props.markers.filter(
+        marker => typeof marker.path[2] === 'object' && marker.path[2]._key === value._key
+      )
+      return (
+        <Annotation
+          key={value._key}
+          attributes={attributes}
+          focusPath={focusPath}
+          markers={markers}
+          onFocus={this.props.onFocus}
+          onChange={this.handleFormBuilderEditObjectChange}
+          readOnly={readOnly}
+          type={type}
+          value={value}
+        >
+          {defaultRender()}
+        </Annotation>
+      )
+    }
+
+    renderDecorator = (
+      value: string,
+      type: Type,
+      ref: React.RefObject<HTMLSpanElement>,
+      attributes: RenderAttributes,
+      defaultRender: () => JSX.Element
+    ): JSX.Element => {
+      if (!this.editor.current) {
+        return null
+      }
+      return <Decorator mark={value}>{defaultRender()}</Decorator>
     }
 
     // TODO: Highlight the cursor to better show where you are at when toggling fullscreen
@@ -407,6 +431,7 @@ export default withPatchSubscriber(
           hotkeys={this.hotkeys}
           onFocus={onFocus}
           onToggleFullscreen={this.handleToggleFullscreen}
+          renderBlock={this.renderBlock}
           selection={selection}
           isReadOnly={!!this.props.readOnly}
         />
@@ -545,7 +570,6 @@ export default withPatchSubscriber(
       const validation = markers.filter(marker => marker.type === 'validation')
       const errors = validation.filter(marker => marker.level === 'error')
       const {isLoading, hasFocus, invalidValue, objectEditStatus, ignoreValidation} = this.state
-
       return (
         <div className={[styles.root, ...(hasFocus ? [styles.focus] : [])].join(' ')}>
           <FormField
