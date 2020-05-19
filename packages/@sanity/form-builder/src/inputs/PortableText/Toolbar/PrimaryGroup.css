@@ -3,7 +3,6 @@
 .root {
   display: flex;
   flex-wrap: nowrap;
-  background-color: var(--component-bg);
 }
 
 .isPopped {
