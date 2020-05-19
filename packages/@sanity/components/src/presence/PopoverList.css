@@ -13,7 +13,10 @@
   font: inherit;
   padding: 0;
   color: inherit;
+}
 
+.globalButton {
+  composes: button;
   @nest &:focus {
     background-color: color(var(--brand-primary) a(20%));
   }
