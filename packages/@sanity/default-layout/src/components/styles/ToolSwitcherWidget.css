@@ -40,7 +40,7 @@
   outline: none;
 
   @nest &:focus {
-    background: var(--selectable-item-color-focus);
+    background-color: color(var(--focus-color) a(20%));
   }
 }
 

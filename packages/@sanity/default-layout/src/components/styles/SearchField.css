@@ -8,14 +8,14 @@
   position: relative;
 
   @nest &:not(.isBleeding) {
-    background: rgba(255, 255, 255, 0.1);
+    background: color(var(--component-bg) alpha(10%));
     border-radius: 3px;
     height: 33px;
   }
 
   @nest &.isFocused:not(.isBleeding) {
-    background: #fff;
-    color: #444;
+    background: var(--component-bg);
+    color: var(--text-muted);
   }
 
   @nest &.isOpen:not(.isBleeding) {
@@ -43,7 +43,7 @@
     left: 0;
     right: 0;
     bottom: -1px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--hairline-color);
   }
 
   @nest .root:not(.isBleeding) & {
@@ -161,7 +161,7 @@
 }
 
 .results {
-  composes: shadow-12dp from "part:@sanity/base/theme/shadows-style";
+  composes: shadow-12dp from 'part:@sanity/base/theme/shadows-style';
   display: none;
   position: absolute;
   background: #fff;

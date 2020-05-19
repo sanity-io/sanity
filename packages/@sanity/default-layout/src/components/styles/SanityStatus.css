@@ -1,4 +1,4 @@
-@import "part:@sanity/base/theme/variables-style";
+@import 'part:@sanity/base/theme/variables-style';
 
 .root {
   display: flex;
@@ -39,7 +39,7 @@
 
   @nest &:focus {
     opacity: 1;
-    background: var(--selectable-item-color-focus);
+    background-color: color(var(--focus-color) a(20%));
   }
 }
 
@@ -68,19 +68,19 @@
   box-sizing: border-box;
 }
 
-.updateIndicator[data-severity="notice"] {
+.updateIndicator[data-severity='notice'] {
   background: currentColor;
 }
 
-.updateIndicator[data-severity="low"] {
+.updateIndicator[data-severity='low'] {
   background: currentColor;
 }
 
-.updateIndicator[data-severity="medium"] {
+.updateIndicator[data-severity='medium'] {
   background: var(--state-warning-color);
 }
 
-.updateIndicator[data-severity="high"] {
+.updateIndicator[data-severity='high'] {
   background: var(--state-danger-color);
 }
 
