@@ -32,7 +32,7 @@ const getStaticImageUrl = value => {
   return `https://maps.googleapis.com/maps/api/staticmap?${qs.join('&')}`
 }
 
-class GeopointInput extends React.PureComponent {
+class GeopointInput extends React.Component {
   static propTypes = {
     onChange: PropTypes.func.isRequired,
     markers: PropTypes.arrayOf(

@@ -54,7 +54,7 @@ export type Props = {
 type ArrayInputState = {
   isMoving: boolean
 }
-export default class ArrayInput extends React.PureComponent<Props, ArrayInputState> {
+export default class ArrayInput extends React.Component<Props, ArrayInputState> {
   _element: any
   uploadSubscriptions: {
     [name: string]: Subscription
