@@ -9,7 +9,10 @@ import {
   Patch as EditorPatch,
   InvalidValue as InvalidEditorValue,
   HotkeyOptions,
-  RenderAttributes
+  RenderAttributes,
+  RenderBlockFunction,
+  getPortableTextFeatures,
+  PortableTextFeatures
 } from '@sanity/portable-text-editor'
 import Button from 'part:@sanity/components/buttons/default'
 import FormField from 'part:@sanity/components/formfields/default'
@@ -52,6 +55,8 @@ type Props = {
     insert?: PortableTextBlock[]
     path?: []
   }
+  renderBlockActions?: RenderBlockActions
+  renderCustomMarkers?: RenderCustomMarkers
   subscribe: (arg0: ({patches: PatchEvent}) => void) => void
 }
 
@@ -78,6 +83,7 @@ export default withPatchSubscriber(
     private incoming: PatchWithOrigin[] = []
     private patche$: Subject<EditorPatch> = new Subject()
     private usubscribe: any
+    private ptFeatures: PortableTextFeatures
 
     handleToggleFullscreen = (): void => {
       if (!this.editor.current) {
@@ -170,6 +176,7 @@ export default withPatchSubscriber(
 
     constructor(props: Props) {
       super(props)
+      this.ptFeatures = getPortableTextFeatures(props.type)
       this.usubscribe = props.subscribe(this.handleDocumentPatches)
     }
 
@@ -374,20 +381,23 @@ export default withPatchSubscriber(
 
     renderEditor = (editor: JSX.Element): JSX.Element => {
       const {selection, isFullscreen} = this.state
-      const {onFocus, markers} = this.props
-
+      const {onFocus, markers, renderBlockActions, renderCustomMarkers} = this.props
+      const hasMarkers = markers.filter(marker => marker.path.length > 0).length > 0
       const scClassNames = [
         styles.scrollContainer,
-        ...(isFullscreen ? [styles.fullscreen] : [])
+        ...(isFullscreen ? [styles.fullscreen] : []),
+        ...(renderBlockActions || hasMarkers ? [styles.hasBlockExtras] : [])
       ].join(' ')
       const editorWrapperClassNames = [
         styles.editorWrapper,
         ...(isFullscreen ? [styles.fullscreen] : [])
       ].join(' ')
 
-      const editorClassNames = [styles.editor, ...(isFullscreen ? [styles.fullscreen] : [])].join(
-        ' '
-      )
+      const editorClassNames = [
+        styles.editor,
+        ...(isFullscreen ? [styles.fullscreen] : []),
+        ...(renderBlockActions || hasMarkers ? [styles.hasBlockExtras] : [])
+      ].join(' ')
 
       const toolbar = (
         <Toolbar
@@ -408,6 +418,18 @@ export default withPatchSubscriber(
           <div className={scClassNames}>
             <div className={editorWrapperClassNames}>
               <div className={editorClassNames}>{editor}</div>
+              <div className={styles.blockExtras}>
+                <BlockExtrasOverlay
+                  isFullscreen={isFullscreen}
+                  editor={this.editor.current}
+                  markers={markers}
+                  onFocus={onFocus}
+                  onChange={this.props.onChange}
+                  renderBlockActions={this.props.readOnly ? undefined : renderBlockActions}
+                  renderCustomMarkers={renderCustomMarkers}
+                  value={this.props.value}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -428,7 +450,6 @@ export default withPatchSubscriber(
 
     renderEditObject = (): JSX.Element => {
       const {objectEditStatus} = this.state
-      const ptFeatures = PortableTextEditor.getPortableTextFeatures(this.editor.current)
       let object
       let lookForType
       let referenceElement
@@ -477,7 +498,7 @@ export default withPatchSubscriber(
       }
       if (object && lookForType) {
         // Find the type
-        const type = ptFeatures.types[
+        const type = this.ptFeatures.types[
           objectEditStatus.formBuilderPath.length === 1
             ? 'blockObjects'
             : objectEditStatus.type === 'annotation'
@@ -575,6 +596,8 @@ export default withPatchSubscriber(
                 ref={this.editor}
                 renderBlock={this.renderBlock}
                 renderChild={this.renderChild}
+                renderDecorator={this.renderDecorator}
+                renderAnnotation={this.renderAnnotation}
                 renderEditor={this.renderEditor}
                 spellCheck={false} // TODO: from schema?
                 type={type}

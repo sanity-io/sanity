@@ -1,0 +1,73 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  font-size: var(--font-size-xsmall);
+  z-index: 0;
+}
+
+.content {
+  margin-left: calc(100% - var(--block-extras-width));
+  pointer-events: all;
+  border-left: 2px solid transparent;
+  padding-left: var(--small-padding);
+  height: 100%;
+
+  @nest &:hover::before {
+    content: '';
+    position: absolute;
+    box-sizing: border-box;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background-color: color(var(--text-color) a(5%));
+  }
+}
+
+.hasFullScreen {
+  overflow: visible;
+}
+
+.hasFullScreen .content {
+  margin-left: 100%;
+}
+
+.withError {
+  composes: root;
+
+  @nest & .content {
+    border-left: 2px solid var(--state-danger-color);
+  }
+
+  @nest & .content:hover::before {
+    background-color: color(var(--state-danger-color) a(10%));
+  }
+}
+
+.withWarning {
+  composes: root;
+  border-left: 2px solid var(--state-warning-color);
+
+  @nest &:hover::before {
+    background-color: color(var(--state-warning-color) a(10%));
+  }
+}
+
+.blockActions {
+  @nest & .content {
+    color: var(--text-color);
+    border-left: 2px solid var(--text-color);
+  }
+}
+
+.markers {
+  @nest & .content {
+    border-left: 2px solid var(--state-info-color);
+    color: var(--text-color);
+  }
+}
