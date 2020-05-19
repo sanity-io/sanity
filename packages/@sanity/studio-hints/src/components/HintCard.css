@@ -3,7 +3,7 @@
 .root {
   padding: var(--medium-padding);
   border-radius: var(--border-radius-medium);
-  border: 1px solid color(var(--main-navigation-color--inverted) a(40%));
+  border: 1px solid var(--hairline-color);
   margin: var(--small-padding) 0;
   cursor: pointer;
   display: flex;

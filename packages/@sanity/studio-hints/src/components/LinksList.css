@@ -24,7 +24,7 @@
 }
 
 .simpleList {
-  border: 1px solid color(var(--main-navigation-color--inverted) a(40%));
+  border: 1px solid var(--hairline-color);
   border-radius: var(--border-radius-large);
   margin: 0;
   padding: var(--small-padding) 0;

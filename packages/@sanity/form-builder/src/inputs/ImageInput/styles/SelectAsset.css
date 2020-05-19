@@ -7,7 +7,7 @@
 }
 
 .imageList {
-  margin: 0;
+  margin: calc(0 - (var(--small-padding) / 2));
   padding: 0;
   display: flex;
   flex-wrap: wrap;
@@ -20,6 +20,9 @@
 
 .loadMore {
   margin: var(--medium-padding) 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: var(--small-padding);
 }
 
 .noAssets {

@@ -2,17 +2,23 @@
 @import 'part:@sanity/base/theme/variables/globals-style';
 
 :root {
+  /* Default button */
   --default-button-color: var(--text-color);
   --default-button-color--inverted: var(--white);
   --default-button-color--hover: var(--text-color);
   --default-button-color--active: var(--text-color);
+
+  /* Button */
   --button-border-radius: var(--border-radius-medium);
+
+  /* Input */
   --input-bg: var(--component-bg);
   --input-bg-focus: var(--input-bg);
   --input-bg-invalid: var(--component-bg);
-  --input-bg-disabled: var(--gray-lighter);
+  --input-bg-disabled: var(--gray-lightest);
   --input-color: var(--text-color);
-  --input-border-color: var(--component-border-color);
+  --input-color-disabled: var(--gray);
+  --input-border-color: var(--gray-lighter);
   --input-border-size: 1px;
   --input-line-height: 2em;
   --input-padding-vertical: 0.5em;
@@ -20,23 +26,33 @@
   --input-border-radius: var(--border-radius-small);
   --input-border-radius-large: var(--border-radius-large);
   --input-border-radius-small: var(--border-radius-small);
-  --input-border-color-hover: var(--gray);
+  --input-border-color-hover: var(--gray-light);
   --input-border-color-focus: var(--brand-primary);
   --input-border-color-active: var(--brand-primary);
   --input-border-color-invalid: var(--state-danger-color);
-  --focus-color: color(var(--brand-primary) alpha(40%));
-  --input-color-placeholder: var(--text-color-secondary);
-  --label-color: var(--text-color);
-  --legend-color: var(--text-color);
-  --cursor-disabled: not-allowed;
-  --clear-cross-color: var(--input-color);
-  --clear-cross-color-hover: var(--state-danger-color);
+  --input-color-placeholder: var(--text-muted);
   --input-box-shadow-base: var(--gray-base);
   --input-box-shadow: none;
   --input-box-shadow--hover: none;
   --input-box-shadow--focus: 0 0 0 3px color(var(--input-border-color-focus) a(42%));
   --input-box-shadow--invalid: none;
   --input-box-shadow--invalid-focus: 0 0 0 3px color(var(--input-border-color-invalid) a(42%));
+
+  /* Focus */
+  --focus-color: color(var(--brand-primary) alpha(40%));
+
+  /* Label */
+  --label-color: var(--text-color);
+
+  /* Legend */
+  --legend-color: var(--text-color);
+
+  /* Cursor */
+  --cursor-disabled: not-allowed;
+
+  /* Clear cross */
+  --clear-cross-color: var(--input-color);
+  --clear-cross-color-hover: var(--state-danger-color);
 
   /* fieldset */
   --fieldset-border: var(--input-border-size) solid var(--hairline-color);
@@ -46,6 +62,8 @@
   --fieldset-box-shadow--focus: var(--input-box-shadow--focus);
   --fieldset-box-shadow--invalid-focus: var(--input-box-shadow--invalid-focus);
   --fieldset-bg: transparent;
+
+  /* Form builder */
   --form-builder-block-border-color: var(--component-border-color);
   --form-builder-block-border-color-focus: var(--input-border-color-focus);
   --form-builder-block-border-color-error: var(--input-border-color-invalid);

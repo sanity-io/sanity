@@ -93,7 +93,8 @@
 }
 
 .status {
-  color: var(--gray-darker-transparent);
+  color: currentColor;
+  opacity: 0.7;
 }
 
 .mediaString {
