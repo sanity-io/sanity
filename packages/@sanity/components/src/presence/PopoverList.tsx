@@ -1,7 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import React, {useRef, useState} from 'react'
 import styles from './PopoverList.css'
-import {Tooltip} from 'react-tippy'
+import {Tooltip, Position} from 'react-tippy'
 import CogIcon from 'part:@sanity/base/cog-icon'
 import {useId} from '@reach/auto-id'
 import {User} from './types'
@@ -9,7 +9,7 @@ import {User} from './types'
 type Props<Item> = {
   items: Item[]
   renderItem: (item: Item) => React.ReactNode
-  position?: 'top' | 'bottom'
+  position?: Position
   trigger?: 'mouseenter' | 'click' | 'manual'
   children?: React.ReactNode
   distance?: number
@@ -21,7 +21,7 @@ type Props<Item> = {
 export default function PopoverList<Item extends {user: User}>({
   items = [],
   position = 'top',
-  distance = 10,
+  distance = 0,
   trigger,
   renderItem,
   children,
