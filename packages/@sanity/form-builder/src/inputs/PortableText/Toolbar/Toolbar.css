@@ -2,11 +2,8 @@
 
 .root {
   position: relative;
-  padding-bottom: var(--small-padding);
-}
-
-.inner {
   display: flex;
+  width: 100%;
   justify-content: stretch;
   flex-wrap: nowrap;
   font-size: var(--font-size-small);
