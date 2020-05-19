@@ -15,7 +15,15 @@ import PrimaryGroup from './PrimaryGroup'
 import styles from './Toolbar.css'
 import {Path} from '../../../typedefs/path'
 import {Marker} from '../../../typedefs'
-import {PortableTextEditor, EditorSelection, HotkeyOptions} from '@sanity/portable-text-editor'
+import {
+  PortableTextEditor,
+  EditorSelection,
+  HotkeyOptions,
+  PortableTextBlock,
+  RenderAttributes,
+  Type,
+  RenderBlockFunction
+} from '@sanity/portable-text-editor'
 
 const BREAKPOINT_SCREEN_MEDIUM = 512
 
@@ -33,6 +41,7 @@ type Props = {
   markers: Marker[]
   onFocus: (path: Path) => void
   onToggleFullscreen: () => void
+  renderBlock: RenderBlockFunction
   selection: EditorSelection
 }
 

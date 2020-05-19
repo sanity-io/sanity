@@ -11,7 +11,8 @@ import {
   PortableTextEditor,
   EditorSelection,
   Type,
-  HotkeyOptions
+  HotkeyOptions,
+  RenderBlockFunction
 } from '@sanity/portable-text-editor'
 
 type Props = {
@@ -23,6 +24,7 @@ type Props = {
   isPopped?: boolean
   isReadOnly: boolean
   onFocus: (path: Path) => void
+  renderBlock: RenderBlockFunction
   selection: EditorSelection
 }
 type State = {
@@ -61,6 +63,7 @@ export default class PrimaryGroup extends React.PureComponent<Props, State> {
               className={styles.blockStyleSelect}
               editor={editor}
               selection={this.props.selection}
+              renderBlock={this.props.renderBlock}
             />
           )}
         </div>
