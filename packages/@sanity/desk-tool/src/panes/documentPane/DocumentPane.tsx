@@ -865,7 +865,6 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
               kind="warning"
               title="Connection lost. Reconnecting when online…"
               isPersisted
-              preventDuplicate
             />
           )}
           <DocumentOperationResults id={options.id} type={options.type} />
