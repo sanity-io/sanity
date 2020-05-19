@@ -2,7 +2,7 @@
 import React from 'react'
 import {splitRight} from './utils'
 import {sortBy, uniqBy} from 'lodash'
-import {AVATAR_SIZE, MAX_AVATARS} from './constants'
+import {AVATAR_DISTANCE, AVATAR_SIZE, MAX_AVATARS} from './constants'
 import {PopoverList, StackCounter} from './index'
 import styles from './FieldPresence.css'
 import UserAvatar from './UserAvatar'
@@ -45,8 +45,7 @@ export function FieldPresenceInner({presence, position}: InnerProps) {
       : null
   ].filter(Boolean)
 
-  const width = 8 + (AVATAR_SIZE - 8) * MAX_AVATARS
-  const right = width - AVATAR_SIZE
+  const minWidth = -AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * MAX_AVATARS
   return (
     <div className={styles.root}>
       <PopoverList
@@ -56,13 +55,13 @@ export function FieldPresenceInner({presence, position}: InnerProps) {
         distance={10}
         renderItem={item => <PresenceListItem status="online" user={item.user} />}
       >
-        <div className={styles.inner} style={{width}}>
+        <div className={styles.inner} style={{minWidth}}>
           {avatars.map((av, i) => (
             <div
               key={av.key}
               style={{
                 position: 'absolute',
-                transform: `translate3d(${right - (AVATAR_SIZE - 8) * i}px, 0px, 0px)`,
+                transform: `translate3d(${-i * (AVATAR_SIZE + AVATAR_DISTANCE)}px, 0px, 0px)`,
                 transitionProperty: 'transform',
                 transitionDuration: '200ms',
                 transitionTimingFunction: 'cubic-bezier(0.85, 0, 0.15, 1)',
