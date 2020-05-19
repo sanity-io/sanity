@@ -63,7 +63,7 @@ export default function PopoverList<Item extends {user: User}>({
     >
       {isGlobal && items.length < 1 && (
         <div className={styles.header}>
-          <h2 className={styles.title}>No one's here!</h2>
+          <h2 className={styles.title}>No collaborators here!</h2>
           <p className={styles.subtitle}>Invite more collaborators to see their online statuses.</p>
         </div>
       )}
