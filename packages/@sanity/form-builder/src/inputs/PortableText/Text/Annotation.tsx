@@ -35,7 +35,7 @@ export const Annotation: FunctionComponent<Props> = ({
     styles.root,
     focused && styles.focused,
     selected && styles.selected,
-    errors.length > 0 && styles.hasErrors
+    errors.length > 0 ? styles.error : styles.valid
   ])
 
   const handleOpen = (event: SyntheticEvent<HTMLSpanElement>): void => {
