@@ -4,12 +4,16 @@
   position: relative;
   display: flex;
   width: 100%;
+  min-height: 4rem;
   justify-content: stretch;
   flex-wrap: nowrap;
   font-size: var(--font-size-small);
+  background-color: var(--component-bg);
 
   @nest &:not(.fullscreen) {
     max-width: 640px;
+    min-height: 3.5rem;
+    background-color: none;
   }
 
   @nest &.fullscreen {
