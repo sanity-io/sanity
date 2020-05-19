@@ -1,0 +1,37 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  composes: default from './Spacing.css';
+  text-transform: none;
+  font-family: var(--block-editor-header-font-family);
+}
+
+.h1 {
+  composes: heading1 from 'part:@sanity/base/theme/typography/headings-style';
+  composes: root;
+}
+
+.h2 {
+  composes: heading2 from 'part:@sanity/base/theme/typography/headings-style';
+  composes: root;
+}
+
+.h3 {
+  composes: heading3 from 'part:@sanity/base/theme/typography/headings-style';
+  composes: root;
+}
+
+.h4 {
+  composes: heading4 from 'part:@sanity/base/theme/typography/headings-style';
+  composes: root;
+}
+
+.h5 {
+  composes: heading5 from 'part:@sanity/base/theme/typography/headings-style';
+  composes: root;
+}
+
+.h6 {
+  composes: heading6 from 'part:@sanity/base/theme/typography/headings-style';
+  composes: root;
+}
