@@ -11,7 +11,7 @@
 }
 
 .root {
-  composes: default from './Spacing.css';
+  composes: default from '../Text/Spacing.css';
   width: 100%;
 }
 
