@@ -1,59 +1,74 @@
+/* eslint-disable react/no-multi-comp */
+
 import React from 'react'
 import StyleSelect from 'part:@sanity/components/selects/style'
 import {
   EditorSelection,
   PortableTextEditor,
   PortableTextFeature,
-  StyledComponents
+  RenderBlockFunction
 } from '@sanity/portable-text-editor'
 export type BlockStyleItem = {
   active: boolean
   key: string
-  preview: JSX.Element
+  preview: () => JSX.Element
   style: string
   title: string
 }
 type Props = {
   className: string
   editor: PortableTextEditor
+  renderBlock: RenderBlockFunction
   selection: EditorSelection
 }
+const noStylePreview = (): JSX.Element => <div>No style</div>
 
-export default class BlockStyleSelect extends React.Component<Props, {}> {
-  shouldComponentUpdate(nextProps: Props): boolean {
-    if (nextProps.selection && nextProps.selection !== this.props.selection) {
-      return true
-    }
-    return false
+export default function BlockStyleSelect(props: Props): JSX.Element {
+  const ptFeatures = PortableTextEditor.getPortableTextFeatures(props.editor)
+
+  const renderStyle = (style, StyleComponent): JSX.Element => {
+    return props.renderBlock(
+      {
+        _key: '1',
+        _type: ptFeatures.types.block.name,
+        children: [
+          {
+            _key: '2',
+            _type: ptFeatures.types.span.name,
+            text: style.title
+          }
+        ],
+        style: style.value
+      },
+      ptFeatures.types.block,
+      () => (StyleComponent ? <StyleComponent>{style.title}</StyleComponent> : <>{style.title}</>),
+      {focused: false, selected: false, path: []},
+      React.createRef()
+    )
   }
-  getItemsAndValue(): {
+
+  const getItemsAndValue = (): {
     items: BlockStyleItem[]
     value: BlockStyleItem[]
-  } {
-    const {editor} = this.props
-    const items = PortableTextEditor.getPortableTextFeatures(editor).styles.map(
-      (style: PortableTextFeature) => {
-        const styleComponent = style && style.blockEditor && style.blockEditor.render
-        const preview: JSX.Element = (
-          <StyledComponents.Text style={style.value} styleComponent={styleComponent}>
-            {style.title}
-          </StyledComponents.Text>
-        )
-        return {
-          active: PortableTextEditor.hasBlockStyle(editor, style.value),
-          key: `style-${style.value}`,
-          preview: preview,
-          style: style.value,
-          title: ` ${style.title}`
-        }
+  } => {
+    const {editor} = props
+    const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
+    const items = ptFeatures.styles.map((style: PortableTextFeature) => {
+      const StyleComponent = style && style.blockEditor && style.blockEditor.render
+      return {
+        active: PortableTextEditor.hasBlockStyle(editor, style.value),
+        key: `style-${style.value}`,
+        preview: () => renderStyle(style, StyleComponent),
+        style: style.value,
+        title: ` ${style.title}`
       }
-    )
+    })
     let value = items.filter(item => item.active)
     if (value.length === 0 && items.length > 1) {
       items.push({
         key: 'style-none',
         style: null,
-        preview: <div>No style</div>,
+        preview: noStylePreview,
         title: ' No style',
         active: true
       })
@@ -64,35 +79,35 @@ export default class BlockStyleSelect extends React.Component<Props, {}> {
       value: value
     }
   }
-  handleChange = (item: BlockStyleItem): void => {
-    const {editor} = this.props
-    PortableTextEditor.toggleBlockStyle(editor, item.style)
+
+  const handleChange = (item: BlockStyleItem): void => {
+    PortableTextEditor.toggleBlockStyle(props.editor, item.style)
   }
-  renderItem = (item: BlockStyleItem): JSX.Element => {
-    return item.preview
+
+  const renderItem = (item: BlockStyleItem): JSX.Element => {
+    return item.preview()
   }
-  render(): JSX.Element {
-    const {items, value} = this.getItemsAndValue()
-    // If just one style, don't show
-    if (!items || items.length < 2) {
-      return null
-    }
-    const {className, editor} = this.props
-    const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
-    const focusBlock = PortableTextEditor.focusBlock(editor)
-    const disabled = focusBlock ? ptFeatures.types.block.name !== focusBlock._type : false
-    return (
-      <label className={className}>
-        <span style={{display: 'none'}}>Text</span>
-        <StyleSelect
-          disabled={disabled}
-          items={items}
-          onChange={this.handleChange}
-          renderItem={this.renderItem}
-          transparent
-          value={value}
-        />
-      </label>
-    )
+
+  const {items, value} = getItemsAndValue()
+
+  // If just one style, don't show
+  if (!items || items.length < 2) {
+    return null
   }
+  const {className, editor} = props
+  const focusBlock = PortableTextEditor.focusBlock(editor)
+  const disabled = focusBlock ? ptFeatures.types.block.name !== focusBlock._type : false
+  return (
+    <label className={className}>
+      <span style={{display: 'none'}}>Text</span>
+      <StyleSelect
+        disabled={disabled}
+        items={items}
+        onChange={handleChange}
+        renderItem={renderItem}
+        transparent
+        value={value}
+      />
+    </label>
+  )
 }
