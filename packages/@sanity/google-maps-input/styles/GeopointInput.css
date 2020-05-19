@@ -19,7 +19,10 @@
 }
 
 .map {
-  /* empty */
+  /*
+    This is a container for the map input, to avoid fieldset's CSS grid
+    to apply grid gap spacing to the map input's children.
+  */
 }
 
 .functions {
