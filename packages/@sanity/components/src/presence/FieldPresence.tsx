@@ -51,10 +51,12 @@ export function FieldPresenceInner({presence, position}: InnerProps) {
     <div className={styles.root}>
       <PopoverList
         items={presence}
-        disabled={hidden.length === 0}
+        position="top-end"
+        trigger="mouseenter"
+        distance={10}
         renderItem={item => <PresenceListItem status="online" user={item.user} />}
       >
-        <div className={styles.inner} style={{width: width}}>
+        <div className={styles.inner} style={{width}}>
           {avatars.map((av, i) => (
             <div
               key={av.key}
