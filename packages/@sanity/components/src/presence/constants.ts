@@ -5,7 +5,10 @@ export const DISABLE_OVERLAY = false
 // number of avatars to display on each fields (will be stacked and have a counter if more than 3 users in a field)
 export const MAX_AVATARS = 3
 
-// height/width of the avatars
+// distance between avatars in pixels (negative number means overlap)
+export const AVATAR_DISTANCE = -5
+
+// height/width of the avatars in pixels
 export const AVATAR_SIZE = 21
 
 // these are the thresholds in which the intersection observers will notify about regions going in/out of viewport
