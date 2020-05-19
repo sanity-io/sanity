@@ -113,7 +113,6 @@ export default class BlockExtrasOverlay extends React.Component<Props, State> {
     )
   }
   render(): JSX.Element {
-    console.log('render blockextras')
     const {value} = this.props
     const {visible} = this.state
     if (!visible || !value || !Array.isArray(value)) {
