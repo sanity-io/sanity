@@ -59,7 +59,7 @@
     "rimraf": "^2.7.1"
   },
   "peerDependencies": {
-    "@sanity/base": "^0.147.0",
+    "@sanity/base": "^0.147.0 || ^1.148.0",
     "prop-types": "^15.6 || ^16",
     "react": "^16.9"
   },
