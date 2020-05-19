@@ -324,7 +324,9 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
       )
     }
     const FieldSetComponent = SUPPORT_DIRECT_UPLOADS ? UploadTargetFieldset : Fieldset
-    const uploadProps = SUPPORT_DIRECT_UPLOADS ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload} : {}
+    const uploadProps = SUPPORT_DIRECT_UPLOADS
+      ? {getUploadOptions: this.getUploadOptions, onUpload: this.handleUpload}
+      : {}
     return (
       <FieldSetComponent
         markers={markers}
@@ -338,17 +340,19 @@ export default class ArrayInput extends React.Component<Props, ArrayInputState> 
         ref={this.setElement}
         {...uploadProps}
       >
-        {value && value.length > 0 && this.renderList()}
-        <ArrayFunctions
-          type={type}
-          value={value}
-          readOnly={readOnly}
-          onAppendItem={this.handleAppend}
-          onPrependItem={this.handlePrepend}
-          onFocusItem={this.handleFocusItem}
-          onCreateValue={createProtoValue}
-          onChange={onChange}
-        />
+        <div>
+          {value && value.length > 0 && this.renderList()}
+          <ArrayFunctions
+            type={type}
+            value={value}
+            readOnly={readOnly}
+            onAppendItem={this.handleAppend}
+            onPrependItem={this.handlePrepend}
+            onFocusItem={this.handleFocusItem}
+            onCreateValue={createProtoValue}
+            onChange={onChange}
+          />
+        </div>
       </FieldSetComponent>
     )
   }

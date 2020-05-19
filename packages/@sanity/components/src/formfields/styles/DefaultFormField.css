@@ -6,10 +6,6 @@
   box-sizing: border-box;
 }
 
-.root + .root {
-  margin-top: var(--medium-padding);
-}
-
 .block {
   display: block;
 }

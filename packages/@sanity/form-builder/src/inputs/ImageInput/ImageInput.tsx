@@ -184,11 +184,7 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
     }
   }
 
-  uploadWith(
-    uploader: Uploader,
-    file: File,
-    assetDocumentProps: AssetDocumentProps = {}
-  ) {
+  uploadWith(uploader: Uploader, file: File, assetDocumentProps: AssetDocumentProps = {}) {
     const {type, onChange} = this.props
     const {label, title, description, creditLine, source} = assetDocumentProps
     const options = {
@@ -550,65 +546,65 @@ export default class ImageInput extends React.PureComponent<Props, ImageInputSta
         ref={this.setFocusArea}
         {...uploadProps}
       >
-        {uploadError && (
-          <Snackbar
-            kind="error"
-            isPersisted
-            actionTitle="OK"
-            onAction={() => this.setState({uploadError: null})}
-            title="Upload error"
-            subtitle={<div>{"We're"} really sorry, but the upload could not be completed.</div>}
-          />
-        )}
-        <div className={styles.content}>
-          <div className={styles.assetWrapper}>
-            {value && value._upload && (
-              <div className={styles.uploadState}>{this.renderUploadState(value._upload)}</div>
-            )}
-            {hasAsset ? (
-              <WithMaterializedReference reference={value.asset} materialize={materialize}>
-                {this.renderMaterializedAsset}
-              </WithMaterializedReference>
-            ) : readOnly ? (
-              <span>Field is read only</span>
-            ) : (
-              SUPPORT_DIRECT_UPLOADS && <UploadPlaceholder hasFocus={hasFocus} />
-            )}
+        <div>
+          {uploadError && (
+            <Snackbar
+              kind="error"
+              isPersisted
+              actionTitle="OK"
+              onAction={() => this.setState({uploadError: null})}
+              title="Upload error"
+              subtitle={<div>{"We're"} really sorry, but the upload could not be completed.</div>}
+            />
+          )}
+          <div className={styles.content}>
+            <div className={styles.assetWrapper}>
+              {value && value._upload && (
+                <div className={styles.uploadState}>{this.renderUploadState(value._upload)}</div>
+              )}
+              {hasAsset ? (
+                <WithMaterializedReference reference={value.asset} materialize={materialize}>
+                  {this.renderMaterializedAsset}
+                </WithMaterializedReference>
+              ) : readOnly ? (
+                <span>Field is read only</span>
+              ) : (
+                SUPPORT_DIRECT_UPLOADS && <UploadPlaceholder hasFocus={hasFocus} />
+              )}
+            </div>
+          </div>
+          <div className={styles.functions}>
+            <ButtonGrid>
+              {!readOnly && SUPPORT_DIRECT_UPLOADS && (
+                <FileInputButton
+                  icon={UploadIcon}
+                  inverted
+                  onSelect={this.handleSelectFile}
+                  accept={accept}
+                >
+                  Upload
+                </FileInputButton>
+              )}
+              {!readOnly && this.renderSelectImageButton()}
+              {showAdvancedEditButton && (
+                <Button
+                  icon={readOnly ? VisibilityIcon : EditIcon}
+                  inverted
+                  title={readOnly ? 'View details' : 'Edit details'}
+                  onClick={this.handleStartAdvancedEdit}
+                >
+                  {readOnly ? 'View details' : 'Edit'}
+                </Button>
+              )}
+              {hasAsset && !readOnly && (
+                <Button color="danger" inverted onClick={this.handleRemoveButtonClick}>
+                  Remove
+                </Button>
+              )}
+            </ButtonGrid>
           </div>
         </div>
-        <div className={styles.functions}>
-          <ButtonGrid>
-            {!readOnly && SUPPORT_DIRECT_UPLOADS && (
-              <FileInputButton
-                icon={UploadIcon}
-                inverted
-                onSelect={this.handleSelectFile}
-                accept={accept}
-              >
-                Upload
-              </FileInputButton>
-            )}
-            {!readOnly && this.renderSelectImageButton()}
-            {showAdvancedEditButton && (
-              <Button
-                icon={readOnly ? VisibilityIcon : EditIcon}
-                inverted
-                title={readOnly ? 'View details' : 'Edit details'}
-                onClick={this.handleStartAdvancedEdit}
-              >
-                {readOnly ? 'View details' : 'Edit'}
-              </Button>
-            )}
-            {hasAsset && !readOnly && (
-              <Button color="danger" inverted onClick={this.handleRemoveButtonClick}>
-                Remove
-              </Button>
-            )}
-          </ButtonGrid>
-        </div>
-        {highlightedFields.length > 0 && (
-          <div className={styles.fieldsWrapper}>{this.renderFields(highlightedFields)}</div>
-        )}
+        {highlightedFields.length > 0 && this.renderFields(highlightedFields)}
         {isAdvancedEditOpen && this.renderAdvancedEdit(otherFields)}
         {selectedAssetSource && this.renderAssetSource()}
       </FieldSetComponent>

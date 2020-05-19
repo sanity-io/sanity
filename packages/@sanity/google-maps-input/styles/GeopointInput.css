@@ -1,4 +1,4 @@
-@import "part:@sanity/base/theme/variables-style";
+@import 'part:@sanity/base/theme/variables-style';
 
 .previewImage {
   width: 100%;
@@ -18,11 +18,21 @@
   overflow: hidden;
 }
 
+.map {
+  /*
+    This is a container for the map input, to avoid fieldset's CSS grid
+    to apply grid gap spacing to the map input's children.
+  */
+}
+
 .functions {
   composes: functions from 'part:@sanity/components/fieldsets/default-style';
-  padding-top: var(--small-padding);
+}
+
+.map + .functions {
+  margin-top: var(--small-padding);
 
   @media (--screen-medium) {
-    padding-top: var(--medium-padding);
+    margin-top: var(--medium-padding);
   }
 }

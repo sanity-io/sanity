@@ -77,36 +77,40 @@ export default class OptionsArrayInput extends React.PureComponent<OptionsArrayI
     const direction = get(type.options, 'direction') // vertical and horizontal
     return (
       <Fieldset legend={type.title} description={type.description} markers={markers} level={level}>
-        {options.map((option, index) => {
-          const optionType = this.getMemberTypeOfItem(option)
-          if (!optionType) {
-            const actualType = resolveTypeName(resolveValueWithLegacyOptionsSupport(option))
-            const validTypes = type.of.map(ofType => ofType.name)
+        <div>
+          {options.map((option, index) => {
+            const optionType = this.getMemberTypeOfItem(option)
+            if (!optionType) {
+              const actualType = resolveTypeName(resolveValueWithLegacyOptionsSupport(option))
+              const validTypes = type.of.map(ofType => ofType.name)
+              return (
+                <div key={option._key || index} className={styles.error}>
+                  Invalid option type: Type <code>{actualType}</code> not valid for array of [
+                  {validTypes.join(', ')}]. Check the list options of this field
+                </div>
+              )
+            }
+            const checked = inArray(value, resolveValueWithLegacyOptionsSupport(option))
             return (
-              <div key={option._key || index} className={styles.error}>
-                Invalid option type: Type <code>{actualType}</code> not valid for array of [
-                {validTypes.join(', ')}]. Check the list options of this field
+              <div
+                key={option._key || index}
+                className={
+                  direction === 'vertical'
+                    ? styles.itemWrapperVertical
+                    : styles.itemWrapperHorizontal
+                }
+              >
+                <Item
+                  type={optionType}
+                  readOnly={readOnly}
+                  value={option}
+                  checked={checked}
+                  onChange={this.handleChange}
+                />
               </div>
             )
-          }
-          const checked = inArray(value, resolveValueWithLegacyOptionsSupport(option))
-          return (
-            <div
-              key={option._key || index}
-              className={
-                direction === 'vertical' ? styles.itemWrapperVertical : styles.itemWrapperHorizontal
-              }
-            >
-              <Item
-                type={optionType}
-                readOnly={readOnly}
-                value={option}
-                checked={checked}
-                onChange={this.handleChange}
-              />
-            </div>
-          )
-        })}
+          })}
+        </div>
       </Fieldset>
     )
   }

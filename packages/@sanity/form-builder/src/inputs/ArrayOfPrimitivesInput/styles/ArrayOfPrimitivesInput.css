@@ -41,5 +41,9 @@
 }
 
 .list + .functions {
-  padding-top: var(--medium-padding);
+  margin-top: var(--small-padding);
+
+  @media (--screen-medium) {
+    margin-top: var(--medium-padding);
+  }
 }

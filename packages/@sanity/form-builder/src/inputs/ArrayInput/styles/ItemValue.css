@@ -16,6 +16,7 @@
 
 .listItem {
   composes: root;
+  padding: var(--small-padding) 0;
 }
 
 .gridItem {
@@ -99,8 +100,6 @@
 
 .previewWrapperHelper {
   outline: none;
-  padding: var(--small-padding) 0;
-  box-sizing: border-box;
 }
 
 .previewWrapperHelper:focus {
