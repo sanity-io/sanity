@@ -1,7 +1,0 @@
-.root {
-  composes: default from './Spacing.css';
-}
-
-.quote {
-  composes: blockquote from 'part:@sanity/base/theme/typography/text-blocks-style';
-}
