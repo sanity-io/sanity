@@ -88,10 +88,9 @@ class DefaultPreview extends React.PureComponent {
               {typeof title === 'function' && title({layout: 'default'})}
             </h2>
 
-            {subtitle !== undefined && (
+            {(subtitle || subtitle === 0) && (
               <h3 className={styles.subtitle}>
-                {(typeof subtitle === 'function' && subtitle({layout: 'default'})) ||
-                  String(subtitle)}
+                {(typeof subtitle === 'function' && subtitle({layout: 'default'})) || subtitle}
               </h3>
             )}
           </div>
