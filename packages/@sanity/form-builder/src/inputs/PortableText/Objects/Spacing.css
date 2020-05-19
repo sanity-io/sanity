@@ -1,7 +1,0 @@
-@import 'part:@sanity/base/theme/variables-style';
-
-.default {
-  display: block;
-  margin: 0;
-  padding: var(--small-padding) 0;
-}
