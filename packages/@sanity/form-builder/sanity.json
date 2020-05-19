@@ -111,17 +111,17 @@
     {
       "name": "part:@sanity/form-builder/input/block-editor/block-markers-default",
       "implements": "part:@sanity/form-builder/input/block-editor/block-markers",
-      "path": "inputs/BlockEditor/nodes/Markers.js"
+      "path": "inputs/PortableText/Markers.js"
     },
     {
       "name": "part:@sanity/form-builder/input/block-editor/block-extras-default",
       "implements": "part:@sanity/form-builder/input/block-editor/block-extras",
-      "path": "inputs/BlockEditor/BlockExtras.js"
+      "path": "inputs/PortableText/BlockExtras.js"
     },
     {
       "name": "part:@sanity/form-builder/input/block-editor/block-markers-custom-default",
       "implements": "part:@sanity/form-builder/input/block-editor/block-markers-custom",
-      "path": "inputs/BlockEditor/nodes/CustomMarkers.js"
+      "path": "inputs/PortableText/CustomMarkers.js"
     },
     {
       "name": "part:@sanity/form-builder/input/image/asset-source-default",
