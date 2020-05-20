@@ -1,7 +1,8 @@
 import React from 'react'
+import {action} from 'part:@sanity/storybook/addons/actions'
 import {text, boolean, number} from 'part:@sanity/storybook/addons/knobs'
-import SearchField from '../components/SearchField'
-import SearchResults from '../components/SearchResults'
+import SearchField from '../navbar/search/SearchField'
+import SearchResults from '../navbar/search/SearchResults'
 
 export function SearchFieldMobileStory() {
   const hasResults = boolean('hasResults', false, 'props')
@@ -29,7 +30,7 @@ export function SearchFieldMobileStory() {
             />
           }
           value={query}
-          onChange={() => console.log('change')}
+          onChange={() => action('onChange')}
         />
       </div>
     </div>
