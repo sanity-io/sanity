@@ -20,7 +20,6 @@
 
   @media (--screen-medium) {
     /* Reset mobile first */
-    transition: box-shadow 0.1s linear;
     position: relative;
     height: 100%;
     top: initial;
@@ -44,15 +43,9 @@
 .isCollapsed {
   @media (--screen-medium) {
     composes: root;
-    margin-right: 0;
-    border-color: var(--hairline-color);
-    padding: 0;
     flex-direction: row;
-    transition: box-shadow var(--pane-animation-time) var(--pane-animation-time) linear;
-    background-image: linear-gradient(90deg, transparent, color(var(--text-color) a(10%)));
-    background-size: 0.8rem 100%;
-    background-repeat: no-repeat;
-    background-position: right;
+    width: 49px;
+    border-right: 1px solid var(--hairline-color);
     height: 100%;
     overflow: hidden;
   }
@@ -92,7 +85,6 @@
   align-self: flex-end;
   box-sizing: border-box;
   width: 100%;
-  padding-bottom: var(--extra-small-padding);
 
   @nest .isCollapsed & {
     min-width: 100vh;
@@ -218,7 +210,6 @@
   margin-right: auto;
   transform-origin: 1.5em 1.5em;
   transform: rotate(0deg);
-  transition: transform var(--pane-animation-time) linear;
 
   @nest .isCollapsed & {
     transform: rotate(90deg);
@@ -296,10 +287,6 @@
 }
 
 .main {
-  /* NOTE: animation is disabled because it breaks tab navigation */
-  /* opacity: 1; */
-  /* transition: opacity var(--pane-animation-time) var(--pane-animation-time) linear; */
-
   position: relative;
   flex-grow: 1;
   display: flex;
@@ -307,9 +294,6 @@
   padding-bottom: var(--pane-footer-height);
 
   @nest .isCollapsed & {
-    /* NOTE: animation is disabled because it breaks tab navigation */
-    /* opacity: 0; */
-    /* transition: opacity 0 0; */
     display: none;
   }
 }
