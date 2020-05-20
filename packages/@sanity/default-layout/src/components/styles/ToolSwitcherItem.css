@@ -1,28 +1,21 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  @media (hover: hover) {
-    opacity: 0.6;
-
-    @nest &:hover {
-      opacity: 1;
-    }
-  }
-
-  @nest a:focus & {
-    opacity: 1;
-  }
 }
 
 .inner {
   position: relative;
-  display: flex;
   text-decoration: none;
-  padding: 0.75em;
+  padding: var(--medium-padding);
   white-space: nowrap;
   outline: none;
   flex-direction: row;
-  align-items: center;
+
+  @nest & > div {
+    margin: calc(0 - var(--extra-small-padding));
+    display: flex;
+    align-items: center;
+  }
 }
 
 .horizontal {
@@ -37,7 +30,7 @@
 
 .rootActive {
   composes: root;
-  opacity: 1;
+  color: var(--main-navigation-color--inverted);
 }
 
 .iconContainer {
@@ -51,11 +44,12 @@
 }
 
 .toolName {
-  font-size: calc(14 / 16 * 1em);
-  line-height: calc(17 / 14);
-  padding: 0 0.25em;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  padding: 0 var(--extra-small-padding);
+  margin-top: -1px;
 
   @nest .vertical & {
-    padding-left: 0.5em;
+    padding-left: var(--small-padding);
   }
 }

@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import enhanceClickOutside from 'react-click-outside'
+import ChevronDownIcon from 'part:@sanity/base/chevron-down-icon'
 import {withRouterHOC} from 'part:@sanity/base/router'
 import {map} from 'rxjs/operators'
-import DefaultSelect from 'part:@sanity/components/selects/default'
 import {state as urlState} from '../datastores/urlState'
 import {CONFIGURED_SPACES} from '../util/spaces'
 import styles from './styles/SpaceSwitcher.css'
@@ -43,8 +43,8 @@ class SpaceSwitcher extends React.PureComponent {
     this.setState(prev => ({menuOpen: !prev.menuOpen}))
   }
 
-  handleChange = item => {
-    this.props.router.navigate({space: item.name})
+  handleChange = spaceName => {
+    this.props.router.navigate({space: spaceName})
     this.setState({menuOpen: false}, () => {
       window.location.reload()
     })
@@ -53,14 +53,25 @@ class SpaceSwitcher extends React.PureComponent {
   render() {
     const {currentSpace, isVisible} = this.state
     const tabIndex = isVisible ? '0' : '-1'
+
+    const handleChange = event => {
+      this.handleChange(event.target.value)
+    }
+
     return (
-      <div className={styles.root}>
-        <DefaultSelect
-          onChange={this.handleChange}
-          items={CONFIGURED_SPACES}
+      <div aria-hidden={!isVisible} className={styles.root}>
+        <select
+          onChange={handleChange}
           tabIndex={tabIndex}
-          value={currentSpace}
-        />
+          value={(currentSpace && currentSpace.name) || undefined}
+        >
+          {CONFIGURED_SPACES.map(space => (
+            <option key={space.name} value={space.name}>
+              {space.title}
+            </option>
+          ))}
+        </select>
+        <ChevronDownIcon />
       </div>
     )
   }

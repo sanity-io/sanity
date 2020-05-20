@@ -8,8 +8,8 @@
   position: relative;
 
   @nest &:not(.isBleeding) {
-    background: color(var(--component-bg) alpha(10%));
-    border-radius: 3px;
+    background: color(var(--main-navigation-color) blend(var(--gray) 15%));
+    border-radius: var(--border-radius-base);
     height: 33px;
   }
 
@@ -28,7 +28,7 @@
   display: flex;
 
   @nest .isBleeding & {
-    background: #fff;
+    background: var(--component-bg);
     position: fixed;
     top: 0;
     left: 0;
@@ -63,8 +63,8 @@
   justify-content: center;
 
   @nest & > svg {
-    font-size: calc(20 / 16 * 1em);
-    opacity: 0.6;
+    color: var(--gray);
+    font-size: calc(25 / 16 * 1rem);
   }
 
   @nest .isBleeding & {
@@ -83,21 +83,19 @@
   margin: 0;
   background-color: transparent;
   font-family: inherit;
-  font-size: 0.9375em;
-  line-height: calc(17 / 15);
-  padding-left: 33px;
-  padding-bottom: 2px;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  padding: 0 0 2px 33px;
   box-sizing: border-box;
   white-space: nowrap;
 
   @nest &::placeholder {
-    color: inherit;
-    opacity: 0.6;
+    color: var(--gray);
   }
 
   @nest .isBleeding & {
-    font-size: 1em;
-    line-height: 1.25;
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
     padding: calc(1em - 2px) 1em calc(1em - 1px);
   }
 
@@ -113,7 +111,7 @@
   align-items: center;
   justify-content: center;
   min-width: 33px;
-  opacity: 0.6;
+  /* opacity: 0.6; */
 
   & > svg {
     font-size: 1.5625em;
@@ -145,9 +143,9 @@
   display: none;
   margin-left: auto;
   box-sizing: border-box;
-  font-size: 0.7em;
+  font-size: var(--font-size-tiny);
   align-items: center;
-  opacity: 0.6;
+  /* opacity: 0.6; */
 
   @nest .root:not(.isBleeding):not(.hasValue) & {
     padding-right: 0.75em;
@@ -164,8 +162,8 @@
   composes: shadow-12dp from 'part:@sanity/base/theme/shadows-style';
   display: none;
   position: absolute;
-  background: #fff;
-  color: #444;
+  background: var(--component-bg);
+  color: var(--component-text-color);
   top: 33px;
   left: 0;
   width: 100%;
@@ -177,8 +175,8 @@
   }
 
   @nest .root:not(.isBleeding) & {
-    border-bottom-left-radius: 3px;
-    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: var(--border-radius-base);
+    border-bottom-right-radius: var(--border-radius-base);
     max-height: 80vh;
     overflow: auto;
 
