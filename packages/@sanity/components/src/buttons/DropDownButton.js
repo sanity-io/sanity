@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import PropTypes from 'prop-types'
 import React, {Fragment} from 'react'
 import styles from 'part:@sanity/components/buttons/dropdown-style'
@@ -51,7 +50,6 @@ export default class DropDownButton extends React.PureComponent {
     inverted: PropTypes.bool,
     icon: PropTypes.func,
     loading: PropTypes.bool,
-    ripple: PropTypes.bool,
     colored: PropTypes.bool,
     color: PropTypes.string,
     className: PropTypes.string,
@@ -61,6 +59,15 @@ export default class DropDownButton extends React.PureComponent {
   }
 
   static defaultProps = {
+    children: undefined,
+    className: undefined,
+    color: undefined,
+    colored: false,
+    kind: undefined,
+    icon: undefined,
+    inverted: false,
+    items: [],
+    loading: false,
     renderItem(item) {
       return <div>{item.title}</div>
     },
@@ -101,9 +108,8 @@ export default class DropDownButton extends React.PureComponent {
   }
 
   handleOnClick = event => {
-    this.setState(({menuOpened}) => ({
-      menuOpened: !menuOpened
-    }))
+    this.setState(({menuOpened}) => ({menuOpened: !menuOpened}))
+
     // Checks if the onClick comes from pressing the keyboard
     this.keyboardNavigation = event.detail == 0
   }
@@ -151,7 +157,6 @@ export default class DropDownButton extends React.PureComponent {
       'onAction'
     )
     const {menuOpened} = this.state
-
     const buttonElement =
       this.buttonElement && this.buttonElement.current && this.buttonElement.current._element
 
