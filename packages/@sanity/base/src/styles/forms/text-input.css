@@ -7,8 +7,8 @@
   display: block;
   width: 100%;
   outline: none;
+  font: inherit;
   line-height: var(--input-line-height);
-  font-size: inherit;
   box-sizing: border-box;
   padding: var(--input-padding-horizontal) var(--input-padding-vertical);
   border-radius: var(--input-border-radius);
