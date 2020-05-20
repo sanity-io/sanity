@@ -25,6 +25,7 @@ export default class DefaultTextInput extends React.PureComponent {
       container: PropTypes.string,
       input: PropTypes.string,
       isClearable: PropTypes.string,
+      isDisabled: PropTypes.string,
       clearButton: PropTypes.string,
       inputOnDisabled: PropTypes.string,
       inputOnError: PropTypes.string,
@@ -106,7 +107,7 @@ export default class DefaultTextInput extends React.PureComponent {
           disabled={disabled}
         />
         {isClearable && (
-          <button className={styles.clearButton} onClick={onClear}>
+          <button className={styles.clearButton} onClick={onClear} type="button">
             <CloseIcon color="inherit" />
           </button>
         )}
