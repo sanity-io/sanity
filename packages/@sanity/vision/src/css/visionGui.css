@@ -226,7 +226,6 @@
 }
 
 .root :global(.Resizer:hover) {
-  transition: all 2s ease;
 }
 
 .root :global(.Resizer.horizontal) {
