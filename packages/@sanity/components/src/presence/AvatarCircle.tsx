@@ -33,7 +33,7 @@ export default function AvatarCircle({
   tone
 }: Props) {
   const elementId = useId()
-  const [arrowPosition, setArrowPosition] = useState('inside')
+  const [arrowPosition, setArrowPosition] = useState(position)
 
   useEffect(() => {
     const arrowTimer = setTimeout(() => {
@@ -42,7 +42,7 @@ export default function AvatarCircle({
     return () => {
       clearTimeout(arrowTimer)
     }
-  }, [])
+  }, [position])
 
   return (
     <div
