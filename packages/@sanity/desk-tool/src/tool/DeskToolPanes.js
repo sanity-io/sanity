@@ -16,7 +16,7 @@ import desktoolStyles from './DeskTool.css'
 import {LOADING_PANE} from '../constants'
 import {PaneRouterContext, getPaneRouterContextFactory} from '../contexts/PaneRouterContext'
 
-const COLLAPSED_WIDTH = 55
+const COLLAPSED_WIDTH = 50
 
 function getPaneMinSize(pane) {
   return pane.type === 'document' ? 500 : 320
