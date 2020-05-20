@@ -1,4 +1,4 @@
-/* eslint-disable complexity */
+import classNames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
 
@@ -24,8 +24,15 @@ export default class DefaultFormField extends React.PureComponent {
   }
 
   static defaultProps = {
+    children: undefined,
+    className: undefined,
+    description: undefined,
+    label: undefined,
+    labelFor: undefined,
     level: 1,
-    markers: []
+    inline: false,
+    markers: [],
+    wrapped: false
   }
 
   render() {
@@ -37,20 +44,21 @@ export default class DefaultFormField extends React.PureComponent {
       children,
       inline,
       wrapped,
-      className,
+      className: classNameProp,
       markers
     } = this.props
 
     const levelClass = `level_${level}`
 
+    const className = classNames(
+      classNameProp,
+      inline ? styles.inline : styles.block,
+      styles[levelClass],
+      wrapped && styles.wrapped
+    )
+
     return (
-      <div
-        className={`
-          ${inline ? styles.inline : styles.block}
-          ${styles[levelClass] || ''}
-          ${wrapped ? styles.wrapped : ''}
-          ${className || ''}`}
-      >
+      <div className={className}>
         <label className={styles.inner} htmlFor={labelFor}>
           {label && (
             <div className={styles.header}>
@@ -67,8 +75,9 @@ export default class DefaultFormField extends React.PureComponent {
               </div>
             </div>
           )}
-          <div className={styles.content}>{children}</div>
         </label>
+
+        <div className={styles.content}>{children}</div>
       </div>
     )
   }
