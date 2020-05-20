@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import PackageIcon from 'part:@sanity/base/package-icon'
+import {useId} from '@reach/auto-id'
 import UpdateNotifierDialog from './UpdateNotifierDialog'
 import CurrentVersionsDialog from './CurrentVersionsDialog'
 
@@ -22,6 +23,7 @@ export default function SanityStatus(props) {
     showDialog,
     versions
   } = props
+  const elementId = useId()
   const currentLevel = outdated.length ? level : 'notice'
   const severity = isSupported ? currentLevel : 'high'
   const Dialog = isUpToDate ? CurrentVersionsDialog : UpdateNotifierDialog
@@ -29,30 +31,33 @@ export default function SanityStatus(props) {
   return (
     <div className={styles.root}>
       {showDialog && (
-        <Dialog
-          severity={severity}
-          outdated={outdated}
-          onClose={onHideDialog}
-          versions={versions}
-        />
+        <div role="dialog" aria-modal="true" aria-labelledby={elementId}>
+          <Dialog
+            severity={severity}
+            outdated={outdated}
+            onClose={onHideDialog}
+            versions={versions}
+          />
+        </div>
       )}
-      <button className={styles.button} onClick={onShowDialog} type="button">
-        <div className={styles.buttonInner} tabIndex={-1}>
-          {!isUpToDate && (
+      {!isUpToDate && (
+        <button
+          className={styles.button}
+          onClick={onShowDialog}
+          type="button"
+          aria-label={`${formatUpdateLabel(outdated.length)}, ${severity} severity level.`}
+          id={elementId}
+        >
+          <div className={styles.buttonInner} tabIndex={-1}>
             <div className={styles.hasUpdates}>
-              <span className={styles.updateIcon}>
-                <div
-                  className={styles.updateIndicator}
-                  data-severity={severity}
-                  aria-label={`${severity} severity level.`}
-                />
+              <span className={styles.updateIcon} role="image">
+                <div className={styles.updateIndicator} data-severity={severity} />
                 <PackageIcon />
               </span>
-              <span className={styles.updateLabel}>{formatUpdateLabel(outdated.length)}</span>
             </div>
-          )}
-        </div>
-      </button>
+          </div>
+        </button>
+      )}
     </div>
   )
 }
