@@ -3,7 +3,6 @@
 
 import React, {useEffect} from 'react'
 import UUID from '@sanity/uuid'
-import Icon from 'part:@sanity/base/view-column-icon'
 import {route, useRouterState} from 'part:@sanity/base/router'
 import {parsePanesSegment, encodePanesSegment} from '../utils/parsePanesSegment'
 import IntentResolver from '../components/IntentResolver'
@@ -76,6 +75,27 @@ function getIntentState(intentName, params, currentState, payload) {
   return {intent: intentName, params, payload}
 }
 
+const strokeStyle = {
+  stroke: 'currentColor',
+  strokeWidth: 1.2,
+  vectorEffect: 'non-scaling-stroke'
+}
+
+// @todo: Move to @sanity/base
+// eslint-disable-next-line react/no-multi-comp
+function MasterDetailIcon() {
+  return (
+    <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4.5" y="5.5" width="16" height="14" style={strokeStyle} />
+      <path d="M10.5 5.5V19.5" style={strokeStyle} />
+      <path d="M6 8.5H9" style={strokeStyle} />
+      <path d="M13 8.5H18" style={strokeStyle} />
+      <path d="M6 11.5H9" style={strokeStyle} />
+      <path d="M6 14.5H9" style={strokeStyle} />
+    </svg>
+  )
+}
+
 export default {
   router: route('/', [
     // "Asynchronous intent resolving" route
@@ -109,6 +129,6 @@ export default {
   getIntentState,
   title: 'Desk',
   name: 'desk',
-  icon: Icon,
+  icon: MasterDetailIcon,
   component: DeskToolPaneStateSyncer
 }
