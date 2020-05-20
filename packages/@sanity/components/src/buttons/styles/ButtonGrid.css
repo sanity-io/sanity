@@ -12,7 +12,9 @@
   }
 
   &[data-buttons='4'] {
-    grid-template-columns: 1fr 1fr;
+    @media (max-width: 520px) {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
   /* When buttons are alone */
