@@ -5,9 +5,7 @@
 }
 
 .root {
-  font-size: 100%;
   font-family: var(--font-family-base);
-  line-height: var(--line-height-base);
   color: var(--text-color);
   margin: 0;
   padding: 0;
@@ -15,27 +13,31 @@
 
 .base {
   composes: root;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
 }
 
 .lead {
   composes: base;
   font-size: var(--font-size-large);
-  padding-bottom: 1rem;
+  line-height: var(--line-height-large);
+  padding-bottom: var(--medium-padding);
 }
 
 .small {
   composes: base;
   font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
 }
 
 .description {
   composes: small;
-  color: var(--text-color-secondary);
+  color: var(--text-muted);
 }
 
 .paragraph {
   composes: base;
-  padding-bottom: 1rem;
+  padding-bottom: var(--medium-padding);
 }
 
 .blockquote {
@@ -45,7 +47,7 @@
   font-family: var(--font-family-serif);
   font-style: italic;
   margin: 0;
-  padding: 0.5em;
+  padding: var(--medium-padding);
   padding-left: 2.5em;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 400 300'><polygon opacity='0.15' fill='currentColor' points='184,40 108,150 166,150 166,300 0,300 16,139 103,40'/><polygon opacity='0.15' fill='currentColor' points='216,260 292,150 234,150 234,0 400,0 384,161 297,260'/></svg>");
   background-repeat: no-repeat;
