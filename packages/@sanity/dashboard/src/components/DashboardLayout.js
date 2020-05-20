@@ -4,7 +4,11 @@ import React from 'react'
 import styles from './DashboardLayout.css'
 
 function DashboardLayout(props) {
-  return <div className={styles.root}>{props.children}</div>
+  return (
+    <div className={styles.root}>
+      <div className={styles.inner}>{props.children}</div>
+    </div>
+  )
 }
 
 DashboardLayout.propTypes = {
