@@ -16,8 +16,6 @@
   left: 0;
   z-index: var(--zindex-portal);
   background-color: var(--body-bg);
-  width: 100vw;
-  height: 100vh;
   margin-top: 4rem;
 }
 
@@ -25,11 +23,13 @@
   composes: scrollY from 'part:@sanity/base/theme/layout/scrolling-style';
   display: block;
   height: 15rem;
-  padding-bottom: 2rem;
   border: 1px solid var(--input-border-color);
   border-radius: var(--input-border-radius);
   box-sizing: border-box;
   overflow-y: overlay;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 
   @nest &.hasBlockExtras::after {
     content: '';
@@ -45,10 +45,9 @@
   }
 
   @nest .fullscreenWrapper & {
-    border: 1px solid red;
-    position: absolute;
     top: 0;
     left: 0;
+    display: flex;
     height: calc(100vh - 4rem);
     width: 100vw;
     background-color: color(var(--body-bg) lightness(- 2%));
@@ -69,20 +68,19 @@
 .editorWrapper {
   /* make it fill its parent */
   composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
-  position: relative;
   box-sizing: border-box;
-  min-height: 100%;
+  height: auto;
   display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .fullscreen .editorWrapper {
   max-width: 50em;
-  min-height: 90vh;
   margin: 3rem auto;
   background-color: var(--input-bg);
   width: 95vw;
   box-sizing: border-box;
-  padding-bottom: 4rem;
   margin-top: 5rem;
 
   @media (--screen-medium) {
@@ -144,8 +142,8 @@
   position: relative;
   box-sizing: border-box;
   font-family: var(--block-editor-base-font-family);
-  height: 100%;
   width: 100%;
+  min-height: 100%;
   margin: 0;
   padding: 0;
 }
@@ -204,8 +202,24 @@
     }
   }
 }
+
+.editor > div {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100%;
+}
+
+.editor > div > *:last-child {
+  flex-grow: 1;
+  @nest .fullscreenWrapper & {
+    padding-bottom: 3rem;
+  }
+}
+
+
 .blockExtras {
-  position: absolute;
+  position: relative;
   height: 100%;
   top: 0;
   left: 0;
