@@ -12,7 +12,7 @@
 
 .inline {
   composes: root;
-  display: inline;
+  display: inline-block;
 }
 
 .label {
@@ -28,10 +28,14 @@
     flex-grow: 10;
     display: inline-block;
   }
-}
 
-.label + .content {
-  margin-top: var(--small-padding);
+  @nest .label + & {
+    margin-top: var(--small-padding);
+  }
+
+  @nest .description + & {
+    margin-top: var(--small-padding);
+  }
 }
 
 .title {
@@ -42,22 +46,19 @@
 .description {
   composes: description from 'part:@sanity/base/theme/typography/text-blocks-style';
 
-  @nest .inline & {
+  /* @nest .inline & {
     font-size: var(--font-size-tiny);
-  }
-}
+  } */
 
-.label + .description {
-  margin-top: calc(var(--small-padding) / 3);
-}
-
-.description + .content {
-  margin-top: var(--small-padding);
+  /* @nest .label + & {
+    margin-top: calc(var(--small-padding) / 4);
+  } */
 }
 
 .header {
   display: flex;
   align-items: center;
+  padding: var(--extra-small-padding) 0;
   margin-bottom: var(--small-padding);
 }
 
@@ -104,7 +105,8 @@
   composes: root;
   padding: 1rem;
   background-color: var(--component-bg);
-  border: 1px solid var(--gray-light);
+  border: var(--fieldset-border);
+  border-radius: var(--border-radius-medium);
   overflow: hidden;
   max-width: 100%;
 }
