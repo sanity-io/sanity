@@ -39,7 +39,16 @@
   color: inherit;
   outline: none;
 
+  @media (hover: hover) {
+    color: var(--gray);
+
+    @nest &:hover {
+      color: inherit;
+    }
+  }
+
   @nest &:focus {
+    color: var(--main-navigation-color--inverted);
     background-color: color(var(--focus-color) a(20%));
   }
 }
