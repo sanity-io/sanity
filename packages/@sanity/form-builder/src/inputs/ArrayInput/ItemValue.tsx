@@ -190,7 +190,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
       return (
         <div>
           <EditItemFold title={title} onClose={this.handleEditStop}>
-            {content}
+            <PresenceOverlay>{content}</PresenceOverlay>
           </EditItemFold>
         </div>
       )
@@ -212,7 +212,9 @@ export default class RenderItemValue extends React.PureComponent<Props> {
             onAction={this.handleDialogAction}
             placement="auto"
           >
-            <DialogContent size="small">{content}</DialogContent>
+            <DialogContent size="small">
+              <PresenceOverlay>{content}</PresenceOverlay>
+            </DialogContent>
           </Popover>
         </div>
       )
@@ -227,9 +229,9 @@ export default class RenderItemValue extends React.PureComponent<Props> {
         onAction={this.handleDialogAction}
         showCloseButton={false}
       >
-        <PresenceOverlay>
-          <DialogContent size="medium">{content}</DialogContent>
-        </PresenceOverlay>
+        <DialogContent size="medium">
+          <PresenceOverlay>{content}</PresenceOverlay>
+        </DialogContent>
       </DefaultDialog>
     )
   }
@@ -251,6 +253,8 @@ export default class RenderItemValue extends React.PureComponent<Props> {
         })
       })
       .filter(Boolean)
+
+    const hasItemFocus = PathUtils.isExpanded(pathSegmentFrom(value), focusPath)
 
     return (
       <div className={styles.inner}>
@@ -274,7 +278,7 @@ export default class RenderItemValue extends React.PureComponent<Props> {
 
         <div className={isGrid ? styles.functionsInGrid : styles.functions}>
           <ValidationStatus markers={scopedValidation} showSummary={!value._ref} />
-          <FieldPresence presence={presence} />
+          <FieldPresence presence={hasItemFocus ? [] : presence} />
           {value._ref && (
             <IntentLink className={styles.linkToReference} intent="edit" params={{id: value._ref}}>
               <LinkIcon />
