@@ -22,6 +22,9 @@
 }
 
 .draftBadge {
-  font-size: var(--font-size-tiny--relative);
-  opacity: 0.75;
+  opacity: 0.5;
+
+  @nest & > svg {
+    display: block;
+  }
 }
