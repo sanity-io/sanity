@@ -1,12 +1,13 @@
 /* eslint-disable prefer-template */
+
 import React from 'react'
-import HelpOutline from 'react-icons/lib/io/ios-help-outline'
-import Exit from 'react-icons/lib/io/ios-close-outline'
 import {
   isSidecarOpenSetting,
   toggleSidecarOpenState
 } from 'part:@sanity/default-layout/sidecar-datastore'
 import styles from './ToggleSidecarButton.css'
+import CloseCircleIcon from './icons/CloseCircle'
+import HelpCircleIcon from './icons/HelpCircle'
 
 export default class ToggleSidecarButton extends React.PureComponent {
   state = {
@@ -36,7 +37,7 @@ export default class ToggleSidecarButton extends React.PureComponent {
         aria-pressed={isOpen}
       >
         <div className={styles.inner} tabIndex={-1}>
-          {isOpen ? <Exit /> : <HelpOutline />}
+          {isOpen ? <CloseCircleIcon /> : <HelpCircleIcon />}
         </div>
       </button>
     )
