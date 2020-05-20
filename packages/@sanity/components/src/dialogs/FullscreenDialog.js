@@ -73,7 +73,17 @@ export default class FullScreenDialog extends React.PureComponent {
   }
 
   render() {
-    const {color, title, className, onClose, onEscape, isOpen, actions, padding, centered} = this.props
+    const {
+      color,
+      title,
+      className,
+      onClose,
+      onEscape,
+      isOpen,
+      actions,
+      padding,
+      centered
+    } = this.props
 
     const classNames = [
       styles[color] || styles.default,
