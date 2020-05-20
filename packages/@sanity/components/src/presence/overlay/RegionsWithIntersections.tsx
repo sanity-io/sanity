@@ -10,6 +10,7 @@ import {
   INTERSECTION_THRESHOLDS
 } from '../constants'
 import {RegionWithIntersectionDetails} from '../types'
+import styles from './RegionsWithIntersections.css'
 
 const OVERLAY_STYLE: React.CSSProperties = {
   position: 'absolute',
@@ -18,7 +19,7 @@ const OVERLAY_STYLE: React.CSSProperties = {
   right: 0,
   bottom: 0,
   pointerEvents: 'none',
-  background: DEBUG ? 'rgba(255, 255, 0, 0.25)' : '',
+  background: DEBUG ? 'rgba(255, 0, 0, 0.25)' : '',
   zIndex: 5
 }
 
@@ -65,6 +66,8 @@ const invert = (num: number) => -num
 
 export function RegionsWithIntersections(props: Props) {
   const {regions, render, children, trackerRef, margins} = props
+
+  const overlayRef = React.useRef<HTMLDivElement>()
 
   const io = React.useMemo(
     () =>
@@ -149,33 +152,30 @@ export function RegionsWithIntersections(props: Props) {
         }}
       />
       <div>{children}</div>
-      <div style={OVERLAY_STYLE}>
+      <div ref={overlayRef} className={styles.overlay} style={OVERLAY_STYLE}>
         {regionsWithIntersectionDetails &&
-          trackerRef.current &&
-          render(regionsWithIntersectionDetails, trackerRef.current.offsetWidth)}
+          overlayRef.current &&
+          render(regionsWithIntersectionDetails, overlayRef.current.offsetWidth)}
       </div>
-      <div style={OVERLAY_STYLE}>
-        {regions.map(region => {
-          const forceWidth = region.rect.width === 0
-          return (
-            <WithIntersection
-              io={io}
-              onIntersection={onIntersection}
-              key={region.id}
-              id={region.id}
-              style={{
-                ...OVERLAY_ITEM_STYLE,
-                width: forceWidth ? 1 : region.rect.width,
-                left: region.rect.left - (forceWidth ? 1 : 0),
-                top: region.rect.top - INTERSECTION_ELEMENT_PADDING,
-                height: region.rect.height + INTERSECTION_ELEMENT_PADDING * 2,
-                visibility: DEBUG ? 'visible' : 'hidden'
-              }}
-            />
-          )
-        })}
-      </div>
-      <div style={{padding: 20}} />
+      {regions.map(region => {
+        const forceWidth = region.rect.width === 0
+        return (
+          <WithIntersection
+            io={io}
+            onIntersection={onIntersection}
+            key={region.id}
+            id={region.id}
+            style={{
+              ...OVERLAY_ITEM_STYLE,
+              width: forceWidth ? 1 : region.rect.width,
+              left: region.rect.left - (forceWidth ? 1 : 0),
+              top: region.rect.top - INTERSECTION_ELEMENT_PADDING,
+              height: region.rect.height + INTERSECTION_ELEMENT_PADDING * 2,
+              visibility: DEBUG ? 'visible' : 'hidden'
+            }}
+          />
+        )
+      })}
       <WithIntersection
         id="::bottom"
         io={io}
