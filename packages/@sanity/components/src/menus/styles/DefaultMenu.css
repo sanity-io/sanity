@@ -5,6 +5,7 @@
   color: var(--text-color);
   composes: shadow-6dp from 'part:@sanity/base/theme/shadows-style';
   font-size: var(--font-size-small);
+  line-height: var(--font-size-small);
   user-select: none;
   text-align: left;
   overflow: auto;
@@ -47,8 +48,7 @@
   display: flex;
   align-items: center;
   position: relative;
-  line-height: 3em;
-  padding: 0 1em;
+  padding: var(--medium-padding);
   cursor: default;
   text-decoration: none;
   color: inherit;
