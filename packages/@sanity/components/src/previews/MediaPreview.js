@@ -68,12 +68,11 @@ export default class MediaPreview extends React.PureComponent {
           {typeof media === 'function' && media({dimensions: mediaDimensions, layout: 'media'})}
           {typeof media === 'string' && <div className={styles.mediaString}>{media}</div>}
           {React.isValidElement(media) && media}
-          {typeof progress === 'number' &&
-            progress > -1 && (
-              <div className={styles.progress}>
-                <ProgressCircle percent={progress} showPercent text="Uploaded" />
-              </div>
-            )}
+          {typeof progress === 'number' && progress > -1 && (
+            <div className={styles.progress}>
+              <ProgressCircle percent={progress} showPercent text="Uploaded" />
+            </div>
+          )}
         </div>
 
         <div className={styles.meta}>
