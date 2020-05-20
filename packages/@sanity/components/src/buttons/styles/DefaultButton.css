@@ -52,8 +52,6 @@
   line-height: 1.25;
   font-family: inherit;
   user-select: none;
-  transition: border-color 0.15s, background-color 0.15s, color 0.15s, opacity 0.15s,
-    box-shadow 0.1s;
   text-decoration: none;
   padding: 0;
 }
@@ -235,6 +233,7 @@ span.content {
   }
 }
 
+/* @todo: Rename to "ghost" */
 .inverted {
   color: var(--default-button-color);
   border: 1px solid color(var(--default-button-color) a(35%));
@@ -248,8 +247,8 @@ span.content {
 
   @media (hover: hover) {
     @nest &:not(.disabled):hover {
-      border-color: color(var(--default-button-color) a(70%));
-      background-color: color(var(--default-button-color) a(5%));
+      background: var(--default-button-color);
+      color: var(--default-button-color--inverted);
     }
   }
 
