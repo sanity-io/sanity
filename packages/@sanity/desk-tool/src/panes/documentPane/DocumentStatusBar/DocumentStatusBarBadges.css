@@ -1,6 +1,14 @@
+@import 'part:@sanity/base/theme/variables-style';
+
 .statusBadges {
+  display: flex;
+  flex-wrap: nowrap;
   white-space: nowrap;
   font-size: calc(11 / 16 * 1em);
   line-height: 1;
   margin-bottom: auto;
+
+  @nest & > div + div {
+    margin-left: var(--extra-small-padding);
+  }
 }
