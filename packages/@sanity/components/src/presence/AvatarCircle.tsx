@@ -12,6 +12,7 @@ type Props = {
   children?: React.ReactNode
   onImageLoadError?: (event: Error) => void
   position?: Position
+  animateArrowFrom?: Position
   status?: Status
   size?: Size
   tone?: 'navbar'
@@ -28,12 +29,13 @@ export default function AvatarCircle({
   children,
   onImageLoadError,
   position = 'inside',
+  animateArrowFrom,
   status = 'online',
   size = 'small',
   tone
 }: Props) {
   const elementId = useId()
-  const [arrowPosition, setArrowPosition] = useState(position)
+  const [arrowPosition, setArrowPosition] = useState(animateArrowFrom || position)
 
   useEffect(() => {
     const arrowTimer = setTimeout(() => {

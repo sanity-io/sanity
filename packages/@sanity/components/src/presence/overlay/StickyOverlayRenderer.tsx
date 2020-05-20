@@ -4,6 +4,7 @@ import {CSSProperties} from 'react'
 import {RegionsWithIntersections} from './RegionsWithIntersections'
 import {flatten, groupBy, orderBy, sortBy} from 'lodash'
 import {
+  AVATAR_DISTANCE,
   AVATAR_SIZE,
   DEBUG,
   SLIDE_RIGHT_THRESHOLD_BOTTOM,
@@ -112,26 +113,39 @@ export function StickyOverlayRenderer(props: Props) {
       margins={margins}
       regions={regions}
       trackerRef={trackerRef}
-      render={(regionsWithIntersectionDetails: RegionWithIntersectionDetails[]) => {
-        const maxRight = Math.max(
-          ...regionsWithIntersectionDetails.map(
-            withIntersection =>
-              withIntersection.region.rect.left + withIntersection.region.rect.width
-          )
+      render={(regionsWithIntersectionDetails: RegionWithIntersectionDetails[], containerWidth) => {
+        const grouped = group(
+          regionsWithIntersectionDetails.filter(item => item.region.data.presence.length > 0)
         )
-        const grouped = group(regionsWithIntersectionDetails)
         const topSpacing = sum(grouped.top.map(n => n.region.rect.height + n.spacerHeight))
         const bottomSpacing = sum(
           [...grouped.inside, ...grouped.bottom].map(n => n.region.rect.height + n.spacerHeight)
         )
+
+        // todo: this needs cleaning up, should process all the needed layout data in one go
+        const counts = grouped.inside.reduce(
+          (counts, withIntersection) => {
+            const {distanceTop, distanceBottom} = withIntersection
+
+            const nearTop = distanceTop <= SLIDE_RIGHT_THRESHOLD_TOP
+            const nearBottom = distanceBottom <= SLIDE_RIGHT_THRESHOLD_BOTTOM
+            return {
+              nearTop:
+                counts.nearTop + (nearTop ? withIntersection.region.data.presence.length : 0),
+              nearBottom:
+                counts.nearBottom + (nearBottom ? withIntersection.region.data.presence.length : 0)
+            }
+          },
+          {nearTop: 0, nearBottom: 0}
+        )
         return (
           <>
             {[
-              renderDock('top', margins, grouped.top),
+              renderDock('top', margins, grouped.top, counts.nearTop),
               <Spacer key="spacerTop" height={topSpacing} />,
-              ...renderInside(grouped.inside, maxRight),
+              ...renderInside(grouped.inside, containerWidth),
               <Spacer key="spacerBottom" height={bottomSpacing} />,
-              renderDock('bottom', margins, grouped.bottom)
+              renderDock('bottom', margins, grouped.bottom, counts.nearBottom)
             ]}
           </>
         )
@@ -145,7 +159,8 @@ export function StickyOverlayRenderer(props: Props) {
 function renderDock(
   position: 'top' | 'bottom',
   margins: Margins,
-  regionsWithIntersectionDetails: RegionWithIntersectionDetails[]
+  regionsWithIntersectionDetails: RegionWithIntersectionDetails[],
+  closeCount
 ) {
   const dir = position === 'top' ? 1 : -1
   const allPresenceItems = flatten(
@@ -153,7 +168,7 @@ function renderDock(
       withIntersection => withIntersection.region.data?.presence || []
     ) || []
   )
-
+  const leftOffset = allPresenceItems.length > 0 ? -closeCount * (AVATAR_SIZE + AVATAR_DISTANCE) : 0
   const margin = position === 'top' ? margins[0] : margins[2]
   const arrowHeight = 4
   return (
@@ -162,12 +177,13 @@ function renderDock(
       key={`sticky-${position}`}
       style={{
         position: 'sticky',
-        top: arrowHeight + 1 + margin,
-        bottom: arrowHeight + 1,
-        right: 0,
-        left: 0,
         display: 'flex',
-        justifyContent: 'flex-end'
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+        ...ITEM_TRANSITION,
+        transform: `translate3d(${leftOffset}px, 0px, 0px)`,
+        top: arrowHeight + 1 + margin,
+        bottom: arrowHeight + 1 + margin
       }}
     >
       <FieldPresenceInner position={position} presence={allPresenceItems} />
@@ -175,17 +191,20 @@ function renderDock(
   )
 }
 
-function renderInside(regionsWithIntersectionDetails: RegionWithSpacerHeight[], maxRight: number) {
+function renderInside(
+  regionsWithIntersectionDetails: RegionWithSpacerHeight[],
+  containerWidth: number
+) {
   return regionsWithIntersectionDetails.map(withIntersection => {
-    const distanceMaxLeft =
-      maxRight - withIntersection.region.rect.width - withIntersection.region.rect.left
     const originalLeft = withIntersection.region.rect.left
     const {distanceTop, distanceBottom} = withIntersection
 
-    const nearTop = distanceTop + SNAP_TO_DOCK_DISTANCE_TOP < SLIDE_RIGHT_THRESHOLD_TOP
-    const nearBottom = distanceBottom + SNAP_TO_DOCK_DISTANCE_BOTTOM < SLIDE_RIGHT_THRESHOLD_BOTTOM
+    const nearTop = distanceTop <= SLIDE_RIGHT_THRESHOLD_TOP
+    const nearBottom = distanceBottom <= SLIDE_RIGHT_THRESHOLD_BOTTOM
 
-    const {component: Component, data} = withIntersection.region
+    const diffRight = containerWidth - originalLeft - withIntersection.region.rect.width
+
+    const {presence} = withIntersection.region.data
     return (
       <React.Fragment key={withIntersection.region.id}>
         <div
@@ -193,15 +212,18 @@ function renderInside(regionsWithIntersectionDetails: RegionWithSpacerHeight[], 
             position: 'absolute',
             pointerEvents: 'all',
             ...ITEM_TRANSITION,
-            transform: `translate3d(${originalLeft +
-              (nearTop || nearBottom ? distanceMaxLeft : 0)}px, 0px, 0px)`,
+            left: originalLeft,
+            transform: `translate3d(${nearTop || nearBottom ? diffRight : 0}px, 0px, 0px)`,
             height: withIntersection.region.rect.height,
-            width: withIntersection.region.rect.width,
             top: withIntersection.region.rect.top
           }}
         >
           <DebugValue value={() => `⤒${distanceTop} | ${distanceBottom}⤓`}>
-            {Component ? <Component {...data} /> : null}
+            <FieldPresenceInner
+              stack={!nearTop && !nearBottom}
+              position={nearTop ? 'top' : nearBottom ? 'bottom' : 'inside'}
+              presence={presence}
+            />
           </DebugValue>
         </div>
       </React.Fragment>
