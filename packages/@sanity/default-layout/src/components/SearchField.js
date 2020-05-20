@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Ink from 'react-ink'
 import CloseIcon from 'part:@sanity/base/close-icon'
 import SearchIcon from 'part:@sanity/base/search-icon'
 import Hotkeys from 'part:@sanity/components/typography/hotkeys'
@@ -95,7 +94,6 @@ class SearchField extends React.PureComponent {
             title="Clear search"
           >
             <CloseIcon />
-            <Ink duration={1000} opacity={0.1} radius={200} />
           </div>
         </div>
         <div className={styles.results}>{results}</div>

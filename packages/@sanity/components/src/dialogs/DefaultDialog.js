@@ -6,7 +6,6 @@ import styles from 'part:@sanity/components/dialogs/default-style'
 import Button from 'part:@sanity/components/buttons/default'
 import ButtonGrid from 'part:@sanity/components/buttons/button-grid'
 import {partition, debounce} from 'lodash'
-import Ink from 'react-ink'
 import {Portal} from '../utilities/Portal'
 import Escapable from '../utilities/Escapable'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
@@ -190,7 +189,6 @@ export default class DefaultDialog extends React.PureComponent {
                           <div className={styles.closeButtonIcon}>
                             <CloseIcon color="inherit" />
                           </div>
-                          <Ink duration={1000} opacity={0.1} radius={200} />
                         </button>
                       )}
                     </div>

@@ -16,7 +16,6 @@ import {
 import {getPublishedId} from 'part:@sanity/base/util/draft-utils'
 import {IntentLink} from 'part:@sanity/base/router'
 import search from 'part:@sanity/base/search'
-import Ink from 'react-ink'
 import SearchField from './SearchField'
 import SearchResults from './SearchResults'
 
@@ -227,7 +226,6 @@ class SearchContainer extends React.Component {
             status={<div className={resultsStyles.itemType}>{type.title}</div>}
           />
         )}
-        <Ink duration={200} opacity={0.1} radius={200} />
       </IntentLink>
     )
   }
