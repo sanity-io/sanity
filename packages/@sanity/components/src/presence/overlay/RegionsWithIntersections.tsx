@@ -118,9 +118,9 @@ export function RegionsWithIntersections(props: Props) {
                 : -top.boundingClientRect.bottom
 
               const position =
-                distanceTop < SNAP_TO_DOCK_DISTANCE_TOP
+                distanceTop <= SNAP_TO_DOCK_DISTANCE_TOP
                   ? 'top'
-                  : distanceBottom < SNAP_TO_DOCK_DISTANCE_BOTTOM
+                  : distanceBottom <= SNAP_TO_DOCK_DISTANCE_BOTTOM
                   ? 'bottom'
                   : 'inside'
               return {
