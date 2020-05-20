@@ -436,13 +436,11 @@ export default withPatchSubscriber(
           isReadOnly={!!this.props.readOnly}
         />
       )
-
       const wrappedEditor = (
         <div>
           {toolbar}
           <div className={scClassNames}>
             <div className={editorWrapperClassNames}>
-              <div className={editorClassNames}>{editor}</div>
               <div className={styles.blockExtras}>
                 <BlockExtrasOverlay
                   isFullscreen={isFullscreen}
@@ -455,6 +453,7 @@ export default withPatchSubscriber(
                   value={this.props.value}
                 />
               </div>
+              <div className={editorClassNames}>{editor}</div>
             </div>
           </div>
         </div>
