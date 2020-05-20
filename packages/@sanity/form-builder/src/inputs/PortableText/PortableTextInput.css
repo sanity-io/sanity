@@ -145,6 +145,7 @@
   box-sizing: border-box;
   font-family: var(--block-editor-base-font-family);
   height: 100%;
+  width: 100%;
   margin: 0;
   padding: 0;
 }
@@ -154,7 +155,7 @@
 }
 
 /* less spacing on block objects / non-text objects */
-.editor div[data-slate-void='true'] + div[data-slate-void='true'] {
+.editor > div > div[data-slate-void='true'] + div[data-slate-void='true'] {
   padding-top: var(--small-padding);
 }
 
