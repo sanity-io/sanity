@@ -255,6 +255,10 @@
       "description": "Fullscreen dialog"
     },
     {
+      "name": "part:@sanity/components/dialogs/fullscreen-message",
+      "description": "Fullscreen message dialog"
+    },
+    {
       "name": "part:@sanity/components/dialogs/fullscreen-style",
       "description": "Fullscreen dialog styling"
     },
@@ -601,6 +605,10 @@
     {
       "implements": "part:@sanity/components/dialogs/fullscreen",
       "path": "dialogs/FullscreenDialog.js"
+    },
+    {
+      "implements": "part:@sanity/components/dialogs/fullscreen-message",
+      "path": "dialogs/FullscreenMessageDialog.js"
     },
     {
       "implements": "part:@sanity/components/dialogs/popover",
