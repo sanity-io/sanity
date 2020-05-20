@@ -8,7 +8,6 @@
   cursor: pointer;
   display: flex;
   text-decoration: none;
-  transition: all 0.2s linear;
   color: inherit;
 
   @nest &:hover {
