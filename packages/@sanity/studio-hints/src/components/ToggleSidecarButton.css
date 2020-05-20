@@ -24,19 +24,18 @@
     align-items: center;
     text-align: center;
     outline: none;
-    padding: var(--small-padding);
+    padding: calc(var(--medium-padding) - var(--extra-small-padding));
   }
 
   @nest &:focus {
-    opacity: 1;
-    background-color: color(var(--brand-primary) a(20%));
+    background-color: color(var(--focus-color) a(20%));
   }
 
   @media (hover: hover) {
-    opacity: 0.6;
+    color: var(--gray);
 
     @nest &:hover {
-      opacity: 1;
+      color: inherit;
     }
   }
 
