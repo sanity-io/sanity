@@ -1,4 +1,5 @@
 /* part:@sanity/base/theme/forms/clear-button-style */
+
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
@@ -7,7 +8,6 @@
   appearance: none;
   border: none;
   background-color: transparent;
-  transition: all 0.1s linear;
   padding: 0;
   margin: 0;
   display: inline-flex;
