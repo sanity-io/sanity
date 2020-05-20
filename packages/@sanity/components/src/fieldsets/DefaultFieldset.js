@@ -1,14 +1,13 @@
-/* eslint-disable react/no-multi-comp, complexity*/
+/* eslint-disable react/no-multi-comp, complexity, react/jsx-filename-extension */
 
 import defaultStyles from 'part:@sanity/components/fieldsets/default-style'
 import PropTypes from 'prop-types'
 import React from 'react'
 import ArrowDropDown from 'part:@sanity/base/arrow-drop-down'
 import ValidationStatus from 'part:@sanity/components/validation/status'
-import AnimateHeight from 'react-animate-height'
 import DefaultLabel from 'part:@sanity/components/labels/default'
 
-export default class Fieldset extends React.Component {
+export default class Fieldset extends React.PureComponent {
   static propTypes = {
     description: PropTypes.string,
     legend: PropTypes.string.isRequired,
@@ -30,12 +29,19 @@ export default class Fieldset extends React.Component {
   }
 
   static defaultProps = {
+    children: undefined,
+    className: '',
+    columns: undefined,
+    description: undefined,
     level: 1,
     fieldset: {},
-    markers: [],
-    className: '',
     isCollapsed: false,
-    isCollapsible: false // can collapsing be toggled by user?
+    isCollapsible: false, // can collapsing be toggled by user?
+    markers: [],
+    onFocus: undefined,
+    styles: undefined,
+    tabIndex: undefined,
+    transparent: undefined
   }
 
   constructor(props) {
@@ -93,7 +99,7 @@ export default class Fieldset extends React.Component {
     }
 
     const validation = markers.filter(marker => marker.type === 'validation')
-    const errors = validation.filter(marker => marker.level === 'error')
+    // const errors = validation.filter(marker => marker.level === 'error')
 
     const rootClassName = [
       styles.root,
@@ -122,11 +128,9 @@ export default class Fieldset extends React.Component {
           <div className={styles.inner}>
             <div className={styles.header}>
               <div className={styles.headerMain}>
-                {
-                  // Uses the tabIndex 0 and -1 here to avoid focus state on click
-                }
                 <legend
                   className={`${styles.legend} ${isCollapsed ? '' : styles.isOpen}`}
+                  // Uses the tabIndex 0 and -1 here to avoid focus state on click
                   tabIndex={isCollapsible ? 0 : undefined}
                   // eslint-disable-next-line react/jsx-no-bind
                   onKeyDown={event => (event.key === 'Enter' ? this.handleToggle() : false)}
@@ -155,6 +159,7 @@ export default class Fieldset extends React.Component {
                     hideTooltip={hideTooltip}
                   />
                 </legend>
+
                 {(description || fieldset.description) && (
                   <p className={`${styles.description} ${isCollapsed ? '' : styles.isOpen}`}>
                     {description || fieldset.description}
@@ -162,21 +167,22 @@ export default class Fieldset extends React.Component {
                 )}
               </div>
             </div>
-            {isCollapsible && (
-              <AnimateHeight
+
+            {isCollapsible && !isCollapsed && (
+              <div
                 duration={250}
                 height={isCollapsed && children ? 0 : 'auto'}
-                className={styles.animateHeight}
-                contentClassName={styles.content}
+                className={styles.content}
               >
                 <div className={styles.fieldWrapper}>
                   {(hasBeenToggled || !isCollapsed) && children}
                 </div>
-              </AnimateHeight>
+              </div>
             )}
+
             {!isCollapsible && (
               <div className={styles.content}>
-                <div className={styles.fieldWrapper}>{!isCollapsed && children}</div>
+                <div className={styles.fieldWrapper}>{children}</div>
               </div>
             )}
           </div>
