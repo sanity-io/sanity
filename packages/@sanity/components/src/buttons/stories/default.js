@@ -35,7 +35,7 @@ export function DefaultStory() {
           inverted={boolean('inverted', false, 'props')}
           color={select(
             'color',
-            [undefined, 'primary', 'success', 'danger', 'white'],
+            [undefined, 'primary', 'success', 'warning', 'danger', 'white'],
             undefined,
             'props'
           )}
