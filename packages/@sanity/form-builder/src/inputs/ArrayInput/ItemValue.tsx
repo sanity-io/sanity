@@ -212,9 +212,9 @@ export default class RenderItemValue extends React.PureComponent<Props> {
             onAction={this.handleDialogAction}
             placement="auto"
           >
-            <DialogContent size="small">
-              <PresenceOverlay>{content}</PresenceOverlay>
-            </DialogContent>
+            <PresenceOverlay>
+              <DialogContent size="small">{content}</DialogContent>
+            </PresenceOverlay>
           </Popover>
         </div>
       )
@@ -229,9 +229,9 @@ export default class RenderItemValue extends React.PureComponent<Props> {
         onAction={this.handleDialogAction}
         showCloseButton={false}
       >
-        <DialogContent size="medium">
-          <PresenceOverlay>{content}</PresenceOverlay>
-        </DialogContent>
+        <PresenceOverlay>
+          <DialogContent size="medium">{content}</DialogContent>
+        </PresenceOverlay>
       </DefaultDialog>
     )
   }
