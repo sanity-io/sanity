@@ -1,8 +1,8 @@
+import {action} from 'part:@sanity/storybook/addons/actions'
 import React from 'react'
-import LoginStatus from '../components/LoginStatus'
-
-import NavBarStyles from '../components/styles/NavBar.css'
-import DefaultLayoutStyles from '../components/styles/DefaultLayout.css'
+import LoginStatus from '../navbar/loginStatus/LoginStatus'
+import NavBarStyles from '../navbar/NavBar.css'
+import DefaultLayoutStyles from '../DefaultLayout.css'
 
 export function LoginStatusStory() {
   return (
@@ -14,7 +14,7 @@ export function LoginStatusStory() {
               name: 'John Doe',
               profileImage: 'https://randomuser.me/api/portraits/men/12.jpg'
             }}
-            onLogout={() => console.log('logout')}
+            onLogout={() => action('onLogout')}
           />
         </div>
       </div>

@@ -1,6 +1,6 @@
 import {DebugRouterProvider} from 'part:@sanity/storybook/components'
 import React from 'react'
-import NotFound from '../components/NotFound'
+import NotFound from '../main/NotFound'
 
 export function NotFoundStory() {
   return (

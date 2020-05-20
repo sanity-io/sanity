@@ -1,10 +1,10 @@
 import React from 'react'
+import {action} from 'part:@sanity/storybook/addons/actions'
 import {text, boolean, number} from 'part:@sanity/storybook/addons/knobs'
-import SearchField from '../components/SearchField'
-import SearchResults from '../components/SearchResults'
-
-import NavBarStyles from '../components/styles/NavBar.css'
-import DefaultLayoutStyles from '../components/styles/DefaultLayout.css'
+import SearchField from '../navbar/search/SearchField'
+import SearchResults from '../navbar/search/SearchResults'
+import NavBarStyles from '../navbar/NavBar.css'
+import DefaultLayoutStyles from '../DefaultLayout.css'
 
 export function SearchFieldDesktopStory() {
   const hasResults = boolean('hasResults', false, 'props')
@@ -34,7 +34,7 @@ export function SearchFieldDesktopStory() {
                 />
               }
               value={query}
-              onChange={() => console.log('change')}
+              onChange={() => action('onChange')}
             />
           </div>
         </div>
