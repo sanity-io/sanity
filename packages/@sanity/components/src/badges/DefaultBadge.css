@@ -1,0 +1,45 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--border-radius-small);
+  /* Optimised for 11px */
+  padding: 1px 3px;
+  line-height: calc(12 / 11);
+  text-transform: uppercase;
+  font-weight: 600;
+  box-sizing: border-box;
+  white-space: nowrap;
+  text-align: center;
+  border: 1px solid transparent;
+  transform: translateZ(0);
+  cursor: default;
+  background-color: var(--gray);
+  border-color: var(--gray);
+  color: var(--white);
+
+  @nest &[data-color='success'] {
+    background-color: var(--state-success-color);
+    border-color: var(--state-success-color);
+    color: var(--state-success-color--inverted);
+  }
+
+  @nest &[data-color='info'] {
+    background-color: var(--state-info-color);
+    border-color: var(--state-info-color);
+    color: var(--state-info-color--inverted);
+  }
+
+  @nest &[data-color='warning'] {
+    background-color: var(--state-warning-color);
+    border-color: var(--state-warning-color);
+    color: var(--state-warning-color--inverted);
+  }
+
+  @nest &[data-color='danger'] {
+    background-color: var(--state-danger-color);
+    border-color: var(--state-danger-color);
+    color: var(--state-danger-color--inverted);
+  }
+}
