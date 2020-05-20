@@ -52,7 +52,8 @@ const WithIntersection = (props: WithIntersectionProps) => {
 type Props = {
   regions: any[]
   render: (
-    regionsWithIntersectionDetails: RegionWithIntersectionDetails[]
+    regionsWithIntersectionDetails: RegionWithIntersectionDetails[],
+    containerWidth: number
   ) => React.ReactNode | null
   children: React.ReactNode
   trackerRef: React.RefObject<any>
@@ -68,7 +69,7 @@ export function RegionsWithIntersections(props: Props) {
   const io = React.useMemo(
     () =>
       createIntersectionObserver({
-        rootMargin: (margins)
+        rootMargin: margins
           .map(invert)
           .map(toPx)
           .join(' '),
@@ -88,6 +89,7 @@ export function RegionsWithIntersections(props: Props) {
   const regionsWithIntersectionDetails: RegionWithIntersectionDetails[] =
     top && bottom
       ? regions
+          .filter(region => region.data.presence.length > 0)
           .map(
             (region): RegionWithIntersectionDetails => {
               const intersection = intersections[region.id]
@@ -100,7 +102,6 @@ export function RegionsWithIntersections(props: Props) {
               const aboveTop = intersection.boundingClientRect.top < top.boundingClientRect.bottom
               const belowBottom =
                 intersection.boundingClientRect.top < bottom.boundingClientRect.top
-
               const distanceTop = intersection.isIntersecting
                 ? boundsTop - (intersection.intersectionRect.top - INTERSECTION_ELEMENT_PADDING)
                 : aboveTop
@@ -140,6 +141,7 @@ export function RegionsWithIntersections(props: Props) {
         id="::top"
         onIntersection={onIntersection}
         style={{
+          zIndex: 100,
           position: 'sticky',
           top: margins[0],
           height: 1,
@@ -148,7 +150,9 @@ export function RegionsWithIntersections(props: Props) {
       />
       <div>{children}</div>
       <div style={OVERLAY_STYLE}>
-        {regionsWithIntersectionDetails && render(regionsWithIntersectionDetails)}
+        {regionsWithIntersectionDetails &&
+          trackerRef.current &&
+          render(regionsWithIntersectionDetails, trackerRef.current.offsetWidth)}
       </div>
       <div style={OVERLAY_STYLE}>
         {regions.map(region => {

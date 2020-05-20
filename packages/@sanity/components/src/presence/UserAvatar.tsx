@@ -7,6 +7,7 @@ export type Props = {
   user: User
   color?: string
   position?: Position
+  animateArrowFrom?: Position
   status?: Status
   size?: Size
   tone?: 'navbar'
@@ -18,7 +19,15 @@ function nameToInitials(fullName: string) {
   return `${namesArray[0].charAt(0)}${namesArray[namesArray.length - 1].charAt(0)}`
 }
 
-export default function UserAvatar({user, position, color, status = 'online', size, tone}: Props) {
+export default function UserAvatar({
+  user,
+  animateArrowFrom,
+  position,
+  color,
+  status = 'online',
+  size,
+  tone
+}: Props) {
   const [imageLoadError, setImageLoadError] = useState<null | Error>(null)
   // Decide whether the avatar border should animate
   const isAnimating = !position && status === 'editing'
@@ -28,6 +37,7 @@ export default function UserAvatar({user, position, color, status = 'online', si
   return (
     <AvatarCircle
       imageUrl={imageUrl}
+      animateArrowFrom={animateArrowFrom}
       isAnimating={isAnimating}
       position={position}
       size={size}
