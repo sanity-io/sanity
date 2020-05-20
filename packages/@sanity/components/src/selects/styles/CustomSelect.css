@@ -9,7 +9,6 @@
   cursor: default;
 
   @nest .transparent & {
-    transition: all 0.05s linear;
     background-color: transparent;
     border-color: transparent;
 
