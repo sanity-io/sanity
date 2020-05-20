@@ -1,15 +1,44 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  display: block;
-  text-align: center;
   height: 100vh;
+  box-sizing: border-box;
   overflow: auto;
+  padding: var(--medium-padding);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.inner {
+  width: 100%;
+  min-width: 0;
+  max-width: 480px;
+  padding-bottom: 4rem;
+}
+
+.card {
+  border-radius: var(--border-radius-large);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--component-bg);
+}
+
+.cardHeader {
+  padding: var(--medium-padding);
+  border-bottom: 1px solid var(--hairline-color);
+}
+
+.cardTitle {
+  composes: base from 'part:@sanity/base/theme/typography/text-blocks-style';
+}
+
+.cardContent {
+  padding: var(--medium-padding);
 }
 
 .title {
+  composes: heading4 from 'part:@sanity/base/theme/typography/headings-style';
   text-align: center;
-  text-transform: uppercase;
 }
 
 .description {
@@ -20,16 +49,16 @@
 
 .sanityLogo {
   width: 8rem;
-  margin: 4rem auto;
+  margin: var(--medium-padding) auto;
 }
 
 .branding {
-  margin: 0 auto;
-  margin-bottom: 4rem;
+  /* composes: heading1 from 'part:@sanity/base/theme/typography/headings-style'; */
 }
 
 .projectName {
-  composes: heading1 from 'part:@sanity/base/theme/typography/text-blocks-style';
+  composes: heading2 from 'part:@sanity/base/theme/typography/headings-style';
+  text-align: center;
 }
 
 .projectNameHidden {
@@ -52,48 +81,46 @@
   margin: 0;
   padding: 0;
   text-align: center;
-}
-
-.inner {
-  display: block;
+  list-style: none;
 }
 
 .provider {
-  display: inline-block;
-  margin: 1em;
-  padding: 0;
+  @nest .provider + & {
+    margin-top: var(--small-padding);
+  }
 }
 
 .providerButton {
+  composes: item from 'part:@sanity/base/theme/layout/selectable-style';
+  color: inherit;
+  -webkit-font-smoothing: inherit;
   appearance: none;
-  display: block;
+  display: flex;
   border: none;
   background-color: transparent;
-  padding: 1em;
-  outline: none !important;
+  padding: var(--medium-padding);
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
   cursor: pointer;
-
-  &:hover {
-    background-color: var(--gray-lighter);
-  }
-
-  &:active {
-    background-color: var(--selected-item-color-hover);
-  }
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--hairline-color);
+  border-radius: var(--border-radius-base);
 }
 
 .providerName {
-  padding-top: 0.5em;
+  composes: base from 'part:@sanity/base/theme/typography/text-blocks-style';
   display: block;
+  padding-left: var(--small-padding);
 }
 
 .providerLogo {
-  @nest & svg {
-    height: 4em;
-    width: auto;
+  display: block;
 
-    @media (--screen-medium) {
-      height: 7em;
-    }
+  @nest & svg {
+    height: 1.5em;
+    width: auto;
+    vertical-align: top;
   }
 }

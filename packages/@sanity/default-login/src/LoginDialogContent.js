@@ -38,7 +38,7 @@ const GoogleLogo = () => (
 const QuestionmarkLogo = () => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 112 112">
     <path d="M0 0h112v112H0z" />
-    <circle cx="56" cy="56" r="56" fill="#A4A4A4" />
+    <circle cx="56" cy="56" r="56" fill="#AFBACA" />
     <path d="M22 24h68v68H22z" />
     <path d="M27.667 35.333h56.667v45.333H27.667z" />
     <path
@@ -66,10 +66,12 @@ function getProviderLogo(provider) {
   }
 }
 
+// eslint-disable-next-line react/require-optimization
 export default class LoginDialogContent extends React.Component {
   static propTypes = {
     title: PropTypes.node.isRequired,
     description: PropTypes.node,
+    // eslint-disable-next-line react/forbid-prop-types
     providers: PropTypes.array,
     onLoginButtonClick: PropTypes.func,
     SanityLogo: PropTypes.func
@@ -77,7 +79,6 @@ export default class LoginDialogContent extends React.Component {
 
   static defaultProps = {
     description: null,
-    title: null,
     providers: null,
     onLoginButtonClick: null,
     SanityLogo: null
@@ -103,35 +104,51 @@ export default class LoginDialogContent extends React.Component {
             </div>
           )}
 
-          <div className={styles.branding}>
-            <h1 className={BrandLogo ? styles.projectNameHidden : styles.projectName}>
-              {projectName}
-            </h1>
-            {BrandLogo && (
-              <div className={styles.brandLogoContainer}>
-                <BrandLogo projectName={projectName} />
-              </div>
-            )}
-          </div>
+          <div className={styles.card}>
+            <div className={styles.cardHeader}>
+              <h1 className={styles.cardTitle}>Sign in</h1>
+            </div>
 
-          <h2 className={styles.title}>{title}</h2>
-          {description && <div className={styles.description}>{description}</div>}
-          <ul className={styles.providers}>
-            {providers.map(provider => {
-              const ProviderLogo = getProviderLogo(provider)
-              const onLoginClick = this.handleLoginButtonClicked.bind(this, provider)
-              return (
-                <li key={provider.name} className={styles.provider}>
-                  <button type="button" onClick={onLoginClick} className={styles.providerButton}>
-                    <span className={styles.providerLogo}>
-                      <ProviderLogo />
-                    </span>
-                    <span className={styles.providerName}>{provider.title}</span>
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
+            <div className={styles.cardContent}>
+              <div className={styles.branding}>
+                <h1 className={BrandLogo ? styles.projectNameHidden : styles.projectName}>
+                  {projectName}
+                </h1>
+                {BrandLogo && (
+                  <div className={styles.brandLogoContainer}>
+                    <BrandLogo projectName={projectName} />
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <h2 className={styles.title}>{title}</h2>
+                {description && <div className={styles.description}>{description}</div>}
+              </div>
+
+              <ul className={styles.providers}>
+                {providers.map(provider => {
+                  const ProviderLogo = getProviderLogo(provider)
+                  const onLoginClick = this.handleLoginButtonClicked.bind(this, provider)
+                  return (
+                    <li key={provider.name} className={styles.provider}>
+                      {/* eslint-disable-next-line react/jsx-no-bind */}
+                      <button
+                        type="button"
+                        onClick={onLoginClick}
+                        className={styles.providerButton}
+                      >
+                        <span className={styles.providerLogo}>
+                          <ProviderLogo />
+                        </span>
+                        <span className={styles.providerName}>{provider.title}</span>
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     )
