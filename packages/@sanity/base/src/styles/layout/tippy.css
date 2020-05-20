@@ -594,7 +594,6 @@
   top: 50%;
   z-index: -1;
   overflow: hidden;
-  transition: all ease;
 }
 
 :global(.tippy-tooltip.noPadding-theme) {
