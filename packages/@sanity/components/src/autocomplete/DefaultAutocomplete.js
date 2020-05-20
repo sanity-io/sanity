@@ -1,52 +1,40 @@
+import {uniqueId} from 'lodash'
 import PropTypes from 'prop-types'
 import React from 'react'
 import FormField from 'part:@sanity/components/formfields/default'
 import TextInput from 'part:@sanity/components/textinputs/default'
 import styles from 'part:@sanity/components/autocomplete/default-style'
-import List from 'part:@sanity/components/lists/default'
+import {List} from 'part:@sanity/components/lists/default'
 
-import {uniqueId} from 'lodash'
+const noop = () => undefined
 
-export default class DefaultAutocomplete extends React.Component {
+export default class DefaultAutocomplete extends React.PureComponent {
   static propTypes = {
+    id: PropTypes.string,
     label: PropTypes.string.isRequired,
     onChange: PropTypes.func,
     onSelect: PropTypes.func,
-    value: PropTypes.string,
-    hasError: PropTypes.bool,
-    onKeyPress: PropTypes.func,
-    placeholder: PropTypes.string,
-    isClearable: PropTypes.bool,
-    isOpen: PropTypes.bool,
-    id: PropTypes.string,
-    items: PropTypes.arrayOf(
-      PropTypes.shape({
-        title: PropTypes.string
-      })
-    ),
     suggestions: PropTypes.arrayOf(
       PropTypes.shape({
         title: PropTypes.string
       })
-    )
+    ),
+    value: PropTypes.string
   }
 
   static defaultProps = {
-    value: '',
-    onChange() {},
-    onSelect() {},
-    suggestions: []
+    id: undefined,
+    onChange: noop,
+    onSelect: noop,
+    suggestions: [],
+    value: ''
   }
 
   constructor(props, context) {
     super(props, context)
-    this.handleSelect = this.handleSelect.bind(this)
-    this.handleKeyPress = this.handleKeyPress.bind(this)
-    this.handleChange = this.handleChange.bind(this)
-  }
 
-  handleKeyPress() {
-    // console.log('press')
+    this.handleSelect = this.handleSelect.bind(this)
+    this.handleChange = this.handleChange.bind(this)
   }
 
   handleSelect(item) {
@@ -57,13 +45,13 @@ export default class DefaultAutocomplete extends React.Component {
     this.props.onChange(event)
   }
 
+  // eslint-disable-next-line camelcase
   UNSAFE_componentWillMount() {
     this._inputId = this.props.id || uniqueId('Autocomplete')
   }
 
   render() {
     const {suggestions, label, value} = this.props
-
     const isOpen = suggestions.length > 1
 
     return (
@@ -72,15 +60,13 @@ export default class DefaultAutocomplete extends React.Component {
         label={label}
         labelFor={this._inputId}
       >
-        <div className={styles.input}>
-          <TextInput
-            id={this._inputId}
-            value={value}
-            onKeyPress={this.handleKeyPress}
-            className={styles.textField}
-            onChange={this.handleChange}
-          />
-        </div>
+        <TextInput
+          id={this._inputId}
+          value={value}
+          className={styles.textField}
+          onChange={this.handleChange}
+        />
+        <div className={styles.input} />
         <div className={styles.suggestionsContainer}>
           <List items={suggestions} className={styles.suggestions} onSelect={this.handleSelect} />
         </div>
