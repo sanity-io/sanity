@@ -3,25 +3,21 @@
     "source": "./src",
     "compiled": "./lib"
   },
-
   "parts": [
     {
       "name": "part:@sanity/default-layout/action-modal-style",
       "description": "Styles for the action picker modal"
     },
-
     {
       "implements": "part:@sanity/base/root",
       "name": "part:@sanity/default-layout/root",
-      "path": "components/DefaultLayoutContainer"
+      "path": "DefaultLayoutContainer"
     },
-
     {
       "implements": "part:@sanity/default-layout/tool-switcher",
       "name": "part:@sanity/default-layout/default-tool-switcher",
-      "path": "components/ToolSwitcher"
+      "path": "navbar/toolMenu/ToolSwitcher"
     },
-
     {
       "name": "part:@sanity/default-layout/sidecar",
       "description": "Component for sidecar layout"
@@ -34,14 +30,13 @@
       "implements": "part:@sanity/default-layout/sidecar-datastore",
       "path": "datastores/sidecar.js"
     },
-
     {
       "name": "part:@sanity/default-layout/branding",
       "description": "Branding"
     },
     {
       "implements": "part:@sanity/default-layout/branding",
-      "path": "components/Branding"
+      "path": "navbar/branding/Branding"
     },
     {
       "name": "part:@sanity/default-layout/branding-style",
@@ -49,7 +44,7 @@
     },
     {
       "implements": "part:@sanity/default-layout/branding-style",
-      "path": "components/styles/Branding.css"
+      "path": "navbar/branding/Branding.css"
     },
     {
       "implements": "part:@sanity/base/component",

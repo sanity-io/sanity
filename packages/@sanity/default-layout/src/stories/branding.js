@@ -1,8 +1,7 @@
 import React from 'react'
-import Branding from '../components/Branding'
-
-import NavBarStyles from '../components/styles/NavBar.css'
-import DefaultLayoutStyles from '../components/styles/DefaultLayout.css'
+import Branding from '../navbar/branding/Branding'
+import NavBarStyles from '../navbar/NavBar.css'
+import DefaultLayoutStyles from '../DefaultLayout.css'
 
 export function BrandingStory() {
   return (

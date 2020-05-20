@@ -1,0 +1,41 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.root {
+  position: relative;
+
+  @media (hover: hover) {
+    color: var(--gray);
+
+    @nest &:hover {
+      color: inherit;
+    }
+  }
+
+  @nest & > select {
+    -webkit-font-smoothing: inherit;
+    appearance: none;
+    background: color(var(--main-navigation-color) blend(var(--gray) 15%));
+    color: inherit;
+    font: inherit;
+    font-size: var(--font-size-base);
+    line-height: calc((var(--line-height-base) * 1rem) - 3px);
+    padding: var(--small-padding) calc(var(--small-padding) + 2rem) var(--small-padding)
+      var(--small-padding);
+    border: 0;
+    border-radius: var(--border-radius-base);
+    outline: none;
+    width: 100%;
+
+    @nest &:focus {
+      box-shadow: 0 0 0 2px var(--focus-color);
+    }
+  }
+
+  @nest & > svg {
+    position: absolute;
+    top: var(--extra-small-padding);
+    right: var(--extra-small-padding);
+    font-size: 25px;
+    pointer-events: none;
+  }
+}
