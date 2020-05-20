@@ -1,4 +1,4 @@
-@import 'part:@sanity/base/theme/variables/typography-style';
+@import 'part:@sanity/base/theme/variables-style';
 
 .root {
   text-align: left;
@@ -14,42 +14,48 @@
 .heading1 {
   composes: root;
   font-size: var(--font-size-h1);
-  padding-bottom: 1rem;
-  padding-top: 1rem;
+  line-height: var(--line-height-h1);
+  padding-bottom: var(--medium-padding);
+  padding-top: var(--medium-padding);
 }
 
 .heading2 {
   composes: root;
   font-size: var(--font-size-h2);
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  line-height: var(--line-height-h2);
+  padding-top: var(--medium-padding);
+  padding-bottom: var(--medium-padding);
 }
 
 .heading3 {
   composes: root;
   font-size: var(--font-size-h3);
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  line-height: var(--line-height-h3);
+  padding-top: var(--medium-padding);
+  padding-bottom: var(--medium-padding);
 }
 
 .heading4 {
   composes: root;
   font-size: var(--font-size-h4);
-  /* line-height: calc(22 / 16); */
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  line-height: var(--line-height-h4);
+  padding-top: var(--medium-padding);
+  padding-bottom: var(--medium-padding);
 }
 
 .heading5 {
   composes: root;
   font-size: var(--font-size-h5);
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
+  line-height: var(--line-height-h5);
+  padding-top: var(--small-padding);
+  padding-bottom: var(--small-padding);
 }
 
 .heading6 {
   composes: root;
   font-size: var(--font-size-h6);
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
+  line-height: var(--line-height-h6);
+  color: var(--text-muted);
+  padding-top: var(--small-padding);
+  padding-bottom: var(--small-padding);
 }

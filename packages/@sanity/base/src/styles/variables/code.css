@@ -3,7 +3,7 @@
 :root {
   /* Code */
   --code-bg: var(--gray-lightest);
-  --code-color: var(--gray-dark);
+  --code-color: var(--gray-darker);
 
   /* KBD */
   --kbd-bg: var(--gray-lighter);
@@ -11,7 +11,7 @@
 
   /* Pre */
   --pre-bg: var(--gray-lightest);
-  --pre-color: var(--gray-dark);
+  --pre-color: var(--gray-darker);
   --pre-border-color: var(--gray-lighter);
   --pre-scrollable-max-height: 20em;
 }

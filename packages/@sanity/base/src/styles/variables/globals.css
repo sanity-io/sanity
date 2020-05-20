@@ -4,7 +4,7 @@
   --body-text: var(--gray-darkest);
   --component-bg: var(--white);
   --component-text-color: var(--gray-darkest);
-  --preview-placeholder-color: color(var(--component-bg) contrast(80%) alpha(10%));
+  --preview-placeholder-color: var(--gray-lightest);
   --component-border-color: color(var(--component-bg) contrast(80%) alpha(20%));
   --backdrop-color: color(var(--brand-darkest) alpha(12%));
 
@@ -49,15 +49,17 @@
 
   /* Padding */
   --extra-small-padding: 0.25rem;
-  --small-padding: 0.5rem;
-  --medium-padding: 1rem;
-  --large-padding: 1.5rem;
-  --extra-large-padding: 3rem;
   --extra-small-padding--em: 0.25em;
+  --small-padding: 0.5rem;
   --small-padding--em: 0.5em;
+  --medium-padding: 1rem;
   --medium-padding--em: 1em;
+  --large-padding: 1.5rem;
   --large-padding--em: 1.5em;
-  --extra-large-padding--em: 3em;
+  --extra-large-padding: 2rem;
+  --extra-large-padding--em: 2em;
+
+  /* Text selection */
   --text-selection-color: color(var(--brand-primary) alpha(20%));
 
   /* Block editor */
