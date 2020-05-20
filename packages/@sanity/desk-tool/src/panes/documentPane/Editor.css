@@ -27,8 +27,8 @@
   border: 0;
   padding: var(--small-padding) 0;
   font-size: var(--font-size-tiny);
+  font-size: var(--line-height-tiny);
   font-family: var(--font-family-monospace);
-  line-height: 1.5em;
 }
 
 .jsonDump {
@@ -118,48 +118,31 @@
 }
 
 .popOverText {
-  font-size: 1em;
-  line-height: 1.25;
-  margin-bottom: 1em;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  margin-bottom: var(--medium-padding);
   text-align: center;
   max-width: 18em;
 }
 
 .errors {
-  margin-left: 1rem;
+  margin-left: var(--medium-padding);
   color: var(--state-danger-color);
 }
 
 .warnings {
-  margin-left: 1rem;
+  margin-left: var(--medium-padding);
   color: var(--state-warning-color);
 }
 
 .editor {
   padding: var(--medium-padding);
-  padding-bottom: 4em;
-}
+  padding-bottom: calc(var(--medium-padding) * 3);
 
-.syncStatus {
-  display: block;
-  opacity: 1;
-  font-size: var(--font-size-xsmall);
-  padding: 0 var(--small-padding);
-  white-space: nowrap;
-}
-
-.syncStatusSynced {
-  composes: syncStatus;
-}
-
-.syncStatusReconnecting {
-  composes: syncStatus;
-  color: var(--state-danger-color);
-}
-
-.syncStatusSyncing {
-  composes: syncStatus;
-  color: var(--state-success-color);
+  @media (--screen-medium) {
+    padding: var(--extra-large-padding) var(--medium-padding);
+    padding-bottom: calc(var(--large-padding) * 3);
+  }
 }
 
 .overlay {
@@ -181,26 +164,8 @@
   padding-right: 0;
 
   @media (--screen-medium) {
-    font-size: 1em;
-  }
-}
-
-.syncSpinnerContainer {
-  display: flex;
-  position: relative;
-  align-items: center;
-}
-
-.syncSpinner {
-  display: block;
-
-  @nest & > svg {
-    display: block;
-    transform-origin: center center;
-    animation-name: spin;
-    animation-duration: 2s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
   }
 }
 
@@ -217,39 +182,4 @@
     position: absolute;
     height: calc(100vh - 6rem); /* 6rem is aprox the height of the header stuff */
   }
-}
-
-.statusBadges {
-  font-size: var(--font-size-xsmall--uppercase);
-  color: var(--text-muted);
-}
-
-.editedTime {
-  display: inline-block;
-  cursor: default;
-  font-size: var(--font-size-xsmall);
-  pointer-events: none;
-
-  @nest &::first-letter {
-    text-transform: uppercase;
-  }
-}
-
-.editedTimeClickable {
-  composes: editedTime;
-  cursor: pointer;
-
-  @media (--screen-medium) {
-    pointer-events: initial;
-  }
-
-  @media (hover: hover) {
-    @nest &:hover {
-      text-decoration: underline;
-    }
-  }
-}
-
-.statusBadges:not(:empty) + .editedTime {
-  margin-left: 0.5rem;
 }
