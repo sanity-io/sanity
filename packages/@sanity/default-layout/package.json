@@ -33,7 +33,6 @@
     "is-hotkey": "^0.1.4",
     "lodash": "^4.17.15",
     "react-click-outside": "^3.0.0",
-    "react-ink": "^6.1.0",
     "react-props-stream": "^1.0.0",
     "react-tippy": "^1.2.3",
     "rxjs": "^6.5.3"

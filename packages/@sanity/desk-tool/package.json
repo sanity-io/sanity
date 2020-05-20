@@ -41,7 +41,6 @@
     "lodash": "^4.17.15",
     "promise-latest": "^1.0.4",
     "react-click-outside": "^3.0.0",
-    "react-ink": "^6.1.0",
     "react-json-inspector": "^7.1.1",
     "react-tiny-virtual-list": "^2.0.5",
     "react-tippy": "^1.2.3",

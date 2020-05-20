@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Ink from 'react-ink'
 import styles from 'part:@sanity/components/buttons/in-input-style'
 import Spinner from 'part:@sanity/components/loading/spinner'
 import {omit} from 'lodash'
@@ -13,14 +12,12 @@ export default class InInputButton extends React.Component {
     inverted: PropTypes.bool,
     icon: PropTypes.func,
     loading: PropTypes.bool,
-    ripple: PropTypes.bool,
     colored: PropTypes.bool,
     className: PropTypes.string,
     disabled: PropTypes.bool
   }
 
   static defaultProps = {
-    ripple: true,
     icon() {
       return null
     },
@@ -38,7 +35,7 @@ export default class InInputButton extends React.Component {
   }
 
   render() {
-    const {kind, ripple, inverted, colored, icon, loading, className, ...rest} = omit(
+    const {kind, inverted, colored, icon, loading, className, ...rest} = omit(
       this.props,
       'onAction'
     )
@@ -68,8 +65,6 @@ export default class InInputButton extends React.Component {
           )}
           <span className={styles.text}>{this.props.children}</span>
         </span>
-
-        {ripple && <Ink duration={200} opacity={0.1} radius={200} />}
       </button>
     )
   }
