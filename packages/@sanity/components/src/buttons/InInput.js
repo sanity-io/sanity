@@ -1,3 +1,5 @@
+/* eslint-disable complexity */
+
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/buttons/in-input-style'
@@ -18,6 +20,12 @@ export default class InInputButton extends React.Component {
   }
 
   static defaultProps = {
+    className: undefined,
+    colored: false,
+    disabled: false,
+    kind: undefined,
+    inverted: false,
+    loading: false,
     icon() {
       return null
     },
