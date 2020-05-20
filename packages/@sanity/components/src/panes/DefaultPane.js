@@ -261,6 +261,7 @@ class Pane extends React.PureComponent {
           interactive
           open={this.state.isMenuOpen}
           onRequestClose={this.handleToggleMenu}
+          useContext
           html={
             <div className={styles.menuInner}>
               <Menu
