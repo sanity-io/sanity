@@ -1,7 +1,13 @@
 /* eslint-disable complexity */
+
+import classNames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
 import styles from 'part:@sanity/components/buttons/button-grid-style'
+
+function toChildrenArray(val) {
+  return (Array.isArray(val) ? val : [val]).filter(node => node !== null && node !== undefined)
+}
 
 export default class ButtonGrid extends React.PureComponent {
   static propTypes = {
@@ -18,36 +24,24 @@ export default class ButtonGrid extends React.PureComponent {
   }
 
   render() {
-    const {align, children, secondary} = this.props
+    const {align, children: childrenProp, className, secondary} = this.props
+    const children = toChildrenArray(childrenProp)
+    const secondaryChildren = toChildrenArray(secondary)
+    const len = children.length + secondaryChildren.length
 
-    if (!children) {
-      return null
-    }
-
-    if (secondary && (secondary.length > 0 || typeof secondary !== 'object')) {
-      return (
-        <div
-          className={align === 'start' ? styles.alignStart : styles.alignEnd}
-          data-buttons={children.filter(Boolean).length + secondary.filter(Boolean).length}
-        >
-          {children}
-          {secondary.length > 0
-            ? secondary.map((child, i) => (
-                <div className={styles.secondary} key={i}>
-                  {child}
-                </div>
-              ))
-            : secondary}
-        </div>
-      )
-    }
+    if (len === 0) return null
 
     return (
       <div
-        className={align === 'start' ? styles.alignStart : styles.alignEnd}
-        data-buttons={children.filter(Boolean).length}
+        className={classNames(className, align === 'start' ? styles.alignStart : styles.alignEnd)}
+        data-buttons={len}
       >
-        {children || secondary}
+        {children}
+        {secondaryChildren.map((child, childIndex) => (
+          <div className={styles.secondary} key={String(childIndex)}>
+            {child}
+          </div>
+        ))}
       </div>
     )
   }
