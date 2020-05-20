@@ -44,7 +44,6 @@
     position: absolute;
     top: calc((100% - var(--checkbox-button-size)) / 2);
     left: calc((100% - var(--checkbox-button-size)) / 2);
-    transition: all 0.1s linear;
     transform: scale(0.5);
     opacity: 0;
     flex: 1;
