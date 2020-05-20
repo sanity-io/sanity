@@ -11,6 +11,8 @@ export const AVATAR_DISTANCE = -5
 // height/width of the avatars in pixels
 export const AVATAR_SIZE = 21
 
+export const AVATAR_ARROW_HEIGHT = 4
+
 // these are the thresholds in which the intersection observers will notify about regions going in/out of viewport
 // these will affect the thresholds below, so make sure to coordinate edits
 export const INTERSECTION_THRESHOLDS = [0, 0.25, 0.75, 1]
