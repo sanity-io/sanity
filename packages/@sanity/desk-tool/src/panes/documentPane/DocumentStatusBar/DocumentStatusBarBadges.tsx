@@ -23,10 +23,12 @@ function DocumentStatusBarBadgesInner(props: Props) {
   }
   return (
     <div className={styles.statusBadges}>
-      {props.states.map((badge, i) => (
-        <Badge key={i} color={badge.color} title={badge.title}>
-          {badge.label}
-        </Badge>
+      {props.states.map((badge, badgeIndex) => (
+        <div key={String(badgeIndex)}>
+          <Badge color={badge.color} title={badge.title}>
+            {badge.label}
+          </Badge>
+        </div>
       ))}
     </div>
   )
