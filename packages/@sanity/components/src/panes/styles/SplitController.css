@@ -8,7 +8,6 @@
 
   @nest & :global(.Pane1) {
     background-color: inherit;
-    transition: width 200ms linear;
   }
 }
 
@@ -26,10 +25,6 @@
 
 .splitWrapperResizing {
   composes: splitWrapper;
-
-  @nest & :global(.Pane1) {
-    transition: unset !important;
-  }
 }
 
 .singleWrapper {
@@ -59,7 +54,6 @@
 
   @nest &:hover {
     opacity: 0.2;
-    transition: border 200ms ease, opacity 100ms ease;
   }
 
   @nest .vertical & {
