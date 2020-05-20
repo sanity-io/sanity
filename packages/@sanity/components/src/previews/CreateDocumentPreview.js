@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styles from './styles/CreateDocumentPreview.css'
 import {IntentLink} from 'part:@sanity/base/router'
-import Ink from 'react-ink'
 
 const fieldProp = PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.func])
 
@@ -88,7 +87,6 @@ class CreateDocumentPreview extends React.PureComponent {
           )}
         </div>
         {description && <p className={styles.description}>{description}</p>}
-        <Ink duration={1000} opacity={0.1} radius={200} />
       </IntentLink>
     )
   }

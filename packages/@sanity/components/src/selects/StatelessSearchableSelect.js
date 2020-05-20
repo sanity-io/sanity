@@ -11,7 +11,6 @@ import Stacked from '../utilities/Stacked'
 import CaptureOutsideClicks from '../utilities/CaptureOutsideClicks'
 import Escapable from '../utilities/Escapable'
 import {Portal} from '../utilities/Portal'
-import Ink from 'react-ink'
 import {get} from 'lodash'
 import SelectMenu from './SelectMenu'
 
@@ -190,7 +189,6 @@ export default class StatelessSearchableSelect extends React.PureComponent {
                         onKeyPress={disabled ? null : this.handleArrowKeyPress}
                       >
                         <FaAngleDown color="inherit" />
-                        <Ink duration={200} opacity={0.1} radius={200} />
                       </div>
                     )}
                     {isLoading && (
