@@ -15,7 +15,7 @@ type SchemaType = any
 interface Props {
   headerHeight: number
   id: string
-  isNarrowScreen: boolean
+  margins: [number, number, number, number]
   value: Doc
 
   filterField: () => boolean
@@ -54,8 +54,7 @@ export default class EditForm extends React.PureComponent<Props> {
     const {
       filterField,
       focusPath,
-      headerHeight,
-      isNarrowScreen,
+      margins,
       markers,
       value,
       onBlur,
@@ -68,7 +67,7 @@ export default class EditForm extends React.PureComponent<Props> {
     } = this.props
 
     return (
-      <PresenceOverlay margins={[isNarrowScreen ? headerHeight : 0, 0, 0, 0]}>
+      <PresenceOverlay margins={margins}>
         <form className={styles.editor} onSubmit={preventDefault}>
           <FormBuilder
             schema={schema}

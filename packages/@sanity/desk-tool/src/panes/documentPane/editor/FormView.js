@@ -26,10 +26,9 @@ export default class FormView extends React.PureComponent {
       published: PropTypes.shape({_id: PropTypes.string, _type: PropTypes.string}),
       displayed: PropTypes.shape({_id: PropTypes.string, _type: PropTypes.string})
     }).isRequired,
-    headerHeight: PropTypes.number.isRequired,
+    margins: PropTypes.arrayOf(PropTypes.number),
     initialValue: PropTypes.shape({_type: PropTypes.string}),
     isConnected: PropTypes.bool,
-    isNarrowScreen: PropTypes.bool.isRequired,
     onChange: PropTypes.func.isRequired,
     schemaType: PropTypes.shape({name: PropTypes.string, title: PropTypes.string}).isRequired,
     markers: PropTypes.arrayOf(
@@ -101,14 +100,13 @@ export default class FormView extends React.PureComponent {
   render() {
     const {
       document,
-      headerHeight,
       id,
       history,
       schemaType,
       markers,
       patchChannel,
       initialValue,
-      isNarrowScreen,
+      margins,
       presence
     } = this.props
     const {draft, published, displayed} = document
@@ -136,9 +134,8 @@ export default class FormView extends React.PureComponent {
           <HistoryForm document={displayed} schema={schema} schemaType={schemaType} />
         ) : (
           <EditForm
-            headerHeight={headerHeight}
             id={id}
-            isNarrowScreen={isNarrowScreen}
+            margins={margins}
             value={draft || published || initialValue}
             filterField={filterField}
             focusPath={focusPath}

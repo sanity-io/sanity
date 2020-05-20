@@ -112,6 +112,10 @@ const INITIAL_STATE: State = {
   history: {}
 }
 
+const DEFAULT_MARGINS = [0, 0, 0, 0]
+const MARGINS_NARROW_SCREEN_WITH_TABS = [74, 0, 64, 0]
+const MARGINS_NARROW_SCREEN_WITHOUT_TABS = [53, 0, 64, 0]
+
 interface Props {
   styles?: {error?: string; errorInner?: string}
   title?: string
@@ -767,7 +771,11 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
 
     // Calculate the height of the header
     const hasTabs = views.length > 1
-    const headerHeight = hasTabs ? 74 : 49
+    const margins = isNarrowScreen
+      ? hasTabs
+        ? MARGINS_NARROW_SCREEN_WITH_TABS
+        : MARGINS_NARROW_SCREEN_WITHOUT_TABS
+      : DEFAULT_MARGINS
 
     switch (activeView.type) {
       case 'form':
@@ -776,7 +784,7 @@ export default class DocumentPane extends React.PureComponent<Props, State> {
             ref={this.formRef}
             id={formProps.documentId}
             {...formProps}
-            headerHeight={headerHeight}
+            margins={margins}
             isNarrowScreen={isNarrowScreen}
           />
         )
