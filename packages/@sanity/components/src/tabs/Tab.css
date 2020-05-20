@@ -9,15 +9,13 @@
   background: none;
   color: var(--text-muted);
   font: inherit;
-  line-height: 1;
-  font-weight: 600;
   padding: 0;
-  border-radius: 2px;
+  border-radius: var(--border-radius-small);
   outline: none;
 
   /* Clickable focus container */
   @nest & > div {
-    padding: 0.25rem 0.5rem;
+    padding: var(--extra-small-padding) var(--small-padding);
     outline: none;
     display: flex;
   }
@@ -40,23 +38,22 @@
 
 .icon {
   display: block;
-  padding: 1px;
-  height: calc(15 / 16 * 1em);
+  margin: -1px 0;
 
   @nest & > svg {
+    font-size: calc(1rem + 1px);
     display: block;
-    font-size: calc(15 / 16 * 1em);
-    line-height: 1;
   }
 }
 
 .label {
   display: block;
-  font-size: calc(13 / 16 * 1em);
-  line-height: calc(17 / 13);
-  height: calc(17 / 13 * 1em);
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  font-weight: 600;
+  margin: -1px 0 0;
 
   @nest .icon + & {
-    margin-left: 0.25rem;
+    margin-left: var(--extra-small-padding);
   }
 }
