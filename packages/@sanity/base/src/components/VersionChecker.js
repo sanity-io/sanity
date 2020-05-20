@@ -2,7 +2,7 @@ import {omit} from 'lodash'
 import React, {PureComponent} from 'react'
 import semverCompare from 'semver-compare'
 import versions from 'sanity:versions'
-import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen?'
+import FullscreenMessageDialog from 'part:@sanity/components/dialogs/fullscreen-message?'
 import client from 'part:@sanity/base/client'
 import FullscreenError from './FullscreenError'
 
@@ -142,11 +142,11 @@ class VersionChecker extends PureComponent {
       return null
     }
 
-    const Dialog = FullscreenDialog || FullscreenError
+    const Dialog = FullscreenMessageDialog || FullscreenError
     const title = 'Unsupported module versions'
 
     return (
-      <Dialog centered isOpen color="danger" title={title} onClose={this.handleClose}>
+      <Dialog color="danger" title={title} onClose={this.handleClose}>
         {paragraphify(result.message || '')}
 
         {result.helpUrl && (
