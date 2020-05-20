@@ -24,7 +24,7 @@ export default class LoginWrapper extends React.PureComponent {
   }
 
   static defaultProps = {
-    title: 'Log in with',
+    title: 'Choose a login provider',
     description: null,
     sanityLogo: null,
     SanityLogo: SanityStudioLogo,

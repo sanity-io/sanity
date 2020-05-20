@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
+import FullscreenMessageDialog from 'part:@sanity/components/dialogs/fullscreen-message'
 import userStore from 'part:@sanity/base/user'
 import Button from 'part:@sanity/components/buttons/default'
 
@@ -10,7 +10,10 @@ function handleLogout() {
 
 export default function UnauthorizedUser(props) {
   return (
-    <FullscreenDialog title="Unauthorized" isOpen centered>
+    <FullscreenMessageDialog
+      buttons={<Button onClick={handleLogout}>Logout</Button>}
+      title="Unauthorized"
+    >
       <p>
         You are not authorized to access this studio. Maybe you could ask someone to invite you to
         collaborate on this project?
@@ -22,9 +25,7 @@ export default function UnauthorizedUser(props) {
           {props.user.name} ({props.user.email})
         </span>
       </p>
-
-      <Button onClick={handleLogout}>Logout</Button>
-    </FullscreenDialog>
+    </FullscreenMessageDialog>
   )
 }
 
