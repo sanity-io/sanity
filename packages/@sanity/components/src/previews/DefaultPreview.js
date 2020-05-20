@@ -71,7 +71,7 @@ class DefaultPreview extends React.PureComponent {
     return (
       <div className={className}>
         <div className={styles.inner}>
-          {media !== false && (
+          {media !== false && media !== undefined && (
             <div className={styles.media}>
               {typeof media === 'function' &&
                 media({dimensions: mediaDimensions, layout: 'default'})}
