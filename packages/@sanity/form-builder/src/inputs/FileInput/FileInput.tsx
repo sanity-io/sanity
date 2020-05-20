@@ -360,7 +360,8 @@ export default class FileInput extends React.PureComponent<Props, FileInputState
                 Upload
               </FileInputButton>
             )}
-            {!readOnly && this.renderSelectFileButton()}
+            {/* Enable when selecting already uploaded files is possible */}
+            {/* {!readOnly && this.renderSelectFileButton()} */}
             {value && otherFields.length > 0 && (
               <Button
                 icon={readOnly ? VisibilityIcon : EditIcon}
