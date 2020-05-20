@@ -146,4 +146,5 @@
 
 .status {
   white-space: nowrap;
+  outline: none;
 }
