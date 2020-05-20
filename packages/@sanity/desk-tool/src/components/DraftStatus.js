@@ -6,15 +6,15 @@ import styles from './ItemStatus.css'
 
 const DraftStatus = () => (
   <Tooltip
+    tabIndex={0}
     className={styles.itemStatus}
     title="There are unpublished edits"
     arrow
     theme="light"
-    distance="2"
     sticky
     size="small"
   >
-    <div className={styles.draftBadge}>
+    <div className={styles.draftBadge} role="image" aria-label="There are unpublished edits">
       <EditIcon />
     </div>
   </Tooltip>
