@@ -31,12 +31,10 @@
 }
 
 .summary {
-  transition: all 0.3s linear;
-}
-
-.summary:focus {
-  outline: 0;
-  font-weight: bold;
+  @nest &:focus {
+    outline: 0;
+    font-weight: bold;
+  }
 }
 
 .upgradeText {
