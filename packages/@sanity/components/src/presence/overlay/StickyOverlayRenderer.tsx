@@ -4,6 +4,7 @@ import {CSSProperties} from 'react'
 import {RegionsWithIntersections} from './RegionsWithIntersections'
 import {flatten, groupBy, orderBy, sortBy} from 'lodash'
 import {
+  AVATAR_ARROW_HEIGHT,
   AVATAR_DISTANCE,
   AVATAR_SIZE,
   DEBUG,
@@ -168,9 +169,13 @@ function renderDock(
       withIntersection => withIntersection.region.data?.presence || []
     ) || []
   )
-  const leftOffset = allPresenceItems.length > 0 ? -closeCount * (AVATAR_SIZE + AVATAR_DISTANCE) : 0
-  const margin = position === 'top' ? margins[0] : margins[2]
-  const arrowHeight = 4
+  const [topMargin, rightMargin, bottomMargin, leftMargin] = margins
+  const leftOffset =
+    (leftMargin || 0) +
+    (allPresenceItems.length > 0 ? -closeCount * (AVATAR_SIZE + AVATAR_DISTANCE) : 0) -
+    rightMargin
+
+  const margin = position === 'top' ? topMargin : bottomMargin
   return (
     <div
       data-dock={position}
@@ -182,8 +187,8 @@ function renderDock(
         alignItems: 'flex-end',
         ...ITEM_TRANSITION,
         transform: `translate3d(${leftOffset}px, 0px, 0px)`,
-        top: arrowHeight + 1 + margin,
-        bottom: arrowHeight + 1 + margin
+        top: AVATAR_ARROW_HEIGHT + 1 + margin,
+        bottom: AVATAR_ARROW_HEIGHT + 1 + margin
       }}
     >
       <FieldPresenceInner position={position} presence={allPresenceItems} />
