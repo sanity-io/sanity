@@ -64,6 +64,11 @@ function NavBar(props) {
       <StateLink state={rootState} className={styles.branding}>
         <Branding projectName={config && config.project.name} />
       </StateLink>
+      {HAS_SPACES && (
+        <div className={styles.spaceSwitcher}>
+          <SpaceSwitcher isVisible={showToolSwitcher} />
+        </div>
+      )}
       <button className={styles.createButton} onClick={onCreateButtonClick} type="button">
         <Tooltip
           disabled={'ontouchstart' in document.documentElement}
@@ -92,11 +97,6 @@ function NavBar(props) {
           />
         </div>
       </div>
-      {HAS_SPACES && (
-        <div className={styles.spaceSwitcher}>
-          <SpaceSwitcher isVisible={showToolSwitcher} />
-        </div>
-      )}
       <div className={styles.toolSwitcher}>
         <ToolSwitcher
           direction="horizontal"

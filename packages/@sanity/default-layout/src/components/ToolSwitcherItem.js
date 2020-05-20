@@ -22,12 +22,14 @@ function ToolSwitcherItem(props) {
       disabled={showLabel || 'ontouchstart' in document.documentElement}
     >
       <div className={styles.inner} tabIndex={-1}>
-        {showIcon && (
-          <div className={styles.iconContainer}>
-            <Icon />
-          </div>
-        )}
-        {showLabel && <div className={styles.toolName}>{title}</div>}
+        <div>
+          {showIcon && (
+            <div className={styles.iconContainer}>
+              <Icon />
+            </div>
+          )}
+          {showLabel && <div className={styles.toolName}>{title}</div>}
+        </div>
       </div>
     </Tooltip>
   )
