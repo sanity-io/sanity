@@ -1,4 +1,4 @@
-import {StickyOverlayRenderer} from './StickyOverlayRenderer'
+import {StickyOverlay} from './StickyOverlay'
 import React from 'react'
 import {DISABLE_OVERLAY} from '../constants'
 import {Tracker} from '../overlay-reporter'
@@ -10,7 +10,7 @@ interface Props {
 
 function OverlayEnabled(props: Props) {
   return (
-    <Tracker component={StickyOverlayRenderer} componentProps={{margins: props.margins}}>
+    <Tracker component={StickyOverlay} componentProps={{margins: props.margins}}>
       {props.children}
     </Tracker>
   )

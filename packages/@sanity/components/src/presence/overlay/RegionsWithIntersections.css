@@ -1,0 +1,5 @@
+@import 'part:@sanity/base/theme/variables-style';
+
+.overlay {
+  margin-right: var(--medium-padding);
+}

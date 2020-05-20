@@ -9,9 +9,7 @@ import {
   AVATAR_SIZE,
   DEBUG,
   SLIDE_RIGHT_THRESHOLD_BOTTOM,
-  SLIDE_RIGHT_THRESHOLD_TOP,
-  SNAP_TO_DOCK_DISTANCE_BOTTOM,
-  SNAP_TO_DOCK_DISTANCE_TOP
+  SLIDE_RIGHT_THRESHOLD_TOP
 } from '../constants'
 import {RegionWithIntersectionDetails} from '../types'
 import {FieldPresenceInner} from '../FieldPresence'
@@ -107,7 +105,7 @@ type Props = {
 }
 const DEFAULT_MARGINS: Margins = [0, 0, 0, 0]
 
-export function StickyOverlayRenderer(props: Props) {
+export function StickyOverlay(props: Props) {
   const {regions, children, trackerRef, margins = DEFAULT_MARGINS} = props
   return (
     <RegionsWithIntersections
