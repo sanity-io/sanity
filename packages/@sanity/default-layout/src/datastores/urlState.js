@@ -1,9 +1,9 @@
 import locationStore from 'part:@sanity/base/location'
+import {map, filter, scan, publishReplay, refCount, tap} from 'rxjs/operators'
 import getOrderedTools from '../util/getOrderedTools'
 import reconfigureClient from '../util/reconfigureClient'
 import {HAS_SPACES, CONFIGURED_SPACES} from '../util/spaces'
-import rootRouter from '../defaultLayoutRouter'
-import {map, filter, scan, publishReplay, refCount, tap} from 'rxjs/operators'
+import rootRouter from '../router'
 
 function resolveUrlStateWithDefaultSpace(state) {
   if (!HAS_SPACES || !state || state.space) {

@@ -1,11 +1,12 @@
 import React from 'react'
+import {action} from 'part:@sanity/storybook/addons/actions'
 import PluginIcon from 'part:@sanity/base/plugin-icon'
 import ViewColumnIcon from 'part:@sanity/base/view-column-icon'
-import ToolSwitcherWidget from '../components/ToolSwitcherWidget'
-import ToolSwitcherItem from '../components/ToolSwitcherItem'
+import ToolSwitcherWidget from '../navbar/toolMenu/ToolSwitcherWidget'
+import ToolSwitcherItem from '../navbar/toolMenu/ToolSwitcherItem'
 
-import NavBarStyles from '../components/styles/NavBar.css'
-import DefaultLayoutStyles from '../components/styles/DefaultLayout.css'
+import NavBarStyles from '../navbar/NavBar.css'
+import DefaultLayoutStyles from '../DefaultLayout.css'
 
 export function ToolSwitcherStory() {
   return (
@@ -13,7 +14,7 @@ export function ToolSwitcherStory() {
       <div className={NavBarStyles.root}>
         <div className={NavBarStyles.toolSwitcher}>
           <ToolSwitcherWidget
-            onSwitchTool={event => console.log('onSwitchTool()', event)}
+            onSwitchTool={event => action('onSwitchTool')}
             tools={[
               {
                 name: 'Desk tool',
