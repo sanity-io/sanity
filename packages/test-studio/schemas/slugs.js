@@ -10,7 +10,7 @@ export default {
     prepare: ({title, subtitle}) => {
       return {
         title: title,
-        subtitle: `/${subtitle}/`
+        subtitle: subtitle && `/${subtitle}/`
       }
     }
   },
