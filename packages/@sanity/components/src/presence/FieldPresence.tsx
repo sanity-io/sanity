@@ -21,21 +21,30 @@ export function FieldPresence({presence}: Props) {
 }
 
 interface InnerProps {
+  stack?: boolean
   presence: FieldPresenceT[]
   position: Position
+  animateArrowFrom?: Position
 }
 
-export function FieldPresenceInner({presence, position}: InnerProps) {
+export function FieldPresenceInner({
+  presence,
+  position,
+  animateArrowFrom,
+  stack = true
+}: InnerProps) {
   const sorted = sortBy(
     uniqBy(presence || [], item => item.user.id),
     presence => presence.lastActiveAt
   )
-  const [hidden, visible] = splitRight(sorted, MAX_AVATARS)
+  const [hidden, visible] = stack ? splitRight(sorted, MAX_AVATARS) : [[], sorted]
 
   const avatars = [
     ...visible.reverse().map(visible => ({
       key: visible.user.id,
-      element: <UserAvatar position={position} user={visible.user} />
+      element: (
+        <UserAvatar animateArrowFrom={animateArrowFrom} position={position} user={visible.user} />
+      )
     })),
     hidden.length >= 2
       ? {
