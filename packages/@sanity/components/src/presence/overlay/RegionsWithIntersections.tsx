@@ -89,7 +89,7 @@ export function RegionsWithIntersections(props: Props) {
   const regionsWithIntersectionDetails: RegionWithIntersectionDetails[] =
     top && bottom
       ? regions
-          .filter(region => region.data.presence.length > 0)
+          .filter(region => region.data?.presence?.length > 0)
           .map(
             (region): RegionWithIntersectionDetails => {
               const intersection = intersections[region.id]
