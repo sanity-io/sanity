@@ -1,14 +1,24 @@
 import React from 'react'
 import Dashboard from './containers/Dashboard'
 
+const strokeStyle = {
+  stroke: 'currentColor',
+  strokeWidth: 1.2,
+  vectorEffect: 'non-scaling-stroke'
+}
+
 const Icon = () => (
-  <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path
-      fillRule="evenodd"
-      clipRule="evenodd"
-      d="M5 5H12V10V11V14H5V5ZM12 15H5V20H12V15ZM12 21H5H4V20V15V14V5V4H5H12H13H20H21V5V10V11V20V21H20H13H12ZM20 11H13V14V15V20H20V11ZM20 10V5H13V10H20Z"
-      fill="currentColor"
-    />
+  <svg
+    viewBox="0 0 25 25"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    preserveAspectRatio="xMidYMid"
+    width="1em"
+    height="1em"
+  >
+    <path d="M19.5 19.5H5.5V5.5H19.5V19.5Z" style={strokeStyle} />
+    <path d="M5.5 12.5H19.5" style={strokeStyle} />
+    <path d="M14.5 19.5V12.5M10.5 12.5V5.5" style={strokeStyle} />
   </svg>
 )
 
