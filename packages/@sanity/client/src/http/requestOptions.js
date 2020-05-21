@@ -23,7 +23,7 @@ module.exports = (config, overrides = {}) => {
   const timeout = typeof overrides.timeout === 'undefined' ? config.timeout : overrides.timeout
   return assign({}, overrides, {
     headers: assign({}, headers, overrides.headers || {}),
-    timeout: typeof timeout === 'undefined' ? 5 * 60 * 1000 : timeout,
+    timeout: typeof timeout === 'undefined' ? 10 * 60 * 1000 : timeout,
     json: true,
     withCredentials
   })
