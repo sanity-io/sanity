@@ -71,6 +71,8 @@
 
 .avatarInner {
   position: relative;
+  width: 100%;
+  height: 100%;
 
   @nest & .avatarInitials {
     position: absolute;
@@ -125,6 +127,7 @@
     position: absolute;
     top: -4px;
     left: calc(50% - 5.5px);
+    transform-origin: 0 0;
   }
 }
 
