@@ -9,6 +9,7 @@
   display: flex;
   user-select: none;
   box-shadow: 0 0 0 1px var(--component-bg);
+  align-self: center;
 
   &[data-tone='navbar'] {
     box-shadow: 0 0 0 1px var(--main-navigation-color);
