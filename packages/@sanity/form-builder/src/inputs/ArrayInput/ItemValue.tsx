@@ -15,7 +15,7 @@ import PatchEvent from '../../PatchEvent'
 import Preview from '../../Preview'
 import {resolveTypeName} from '../../utils/resolveTypeName'
 import {Path} from '../../typedefs/path'
-import {FormBuilderPresence, Marker, Type} from '../../typedefs'
+import {Presence, Marker, Type} from '../../typedefs'
 import * as PathUtils from '@sanity/util/paths'
 import ConfirmButton from './ConfirmButton'
 import styles from './styles/ItemValue.css'
@@ -55,7 +55,7 @@ type Props = {
   filterField: Function
   readOnly: boolean | null
   focusPath: Path
-  presence: FormBuilderPresence[]
+  presence: Presence[]
 }
 function pathSegmentFrom(value) {
   return {_key: value._key}

@@ -3,7 +3,7 @@ import Switch from 'part:@sanity/components/toggles/switch'
 import Checkbox from 'part:@sanity/components/toggles/checkbox'
 import ValidationStatus from 'part:@sanity/components/validation/status'
 import PatchEvent, {set} from '../PatchEvent'
-import {Type, Marker, FormBuilderPresence} from '../typedefs'
+import {Type, Marker, Presence} from '../typedefs'
 import styles from './BooleanInput.css'
 import FieldStatus from '@sanity/components/lib/fieldsets/FieldStatus'
 import {FieldPresence} from '@sanity/components/presence'
@@ -15,7 +15,7 @@ type Props = {
   onFocus: () => void
   onChange: (arg0: PatchEvent) => void
   markers: Marker[]
-  presence: FormBuilderPresence[]
+  presence: Presence[]
 }
 
 export default function BooleanInput(props: Props) {

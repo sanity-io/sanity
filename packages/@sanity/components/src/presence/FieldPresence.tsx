@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define,react/no-multi-comp */
-import React from 'react'
+import React, {useContext} from 'react'
 import {splitRight} from './utils'
 import {sortBy, uniqBy} from 'lodash'
 import {AVATAR_DISTANCE, AVATAR_SIZE, MAX_AVATARS} from './constants'
@@ -7,14 +7,17 @@ import {PopoverList, StackCounter} from './index'
 import styles from './FieldPresence.css'
 import UserAvatar from './UserAvatar'
 import {PresenceRegion} from './overlay/PresenceRegion'
-import {FieldPresence as FieldPresenceT, Position} from './types'
+import {FormFieldPresence, Position} from './types'
 import {PresenceListItem} from './PresenceListItem'
+import {Context} from './context'
 
 interface Props {
-  presence: FieldPresenceT[]
+  presence: FormFieldPresence[]
 }
 
-export function FieldPresence({presence}: Props) {
+export function FieldPresence(props: Props) {
+  const contextPresence = useContext(Context)
+  const presence = props.presence || contextPresence
   return presence.length > 0 ? (
     <PresenceRegion presence={presence} component={FieldPresenceInner} />
   ) : null
@@ -22,7 +25,7 @@ export function FieldPresence({presence}: Props) {
 
 interface InnerProps {
   stack?: boolean
-  presence: FieldPresenceT[]
+  presence: FormFieldPresence[]
   position: Position
   animateArrowFrom?: Position
 }

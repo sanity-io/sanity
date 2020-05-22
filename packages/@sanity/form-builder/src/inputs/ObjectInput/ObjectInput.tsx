@@ -1,6 +1,6 @@
 import React from 'react'
 import Field from './Field'
-import {FormBuilderPresence, Marker} from '../../typedefs'
+import {Presence, Marker} from '../../typedefs'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
 import PatchEvent, {set, setIfMissing, unset} from '../../PatchEvent'
 import isEmpty from '../../utils/isEmpty'
@@ -44,7 +44,7 @@ type ObjectInputProps = {
   readOnly?: boolean
   isRoot?: boolean
   filterField?: (...args: any[]) => any
-  presence: FormBuilderPresence[]
+  presence: Presence[]
 }
 export default class ObjectInput extends React.PureComponent<ObjectInputProps, {}> {
   _firstField: any
