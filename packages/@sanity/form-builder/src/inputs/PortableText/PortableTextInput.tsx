@@ -22,7 +22,7 @@ import InvalidValue from './InvalidValue'
 import {Portal} from 'part:@sanity/components/utilities/portal'
 import StackedEscapeable from 'part:@sanity/components/utilities/stacked-escapable'
 import PatchEvent from '../../PatchEvent'
-import {FormBuilderPresence, Marker} from '../../typedefs'
+import {Presence, Marker} from '../../typedefs'
 import {Patch} from '../../typedefs/patch'
 import styles from './PortableTextInput.css'
 import withPatchSubscriber from '../../utils/withPatchSubscriber'
@@ -65,7 +65,7 @@ type Props = {
   }
   renderBlockActions?: RenderBlockActions
   renderCustomMarkers?: RenderCustomMarkers
-  presence: FormBuilderPresence[]
+  presence: Presence[]
   subscribe: (arg0: ({patches: PatchEvent}) => void) => void
 }
 

@@ -5,7 +5,8 @@ import {Path, PathSegment} from './typedefs/path'
 import PatchEvent from './PatchEvent'
 import generateHelpUrl from '@sanity/generate-help-url'
 import * as PathUtils from '@sanity/util/paths.js'
-import {Type, Marker, FormBuilderPresence} from './typedefs'
+import {Type, Marker, Presence} from './typedefs'
+import {Context as PresenceContext} from '@sanity/components/presence'
 
 const NO_MARKERS: Marker[] = []
 
@@ -16,7 +17,7 @@ interface Props {
   onFocus: (arg0: Path) => void
   onBlur: () => void
   readOnly: boolean
-  presence?: FormBuilderPresence[]
+  presence?: Presence[]
   focusPath: Path
   markers: Marker[]
   level: number
@@ -27,6 +28,7 @@ interface Props {
   onKeyPress?: (ev: React.KeyboardEvent) => void
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
 const ENABLE_CONTEXT = () => {}
 
 function getDisplayName(component) {
@@ -222,21 +224,23 @@ export class FormBuilderInput extends React.Component<Props> {
       }))
     return (
       <div data-focus-path={PathUtils.toString(path)}>
-        <InputComponent
-          {...rest}
-          {...rootProps}
-          {...leafProps}
-          value={value}
-          readOnly={readOnly || type.readOnly}
-          markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
-          type={type}
-          presence={childPresenceInfo}
-          onChange={this.handleChange}
-          onFocus={this.handleFocus}
-          onBlur={this.handleBlur}
-          level={level}
-          ref={this.setInput}
-        />
+        <PresenceContext.Provider value={childPresenceInfo}>
+          <InputComponent
+            {...rest}
+            {...rootProps}
+            {...leafProps}
+            value={value}
+            readOnly={readOnly || type.readOnly}
+            markers={childMarkers.length === 0 ? NO_MARKERS : childMarkers}
+            type={type}
+            presence={childPresenceInfo}
+            onChange={this.handleChange}
+            onFocus={this.handleFocus}
+            onBlur={this.handleBlur}
+            level={level}
+            ref={this.setInput}
+          />
+        </PresenceContext.Provider>
       </div>
     )
   }
