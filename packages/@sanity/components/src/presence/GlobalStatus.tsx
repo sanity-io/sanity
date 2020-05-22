@@ -24,12 +24,16 @@ type GlobalPresenceListItemProps = {
 
 function GlobalPresenceListItem(props: GlobalPresenceListItemProps) {
   const {presence, onClick, size} = props
-  const documentId = presence.locations.map(location => location.documentId)
+  const locationWithDocumentId = presence.locations.find(location => location.documentId)
   const item = (
     <PresenceListItem user={presence.user} status={presence.status} onClick={onClick} size={size} />
   )
-  return documentId ? (
-    <IntentLink className={styles.intentLink} intent="edit" params={{id: documentId}}>
+  return locationWithDocumentId ? (
+    <IntentLink
+      className={styles.intentLink}
+      intent="edit"
+      params={{id: locationWithDocumentId.documentId}}
+    >
       {item}
     </IntentLink>
   ) : (
