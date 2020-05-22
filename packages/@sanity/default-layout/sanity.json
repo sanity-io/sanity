@@ -11,7 +11,7 @@
     {
       "implements": "part:@sanity/base/root",
       "name": "part:@sanity/default-layout/root",
-      "path": "DefaultLayoutContainer"
+      "path": "Root"
     },
     {
       "implements": "part:@sanity/default-layout/tool-switcher",
@@ -28,7 +28,7 @@
     },
     {
       "implements": "part:@sanity/default-layout/sidecar-datastore",
-      "path": "datastores/sidecar.js"
+      "path": "datastores/sidecar"
     },
     {
       "name": "part:@sanity/default-layout/branding",

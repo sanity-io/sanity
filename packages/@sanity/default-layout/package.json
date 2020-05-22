@@ -6,7 +6,9 @@
   "scripts": {
     "coverage": "nyc --report=lcov --report=text _mocha -- test/**/*.test.js",
     "clean": "rimraf lib .nyc_output coverage",
-    "prepublishOnly": "sanity-check"
+    "posttest": "npm run type-check",
+    "prepublishOnly": "sanity-check",
+    "type-check": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
@@ -45,7 +47,8 @@
     "mocha": "^5.0.1",
     "nyc": "^11.0.3",
     "prop-types": "^15.6.0",
-    "rimraf": "^2.7.1"
+    "rimraf": "^2.7.1",
+    "typescript": "^3.7.3"
   },
   "peerDependencies": {
     "@sanity/base": "^0.147.0",
