@@ -2,13 +2,13 @@
 import {useId} from '@reach/auto-id'
 import React from 'react'
 
-import {FieldPresence} from '../types'
+import {FormFieldPresence} from '../types'
 import {DISABLE_OVERLAY} from '../constants'
 import {RegionReporter} from '../overlay-reporter'
 
 type Props = {
-  presence: FieldPresence[]
-  component: React.ComponentType<{presence: FieldPresence[]}>
+  presence: FormFieldPresence[]
+  component: React.ComponentType<{presence: FormFieldPresence[]}>
 }
 
 function RegionWithOverlay({presence, component}: Props) {

@@ -5,37 +5,49 @@ import {PatchEvent, set, unset} from 'part:@sanity/form-builder/patch-event'
 
 import styles from './Slider.css'
 
-export default class Slider extends React.Component {
-  static propTypes = {
-    type: PropTypes.shape({
-      title: PropTypes.string
-    }).isRequired,
-    level: PropTypes.number,
-    value: PropTypes.number,
-    onChange: PropTypes.func.isRequired
-  }
-
-  handleChange = event => {
+const Slider = React.forwardRef(function Slider(props, ref) {
+  const {type, value, level, onChange, onFocus} = props
+  const handleChange = React.useCallback(event => {
     const inputValue = event.target.value
     const patch = inputValue === '' ? unset() : set(Number(inputValue))
-    this.props.onChange(PatchEvent.from(patch))
-  }
+    onChange(PatchEvent.from(patch))
+  }, [])
 
-  render() {
-    const {type, value, level} = this.props
-    const {min, max, step} = type.options.range
-    return (
-      <FormField label={type.title} level={level} description={type.description}>
-        <input
-          type="range"
-          className={styles.slider}
-          min={min}
-          max={max}
-          step={step}
-          value={value === undefined ? '' : value}
-          onChange={this.handleChange}
-        />
-      </FormField>
-    )
-  }
+  const {min, max, step} = type.options.range
+
+  return (
+    <FormField label={type.title} level={level} description={type.description}>
+      <input
+        type="range"
+        className={styles.slider}
+        min={min}
+        max={max}
+        ref={ref}
+        step={step}
+        value={value === undefined ? '' : value}
+        onFocus={onFocus}
+        onChange={handleChange}
+      />
+    </FormField>
+  )
+})
+
+Slider.propTypes = {
+  type: PropTypes.shape({
+    title: PropTypes.string,
+    description: PropTypes.string,
+    options: PropTypes.shape({
+      range: PropTypes.shape({
+        min: PropTypes.number,
+        max: PropTypes.number,
+        step: PropTypes.number
+      })
+    })
+  }).isRequired,
+  level: PropTypes.number,
+  value: PropTypes.number,
+  onChange: PropTypes.func.isRequired,
+  onFocus: PropTypes.func.isRequired
 }
+
+export default Slider
