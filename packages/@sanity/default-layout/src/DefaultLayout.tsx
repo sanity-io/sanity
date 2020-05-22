@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types'
 import React from 'react'
+import {Subscription} from 'rxjs'
 import AppLoadingScreen from 'part:@sanity/base/app-loading-screen'
 import {RouteScope, withRouterHOC} from 'part:@sanity/base/router'
 import absolutes from 'all:part:@sanity/base/absolutes'
@@ -11,29 +11,40 @@ import SideMenu from './navbar/drawer/SideMenu'
 import NavBarContainer from './navbar/NavBarContainer'
 import {SchemaErrorReporter} from './schemaErrors/SchemaErrorReporter'
 import getNewDocumentModalActions from './util/getNewDocumentModalActions'
+import {Router, Tool, User} from './types'
 
 import styles from './DefaultLayout.css'
 
-class DefaultLayout extends React.PureComponent {
-  static propTypes = {
-    router: PropTypes.shape({
-      state: PropTypes.shape({tool: PropTypes.string}),
-      navigate: PropTypes.func
-    }).isRequired,
-    tools: PropTypes.arrayOf(
-      PropTypes.shape({
-        name: PropTypes.string
-      })
-    ).isRequired
-  }
+interface OuterProps {
+  tools: Tool[]
+}
 
-  state = {
+interface Props {
+  router: Router
+  tools: Tool[]
+}
+
+interface State {
+  createMenuIsOpen: boolean
+  menuIsOpen: boolean
+  showLoadingScreen: boolean
+  searchIsOpen: boolean
+  loaded: boolean
+  user?: User
+}
+
+class DefaultLayout extends React.PureComponent<Props, State> {
+  state: State = {
     createMenuIsOpen: false,
     menuIsOpen: false,
     showLoadingScreen: true,
     searchIsOpen: false,
     loaded: false
   }
+
+  userSubscription: Subscription | null = null
+
+  _loadingScreenElement: HTMLDivElement | null = null
 
   // eslint-disable-next-line camelcase
   UNSAFE_componentWillMount() {
@@ -71,13 +82,13 @@ class DefaultLayout extends React.PureComponent {
     }
   }
 
-  handleAnimationEnd = event => {
+  handleAnimationEnd = () => {
     this.setState({
       showLoadingScreen: false
     })
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate() {
     if (!this.state.loaded) {
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState({loaded: true})
@@ -167,6 +178,7 @@ class DefaultLayout extends React.PureComponent {
             /* eslint-disable-next-line react/jsx-handler-names */
             onSignOut={userStore.actions.logout}
             onSwitchTool={this.handleSwitchTool}
+            router={router}
             tools={this.props.tools}
             user={this.state.user}
           />
@@ -200,4 +212,4 @@ class DefaultLayout extends React.PureComponent {
   }
 }
 
-export default withRouterHOC(DefaultLayout)
+export default withRouterHOC(DefaultLayout) as React.ComponentType<OuterProps>

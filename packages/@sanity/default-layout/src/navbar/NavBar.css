@@ -21,7 +21,7 @@
 
     @nest &.withToolSwitcher {
       /* prettier-ignore */
-      grid-template-areas:  'branding    spaceSwitcher createButton search                toolSwitcher extras      sanityStatus sidecarStatus loginStatus';
+      grid-template-areas:  'branding    datasetSelect createButton search                toolSwitcher extras      sanityStatus sidecarStatus loginStatus';
       /* prettier-ignore */
       grid-template-columns: max-content max-content   min-content  minmax(240px, 400px)  auto         max-content max-content  min-content   min-content;
     }
@@ -105,9 +105,9 @@ a.branding {
   }
 }
 
-.spaceSwitcher {
+.datasetSelect {
   display: none;
-  grid-area: spaceSwitcher;
+  grid-area: datasetSelect;
   font-size: calc(13 / 16 * 1em);
   padding: var(--small-padding);
   box-sizing: border-box;
