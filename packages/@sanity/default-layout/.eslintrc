@@ -1,0 +1,8 @@
+{
+  "extends": ["../../../.eslintrc-ts.js"],
+  "rules": {
+    "@typescript-eslint/explicit-function-return-type": 0,
+    "@typescript-eslint/no-use-before-define": 0,
+    "react/require-optimization": 0
+  }
+}
