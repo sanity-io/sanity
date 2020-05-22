@@ -1,3 +1,4 @@
+
 export type Position = 'top' | 'bottom' | 'inside' | null
 export type Size = 'xsmall' | 'small' | 'medium'
 
@@ -51,8 +52,9 @@ export interface Location {
   path: PathElement[]
 }
 
-export interface FieldPresence {
+export interface FormFieldPresence {
   user: User
+  path: PathElement[]
   sessionId: string
   lastActiveAt: string
 }

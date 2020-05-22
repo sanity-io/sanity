@@ -21,10 +21,4 @@ export type Marker = {
   item: any
 }
 
-export type FormBuilderPresence = {
-  sessionId: string
-  userId: string
-  path: Path
-  timestamp: string
-  state: {[key: string]: any}
-}
+export {FormFieldPresence as Presence} from '@sanity/components/presence'
