@@ -1,4 +1,5 @@
 import React from 'react'
+import {Subscription} from 'rxjs'
 import LoginWrapper from 'part:@sanity/base/login-wrapper?'
 import {RouterProvider} from 'part:@sanity/base/router'
 import AppLoadingScreen from 'part:@sanity/base/app-loading-screen'
@@ -10,8 +11,19 @@ import NotFound from './main/NotFound'
 
 const handleNavigate = urlStateStore.navigate
 
-export default class DefaultLayoutContainer extends React.PureComponent {
-  state = {}
+interface State {
+  intent?: {
+    name: string
+    params: {[key: string]: string}
+  }
+  urlState?: {}
+  isNotFound?: boolean
+}
+
+class DefaultLayoutRoot extends React.PureComponent<{}, State> {
+  state: State = {}
+
+  urlStateSubscription: Subscription | null = null
 
   // eslint-disable-next-line camelcase
   UNSAFE_componentWillMount() {
@@ -61,3 +73,5 @@ export default class DefaultLayoutContainer extends React.PureComponent {
     )
   }
 }
+
+export default DefaultLayoutRoot

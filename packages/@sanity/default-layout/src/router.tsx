@@ -7,7 +7,7 @@ const basePath = ((project && project.basePath) || '').replace(/\/+$/, '')
 
 const toolRoute = route('/:tool', toolParams => {
   const foundTool = tools.find(current => current.name === toolParams.tool)
-  return foundTool ? route.scope(foundTool.name, '/', foundTool.router) : route('/')
+  return foundTool ? (route as any).scope(foundTool.name, '/', foundTool.router) : route('/')
 })
 
 const spaceRoute = route('/:space', params => {
@@ -16,7 +16,7 @@ const spaceRoute = route('/:space', params => {
 })
 
 const rootRouter = route(`${basePath}/`, [
-  route.intents('/intent'),
+  (route as any).intents('/intent'),
   HAS_SPACES ? spaceRoute : toolRoute
 ])
 
