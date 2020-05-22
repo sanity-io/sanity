@@ -5,7 +5,7 @@ export type PathElement = string | number | {_key: string}
 
 // Low level data/transport format
 export interface Session {
-  id: string
+  sessionId: string
   userId: string
   lastActiveAt: LastActiveAt
   locations: PresenceLocation[]
