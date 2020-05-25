@@ -56,7 +56,6 @@ const handleIncomingMessage = (event: IncomingBifurEvent<Location[]>): Transport
 
 export const createBifurTransport = (bifur, sessionId: string): Transport => {
   const disconnect$: Observable<never> = fromEvent(window, 'beforeunload').pipe(
-    tap(() => console.log('before unload')),
     switchMapTo(bifur.request('presence_disconnect', {session: sessionId})),
     mergeMapTo(EMPTY)
   )
