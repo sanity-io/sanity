@@ -28,6 +28,7 @@ import {
 } from 'rxjs/operators'
 import {flatten, groupBy, omit, uniq} from 'lodash'
 import {createBifurTransport} from './message-transports/bifurTransport'
+import {nanoid} from 'nanoid'
 
 import userStore from '../user'
 import {PresenceLocation, Session, User} from './types'
@@ -40,13 +41,35 @@ import {
 } from './message-transports/transport'
 import {mock$} from './mock-events'
 
-// todo: consider using sessionStorage for this instead as it will survive page reloads. It needs a way to prevent duplicate ids when opening new windows/tabs
-// possibly by using storageEvent to coordinate
-// > Opening a page in a new tab or window creates a new session with the value of the top-level browsing context, which differs from how session cookies work.
-// https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage
-export const SESSION_ID = Math.random()
-  .toString(32)
-  .substring(2)
+const KEY = 'presence_session_id'
+const generate = () => nanoid(16)
+
+// We're keeping the session id in sessionStorage as it will survive page reloads.
+// todo:
+//  There's a potential issue with window.open(...) here as it inherits the top level session storage and thus will
+//  re-use session ids:
+//    > Opening a page in a new tab or window creates a new session with the value of the top-level browsing context,
+//      which differs from how session cookies work.
+//      More at https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage
+//  This is _probably_ a quite marginal case and not going to be much of a issue in practice
+function getSessionId() {
+  try {
+    return window.sessionStorage.getItem(KEY)
+  } catch (err) {
+    // We don't want to fail hard if session storage can't be accessed for some reason
+  }
+  return null
+}
+function setSessionId(id) {
+  try {
+    window.sessionStorage.setItem(KEY, id)
+  } catch (err) {
+    // We don't want to fail hard if session storage can't be accessed for some reason
+  }
+  return id
+}
+
+export const SESSION_ID = getSessionId() || setSessionId(generate())
 
 const [presenceEvents$, sendMessage] = createBifurTransport(bifur, SESSION_ID)
 
