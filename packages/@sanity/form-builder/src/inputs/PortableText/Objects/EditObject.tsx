@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useState} from 'react'
+import React, {FunctionComponent, useState, useMemo} from 'react'
 import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
 import {get} from 'lodash'
 
@@ -49,6 +49,8 @@ export const EditObject: FunctionComponent<Props> = ({
     onClose()
   }
 
+  const refElm = useMemo(() => referenceElement, [])
+
   const handleChange = (patchEvent: PatchEvent): void => {
     onChange(patchEvent, formBuilderPath)
   }
@@ -74,7 +76,7 @@ export const EditObject: FunctionComponent<Props> = ({
         <PopoverObjectEditing
           object={object}
           type={type}
-          referenceElement={referenceElement}
+          referenceElement={refElm}
           readOnly={readOnly}
           markers={markers}
           focusPath={focusPath}
