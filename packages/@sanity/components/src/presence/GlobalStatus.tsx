@@ -57,9 +57,7 @@ export function GlobalStatus({projectId, presence}: Props) {
           {/* Only show this on mobile */}
           <div className={styles.mobileContent}>
             <div className={styles.icon}>
-              {presence.length > 0 && (
-                <div className={styles.statusIndicator} aria-label={`Online presentUsers`} />
-              )}
+              {presence.length > 0 && <div className={styles.statusIndicator} />}
               <UsersIcon />
             </div>
           </div>

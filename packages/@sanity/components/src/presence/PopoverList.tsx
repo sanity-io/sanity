@@ -104,7 +104,7 @@ export default function PopoverList<Item extends {user: User}>({
         distance={distance}
       >
         <button
-          aria-label={isOpen ? 'Close presence menu' : 'Open presence menu'}
+          aria-label={isOpen ? 'Hide online collaborators' : 'Show online collaborators'}
           type="button"
           className={isGlobal ? styles.globalButton : styles.button}
           aria-haspopup="true"
