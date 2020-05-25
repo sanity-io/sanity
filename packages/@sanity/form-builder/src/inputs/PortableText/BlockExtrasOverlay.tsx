@@ -44,7 +44,11 @@ export default class BlockExtrasOverlay extends React.Component<Props, State> {
   }
 
   shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
-    return nextProps.value !== this.props.value || nextState.visible !== this.state.visible
+    return (
+      nextProps.value !== this.props.value ||
+      nextState.visible !== this.state.visible ||
+      nextProps.markers !== this.props.markers
+    )
   }
 
   // eslint-disable-next-line complexity
