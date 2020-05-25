@@ -15,7 +15,7 @@ import SearchContainer from './search/SearchContainer'
 import DatasetSelect from './datasetSelect/DatasetSelect'
 import {Router, Tool, User} from '../types'
 
-import styles from './NavBar.css'
+import styles from './Navbar.css'
 
 interface Props {
   searchIsOpen: boolean
@@ -41,7 +41,7 @@ if (sidecar) {
   SidecarToggleButton = sidecar.SidecarToggleButton
 }
 
-function NavBar(props: Props) {
+function Navbar(props: Props) {
   const {
     searchIsOpen,
     onCreateButtonClick,
@@ -150,11 +150,11 @@ function NavBar(props: Props) {
   )
 }
 
-NavBar.defaultProps = {
+Navbar.defaultProps = {
   showLabel: true,
   showToolSwitcher: true,
   onSetLoginStatusElement: undefined,
   onSetSearchElement: undefined
 }
 
-export default NavBar
+export default Navbar

@@ -1,5 +1,5 @@
 import React from 'react'
-import NavBar from './NavBar'
+import Navbar from './Navbar'
 import {Router, Tool, User} from '../types'
 
 interface Props {
@@ -79,7 +79,7 @@ function getNextState(
 /* eslint-enable max-depth */
 /* eslint-enable no-lonely-if */
 
-class NavBarContainer extends React.PureComponent<Props, State> {
+class NavbarContainer extends React.PureComponent<Props, State> {
   state = {
     showLabel: false,
     showLabelMinWidth: -1,
@@ -95,7 +95,7 @@ class NavBarContainer extends React.PureComponent<Props, State> {
   io = null
 
   componentDidMount() {
-    // Start an animation frame loop to check whether elements within the NavBar
+    // Start an animation frame loop to check whether elements within the Navbar
     // exits the viewport at any time.
     this.tick()
   }
@@ -177,7 +177,7 @@ class NavBarContainer extends React.PureComponent<Props, State> {
     const {showLabel, showToolSwitcher} = this.state
 
     return (
-      <NavBar
+      <Navbar
         onCreateButtonClick={onCreateButtonClick}
         onSearchClose={onSearchClose}
         onSearchOpen={onSearchOpen}
@@ -197,4 +197,4 @@ class NavBarContainer extends React.PureComponent<Props, State> {
   }
 }
 
-export default NavBarContainer
+export default NavbarContainer
