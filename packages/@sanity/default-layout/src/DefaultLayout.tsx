@@ -8,7 +8,7 @@ import Sidecar from './addons/Sidecar'
 import RenderTool from './main/RenderTool'
 import ActionModal from './navbar/actionButton/ActionModal'
 import SideMenu from './navbar/drawer/SideMenu'
-import NavBarContainer from './navbar/NavBarContainer'
+import NavbarContainer from './navbar/NavbarContainer'
 import {SchemaErrorReporter} from './schemaErrors/SchemaErrorReporter'
 import getNewDocumentModalActions from './util/getNewDocumentModalActions'
 import {Router, Tool, User} from './types'
@@ -155,7 +155,7 @@ class DefaultLayout extends React.PureComponent<Props, State> {
         )}
 
         <div className={styles.navBar}>
-          <NavBarContainer
+          <NavbarContainer
             tools={tools}
             onCreateButtonClick={this.handleCreateButtonClick}
             onToggleMenu={this.handleToggleMenu}
