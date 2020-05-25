@@ -100,6 +100,12 @@ export default {
       options: {collapsible: true, collapsed: true}
     },
     {
+      name: 'portableText',
+      title: 'Portable text',
+      type: 'array',
+      of: [{type: 'block'}, {type: 'objectWithNestedArray'}]
+    },
+    {
       name: 'nestedArray',
       title: 'Nested array test',
       type: 'array',

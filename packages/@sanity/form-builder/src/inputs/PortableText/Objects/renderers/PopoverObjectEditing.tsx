@@ -7,9 +7,10 @@ import Stacked from 'part:@sanity/components/utilities/stacked'
 
 import {FormBuilderInput} from '../../../../FormBuilderInput'
 import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
-import {Marker} from '../../../../typedefs'
+import {Marker, Presence} from '../../../../typedefs'
 import {Path} from '../../../../typedefs/path'
 import {PatchEvent} from '../../../../PatchEvent'
+import {Overlay as PresenceOverlay} from '@sanity/components/presence'
 
 type Props = {
   type: Type
@@ -23,6 +24,7 @@ type Props = {
   onFocus: (arg0: Path) => void
   onClose: (event: React.SyntheticEvent) => void
   onBlur: () => void
+  presence: Presence[]
 }
 
 export const PopoverObjectEditing: FunctionComponent<Props> = ({
@@ -35,6 +37,7 @@ export const PopoverObjectEditing: FunctionComponent<Props> = ({
   path,
   onChange,
   onFocus,
+  presence,
   onBlur,
   onClose
 }): JSX.Element => {
@@ -52,18 +55,21 @@ export const PopoverObjectEditing: FunctionComponent<Props> = ({
           padding="none"
         >
           <DialogContent size="medium" padding="small">
-            <FormBuilderInput
-              type={type}
-              level={0}
-              readOnly={readOnly || type.readOnly}
-              value={object}
-              onChange={handleChange}
-              onFocus={onFocus}
-              onBlur={onBlur}
-              focusPath={focusPath}
-              path={path}
-              markers={markers}
-            />
+            <PresenceOverlay>
+              <FormBuilderInput
+                type={type}
+                level={0}
+                readOnly={readOnly || type.readOnly}
+                value={object}
+                onChange={handleChange}
+                onFocus={onFocus}
+                onBlur={onBlur}
+                focusPath={focusPath}
+                path={path}
+                presence={presence}
+                markers={markers}
+              />
+            </PresenceOverlay>
           </DialogContent>
         </Popover>
       )}
