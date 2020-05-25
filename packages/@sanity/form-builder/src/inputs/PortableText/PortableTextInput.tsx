@@ -188,9 +188,9 @@ export default withPatchSubscriber(
       this.usubscribe = props.subscribe(this.handleDocumentPatches)
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
       // Trigger rendering of toolbar initially
-      this.setState({selection: null})
+      this.setState({selection: null}) // eslint-disable-line react/no-did-mount-set-state
     }
 
     componentWillUnmount(): void {
