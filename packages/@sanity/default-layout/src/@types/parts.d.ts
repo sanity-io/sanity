@@ -341,7 +341,7 @@ declare module 'part:@sanity/base/new-document-structure?' {
 
 declare module 'part:@sanity/base/client' {
   const client: {
-    config: (api: {}) => void
+    config: (api?: {}) => {projectId: string; dataset: string}
   }
   export default client
 }
