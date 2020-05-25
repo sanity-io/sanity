@@ -340,11 +340,14 @@ export default withPatchSubscriber(
       if (isSpan) {
         return defaultRender(value)
       }
+      const inlineMarkers = markers.filter(
+        marker => typeof marker.path[2] === 'object' && marker.path[2]._key === value._key
+      )
       return (
         <InlineObject
           attributes={attributes}
           focusPath={focusPath}
-          markers={markers}
+          markers={inlineMarkers}
           onFocus={this.props.onFocus}
           onChange={this.handleFormBuilderEditObjectChange}
           readOnly={readOnly}
