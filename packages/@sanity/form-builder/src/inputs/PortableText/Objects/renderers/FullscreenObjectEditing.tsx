@@ -3,9 +3,10 @@ import React, {FunctionComponent} from 'react'
 import FullscreenDialog from 'part:@sanity/components/dialogs/fullscreen'
 import Stacked from 'part:@sanity/components/utilities/stacked'
 import {PortableTextBlock, Type, PortableTextChild} from '@sanity/portable-text-editor'
+import {Overlay as PresenceOverlay} from '@sanity/components/presence'
 
 import {FormBuilderInput} from '../../../../FormBuilderInput'
-import {Marker} from '../../../../typedefs'
+import {Marker, Presence} from '../../../../typedefs'
 import {Path} from '../../../../typedefs/path'
 import {PatchEvent} from '../../../../PatchEvent'
 
@@ -20,6 +21,7 @@ type Props = {
   onFocus: (arg0: Path) => void
   onBlur: () => void
   onClose: (event: React.SyntheticEvent) => void
+  presence: Presence[]
 }
 
 export const FullscreenObjectEditing: FunctionComponent<Props> = ({
@@ -32,7 +34,8 @@ export const FullscreenObjectEditing: FunctionComponent<Props> = ({
   onChange,
   onFocus,
   onBlur,
-  onClose
+  onClose,
+  presence
 }): JSX.Element => {
   const handleChange = (patchEvent: PatchEvent): void => onChange(patchEvent, path)
   return (
@@ -48,18 +51,21 @@ export const FullscreenObjectEditing: FunctionComponent<Props> = ({
             {/* TODO: Styling */}
             {/* <div className={styles.formBuilderInputWrapper}> */}
             <div>
-              <FormBuilderInput
-                type={type}
-                level={0}
-                readOnly={readOnly || type.readOnly}
-                value={object}
-                onChange={handleChange}
-                onFocus={onFocus}
-                onBlur={onBlur}
-                focusPath={focusPath}
-                path={path}
-                markers={markers}
-              />
+              <PresenceOverlay>
+                <FormBuilderInput
+                  type={type}
+                  level={0}
+                  readOnly={readOnly || type.readOnly}
+                  value={object}
+                  presence={presence}
+                  onChange={handleChange}
+                  onFocus={onFocus}
+                  onBlur={onBlur}
+                  focusPath={focusPath}
+                  path={path}
+                  markers={markers}
+                />
+              </PresenceOverlay>
             </div>
           </FullscreenDialog>
         </div>

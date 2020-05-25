@@ -6,9 +6,10 @@ import DialogContent from 'part:@sanity/components/dialogs/content'
 import Stacked from 'part:@sanity/components/utilities/stacked'
 
 import {FormBuilderInput} from '../../../../FormBuilderInput'
-import {Marker} from '../../../../typedefs'
+import {Marker, Presence} from '../../../../typedefs'
 import {Path} from '../../../../typedefs/path'
 import {PatchEvent} from '../../../../PatchEvent'
+import {Overlay as PresenceOverlay} from '@sanity/components/presence'
 
 type Props = {
   type: Type
@@ -21,6 +22,7 @@ type Props = {
   onFocus: (arg0: Path) => void
   onBlur: () => void
   onClose: (event: React.SyntheticEvent) => void
+  presence: Presence[]
 }
 
 export const DefaultObjectEditing: FunctionComponent<Props> = ({
@@ -33,6 +35,7 @@ export const DefaultObjectEditing: FunctionComponent<Props> = ({
   onChange,
   onFocus,
   onBlur,
+  presence,
   onClose
 }): JSX.Element => {
   const handleChange = (patchEvent: PatchEvent): void => onChange(patchEvent, path)
@@ -50,18 +53,21 @@ export const DefaultObjectEditing: FunctionComponent<Props> = ({
             {/* TODO: Styling */}
             {/* <div className={styles.formBuilderInputWrapper}> */}
             <div>
-              <FormBuilderInput
-                type={type}
-                level={0}
-                readOnly={readOnly || type.readOnly}
-                value={object}
-                onChange={handleChange}
-                onFocus={onFocus}
-                onBlur={onBlur}
-                focusPath={focusPath}
-                path={path}
-                markers={markers}
-              />
+              <PresenceOverlay>
+                <FormBuilderInput
+                  type={type}
+                  level={0}
+                  readOnly={readOnly || type.readOnly}
+                  value={object}
+                  onChange={handleChange}
+                  onFocus={onFocus}
+                  onBlur={onBlur}
+                  presence={presence}
+                  focusPath={focusPath}
+                  path={path}
+                  markers={markers}
+                />
+              </PresenceOverlay>
             </div>
           </DialogContent>
         </DefaultDialog>
