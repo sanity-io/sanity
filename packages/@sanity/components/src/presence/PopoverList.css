@@ -31,7 +31,7 @@
 }
 
 .header {
-  padding: var(--small-padding) var(--medium-padding) 0;
+  padding: var(--medium-padding) var(--medium-padding) var(--small-padding);
   text-align: left;
   max-width: 220px;
 
@@ -56,11 +56,16 @@
   max-height: 180px;
 }
 
+.userList::-webkit-scrollbar {
+  display: none;
+}
+
 .manageMembers {
   border-top: 1px solid var(--hairline-color);
   padding: var(--extra-small-padding) 0;
   position: sticky;
   bottom: 0;
+  min-width: 190px;
 }
 
 .manageLink {
