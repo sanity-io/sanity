@@ -1,9 +1,10 @@
 @import 'part:@sanity/base/theme/variables-style';
 
 .root {
-  composes: default from './Spacing.css';
+  margin: 0;
   text-transform: none;
   font-family: var(--block-editor-header-font-family);
+  padding: var(--small-padding) 0;
 }
 
 .h1 {

@@ -4,6 +4,7 @@
 .root {
   display: inline-block;
   position: relative;
+  padding: 0;
   margin: 0 1px; /* Allow cursor to show in nearby text */
 }
 
@@ -14,7 +15,6 @@
   box-sizing: border-box;
   border: 1px solid transparent;
   background-color: var(--form-builder-block-background);
-  height: 1em;
   padding: 0 0.25em;
   border-radius: 2px;
   pointer-events: none;

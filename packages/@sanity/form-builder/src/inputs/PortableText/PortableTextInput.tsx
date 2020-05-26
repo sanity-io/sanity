@@ -33,7 +33,6 @@ import {InlineObject} from './Objects/InlineObject'
 import {EditObject} from './Objects/EditObject'
 import {Annotation} from './Text/Annotation'
 import Decorator from './Text/Decorator'
-import Normal from './Text/Normal'
 import Blockquote from './Text/Blockquote'
 import Header from './Text/Header'
 import BlockExtrasOverlay from './BlockExtrasOverlay'
@@ -302,9 +301,7 @@ export default withPatchSubscriber(
       if (value._type === this.ptFeatures.types.block.name) {
         let returned = defaultRender(value)
         // Deal with block style
-        if (value.style === 'normal') {
-          returned = <Normal>{returned}</Normal>
-        } else if (value.style === 'blockquote') {
+        if (value.style === 'blockquote') {
           returned = <Blockquote>{returned}</Blockquote>
         } else if (HEADER_STYLES.includes(value.style)) {
           returned = <Header style={value.style}>{returned}</Header>
