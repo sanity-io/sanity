@@ -152,11 +152,28 @@
   padding-right: var(--block-extras-width);
 }
 
-/* less spacing on block objects / non-text objects */
-.editor > div > div[data-slate-void='true'] + div[data-slate-void='true'] {
-  padding-top: var(--small-padding);
+/* Defaults for text blocks */
+.editor > div > div[class~=pt-text-block] + div[class~=pt-text-block] {
+  padding-top: 0.8rem;
 }
 
+/* spacing on block objects  */
+.editor > div > div[class~=pt-object-block] + div[class~=pt-object-block] {
+  padding-top: 0;
+}
+.editor > div > div[class~=pt-object-block] + div[class~=pt-text-block] {
+  padding-top: 0.8rem;
+}
+.editor > div > div[class~=pt-text-block] + div[class~=pt-object-block] {
+  padding-top: 0.8rem;
+}
+
+.editor > div > div[class~=pt-list-item] + div[class~=pt-list-item] {
+  padding-top: 0.25rem;
+}
+
+
+/* All blocks */
 .editor > div > * {
   position: relative;
   box-sizing: content-box;
