@@ -486,37 +486,33 @@ export default withPatchSubscriber(
         blockKey &&
         Array.isArray(this.props.value) &&
         this.props.value.find(blk => blk._key === blockKey)
-      if (!block) {
-        return null
-      }
-      if (objectEditStatus.type === 'blockObject') {
+      if (block && objectEditStatus.type === 'blockObject') {
         object = block
         lookForType = object._type
         // eslint-disable-next-line react/no-find-dom-node
         referenceElement = PortableTextEditor.findDOMNode(this.editor.current, object)
-      } else if (objectEditStatus.type === 'inlineObject') {
-        object =
-          block &&
-          block.children.find(child => child._key === objectEditStatus.formBuilderPath[2]._key)
-        lookForType = object._type
-        // eslint-disable-next-line react/no-find-dom-node
-        referenceElement = PortableTextEditor.findDOMNode(this.editor.current, object)
-      } else if (objectEditStatus.type === 'annotation') {
-        if (block) {
-          const child =
-            block &&
-            block.children.find(child => child._key === objectEditStatus.editorPath[2]._key)
-          if (child) {
-            const markDef =
-              child.marks &&
-              block.markDefs &&
-              block.markDefs.find(def => child.marks.includes(def._key))
-            if (markDef) {
-              lookForType = markDef._type
-              object = markDef
-              // eslint-disable-next-line react/no-find-dom-node
-              referenceElement = PortableTextEditor.findDOMNode(this.editor.current, child)
-            }
+      } else if (block && objectEditStatus.type === 'inlineObject') {
+        object = block.children.find(
+          child => child._key === objectEditStatus.formBuilderPath[2]._key
+        )
+        if (object) {
+          lookForType = object._type
+          // eslint-disable-next-line react/no-find-dom-node
+          referenceElement = PortableTextEditor.findDOMNode(this.editor.current, object)
+        }
+      } else if (block && objectEditStatus.type === 'annotation') {
+        const child =
+          block && block.children.find(child => child._key === objectEditStatus.editorPath[2]._key)
+        if (child) {
+          const markDef =
+            child.marks &&
+            block.markDefs &&
+            block.markDefs.find(def => child.marks.includes(def._key))
+          if (markDef) {
+            lookForType = markDef._type
+            object = markDef
+            // eslint-disable-next-line react/no-find-dom-node
+            referenceElement = PortableTextEditor.findDOMNode(this.editor.current, child)
           }
         }
       }
@@ -560,6 +556,10 @@ export default withPatchSubscriber(
           />
         )
       }
+      // Clear the edit state after the render is done.
+      setTimeout(() => {
+        this.setState({objectEditStatus: null})
+      }, 0)
       return null
     }
 
