@@ -7,7 +7,7 @@
   position: relative;
   overflow: hidden;
   font-size: var(--font-size-xsmall);
-  z-index: 0;
+  z-index: var(--zindex-portal);
 }
 
 .content {
