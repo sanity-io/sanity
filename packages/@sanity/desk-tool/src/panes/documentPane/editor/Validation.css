@@ -3,6 +3,10 @@
 .button {
   font-size: var(--font-size-large);
   margin: -1px;
+
+  @nest &:hover {
+    color: var(--state-danger-color) !important;
+  }
 }
 
 .isOpen {
