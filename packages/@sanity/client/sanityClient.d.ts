@@ -390,13 +390,21 @@ export class Transaction {
   delete(documentId: string): this
 
   /**
-   * Performs a patch on the given document ID. Can either be a builder function, a prepared Patch instance or an object of patch operations.
+   * Performs a patch on the given document ID. Can either be a builder function or an object of patch operations.
    * The operation is added to the current transaction, ready to be commited by `commit()`
    *
    * @param documentId Document ID to perform the patch operation on
    * @param patchOps Operations to perform, or a builder function
    */
-  patch(documentId: string, patchOps?: PatchBuilder | Patch | PatchOperations): this
+  patch(documentId: string, patchOps?: PatchBuilder | PatchOperations): this
+
+  /**
+   * Adds the given patch instance to the transaction.
+   * The operation is added to the current transaction, ready to be commited by `commit()`
+   *
+   * @param patch Patch to execute
+   */
+  patch(patch: Patch): this
 
   /**
    * Set or gets the ID of this transaction.
