@@ -195,6 +195,7 @@ export default class ObjectInput extends React.PureComponent<ObjectInputProps, {
           columns={columns}
           isCollapsible={collapsibleOpts.collapsible}
           isCollapsed={!isExpanded && collapsibleOpts.collapsed}
+          markers={markers}
         >
           {renderedFields}
           {renderedUnknownFields}

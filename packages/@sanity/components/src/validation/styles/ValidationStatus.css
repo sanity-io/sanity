@@ -15,9 +15,10 @@
   max-width: 210px;
   text-align: left;
   padding: var(--small-padding);
+  font-size: var(--font-size-small);
 
   @nest & .icon {
-    padding: 3px var(--small-padding) 0 0;
+    padding: 0 var(--small-padding) 0 0;
     font-size: var(--font-size-base);
   }
 }
