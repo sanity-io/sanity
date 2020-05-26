@@ -25,7 +25,7 @@
   }
 
   @nest & .icon {
-    padding-top: 3px;
+    padding-top: 1px;
     font-size: var(--font-size-base);
   }
 }
