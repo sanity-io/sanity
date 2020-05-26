@@ -81,7 +81,12 @@ export default function BlockStyleSelect(props: Props): JSX.Element {
   }
 
   const handleChange = (item: BlockStyleItem): void => {
-    PortableTextEditor.toggleBlockStyle(props.editor, item.style)
+    const focusBlock = PortableTextEditor.focusBlock(props.editor)
+    if (focusBlock && item.style !== focusBlock.style) {
+      PortableTextEditor.toggleBlockStyle(props.editor, item.style)
+    } else {
+      PortableTextEditor.focus(props.editor)
+    }
   }
 
   const renderItem = (item: BlockStyleItem): JSX.Element => {
