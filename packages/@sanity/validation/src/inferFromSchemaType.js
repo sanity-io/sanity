@@ -37,6 +37,10 @@ function inferFromSchemaType(typeDef, schema, visited = new Set()) {
     base = base.type('Date')
   }
 
+  if (type && type.name === 'date') {
+    base = base.type('Date')
+  }
+
   if (type && type.name === 'url') {
     base = base.uri()
   }
