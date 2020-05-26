@@ -940,6 +940,10 @@
       "path": "components/icons/UsersIcon.js"
     },
     {
+      "implements": "part:@sanity/base/drag-handle-icon",
+      "path": "components/icons/DragHandle.js"
+    },
+    {
       "implements": "part:@sanity/base/sanity-logo",
       "path": "components/logos/SanityLogo.js"
     },
