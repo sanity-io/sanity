@@ -144,7 +144,8 @@ export default withPatchSubscriber(
         const isMarkdef = focusPath[1] === 'markDefs'
         const blockSegment = focusPath[0]
         if (isMarkdef && blockSegment && typeof blockSegment === 'object') {
-          const block = nextProps.value.find(blk => blk._key === blockSegment._key)
+          const block =
+            nextProps.value && nextProps.value.find(blk => blk._key === blockSegment._key)
           const markDefSegment = focusPath[2]
           if (block && markDefSegment && typeof markDefSegment === 'object') {
             const span = block.children.find(
