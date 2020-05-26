@@ -98,7 +98,7 @@ function inferForMemberTypes(typeDef, schema, visited) {
 }
 
 function extractValueFromListOption(option) {
-  return option.value || option
+  return option.value !== undefined ? option.value : option
 }
 
 function inferValidation(field, baseRule) {
