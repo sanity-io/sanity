@@ -646,7 +646,7 @@ export interface RawQueryResponse<R> {
   result: R
 }
 
-export type SanityDocument<T extends Record<string, any> = {}> = {
+export type SanityDocument<T extends Record<string, any> = Record<string, any>> = {
   [P in keyof T]: T[P]
 } & {
   _id: string
@@ -656,13 +656,13 @@ export type SanityDocument<T extends Record<string, any> = {}> = {
   _updatedAt: string
 }
 
-export type SanityDocumentStub<T extends Record<string, any> = {}> = {
+export type SanityDocumentStub<T extends Record<string, any> = Record<string, any>> = {
   [P in keyof T]: T[P]
 } & {
   _type: string
 }
 
-export type IdentifiedSanityDocumentStub<T extends Record<string, any> = {}> = {
+export type IdentifiedSanityDocumentStub<T extends Record<string, any> = Record<string, any>> = {
   [P in keyof T]: T[P]
 } & {
   _id: string
