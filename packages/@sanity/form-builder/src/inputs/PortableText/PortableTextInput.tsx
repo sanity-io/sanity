@@ -308,14 +308,16 @@ export default withPatchSubscriber(
         }
         return returned
       }
-
+      const blockMarkers = this.props.markers.filter(
+        marker => typeof marker.path[0] === 'object' && marker.path[0]._key === value._key
+      )
       // Object blocks
       return (
         <BlockObject
           attributes={attributes}
           editorRef={this.editor}
           focusPath={this.props.focusPath}
-          markers={this.props.markers}
+          markers={blockMarkers}
           onChange={this.handleFormBuilderEditObjectChange}
           onFocus={this.props.onFocus}
           readOnly={this.props.readOnly}
@@ -365,7 +367,7 @@ export default withPatchSubscriber(
         return null
       }
       const {focusPath, readOnly} = this.props
-      const markers = this.props.markers.filter(
+      const annotationMarkers = this.props.markers.filter(
         marker => typeof marker.path[2] === 'object' && marker.path[2]._key === value._key
       )
       return (
@@ -373,7 +375,7 @@ export default withPatchSubscriber(
           key={value._key}
           attributes={attributes}
           focusPath={focusPath}
-          markers={markers}
+          markers={annotationMarkers}
           onFocus={this.props.onFocus}
           onChange={this.handleFormBuilderEditObjectChange}
           readOnly={readOnly}
@@ -486,36 +488,44 @@ export default withPatchSubscriber(
         blockKey &&
         Array.isArray(this.props.value) &&
         this.props.value.find(blk => blk._key === blockKey)
-      if (block && objectEditStatus.type === 'blockObject') {
-        object = block
-        lookForType = object._type
-        // eslint-disable-next-line react/no-find-dom-node
-        referenceElement = PortableTextEditor.findDOMNode(this.editor.current, object)
-      } else if (block && objectEditStatus.type === 'inlineObject') {
-        object = block.children.find(
-          child => child._key === objectEditStatus.formBuilderPath[2]._key
-        )
-        if (object) {
-          lookForType = object._type
-          // eslint-disable-next-line react/no-find-dom-node
-          referenceElement = PortableTextEditor.findDOMNode(this.editor.current, object)
-        }
-      } else if (block && objectEditStatus.type === 'annotation') {
-        const child =
-          block && block.children.find(child => child._key === objectEditStatus.editorPath[2]._key)
-        if (child) {
-          const markDef =
-            child.marks &&
-            block.markDefs &&
-            block.markDefs.find(def => child.marks.includes(def._key))
-          if (markDef) {
-            lookForType = markDef._type
-            object = markDef
+
+      if (block) {
+        switch (objectEditStatus.type) {
+          case 'blockObject':
+            object = block
+            lookForType = object._type
             // eslint-disable-next-line react/no-find-dom-node
-            referenceElement = PortableTextEditor.findDOMNode(this.editor.current, child)
-          }
+            referenceElement = PortableTextEditor.findDOMNode(this.editor.current, object)
+            break
+          case 'inlineObject':
+            object = block.children.find(
+              child => child._key === objectEditStatus.formBuilderPath[2]._key
+            )
+            if (object) {
+              lookForType = object._type
+              // eslint-disable-next-line react/no-find-dom-node
+              referenceElement = PortableTextEditor.findDOMNode(this.editor.current, object)
+            }
+            break
+          case 'annotation':
+            const child =
+              block &&
+              block.children.find(child => child._key === objectEditStatus.editorPath[2]._key)
+            if (child) {
+              const markDef =
+                child.marks &&
+                block.markDefs &&
+                block.markDefs.find(def => child.marks.includes(def._key))
+              if (markDef) {
+                lookForType = markDef._type
+                object = markDef
+                // eslint-disable-next-line react/no-find-dom-node
+                referenceElement = PortableTextEditor.findDOMNode(this.editor.current, child)
+              }
+            }
         }
       }
+
       if (object && lookForType) {
         // Find the type
         const type = this.ptFeatures.types[
@@ -525,7 +535,6 @@ export default withPatchSubscriber(
             ? 'annotations'
             : 'inlineObjects'
         ].find(t => t.name === lookForType)
-
         const handleClose = (): void => {
           const {editorPath} = objectEditStatus
           const {onFocus} = this.props
@@ -538,7 +547,6 @@ export default withPatchSubscriber(
             })
           }
         }
-
         return (
           <EditObject
             formBuilderPath={objectEditStatus.formBuilderPath}
@@ -556,7 +564,8 @@ export default withPatchSubscriber(
           />
         )
       }
-      // Clear the edit state after the render is done.
+      // Clear the edit state after rendering null.
+      // TODO: render this with hooks
       setTimeout(() => {
         this.setState({objectEditStatus: null})
       }, 0)
@@ -614,7 +623,7 @@ export default withPatchSubscriber(
                 maxBlocks={-1} // TODO: from schema?
                 onChange={this.handleEditorChange}
                 incomingPatche$={this.patche$.asObservable()}
-                placeholderText={value ? undefined : '[No content]'}
+                placeholderText={value ? undefined : 'Empty'}
                 readOnly={readOnly}
                 ref={this.editor}
                 renderBlock={this.renderBlock}
