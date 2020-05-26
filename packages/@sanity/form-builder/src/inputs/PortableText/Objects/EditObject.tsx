@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useState, useMemo} from 'react'
+import React, {FunctionComponent, useMemo} from 'react'
 import {PortableTextBlock, PortableTextChild, Type} from '@sanity/portable-text-editor'
 import {get} from 'lodash'
 
@@ -40,17 +40,10 @@ export const EditObject: FunctionComponent<Props> = ({
   onBlur
 }): JSX.Element => {
   const editModalLayout: ModalType = get(type, 'options.editModal')
-  const [isOpen, setIsOpen] = useState(true)
-  if (!isOpen) {
-    return null
-  }
   const handleClose = (): void => {
-    setIsOpen(false)
     onClose()
   }
-
   const refElm = useMemo(() => referenceElement, [])
-
   const handleChange = (patchEvent: PatchEvent): void => {
     onChange(patchEvent, formBuilderPath)
   }
