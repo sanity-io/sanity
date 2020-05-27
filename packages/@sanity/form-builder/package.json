@@ -23,7 +23,7 @@
     "@sanity/generate-help-url": "1.149.0",
     "@sanity/imagetool": "1.149.0",
     "@sanity/mutator": "1.149.0",
-    "@sanity/portable-text-editor": "^0.0.8",
+    "@sanity/portable-text-editor": "^0.0.9",
     "@sanity/util": "1.149.7",
     "@sanity/uuid": "1.149.0",
     "attr-accept": "^1.1.0",
