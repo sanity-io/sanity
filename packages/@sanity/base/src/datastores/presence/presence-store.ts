@@ -1,28 +1,31 @@
 import {
-  asyncScheduler,
   BehaviorSubject,
   concat,
   defer,
   EMPTY,
   from,
   fromEvent,
-  interval,
   merge,
+  NEVER,
   Observable,
-  of
+  of,
+  timer
 } from 'rxjs'
 
 import {
+  auditTime,
+  distinctUntilChanged,
   filter,
   flatMap,
   map,
   mergeMapTo,
   scan,
   share,
+  shareReplay,
   switchMap,
   switchMapTo,
-  take,
-  throttleTime,
+  takeUntil,
+  tap,
   toArray,
   withLatestFrom
 } from 'rxjs/operators'
@@ -40,6 +43,7 @@ import {
   TransportEvent
 } from './message-transports/transport'
 import {mock$} from './mock-events'
+import {connectionStatus$} from '../../connection-status/connection-status-store'
 
 const KEY = 'presence_session_id'
 const generate = () => nanoid(16)
@@ -60,6 +64,7 @@ function getSessionId() {
   }
   return null
 }
+
 function setSessionId(id) {
   try {
     window.sessionStorage.setItem(KEY, id)
@@ -73,10 +78,11 @@ export const SESSION_ID = getSessionId() || setSessionId(generate())
 
 const [presenceEvents$, sendMessage] = createBifurTransport(bifur, SESSION_ID)
 
-const locationChange = new BehaviorSubject(null)
+const currentLocation$ = new BehaviorSubject([])
+const locationChange$ = currentLocation$.pipe(distinctUntilChanged())
 
 export const setLocation = (nextLocation: PresenceLocation[]) => {
-  locationChange.next(nextLocation)
+  currentLocation$.next(nextLocation)
 }
 
 export const reportLocations = (locations: PresenceLocation[]) =>
@@ -85,29 +91,34 @@ export const reportLocations = (locations: PresenceLocation[]) =>
 const requestRollCall = () => sendMessage({type: 'rollCall'})
 
 const rollCallRequests$ = presenceEvents$.pipe(
-  filter((event: TransportEvent): event is RollCallEvent => event.type === 'rollCall')
+  filter((event: TransportEvent): event is RollCallEvent => event.type === 'rollCall'),
+  // do not respond to my own rollcall requests
+  filter((event: RollCallEvent) => event.sessionId !== SESSION_ID)
 )
+
+const REPORT_MIN_INTERVAL = 30000
 
 // Interval to report my own location at
-const reportLocationInterval$ = interval(10000)
+const reportLocationInterval$ = timer(0, REPORT_MIN_INTERVAL)
 
-const rollCallReplies$ = merge(locationChange, reportLocationInterval$, rollCallRequests$).pipe(
-  withLatestFrom(locationChange),
-  throttleTime(200, asyncScheduler, {leading: false, trailing: true}),
-  map(([, currentLocation]) => currentLocation),
+const reportLocation$ = defer(() => merge(locationChange$, rollCallRequests$)).pipe(
+  switchMap(() => reportLocationInterval$),
+  withLatestFrom(currentLocation$),
+  map(([, locations]) => locations),
+  auditTime(200),
   switchMap(locations => reportLocations(locations)),
-  mergeMapTo(EMPTY)
+  mergeMapTo(EMPTY),
+  share()
 )
 
-// This is my rollcall to other clients
-const initialRollCall$ = defer(() => from(requestRollCall()).pipe(take(1), mergeMapTo(EMPTY)))
+// This represents my rollcall request to other clients
+// Note: We are requesting a rollcall whenever we (re)connect
+const myRollCall$ = defer(() => requestRollCall()).pipe(mergeMapTo(EMPTY))
 
-const syncEvent$ = merge(initialRollCall$, presenceEvents$).pipe(
-  filter(
-    (event: TransportEvent): event is StateEvent | DisconnectEvent =>
-      event.type === 'state' || event.type === 'disconnect'
-  ),
-  share()
+const connectionChange$ = connectionStatus$.pipe(
+  map(status => status.type),
+  filter(statusType => statusType === 'connected' || statusType === 'error'),
+  distinctUntilChanged()
 )
 
 const debugParams$ = concat(of(0), fromEvent(window, 'hashchange')).pipe(
@@ -125,6 +136,13 @@ const useMock$ = debugParams$.pipe(
 
 const debugIntrospect$ = debugParams$.pipe(map(args => args.includes('introspect')))
 
+const syncEvent$ = merge(myRollCall$, presenceEvents$).pipe(
+  filter(
+    (event: TransportEvent): event is StateEvent | DisconnectEvent =>
+      event.type === 'state' || event.type === 'disconnect'
+  )
+)
+
 const states$: Observable<{[sessionId: string]: Session}> = merge(syncEvent$, useMock$).pipe(
   scan(
     (keyed, event) =>
@@ -135,10 +153,8 @@ const states$: Observable<{[sessionId: string]: Session}> = merge(syncEvent$, us
   )
 )
 
-const allSessions$: Observable<{user: User; session: Session}[]> = merge(
-  states$,
-  rollCallReplies$
-).pipe(
+const allSessions$: Observable<{user: User; session: Session}[]> = connectionChange$.pipe(
+  switchMap(status => (status === 'connected' ? merge(states$, reportLocation$) : NEVER)),
   map(keyedSessions => Object.values(keyedSessions)),
   switchMap(sessions => {
     const userIds = uniq(sessions.map(sess => sess.userId))
@@ -150,7 +166,11 @@ const allSessions$: Observable<{user: User; session: Session}[]> = merge(
         }))
       )
     )
-  })
+  }),
+  takeUntil(
+    fromEvent(window, 'beforeunload').pipe(switchMap(() => sendMessage({type: 'disconnect'})))
+  ),
+  shareReplay({refCount: true, bufferSize: 1})
 )
 
 const concatValues = <T>(prev: T[], curr: T): T[] => prev.concat(curr)

@@ -27,7 +27,7 @@
   },
   "homepage": "https://www.sanity.io/",
   "dependencies": {
-    "@sanity/bifur-client": "0.0.2",
+    "@sanity/bifur-client": "^0.0.3",
     "@sanity/client": "1.149.13",
     "@sanity/generate-help-url": "1.149.0",
     "@sanity/image-url": "0.140.15",
