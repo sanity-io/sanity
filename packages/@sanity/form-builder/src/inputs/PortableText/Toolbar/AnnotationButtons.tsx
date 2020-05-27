@@ -1,5 +1,5 @@
 import React from 'react'
-import {get} from 'lodash'
+import {get, isEqual} from 'lodash'
 import LinkIcon from 'part:@sanity/base/link-icon'
 import SanityLogoIcon from 'part:@sanity/base/sanity-logo-icon'
 import ToggleButton from 'part:@sanity/components/toggles/button'
@@ -51,11 +51,12 @@ export default class AnnotationButtons extends React.PureComponent<Props, {}> {
     const ptFeatures = PortableTextEditor.getPortableTextFeatures(editor)
     const activeAnnotations = PortableTextEditor.activeAnnotations(editor)
     const focusChild = PortableTextEditor.focusChild(editor)
+    const hasText = focusChild && focusChild.text
     return ptFeatures.annotations.map((item: AnnotationItem) => {
       return {
         ...item,
         active: !!activeAnnotations.find(an => an._type === item.type.name),
-        disabled: !focusChild || PortableTextEditor.isVoid(editor, focusChild)
+        disabled: !hasText || !focusChild || PortableTextEditor.isVoid(editor, focusChild)
       }
     })
   }
