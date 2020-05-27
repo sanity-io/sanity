@@ -364,9 +364,6 @@ export default withPatchSubscriber(
       attributes: RenderAttributes,
       defaultRender: () => JSX.Element
     ): JSX.Element => {
-      if (!this.editor.current) {
-        return null
-      }
       const {focusPath, readOnly} = this.props
       const annotationMarkers = this.props.markers.filter(
         marker => typeof marker.path[2] === 'object' && marker.path[2]._key === value._key
@@ -395,9 +392,6 @@ export default withPatchSubscriber(
       attributes: RenderAttributes,
       defaultRender: () => JSX.Element
     ): JSX.Element => {
-      if (!this.editor.current) {
-        return null
-      }
       return <Decorator mark={value}>{defaultRender()}</Decorator>
     }
 
