@@ -68,7 +68,9 @@ export default class AnnotationButtons extends React.PureComponent<Props, {}> {
     }
     const paths = PortableTextEditor.addAnnotation(editor, item.type)
     if (paths && paths.markDefPath) {
-      onFocus(paths.markDefPath.concat(FOCUS_TERMINATOR))
+      setTimeout(() => {
+        onFocus(paths.markDefPath.concat(FOCUS_TERMINATOR))
+      })
     }
   }
   renderAnnotationButton = (item: AnnotationItem): JSX.Element => {
