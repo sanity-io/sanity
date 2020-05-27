@@ -1,7 +1,27 @@
+import moment from 'moment'
+
 const ValidationError = require('../ValidationError')
 const genericValidator = require('./genericValidator')
 
 const isoDate = /^(?:[-+]\d{2})?(?:\d{4}(?!\d{2}\b))(?:(-?)(?:(?:0[1-9]|1[0-2])(?:\1(?:[12]\d|0[1-9]|3[01]))?|W(?:[0-4]\d|5[0-2])(?:-?[1-7])?|(?:00[1-9]|0[1-9]\d|[12]\d{2}|3(?:[0-5]\d|6[1-6])))(?![T]$|[T][\d]+Z$)(?:[T\s](?:(?:(?:[01]\d|2[0-3])(?:(:?)[0-5]\d)?|24\:?00)(?:[.,]\d+(?!:))?)(?:\2[0-5]\d(?:[.,]\d+)?)?(?:[Z]|(?:[+-])(?:[01]\d|2[0-3])(?::?[0-5]\d)?)?)?)?$/
+
+const getFormattedDate = (type = '', value, options) => {
+  let format = 'YYYY-MM-DD'
+  if (options && options.dateFormat) {
+    format = options.dateFormat
+  }
+  if (type === 'date') {
+    // If the type is date only
+    return moment(value).format(format)
+  }
+  // If the type is datetime
+  if (options && options.timeFormat) {
+    format += ` ${options.timeFormat}`
+  } else {
+    format += ' HH:mm'
+  }
+  return moment(value).format(format)
+}
 
 const type = (unused, value, message) => {
   const strVal = `${value}`
@@ -12,30 +32,31 @@ const type = (unused, value, message) => {
   return new ValidationError(message || 'Must be a valid ISO-8601 formatted date string')
 }
 
-const min = (minDate, value, message) => {
+const min = (minDate, value, message, field) => {
   const dateVal = value && parseDate(value)
   if (!dateVal) {
-    return true // `type()` shoudl catch parse errors
+    return true // `type()` should catch parse errors
   }
 
   if (!value || dateVal >= parseDate(minDate, true)) {
     return true
   }
-
-  return new ValidationError(message || `Must be at or after ${minDate}`)
+  const date = getFormattedDate(field.type.name, minDate, field.type.options)
+  return new ValidationError(message || `Must be at or after ${date}`)
 }
 
-const max = (maxDate, value, message) => {
+const max = (maxDate, value, message, field) => {
   const dateVal = value && parseDate(value)
   if (!dateVal) {
-    return true // `type()` shoudl catch parse errors
+    return true // `type()` should catch parse errors
   }
 
   if (!value || dateVal <= parseDate(maxDate, true)) {
     return true
   }
 
-  return new ValidationError(message || `Must be before or at ${maxDate}`)
+  const date = getFormattedDate(field.type.name, maxDate, field.type.options)
+  return new ValidationError(message || `Must be at or before ${date}`)
 }
 
 function parseDate(date, throwOnError) {
