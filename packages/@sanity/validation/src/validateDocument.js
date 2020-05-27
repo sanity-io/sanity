@@ -131,7 +131,12 @@ function validatePrimitive(item, type, path, options) {
 
   const results = type.validation.map(rule =>
     rule
-      .validate(item, {parent: options.parent, document: options.document, path})
+      .validate(item, {
+        parent: options.parent,
+        document: options.document,
+        path,
+        type: {name: options.type.name, options: options.type.options}
+      })
       .then(currRuleResults => applyPath(currRuleResults, path))
   )
 
